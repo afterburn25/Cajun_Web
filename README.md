@@ -1,0 +1,47 @@
+# CajunWebPro — project source of truth
+
+Custom web design and development services, portfolio, and business-management website. **This is a service business website, not a do-it-yourself website builder.**
+
+Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
+
+## Start here in every session
+
+1. Read [AGENTS.md](AGENTS.md) for the working rules.
+2. Read [PROJECT_STATUS.md](PROJECT_STATUS.md) for what exists, what is pending, and what is unverified.
+3. Read [SESSION_HANDOFF.md](SESSION_HANDOFF.md) for the exact next actions.
+4. Read [Project direction](docs/PROJECT_DIRECTION.md) and [Roadmap](docs/ROADMAP.md) before changing scope or design.
+
+Every working session must update the status, handoff, and [session log](docs/SESSION_LOG.md). Record implementation changes in [CHANGELOG.md](CHANGELOG.md), and important choices in [Decisions](docs/DECISIONS.md). Documentation belongs in Git with the work, not only in chat.
+
+## Current checkpoint — 2026-10-12
+
+The repository was empty when inspected. This bootstrap records the project requirements, inspected distribution baseline, approved backlog, and continuity process. **Application source and original image assets have not yet been imported into Git. This is not a deployable website release.**
+
+The latest supplied PHP distribution is `CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip`. Its actual archive hash and contents were inspected locally; see [Baseline inventory](docs/BASELINE_INVENTORY.md). It is a baseline to import, not proof of the version running on the user's host. The last reported live installer/version and storage issues have no confirmed target-host resolution.
+
+## Non-negotiable direction
+
+- PHP/MySQL or MariaDB on shared hosting; no required Node service, SSH, root access, or command-line installation.
+- Preserve the approved navy/royal-blue and metallic-gold design and original horizontal CajunWebPro logo, without `.com` in the branding.
+- Use the user's attached fleur-de-lis as the favicon source. Do not substitute another crest or regenerate the logo.
+- Fancy, organized, technology-driven presentation; no dull template redesign, flying pixels, forced loading animation, or obstructive effects.
+- One visible installer form, all configuration on one page, one Install submission, inline errors, no Next/Back wizard, and no installation key.
+- Preserve private configuration, real content, media, and installation locks. Verify installer deletion and report failures honestly.
+- Ship one complete, unambiguously named deployment package with no enclosing version or upload folder.
+- Keep requested features, mockups, implemented source, local tests, and confirmed deployment clearly distinguished.
+
+## Documentation map
+
+| Record | Purpose |
+|---|---|
+| [Project direction](docs/PROJECT_DIRECTION.md) | Positioning, design, audience, and scope |
+| [Roadmap](docs/ROADMAP.md) | All approved additions and acceptance criteria |
+| [Architecture](docs/ARCHITECTURE.md) | Inspected PHP baseline and planned extension boundaries |
+| [Installation and updates](docs/INSTALLATION_AND_UPDATES.md) | Single-page installer, ownership, packaging, and release checks |
+| [Brand assets](docs/BRAND_ASSETS.md) | Exact logo, favicon source, and visual-reference provenance |
+| [Baseline inventory](docs/BASELINE_INVENTORY.md) | Artifact identity, file inventory, and inspection limits |
+| [Decisions](docs/DECISIONS.md) | Accepted constraints and why earlier approaches were rejected |
+| [Session log](docs/SESSION_LOG.md) | Dated work record |
+| [Session template](docs/SESSION_TEMPLATE.md) | Required end-of-session record |
+
+The Git repository is not the public document root. Do not upload project documentation, private configuration, customer records, or development tooling as website assets.
