@@ -1,47 +1,47 @@
 # Project status
 
-Updated: 2026-10-12 · Repository: `afterburn25/Cajun_Web` · Source-of-truth branch: `main`.
+Updated: 2026-10-12 — download recovery / release-claim correction.
+Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
 
-## Executive checkpoint
+## Critical correction
 
-The owner created this repository and requested persistent documentation for every project change and direction decision. The repository was verified empty before this documentation bootstrap.
+The assistant's latest chat reply claimed an expanded, packaged and locally tested **v1.1.0** and supplied download links. The owner received **Failed to download file**. The v1.1.0 complete ZIP, update ZIP, development checkpoint, previews and operations report could not be found in the active runtime or recovered through the file searches in this session. **Do not treat that reply as evidence of a completed release or passing tests. Its packaging/completion claims are withdrawn.**
 
-**This checkpoint adds documentation only. PHP source and original artwork are not yet imported into Git. No website release, feature implementation, hosting change, database migration, or deployment occurred in this session.**
+At investigation time both `main` and `feature/growth-suite-1.1.0` pointed to documentation commit `089d2d9e7b62416bc10f6a53f9cba8879f644550`. GitHub's releases collection was empty. This recovery commit changes documentation only; it does not add application source or ship the growth suite. See [delivery incident](docs/DELIVERY_INCIDENT_2026-10-12.md).
 
-The latest supplied distribution is `CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip`. Its bytes were inspected locally during this session: archive SHA-256 matched the historical report, ZIP integrity passed, 33 files were present at the archive root, and application/installer constants both identify 1.0.8. See `docs/BASELINE_INVENTORY.md`.
+## Verified available artifacts
+
+| Artifact | Verified here | What it is not |
+|---|---|---|
+| `CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip` | 1,185,879 bytes; archive CRC passes; 33 files; app and installer declare 1.0.8; archive hash matches the baseline inventory | Not v1.1.0, not a new feature update, not proof of host deployment |
+| `CajunWebPro-Exact-Favicon.zip` | 247,403 bytes; archive CRC passes; PNG/ICO images decode; square RGBA PNG sizes 16/32/48/64/180/192/512 and ICO frames 16/32/48/64/128/256 | Not evidence the favicon has been wired into a deployed site |
+| `icon(4).png` | SHA-256 matches the source recorded in the favicon archive and the earlier `icon(1).png` | Not permission to replace the horizontal logo |
+
+Fresh byte-identical recovery copies were created as `CajunWebPro-1.0.8-Recovered-Original.zip` and `CajunWebPro-Favicon-Recovered.zip`. The older baseline was not renamed to v1.1.0. These are new attachment paths, not permanent hosting URLs.
 
 ## Evidence ledger
 
-| Area | Current status | Evidence or remaining boundary |
-|---|---|---|
-| Repository access | Verified | Connected GitHub account has push access; default branch is `main` |
-| Documentation foundation | Added in this bootstrap | Requirements, direction, backlog, decisions, status, handoff, session procedure |
-| 1.0.8 distribution | Inspected locally | Exact ZIP hash, entry list, core/installer headers, schema definitions, branding fingerprints |
-| Application source in Git | Pending import | Do not call this documentation tree deployable |
-| Public PHP pages and administration | Present in the distribution; not re-accepted end to end here | Public routes, admin/API/media/mail code, schema and assets are in the inspected ZIP |
-| One-page/keyless installer | Declared in supplied 1.0.8 source; prior report describes local tests | This session did not run a browser installation; user's running copy has not been verified |
-| Live installation | Unverified | Last user reports included version 1.0.5, a multi-step screen, missing-file concerns, root-owned storage, and missing media |
-| Storage ownership on host | Unresolved until verified | No live worker UID, ACL, document-root permissions, or writable-parent evidence collected here |
-| Favicon requested by owner | Approved, implementation pending verification/import | Exact source is `icon(1).png`; distribution already has a different favicon file, which is not evidence this request was applied |
-| New sales/portfolio/client features | Approved backlog, not implemented by this bootstrap | See `docs/ROADMAP.md` |
-| Native MySQL/GD/SMTP/HTTPS acceptance | Still requires verified runs | Historical report expressly lists these target-host checks as outstanding |
+| Area | Current status |
+|---|---|
+| Documentation and approved direction | Preserved in Git; this incident and next steps recorded |
+| PHP source in Git | Still pending import; current reachable source tree is documentation only |
+| 1.0.8 source distribution | Recoverable locally; source inventory is in `docs/BASELINE_INVENTORY.md` |
+| Favicon derivatives | Recoverable, decoded and archive-checked; integration/deployment pending |
+| Expanded portfolio, estimator, comparison content and client workflows | Approved roadmap; no complete recoverable release or verified implementation commit established here |
+| Native database, image upload, email, HTTPS acceptance | Not run in this recovery session; historical baseline report lists outstanding host checks |
+| Running installer and storage issue | Still unverified on the actual host; do not declare fixed |
 
-## Baseline functionality inventory
+## Existing baseline and unresolved work
 
-The inspected distribution includes PHP public pages, an administration entry point, project/service/testimonial records, lead submission, media handling, SMTP code, account-reset support, robots and sitemap endpoints, and the installer. The ten schema definitions are `settings`, `users`, `projects`, `services`, `testimonials`, `leads`, `media`, `rate_limits`, `resets`, and `audit`.
+The baseline includes public PHP routes, admin/API/media/mail code, robots/sitemap endpoints, branding and a keyless one-page installer. Its ten schema declarations are settings, users, projects, services, testimonials, leads, media, rate_limits, resets and audit. That inventory is not evidence of the proposed private client portal, invoices, scheduling, approvals or backup/update tools.
 
-This is a source inventory, not a full security or functionality audit. Do not infer a client portal, invoices, scheduling engine, proposal system, or backup manager from the existence of a generic users/projects table.
+- **B-001 — Source continuity:** import the exact 1.0.8 distribution and original assets into Git, preserving byte provenance and excluding secrets. Do not replace the existing PHP application with a mockup.
+- **B-002 — Running installer mismatch:** verify the actual served installer path/build; the last owner report included a 1.0.5 wizard. No upload-location/cache explanation has been proven on the host.
+- **B-003 — Hosting filesystem:** verify real PHP-worker permissions, permanent storage and cleanup access; preserve customer data/locks. Do not promise root ownership or use 0777.
+- **B-004 — Native acceptance:** stage and test actual MySQL/MariaDB, GD uploads, SMTP receipt, HTTPS flows, recovery and cleanup.
+- **B-005 — Approved expansion:** implement and verify `docs/ROADMAP.md`; no feature is complete because it appeared in an image or chat summary.
+- **B-006 — Missing v1.1.0 artifacts:** no downloadable complete/update package or test evidence recovered. Reconstruct from preserved source only after committing a real baseline; never silently substitute the old site as the requested update.
 
-## Open blockers
+## Owner direction remains unchanged
 
-- **B-001 — Source continuity:** import the exact complete baseline and original reference assets into Git with provenance. Preserve the existing PHP application; do not replace it with the latest generated mockup.
-- **B-002 — Running installer mismatch:** establish the actual deployed path, displayed build, served source/hash where accessible, and active route before diagnosing caching or upload placement as the cause.
-- **B-003 — Host filesystem:** verify targeted writable locations and permanent private storage under the real PHP worker. Preserve existing data and locks. A root-owned `0755` directory is not repaired by changing a version label.
-- **B-004 — Native acceptance:** run real MySQL/MariaDB installation, recovery, admin/public operations, GD uploads, SMTP receipt, HTTPS form/session behavior, and cleanup on suitable staging.
-- **B-005 — Approved additions:** favicon, interactive portfolio, enhanced motion, estimator, comparison content, review requests, client workspace, proposals/payments/care plans, scheduling/content, pipeline, backups/history/update manager remain tracked work, not completed claims.
-
-## Latest user direction
-
-The owner accepted all additions proposed in the prior feature discussion, specifically requested persuasive but organized Wix/Squarespace switching comparisons and more useful service information, and supplied the fleur-de-lis for the favicon. The subsequent image generation was a visual concept, not implementation of those systems.
-
-No prices, provider account credentials, legal contract terms, guaranteed response times, or production payment configuration have been supplied. Do not invent these values.
+Keep the rich navy/gold design and original horizontal logo without .com, use the exact fleur-de-lis favicon, retain PHP shared hosting and one-page/no-key installation, add the full agreed feature suite and accurate Wix/Squarespace comparison content. Prices, payment/calendar accounts and contractual commitments must not be invented. Keep existing hosting files and data intact during recovery.
