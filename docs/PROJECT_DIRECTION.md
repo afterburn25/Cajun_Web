@@ -1,0 +1,45 @@
+# Project direction
+
+Recorded: 2026-10-12. This document captures accepted owner requirements, not a claim all features are implemented.
+
+## Business and positioning
+
+CajunWebPro designs and builds websites for other people and businesses. The site must market that service, show actual work, qualify inquiries, and eventually support the client relationship. It is not a DIY website builder and should not ask prospects to build their own website.
+
+Brand name in the interface: **CajunWebPro**, without `.com`. The domain remains `cajunwebpro.com`. Louisiana/Cajun identity should support credibility without overwhelming the web-design message. Do not invent a team size, years in business, client counts, ratings, awards, or measured outcomes.
+
+## Approved visual direction
+
+Preserve the first selected rich navy-and-gold homepage concept: sharp blue/navy surfaces, metallic gold highlights, strong silver/gold headline treatment, a large laptop-and-phone scene, Louisiana/bridge imagery, the original fleur-de-lis wordmark, luminous but readable controls, organized service cards, an attractive portfolio, and a strong inquiry call to action.
+
+The owner's central feedback is that a web design company's own website should demonstrate its design and technology capabilities. Plain, muted, generic-template layouts were rejected. Also rejected: overloaded neon scenery, repetitive logo redesigns, flying/disintegrating pixels, and unnecessary complexity. The target is fancy, professional, distinctive, organized, and usable—not a chaotic special-effects demo.
+
+Text, navigation, forms, project cards, and interactions must be actual HTML/PHP/CSS/JavaScript elements, not a full-page mockup used as the functioning site. Decorative imagery must not be represented as a true navigable 3D implementation. Do not describe upscaled source images as native 4K detail.
+
+Use subtle logo highlights, device depth, controlled section motion, portfolio interactions, and responsive lighting with restraint. Avoid autoplay audio, forced loading sequences, obstructive custom cursors, inaccessible interactions, and performance guarantees without measurements. Support keyboard use, touch, readable contrast, and reduced motion.
+
+## Brand assets
+
+Keep the exact existing horizontal navy-and-gold logo: fleur-de-lis to the left, Cajun/Web/Pro lettering, and the web-design/development descriptor. The later generated large crest is not the selected website wordmark. The separate user-uploaded fleur-de-lis is the requested favicon source. See `BRAND_ASSETS.md` for filenames and fingerprints.
+
+## Content direction
+
+Explain services clearly: custom business websites, redesigns, online stores, custom applications, branding/content options, and maintenance where genuinely offered. Give visitors useful information about the process, scope, ownership/handover terms, responsibilities, revisions, costs or ranges, and ongoing support.
+
+Add an engaging 'Why custom / Why switch?' area and dedicated Wix/Squarespace comparisons. Position CajunWebPro around the actual done-for-you service, brand-specific design, information organization, approved custom functionality, and ongoing relationship. Present the cost/responsibility tradeoffs as well as strengths; do not pretend custom development is always the right choice.
+
+Competitive claims require current official sources, dates, and applicable plan/product scope. Do not claim competitors universally have dull designs, no custom code, no SEO, no support, no ownership, or no integrations. Do not reproduce invented comparison claims such as 'anything you can imagine' or automatic guaranteed growth from generated artwork.
+
+Portfolio examples must be labeled as concepts until they are actual authorized client work. Before/after comparisons and case results must be factual. The user has not supplied approved commercial package prices or contractual terms; these are configuration/content inputs, not values to invent.
+
+## Approved expansion
+
+The owner accepted all features proposed in the preceding planning discussion: interactive case studies, signature motion, a single-page project estimator, website-review requests, a private client portal, proposals/deposits/maintenance, consultation scheduling, packages/FAQ/local and industry information, lead pipeline, backups/restores, revision history, and a controlled update manager. The owner additionally requested richer comparison content and the attached favicon.
+
+`ROADMAP.md` defines implementable acceptance criteria. Approval of scope and creation of a concept image do not establish implementation or production activation.
+
+## Delivery and continuity
+
+Keep PHP/MySQL or MariaDB shared-host deployment and the existing app/assets separation. Installation is browser based, keyless, and truly one page. Package and test actual complete releases with no wrapper-folder confusion or multi-patch dependency.
+
+Git `main` is the continuing source of truth once the application baseline is imported. Every session documents what changed, how it was checked, what remains unresolved, and what to do next. Preserve functioning work and existing customer data while extending the product.
