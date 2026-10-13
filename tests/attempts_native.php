@@ -9,7 +9,7 @@ $password='Synthetic sandbox owner passphrase';$checks=[];
 function trial_ok(string $name,bool $ok): void {global $checks;$checks[]=['name'=>$name,'passed'=>$ok];if(!$ok)throw new RuntimeException($name);}
 function trial_deny(string $name,callable $fn): void {try{$fn();}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;trial_ok($name,true);return;}trial_ok($name,false);}
 function trial_actor(int $id=1): void {$u=one('SELECT * FROM '.table('users').' WHERE id=?',[$id]);$_SESSION=['uid'=>$id,'auth_version'=>$u['auth_version'],'login_at'=>time(),'last_activity'=>time()];}
-function trial_request(): int {return payments_prepare(1,'full',7,payments_invoice_hash(payments_invoice(1)),bin2hex(random_bytes(32)));}
+function trial_request(int $invoice=1): int {return payments_prepare($invoice,'full',7,payments_invoice_hash(payments_invoice($invoice)),bin2hex(random_bytes(32)));}
 function trial_transport(string $body): array {
     global $calls,$mode,$reference,$transaction,$overrides,$during;
     $r=json_decode($body,true,32,JSON_THROW_ON_ERROR);$method=array_key_first($r);$calls[]=$method;
@@ -71,13 +71,13 @@ try{
     $mode='ok';
     foreach([['transId'=>'900999'],['order'=>['invoiceNumber'=>'UnrelatedReference']],['authAmount'=>125.11],['settleAmount'=>1],['transactionType'=>'refundTransaction'],['currencyCode'=>'EUR'],['splitTenderId'=>'123'],['transactionStatus'=>'unknownStatus'],['responseCode'=>2]] as $bad){$overrides=$bad;trial_deny('Mismatched reporting facts do not resolve '.array_key_first($bad),fn()=>attempts_reconcile($id,$transaction,1,$password,'trial_transport'));}
     trial_ok('Unmatched typed transaction IDs were never attached',one('SELECT transaction_id FROM '.table('payment_attempts').' WHERE id=?',[$id])['transaction_id']===null);
-    $overrides=['transactionStatus'=>'FDSAuthorizedPendingReview'];attempts_reconcile($id,$transaction,1,$password,'trial_transport');trial_ok('Held result remains unresolved',one('SELECT state FROM '.table('payment_attempts').' WHERE id=?',[$id])['state']==='held');
+    $overrides=['transactionStatus'=>'FDSAuthorizedPendingReview','responseCode'=>4];attempts_reconcile($id,$transaction,1,$password,'trial_transport');trial_ok('Held result remains unresolved',one('SELECT state FROM '.table('payment_attempts').' WHERE id=?',[$id])['state']==='held');
     trial_deny('Held result blocks request replacement',fn()=>trial_request());
     trial_deny('Attached transaction cannot be swapped',fn()=>attempts_reconcile($id,'900099',1,$password,'trial_transport'));
     $overrides=[];attempts_reconcile($id,$transaction,1,$password,'trial_transport');trial_ok('Verified details resolve timeout to captured',one('SELECT state FROM '.table('payment_attempts').' WHERE id=?',[$id])['state']==='captured');
     $stale=one('SELECT * FROM '.table('payment_attempts').' WHERE id=?',[$id]);$stale['event_count']=(int)query('SELECT COUNT(*) FROM '.table('payment_attempt_events').' WHERE attempt_id=?',[$id])->fetchColumn();
     $overrides=['transactionStatus'=>'settledSuccessfully'];attempts_reconcile($id,$transaction,1,$password,'trial_transport');attempts_record($stale,['state'=>'unknown','transaction_id'=>$transaction],1,'response');trial_ok('Delayed observation cannot regress newer settlement',one('SELECT state FROM '.table('payment_attempts').' WHERE id=?',[$id])['state']==='settled');
-    $overrides=['transactionStatus'=>'declined'];trial_deny('Conflicting terminal report cannot downgrade settlement',fn()=>attempts_reconcile($id,$transaction,1,$password,'trial_transport'));$overrides=['transactionStatus'=>'settledSuccessfully'];
+    $overrides=['transactionStatus'=>'declined','responseCode'=>2];trial_deny('Conflicting terminal report cannot downgrade settlement',fn()=>attempts_reconcile($id,$transaction,1,$password,'trial_transport'));$overrides=['transactionStatus'=>'settledSuccessfully'];
     payments_save('sandbox',1,['api_login_id'=>'AnotherSandboxAccount'],$password);query('UPDATE '.table('payment_gateways')." SET validation='authenticated'");trial_deny('Different merchant cannot reconcile retained attempt',fn()=>attempts_reconcile($id,$transaction,2,$password,'trial_transport'));
     payments_save('sandbox',2,$creds,$password);query('UPDATE '.table('payment_gateways')." SET validation='authenticated'");attempts_reconcile($id,$transaction,3,$password,'trial_transport');trial_ok('Same merchant key rotation supports reconciliation',true);
     $request=trial_request();$key=str_repeat('c',64);$calls=[];$overrides=[];$transaction='900003';
@@ -89,11 +89,21 @@ try{
     try{attempts_submit($request,3,$key,'SyntheticNonceOnly',$password,'trial_transport');$failed=false;}catch(PDOException){$failed=true;}$during=null;
     $a=one('SELECT * FROM '.table('payment_attempts').' WHERE request_id=?',[$request]);trial_ok('Post-send audit failure preserves unresolved committed intent',$failed&&$a['state']==='submitting'&&$a['transaction_id']===null);db()->exec('DROP TRIGGER trialci_response_audit_failure');
     attempts_reconcile((int)$a['id'],$transaction,3,$password,'trial_transport');trial_ok('Reporting recovers a post-send persistence failure',one('SELECT state FROM '.table('payment_attempts').' WHERE id=?',[$a['id']])['state']==='captured');
+    $product=catalog_save(0,0,['sku'=>'TRIAL-CATALOG','title'=>'Synthetic catalog trial','family'=>'web-design','status'=>'published','term'=>'once','currency'=>'USD','amount'=>'125.10','setup'=>'0.00','cost'=>'1.00','provider_ref'=>'','summary'=>'Test scope','features'=>'Test features','terms'=>'Test terms','sort_order'=>'0']);
+    $catalogInvoice=catalog_issue(1,$product,1,1,'Synthetic catalog invoice',str_repeat('e',64));$catalogRequest=trial_request($catalogInvoice);
+    $collision=attempts_submit($catalogRequest,3,str_repeat('e',64),'SyntheticNonceOnly',$password,'trial_transport');
+    trial_ok('Same gateway transaction cannot be credited to two attempts',one('SELECT state,transaction_id FROM '.table('payment_attempts').' WHERE id=?',[$collision])===['state'=>'unknown','transaction_id'=>null]);
+    trial_deny('Unresolved trial blocks catalog void under shared lock',fn()=>catalog_transition(1,$catalogInvoice,'void','Verified cancellation'));
+    trial_deny('Unresolved trial blocks catalog paid under shared lock',fn()=>catalog_transition(1,$catalogInvoice,'paid','Verified bank payment'));
+    query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,instructions,created_at) VALUES (1,?,?,?,?,?)',['TRIAL-RACE','Synthetic race',12510,'Test only',gmdate('Y-m-d H:i:s')]);$raceInvoice=(int)db()->lastInsertId();$raceRequest=trial_request($raceInvoice);$beforeCalls=count($calls);
+    $raceTransport=function(string $body) use($raceInvoice): array {payments_manual_paid(1,$raceInvoice,'Verified receipt during preflight');return trial_transport($body);};
+    trial_deny('Manual receipt during preflight prevents later gateway dispatch',fn()=>attempts_submit($raceRequest,3,str_repeat('f',64),'SyntheticNonceOnly',$password,$raceTransport));
+    trial_ok('Preflight race leaves no attempt or charge',!one('SELECT id FROM '.table('payment_attempts').' WHERE request_id=?',[$raceRequest])&&array_slice($calls,$beforeCalls)===['getMerchantDetailsRequest']);
     $GLOBALS['cwp_support']=['actor'=>['id'=>1]];trial_deny('Support context cannot submit a trial',fn()=>attempts_submit($request,3,$key,'SyntheticNonceOnly',$password,'trial_transport'));trial_deny('Support context cannot verify transactions',fn()=>attempts_reconcile((int)$a['id'],$transaction,3,$password,'trial_transport'));unset($GLOBALS['cwp_support']);
     query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Trial staff','trial-staff@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat('d',32),gmdate('Y-m-d H:i:s')]);query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (2,'administrator',1,?)",['["payments.manage","clients.manage"]']);trial_actor(2);
     trial_deny('Payment staff cannot run owner-only trials',fn()=>attempts_submit($request,3,$key,'SyntheticNonceOnly',$password,'trial_transport'));trial_actor();
     $saved=json_encode([all('SELECT * FROM '.table('payment_attempts')),all('SELECT * FROM '.table('payment_attempt_events')),all('SELECT * FROM '.table('audit'))]);trial_ok('Persisted trial/audit facts exclude nonces credentials and provider text',!str_contains($saved,'SyntheticNonce')&&!str_contains($saved,'SandboxTrialFixture')&&!str_contains($saved,'FixtureKey')&&!str_contains($saved,'Synthetic success'));
-    trial_ok('No trial changed actual invoice financial state',one('SELECT * FROM '.table('studio_invoices'))===$invoice);
+    trial_ok('No trial changed actual invoice financial state',one('SELECT * FROM '.table('studio_invoices').' WHERE id=1')===$invoice);
     payments_manual_paid(1,1,'Verified independent bank receipt');trial_ok('Resolved sandbox permits independently audited real payment',one('SELECT status FROM '.table('studio_invoices'))['status']==='paid');
     foreach(['[]','null','true','{"messages":null}','invalid'] as $raw)trial_ok('Malformed reporting fails closed '.hash('crc32b',$raw),authorize_sandbox_call('getTransactionDetailsRequest',$creds,['transId'=>'1'],fn()=>[200,$raw])===null||!authorize_sandbox_ok(json_decode($raw,true)));
 }catch(Throwable $e){$error=$e;}

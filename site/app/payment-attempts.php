@@ -119,7 +119,8 @@ function payments_manual_paid(int $job,int $invoice,string $note): void {
     staff_locked(fn()=>staff_transaction(function() use($job,$invoice,$note): void {
         if(support_current())throw new RuntimeException('Payment changes are unavailable during a support session.');
         $actor=staff_require('clients.manage');$r=one('SELECT * FROM '.table('studio_invoices').' WHERE id=? AND job_id=? FOR UPDATE',[$invoice,$job]);
-        if(!$r||$r['status']!=='issued'||catalog_snapshot($invoice))throw new RuntimeException('Only an unpaid manual invoice can be changed here.');
+        if(!$r||$r['status']!=='issued')throw new RuntimeException('Invoice not found or already recorded as paid.');
+        if(catalog_snapshot($invoice))throw new RuntimeException('Use the catalog invoice payment action.');
         attempts_assert_clear($invoice);
         query('UPDATE '.table('studio_invoices')." SET status='paid',paid_note=?,paid_at=? WHERE id=?",[$note,gmdate('Y-m-d H:i:s'),$invoice]);
         payments_audit((int)$actor['id'],'manual.paid','Invoice '.$invoice.' project '.$job);

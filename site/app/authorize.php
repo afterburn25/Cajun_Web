@@ -59,6 +59,7 @@ function authorize_sandbox_details(#[\SensitiveParameter] array $credentials,arr
     $r=authorize_sandbox_call('getTransactionDetailsRequest',$credentials,['transId'=>$id],$transport);$t=$r['transaction']??null;
     if(!authorize_sandbox_ok($r)||!is_array($t)||($t['transId']??null)!==$id||($t['transactionType']??null)!=='authCaptureTransaction'||($t['order']['invoiceNumber']??null)!==$attempt['reference']||authorize_cents($t['authAmount']??null)!==(int)$attempt['amount_cents']||!empty($t['splitTenderId'])||isset($t['currencyCode'])&&$t['currencyCode']!=='USD')return $unknown;
     $state=match($t['transactionStatus']??null){'capturedPendingSettlement'=>'captured','settledSuccessfully'=>'settled','declined'=>'declined','voided'=>'voided','expired'=>'expired','FDSPendingReview','FDSAuthorizedPendingReview'=>'held',default=>'unknown'};
+    if($state==='declined'&&(string)($t['responseCode']??'')!=='2'||$state==='held'&&(string)($t['responseCode']??'')!=='4')return $unknown;
     if(in_array($state,['captured','settled'],true)&&((string)($t['responseCode']??'')!=='1'||authorize_cents($t['settleAmount']??null)!==(int)$attempt['amount_cents']))return $unknown;
     return ['state'=>$state,'transaction_id'=>$id];
 }
