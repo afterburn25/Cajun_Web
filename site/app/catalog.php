@@ -20,7 +20,7 @@ function catalog_terms(): array {return ['once'=>'One-time service','month'=>'On
 function catalog_audit(int $actor,string $action,string $detail): void {
     query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[$actor,'catalog.'.$action,$detail,gmdate('Y-m-d H:i:s')]);
 }
-function catalog_validate_schema(string $name,string $sql): void {
+function catalog_validate_schema(string $name,string $sql,?array $requiredKeys=null): void {
     $cols=all('SHOW FULL COLUMNS FROM '.table($name));$engine=one('SELECT ENGINE FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]);
     if(strtolower($engine['ENGINE']??'')!=='innodb')throw new RuntimeException('Catalog tables require InnoDB.');
     preg_match_all('/(?:\(|,)\s*([a-z_][a-z0-9_]*) ((?:INT|BIGINT)(?: UNSIGNED)?|(?:VARCHAR|CHAR)\([0-9]+\)|DATETIME|LONGTEXT|TEXT)([^,]*)/',$sql,$matches,PREG_SET_ORDER);
@@ -30,7 +30,7 @@ function catalog_validate_schema(string $name,string $sql): void {
         if(in_array($c['Field'],['request_key','request_hash'],true)&&$c['Collation']!=='ascii_bin')throw new RuntimeException('Incompatible invoice request identifiers.');
     }
     $unique=[];foreach(all('SHOW INDEX FROM '.table($name)) as $k)if((int)$k['Non_unique']===0)$unique[$k['Key_name']][(int)$k['Seq_in_index']]=$k['Column_name'];
-    $expected=['PRIMARY'=>['id']]+match($name){'catalog_products'=>['sku'=>['sku']],'catalog_revisions'=>['product_revision'=>['product_id','revision']],default=>['invoice_id'=>['invoice_id'],'request_key'=>['request_key']]};
+    $expected=['PRIMARY'=>['id']]+($requiredKeys??match($name){'catalog_products'=>['sku'=>['sku']],'catalog_revisions'=>['product_revision'=>['product_id','revision']],default=>['invoice_id'=>['invoice_id'],'request_key'=>['request_key']]});
     foreach($expected as $key=>$fields){$actual=$unique[$key]??[];ksort($actual);if(array_values($actual)!==$fields)throw new RuntimeException('Incompatible catalog unique keys.');}
 }
 function catalog_migrate(#[\SensitiveParameter] string $password): void {

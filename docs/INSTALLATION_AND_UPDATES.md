@@ -1,5 +1,10 @@
 # Installation, packaging and updates
 
+## 2026-10-13 — Candidate 1.5.0 payment foundation
+
+Implemented on `codex/payment-foundation`, parent `e0f8968` after main `f659adf`: owner-only protected separate Authorize.net settings, sandbox-authentication-only adapter and reviewed invoice-bound prepared requests. Existing invoices, catalog snapshots, permissions and client identities are retained. Card collection/production processing remain disabled. [Guide](PAYMENT_PREPARATION.md). Local PHP syntax, deterministic 58/57-file build and 251 permission checks pass. Native MariaDB/actual HTTP/browser and retained 1.4.0 upgrade tests are added; CI is pending and no provider success is claimed. No real credentials, live host, customer mail or provider operation. Next: run/fix full application acceptance, review screenshots, merge only when green and verify an exact-main release. Devin PR #7 is unchanged.
+
+
 Released 1.4.0: after a full backup and UPDATE merge, owners enable **Service catalog** with their current password. Three additive catalog tables preserve clients, support policy, staff access and existing invoices. Fresh installation initializes an empty catalog. No sample prices publish. Read [Service catalog](SERVICE_CATALOG.md); publication evidence remains in the release register. Complete/update inventory: 55/54 files.
 
 

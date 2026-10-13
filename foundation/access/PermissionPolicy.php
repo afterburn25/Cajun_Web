@@ -19,6 +19,7 @@ final class PermissionPolicy
         'website.manage',
         'clients.manage',
         'catalog.manage',
+        'payments.manage',
         'support.login',
         'support.write',
         'support.download',

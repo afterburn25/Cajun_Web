@@ -9,7 +9,7 @@
  * Existing-site guards remain. Never delete config.php or permanent locks.
  */
 declare(strict_types=1);
-const CWP_INSTALLER_BUILD = '1.4.0';
+const CWP_INSTALLER_BUILD = '1.5.0';
 const CWP_INSTALLER_LAYOUT = 'one-page';
 ini_set('display_errors', '0');
 header('Cache-Control: no-store, private, max-age=0, must-revalidate');
@@ -56,7 +56,7 @@ define('CWP_BOOT', true);
 defined('CWP_BOOT') || exit;
 ini_set('display_errors','0');
 ini_set('log_errors','1');
-const CWP_VERSION = '1.4.0';
+const CWP_VERSION = '1.5.0';
 const CWP_GUARD = "<?php http_response_code(404); exit; ?>\n";
 const CWP_ROOT = __DIR__;
 
@@ -282,18 +282,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['cwp_check'])) {
 /** Only immutable public application files: never config, locks or customer data. */
 function setup_expected_files(): array { return [
         '.htaccess' => '2cbbbf4de31257d939c6ddaabb570e1f309a2c418be31fdcc7b269f19b3078fb',
-        'admin.php' => '869e530beb450253fdd3970b84da0180645a7c133f529e844c656068e292f11d',
+        'admin.php' => '4bce1d7b3f888fc0a4618077304be25eb6b92eab5aac7f7bf00a662a535f2b7f',
         'api.php' => '500e1a3b1d33ed693bf91f6fa9fa723451dea38c49f83b061fa9de8eabd688b2',
         'app/.htaccess' => 'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
-        'app/admin-view.php' => '995db8cdfc0802a80a37718937afb9e77571cc83a46e1c7f70cb8700abb1ada2',
+        'app/admin-view.php' => '2aeb68f95d36147c310545e35d511cd976738e3dd6d5dc2e174ca02c1e03323f',
+        'app/authorize.php' => '1395596d5819df9b7015c7a032888703064aeb1ac1bc256699ba625caa8652ff',
         'app/catalog-admin.php' => '8b5de8a5bcfa53eabf3fd0b65224d08f5393888ffb4369b1a914e9b9fa9e1eeb',
         'app/catalog-view.php' => '006d083ebe5d9571e7fde0e24dc742b452020725af606386028d1750e82c448b',
-        'app/catalog.php' => '934218120d634bf9d7f978c37e2094b4722aa3787d950b3efd3ea62cb6084be4',
-        'app/core.php' => 'e308523ee00b3e561640a14173a6fea51dce1b08e8c9cac5575415bb9fa669dd',
+        'app/catalog.php' => '2b80a1fe602a335c879aec0532a7f1289b4a03e1943c19bcdab7d0dbfe5d8845',
+        'app/core.php' => '4dc1ba59b26f2e8e33c2b2d4f94142484e08f3e48d58ece993797a95ca44863a',
         'app/foundation/access/AccessContext.php' => '1ff80e17334bffedc443810220cb18aff79ee476132081142d483a7437a6ebfd',
         'app/foundation/access/AuthorizationVersion.php' => 'ec1ed3d2f9473518e97164dab76dca0293d3ea28919c0234e145bc802be7caf1',
         'app/foundation/access/MailboxGrant.php' => '79f61e27a2b12711c5f5a4324e8e8150c2f2a2549f8672c0dfec25f140ca1109',
-        'app/foundation/access/PermissionPolicy.php' => 'c2125928fa2742acd9c5ab6101ad6ef78ff8252abbd6de461d05be167b4165b6',
+        'app/foundation/access/PermissionPolicy.php' => 'cf725dfb0370eb22c5587e9412a8aa3e6a5b01192008ff46edde24a1577dd4ee',
         'app/foundation/invitations/IssuedInvitation.php' => '4bddf300ace0cee2f9965f51c6c1322ac8fe6f4b9e33d10531ddd7210e7e1127',
         'app/foundation/invitations/StaffInvitationStore.php' => '358917c0e219eea7cb391a73b63bbf7cf8205ddfa363a1199656f3da8ba2e268',
         'app/growth-pages.php' => 'f0708a5e9197f06adf55b842e868ed9907ca97438a052142989da28d834f3a42',
@@ -301,14 +302,16 @@ function setup_expected_files(): array { return [
         'app/home.php' => '884af04ad7d0b584af6db50a87df30af9327c6cabbae5fd752da28e3da53d243',
         'app/index.php' => '696138b31bbb2a20c4bb53eb98b68dbe25557947dd6a7513c81e1c8b9446ce0d',
         'app/mail.php' => 'b841a8f23acc147748a829dea230e5e0053489623688c6cbf3f8b18af71fe3d8',
-        'app/schema.php' => '62eaa51dfe9760fe62143af0e49bbdf31a9b16f20784166ddd03c990e0432d19',
+        'app/payments-admin.php' => '1256e9accf6b386271a49e06818d984f860fd15734ba83e97689f966337505c4',
+        'app/payments.php' => '171f5df846eff48fcc57921ea71d47c39a46d67ffa60266ce2c4db007f6b2804',
+        'app/schema.php' => 'b75dd32dfd4229a45224d4fcccfe1b734022acbb4ddb82a907f3aba465e88f54',
         'app/staff-admin.php' => 'cbfb94bcfc9cbf66beefb3bf86cfb0f2c440814a529c1d8b714020b5dcbdb61e',
-        'app/staff.php' => '290be249f745df85a806414a23eda4c0c49df2a3c183e8040f7f7fff4f923636',
-        'app/studio-admin.php' => '0d4febbd879fbe824ef8edb159b862e555e23765a6d603e27b68408197e613b4',
+        'app/staff.php' => '4e7c46c53785987da1a609f0a1b6a1566fefba48f18ba7bbd5f7a54674cb398f',
+        'app/studio-admin.php' => '206aa4a0a903cb7a018147a3119106f9e7058858ffa9a37710d6a5214be3764f',
         'app/support-admin.php' => '771ee8a645f393a23cf3fc151e582aa6fd4bc8dde2807a6830cb057d2e8ef8f0',
         'app/support.php' => 'd6090f02f4d4d97c77376a028ac50461f07f63ed103626e25b16b37c5dd3fa55',
         'app/view.php' => 'ebf2a24ebf86ff7fba26abdb6c475ffc48be3b90a25dcc6c7a59745a9173f1a4',
-        'app/workspace.php' => '71e819dfbd19c87ad2e40546704e7d413b17f83fd8be4f01e5a4e3e7fca16b83',
+        'app/workspace.php' => '537c2cabdd6f435692574cb74d1b1a5634fe6389afd733a5dd4aa7c6043b1f20',
         'assets/admin.css' => 'cc303d58c57da9f83eb400c5b9d253dca613edadd4bb3c9ab2a0aade5e02789a',
         'assets/admin.js' => '6f01319f40402e806cb29b32629b38edc5a3960a568fef150bed89fb8d95ae83',
         'assets/bayou-detail.webp' => '8c1752557b818bc8a35a32ffc4017cef94ee1d6cd247eaa484e2949ee6da2723',
@@ -332,7 +335,7 @@ function setup_expected_files(): array { return [
         'favicon.ico' => 'c4e4fe3038ef2cf63978f940d9c43402d9474b1c93e4e0334bbd73a0c8a9ec13',
         'index.php' => '4b1ea57157dc87fc7b7af5d5ffb12dd67127fd8130f62f432d9a9e76e9115cd1',
         'media.php' => '233adcefeb5f0e4a7abad8ec90fa5162a3e274506f5e56d764c2aafec9282a83',
-        'portal.php' => 'd824dc61698fd590e42f1385c84c827116bcb1a139df4a41423a71ac9227bc81',
+        'portal.php' => '65a2276a52307f1a8648313b18af7c880f9408a8f4be387c8164eb41513a844c',
         'robots.php' => '954fce8a35cbc1832f58d386ffd611bf9f45c54456de5f6f7be532c3a3fd7c90',
         'sitemap.php' => '508fcb6f6c3d5511a6c41944a1b11aff6140e410641f1735d67f12d3b61d834b',
     ]; }
@@ -661,7 +664,7 @@ function setup_deploy(array $o,array $c,string $storage): array {
         save_setting('contact_email',$o['business_email']);save_setting('notification_email',$o['email']);save_setting('mail_from',$o['business_email']);save_setting('site_published',$o['preview']?'0':'1');
         query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',[$o['name'],$o['email'],$o['hash'],bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
         staff_seed_owner((int)$pdo->lastInsertId());
-        save_setting('support_schema_version','1');save_setting('catalog_schema_version','1');
+        save_setting('support_schema_version','1');save_setting('catalog_schema_version','1');save_setting('payments_schema_version','1');
         foreach(default_services() as $i=>$v)query('INSERT INTO '.table('services').' (slug,title,summary,body,icon,sort_order,active) VALUES (?,?,?,?,?,?,1)',[...$v,$i]);
         if($o['seed'])foreach(default_projects() as $i=>$v)query('INSERT INTO '.table('projects').' (slug,title,category,summary,description,challenge,solution,deliverables,cover,status,is_demo,featured,sort_order,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,\'published\',1,1,?,?,?)',[...$v,$i,gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);
         log_event('install.complete','Installer '.CWP_INSTALLER_BUILD);$pdo->commit();$events[]='Saved the administrator account and website content.';

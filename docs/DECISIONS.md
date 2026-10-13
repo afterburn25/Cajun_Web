@@ -108,3 +108,7 @@ The access component's logical capability/context identifiers are integration co
 | D-040 | Scope choice | Ship website/client staff grants and manual private setup links first | Delivers useful additional administrator accounts without pretending mailbox access, MFA or automatic delivery exists. Owner-assisted setup recovery retires previous password/sessions. |
 | D-041 | Invariant | Serialize every administrator credential/owner transition per installation | Activation, reset, account edits and owner changes use one advisory lock plus transactions, preventing concurrent last-owner removal. Full code/data backup is required for downgrade. |
 | D-042 | Packaging | Keep canonical foundations and bundle verified copies; derive embedded core | Prevents deployed copies drifting from tested components or installer bootstrap. Customer installation still requires no build tools. |
+
+## 2026-10-13 — Bounded payment preparation before charging
+
+Reuse current project invoices and staff/client identities. Owner-only credentials use a separate external master key; public storage fallback cannot hold it. Authorize.net authentication checks are sandbox-only and do not certify other keys or transactions. Prepared invoice requests have no charge action or guest capability. This keeps current manual invoice semantics while the next increment implements transaction concurrency/reconciliation. M2 is partial; no provider success or live activation is inferred from fixtures.
