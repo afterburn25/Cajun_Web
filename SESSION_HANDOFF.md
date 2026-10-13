@@ -1,9 +1,15 @@
 # Session handoff — read before continuing
 
-Checkpoint: 2026-10-12 — GitHub release/testing discipline and Codex/Devin coordination established; recover current 1.1.0 source next.
+Checkpoint: 2026-10-13 — parallel permission-component implementation on codex/platform-foundation; 1.1.0 completion remains with its existing worker.
 Repository: afterburn25/Cajun_Web · Authoritative branch: main.
 
 ## Resume here — GitHub workflow and two-agent split
+
+Latest owner instruction: start independent work while another worker finishes 1.1.0 and updates GitHub. Do not ask again for the build or overwrite `codex/finish-1.1.0`. Main at `9e30564` contains that worker's progress report but no deployable current source. Independent components/contracts/tests can proceed; application integration still needs the actual current source.
+
+This branch adds `foundation/access/` and `tests/access/run.php`: immutable contexts, known global permissions, separate mailbox read/send grants, default denial and stale/inactive session decisions. Local PHP 8.4.25 passes 142 cases and four syntax checks. Read `docs/ACCESS_FOUNDATION.md` for exact limitations and the adapter/lifecycle work needed after source publication. GitHub workflow `access-policy.yml` tests PHP 8.2/8.4; inspect its actual PR/run result. No working administrators UI or real session revocation is claimed.
+
+The owner also requested a revised Devin prompt. Update issue #2 so Devin can start isolated `foundation/portfolio/` contracts/filtering and `tests/portfolio/` with synthetic examples, then adapt them to the real portfolio after 1.1.0 lands. It must not edit our access module or invent a replacement application. Keep the two implementation branches separate and integrate tested pieces with clear status.
 
 Read `docs/RELEASE_WORKFLOW.md`, `docs/RELEASES.md` and `docs/AGENT_COORDINATION.md`. The owner wants incremental versions archived as complete GitHub Release ZIPs, automated GitHub tests, current documentation for other agents, and Codex/Devin work on separate branches integrated when ready. Documentation CI now exists; application tests/build/release automation await the actual 1.1.0 source. Do not publish a placeholder version or relabel 1.0.8.
 

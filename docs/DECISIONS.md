@@ -84,3 +84,11 @@ Official public 20i API, client service grants, StackCP, webmail, backup and SSH
 |---|---|---|---|
 | D-034 | Accepted | Use GitHub testing and incremental releases; retain versions and agent documentation | Add scoped CI now; publish exact tested full deployment ZIPs with tags/manifests/checksums/reports after source recovery; maintain release register, main, status and handoff; no application version for docs-only changes |
 | D-035 | Accepted | Split implementation between Codex and Devin using separate branches and integrate completed work | Codex coordinates shared contracts, platform foundations, review/integration and releases; Devin starts with bounded public portfolio work; explicit file ownership and combined checks prevent competing schema or interface changes |
+
+## 2026-10-13 — Start independent components during 1.1.0 completion
+
+| ID | Status | Decision | Consequence |
+|---|---|---|---|
+| D-036 | Owner clarified | Another worker is finishing 1.1.0 and will publish source; begin independent parallel work now | Supersedes the blanket implementation wait for isolated components/contracts/synthetic tests only. Codex starts access decisions, Devin starts portfolio filtering; neither replaces the application or changes its routes/schema/installer until current-source inspection. No need to ask for the same build again. |
+
+The access component's logical capability/context identifiers are integration contracts, not assertions about existing database fields. Source-specific migrations, real authorization lifecycle and UI remain pending inspection.

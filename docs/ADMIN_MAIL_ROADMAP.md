@@ -2,6 +2,8 @@
 
 Approved scope: 2026-10-12. Requirements only; no implementation or account connection is established. Inspect the owner's current 1.1.0 source first and extend existing capabilities without replacing functioning work.
 
+2026-10-13 progress: the isolated [access foundation](ACCESS_FOUNDATION.md) implements staff/mailbox permission decisions and local unit tests while the separate worker completes 1.1.0. It does not implement administrator creation, sessions, invitations, mailbox connections, mail UI or sending; A-05/A-06 remain incomplete until application integration and acceptance.
+
 ## Owner request and intended experience
 
 Add an Email section inside CajunWebPro admin for sending and receiving mail from multiple accounts, with account setup controls and reusable sending templates. Allow the owner to add additional admin accounts. Show an unread-email bell in admin and on the public site only for authenticated admins; a notification opens the corresponding message inside admin webmail. Preserve the original navy/gold design and PHP/MySQL shared-host deployment.
