@@ -3,6 +3,7 @@
 ## 2026-10-13 — Devin HC-10 VPS lifecycle foundation (unreviewed, unintegrated)
 
 Devin implemented the safe-work portion of HC-10 as an isolated canonical component on `devin/vps-foundation`: `foundation/vps/` (VpsSpec, VpsOffering, QuotaUsage, VpsServer state machine with two-actor decommission and in-flight failure rollback), `tests/vps/run.php` (58 checks), `vps.yml` workflow, and [VPS_FOUNDATION](docs/VPS_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Development pending — API verification** (fixture specs/prices only; no provider calls). No `site/` changes, catalog UI, schema, persistence, deployment or release.
+
 ## Current directory and package contract — released 1.11.0
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](docs/DIRECTORY_STRUCTURE.md), [migration and recovery](docs/STRUCTURE_MIGRATION.md), and [START-HERE](START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.

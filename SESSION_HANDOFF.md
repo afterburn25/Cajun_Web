@@ -5,6 +5,7 @@
 `devin/vps-foundation` (branched from `main` `5d810b1`) carries the isolated HC-10 VPS contract: `foundation/vps/` (`VpsSpec`, `VpsOffering` with null=not-orderable pricing, `QuotaUsage` display pairs, `VpsServer` guarded lifecycle — two-actor decommission where approver ≠ requester, in-flight failure rollback to stable state, terminal terminated/cancelled, actor-attributed history), `tests/vps/run.php` (58 synthetic checks), `docs/VPS_FOUNDATION.md`, `.github/workflows/vps.yml`. Local PHP 8.4.25: all checks pass, all files lint clean.
 
 **Gate:** Development pending — API verification; no provider calls or fabricated data. **Not integrated:** additive-only outside `site/`.
+
 ## Current directory and package contract — released 1.11.0
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](docs/DIRECTORY_STRUCTURE.md), [migration and recovery](docs/STRUCTURE_MIGRATION.md), and [START-HERE](START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.
