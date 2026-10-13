@@ -48,7 +48,7 @@ def run_browser(env,browser):
     check('Message history is private to current staff identity',len(soup(member.get(message)).select('article.workspace-card'))==1)
     grant(member_id,enabled='0');check('Revoking mailbox grant stops the current browser session',member.get(message).status_code==403);grant(member_id)
     db('UPDATE ci_staff_profiles SET permissions=? WHERE user_id=?',[original,member_id]);check('Revoking global permission stops exact-message access',member.get(message).status_code==403)
-    for mode,phrase in [('message-limit','exceeds the supported'),('message-wrong-uid','unsupported or incomplete'),('message-epoch','no longer available'),('message-bad-mime','unsupported or incomplete')]:
+    for mode,phrase in [('message-limit','exceeds the supported'),('message-wrong-uid','no longer available'),('message-epoch','no longer available'),('message-bad-mime','unsupported or incomplete')]:
         age();inbox_server.mode=mode;r=load(owner);check('Exact-message HTTP '+mode+' refuses partial content',phrase in r.text and soup(r).select_one('[data-message-content]') is None)
     age();inbox_server.mode='message-attachment';r=load(owner);check('Attached text is not displayed as an inline body','No supported inline text was provided' in r.text and 'SYNTHETIC ATTACHMENT SECRET' not in r.text)
     age();inbox_server.mode='message-html-only';r=load(owner);check('HTML-only message has formatting without invented plaintext',soup(r).select_one('[data-message-formatted]') is not None and soup(r).select_one('[data-message-plain]') is None)
