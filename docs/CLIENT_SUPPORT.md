@@ -1,6 +1,6 @@
 # Client portal support access
 
-Candidate v1.3.0 implements the current website-project portal portion of A-09. Use the [release register](RELEASES.md) to distinguish candidates from published packages. VPS SSH, provider SSO, payments and email remain separate roadmap work.
+v1.3.0 implements the current website-project portal portion of A-09. Use the [release register](RELEASES.md) to distinguish candidates from published packages. VPS SSH, provider SSO, payments and email remain separate roadmap work.
 
 ## Enable and open a portal
 

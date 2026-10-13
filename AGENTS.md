@@ -1,5 +1,7 @@
 # Working agreement for CajunWebPro
 
+**A-09 acceptance — 2026-10-13:** candidate `c42d85f` passed [application run 38366999645](https://github.com/afterburn25/Cajun_Web/actions/runs/38366999645): 50 original + 31 staff + 35 support native and 289 real HTTP/Chromium checks, including the actual 1.2.0 package update. Reviewed desktop and narrow support portal/admin screenshots; activity log now receives a bounded scroll area, and account permission guidance includes support. Final candidate checks, checked PR #12 merge, exact-main acceptance and release download verification remain the publication gate. v1.2.0 is still the published version; no live deployment.
+
 **A-09 implementation checkpoint — 2026-10-13:** [PR #12](https://github.com/afterburn25/Cajun_Web/pull/12), branch `codex/client-support`, candidate v1.3.0. Implementation `0ea3e5b` adds explicit support permissions/client policy, separate bound sessions (15-minute maximum, five-minute idle), banner/return, scoped forms, real-actor writes/download audit and sensitive-action denials. The first GitHub run passed 50 original + 31 staff + 35 support native checks; packaging exposed an LF/CRLF installer hash mismatch, now corrected, with pipeline failure propagation tightened. Actual 1.2.0 upgrade and HTTP/Chromium support tests are added and pending execution. Published v1.2.0 and Devin PR #7 remain unchanged. Next: pass complete candidate acceptance, review screenshots, then checked merge/exact-main acceptance and verified release. No deployment.
 
 
