@@ -1,5 +1,17 @@
 # Session log
 
+## 2026-10-13 — Devin review-request adapter contract (L-02 dependency)
+
+**Request:** Continue the roadmap while queued PRs await Codex integration. Following the estimator adapter contract (PR #35), document how the live `website-review` route adopts the L-02 foundation.
+
+**Starting commit:** `b975915` (main). New branch `devin/review-adapter`. Owned: `docs/REVIEW_REQUESTS_ADAPTER.md` + continuity docs. Documentation only.
+
+**Work:** Mapped `growth_submit`'s website-review branch to the foundation: `current_url` → `WebsiteAddress` (bare-host normalization flagged as a deliberate acceptance-widening decision A/B), name/email/consent → `ReviewContact`, additive `review_stages` and `review_reports` tables driving `ReviewInbox` transitions and the saved-report+consent delivery gate, staff stage controls scoped to website-review leads. All form/spam/lead-write behavior stays live-side; no fetching, mail, or delivery mechanism is added.
+
+**Verification:** `tools/check_docs.py` passes (444 links). No code executed or changed.
+
+**Next:** Codex review; L-03 consultation adapter contract is the natural next doc. Queued: #31, #32, #34, #35.
+
 ## 2026-10-13 — Devin estimator adapter contract (L-01 dependency)
 
 **Request:** Continue the roadmap while Codex sequences v1.11.0 and the queued Devin PRs. PUBLIC_COMPONENT_INTEGRATION.md names an explicit adapter contract as the prerequisite before the live estimator adopts `foundation/estimator`.
@@ -522,6 +534,14 @@ PR #55 merged at 4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36; exact-main acceptance
 **Changed:** byte-length check now uses `strlen()` — a byte cap is consistent with HTTP input limits. Workflow now reruns the suite under `php -n` as a no-optional-extension regression. Guide/handoff check counts updated to the actual 86.
 
 **Tests:** 86 checks pass on PHP 8.4.25 under both `php` and `php -n`.
+
+### 2026-10-13 — Devin L-02 adapter-contract reconciliation (Codex review)
+
+**Request:** Codex review on #36 required reconciling the adapter doc with the corrected component API and honest input-compatibility framing.
+
+**Changed (docs only):** `WebsiteAddress` now referenced via constructor + `->url()` (not `parse()`/`normalized()`); `ReviewInbox::transition()` replaces `record()`; evidence constants written as their actual values (`human-review`/`lab-data`/`field-data`/`absent-data`); delivery gate now requires a saved report with confirmed `deliveredAt` plus consent — a saved draft never enables `delivered`; input-equivalence promises removed and replaced with an explicit widening/narrowing analysis (bare hosts broaden under option A; fragments/userinfo narrow).
+
+**Tests:** documentation-only change; component checks remain 86 on `devin/review-requests`.
 ### 2026-10-13 — Devin A-06 webmail foundation
 
 **Request:** "Continue Without Stopping" — next feasible roadmap item (A-06 multi-account webmail contract layer, no external gate). Codex is mid-integration on `codex/admin-email-templates`; flagged that it carries the pre-correction #56 head (`ef5d4f9`, corrected head `f3522f6`).
@@ -593,3 +613,7 @@ First PR #63 application run 38445233085 at 62e9107 stops at installer inventory
 ## 2026-10-13 — 1.13.0 email account preparation published and verified
 
 PR #63 merged at b83cb9fb6856bca4f333fe953bee2e68f5074d51, preserving corrected #59 through 13c04f6. Exact-main 38446948573: 5192 named checks (745 native, 3084 estimator, 862 HTTP/Chromium, 101 filesystem, 381 Apache, 19 builder). All 16 draft/public assets and tag downloaded/verified; Windows/Linux bytes match; prior 1.12.0 fingerprints unchanged. Homepage pixels retained; real account desktop/mobile screens inspected. Source review and Devin's independent review found no outstanding defect. Updated current release records/guide/handoff. No live deployment, transport, sending or external provider activation. Next: bounded L-02 staff review workflow after preserving/re-reviewing #31/#36; mail transport has separate security/provider gates. The roadmap continues.
+
+## 2026-10-13 — claim bounded L-02 application integration
+
+Start publication-record main 80f1c0322238e54b5f189841a0e5bae6a5eaf631 after publishing/download-verifying 1.13.0. Branch codex/website-review-workflow preserves #31 ea0a4d3 through the component merge and #36 7958578 through this merge. Corrected component/contract content is unchanged from inspected 056bd02/ebc8793; 86 local PHP 8.4 no-extension checks pass. Resolve stale union-merge headings in favor of actual release facts while retaining historical contract records. Add the concrete application contract and ownership; source implementation/acceptance remain pending. No release bump or activation from this preservation step. Next implement additive storage and current-authorization report lifecycle, then actual UI/native/browser/update acceptance.

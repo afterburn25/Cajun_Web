@@ -1,5 +1,9 @@
 # Working agreement for CajunWebPro
 
+## Active integration — L-02 website review workflow
+
+Codex owns `codex/website-review-workflow` from verified 1.13.0 publication-record main `80f1c03`. Preserve reviewed #31 through `ea0a4d3` and #36 through `7958578`; their component/contract content is unchanged from the inspected corrected heads. All 86 local PHP 8.4 no-extension component checks pass. [Application contract](docs/WEBSITE_REVIEW_WORKFLOW.md) selects explicit bare-host normalization with retained 500-byte/control/userinfo boundaries, additive storage, current website staff permissions, evidence-labeled reports, revisions and honest recorded external delivery. Application implementation and acceptance are pending; latest published release remains 1.13.0. No automatic URL fetch, customer mail, fabricated audit or production deployment. Codex owns application/schema/UI/tests/build/release; preserve other Devin branches.
+
 ## Latest verified publication — 1.13.0
 
 [v1.13.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.13.0) is published and freshly downloaded/verified at source/tag `b83cb9fb6856bca4f333fe953bee2e68f5074d51` through [PR #63](https://github.com/afterburn25/Cajun_Web/pull/63), preserving corrected Devin #59 through `13c04f6`. Bounded A-06 now provides owner-managed multiple email profiles, encrypted private passwords, separate read/send permissions and current per-mailbox assignments, scoped staff listings, immutable metadata history and stale/concurrent-write protection. Even owners require mailbox assignments. [Guide](docs/ADMIN_EMAIL_ACCOUNTS.md). This prepares accounts only: no server connection, inbox, message fetching or sending.
