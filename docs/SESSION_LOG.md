@@ -412,3 +412,14 @@ Candidate 49eae7f passes the builder negative, native, HTTP/Chromium and filesys
 
 The Apache legacy fixture also needs CWP_BOOT when reading the intentionally guarded synthetic installed configuration. Without that constant the fixture helper exits safely before copying config; it cannot exercise migration. Added the normal guard constant to that fixture-only CLI command. No production configuration changed.
 
+## 2026-10-13 — Dependency status clarification and agent instructions
+
+**Request:** Owner approved replacing ambiguous roadmap "Blocked" classifications for HC-07, HC-09, HC-10 and A-10 and explicitly instructed Codex/Devin not to stop independent development when an external provider/merchant/SSH prerequisite is unavailable.
+
+**Starting main:** `b975915b091d72944dca068399cfd2df1db74e88` (repository tree `3222081021545afa6f9af952bf6bc31a7b21768f`). Read and preserved current AGENTS, roadmap, hosting/client roadmaps, coordination, status/handoff, decisions, changelog and historical log.
+
+**Docs changes:** Added `docs/DEPENDENCY_GATES.md`; inserted mandatory policy links/brief instructions into `AGENTS.md`, `docs/ROADMAP.md`, `docs/HOSTING_AND_BILLING_ROADMAP.md`, `docs/CLIENT_PORTAL_ROADMAP.md`, `docs/AGENT_COORDINATION.md`; updated `PROJECT_STATUS.md`, `SESSION_HANDOFF.md`, `docs/DECISIONS.md`, `CHANGELOG.md` and this log. The four listed labels now describe external validation gaps independently from actual implementation and release status.
+
+**Verification and limitations:** Verified current GitHub main and read the target documentation before composing changes; GitHub write and readback of committed docs will be checked. No application source, release packages, CI tests, provider API, Authorize.net merchant, payments, customer service or live host were changed, exercised or represented as working.
+
+**Next:** Agents should begin with the next safe bounded implementation on current main, track precise external gates for real provider actions, avoid duplicate work/branches, and update evidence/status per reviewed implementation. No owner secrets should be placed in Git.

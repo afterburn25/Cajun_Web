@@ -14,6 +14,10 @@ Required meaningful areas: admin, portal, pages, includes, business app modules,
 
 Devin PRs #31/#32 are separate independent components, preserved and paused for integration while paths change. Supply the exact mapping and corrected baseline before further application adapters. Next action is structure implementation, migration/recovery and Apache/native/browser/package acceptance—not another roadmap feature.
 
+## Mandatory agent workflow for external dependencies — 2026-10-13
+
+Codex and Devin must apply [dependency gate policy](DEPENDENCY_GATES.md) and the four [reclassified roadmap gates](ROADMAP.md#dependency-aware-roadmap-status--owner-instruction-2026-10-13). A missing 20i reseller key, live domain/VPS API evidence, merchant acceptance or SSH transport **does not pause all development**. Split tasks into mock-tested implementable pieces and real integration acceptance gates; select bounded independent tasks for parallel workers without colliding with another branch. A blocked live operation is disabled, never simulated as production. Handoff must name code actually implemented, exact gate/owner action and the next actionable task. Neither PRs nor documentation imply live release or deployment.
+
 ## Current sequential integration — 2026-10-13
 
 Estimator PR #29 merged with original PR #27 ancestry after all checks. Its subsequent main-refresh head `65c2084` is retained in `codex/portfolio-browsing`. Portfolio PR #7 at `016a405` is now being integrated there with Codex review fixes and current activity features. No pushes to Devin branches; the original unused local `codex/integrate-portfolio` remains untouched. [Committed boundaries](PUBLIC_COMPONENT_INTEGRATION.md). [Issue #2 coordination update](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6146835752) asks for stable completed heads; it does not prove receipt.

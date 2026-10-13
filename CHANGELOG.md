@@ -12,6 +12,13 @@
 
 Owner override stops the portfolio-only 1.11.0 publication. Preserve integrated source and implement organized modules/assets, protected storage/upload scaffolding, bounded owner migration/recovery, and FULL-PROJECT/COMPLETE-UPLOAD/UPDATE artifacts. Latest published version remains 1.10.0; no corrected release claimed yet.
 
+## 2026-10-13 — Dependency-aware roadmap and agent instructions (docs only)
+
+- Added a mandatory owner-approved policy for Codex/Devin: unavailable third-party API/merchant/SSH verification blocks only the specific real integration or production operation, **not** safe independent development or unrelated features.
+- Clarified HC-07 (Awaiting API verification), HC-09/HC-10 (Development pending — API verification), and A-10 (Architecture/security validation pending), tracking those gates separately from implementation/release/deployment status.
+- Linked the rules from agent instructions, roadmap, provider/client roadmaps, coordination, status, handoff and decisions. Explicit production restrictions remain.
+- No PHP/runtime feature, integration, live transaction, deployment or app version bump; previously released v1.10.0 stays unchanged.
+
 ## 1.11.0 — portfolio integration candidate, not yet released
 
 - Stabilize modified-click acceptance by observing the application decision before suppressing synthetic navigation; add an actual Ctrl-click/new-tab check. Shipping bytes are unchanged by this test-only correction.

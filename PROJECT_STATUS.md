@@ -16,6 +16,12 @@ Required meaningful areas: admin, portal, pages, includes, business app modules,
 
 Devin PRs #31/#32 are separate independent components, preserved and paused for integration while paths change. Supply the exact mapping and corrected baseline before further application adapters. Next action is structure implementation, migration/recovery and Apache/native/browser/package acceptance—not another roadmap feature.
 
+## 2026-10-13 — Owner clarification: dependency gates ≠ stop-development (docs-only)
+
+Owner requested that Codex/Devin keep working on independent tasks while vendor access/testing is outstanding. The four earlier generic "Blocked" spreadsheet entries are now characterized in [dependency-gate policy](docs/DEPENDENCY_GATES.md): HC-07 **Awaiting API verification**; HC-09/HC-10 **Development pending — API verification**; A-10 **Architecture/security validation pending**. These are *external/technical gates*, not implementation-completion statuses. Continue safe mocked/UI/adapter/schema work and other ready roadmap work; no real payments, domains, provider provisioning or SSH until separately verified/approved.
+
+**No runtime changes, vendor API connections, new tests, deployment or application version bump from this policy-only change.** Existing v1.10.0 publication and 1.11.0 candidate context remain separate; refresh current main and open PRs before implementation.
+
 ## Release acceptance follow-up — 2026-10-13
 
 Portfolio integration PR #30 is merged at `332af19333a62d3dfcc90eb9cf34871a7fac50ec`; original Devin PRs #7/#27 are merged with preserved history. Both candidate runs passed 618 native / 675 HTTP/Chromium checks and reviewed screenshots. Exact-main run 38408053057 passed native and actual 1.10.0 retention checks, then exposed a synthetic modified-click test navigation race. `codex/portfolio-acceptance` fixes the test observer and adds a real Ctrl-click/new-tab assertion; it changes no shipping bytes. Publication remains pending successful exact-main acceptance. Latest public release remains 1.10.0. New Devin L-02 PR #31 is separate unreviewed work, outside this release.
