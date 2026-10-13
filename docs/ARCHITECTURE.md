@@ -1,6 +1,6 @@
 # Architecture notes
 
-Checkpoint: 2026-10-12. This is an inventory of the supplied 1.0.8 distribution and a guide for extensions. **The distribution is not yet imported into this Git tree.**
+Updated 2026-10-13: recovered 1.1.0 source is in `site/`. Public growth modules, `workspace.php`, `studio-admin.php` and `portal.php` extend the existing application. The seven additive workspace tables and actual routes/controls are mapped in [release acceptance](RELEASE_1.1.0.md). The older source inventory below remains useful baseline history.
 
 ## Deployment model
 
@@ -10,7 +10,7 @@ Independent implementation added 2026-10-13: [access foundation](ACCESS_FOUNDATI
 
 Existing application: PHP with PDO MySQL/MariaDB, normal browser requests, local CSS/JavaScript/images, and persistent private file storage. PHP source targets 8.2 or newer. Required extensions are checked by the installer. Shared-host deployment must not require a Node service, command-line build, root access, or a long-running worker.
 
-The repo's documentation tree is not the website document root. Decide and document the source directory at import. Build the deployment ZIP from the deployable files only, without a source-directory/version wrapper. Preserve the existing app/assets grouping and root entry-point behavior.
+The repo's documentation tree is not the website document root. `site/` is the source directory; `brand/`, `tests/`, `tools/` and `foundation/` are not deployed. Build the deployment ZIP from the deployable files only, without a source-directory/version wrapper. Preserve the existing app/assets grouping and root entry-point behavior.
 
 ## Inspected source map
 

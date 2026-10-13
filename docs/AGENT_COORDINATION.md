@@ -1,5 +1,7 @@
 # Codex and Devin work allocation
 
+**Owner priority override, 2026-10-13:** finish and verify the existing 1.1.0 website/client workspace, merge actual source, publish and download-verify its GitHub Release, then hand off issue #2 and stop. Completion branch `codex/release-1.1.0` preserves application `90ba4f5`, main `b28a67c` and Devin PR #7 at `55d6067`. Codex owns release fixes/tests/integration/publication; original branches remain intact. Later roadmap work is paused. The user authorized repository changes, isolated tests, PRs, checked merges, publication and the GitHub handoff, not live hosting/customer/provider operations. This overrides earlier parallel-work timing below.
+
 Owner direction, 2026-10-12: split work between Codex and Devin on separate branches, then integrate finished pieces. Codex coordinates integration, shared interfaces, testing and releases. This assignment is not evidence that Devin has started or received a message.
 
 ## Current gate and assignments

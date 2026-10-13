@@ -127,6 +127,9 @@ try:
         check('Browser estimator uses actual server response','$1,100.00' in page.locator('[data-estimate-label]').inner_text())
         page.goto(BASE+'/existing/portal.php');page.locator('[name=email]').fill('alice@example.invalid');page.locator('[name=password]').fill('Synthetic client passphrase 2026');page.locator('button[type=submit],form button').first.click();page.wait_for_url('**/portal.php');page.goto(BASE+'/existing/portal.php?job=1');page.screenshot(path=str(QA/'Client-Workspace-Desktop.png'),full_page=True)
         check('Browser private project renders','HTTP manual invoice' in page.content());check('No uncaught browser errors',not errors)
+        with page.expect_download() as download:page.locator('a[href*="portal.php?file="]').first.click()
+        check('Browser authorized download matches stored file',Path(download.value.path()).read_bytes()==(ROOT/'site/assets/favicon.png').read_bytes())
+        page.get_by_role('button',name='Sign out').click();expect(page.locator('[name=email]')).to_be_visible();check('Browser client logout clears access',True)
         run_browser(globals(),browser,release_fixture)
         browser.close()
 except Exception as exc:

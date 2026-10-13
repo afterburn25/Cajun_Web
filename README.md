@@ -15,13 +15,11 @@ Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
 
 Every working session must update the status, handoff, and [session log](docs/SESSION_LOG.md). Record implementation changes in [CHANGELOG.md](CHANGELOG.md), and important choices in [Decisions](docs/DECISIONS.md). Documentation belongs in Git with the work, not only in chat.
 
-## Current checkpoint — 2026-10-12
+## Current checkpoint — 2026-10-13
 
-Parallel work started 2026-10-13 while a separate worker finishes 1.1.0: an isolated [staff/mailbox permission foundation](docs/ACCESS_FOUNDATION.md) and tests are being developed on `codex/platform-foundation`. [Agent coordination](docs/AGENT_COORDINATION.md) defines an independent Devin portfolio stream. These components are not yet integrated into a deployable website; the current-source gate below applies to integration, not independent preparation.
+Actual **1.1.0 website/client-workspace source** is in `site/`, with native/browser tests and `tools/build.py`. [Completion PR #8](https://github.com/afterburn25/Cajun_Web/pull/8) reconciles recovered source with main. Read the [feature/test matrix](docs/RELEASE_1.1.0.md), [installation instructions](docs/INSTALLATION_AND_UPDATES.md) and [release register](docs/RELEASES.md) for exact evidence and publication status. Historical missing-source incidents no longer mean the source is absent.
 
-The repository was empty when inspected. This bootstrap records the project requirements, inspected distribution baseline, approved backlog, and continuity process. **Application source and original image assets have not yet been imported into Git. This is not a deployable website release.**
-
-The owner confirms **1.1.0 is the latest version**. Its source/package must be located and verified before implementation. The older `CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip` was inspected locally; see [Baseline inventory](docs/BASELINE_INVENTORY.md). Keep that archive as historical reference, not the default starting point or proof of the running host version. The last reported live installer/version and storage issues have no confirmed target-host resolution.
+Deploy only `site/` contents in the flat release package. Independent staff components in `foundation/` remain outside deployment; Devin's portfolio component is preserved in PR #7. The historical 1.0.8 ZIP in `tests/fixtures/` exists only for upgrade acceptance. Later roadmap work is paused until 1.1.0 publication and handoff.
 
 ## Non-negotiable direction
 

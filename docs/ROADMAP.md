@@ -1,6 +1,6 @@
 # Approved roadmap and acceptance criteria
 
-Updated: 2026-10-12. **All items below are pending implementation/verification in Git unless their status is changed with commit and test evidence.** The initial repository work is documentation only. A rendered concept is not a finished feature.
+Updated: 2026-10-13. The existing website/client-workspace subset is implemented in `site/` and under release acceptance in PR #8. The [feature-to-test matrix](RELEASE_1.1.0.md) covers F-01/03/04, public C/L work, partial W-01, client P-01/02/05, manual invoices, A-01/02 and the database-upgrade subset of A-04. Manual invoices are not P-03 card processing; private documents are not P-06 ZIP handover; database migration is not a complete updater. Nothing is marked deployed. Later roadmap development is paused until publication and handoff.
 
 The owner explicitly wants to build our own WHMCS from scratch: a custom CajunWebPro hosting/billing/client-management platform. The [platform blueprint](CUSTOM_PLATFORM_BLUEPRINT.md) maps that direction to this roadmap, including web-design payments, additional admins, webmail/templates and private mail notifications. Preserve current 1.1.0 source and branding when implementing these modules; no WHMCS installation is required.
 

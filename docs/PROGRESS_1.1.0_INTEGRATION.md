@@ -1,5 +1,7 @@
 # v1.1.0 integration progress — not release acceptance
 
+Current 2026-10-13 continuation: executable source is recovered in `site/` and release completion is tracked by [PR #8](https://github.com/afterburn25/Cajun_Web/pull/8) and the [acceptance matrix](RELEASE_1.1.0.md). The following investigation describes an earlier checkpoint and must not be used as an absent-source blocker.
+
 ## Request and scope
 
 The owner asked to finish the saved v1.1.0 source and then interrupted to ask how much work remains. This record is an inspection of the current local integration tree, not evidence of production deployment. Starting Git main: `43bebd019a6f548d7a059b2c8e259beed3efe561`.
