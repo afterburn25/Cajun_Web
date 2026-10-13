@@ -192,14 +192,14 @@ expectThrows(fn () => new TransportRequest('GET', 'https://x.test/', [], null, 0
 expectThrows(fn () => new TransportRequest('GET', 'https://x.test/', [], null, 999), 'request rejects excessive timeout');
 $req = new TransportRequest('get', 'https://api.test/path');
 check($req->method === 'GET', 'method normalized to uppercase');
-check(new TransportResponse(200, [], '{}')->ok(), '2xx response is ok');
-check(new TransportResponse(503, [], '')->retryable(), '5xx response is retryable');
-check(new TransportResponse(429, [], '')->retryable(), '429 response is retryable');
-check(!new TransportResponse(404, [], '')->retryable(), '4xx response is not retryable');
+check((new TransportResponse(200, [], '{}'))->ok(), '2xx response is ok');
+check((new TransportResponse(503, [], ''))->retryable(), '5xx response is retryable');
+check((new TransportResponse(429, [], ''))->retryable(), '429 response is retryable');
+check(!(new TransportResponse(404, [], ''))->retryable(), '4xx response is not retryable');
 expectThrows(fn () => new TransportResponse(99, [], ''), 'response rejects invalid status');
 
 // --- ProviderOperation -------------------------------------------------------
-check(new ProviderOperation('packages.list', 'key-1')->name === 'packages.list', 'dotted operation name accepted');
+check((new ProviderOperation('packages.list', 'key-1'))->name === 'packages.list', 'dotted operation name accepted');
 expectThrows(fn () => new ProviderOperation('List Packages!', 'k'), 'operation name must be dotted lowercase');
 expectThrows(fn () => new ProviderOperation('x.y', ''), 'operation needs an idempotency key');
 expectThrows(fn () => new ProviderOperation('x.y', str_repeat('k', 200)), 'idempotency key length bounded');
