@@ -455,3 +455,17 @@ Second acceptance run 38427420414 reached actual browser setup and found stale 1
 PR #50 merged at cefcc41bcd5297715f2a49d6526900ebe8ad4eb4; exact-main acceptance 38429347222 passes 618 native / 800 HTTP-browser / 59 filesystem / 241 Apache / 17 builder checks. Preserved Devin #34 history; completed motion preferences plus owner update/recovery from actual published organized 1.11.0. Prepared all three artifacts from the same clean source on Windows and compared Linux CI bytes. Draft and public downloads verify all 16 assets, hashes, members, directories and tag. Prior 1.11.0 fingerprints unchanged. Screenshot dimensions/layout retained; subtle logo-edge changes measured and inspected. No live deployment or external activation. Updated exact evidence/current docs/Devin handoff; next actual work is L-01 application adapter while Devin corrects #31/#32 and other foundations await review. This record is documentation only and leaves release bytes immutable.
 
 Next-increment preparation while exact-main acceptance ran: an isolated local estimator adapter draft matched the current shipping calculator across 1,512 priced/missing/malformed/quantity cases on PHP 8.4, without database access or shipping changes. This is prototype parity evidence only; component guards, actual application integration and native/browser/upgrade acceptance remain required. Devin correction priority reiterated in issue #2 comment 6150049591; no acknowledgment or completed fixes inferred.
+
+### 2026-10-13 — Devin A-07 email-template foundation
+
+**Request:** "Continue Without Stopping" — next feasible roadmap item (A-07 template/placeholder contract layer, no external gate). Codex review corrections on #31/#32 were delivered and pushed first this session.
+
+**Starting commit:** `main` `855981b` (published 1.11.1). New branch `devin/email-templates`.
+
+**Changed:** added `foundation/email-templates/` (PlaceholderRegistry, EmailTemplate), `tests/email-templates/run.php`, `docs/EMAIL_TEMPLATES_FOUNDATION.md`, `.github/workflows/email-templates.yml`, and additive continuity entries. No `site/` or shared-path changes.
+
+**Tests:** `php tests/email-templates/run.php` — 36 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: allowlist construction/validation, unknown-placeholder rejection at draft and edit, draft→active→archived lifecycle, non-mutating edits, duplicate-as-personal, shared/personal/transactional insertion gating, honest preview with named unresolved fields.
+
+**Failures:** none. **Blockers:** none for the contract layer; compose UI, persistence and sending remain Codex integration work.
+
+**Next:** PR `devin/email-templates`; queue now 17 open Devin PRs awaiting Codex sequencing.

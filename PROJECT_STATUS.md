@@ -1,5 +1,9 @@
 # Project status
 
+## 2026-10-13 — Devin A-07 email-template foundation (unreviewed, unintegrated)
+
+Devin implemented the safe-work portion of A-07 as an isolated canonical component on `devin/email-templates`: `foundation/email-templates/` (`PlaceholderRegistry`, `EmailTemplate`), `tests/email-templates/run.php` (36 checks), `email-templates.yml` workflow, and [EMAIL_TEMPLATES_FOUNDATION](docs/EMAIL_TEMPLATES_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer; compose UI, persistence and sending remain Codex integration work. No `site/` changes, deployment or release.
+
 ## Latest verified publication — 1.11.1
 
 [v1.11.1](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.1) is published and freshly downloaded/verified at source/tag `cefcc41bcd5297715f2a49d6526900ebe8ad4eb4` through [PR #50](https://github.com/afterburn25/Cajun_Web/pull/50), preserving Devin PR #34 ancestry. Delivers the bounded W-02 motion/preferences fix, canonical installer build/brand-path corrections and tested organized 1.11.0 owner-update/recovery path. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38429347222): 618 native, 800 HTTP/Chromium, 59 filesystem/recovery, 241 Apache and 17 package-builder checks; all 16 published assets, ZIP members/directories/checksums and immutable tag verified. Windows/Linux package bytes agree. [Test report](docs/TEST_REPORT_1.11.1.md); [handoff](docs/DEVIN_HANDOFF_1.11.1.md).

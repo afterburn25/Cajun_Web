@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Devin active branch — `devin/email-templates` (A-07 template/placeholder model)
+
+Branched from `main` `855981b` (published 1.11.1). Isolated A-07 contract layer: `foundation/email-templates/` (2 files), `tests/email-templates/run.php` (36 synthetic checks, all pass on PHP 8.4.25 locally), `docs/EMAIL_TEMPLATES_FOUNDATION.md`, `.github/workflows/email-templates.yml`.
+
+**Gate:** none for the contract layer; compose UI, persistence and sending remain Codex integration work. **Not integrated:** additive-only outside `site/`.
+
 ## Latest verified publication — 1.11.1
 
 [v1.11.1](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.1) is published and freshly downloaded/verified at source/tag `cefcc41bcd5297715f2a49d6526900ebe8ad4eb4` through [PR #50](https://github.com/afterburn25/Cajun_Web/pull/50), preserving Devin PR #34 ancestry. Delivers the bounded W-02 motion/preferences fix, canonical installer build/brand-path corrections and tested organized 1.11.0 owner-update/recovery path. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38429347222): 618 native, 800 HTTP/Chromium, 59 filesystem/recovery, 241 Apache and 17 package-builder checks; all 16 published assets, ZIP members/directories/checksums and immutable tag verified. Windows/Linux package bytes agree. [Test report](docs/TEST_REPORT_1.11.1.md); [handoff](docs/DEVIN_HANDOFF_1.11.1.md).
