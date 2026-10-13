@@ -131,7 +131,12 @@ function structure_replace(string $name,string $bytes): void {
     $tmp=$parent.'/.structure-'.bin2hex(random_bytes(8)).'.php';
     write_private_file($tmp,$bytes);
     if(!@chmod($tmp,0644) || !@rename($tmp,$path)){@unlink($tmp);throw new RuntimeException('Cannot replace '.$name.'. Recovery copies remain available.');}
-    if(function_exists('opcache_invalidate'))@opcache_invalidate($path,true);
+    structure_refresh_php($path);
+}
+function structure_refresh_php(string $path): void {
+    if(str_ends_with($path,'.php') && function_exists('opcache_is_script_cached') && opcache_is_script_cached($path)) {
+        if(!opcache_invalidate($path,true))throw new RuntimeException('The host could not invalidate cached PHP for '.basename($path).'. Keep maintenance protection and ask the host to clear this site cache before retrying.');
+    }
 }
 function structure_maintenance(): string {
     return "# Temporary owner-authenticated structure update. Retry or recover using the staged owner page.\nOptions -Indexes\nRequire all denied\n<Files \"owner-update.php\">\nRequire all granted\n</Files>\n";
@@ -166,12 +171,16 @@ function structure_apply(string $payload,array $manifest,array $history,string $
         $path=structure_path(CWP_ROOT,$name);$actual=structure_hash($path);
         if($actual===$op['new'])continue; // Includes interrupted deletion and successful atomic replacement.
         if($actual!==$op['old'])throw new RuntimeException('File changed during update; preserved: '.$name.'. Keep maintenance protection and recover or review before retrying.');
-        if($op['new']===null){if(!@unlink($path))throw new RuntimeException('Cannot retire '.$name.'. Retry or recover; backup is retained.');}
+        if($op['new']===null){structure_refresh_php($path);if(!@unlink($path))throw new RuntimeException('Cannot retire '.$name.'. Retry or recover; backup is retained.');}
         else{ $bytes=$op['bytes']??file_get_contents(structure_path($payload,$op['source'])); if(!hash_equals($op['new'],hash('sha256',$bytes)))throw new RuntimeException('Replacement changed: '.$name);structure_replace($name,$bytes); }
         $j['last_completed']=$name;structure_save($dir,$j);
         if(PHP_SAPI==='cli' && $checkpoint)$checkpoint($name);
     }
-    foreach($j['operations'] as $name=>$op)if($name!=='.htaccess' && structure_hash(structure_path(CWP_ROOT,$name))!==$op['new'])throw new RuntimeException('Final verification failed: '.$name);
+    foreach($j['operations'] as $name=>$op){
+        if($name==='.htaccess')continue;$path=structure_path(CWP_ROOT,$name);
+        if(structure_hash($path)!==$op['new'])throw new RuntimeException('Final verification failed: '.$name);
+        if($op['new']!==null)structure_refresh_php($path);
+    }
     structure_replace('.htaccess',file_get_contents($payload.'/.htaccess'));
     $j['state']='complete';$j['completed_at']=gmdate('c');structure_save($dir,$j);return $j;
 }

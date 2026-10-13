@@ -51,6 +51,7 @@ jobs:
           set -o pipefail
           mkdir -p qa
           python3 tools/build.py --commit "$GITHUB_SHA" | tee qa/build-results.txt
+          python3 tests/build_guards.py
       - name: Native database, upgrade and authorization integration
         run: |
           python3 tests/prepare_legacy.py

@@ -37,6 +37,9 @@ TypesConfig /etc/mime.types
 '''+''.join('LoadModule '+m+'_module /usr/lib/apache2/modules/mod_'+m+'.so\n' for m in modules)+'''
 LoadModule php_module /usr/lib/apache2/modules/libphp8.3.so
 PHPIniDir /etc/php/8.3/apache2
+php_admin_flag opcache.enable On
+php_admin_flag opcache.validate_timestamps Off
+php_admin_value opcache.file_update_protection 0
 <FilesMatch "\\.php$">
   SetHandler application/x-httpd-php
 </FilesMatch>
@@ -86,9 +89,12 @@ PHPIniDir /etc/php/8.3/apache2
             php=shutil.which('php8.3') or shutil.which('php')
             subprocess.run([php,'-r',code,str(web/'config.php'),str(legacy/'config.php'),base+'/legacy'],check=True)
             shutil.copyfile(web/'.installed.php',legacy/'.installed.php')
+            warm=requests.get(base+'/legacy/admin.php?view=login')
+            check(label+' old privileged entry was served before migration',warm.status_code==200 and 'Sign in to manage' in warm.text)
             with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(legacy)
             failed=subprocess.run([php,str(ROOT/'tests/structure_worker.php'),str(legacy),'apply','5'],capture_output=True,text=True)
-            check(label+' actual migration interrupts after journaled operation',failed.returncode!=0 and 'Synthetic interruption' in failed.stderr)
+            (QA/('apache-'+label+'-interruption.log')).write_text(failed.stdout+failed.stderr)
+            check(label+' actual migration interrupts after journaled operation: '+failed.stderr.strip(),failed.returncode!=0 and 'Synthetic interruption' in failed.stderr)
             for route in ['admin.php','portal.php','index.php','assets/site.css']:
                 check(label+' maintenance denies old application '+route,requests.get(base+'/legacy/'+route).status_code==403)
             session=requests.Session();url=base+'/legacy/cwp-update-1.11.0/owner-update.php';r=session.get(url)
@@ -100,7 +106,7 @@ PHPIniDir /etc/php/8.3/apache2
             r=session.get(base+'/legacy/admin.php?view=security');doc=BeautifulSoup(r.text,'html.parser');form=next(f for f in doc.select('form') if f.select_one('[name=action][value=account_save]'))
             fields={n['name']:n.get('value','') for n in form.select('input[name]')};fields['current_password']='Incorrect fixture password'
             r=session.post(base+'/legacy/admin.php?view=security',data=fields,allow_redirects=False)
-            check(label+' Apache legacy POST invokes canonical action with body and session',r.status_code==200 and 'current password' in r.text.lower() and 'Location' not in r.headers)
+            check(label+' Apache legacy POST invokes canonical action with body and session',r.status_code==200 and 'current password' in r.text.lower() and 'Location' not in r.headers and 'STUDIO RELEASE 1.11.0' in r.text)
             check(label+' Apache upgraded canonical portal still serves',session.get(base+'/legacy/portal/index.php').status_code==200)
         finally:
             proc.terminate()

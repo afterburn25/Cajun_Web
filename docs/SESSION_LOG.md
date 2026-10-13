@@ -400,3 +400,7 @@ Run `38414568043` retained passing application/component suites but exposed two 
 ### Server and compatibility acceptance follow-up
 
 Candidate `57e28bf` passes all native/HTTP/Chromium suites plus 41 real filesystem/package/recovery checks. Apache run `38416307606` exercised the real installer, root cookie scope, exact assets and internal-file denials, then found the minimal server harness omitted mod_autoindex; it therefore did not produce the expected directory-listing denial response. Load autoindex to test the production Options -Indexes rule explicitly. Added Apache maintenance/resume checks, legacy authenticated POST and exact-body signed callback checks, standalone PHP guards and nested transport redirect assertions. Expanded assertions remain pending their next combined run.
+
+### Final guard coverage expansion
+
+Run `38417310703` retains passing native, expanded HTTP/Chromium and filesystem recovery suites. Apache now passes fresh root/subfolder setup, asset/session checks, internal denial, no listings and runtime-file protection, but the added interrupted-upgrade fixture needs its worker diagnostic captured before claiming that case. Added exact diagnostics, real builder negative tests (runtime data, missing/moved modules, root logic, weakened guards, symlinks and archive paths), and opcode-cache invalidation checks before activating changed PHP. Apache acceptance will use timestamp validation disabled to exercise stale-code prevention. These additions are not yet accepted.
