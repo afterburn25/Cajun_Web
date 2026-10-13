@@ -1,6 +1,6 @@
 # Scheduling foundation — L-03 isolated component
 
-Status: **isolated component — not integrated into the application.** This is
+Status: **integrated into bounded released 1.15.0.** The [application guide](CONSULTATION_SCHEDULING.md) and [acceptance report](TEST_REPORT_1.15.0.md) supersede the original isolated checkpoint below. This is
 the L-03 "consultation scheduling" contract from `docs/ROADMAP.md`, delivered
 as a framework-independent PHP component like the portfolio, estimator and
 review-request foundations. It has no database, request, session, mail, or
@@ -85,4 +85,4 @@ integration remain untested here.
 
 ## Current integration
 
-Codex preserves this corrected component through 3617ad5 for the [bounded application contract](CONSULTATION_SCHEDULING.md). The 1.14.0 publication remains current; application scheduling is not released by this component merge.
+Codex preserves this corrected component through 3617ad5 for the [bounded application contract](CONSULTATION_SCHEDULING.md). The bounded application workflow is now published/download-verified in 1.15.0; calendar-provider and outbound decision messaging remain outside that release.
