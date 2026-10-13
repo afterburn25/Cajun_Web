@@ -7,6 +7,17 @@ define('CWP_BOOT',true);define('CWP_ROOT',$root);
 require $root.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=require $root.'/config.php';
 if(config()['db']['name']!=='cwp_test')exit(2);
+if(($argv[2]??'')==='inbox-seed'){
+    require_once $root.'/app/mail/inbox.php';
+    $account=one('SELECT id,revision FROM '.table('mail_accounts').' ORDER BY id LIMIT 1');
+    $started=['id'=>str_repeat('f',32),'account_id'=>$account['id'],'account_revision'=>(int)$account['revision'],'actor_id'=>1,'started_at'=>gmdate('Y-m-d H:i:s'),'started_epoch'=>time()];
+    query('INSERT INTO '.table('mail_inbox_reads').' (id,account_id,account_revision,actor_id,started_at,started_epoch) VALUES (?,?,?,?,?,?)',array_values($started));
+    mail_inbox_record($started,'connection',1);
+    echo json_encode(['fixture'=>'Synthetic failed inbox request only; no network attempted'],JSON_THROW_ON_ERROR);exit;
+}
+if(($argv[2]??'')==='inbox'){
+    echo json_encode(['requests'=>all('SELECT * FROM '.table('mail_inbox_reads').' ORDER BY id'),'results'=>all('SELECT * FROM '.table('mail_inbox_results').' ORDER BY id')],JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='mail-checks-seed'){
     require_once $root.'/app/mail/connections.php';
     $account=one('SELECT id,revision FROM '.table('mail_accounts').' ORDER BY id LIMIT 1');

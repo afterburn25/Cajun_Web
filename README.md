@@ -1,5 +1,10 @@
 # CajunWebPro — project source of truth
 
+## Candidate 1.17.0 — acceptance pending
+
+[PR #69](https://github.com/afterburn25/Cajun_Web/pull/69) adds explicit assigned-staff INBOX header reading, protected bundled dependencies, strict request auditing and an additive upgrade setup. See the [receiving contract](docs/MAIL_INBOX_READER.md). New native/HTTP/TLS/browser/Apache and 1.16.0 upgrade/recovery acceptance is pending. Latest published version remains 1.16.0; publication summaries below describe their recorded release, not the active candidate. The permanent organized structure remains in force.
+
+
 ## Latest verified publication — 1.16.0
 
 [v1.16.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.16.0) is published and freshly downloaded/verified at immutable source/tag `372ea28bf0d3081180c836e2c90aa14b7a90bdd3` through [PR #67](https://github.com/afterburn25/Cajun_Web/pull/67). Bounded A-06 adds explicit owner checks of saved incoming/outgoing credentials with current password/revision/matching mailbox assignment, public destination validation, pinned verified TLS and authentication-only commands. Started intent and separate terminal result each commit with strict audit; interrupted results remain incomplete and older saved versions historical. DNS is outside the staff lock, current authority is checked before credentials, and network work holds no InnoDB transaction. [Owner guide](docs/MAIL_CONNECTION_CHECKS.md). No message is read or sent; website system-email settings remain unchanged.

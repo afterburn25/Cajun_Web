@@ -75,5 +75,5 @@ def run_browser(env,browser):
     page.set_viewport_size({'width':390,'height':844});expect(page.locator('.admin-sidebar')).not_to_be_in_viewport()
     page.screenshot(path=str(QA/'Email-Accounts-Mobile.png'),full_page=True)
     check('Email account form fits mobile viewport',page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
-    check('Email account UI reports untested state without pretending to send','Connection not checked' in page.content() and 'Inbox access and sending are not available' in page.content())
+    check('Email account UI reports untested settings and current message limits','Connection not checked' in page.content() and 'Message bodies, attachments and sending are not available yet' in page.content())
     check('Email account page has no browser errors',not errors);context.close()
