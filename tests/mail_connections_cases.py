@@ -62,6 +62,6 @@ def run_browser(env,browser):
     expect(page.locator('.notice.error').first).to_contain_text('public server hostname')
     check('Chromium unsupported endpoint leaves synthetic history unchanged',len(db('SELECT * FROM ci_mail_connection_checks WHERE account_id=?',[aid]))==2)
     page.locator('[data-mail-checks]').screenshot(path=str(QA/'Mail-Connection-Checks-Desktop.png'))
-    page.set_viewport_size({'width':390,'height':844});page.locator('[data-mail-checks]').screenshot(path=str(QA/'Mail-Connection-Checks-Mobile.png'))
+    page.set_viewport_size({'width':390,'height':844});expect(page.locator('.admin-sidebar')).not_to_be_in_viewport();page.locator('[data-mail-checks]').screenshot(path=str(QA/'Mail-Connection-Checks-Mobile.png'))
     check('Connection-check forms fit mobile',page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
     check('Connection controls have no browser errors',not errors);context.close()

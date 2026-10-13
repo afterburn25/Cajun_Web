@@ -36,7 +36,7 @@ function setup_expected_files(): array { return [
     'admin/views/lead.php'=>'0e7045f16f487f21df5b8b746665102bbc873459fa54d1a89e5fb9f2f1d93cd1',
     'admin/views/leads.php'=>'0001cfd7d9d625dca7a94a44aebc6670e2e5439f73b7aa80595f702fd1a1ea87',
     'admin/views/mail_accounts.php'=>'a1f5f0a31fa16281aa8228216d49a984d5887ca77ae8040fc524e12383b4b8b1',
-    'admin/views/mail_connections.php'=>'7a409011a82edd89880fc45f5b1e05f9919fe93929d1233083e5f4e48dc1e6c4',
+    'admin/views/mail_connections.php'=>'976644e2dbaf314623d477068b51e14be9900404b35406d8e39ffd44d3c13399',
     'admin/views/mail_templates.php'=>'26342cd75557f2ae5aa16e71d2cfc177c872d2340263c835aea89020a06686dd',
     'admin/views/payment-notifications.php'=>'1bcc40257844dcd104f95fcc074c725168c8da16479fad316dea19692d70377c',
     'admin/views/payment-trials.php'=>'7dee3131faa35ec4b64330ace5b93c9b9430617d73f0c8f89a7f62e66dc880aa',

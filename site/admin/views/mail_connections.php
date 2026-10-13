@@ -10,14 +10,14 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn gold">Prepare connection checks</button></form>
 <?php else: ?>
 <p class="hint">Supported: incoming 993/TLS or 143/STARTTLS; outgoing 465/TLS or 587/STARTTLS. Use your provider’s public server hostname and approved password. OAuth-only accounts are not supported yet. A successful login does not establish sending permission or delivery.</p>
-<div class="workspace-grid"><?php foreach (['imap'=>'incoming','smtp'=>'outgoing'] as $target=>$label): ?>
+<div class="workspace-grid"><?php foreach (['imap'=>'incoming','smtp'=>'outgoing'] as $target=>$label): ?><div>
 <form method="post" data-mail-check="<?=esc($target)?>"><?php admin_action('mail_accounts_check'); ?>
 <input type="hidden" name="account_id" value="<?=esc($accountId)?>"><input type="hidden" name="revision" value="<?=(int)$record['revision']?>"><input type="hidden" name="target" value="<?=esc($target)?>">
 <h3><?=esc(ucfirst($label))?> connection</h3><p><?=esc($record[$target.'_host'])?> · <?=(int)$record[$target.'_port']?> · Saved version <?=(int)$record['revision']?></p>
 <?php if (mail_accounts_can($target==='imap'?'mail.read':'mail.send',$accountId)): ?>
 <?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Test <?=esc($label)?> connection</button>
 <?php else: ?><p>Enable this saved account and assign yourself <?=esc($target==='imap'?'Read':'Send')?> access before testing.</p><?php endif; ?>
-</form><?php endforeach; ?></div>
+</form></div><?php endforeach; ?></div>
 <p class="hint">Wait 30 seconds between checks of the same connection. Each owner may start up to 20 checks per hour.</p>
 <?php $checkPage=max(1,min((int)($_GET['check_page']??1),100000));$checks=mail_connections_history($accountId,$checkPage); ?>
 <h3>Connection-check history</h3><p class="hint">Results describe the saved version and time shown. Earlier results remain historical after settings change.</p>
