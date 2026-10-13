@@ -200,3 +200,5 @@ Parent `f007803`; request remains finish and publish 1.1.0. Native and package-u
 ### 2026-10-13 — Complete candidate evidence and final browser matrix
 
 Parent `91ef30d`; [branch run](https://github.com/afterburn25/Cajun_Web/actions/runs/38355321670) passed 50 native and 143 HTTP/browser checks, no PHP warnings, no unexpected browser errors or failed requests. The only console error was the asserted estimator 422 with exact URL and retained diagnostics. Visually reviewed implementation captures. Added explicit browser content/pricing/pipeline/client/media controls, mobile navigation, favicon heads and sitemap behavior; reduced-motion admin capture prevents mid-transition screenshots. No further shipping-source changes. Next: full rerun, merge and exact-main release acceptance.
+
+Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid versioned favicon URLs because it compared the query suffix as part of the path. Parse the URL path and fetch the actual referenced icon for byte equality. Application source is unchanged; rerun the full suite.

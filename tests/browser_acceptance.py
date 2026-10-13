@@ -69,7 +69,7 @@ try:
     admin=login('owner@example.invalid','Synthetic owner passphrase 2026')
     for label,url,session in [('Public','/existing/',requests),('Admin','/existing/admin.php',admin),('Client','/existing/portal.php',requests),('Installer','/fresh/install.php',requests)]:
         head=soup(session.get(BASE+url));icons=head.select('link[rel=icon]')
-        check(label+' head references original favicon',bool(icons) and all(urljoin(BASE+url,n['href']).endswith('/assets/favicon.png') or urljoin(BASE+url,n['href']).endswith('/favicon.ico') for n in icons))
+        check(label+' head references original favicon',bool(icons) and all(urlparse(urljoin(BASE+url,n['href'])).path.endswith('/assets/favicon.png') and session.get(urljoin(BASE+url,n['href'])).content==(ROOT/'site/assets/favicon.png').read_bytes() for n in icons))
     for view in ['studio-clients','studio-job&id=1','studio-pipeline','studio-content','studio-prices','studio-history','studio-portfolio','studio-upgrade','lead&id=1']:
         r=admin.get(BASE+'/existing/admin.php?view='+view);check('Admin route '+view,r.status_code==200 and 'We could not complete this request' not in r.text and 'This request could not complete' not in r.text)
     r=submit(admin,BASE+'/existing/admin.php?view=studio-clients','studio_client',{'name':'HTTP client','email':'newclient@example.invalid'});check('Admin client create persists',r.status_code==200 and 'newclient@example.invalid' in r.text)
