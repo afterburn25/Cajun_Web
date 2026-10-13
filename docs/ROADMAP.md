@@ -6,7 +6,7 @@ Updated: 2026-10-12. **All items below are pending implementation/verification i
 
 ### F-01 — Import the exact application baseline
 
-Import the complete inspected 1.0.8 PHP distribution and original assets, preserve filenames and functionality, document repository-to-upload layout, exclude secrets/private data, and make repeatable flat packages with manifests. Verify version constants and the installer's embedded hashes after every shipping-file change. Acceptance: no missing includes/assets, no wrapper folders, no mixed-build files, no stale direct-download installer, and a source/commit/artifact provenance record.
+Recover and verify the owner's current 1.1.0 PHP distribution and original assets before importing source. The inspected 1.0.8 distribution is historical reference only. Preserve current filenames and functionality, document repository-to-upload layout, exclude secrets/private data, and make repeatable flat packages with manifests. Verify version constants and the installer's embedded hashes after every shipping-file change. Acceptance: verified current-build provenance, no missing includes/assets, no wrapper folders, no mixed-build files, no stale direct-download installer, and a source/commit/artifact record.
 
 ### F-02 — Real staging acceptance
 
@@ -56,9 +56,13 @@ Admin-controlled invitation/access, client-isolated projects, milestone status, 
 
 Freeze the exact design/proposal version under review; capture authorized approval or change requests against that version. Proposals contain approved deliverables, exclusions, revisions, schedule assumptions and payment milestones. Acceptance: immutable approved snapshots/audit history, clear superseded versions, ownership checks, deliberate confirmation, and no implied legal e-signature compliance without separate review.
 
-### P-03 — Deposits, invoices and maintenance payments
+### P-03 — Web-design payment forms, deposits, invoices and maintenance payments
 
-Integrate an owner-selected hosted payment/invoice provider; Stripe was proposed, not configured or activated. Use provider-hosted card handling. Map customer/project/proposal/milestones, deposits, invoice status, and opt-in care-plan subscriptions. Acceptance: verified signed notifications, idempotent events, amount/currency/project validation, replay/error handling, reconciliation, separate test/live configuration, no raw card storage, and no 'paid' status from a success-page visit alone. Real charges/subscriptions are not authorized by documentation work.
+Provide dedicated CajunWebPro-styled payment forms for web-design services through the selected Authorize.net integration. Support full payment for an admin-published fixed-price service, a fixed-amount or percentage deposit against an approved quote, milestone invoices, final balance, and separately consented recurring maintenance. A customer must be able to pay for design work without buying hosting, a domain or VPS, and without a configured 20i account.
+
+Admin creates a payment request from the customer/project/proposal/invoice with service description, approved amount, currency, due date and applicable terms; preview it and generate a secure shareable payment link. The client can also select Pay from their own portal invoice. Show invoice/reference, service scope, amount due now, prior payments and remaining project balance where applicable. Lock pricing to server-side invoice/quote records; an estimator result alone cannot authorize a charge. Paid, canceled, expired or superseded requests must not accept another payment. Links must not expose other invoices, files or customer records.
+
+Use the same tokenized Authorize.net payment service, transaction records, verified notifications, receipts and reconciliation as hosting checkout; no separate gateway or raw card storage. Reflect confirmed payments and refunds in both invoice and project balance while keeping project completion/approval independent. See HC-11 for detailed workflow and acceptance. Acceptance includes standalone design-only sandbox payments, duplicate/timeout recovery, tampered amounts, link access/expiry/revocation, deposits/milestones/final balance, correct receipts, separate test/live configuration, and no 'paid' status from a success-page visit alone. Status: approved requirement, pending implementation/current-source inspection. Real charges/subscriptions are not authorized by documentation work.
 
 ### P-04 — Maintenance/service plans
 

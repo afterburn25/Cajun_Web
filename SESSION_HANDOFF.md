@@ -1,7 +1,13 @@
 # Session handoff — read before continuing
 
-Checkpoint: 2026-10-12 — owner confirms latest version is 1.1.0; locate that artifact next.
+Checkpoint: 2026-10-12 — standalone web-design payment forms added to the approved scope; recover current 1.1.0 source next.
 Repository: afterburn25/Cajun_Web · Authoritative branch: main.
+
+## Latest requirement — web-design payment forms
+
+The owner wants payment forms for web-design services too. Updated P-03 and HC-11 with full service payments, fixed/percentage quote deposits, milestones, final balances, optional recurring maintenance, admin-created payment requests/secure links and portal payments. Use the same branded Authorize.net engine and ledger as hosting checkout, but design payments must work with 20i disabled and no infrastructure purchase. Deliver these forms in M2; deeper project/hosting bundles remain M4.
+
+Current branch: `docs/web-design-payment-forms`, starting from local `072449c` over remote main `43bebd0`. This branch also preserves the earlier verification and owner version correction. This is documentation only; inspect the actual 1.1.0 build to identify existing implementation before coding. Use the P-03/HC-11 acceptance cases for sandbox payments, invoice links/access, server-side amounts, duplicate/timeout recovery, receipts/refunds and balances. No live payment or deployment is authorized by this documentation update.
 
 ## Current owner correction — takes precedence over older baseline instructions
 

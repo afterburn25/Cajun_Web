@@ -1,7 +1,13 @@
 # Project status
 
-Updated: 2026-10-12 — owner confirms latest version is 1.1.0; current artifact location pending.
+Updated: 2026-10-12 — dedicated web-design payment forms specified; current 1.1.0 artifact location pending.
 Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
+
+## Latest requirement — payment forms for web-design services
+
+The owner explicitly requested payment forms for web-design services as well as hosting checkout. P-03 and HC-11 now specify branded Authorize.net forms for full service payments, quote deposits, milestones, final balances and optional recurring maintenance; admin-configured payment requests, secure shareable links, portal invoice payment, receipts and correct project balances. Design-only payments must work without hosting purchases or 20i setup. The core forms belong in M2; richer project/hosting integration remains M4.
+
+**Status:** requirements captured, pending current 1.1.0 source inspection and implementation evidence. Documentation, direction, architecture, decisions and release handoff are synchronized. No card charge, gateway configuration, actual payment form, runtime change or deployment was performed. The artifact-location question below remains open.
 
 ## Owner correction — latest version is 1.1.0
 

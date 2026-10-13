@@ -17,7 +17,7 @@ Every working session must update the status, handoff, and [session log](docs/SE
 
 The repository was empty when inspected. This bootstrap records the project requirements, inspected distribution baseline, approved backlog, and continuity process. **Application source and original image assets have not yet been imported into Git. This is not a deployable website release.**
 
-The latest supplied PHP distribution is `CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip`. Its actual archive hash and contents were inspected locally; see [Baseline inventory](docs/BASELINE_INVENTORY.md). It is a baseline to import, not proof of the version running on the user's host. The last reported live installer/version and storage issues have no confirmed target-host resolution.
+The owner confirms **1.1.0 is the latest version**. Its source/package must be located and verified before implementation. The older `CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip` was inspected locally; see [Baseline inventory](docs/BASELINE_INVENTORY.md). Keep that archive as historical reference, not the default starting point or proof of the running host version. The last reported live installer/version and storage issues have no confirmed target-host resolution.
 
 ## Non-negotiable direction
 

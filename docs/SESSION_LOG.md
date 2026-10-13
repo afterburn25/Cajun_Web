@@ -76,3 +76,15 @@ Append dated entries. Keep this chronological. Use `SESSION_TEMPLATE.md`; link d
 **Limits:** No 1.1.0 source/package was inspected, no runtime tests ran, and no source, host, provider or remote GitHub changes occurred. The earlier 1.0.8 verification remains valid for that historical artifact only.
 
 **Next concrete action:** Locate and verify the owner's 1.1.0 build, then reconcile/import the current source and reassess roadmap status. Do not start new feature work or downgrade the host using 1.0.8. Local documentation commit message: `docs: record owner-confirmed 1.1.0 current version`; parent is `1eab202`.
+
+## 2026-10-12 — Specify web-design service payment forms
+
+**Request:** The owner also wants payment forms for web-design services.
+
+**Starting state:** Local commit `072449c7596c8c3af0e2b7b28149b2508203c152`; clean worktree; refreshed origin/main remains `43bebd019a6f548d7a059b2c8e259beed3efe561`. Created branch `docs/web-design-payment-forms`. The repository contains documentation only, and the owner's current 1.1.0 source/package is still awaiting location/verification.
+
+**Changes:** Expanded P-03 and HC-11 with standalone branded Authorize.net forms, full service payments, fixed/percentage quote deposits, milestones, final balance, approved extras and opt-in maintenance. Defined admin payment-request configuration, secure links, portal entry, invoice/project ownership and balances, receipts/refunds, immutable terms and duplicate/timeout recovery. Moved payment-form delivery into M2, independent of 20i/hosting purchases; richer project/bundle integration remains M4. Updated README and current import prerequisites to 1.1.0, retaining 1.0.8 as historical evidence. Synchronized PROJECT_STATUS, SESSION_HANDOFF, CHANGELOG, PROJECT_DIRECTION, ARCHITECTURE, DECISIONS and this log.
+
+**Verification:** `git diff --check` passed; all 21 relative documentation links resolved. These are documentation checks only. No current application source was available, so no PHP/database/browser/payment integration tests were run. New sandbox acceptance scenarios are requirements, not passing test results. No external gateway research or configuration occurred in this scope clarification.
+
+**Blockers / next action:** Recover and verify the owner's 1.1.0 source, reconcile implemented capabilities against P-03/HC-11, then implement/test standalone service payments against Authorize.net sandbox. No actual form, charge, 20i operation, host change or deployment is claimed. Commit message: `docs: specify standalone web-design payment forms`; parent is the starting local commit above. Prepare this documentation branch for GitHub review with the current-version correction included.

@@ -40,3 +40,13 @@ No actual payment/calendar provider account, package pricing, contract wording, 
 | D-020 | Accepted | Preserve existing single-page keyless installer, PHP/MySQL shared host, navy/gold logo and client data | Add modular code and safe migrations, not a root-file monolith or forced fresh install |
 
 Unresolved verification items: actual 20i API credentials/capabilities (especially domain/VPS), Authorize.net merchant account/test credentials, final published plan prices, tax/legal/PCI determinations, cron support on target host and live payment activation authorization. See docs/HOSTING_AND_BILLING_ROADMAP.md.
+
+## 2026-10-12 — Current version and dedicated design-service payments
+
+| ID | Status | Decision | Consequence |
+|---|---|---|---|
+| D-021 | Accepted owner correction | The owner confirms 1.1.0 is the latest build | Locate and verify that artifact before implementation; the verified 1.0.8 archive is historical reference and must not become a downgrade or default starting point |
+| D-022 | Accepted requirement | Provide branded Authorize.net payment forms for web-design services as well as hosting checkout | P-03 and HC-11 explicitly include full service payments, quote deposits, milestones, final balances, secure payment links and optional maintenance; one invoice/payment engine and client portal |
+| D-023 | Delivery sequence | Standalone design-payment forms belong in M2 with payments, independent of 20i provisioning | Supersedes the earlier implication that all HC-11 work waits for M4; project/bundle integration remains M4, with no hosting purchase required to pay for design |
+
+The concrete form/admin flows and acceptance cases are specified in P-03 and HC-11. No current 1.1.0 source inspection, form implementation or payment integration test occurred in this documentation change.

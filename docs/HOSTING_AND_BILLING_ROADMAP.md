@@ -10,7 +10,7 @@ CajunWebPro is BOTH (1) a done-for-you web design/development/maintenance compan
 
 The owner wants an attractive **custom on-site card payment form** fitting CajunWebPro's theme, NOT a visually disconnected third-party checkout. Authorize.net Accept.js with first-party card form is an available candidate; card entry must go directly to Authorize.net tokenization and never traverse CajunWebPro servers. It typically falls under PCI DSS SAQ A-EP rather than SAQ A; complete merchant-specific PCI review before live launch. Offer an integrated Authorize.net-hosted-fields/Accept Hosted fallback if a lower PCI footprint becomes necessary. Never represent a hosted iframe as wholly custom-controlled card fields.
 
-**Dependency:** Import and verify the actual 1.0.8 source baseline into Git first. As of this decision the repo contains documentation only. All work below is APPROVED / NOT IMPLEMENTED. No live API credentials, products, wholesale costs, retail prices, licenses or merchant account access have been supplied. Price examples from chat are proposals, not authorized published rates.
+**Dependency:** Recover, verify and import the owner's current 1.1.0 source before implementation. The locally inspected 1.0.8 archive is historical reference only. The repo contains documentation only; current 1.1.0 source has not been inspected here, so reconcile existing capabilities before adding them. All work below is approved scope without implementation evidence in Git. No live API credentials, products, wholesale costs, retail prices, licenses or merchant account access have been supplied. Price examples from chat are proposals, not authorized published rates.
 
 ## Public experience and site architecture
 
@@ -114,11 +114,32 @@ Sell unmanaged/managed VPS only if 20i account product access, API endpoints, pr
 
 **Acceptance:** Real test provision/build readiness, safe retry, start/stop as available, billing synchronization and teardown verified. Don't publish VPS inventory and accept money before tested provisioning supports it.
 
-## HC-11 — Web design + maintenance commerce (P1)
+## HC-11 — Web-design payment forms and maintenance commerce (P0 payments / P1 project integration)
 
-Join current proposal/lead/project roadmap: public service packages and estimator with honest starting ranges; deposit checkout from accepted proposal; milestone invoices; retainer/maintenance subscriptions; project progress/file/approval, support and site handover. Optional packages include a domain and hosting plan with separate line-item financial treatment and ownership/transfer terms. Prevent automation from treating website design as instantly fulfilled infrastructure.
+The owner explicitly wants payment forms for web-design services as well as infrastructure checkout. Deliver a standalone design-payment flow in the approved navy/gold theme using the same Authorize.net settings and payment engine. It must work with 20i disabled and no hosting/domain/VPS purchase. Do not delay design payments until domain provisioning is available. This is a planned requirement; inspect current 1.1.0 source before determining the implementation gap.
 
-**Acceptance:** A signed-in client can purchase hosting and pay for an approved custom-design milestone, see both in one dashboard, receive separate correct fulfillment states, approve project deliverables and open support requests.
+### Payment options and customer form
+
+- Full payment for a real fixed-price web-design service published by admin.
+- Fixed-amount or percentage deposit calculated from the accepted project quote; show both amount due now and remaining quoted balance.
+- Milestone payment requests tied to the exact approved proposal/project stage, followed by final-balance payment.
+- One-off additional work on an approved invoice, and optional recurring maintenance/retainers with explicit recurring consent and separate terms.
+- Entry from a published service, the client's own portal invoice, or an admin-generated secure payment link. Quote-specific prices remain private and cannot be inferred from an estimator or URL parameter.
+- Responsive form with customer/billing details, service/invoice reference, itemized amount, applicable tax, total due now, prior payments and remaining balance where relevant, terms, clear Pay action, recoverable inline errors and confirmed receipt. Do not preselect optional purchases or recurring consent.
+
+### Admin and payment-request lifecycle
+
+Admin can create, preview, activate, expire and revoke a service payment request linked to customer, project, proposal version and invoice. Configure description, approved line items/prices, currency, due date, deposit rule and allowed payment stage; preserve an immutable snapshot when issued. The generated link can be copied for sharing. Issued price/term changes supersede the old request; paid invoices cannot be silently rewritten. Track draft, awaiting payment, processing, paid, failed, canceled/expired and refund states with amount due and an audit trail.
+
+Require authenticated invoice ownership or a narrowly scoped, unpredictable, expiring and revocable payment token that grants no other portal access. Keep tokens protected and out of logs/referrers; no personal details, card data or gateway credentials in the URL. Resolve payable amount and eligibility server-side on every submission. Serialize payment attempts so duplicate links, tabs or retries cannot charge the same obligation twice or overpay the project. A timed-out attempt remains pending until gateway reconciliation establishes whether it succeeded.
+
+Use HC-04/05/06 for tokenized card processing, sandbox/live separation, verified transaction/webhook handling, receipts, refunds and reconciliation. A failed charge retains the invoice as unpaid. A confirmed payment updates the invoice, project financial balance, admin and client history; it does not automatically approve a design, mark work finished or provision infrastructure. Reconcile partial/full refunds and remaining balance according to recorded policy. Recurring maintenance is a distinct opted-in subscription, never an automatic consequence of paying a one-off invoice.
+
+### Project and hosting integration
+
+Join the proposal/lead/project roadmap: public service packages and estimator with honest ranges; quote approval; progress/files/approvals; support and handover. Optional bundles include a domain and hosting plan with separate financial treatment and ownership terms. The single client dashboard displays both design payments and infrastructure services, with distinct fulfillment states. Payment-only requests can launch with M2 once their own security/staging gates pass; richer project workflow and cross-sell remain M4.
+
+**Acceptance:** In sandbox with 20i disabled, complete a design-only full payment, deposit, milestone and final balance; confirm invoice/project balances and receipts. Demonstrate declined, duplicate, concurrent and uncertain/timeout attempts recover without duplicate charges; server-side amount/currency validation; wrong-client access denial; expired/revoked/superseded/already-paid link handling; verified webhook replay handling; partial/full refund reconciliation; and explicit recurring-maintenance consent. Then verify a mixed hosting/design order gives each item its correct fulfillment state and the client can see both in the same dashboard. No existing implementation or live charge is claimed by these criteria.
 
 ## HC-12 — Admin operations and service desk (P1)
 
@@ -150,9 +171,9 @@ Operational features: scheduled job heartbeat, daily financial/provider reconcil
 |---|---|---|
 | M0 Source and integration discovery | Existing F-01/F-02, HC-07 investigation | Import true baseline; inspect actual 20i account capabilities, Authorize.net sandbox and webhook settings; collect no secrets in Git; document feasible SKUs, costs, compliance choice |
 | M1 Product UI + clients foundation | HC-01, HC-02 | Matching branded responsive plan pages, client authentication, price/config CRUD, tenant isolation, no fake checkout |
-| M2 Payments + billing engine | HC-03 to HC-06 | Authorize.net admin's four keys in both environments, themed tokenized card form, webhook signature and idempotency, sandbox payments, invoices/receipts/profiles and recurring-billing test suite |
+| M2 Payments + billing engine | HC-03 to HC-06, HC-11 payment forms, P-03 | Authorize.net admin's four keys in both environments; themed checkout and standalone web-design payment forms; full/deposit/milestone/final-balance sandbox payments with 20i disabled; secure invoice links, verified events, duplicate protection, receipts/profiles and recurring-billing tests |
 | M3 Shared hosting fulfillment | HC-07, HC-08 | Paid order→one provider package→client dashboard→renewal/cancellation recovery, in a tested isolated account |
-| M4 Domains and design service cross-sell | HC-09, HC-11 | Dynamic domain catalog/registration/renewals; web design/maintenance invoices and project dashboard integrated without mis-fulfillment |
+| M4 Domains and design service cross-sell | HC-09, HC-11 project integration | Dynamic domain catalog/registration/renewals; extend M2 design-payment forms with richer project approvals, maintenance and bundled service workflows without mis-fulfillment |
 | M5 VPS and support/admin operations | HC-10, HC-12 | Real endpoint/cost validation, tested VPS provisioning/teardown, queues/support/reporting/admin recovery |
 | M6 Hardening, release and rollout | HC-13, HC-14 and A-03/A-04 | Threat model, native integration tests, PCI review, migration/rollback/backup restore, real package hash and tested staging HTTPS checkout; only then authorize live merchant/provisioning |
 
@@ -170,6 +191,8 @@ Every item moves approved → in progress → implemented → verified → deplo
 8. Admin roles/secret masked/credential rotation and live-vs-sandbox separation.
 9. One-page installer, app upgrade/migration, backup/restore, subdirectory installation and shared-host cron/permission preflight.
 10. Responsive desktop/mobile, keyboard navigation, reduced motion, clear invoice/legal text and transactionally accurate emails.
+11. Standalone web-design payment form with 20i disabled: full service price, fixed/percentage deposit, milestones, final balance, approved extras, invoice/receipt/project balance and opt-in maintenance.
+12. Design-payment request security and lifecycle: foreign-client invoice, altered amount/currency, expired/revoked/superseded/paid link, concurrent duplicate attempts, ambiguous gateway timeout, webhook replay and partial/full refund reconciliation.
 
 No credentials, payment cards, provider IDs from real customers, or private billing information are to be inserted in GitHub issues, commits, screenshots or test fixtures.
 
