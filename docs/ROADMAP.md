@@ -141,7 +141,7 @@ Admin-managed real package ranges and inclusions, service detail, process, owner
 
 ### L-03 — Consultation scheduling
 
-Application integration is claimed on `codex/consultation-workflow` from verified 1.14.0, preserving corrected #32. [Bounded contract](CONSULTATION_SCHEDULING.md); 71 isolated checks pass. Database/UI/application acceptance and publication remain pending.
+Application integration is claimed on `codex/consultation-workflow` from verified 1.14.0, preserving corrected #32. [Bounded contract](CONSULTATION_SCHEDULING.md); 71 isolated checks pass. Candidate 1.15.0 implements the bounded database/public/admin workflow with acceptance fixtures. Combined application checks, actual screen review and publication remain pending.
 
 Start with an honest appointment-request workflow or integrate the selected calendar provider after configuration. Acceptance: timezone handling, real availability/conflict protection if promising instant booking, confirmations, cancellation/rescheduling, spam controls, and no appointment described as booked before persistence/provider confirmation. Provider selection remains a configuration decision, not an existing connection.
 
