@@ -3,18 +3,18 @@ declare(strict_types=1);
 if (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); exit; }
 ?>
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="csrf-token" content="<?=esc(csrf())?>"><title>CajunWebPro · One-page installer 1.11.0</title><link rel="icon" href="images/icons/favicon.png">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="csrf-token" content="<?=esc(csrf())?>"><title>CajunWebPro · One-page installer <?=esc(CWP_INSTALLER_BUILD)?></title><link rel="icon" href="images/icons/favicon.png">
 <style>
 <?php require CWP_ROOT.'/install/views/styles.php'; ?>
 </style></head><body><main class="shell">
-<header class="topbar"><img class="logo" src="assets/logo.png" alt="CajunWebPro"><div class="build"><strong>ONE-PAGE INSTALLER · 1.11.0</strong><span>NO INSTALLATION KEY</span></div></header>
-<div class="intro"><div><div class="eyebrow">LAUNCH STUDIO / YOUR SERVER. YOUR WEBSITE.</div><h1>Everything here.<br><span class="metal">Ready for launch.</span></h1><p>Connect your database, create your administrator account, and install. All fields are shown below. Enter your details once, then press Install.</p></div><div class="intro-sign"><img src="assets/emblem.png" alt=""><div>BUILT ON YOUR TERMS<span>PHP / MYSQL / PRIVATE STORAGE</span></div></div></div>
+<header class="topbar"><img class="logo" src="images/branding/logo.png" alt="CajunWebPro"><div class="build"><strong>ONE-PAGE INSTALLER · <?=esc(CWP_INSTALLER_BUILD)?></strong><span>NO INSTALLATION KEY</span></div></header>
+<div class="intro"><div><div class="eyebrow">LAUNCH STUDIO / YOUR SERVER. YOUR WEBSITE.</div><h1>Everything here.<br><span class="metal">Ready for launch.</span></h1><p>Connect your database, create your administrator account, and install. All fields are shown below. Enter your details once, then press Install.</p></div><div class="intro-sign"><img src="images/branding/emblem.png" alt=""><div>BUILT ON YOUR TERMS<span>PHP / MYSQL / PRIVATE STORAGE</span></div></div></div>
 <noscript><div class="status-box error">Enable JavaScript for the inline server checks and one-page installation form.</div></noscript>
 <?php if(!$secure):?><div class="status-box error">HTTPS is not active. Enable SSL for this domain before entering credentials. Behind a proxy? Configure only the trusted proxy IPs in proxy-config.php.</div><?php endif?>
 <div class="onepage-note"><strong>Database · Administrator · Website · Server checks</strong><span>One form. No Next/Back screens. No wizard. No key. Missing files and storage errors stay on this screen.</span></div>
 
 <section id="package-panel" class="panel package-panel" aria-labelledby="package-heading">
-<div class="panel-head"><div class="head-title"><span class="section-icon" aria-hidden="true">✓</span><div class="head-copy"><h2 id="package-heading">Website files</h2><p id="package-summary"><?=esc($package['ok'] ? $package['passed'].' / '.$package['expected'].' required files verified.' : count($package['issues']).' missing or mismatched files. Your setup form is still below.')?></p></div></div><span class="pill">BUILD 1.11.0</span></div>
+<div class="panel-head"><div class="head-title"><span class="section-icon" aria-hidden="true">✓</span><div class="head-copy"><h2 id="package-heading">Website files</h2><p id="package-summary"><?=esc($package['ok'] ? $package['passed'].' / '.$package['expected'].' required files verified.' : count($package['issues']).' missing or mismatched files. Your setup form is still below.')?></p></div></div><span class="pill">BUILD <?=esc(CWP_INSTALLER_BUILD)?></span></div>
 <div class="body compact"><p class="path-note">This installer is running from <strong><?=esc(__FILE__)?></strong></p><ul id="package-issues" class="package-issues" <?=$package['ok']?'hidden':''?>><?php foreach($package['issues'] as $issue):?><li><code><?=esc($issue['path'])?></code> — <?=esc($issue['problem'])?></li><?php endforeach?></ul><p class="hint">The ZIP extracts directly into this website folder. There is no enclosing upload/ or version folder. Configuration and private media are created during installation, not supplied as empty credential files.</p></div></section>
 <div id="setup-error" class="status-box error" role="alert" hidden></div>
 <section id="completion" class="panel complete" aria-live="polite" hidden><div class="eyebrow">INSTALLATION COMPLETE</div><h2>Your website is ready.</h2><p>The completed actions and any cleanup warnings appear below.</p><ul id="completion-log"></ul><div id="completion-warnings"></div><a class="button gold" id="open-dashboard">Open dashboard →</a><a class="button" id="open-website">View website ↗</a></section>
@@ -33,7 +33,7 @@ if (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); ex
 <div class="launch-bar"><label class="checkbox"><input name="confirm_install" type="checkbox" required><span>I confirm this is the intended website directory and I have backed up any existing files. Existing application tables and installed websites will not be overwritten.</span></label><button type="submit" class="button gold" id="install-button" <?=$secure?'':'disabled'?>>Install CajunWebPro ↗</button></div>
 <div id="working" class="status-box wait" role="status" hidden><span class="spinner" aria-hidden="true"></span><span id="working-text">Installing… Keep this page open.</span></div>
 <p class="fineprint">Installation repeats the server and database checks, saves your account and configuration, locks setup, and attempts to delete this installer and its legacy files. Any failed deletion is reported. Finish setup promptly: an unfinished key-free installer is accessible to anyone who can reach this address.</p>
-</form><footer class="bottom"><span>CAJUNWEBPRO / LAUNCH STUDIO</span><span>ONE PAGE · BUILD 1.11.0 · NO KEY</span></footer></main>
+</form><footer class="bottom"><span>CAJUNWEBPRO / LAUNCH STUDIO</span><span>ONE PAGE · BUILD <?=esc(CWP_INSTALLER_BUILD)?> · NO KEY</span></footer></main>
 <script nonce="<?=nonce()?>">
 <?php require CWP_ROOT.'/install/views/script.php'; ?>
 </script></body></html>
