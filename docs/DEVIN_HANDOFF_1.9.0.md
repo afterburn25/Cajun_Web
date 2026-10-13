@@ -1,0 +1,9 @@
+# Devin handoff — verified 1.9.0
+
+[v1.9.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.9.0) is published and downloaded-back verified at `080f14aea8fe5c35e04e4eba62976609aef7cd67` through [PR #24](https://github.com/afterburn25/Cajun_Web/pull/24). Later publication records do not change application bytes. [Exact-main CI](https://github.com/afterburn25/Cajun_Web/actions/runs/38396372080): 539 native / 569 HTTP/Chromium checks. [Report](TEST_REPORT_1.9.0.md).
+
+Continue W-01 on existing `devin/public-experience` / [PR #7](https://github.com/afterburn25/Cajun_Web/pull/7), preserved at `55d60670497d987286e64630e037e1ba2ec3a318`. Fetch and inspect current main, AGENTS/status/handoff/coordination before adapting. Merge or rebase carefully; never force-push shared history or overwrite Codex payment/identity/schema/installer/private-delivery work. Your isolated portfolio contract/filtering component remains unintegrated. Scope actual public-page adaptation; agree shared storage/admin dependencies first. Preserve branding, PHP/shared hosting, one-page keyless installation and existing client data. Submit a small checked PR with actual screenshots/tests/continuity notes; Codex handles integration/releases.
+
+Codex now owns reviewed client website ZIP deliveries alongside external receipts/balances/client statements and separate sandbox evidence. Do not reuse private client releases as public portfolio assets or introduce competing project/payment/identity schemas. [Delivery guide](CLIENT_DELIVERIES.md). Full P-06 database/build/restore/retention work, card checkout/actual merchant acceptance, broader mail/20i/SSH remain pending. No live customer/provider operation or deployment is authorized by this handoff.
+
+The owner requested this GitHub assignment for pasting into Devin. Publishing this handoff is not proof of receipt, execution or completion. Report your branch/commit/PR and actual readiness when finished.

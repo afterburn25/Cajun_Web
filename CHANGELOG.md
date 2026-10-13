@@ -1,13 +1,99 @@
 # Changelog
 
+## 1.9.0 — client website downloads
+
+- Private staff uploads, immutable manifests and owner-reviewed publication of versioned client ZIPs.
+- Client/project history, notes, package scope, SHA-256 checksums and authenticated resumable downloads; strict ownership and support attribution.
+- Bounded archive inspection without extraction/execution; reject unsafe paths, links, credentials, encrypted/nested archives and databases. Outside-web-root guarded storage with project/site quotas.
+- Additive setup and retained 1.8.0 upgrade coverage preserve the existing portal, payment ledger and credentials.
+- Published/download-verified at `080f14aea8fe5c35e04e4eba62976609aef7cd67`; 539 native / 569 HTTP/Chromium checks pass. Automated packaging, database transfer, larger jobs and full P-06 remain incomplete.
+
+## 1.8.0 — invoice payments and client receipts
+
+- Record verified external USD payments in full or in parts; show total paid and remaining invoice balances. Replay, stale review, duplicate reference and overpayment guards share the existing financial lock.
+- Owners correct mistakes with an audited full reversal while retaining original entries. No money is sent or refunded.
+- Clients view owned statements and printable receipts; staff-only references remain private, and support receipt access is blocked and audited.
+- Additive migration imports legacy paid balances without fabricating receipts. Partial payments/corrections retire earlier requests; new requests use the remaining amount.
+- Published/download-verified at `c36a36e80c40485c9e3e7e6cdd4884ced25db961`; 427 native / 503 HTTP/Chromium checks pass. Card checkout, actual merchant acceptance and recurring/refund processing remain pending.
+
+## 1.7.0 — sandbox notification inbox
+
+- Owner-configured sandbox callback with raw-body HMAC verification, account/webhook binding, bounded payloads and replay protection. Durable minimal receipt and strict audit precede HTTP 200.
+- Owner verification matches an existing attempt and checks current sandbox reporting; observation, processing state and audit commit together. No real invoices are paid.
+- Explicit additive upgrade preserves earlier attempts, requests, encrypted credentials and external keys. Browser setup/inbox follows existing styling.
+- Published/download-verified at `1fe0670142755f86aee235fabe1847e5d118ee52`; exact-main 358 native / 451 HTTP/Chromium checks pass. Actual merchant delivery, scheduled processing, production and client checkout remain pending.
+
+## 2026-10-13 — Sandbox trial release published and verified
+
+Continued roadmap from main `dd29436fa40c2a0f800bc02569b5fd5d1fb75c09` / 1.5.0 on `codex/sandbox-attempts`. Added owner-only tokenized sandbox UI, fixed sandbox reporting/charge adapter, additive attempt/events, exact amount/reference/account checks, idempotency and concurrency safeguards, unknown-result recovery, shared manual/catalog/request locks, strict audit and immutable 1.5.0 upgrade acceptance. PR #18 merged as `e5d4c17456faff0522429ab3f58093a06a523bd5`; exact-main run https://github.com/afterburn25/Cajun_Web/actions/runs/38380935411 passes 296 native / 421 HTTP/Chromium checks. Independent policy/invitation/documentation checks pass. Reviewed desktop/320px screenshots.
+
+First candidate 4158d37 failed installer inventory due to Windows line endings; normalized LF and regenerated. f36e44a passed native tests but HTTP expected the established duplicate-payment message; restored the message without removing safeguards. 3ebc8a8 passed complete acceptance; final wording clarifies owner sandbox versus disabled client checkout. Final merged source and packages were checked independently. All eight draft and published release assets, extracted hashes, version labels and tag were downloaded-back verified. [Report](docs/TEST_REPORT_1.6.0.md), [verification](docs/RELEASE_VERIFICATION_1.6.0.json). Earlier releases untouched. No live deployment, provider operation or customer mail/data. Real merchant acceptance remains unverified; tests use synthetic gateway/Accept.js boundaries. Next: signed events, actual sandbox acceptance, distinct client/real-money checkout. Preserve Devin PR #7. Publication records are docs-only.
+
+
+
+## v1.5.0 — 2026-10-13
+
+**Current release — 2026-10-13:** [v1.5.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.5.0) is published and downloaded-back verified at `3e95bdf81ca0126d99a69c41f2ff6eb0c08da1e1` via [PR #16](https://github.com/afterburn25/Cajun_Web/pull/16). Bounded M2 preparation: owner-only protected separate Authorize.net credentials, sandbox-authentication diagnostics, reviewed invoice requests with expiry/revocation/replacement and strict audit. Card collection, production connections and transaction processing remain disabled. [Payment guide](docs/PAYMENT_PREPARATION.md). Exact-main acceptance: 227 native and 401 HTTP/Chromium checks; all eight assets/tag verified. Provider results use synthetic fixtures, not real merchant authentication. Earlier releases and Devin PR #7 remain unchanged. No live deployment/customer/provider operation. Next: tokenized sandbox payment attempts, verified events and reconciliation before actual design-only checkout; full M2/20i/mail/ZIP/SSH remain pending. [Devin handoff](docs/DEVIN_HANDOFF_1.5.0.md).
+
+
+
+## v1.4.0 — 2026-10-13
+
+M1 / partial HC-01 and HC-06: managed service prices, public configured cards, preserved invoice snapshots and audited manual payment/void workflow. Published at `0cdea7fbd17e887d3f4bc0574a411b157431b7df` via PR #14 after 165 native and 345 HTTP/Chromium checks. Eight retained assets/tag downloaded-back verified. No live deployment or gateway operation; [scope](docs/RELEASE_1.4.0.md).
+
+## v1.3.0 — 2026-10-13
+
+- Explicit owner-confirmed client policy and separate staff support view/write/download permissions.
+- Browser-bound expiring contexts, persistent staff/client banner and return, stale-tab isolation and separate form tokens.
+- Attributed messages/uploads/downloads and strict audit rollback; blocked customer decisions/security/payment actions.
+- Additive support schema, preserved 1.2.0 update state, native and HTTP/Chromium acceptance.
+- Published and downloaded-back verified at `7856cccf230a1646d02a4a92ad4bfb1c280efa19` through PR #12; 116 native and 289 HTTP/Chromium checks, eight retained assets. No host deployment. SSH/provider access remains separate.
+
+
+
+## v1.2.0 — 2026-10-13
+
+Owner-controlled creation, selected website/client-workspace permissions, enable/disable and private 24-hour setup/recovery links are integrated with existing users. Current-password confirmation, per-request authorization, reset/setup/session revocation and concurrent last-owner protection are enforced. Fresh installs initialize the owner; existing installations explicitly select an owner and add two tables without changing legacy credentials. Original and actual released-1.1.0 package upgrades are tested. Canonical foundation components and the embedded installer core are verified by the builder. [User/developer guide](docs/ADMIN_ACCOUNTS.md), [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10). Published and downloaded-back verified at `f85627e05b171e4ee8508231e2ed6ee7b9374274`: eight retained assets; 81 native and 216 HTTP/Chromium checks plus independent suites. See [release register](docs/RELEASES.md). No target-host deployment.
+
+## v1.1.0 — 2026-10-13
+
+Published [v1.1.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.1.0) at `3703783e979abab38e8d72e9092c51dc835833b3` after PR #8. Delivered website/client-workspace scope and release fixes are listed in [the matrix](docs/RELEASE_1.1.0.md). Exact-main tests passed: 50 native, 157 HTTP/browser, all independent component/documentation checks. Seven retained assets were downloaded back and verified. Complete/update ZIPs support fresh setup and the tested populated 1.0.8 upgrade; no live deployment. This later documentation-only checkpoint records publication, remaining roadmap and the exact-release Devin handoff. Older pending statements below are historical.
+
+## 2026-10-13 — Native regression fixes
+
+First MariaDB acceptance found a real schema-idempotency failure: digit-bearing `sha256` was omitted by the column parser. Fixed both column-name patterns without weakening type/engine/unique-key checks. Local native tests then passed, and real unprivileged PHP HTTP tests completed fresh one-page installation and physical cleanup. Also fixed the existing lead editor's seven-status/six-label mismatch and corrected the test's portfolio route to the actual `work` endpoint. Tests now run extracted package bytes and cover incompatible schema preservation, cross-client/CSRF rejection and disguised executable uploads. Public service copy was polished and official comparison sources rechecked on 13 October. Complete browser acceptance and release publication remain pending. No customer host or database was changed.
+
+
+## 2026-10-13 — Source recovery checkpoint
+
+Recovered 41 actual website files plus native/HTTP tests and a build tool from the nine preserved source fragments. Original external assets were fetched only at the recorded public paths and checked against recorded SHA-256 values. Executable source is now under `site/` on `codex/finish-1.1.0`. This supersedes the older no-source-in-Git blocker on this branch, NOT the unverified runtime or release claims. No production files, database, mail or payments were changed. Review `docs/SOURCE_RECOVERY_2026-10-13.json`; run native integration and authorization tests next. No 1.1.0 release is declared by source recovery.
+
+
 This log distinguishes repository work from application releases and deployment. Documentation-only work does not advance the application version.
 
 ## 2026-10-13 — Independent portfolio browsing component (Devin)
 
 - Added standalone PHP 8.2+ portfolio contract and catalog decisions on `devin/public-experience`: immutable records with explicit `client-work`/`concept` labels and `published`/`draft`/`archived` status, case-study fields, genuine before/after pair requirement, normalized category filtering and deterministic position/slug/id ordering.
 - Added 46 synthetic-fixture checks and a separate read-only GitHub PHP 8.2/8.4 workflow (`portfolio-catalog.yml`). No Composer or runtime-service requirement; no access, identity, migration, installer, billing or provider files changed.
-- Documented the adapter-input contract and pending 1.1.0 integration in `docs/PORTFOLIO_FOUNDATION.md`. Only published records appear in public output; nothing generates copy, metrics or endorsements.
-- No version bump, UI, routes, database, real content, release ZIP or deployment. The component stays outside application packaging until adapted to verified current source.
+- Documented the adapter-input contract and pending application integration in `docs/PORTFOLIO_FOUNDATION.md`. Only published records appear in public output; nothing generates copy, metrics or endorsements.
+- No version bump, UI, routes, database, real content, release ZIP or deployment in that component commit. The component stays outside application packaging until adapted to verified current source.
+
+## 2026-10-13 — 1.1.0 release acceptance in progress
+
+- Reconciled recovered application source with main while preserving foundation components and Devin's separate work.
+- Renamed the browser runner to avoid shadowing Python's standard HTTP library; the first combined run passed native database tests but failed on that import.
+- Aligned candidate labels at 1.1.0, enforced canonical line endings, and made the build compare shipping bytes with its recorded commit.
+- Client changes revoke outstanding invitations and sessions; activation rechecks expiry after locking/password hashing. Uploads reject executable extensions/code; form feedback respects reduced motion.
+- Expanded release acceptance and publication remain in progress.
+- Fixed real JavaScript submissions where a named action field hid the form endpoint; both growth requests and the original inquiry form now use their explicit destination attribute.
+- Added the exact historical 1.0.8 test fixture and actual UPDATE-package/admin-upgrade checks, broader saved-state/browser/installer tests, local synthetic mail capture and the feature-to-test matrix. Preserved the original favicon source with its verified hash.
+
+## 2026-10-13 — Staff invitations and source-compatible session tokens
+
+- Inspected the recovered draft's real login/schema and corrected access contexts from integer revisions to opaque authorization strings with strict comparison.
+- Added independent PDO staff invitation persistence: hashed single-use links, bounded expiry, replacement/revocation, transactional activation/consumption and rollback.
+- Added a native MariaDB test workflow covering concurrency and failures using synthetic accounts; kept application migration, delivery, UI and release integration separate.
+- Verified 146 access and 46 native invitation checks on each of PHP 8.2.34/8.4.26 with MariaDB 11.4.13; recorded branch and PR evidence in the invitation contract and continuity documents.
 
 ## 2026-10-13 — Independent staff and mailbox permission component
 
@@ -111,3 +197,9 @@ No application source/asset import, feature implementation, host repair, databas
 ## Pre-repository baseline — supplied 1.0.8 distribution
 
 `CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip` is the latest recoverable complete artifact identified in the conversation. It contains the PHP application and one-page installer source. It is not a Git release/tag created by the bootstrap, and its live deployment is unverified. See `docs/BASELINE_INVENTORY.md` and `PROJECT_STATUS.md`.
+
+- 1.1.0 acceptance follow-up: mobile consent text wraps as one paragraph; expanded browser installer/contact checks and retained runtime diagnostics.
+
+- Candidate 91ef30d: 50 native and 143 HTTP/browser checks passed; final browser-admin, sitemap and favicon-reference assertions added before merge.
+
+Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid versioned favicon URLs because it compared the query suffix as part of the path. Parse the URL path and fetch the actual referenced icon for byte equality. Application source is unchanged; rerun the full suite.

@@ -1,0 +1,26 @@
+name: Inspect historical distribution origin
+on:
+  push:
+    branches: [codex/finish-1.1.0]
+    paths: [.github/workflows/check-recovery-source.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Check exact known public artifact name
+        run: |
+          mkdir recovery-check
+          if curl --fail --location --proto '=https' --proto-redir '=https' --max-time 30 --max-filesize 2000000 'https://cajunwebpro.com/CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip' -o recovery-check/baseline.zip; then
+            if echo '13bcf66cf069896017a6168556eba5211ec5bf3b1bee2aa23d354b4e9be5b6cf  recovery-check/baseline.zip' | sha256sum -c -; then
+              echo 'Verified exact historical archive. This is not the current application release.'
+            else
+              rm recovery-check/baseline.zip
+              echo 'Response was not the known archive; discarded.'
+            fi
+          else
+            rm -f recovery-check/baseline.zip
+            echo 'Historical archive is not available from this explicit public location.'
+          fi

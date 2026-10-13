@@ -1,9 +1,39 @@
 # Session handoff — read before continuing
 
+## 2026-10-13 — Verified client ZIP delivery release
+
+**Published and downloaded-back verified: [CajunWebPro v1.9.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.9.0).** Source/tag `080f14aea8fe5c35e04e4eba62976609aef7cd67`, [PR #24](https://github.com/afterburn25/Cajun_Web/pull/24). [Complete upload ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.9.0/CajunWebPro-1.9.0-COMPLETE-UPLOAD.zip) · [UPDATE ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.9.0/CajunWebPro-1.9.0-UPDATE.zip). Earlier releases remain immutable; later publication records are documentation only.
+
+Delivered bounded P-06: authorized staff upload prepared sanitized ZIPs with versions, notes, accurate static/files-only scope and handover/license documents. Owners download/review the exact manifest and contents, confirm transfer rights, reauthenticate and publish. Clients see their own retained releases and download immutable packages with SHA-256 verification and resume support. Drafts are private; support downloads require separate permission and strict staff attribution. Outside-web-root guarded storage, bounded archive inspection without execution/extraction, quotas and audit failure guards protect delivery. No paid-in-full gate. [Guide](docs/CLIENT_DELIVERIES.md).
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38396372080): **539 native checks (55 archive, 57 delivery persistence/permissions), 569 HTTP/Chromium checks**, PHP 8.3/MariaDB 10.11. Actual retained 1.8.0 update preserves invoices/external receipts, requests/trials/notifications, credentials/master key, identities/catalog/support and private/config/guard files. All earlier updates and one-page fresh installation pass. Chromium downloads exact ZIP bytes and opens the extracted synthetic static site locally. Desktop/320px screenshots reviewed. Independent policy 251 and invitation 46 checks pass on PHP 8.2/8.4. [Report](docs/TEST_REPORT_1.9.0.md), [scope](docs/RELEASE_1.9.0.md), [download verification](docs/RELEASE_VERIFICATION_1.9.0.json). All eight draft/public assets and tag match exact-main CI and local rebuild.
+
+Existing sites back up files/database/private storage, merge UPDATE, then have an owner enable **Website deliveries**. Uploads require PHP ZIP and storage outside the web document root; host upload limits may be lower than 50 MiB. Fresh installation includes empty enabled tables. Packages contain 69 COMPLETE / 68 UPDATE files; UPDATE omits only install.php. Never rerun fresh setup. Clients read HANDOVER.md and LICENSES.md before installation; files-only scope explicitly excludes databases/content and does not promise a complete dynamic restore.
+
+**Full P-06 remains partial:** automatic builds, database export/import, larger background jobs, dynamic restore orchestration, retention/deletion automation and notifications remain pending. **Real card checkout and actual merchant acceptance are still incomplete**, along with refunds/credits/tax/subscriptions, broader 20i, multi-account admin mail/templates/bells, MFA and VPS SSH. Automated ZIP inspection cannot prove all secrets or license issues are absent; owner review is mandatory. No live deployment, customer mail or provider operation occurred. Synthetic gateway evidence is not actual merchant or PCI acceptance.
+
+**Next:** preserve Devin portfolio PR #7 at `55d60670497d987286e64630e037e1ba2ec3a318`; [handoff](docs/DEVIN_HANDOFF_1.9.0.md). Refresh main/open work, then claim another bounded independent portal/admin milestone or perform actual sandbox acceptance before real gateway/client checkout. Never treat sandbox records as real revenue. No background continuation is scheduled.
+
+## Historical checkpoints — superseded where noted
+
+## 2026-10-13 — Native regression fixes
+
+First MariaDB acceptance found a real schema-idempotency failure: digit-bearing `sha256` was omitted by the column parser. Fixed both column-name patterns without weakening type/engine/unique-key checks. Local native tests then passed, and real unprivileged PHP HTTP tests completed fresh one-page installation and physical cleanup. Also fixed the existing lead editor's seven-status/six-label mismatch and corrected the test's portfolio route to the actual `work` endpoint. Tests now run extracted package bytes and cover incompatible schema preservation, cross-client/CSRF rejection and disguised executable uploads. Public service copy was polished and official comparison sources rechecked on 13 October. Complete browser acceptance and release publication remain pending. No customer host or database was changed.
+
+
+## 2026-10-13 — Source recovery checkpoint
+
+Recovered 41 actual website files plus native/HTTP tests and a build tool from the nine preserved source fragments. Original external assets were fetched only at the recorded public paths and checked against recorded SHA-256 values. Executable source is now under `site/` on `codex/finish-1.1.0`. This supersedes the older no-source-in-Git blocker on this branch, NOT the unverified runtime or release claims. No production files, database, mail or payments were changed. Review `docs/SOURCE_RECOVERY_2026-10-13.json`; run native integration and authorization tests next. No 1.1.0 release is declared by source recovery.
+
+
+Checkpoint: 2026-10-12 — GitHub release/testing discipline and Codex/Devin coordination established; recover current 1.1.0 source next.
+
 Checkpoint: 2026-10-13 — parallel permission-component implementation on codex/platform-foundation; 1.1.0 completion remains with its existing worker.
 Repository: afterburn25/Cajun_Web · Authoritative branch: main.
 
 ## Resume here — GitHub workflow and two-agent split
+
+Current continuation: source now exists under `site/` on the other worker's `codex/finish-1.1.0` branch, inspected at `4a8b4c4` (worker has since advanced to `90ba4f5`). It is still a draft. Do not overwrite that branch. This stream changes only independent foundations: opaque string authorization versions aligned to the draft, and the [staff invitation store](docs/STAFF_INVITATIONS.md). Source `718dbc4` in [PR #6](https://github.com/afterburn25/Cajun_Web/pull/6) passed 146 access and 46 native invitation checks on PHP 8.2/8.4 with MariaDB 11.4; evidence is linked in the store documentation. Verify final PR state and integrate, then review Devin's incoming [PR #7](https://github.com/afterburn25/Cajun_Web/pull/7) sequentially with combined checks. Next application work is the staff account lifecycle/adapter and UI after final-source reconciliation; no application schema, installer, live account or mail was changed here.
 
 Latest owner instruction: start independent work while another worker finishes 1.1.0 and updates GitHub. Do not ask again for the build or overwrite `codex/finish-1.1.0`. Main at `9e30564` contains that worker's progress report but no deployable current source. Independent components/contracts/tests can proceed; application integration still needs the actual current source.
 
@@ -87,3 +117,7 @@ Create an actionable GitHub roadmap expanding CajunWebPro into a **web design AN
 The verified baseline ZIP is CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip (33 files, SHA-256 13bcf66cf069896017a6168556eba5211ec5bf3b1bee2aa23d354b4e9be5b6cf). Favicon source hash, installer incident and missing v1.1.0 details remain in PROJECT_STATUS.md, docs/BASELINE_INVENTORY.md and docs/DELIVERY_INCIDENT_2026-10-12.md. Do not downgrade the hosted site to repair a missing chat download.
 
 The latest session verified existing documentation and the local distribution only. Next implementation session should record source-import and runtime-test evidence and update every continuity file.
+
+Release acceptance follow-up (parent `f007803`): HTTP/browser checks reached account revocation; console classification stopped on the intentionally invalid estimator response. The next commit scopes that expected resource message to the precise estimator URL, retains diagnostic JSON, adds original-contact and real-browser fresh-install coverage, scans PHP runtime diagnostics, and improves mobile consent wrapping. Full rerun required before publication.
+
+Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid versioned favicon URLs because it compared the query suffix as part of the path. Parse the URL path and fetch the actual referenced icon for byte equality. Application source is unchanged; rerun the full suite.

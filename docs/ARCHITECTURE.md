@@ -1,14 +1,44 @@
 # Architecture notes
 
-Checkpoint: 2026-10-12. This is an inventory of the supplied 1.0.8 distribution and a guide for extensions. **The distribution is not yet imported into this Git tree.**
+## 2026-10-13 — Verified 1.9.0 client ZIP delivery increment
+
+Prepared, reviewed and versioned client ZIP handover is delivered in [v1.9.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.9.0) / `080f14aea8fe5c35e04e4eba62976609aef7cd67`. Guarded private storage, immutable manifests, owner publication, client history and authenticated resumable downloads preserve previous records through actual 1.8.0 UPDATE acceptance. 539 native / 569 HTTP/Chromium checks pass. Full P-06 remains partial: generated builds, database handover, larger jobs, dynamic restore and notifications remain pending. Actual merchant acceptance/card checkout and broader 20i/mail/SSH remain pending. [Guide](CLIENT_DELIVERIES.md) · [report](TEST_REPORT_1.9.0.md).
+
+## 2026-10-13 — Verified 1.8.0 invoice payment increment
+
+External USD receipts, partial/full balances, retained owner corrections, legacy balance import and client-owned statements/printable receipts are delivered in [v1.8.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.8.0) / `c36a36e80c40485c9e3e7e6cdd4884ced25db961`. Existing 1.7.0 invoices, attempts/notifications, credentials/keys and earlier data survive UPDATE. New requests/trials use remaining balances; sandbox evidence never becomes revenue. 427 native / 503 HTTP/Chromium checks pass. Actual merchant acceptance, production/client checkout, refunds/tax/credits/subscriptions remain pending. [Guide](INVOICE_LEDGER.md) · [report](TEST_REPORT_1.8.0.md).
+
+## 2026-10-13 — Verified 1.7.0 sandbox notification increment
+
+Signed sandbox receipt, durable minimal inbox and explicit owner-triggered current reporting are delivered in [v1.7.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.7.0) / `1fe0670142755f86aee235fabe1847e5d118ee52`. Receiver defaults off; schema is additive, invoice settlement remains disabled and no runtime daemon is needed. Original 1.6.0 UPDATE preserves attempts/events and all earlier records/keys. 358 native / 451 HTTP/Chromium checks pass; signatures/reporting remain synthetic. Actual merchant acceptance, production/client checkout and automatic processing are pending. [Guide](SANDBOX_NOTIFICATIONS.md) · [report](TEST_REPORT_1.7.0.md).
+
+## 2026-10-13 — Verified 1.6.0 sandbox increment
+
+Owner-only tokenized sandbox trials, durable intent/events, transaction-detail reconciliation and shared manual/catalog/request locking are delivered in [v1.6.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.6.0) / `e5d4c17456faff0522429ab3f58093a06a523bd5`. Sandbox never pays real invoices. Production/client checkout, webhooks, receipts/refunds and recurring billing remain pending. Original 1.5.0 UPDATE preserves credentials/key, requests and existing records. 296 native / 421 HTTP/Chromium checks pass; gateway and browser tokenization fixtures remain synthetic. Back up and enable Sandbox trials after UPDATE. [Guide](SANDBOX_PAYMENTS.md) · [report](TEST_REPORT_1.6.0.md).
+
+
+Released 1.5.0 adds [payment preparation](PAYMENT_PREPARATION.md): two additive tables, owner-only external-key credential protection and reviewed existing-invoice requests. Charges and production connections stay disabled. 227 native / 401 HTTP-browser checks passed; [report](TEST_REPORT_1.5.0.md). Complete/update: 58/57 files. After backup and UPDATE merge, owners enable Payment preparation; private gateway storage must be outside the document root. Existing manual billing remains unchanged.
+
+
+Released 1.4.0 adds `catalog.php`, `catalog-admin.php` and shared `catalog-view.php`. Products append revision history and use explicit catalog permission; public reads select only safe fields. Existing studio invoices receive immutable catalog snapshots with unique request keys and serialized issuance. Product saves and issue/paid/void transitions use strict transactional audit. [Catalog guide](SERVICE_CATALOG.md).
+
+
+A-09 released 1.3.0: `app/support.php` holds additive support policy/session/audit adapters; `app/support-admin.php` provides owner setup and client entry. The existing portal receives an explicit browser-bound context without customer-login impersonation. Every request revalidates staff/client versions and client policy; writes revalidate under the shared staff mutex and InnoDB transaction. Per-context CSRF prevents URL stripping or retargeting. Strict action audit precedes commit/download bytes. [Operational guide](CLIENT_SUPPORT.md).
+
+
+The website/client application shipped in v1.1.0. Released 1.2.0 integrates administrator access using canonical foundation components bundled verbatim into `site/app/foundation`; see [administrator architecture](ADMIN_ACCOUNTS.md). See [release register](RELEASES.md) and [test report](TEST_REPORT_1.1.0.md).
+
+Updated 2026-10-13: recovered 1.1.0 source is in `site/`. Public growth modules, `workspace.php`, `studio-admin.php` and `portal.php` extend the existing application. The seven additive workspace tables and actual routes/controls are mapped in [release acceptance](RELEASE_1.1.0.md). The older source inventory below remains useful baseline history.
 
 ## Deployment model
 
-Independent implementation added 2026-10-13: [access foundation](ACCESS_FOUNDATION.md) under `foundation/access/`, with synthetic unit tests under `tests/access/`; and [portfolio foundation](PORTFOLIO_FOUNDATION.md) under `foundation/portfolio/`, with synthetic unit tests under `tests/portfolio/`. They are pure PHP decision modules with no framework, database, request handler or installer dependency. They are excluded from deployment until mapped into the verified current source; no current schema or authentication structure is assumed. Historical source inventory below remains historical.
+Follow-on A-05 component: [Staff invitations](STAFF_INVITATIONS.md) uses PDO MySQL/MariaDB and an explicitly migrated InnoDB table, with transactional one-use redemption and an application-supplied account activation callback. The 1.2.0 staff adapter now supplies that callback, lifecycle serialization and explicit migration; the canonical component is bundled into the deployable tree. Read-only inspection of recovered draft source on `codex/finish-1.1.0` revealed opaque string `auth_version` values; the foundation now matches those without changing the draft's schema/login code.
+
+Independent implementation added 2026-10-13: [access foundation](ACCESS_FOUNDATION.md) under `foundation/access/`, with synthetic unit tests under `tests/access/`; and [portfolio foundation](PORTFOLIO_FOUNDATION.md) under `foundation/portfolio/`, with synthetic unit tests under `tests/portfolio/`. They are pure PHP decision modules with no framework, database, request handler or installer dependency. The 1.2.0 adapter maps access to existing `users` and additive `staff_profiles`; the portfolio component is being adapted to the verified `site/` source. Historical source inventory below remains historical.
 
 Existing application: PHP with PDO MySQL/MariaDB, normal browser requests, local CSS/JavaScript/images, and persistent private file storage. PHP source targets 8.2 or newer. Required extensions are checked by the installer. Shared-host deployment must not require a Node service, command-line build, root access, or a long-running worker.
 
-The repo's documentation tree is not the website document root. Decide and document the source directory at import. Build the deployment ZIP from the deployable files only, without a source-directory/version wrapper. Preserve the existing app/assets grouping and root entry-point behavior.
+The repo's documentation tree is not the website document root. `site/` is the source directory; `brand/`, `tests/`, `tools/` and the canonical `foundation/` directory are not deployed directly; verified copies of the access/invitation classes are shipping dependencies under `site/app/foundation/`. Build the deployment ZIP from the deployable files only, without a source-directory/version wrapper. Preserve the existing app/assets grouping and root entry-point behavior.
 
 ## Inspected source map
 
@@ -21,6 +51,8 @@ The repo's documentation tree is not the website document root. Decide and docum
 | `app/core.php` | Common configuration/session/database/security/filesystem helpers; version constant |
 | `app/schema.php` | Initial table definitions and seed/default content |
 | `app/mail.php` | Mail delivery helpers |
+| `app/staff.php`, `app/staff-admin.php` | Account lifecycle/authorization, explicit upgrade and administrator/setup forms |
+| `app/foundation/` | Verbatim bundled access/invitation components; canonical sources stay in root foundation |
 | `media.php` | Media-serving entry point |
 | `robots.php`, `sitemap.php` | Search-crawler endpoints |
 | `install.php` | Embedded-bootstrap, one-page setup and package inventory |

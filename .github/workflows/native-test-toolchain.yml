@@ -1,0 +1,29 @@
+name: Native PHP test toolchain
+on:
+  push:
+    branches: [codex/finish-1.1.0]
+    paths: [.github/workflows/native-test-toolchain.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  dependencies:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Obtain signed-distribution test dependencies
+        run: |
+          mkdir -p native-debs
+          docker run --rm -v "$PWD/native-debs:/out" debian:trixie bash -ec '
+            apt-get update
+            apt-get -y --download-only install php8.4-cli php8.4-mysql php8.4-gd php8.4-zip mariadb-server mariadb-client
+            cp /var/cache/apt/archives/*.deb /out/
+            cd /out
+            sha256sum *.deb > SHA256SUMS
+          '
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-debian-test-dependencies
+          path: native-debs/
+          retention-days: 3
+          if-no-files-found: error

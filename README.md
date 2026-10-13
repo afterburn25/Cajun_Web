@@ -1,5 +1,8 @@
 # CajunWebPro — project source of truth
 
+
+
+
 Custom web design and development services, portfolio, and business-management website. **This is a service business website, not a do-it-yourself website builder.**
 
 Approved expansion: our own custom hosting/billing/client-management platform covering the agreed functions otherwise handled by WHMCS, with 20i infrastructure, Authorize.net payments, web-design services, staff accounts and admin webmail. See the [custom platform blueprint](docs/CUSTOM_PLATFORM_BLUEPRINT.md); this is planned scope, not a completed platform.
@@ -15,13 +18,21 @@ Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
 
 Every working session must update the status, handoff, and [session log](docs/SESSION_LOG.md). Record implementation changes in [CHANGELOG.md](CHANGELOG.md), and important choices in [Decisions](docs/DECISIONS.md). Documentation belongs in Git with the work, not only in chat.
 
-## Current checkpoint — 2026-10-12
+## Current release — 1.9.0
 
-Parallel work started 2026-10-13 while a separate worker finishes 1.1.0: an isolated [staff/mailbox permission foundation](docs/ACCESS_FOUNDATION.md) and tests are on `codex/platform-foundation`, and an independent Devin [portfolio contract/filtering foundation](docs/PORTFOLIO_FOUNDATION.md) is on `devin/public-experience`. [Agent coordination](docs/AGENT_COORDINATION.md) defines the stream split. These components are not yet integrated into a deployable website; the current-source gate below applies to integration, not independent preparation.
+**Published and downloaded-back verified: [CajunWebPro v1.9.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.9.0).** Source/tag `080f14aea8fe5c35e04e4eba62976609aef7cd67`, [PR #24](https://github.com/afterburn25/Cajun_Web/pull/24). [Complete upload ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.9.0/CajunWebPro-1.9.0-COMPLETE-UPLOAD.zip) · [UPDATE ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.9.0/CajunWebPro-1.9.0-UPDATE.zip). Earlier releases remain immutable; later publication records are documentation only.
 
-The repository was empty when inspected. This bootstrap records the project requirements, inspected distribution baseline, approved backlog, and continuity process. **Application source and original image assets have not yet been imported into Git. This is not a deployable website release.**
+Parallel work: an isolated [staff/mailbox permission foundation](docs/ACCESS_FOUNDATION.md) and tests are on `codex/platform-foundation`, and an independent Devin [portfolio contract/filtering foundation](docs/PORTFOLIO_FOUNDATION.md) is on `devin/public-experience`, being adapted to the now-published source. [Agent coordination](docs/AGENT_COORDINATION.md) defines the stream split.
 
-The owner confirms **1.1.0 is the latest version**. Its source/package must be located and verified before implementation. The older `CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip` was inspected locally; see [Baseline inventory](docs/BASELINE_INVENTORY.md). Keep that archive as historical reference, not the default starting point or proof of the running host version. The last reported live installer/version and storage issues have no confirmed target-host resolution.
+Delivered bounded P-06: authorized staff upload prepared sanitized ZIPs with versions, notes, accurate static/files-only scope and handover/license documents. Owners download/review the exact manifest and contents, confirm transfer rights, reauthenticate and publish. Clients see their own retained releases and download immutable packages with SHA-256 verification and resume support. Drafts are private; support downloads require separate permission and strict staff attribution. Outside-web-root guarded storage, bounded archive inspection without execution/extraction, quotas and audit failure guards protect delivery. No paid-in-full gate. [Guide](docs/CLIENT_DELIVERIES.md).
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38396372080): **539 native checks (55 archive, 57 delivery persistence/permissions), 569 HTTP/Chromium checks**, PHP 8.3/MariaDB 10.11. Actual retained 1.8.0 update preserves invoices/external receipts, requests/trials/notifications, credentials/master key, identities/catalog/support and private/config/guard files. All earlier updates and one-page fresh installation pass. Chromium downloads exact ZIP bytes and opens the extracted synthetic static site locally. Desktop/320px screenshots reviewed. Independent policy 251 and invitation 46 checks pass on PHP 8.2/8.4. [Report](docs/TEST_REPORT_1.9.0.md), [scope](docs/RELEASE_1.9.0.md), [download verification](docs/RELEASE_VERIFICATION_1.9.0.json). All eight draft/public assets and tag match exact-main CI and local rebuild.
+
+Existing sites back up files/database/private storage, merge UPDATE, then have an owner enable **Website deliveries**. Uploads require PHP ZIP and storage outside the web document root; host upload limits may be lower than 50 MiB. Fresh installation includes empty enabled tables. Packages contain 69 COMPLETE / 68 UPDATE files; UPDATE omits only install.php. Never rerun fresh setup. Clients read HANDOVER.md and LICENSES.md before installation; files-only scope explicitly excludes databases/content and does not promise a complete dynamic restore.
+
+**Full P-06 remains partial:** automatic builds, database export/import, larger background jobs, dynamic restore orchestration, retention/deletion automation and notifications remain pending. **Real card checkout and actual merchant acceptance are still incomplete**, along with refunds/credits/tax/subscriptions, broader 20i, multi-account admin mail/templates/bells, MFA and VPS SSH. Automated ZIP inspection cannot prove all secrets or license issues are absent; owner review is mandatory. No live deployment, customer mail or provider operation occurred. Synthetic gateway evidence is not actual merchant or PCI acceptance.
+
+**Next:** preserve Devin portfolio PR #7 at `55d60670497d987286e64630e037e1ba2ec3a318`; [handoff](docs/DEVIN_HANDOFF_1.9.0.md). Refresh main/open work, then claim another bounded independent portal/admin milestone or perform actual sandbox acceptance before real gateway/client checkout. Never treat sandbox records as real revenue. No background continuation is scheduled.
 
 ## Non-negotiable direction
 
@@ -49,7 +60,8 @@ The owner confirms **1.1.0 is the latest version**. Its source/package must be l
 | [Release register](docs/RELEASES.md) | Version provenance, published package links and verification limits |
 | [Codex and Devin coordination](docs/AGENT_COORDINATION.md) | Separate work branches, task ownership, Devin handoff and integration checks |
 | [Access foundation](docs/ACCESS_FOUNDATION.md) | Implemented permission component, test scope and pending 1.1.0 adapter requirements |
-| [Portfolio foundation](docs/PORTFOLIO_FOUNDATION.md) | Implemented portfolio contract/filtering component, test scope and pending 1.1.0 adapter requirements |
+| [Staff invitations](docs/STAFF_INVITATIONS.md) | Expiring one-use setup tokens, native transaction tests and account-adapter requirements |
+| [Portfolio foundation](docs/PORTFOLIO_FOUNDATION.md) | Implemented portfolio contract/filtering component, test scope and adapter requirements |
 | [Brand assets](docs/BRAND_ASSETS.md) | Exact logo, favicon source, and visual-reference provenance |
 | [Baseline inventory](docs/BASELINE_INVENTORY.md) | Artifact identity, file inventory, and inspection limits |
 | [Decisions](docs/DECISIONS.md) | Accepted constraints and why earlier approaches were rejected |
