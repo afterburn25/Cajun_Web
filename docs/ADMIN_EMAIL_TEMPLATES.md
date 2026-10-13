@@ -1,6 +1,6 @@
 # Administrator email-template library — bounded A-07
 
-Candidate 1.12.0 on `codex/admin-email-templates`, from published 1.11.2. Application implementation is in progress; acceptance and publication are required before release. This library stores and previews reusable text. Account setup, inboxes, sending, signatures, compose insertion and transactional receipts/reset messages remain separate work.
+Published and download-verified [1.12.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.12.0) at `c526e960db13246c217f2b9d6f421c17b8d48261`, from published 1.11.2. [Actual combined acceptance](TEST_REPORT_1.12.0.md). This library stores and previews reusable text. Account setup, inboxes, sending, signatures, compose insertion and transactional receipts/reset messages remain separate work.
 
 ## Use
 
@@ -18,4 +18,4 @@ Canonical model: `foundation/email-templates/`, mirrored into protected `site/in
 
 Additive InnoDB tables `mail_templates` and `mail_template_revisions` retain current state and immutable versions. Per-record revisions plus row locks reject stale writes; the existing staff mutex serializes authorization changes with template mutations. A strict audit insert is part of every mutation transaction, so audit/history failures roll back current state too. Setup rejects incompatible or populated unrecognized tables rather than adopting or replacing records. No hard deletion is provided. Owner file recovery preserves added database tables/records; it does not pretend to reverse database changes.
 
-Required evidence: native migration/idempotence, role/privacy/support boundaries, revoked sessions, malformed fields, literal sample handling, audit rollback, stale and simultaneous edits; HTTP/Chromium create/preview/activate/archive/duplicate, invalid draft preservation, HTML escaping, personal isolation, mobile rendering and real 1.11.2 upgrade/recovery. Existing application/package/Apache/historical-update checks remain required. Record actual results in the release report; this document alone establishes none of those passes.
+Required evidence: native migration/idempotence, role/privacy/support boundaries, revoked sessions, malformed fields, literal sample handling, audit rollback, stale and simultaneous edits; HTTP/Chromium create/preview/activate/archive/duplicate, invalid draft preservation, HTML escaping, personal isolation, mobile rendering and real 1.11.2 upgrade/recovery. Existing application/package/Apache/historical-update checks remain required. Actual named results and their limits are recorded in the linked release report.
