@@ -50,7 +50,7 @@ function rejects(string $name, callable $action): void
 }
 
 $globals = [
-    'website.manage', 'clients.manage', 'support.login', 'support.write', 'support.download',
+    'website.manage', 'clients.manage','catalog.manage', 'support.login', 'support.write', 'support.download',
     'staff.manage', 'staff.permissions.manage', 'mail.accounts.manage',
     'mail.templates.manage', 'billing.settings.manage', 'hosting.settings.manage',
 ];

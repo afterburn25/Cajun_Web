@@ -18,7 +18,7 @@ function staff_schema(string $prefix): array {
         'staff_invitations'=>StaffInvitationStore::createTableSql($prefix.'staff_invitations'),
     ];
 }
-function staff_permissions(): array { return ['website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support']; }
+function staff_permissions(): array { return ['catalog.manage'=>'Service catalog, internal costs and catalog invoices (also needs client access)', 'website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support']; }
 function staff_profile(array $user): ?array {
     if (!staff_ready()) return $user + ['role'=>'owner','enabled'=>1,'permissions'=>'[]']; // Existing access until explicit upgrade.
     $p=one('SELECT role,enabled,permissions FROM '.table('staff_profiles').' WHERE user_id=?',[$user['id']]);
@@ -172,6 +172,7 @@ function staff_view_permission(string $view): ?string {
     if(in_array($view,['login','forgot','reset','staff-setup','security'],true))return null;
     if($view==='staff')return 'staff.manage';
     if($view==='support')return 'support.login';
+    if(in_array($view,['catalog','catalog-invoice'],true))return 'catalog.manage';
     if(in_array($view,['email','health','studio-upgrade'],true))return 'staff.manage';
     if(in_array($view,['studio-clients','studio-job'],true))return 'clients.manage';
     return 'website.manage';
@@ -179,11 +180,13 @@ function staff_view_permission(string $view): ?string {
 function staff_action_permission(string $action): ?string {
     if(in_array($action,['logout','account_save'],true))return null;
     if($action==='support_start')return 'support.login';
+    if($action==='catalog_migrate')return 'staff.manage';
+    if(str_starts_with($action,'catalog_'))return 'catalog.manage';
     if(in_array($action,['support_migrate','support_policy'],true))return 'staff.manage';
     if(str_starts_with($action,'staff_')||in_array($action,['email_save','email_test','installer_cleanup','storage_repair','clear_limits','media_cleanup','studio_migrate'],true))return 'staff.manage';
     if(in_array($action,['studio_client','studio_invite','studio_job','studio_message','studio_publish','studio_upload','studio_invoice','studio_paid'],true))return 'clients.manage';
     return 'website.manage';
 }
 function staff_home(array $user): string {
-    return staff_can('website.manage',$user)?'dashboard':(staff_can('clients.manage',$user)?'studio-clients':(staff_can('support.login',$user)?'support':'security'));
+    return staff_can('website.manage',$user)?'dashboard':(staff_can('clients.manage',$user)?'studio-clients':(staff_can('catalog.manage',$user)?'catalog':(staff_can('support.login',$user)?'support':'security')));
 }

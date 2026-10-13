@@ -1,7 +1,7 @@
 name: Application acceptance
 on:
   push:
-    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support]
+    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog]
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/build.py', '.github/workflows/application-tests.yml']
   pull_request:
     branches: [main]
@@ -57,6 +57,7 @@ jobs:
           php8.3 tests/native.php
           php8.3 tests/staff_native.php
           php8.3 tests/support_native.php
+          php8.3 tests/catalog_native.php
       - name: Real HTTP and Chromium application workflows
         run: .ci-venv/bin/python tests/browser_acceptance.py
       - name: Verify tests did not mutate shipping source
