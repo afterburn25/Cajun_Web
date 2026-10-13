@@ -14,8 +14,10 @@ def upgrade():
     tables=['staff_profiles','staff_invitations','support_clients','support_events','studio_clients','studio_jobs','studio_invoices','catalog_products','catalog_revisions','catalog_invoice_snapshots','payment_gateways','payment_requests','payment_attempts','payment_attempt_events','leads','projects']
     before={t:db('SELECT * FROM notifyup_'+t) for t in tables};settings=db('SELECT * FROM notifyup_settings')
     with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(dest)
+    from structure_helpers import apply_file_update
+    apply_file_update(globals(),dest)
     check('Actual 1.6 update preserves config locks private files and master key',all(p.read_bytes()==v for p,v in preserved.items()))
-    up=requests.Session();url=BASE+'/notification-upgrade/admin.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
+    up=requests.Session();url=BASE+'/notification-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
     r=submit(up,url+'?view=payment-notifications','payments_notification_setup',{'owner_password':'wrong','confirm':'1'});check('Notification upgrade refuses wrong password','current password' in r.text.lower())
     r=submit(up,url+'?view=payment-notifications','payments_notification_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Actual 1.6 additive notification upgrade succeeds','Sandbox notification inbox enabled' in r.text)
     check('Actual 1.6 update preserves attempts events ciphertext requests and prior records',all(db('SELECT * FROM notifyup_'+t)==v for t,v in before.items()))
@@ -24,14 +26,14 @@ def upgrade():
     r=submit(up,url+'?view=payment-settings','payments_save',{'owner_password':'Synthetic upgrade passphrase 2026'});check('Actual 1.6 protected key still decrypts original saved credentials','Credentials protected and saved' in r.text and 'RetainedSandboxFixture' not in r.text)
 
 def run_browser(env,browser):
-    globals().update(env);upgrade();url=BASE+'/existing/admin.php?view=payment-notifications';endpoint=BASE+'/existing/sandbox-notifications.php'
+    globals().update(env);upgrade();url=BASE+'/existing/admin/index.php?view=payment-notifications';endpoint=BASE+'/existing/webhooks/authorize-net/index.php'
     check('Fresh installer creates empty inbox and disabled receiver',db("SELECT value FROM fresh_settings WHERE name='payment_notifications_schema_version'")==[{'value':'1'}] and db('SELECT * FROM fresh_payment_notifications')==[] and db("SELECT * FROM fresh_settings WHERE name='sandbox_notification_receiver'")==[])
-    admin=requests.Session();submit(admin,BASE+'/existing/admin.php?view=login','login',{'email':'owner@example.invalid','password':OWNER})
+    admin=requests.Session();submit(admin,BASE+'/existing/admin/index.php?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     r=admin.get(url)
     if 'Enable sandbox inbox' in r.text:r=submit(admin,url,'payments_notification_setup',{'owner_password':OWNER,'confirm':'1'})
     check('Owner notification page displays truthful sandbox boundary','Notification inbox' in r.text and 'Production and client checkout remain disabled' in r.text)
     check('Anonymous cannot read private notification inbox','Notification inbox' not in requests.get(url).text)
-    staff=requests.Session();submit(staff,BASE+'/existing/admin.php?view=login','login',{'email':'request-staff@example.invalid','password':STAFF})
+    staff=requests.Session();submit(staff,BASE+'/existing/admin/index.php?view=login','login',{'email':'request-staff@example.invalid','password':STAFF})
     check('Non-owner cannot read notification inbox',staff.get(url).status_code==403)
     check('Callback GET returns 405 without login redirect',requests.get(endpoint,allow_redirects=False).status_code==405)
     check('Callback refuses plain HTTP without redirect',requests.post(endpoint,json={},allow_redirects=False).status_code==403)
@@ -55,7 +57,7 @@ def run_browser(env,browser):
     r=submit(admin,url,'payments_notification_verify',{'notification_id':rows[0]['id'],'gateway_revision':revision,'owner_password':OWNER});check('Unmatched HTTP notification stays queued for investigation','No unique sandbox attempt matches' in r.text and db('SELECT * FROM ci_payment_notifications')==rows)
     ctx=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce');p=ctx.new_page();errors=[];p.on('pageerror',lambda e:errors.append(str(e)));external=[]
     p.on('request',lambda req:external.append(req.url) if 'authorize.net' in req.url else None)
-    p.goto(BASE+'/existing/admin.php?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill(OWNER);p.locator('form button').click();p.wait_for_url('**/admin.php?view=dashboard');ctx.set_extra_http_headers({'X-Forwarded-Proto':'https'});p.goto(url);expect(p.get_by_role('heading',name='Notification inbox')).to_be_visible()
+    p.goto(BASE+'/existing/admin/index.php?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill(OWNER);p.locator('form button').click();p.wait_for_url('**/admin/index.php?view=dashboard');ctx.set_extra_http_headers({'X-Forwarded-Proto':'https'});p.goto(url);expect(p.get_by_role('heading',name='Notification inbox')).to_be_visible()
     check('Browser inbox redacts saved credentials and provider payload',all(x not in p.content() for x in ['HttpFixtureLogin','HttpFixtureKey12','b'*128,'NeverStoreHttpPayload']))
     p.screenshot(path=str(QA/'Sandbox-Notifications-Desktop.png'),full_page=True);p.set_viewport_size({'width':320,'height':844});p.screenshot(path=str(QA/'Sandbox-Notifications-Narrow.png'),full_page=True);check('Notification page fits 320px viewport',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1'))
     form=p.locator('form').filter(has=p.locator('[name=action][value=payments_notification_configure]'));form.locator('[name=enabled]').uncheck();form.locator('[name=owner_password]').fill(OWNER);form.get_by_role('button',name='Save receiver settings').click();expect(p.get_by_text('Sandbox receiver settings saved.',exact=False)).to_be_visible()

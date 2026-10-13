@@ -1,5 +1,11 @@
 # Release register
 
+## Current directory and package contract — 1.11.0 candidate
+
+The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](DIRECTORY_STRUCTURE.md), [migration and recovery](STRUCTURE_MIGRATION.md), and [START-HERE](../START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.
+
+Candidate `9e8dedf` in [PR #38](https://github.com/afterburn25/Cajun_Web/pull/38) passes 618 native, 782 HTTP/Chromium, 41 filesystem/recovery, 203 Apache and 16 package-builder checks. [Acceptance record](TEST_REPORT_1.11.0.md); [Devin handoff](DEVIN_HANDOFF_1.11.0.md). Final cleanup/docs acceptance, merge, exact-main tests and immutable publication remain mandatory. Latest published release remains 1.10.0. No live deployment.
+
 ## v1.10.0 — published 13 October 2026
 
 [Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0) published `2026-10-13T13:16:03Z`; immutable source/tag `4649a913d40166b9874f9550e57b4186edfc43ab`, [PR #26](https://github.com/afterburn25/Cajun_Web/pull/26). Later records do not alter release bytes.
