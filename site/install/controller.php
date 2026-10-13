@@ -2,7 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); exit; }
 security_headers();
-header('X-CWP-Installer: one-page-1.11.0');
+header('X-CWP-Installer: one-page-'.CWP_INSTALLER_BUILD);
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['cwp_check'])) {
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(['ok'=>true, 'installer_build'=>CWP_INSTALLER_BUILD,

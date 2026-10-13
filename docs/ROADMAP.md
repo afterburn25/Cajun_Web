@@ -1,5 +1,9 @@
 # Approved roadmap and acceptance criteria
 
+## Current executable increment — 1.11.1 acceptance
+
+Published/download-verified baseline is 1.11.0. PR #50 preserves Devin W-02 motion work and tests owner updates from that actual organized release, along with all older supported paths. Manual pause/root scrolling, restrained logo sheen, saved preferences/reduced motion, separate recovery journals and retained cross-version locking are implemented; combined acceptance/publication is in progress. This bounded slice does not complete all W-02 media/performance work. L-02/L-03 component findings are recorded on PRs #31/#32; application adapters follow their corrections. External-provider gates remain operation-specific. Earlier candidate status below is historical.
+
 ## Dependency-aware roadmap status — owner instruction (2026-10-13)
 
 **External verification is not a stop-work order.** All workers must follow [dependency and verification gates](DEPENDENCY_GATES.md), separating *implementation progress* from *provider access/production gate* and *released/deployed*. Implement and test independent work; defer only unsupported real provider/merchant/SSH operations, not entire workstreams.
@@ -76,7 +80,7 @@ Real desktop/mobile captures, accessible before/after slider for actual redesign
 
 ### W-02 — Signature homepage motion
 
-Preserve approved navy/gold composition while adding restrained metallic logo highlights, layered device depth, polished service/portfolio responses, and section reveals. Acceptance: immediate readable content, reduced-motion and no-JavaScript behavior, touch-safe controls, no flying pixels/autoplay audio/forced loading, and measured load/layout/interactivity before claiming performance improvements.
+Preserve approved navy/gold composition while adding restrained metallic logo highlights, layered device depth, polished service/portfolio responses, and section reveals. Acceptance: immediate readable content, reduced-motion and no-JavaScript behavior, touch-safe controls, no flying pixels/autoplay audio/forced loading, and measured load/layout/interactivity before claiming performance improvements. Partially delivered on `devin/homepage-motion`: a working motion pause (`motion-off` now actually disables CSS motion and force-reveals pending sections — previously a no-op) plus a restrained metallic logo sheen; layered device depth and measured load/layout evidence remain.
 
 ### L-01 — Single-page project estimator
 
