@@ -1,0 +1,6 @@
+<?php
+declare(strict_types=1);
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+
+      $rows=all('SELECT * FROM '.table('leads').' ORDER BY id DESC LIMIT 300');?><div class="pipeline"><?php foreach(studio_pipeline_stages() as $key=>$label):?><section><h3><?=esc($label)?></h3><?php foreach($rows as $lead)if($lead['status']===$key):?><article><a href="<?=esc(admin_url('lead',['id'=>$lead['id']]))?>"><strong><?=esc($lead['name'])?></strong></a><p><?=esc($lead['service'])?></p><form method="post"><?php admin_action('studio_pipeline');studio_hidden('id',$lead['id']);admin_select('status','Stage',studio_pipeline_stages(),$lead['status']);admin_input('follow_up','Next follow-up',setting('growth_follow_'.$lead['id']),'date');admin_textarea('notes','Notes',$lead['notes'],3,10000);?><button class="btn outline small">Save</button></form></article><?php endif;?></section><?php endforeach;?></div><p>Showing up to the latest 300 inquiries. The original inquiry inbox retains search and export.</p><?php
+    

@@ -59,6 +59,24 @@ function structure_verified_payload(string $payload,array $manifest): void {
         if(!hash_equals($hash,structure_hash(structure_path($payload,$name))??''))throw new RuntimeException('Restore the exact UPDATE package; missing or mismatched replacement: '.$name);
     }
 }
+function structure_unknown_files(array $known,array $current): array {
+    $preserved=[];$count=0;
+    foreach(new DirectoryIterator(CWP_ROOT) as $entry){
+        if($entry->isDot())continue;$name=$entry->getFilename();
+        if(isset($known[$name])||isset($current[$name])||in_array($name,['config.php','proxy-config.php','.installed.php','.installation-mutex.php','storage','upload','cwp-update-1.11.0'],true))continue;
+        if($entry->isDir()&&!$entry->isLink()){
+            if(in_array($name,['app','assets'],true)){
+                $files=new RecursiveIteratorIterator(new RecursiveDirectoryIterator($entry->getPathname(),FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::LEAVES_ONLY);
+                foreach($files as $file){
+                    if(++$count>5000)throw new RuntimeException('More than 5000 legacy-area entries require owner review. Nothing was removed.');
+                    $relative=str_replace('\\','/',substr($file->getPathname(),strlen(CWP_ROOT)+1));
+                    if(!isset($known[$relative])&&!isset($current[$relative]))$preserved[]=$relative;
+                }
+            }elseif(!array_filter(array_keys($current),fn($n)=>str_starts_with($n,$name.'/')))$preserved[]=$name.'/';
+        }else $preserved[]=$name;
+    }
+    return $preserved;
+}
 function structure_plan(string $payload,array $manifest,array $history): array {
     structure_verified_payload($payload,$manifest);
     if(!is_file(CWP_ROOT.'/config.php') || is_link(CWP_ROOT.'/config.php'))throw new RuntimeException('An existing installed configuration is required. Do not use this update for fresh setup.');
@@ -68,7 +86,7 @@ function structure_plan(string $payload,array $manifest,array $history): array {
         foreach($release['files'] as $name=>$hash)$known[$name][$hash]=true;
     }
     if(!$version)throw new RuntimeException('The starting application is not a recognized 1.0.8–1.10.0 release. Customized bootstrap files were preserved. Restore or review them from your backup first.');
-    $ops=[];$preserved=[];
+    $ops=[];$preserved=structure_unknown_files($known,$manifest['files']);
     foreach($manifest['files'] as $name=>$hash){
         $old=structure_hash(structure_path(CWP_ROOT,$name));
         if($old===$hash)continue;
@@ -131,7 +149,9 @@ function structure_apply(string $payload,array $manifest,array $history,string $
     if($j && $j['state']==='complete')return $j;
     if($j && $j['state']==='rolled-back'){
         $next=structure_plan($payload,$manifest,$history);
-        write_private_file($dir.'/recovered-'.$j['backup_id'].'.php',CWP_GUARD.json_encode($j,JSON_THROW_ON_ERROR));
+        $archive=$dir.'/recovered-'.$j['backup_id'].'.php';$bytes=CWP_GUARD.json_encode($j,JSON_THROW_ON_ERROR);
+        if(file_exists($archive)){if(is_link($archive)||file_get_contents($archive)!==$bytes)throw new RuntimeException('Recovered journal archive differs. Keep it for owner review.');}
+        else write_private_file($archive,$bytes);
         $j=$next;structure_save($dir,$j);
     }
     if(!$j){$j=structure_plan($payload,$manifest,$history);structure_save($dir,$j);}

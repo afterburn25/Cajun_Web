@@ -1,0 +1,7 @@
+<?php
+declare(strict_types=1);
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+
+ gphead('A CONSIDERED MOVE','Keep the business.','Upgrade the experience.','A redesign should not gamble with your domain, email, content or customers. We plan the transition before changing the live site.'); ?>
+<section class="section"><div class="container"><div class="growth-grid"><?php foreach([['01','Review what exists','List pages, traffic priorities, forms, products, accounts, integrations and the features that cannot be lost.'],['02','Plan what changes','Agree the new structure, content work, redirect mapping, functionality and acceptance criteria. Exportable content is only part of a migration.'],['03','Build beside the live site','Develop and review on staging while your existing website remains available.'],['04','Test the real journeys','Check mobile navigation, inquiries, purchase paths where included, images, redirects and email dependencies.'],['05','Coordinate the changeover','Schedule DNS and hosting changes, with rollback steps and a clear owner for each action.'],['06','Verify and hand over','Review the live website, access and editing guidance. Cancel old services only after checking the dependencies.']] as [$n,$h,$p]):?><article class="growth-card"><span class="growth-number"><?=$n?></span><h3><?=esc($h)?></h3><p><?=esc($p)?></p></article><?php endforeach;?></div><?php gpcta();?></div></section>
+<?php 

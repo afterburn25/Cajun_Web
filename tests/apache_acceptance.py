@@ -45,7 +45,7 @@ PHPIniDir /etc/php/8.3/apache2
   Require all granted
 </Directory>
 '''
-        config=work/'httpd.conf';config.write_text(conf);proc=subprocess.Popen(['/usr/sbin/apache2','-f',str(config),'-DFOREGROUND'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        config=work/'httpd.conf';config.write_text(conf);proc=subprocess.Popen(['/usr/sbin/apache2','-f',str(config),'-DFOREGROUND'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
         base=f'http://127.0.0.1:{port}'
         try:
             r=wait(base);check(label+' real Apache serves one-page setup','Apache/' in r.headers.get('Server','') and r.status_code==200 and 'id="install-form"' in r.text)

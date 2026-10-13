@@ -265,5 +265,31 @@
       "database/migrations/activity_migrate.php",
       "database/schema/activity_schema.php"
     ]
+  },
+  "render_splits": {
+    "app/studio-admin.php": [
+      "admin/views/studio/clients.php",
+      "admin/views/studio/content.php",
+      "admin/views/studio/history.php",
+      "admin/views/studio/job.php",
+      "admin/views/studio/pipeline.php",
+      "admin/views/studio/portfolio.php",
+      "admin/views/studio/prices.php",
+      "admin/views/studio/upgrade.php",
+      "admin/controllers/studio.php",
+      "app/settings/revisions.php"
+    ],
+    "app/growth-pages.php": [
+      "pages/marketing/controller.php",
+      "pages/marketing/content.php",
+      "includes/layout/marketing.php",
+      "pages/contact/request.php",
+      "pages/comparisons/index.php",
+      "pages/comparisons/switch.php",
+      "pages/services/faq.php",
+      "pages/services/index.php",
+      "pages/services/industries.php",
+      "pages/services/packages.php"
+    ]
   }
 }

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.11.0 — directory correction candidate (not published)
+
+- Organized administration, portal, public templates, shared bootstrap/security, business services, database migrations, API/webhooks/media and setup source; retained existing visuals and exact image bytes.
+- Canonical root/subfolder URLs, shared session identity, guarded internal paths and private upload staging within the configured store.
+- Staged owner update with recognized-source verification, backup confirmation, serialized journaled replacement, known-hash retirement, direct legacy callbacks and recovery.
+- Three clean-commit artifacts: sanitized FULL-PROJECT, organized COMPLETE-UPLOAD and independently exercised UPDATE; per-artifact inventories/checksums and START-HERE.
+- Expanded application, historical upgrade, Apache and filesystem recovery acceptance. Publication depends on completed checks and exact-main verification.
+
 ## Unreleased priority correction — organized directory layout and complete project packages
 
 Owner override stops the portfolio-only 1.11.0 publication. Preserve integrated source and implement organized modules/assets, protected storage/upload scaffolding, bounded owner migration/recovery, and FULL-PROJECT/COMPLETE-UPLOAD/UPDATE artifacts. Latest published version remains 1.10.0; no corrected release claimed yet.

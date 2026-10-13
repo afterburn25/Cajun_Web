@@ -1,0 +1,8 @@
+<?php
+declare(strict_types=1);
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+
+ require_once CWP_CODE_ROOT.'/app/clients/workspace.php';$catalogProducts=catalog_public();
+ gphead('CLEAR SCOPE. INDIVIDUAL DIRECTION.','Choose the starting point.','We’ll shape the details.','A clear starting point, an individual design, and a scope you approve. Your proposal defines the design, development, deliverables and investment.'); ?>
+<section class="section"><div class="container"><?php if($catalogProducts){catalog_cards($catalogProducts);}else{?><div class="growth-grid"><?php foreach(growth_packages() as $i=>[$h,$p,$list]):$custom=setting('growth_package_'.$i);?><article class="growth-card"><span class="eyebrow">0<?=($i+1)?> / CUSTOM SERVICE</span><h2><?=esc($h)?></h2><p><?=esc($p)?></p><ul><?php foreach(preg_split('/\\n|\r?\n/',$list) as $li):?><li><?=esc($li)?></li><?php endforeach;?></ul><strong><?=esc($custom?:'Quoted around your scope')?></strong><a class="btn gold" href="<?=esc(page_url('estimate'))?>">Discuss this project →</a></article><?php endforeach;?></div><?php }?><article class="content-card growth-care"><span class="eyebrow">AFTER THE LAUNCH</span><h2>Keep moving forward.</h2><p>Care plans can cover agreed updates, content help and improvements. We set the included work, exclusions, response expectations and price in writing. An inquiry is not a recurring subscription.</p><a class="btn outline" href="<?=esc(page_url('consultation'))?>">Talk about ongoing care →</a></article><?php gpfaq(4);?></div></section>
+<?php 

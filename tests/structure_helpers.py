@@ -5,6 +5,12 @@ import requests
 def apply_file_update(env, destination):
     base=env['BASE'];check=env['check'];soup=env['soup'];token=env['token']
     url=base+'/'+destination.name+'/cwp-update-1.11.0/owner-update.php'
+    if destination.name=='portfolio-upgrade':
+        path=destination/'cwp-update-1.11.0/site/includes/security/csrf.php';saved=path.read_bytes();path.unlink()
+        try:
+            broken=requests.get(url,timeout=20)
+            check('Interrupted staged bootstrap upload has useful fallback before application loading',broken.status_code==503 and 'Update support is missing or mismatched' in broken.text and not (destination/'admin/index.php').exists())
+        finally:path.write_bytes(saved)
     session=requests.Session();r=session.get(url,timeout=20)
     check(destination.name+' staged update requires owner and backup',r.status_code==200 and 'Current owner password' in r.text and 'backup_confirm' in r.text)
     data={'csrf':token(r),'email':'upgrade@example.invalid','owner_password':'Synthetic upgrade passphrase 2026','backup_confirm':'1','action':'inspect'}
