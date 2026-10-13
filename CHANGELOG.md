@@ -3,6 +3,7 @@
 ## Unreleased — scheduling adapter contract (L-03 dependency)
 
 - Add `docs/SCHEDULING_ADAPTER.md`: contract for adopting the scheduling foundation (PR #32) in the live `consultation` route — preferred date/period/zone becomes a `TimeWindow` request, staff narrow to an exact slot via `isBookable` + confirm, additive `consultations` table feeds conflict checks, and all form/spam/lead behavior stays live-side. No shipping code or schema changes.
+
 ## 1.11.1 — candidate, motion preferences and organized updates
 
 - Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.
