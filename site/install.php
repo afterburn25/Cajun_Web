@@ -304,7 +304,7 @@ function setup_expected_files(): array { return [
         'app/studio-admin.php' => 'db29e3d63b3a9ad60566ad90183905f4f7f57247f64b76ddf5ea39391e99f77f',
         'app/view.php' => 'ebf2a24ebf86ff7fba26abdb6c475ffc48be3b90a25dcc6c7a59745a9173f1a4',
         'app/workspace.php' => 'c1721f5990cf39e54fb1eeab28a0d9ba413b4ba206735dc4d5886538196479ef',
-        'assets/admin.css' => 'd502889e32bedc3e7ca7cae57f39606330e5632069c79066d821d3016b3d49a0',
+        'assets/admin.css' => 'cc303d58c57da9f83eb400c5b9d253dca613edadd4bb3c9ab2a0aade5e02789a',
         'assets/admin.js' => '6f01319f40402e806cb29b32629b38edc5a3960a568fef150bed89fb8d95ae83',
         'assets/bayou-detail.webp' => '8c1752557b818bc8a35a32ffc4017cef94ee1d6cd247eaa484e2949ee6da2723',
         'assets/bayou.webp' => '9a50abd55f4ea8d6a86e3557e2f0c463cb124279cdc193cc0fc1413887f3d82a',

@@ -129,7 +129,7 @@ def installer_failures(env):
     missing=WEB/'missing';blocked=WEB/'blocked'
     for dest in [missing,blocked]:
         dest.mkdir()
-        with zipfile.ZipFile(ROOT/'dist/CajunWebPro-1.1.0-COMPLETE-UPLOAD.zip') as z:z.extractall(dest)
+        with zipfile.ZipFile(next((ROOT/'dist').glob('*-COMPLETE-UPLOAD.zip'))) as z:z.extractall(dest)
     (missing/'app/growth.php').unlink()
     r=requests.get(BASE+'/missing/install.php')
     check('Missing dependency leaves the full one-page form visible',len(soup(r).select('#install-form'))==1 and 'app/growth.php' in r.text and 'name="db_host"' in r.text and 'name="owner_password"' in r.text)

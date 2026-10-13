@@ -1,5 +1,7 @@
 # Project status
 
+**Current candidate — 2026-10-13:** [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10), `codex/admin-accounts`, candidate 1.2.0, implements additional administrator accounts, owner-issued setup/recovery links and explicit website/client permissions. v1.1.0 remains the published version. Native adapter checks passed on GitHub; first browser run found a stale test package filename, now corrected. Actual released-1.1.0 ZIP upgrade and real browser account acceptance are being added. No new publication or host deployment yet. Devin PR #7 is unchanged. Next: pass full acceptance and document/release the bounded increment.
+
 **Roadmap resumed by the owner, 2026-10-13:** the new request "Continue With Roadmap" supersedes the completed release-task stop. Starting main: `ffdcef36bc71a10a456987808c70d4abd61afa9d`; released v1.1.0 stays immutable. Codex claims A-05 application integration on `codex/admin-accounts`: additional staff invitations/accounts, explicit website/client permissions, revocation and last-owner protection using existing identities and foundation components. Own staff adapter/UI, necessary auth/schema/installer/build integration and native/browser tests. Devin PR #7 remains at `55d6067` with its portfolio paths untouched. No live hosting/customer mail/payments/provider actions. Next: implement and verify the bounded admin-account increment, then integrate/release only after checks.
 
 

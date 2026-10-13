@@ -1,6 +1,7 @@
 """Verify and extract the retained historical fixture, never a deployment source."""
 from pathlib import Path, PurePosixPath
 import hashlib, zipfile, subprocess, shutil
+from urllib.request import urlopen
 root=Path(__file__).resolve().parents[1]
 archive=root/'tests/fixtures/CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip'
 assert hashlib.sha256(archive.read_bytes()).hexdigest()=='13bcf66cf069896017a6168556eba5211ec5bf3b1bee2aa23d354b4e9be5b6cf'
@@ -18,3 +19,17 @@ php=shutil.which('php8.3') or shutil.which('php')
 code="define('CWP_BOOT',true);require $argv[1];echo json_encode(['schema'=>schema_statements('ci_'),'settings'=>default_settings()],JSON_THROW_ON_ERROR);"
 result=subprocess.run([php,'-r',code,str(destination/'app/schema.php')],check=True,capture_output=True)
 (root/'test-runtime/legacy-schema.json').write_bytes(result.stdout)
+# Download the immutable released package for actual 1.1.0 -> current update acceptance.
+# Never adopt bytes solely on a release name: verify the retained, published SHA-256 first.
+current_baseline=root/'test-runtime/CajunWebPro-1.1.0-COMPLETE-UPLOAD.zip'
+with urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.1.0/CajunWebPro-1.1.0-COMPLETE-UPLOAD.zip',timeout=60) as response:
+    current_baseline.write_bytes(response.read())
+assert hashlib.sha256(current_baseline.read_bytes()).hexdigest()=='52da8a009ace9643cf65d678ca2de6d9612b01a24be4acd2634668d5de8423cd'
+with zipfile.ZipFile(current_baseline) as z:
+    assert z.testzip() is None
+    for item in z.infolist():
+        path=PurePosixPath(item.filename)
+        assert not path.is_absolute() and '..' not in path.parts and '\\' not in item.filename
+        assert (item.external_attr>>16)&0o170000 != 0o120000
+    z.extractall(root/'test-runtime/released-1.1.0')
+print('PASS: immutable released 1.1.0 package checksum, archive paths and extraction')
