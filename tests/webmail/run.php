@@ -139,10 +139,13 @@ throws('uidValidity below 1 rejected', fn () => msg(['uidValidity' => 0]));
 throws('empty folder rejected', fn () => msg(['folder' => '']));
 check('no body field exists', !property_exists($m, 'body'));
 check('flag copies preserve uidValidity', $m->markSeen()->uidValidity === 700);
-check('identity is mailbox+folder+generation+uid',
-    $m->identity() === 'mb-1|INBOX|700|1');
+check('identity is length-prefixed tuple',
+    $m->identity() === '4:mb-1|5:INBOX|700|1');
 check('same uid in new generation is distinct',
     msg(['uidValidity' => 701])->identity() !== $m->identity());
+check('separator chars in fields cannot collide',
+    msg(['mailboxId' => 'a|b', 'folder' => 'INBOX'])->identity()
+        !== msg(['mailboxId' => 'a', 'folder' => 'b|INBOX'])->identity());
 
 // ── UnifiedInbox privacy ─────────────────────────────────────────
 
@@ -185,6 +188,14 @@ check('same uid in different folders allowed', (new UnifiedInbox('staff-ben', [$
 check('same uid in different generations allowed', (new UnifiedInbox('staff-ben', [$grant], [
     msg(['uid' => 9, 'uidValidity' => 700]),
     msg(['uid' => 9, 'uidValidity' => 701]),
+], 50))->total() === 2);
+check('separator-bearing identities coexist', (new UnifiedInbox('staff-ben', [
+    $grant,
+    new MailboxAssignment('g2', 'a|b', 'staff-ben', 'o', 0),
+    new MailboxAssignment('g3', 'a', 'staff-ben', 'o', 0),
+], [
+    msg(['mailboxId' => 'a|b', 'folder' => 'INBOX']),
+    msg(['mailboxId' => 'a', 'folder' => 'b|INBOX']),
 ], 50))->total() === 2);
 check('negative now rejected', (static function () use ($grant) {
     try { new UnifiedInbox('staff-ben', [$grant], [], -1); return false; }
