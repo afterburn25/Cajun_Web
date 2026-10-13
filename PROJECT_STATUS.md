@@ -1,9 +1,13 @@
 # Project status
 
-Updated: 2026-10-12 — GitHub testing/release workflow and Codex/Devin split added; current 1.1.0 artifact location pending.
+Updated: 2026-10-13 — independent staff/mailbox permission component started while the separate 1.1.0 worker finishes the application.
 Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
 
 ## Current repository delivery and coordination checkpoint
+
+The owner confirms another worker is finishing 1.1.0 and will update GitHub, and authorizes independent parallel implementation now. Refreshed main is `9e30564ee83d8e859c0d420ae42d6bbd805a6a57`; its [1.1.0 progress report](docs/PROGRESS_1.1.0_INTEGRATION.md) describes that worker's local integration, not source imported here. The `codex/finish-1.1.0` branch currently carries recovery/test-toolchain preparation. Preserve its ownership; no need to ask the owner for the same build again.
+
+On `codex/platform-foundation`, implemented a standalone PHP 8.2+ [permission component](docs/ACCESS_FOUNDATION.md) for staff capabilities and explicit mailbox read/send grants in commit `5cf3f01975dec7365d57415eecd061dda43a4823`, [PR #5](https://github.com/afterburn25/Cajun_Web/pull/5). Local PHP 8.4.25 passes 142 isolated checks and syntax checks for four files; [GitHub PHP 8.2.34/8.4.26 checks](https://github.com/afterburn25/Cajun_Web/actions/runs/38349906968) and [PR integration checks](https://github.com/afterburn25/Cajun_Web/actions/runs/38349921814) also passed. This component has no login, database, installer or UI connection yet, and does not complete A-05/A-06. Devin's [assignment #2](https://github.com/afterburn25/Cajun_Web/issues/2) is updated to allow independent portfolio contract/filtering work before 1.1.0 integration. Inspect the PR's current state before resuming.
 
 The owner authorizes GitHub testing, incremental version releases with retained copies, ongoing agent documentation, and separate Codex/Devin work branches integrated as they finish. Added [release workflow](docs/RELEASE_WORKFLOW.md), [release register](docs/RELEASES.md), [agent coordination and Devin handoff](docs/AGENT_COORDINATION.md), and read-only GitHub Actions documentation checks. This workflow does not yet test application code or build packages.
 
@@ -11,7 +15,7 @@ The owner authorizes GitHub testing, incremental version releases with retained 
 
 Created separate GitHub branches from that merged checkpoint: `codex/platform-foundation` and `devin/public-experience`. Refresh both from the verified current-source baseline before implementation. Codex owns foundation/integration; Devin's first bounded assignment is [issue #2: W-01 portfolio](https://github.com/afterburn25/Cajun_Web/issues/2). The owner chose to paste that assignment into Devin. Devin has not been dispatched from this chat and is not claimed to be running.
 
-**Blocking next step:** locate/import the owner's 1.1.0 source and reconcile existing features. No application version bump, public release ZIP, payment/provider operation, mail send or host deployment has occurred. Historical 1.0.8 remains reference only. GitHub documentation checks are not runtime acceptance.
+**Integration dependency:** the 1.1.0 worker publishes verified current source; then inspect existing features and adapt independent modules to it. No version bump, release ZIP, payment/provider operation, mail send or deployment occurred here. Historical 1.0.8 remains reference only. Documentation and isolated component tests are not application acceptance.
 
 ## Latest requirements — complete client portal and support access
 

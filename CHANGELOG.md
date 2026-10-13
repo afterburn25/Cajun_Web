@@ -2,6 +2,13 @@
 
 This log distinguishes repository work from application releases and deployment. Documentation-only work does not advance the application version.
 
+## 2026-10-13 — Independent staff and mailbox permission component
+
+- Added standalone PHP 8.2+ immutable access contexts and permission policy: deny unknown/inactive/stale identities, separate staff management/permission grants, require exact mailbox read/send memberships, and reject conflicting duplicate grants.
+- Added 142 local decision checks and a GitHub PHP 8.2/8.4 syntax/unit-test workflow. No Composer/runtime service requirement.
+- Verified the source and PR checks on GitHub: 142 decisions and four syntax checks pass on PHP 8.2.34/8.4.26. Evidence is linked from the access foundation and status/handoff; the isolated component is not current-application acceptance.
+- Documented the trusted adapter boundary and pending lifecycle/database/browser integration; updated ownership and Devin's independent portfolio scope while another worker finishes 1.1.0.
+- No version bump, current-source replacement, admin UI, real account/mail operation, release ZIP or deployment. This component remains outside application packaging.
 ## 2026-10-12 — GitHub checks, release retention and Codex/Devin coordination
 
 - Integrated roadmap/workflow PR #1 into main, verified passing PR and merged-main documentation jobs, created both work branches and published Devin assignment issue #2. Current status/handoff links the evidence and states that Devin has not been dispatched.
