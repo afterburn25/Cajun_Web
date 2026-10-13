@@ -1,6 +1,14 @@
 # Approved roadmap and acceptance criteria
 
-## Latest verified publication — 1.11.1
+## Latest verified publication — 1.11.2
+
+[v1.11.2](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.2) is published and freshly downloaded/verified at source/tag `4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36` through [PR #55](https://github.com/afterburn25/Cajun_Web/pull/55), preserving Devin PR #35 ancestry through `efc967a`. The live public estimator now uses canonical exact arithmetic while preserving existing form, validation, prices, results and saved-lead behavior. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38433670555): 3,084 estimator comparisons/boundaries, 618 native, 802 HTTP/Chromium, 73 filesystem/recovery, 279 Apache and 17 builder checks. All 16 published assets, archive members/directories/checksums and immutable tag verified; Windows/Linux package bytes agree. [Test report](TEST_REPORT_1.11.2.md); [handoff](DEVIN_HANDOFF_1.11.2.md).
+
+The organized directory and three-package contract remain permanent. Updates recognize 1.0.8 and 1.1.0 through 1.11.1; current staging is cwp-update-1.11.2, recovery is per target version and the original structure-1.11.0/mutex.php lock is shared. Private data/scaffolds and prior journals remain preserved. Desktop/mobile homepage screenshots are pixel-identical to verified 1.11.1. Previous releases remain immutable. No live deployment, schema change or external payment/provider/mail/SSH activation.
+
+Next executable work: A-07 staff email-template authoring, storage and preview after correcting/re-reviewing Devin #56; Codex owns its application integration. #31 review-request portability and #36 contract corrections remain assigned; corrected #32 scheduling passes 71 local component checks but needs a consistent adapter and database concurrency acceptance. Other foundation branches remain preserved and unaccepted until reviewed. The full roadmap, including multi-account webmail, real merchant checkout and 20i/VPS/SSH, remains incomplete.
+
+## Previous verified publication — 1.11.1 (superseded checkpoint)
 
 [v1.11.1](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.1) is published and freshly downloaded/verified at source/tag `cefcc41bcd5297715f2a49d6526900ebe8ad4eb4` through [PR #50](https://github.com/afterburn25/Cajun_Web/pull/50), preserving Devin PR #34 ancestry. Delivers the bounded W-02 motion/preferences fix, canonical installer build/brand-path corrections and tested organized 1.11.0 owner-update/recovery path. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38429347222): 618 native, 800 HTTP/Chromium, 59 filesystem/recovery, 241 Apache and 17 package-builder checks; all 16 published assets, ZIP members/directories/checksums and immutable tag verified. Windows/Linux package bytes agree. [Test report](TEST_REPORT_1.11.1.md); [handoff](DEVIN_HANDOFF_1.11.1.md).
 
@@ -83,9 +91,9 @@ Preserve approved navy/gold composition while adding restrained metallic logo hi
 
 ### L-01 — Single-page project estimator
 
-Current integration: Codex candidate 1.11.2 adopts the canonical estimator through the reviewed quantity adapter without changing the established public form/results. Actual 1.11.1 parity and boundary checks pass locally; full application/upgrade acceptance and publication remain pending. Broader L-01 completion is not claimed.
+Current integration: verified release 1.11.2 adopts the canonical estimator through the reviewed quantity adapter without changing the established public form/results. Actual 1.11.1 parity, boundary and full application/upgrade acceptance pass; release assets are downloaded and verified. Broader L-01 completion is not claimed.
 
-One form for service/project type, approximate pages/products, functionality, content/branding/migration/maintenance options, timing, and contact information. Optional fields can appear in place; no wizard. Admin-editable price rules and ranges, an explanation of assumptions, and a consultation result for uncertain/custom scopes. Acceptance: server-side recomputation, validation, spam controls, saved lead/brief before notification, input preservation on failure, no invented starting prices, and 'estimate, not final quote' labeling. Adapter contract drafted in [docs/ESTIMATOR_ADAPTER.md](ESTIMATOR_ADAPTER.md) on `devin/estimator-adapter`; implementation remains a reviewed step.
+One form for service/project type, approximate pages/products, functionality, content/branding/migration/maintenance options, timing, and contact information. Optional fields can appear in place; no wizard. Admin-editable price rules and ranges, an explanation of assumptions, and a consultation result for uncertain/custom scopes. Acceptance: server-side recomputation, validation, spam controls, saved lead/brief before notification, input preservation on failure, no invented starting prices, and 'estimate, not final quote' labeling. The [estimator adapter contract](ESTIMATOR_ADAPTER.md) is integrated in verified 1.11.2.
 
 ### L-02 — Website-review requests
 

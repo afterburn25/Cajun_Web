@@ -1,12 +1,12 @@
 # Changelog
 
-## 1.11.2 — candidate, canonical live estimator integration
+## 1.11.2 — verified canonical live estimator integration
 
 - Preserve Devin's reviewed adapter contract and route existing calculator arithmetic through the canonical estimator, folding quantities with exact integer guards. Existing field validation, missing-price early returns, invalid-range errors, consultation exclusions/cap and displayed results remain compatible.
 - Add direct-entry guards before mirroring the canonical estimator into protected includes; installer inventory verifies the new files.
 - Compare actual application results with the immutable published 1.11.1 calculator and independent boundary examples. Retain server-recomputed HTTP results and saved-lead acceptance.
 - Recognize verified 1.11.1 for staged owner updates; exercise both organized starting versions as well as retained old-layout upgrades and recovery records. No schema change or live external activation.
-- Local parity/component checks pass; full application acceptance and release publication remain pending.
+- Published/download-verified from `4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36` after exact-main run 38433670555; all 16 assets/tag pass. Homepage pixels match 1.11.1. Prior releases remain immutable; no live deployment.
 
 ## 1.11.1 — motion preferences and verified organized updates
 
