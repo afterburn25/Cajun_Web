@@ -5,6 +5,7 @@ defined('CWP_BOOT') || exit;
 require_once __DIR__.'/catalog.php';
 require_once __DIR__.'/authorize.php';
 require_once __DIR__.'/payment-attempts.php';
+require_once __DIR__.'/payment-notifications.php';
 
 function payments_schema(string $prefix): array {
     if(!preg_match('/^[a-zA-Z][a-zA-Z0-9_]{1,19}$/D',$prefix))throw new InvalidArgumentException('Invalid prefix.');

@@ -82,11 +82,14 @@ function attempts_submit(int $request,int $revision,string $key,#[\SensitivePara
 }
 /** Persist only verified safe facts; stale network replies cannot regress a newer observation. */
 function attempts_record(array $expected,array $facts,int $actor,string $source): void {
-    staff_locked(fn()=>staff_transaction(function() use($expected,$facts,$actor,$source): void {
+    staff_locked(fn()=>staff_transaction(fn()=>attempts_record_locked($expected,$facts,$actor,$source)));
+}
+/** Caller must hold staff mutex and transaction so related inbox updates commit atomically. */
+function attempts_record_locked(array $expected,array $facts,int $actor,string $source): bool {
         $r=one('SELECT * FROM '.table('payment_attempts').' WHERE id=? FOR UPDATE',[$expected['id']]);
-        if(!$r||$r['state']!==$expected['state']||$r['updated_at']!==$expected['updated_at']||$r['transaction_id']!==$expected['transaction_id'])return;
+        if(!$r||$r['state']!==$expected['state']||$r['updated_at']!==$expected['updated_at']||$r['transaction_id']!==$expected['transaction_id'])return false;
         // Another response may have appended an identical state within the same second.
-        if((int)query('SELECT COUNT(*) FROM '.table('payment_attempt_events').' WHERE attempt_id=?',[$r['id']])->fetchColumn()!==(int)($expected['event_count']??1))return;
+        if((int)query('SELECT COUNT(*) FROM '.table('payment_attempt_events').' WHERE attempt_id=?',[$r['id']])->fetchColumn()!==(int)($expected['event_count']??1))return false;
         $state=$facts['state'];$transaction=$facts['transaction_id']??$r['transaction_id'];
         if(!in_array($state,['unknown','held','captured','settled','declined','voided','expired'],true))throw new LogicException('Invalid sandbox observation.');
         if(in_array($r['state'],['settled','declined','voided','expired'],true)&&$state!==$r['state'])throw new RuntimeException('Conflicting terminal observation. Retained result unchanged; investigate in the sandbox portal.');
@@ -94,7 +97,7 @@ function attempts_record(array $expected,array $facts,int $actor,string $source)
         if($transaction!==null&&one('SELECT id FROM '.table('payment_attempts').' WHERE environment=? AND account_hash=? AND transaction_id=? AND id<>?',[$r['environment'],$r['account_hash'],$transaction,$r['id']])){$state='unknown';$transaction=$r['transaction_id'];}
         query('UPDATE '.table('payment_attempts').' SET state=?,transaction_id=?,updated_at=? WHERE id=?',[$state,$transaction,gmdate('Y-m-d H:i:s'),$r['id']]);
         attempts_event((int)$r['id'],$actor,$source.'.'.$state);
-    }));
+        return true;
 }
 function attempts_reconcile(int $id,string $transaction,int $revision,#[\SensitiveParameter] string $password,?callable $transport=null): void {
     if(!preg_match('/^[1-9][0-9]{0,19}$/D',$transaction))throw new InvalidArgumentException('Enter the sandbox transaction ID to verify.');

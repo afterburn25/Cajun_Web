@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.0 candidate — sandbox notification inbox
+
+- Owner-configured sandbox callback with raw-body HMAC verification, account/webhook binding, bounded payloads and replay protection. Durable minimal receipt and strict audit precede HTTP 200.
+- Owner verification matches an existing attempt and checks current sandbox reporting; observation, processing state and audit commit together. No real invoices are paid.
+- Explicit additive upgrade preserves earlier attempts, requests, encrypted credentials and external keys. Browser setup/inbox follows existing styling.
+- Local checks pass; GitHub acceptance and release publication pending. Actual merchant delivery, scheduled processing, production and client checkout remain pending.
+
 ## 2026-10-13 — Sandbox trial release published and verified
 
 Continued roadmap from main `dd29436fa40c2a0f800bc02569b5fd5d1fb75c09` / 1.5.0 on `codex/sandbox-attempts`. Added owner-only tokenized sandbox UI, fixed sandbox reporting/charge adapter, additive attempt/events, exact amount/reference/account checks, idempotency and concurrency safeguards, unknown-result recovery, shared manual/catalog/request locks, strict audit and immutable 1.5.0 upgrade acceptance. PR #18 merged as `e5d4c17456faff0522429ab3f58093a06a523bd5`; exact-main run https://github.com/afterburn25/Cajun_Web/actions/runs/38380935411 passes 296 native / 421 HTTP/Chromium checks. Independent policy/invitation/documentation checks pass. Reviewed desktop/320px screenshots.

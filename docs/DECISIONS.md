@@ -1,5 +1,9 @@
 # Decision record
 
+## 2026-10-13 — signed sandbox receipt before explicit reporting verification
+
+A callback commits minimal notification identifiers and strict audit before acknowledging receipt; it never calls the provider or trusts notification amounts/statuses. Owners explicitly invoke current sandbox reporting. Existing attempt observation, inbox processing and audit share a transaction, retaining stale/conflicting results for investigation. This keeps shared-host deployment independent of cron/daemons while scheduled processing is pending. Hexadecimal Signature Keys are decoded to binary per official credential guidance. Actual merchant delivery remains an acceptance gate, not inferred from synthetic signatures.
+
 ## 2026-10-13 — Verified 1.6.0 sandbox increment
 
 Owner-only tokenized sandbox trials, durable intent/events, transaction-detail reconciliation and shared manual/catalog/request locking are delivered in [v1.6.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.6.0) / `e5d4c17456faff0522429ab3f58093a06a523bd5`. Sandbox never pays real invoices. Production/client checkout, webhooks, receipts/refunds and recurring billing remain pending. Original 1.5.0 UPDATE preserves credentials/key, requests and existing records. 296 native / 421 HTTP/Chromium checks pass; gateway and browser tokenization fixtures remain synthetic. Back up and enable Sandbox trials after UPDATE. [Guide](SANDBOX_PAYMENTS.md) · [report](TEST_REPORT_1.6.0.md).
