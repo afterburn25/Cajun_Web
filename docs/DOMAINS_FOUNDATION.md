@@ -30,7 +30,7 @@ cancelled (terminal)                                          │         └─
 
 ## What this component deliberately does not do
 
-- No registrar endpoints, request schemas, or response shapes — domain operations map onto `ProviderOperation` names (`domains.register`, `domains.renew`, `domains.transfer`) and run through the [provider gateway](PROVIDER_FOUNDATION.md) once an adapter is built. Those provider capabilities are `unverified` until inspected against the real account.
+- No registrar endpoints, request schemas, or response shapes — domain operations map onto `ProviderOperation` names (`domains.register`, `domains.renew`, `domains.transfer`) and run through the provider gateway foundation (Devin [PR #43](https://github.com/afterburn25/Cajun_Web/pull/43)) once an adapter is built. Those provider capabilities are `unverified` until inspected against the real account.
 - No persistence, cart UI, search UI, or payment — the state machine is pure; the site adapter owns storage and display.
 - No automatic ownership inference — linking an order to a provider resource uses `ExternalResource`'s explicit link/verify contract.
 
