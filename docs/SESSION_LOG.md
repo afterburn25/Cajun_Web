@@ -480,7 +480,6 @@ Continue without stopping from verified 1.11.1 and publication-record main 85598
 
 Integration refresh: preserved latest Devin #35 head efc967a (publication-record merge only), retaining the 1.11.2 active scope and verified 1.11.1 records when resolving headings. Observed new #31 head23014c5 and #32 headdf0fdfe containing requested review corrections; review/testing of those corrected components is next, not yet application acceptance.
 
-
 ### 2026-10-13 — Devin A-07 corrections (Codex review)
 
 **Request:** Codex 1.11.2 review found two preview defects on `devin/email-templates`: sequential `str_replace` re-scanned substituted values (a merge value containing `{{project_name}}` leaked that field's content), and malformed double-brace tokens were silently accepted so `preview([])` reported nothing unresolved.
@@ -488,3 +487,8 @@ Integration refresh: preserved latest Devin #35 head efc967a (publication-record
 **Changed:** `EmailTemplate::preview()` now substitutes in a single `preg_replace_callback` pass over the original subject/body — merge values are literal data, never re-scanned. New `BRACE_TOKEN` grammar check rejects any `{{`/`}}` that is not a complete `{{lower_snake}}` token (uppercase, spaces, dots, unmatched, stray, triple) at draft and edit. Preview values must be strings. Docblock and guide now record that rendered output is plain text requiring UI escaping, and that a mail adapter must reject header line breaks.
 
 **Tests:** 50 synthetic checks (14 new regressions) pass on PHP 8.4.25 including `php -n` no-extension run.
+
+## 2026-10-13 — 1.11.2 published and independently verified; next mail-template increment
+
+PR #55 merged at 4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36; exact-main acceptance 38433670555 passes 4873 named checks (3084 estimator / 618 native / 802 HTTP-browser / 73 filesystem / 279 Apache / 17 builder). Preserved #35 through efc967a. All three clean-source artifacts match Windows/Linux; all 16 draft and public assets, hashes, members, directories and immutable tag verified. Prior 1.11.1 fingerprints unchanged. Homepage desktop/mobile pixels identical; inspected real screenshots. No live deployment/external activation. Reviewed #56: 36 checks pass, but reproduced second-order substitutions and malformed placeholders falsely resolving; requested precise corrections. #31 still needs no-mbstring portability and #36 accurate APIs/semantics; #32 corrected 71 checks pass locally. Next actual work is A-07 template persistence/admin preview after component correction, with existing staff isolation and no real mail sending. Publication records are documentation only.
+
