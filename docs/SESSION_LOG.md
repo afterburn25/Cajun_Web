@@ -1,5 +1,11 @@
 # Session log
 
+## 2026-10-13 — HC-10 VPS lifecycle foundation component
+
+Request: continue without stopping. Started from `main` `5d810b1` on `devin/vps-foundation`. Implemented the safe-work portion of HC-10 per DEPENDENCY_GATES.md: canonical `foundation/vps/` — `VpsSpec` (bounded vCPU/RAM/disk, slug region, OS image), `VpsOffering` (admin monthly price, null = not orderable), `QuotaUsage` (entitlement/usage display, unknown = null), `VpsServer` (guarded lifecycle: pending→provisioning→active⇄suspended, provisioning fail/retry, suspend/resume in-flight rollback, **two-actor decommission** where approver must differ from requester, withdrawal and teardown-failure rollback, no silent cancel of active servers, terminal states, actor-attributed history) — plus `tests/vps/run.php` (58 checks, fixture specs/prices), `vps.yml` workflow, `VPS_FOUNDATION.md`, and continuity docs.
+
+Verified locally on PHP 8.4.25: 58/58 checks, all files `php -l` clean. Scope: no `site/` changes, catalog UI, schema, persistence or provider calls. Gate: Development pending — API verification. Next: Codex review/merge; adapter contract after refactor.
+
 ## 2026-10-13 — Sandbox trial release published and verified
 
 Continued roadmap from main `dd29436fa40c2a0f800bc02569b5fd5d1fb75c09` / 1.5.0 on `codex/sandbox-attempts`. Added owner-only tokenized sandbox UI, fixed sandbox reporting/charge adapter, additive attempt/events, exact amount/reference/account checks, idempotency and concurrency safeguards, unknown-result recovery, shared manual/catalog/request locks, strict audit and immutable 1.5.0 upgrade acceptance. PR #18 merged as `e5d4c17456faff0522429ab3f58093a06a523bd5`; exact-main run https://github.com/afterburn25/Cajun_Web/actions/runs/38380935411 passes 296 native / 421 HTTP/Chromium checks. Independent policy/invitation/documentation checks pass. Reviewed desktop/320px screenshots.

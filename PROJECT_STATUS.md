@@ -1,5 +1,9 @@
 # Project status
 
+## 2026-10-13 — Devin HC-10 VPS lifecycle foundation (unreviewed, unintegrated)
+
+Devin implemented the safe-work portion of HC-10 as an isolated canonical component on `devin/vps-foundation`: `foundation/vps/` (VpsSpec, VpsOffering, QuotaUsage, VpsServer state machine with two-actor decommission and in-flight failure rollback), `tests/vps/run.php` (58 checks), `vps.yml` workflow, and [VPS_FOUNDATION](docs/VPS_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Development pending — API verification** (fixture specs/prices only; no provider calls). No `site/` changes, catalog UI, schema, persistence, deployment or release.
+
 ## 2026-10-13 — Owner clarification: dependency gates ≠ stop-development (docs-only)
 
 Owner requested that Codex/Devin keep working on independent tasks while vendor access/testing is outstanding. The four earlier generic "Blocked" spreadsheet entries are now characterized in [dependency-gate policy](docs/DEPENDENCY_GATES.md): HC-07 **Awaiting API verification**; HC-09/HC-10 **Development pending — API verification**; A-10 **Architecture/security validation pending**. These are *external/technical gates*, not implementation-completion statuses. Continue safe mocked/UI/adapter/schema work and other ready roadmap work; no real payments, domains, provider provisioning or SSH until separately verified/approved.

@@ -147,6 +147,8 @@ Use 20i domain capabilities after verifying access: live availability and dynami
 
 ## HC-10 — VPS/cloud catalog and lifecycle (P2)
 
+**Progress 2026-10-13:** the VPS lifecycle contract is implemented as an isolated component on `devin/vps-foundation` — validated specs, admin-priced offerings (null = not orderable), entitlement/usage display, and a guarded server state machine with two-actor decommission, in-flight failure rollback and no silent cancellation; 58 synthetic checks. See [VPS_FOUNDATION](VPS_FOUNDATION.md). Catalog/comparison UI, persistence, provider adapter wiring and real provision/cancel verification remain pending (gate: Development pending — API verification).
+
 Sell unmanaged/managed VPS only if 20i account product access, API endpoints, prices, provisioning/cancellation operations, IP allocations and support boundaries are verified. Product variants include CPU/RAM/disk/OS/region, addons, licensing, capacity and known wholesale costs. Confirm whether payment requires prepaid credit or separate monthly provider charges. After payment/fraud check, create server, monitor build state, show credentials securely by one-time reveal or delegated panel, and expose only supported power/reboot/rebuild/backups controls. Destructive operations require confirmation, verified backups/retention warnings and logged authorization. Managed support and SLAs are separate published products only when deliverable.
 
 **Acceptance:** Real test provision/build readiness, safe retry, start/stop as available, billing synchronization and teardown verified. Don't publish VPS inventory and accept money before tested provisioning supports it.

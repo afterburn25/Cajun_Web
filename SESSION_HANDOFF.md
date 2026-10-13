@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Devin HC-10 VPS lifecycle foundation in review — 2026-10-13
+
+`devin/vps-foundation` (branched from `main` `5d810b1`) carries the isolated HC-10 VPS contract: `foundation/vps/` (`VpsSpec`, `VpsOffering` with null=not-orderable pricing, `QuotaUsage` display pairs, `VpsServer` guarded lifecycle — two-actor decommission where approver ≠ requester, in-flight failure rollback to stable state, terminal terminated/cancelled, actor-attributed history), `tests/vps/run.php` (58 synthetic checks), `docs/VPS_FOUNDATION.md`, `.github/workflows/vps.yml`. Local PHP 8.4.25: all checks pass, all files lint clean.
+
+**Gate:** Development pending — API verification; no provider calls or fabricated data. **Not integrated:** additive-only outside `site/`.
+
 ## Owner instruction — keep development moving despite provider gates (2026-10-13)
 
 The owner approved [dependency gates policy](docs/DEPENDENCY_GATES.md) for all Codex and Devin sessions. Replace the four vague "Blocked" items in roadmap/tracker interpretation with: **HC-07 Awaiting API verification; HC-09/HC-10 Development pending — API verification; A-10 Architecture/security validation pending**. Do not mark those features implemented as a result of relabeling. Build and test all independently feasible designs, admin inputs, PHP logic, data models, fixtures/adapters, idempotent jobs, permissions and UI; then continue another authorized roadmap item if an external test cannot yet pass.
