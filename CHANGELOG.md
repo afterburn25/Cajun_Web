@@ -5,10 +5,11 @@
 - Add `foundation/mail-transport/`: a bounded read-only IMAP4rev1 subset over injectable sockets — greeting/capability/STARTTLS/login, EXAMINE-based unseen header fetches, honest classified failures, mandatory TLS peer verification and bounded line/literal reads. `InboundSync` maps fetched summaries onto the released A-06 `MailMessage`/`ConnectionResult` contract; authorization remains caller-side.
 - Add 34 scripted-socket checks (PHP 8.2/8.4, `--network none`) and `docs/MAIL_TRANSPORT.md`. No network dial, credentials, persistence, send path, or application integration; real mailbox acceptance remains a separate gate.
 ## Unreleased — 1.16.0 candidate: explicit email connection checks
+## 1.16.0 — verified explicit email connection checks
 
 - Add separate owner-only checks of saved incoming/outgoing settings, current password and matching mailbox assignment. Verify public DNS destinations, pin the numeric connection, validate TLS and authenticate without reading or sending messages.
 - Add auditable started/terminal history, saved-version labels, bounded response handling and per-account/owner repeat limits. Interrupted or unaudited final outcomes remain incomplete.
-- Add additive upgrade setup, fresh empty schema, isolated TLS/DNS/database/HTTP acceptance and actual 1.15.0 update/recovery coverage. Candidate acceptance and publication are pending; latest published version remains 1.15.0.
+- Add additive upgrade setup, fresh empty schema, isolated TLS/DNS/database/HTTP acceptance and actual 1.15.0 update/recovery coverage. Published and downloaded/verified from `372ea28bf0d3081180c836e2c90aa14b7a90bdd3` after exact-main 38466626819; all 16 assets/tag pass. No real mailbox or deployment.
 
 ## 1.15.0 — verified consultation scheduling
 
