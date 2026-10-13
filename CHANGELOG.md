@@ -1,9 +1,13 @@
 # Changelog
 
-## Unreleased — homepage motion fixes (W-02 slice, reapplied post-refactor)
+## 1.11.1 — candidate, motion preferences and organized updates
 
-- Reapplied at the refactored `site/assets/css/` / `site/assets/js/` paths, retaining the refactor's `body.cwp-site.motion-off` convention. Added `html:has(.cwp-site.motion-off)` so the pause toggle also disables root smooth-scroll (the `motion-off *` rule cannot reach `html` itself).
-- Re-add the restrained hover/focus metallic sheen on the brand logo; the paused-motion rules suppress it. Removed the dead legacy `.hero-scene` rules — markup emits `.hero-visual` and parallax uses `[data-parallax]`/`premium.css`. Acceptance records `qa/motion-metrics.json` (navigation timing, resource bytes, paint entries, layout-shift total) and exercises the toggle on the reorganized routes.
+- Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.
+- Measure homepage lab layout shifts with a real buffered PerformanceObserver and session-window calculation; test saved pause/resume, device reduced motion and no-JavaScript readability. This is synthetic browser evidence, not a production performance guarantee.
+- Recognize the verified 1.11.0 package for owner updates; retain known upgrade-only routes without adding them to fresh organized sites. Preserve private scaffolds, previous recovery records and all configuration/business data. Separate target-version journals share the original permanent update lock.
+- Extend real Apache update/recovery acceptance with the actual retained 1.11.0 installer, database records, session continuity and opcode caching enabled without timestamp validation. Retain old-layout historical acceptance.
+- Make package checksum ordering identical on Windows and Linux; use committed history and guide bytes in exact-source artifacts.
+- Acceptance/publication pending. Prior releases remain immutable; no live deployment or new external payment/provider operations.
 
 ## 1.11.0 — organized application and verified three-package release
 

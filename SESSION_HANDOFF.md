@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Active roadmap increment — 1.11.1 candidate
+
+Codex owns `codex/motion-update-1.11.1` from main `02fc784`, preserving Devin PR #34 history at `e2b2a23` in merge `69ed304`. Scope: W-02 homepage pause/root scrolling and restrained brand sheen; honest browser motion evidence; safe staged updates from published organized 1.11.0 while retaining all older supported paths. Recovery journals are per target version; the permanent 1.11.0 lock is shared across retained updater versions. Existing private/configuration/scaffold bytes and prior recovery records stay intact; fresh organized sites gain no legacy root routes.
+
+Implementation and expanded acceptance are in progress; 1.11.0 remains the latest verified publication. No 1.11.1 release or target-host deployment is claimed. Codex owns shared shipping code/build/version/acceptance; Devin's isolated foundations/contracts remain on their own branches. Review findings for #31/#32 are tracked in [issue #2](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6149391893); resolve those before application adapters. Next: run combined native/browser/Apache/filesystem/package acceptance, resolve failures, merge and test exact main, then publish/download-verify three 1.11.1 packages. Continue the next feasible roadmap increment afterward; external activation gates remain unchanged.
+
 ## Current directory and package contract — released 1.11.0
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](docs/DIRECTORY_STRUCTURE.md), [migration and recovery](docs/STRUCTURE_MIGRATION.md), and [START-HERE](START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.

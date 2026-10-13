@@ -132,21 +132,21 @@ def main():
     site={n:(SITE/n).read_bytes() for n in inv}
     payload={n:data for n,data in site.items() if n!='install.php' and not n.startswith(('install/','storage/','upload/'))}
     shims={old:"<?php\n/** Upgrade compatibility: directly preserves method, query, body and cookies. */\ndeclare(strict_types=1);\nrequire __DIR__.'/"+new+"';\n" for old,new in MAP['routes'].items() if old not in {'robots.php','sitemap.php'}}
-    manifest={'version':version,'source_commit':commit,'files':{n:sha(data) for n,data in payload.items()},'shims':shims,'history_sha256':sha((ROOT/'tools/legacy-release-files.json').read_bytes())}
+    manifest={'version':version,'source_commit':commit,'files':{n:sha(data) for n,data in payload.items()},'shims':shims,'history_sha256':sha(full['tools/legacy-release-files.json'])}
     # JSON is encoded as a PHP string through base64, avoiding PHP string-escape ambiguities.
     import base64
     encoded=base64.b64encode(json.dumps(manifest).encode()).decode()
     stage=f'cwp-update-{version}/'
     update={stage+'site/'+n:data for n,data in payload.items()}
-    update[stage+'owner-update.php']=(ROOT/'tools/update/owner-update.php').read_bytes()
+    update[stage+'owner-update.php']=full['tools/update/owner-update.php']
     update[stage+'manifest.php']=("<?php\nif (!defined('CWP_BOOT')) { http_response_code(404); exit; }\nreturn json_decode(base64_decode('"+encoded+"'),true,64,JSON_THROW_ON_ERROR);\n").encode()
-    update[stage+'legacy-release-files.json']=(ROOT/'tools/legacy-release-files.json').read_bytes()
+    update[stage+'legacy-release-files.json']=full['tools/legacy-release-files.json']
     update[stage+'.htaccess']=b'Options -Indexes\nRequire all denied\n<Files "owner-update.php">\nRequire all granted\n</Files>\n'
     out=ROOT/'dist';out.mkdir(exist_ok=True)
     reports=[archive(out,f'CajunWebPro-{version}-{kind}.zip',files,commit,version) for kind,files in [('FULL-PROJECT',full),('COMPLETE-UPLOAD',site),('UPDATE',update)]]
     write(out/'manifest.json',json.dumps({'version':version,'source_commit':commit,'layout':'organized','files':inv,'artifacts':[{k:v for k,v in m.items() if k!='files'} for m in reports]},indent=2)+'\n')
-    (out/'START-HERE.txt').write_bytes((ROOT/'START-HERE.txt').read_bytes())
-    files=sorted([out/'manifest.json',out/'START-HERE.txt']+[out/m['artifact'] for m in reports]+[out/(m['artifact'].removesuffix('.zip')+ext) for m in reports for ext in ['.manifest.json','.directories.txt']])
+    (out/'START-HERE.txt').write_bytes(full['START-HERE.txt'])
+    files=sorted([out/'manifest.json',out/'START-HERE.txt']+[out/m['artifact'] for m in reports]+[out/(m['artifact'].removesuffix('.zip')+ext) for m in reports for ext in ['.manifest.json','.directories.txt']],key=lambda p:p.name)
     write(out/'SHA256SUMS.txt',''.join(sha(p.read_bytes())+'  '+p.name+'\n' for p in files))
     print(json.dumps({'version':version,'source_commit':commit,'shipping_files':len(inv),'artifacts':{m['artifact']:len(m['files']) for m in reports}},indent=2))
 if __name__=='__main__':main()
