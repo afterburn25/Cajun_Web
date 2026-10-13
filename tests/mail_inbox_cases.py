@@ -28,7 +28,11 @@ def run_browser(env,browser):
     check('Assigned account list links directly to its inbox','view=mail-inbox' in owner.get(assigned).text)
     r=load(owner,csrf='bad');check('Inbox read rejects bad CSRF before any network work','session expired' in r.text.lower() and inbox_server.connections==before and not db('SELECT * FROM ci_mail_inbox_reads'))
     r=load(owner,revision='99');check('Inbox read rejects stale settings before network work','account changed' in r.text and inbox_server.connections==before)
-    r=load(owner);check('Packaged inbox uses actual synthetic TLS and renders newest headers',r.status_code==200 and inbox_server.connections==before+1 and 'SYNTHETIC PRIVATE Café' in r.text and [n['data-inbox-uid'] for n in soup(r).select('[data-inbox-uid]')]==['82','81'])
+    r=load(owner)
+    # Synthetic mailbox only: preserve enough diagnostics to distinguish transport from UI failures.
+    (QA/'inbox-first-response.html').write_text(r.text,encoding='utf-8')
+    (QA/'inbox-fixture-observation.json').write_text(json.dumps({'status':r.status_code,'headers':dict(r.headers),'connections':inbox_server.connections,'commands':inbox_server.commands,'fixture_errors':inbox_server.errors},indent=2),encoding='utf-8')
+    check('Packaged inbox uses actual synthetic TLS and renders newest headers',r.status_code==200 and inbox_server.connections==before+1 and 'SYNTHETIC PRIVATE Café' in r.text and [n['data-inbox-uid'] for n in soup(r).select('[data-inbox-uid]')]==['82','81'])
     check('Inbox provider markup is escaped without image or script nodes','&lt;img' in r.text and not soup(r).select('[data-inbox-uid] img,[data-inbox-uid] script'))
     check('Inbox result forbids browser and shared caching','no-store' in r.headers.get('Cache-Control','') and r.headers.get('Referrer-Policy')=='no-referrer')
     check('Successful read persists audited counts and exact mailbox epoch',db('SELECT outcome,result_code,message_count,mailbox_total,uidvalidity FROM ci_mail_inbox_results')==[{'outcome':'success','result_code':'ok','message_count':2,'mailbox_total':2,'uidvalidity':'1234'}])

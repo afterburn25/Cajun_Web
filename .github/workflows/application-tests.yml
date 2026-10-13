@@ -75,6 +75,14 @@ jobs:
           php8.3 tests/mail_inbox_native.php
       - name: Real HTTP and Chromium application workflows
         run: .ci-venv/bin/python tests/browser_acceptance.py
+      - name: Preserve browser checkpoint before the extended recovery matrix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-browser-checkpoint-${{ github.sha }}
+          path: qa/
+          retention-days: 3
+          if-no-files-found: warn
       - name: Unprivileged structure update interruption and recovery
         if: success() || failure()
         run: .ci-venv/bin/python tests/structure_acceptance.py
