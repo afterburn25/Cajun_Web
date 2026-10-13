@@ -28,7 +28,7 @@ Submitting, unknown and held attempts block replacement/revocation of their requ
 
 Enter an unknown attempt's candidate transaction ID and current owner password to **Verify transaction**. A wrong reference, amount, type, account, partial authorization or unavailable response does not attach the entered ID or resolve the attempt. Once attached, the transaction ID cannot be swapped. Credential rotation within the same sandbox account permits reconciliation after fresh authentication; switching accounts does not. A stale response cannot overwrite a newer recorded observation. Audit failures after dispatch leave the committed unresolved intent available for recovery.
 
-There is no blind retry, manual “force successful” button or “not found means failed” shortcut. A timeout with no discoverable matching transaction remains unresolved; use a separate synthetic invoice for further development tests and investigate the original in the sandbox portal. Automatic transaction discovery, scheduled reconciliation, signed webhooks, real-money settlement, refunds, receipts, guest links and client checkout remain pending.
+There is no blind retry, manual “force successful” button or “not found means failed” shortcut. A timeout with no discoverable matching transaction remains unresolved; use a separate synthetic invoice for further development tests and investigate the original in the sandbox portal. The 1.7.0 [sandbox notification increment](SANDBOX_NOTIFICATIONS.md) adds signed receipt and owner-triggered reporting verification. Automatic transaction discovery, scheduled reconciliation, real-money settlement, refunds, receipts, guest links and client checkout remain pending.
 
 ## Evidence and boundaries
 
