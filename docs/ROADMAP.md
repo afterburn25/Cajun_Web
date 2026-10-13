@@ -1,8 +1,12 @@
 # Approved roadmap and acceptance criteria
 
-## Current executable increment — 1.11.1 acceptance
+## Latest verified publication — 1.11.1
 
-Published/download-verified baseline is 1.11.0. PR #50 preserves Devin W-02 motion work and tests owner updates from that actual organized release, along with all older supported paths. Manual pause/root scrolling, restrained logo sheen, saved preferences/reduced motion, separate recovery journals and retained cross-version locking are implemented; combined acceptance/publication is in progress. This bounded slice does not complete all W-02 media/performance work. L-02/L-03 component findings are recorded on PRs #31/#32; application adapters follow their corrections. External-provider gates remain operation-specific. Earlier candidate status below is historical.
+[v1.11.1](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.1) is published and freshly downloaded/verified at source/tag `cefcc41bcd5297715f2a49d6526900ebe8ad4eb4` through [PR #50](https://github.com/afterburn25/Cajun_Web/pull/50), preserving Devin PR #34 ancestry. Delivers the bounded W-02 motion/preferences fix, canonical installer build/brand-path corrections and tested organized 1.11.0 owner-update/recovery path. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38429347222): 618 native, 800 HTTP/Chromium, 59 filesystem/recovery, 241 Apache and 17 package-builder checks; all 16 published assets, ZIP members/directories/checksums and immutable tag verified. Windows/Linux package bytes agree. [Test report](TEST_REPORT_1.11.1.md); [handoff](DEVIN_HANDOFF_1.11.1.md).
+
+The organized directory and three-package contract remain permanent. Updates recognize 1.0.8 and 1.1.0 through 1.11.0; current staging is cwp-update-1.11.1, recovery is per target version and the original structure-1.11.0/mutex.php lock is shared. Existing private data/scaffolds and older recovery records are preserved; fresh organized sites gain no legacy entries. Previous releases remain immutable. No live deployment or external payment/provider/mail/SSH activation.
+
+Next executable work: integrate the reviewed L-01 estimator adapter contract from PR #35 with exact existing behavior; review corrected L-02/L-03 components in #31/#32 before their application adapters. Keep other Devin foundations isolated and review sequentially. The roadmap continues; this bounded release does not complete W-02 or the full client/billing/mail/provider platform.
 
 ## Dependency-aware roadmap status — owner instruction (2026-10-13)
 
