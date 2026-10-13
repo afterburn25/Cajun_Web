@@ -32,7 +32,9 @@ function appointments_seed(int $actor=0): void {
     query('INSERT INTO '.table('appointment_settings')." (id,revision,timezone,slot_minutes,buffer_minutes,notice_minutes,enabled,rules,updated_by,updated_at) VALUES (1,1,'UTC',30,15,120,0,'[]',?,?)",[$actor,gmdate('Y-m-d H:i:s')]);appointments_settings_snapshot($actor);
 }
 function appointments_active(int $from,int $until): array {
-    return all('SELECT a.*,l.name,l.email FROM '.table('appointments').' a JOIN '.table('leads')." l ON l.id=a.lead_id WHERE a.status IN ('requested','confirmed') AND a.ends_at>? AND a.starts_at<? ORDER BY a.starts_at,a.id",[$from,$until]);
+    // Under REPEATABLE READ, authorization/readiness may have opened a snapshot before the
+    // calendar lock was acquired. Conflict writes must use a current read after that lock.
+    return all('SELECT a.*,l.name,l.email FROM '.table('appointments').' a JOIN '.table('leads')." l ON l.id=a.lead_id WHERE a.status IN ('requested','confirmed') AND a.ends_at>? AND a.starts_at<? ORDER BY a.starts_at,a.id".(db()->inTransaction()?' FOR UPDATE':''),[$from,$until]);
 }
 function appointments_context(array $settings,int $now): array {
     $buffer=(int)$settings['buffer_minutes']*60;$until=$now+30*86400;
