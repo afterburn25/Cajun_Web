@@ -48,3 +48,19 @@ Append dated entries. Keep this chronological. Use `SESSION_TEMPLATE.md`; link d
 **Known blockers:** Source baseline not yet imported; last target host installer/storage state and old v1.1.0 release claims unresolved. 20i account-only API capabilities, wholesale VPS/domain costs, and Authorize.net merchant/sandbox account not supplied; PCI compliance and release controls not yet confirmed. Avoid all pricing or deployment claims.
 
 **Next:** Import the fingerprinted 1.0.8 baseline into Git, inspect live deployment and API capabilities, implement and test M0→M6 incrementally. Preserve existing logo/favicon/site and one-page keyless installer, customer data and modular structure. This documentation commit makes no release claim.
+
+## 2026-10-12 — Verify current roadmap and available build
+
+**Request:** Check the owner's Cajun_Web GitHub roadmap and intended product, and ensure the latest available build is present locally.
+
+**Starting commit:** Fresh clone of main at `43bebd019a6f548d7a059b2c8e259beed3efe561`, reconfirmed by a final fetch. Read AGENTS, README, status, handoff, direction, full roadmap, hosting/billing roadmap, baseline inventory, brand provenance, installation requirements, delivery incident, changelog and prior session log.
+
+**Remote findings:** Main's latest commit records custom hosting resale, Authorize.net billing and unified clients. `feature/growth-suite-1.1.0` is two commits behind main; `feature/public-growth-rc1` is one commit behind; neither is ahead. GitHub returns no releases, tags, Actions runs, open PRs or open issues. The remote tree contains documentation only.
+
+**Local actions and checks:** Scoped filename search across Downloads, Desktop and Documents found the original and recovered 1.0.8 ZIPs, with no matching newer CajunWebPro archive. Both copies are 1,185,879 bytes and SHA-256 `13bcf66cf069896017a6168556eba5211ec5bf3b1bee2aa23d354b4e9be5b6cf`. Retained an unchanged archive and extracted source outside the repository. ZIP CRC, 33-file extraction byte equality, all 32 embedded installer dependency hashes, original logo hash, consistent 1.0.8 app/installer constants and one-page layout passed. Syntax checks passed for 14 PHP files using PHP 8.4.25 and two JavaScript files using Node. Local detailed evidence is in the parent chat workspace's `work/baseline-verification.json`.
+
+**Tracked changes:** PROJECT_STATUS.md, SESSION_HANDOFF.md, CHANGELOG.md and this log, on local branch `docs/verify-latest-baseline-20261012`. Commit message: `docs: verify current roadmap and recover local 1.0.8 baseline`; parent is the starting commit above. No push or remote mutation.
+
+**Limits and remaining blockers:** These checks establish artifact identity and syntax, not working installation or full application correctness. No source import, new feature build, favicon integration, database test, SMTP test, hosted browser flow, payment/provisioning test or live deployment. B-001 through B-006 remain open, and the running host version remains unknown. Missing v1.1.0 release claims remain withdrawn. The selected Authorize.net direction supersedes the earlier Stripe proposal.
+
+**Next concrete action:** Import the verified baseline and original branding after a secrets/private-data review, retain source-to-package provenance, then complete native staging and real installer/storage checks before extending the approved M0–M6 roadmap.

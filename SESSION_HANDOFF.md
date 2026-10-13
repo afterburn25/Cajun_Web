@@ -1,9 +1,19 @@
 # Session handoff — read before continuing
 
-Checkpoint: 2026-10-12 — custom hosting commerce scope added; documentation only.
+Checkpoint: 2026-10-12 — latest GitHub roadmap and available baseline verified locally.
 Repository: afterburn25/Cajun_Web · Authoritative branch: main.
 
-## Latest owner request
+## Latest owner request and result
+
+The owner asked to check GitHub for the roadmap, understand the intended CajunWebPro product, and have the latest build available. Fresh clone/fetch confirmed main at `43bebd019a6f548d7a059b2c8e259beed3efe561`; both existing feature branches are behind main. There are no published releases/tags, Actions runs, open PRs or open issues, and the remote source tree is documentation only.
+
+Recovered a local working copy of the exact 1.0.8 baseline from Downloads. Both original/recovered ZIPs match the recorded archive hash. ZIP CRC, 33-file extraction equality, all 32 installer dependency hashes, app/installer 1.0.8 constants, one-page layout, original logo hash, 14 PHP syntax checks and two JavaScript syntax checks passed. No application behavior or live deployment is established by these checks.
+
+In this desktop chat workspace the retained archive is `work/CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip`, extracted source is `work/CajunWebPro-1.0.8-baseline/`, and detailed local evidence is `work/baseline-verification.json`. These are workspace-relative local files, outside this repository and not permanent download URLs. Verify their existence and hashes when resuming elsewhere. Local documentation branch: `docs/verify-latest-baseline-20261012`; this investigation was not pushed or deployed.
+
+Next implementation step remains importing the verified baseline and original assets into Git after a secrets/private-data review, then resolving actual staging/installer/storage acceptance. The hosting roadmap and Authorize.net choice remain authoritative; none of HC-01 through HC-14 is claimed implemented by this investigation.
+
+## Prior approved owner request
 
 Create an actionable GitHub roadmap expanding CajunWebPro into a **web design AND hosting business**, with a fully custom first-party billing platform, client portal, plan store, checkout, 20i reseller provisioning for shared hosting/domains/VPS, and Authorize.net instead of Stripe. Admin must accept API Login ID, Transaction Key, Signature Key and Public Client Key. Payment forms should be styled to match the existing navy-and-gold design.
 
@@ -32,4 +42,4 @@ Create an actionable GitHub roadmap expanding CajunWebPro into a **web design AN
 
 The verified baseline ZIP is CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip (33 files, SHA-256 13bcf66cf069896017a6168556eba5211ec5bf3b1bee2aa23d354b4e9be5b6cf). Favicon source hash, installer incident and missing v1.1.0 details remain in PROJECT_STATUS.md, docs/BASELINE_INVENTORY.md and docs/DELIVERY_INCIDENT_2026-10-12.md. Do not downgrade the hosted site to repair a missing chat download.
 
-This session is documentation/requirements capture. Next session should record actual baseline/import/test evidence and update every continuity file.
+The latest session verified existing documentation and the local distribution only. Next implementation session should record source-import and runtime-test evidence and update every continuity file.

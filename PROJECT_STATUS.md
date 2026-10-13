@@ -1,7 +1,15 @@
 # Project status
 
-Updated: 2026-10-12 — download recovery / release-claim correction.
+Updated: 2026-10-12 — current GitHub roadmap and local baseline reverified.
 Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
+
+## Latest verification — 2026-10-12
+
+Fresh clone and final fetch found GitHub `main` at `43bebd019a6f548d7a059b2c8e259beed3efe561` (October 12, 7:59 p.m. America/Chicago). Both feature branches are ancestors of main; neither contains newer application work. The remote tree remains documentation only. GitHub returned no releases, tags, workflow runs, open pull requests, or open issues.
+
+The owner's local Downloads folder contains both the original and recovered 1.0.8 complete ZIPs. Both are 1,185,879 bytes and match SHA-256 `13bcf66cf069896017a6168556eba5211ec5bf3b1bee2aa23d354b4e9be5b6cf`. A byte-identical archive and extracted working copy were retained outside the repository. Fresh checks passed: ZIP CRC, all 33 extracted files, all 32 installer dependency hashes, original logo hash, consistent 1.0.8 app/installer constants and one-page layout, PHP syntax for 14 files under PHP 8.4.25, and JavaScript syntax for two files.
+
+This establishes the latest verifiable available baseline as **1.0.8**, not a newly built release. No CajunWebPro 1.1.0 archive was found in the scoped Downloads/Desktop/Documents filename search. No live host, database, SMTP, payment or provisioning tests ran. Source import and original favicon recovery/integration remain pending; the extracted baseline is not yet tracked application source. The accepted hosting/billing roadmap selects **Authorize.net**, superseding the older Stripe proposal in P-03.
 
 ## Critical correction
 

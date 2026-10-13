@@ -2,6 +2,13 @@
 
 This log distinguishes repository work from application releases and deployment. Documentation-only work does not advance the application version.
 
+## 2026-10-12 — Current roadmap and available build verification (local docs only)
+
+- Confirmed GitHub main at `43bebd019a6f548d7a059b2c8e259beed3efe561`; feature branches contain no newer source, and no release/tag/workflow run was available.
+- Located both original/recovered 1.0.8 archives in local Downloads, verified their recorded SHA-256, and retained an unchanged archive and extracted working copy outside the repository.
+- Fresh checks passed ZIP CRC, 33-file byte equality, 32 installer dependency hashes, version/layout constants, original logo hash, 14 PHP syntax checks and two JavaScript syntax checks.
+- Updated status, handoff and session log. No source import, feature implementation, new release, host repair, provider action or deployment; remote GitHub content unchanged.
+
 ## 2026-10-12 — Hosting resale and custom billing roadmap (docs only)
 
 - Approved first-party hosting/domain/VPS storefront integrated with CajunWebPro web-design services; created docs/HOSTING_AND_BILLING_ROADMAP.md (HC-01 through HC-14, M0–M6 phases and acceptance tests).
