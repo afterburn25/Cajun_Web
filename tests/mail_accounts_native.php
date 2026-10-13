@@ -22,7 +22,7 @@ if (($argv[1]??'')==='save-worker') {
     catch (RuntimeException $e) {if ($e instanceof PDOException || !str_contains($e->getMessage(),'changed')) throw $e;echo 'stale';}exit;
 }
 try {
-    foreach (schema_statements('maci_') as $name=>$sql) if (!array_key_exists($name,mail_accounts_schema('maci_'))) db()->exec($sql);
+    foreach (schema_statements('maci_') as $name=>$sql) if (!array_key_exists($name,mail_accounts_schema('maci_')) && !array_key_exists($name,mail_connections_schema('maci_'))) db()->exec($sql);
     foreach (default_settings() as $key=>$value) save_setting($key,$value);
     $now=gmdate('Y-m-d H:i:s');
     for ($id=1;$id<=5;$id++) query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Mail staff '.$id,'mail'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),$now]);

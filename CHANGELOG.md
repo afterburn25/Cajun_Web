@@ -1,5 +1,6 @@
 # Changelog
 
+<<<<<<< HEAD
 ## Unreleased — review-request adapter contract (L-02 dependency)
 
 - Add `docs/REVIEW_REQUESTS_ADAPTER.md`: the contract for adopting the review-request foundation (PR #31) in the live `website-review` lead path — `WebsiteAddress` intake normalization, consent-aware `ReviewContact`, stage persistence via an additive `review_stages` table, `review_reports` as the delivery gate, and staff transition controls through `ReviewInbox`. No shipping code or schema changes; records two decisions for integration review.
@@ -12,6 +13,14 @@
 ## 1.13.0 — candidate, email account preparation
 ## 1.14.0 — candidate, human website review workflow
 ## 1.15.0 — candidate, consultation scheduling
+=======
+## Unreleased — 1.16.0 candidate: explicit email connection checks
+
+- Add separate owner-only checks of saved incoming/outgoing settings, current password and matching mailbox assignment. Verify public DNS destinations, pin the numeric connection, validate TLS and authenticate without reading or sending messages.
+- Add auditable started/terminal history, saved-version labels, bounded response handling and per-account/owner repeat limits. Interrupted or unaudited final outcomes remain incomplete.
+- Add additive upgrade setup, fresh empty schema, isolated TLS/DNS/database/HTTP acceptance and actual 1.15.0 update/recovery coverage. Candidate acceptance and publication are pending; latest published version remains 1.15.0.
+
+>>>>>>> origin/main
 ## 1.15.0 — verified consultation scheduling
 
 - Preserve corrected Devin #32 scheduling ancestry and 71 isolated checks. Add one explicitly configured studio calendar, disabled by default, with timezone-aware offered slots, buffers, notice and a 30-day horizon.

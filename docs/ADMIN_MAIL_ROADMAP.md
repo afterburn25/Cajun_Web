@@ -1,8 +1,12 @@
 # Admin webmail, staff access, templates and email notifications
 
-## Current released scope — 1.14.0 baseline
+## Active candidate — 1.16.0 connection checks
 
-Administrator accounts and client-support access remain released. [1.12.0](TEST_REPORT_1.12.0.md) adds the bounded personal/shared template library with previews and history. [1.13.0](TEST_REPORT_1.13.0.md) adds multiple owner-managed email profiles, encrypted private passwords, separate read/send permissions and explicit current per-mailbox assignments, including for owners. [Accounts guide](ADMIN_EMAIL_ACCOUNTS.md) and [template guide](ADMIN_EMAIL_TEMPLATES.md) define those accepted subsets. These remain preserved in 1.14.0.
+[PR #67](https://github.com/afterburn25/Cajun_Web/pull/67) implements explicit owner/password/current-assignment diagnostics for saved incoming and outgoing settings, verified public-destination TLS authentication, and versioned sanitized check history. [Contract and owner workflow](MAIL_CONNECTION_CHECKS.md). Candidate application/release acceptance remains pending. Receiving, compose/send, OAuth and email notification bells remain separate work; no external mailbox is used in testing. Preserve Devin receiving PR #68 for review against the maintained-stack requirement before integration.
+
+## Current released scope — 1.15.0 baseline
+
+Administrator accounts and client-support access remain released. [1.12.0](TEST_REPORT_1.12.0.md) adds the bounded personal/shared template library with previews and history. [1.13.0](TEST_REPORT_1.13.0.md) adds multiple owner-managed email profiles, encrypted private passwords, separate read/send permissions and explicit current per-mailbox assignments, including for owners. [Accounts guide](ADMIN_EMAIL_ACCOUNTS.md) and [template guide](ADMIN_EMAIL_TEMPLATES.md) define those accepted subsets. These remain preserved in 1.15.0.
 
 Full webmail remains incomplete: no account connection, IMAP synchronization, message rendering, compose/send or email notification bell is implemented by these releases. Existing workspace activity bells represent workspace activity, not received mail. No external mailbox is connected. Historical checkpoints below describe their dated state and do not override this current scope.
 
