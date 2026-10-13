@@ -2,6 +2,7 @@
 /** 1.1.0 public growth workflows. Existing settings/leads schema is retained. */
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+require_once CWP_CODE_ROOT.'/app/marketing/estimator.php';
 function growth_routes(): array { return ['why-custom','compare-wix','compare-squarespace','switch','packages','faq','industries','estimate','website-review','consultation']; }
 function growth_types(): array { return ['business'=>'Business website','redesign'=>'Website redesign','store'=>'Online store','custom'=>'Custom application']; }
 function growth_options(): array { return ['copy'=>'Copywriting','brand'=>'Brand identity','migration'=>'Content migration','booking'=>'Booking integration','accounts'=>'Member accounts','integration'=>'Custom integration']; }
@@ -19,8 +20,8 @@ function growth_estimate(array $a,array $r): array {
  $out=['mode'=>'consultation','label'=>'Let’s scope your project together','low'=>null,'high'=>null,'type'=>$type,'pages'=>$pages,'products'=>$products,'options'=>$opts,'note'=>'An estimate is not a final quote. Hosting, third-party fees, taxes and ongoing care are scoped separately.'];
  if(($r['enabled']??false)!==true||$type==='custom'||in_array('integration',$opts,true))return $out;
  $keys=[$type=>1];if($pages>5)$keys['page']=$pages-5;if($products>0)$keys['product']=$products;foreach($opts as $o)$keys[$o]=1;
- $lo=$hi=0;foreach($keys as $k=>$qty){$p=grange($r[$k]??[null,null]);if($p[0]===null)return $out;$lo+=$p[0]*$qty;$hi+=$p[1]*$qty;}
- if($hi>99999999)return $out;$out['mode']='range';$out['low']=$lo;$out['high']=$hi;$out['label']='$'.number_format($lo/100,2).' – $'.number_format($hi/100,2).' USD';return $out;
+ $range=growth_estimator_range($keys,$r);if($range===null)return $out;[$lo,$hi]=$range;
+ $out['mode']='range';$out['low']=$lo;$out['high']=$hi;$out['label']='$'.number_format($lo/100,2).' – $'.number_format($hi/100,2).' USD';return $out;
 }
 function growth_faq_defaults(): array {return [
  ['Why hire CajunWebPro rather than build it myself?','You bring the business knowledge. We plan the structure, design the experience and develop the agreed features. You get a scoped, done-for-you service—not just access to an editor.'],

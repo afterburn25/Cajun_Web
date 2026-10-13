@@ -8,6 +8,15 @@
 
 ## 1.11.1 — candidate, motion preferences and organized updates
 
+## 1.11.2 — candidate, canonical live estimator integration
+
+- Preserve Devin's reviewed adapter contract and route existing calculator arithmetic through the canonical estimator, folding quantities with exact integer guards. Existing field validation, missing-price early returns, invalid-range errors, consultation exclusions/cap and displayed results remain compatible.
+- Add direct-entry guards before mirroring the canonical estimator into protected includes; installer inventory verifies the new files.
+- Compare actual application results with the immutable published 1.11.1 calculator and independent boundary examples. Retain server-recomputed HTTP results and saved-lead acceptance.
+- Recognize verified 1.11.1 for staged owner updates; exercise both organized starting versions as well as retained old-layout upgrades and recovery records. No schema change or live external activation.
+- Local parity/component checks pass; full application acceptance and release publication remain pending.
+
+
 ## 1.11.1 — motion preferences and verified organized updates
 
 - Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.
