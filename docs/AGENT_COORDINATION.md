@@ -1,5 +1,10 @@
 # Codex and Devin work allocation
 
+## 2026-10-13 — M2 payment foundation in progress
+
+Owner requested continued roadmap implementation. Starting main `f659adfc58d3176b233d629e157fd685599bc824`; latest verified release remains 1.4.0 at `0cdea7fbd17e887d3f4bc0574a411b157431b7df`. Codex owns `codex/payment-foundation`: protected separate Authorize.net credentials, sandbox authentication diagnostics, and invoice-bound prepared payment requests with expiry/revocation and explicit no-charge status. Shared permissions, schema, installer, tests and documentation belong to this increment. Devin PR #7 remains untouched at `55d60670497d987286e64630e037e1ba2ec3a318`. Card collection, transaction processing, verified webhooks, refunds and production activation remain disabled and pending separate acceptance. No merchant credentials or live operations are needed for isolated implementation tests; provider success will not be claimed from fixtures. Next: implement and test against native MariaDB and actual browser flows, then release only after complete exact-artifact acceptance.
+
+
 **Current release — 2026-10-13:** [v1.4.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.4.0) is published and downloaded-back verified at `0cdea7fbd17e887d3f4bc0574a411b157431b7df` through [PR #14](https://github.com/afterburn25/Cajun_Web/pull/14). Bounded M1 catalog/billing groundwork: approved service SKUs and exact USD prices, private costs, public configured cards, price revisions, reviewed immutable snapshots on existing invoices, duplicate prevention and audited manual paid/void transitions. [Catalog guide](SERVICE_CATALOG.md). Exact-main acceptance: 165 native and 345 HTTP/Chromium checks, all eight retained assets/tag verified. Earlier releases and Devin PR #7 remain unchanged. No live deployment or payment/provider operation. Next bounded work: M2 Authorize.net sandbox settings and payment-request foundation, followed by verified design-only checkout. Broader catalog/order/tax/subscription/20i/mail/ZIP/SSH work remains incomplete. [Devin handoff](DEVIN_HANDOFF_1.4.0.md).
 
 
