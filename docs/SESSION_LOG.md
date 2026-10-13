@@ -449,3 +449,19 @@ Request: continue without stopping after verified 1.11.0. Starting main `02fc784
 Acceptance follow-up: first PR run 38426685869 passes native, all 59 filesystem/recovery and 241 Apache checks, including actual 1.11.0 update/recovery. Chromium exposed a test-selector error: no-JavaScript pages correctly omit JS-added reveal classes. The assertion now checks actual server-rendered headings/cards and navigates the real work link. Shipping code is unchanged; rerunning the complete suite is required to reach the remaining browser workflows.
 
 Second acceptance run 38427420414 reached actual browser setup and found stale 1.11.0 build literals in the split installer, which rejected valid 1.11.1 JSON responses. Replaced page/JavaScript/header/error labels with the canonical build constant. Also fixed two remaining installer brand-image references from the old assets path, added browser load/version assertions and a builder rejection case. This is a shipping fix; installer inventory is regenerated and full acceptance reruns before merge/publication.
+
+### 2026-10-13 — Devin A-09 support-access foundation
+
+**Request:** "Continue Without Stopping" — next feasible roadmap item (A-09 support-access contract layer, no external gate).
+
+**Starting commit:** `main` `cefcc41` (1.11.1 merged). New branch `devin/support-access`.
+
+**Changed:** added `foundation/support-access/` (SupportGrant, SupportSession, SupportBroker, SupportDenied), `tests/support-access/run.php`, `docs/SUPPORT_ACCESS_FOUNDATION.md`, `.github/workflows/support-access.yml`, and additive continuity entries. No `site/` or shared-path changes.
+
+**Tests:** `php tests/support-access/run.php` — 37 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: staff≠client identity enforcement, TTL bounds, revocation, sensitive-action flag separation, launch denials audited (revoked grant, per-client concurrency), expiry, close/double-close, revocation killing live sessions, banner text, audit trail.
+
+**Failures:** none (one self-caught fix — broker capacity checks now use the launch timestamp rather than real `time()` so synthetic clocks work).
+
+**Blockers:** none for the contract layer; portal session issuance, banner UI and permission wiring remain Codex integration work.
+
+**Next:** PR `devin/support-access`; queue now 16 open Devin PRs awaiting Codex sequencing.

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — A-09 support-access foundation (Devin, isolated component)
+
+- Added canonical `foundation/support-access/` classes (`SupportGrant` binding one staff to one client with bounded TTL, issuer attribution and `permitsSensitive` flag; `SupportSession` with banner text, expiry, action-attributed logging and Return-to-admin close; `SupportBroker` launch gate with grant checks, per-client/per-staff concurrency caps and denial auditing; `SupportDenied` honest-refusal exception) plus `docs/SUPPORT_ACCESS_FOUNDATION.md`.
+- Added `tests/support-access/run.php` (37 synthetic checks; fixture grants/sessions only) and the `support-access.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes, real portal sessions or impersonation. Not yet integrated or released.
+
 ## 1.11.1 — candidate, motion preferences and organized updates
 
 - Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.
