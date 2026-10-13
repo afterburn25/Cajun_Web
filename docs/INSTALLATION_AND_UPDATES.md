@@ -1,6 +1,8 @@
 # Installation, packaging and updates
 
-**1.7.0 candidate:** `sandbox-notifications.php` is a fixed sandbox-only HTTPS POST endpoint with no session, redirects or provider call. One additive `payment_notifications` table and an owner-configured receiver setting are added; receipt defaults to disabled. Existing sites back up files/database/external credential master key, merge UPDATE, then enable Sandbox notifications after Sandbox trials. No runtime CLI/daemon is required. Credential edits pause receipt until rechecked and reconfigured. Owners process queued notifications manually. [Setup and limits](SANDBOX_NOTIFICATIONS.md). Publication pending.
+## 2026-10-13 — Verified 1.7.0 sandbox notification increment
+
+Signed sandbox receipt, durable minimal inbox and explicit owner-triggered current reporting are delivered in [v1.7.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.7.0) / `1fe0670142755f86aee235fabe1847e5d118ee52`. Receiver defaults off; schema is additive, invoice settlement remains disabled and no runtime daemon is needed. Original 1.6.0 UPDATE preserves attempts/events and all earlier records/keys. 358 native / 451 HTTP/Chromium checks pass; signatures/reporting remain synthetic. Actual merchant acceptance, production/client checkout and automatic processing are pending. [Guide](SANDBOX_NOTIFICATIONS.md) · [report](TEST_REPORT_1.7.0.md).
 
 ## 2026-10-13 — Verified 1.6.0 sandbox increment
 
@@ -13,7 +15,7 @@ Released 1.5.0 adds [payment preparation](PAYMENT_PREPARATION.md): two additive 
 Released 1.4.0: after a full backup and UPDATE merge, owners enable **Service catalog** with their current password. Three additive catalog tables preserve clients, support policy, staff access and existing invoices. Fresh installation initializes an empty catalog. No sample prices publish. Read [Service catalog](SERVICE_CATALOG.md); publication evidence remains in the release register. Complete/update inventory: 55/54 files.
 
 
-Current verified release: [v1.6.0](RELEASES.md#v160--published-13-october-2026). [1.6.0 test report](TEST_REPORT_1.6.0.md). Earlier version instructions below are retained for their supported upgrade steps.
+Current verified release: [v1.7.0](RELEASES.md#v170--published-13-october-2026). [1.7.0 test report](TEST_REPORT_1.7.0.md). Earlier version instructions below are retained for their supported upgrade steps.
 
 Released 1.3.0 adds [client support sessions](CLIENT_SUPPORT.md). From 1.2.0, merge the verified UPDATE package after backup, then explicitly enable Client support with the owner password and allow individual clients under the support agreement. Existing roles and customer credentials are retained. From earlier versions, complete the existing workspace/administrator setup first. Fresh setup remains one-page; support policy still requires explicit confirmation. Package inventory: 52 complete / 51 update files. Publication and evidence are tracked in the release register.
 

@@ -1,6 +1,6 @@
 # CajunWebPro 1.7.0 — sandbox notification inbox
 
-Bounded M2 / partial HC-04 and HC-11, starting from published 1.6.0 and main `3dd6d5e82e22ad4a2ab27dbf54d08bde45c50a9a`. Implementation: [PR #20](https://github.com/afterburn25/Cajun_Web/pull/20), `codex/sandbox-webhooks`. Devin's portfolio PR #7 is preserved. Final exact-main acceptance and publication evidence are recorded separately when complete.
+Bounded M2 / partial HC-04 and HC-11, starting from published 1.6.0 and main `3dd6d5e82e22ad4a2ab27dbf54d08bde45c50a9a`. Implementation: [PR #20](https://github.com/afterburn25/Cajun_Web/pull/20), `codex/sandbox-webhooks`. Devin's portfolio PR #7 is preserved. Published and verified at `1fe0670142755f86aee235fabe1847e5d118ee52`. [Exact-main run](https://github.com/afterburn25/Cajun_Web/actions/runs/38385343738) passed 358 native / 451 HTTP/Chromium checks. [Report](TEST_REPORT_1.7.0.md) and [download verification](RELEASE_VERIFICATION_1.7.0.json) retain evidence.
 
 | Scope | Delivered behavior / limit |
 |---|---|
