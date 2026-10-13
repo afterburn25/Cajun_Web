@@ -11,3 +11,5 @@
 *.png binary
 *.ico binary
 *.webp binary
+foundation/mail-receiving/vendor/** -text
+foundation/mail-receiving/licenses/** -text

@@ -1,0 +1,39 @@
+name: Mail receiving checks
+on:
+  push:
+    branches: [main]
+    paths: ['foundation/mail-receiving/**', 'tests/mail-receiving/**', 'tools/check_mail_vendor.py', '.github/workflows/mail-receiving.yml']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  receiving:
+    name: Mail receiving PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    strategy:
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@d52fc211a0436f8839a587b3b5b8efddab4744ea
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: openssl, mbstring, iconv, ctype
+          coverage: none
+      - name: Exact dependencies and synthetic parser boundaries
+        run: |
+          mkdir -p qa
+          python3 tools/check_mail_vendor.py --reproduce > qa/mail-receiving-vendor.txt
+          php tests/mail-receiving/run.php > qa/mail-receiving-results.json
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mail-receiving-${{ matrix.php }}-${{ github.sha }}
+          path: qa/mail-receiving-*
+          if-no-files-found: error
