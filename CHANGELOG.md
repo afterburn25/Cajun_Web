@@ -5,6 +5,7 @@
 - Added canonical `foundation/ssh-access/` classes (`ServiceTarget`, `TargetRegistry`, client-authorized `AccessGrant`, hash-bound single-use `LaunchToken`, `TerminalSession` with enforced idle/absolute timeouts, `AuditEvent`, the `TerminalTransport` boundary interface with no implementation, and `SessionBroker` — the single launch gate that never touches transport on a denial) plus `docs/SSH_ACCESS_FOUNDATION.md`.
 - Added `tests/ssh-access/run.php` (65 synthetic checks; fixture identities/targets only) and the `ssh-access.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, terminal UI, gateway, schema or SSH transport; A-10 gate remains `Architecture/security validation pending`. Not yet integrated or released.
+
 ## 1.11.1 — candidate, motion preferences and organized updates
 
 - Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.
