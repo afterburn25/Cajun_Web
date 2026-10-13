@@ -3,7 +3,7 @@
 ## Unreleased — homepage motion fixes (W-02 slice)
 
 - Move the `motion-off` marker to `documentElement` and give it real CSS coverage: paused motion now stops CSS animations/transitions, disables smooth-scroll, resets the hero transform and force-reveals pending `.reveal` sections that a mid-session pause previously left invisible.
-- Add a restrained hover/focus metallic sheen on the brand logo; both pause paths suppress it. The parallax reset now targets the real `[data-parallax]` hook (`.hero-scene` markup was never emitted; `--scene-*` variables are currently unconsumed by any rule — recorded as a finding, not wired).
+- Add a restrained hover/focus metallic sheen on the brand logo; both pause paths suppress it. The parallax reset now targets the real `[data-parallax]` hook (`.hero-scene` markup was never emitted; `--scene-*` variables are live via `premium.css`). Ten provably-dead rules for the legacy `.hero-scene`/`.scroll-cue`/`float-cue` selectors were removed — no markup emits them and no JS adds them.
 
 ## 1.11.0 — portfolio integration candidate, not yet released
 
