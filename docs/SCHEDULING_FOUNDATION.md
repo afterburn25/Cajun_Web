@@ -17,8 +17,10 @@ provider dependencies, and it performs no network access.
   timezone (`Tuesdays 09:00–12:00 America/Chicago`). `expand()` produces
   concrete UTC windows using real timezone rules: DST transitions shift the
   UTC instant while the configured local time stays put, and occurrences
-  swallowed by a spring-forward gap are skipped rather than silently moved.
-  Unknown timezone identifiers are rejected, never guessed.
+  swallowed by a spring-forward gap at either endpoint are skipped rather
+  than silently moved or stretched; ambiguous fall-back times resolve to
+  the first occurrence. Unknown timezone identifiers are rejected, never
+  guessed.
 - **`SchedulePolicy`** — adapter-supplied constraints: slot length (1–480
   minutes), buffer seconds between bookings, and minimum-notice seconds.
 - **`Consultation`** — immutable request record: id, name, validated email,
@@ -33,10 +35,13 @@ provider dependencies, and it performs no network access.
   requires the slot to be policy-sized, boundary-aligned, fully inside an
   availability window, and clear of every active consultation including its
   buffer. `request()` verifies bookability and returns the consultation still
-  `requested`; `transition()` applies only legal moves; `reschedule()`
-  requires a bookable new slot (ignoring the consultation's own slot) and
-  returns the consultation to `requested`, because a moved meeting is not
-  confirmed until confirmed again.
+  `requested`; `transition()` applies only legal moves and `reschedule()`
+  requires a bookable new slot (ignoring the consultation's own slot),
+  returning it to `requested` — a moved meeting is not confirmed until
+  confirmed again. Both lifecycle operations require the instance currently
+  tracked by the calendar, refuse stale or untracked copies, and store their
+  result, so sequential operations on one calendar never keep stale
+  conflicts or leave a newly occupied time bookable.
 
 ## What it deliberately does not do
 

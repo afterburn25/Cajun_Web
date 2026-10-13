@@ -84,6 +84,22 @@ $gap = new WeeklyRule(0, 150, 180, 'America/New_York');
 check('gap occurrence is skipped', $gap->expand(strtotime('2025-03-08T00:00:00Z'), strtotime('2025-03-10T00:00:00Z')) === []);
 check('gap rule still produces normal weeks', count($gap->expand(strtotime('2025-03-10T00:00:00Z'), strtotime('2025-03-24T00:00:00Z'))) === 2);
 
+// An end inside the spring-forward gap is also skipped — Sunday 01:30 exists
+// but 02:30 does not, so the whole occurrence drops rather than silently
+// stretching to 03:30 and offering unconfigured availability.
+$endGap = new WeeklyRule(0, 90, 150, 'America/New_York');
+check('end-in-gap occurrence is skipped', $endGap->expand(strtotime('2025-03-08T00:00:00Z'), strtotime('2025-03-10T00:00:00Z')) === []);
+check('end-in-gap rule still produces normal weeks', count($endGap->expand(strtotime('2025-03-10T00:00:00Z'), strtotime('2025-03-24T00:00:00Z'))) === 2);
+
+// Fall-back policy is explicit: ambiguous local times resolve to the first
+// occurrence — Sunday 01:00–01:30 America/New_York on 2025-11-02 is
+// 05:00–05:30 UTC (the EDT occurrence), not the repeated hour.
+$fallback = new WeeklyRule(0, 60, 90, 'America/New_York');
+$fbWindows = $fallback->expand(strtotime('2025-11-01T00:00:00Z'), strtotime('2025-11-04T00:00:00Z'));
+check('fall-back resolves to first occurrence', count($fbWindows) === 1
+    && $fbWindows[0]->startsAt === strtotime('2025-11-02T05:00:00Z')
+    && $fbWindows[0]->endsAt === strtotime('2025-11-02T05:30:00Z'));
+
 throws('unknown timezone rejected', fn () => new WeeklyRule(1, 0, 60, 'Not/AZone'));
 throws('blank timezone rejected', fn () => new WeeklyRule(1, 0, 60, ' '));
 throws('bad day rejected', fn () => new WeeklyRule(7, 0, 60, 'America/Chicago'));
@@ -175,6 +191,14 @@ throws('rescheduling a cancelled consult rejected', fn () => $cal->reschedule(fi
 $cancelledFinal = $cal->transition($moved, Consultation::CANCELLED);
 throws('cancelled cannot be confirmed', fn () => $cal->transition($cancelledFinal, Consultation::CONFIRMED));
 throws('declined cannot reopen', fn () => $cal->transition(fixtureConsultation('fx-d', 1737000000, ['status' => Consultation::DECLINED]), Consultation::REQUESTED));
+
+// Lifecycle operations must update the stored record on the same calendar:
+// the cancellation above frees the rescheduled slot for real, and callers
+// holding superseded instances are refused rather than forking state.
+check('cancellation frees the rescheduled slot', $cal->isBookable(new TimeWindow(strtotime('2025-01-07T16:30:00Z'), strtotime('2025-01-07T17:00:00Z')), null, $now));
+throws('stale instance rejected', fn () => $cal->transition($req, Consultation::CANCELLED));
+throws('untracked consultation rejected', fn () => $cal->transition(fixtureConsultation('fx-new', strtotime('2025-01-07T16:00:00Z')), Consultation::CONFIRMED));
+throws('untracked reschedule rejected', fn () => $cal->reschedule(fixtureConsultation('fx-new2', strtotime('2025-01-07T16:00:00Z')), new TimeWindow(strtotime('2025-01-07T17:00:00Z'), strtotime('2025-01-07T17:30:00Z')), $now));
 
 printf("%d checks, %d failures\n", $checks, count($failures));
 foreach ($failures as $failure) {

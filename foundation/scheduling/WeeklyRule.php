@@ -45,8 +45,10 @@ final readonly class WeeklyRule
 
     /**
      * Every concrete UTC window this rule produces inside [rangeStart, rangeEnd).
-     * Times that do not exist locally (spring-forward gaps) are skipped;
-     * ambiguous fall-back times resolve to the first occurrence.
+     * Occurrences whose start OR end local minute does not exist (spring-forward
+     * gaps) are skipped — normalizing an endpoint inside the gap would silently
+     * lengthen or move the offered availability. Ambiguous fall-back times
+     * resolve to the first occurrence.
      *
      * @return list<TimeWindow>
      */
@@ -60,21 +62,21 @@ final readonly class WeeklyRule
         $endLocal = (new DateTimeImmutable('@' . $rangeEnd))->setTimezone($zone);
 
         $windows = [];
+        $localMinute = static fn (DateTimeImmutable $t): int => (int) $t->format('H') * 60 + (int) $t->format('i');
         // Walk local days; each matching day yields at most one window.
         while ($cursor->getTimestamp() <= $endLocal->getTimestamp() + 86400) {
             if ((int) $cursor->format('w') === $this->dayOfWeek) {
                 $dayStart = $cursor;
                 $start = $dayStart->setTime(0, 0)->modify("+{$this->startMinute} minutes");
                 $end = $dayStart->setTime(0, 0)->modify("+{$this->endMinute} minutes");
-                // Skip occurrences swallowed by a DST gap: after a spring
-                // forward the requested local time may not exist, so the
-                // resolved instant lands on a different local minute.
-                $startOk = ((int) $start->format('H') * 60 + (int) $start->format('i')) === $this->startMinute % 1440
-                    && $this->startMinute < 1440;
-                if ($this->startMinute === 0) {
-                    $startOk = ((int) $start->format('H') === 0 && (int) $start->format('i') === 0);
-                }
-                if ($startOk && $end->getTimestamp() > $start->getTimestamp()) {
+                // Skip occurrences swallowed by a DST gap at either endpoint:
+                // after a spring forward the requested local time may not
+                // exist, so the resolved instant lands on a different local
+                // minute. Checking only the start would let an end inside the
+                // gap silently stretch the window.
+                $startOk = $localMinute($start) === $this->startMinute;
+                $endOk = $localMinute($end) === $this->endMinute % 1440;
+                if ($startOk && $endOk && $end->getTimestamp() > $start->getTimestamp()) {
                     $window = new TimeWindow($start->getTimestamp(), $end->getTimestamp());
                     if ($window->overlaps(new TimeWindow($rangeStart, $rangeEnd))) {
                         $windows[] = $window;

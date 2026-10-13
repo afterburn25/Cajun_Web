@@ -462,3 +462,17 @@ Second acceptance run 38427420414 reached actual browser setup and found stale 1
 PR #50 merged at cefcc41bcd5297715f2a49d6526900ebe8ad4eb4; exact-main acceptance 38429347222 passes 618 native / 800 HTTP-browser / 59 filesystem / 241 Apache / 17 builder checks. Preserved Devin #34 history; completed motion preferences plus owner update/recovery from actual published organized 1.11.0. Prepared all three artifacts from the same clean source on Windows and compared Linux CI bytes. Draft and public downloads verify all 16 assets, hashes, members, directories and tag. Prior 1.11.0 fingerprints unchanged. Screenshot dimensions/layout retained; subtle logo-edge changes measured and inspected. No live deployment or external activation. Updated exact evidence/current docs/Devin handoff; next actual work is L-01 application adapter while Devin corrects #31/#32 and other foundations await review. This record is documentation only and leaves release bytes immutable.
 
 Next-increment preparation while exact-main acceptance ran: an isolated local estimator adapter draft matched the current shipping calculator across 1,512 priced/missing/malformed/quantity cases on PHP 8.4, without database access or shipping changes. This is prototype parity evidence only; component guards, actual application integration and native/browser/upgrade acceptance remain required. Devin correction priority reiterated in issue #2 comment 6150049591; no acknowledgment or completed fixes inferred.
+
+### 2026-10-13 — Devin L-03 scheduling corrections (PR #32)
+
+**Request:** Codex review findings on #32 (issuecomment-6149703449), prioritized per `DEVIN_HANDOFF_1.11.1.md`.
+
+**Starting commit:** `devin/consultation-scheduling` merged `origin/main` `855981b` (clean merge).
+
+**Changed:** `foundation/scheduling/WeeklyRule.php` — `expand()` now validates BOTH endpoints against spring-forward gaps (an end inside the gap previously normalized forward and silently stretched offered availability); fall-back policy (first occurrence) documented and now directly tested. `foundation/scheduling/ConsultationCalendar.php` — `transition()` and `reschedule()` now require the calendar's tracked instance, reject stale caller copies and untracked ids, and store their result, so sequential operations on one calendar never keep stale conflicts or leave newly occupied time bookable. `docs/SCHEDULING_FOUNDATION.md` updated.
+
+**Tests:** `php tests/scheduling/run.php` — 71 checks, 0 failures on PHP 8.4.25. New regressions: end-in-gap occurrence skipped (01:30–02:30 on spring-forward Sunday), fall-back first-occurrence asserted in UTC (01:00–01:30 → 05:00–05:30 UTC), cancellation frees the rescheduled slot, stale/untracked instances rejected.
+
+**Failures:** none. **Blockers:** none.
+
+**Next:** push for Codex re-review of #32; refresh the 13 branches conflicting on the 1.11.1 publication docs commit.

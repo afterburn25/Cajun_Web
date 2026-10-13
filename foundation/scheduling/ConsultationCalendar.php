@@ -134,31 +134,58 @@ final class ConsultationCalendar
     }
 
     /**
-     * Apply a legal lifecycle move. Only the transition rules change state;
-     * `confirmed` is therefore never reachable without an explicit call, and
-     * terminal statuses cannot reopen.
+     * Apply a legal lifecycle move to the tracked consultation and keep the
+     * calendar's stored record current — so a cancellation really frees its
+     * slot and a stale caller copy is refused instead of silently forking
+     * state. Only the transition rules change state; `confirmed` is therefore
+     * never reachable without an explicit call, and terminal statuses cannot
+     * reopen.
      */
     public function transition(Consultation $consultation, string $to): Consultation
     {
-        if (!Consultation::canTransition($consultation->status, $to)) {
-            throw new InvalidArgumentException("Cannot move a consultation from '{$consultation->status}' to '{$to}'.");
+        $stored = $this->tracked($consultation);
+        if (!Consultation::canTransition($stored->status, $to)) {
+            throw new InvalidArgumentException("Cannot move a consultation from '{$stored->status}' to '{$to}'.");
         }
-        return $consultation->withStatus($to);
+        $updated = $stored->withStatus($to);
+        $this->consultations[$stored->id] = $updated;
+        return $updated;
     }
 
     /**
      * Move a consultation to a new slot. The new slot must be bookable while
      * ignoring this consultation's current slot, and the result returns to
-     * `requested` — a new time needs a fresh confirmation.
+     * `requested` — a new time needs a fresh confirmation. The stored record
+     * is updated so the vacated time frees up and the new time blocks
+     * immediately on this calendar.
      */
     public function reschedule(Consultation $consultation, TimeWindow $slot, int $now): Consultation
     {
-        if (!$consultation->isActive()) {
+        $stored = $this->tracked($consultation);
+        if (!$stored->isActive()) {
             throw new InvalidArgumentException('Only a requested or confirmed consultation can be rescheduled.');
         }
-        if (!$this->isBookable($slot, $consultation->id, $now)) {
+        if (!$this->isBookable($slot, $stored->id, $now)) {
             throw new InvalidArgumentException('The new slot is not inside availability or conflicts with an existing consultation.');
         }
-        return $consultation->withSlot($slot);
+        $updated = $stored->withSlot($slot);
+        $this->consultations[$stored->id] = $updated;
+        return $updated;
+    }
+
+    /**
+     * The calendar's tracked copy of a consultation, refusing unknown ids and
+     * stale caller copies whose status/slot no longer match the stored state.
+     */
+    private function tracked(Consultation $consultation): Consultation
+    {
+        $stored = $this->consultations[$consultation->id] ?? null;
+        if ($stored === null) {
+            throw new InvalidArgumentException("Consultation '{$consultation->id}' is not tracked by this calendar.");
+        }
+        if ($stored != $consultation) {
+            throw new InvalidArgumentException("Stale consultation '{$consultation->id}': use the instance returned by the calendar.");
+        }
+        return $stored;
     }
 }
