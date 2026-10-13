@@ -33,7 +33,10 @@ def inventory():
         if (SITE/directory/'.htaccess').read_text(encoding="utf-8")!='Require all denied\n':raise RuntimeError('Missing internal denial: '+directory)
     for path in SITE.rglob('*.php'):
         if path.name.endswith('.generated.php'):continue
-        text=path.read_text(encoding="utf-8")
+        # Maintained charset tables contain intentional non-UTF-8 PHP string bytes.
+        # Preserve them exactly; ASCII dependency scanning still works. Own source stays strict UTF-8.
+        vendor=SITE/'includes/foundation/mail-receiving/vendor'
+        text=path.read_text(encoding="utf-8",errors='surrogateescape' if path.is_relative_to(vendor) else 'strict')
         for dependency in re.findall(r"CWP_CODE_ROOT\s*\.\s*'(/[^']+\.php)'",text):
             if not (SITE/dependency.lstrip('/')).is_file():raise RuntimeError('Stale code dependency in '+str(path)+': '+dependency)
         for asset in re.findall(r'src=[\"\']((?:assets|images)/[^\"\'<>?]+)[\"\']',text):
@@ -46,6 +49,16 @@ def inventory():
     return result
 
 def generated(refresh):
+    from check_mail_vendor import check as check_mail_vendor, check_mirror
+    check_mail_vendor(check_runtime=False)
+    receiving=ROOT/'foundation/mail-receiving'
+    for source in receiving.rglob('*'):
+        if source.is_symlink():raise RuntimeError('Symlink in receiving source')
+        if source.is_file():
+            target=SITE/'includes/foundation/mail-receiving'/source.relative_to(receiving)
+            if refresh:
+                target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(source.read_bytes())
+    check_mirror(required=True)
     for area in ['access','invitations','portfolio','estimator','email-templates','webmail','review-requests','scheduling','mail-transport']:
         for source in (ROOT/'foundation'/area).glob('*.php'):
             target=SITE/'includes/foundation'/area/source.name
