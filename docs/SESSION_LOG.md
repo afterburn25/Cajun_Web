@@ -12,14 +12,11 @@
 
 **Next:** Codex review; implementation PR follows only after the contract is accepted. PRs #31/#32/#34 remain queued and mergeable; PR #34 received an installer-hash fix at `ac91f0e` (CRLF-hashed site.css → LF).
 
-
 ## 2026-10-13 — Sandbox trial release published and verified
 
 Continued roadmap from main `dd29436fa40c2a0f800bc02569b5fd5d1fb75c09` / 1.5.0 on `codex/sandbox-attempts`. Added owner-only tokenized sandbox UI, fixed sandbox reporting/charge adapter, additive attempt/events, exact amount/reference/account checks, idempotency and concurrency safeguards, unknown-result recovery, shared manual/catalog/request locks, strict audit and immutable 1.5.0 upgrade acceptance. PR #18 merged as `e5d4c17456faff0522429ab3f58093a06a523bd5`; exact-main run https://github.com/afterburn25/Cajun_Web/actions/runs/38380935411 passes 296 native / 421 HTTP/Chromium checks. Independent policy/invitation/documentation checks pass. Reviewed desktop/320px screenshots.
 
 First candidate 4158d37 failed installer inventory due to Windows line endings; normalized LF and regenerated. f36e44a passed native tests but HTTP expected the established duplicate-payment message; restored the message without removing safeguards. 3ebc8a8 passed complete acceptance; final wording clarifies owner sandbox versus disabled client checkout. Final merged source and packages were checked independently. All eight draft and published release assets, extracted hashes, version labels and tag were downloaded-back verified. [Report](TEST_REPORT_1.6.0.md), [verification](RELEASE_VERIFICATION_1.6.0.json). Earlier releases untouched. No live deployment, provider operation or customer mail/data. Real merchant acceptance remains unverified; tests use synthetic gateway/Accept.js boundaries. Next: signed events, actual sandbox acceptance, distinct client/real-money checkout. Preserve Devin PR #7. Publication records are docs-only.
-
-
 
 ## 2026-10-13 — Administrator application integration candidate
 
@@ -60,7 +57,6 @@ Append dated entries. Keep this chronological. Use `SESSION_TEMPLATE.md`; link d
 **Limits / no external implementation:** No website source import or feature build in this recovery session, no staging acceptance, no hosting modification, and no customer-data changes. No complete v1.1.0 package or supporting test evidence was recovered. A favicon asset archive does not establish its live integration.
 
 **Next action:** Commit the recoverable complete baseline and originals into the source tree before rebuilding requested additions in tested, committed increments. Verify real artifacts and attach only existing files before declaring another downloadable release. Keep the current website intact rather than downgrade/reinstall it to address a chat download failure.
-
 
 ## 2026-10-12 — Add custom hosting commerce and Authorize.net roadmap
 
@@ -210,13 +206,11 @@ Staff/access and invitation components from PRs #5/#6 are preserved outside the 
 
 Next: run native MariaDB and real HTTP/Chromium acceptance on the reconciled candidate, extend missing release coverage, fix failures, publish only the exact tested main/package, verify the downloaded release, then post the authorized issue #2 handoff and stop. Issue #4 tracks completion. No release is declared at this checkpoint. No live hosting, customer data/mail, charges or provider operations are authorized.
 
-
 **Work/evidence at this checkpoint:** fetched branches, tags, PRs, issues #2/#4 and releases; read both source/main records and the build/acceptance tools. No tag or release exists. Earlier full application run failed on an older SHA; corrected application head has no complete run. Reconciled documentation histories without replacing either stream; no shipping changes in this merge. Commit: `merge: preserve main foundations in 1.1.0 release completion`; parents are the exact source/main commits above. Validation and later release evidence will follow.
 
 **Acceptance correction:** PR #8 combined run 38352334014 passed build and native database steps, then failed importing requests because tests/http.py shadowed the standard library. Renamed it, aligned candidate labels, fixed build UTF-8/line-ending and recorded-commit verification, revoked invites on client changes, rechecked activation expiry and tightened uploads/reduced-motion behavior. Local syntax/build and documentation checks pass; expanded native/browser acceptance remains required. Parent df57b40; commit message: fix: prepare release candidate and repair browser acceptance entrypoint. No publication or deployment.
 
 **Expanded acceptance and browser defect:** `01e7706` added the exact 1.0.8 historical test fixture, actual update ZIP/admin migration, captured synthetic mail, saved admin/client workflows, installer failures and narrow/mobile/root browser cases. Run 38353670112 passed the native and expanded HTTP portions, then exposed a real browser bug: named action controls shadowed form.action, producing POST /existing/[object RadioNodeList]. Both growth and original inquiry scripts now use the explicit action attribute. Added real Chromium review/consultation submission and account-revocation coverage. Parent `01e7706`; commit `fix: submit public browser forms to their configured endpoints`. No CSP weakening, live mail, deployment or publication occurred; rerun the entire suite after refreshed installer hashes.
-
 
 **Release documentation and browser continuation:** parent 7f8a6af. Actual browser forms now submit and persist; remaining run stopped on a test locator expecting Sign in without the displayed arrow. Corrected the locator and added browser protected-download/logout verification. Updated source layout, installation versus 1.0.8 upgrade, current roadmap/ownership/release status and official competitor reference review. No published release yet; run final combined acceptance before merging. Commit: docs: reconcile release instructions and browser acceptance.
 
@@ -296,11 +290,9 @@ Documentation-only publication commit parent `0cdea7fbd17e887d3f4bc0574a411b1574
 
 Owner requested continued roadmap implementation. Starting main `f659adfc58d3176b233d629e157fd685599bc824`; latest verified release remains 1.4.0 at `0cdea7fbd17e887d3f4bc0574a411b157431b7df`. Codex owns `codex/payment-foundation`: protected separate Authorize.net credentials, sandbox authentication diagnostics, and invoice-bound prepared payment requests with expiry/revocation and explicit no-charge status. Shared permissions, schema, installer, tests and documentation belong to this increment. Devin PR #7 remains untouched at `55d60670497d987286e64630e037e1ba2ec3a318`. Card collection, transaction processing, verified webhooks, refunds and production activation remain disabled and pending separate acceptance. No merchant credentials or live operations are needed for isolated implementation tests; provider success will not be claimed from fixtures. Next: implement and test against native MariaDB and actual browser flows, then release only after complete exact-artifact acceptance.
 
-
 ## 2026-10-13 — Candidate 1.5.0 payment foundation
 
 Implemented on `codex/payment-foundation`, parent `e0f8968` after main `f659adf`: owner-only protected separate Authorize.net settings, sandbox-authentication-only adapter and reviewed invoice-bound prepared requests. Existing invoices, catalog snapshots, permissions and client identities are retained. Card collection/production processing remain disabled. [Guide](PAYMENT_PREPARATION.md). Local PHP syntax, deterministic 58/57-file build and 251 permission checks pass. Native MariaDB/actual HTTP/browser and retained 1.4.0 upgrade tests are added; CI is pending and no provider success is claimed. No real credentials, live host, customer mail or provider operation. Next: run/fix full application acceptance, review screenshots, merge only when green and verify an exact-main release. Devin PR #7 is unchanged.
-
 
 ## 2026-10-13 — Payment candidate installer mismatch
 
@@ -428,7 +420,6 @@ Run `38417310703` retains passing native, expanded HTTP/Chromium and filesystem 
 
 Candidate 49eae7f passes the builder negative, native, HTTP/Chromium and filesystem suites. Apache run 38418701581 exposed a harness configuration error: OPcache was enabled per request after startup, which PHP forbids and the installed module crashed on. Configure the isolated Apache PHP scan directory at process startup instead. Preserve all distribution guides and per-artifact manifests in CI artifacts. The interrupted Apache update diagnostic remains to be reached and checked; publication remains pending.
 
-
 The Apache legacy fixture also needs CWP_BOOT when reading the intentionally guarded synthetic installed configuration. Without that constant the fixture helper exits safely before copying config; it cannot exercise migration. Added the normal guard constant to that fixture-only CLI command. No production configuration changed.
 
 ## 2026-10-13 — Dependency status clarification and agent instructions
@@ -469,11 +460,33 @@ PR #50 merged at cefcc41bcd5297715f2a49d6526900ebe8ad4eb4; exact-main acceptance
 
 Next-increment preparation while exact-main acceptance ran: an isolated local estimator adapter draft matched the current shipping calculator across 1,512 priced/missing/malformed/quantity cases on PHP 8.4, without database access or shipping changes. This is prototype parity evidence only; component guards, actual application integration and native/browser/upgrade acceptance remain required. Devin correction priority reiterated in issue #2 comment 6150049591; no acknowledgment or completed fixes inferred.
 
+### 2026-10-13 — Devin A-07 email-template foundation
+
+**Request:** "Continue Without Stopping" — next feasible roadmap item (A-07 template/placeholder contract layer, no external gate). Codex review corrections on #31/#32 were delivered and pushed first this session.
+
+**Starting commit:** `main` `855981b` (published 1.11.1). New branch `devin/email-templates`.
+
+**Changed:** added `foundation/email-templates/` (PlaceholderRegistry, EmailTemplate), `tests/email-templates/run.php`, `docs/EMAIL_TEMPLATES_FOUNDATION.md`, `.github/workflows/email-templates.yml`, and additive continuity entries. No `site/` or shared-path changes.
+
+**Tests:** `php tests/email-templates/run.php` — 50 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: allowlist construction/validation, unknown-placeholder rejection at draft and edit, draft→active→archived lifecycle, non-mutating edits, duplicate-as-personal, shared/personal/transactional insertion gating, honest preview with named unresolved fields.
+
+**Failures:** none. **Blockers:** none for the contract layer; compose UI, persistence and sending remain Codex integration work.
+
+**Next:** PR `devin/email-templates`; queue now 17 open Devin PRs awaiting Codex sequencing.
+
 ## 2026-10-13 — L-01 live estimator integration, 1.11.2 candidate
 
 Continue without stopping from verified 1.11.1 and publication-record main 855981b. Branch codex/estimator-live-adapter preserves reviewed Devin #35/91a12cc in merge9070609. Added app/marketing/estimator.php, protected canonical foundation mirroring and delegation from existing growth_estimate; retained all live input/result/policy semantics, including early unpriced and malformed-rule handling. Added actual-release CLI parity worker/matrix, independent boundary expectations and direct-HTTP denial coverage. Local PHP 8.4: 3,084 parity/boundary cases plus 65 component checks pass; no database/network operation in this comparison. Added published 1.11.1 archive/file/shim inventory and download fixture; expanded Apache/filesystem acceptance across both organized baselines. Candidate version1.11.2 with regenerated installer; combined acceptance/publication pending. No schema changes, live host deployment, provider/merchant/mail/SSH activation. Next: combined PR acceptance, exact-main verification and three-package release; Devin #31/#32 findings remain assigned for correction.
 
 Integration refresh: preserved latest Devin #35 head efc967a (publication-record merge only), retaining the 1.11.2 active scope and verified 1.11.1 records when resolving headings. Observed new #31 head23014c5 and #32 headdf0fdfe containing requested review corrections; review/testing of those corrected components is next, not yet application acceptance.
+
+### 2026-10-13 — Devin A-07 corrections (Codex review)
+
+**Request:** Codex 1.11.2 review found two preview defects on `devin/email-templates`: sequential `str_replace` re-scanned substituted values (a merge value containing `{{project_name}}` leaked that field's content), and malformed double-brace tokens were silently accepted so `preview([])` reported nothing unresolved.
+
+**Changed:** `EmailTemplate::preview()` now substitutes in a single `preg_replace_callback` pass over the original subject/body — merge values are literal data, never re-scanned. New `BRACE_TOKEN` grammar check rejects any `{{`/`}}` that is not a complete `{{lower_snake}}` token (uppercase, spaces, dots, unmatched, stray, triple) at draft and edit. Preview values must be strings. Docblock and guide now record that rendered output is plain text requiring UI escaping, and that a mail adapter must reject header line breaks.
+
+**Tests:** 50 synthetic checks (14 new regressions) pass on PHP 8.4.25 including `php -n` no-extension run.
 
 ## 2026-10-13 — 1.11.2 published and independently verified; next mail-template increment
 
@@ -492,3 +505,27 @@ PR #55 merged at 4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36; exact-main acceptance
 **Failures:** none. **Blockers:** none for the contract layer; provider calls, reconciliation, billing and UI remain Codex integration work.
 
 **Next:** PR `devin/shared-hosting`; queue now 19 open PRs awaiting Codex sequencing.
+
+## 2026-10-13 — A-07 application integration claimed
+
+Started from publication-record main a1581d4 on codex/admin-email-templates; preserve #56 through ef5d4f9. Shared-doc conflicts retain actual published 1.11.2 and historical component records. Original 36 component checks pass, but sequential substitution and malformed-token acceptance are reproduced and assigned to Devin before release. Next: implement additive staff template storage/revisions/permissions/UI and native/browser acceptance while corrections proceed. No production send or account connection. Issue #2 claim and verified 1.11.2 handoff are posted.
+
+## 2026-10-13 — A-07 application implementation ready for combined acceptance
+
+From merge 395e9b9 preserving corrected Devin #56 through f3522f6, added organized mail-template service/controllers/view/schema/migration, explicit staff grant/home/navigation, canonical mirroring and fresh-install setup. New candidate 1.12.0 tracks exact published 1.11.2 hashes and extends organized recovery fixtures. Added native permission/privacy/audit/concurrency checks, real admin/browser drafts/preview/archive/escaping checks and actual latest-package additive setup/file recovery. Fifty component checks under PHP 8.4 without optional extensions, syntax, documentation links and source whitespace pass; full native/browser/Apache acceptance is pending. No messages sent, provider changes or live deployment. Next: run combined CI, resolve findings, inspect screenshots and only then merge/test exact main and publish verified packages.
+
+## 2026-10-13 — A-07 first combined acceptance and browser-test correction
+
+PR #58 head 327c8b5 / run 38437059703 passes 56 new template-native checks, existing native suites, all 826 recorded HTTP checks, 87 filesystem/recovery and 327 Apache checks. The browser suite stops at its new template sign-in navigation wait: test expected admin/index.php without the existing ?view=dashboard query. Corrected that expectation; no shipping-source fix was needed. Retained failed-run evidence locally. Added meaningful native checks for refusing/adopting no populated unknown template state and for paginated immutable history. Next: rerun complete acceptance and inspect the actual template screens. Candidate remains unpublished.
+
+## 2026-10-13 — Template activation assertion corrected from observed rendering
+
+Run 38437939855 at f642f8b passes all 59 template-native checks, 87 filesystem and 327 Apache checks. Browser create/preview and direct HTTP lifecycle pass; the Chromium activation assertion compared lowercase against innerText rendered through the existing capitalize CSS. Server evidence shows successful 303 activation and follow-up GET. Use a retried DOM-text assertion and explicit saved database state. Inspected the actual desktop template preview; mobile capture follows activation in the next run. Updated the administrator grant guide and its organized source paths. No shipping-source change. Candidate release remains gated on the complete passing run and final screenshots.
+
+## 2026-10-13 — Passing template application run and mobile evidence adjustment
+
+PR #58 at 8905ed1 / run 38438750445 passes all named suites: 677 native (59 templates), 3,084 estimator, 832 HTTP/browser, 87 filesystem, 327 Apache and 17 builder checks. Inspected template desktop/mobile screenshots. The mobile image was taken mid-transition immediately after resizing the desktop viewport, leaving the moving sidebar over the form. Added a state-based wait for the closed drawer plus actual open/Escape/focus checks before capturing the final mobile view. No application CSS or behavior change; this improves visual/navigation evidence. Next: passing revised PR checks, exact-main acceptance and independent release verification.
+
+## 2026-10-13 — Keep CSP intact while waiting for mobile drawer state
+
+Run 38439521027 confirms template create/preview/activation plus native/filesystem/Apache passes, but the custom Playwright wait_for_function evaluates a string in the page and is rejected by the site's existing unsafe-eval prohibition. Replaced that test-only wait with built-in viewport assertions, verified against Playwright's documented locator API. The security policy remains unchanged. Also focus the template navigation link before Escape so the check actually exercises focus return to the menu button. Next: complete the revised browser evidence and release gates.
