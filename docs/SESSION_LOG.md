@@ -511,3 +511,7 @@ Run 38437939855 at f642f8b passes all 59 template-native checks, 87 filesystem a
 ## 2026-10-13 — Passing template application run and mobile evidence adjustment
 
 PR #58 at 8905ed1 / run 38438750445 passes all named suites: 677 native (59 templates), 3,084 estimator, 832 HTTP/browser, 87 filesystem, 327 Apache and 17 builder checks. Inspected template desktop/mobile screenshots. The mobile image was taken mid-transition immediately after resizing the desktop viewport, leaving the moving sidebar over the form. Added a state-based wait for the closed drawer plus actual open/Escape/focus checks before capturing the final mobile view. No application CSS or behavior change; this improves visual/navigation evidence. Next: passing revised PR checks, exact-main acceptance and independent release verification.
+
+## 2026-10-13 — Keep CSP intact while waiting for mobile drawer state
+
+Run 38439521027 confirms template create/preview/activation plus native/filesystem/Apache passes, but the custom Playwright wait_for_function evaluates a string in the page and is rejected by the site's existing unsafe-eval prohibition. Replaced that test-only wait with built-in viewport assertions, verified against Playwright's documented locator API. The security policy remains unchanged. Also focus the template navigation link before Escape so the check actually exercises focus return to the menu button. Next: complete the revised browser evidence and release gates.
