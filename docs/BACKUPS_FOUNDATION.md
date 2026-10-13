@@ -14,6 +14,9 @@ This is the safe portion of [A-03](ROADMAP.md#a-03--backup-and-restore): the man
 ## Guarantees
 
 - **Secrets exclusion is structural** — private paths cannot enter a backup scope at all.
+- **Retention is never born expired** — `retainUntil` must parse and
+  extend past `createdAt`; pruning can only happen on real elapsed
+  time.
 - **Deliberate authorization** — a typed phrase + named actor, never a bare click; expired backups cannot be authorized.
 - **Honest impact** — the preview reflects real hash comparisons, so "what will change" is computed, not asserted.
 - **No unauthorized application** — `applied()` throws unless authorized first.

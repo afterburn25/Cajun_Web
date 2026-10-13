@@ -67,6 +67,8 @@ check('verifyItem mismatch', !manifest()->verifyItem('db/services', h('tampered'
 check('verifyItem unknown', !manifest()->verifyItem('db/nope', h('x')));
 check('not expired before retainUntil', !manifest()->expired(strtotime('2026-10-15')));
 check('expired after retainUntil', manifest()->expired(strtotime('2026-11-15')));
+rejects('retention before creation rejected', fn () => manifest(['retainUntil' => '2026-10-01']));
+rejects('retention equal to creation rejected', fn () => manifest(['retainUntil' => '2026-10-10T09:00:00Z']));
 
 // Secrets can never be scoped into a backup
 rejects('config.php rejected from scope', fn () => manifest(['items' => ['config.php' => h('x')]]));
@@ -98,8 +100,8 @@ rejects('apply before authorize rejected', fn () => $plan->applied());
 rejects('wrong phrase rejected', fn () => $plan->authorize('owner-1', 'nope', 'RESTORE backup-1', strtotime('2026-10-15')));
 check('still preview after bad auth', $plan->state() === RestorePlan::PREVIEW);
 
-// Expired backup cannot be authorized
-$stale = manifest(['retainUntil' => '2026-10-01']);
+// Expired backup cannot be authorized — retention passed between creation and now
+$stale = manifest(['createdAt' => '2026-09-01', 'retainUntil' => '2026-10-01']);
 $plan2 = RestorePlan::preview('restore-2', $stale, $current, BackupManifest::FORMAT_VERSION);
 rejects('expired backup authorize rejected', fn () => $plan2->authorize('owner-1', 'RESTORE backup-1', 'RESTORE backup-1', strtotime('2026-10-15')));
 

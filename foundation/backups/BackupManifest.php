@@ -45,6 +45,9 @@ final readonly class BackupManifest
         if (strtotime($createdAt) === false || strtotime($retainUntil) === false) {
             throw new InvalidArgumentException('createdAt and retainUntil must be parseable dates.');
         }
+        if (strtotime($retainUntil) <= strtotime($createdAt)) {
+            throw new InvalidArgumentException('Retention must extend past creation — a manifest that is born expired protects nothing.');
+        }
         foreach ($items as $name => $hash) {
             if (preg_match(self::FORBIDDEN, (string) $name)) {
                 throw new InvalidArgumentException('Backup scope cannot contain private/secret material: ' . $name);
