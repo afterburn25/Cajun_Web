@@ -699,3 +699,7 @@ Documentation checks pass (102 project Markdown files, 777 local links), and git
 ## 2026-10-13 — canonical dependency metadata line endings
 
 From dependency checkpoint 3da3cbb, Git staging showed root composer.json would normalize Windows CRLF to LF. Normalize that project-authored file and regenerate its manifest hash before remote acceptance; vendor bytes remain untouched. Verify all staged manifest file bytes, then continue receiving implementation.
+
+## 2026-10-13 — identical dependency helpers across platforms
+
+From 71c88e5 / PR #69: The initial PHP 8.4 Linux reproduction run 38470154781 correctly failed because Composer auto mode omits Windows carbon.bat there (8.2 was cancelled by matrix fail-fast). Pin bin-compat=full so both platforms generate identical helpers, per the official Composer configuration contract. No upstream package changes. All 2,070 staged file hashes passed; fresh Linux reproduction is being rerun. The draft PR remains outside deployment. Bounded stream/session implementation and its acceptance continue separately.

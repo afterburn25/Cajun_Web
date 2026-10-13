@@ -11,7 +11,8 @@
       "php": "8.2.0"
     },
     "allow-plugins": false,
-    "sort-packages": true
+    "sort-packages": true,
+    "bin-compat": "full"
   },
   "minimum-stability": "stable",
   "prefer-stable": true

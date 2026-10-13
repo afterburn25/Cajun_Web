@@ -11,7 +11,7 @@ def checked_path(name):
 def check():
  m=json.loads((BUNDLE/'vendor-manifest.json').read_text(encoding='utf-8'));lock=json.loads((BUNDLE/'composer.lock').read_text(encoding='utf-8'));config=json.loads((BUNDLE/'composer.json').read_text(encoding='utf-8'))
  assert m['schema']==1 and m['php_platform']=='8.2.0'
- assert config['require']=={'directorytree/imapengine':'1.25.6','zbateson/mail-mime-parser':'4.0.6'} and config['config']['allow-plugins'] is False and config['config']['platform']['php']=='8.2.0'
+ assert config['require']=={'directorytree/imapengine':'1.25.6','zbateson/mail-mime-parser':'4.0.6'} and config['config']['allow-plugins'] is False and config['config']['platform']['php']=='8.2.0' and config['config']['bin-compat']=='full'
  assert not lock.get('packages-dev') and len(lock['packages'])==len(m['packages'])==36
  expected={p['name']:p for p in m['packages']}
  for p in lock['packages']:
@@ -39,7 +39,7 @@ def reproduce(m):
   for name in ['composer.json','composer.lock']:shutil.copyfile(BUNDLE/name,project/name)
   data=urllib.request.urlopen(m['composer']['url'],timeout=60).read();assert hashlib.sha256(data).hexdigest()==m['composer']['sha256']
   phar=stage/'composer.phar';phar.write_bytes(data)
-  env=os.environ.copy();env['COMPOSER_HOME']=str(stage/'composer-home');env['COMPOSER_CACHE_DIR']=str(stage/'composer-cache');env.pop('COMPOSER_AUTH',None);env.pop('COMPOSER_ROOT_VERSION',None)
+  env={k:v for k,v in os.environ.items() if not k.startswith('COMPOSER_')};env['COMPOSER_HOME']=str(stage/'composer-home');env['COMPOSER_CACHE_DIR']=str(stage/'composer-cache');env.pop('COMPOSER_AUTH',None);env.pop('COMPOSER_ROOT_VERSION',None)
   result=subprocess.run(['php',str(phar),'install','--no-dev','--no-plugins','--no-scripts','--prefer-dist','--no-interaction'],cwd=project,env=env,capture_output=True,text=True)
   assert result.returncode==0,result.stderr
   assert 'lock file is not up to date' not in result.stderr and (project/'composer.lock').read_bytes()==(BUNDLE/'composer.lock').read_bytes()
