@@ -1,6 +1,8 @@
 # CajunWebPro custom hosting commerce, billing and client platform
 
-**M2 continuation, 2026-10-13:** 1.7.0 candidate implements sandbox notification receipt and explicit owner verification only. [Notification contract](SANDBOX_NOTIFICATIONS.md). Full M2, client/design checkout and production ledger remain incomplete; actual sandbox delivery requires separate acceptance. Release gates pending.
+## 2026-10-13 — Verified 1.7.0 sandbox notification increment
+
+Signed sandbox receipt, durable minimal inbox and explicit owner-triggered current reporting are delivered in [v1.7.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.7.0) / `1fe0670142755f86aee235fabe1847e5d118ee52`. Receiver defaults off; schema is additive, invoice settlement remains disabled and no runtime daemon is needed. Original 1.6.0 UPDATE preserves attempts/events and all earlier records/keys. 358 native / 451 HTTP/Chromium checks pass; signatures/reporting remain synthetic. Actual merchant acceptance, production/client checkout and automatic processing are pending. [Guide](SANDBOX_NOTIFICATIONS.md) · [report](TEST_REPORT_1.7.0.md).
 
 ## 2026-10-13 — Verified 1.6.0 sandbox increment
 

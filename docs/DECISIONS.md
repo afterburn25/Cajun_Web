@@ -1,5 +1,9 @@
 # Decision record
 
+## 2026-10-13 — Verified 1.7.0 sandbox notification increment
+
+Signed sandbox receipt, durable minimal inbox and explicit owner-triggered current reporting are delivered in [v1.7.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.7.0) / `1fe0670142755f86aee235fabe1847e5d118ee52`. Receiver defaults off; schema is additive, invoice settlement remains disabled and no runtime daemon is needed. Original 1.6.0 UPDATE preserves attempts/events and all earlier records/keys. 358 native / 451 HTTP/Chromium checks pass; signatures/reporting remain synthetic. Actual merchant acceptance, production/client checkout and automatic processing are pending. [Guide](SANDBOX_NOTIFICATIONS.md) · [report](TEST_REPORT_1.7.0.md).
+
 ## 2026-10-13 — signed sandbox receipt before explicit reporting verification
 
 A callback commits minimal notification identifiers and strict audit before acknowledging receipt; it never calls the provider or trusts notification amounts/statuses. Owners explicitly invoke current sandbox reporting. Existing attempt observation, inbox processing and audit share a transaction, retaining stale/conflicting results for investigation. This keeps shared-host deployment independent of cron/daemons while scheduled processing is pending. Hexadecimal Signature Keys are decoded to binary per official credential guidance. Actual merchant delivery remains an acceptance gate, not inferred from synthetic signatures.

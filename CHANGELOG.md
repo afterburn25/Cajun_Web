@@ -1,11 +1,11 @@
 # Changelog
 
-## 1.7.0 candidate — sandbox notification inbox
+## 1.7.0 — sandbox notification inbox
 
 - Owner-configured sandbox callback with raw-body HMAC verification, account/webhook binding, bounded payloads and replay protection. Durable minimal receipt and strict audit precede HTTP 200.
 - Owner verification matches an existing attempt and checks current sandbox reporting; observation, processing state and audit commit together. No real invoices are paid.
 - Explicit additive upgrade preserves earlier attempts, requests, encrypted credentials and external keys. Browser setup/inbox follows existing styling.
-- Local checks pass; GitHub acceptance and release publication pending. Actual merchant delivery, scheduled processing, production and client checkout remain pending.
+- Published/download-verified at `1fe0670142755f86aee235fabe1847e5d118ee52`; exact-main 358 native / 451 HTTP/Chromium checks pass. Actual merchant delivery, scheduled processing, production and client checkout remain pending.
 
 ## 2026-10-13 — Sandbox trial release published and verified
 
