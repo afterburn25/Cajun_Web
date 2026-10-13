@@ -1,5 +1,9 @@
 # CajunWebPro custom hosting commerce, billing and client platform
 
+## Implementation continuity when external accounts are unavailable (owner policy 2026-10-13)
+
+See [dependency gate policy](DEPENDENCY_GATES.md): `HC-07` **Awaiting API verification**, `HC-09` and `HC-10` **Development pending — API verification**. Continue first-party product, pricing, cart, client portal, invoice/workflow, adapter interface, protected settings, idempotency, jobs and test-fixture work without using fabricated live 20i results. Keep real reseller/domain/VPS operations unorderable or disabled until exact account entitlements, costs, endpoints and staging acceptance are verified. A missing key is not a reason to halt unrelated web-design, payment foundation or portal work. These statuses describe validation gates and **do not change implemented/release state**.
+
 ## 2026-10-13 — Verified 1.9.0 client ZIP delivery increment
 
 Prepared, reviewed and versioned client ZIP handover is delivered in [v1.9.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.9.0) / `080f14aea8fe5c35e04e4eba62976609aef7cd67`. Guarded private storage, immutable manifests, owner publication, client history and authenticated resumable downloads preserve previous records through actual 1.8.0 UPDATE acceptance. 539 native / 569 HTTP/Chromium checks pass. Full P-06 remains partial: generated builds, database handover, larger jobs, dynamic restore and notifications remain pending. Actual merchant acceptance/card checkout and broader 20i/mail/SSH remain pending. [Guide](CLIENT_DELIVERIES.md) · [report](TEST_REPORT_1.9.0.md).

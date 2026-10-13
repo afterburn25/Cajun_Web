@@ -4,6 +4,25 @@
 
 - Add `docs/ESTIMATOR_ADAPTER.md`: the explicit contract for adopting the reviewed estimator foundation in the live `growth_estimate` path. Quantities fold into adapter-built `PriceRule` ranges; consultation conditions (disabled pricing, `custom` type, `integration` option, unpriced keys, the 99999999-cent cap) are preserved verbatim; a fixture-equivalence test plan is required before implementation. No shipping code changes.
 
+## 1.11.0 — directory correction candidate (not published)
+
+- Organized administration, portal, public templates, shared bootstrap/security, business services, database migrations, API/webhooks/media and setup source; retained existing visuals and exact image bytes.
+- Canonical root/subfolder URLs, shared session identity, guarded internal paths and private upload staging within the configured store.
+- Staged owner update with recognized-source verification, backup confirmation, serialized journaled replacement, known-hash retirement, direct legacy callbacks and recovery.
+- Three clean-commit artifacts: sanitized FULL-PROJECT, organized COMPLETE-UPLOAD and independently exercised UPDATE; per-artifact inventories/checksums and START-HERE.
+- Expanded application, historical upgrade, Apache and filesystem recovery acceptance. Publication depends on completed checks and exact-main verification.
+
+## Unreleased priority correction — organized directory layout and complete project packages
+
+Owner override stops the portfolio-only 1.11.0 publication. Preserve integrated source and implement organized modules/assets, protected storage/upload scaffolding, bounded owner migration/recovery, and FULL-PROJECT/COMPLETE-UPLOAD/UPDATE artifacts. Latest published version remains 1.10.0; no corrected release claimed yet.
+
+## 2026-10-13 — Dependency-aware roadmap and agent instructions (docs only)
+
+- Added a mandatory owner-approved policy for Codex/Devin: unavailable third-party API/merchant/SSH verification blocks only the specific real integration or production operation, **not** safe independent development or unrelated features.
+- Clarified HC-07 (Awaiting API verification), HC-09/HC-10 (Development pending — API verification), and A-10 (Architecture/security validation pending), tracking those gates separately from implementation/release/deployment status.
+- Linked the rules from agent instructions, roadmap, provider/client roadmaps, coordination, status, handoff and decisions. Explicit production restrictions remain.
+- No PHP/runtime feature, integration, live transaction, deployment or app version bump; previously released v1.10.0 stays unchanged.
+
 ## 1.11.0 — portfolio integration candidate, not yet released
 
 - Stabilize modified-click acceptance by observing the application decision before suppressing synthetic navigation; add an actual Ctrl-click/new-tab check. Shipping bytes are unchanged by this test-only correction.

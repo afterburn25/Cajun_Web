@@ -1,0 +1,5 @@
+<?php
+declare(strict_types=1);
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+
+site_head('Our Capabilities','services');?><section class="page-hero"><div class="container"><span class="eyebrow">DESIGN / DEVELOPMENT / EVERYTHING BETWEEN</span><h1>One partner.<br><span class="gold-text">A world of possibilities.</span></h1><p>From an unforgettable first impression to the systems behind it, we build around what your business needs.</p></div></section><section class="section"><div class="container services-detail"><?php foreach($services as $i=>$s):?><article class="service-detail content-card" id="<?=esc($s['slug'])?>"><div class="service-number"><?=str_pad((string)($i+1),2,'0',STR_PAD_LEFT)?></div><div><?=icon($s['icon'])?><h2><?=esc($s['title'])?></h2><p class="lead"><?=esc($s['summary'])?></p><div class="prose"><?=nl2br(esc(str_replace('\\n',"\n",$s['body'])))?></div><a class="text-link" href="<?=esc(page_url('contact'))?>">Let's talk about your project ↗</a></div></article><?php endforeach;?></div></section><?php site_foot();
