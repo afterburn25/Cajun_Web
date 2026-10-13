@@ -1,6 +1,6 @@
 # Service catalog and invoice snapshots
 
-Candidate 1.4.0 delivers a bounded M1 / HC-01 and HC-06 foundation. It reuses existing clients, projects and manual invoices. It does not yet implement checkout, tax/discount calculation, recurring enrollment or provider provisioning. Publication status is in the [release register](RELEASES.md).
+Released 1.4.0 delivers a bounded M1 / HC-01 and HC-06 foundation. It reuses existing clients, projects and manual invoices. It does not yet implement checkout, tax/discount calculation, recurring enrollment or provider provisioning. Publication status is in the [release register](RELEASES.md).
 
 ## Setup and permissions
 
@@ -32,4 +32,4 @@ Product revisions, invoice creation and paid/void transitions are transactional 
 
 ## Acceptance
 
-`tests/catalog_native.php` covers migrations, permissions, cent validation/overflow, stale revisions, provider publication restrictions, private-field isolation, immutable snapshots, duplicate/concurrent issuance and strict audit rollback. HTTP/browser and actual published 1.3.0 package-update results will be recorded in the release report before publication. Live hosting, tax configuration, gateway and provider operations are not exercised by this increment.
+`tests/catalog_native.php` covers migrations, permissions, cent validation/overflow, stale revisions, provider publication restrictions, private-field isolation, immutable snapshots, duplicate/concurrent issuance and strict audit rollback. HTTP/browser and actual published 1.3.0 package-update results are recorded in [the release report](TEST_REPORT_1.4.0.md). Live hosting, tax configuration, gateway and provider operations are not exercised by this increment.

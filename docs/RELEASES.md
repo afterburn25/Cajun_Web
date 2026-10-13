@@ -1,5 +1,18 @@
 # Release register
 
+## v1.4.0 — published 13 October 2026
+
+[Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.4.0) published `2026-10-13T08:49:55Z`; immutable source/tag `0cdea7fbd17e887d3f4bc0574a411b157431b7df`, [PR #14](https://github.com/afterburn25/Cajun_Web/pull/14). Later publication records are documentation only.
+
+| Asset | Bytes | SHA-256 |
+|---|---:|---|
+| [COMPLETE-UPLOAD](https://github.com/afterburn25/Cajun_Web/releases/download/v1.4.0/CajunWebPro-1.4.0-COMPLETE-UPLOAD.zip) | 1433801 | `5d67d3349cf2e48be5a693f9662a2b6f4bbb80c829f03d5ccb5de84a2e678bef` |
+| [UPDATE](https://github.com/afterburn25/Cajun_Web/releases/download/v1.4.0/CajunWebPro-1.4.0-UPDATE.zip) | 1340794 | `7858b70141889f9cf4db98280ae4e889bce2378c1b22c0ef4a7cc988595cbeec` |
+
+Eight permanent assets: complete/update ZIPs, manifest, SHA256SUMS, report, installation guide, service-catalog guide and TEST-EVIDENCE ZIP. Complete/update: 55/54 flat files. All assets were freshly downloaded as draft and after publication; bytes/hashes/CRC/extraction/versions/tag match exact-main CI and local rebuild. Earlier versions remain unchanged.
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38371380103): 165 native and 345 HTTP/Chromium checks, actual published 1.3.0 update plus prior upgrades/fresh setup, concurrency, audit-failure rollback, private-field and permission boundaries. [Report](TEST_REPORT_1.4.0.md), [scope](RELEASE_1.4.0.md), [download evidence](RELEASE_VERIFICATION_1.4.0.json), [setup guide](SERVICE_CATALOG.md). No checkout, recurring charges, live deployment or provider operations.
+
 ## v1.3.0 — published 13 October 2026
 
 [Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.3.0) published `2026-10-13T08:17:54Z`; immutable source/tag `7856cccf230a1646d02a4a92ad4bfb1c280efa19`. Application merge [PR #12](https://github.com/afterburn25/Cajun_Web/pull/12). Publication records are documentation only and do not alter release bytes.
