@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Devin active branch — `devin/pipeline-foundation` (A-01 board/lead model)
+
+Branched from `main` `02fc784` (published 1.11.0 baseline). Isolated A-01 contract layer: `foundation/pipeline/` (3 files), `tests/pipeline/run.php` (31 synthetic checks, all pass on PHP 8.4.25 locally), `docs/PIPELINE_FOUNDATION.md`, `.github/workflows/pipeline.yml`.
+
+**Gate:** none for the contract layer; persistence/permissions/board UI remain Codex integration work. **Not integrated:** additive-only outside `site/`.
+
 ## Current directory and package contract — released 1.11.0
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](docs/DIRECTORY_STRUCTURE.md), [migration and recovery](docs/STRUCTURE_MIGRATION.md), and [START-HERE](START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.

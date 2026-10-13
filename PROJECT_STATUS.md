@@ -1,5 +1,9 @@
 # Project status
 
+## 2026-10-13 — Devin A-01 lead-pipeline foundation (unreviewed, unintegrated)
+
+Devin implemented the safe-work portion of A-01 as an isolated canonical component on `devin/pipeline-foundation`: `foundation/pipeline/` (`PipelineStage`, `PipelineBoard`, `LeadRecord`), `tests/pipeline/run.php` (31 checks), `pipeline.yml` workflow, and [PIPELINE_FOUNDATION](docs/PIPELINE_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer. No `site/` changes, deployment or release.
+
 ## Current directory and package contract — released 1.11.0
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](docs/DIRECTORY_STRUCTURE.md), [migration and recovery](docs/STRUCTURE_MIGRATION.md), and [START-HERE](START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.
