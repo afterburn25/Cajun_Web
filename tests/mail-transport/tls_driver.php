@@ -11,7 +11,8 @@ try {
     $port=['imap'=>['ssl'=>993,'starttls'=>143],'smtp'=>['ssl'=>465,'starttls'=>587]][$input['protocol']][$input['encryption']];
     $channel=SecureChannel::open($input['protocol'],$input['host'],$port,$input['encryption'],'8.8.8.8');
     (new ReflectionClass(SecureChannel::class))->getProperty('deadline')->setValue($channel,hrtime(true)/1e9+($input['budget']??4));
-    (new ConnectionProbe($channel,static function() use ($input): void {if ($input['revoke']??false) throw new ProbeFailure('credential');}))->run($input['protocol'],$input['encryption'],'synthetic@example.net','synthetic fixture password');
+    $authorizations=0;
+    (new ConnectionProbe($channel,static function() use ($input,&$authorizations): void {$authorizations++;if (($input['revoke']??false) || (($input['revoke_second']??false) && $authorizations===2)) throw new ProbeFailure('access_changed');}))->run($input['protocol'],$input['encryption'],'synthetic@example.net','synthetic fixture password');
     echo json_encode(['ok'=>true,'pinned'=>$GLOBALS['pinned_verified']??false]);
 } catch(ProbeFailure $e) {echo json_encode(['ok'=>false,'reason'=>$e->getMessage(),'pinned'=>$GLOBALS['pinned_verified']??false]);}
 finally {$channel?->close();}

@@ -1,6 +1,6 @@
 # Bounded A-06 connection checks — candidate 1.16.0
 
-Starting point: verified [1.15.0](TEST_REPORT_1.15.0.md), publication-record main ad2f39d, branch codex/mail-connection-checks. Existing multiple-account preparation, encrypted private key and explicit read/send assignments remain authoritative. Codex owns application transport, owner controls, tests and release. Application adaptation is implemented in candidate source, mirrored from canonical foundation/mail-transport. Local PHP 8.4 passes 103 policy, 13 resolver and 185 actual loopback TLS checks. The initial prototype passed PHP 8.2/8.4 CI; candidate database/HTTP/upgrade/release acceptance remains pending. This is not a release or a real-provider test.
+Starting point: verified [1.15.0](TEST_REPORT_1.15.0.md), publication-record main ad2f39d, branch codex/mail-connection-checks. Existing multiple-account preparation, encrypted private key and explicit read/send assignments remain authoritative. Codex owns application transport, owner controls, tests and release. Application adaptation is implemented in candidate source, mirrored from canonical foundation/mail-transport. Local PHP 8.4 passes 104 policy, 13 resolver and 313 actual loopback TLS checks. The initial prototype passed PHP 8.2/8.4 CI; candidate database/HTTP/upgrade/release acceptance remains pending. This is not a release or a real-provider test.
 
 ## Next usable increment
 

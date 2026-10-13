@@ -26,6 +26,11 @@ function mc_audit_failure(callable $fn,string $action=''): bool {
     db()->exec('CREATE TRIGGER mcci_fail BEFORE INSERT ON '.table('audit').' FOR EACH ROW BEGIN '.$when.' END');
     try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER mcci_fail');}return $failed;
 }
+if(($argv[1]??'')==='pause-dns-worker') {
+    mc_actor();
+    $code=mail_connections_check($argv[2],1,'imap',$password,function($host){echo "resolving\n";fflush(STDOUT);if(trim(fgets(STDIN))!=='continue')throw new RuntimeException('Fixture synchronization');return mc_resolve($host);},'mc_transport');
+    echo $code.':'.$transportCalls;exit;
+}
 if(($argv[1]??'')==='check-worker') {
     mc_actor();echo "ready\n";fflush(STDOUT);
     try{echo mc_check($argv[2]);}catch(RuntimeException $e){if($e instanceof PDOException||!str_contains($e->getMessage(),'30 seconds'))throw $e;echo 'cooldown';}exit;
@@ -41,12 +46,25 @@ try {
     mc_actor(2);mc_deny('Mailbox permissions cannot enable connection checks',fn()=>mail_connections_migrate($password));mc_actor();
     mc_deny('Checking is unavailable before explicit setup',fn()=>mc_check($id));
     mc_ok('Setup audit failure does not mark checks ready',mc_audit_failure(fn()=>mail_connections_migrate($password))&&!mail_connections_ready());
+    db()->exec('ALTER TABLE '.table('mail_connection_checks').' MODIFY target VARCHAR(11) NOT NULL');
+    mc_deny('Setup refuses an incompatible preexisting column',fn()=>mail_connections_migrate($password));
+    db()->exec('ALTER TABLE '.table('mail_connection_checks').' MODIFY target VARCHAR(10) NOT NULL');
+    $foreign=one('SELECT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=? AND REFERENCED_TABLE_NAME IS NOT NULL',['mcci_mail_connection_results'])['CONSTRAINT_NAME'];
+    if(!preg_match('/^[A-Za-z0-9_]+$/D',$foreign))throw new RuntimeException('Unexpected fixture constraint name');
+    db()->exec('ALTER TABLE '.table('mail_connection_results').' DROP FOREIGN KEY `'.$foreign.'`');
+    mc_deny('Setup refuses a missing immutable-result relationship',fn()=>mail_connections_migrate($password));
+    db()->exec('ALTER TABLE '.table('mail_connection_results').' ADD FOREIGN KEY (id) REFERENCES '.table('mail_connection_checks').' (id) ON DELETE RESTRICT');
     query('INSERT INTO '.table('mail_connection_checks').' (id,account_id,account_revision,target,actor_id,started_at,started_epoch) VALUES (?,?,1,?,1,?,?)',[str_repeat('a',32),$id,'imap',gmdate('Y-m-d H:i:s'),time()]);
     mc_deny('Setup refuses unknown existing check records',fn()=>mail_connections_migrate($password));query('DELETE FROM '.table('mail_connection_checks'));
     mail_connections_migrate($password);mail_connections_migrate($password);
     mc_ok('Additive setup is idempotent and preserves saved credentials',mail_connections_ready()&&mail_accounts_get($id)['has_credentials']&&!mail_connections_history($id));
     mc_deny('Owner must have a matching mailbox assignment',fn()=>mc_check($id));
     mc_grant($id,true,false);mc_deny('Read assignment cannot test outgoing credentials',fn()=>mc_check($id,1,'smtp'));mc_grant($id);
+    query('UPDATE '.table('mail_accounts').' SET enabled=0 WHERE id=?',[$id]);mc_deny('Disabled mailbox prevents all connection checks',fn()=>mc_check($id));query('UPDATE '.table('mail_accounts').' SET enabled=1 WHERE id=?',[$id]);
+    query('UPDATE '.table('mail_account_grants').' SET issued_at=? WHERE account_id=? AND user_id=1',[time()+3600,$id]);mc_deny('Future assignment cannot test credentials early',fn()=>mc_check($id));mc_grant($id);
+    query('UPDATE '.table('mail_account_grants').' SET enabled=0 WHERE account_id=? AND user_id=1',[$id]);mc_deny('Revoked assignment prevents all connection checks',fn()=>mc_check($id));mc_grant($id);
+    query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');mc_deny('Disabled staff identity prevents all connection checks',fn()=>mc_check($id));query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');mc_actor();
+    query('UPDATE '.table('staff_profiles')." SET role='administrator',permissions=? WHERE user_id=1",[json_encode(['mail.read','mail.send'])]);mc_deny('Changed owner role is refreshed before checking',fn()=>mc_check($id));query('UPDATE '.table('staff_profiles')." SET role='owner',permissions='[]' WHERE user_id=1");
     mc_deny('Wrong current password prevents DNS and transport',fn()=>mail_connections_check($id,1,'imap','wrong','mc_resolve','mc_transport'));
     mc_deny('Stale account revision prevents DNS and transport',fn()=>mc_check($id,99));
     mc_deny('Unknown protocol is rejected',fn()=>mc_check($id,1,'pop3'));
@@ -67,6 +85,7 @@ try {
     mc_ok('Damaged credential envelope never reaches transport',mc_check($id)==='credential'&&$transportCalls===$before);query('UPDATE '.table('mail_accounts').' SET credentials=? WHERE id=?',[$cipher,$id]);
     mc_age();$mode='expire';mc_ok('Expiry immediately before credentials stops authentication',mc_check($id)==='access_changed');$mode='ok';mc_grant($id);
     mc_age();$before=$transportCalls;
+    mc_ok('Assignment revoked while resolving stops before transport',mail_connections_check($id,1,'imap',$password,function($host)use($id){query('UPDATE '.table('mail_account_grants').' SET enabled=0 WHERE account_id=? AND user_id=1',[$id]);return ['8.8.8.8'];},'mc_transport')==='access_changed'&&$transportCalls===$before);mc_grant($id);mc_age();
     mc_ok('Settings changed during DNS reject old credentials',mail_connections_check($id,1,'imap',$password,function($host)use($id,$password){mail_accounts_save($id,1,mc_input(),true,[],$password);return ['8.8.8.8'];},'mc_transport')==='access_changed'&&$transportCalls===$before);
     mc_age();mc_ok('Current settings receive a separately versioned result',mc_check($id,2)==='ok'&&mail_connections_history($id)[0]['account_revision']===2);
     mc_age();mc_ok('Final audit rollback leaves a truthful incomplete attempt',mc_audit_failure(fn()=>mc_check($id,2),'check_finished')&&mail_connections_history($id)[0]['outcome']===null);
@@ -80,6 +99,15 @@ try {
     try{for($i=0;$i<2;$i++){$pipes=[];$proc=proc_open([PHP_BINARY,__FILE__,'check-worker',$race],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);fclose($pipes[0]);$workers[]=[$proc,$pipes];mc_ok('Concurrent check worker ready '.($i+1),trim(fgets($pipes[1]))==='ready');}}finally{query('SELECT RELEASE_LOCK(?)',[$lock]);}
     $out=[];foreach($workers as [$proc,$pipes]){$out[]=stream_get_contents($pipes[1]);$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);mc_ok('Concurrent check worker finishes '.count($out),proc_close($proc)===0&&$err==='');}sort($out);
     mc_ok('Simultaneous checks authenticate once and reject the repeat',$out===['cooldown','ok']&&count(mail_connections_history($race))===1);
+    foreach(['revoke','edit'] as $change) {
+        mc_age();$interleave=mail_accounts_save('',0,mc_input(),true,['imap_password'=>'Synthetic private password','smtp_password'=>'Synthetic private password'],$password);mc_grant($interleave);
+        $pipes=[];$proc=proc_open([PHP_BINARY,__FILE__,'pause-dns-worker',$interleave],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);
+        mc_ok('Separate process reaches committed intent before '.$change,trim(fgets($pipes[1]))==='resolving'&&count(mail_connections_history($interleave))===1);
+        if($change==='revoke'){$g=one('SELECT revision FROM '.table('mail_account_grants').' WHERE account_id=? AND user_id=1',[$interleave]);mail_accounts_grant($interleave,1,(int)$g['revision'],true,true,false,0,$password);}
+        else mail_accounts_save($interleave,1,mc_input(),true,[],$password);
+        fwrite($pipes[0],"continue\n");fclose($pipes[0]);$out=stream_get_contents($pipes[1]);$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);$exit=proc_close($proc);
+        mc_ok('Concurrent '.$change.' finishes while DNS waits and prevents credential transport',$exit===0&&$err===''&&$out==='access_changed:0'&&mail_connections_history($interleave)[0]['result_code']==='access_changed');
+    }
     mc_age();$count=(int)query('SELECT COUNT(*) FROM '.table('mail_connection_checks').' WHERE account_id=?',[$id])->fetchColumn();
     for($i=$count;$i<24;$i++)query('INSERT INTO '.table('mail_connection_checks').' (id,account_id,account_revision,target,actor_id,started_at,started_epoch) VALUES (?,?,2,?,1,?,?)',[bin2hex(random_bytes(16)),$id,'imap',gmdate('Y-m-d H:i:s'),time()-7200-$i]);
     $a=mail_connections_history($id);$b=mail_connections_history($id,2);mc_ok('History has distinct pages with a sentinel',count($a)===21&&count($b)===4&&!array_intersect(array_column(array_slice($a,0,20),'id'),array_column($b,'id')));
