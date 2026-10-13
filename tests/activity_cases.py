@@ -55,6 +55,13 @@ def run_browser(env,browser):
     r=alice.get(center);check('Client center lists safe metadata and escapes project title',key in r.text and '&lt;img src=x onerror=alert(1)&gt;' in r.text and '<img src=x onerror=alert(1)>' not in r.text and 'Activity exact-source secret body' not in r.text)
     check('Cross-client center and exact source stay private',key not in bob.get(center).text and bob.get(center+'&open='+key).status_code==403)
     check('Malformed source is refused',alice.get(center+'&open=message:1%20OR%201=1').status_code==403)
+    with (ROOT/'site/assets/favicon.png').open('rb') as f:submit(admin,root+'?view=studio-job&id=1','studio_upload',files={'document':('Activity-studio-file.png',f,'image/png')})
+    source_keys=[];next_url=center
+    while next_url:
+        page=soup(alice.get(next_url));source_keys.extend(n['data-event-key'] for n in page.select('[data-event-key]'));link=page.find('a',string='Older updates →');next_url=link['href'] if link else None
+    for kind in ['message','review','file','invoice','payment','release']:
+        event=next(k for k in source_keys if k.startswith(kind+':'));result=alice.get(center+'&open='+event);fragment=urlparse(result.url).fragment
+        check('Activity navigation resolves exact authorized '+kind,result.status_code==200 and (soup(result).find(id=fragment) is not None if fragment else parse_qs(urlparse(result.url).query).get('release')==[event.split(':')[1]]))
     check('Listing and opening do not implicitly mark read',db('SELECT * FROM ci_activity_reads')==[] and alice.get(center+'&open='+key).status_code==200 and db('SELECT * FROM ci_activity_reads')==[])
     r=mark(alice,center,[key],csrf='wrong');check('Read mutation rejects CSRF','session expired' in r.text.lower() and db('SELECT * FROM ci_activity_reads')==[])
     r=mark(alice,center,[key]);check('Client can explicitly mark one update read','read status was saved' in r.text and len(db('SELECT * FROM ci_activity_reads'))==1)
@@ -90,6 +97,10 @@ def run_browser(env,browser):
         page=soup(alice.get(next_url));seen.extend(n['data-event-key'] for n in page.select('[data-event-key]'));link=page.find('a',string='Older updates →');next_url=link['href'] if link else None
     check('HTTP pagination reaches older activity without duplicates',len(seen)>105 and len(set(seen))==len(seen))
     check('Unread bell count caps at 99+',alice.get(endpoint+'?audience=client').json()['count']==100 and '99+ unread' in alice.get(center).text)
+    old_review=db('SELECT * FROM ci_studio_versions WHERE job_id=1 ORDER BY id LIMIT 1')[0];version=db('SELECT MAX(version_no) AS n FROM ci_studio_versions WHERE job_id=1 AND kind=?',[old_review['kind']])[0]['n']
+    for n in range(101):db("INSERT INTO ci_studio_versions (job_id,kind,version_no,title,body,feedback,created_at) VALUES (1,?,?,?,?,?,?)",[old_review['kind'],version+n+1,'Later review '+str(n),'Later immutable review','', '2026-10-13 01:00:00'])
+    result=alice.get(center+'&open=review:'+str(old_review['id']));old_node=soup(result).find(id='review-'+str(old_review['id']))
+    check('Focused review outside newest hundred remains visible without stale decision form',result.status_code==200 and old_node is not None and old_node.find('form') is None)
     # Dual identity uses the explicitly requested audience.
     submit(admin,portal,'login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'});check('One browser can keep separate staff and client notifications',admin.get(endpoint+'?audience=client').json()['count']==100 and admin.get(endpoint+'?audience=admin').json()['url']==url)
     uid=db("SELECT id FROM ci_users WHERE email='request-staff@example.invalid'")[0]['id'];old_grants=db('SELECT permissions FROM ci_staff_profiles WHERE user_id=?',[uid])[0]['permissions'];db("UPDATE ci_staff_profiles SET permissions='[]' WHERE user_id=?",[uid])
