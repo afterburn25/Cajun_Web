@@ -1,5 +1,9 @@
 # Project status
 
+## 2026-10-13 — Devin P-04 service-plan foundation (unreviewed, unintegrated)
+
+Devin implemented the safe-work portion of P-04 as an isolated canonical component on `devin/service-plans`: `foundation/service-plans/` (`ServicePlan`, `PlanSubscription`), `tests/service-plans/run.php` (46 checks), `service-plans.yml` workflow, and [SERVICE_PLANS_FOUNDATION](docs/SERVICE_PLANS_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer; plan UI, billing capture and the request workflow remain integration work. No `site/` changes, deployment or release.
+
 ## Current directory and package contract — released 1.11.0
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](docs/DIRECTORY_STRUCTURE.md), [migration and recovery](docs/STRUCTURE_MIGRATION.md), and [START-HERE](START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.

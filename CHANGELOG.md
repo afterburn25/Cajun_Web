@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — P-04 service-plan foundation (Devin, isolated component)
+
+- Added canonical `foundation/service-plans/` classes (`ServicePlan` with typed cadence/price/limits, concrete inclusions and banned "unbounded service" phrasing, immutable once active; `PlanSubscription` with pinned agreed price, consent-gated recurring activation bound to `termsHash`, and actor-attributed lifecycle) plus `docs/SERVICE_PLANS_FOUNDATION.md`.
+- Added `tests/service-plans/run.php` (46 synthetic checks; fixture plans only) and the `service-plans.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes, billing capture or persistence. Not yet integrated or released.
+
 ## 1.11.0 — organized application and verified three-package release
 
 Published from `de70c5da2e8f7bd35fbb92b9b829d0ab3e880372` after exact-main acceptance; all 16 assets downloaded and verified. Original history and all earlier releases retained. No live deployment.
