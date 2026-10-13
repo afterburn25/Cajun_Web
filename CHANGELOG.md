@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — A-06 email account preparation
+
+- Preserve Devin #59 canonical profile/assignment/message models and isolated CI. Re-reviewed 62 no-extension component checks; identity tuple encoding still needs its assigned correction before acceptance.
+- Codex application, storage and credential preparation is in development on its separate branch. No transport, mailbox contents, connection success, sending, release or deployment is implied.
+
 ## 1.12.0 — verified administrator email-template library
 
 - Add explicit template permissions, personal/shared drafts, create/edit/duplicate/activate/archive and escaped sample previews. Reuse the corrected Devin #56 model with literal single-pass substitutions and strict field grammar.
