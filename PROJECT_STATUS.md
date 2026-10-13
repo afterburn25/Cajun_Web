@@ -1,5 +1,8 @@
 # Project status
 
+**Active M1 catalog increment — 2026-10-13:** owner requested Continue With Roadmap. Starting main `9b836e81bde67710c1b672d8204b9395d5b17cd3`, released v1.3.0 unchanged. Codex claims `codex/service-catalog`: owner/explicit catalog permission, draft/published/retired service SKUs and exact USD prices, private cost and revision history, public configured service cards, reviewed/idempotent invoice snapshots on existing projects with strict audit and paid/void transitions. Provider-dependent families remain draft; no tax/subscription/gateway/provisioning implementation is claimed. Own new catalog adapter/UI and necessary staff/portal/workspace/installer/tests integration. Devin PR #7 remains unchanged at 55d6067; independent portfolio paths remain its scope. Candidate v1.4.0 requires native, actual-package upgrade, HTTP/browser and exact-release verification before publication. No live customer/provider operation.
+
+
 ## 2026-10-13 — Verified client-support release
 
 **Published and downloaded-back verified: [CajunWebPro v1.3.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.3.0).** Source/tag `7856cccf230a1646d02a4a92ad4bfb1c280efa19`, merged through [PR #12](https://github.com/afterburn25/Cajun_Web/pull/12). [Complete upload ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.3.0/CajunWebPro-1.3.0-COMPLETE-UPLOAD.zip) · [UPDATE ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.3.0/CajunWebPro-1.3.0-UPDATE.zip). v1.2.0 and v1.1.0 remain available unchanged. Later publication-record changes are documentation only.
