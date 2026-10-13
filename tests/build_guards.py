@@ -23,6 +23,7 @@ try:
     temporary('upload/staging.php',b'<?php exit; ?>private','Builder rejects upload staging contents')
     temporary('storage/index.php',b'<?php echo "changed";','Builder rejects altered scaffold metadata')
     temporary('config.php',b'<?php return [];','Builder rejects installed configuration')
+    temporary('includes/mail-master.key',b'synthetic key material','Builder rejects email credential keys in code directories')
     temporary('business.php',b'<?php echo 1;','Builder rejects new root business modules')
     temporary('assets/accidental.png',b'image','Builder rejects images mixed with styles/scripts')
     temporary('includes/.htaccess',b'Require all granted\n','Builder rejects weakened internal server denial')

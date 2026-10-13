@@ -12,7 +12,7 @@ foreach (['access/AuthorizationVersion','access/AccessContext','access/MailboxGr
 }
 function staff_ready(): bool { return setting('staff_schema_version') === '1'; }
 require_once CWP_CODE_ROOT.'/database/schema/staff_schema.php';
-function staff_permissions(): array { return ['mail.templates.manage'=>'Personal and shared email templates (no sending or mailbox access)', 'payments.manage'=>'Invoice payment requests and verified external receipts (also needs client access)', 'catalog.manage'=>'Service catalog, internal costs and catalog invoices (also needs client access)', 'website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support']; }
+function staff_permissions(): array { return ['mail.read'=>'Read explicitly assigned email accounts (webmail preparation)', 'mail.send'=>'Send from explicitly assigned email accounts (sending unavailable)', 'mail.templates.manage'=>'Personal and shared email templates (no sending or mailbox access)', 'payments.manage'=>'Invoice payment requests and verified external receipts (also needs client access)', 'catalog.manage'=>'Service catalog, internal costs and catalog invoices (also needs client access)', 'website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support']; }
 function staff_profile(array $user): ?array {
     if (!staff_ready()) return $user + ['role'=>'owner','enabled'=>1,'permissions'=>'[]']; // Existing access until explicit upgrade.
     $p=one('SELECT role,enabled,permissions FROM '.table('staff_profiles').' WHERE user_id=?',[$user['id']]);
@@ -130,8 +130,8 @@ function staff_reset_token(string $email): ?array {
     }));
 }
 function staff_view_permission(string $view): ?string {
-    if(in_array($view,['login','forgot','reset','staff-setup','security'],true))return null;
-    if(in_array($view,['staff','payment-settings','payment-trials','payment-notifications'],true))return 'staff.manage';
+    if(in_array($view,['login','forgot','reset','staff-setup','security','mailboxes'],true))return null;
+    if(in_array($view,['staff','mail-accounts','mail-account','payment-settings','payment-trials','payment-notifications'],true))return 'staff.manage';
     if(in_array($view,['payments','invoice-payments'],true))return 'payments.manage';
     if(in_array($view,['mail-templates','mail-template'],true))return 'mail.templates.manage';
     if($view==='support')return 'support.login';
@@ -142,6 +142,7 @@ function staff_view_permission(string $view): ?string {
 }
 function staff_action_permission(string $action): ?string {
     if(in_array($action,['logout','account_save'],true))return null;
+    if(str_starts_with($action,'mail_accounts_'))return 'staff.manage';
     if($action==='mail_templates_setup')return 'staff.manage';
     if(str_starts_with($action,'mail_templates_'))return 'mail.templates.manage';
     if($action==='support_start')return 'support.login';
@@ -159,5 +160,5 @@ function staff_action_permission(string $action): ?string {
     return 'website.manage';
 }
 function staff_home(array $user): string {
-    return staff_can('website.manage',$user)?'dashboard':(staff_can('clients.manage',$user)?'studio-clients':(staff_can('catalog.manage',$user)?'catalog':(staff_can('mail.templates.manage',$user)?'mail-templates':(staff_can('support.login',$user)?'support':'security'))));
+    return staff_can('website.manage',$user)?'dashboard':(staff_can('clients.manage',$user)?'studio-clients':(staff_can('catalog.manage',$user)?'catalog':(staff_can('mail.templates.manage',$user)?'mail-templates':(staff_can('support.login',$user)?'support':((function_exists('mail_accounts_access')&&mail_accounts_access($user))?'mailboxes':'security')))));
 }
