@@ -1,10 +1,16 @@
 # Changelog
 
-## 1.13.0 — candidate, email account preparation
+## 1.14.0 — candidate, human website review workflow
 
-- Preserve Devin #59 canonical profile/assignment/message models and isolated CI. Re-reviewed 64 no-extension component checks; future-issued grants, UIDVALIDITY, duplicate identities and tuple encoding are corrected. Application acceptance remains pending.
+- Preserve corrected Devin #31/#36 and adapt the canonical review lifecycle into the existing inquiry system. Accept bare website hosts deliberately; retain the 500-byte bound and reject fragments, userinfo and control characters. Capture new review identity atomically with accepted leads; older inquiry adoption is explicit.
+- Add current website-staff authorization, owner-only additive setup, evidence-labeled findings, saved report revisions, stale/concurrent protection and strict audit. External delivery requires the exact saved draft, current consent, real entered time/reference and staff password; this records delivery outside the app and sends nothing.
+- Add escaped desktop/mobile forms, draft finding add/remove controls, history and explicit inquiry deletion of dependent personal review content. Recognize actual 1.13.0 upgrade/recovery with earlier email key/assignment/template retention. Native/HTTP/Chromium/Apache/build acceptance is pending; no release or deployment claim.
+
+## 1.13.0 — verified email account preparation
+
+- Preserve Devin #59 canonical profile/assignment/message models and isolated CI. Re-reviewed 64 no-extension component checks; future-issued grants, UIDVALIDITY, duplicate identities and tuple encoding are corrected. Combined application acceptance passes.
 - Add owner-managed incoming/outgoing profiles, encrypted private credentials, immutable metadata/assignment history, strict audit and stale-write protection. Add separate staff read/send permissions and current per-mailbox assignments, including for owners.
-- Add administrative settings and scoped assigned-account lists, additive owner setup, fresh schema preparation and actual 1.12.0 upgrade/key/data recovery fixtures. Combined application acceptance is pending. No transport, mailbox contents, connection success, sending, release or deployment is implied.
+- Add administrative settings and scoped assigned-account lists, additive owner setup, fresh schema preparation and actual 1.12.0 upgrade/key/data recovery fixtures. Published/download-verified from `b83cb9fb6856bca4f333fe953bee2e68f5074d51` after exact-main run 38446948573; all 16 assets/tag pass. No transport, mailbox contents, connection success, sending or deployment is implied.
 
 ## 1.12.0 — verified administrator email-template library
 
@@ -71,6 +77,9 @@ Owner override stops the portfolio-only 1.11.0 publication. Preserve integrated 
 ## Unreleased — scheduling foundation
 
 - Add independent L-03 consultation-scheduling contract (`foundation/scheduling/`): UTC time windows, weekly availability rules with real IANA/DST expansion, slot/buffer/minimum-notice policy, a `requested → confirmed | declined | cancelled` lifecycle where rescheduling re-requires confirmation, and exact bookability checks. Not integrated; no schema, form, mail, or calendar provider.
+## Unreleased — review-request foundation
+
+- Add independent L-02 review-request contract (`foundation/review-requests/`): normalized website addresses with SSRF-readiness flags, contact consent, legal stage transitions, human-reviewed findings with labeled lab/field/absent evidence, and delivery guarded by a saved report plus consent. Not integrated; no schema, form, mail, or URL fetching.
 
 ## Unreleased — reviewed estimator foundation
 
@@ -273,3 +282,8 @@ No application source/asset import, feature implementation, host repair, databas
 - Candidate 91ef30d: 50 native and 143 HTTP/browser checks passed; final browser-admin, sitemap and favicon-reference assertions added before merge.
 
 Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid versioned favicon URLs because it compared the query suffix as part of the path. Parse the URL path and fetch the actual referenced icon for byte equality. Application source is unchanged; rerun the full suite.
+
+
+## Historical component contract — review-request adapter contract (L-02 dependency)
+
+- Add `docs/REVIEW_REQUESTS_ADAPTER.md`: the contract for adopting the review-request foundation (PR #31) in the live `website-review` lead path — `WebsiteAddress` intake normalization, consent-aware `ReviewContact`, stage persistence via an additive `review_stages` table, `review_reports` as the delivery gate, and staff transition controls through `ReviewInbox`. No shipping code or schema changes; records two decisions for integration review.

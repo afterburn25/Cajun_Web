@@ -1,6 +1,16 @@
 # Approved roadmap and acceptance criteria
 
-## Latest verified publication — 1.12.0
+## Latest verified publication — 1.13.0
+
+[v1.13.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.13.0) is published and freshly downloaded/verified at source/tag `b83cb9fb6856bca4f333fe953bee2e68f5074d51` through [PR #63](https://github.com/afterburn25/Cajun_Web/pull/63), preserving corrected Devin #59 through `13c04f6`. Bounded A-06 now provides owner-managed multiple email profiles, encrypted private passwords, separate read/send permissions and current per-mailbox assignments, scoped staff listings, immutable metadata history and stale/concurrent-write protection. Even owners require mailbox assignments. [Guide](ADMIN_EMAIL_ACCOUNTS.md). This prepares accounts only: no server connection, inbox, message fetching or sending.
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38446948573): 745 native checks (including 68 account checks), 3,084 estimator comparisons, 862 HTTP/Chromium, 101 filesystem/recovery, 381 Apache and 19 builder checks. All 16 public assets, archive members/directories/checksums and immutable tag verified; Windows/Linux bytes agree. Homepage desktop/mobile pixels match 1.12.0; actual account screens inspected. [Test report](TEST_REPORT_1.13.0.md); [handoff](DEVIN_HANDOFF_1.13.0.md).
+
+Permanent organized packaging remains in force. Fifteen supported starting packages: 1.0.8 and 1.1.0 through 1.12.0. UPDATE stages cwp-update-1.13.0 with target-specific recovery and shared structure-1.11.0/mutex.php. File recovery preserves new account/assignment/history rows and the original external private mail-master.key. Back up that key with the database. Missing/damaged keys are never silently replaced over saved ciphertext. Prior 1.12.0 release fingerprints remain unchanged. No live deployment or external payment/provider/mail/SSH activation.
+
+Next executable work: integrate reviewed L-02 review-request components and the corrected #36 contract into a bounded staff workflow, preserving existing intake protection, current permissions, explicit human evidence, durable revision history and confirmed external-delivery records. Codex owns application/schema/UI/tests/build/release; Devin retains independent component corrections. Real IMAP/SMTP transport, mailbox rendering, compose/send and A-08 email bells remain incomplete and need separate transport/security/provider acceptance. Corrected #32 scheduling has component evidence but still needs adapter/database concurrency acceptance. Preserve other branches and existing activity/support implementations. The roadmap remains active.
+
+## Previous verified publication — 1.12.0 (superseded checkpoint)
 
 [v1.12.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.12.0) is published and freshly downloaded/verified at source/tag `c526e960db13246c217f2b9d6f421c17b8d48261` through [PR #58](https://github.com/afterburn25/Cajun_Web/pull/58), preserving corrected Devin #56 through `f3522f6`. Bounded A-07 now provides an administrator template library: personal/shared drafts, explicit permission, create/edit/duplicate/activate/archive, escaped sample previews, immutable history and stale-write protection. Additive owner setup preserves existing records; fresh setup prepares an empty library. [User/technical guide](ADMIN_EMAIL_TEMPLATES.md).
 
@@ -107,6 +117,8 @@ One form for service/project type, approximate pages/products, functionality, co
 
 ### L-02 — Website-review requests
 
+Candidate 1.14.0 implements the bounded human review/report workflow; combined acceptance and publication remain pending. [Contract and current implementation](WEBSITE_REVIEW_WORKFLOW.md). Automated audits, fetching and customer delivery remain separate work.
+
 Capture existing website, business goals, and contact details in the lead inbox. Start with human-reviewed findings and a saved review/report before sending. Automated performance data is optional later and must label sources, observation date, lab versus real-user evidence, and absent data. Acceptance: valid request persistence, admin workflow, appropriate consent and delivery tracking. Any later server-side URL fetching requires SSRF protections, limits, and no access to private/internal addresses.
 
 ### C-01 — Why custom / Wix and Squarespace comparisons
@@ -183,7 +195,7 @@ Owner-controlled creation/invitation, role and mailbox grants, reset and deactiv
 
 ### A-06 — Multi-account admin webmail and setup
 
-Candidate 1.13.0 implements bounded profile/password/assignment preparation and the administrative UI. [Guide and pending acceptance](ADMIN_EMAIL_ACCOUNTS.md). No real connection, inbox or sending is included; full A-06 remains incomplete.
+Verified 1.13.0 delivers bounded profile/password/assignment preparation and the administrative UI. [Guide and acceptance](ADMIN_EMAIL_ACCOUNTS.md). No real connection, inbox or sending is included; full A-06 remains incomplete.
 
 Add Email with incoming/outgoing account configuration, separate connection tests, mailbox access grants, account switching/combined inbox, folders, read/unread, search, compose/reply/forward, drafts and attachments. Preserve server-side mailbox permissions, encrypted credentials, safe message rendering and correct send/sync failure handling. Full workflows and native two-account tests: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-06--multiple-email-accounts-and-webmail).
 
@@ -236,3 +248,4 @@ Move an item through `approved` → `in progress` → `implemented` → `verifie
 L-01 standalone estimator PR #27 is being integrated with arithmetic/result validation fixes; application adaptation remains pending. W-01 PR #7 now includes a real portfolio adapter and will be integrated next. Neither full roadmap item is complete. [Contract](PUBLIC_COMPONENT_INTEGRATION.md).
 
 L-02 review requests ([PR #31](https://github.com/afterburn25/Cajun_Web/pull/31)) and L-03 scheduling on `devin/consultation-scheduling` ([guide](SCHEDULING_FOUNDATION.md)) have isolated contracts: capture/workflow normalization and availability/conflict/booking lifecycle respectively. No forms, storage, mail, fetching or providers yet — application adaptation is a separate agreed step for each.
+L-02 standalone review-request contract on `devin/review-requests` ([guide](REVIEW_REQUESTS_FOUNDATION.md)): capture normalization, consent-aware contacts, legal stage pipeline and human-reviewed findings with labeled evidence. No form, storage, mail or URL fetching yet — application adaptation is a separate agreed step.

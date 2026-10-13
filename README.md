@@ -1,6 +1,16 @@
 # CajunWebPro — project source of truth
 
-## Latest verified publication — 1.12.0
+## Latest verified publication — 1.13.0
+
+[v1.13.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.13.0) is published and freshly downloaded/verified at source/tag `b83cb9fb6856bca4f333fe953bee2e68f5074d51` through [PR #63](https://github.com/afterburn25/Cajun_Web/pull/63), preserving corrected Devin #59 through `13c04f6`. Bounded A-06 now provides owner-managed multiple email profiles, encrypted private passwords, separate read/send permissions and current per-mailbox assignments, scoped staff listings, immutable metadata history and stale/concurrent-write protection. Even owners require mailbox assignments. [Guide](docs/ADMIN_EMAIL_ACCOUNTS.md). This prepares accounts only: no server connection, inbox, message fetching or sending.
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38446948573): 745 native checks (including 68 account checks), 3,084 estimator comparisons, 862 HTTP/Chromium, 101 filesystem/recovery, 381 Apache and 19 builder checks. All 16 public assets, archive members/directories/checksums and immutable tag verified; Windows/Linux bytes agree. Homepage desktop/mobile pixels match 1.12.0; actual account screens inspected. [Test report](docs/TEST_REPORT_1.13.0.md); [handoff](docs/DEVIN_HANDOFF_1.13.0.md).
+
+Permanent organized packaging remains in force. Fifteen supported starting packages: 1.0.8 and 1.1.0 through 1.12.0. UPDATE stages cwp-update-1.13.0 with target-specific recovery and shared structure-1.11.0/mutex.php. File recovery preserves new account/assignment/history rows and the original external private mail-master.key. Back up that key with the database. Missing/damaged keys are never silently replaced over saved ciphertext. Prior 1.12.0 release fingerprints remain unchanged. No live deployment or external payment/provider/mail/SSH activation.
+
+Next executable work: integrate reviewed L-02 review-request components and the corrected #36 contract into a bounded staff workflow, preserving existing intake protection, current permissions, explicit human evidence, durable revision history and confirmed external-delivery records. Codex owns application/schema/UI/tests/build/release; Devin retains independent component corrections. Real IMAP/SMTP transport, mailbox rendering, compose/send and A-08 email bells remain incomplete and need separate transport/security/provider acceptance. Corrected #32 scheduling has component evidence but still needs adapter/database concurrency acceptance. Preserve other branches and existing activity/support implementations. The roadmap remains active.
+
+## Previous verified publication — 1.12.0 (superseded checkpoint)
 
 [v1.12.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.12.0) is published and freshly downloaded/verified at source/tag `c526e960db13246c217f2b9d6f421c17b8d48261` through [PR #58](https://github.com/afterburn25/Cajun_Web/pull/58), preserving corrected Devin #56 through `f3522f6`. Bounded A-07 now provides an administrator template library: personal/shared drafts, explicit permission, create/edit/duplicate/activate/archive, escaped sample previews, immutable history and stale-write protection. Additive owner setup preserves existing records; fresh setup prepares an empty library. [User/technical guide](docs/ADMIN_EMAIL_TEMPLATES.md).
 
@@ -103,6 +113,7 @@ Existing sites back up files/database/private storage, merge UPDATE and have an 
 | [Access foundation](docs/ACCESS_FOUNDATION.md) | Implemented permission component, test scope and pending 1.1.0 adapter requirements |
 | [Staff invitations](docs/STAFF_INVITATIONS.md) | Expiring one-use setup tokens, native transaction tests and account-adapter requirements |
 | [Scheduling foundation](docs/SCHEDULING_FOUNDATION.md) | Independent L-03 availability/conflict/booking-lifecycle contract and adapter requirements |
+| [Review-request foundation](docs/REVIEW_REQUESTS_FOUNDATION.md) | Independent L-02 capture/workflow contract, evidence labeling and adapter requirements |
 | [Brand assets](docs/BRAND_ASSETS.md) | Exact logo, favicon source, and visual-reference provenance |
 | [Baseline inventory](docs/BASELINE_INVENTORY.md) | Artifact identity, file inventory, and inspection limits |
 | [Decisions](docs/DECISIONS.md) | Accepted constraints and why earlier approaches were rejected |
