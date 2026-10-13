@@ -130,6 +130,7 @@ function staff_reset_token(string $email): ?array {
     }));
 }
 function staff_view_permission(string $view): ?string {
+    if($view==='mail-inbox')return 'mail.read';
     if($view==='consultation-settings')return 'staff.manage';
     if(in_array($view,['consultations','consultation'],true))return 'website.manage';
     if(in_array($view,['login','forgot','reset','staff-setup','security','mailboxes'],true))return null;
@@ -143,6 +144,8 @@ function staff_view_permission(string $view): ?string {
     return 'website.manage';
 }
 function staff_action_permission(string $action): ?string {
+    if($action==='mail_inbox_setup')return 'staff.manage';
+    if(str_starts_with($action,'mail_inbox_'))return 'mail.read';
     if(in_array($action,['appointments_setup','appointments_configure'],true))return 'staff.manage';
     if(str_starts_with($action,'appointments_'))return 'website.manage';
     if(in_array($action,['logout','account_save'],true))return null;

@@ -44,7 +44,7 @@ jobs:
           php8.3 -v
           php8.3 -m
           python3 -m venv .ci-venv
-          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 playwright
+          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 playwright cryptography==50.0.1
           .ci-venv/bin/python -m playwright install --with-deps chromium
       - name: Exact source, installer inventory and package checks
         run: |
@@ -72,6 +72,7 @@ jobs:
           php8.3 tests/reviews_native.php
           php8.3 tests/appointments_native.php
           php8.3 tests/mail_connections_native.php
+          php8.3 tests/mail_inbox_native.php
       - name: Real HTTP and Chromium application workflows
         run: .ci-venv/bin/python tests/browser_acceptance.py
       - name: Unprivileged structure update interruption and recovery

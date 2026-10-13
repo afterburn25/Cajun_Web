@@ -8,7 +8,7 @@ def checked_path(name):
  if p.is_absolute() or '..' in p.parts or '\\' in name or ':' in name or p.as_posix()!=name:raise RuntimeError('Unsafe dependency path')
  if p.parts[0] not in ['vendor','licenses'] and name not in ['composer.json','composer.lock']:raise RuntimeError('Unexpected dependency manifest scope')
  return BUNDLE/name
-def check():
+def check(check_runtime=True):
  m=json.loads((BUNDLE/'vendor-manifest.json').read_text(encoding='utf-8'));lock=json.loads((BUNDLE/'composer.lock').read_text(encoding='utf-8'));config=json.loads((BUNDLE/'composer.json').read_text(encoding='utf-8'))
  assert m['schema']==1 and m['php_platform']=='8.2.0'
  assert config['require']=={'directorytree/imapengine':'1.25.6','zbateson/mail-mime-parser':'4.0.6'} and config['config']['allow-plugins'] is False and config['config']['platform']['php']=='8.2.0' and config['config']['bin-compat']=='full'
@@ -27,7 +27,20 @@ def check():
   p=checked_path(name);assert p.is_file() and not p.is_symlink() and digest(p)==h,name
   assert not p.name.startswith('.env') and p.suffix not in ['.pem','.key','.p12','.sql'],name
  print(f'PASS: {len(m["packages"])} locked packages; {len(names)} exact dependency/license files; no drift.')
+ if check_runtime:check_mirror()
  return m
+
+def check_mirror(required=False):
+ mirror=ROOT/'site/includes/foundation/mail-receiving'
+ if not mirror.exists():
+  assert not required,'Receiving runtime mirror is required'
+  return
+ sources={p.relative_to(BUNDLE).as_posix():p for p in BUNDLE.rglob('*') if p.is_file()}
+ targets={p.relative_to(mirror).as_posix():p for p in mirror.rglob('*') if p.is_file()}
+ assert set(sources)==set(targets),'Receiving runtime mirror has missing or extra files'
+ for name,p in targets.items():assert not p.is_symlink() and p.read_bytes()==sources[name].read_bytes(),name
+ assert not any(p.is_symlink() for p in mirror.rglob('*')),'Receiving runtime contains a symlink'
+ print(f'PASS: {len(targets)} receiving runtime files match the canonical bundle byte-for-byte.')
 def reproduce(m):
  # A sibling stage remains outside the checkout so Composer cannot embed branch/commit metadata.
  base=ROOT.parent.resolve()

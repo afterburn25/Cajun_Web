@@ -59,13 +59,13 @@ def main():
     # export rules. Exclude only this exact, hash-verified dependency subtree.
     from check_mail_vendor import check as check_mail_vendor
     check_mail_vendor()
-    vendor = ROOT / "foundation/mail-receiving/vendor"
+    vendors = [ROOT / "foundation/mail-receiving/vendor", ROOT / "site/includes/foundation/mail-receiving/vendor"]
     for name in REQUIRED:
         path = ROOT / name
         if not path.is_file() or not path.read_text(encoding="utf-8").strip():
             errors.append(f"Missing or empty continuity document: {name}")
 
-    documents = {path: path.read_text(encoding="utf-8") for path in ROOT.rglob("*.md") if ".git" not in path.relative_to(ROOT).parts and not path.is_relative_to(vendor)}
+    documents = {path: path.read_text(encoding="utf-8") for path in ROOT.rglob("*.md") if ".git" not in path.relative_to(ROOT).parts and not any(path.is_relative_to(vendor) for vendor in vendors)}
     local_links = 0
     heading_links = 0
     for path, source in documents.items():

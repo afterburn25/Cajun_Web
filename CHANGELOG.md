@@ -1,13 +1,10 @@
 # Changelog
 
-## Unreleased — bounded inbox receiving in progress
+## 1.17.0 candidate — bounded recent inbox headers (unreleased)
 
-- Add the isolated pinned TLS/header-reading foundation, exact UID identities, explicit limits, private bounded header decoding and 531 additional session/TLS checks. No deployment integration yet.
-- Pin Composer cross-platform helper generation after Linux reproduction identified an auto-mode difference.
-- Normalize root dependency metadata to Git-stable LF bytes while retaining original upstream vendor bytes.
-- Retain the exact maintained dependency bundle, licenses, bounded tokenizer and 17 isolated fixtures; add fresh-install byte reproduction and PHP 8.2/8.4 CI. Deployment remains unchanged.
-- Define a maintained IMAP/MIME dependency and bounded header-reading contract. Preserve explicit current mailbox authority and the released authentication diagnostics.
-- Initial source/dependency work is excluded from deployment; inbox UI, real mailbox acceptance, message bodies and sending are not enabled by this checkpoint.
+- Add explicit assigned-staff INBOX header loading over verified TLS, using maintained pinned IMAP/MIME dependencies bundled for PHP shared hosting. Preserve account/folder/UIDVALIDITY/UID identity and existing read flags; no body, attachment, compose/send or background polling.
+- Enforce current session, global permission, mailbox assignment and saved revision before credentials and display. Limit refreshes to one per account per 15 seconds and 120 per staff hour. Commit started and terminal audits separately; retain only outcome/count metadata and personal request history, never header contents.
+- Add owner-prepared additive request storage, fresh empty install schema, byte-verified protected runtime mirror, and actual 1.16.0 update/recovery coverage. Application acceptance is pending; foundation exact-head PHP 8.2/8.4 already passes 548 named checks each.
 
 ## 1.16.0 — verified explicit email connection checks
 
