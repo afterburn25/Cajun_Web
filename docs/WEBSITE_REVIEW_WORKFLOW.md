@@ -1,6 +1,6 @@
 # Website review workflow — bounded L-02 application contract
 
-Codex owns `codex/website-review-workflow`, continuing verified 1.13.0. Preserve Devin #31 and #36 ancestry; reuse the canonical review classes rather than a parallel lifecycle. Candidate 1.14.0 source implements this contract. Combined acceptance, actual screenshots and publication verification are pending; latest verified publication remains 1.13.0.
+Codex owns `codex/website-review-workflow`, continuing verified 1.13.0. Preserve Devin #31 and #36 ancestry; reuse the canonical review classes rather than a parallel lifecycle. Published and download-verified [1.14.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.14.0) at `f55879339e38769b4ec5fa81780a3d650b63da25` implements this bounded contract. [Exact-main acceptance and inspected screens](TEST_REPORT_1.14.0.md).
 
 ## User workflow
 
