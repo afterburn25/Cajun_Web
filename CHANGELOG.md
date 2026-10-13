@@ -3,7 +3,9 @@
 ## Unreleased — review-request adapter contract (L-02 dependency)
 
 - Add `docs/REVIEW_REQUESTS_ADAPTER.md`: the contract for adopting the review-request foundation (PR #31) in the live `website-review` lead path — `WebsiteAddress` intake normalization, consent-aware `ReviewContact`, stage persistence via an additive `review_stages` table, `review_reports` as the delivery gate, and staff transition controls through `ReviewInbox`. No shipping code or schema changes; records two decisions for integration review.
-## 1.11.0 — directory correction candidate (not published)
+## 1.11.0 — organized application and verified three-package release
+
+Published from `de70c5da2e8f7bd35fbb92b9b829d0ab3e880372` after exact-main acceptance; all 16 assets downloaded and verified. Original history and all earlier releases retained. No live deployment.
 
 - Organized administration, portal, public templates, shared bootstrap/security, business services, database migrations, API/webhooks/media and setup source; retained existing visuals and exact image bytes.
 - Canonical root/subfolder URLs, shared session identity, guarded internal paths and private upload staging within the configured store.
@@ -11,7 +13,7 @@
 - Three clean-commit artifacts: sanitized FULL-PROJECT, organized COMPLETE-UPLOAD and independently exercised UPDATE; per-artifact inventories/checksums and START-HERE.
 - Expanded application, historical upgrade, Apache and filesystem recovery acceptance. Publication depends on completed checks and exact-main verification.
 
-## Unreleased priority correction — organized directory layout and complete project packages
+## Historical priority request — fulfilled by 1.11.0
 
 Owner override stops the portfolio-only 1.11.0 publication. Preserve integrated source and implement organized modules/assets, protected storage/upload scaffolding, bounded owner migration/recovery, and FULL-PROJECT/COMPLETE-UPLOAD/UPDATE artifacts. Latest published version remains 1.10.0; no corrected release claimed yet.
 
@@ -22,7 +24,7 @@ Owner override stops the portfolio-only 1.11.0 publication. Preserve integrated 
 - Linked the rules from agent instructions, roadmap, provider/client roadmaps, coordination, status, handoff and decisions. Explicit production restrictions remain.
 - No PHP/runtime feature, integration, live transaction, deployment or app version bump; previously released v1.10.0 stays unchanged.
 
-## 1.11.0 — portfolio integration candidate, not yet released
+## Historical 1.11.0 portfolio candidate — included in the corrected release
 
 - Stabilize modified-click acceptance by observing the application decision before suppressing synthetic navigation; add an actual Ctrl-click/new-tab check. Shipping bytes are unchanged by this test-only correction.
 
