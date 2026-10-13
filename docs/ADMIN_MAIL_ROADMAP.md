@@ -1,5 +1,10 @@
 # Admin webmail, staff access, templates and email notifications
 
+## Candidate 1.17.0 — acceptance pending
+
+[PR #69](https://github.com/afterburn25/Cajun_Web/pull/69) adds explicit assigned-staff INBOX header reading, protected bundled dependencies, strict request auditing and an additive upgrade setup. See the [receiving contract](MAIL_INBOX_READER.md). New native/HTTP/TLS/browser/Apache and 1.16.0 upgrade/recovery acceptance is pending. Latest published version remains 1.16.0; publication summaries below describe their recorded release, not the active candidate. The permanent organized structure remains in force.
+
+
 ## Current released increment — 1.16.0
 
 [Verified 1.16.0](TEST_REPORT_1.16.0.md) adds explicit owner/password/current-assignment checks of saved incoming and outgoing credentials, verified public-destination TLS authentication and versioned sanitized history. [Owner guide](MAIL_CONNECTION_CHECKS.md). This checks authentication only: no inbox synchronization, message reading/rendering, compose/send, OAuth or email notification bell. No real mailbox was used in acceptance. Existing activity bells remain workspace events. Preserve Devin receiving PR #68 for maintained-stack/adapter review before integration.
