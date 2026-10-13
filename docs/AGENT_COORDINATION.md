@@ -1,5 +1,13 @@
 # Codex and Devin work allocation
 
+## Owner priority override — directory structure and packaging, 2026-10-13
+
+The owner requires an actual structural refactor and three separately verified downloads before any unrelated roadmap work resumes. This supersedes earlier constraints that kept substantial root PHP files or interpreted a no-wrapper ZIP as a flat application. Work on `codex/priority-directory-refactor` from main `b975915` preserves integrated portfolio/estimator work and the tested browser correction. Latest published version is **1.10.0**; the 1.11.0 portfolio-only release was stopped before draft/tag creation. The unused 1.11.0 candidate will be corrected before release. Do not publish the old-layout candidate.
+
+Required meaningful areas: admin, portal, pages, includes, business app modules, API/webhooks/media, install, database, config, assets/css and assets/js, categorized images, protected storage/upload scaffolds. Root entry points must be thin. FULL-PROJECT includes docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD extracts organized site contents directly; UPDATE includes tested compatibility/migration support. Keep private configured data locations, exact brand bytes, one-page keyless setup, all existing behavior and no-rewrite/root/subfolder support. [Refactor contract](DIRECTORY_REFACTOR_CONTRACT.md). No live deployment is authorized.
+
+Devin PRs #31/#32 are separate independent components, preserved and paused for integration while paths change. Supply the exact mapping and corrected baseline before further application adapters. Next action is structure implementation, migration/recovery and Apache/native/browser/package acceptance—not another roadmap feature.
+
 ## Current sequential integration — 2026-10-13
 
 Estimator PR #29 merged with original PR #27 ancestry after all checks. Its subsequent main-refresh head `65c2084` is retained in `codex/portfolio-browsing`. Portfolio PR #7 at `016a405` is now being integrated there with Codex review fixes and current activity features. No pushes to Devin branches; the original unused local `codex/integrate-portfolio` remains untouched. [Committed boundaries](PUBLIC_COMPONENT_INTEGRATION.md). [Issue #2 coordination update](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6146835752) asks for stable completed heads; it does not prove receipt.

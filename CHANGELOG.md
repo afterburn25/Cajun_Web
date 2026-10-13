@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased priority correction — organized directory layout and complete project packages
+
+Owner override stops the portfolio-only 1.11.0 publication. Preserve integrated source and implement organized modules/assets, protected storage/upload scaffolding, bounded owner migration/recovery, and FULL-PROJECT/COMPLETE-UPLOAD/UPDATE artifacts. Latest published version remains 1.10.0; no corrected release claimed yet.
+
 ## 1.11.0 — portfolio integration candidate, not yet released
 
 - Stabilize modified-click acceptance by observing the application decision before suppressing synthetic navigation; add an actual Ctrl-click/new-tab check. Shipping bytes are unchanged by this test-only correction.

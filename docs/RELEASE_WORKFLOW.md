@@ -1,5 +1,13 @@
 # GitHub testing, incremental releases and agent continuity
 
+## Owner priority override — directory structure and packaging, 2026-10-13
+
+The owner requires an actual structural refactor and three separately verified downloads before any unrelated roadmap work resumes. This supersedes earlier constraints that kept substantial root PHP files or interpreted a no-wrapper ZIP as a flat application. Work on `codex/priority-directory-refactor` from main `b975915` preserves integrated portfolio/estimator work and the tested browser correction. Latest published version is **1.10.0**; the 1.11.0 portfolio-only release was stopped before draft/tag creation. The unused 1.11.0 candidate will be corrected before release. Do not publish the old-layout candidate.
+
+Required meaningful areas: admin, portal, pages, includes, business app modules, API/webhooks/media, install, database, config, assets/css and assets/js, categorized images, protected storage/upload scaffolds. Root entry points must be thin. FULL-PROJECT includes docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD extracts organized site contents directly; UPDATE includes tested compatibility/migration support. Keep private configured data locations, exact brand bytes, one-page keyless setup, all existing behavior and no-rewrite/root/subfolder support. [Refactor contract](DIRECTORY_REFACTOR_CONTRACT.md). No live deployment is authorized.
+
+Devin PRs #31/#32 are separate independent components, preserved and paused for integration while paths change. Supply the exact mapping and corrected baseline before further application adapters. Next action is structure implementation, migration/recovery and Apache/native/browser/package acceptance—not another roadmap feature.
+
 The first v1.1.0 publication completed this workflow: exact-main tests, deterministic packages, draft verification, publication, clean download verification and retained evidence. See [release register](RELEASES.md) and [test report](TEST_REPORT_1.1.0.md).
 
 Owner direction recorded 2026-10-12: use GitHub for testing, deliver incremental versions, retain copies of released versions on GitHub, and document the project so other agents can resume without reconstructing chat history. This is standing authorization for ordinary repository updates, isolated CI tests and publishing verified project release packages. It does not itself activate production deployments, live charges, customer mail or paid provider operations.
