@@ -12,6 +12,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     if(str_starts_with($action,'catalog_'))catalog_admin_action($action,$user);
     if(str_starts_with($action,'payments_'))payments_admin_action($action);
     if(str_starts_with($action,'mail_accounts_')){mail_accounts_admin_action($action);return;}
+    if(str_starts_with($action,'reviews_')){reviews_admin_action($action);return;}
     if(str_starts_with($action,'mail_templates_')){mail_templates_admin_action($action);return;}
     if(str_starts_with($action,'activity_'))activity_post('admin');
     if(str_starts_with($action,'delivery_'))delivery_admin_action($action);
