@@ -2,6 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/mail/accounts.php';
+require_once CWP_CODE_ROOT.'/app/mail/connections.php';
 
 function mail_accounts_revision(): int {
     $revision=posted('revision',10);
@@ -12,7 +13,15 @@ function mail_accounts_admin_action(string $action): void {
     if ($action==='mail_accounts_setup') {
         mail_accounts_migrate($password);flash('Email account storage enabled.');redirect(admin_url('mail-accounts'));
     }
+    if ($action==='mail_accounts_connections_setup') {
+        $id=posted('account_id',32);mail_accounts_manager();mail_accounts_load($id);
+        mail_connections_migrate($password);flash('Connection-check history is ready. No server was contacted.');redirect(admin_url('mail-account',['account_id'=>$id]));
+    }
     mail_accounts_manager();$id=posted('account_id',32);$revision=mail_accounts_revision();
+    if ($action==='mail_accounts_check') {
+        $code=mail_connections_check($id,$revision,posted('target',10),$password);
+        flash(mail_connections_message($code),$code==='ok'?'success':'error');redirect(admin_url('mail-account',['account_id'=>$id]));
+    }
     if ($action==='mail_accounts_save') {
         $values=[];foreach (mail_accounts_fields() as $key=>$max) $values[$key]=posted($key,$max);
         $secrets=[];foreach (['imap_password','smtp_password'] as $key) {
