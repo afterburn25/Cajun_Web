@@ -85,7 +85,7 @@ PHPIniDir /etc/php/8.3/apache2
             # This fixture reuses the isolated fresh schema; the comprehensive HTTP
             # suite separately retains actual old databases and business records.
             legacy=web/'legacy';shutil.copytree(ROOT/'test-runtime/released-1.10.0',legacy)
-            code="$c=require $argv[1];$c['site_url']=$argv[3];file_put_contents($argv[2],'<?php return '.var_export($c,true).';');"
+            code="define('CWP_BOOT',true);$c=require $argv[1];$c['site_url']=$argv[3];file_put_contents($argv[2],'<?php return '.var_export($c,true).';');"
             php=shutil.which('php8.3') or shutil.which('php')
             subprocess.run([php,'-r',code,str(web/'config.php'),str(legacy/'config.php'),base+'/legacy'],check=True)
             shutil.copyfile(web/'.installed.php',legacy/'.installed.php')
