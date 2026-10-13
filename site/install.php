@@ -342,7 +342,7 @@ function setup_expected_files(): array { return [
         'favicon.ico' => 'c4e4fe3038ef2cf63978f940d9c43402d9474b1c93e4e0334bbd73a0c8a9ec13',
         'index.php' => '4b1ea57157dc87fc7b7af5d5ffb12dd67127fd8130f62f432d9a9e76e9115cd1',
         'media.php' => '233adcefeb5f0e4a7abad8ec90fa5162a3e274506f5e56d764c2aafec9282a83',
-        'portal.php' => 'f5be7a00c0cfd4042d1bace4a33bccf1d870e1cb43d7daa3eb0dfbe63bfd7e68',
+        'portal.php' => '2f4b6bccee16708a9573507e851d176d79f78af2a104a26a28e75ecfb9ec7deb',
         'robots.php' => '954fce8a35cbc1832f58d386ffd611bf9f45c54456de5f6f7be532c3a3fd7c90',
         'sandbox-notifications.php' => '0072a635ac32b8b896cffdf03cb8e4ead1f438edff03d603f0cc4aa35bfeac92',
         'sitemap.php' => '508fcb6f6c3d5511a6c41944a1b11aff6140e410641f1735d67f12d3b61d834b',

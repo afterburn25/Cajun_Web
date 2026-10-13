@@ -326,3 +326,5 @@ CI findings: `f955b13` / run 38383777980 stopped on an overlong synthetic API Lo
 ## 2026-10-13 — Continue roadmap: invoice ledger candidate
 
 Request: continue roadmap. Start `2eee5719ccd85d6661b2677dbc8c1415853d9ec3` / published v1.7.0, contract commit `61b0b47`, branch `codex/invoice-ledger`. Added additive ledger/migration, strict external receipts/corrections, admin/client views, remaining request balances, installer inventory and retained-1.7/native/concurrent/HTTP/browser coverage. Acceptance has not yet run. Earlier release bytes and Devin PR #7 retained; no live deployment/customer/provider operation. Next: local checks, GitHub acceptance and fixes, reviewed integration and exact-main release/download verification.
+
+Candidate `105c940`, run 38389060369: native checks passed; an older HTTP assertion caught the renamed pre-ledger paid status text. Retained the original receipt label before ledger enablement and uses Marked paid after enablement, so imported legacy balances are not mislabeled as new receipts. Rechecking acceptance.
