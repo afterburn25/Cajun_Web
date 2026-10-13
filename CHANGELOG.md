@@ -3,6 +3,24 @@
 ## Unreleased — scheduling adapter contract (L-03 dependency)
 
 - Add `docs/SCHEDULING_ADAPTER.md`: contract for adopting the scheduling foundation (PR #32) in the live `consultation` route — preferred date/period/zone becomes a `TimeWindow` request, staff narrow to an exact slot via `isBookable` + confirm, additive `consultations` table feeds conflict checks, and all form/spam/lead behavior stays live-side. No shipping code or schema changes.
+## 1.11.0 — directory correction candidate (not published)
+
+- Organized administration, portal, public templates, shared bootstrap/security, business services, database migrations, API/webhooks/media and setup source; retained existing visuals and exact image bytes.
+- Canonical root/subfolder URLs, shared session identity, guarded internal paths and private upload staging within the configured store.
+- Staged owner update with recognized-source verification, backup confirmation, serialized journaled replacement, known-hash retirement, direct legacy callbacks and recovery.
+- Three clean-commit artifacts: sanitized FULL-PROJECT, organized COMPLETE-UPLOAD and independently exercised UPDATE; per-artifact inventories/checksums and START-HERE.
+- Expanded application, historical upgrade, Apache and filesystem recovery acceptance. Publication depends on completed checks and exact-main verification.
+
+## Unreleased priority correction — organized directory layout and complete project packages
+
+Owner override stops the portfolio-only 1.11.0 publication. Preserve integrated source and implement organized modules/assets, protected storage/upload scaffolding, bounded owner migration/recovery, and FULL-PROJECT/COMPLETE-UPLOAD/UPDATE artifacts. Latest published version remains 1.10.0; no corrected release claimed yet.
+
+## 2026-10-13 — Dependency-aware roadmap and agent instructions (docs only)
+
+- Added a mandatory owner-approved policy for Codex/Devin: unavailable third-party API/merchant/SSH verification blocks only the specific real integration or production operation, **not** safe independent development or unrelated features.
+- Clarified HC-07 (Awaiting API verification), HC-09/HC-10 (Development pending — API verification), and A-10 (Architecture/security validation pending), tracking those gates separately from implementation/release/deployment status.
+- Linked the rules from agent instructions, roadmap, provider/client roadmaps, coordination, status, handoff and decisions. Explicit production restrictions remain.
+- No PHP/runtime feature, integration, live transaction, deployment or app version bump; previously released v1.10.0 stays unchanged.
 
 ## 1.11.0 — portfolio integration candidate, not yet released
 

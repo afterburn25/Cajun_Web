@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace CajunWebPro\Foundation\Invitations;
 
+if (PHP_SAPI !== 'cli' && !defined('CWP_BOOT')) { http_response_code(404); exit; }
+
 /** The raw token is returned once for trusted delivery, never persisted or logged. */
 final readonly class IssuedInvitation implements \JsonSerializable
 {

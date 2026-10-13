@@ -1,5 +1,9 @@
 # Unified client portal: hosting, design projects, updates and website downloads
 
+## VPS support gate interpretation (owner policy 2026-10-13)
+
+A-10 is **Architecture/security validation pending**, not a project-wide blocker. Continue independent staff permissions, customer/service mapping, audit, explicit consent and safe session UX with isolated tests. Do not permit a live terminal until a properly scoped provider handoff or external secure gateway is reviewed and tested; never add an undeclared SSH daemon/root requirement to the shared-host application. Read [dependency-gate policy](DEPENDENCY_GATES.md). This is documentation-only and does not claim SSH support is implemented.
+
 ## 2026-10-13 — Verified 1.10.0 workspace activity increment
 
 Separate client/staff activity centers and private workspace bells are delivered in [v1.10.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0) / `4649a913d40166b9874f9550e57b4186edfc43ab`. Additive per-person read state projects retained sources without changing business writes. Exact links, bounded mark-visible actions, history, current authorization and passive idle expiry pass 603 native / 630 HTTP/Chromium checks including actual 1.9.0 UPDATE. Full P-07 remains partial; SMTP dispatch/preferences/stage/hosting/ticket/renewal events and A-06–A-08 multi-account webmail/templates/email bells remain pending. [Guide](WORKSPACE_ACTIVITY.md) · [report](TEST_REPORT_1.10.0.md).

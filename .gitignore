@@ -8,4 +8,11 @@ __pycache__/
 /site/proxy-config.php
 /site/.installed.php
 /site/storage/
+!/site/storage/
+/site/storage/*
+!/site/storage/.htaccess
+!/site/storage/index.php
+/site/upload/*
+!/site/upload/.htaccess
+!/site/upload/index.php
 /.installer-script-*.js
