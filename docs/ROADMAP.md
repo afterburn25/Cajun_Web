@@ -1,5 +1,78 @@
 # Approved roadmap and acceptance criteria
 
+## Active candidate — A-06 connection checks
+
+Candidate 1.16.0, [PR #67](https://github.com/afterburn25/Cajun_Web/pull/67), adds explicit current-authorized owner checks of saved IMAP/SMTP credentials with verified public-destination TLS and truthful versioned history. [Contract](MAIL_CONNECTION_CHECKS.md). Application/release acceptance is pending; full inbox/compose and A-08 email bells remain incomplete. This does not activate or test a live mailbox. Latest published release remains 1.15.0.
+
+## Latest verified publication — 1.15.0
+
+[v1.15.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.15.0) is published and freshly downloaded/verified at source/tag `8749bc5a89e52f8f35a193cc49d306136576ec8e` through [PR #66](https://github.com/afterburn25/Cajun_Web/pull/66), preserving corrected Devin #32 through `3617ad5`. Bounded L-03 adds one owner-configured studio calendar, public pending slot requests, explicit old-inquiry adoption, staff confirmation/cancellation/decline/rescheduling and retained history. Scheduling starts disabled with no offered hours. Current permissions, consent, saved revisions and password-confirmed decisions protect the workflow; all conflict-changing writes use one configuration lock and current database reads. [Guide](CONSULTATION_SCHEDULING.md). Decisions update the studio calendar only; contact prospects separately. No provider calendar or outgoing confirmation/cancellation message.
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38460197599): 893 native checks (including 83 scheduling checks), 3,084 estimator comparisons, 923 HTTP/Chromium, 129 filesystem/recovery, 487 Apache and 19 builder checks. All 16 public assets, archive members/directories/checksums and immutable tag verified; Windows/Linux bytes agree. Homepage desktop/mobile pixels match 1.14.0; actual consultation public/admin screens inspected. [Test report](TEST_REPORT_1.15.0.md); [handoff](DEVIN_HANDOFF_1.15.0.md).
+
+Permanent organized packaging remains in force. Seventeen supported starting packages: 1.0.8 and 1.1.0 through 1.14.0. UPDATE stages cwp-update-1.15.0 with target-specific recovery and shared structure-1.11.0/mutex.php. Actual 1.14.0 update/recovery retains review history, email credentials/assignments/private key, templates and added appointment/configuration history. Prior 1.14.0 asset fingerprints remain unchanged. No live deployment or external payment/provider/mail/SSH activation.
+
+Next executable work: return to A-06 webmail transport, evaluate maintained PHP/shared-host-compatible options and define a bounded connection/inbound-message contract before integration. Reuse the released email profiles, private credential key, current mailbox assignments and canonical permission policy; validate TLS/network boundaries and hostile-content handling with isolated tests. Real account acceptance, outgoing mail and A-08 email bells remain separate gates. The separate owner-requested 20i package-list diagnostic succeeded in run 38458492995, job 115510304263 (HTTP 200 and valid list); its earlier secret-availability blocker is resolved. This establishes only authenticated GET /package, not a shipped adapter or other entitlements. See [issue #65](https://github.com/afterburn25/Cajun_Web/issues/65) and preserved ops/twentyi-read-only-check-20261013 at 7e87d8c; do not rerun or expand provider calls without their own authorization. Continue feasible 20i/merchant/VPS/SSH development under operation-specific verification rules; preserve other Devin branches and current activity/support implementations. The roadmap remains active.
+
+## Previous verified publication — 1.14.0 (superseded checkpoint)
+
+[v1.14.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.14.0) is published and freshly downloaded/verified at source/tag `f55879339e38769b4ec5fa81780a3d650b63da25` through [PR #64](https://github.com/afterburn25/Cajun_Web/pull/64), preserving corrected Devin #31/#36 through `ea0a4d3`/`7958578`. Bounded L-02 provides human website reviews within existing inquiries: explicit adoption, evidence-labeled findings, report/stage history, current staff authorization and stale/concurrent protection. Password-confirmed external-delivery records require the saved draft, current consent, actual time and reference; they record delivery performed elsewhere and send nothing. [Guide](WEBSITE_REVIEW_WORKFLOW.md). New structured intake commits atomically; bare-host normalization retains the raw 500-byte limit and rejects fragments/userinfo/controls. No website is fetched or audit score generated.
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38453775600): 810 native checks (including 65 review checks), 3,084 estimator comparisons, 890 HTTP/Chromium, 115 filesystem/recovery, 433 Apache and 19 builder checks. All 16 public assets, archive members/directories/checksums and immutable tag verified; Windows/Linux bytes agree. Homepage desktop/mobile pixels match 1.13.0; actual review screens inspected. [Test report](TEST_REPORT_1.14.0.md); [handoff](DEVIN_HANDOFF_1.14.0.md).
+
+Permanent organized packaging remains in force. Sixteen supported starting packages: 1.0.8 and 1.1.0 through 1.13.0. UPDATE stages cwp-update-1.14.0 with target-specific recovery and shared structure-1.11.0/mutex.php. Actual 1.13.0 update/recovery retains email credentials/assignments/private key, template history and added review records. Prior 1.13.0 asset fingerprints remain unchanged. No live deployment or external payment/provider/mail/SSH activation.
+
+Next executable work: re-review and preserve corrected Devin #32 scheduling, agree a bounded L-03 application contract, then implement current-authorized availability and requested/confirmed consultation handling with transactional conflict protection and actual public/admin acceptance. Codex owns application/schema/UI/tests/build/release; retain other Devin branches. Real IMAP/SMTP transport, mailbox rendering/compose and A-08 email bells remain incomplete; 20i, merchant checkout and VPS SSH retain their separate operation-specific validation gates. Continue feasible development while those gates are pending. The roadmap remains active.
+
+## Previous verified publication — 1.13.0 (superseded checkpoint)
+
+[v1.13.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.13.0) is published and freshly downloaded/verified at source/tag `b83cb9fb6856bca4f333fe953bee2e68f5074d51` through [PR #63](https://github.com/afterburn25/Cajun_Web/pull/63), preserving corrected Devin #59 through `13c04f6`. Bounded A-06 now provides owner-managed multiple email profiles, encrypted private passwords, separate read/send permissions and current per-mailbox assignments, scoped staff listings, immutable metadata history and stale/concurrent-write protection. Even owners require mailbox assignments. [Guide](ADMIN_EMAIL_ACCOUNTS.md). This prepares accounts only: no server connection, inbox, message fetching or sending.
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38446948573): 745 native checks (including 68 account checks), 3,084 estimator comparisons, 862 HTTP/Chromium, 101 filesystem/recovery, 381 Apache and 19 builder checks. All 16 public assets, archive members/directories/checksums and immutable tag verified; Windows/Linux bytes agree. Homepage desktop/mobile pixels match 1.12.0; actual account screens inspected. [Test report](TEST_REPORT_1.13.0.md); [handoff](DEVIN_HANDOFF_1.13.0.md).
+
+Permanent organized packaging remains in force. Fifteen supported starting packages: 1.0.8 and 1.1.0 through 1.12.0. UPDATE stages cwp-update-1.13.0 with target-specific recovery and shared structure-1.11.0/mutex.php. File recovery preserves new account/assignment/history rows and the original external private mail-master.key. Back up that key with the database. Missing/damaged keys are never silently replaced over saved ciphertext. Prior 1.12.0 release fingerprints remain unchanged. No live deployment or external payment/provider/mail/SSH activation.
+
+Next executable work: integrate reviewed L-02 review-request components and the corrected #36 contract into a bounded staff workflow, preserving existing intake protection, current permissions, explicit human evidence, durable revision history and confirmed external-delivery records. Codex owns application/schema/UI/tests/build/release; Devin retains independent component corrections. Real IMAP/SMTP transport, mailbox rendering, compose/send and A-08 email bells remain incomplete and need separate transport/security/provider acceptance. Corrected #32 scheduling has component evidence but still needs adapter/database concurrency acceptance. Preserve other branches and existing activity/support implementations. The roadmap remains active.
+
+## Previous verified publication — 1.12.0 (superseded checkpoint)
+
+[v1.12.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.12.0) is published and freshly downloaded/verified at source/tag `c526e960db13246c217f2b9d6f421c17b8d48261` through [PR #58](https://github.com/afterburn25/Cajun_Web/pull/58), preserving corrected Devin #56 through `f3522f6`. Bounded A-07 now provides an administrator template library: personal/shared drafts, explicit permission, create/edit/duplicate/activate/archive, escaped sample previews, immutable history and stale-write protection. Additive owner setup preserves existing records; fresh setup prepares an empty library. [User/technical guide](ADMIN_EMAIL_TEMPLATES.md).
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38441087438): 677 native checks (including 59 template checks), 3,084 estimator comparisons, 834 HTTP/Chromium, 87 filesystem/recovery, 327 Apache and 17 builder checks. All 16 public assets, archive members/directories/checksums and immutable tag verified; Windows/Linux bytes agree. Homepage desktop/mobile pixels match 1.11.2; actual template screens inspected. [Test report](TEST_REPORT_1.12.0.md); [handoff](DEVIN_HANDOFF_1.12.0.md).
+
+The organized directory and three-package contract remain permanent. Updates recognize 1.0.8 and 1.1.0 through 1.11.2; staging is cwp-update-1.12.0, recovery is target-specific and the original structure-1.11.0/mutex.php lock is shared. File recovery preserves added template database records. Prior releases remain immutable. No live deployment or external payment/provider/mail/SSH activation. Templates do not send mail or read client data.
+
+Next executable work: apply/review the identified Devin #59 corrections (grant start times, UIDVALIDITY identities, duplicate messages and trust/evidence documentation), then implement the bounded A-06 account/configuration/grant adapter. Codex has claimed application/schema/UI/build ownership; Devin retains canonical corrections. Real transport, mailbox acceptance, compose/send and A-08 email bells remain incomplete. #31 portability corrections pass 86 no-extension checks; #36 URL-input contract needs accurate final caveats before L-02 integration. Corrected #32 scheduling passes 71 local component checks but its adapter/concurrency acceptance is still pending. Keep other foundations isolated until reviewed; the full roadmap is not complete.
+
+## Previous verified publication — 1.11.2 (superseded checkpoint)
+
+[v1.11.2](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.2) is published and freshly downloaded/verified at source/tag `4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36` through [PR #55](https://github.com/afterburn25/Cajun_Web/pull/55), preserving Devin PR #35 ancestry through `efc967a`. The live public estimator now uses canonical exact arithmetic while preserving existing form, validation, prices, results and saved-lead behavior. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38433670555): 3,084 estimator comparisons/boundaries, 618 native, 802 HTTP/Chromium, 73 filesystem/recovery, 279 Apache and 17 builder checks. All 16 published assets, archive members/directories/checksums and immutable tag verified; Windows/Linux package bytes agree. [Test report](TEST_REPORT_1.11.2.md); [handoff](DEVIN_HANDOFF_1.11.2.md).
+
+The organized directory and three-package contract remain permanent. Updates recognize 1.0.8 and 1.1.0 through 1.11.1; current staging is cwp-update-1.11.2, recovery is per target version and the original structure-1.11.0/mutex.php lock is shared. Private data/scaffolds and prior journals remain preserved. Desktop/mobile homepage screenshots are pixel-identical to verified 1.11.1. Previous releases remain immutable. No live deployment, schema change or external payment/provider/mail/SSH activation.
+
+Next executable work: A-07 staff email-template authoring, storage and preview after correcting/re-reviewing Devin #56; Codex owns its application integration. #31 review-request portability and #36 contract corrections remain assigned; corrected #32 scheduling passes 71 local component checks but needs a consistent adapter and database concurrency acceptance. Other foundation branches remain preserved and unaccepted until reviewed. The full roadmap, including multi-account webmail, real merchant checkout and 20i/VPS/SSH, remains incomplete.
+
+## Previous verified publication — 1.11.1 (superseded checkpoint)
+
+[v1.11.1](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.1) is published and freshly downloaded/verified at source/tag `cefcc41bcd5297715f2a49d6526900ebe8ad4eb4` through [PR #50](https://github.com/afterburn25/Cajun_Web/pull/50), preserving Devin PR #34 ancestry. Delivers the bounded W-02 motion/preferences fix, canonical installer build/brand-path corrections and tested organized 1.11.0 owner-update/recovery path. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38429347222): 618 native, 800 HTTP/Chromium, 59 filesystem/recovery, 241 Apache and 17 package-builder checks; all 16 published assets, ZIP members/directories/checksums and immutable tag verified. Windows/Linux package bytes agree. [Test report](TEST_REPORT_1.11.1.md); [handoff](DEVIN_HANDOFF_1.11.1.md).
+
+The organized directory and three-package contract remain permanent. Updates recognize 1.0.8 and 1.1.0 through 1.11.0; current staging is cwp-update-1.11.1, recovery is per target version and the original structure-1.11.0/mutex.php lock is shared. Existing private data/scaffolds and older recovery records are preserved; fresh organized sites gain no legacy entries. Previous releases remain immutable. No live deployment or external payment/provider/mail/SSH activation.
+
+Next executable work: integrate the reviewed L-01 estimator adapter contract from PR #35 with exact existing behavior; review corrected L-02/L-03 components in #31/#32 before their application adapters. Keep other Devin foundations isolated and review sequentially. The roadmap continues; this bounded release does not complete W-02 or the full client/billing/mail/provider platform.
+
+## Dependency-aware roadmap status — owner instruction (2026-10-13)
+
+**External verification is not a stop-work order.** All workers must follow [dependency and verification gates](DEPENDENCY_GATES.md), separating *implementation progress* from *provider access/production gate* and *released/deployed*. Implement and test independent work; defer only unsupported real provider/merchant/SSH operations, not entire workstreams.
+
+| Item | Gate label (replaces generic "Blocked" in trackers) | Continue now | Cannot activate until |
+|---|---|---|---|
+| HC-07 20i API | Awaiting API verification | Provider adapter, admin settings, connection/fixture tests, inventory mapping | Actual account authorization, capability checks and staging test |
+| HC-09 Domains | Development pending — API verification | Search UI, TLD/pricing models, domain lifecycle and synthetic tests | Domain entitlement, wholesale funding and safe end-to-end provider test |
+| HC-10 VPS | Development pending — API verification | VPS catalog/UX, order/lifecycle adapter and synthetic tests | Verified VPS API/prices and provision/cancel acceptance |
+| A-10 VPS SSH | Architecture/security validation pending | Secure access model, audited UX and isolated transport tests | Authenticated vetted gateway/provider handoff and real security acceptance |
+
+This table updates **dependency labels only**; none of these four roadmap features is hereby claimed complete, released or live. No real charges, domain changes, hosting/VPS writes or SSH connections without their operation-specific owner-approved gates. Agents must choose another executable scoped task rather than idling when a gate cannot pass.
+
 ## Current integration checkpoint — 2026-10-13
 
 W-01: candidate 1.11.0 integrates existing portfolio browsing, real category URLs, no-JavaScript filtering, exact published-only detail lookup and accessible enhanced history/result count. Full case-study galleries/results editing and broader interaction/media acceptance remain partial. L-01: reviewed standalone estimator merged through PR #29; live quantity-price adapter is deferred. [Scope and tests](PORTFOLIO_BROWSING.md); publication pending.
@@ -16,16 +89,11 @@ W-01: candidate 1.11.0 integrates existing portfolio browsing, real category URL
 
 **Previous 1.5.0 checkpoint (superseded) — 2026-10-13:** [v1.5.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.5.0) is published and downloaded-back verified at `3e95bdf81ca0126d99a69c41f2ff6eb0c08da1e1` via [PR #16](https://github.com/afterburn25/Cajun_Web/pull/16). Bounded M2 preparation: owner-only protected separate Authorize.net credentials, sandbox-authentication diagnostics, reviewed invoice requests with expiry/revocation/replacement and strict audit. Card collection, production connections and transaction processing remain disabled. [Payment guide](PAYMENT_PREPARATION.md). Exact-main acceptance: 227 native and 401 HTTP/Chromium checks; all eight assets/tag verified. Provider results use synthetic fixtures, not real merchant authentication. Earlier releases and Devin PR #7 remain unchanged. No live deployment/customer/provider operation. Next: tokenized sandbox payment attempts, verified events and reconciliation before actual design-only checkout; full M2/20i/mail/ZIP/SSH remain pending. [Devin handoff](DEVIN_HANDOFF_1.5.0.md).
 
-
 **Previous 1.4.0 checkpoint (superseded) — 2026-10-13:** [v1.4.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.4.0) is published and downloaded-back verified at `0cdea7fbd17e887d3f4bc0574a411b157431b7df` through [PR #14](https://github.com/afterburn25/Cajun_Web/pull/14). Bounded M1 catalog/billing groundwork: approved service SKUs and exact USD prices, private costs, public configured cards, price revisions, reviewed immutable snapshots on existing invoices, duplicate prevention and audited manual paid/void transitions. [Catalog guide](SERVICE_CATALOG.md). Exact-main acceptance: 165 native and 345 HTTP/Chromium checks, all eight retained assets/tag verified. Earlier releases and Devin PR #7 remain unchanged. No live deployment or payment/provider operation. Next bounded work: M2 Authorize.net sandbox settings and payment-request foundation, followed by verified design-only checkout. Broader catalog/order/tax/subscription/20i/mail/ZIP/SSH work remains incomplete. [Devin handoff](DEVIN_HANDOFF_1.4.0.md).
-
-
 
 **Previous 1.3.0 checkpoint (superseded) — 2026-10-13:** [v1.3.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.3.0) is published and downloaded-back verified at `7856cccf230a1646d02a4a92ad4bfb1c280efa19` through [PR #12](https://github.com/afterburn25/Cajun_Web/pull/12). A-09 is delivered for the current client project portal: explicit client/staff permissions, separate expiring support identity, persistent banner/return, attributed strict audit and sensitive-action denials. [Client support guide](CLIENT_SUPPORT.md). Exact-main acceptance: 50 original + 31 staff + 35 support native and 289 HTTP/Chromium checks; eight retained assets and immutable tag verified. Earlier releases and Devin PR #7 remain unchanged. No live deployment/provider operations. Next bounded platform work: M1 product/price and billing groundwork before M2 Authorize.net checkout; multi-account mail, 20i, website ZIP delivery and A-10 VPS SSH remain roadmap work. [Devin handoff](DEVIN_HANDOFF_1.3.0.md).
 
-
 **Previous 1.2.0 checkpoint (superseded) — 2026-10-13:** [CajunWebPro v1.2.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.2.0) is published and downloaded-back verified at `f85627e05b171e4ee8508231e2ed6ee7b9374274` through [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10). Core A-05 administrator accounts are integrated; [administrator guide](ADMIN_ACCOUNTS.md). Exact-main acceptance passed 50 original + 31 staff native and 216 HTTP/Chromium checks; all eight release assets, extracted bytes and tag target match the tested build. v1.1.0 remains immutable. No live deployment or provider operations. The owner resumed the roadmap after 1.1.0, superseding that task's older stop instructions. Devin PR #7 remains at `55d6067`; [updated handoff](DEVIN_HANDOFF_1.2.0.md) preserves its ownership. Next bounded platform work: A-09 audited client-support sessions using the existing staff/client identities; payments, 20i and mail remain tracked. Publication records are documentation-only and do not alter release bytes.
-
 
 **Released checkpoint:** [v1.1.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.1.0) at `3703783e979abab38e8d72e9092c51dc835833b3` is published and downloaded back. The existing website/client-workspace subset passed exact-main acceptance. F-01 source recovery, F-03 branding integration and F-04 first verified release are delivered for this version. F-02 production/shared-host/SMTP acceptance remains unverified. Public request capture, partial W-01 and client workspace/manual invoice/database-upgrade subsets are delivered as mapped in [release acceptance](RELEASE_1.1.0.md); broader capabilities below are not silently completed. That 1.1.0 release-task stop was superseded by the owner's new roadmap-continuation request.
 
@@ -63,13 +131,17 @@ Real desktop/mobile captures, accessible before/after slider for actual redesign
 
 ### W-02 — Signature homepage motion
 
-Preserve approved navy/gold composition while adding restrained metallic logo highlights, layered device depth, polished service/portfolio responses, and section reveals. Acceptance: immediate readable content, reduced-motion and no-JavaScript behavior, touch-safe controls, no flying pixels/autoplay audio/forced loading, and measured load/layout/interactivity before claiming performance improvements.
+Preserve approved navy/gold composition while adding restrained metallic logo highlights, layered device depth, polished service/portfolio responses, and section reveals. Acceptance: immediate readable content, reduced-motion and no-JavaScript behavior, touch-safe controls, no flying pixels/autoplay audio/forced loading, and measured load/layout/interactivity before claiming performance improvements. Partially delivered on `devin/homepage-motion`: a working motion pause (`motion-off` now actually disables CSS motion and force-reveals pending sections — previously a no-op) plus a restrained metallic logo sheen; layered device depth and measured load/layout evidence remain.
 
 ### L-01 — Single-page project estimator
 
-One form for service/project type, approximate pages/products, functionality, content/branding/migration/maintenance options, timing, and contact information. Optional fields can appear in place; no wizard. Admin-editable price rules and ranges, an explanation of assumptions, and a consultation result for uncertain/custom scopes. Acceptance: server-side recomputation, validation, spam controls, saved lead/brief before notification, input preservation on failure, no invented starting prices, and 'estimate, not final quote' labeling.
+Current integration: verified release 1.11.2 adopts the canonical estimator through the reviewed quantity adapter without changing the established public form/results. Actual 1.11.1 parity, boundary and full application/upgrade acceptance pass; release assets are downloaded and verified. Broader L-01 completion is not claimed.
+
+One form for service/project type, approximate pages/products, functionality, content/branding/migration/maintenance options, timing, and contact information. Optional fields can appear in place; no wizard. Admin-editable price rules and ranges, an explanation of assumptions, and a consultation result for uncertain/custom scopes. Acceptance: server-side recomputation, validation, spam controls, saved lead/brief before notification, input preservation on failure, no invented starting prices, and 'estimate, not final quote' labeling. The [estimator adapter contract](ESTIMATOR_ADAPTER.md) is integrated in verified 1.11.2.
 
 ### L-02 — Website-review requests
+
+Verified 1.14.0 delivers the bounded human review/report workflow; combined acceptance and publication are complete. [Contract and current implementation](WEBSITE_REVIEW_WORKFLOW.md). Automated audits, fetching and customer delivery remain separate work.
 
 Capture existing website, business goals, and contact details in the lead inbox. Start with human-reviewed findings and a saved review/report before sending. Automated performance data is optional later and must label sources, observation date, lab versus real-user evidence, and absent data. Acceptance: valid request persistence, admin workflow, appropriate consent and delivery tracking. Any later server-side URL fetching requires SSRF protections, limits, and no access to private/internal addresses.
 
@@ -82,6 +154,8 @@ Build an engaging homepage teaser plus detailed, separately scoped comparison co
 Admin-managed real package ranges and inclusions, service detail, process, ownership/handover, revisions, timeline responsibilities, hosting/maintenance, practical FAQ, legitimate local service information, and industry examples. Acceptance: no fake prices, locations, customer logos, endorsements, or results; meaningful content rather than duplicate search pages; accurate metadata and structured data only where facts support it.
 
 ### L-03 — Consultation scheduling
+
+Verified 1.15.0 delivers the bounded database/public/admin scheduling workflow, preserving corrected #32. [Guide and scope](CONSULTATION_SCHEDULING.md); 71 isolated checks and actual combined acceptance pass. Provider calendars, outbound decision messages and customer self-service links remain separate work.
 
 Start with an honest appointment-request workflow or integrate the selected calendar provider after configuration. Acceptance: timezone handling, real availability/conflict protection if promising instant booking, confirmations, cancellation/rescheduling, spam controls, and no appointment described as booked before persistence/provider confirmation. Provider selection remains a configuration decision, not an existing connection.
 
@@ -147,9 +221,13 @@ Owner-controlled creation/invitation, role and mailbox grants, reset and deactiv
 
 ### A-06 — Multi-account admin webmail and setup
 
+Verified 1.13.0 delivers bounded profile/password/assignment preparation and the administrative UI. [Guide and acceptance](ADMIN_EMAIL_ACCOUNTS.md). No real connection, inbox or sending is included; full A-06 remains incomplete.
+
 Add Email with incoming/outgoing account configuration, separate connection tests, mailbox access grants, account switching/combined inbox, folders, read/unread, search, compose/reply/forward, drafts and attachments. Preserve server-side mailbox permissions, encrypted credentials, safe message rendering and correct send/sync failure handling. Full workflows and native two-account tests: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-06--multiple-email-accounts-and-webmail).
 
 ### A-07 — Reusable email templates
+
+Current integration: verified 1.12.0 provides the private administrator library, retained revisions, explicit grants and escaped sample preview. [Scope and acceptance](ADMIN_EMAIL_TEMPLATES.md). Mailbox compose insertion and sending remain separate work; full A-07 is not complete.
 
 Create/edit/duplicate/preview/archive templates with subject/body, safe allowlisted placeholders, shared/personal visibility and compose insertion. Preview resolved values and edit the draft before explicit sending. Keep signatures/account selection clear and transactional templates controlled. Acceptance: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-07--reusable-sending-templates).
 
@@ -177,7 +255,6 @@ Establish A-09 support-session identity/permissions alongside M1 and connect it 
 
 Move an item through `approved` → `in progress` → `implemented` → `verified` → `deployed` only with evidence for each transition. Record branch/commit, routes, schema/config changes, tests, limitations, and deployment status. Update this roadmap and the session handoff with every meaningful change.
 
-
 ## H — Hosting commerce, white-label resale, custom billing and unified clients (approved 2026-10-12)
 
 **Full requirements and phase gates:** [Custom hosting and billing roadmap](HOSTING_AND_BILLING_ROADMAP.md). This expands P-01/P-03/P-04 and adds the owner's selected payment/provider direction; existing web-design, branding, installer and safety requirements still apply. Do not treat a future launch as implemented.
@@ -195,3 +272,5 @@ Move an item through `approved` → `in progress` → `implemented` → `verifie
 ## 2026-10-13 integration checkpoint
 
 L-01 standalone estimator PR #27 is being integrated with arithmetic/result validation fixes; application adaptation remains pending. W-01 PR #7 now includes a real portfolio adapter and will be integrated next. Neither full roadmap item is complete. [Contract](PUBLIC_COMPONENT_INTEGRATION.md).
+
+L-02 standalone review-request contract on `devin/review-requests` ([guide](REVIEW_REQUESTS_FOUNDATION.md)): capture normalization, consent-aware contacts, legal stage pipeline and human-reviewed findings with labeled evidence. No form, storage, mail or URL fetching yet — application adaptation is a separate agreed step.

@@ -18,9 +18,12 @@ function structure_hash(string $path): ?string {
     return is_file($path)?hash_file('sha256',$path):null;
 }
 function structure_store(): string {
+    return structure_store_version(CWP_VERSION);
+}
+function structure_store_version(string $version): string {
     $store=realpath(config()['storage']);
     if(!$store || is_link(config()['storage'])) throw new RuntimeException('The configured private store is unavailable. It was not relocated.');
-    $dir=structure_path($store,'structure-1.11.0');
+    $dir=structure_path($store,'structure-'.$version);
     if(!is_dir($dir) && !@mkdir($dir,0700)) throw new RuntimeException('Cannot create protected update recovery storage.');
     if(!@chmod($dir,0700)) throw new RuntimeException('Cannot protect update recovery storage.');
     foreach(['.htaccess'=>"Require all denied\n",'index.php'=>"<?php http_response_code(404); exit;\n"] as $name=>$bytes) {
@@ -31,7 +34,9 @@ function structure_store(): string {
     return $dir;
 }
 function structure_lock(string $dir) {
-    $path=structure_path($dir,'mutex.php');$mask=umask(0077);
+    // Share the original permanent inode with retained 1.11.0 owner tools.
+    // Recovery journals stay version-specific; competing versions cannot run together.
+    $path=structure_path(structure_store_version('1.11.0'),'mutex.php');$mask=umask(0077);
     try{$fp=@fopen($path,'c+b');}finally{umask($mask);}
     if(!$fp) throw new RuntimeException('Cannot open the permanent update lock.');
     if(!flock($fp,LOCK_EX|LOCK_NB)){fclose($fp);throw new RuntimeException('Another update or recovery is running. Retry after it finishes.');}
@@ -56,19 +61,44 @@ function structure_save(string $dir,array $j): void {
 function structure_verified_payload(string $payload,array $manifest): void {
     if(($manifest['version']??'')!==CWP_VERSION || count($manifest['files']??[])<100)throw new RuntimeException('Unrecognized structure update manifest.');
     foreach($manifest['files'] as $name=>$hash) {
+        if(structure_preserved_path($name))throw new RuntimeException('The update payload must not contain installed state: '.$name);
         if(!hash_equals($hash,structure_hash(structure_path($payload,$name))??''))throw new RuntimeException('Restore the exact UPDATE package; missing or mismatched replacement: '.$name);
     }
+}
+function structure_preserved_path(string $name): bool {
+    return in_array($name,['config.php','proxy-config.php','.installed.php','.installation-mutex.php','install/.htaccess'],true)
+        || str_starts_with($name,'storage/') || str_starts_with($name,'upload/');
+}
+function structure_unknown_files(array $known,array $current): array {
+    $preserved=[];$count=0;
+    foreach(new DirectoryIterator(CWP_ROOT) as $entry){
+        if($entry->isDot())continue;$name=$entry->getFilename();
+        if(isset($known[$name])||isset($current[$name])||in_array($name,['config.php','proxy-config.php','.installed.php','.installation-mutex.php','storage','upload','cwp-update-'.CWP_VERSION],true))continue;
+        if($entry->isDir()&&!$entry->isLink()){
+            if(in_array($name,['app','assets'],true)){
+                $files=new RecursiveIteratorIterator(new RecursiveDirectoryIterator($entry->getPathname(),FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::LEAVES_ONLY);
+                foreach($files as $file){
+                    if(++$count>5000)throw new RuntimeException('More than 5000 legacy-area entries require owner review. Nothing was removed.');
+                    $relative=str_replace('\\','/',substr($file->getPathname(),strlen(CWP_ROOT)+1));
+                    if(!isset($known[$relative])&&!isset($current[$relative]))$preserved[]=$relative;
+                }
+            }elseif(!array_filter(array_keys($current),fn($n)=>str_starts_with($n,$name.'/')))$preserved[]=$name.'/';
+        }else $preserved[]=$name;
+    }
+    return $preserved;
 }
 function structure_plan(string $payload,array $manifest,array $history): array {
     structure_verified_payload($payload,$manifest);
     if(!is_file(CWP_ROOT.'/config.php') || is_link(CWP_ROOT.'/config.php'))throw new RuntimeException('An existing installed configuration is required. Do not use this update for fresh setup.');
-    $core=structure_hash(structure_path(CWP_ROOT,'app/core.php'));$version=null;$known=[];
+    $defaults=structure_hash(structure_path(CWP_ROOT,'config/defaults.php'));
+    $legacy=$defaults===null;$identity=$legacy?structure_hash(structure_path(CWP_ROOT,'app/core.php')):$defaults;
+    $identityPath=$legacy?'app/core.php':'config/defaults.php';$version=null;$known=[];
     foreach($history as $v=>$release){
-        if(($release['files']['app/core.php']??null)===$core)$version=$v;
-        foreach($release['files'] as $name=>$hash)$known[$name][$hash]=true;
+        if($identity!==null && ($release['files'][$identityPath]??null)===$identity)$version=$v;
+        foreach($release['files']+($release['upgrade_shims']??[]) as $name=>$hash)$known[$name][$hash]=true;
     }
-    if(!$version)throw new RuntimeException('The starting application is not a recognized 1.0.8–1.10.0 release. Customized bootstrap files were preserved. Restore or review them from your backup first.');
-    $ops=[];$preserved=[];
+    if(!$version)throw new RuntimeException('The starting application is not in this package\'s verified release inventory. Customized version/bootstrap files were preserved. Restore or review them from your backup first.');
+    $ops=[];$preserved=structure_unknown_files($known,$manifest['files']);
     foreach($manifest['files'] as $name=>$hash){
         $old=structure_hash(structure_path(CWP_ROOT,$name));
         if($old===$hash)continue;
@@ -76,7 +106,7 @@ function structure_plan(string $payload,array $manifest,array $history): array {
         $ops[$name]=['old'=>$old,'new'=>$hash,'source'=>$name];
     }
     foreach($known as $name=>$hashes){
-        if(isset($manifest['files'][$name]) || in_array($name,['.htaccess'],true))continue;
+        if(isset($manifest['files'][$name]) || $name==='.htaccess' || structure_preserved_path($name))continue;
         $old=structure_hash(structure_path(CWP_ROOT,$name));
         if($old===null)continue;
         if(!isset($hashes[$old])){
@@ -88,6 +118,7 @@ function structure_plan(string $payload,array $manifest,array $history): array {
     // Only upgrade installations receive these direct-dispatch compatibility entries.
     foreach($manifest['shims'] as $name=>$bytes){
         $old=structure_hash(structure_path(CWP_ROOT,$name));
+        if(!$legacy && $old===null)continue; // Never add old routes to a fresh organized installation.
         if($old!==null && !isset($known[$name][$old]))throw new RuntimeException('Customized compatibility entry preserved: '.$name);
         $ops[$name]=['old'=>$old,'new'=>hash('sha256',$bytes),'bytes'=>$bytes];
     }
@@ -113,7 +144,12 @@ function structure_replace(string $name,string $bytes): void {
     $tmp=$parent.'/.structure-'.bin2hex(random_bytes(8)).'.php';
     write_private_file($tmp,$bytes);
     if(!@chmod($tmp,0644) || !@rename($tmp,$path)){@unlink($tmp);throw new RuntimeException('Cannot replace '.$name.'. Recovery copies remain available.');}
-    if(function_exists('opcache_invalidate'))@opcache_invalidate($path,true);
+    structure_refresh_php($path);
+}
+function structure_refresh_php(string $path): void {
+    if(str_ends_with($path,'.php') && function_exists('opcache_is_script_cached') && opcache_is_script_cached($path)) {
+        if(!opcache_invalidate($path,true))throw new RuntimeException('The host could not invalidate cached PHP for '.basename($path).'. Keep maintenance protection and ask the host to clear this site cache before retrying.');
+    }
 }
 function structure_maintenance(): string {
     return "# Temporary owner-authenticated structure update. Retry or recover using the staged owner page.\nOptions -Indexes\nRequire all denied\n<Files \"owner-update.php\">\nRequire all granted\n</Files>\n";
@@ -131,7 +167,9 @@ function structure_apply(string $payload,array $manifest,array $history,string $
     if($j && $j['state']==='complete')return $j;
     if($j && $j['state']==='rolled-back'){
         $next=structure_plan($payload,$manifest,$history);
-        write_private_file($dir.'/recovered-'.$j['backup_id'].'.php',CWP_GUARD.json_encode($j,JSON_THROW_ON_ERROR));
+        $archive=$dir.'/recovered-'.$j['backup_id'].'.php';$bytes=CWP_GUARD.json_encode($j,JSON_THROW_ON_ERROR);
+        if(file_exists($archive)){if(is_link($archive)||file_get_contents($archive)!==$bytes)throw new RuntimeException('Recovered journal archive differs. Keep it for owner review.');}
+        else write_private_file($archive,$bytes);
         $j=$next;structure_save($dir,$j);
     }
     if(!$j){$j=structure_plan($payload,$manifest,$history);structure_save($dir,$j);}
@@ -146,12 +184,16 @@ function structure_apply(string $payload,array $manifest,array $history,string $
         $path=structure_path(CWP_ROOT,$name);$actual=structure_hash($path);
         if($actual===$op['new'])continue; // Includes interrupted deletion and successful atomic replacement.
         if($actual!==$op['old'])throw new RuntimeException('File changed during update; preserved: '.$name.'. Keep maintenance protection and recover or review before retrying.');
-        if($op['new']===null){if(!@unlink($path))throw new RuntimeException('Cannot retire '.$name.'. Retry or recover; backup is retained.');}
+        if($op['new']===null){structure_refresh_php($path);if(!@unlink($path))throw new RuntimeException('Cannot retire '.$name.'. Retry or recover; backup is retained.');}
         else{ $bytes=$op['bytes']??file_get_contents(structure_path($payload,$op['source'])); if(!hash_equals($op['new'],hash('sha256',$bytes)))throw new RuntimeException('Replacement changed: '.$name);structure_replace($name,$bytes); }
         $j['last_completed']=$name;structure_save($dir,$j);
         if(PHP_SAPI==='cli' && $checkpoint)$checkpoint($name);
     }
-    foreach($j['operations'] as $name=>$op)if($name!=='.htaccess' && structure_hash(structure_path(CWP_ROOT,$name))!==$op['new'])throw new RuntimeException('Final verification failed: '.$name);
+    foreach($j['operations'] as $name=>$op){
+        if($name==='.htaccess')continue;$path=structure_path(CWP_ROOT,$name);
+        if(structure_hash($path)!==$op['new'])throw new RuntimeException('Final verification failed: '.$name);
+        if($op['new']!==null)structure_refresh_php($path);
+    }
     structure_replace('.htaccess',file_get_contents($payload.'/.htaccess'));
     $j['state']='complete';$j['completed_at']=gmdate('c');structure_save($dir,$j);return $j;
 }

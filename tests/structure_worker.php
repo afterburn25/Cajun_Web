@@ -3,6 +3,7 @@ declare(strict_types=1);
 if(PHP_SAPI!=='cli' || getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 $root=realpath($argv[1]);$base=realpath(__DIR__.'/../test-runtime');
 if(!$root || !$base || !str_starts_with($root,$base.DIRECTORY_SEPARATOR))exit(2);
+<<<<<<< HEAD
 define('CWP_BOOT',true);define('CWP_ROOT',$root);define('CWP_CODE_ROOT',$root.'/cwp-update-1.11.0/site');
 // Verify every staged file before loading any staged code: a partial upload must not fatal inside the payload.
 $stage=CWP_ROOT.'/cwp-update-1.11.0';
@@ -17,6 +18,15 @@ require CWP_CODE_ROOT.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=require CWP_ROOT.'/config.php';
 require CWP_CODE_ROOT.'/app/updates/structure.php';
 $history=json_decode(file_get_contents($stage.'/legacy-release-files.json'),true);
+=======
+preg_match("/const CWP_VERSION = '([^']+)'/",file_get_contents(__DIR__.'/../site/config/defaults.php'),$version);
+$stage=$root.'/cwp-update-'.$version[1];
+define('CWP_BOOT',true);define('CWP_ROOT',$root);define('CWP_CODE_ROOT',$stage.'/site');
+require CWP_CODE_ROOT.'/includes/bootstrap.php';
+$GLOBALS['cwp_config']=require CWP_ROOT.'/config.php';
+require CWP_CODE_ROOT.'/app/updates/structure.php';
+$manifest=require $stage.'/manifest.php';$history=json_decode(file_get_contents($stage.'/legacy-release-files.json'),true);
+>>>>>>> origin/main
 $lock=null;
 try{
     $dir=structure_store();$lock=structure_lock($dir);$action=$argv[2];

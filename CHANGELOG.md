@@ -1,10 +1,84 @@
 # Changelog
 
-## Unreleased priority correction — organized directory layout and complete project packages
+## Unreleased — 1.16.0 candidate: explicit email connection checks
+
+- Add separate owner-only checks of saved incoming/outgoing settings, current password and matching mailbox assignment. Verify public DNS destinations, pin the numeric connection, validate TLS and authenticate without reading or sending messages.
+- Add auditable started/terminal history, saved-version labels, bounded response handling and per-account/owner repeat limits. Interrupted or unaudited final outcomes remain incomplete.
+- Add additive upgrade setup, fresh empty schema, isolated TLS/DNS/database/HTTP acceptance and actual 1.15.0 update/recovery coverage. Candidate acceptance and publication are pending; latest published version remains 1.15.0.
+
+## 1.15.0 — verified consultation scheduling
+
+- Preserve corrected Devin #32 scheduling ancestry and 71 isolated checks. Add one explicitly configured studio calendar, disabled by default, with timezone-aware offered slots, buffers, notice and a 30-day horizon.
+- Capture pending public appointments atomically with inquiries; keep honest preference-only intake when scheduling is disabled. Use one locked database configuration row for every conflict-changing write; stale forms, current permissions, contact consent and strict audit protect staff decisions.
+- Add explicit old-inquiry adoption, password-confirmed staff confirmation, cancellation/decline, rescheduling back to pending and retained revisions. Add public/admin forms and actual 1.14.0 update/recovery fixtures preserving earlier reviews/templates/email credentials and private key.
+- Published/download-verified from `8749bc5a89e52f8f35a193cc49d306136576ec8e` after exact-main run 38460197599; all 16 assets/tag pass. Native/HTTP/Chromium/Apache/build acceptance passes. No provider calendar, outgoing confirmation/cancellation mail or live deployment.
+
+## 1.14.0 — verified human website review workflow
+
+- Preserve corrected Devin #31/#36 and adapt the canonical review lifecycle into the existing inquiry system. Accept bare website hosts deliberately; retain the 500-byte bound and reject fragments, userinfo and control characters. Capture new review identity atomically with accepted leads; older inquiry adoption is explicit.
+- Add current website-staff authorization, owner-only additive setup, evidence-labeled findings, saved report revisions, stale/concurrent protection and strict audit. External delivery requires the exact saved draft, current consent, real entered time/reference and staff password; this records delivery outside the app and sends nothing.
+- Add escaped desktop/mobile forms, draft finding add/remove controls, history and explicit inquiry deletion of dependent personal review content. Recognize actual 1.13.0 upgrade/recovery with earlier email key/assignment/template retention. Published/download-verified from `f55879339e38769b4ec5fa81780a3d650b63da25` after exact-main run 38453775600; all 16 assets/tag pass. Native/HTTP/Chromium/Apache/build acceptance passes; no live deployment occurred.
+
+## 1.13.0 — verified email account preparation
+
+- Preserve Devin #59 canonical profile/assignment/message models and isolated CI. Re-reviewed 64 no-extension component checks; future-issued grants, UIDVALIDITY, duplicate identities and tuple encoding are corrected. Combined application acceptance passes.
+- Add owner-managed incoming/outgoing profiles, encrypted private credentials, immutable metadata/assignment history, strict audit and stale-write protection. Add separate staff read/send permissions and current per-mailbox assignments, including for owners.
+- Add administrative settings and scoped assigned-account lists, additive owner setup, fresh schema preparation and actual 1.12.0 upgrade/key/data recovery fixtures. Published/download-verified from `b83cb9fb6856bca4f333fe953bee2e68f5074d51` after exact-main run 38446948573; all 16 assets/tag pass. No transport, mailbox contents, connection success, sending or deployment is implied.
+
+## 1.12.0 — verified administrator email-template library
+
+- Add explicit template permissions, personal/shared drafts, create/edit/duplicate/activate/archive and escaped sample previews. Reuse the corrected Devin #56 model with literal single-pass substitutions and strict field grammar.
+- Retain immutable versions and strict actor audit with transaction rollback, row locking and stale-edit rejection. Add owner-authenticated, idempotent schema setup; fresh installs prepare an empty library automatically.
+- Keep personal templates private even from other owners; shared modification requires creator/owner access. Exclude support/client identities. Preview never reads client records or sends mail.
+- Recognize verified 1.11.2 update inventory, exercise actual latest upgrade/schema/file recovery and all prior supported baselines. Published/download-verified from `c526e960db13246c217f2b9d6f421c17b8d48261` after exact-main run 38441087438; all 16 assets/tag pass. Local and PHP 8.2/8.4 component checks and combined acceptance pass.
+- Full webmail, compose insertion, real sending and transactional messages remain outside this bounded increment.
+
+## Historical A-07 isolated component checkpoint — integrated in 1.12.0
+
+- Added canonical `foundation/email-templates/` classes (`PlaceholderRegistry` allowlist with descriptions, `EmailTemplate` with structural placeholder allowlisting, draft→active→archived lifecycle, non-mutating edits, personal-duplicate, shared/personal visibility, transactional compose exclusion, and honest `preview()` that names unresolved placeholders) plus `docs/EMAIL_TEMPLATES_FOUNDATION.md`.
+- Added `tests/email-templates/run.php` (50 synthetic checks; fixture templates only) and the `email-templates.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes, compose UI, sending or persistence. Not yet integrated or released.
+
+## 1.11.2 — verified canonical live estimator integration
+
+- Preserve Devin's reviewed adapter contract and route existing calculator arithmetic through the canonical estimator, folding quantities with exact integer guards. Existing field validation, missing-price early returns, invalid-range errors, consultation exclusions/cap and displayed results remain compatible.
+- Add direct-entry guards before mirroring the canonical estimator into protected includes; installer inventory verifies the new files.
+- Compare actual application results with the immutable published 1.11.1 calculator and independent boundary examples. Retain server-recomputed HTTP results and saved-lead acceptance.
+- Recognize verified 1.11.1 for staged owner updates; exercise both organized starting versions as well as retained old-layout upgrades and recovery records. No schema change or live external activation.
+- Published/download-verified from `4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36` after exact-main run 38433670555; all 16 assets/tag pass. Homepage pixels match 1.11.1. Prior releases remain immutable; no live deployment.
+
+## 1.11.1 — motion preferences and verified organized updates
+
+- Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.
+- Measure homepage lab layout shifts with a real buffered PerformanceObserver and session-window calculation; test saved pause/resume, device reduced motion and no-JavaScript readability. This is synthetic browser evidence, not a production performance guarantee.
+- Recognize the verified 1.11.0 package for owner updates; retain known upgrade-only routes without adding them to fresh organized sites. Preserve private scaffolds, previous recovery records and all configuration/business data. Separate target-version journals share the original permanent update lock.
+- Extend real Apache update/recovery acceptance with the actual retained 1.11.0 installer, database records, session continuity and opcode caching enabled without timestamp validation. Retain old-layout historical acceptance.
+- Derive installer page/JavaScript/diagnostic build labels from its canonical build constant; restore organized installer logo/emblem paths. Browser setup now explicitly checks version and loaded brand images; the builder rejects stale literal image paths.
+- Make package checksum ordering identical on Windows and Linux; use committed history and guide bytes in exact-source artifacts.
+- Published/download-verified from `cefcc41bcd5297715f2a49d6526900ebe8ad4eb4` after exact-main run 38429347222. All 16 assets and tag pass. Prior releases remain immutable; no live deployment or new external payment/provider operations.
+
+## 1.11.0 — organized application and verified three-package release
+
+Published from `de70c5da2e8f7bd35fbb92b9b829d0ab3e880372` after exact-main acceptance; all 16 assets downloaded and verified. Original history and all earlier releases retained. No live deployment.
+
+- Organized administration, portal, public templates, shared bootstrap/security, business services, database migrations, API/webhooks/media and setup source; retained existing visuals and exact image bytes.
+- Canonical root/subfolder URLs, shared session identity, guarded internal paths and private upload staging within the configured store.
+- Staged owner update with recognized-source verification, backup confirmation, serialized journaled replacement, known-hash retirement, direct legacy callbacks and recovery.
+- Three clean-commit artifacts: sanitized FULL-PROJECT, organized COMPLETE-UPLOAD and independently exercised UPDATE; per-artifact inventories/checksums and START-HERE.
+- Expanded application, historical upgrade, Apache and filesystem recovery acceptance. Publication depends on completed checks and exact-main verification.
+
+## Historical priority request — fulfilled by 1.11.0
 
 Owner override stops the portfolio-only 1.11.0 publication. Preserve integrated source and implement organized modules/assets, protected storage/upload scaffolding, bounded owner migration/recovery, and FULL-PROJECT/COMPLETE-UPLOAD/UPDATE artifacts. Latest published version remains 1.10.0; no corrected release claimed yet.
 
-## 1.11.0 — portfolio integration candidate, not yet released
+## 2026-10-13 — Dependency-aware roadmap and agent instructions (docs only)
+
+- Added a mandatory owner-approved policy for Codex/Devin: unavailable third-party API/merchant/SSH verification blocks only the specific real integration or production operation, **not** safe independent development or unrelated features.
+- Clarified HC-07 (Awaiting API verification), HC-09/HC-10 (Development pending — API verification), and A-10 (Architecture/security validation pending), tracking those gates separately from implementation/release/deployment status.
+- Linked the rules from agent instructions, roadmap, provider/client roadmaps, coordination, status, handoff and decisions. Explicit production restrictions remain.
+- No PHP/runtime feature, integration, live transaction, deployment or app version bump; previously released v1.10.0 stays unchanged.
+
+## Historical 1.11.0 portfolio candidate — included in the corrected release
 
 - Stabilize modified-click acceptance by observing the application decision before suppressing synthetic navigation; add an actual Ctrl-click/new-tab check. Shipping bytes are unchanged by this test-only correction.
 
@@ -12,6 +86,10 @@ Owner override stops the portfolio-only 1.11.0 publication. Preserve integrated 
 - Correct numeric-string categories, the real category `all`, duplicate public slugs, normalized card values and modified-click handling. Identical media no longer presents a before/after comparison.
 - Regenerate the 80-file complete / 79-file update package and versioned keyless installer. No schema changes. Retained 1.10.0 and full application acceptance are required before publication.
 - Reviewed estimator integration remains outside deployment, with 65 exact-integer/result checks; existing live estimator is preserved.
+
+## Unreleased — review-request foundation
+
+- Add independent L-02 review-request contract (`foundation/review-requests/`): normalized website addresses with SSRF-readiness flags, contact consent, legal stage transitions, human-reviewed findings with labeled lab/field/absent evidence, and delivery guarded by a saved report plus consent. Not integrated; no schema, form, mail, or URL fetching.
 
 ## Unreleased — reviewed estimator foundation
 
@@ -54,13 +132,9 @@ Continued roadmap from main `dd29436fa40c2a0f800bc02569b5fd5d1fb75c09` / 1.5.0 o
 
 First candidate 4158d37 failed installer inventory due to Windows line endings; normalized LF and regenerated. f36e44a passed native tests but HTTP expected the established duplicate-payment message; restored the message without removing safeguards. 3ebc8a8 passed complete acceptance; final wording clarifies owner sandbox versus disabled client checkout. Final merged source and packages were checked independently. All eight draft and published release assets, extracted hashes, version labels and tag were downloaded-back verified. [Report](docs/TEST_REPORT_1.6.0.md), [verification](docs/RELEASE_VERIFICATION_1.6.0.json). Earlier releases untouched. No live deployment, provider operation or customer mail/data. Real merchant acceptance remains unverified; tests use synthetic gateway/Accept.js boundaries. Next: signed events, actual sandbox acceptance, distinct client/real-money checkout. Preserve Devin PR #7. Publication records are docs-only.
 
-
-
 ## v1.5.0 — 2026-10-13
 
 **Current release — 2026-10-13:** [v1.5.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.5.0) is published and downloaded-back verified at `3e95bdf81ca0126d99a69c41f2ff6eb0c08da1e1` via [PR #16](https://github.com/afterburn25/Cajun_Web/pull/16). Bounded M2 preparation: owner-only protected separate Authorize.net credentials, sandbox-authentication diagnostics, reviewed invoice requests with expiry/revocation/replacement and strict audit. Card collection, production connections and transaction processing remain disabled. [Payment guide](docs/PAYMENT_PREPARATION.md). Exact-main acceptance: 227 native and 401 HTTP/Chromium checks; all eight assets/tag verified. Provider results use synthetic fixtures, not real merchant authentication. Earlier releases and Devin PR #7 remain unchanged. No live deployment/customer/provider operation. Next: tokenized sandbox payment attempts, verified events and reconciliation before actual design-only checkout; full M2/20i/mail/ZIP/SSH remain pending. [Devin handoff](docs/DEVIN_HANDOFF_1.5.0.md).
-
-
 
 ## v1.4.0 — 2026-10-13
 
@@ -74,8 +148,6 @@ M1 / partial HC-01 and HC-06: managed service prices, public configured cards, p
 - Additive support schema, preserved 1.2.0 update state, native and HTTP/Chromium acceptance.
 - Published and downloaded-back verified at `7856cccf230a1646d02a4a92ad4bfb1c280efa19` through PR #12; 116 native and 289 HTTP/Chromium checks, eight retained assets. No host deployment. SSH/provider access remains separate.
 
-
-
 ## v1.2.0 — 2026-10-13
 
 Owner-controlled creation, selected website/client-workspace permissions, enable/disable and private 24-hour setup/recovery links are integrated with existing users. Current-password confirmation, per-request authorization, reset/setup/session revocation and concurrent last-owner protection are enforced. Fresh installs initialize the owner; existing installations explicitly select an owner and add two tables without changing legacy credentials. Original and actual released-1.1.0 package upgrades are tested. Canonical foundation components and the embedded installer core are verified by the builder. [User/developer guide](docs/ADMIN_ACCOUNTS.md), [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10). Published and downloaded-back verified at `f85627e05b171e4ee8508231e2ed6ee7b9374274`: eight retained assets; 81 native and 216 HTTP/Chromium checks plus independent suites. See [release register](docs/RELEASES.md). No target-host deployment.
@@ -88,11 +160,9 @@ Published [v1.1.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.1.0)
 
 First MariaDB acceptance found a real schema-idempotency failure: digit-bearing `sha256` was omitted by the column parser. Fixed both column-name patterns without weakening type/engine/unique-key checks. Local native tests then passed, and real unprivileged PHP HTTP tests completed fresh one-page installation and physical cleanup. Also fixed the existing lead editor's seven-status/six-label mismatch and corrected the test's portfolio route to the actual `work` endpoint. Tests now run extracted package bytes and cover incompatible schema preservation, cross-client/CSRF rejection and disguised executable uploads. Public service copy was polished and official comparison sources rechecked on 13 October. Complete browser acceptance and release publication remain pending. No customer host or database was changed.
 
-
 ## 2026-10-13 — Source recovery checkpoint
 
 Recovered 41 actual website files plus native/HTTP tests and a build tool from the nine preserved source fragments. Original external assets were fetched only at the recorded public paths and checked against recorded SHA-256 values. Executable source is now under `site/` on `codex/finish-1.1.0`. This supersedes the older no-source-in-Git blocker on this branch, NOT the unverified runtime or release claims. No production files, database, mail or payments were changed. Review `docs/SOURCE_RECOVERY_2026-10-13.json`; run native integration and authorization tests next. No 1.1.0 release is declared by source recovery.
-
 
 This log distinguishes repository work from application releases and deployment. Documentation-only work does not advance the application version.
 
@@ -120,6 +190,7 @@ This log distinguishes repository work from application releases and deployment.
 - Verified the source and PR checks on GitHub: 142 decisions and four syntax checks pass on PHP 8.2.34/8.4.26. Evidence is linked from the access foundation and status/handoff; the isolated component is not current-application acceptance.
 - Documented the trusted adapter boundary and pending lifecycle/database/browser integration; updated ownership and Devin's independent portfolio scope while another worker finishes 1.1.0.
 - No version bump, current-source replacement, admin UI, real account/mail operation, release ZIP or deployment. This component remains outside application packaging.
+
 ## 2026-10-12 — GitHub checks, release retention and Codex/Devin coordination
 
 - Integrated roadmap/workflow PR #1 into main, verified passing PR and merged-main documentation jobs, created both work branches and published Devin assignment issue #2. Current status/handoff links the evidence and states that Devin has not been dispatched.
@@ -221,3 +292,8 @@ No application source/asset import, feature implementation, host repair, databas
 - Candidate 91ef30d: 50 native and 143 HTTP/browser checks passed; final browser-admin, sitemap and favicon-reference assertions added before merge.
 
 Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid versioned favicon URLs because it compared the query suffix as part of the path. Parse the URL path and fetch the actual referenced icon for byte equality. Application source is unchanged; rerun the full suite.
+
+
+## Historical component contract — review-request adapter contract (L-02 dependency)
+
+- Add `docs/REVIEW_REQUESTS_ADAPTER.md`: the contract for adopting the review-request foundation (PR #31) in the live `website-review` lead path — `WebsiteAddress` intake normalization, consent-aware `ReviewContact`, stage persistence via an additive `review_stages` table, `review_reports` as the delivery gate, and staff transition controls through `ReviewInbox`. No shipping code or schema changes; records two decisions for integration review.

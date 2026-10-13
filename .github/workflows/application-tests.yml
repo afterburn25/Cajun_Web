@@ -51,9 +51,11 @@ jobs:
           set -o pipefail
           mkdir -p qa
           python3 tools/build.py --commit "$GITHUB_SHA" | tee qa/build-results.txt
+          python3 tests/build_guards.py
       - name: Native database, upgrade and authorization integration
         run: |
           python3 tests/prepare_legacy.py
+          php8.3 tests/estimator_adapter.php
           php8.3 tests/native.php
           php8.3 tests/staff_native.php
           php8.3 tests/support_native.php
@@ -65,6 +67,11 @@ jobs:
           php8.3 tests/delivery_archive.php
           php8.3 tests/delivery_native.php
           php8.3 tests/activity_native.php
+          php8.3 tests/mail_templates_native.php
+          php8.3 tests/mail_accounts_native.php
+          php8.3 tests/reviews_native.php
+          php8.3 tests/appointments_native.php
+          php8.3 tests/mail_connections_native.php
       - name: Real HTTP and Chromium application workflows
         run: .ci-venv/bin/python tests/browser_acceptance.py
       - name: Unprivileged structure update interruption and recovery
@@ -82,8 +89,6 @@ jobs:
           name: application-acceptance-${{ github.sha }}
           path: |
             qa/
-            dist/manifest.json
-            dist/SHA256SUMS.txt
-            dist/*.zip
+            dist/
           retention-days: 14
           if-no-files-found: error

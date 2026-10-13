@@ -1,6 +1,6 @@
 """Verify and extract the retained historical fixture, never a deployment source."""
 from pathlib import Path, PurePosixPath
-import hashlib, zipfile, subprocess, shutil
+import hashlib, zipfile, subprocess, shutil, re, json, base64
 from urllib.request import urlopen
 root=Path(__file__).resolve().parents[1]
 archive=root/'tests/fixtures/CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip'
@@ -148,3 +148,103 @@ with zipfile.ZipFile(portfolio_baseline) as z:
         assert (item.external_attr>>16)&0o170000 != 0o120000
     z.extractall(root/'test-runtime/released-1.10.0')
 print('PASS: immutable released 1.10.0 package checksum, archive paths and extraction')
+
+organized_baseline=root/'test-runtime/CajunWebPro-1.11.0-COMPLETE-UPLOAD.zip'
+with urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.11.0/CajunWebPro-1.11.0-COMPLETE-UPLOAD.zip',timeout=60) as response:
+    organized_baseline.write_bytes(response.read())
+assert hashlib.sha256(organized_baseline.read_bytes()).hexdigest()=='5bf60867bc47d14ac112bebcb30d02899a2ff13167d39bd01ca9e8dfb5c79f2c'
+with zipfile.ZipFile(organized_baseline) as z:
+    assert z.testzip() is None
+    for item in z.infolist():
+        path=PurePosixPath(item.filename)
+        assert not path.is_absolute() and '..' not in path.parts and '\\' not in item.filename
+        assert (item.external_attr>>16)&0o170000 != 0o120000
+    z.extractall(root/'test-runtime/released-1.11.0')
+print('PASS: immutable released 1.11.0 package checksum, archive paths and extraction')
+organized_update=root/'test-runtime/CajunWebPro-1.11.0-UPDATE.zip'
+with urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.11.0/CajunWebPro-1.11.0-UPDATE.zip',timeout=60) as response:
+    organized_update.write_bytes(response.read())
+assert hashlib.sha256(organized_update.read_bytes()).hexdigest()=='927bb9f121076a0d627807a7809e099c551372a7d57acc71954980720462568d'
+with zipfile.ZipFile(organized_update) as z:
+    text=z.read('cwp-update-1.11.0/manifest.php').decode()
+    manifest=json.loads(base64.b64decode(re.search(r"base64_decode\('([^']+)'\)",text).group(1)))
+    (root/'test-runtime/organized-shims.json').write_text(json.dumps({n:base64.b64encode(b.encode()).decode() for n,b in manifest['shims'].items()}))
+print('PASS: original 1.11.0 UPDATE checksum and compatibility bytes')
+
+organized_baseline=root/'test-runtime/CajunWebPro-1.11.1-COMPLETE-UPLOAD.zip'
+with urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.11.1/CajunWebPro-1.11.1-COMPLETE-UPLOAD.zip',timeout=60) as response:
+    organized_baseline.write_bytes(response.read())
+assert hashlib.sha256(organized_baseline.read_bytes()).hexdigest()=='259c6960b84a64d1b51b0e400bd90943f84f84001844a9735133358f8d51625e'
+with zipfile.ZipFile(organized_baseline) as z:
+    assert z.testzip() is None
+    for item in z.infolist():
+        path=PurePosixPath(item.filename)
+        assert not path.is_absolute() and '..' not in path.parts and '\\' not in item.filename
+        assert (item.external_attr>>16)&0o170000 != 0o120000
+    z.extractall(root/'test-runtime/released-1.11.1')
+print('PASS: immutable released 1.11.1 package checksum, archive paths and extraction')
+
+organized_baseline=root/'test-runtime/CajunWebPro-1.11.2-COMPLETE-UPLOAD.zip'
+with urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.11.2/CajunWebPro-1.11.2-COMPLETE-UPLOAD.zip',timeout=60) as response:
+    organized_baseline.write_bytes(response.read())
+assert hashlib.sha256(organized_baseline.read_bytes()).hexdigest()=='4b76f50483b9c7b1000b11d933c15a4e69f6f4c61b42dfdc96275c43c7e9c9b8'
+with zipfile.ZipFile(organized_baseline) as z:
+    assert z.testzip() is None
+    for item in z.infolist():
+        path=PurePosixPath(item.filename)
+        assert not path.is_absolute() and '..' not in path.parts and '\\' not in item.filename
+        assert (item.external_attr>>16)&0o170000 != 0o120000
+    z.extractall(root/'test-runtime/released-1.11.2')
+print('PASS: immutable released 1.11.2 package checksum, archive paths and extraction')
+
+organized_baseline=root/'test-runtime/CajunWebPro-1.12.0-COMPLETE-UPLOAD.zip'
+with urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.12.0/CajunWebPro-1.12.0-COMPLETE-UPLOAD.zip',timeout=60) as response:
+    organized_baseline.write_bytes(response.read())
+assert hashlib.sha256(organized_baseline.read_bytes()).hexdigest()=='fd9dcb1bab34588588384c5eb99af5b06f67ec7a1ad1af7da86aa0532e6c453e'
+with zipfile.ZipFile(organized_baseline) as z:
+    assert z.testzip() is None
+    for item in z.infolist():
+        path=PurePosixPath(item.filename)
+        assert not path.is_absolute() and '..' not in path.parts and '\\' not in item.filename
+        assert (item.external_attr>>16)&0o170000 != 0o120000
+    z.extractall(root/'test-runtime/released-1.12.0')
+print('PASS: immutable released 1.12.0 package checksum, archive paths and extraction')
+
+organized_baseline=root/'test-runtime/CajunWebPro-1.13.0-COMPLETE-UPLOAD.zip'
+with urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.13.0/CajunWebPro-1.13.0-COMPLETE-UPLOAD.zip',timeout=60) as response:
+    organized_baseline.write_bytes(response.read())
+assert hashlib.sha256(organized_baseline.read_bytes()).hexdigest()=='e2a24d324901ed1f1c43ecb3e3a72a8b6ffd2ff566b8418a2493c18700f1c6ee'
+with zipfile.ZipFile(organized_baseline) as z:
+    assert z.testzip() is None
+    for item in z.infolist():
+        path=PurePosixPath(item.filename)
+        assert not path.is_absolute() and '..' not in path.parts and '\\' not in item.filename
+        assert (item.external_attr>>16)&0o170000 != 0o120000
+    z.extractall(root/'test-runtime/released-1.13.0')
+print('PASS: immutable released 1.13.0 package checksum, archive paths and extraction')
+
+organized_baseline=root/'test-runtime/CajunWebPro-1.14.0-COMPLETE-UPLOAD.zip'
+with urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.14.0/CajunWebPro-1.14.0-COMPLETE-UPLOAD.zip',timeout=60) as response:
+    organized_baseline.write_bytes(response.read())
+assert hashlib.sha256(organized_baseline.read_bytes()).hexdigest()=='051d33fe6c2e9bb524b2b065c0fa72ada2d00979a1526e0d2d1bcb8e6b559f62'
+with zipfile.ZipFile(organized_baseline) as z:
+    assert z.testzip() is None
+    for item in z.infolist():
+        path=PurePosixPath(item.filename)
+        assert not path.is_absolute() and '..' not in path.parts and '\\' not in item.filename
+        assert (item.external_attr>>16)&0o170000 != 0o120000
+    z.extractall(root/'test-runtime/released-1.14.0')
+print('PASS: immutable released 1.14.0 package checksum, archive paths and extraction')
+
+organized_baseline=root/'test-runtime/CajunWebPro-1.15.0-COMPLETE-UPLOAD.zip'
+with urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.15.0/CajunWebPro-1.15.0-COMPLETE-UPLOAD.zip',timeout=60) as response:
+    organized_baseline.write_bytes(response.read())
+assert hashlib.sha256(organized_baseline.read_bytes()).hexdigest()=='c85379eee996a7d9dcbc012a0595dd7b6195889e6bde17ff90a855b15b6ccde5'
+with zipfile.ZipFile(organized_baseline) as z:
+    assert z.testzip() is None
+    for item in z.infolist():
+        path=PurePosixPath(item.filename)
+        assert not path.is_absolute() and '..' not in path.parts and '\\' not in item.filename
+        assert (item.external_attr>>16)&0o170000 != 0o120000
+    z.extractall(root/'test-runtime/released-1.15.0')
+print('PASS: immutable released 1.15.0 package checksum, archive paths and extraction')
