@@ -2,6 +2,7 @@
 
 ## Next increment — exact-message reading (unreleased)
 
+- Correct full-document HTML handling on PHP 8.2 by stripping html/body wrappers while retaining sanitized children; wrapper attributes and head/unknown subtrees stay excluded. Add three cross-runtime malicious-document fixtures. Corrected CI remains pending.
 - Integrate fixed exact-message identity/size-preflight/BODY.PEEK and bounded MIME/HTML components with an exact protected runtime mirror. Preserve the released header limits and all original package pins; add four maintained rendering dependencies. Local component checks pass; PHP matrix/reproduction/no-DOM CI and application integration remain pending. No message-body UI or new release is enabled.
 
 ## 1.17.0 — verified recent inbox headers

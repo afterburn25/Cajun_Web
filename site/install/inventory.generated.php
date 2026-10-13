@@ -188,7 +188,7 @@ function setup_expected_files(): array { return [
     'includes/foundation/invitations/IssuedInvitation.php'=>'f91a7e5ae461744ac189784debd107f7bc6b05618c0a2e2a32e13e84f1a34ccb',
     'includes/foundation/invitations/StaffInvitationStore.php'=>'71b43312f2257be1952705c1bbde557019e55be39b549fdc331eb90767197ec4',
     'includes/foundation/mail-receiving/BodyDecoder.php'=>'72264f89821d291ecb7c61a95aaf33a2a9dfb14acb4aa5f3ebb7548c8229992c',
-    'includes/foundation/mail-receiving/BodyHtml.php'=>'59982777a73c6b150ac82bf7146442a261c882c6c45662e2e2e0d6382e60d6ea',
+    'includes/foundation/mail-receiving/BodyHtml.php'=>'701a2b49d87a9b73781499d7775bf401fb133a27d1b2c06ff6aaf355062bd286',
     'includes/foundation/mail-receiving/BoundedTokenizer.php'=>'25399e4edc2ad7d4fd51be9f221b5a942d0360a3b5586b053f940d21bdf45494',
     'includes/foundation/mail-receiving/HeaderDecoder.php'=>'73d41a50838bc35c5730ab4d82bacb5c42cdbb4c6819ee153232324f57790a20',
     'includes/foundation/mail-receiving/HeaderSession.php'=>'818a444b3c0749f860b38b8c5e688cd2979f8f5db7fd72d49b62e9be2e678c59',

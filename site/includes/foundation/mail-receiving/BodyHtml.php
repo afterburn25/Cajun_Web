@@ -38,7 +38,10 @@ final class BodyHtml
             static $sanitizer=null;
             if($sanitizer===null) {
                 $config=(new HtmlSanitizerConfig())->allowLinkSchemes(['http','https'])
-                    ->allowRelativeLinks(false)->withMaxInputLength(65536);
+                    ->allowRelativeLinks(false)->withMaxInputLength(65536)
+                    // Masterminds retains document wrappers in fragments. Unwrap only
+                    // these containers; their attributes and unknown/head subtrees drop.
+                    ->blockElement('html')->blockElement('body');
                 foreach(['p','div','span','br','hr','b','strong','i','em','u','s','blockquote','pre','code','ul','ol','li','table','thead','tbody','tr','th','td','h1','h2','h3','h4','h5','h6'] as $tag) $config=$config->allowElement($tag);
                 $config=$config->allowElement('a',['href','title'])
                     ->forceAttribute('a','rel','noopener noreferrer')->forceAttribute('a','target','_blank');
