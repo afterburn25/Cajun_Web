@@ -1,5 +1,9 @@
 # Project status
 
+## Release acceptance follow-up — 2026-10-13
+
+Portfolio integration PR #30 is merged at `332af19333a62d3dfcc90eb9cf34871a7fac50ec`; original Devin PRs #7/#27 are merged with preserved history. Both candidate runs passed 618 native / 675 HTTP/Chromium checks and reviewed screenshots. Exact-main run 38408053057 passed native and actual 1.10.0 retention checks, then exposed a synthetic modified-click test navigation race. `codex/portfolio-acceptance` fixes the test observer and adds a real Ctrl-click/new-tab assertion; it changes no shipping bytes. Publication remains pending successful exact-main acceptance. Latest public release remains 1.10.0. New Devin L-02 PR #31 is separate unreviewed work, outside this release.
+
 ## 2026-10-13 — Portfolio integration candidate 1.11.0
 
 Codex is integrating Devin portfolio [PR #7](https://github.com/afterburn25/Cajun_Web/pull/7) at `016a4057a3a17b62b2edcf583252f52cb9ff06a2` on `codex/portfolio-browsing`, starting after estimator integration main `39de8ff50ea245928a1f6528f10057afcf55e5b7`. Original branch/history remain intact. **Candidate source 1.11.0; latest published release remains v1.10.0.** [Contract](docs/PUBLIC_COMPONENT_INTEGRATION.md) and [browsing guide](docs/PORTFOLIO_BROWSING.md).
