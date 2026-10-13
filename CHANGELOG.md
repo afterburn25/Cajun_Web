@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased isolated component — A-06 mail transport
+
+- Add `foundation/mail-transport/`: a bounded read-only IMAP4rev1 subset over injectable sockets — greeting/capability/STARTTLS/login, EXAMINE-based unseen header fetches, honest classified failures, mandatory TLS peer verification and bounded line/literal reads. `InboundSync` maps fetched summaries onto the released A-06 `MailMessage`/`ConnectionResult` contract; authorization remains caller-side.
+- Add 34 scripted-socket checks (PHP 8.2/8.4, `--network none`) and `docs/MAIL_TRANSPORT.md`. No network dial, credentials, persistence, send path, or application integration; real mailbox acceptance remains a separate gate.
+
 ## 1.15.0 — verified consultation scheduling
 
 - Preserve corrected Devin #32 scheduling ancestry and 71 isolated checks. Add one explicitly configured studio calendar, disabled by default, with timezone-aware offered slots, buffers, notice and a 30-day horizon.

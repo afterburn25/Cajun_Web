@@ -217,7 +217,7 @@ Owner-controlled creation/invitation, role and mailbox grants, reset and deactiv
 
 ### A-06 — Multi-account admin webmail and setup
 
-Verified 1.13.0 delivers bounded profile/password/assignment preparation and the administrative UI. [Guide and acceptance](ADMIN_EMAIL_ACCOUNTS.md). No real connection, inbox or sending is included; full A-06 remains incomplete.
+Verified 1.13.0 delivers bounded profile/password/assignment preparation and the administrative UI. [Guide and acceptance](ADMIN_EMAIL_ACCOUNTS.md). The isolated Devin `devin/mail-transport` branch adds the bounded read-only IMAP contract layer (`foundation/mail-transport/`, [contract](MAIL_TRANSPORT.md)) — real connection, inbox, persistence and sending are still not included; full A-06 remains incomplete.
 
 Add Email with incoming/outgoing account configuration, separate connection tests, mailbox access grants, account switching/combined inbox, folders, read/unread, search, compose/reply/forward, drafts and attachments. Preserve server-side mailbox permissions, encrypted credentials, safe message rendering and correct send/sync failure handling. Full workflows and native two-account tests: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-06--multiple-email-accounts-and-webmail).
 
