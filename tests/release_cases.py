@@ -93,7 +93,7 @@ def run_http(env):
     (upgrade/'.installed.php').write_text('<?php exit; ?>original guard');(upgrade/'unrelated.txt').write_text('Keep this unrelated file')
     preserved={p:p.read_bytes() for p in [upgrade/'config.php',upgrade/'.installed.php',upgrade/'unrelated.txt',ROOT/'test-runtime/upgrade-private/media/retained.php']}
     rows_before={t:db('SELECT * FROM upgrade_'+t) for t in ['settings','users','leads','projects']}
-    with zipfile.ZipFile(ROOT/'dist/CajunWebPro-1.1.0-UPDATE.zip') as z:z.extractall(upgrade)
+    with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(upgrade)
     check('Actual update ZIP preserves config locks media and unrelated files',all(p.read_bytes()==data for p,data in preserved.items()))
     up=requests.Session();r=submit(up,BASE+'/upgrade/admin.php?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
     check('Original owner can sign in after file update','Sales pipeline' in r.text)

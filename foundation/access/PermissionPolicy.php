@@ -16,6 +16,8 @@ final class PermissionPolicy
     public const HOSTING_SETTINGS_MANAGE = 'hosting.settings.manage';
 
     private const GLOBAL_PERMISSIONS = [
+        'website.manage',
+        'clients.manage',
         self::STAFF_MANAGE,
         self::STAFF_GRANT,
         self::MAIL_ACCOUNTS_MANAGE,

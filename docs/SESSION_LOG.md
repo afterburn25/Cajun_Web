@@ -1,5 +1,11 @@
 # Session log
 
+## 2026-10-13 — Administrator application integration candidate
+
+Request: continue the roadmap after verified v1.1.0. Parent: `d6de19c` on `codex/admin-accounts`. Added the staff adapter, owner-controlled account forms and setup flow; wired per-request account state, explicit website/client permissions, password/reset/session revocation and serialized last-owner protection into the existing identities. Added compatible staff tables and an explicit owner-selection migration; fresh installs initialize the owner. Canonical access/invitation components now bundle verbatim into the application; the builder also verifies the installer's embedded core. Candidate source version is 1.2.0; no new release or host deployment yet. Devin's portfolio branch is untouched.
+
+Local checks: 176 isolated permission-policy assertions on PHP 8.4.25; builder syntax/inventory/ZIP checks for 50 shipping files and 27 PHP files; new native test scripts parse; `git diff --check` passes. Native database and HTTP/browser evidence is pending GitHub CI, including invitation consumption, upgrade preservation and concurrent owner changes. Remaining: browser account acceptance, actual v1.1.0 package upgrade, review/fixes and verified release gates. Commit: `Integrate owner-managed administrator accounts for acceptance`.
+
 Append dated entries. Keep this chronological. Use `SESSION_TEMPLATE.md`; link detailed test evidence instead of pasting excessive logs or secrets. The surrounding Git commit records the exact resulting revision.
 
 ## 2026-10-12 — Establish repository continuity
