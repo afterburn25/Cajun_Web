@@ -39,16 +39,17 @@ jobs:
                   p=pathlib.PurePosixPath(name)
                   assert not p.is_absolute() and all(x not in ['.','..','.git'] for x in p.parts)
                   assert name.startswith(('site/','tests/','tools/')) and not any(x in p.parts for x in ['config.php','storage','.env'])
+                  if group=='origins' and isinstance(record,str):
+                      assert re.fullmatch('[a-f0-9]{64}',record), 'Invalid original fingerprint'
+                      assert name.startswith('site/assets/')
+                      record={'sha256':record,'url':'https://cajunwebpro.com/'+name.removeprefix('site/')}
                   assert isinstance(record,dict), (name,type(record).__name__)
-                  print('IMPORT',name,'FIELDS',list(record))
                   if group=='files':
                       if 'text' in record:b=record['text'].encode('utf-8')
                       elif 'base64' in record:b=base64.b64decode(record['base64'],validate=True)
-                      elif 'b64' in record:b=base64.b64decode(record['b64'],validate=True)
                       else:raise ValueError('Unknown binary representation: '+name)
                   else:
-                      url=record.get('url',record.get('origin',''))
-                      assert isinstance(url,str) and url.startswith('https://cajunwebpro.com/assets/'),(name,'Unapproved origin')
+                      url=record['url'];assert url.startswith('https://cajunwebpro.com/assets/')
                       with urllib.request.urlopen(url,timeout=30) as res:
                           assert res.url.startswith('https://cajunwebpro.com/'),'Unexpected origin redirect'
                           b=res.read(2000001)
@@ -57,17 +58,17 @@ jobs:
                   if name.endswith(('.php','.py','.js','.css')):
                       text=b.decode('utf-8')
                       assert not re.search(r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|ghp_[A-Za-z0-9]{30,}|AKIA[A-Z0-9]{16}|sk_live_[A-Za-z0-9]{20,}',text),'Secret-shaped content blocked'
-                  target=pathlib.Path(name)
-                  assert not target.exists(),'Preserving existing file: '+name
+                  target=pathlib.Path(name);assert not target.exists(),'Preserving existing file: '+name
                   recovered[name]=b;ledger[name]={'bytes':len(b),'sha256':record['sha256'],'source':'preserved-fragment' if group=='files' else 'fingerprinted-public-asset'}
+                  print('VERIFIED',name,len(b),record['sha256'])
           for name,b in recovered.items():
               p=pathlib.Path(name);p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b)
           pathlib.Path('docs/SOURCE_RECOVERY_2026-10-13.json').write_text(json.dumps({'payload_sha256':expected,'fragments':ids,'files':ledger,'status':'Recovered source only; application acceptance pending.'},indent=2)+'\n')
           count=sum(n.startswith('site/') for n in recovered)
-          note='\n## 2026-10-13 — Source recovery checkpoint\n\nRecovered '+str(count)+' actual website files plus native/HTTP tests and a build tool from the nine preserved source fragments. Original external assets were fetched only at the recorded public URLs and checked against recorded SHA-256 values. Executable source is now under `site/` on `codex/finish-1.1.0`. This supersedes the older no-source-in-Git blocker on this branch, NOT the unverified runtime or release claims. No production files, database, mail or payments were changed. Review `docs/SOURCE_RECOVERY_2026-10-13.json`; run native integration and authorization tests next. No 1.1.0 release is declared by source recovery.\n'
+          note='\n## 2026-10-13 — Source recovery checkpoint\n\nRecovered '+str(count)+' actual website files plus native/HTTP tests and a build tool from the nine preserved source fragments. Original external assets were fetched only at the recorded public paths and checked against recorded SHA-256 values. Executable source is now under `site/` on `codex/finish-1.1.0`. This supersedes the older no-source-in-Git blocker on this branch, NOT the unverified runtime or release claims. No production files, database, mail or payments were changed. Review `docs/SOURCE_RECOVERY_2026-10-13.json`; run native integration and authorization tests next. No 1.1.0 release is declared by source recovery.\n'
           for name in ['PROJECT_STATUS.md','SESSION_HANDOFF.md','CHANGELOG.md']:
               p=pathlib.Path(name);s=p.read_text();head,sep,rest=s.partition('\n');p.write_text(head+'\n'+note+'\n'+rest)
-          p=pathlib.Path('docs/SESSION_LOG.md');p.write_text(p.read_text()+note+'\nStarting commit: '+os.environ['GITHUB_SHA']+'. Recovery verified payload hashes, individual file hashes, safe paths and absence of common secret formats. No application code was executed by the recovery job.\n')
+          p=pathlib.Path('docs/SESSION_LOG.md');p.write_text(p.read_text()+note+'\nStarting commit: '+os.environ['GITHUB_SHA']+'. Recovery verified payload hashes, individual file hashes, safe paths and absence of common secret formats. The first import attempt rejected the origins record format before writing files; corrected to its actual path-to-fingerprint map. No application code was executed by the recovery job.\n')
           print('RECOVERED_SITE_FILES',count,'TOTAL',len(recovered))
       - name: Commit recovered files to the development branch only
         run: |
