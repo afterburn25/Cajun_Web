@@ -1,5 +1,18 @@
 # Release register
 
+## v1.3.0 — published 13 October 2026
+
+[Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.3.0) published `2026-10-13T08:17:54Z`; immutable source/tag `7856cccf230a1646d02a4a92ad4bfb1c280efa19`. Application merge [PR #12](https://github.com/afterburn25/Cajun_Web/pull/12). Publication records are documentation only and do not alter release bytes.
+
+| Asset | Bytes | SHA-256 |
+|---|---:|---|
+| [COMPLETE-UPLOAD](https://github.com/afterburn25/Cajun_Web/releases/download/v1.3.0/CajunWebPro-1.3.0-COMPLETE-UPLOAD.zip) | 1404661 | `bb9bdf041e8bb158d79edb5564276e061f9a0d5e11f79df839796b19f7e48dcb` |
+| [UPDATE from 1.2.0 / 1.1.0 / 1.0.8](https://github.com/afterburn25/Cajun_Web/releases/download/v1.3.0/CajunWebPro-1.3.0-UPDATE.zip) | 1311999 | `67c49bbbefcbfc1a16e2e5737ce058dc1358b246c4c9ad99afe5bdad3f5fc2bb` |
+
+Eight retained assets: complete/update ZIPs, manifest, SHA256SUMS, test report, installation guide, client support guide and permanent TEST-EVIDENCE ZIP. Complete has 52 flat members; update has 51 and excludes fresh setup. All assets were freshly downloaded both as draft and after publication; bytes/hashes/CRC/extraction/versions/tag match the tested exact-main build. Earlier releases remain immutable.
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38367798995): 50 original + 31 staff + 35 support native and 289 HTTP/Chromium checks, including actual 1.2.0 update, previous upgrades, fresh setup, audit-failure injection and stale-tab/client isolation. [Report](TEST_REPORT_1.3.0.md), [scope](RELEASE_1.3.0.md), [verification](RELEASE_VERIFICATION_1.3.0.json), [support setup](CLIENT_SUPPORT.md). No target-host deployment or provider/customer operations. SSH and provider SSO are not part of this portal-support release.
+
 ## v1.2.0 — published 13 October 2026
 
 Release: [v1.2.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.2.0), published at `2026-10-13T07:28:07Z`. Immutable source/tag: `f85627e05b171e4ee8508231e2ed6ee7b9374274`; application merge [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10). Later publication records are documentation-only; the tag, shipping source and prior releases remain unchanged.

@@ -1,6 +1,8 @@
 # Installation, packaging and updates
 
-Candidate 1.3.0 adds [client support sessions](CLIENT_SUPPORT.md). From 1.2.0, merge the verified UPDATE package after backup, then explicitly enable Client support with the owner password and allow individual clients under the support agreement. Existing roles and customer credentials are retained. From earlier versions, complete the existing workspace/administrator setup first. Fresh setup remains one-page; support policy still requires explicit confirmation. Candidate inventory: 52 complete / 51 update files. Publication and evidence are tracked in the release register.
+Current verified release: [v1.3.0](RELEASES.md#v130--published-13-october-2026). [1.3.0 test report](TEST_REPORT_1.3.0.md). Earlier version instructions below are retained for their supported upgrade steps.
+
+Released 1.3.0 adds [client support sessions](CLIENT_SUPPORT.md). From 1.2.0, merge the verified UPDATE package after backup, then explicitly enable Client support with the owner password and allow individual clients under the support agreement. Existing roles and customer credentials are retained. From earlier versions, complete the existing workspace/administrator setup first. Fresh setup remains one-page; support policy still requires explicit confirmation. Package inventory: 52 complete / 51 update files. Publication and evidence are tracked in the release register.
 
 
 v1.2.0 complete/update deployment assets are published and downloaded-back verified; v1.1.0 remains unchanged. Use the [release register](RELEASES.md) for exact URLs, hashes and tested source; read the [1.2.0 test report](TEST_REPORT_1.2.0.md).

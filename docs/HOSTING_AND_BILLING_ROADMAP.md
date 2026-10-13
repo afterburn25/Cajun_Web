@@ -1,5 +1,7 @@
 # CajunWebPro custom hosting commerce, billing and client platform
 
+**2026-10-13 released checkpoint:** [1.3.0](RELEASE_1.3.0.md) delivers A-09 for the existing project portal, following core staff lifecycle in 1.2.0. [Support scope and limits](CLIENT_SUPPORT.md). Provider SSO/A-10 SSH, full billing/catalog, native 20i management, mail and website ZIP delivery remain incomplete. Older pending-source statements below are historical; current PHP source is verified on main.
+
 Approved scope: 2026-10-12. Planning only — NOT implemented, integrated, paid for, verified, or deployed.
 
 ## Business and delivery decision

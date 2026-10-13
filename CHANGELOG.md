@@ -1,17 +1,14 @@
 # Changelog
 
-## 1.3.0 candidate — client portal support
+## v1.3.0 — 2026-10-13
 
 - Explicit owner-confirmed client policy and separate staff support view/write/download permissions.
 - Browser-bound expiring contexts, persistent staff/client banner and return, stale-tab isolation and separate form tokens.
 - Attributed messages/uploads/downloads and strict audit rollback; blocked customer decisions/security/payment actions.
 - Additive support schema, preserved 1.2.0 update state, native and HTTP/Chromium acceptance.
-- Not yet published or deployed; see PR #12. SSH/provider access remains separate.
+- Published and downloaded-back verified at `7856cccf230a1646d02a4a92ad4bfb1c280efa19` through PR #12; 116 native and 289 HTTP/Chromium checks, eight retained assets. No host deployment. SSH/provider access remains separate.
 
 
-## Unreleased — A-09 client support access
-
-Roadmap continuation starts from verified v1.2.0. Explicit staff permissions, client support policy, separate scoped sessions and attributed portal actions are the bounded next increment. No new release/deployment yet.
 
 ## v1.2.0 — 2026-10-13
 

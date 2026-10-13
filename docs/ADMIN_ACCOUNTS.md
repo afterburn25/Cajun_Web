@@ -1,6 +1,6 @@
 # Administrator accounts — 1.2.0
 
-Candidate 1.3.0 adds three separately selectable [client support permissions](CLIENT_SUPPORT.md): portal view, message/upload, and file download. Existing administrators are not automatically granted them; owners still must enable support and allow each client.
+Released 1.3.0 adds three separately selectable [client support permissions](CLIENT_SUPPORT.md): portal view, message/upload, and file download. Existing administrators are not automatically granted them; owners still must enable support and allow each client.
 
 
 Application integration for the core A-05 account lifecycle in [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10). Publication status and exact evidence belong in the [release register](RELEASES.md). This does not connect multi-account webmail, mailbox assignments, payment providers, 20i, support impersonation or SSH.
