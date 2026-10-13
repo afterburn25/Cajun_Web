@@ -435,3 +435,19 @@ Candidate 9e8dedf passes run 38420905892: 618 native, 782 HTTP/Chromium, 41 file
 ### 2026-10-13 — directory correction merged, published and download-verified
 
 PR #38 merged at de70c5da2e8f7bd35fbb92b9b829d0ab3e880372 after candidate 2faa2cb passed both application runs 38421763414/38421754313 and all component/documentation checks. Exact-main run 38422422077 passes all 1660 named application/structure checks. Built all three packages on clean Windows source and compared byte-for-byte to Linux CI; final homepage desktop/mobile screenshot pixels match published 1.10.0 and admin/client layouts were reviewed. Published immutable v1.11.0 with FULL-PROJECT, COMPLETE-UPLOAD, staged UPDATE, individual manifests/directory lists, common checksum/manifest, START-HERE, test report/evidence and migration/tree guides. Fresh draft and public downloads verify all 16 asset bytes, checksums, paths/members and tag target. Previous 1.10.0 asset fingerprints retained unchanged. Updated permanent rules, release report and precise Devin handoff/open-branch inventory. No live deployment, charges, provider writes or unrelated feature integration. Priority correction complete. Next: review bounded pending component/motion PRs against this accepted baseline while preserving external activation gates. This follow-up changes documentation only, not the released source or assets.
+
+### 2026-10-13 — Devin A-03 backup/restore foundation
+
+**Request:** "Continue Without Stopping" — next feasible roadmap item (A-03 manifest/restore contract layer, no external gate).
+
+**Starting commit:** `main` `02fc784` (published 1.11.0 baseline). New branch `devin/backups-foundation`.
+
+**Changed:** added `foundation/backups/` (BackupManifest, RestorePlan), `tests/backups/run.php`, `docs/BACKUPS_FOUNDATION.md`, `.github/workflows/backups.yml`, and additive continuity entries. No `site/` or shared-path changes.
+
+**Tests:** `php tests/backups/run.php` — 31 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: secrets-path exclusion (config/keys/.env/storage), sha256 item + manifest hashing, verifyItem, retention expiry, impact classification (missing/identical/differs), exact-phrase authorization, expired/newer-format rejection, guarded applied/abandoned states.
+
+**Failures:** none.
+
+**Blockers:** none for the contract layer; archive/extract/restore-drill remain Codex integration work.
+
+**Next:** PR `devin/backups-foundation`; queue now 14 open Devin PRs awaiting Codex sequencing (#34 closed, superseded by Codex #50).

@@ -1,5 +1,9 @@
 # Project status
 
+## 2026-10-13 — Devin A-03 backup/restore foundation (unreviewed, unintegrated)
+
+Devin implemented the safe-work portion of A-03 as an isolated canonical component on `devin/backups-foundation`: `foundation/backups/` (`BackupManifest`, `RestorePlan`), `tests/backups/run.php` (31 checks), `backups.yml` workflow, and [BACKUPS_FOUNDATION](docs/BACKUPS_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer; the isolated restore drill still needs the integrated implementation. No `site/` changes, deployment or release.
+
 ## Current directory and package contract — released 1.11.0
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](docs/DIRECTORY_STRUCTURE.md), [migration and recovery](docs/STRUCTURE_MIGRATION.md), and [START-HERE](START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.

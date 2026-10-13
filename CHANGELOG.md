@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — A-03 backup/restore foundation (Devin, isolated component)
+
+- Added canonical `foundation/backups/` classes (`BackupManifest` with per-item sha256 + whole-scope `manifestHash()` and structural secrets exclusion — config/keys/env/private storage can never enter scope; `RestorePlan` with hash-computed impact preview, exact-phrase actor authorization, retention/format gates and guarded applied/abandoned states) plus `docs/BACKUPS_FOUNDATION.md`.
+- Added `tests/backups/run.php` (31 synthetic checks; fixture manifests only) and the `backups.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes, archives, filesystem or database restore. Not yet integrated or released.
+
 ## 1.11.0 — organized application and verified three-package release
 
 Published from `de70c5da2e8f7bd35fbb92b9b829d0ab3e880372` after exact-main acceptance; all 16 assets downloaded and verified. Original history and all earlier releases retained. No live deployment.
