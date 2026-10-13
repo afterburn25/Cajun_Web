@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — scheduling foundation
+
+- Add independent L-03 consultation-scheduling contract (`foundation/scheduling/`): UTC time windows, weekly availability rules with real IANA/DST expansion, slot/buffer/minimum-notice policy, a `requested → confirmed | declined | cancelled` lifecycle where rescheduling re-requires confirmation, and exact bookability checks. Not integrated; no schema, form, mail, or calendar provider.
+
 ## Unreleased — reviewed estimator foundation
 
 - Integrate Devin PR #27 with preserved ancestry; retain the standalone component outside shipping files. Add exact-integer overflow handling and reject inconsistent direct result objects. Application version remains 1.10.0; adapter and UI acceptance remain pending.

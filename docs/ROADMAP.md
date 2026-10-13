@@ -191,3 +191,5 @@ Move an item through `approved` → `in progress` → `implemented` → `verifie
 ## 2026-10-13 integration checkpoint
 
 L-01 standalone estimator PR #27 is being integrated with arithmetic/result validation fixes; application adaptation remains pending. W-01 PR #7 now includes a real portfolio adapter and will be integrated next. Neither full roadmap item is complete. [Contract](PUBLIC_COMPONENT_INTEGRATION.md).
+
+L-02 review requests ([PR #31](https://github.com/afterburn25/Cajun_Web/pull/31)) and L-03 scheduling on `devin/consultation-scheduling` ([guide](SCHEDULING_FOUNDATION.md)) have isolated contracts: capture/workflow normalization and availability/conflict/booking lifecycle respectively. No forms, storage, mail, fetching or providers yet — application adaptation is a separate agreed step for each.

@@ -1,5 +1,9 @@
 # Project status
 
+## 2026-10-13 — Devin L-02/L-03 independent components
+
+Codex is integrating portfolio PR #7 at `016a405` on `codex/portfolio-browsing` (PR #30) toward a bounded v1.11.0; estimator PR #27 landed through PR #29 at `39de8ff`. Devin heads stay stable during integration. Devin delivered two more isolated contracts: L-02 review requests on `devin/review-requests` (`a0959d6`, [PR #31](https://github.com/afterburn25/Cajun_Web/pull/31), all checks green) and L-03 consultation scheduling on this branch `devin/consultation-scheduling` — `foundation/scheduling/` (UTC windows, DST-correct weekly rules, slot/buffer/notice policy, request→confirm lifecycle with conflict protection) with 64 passing synthetic checks and `docs/SCHEDULING_FOUNDATION.md`. No schema, form, mail, provider or shipping files on either — adaptation is a later agreed step.
+
 ## 2026-10-13 — Devin estimator integration candidate
 
 Codex is integrating [Devin PR #27](https://github.com/afterburn25/Cajun_Web/pull/27) at `b69da9626448a2ddfdf30b425dc7c2d5e16d1582` on `codex/integrate-estimator`, from main `6f0120913c93eace492b6c5f333c754fea3bea31`. The ancestry-preserving merge keeps the standalone core outside deployment. Review adds integer-overflow consultation and strict explained-result invariants. Current shipping application/release remains **v1.10.0**; no new form or pricing behavior is claimed. Local PHP 8.4.25 passes 65 named estimator checks and syntax; documentation links pass. Combined GitHub verification is pending. Next: merge only after checks, then integrate portfolio PR #7's new real-route adapter at `c8821f8` against current source. [Integration contract](docs/PUBLIC_COMPONENT_INTEGRATION.md).
