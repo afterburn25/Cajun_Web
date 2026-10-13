@@ -9,12 +9,14 @@ This is the safe portion of [A-07](ROADMAP.md#a-07--reusable-email-templates): t
 | Class | Contract |
 |---|---|
 | `PlaceholderRegistry` | The allowlist of merge fields — `lower_snake` names, each with a required human description, sorted for stable UI. Empty allowlists rejected. |
-| `EmailTemplate` | Subject + body with `{{placeholder}}` merge fields. **Every placeholder must be registered in the allowlist** — unknown names are rejected at construction and on edit, so no template can smuggle an unresolved or unsafe merge field. Lifecycle `draft → active → archived`: edits return a new draft (active copy never mutates), `duplicate()` clones as a personal draft under a new identity, `archive()` retains the record but removes it from compose. `transactional` templates are **never** insertable into ad-hoc compose. `preview()` resolves values and returns `unresolved` names — it never silently emits raw `{{name}}` as if it were content. |
+| `EmailTemplate` | Subject + body with `{{placeholder}}` merge fields. **Every placeholder must be registered in the allowlist** — unknown names are rejected at construction and on edit, so no template can smuggle an unresolved or unsafe merge field. A **strict double-brace grammar** applies at construction/edit: any `{{`/`}}` that is not a complete `{{lower_snake}}` token (uppercase, spaces, dots, unmatched or stray braces) is rejected, so malformed placeholders cannot masquerade as resolved text; ordinary single braces stay usable. Lifecycle `draft → active → archived`: edits return a new draft (active copy never mutates), `duplicate()` clones as a personal draft under a new identity, `archive()` retains the record but removes it from compose. `transactional` templates are **never** insertable into ad-hoc compose. `preview()` resolves values in a **single pass over the original text** — merge values are literal data and are never re-scanned, so a value containing `{{other_field}}` stays literal — and returns `unresolved` names rather than emitting raw `{{name}}` as if it were content. Merge values must be strings; anything else throws. |
 
 ## Guarantees
 
 - **Allowlisted placeholders are structural** — a template containing an unregistered merge field cannot exist.
-- **Preview is honest** — missing values stay unresolved and are named, never substituted with junk or left ambiguous.
+- **Strict grammar** — malformed double-brace tokens are construction/edit errors, not silently-literal text.
+- **Preview is honest and literal-safe** — single-pass substitution means supplied values cannot inject further placeholders; missing values stay unresolved and are named, never substituted with junk or left ambiguous.
+- **Preview output is plain text** — a UI must escape it for HTML display, and a mail adapter must reject header line breaks before sending. The model does not send.
 - **Visibility scoping** — `shared` templates insertable by any staff; `personal` only by the owner; `transactional` excluded from compose insertion entirely.
 - **No silent history loss** — archive retains records; edits produce a new draft state, not an in-place mutation of an active template.
 - Immutable value object — `edit`/`activate`/`archive`/`duplicate` all return new instances.
@@ -29,4 +31,4 @@ When integrated, the adapter: persists templates keyed by the opaque ids; popula
 
 ## Verification
 
-`tests/email-templates/run.php` — 36 synthetic checks under official PHP 8.2/8.4 images with `--network none` (`.github/workflows/email-templates.yml`). Scope: the template/placeholder contract only.
+`tests/email-templates/run.php` — 50 synthetic checks under official PHP 8.2/8.4 images with `--network none` (`.github/workflows/email-templates.yml`), including the Codex-review regressions for single-pass literal substitution, strict double-brace grammar and runtime string validation. Scope: the template/placeholder contract only.

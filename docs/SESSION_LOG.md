@@ -468,7 +468,7 @@ Next-increment preparation while exact-main acceptance ran: an isolated local es
 
 **Changed:** added `foundation/email-templates/` (PlaceholderRegistry, EmailTemplate), `tests/email-templates/run.php`, `docs/EMAIL_TEMPLATES_FOUNDATION.md`, `.github/workflows/email-templates.yml`, and additive continuity entries. No `site/` or shared-path changes.
 
-**Tests:** `php tests/email-templates/run.php` — 36 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: allowlist construction/validation, unknown-placeholder rejection at draft and edit, draft→active→archived lifecycle, non-mutating edits, duplicate-as-personal, shared/personal/transactional insertion gating, honest preview with named unresolved fields.
+**Tests:** `php tests/email-templates/run.php` — 50 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: allowlist construction/validation, unknown-placeholder rejection at draft and edit, draft→active→archived lifecycle, non-mutating edits, duplicate-as-personal, shared/personal/transactional insertion gating, honest preview with named unresolved fields.
 
 **Failures:** none. **Blockers:** none for the contract layer; compose UI, persistence and sending remain Codex integration work.
 
@@ -479,6 +479,14 @@ Next-increment preparation while exact-main acceptance ran: an isolated local es
 Continue without stopping from verified 1.11.1 and publication-record main 855981b. Branch codex/estimator-live-adapter preserves reviewed Devin #35/91a12cc in merge9070609. Added app/marketing/estimator.php, protected canonical foundation mirroring and delegation from existing growth_estimate; retained all live input/result/policy semantics, including early unpriced and malformed-rule handling. Added actual-release CLI parity worker/matrix, independent boundary expectations and direct-HTTP denial coverage. Local PHP 8.4: 3,084 parity/boundary cases plus 65 component checks pass; no database/network operation in this comparison. Added published 1.11.1 archive/file/shim inventory and download fixture; expanded Apache/filesystem acceptance across both organized baselines. Candidate version1.11.2 with regenerated installer; combined acceptance/publication pending. No schema changes, live host deployment, provider/merchant/mail/SSH activation. Next: combined PR acceptance, exact-main verification and three-package release; Devin #31/#32 findings remain assigned for correction.
 
 Integration refresh: preserved latest Devin #35 head efc967a (publication-record merge only), retaining the 1.11.2 active scope and verified 1.11.1 records when resolving headings. Observed new #31 head23014c5 and #32 headdf0fdfe containing requested review corrections; review/testing of those corrected components is next, not yet application acceptance.
+
+### 2026-10-13 — Devin A-07 corrections (Codex review)
+
+**Request:** Codex 1.11.2 review found two preview defects on `devin/email-templates`: sequential `str_replace` re-scanned substituted values (a merge value containing `{{project_name}}` leaked that field's content), and malformed double-brace tokens were silently accepted so `preview([])` reported nothing unresolved.
+
+**Changed:** `EmailTemplate::preview()` now substitutes in a single `preg_replace_callback` pass over the original subject/body — merge values are literal data, never re-scanned. New `BRACE_TOKEN` grammar check rejects any `{{`/`}}` that is not a complete `{{lower_snake}}` token (uppercase, spaces, dots, unmatched, stray, triple) at draft and edit. Preview values must be strings. Docblock and guide now record that rendered output is plain text requiring UI escaping, and that a mail adapter must reject header line breaks.
+
+**Tests:** 50 synthetic checks (14 new regressions) pass on PHP 8.4.25 including `php -n` no-extension run.
 
 ## 2026-10-13 — 1.11.2 published and independently verified; next mail-template increment
 

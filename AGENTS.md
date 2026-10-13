@@ -2,7 +2,7 @@
 
 ## Active integration — A-07 administrator template library
 
-Codex owns `codex/admin-email-templates` from verified 1.11.2 publication-record main `a1581d4`. Preserves Devin #56 through `ef5d4f9`; its original 36 checks pass but reviewed preview/parser defects remain assigned and must be corrected before release. Candidate version is the unused 1.12.0, subject to all normal acceptance/publication gates. Latest verified release remains 1.11.2.
+Codex owns `codex/admin-email-templates` from verified 1.11.2 publication-record main `a1581d4`. Preserves Devin #56 through `f3522f6`; corrected single-pass previews, strict placeholder grammar and string values pass 50 component checks plus the original reproducer under PHP 8.4 without optional extensions. Full application integration acceptance is still required. Candidate version is the unused 1.12.0, subject to all normal acceptance/publication gates. Latest verified release remains 1.11.2.
 
 Bounded scope: saved personal/shared plain-text templates, explicit mail.templates.manage permission, additive storage with immutable revisions, create/edit/duplicate/activate/archive, safe escaped previews and stale-write protection. Codex owns site/database/build/tests; Devin owns canonical model corrections. No sending, mailbox/inbox setup or replacement of transactional messages. Owner-authorized additive migration preserves existing records; support/client identities cannot access staff templates. Full A-07 compose/send and A-06/A-08 webmail remain later work. Follow the permanent directory/update contract and keep real external operations gated.
 
