@@ -1,9 +1,14 @@
 # Admin webmail, staff access, templates and email notifications
 
-## Candidate 1.17.0 — acceptance pending
+## Latest verified publication — 1.17.0
 
-[PR #69](https://github.com/afterburn25/Cajun_Web/pull/69) adds explicit assigned-staff INBOX header reading, protected bundled dependencies, strict request auditing and an additive upgrade setup. See the [receiving contract](MAIL_INBOX_READER.md). New native/HTTP/TLS/browser/Apache and 1.16.0 upgrade/recovery acceptance is pending. Latest published version remains 1.16.0; publication summaries below describe their recorded release, not the active candidate. The permanent organized structure remains in force.
+[v1.17.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.17.0) is published and freshly downloaded/verified at immutable source/tag `fc3bd89c5e1c286f9dc4df12d50dd566a4d4ab86` through [PR #69](https://github.com/afterburn25/Cajun_Web/pull/69). Assigned staff can explicitly load the newest 20 INBOX headers over pinned verified TLS using maintained bundled IMAP/MIME dependencies. Current session, global permission, account assignment and saved revision protect credential use and display. Strict started/terminal audit, refresh limits and personal request history retain outcomes/counts; header contents exist only in the current escaped response. [Owner workflow](MAIL_INBOX_READER.md). Bodies, attachments, sending, OAuth and exact-message bells remain incomplete.
 
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38480568403): 1005 native (including 57 inbox), 3,084 estimator, 985 HTTP/Chromium, 177 filesystem/recovery, 609 Apache and 19 builder checks. Each PHP 8.2/8.4 receiving runner separately passes 17 dependency/parser, 48 session/header and 483 real isolated TLS checks, with every dependency byte reproduced. Existing diagnostic transport checks also pass. All 16 public assets, archive paths/members/checksums and immutable tag verified; Windows/Linux bytes agree. Homepage pixels match 1.16.0; actual desktop/mobile inbox screens inspected. [Report](TEST_REPORT_1.17.0.md); [Devin handoff](DEVIN_HANDOFF_1.17.0.md).
+
+Nineteen supported starting packages: 1.0.8 and 1.1.0 through 1.16.0, including 1.11.1/1.11.2. UPDATE stages cwp-update-1.17.0 with version-specific recovery and the permanent shared structure-1.11.0 lock. Actual 1.16.0 recovery/reapplication retains inbox request records, earlier connection history, appointments, reviews, accounts/assignments, templates and the original private key. Published 1.16.0 asset fingerprints remain unchanged. No real mailbox, hosting deployment or payment/provider/SSH activation occurred in acceptance.
+
+Next: implement bounded exact-message reading on the maintained receiving stack, preserving current grants and saved-account generation with folder/UIDVALIDITY/UID. Agree body/MIME/HTML limits and safe rendering before adding an actionable email bell. Existing workspace bells remain workspace activity. Devin separately owns the provider reservation/retry/request-binding/redaction corrections in PR #43 under issue #2 comment 6156483996; keep those components outside deployment until reviewed and accepted. Preserve #68 independently; its custom parser is unaccepted. The prior owner-requested 20i GET /package diagnostic proves only that read, not a shipped adapter or mutation entitlements. Preserve issue #65 and operation-specific payment/provider/SSH activation gates. The roadmap continues without a release-boundary stop.
 
 ## Current released increment — 1.16.0
 
@@ -13,7 +18,7 @@
 
 Administrator accounts and client-support access remain released. [1.12.0](TEST_REPORT_1.12.0.md) adds the bounded personal/shared template library with previews and history. [1.13.0](TEST_REPORT_1.13.0.md) adds multiple owner-managed email profiles, encrypted private passwords, separate read/send permissions and explicit current per-mailbox assignments, including for owners. [Accounts guide](ADMIN_EMAIL_ACCOUNTS.md) and [template guide](ADMIN_EMAIL_TEMPLATES.md) define those accepted subsets. These remain preserved in 1.15.0.
 
-Full webmail remains incomplete: no account connection, IMAP synchronization, message rendering, compose/send or email notification bell is implemented by these releases. Existing workspace activity bells represent workspace activity, not received mail. No external mailbox is connected. Historical checkpoints below describe their dated state and do not override this current scope.
+Full webmail remains partial. Version 1.16.0 adds explicit connection checks and 1.17.0 adds bounded assigned-staff INBOX header loading. Full synchronization, bodies, attachments, compose/send and exact-message email bells remain incomplete. Existing workspace activity bells represent workspace activity. No real external mailbox was used in acceptance. Historical checkpoints below describe their dated state and do not override the current publication above.
 
 ## 2026-10-13 — Verified 1.10.0 workspace activity increment
 
