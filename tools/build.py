@@ -39,6 +39,8 @@ def main():
         if not actual or actual.group()!=body:raise RuntimeError('Installer hashes are stale; run build.py --refresh after changes')
     version=re.search(r"const CWP_VERSION\s*=\s*'([^']+)'",(SITE/'app/core.php').read_text(encoding='utf-8')).group(1)
     if f"const CWP_INSTALLER_BUILD = '{version}'" not in s or "const CWP_INSTALLER_LAYOUT = 'one-page'" not in s:raise RuntimeError('Version/layout mismatch')
+    for match in re.findall(r"(?:one-page-|ONE-PAGE INSTALLER · |BUILD |installer_build!==')[0-9]+\.[0-9]+\.[0-9]+",s):
+        if not match.endswith(version):raise RuntimeError('Stale installer label or browser response guard: '+match)
     if 'Unlock your installation.' in s or 'data-back=' in s:raise RuntimeError('Legacy installer gate or wizard returned')
     if s.count('id="install-form"')!=1:raise RuntimeError('Expected one visible installation form')
     if args.commit!='local-uncommitted' and not args.refresh:

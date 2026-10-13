@@ -46,7 +46,7 @@ function payments_environment(string $env): void {if(!in_array($env,['sandbox','
 function payments_fields(): array {return ['api_login_id'=>'API Login ID','transaction_key'=>'Transaction Key','signature_key'=>'Signature Key','public_client_key'=>'Public Client Key'];}
 /** A separate master key is never stored in the database or served directory. */
 function payments_master(bool $create=false): string {
-    $storage=realpath(config()['storage']);$root=realpath(CWP_ROOT);$document=realpath($_SERVER['DOCUMENT_ROOT']??'');
+    $storage=realpath(config()['storage']);$root=realpath(CWP_ROOT);$document=empty($_SERVER['DOCUMENT_ROOT'])?false:realpath($_SERVER['DOCUMENT_ROOT']);
     if(!$storage||!$root||!$document||!is_dir($storage))throw new RuntimeException('Payment credentials need verified private storage outside the document root. Ask the hosting owner to configure private storage.');
     $normal=fn($p)=>strtolower(str_replace('\\','/',rtrim($p,'/\\'))).'/';
     if(str_starts_with($normal($storage),$normal($root))||str_starts_with($normal($storage),$normal($document)))throw new RuntimeException('Payment credentials need private storage outside the document root. Existing site storage was not moved.');

@@ -280,3 +280,7 @@ Owner requested continued roadmap implementation. Starting main `f659adfc58d3176
 
 Implemented on `codex/payment-foundation`, parent `e0f8968` after main `f659adf`: owner-only protected separate Authorize.net settings, sandbox-authentication-only adapter and reviewed invoice-bound prepared requests. Existing invoices, catalog snapshots, permissions and client identities are retained. Card collection/production processing remain disabled. [Guide](PAYMENT_PREPARATION.md). Local PHP syntax, deterministic 58/57-file build and 251 permission checks pass. Native MariaDB/actual HTTP/browser and retained 1.4.0 upgrade tests are added; CI is pending and no provider success is claimed. No real credentials, live host, customer mail or provider operation. Next: run/fix full application acceptance, review screenshots, merge only when green and verify an exact-main release. Devin PR #7 is unchanged.
 
+
+## 2026-10-13 — Payment candidate installer mismatch
+
+Candidate `92d2dee` run 38374489193 passed native tests but actual Chromium fresh setup caught old 1.4.0 browser response guards/labels paired with the 1.5.0 backend. Correct all installer labels/handshake versions and add a build-time guard. Also reject a missing document-root value when checking external credential storage. Full acceptance is rerun; the failed candidate was not merged or released.
