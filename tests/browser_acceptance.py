@@ -176,6 +176,8 @@ try:
         portfolio_browser(globals(),browser)
         from mail_templates_cases import run_browser as mail_templates_browser
         mail_templates_browser(globals(),browser)
+        from mail_accounts_cases import run_browser as mail_accounts_browser
+        mail_accounts_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)
