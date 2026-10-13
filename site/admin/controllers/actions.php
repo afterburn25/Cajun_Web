@@ -11,6 +11,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     if(in_array($action,['support_migrate','support_policy','support_start'],true))support_admin_action($action);
     if(str_starts_with($action,'catalog_'))catalog_admin_action($action,$user);
     if(str_starts_with($action,'payments_'))payments_admin_action($action);
+    if(str_starts_with($action,'mail_templates_')){mail_templates_admin_action($action);return;}
     if(str_starts_with($action,'activity_'))activity_post('admin');
     if(str_starts_with($action,'delivery_'))delivery_admin_action($action);
     if(str_starts_with($action,'studio_')){studio_admin_action($action,$user);}
