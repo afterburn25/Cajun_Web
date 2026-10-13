@@ -59,6 +59,12 @@ try:
         r=requests.get(BASE+'/existing/'+path,timeout=15);check('Public route '+(path or 'home'),r.status_code==200 and 'CajunWebPro' in r.text and 'We could not complete this request' not in r.text)
     for path in ['images/icons/favicon.png','favicon.ico','assets/css/growth.css','assets/js/growth.js','images/branding/logo.png']:
         r=requests.get(BASE+'/existing/'+path,timeout=15);check('Asset bytes '+path,r.status_code==200 and hashlib.sha256(r.content).digest()==hashlib.sha256((ROOT/'site'/path).read_bytes()).digest())
+    for path in ['includes/bootstrap.php','includes/security/csrf.php','app/staff/accounts.php','config/example.php','database/schema/base.php','admin/controllers/router.php','admin/views/auth.php','portal/views/workspace.php','pages/home/body.php','includes/foundation/access/AccessContext.php','install/actions/deploy.php']:
+        check('PHP guard denies direct internal entry '+path,requests.get(BASE+'/existing/'+path).status_code==404)
+    r=requests.get(BASE+'/fresh/admin/index.php',allow_redirects=False)
+    check('Uninstalled nested entry redirects to actual site-root setup',r.status_code==302 and r.headers['Location']=='/fresh/install.php')
+    r=requests.post(BASE+'/existing/admin/index.php?view=security',data={'action':'account_save','marker':'keep-method'},headers={'Host':'untrusted.example.invalid'},allow_redirects=False)
+    check('Transport enforcement retains nested canonical path query and POST method',r.status_code==307 and r.headers['Location']==BASE+'/existing/admin/index.php?view=security')
     r=requests.get(BASE+'/existing/install.php');check('Installed-site guard blocks setup',r.status_code==403)
     doc=soup(requests.get(BASE+'/existing/index.php?page=work&cat=Construction',timeout=15))
     cards={c['data-category']:c.has_attr('hidden') for c in doc.select('.portfolio-grid .project-card')}

@@ -18,6 +18,8 @@ def inventory():
         if not p.is_file():continue
         n=p.relative_to(SITE).as_posix();safe(n)
         if n.split('/')[0] in {'storage','upload'} and n not in SCAFFOLDS:raise RuntimeError('Runtime storage in package: '+n)
+        if n in SCAFFOLDS and p.read_text()!=('Require all denied\n' if p.name=='.htaccess' else '<?php http_response_code(404); exit;\n'):raise RuntimeError('Unexpected runtime scaffold metadata: '+n)
+        if n.startswith('assets/') and not (n.startswith('assets/css/') and p.suffix=='.css' or n.startswith('assets/js/') and p.suffix=='.js'):raise RuntimeError('Mixed public assets: '+n)
         if p.name in {'config.php','.installed.php','proxy-config.php','payment-master.key','.installation-mutex.php'} or p.name.startswith('config-pending-'):raise RuntimeError('Private configuration in package: '+n)
         result[n]=sha(p.read_bytes())
     if {n for n in result if '/' not in n}!=ROOT_FILES:raise RuntimeError('Unexpected production root files')
@@ -120,7 +122,12 @@ def main():
         if '/' in n and n.split('/')[0] not in allowed:raise RuntimeError('Unapproved full-project area: '+n)
         if p.name in {'config.php','proxy-config.php','.installed.php','payment-master.key'} or p.name.startswith('.env') or p.suffix in {'.pem','.key','.p12','.sql'} or any(part in {'.git','node_modules','__pycache__','qa','dist','test-runtime'} for part in PurePosixPath(n).parts):raise RuntimeError('Unsanitized full-project source: '+n)
         data=subprocess.check_output(['git','show',commit+':'+n],cwd=ROOT)
-        if p.read_bytes()!=data:raise RuntimeError('Working bytes differ from recorded source: '+n)
+        if p.read_bytes()!=data:
+            # Git's declared text normalization is allowed for development docs/tools.
+            # Shipping bytes remain strict because their installer hashes are byte-based.
+            normalized=subprocess.check_output(['git','hash-object','--path='+n,n],cwd=ROOT,text=True).strip()
+            recorded=subprocess.check_output(['git','rev-parse',commit+':'+n],cwd=ROOT,text=True).strip()
+            if n.startswith('site/') or normalized!=recorded:raise RuntimeError('Working bytes differ from recorded source: '+n)
         full[n]=data
     site={n:(SITE/n).read_bytes() for n in inv}
     payload={n:data for n,data in site.items() if n!='install.php' and not n.startswith(('install/','storage/','upload/'))}

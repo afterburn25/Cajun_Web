@@ -1,5 +1,5 @@
 """Real retained 1.10 update and portfolio route/keyboard/history/no-JS acceptance."""
-import json, shutil, subprocess, zipfile
+import json, shutil, subprocess, zipfile, hashlib, hmac, uuid
 from urllib.parse import urlencode
 import requests
 from playwright.sync_api import expect
@@ -33,6 +33,22 @@ def upgrade():
     check('Retained invoice balance survives portfolio update','$375.00' in owner.get(admin+'?view=invoice-payments&invoice_id=3').text)
     r=submit(owner,admin+'?view=payment-settings','payments_save',{'owner_password':'Synthetic upgrade passphrase 2026'})
     check('Retained encrypted credentials still decrypt after portfolio update','Credentials protected and saved' in r.text)
+    # Actual legacy signed callback dispatch after the real 1.10 file migration.
+    # Trusted loopback HTTPS simulation and synthetic retained sandbox key only.
+    (dest/'proxy-config.php').write_text("<?php return ['127.0.0.1'];")
+    db("UPDATE portfolioup_payment_gateways SET validation='authenticated' WHERE environment='sandbox'")
+    revision=db("SELECT revision FROM portfolioup_payment_gateways WHERE environment='sandbox'")[0]['revision']
+    webhook='11234567-89ab-cdef-0123-456789abcdef';owner.headers.update({'X-Forwarded-Proto':'https'})
+    r=submit(owner,admin+'?view=payment-notifications','payments_notification_configure',{'owner_password':'Synthetic upgrade passphrase 2026','revision':0,'gateway_revision':revision,'webhook_id':webhook,'enabled':'1'})
+    check('Upgraded legacy callback fixture is explicitly configured for synthetic sandbox receipt','Sandbox receiver settings saved' in r.text)
+    body=json.dumps({'notificationId':str(uuid.uuid4()),'webhookId':webhook,'eventType':'net.authorize.payment.authcapture.created','eventDate':'2026-10-13T01:02:03Z','payload':{'id':'930001','entityName':'transaction'}}).encode()
+    headers={'X-Forwarded-Proto':'https','Content-Type':'application/json','X-ANET-Signature':'sha512='+hmac.new(bytes.fromhex('b'*128),body,hashlib.sha512).hexdigest()}
+    invoices=db('SELECT * FROM portfolioup_studio_invoices');old=BASE+'/portfolio-upgrade/sandbox-notifications.php?retained=1';new=BASE+'/portfolio-upgrade/webhooks/authorize-net/index.php'
+    r=requests.post(old,data=body,headers=headers,allow_redirects=False)
+    check('Legacy signed POST preserves raw body signature method and query without redirect',r.status_code==200 and r.json()=={'received':True} and 'Location' not in r.headers and 'Set-Cookie' not in r.headers)
+    records=db('SELECT * FROM portfolioup_payment_notifications');matching=[v for v in records if v['body_hash']==hashlib.sha256(body).hexdigest()]
+    check('Legacy and canonical callbacks share exact-body deduplication',len(matching)==1 and requests.post(new,data=body,headers=headers).status_code==200 and db('SELECT * FROM portfolioup_payment_notifications')==records)
+    check('Legacy callback still rejects altered bytes and never pays invoices',requests.post(old,data=body+b' ',headers=headers).status_code==401 and db('SELECT * FROM portfolioup_studio_invoices')==invoices)
 
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['ROOT','WEB','BASE','QA','check','soup','token','form_data','form_for','submit','php']})

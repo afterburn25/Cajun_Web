@@ -23,7 +23,7 @@ try:
         # Exact readable, root-owned unused scaffold fixture; PHP must select external storage.
         subprocess.run(['sudo','chown','root:root',str(web/'storage')],check=True)
         before=(web/'storage').stat().st_uid
-        modules=['mpm_prefork','authz_core','authz_host','dir','mime','alias','env','headers']+(['rewrite'] if rewrite else [])
+        modules=['mpm_prefork','authz_core','authz_host','dir','mime','alias','env','headers','autoindex']+(['rewrite'] if rewrite else [])
         conf=f'''ServerRoot "{work}"
 ServerName localhost
 Listen 127.0.0.1:{port}
@@ -78,6 +78,30 @@ PHPIniDir /etc/php/8.3/apache2
                 if rewrite:check(label+suffix+' optional crawler rewrite',session.get(url+'/robots.txt').status_code==200 and 'User-agent:' in session.get(url+'/robots.txt').text)
                 else:check(label+suffix+' navigation independent of rewrite',session.get(url+'/index.php?page=work').status_code==200 and session.get(url+'/robots.php').status_code==200)
             check(label+' unused root-owned scaffold remains untouched',(web/'storage').stat().st_uid==before==0)
+            # Real Apache protection during an interrupted old-layout file switch.
+            # This fixture reuses the isolated fresh schema; the comprehensive HTTP
+            # suite separately retains actual old databases and business records.
+            legacy=web/'legacy';shutil.copytree(ROOT/'test-runtime/released-1.10.0',legacy)
+            code="$c=require $argv[1];$c['site_url']=$argv[3];file_put_contents($argv[2],'<?php return '.var_export($c,true).';');"
+            php=shutil.which('php8.3') or shutil.which('php')
+            subprocess.run([php,'-r',code,str(web/'config.php'),str(legacy/'config.php'),base+'/legacy'],check=True)
+            shutil.copyfile(web/'.installed.php',legacy/'.installed.php')
+            with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(legacy)
+            failed=subprocess.run([php,str(ROOT/'tests/structure_worker.php'),str(legacy),'apply','5'],capture_output=True,text=True)
+            check(label+' actual migration interrupts after journaled operation',failed.returncode!=0 and 'Synthetic interruption' in failed.stderr)
+            for route in ['admin.php','portal.php','index.php','assets/site.css']:
+                check(label+' maintenance denies old application '+route,requests.get(base+'/legacy/'+route).status_code==403)
+            session=requests.Session();url=base+'/legacy/cwp-update-1.11.0/owner-update.php';r=session.get(url)
+            check(label+' authenticated owner recovery page remains reachable in maintenance',r.status_code==200 and 'Current owner password' in r.text)
+            check(label+' staged payload is denied independently of rewriting',requests.get(base+'/legacy/cwp-update-1.11.0/site/admin/index.php').status_code==403)
+            r=session.post(url,data={'csrf':csrf(r),'email':'apache@example.invalid','owner_password':'Synthetic Apache owner passphrase','backup_confirm':'1','action':'apply'},timeout=90)
+            (QA/('apache-'+label+'-owner-update.html')).write_text(r.text)
+            check(label+' owner resumes interrupted migration through actual Apache','<h2>Complete</h2>' in r.text and r.status_code==200)
+            r=session.get(base+'/legacy/admin.php?view=security');doc=BeautifulSoup(r.text,'html.parser');form=next(f for f in doc.select('form') if f.select_one('[name=action][value=account_save]'))
+            fields={n['name']:n.get('value','') for n in form.select('input[name]')};fields['current_password']='Incorrect fixture password'
+            r=session.post(base+'/legacy/admin.php?view=security',data=fields,allow_redirects=False)
+            check(label+' Apache legacy POST invokes canonical action with body and session',r.status_code==200 and 'current password' in r.text.lower() and 'Location' not in r.headers)
+            check(label+' Apache upgraded canonical portal still serves',session.get(base+'/legacy/portal/index.php').status_code==200)
         finally:
             proc.terminate()
             try:proc.wait(timeout=10)

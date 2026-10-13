@@ -27,4 +27,8 @@ def apply_file_update(env, destination):
     check(destination.name+' setup cannot be reused after update',not (destination/'install.php').exists() and session.get(base+'/'+destination.name+'/install.php').status_code==404)
     old=session.get(base+'/'+destination.name+'/admin.php',timeout=20)
     check(destination.name+' pre-switch owner session survives old and new URLs',old.status_code==200 and 'Sales pipeline' in old.text and 'Sales pipeline' in session.get(base+'/'+destination.name+'/admin/index.php').text)
+    legacy=base+'/'+destination.name+'/admin.php?view=security';r=session.get(legacy)
+    fields=env['form_data'](env['form_for'](r,'account_save'));fields['current_password']='Incorrect synthetic password'
+    r=session.post(legacy,data=fields,allow_redirects=False,timeout=20)
+    check(destination.name+' legacy POST body and query reach canonical action without redirect',r.status_code==200 and 'current password' in r.text.lower() and 'Location' not in r.headers)
     return session
