@@ -1,5 +1,7 @@
 # Session handoff — read before continuing
 
+**Active A-09 increment — 2026-10-13:** owner requested "Continue With Roadmap" again. Starting main `c09a15c010449e8401aaadce81e9ac34c0f6c04c`, published v1.2.0 unchanged. Codex claims `codex/client-support`: explicit support permissions and client restrictions, separate bound/expiring support sessions, portal banner/return, attributed message/upload/download audit and sensitive-action denials, with additive schema/setup and actual native/browser/package acceptance. Own support adapter/UI and necessary existing staff/portal/workspace/installer/test integration. Devin PR #7 remains `55d6067`; its portfolio paths are untouched. No live hosting/customer/provider operations. Candidate implementation and tests are next; no new release yet.
+
 ## 2026-10-13 — Verified administrator-account release
 
 **Published and downloaded-back verified: [CajunWebPro v1.2.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.2.0).** Immutable source/tag `f85627e05b171e4ee8508231e2ed6ee7b9374274`; merged in [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10). [Complete deployment ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.2.0/CajunWebPro-1.2.0-COMPLETE-UPLOAD.zip) · [UPDATE for 1.1.0 / 1.0.8](https://github.com/afterburn25/Cajun_Web/releases/download/v1.2.0/CajunWebPro-1.2.0-UPDATE.zip). v1.1.0 remains available unchanged. The publication-record commit contains documentation only.
