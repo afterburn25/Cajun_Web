@@ -7,13 +7,13 @@ declare(strict_types=1);
  */
 
 use CajunWebPro\Foundation\Webmail\ConnectionResult;
-use CajunWebPro\Foundation\Webmail\MailboxGrant;
+use CajunWebPro\Foundation\Webmail\MailboxAssignment;
 use CajunWebPro\Foundation\Webmail\MailboxProfile;
 use CajunWebPro\Foundation\Webmail\MailMessage;
 use CajunWebPro\Foundation\Webmail\UnifiedInbox;
 
 require __DIR__ . '/../../foundation/webmail/MailboxProfile.php';
-require __DIR__ . '/../../foundation/webmail/MailboxGrant.php';
+require __DIR__ . '/../../foundation/webmail/MailboxAssignment.php';
 require __DIR__ . '/../../foundation/webmail/ConnectionResult.php';
 require __DIR__ . '/../../foundation/webmail/MailMessage.php';
 require __DIR__ . '/../../foundation/webmail/UnifiedInbox.php';
@@ -62,6 +62,7 @@ function msg(array $over = []): MailMessage
 {
     return new MailMessage(...array_replace([
         'uid' => 1,
+        'uidValidity' => 700,
         'mailboxId' => 'mb-1',
         'folder' => 'INBOX',
         'from' => 'client@example.invalid',
@@ -87,20 +88,28 @@ throws('empty host rejected', fn () => profile(['imapHost' => '']));
 throws('empty credential ref rejected', fn () => profile(['credentialRef' => ' ']));
 check('credential is an opaque ref only', $p->credentialRef === 'cred-ref-abc' && !property_exists($p, 'password'));
 
-// ── MailboxGrant ─────────────────────────────────────────────────
+// ── MailboxAssignment ─────────────────────────────────────────────────
 
-$g = new MailboxGrant('gr-1', 'mb-1', 'staff-ben', 'staff-amy', 100);
-check('fresh grant active', $g->active(200));
-check('grant records issuer', $g->issuedBy === 'staff-amy');
-$expiring = new MailboxGrant('gr-2', 'mb-1', 'staff-cam', 'staff-amy', 100, 500);
-check('grant active before expiry', $expiring->active(400));
-check('grant inactive at expiry', !$expiring->active(500));
-throws('expiry before issue rejected', fn () => new MailboxGrant('g', 'mb-1', 's', 'o', 500, 100));
+$g = new MailboxAssignment('gr-1', 'mb-1', 'staff-ben', 'staff-amy', 100);
+check('fresh assignment active', $g->active(200));
+check('assignment records issuer', $g->issuedBy === 'staff-amy');
+check('assignment active at issuance boundary', $g->active(100));
+check('future-issued assignment inactive', !$g->active(99));
+$future = new MailboxAssignment('gr-f', 'mb-1', 'staff-ben', 'staff-amy', 200, 300);
+check('pre-issuance time never active', !$future->active(100));
+$expiring = new MailboxAssignment('gr-2', 'mb-1', 'staff-cam', 'staff-amy', 100, 500);
+check('assignment active before expiry', $expiring->active(400));
+check('assignment inactive at expiry', !$expiring->active(500));
+throws('expiry before issue rejected', fn () => new MailboxAssignment('g', 'mb-1', 's', 'o', 500, 100));
+throws('expiry equal to issue rejected', fn () => new MailboxAssignment('g', 'mb-1', 's', 'o', 500, 500));
+throws('negative issuance rejected', fn () => new MailboxAssignment('g', 'mb-1', 's', 'o', -1));
+throws('negative now rejected', fn () => $g->active(-1));
 $g->revoke(300);
-check('revoked grant inactive', !$g->active(100));
+check('revoked assignment inactive', !$g->active(100));
 check('revocation timestamped', $g->revokedAt() === 300);
 throws('double revocation rejected', fn () => $g->revoke(400));
-throws('empty staff rejected', fn () => new MailboxGrant('g', 'mb-1', '', 'o', 1));
+throws('revocation before issuance rejected', fn () => (new MailboxAssignment('g', 'mb-1', 's', 'o', 100))->revoke(50));
+throws('empty staff rejected', fn () => new MailboxAssignment('g', 'mb-1', '', 'o', 1));
 
 // ── ConnectionResult ─────────────────────────────────────────────
 
@@ -126,12 +135,18 @@ check('withFlag adds', $flagged->hasFlag('flagged'));
 check('withFlag removes', $flagged->withFlag('flagged', false)->hasFlag('flagged') === false);
 throws('unknown flag rejected', fn () => $m->withFlag('starred', true));
 throws('uid below 1 rejected', fn () => msg(['uid' => 0]));
+throws('uidValidity below 1 rejected', fn () => msg(['uidValidity' => 0]));
 throws('empty folder rejected', fn () => msg(['folder' => '']));
 check('no body field exists', !property_exists($m, 'body'));
+check('flag copies preserve uidValidity', $m->markSeen()->uidValidity === 700);
+check('identity is mailbox+folder+generation+uid',
+    $m->identity() === 'mb-1|INBOX|700|1');
+check('same uid in new generation is distinct',
+    msg(['uidValidity' => 701])->identity() !== $m->identity());
 
 // ── UnifiedInbox privacy ─────────────────────────────────────────
 
-$grant = new MailboxGrant('gr-1', 'mb-1', 'staff-ben', 'staff-amy', 0);
+$grant = new MailboxAssignment('gr-1', 'mb-1', 'staff-ben', 'staff-amy', 0);
 $inbox = new UnifiedInbox('staff-ben', [$grant], [
     msg(['uid' => 2, 'date' => 3000]),
     msg(['uid' => 1, 'date' => 1000]),
@@ -148,14 +163,33 @@ throws('message from ungranted mailbox rejected', fn () => new UnifiedInbox('sta
     msg(['mailboxId' => 'mb-2']),
 ], 50));
 throws('message via revoked grant rejected', fn () => new UnifiedInbox('staff-ben', [
-    (static function () { $x = new MailboxGrant('g', 'mb-1', 'staff-ben', 'o', 0); $x->revoke(10); return $x; })(),
+    (static function () { $x = new MailboxAssignment('g', 'mb-1', 'staff-ben', 'o', 0); $x->revoke(10); return $x; })(),
 ], [msg()], 50));
 throws('message via expired grant rejected', fn () => new UnifiedInbox('staff-ben', [
-    new MailboxGrant('g', 'mb-1', 'staff-ben', 'o', 0, 10),
+    new MailboxAssignment('g', 'mb-1', 'staff-ben', 'o', 0, 10),
 ], [msg()], 50));
 throws('grant for another staff does not authorize', fn () => new UnifiedInbox('staff-ben', [
-    new MailboxGrant('g', 'mb-1', 'staff-cam', 'o', 0),
+    new MailboxAssignment('g', 'mb-1', 'staff-cam', 'o', 0),
 ], [msg()], 50));
+throws('not-yet-issued assignment authorizes nothing', fn () => new UnifiedInbox('staff-ben', [
+    new MailboxAssignment('g', 'mb-1', 'staff-ben', 'o', 200, 300),
+], [msg()], 100));
+throws('duplicate full identity rejected', fn () => new UnifiedInbox('staff-ben', [$grant], [
+    msg(['uid' => 9, 'date' => 1]),
+    msg(['uid' => 9, 'date' => 2]),
+], 50));
+check('same uid in different folders allowed', (new UnifiedInbox('staff-ben', [$grant], [
+    msg(['uid' => 9, 'folder' => 'INBOX']),
+    msg(['uid' => 9, 'folder' => 'Sent']),
+], 50))->total() === 2);
+check('same uid in different generations allowed', (new UnifiedInbox('staff-ben', [$grant], [
+    msg(['uid' => 9, 'uidValidity' => 700]),
+    msg(['uid' => 9, 'uidValidity' => 701]),
+], 50))->total() === 2);
+check('negative now rejected', (static function () use ($grant) {
+    try { new UnifiedInbox('staff-ben', [$grant], [], -1); return false; }
+    catch (InvalidArgumentException) { return true; }
+})());
 
 $empty = new UnifiedInbox('staff-ben', [], [], 50);
 check('empty inbox is zero', $empty->total() === 0 && $empty->unreadCount() === 0);

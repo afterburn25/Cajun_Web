@@ -10,12 +10,17 @@ use InvalidArgumentException;
 /**
  * A-06 — an immutable listing-level summary of one message in one mailbox.
  *
- * Carries only what a folder listing shows: uid, folder, envelope fields
- * and flags. There is deliberately no body — fetching and safely rendering
- * message content is the adapter's separate concern, so a listing object
- * can never smuggle unescaped HTML to the UI. Read/unread transitions are
- * explicit flag changes; `flagged`/`draft`/`answered`/`attachment` are
- * descriptive flags.
+ * Carries only what a folder listing shows: identity, folder, envelope
+ * fields and flags. Message identity follows RFC 9051 §2.3.1.1 —
+ * `mailboxId + folder + uidValidity + uid` — where `uidValidity` is the
+ * folder's generation counter: the same uid in a new generation is a
+ * *different* message, so persisted cache entries and notification links
+ * keyed on the full identity can never resolve to stale content.
+ *
+ * There is deliberately no body — fetching and safely rendering message
+ * content is the adapter's separate concern. Envelope text (from,
+ * subject, folder) remains UNTRUSTED input: this model does not escape
+ * it, and every renderer must.
  *
  * @internal Roadmap A-06; additively inserted.
  */
@@ -35,6 +40,7 @@ final readonly class MailMessage
     /** @param list<string> $flags subset of FLAGS */
     public function __construct(
         public int $uid,
+        public int $uidValidity,
         public string $mailboxId,
         public string $folder,
         public string $from,
@@ -42,8 +48,8 @@ final readonly class MailMessage
         public int $date,
         public array $flags = [],
     ) {
-        if ($uid < 1) {
-            throw new InvalidArgumentException('Message uid must be >= 1.');
+        if ($uid < 1 || $uidValidity < 1) {
+            throw new InvalidArgumentException('Message uid and uidValidity must be >= 1.');
         }
         foreach (['mailboxId' => $mailboxId, 'folder' => $folder, 'from' => $from] as $f => $v) {
             if (trim($v) === '') {
@@ -58,6 +64,12 @@ final readonly class MailMessage
         if ($date < 0) {
             throw new InvalidArgumentException('Message date cannot be negative.');
         }
+    }
+
+    /** The full RFC-stable identity: mailbox + folder + generation + uid. */
+    public function identity(): string
+    {
+        return $this->mailboxId . '|' . $this->folder . '|' . $this->uidValidity . '|' . $this->uid;
     }
 
     public function isUnread(): bool
@@ -92,6 +104,9 @@ final readonly class MailMessage
         if (!$on) {
             $flags = array_values(array_filter($flags, static fn ($f) => $f !== $flag));
         }
-        return new self($this->uid, $this->mailboxId, $this->folder, $this->from, $this->subject, $this->date, $flags);
+        return new self(
+            $this->uid, $this->uidValidity, $this->mailboxId, $this->folder,
+            $this->from, $this->subject, $this->date, $flags
+        );
     }
 }

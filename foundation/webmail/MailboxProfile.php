@@ -11,10 +11,12 @@ use InvalidArgumentException;
  * A-06 — one configured incoming/outgoing mail account profile.
  *
  * Validation only: hosts, ports and encryption are checked here; the actual
- * password never enters this object. `credentialRef` is an opaque reference
- * to the application's encrypted credential store — the model can never be
- * built carrying a usable secret, so a profile leak cannot expose one.
- * Plaintext transports are refused: encryption must be ssl or starttls.
+ * password never enters this object. `credentialRef` is intended as an
+ * opaque handle into the application's encrypted credential store — the
+ * model treats it as an identifier, though a caller could still put a
+ * secret in a string; persistence-layer rules, not this object, enforce
+ * that discipline. Plaintext transports are refused: encryption must be
+ * ssl or starttls.
  *
  * `disabled` is an explicit operator state — a mailbox that exists but is
  * not in service — distinct from "misconfigured" (which cannot exist).

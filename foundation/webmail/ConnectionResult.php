@@ -17,6 +17,10 @@ use InvalidArgumentException;
  * profile exists but was never probed) so the UI can show "not yet checked"
  * instead of a fabricated "working".
  *
+ * Honesty boundary: `success()` records an outcome the *caller* asserts —
+ * the factory cannot itself prove a real connection happened. The contract
+ * obligation (probe actually attempted) sits on the adapter side.
+ *
  * @internal Roadmap A-06; additively inserted.
  */
 final readonly class ConnectionResult
