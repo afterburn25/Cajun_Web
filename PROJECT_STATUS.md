@@ -1,6 +1,6 @@
 # Project status
 
-Updated: 2026-10-13 — independent staff/mailbox permission component started while the separate 1.1.0 worker finishes the application.
+Updated: 2026-10-13 — independent staff/mailbox permission and portfolio components started while the separate 1.1.0 worker finishes the application.
 Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
 
 ## Current repository delivery and coordination checkpoint
@@ -8,6 +8,8 @@ Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
 The owner confirms another worker is finishing 1.1.0 and will update GitHub, and authorizes independent parallel implementation now. Refreshed main is `9e30564ee83d8e859c0d420ae42d6bbd805a6a57`; its [1.1.0 progress report](docs/PROGRESS_1.1.0_INTEGRATION.md) describes that worker's local integration, not source imported here. The `codex/finish-1.1.0` branch currently carries recovery/test-toolchain preparation. Preserve its ownership; no need to ask the owner for the same build again.
 
 On `codex/platform-foundation`, implemented a standalone PHP 8.2+ [permission component](docs/ACCESS_FOUNDATION.md) for staff capabilities and explicit mailbox read/send grants in commit `5cf3f01975dec7365d57415eecd061dda43a4823`, [PR #5](https://github.com/afterburn25/Cajun_Web/pull/5). Local PHP 8.4.25 passes 142 isolated checks and syntax checks for four files; [GitHub PHP 8.2.34/8.4.26 checks](https://github.com/afterburn25/Cajun_Web/actions/runs/38349906968) and [PR integration checks](https://github.com/afterburn25/Cajun_Web/actions/runs/38349921814) also passed. This component has no login, database, installer or UI connection yet, and does not complete A-05/A-06. Devin's [assignment #2](https://github.com/afterburn25/Cajun_Web/issues/2) is updated to allow independent portfolio contract/filtering work before 1.1.0 integration. Inspect the PR's current state before resuming.
+
+On `devin/public-experience` at baseline `e9549d4d0ea9bd4ff4c68dc6d4dd242d864af812`, Devin implemented a standalone PHP 8.2+ [portfolio component](docs/PORTFOLIO_FOUNDATION.md): immutable records with explicit client-work/concept labels and published/draft/archived status, case-study fields, genuine before/after pairs, normalized category filtering and deterministic ordering. Local PHP 8.4.25 passes 46 isolated checks and syntax checks for seven files; GitHub checks are recorded on the pull request. This component has no routes, database, UI or installer connection yet, and does not complete W-01.
 
 The owner authorizes GitHub testing, incremental version releases with retained copies, ongoing agent documentation, and separate Codex/Devin work branches integrated as they finish. Added [release workflow](docs/RELEASE_WORKFLOW.md), [release register](docs/RELEASES.md), [agent coordination and Devin handoff](docs/AGENT_COORDINATION.md), and read-only GitHub Actions documentation checks. This workflow does not yet test application code or build packages.
 

@@ -2,6 +2,13 @@
 
 This log distinguishes repository work from application releases and deployment. Documentation-only work does not advance the application version.
 
+## 2026-10-13 — Independent portfolio browsing component (Devin)
+
+- Added standalone PHP 8.2+ portfolio contract and catalog decisions on `devin/public-experience`: immutable records with explicit `client-work`/`concept` labels and `published`/`draft`/`archived` status, case-study fields, genuine before/after pair requirement, normalized category filtering and deterministic position/slug/id ordering.
+- Added 46 synthetic-fixture checks and a separate read-only GitHub PHP 8.2/8.4 workflow (`portfolio-catalog.yml`). No Composer or runtime-service requirement; no access, identity, migration, installer, billing or provider files changed.
+- Documented the adapter-input contract and pending 1.1.0 integration in `docs/PORTFOLIO_FOUNDATION.md`. Only published records appear in public output; nothing generates copy, metrics or endorsements.
+- No version bump, UI, routes, database, real content, release ZIP or deployment. The component stays outside application packaging until adapted to verified current source.
+
 ## 2026-10-13 — Independent staff and mailbox permission component
 
 - Added standalone PHP 8.2+ immutable access contexts and permission policy: deny unknown/inactive/stale identities, separate staff management/permission grants, require exact mailbox read/send memberships, and reject conflicting duplicate grants.

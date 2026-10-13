@@ -30,6 +30,8 @@ Owner-approved: automated GitHub tests, small versioned releases, retained compl
 
 Real desktop/mobile captures, accessible before/after slider for actual redesigns, optional short user-initiated walkthroughs, filterable project categories, expanded challenge/solution/deliverables/results, and live links where approved. Admin controls for capture/media placement and clear concept/client labels. Acceptance: keyboard/touch usability, no false performance/result claims, no broken media, genuine responsive captures rather than a shrunken desktop screenshot.
 
+Status 2026-10-13: **in progress (independent component only).** The standalone contract/filtering/ordering component and synthetic tests exist on `devin/public-experience` ([portfolio foundation](PORTFOLIO_FOUNDATION.md)); no application route, UI or content integration exists yet, and none is claimed until verified 1.1.0 source is inspected.
+
 ### W-02 — Signature homepage motion
 
 Preserve approved navy/gold composition while adding restrained metallic logo highlights, layered device depth, polished service/portfolio responses, and section reveals. Acceptance: immediate readable content, reduced-motion and no-JavaScript behavior, touch-safe controls, no flying pixels/autoplay audio/forced loading, and measured load/layout/interactivity before claiming performance improvements.

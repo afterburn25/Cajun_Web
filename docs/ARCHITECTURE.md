@@ -4,7 +4,7 @@ Checkpoint: 2026-10-12. This is an inventory of the supplied 1.0.8 distribution 
 
 ## Deployment model
 
-Independent implementation added 2026-10-13: [access foundation](ACCESS_FOUNDATION.md) under `foundation/access/`, with synthetic unit tests under `tests/access/`. It is a pure PHP permission-decision module with no framework, database, request handler or installer dependency. It is excluded from deployment until mapped into the verified current source; no current schema or authentication structure is assumed. Historical source inventory below remains historical.
+Independent implementation added 2026-10-13: [access foundation](ACCESS_FOUNDATION.md) under `foundation/access/`, with synthetic unit tests under `tests/access/`; and [portfolio foundation](PORTFOLIO_FOUNDATION.md) under `foundation/portfolio/`, with synthetic unit tests under `tests/portfolio/`. They are pure PHP decision modules with no framework, database, request handler or installer dependency. They are excluded from deployment until mapped into the verified current source; no current schema or authentication structure is assumed. Historical source inventory below remains historical.
 
 Existing application: PHP with PDO MySQL/MariaDB, normal browser requests, local CSS/JavaScript/images, and persistent private file storage. PHP source targets 8.2 or newer. Required extensions are checked by the installer. Shared-host deployment must not require a Node service, command-line build, root access, or a long-running worker.
 
