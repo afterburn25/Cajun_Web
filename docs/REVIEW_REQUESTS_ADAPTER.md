@@ -1,12 +1,12 @@
 # Review-request adapter contract — L-02
 
-Written 2026-10-13 on `devin/review-adapter` from main `b975915`. This is the L-02 counterpart to the estimator adapter contract ([PR #35](https://github.com/afterburn25/Cajun_Web/pull/35)): how the live `website-review` lead route can adopt the review-request foundation ([PR #31](https://github.com/afterburn25/Cajun_Web/pull/31), pending integration) without changing visible intake behavior. **No `site/` or schema changes are proposed here** — implementation is a separate reviewed step.
+Written 2026-10-13 on `devin/review-adapter` from main `b975915`. This is the L-02 counterpart to the estimator adapter contract ([PR #35](https://github.com/afterburn25/Cajun_Web/pull/35)): how the live `website-review` lead route can adopt the review-request foundation ([PR #31](https://github.com/afterburn25/Cajun_Web/pull/31), pending integration). Intake acceptance changes at the edges under either adoption option — those changed cases are enumerated in the decision section rather than blanket-preserved. **No `site/` or schema changes are proposed here** — implementation is a separate reviewed step.
 
 ## Live semantics that must be preserved
 
-`growth_submit`'s `website-review` branch (currently `site/app/growth.php`; moves to `site/app/marketing/growth.php` under Codex's directory refactor) today:
+`growth_submit`'s `website-review` branch (`site/app/marketing/growth.php` in the released organized layout) today:
 
-- Requires `current_url` non-empty (capped at **500 chars** by `gtext` — the live bound is stricter than `WebsiteAddress`'s 2048-byte cap, and stays authoritative at intake) and passes it through `safe_url()` — an absolute `http`/`https` URL with no userinfo and no CR/LF. Bare hosts like `example.com` are currently **rejected**.
+- Requires `current_url` non-empty (capped at **500 bytes** by `gtext` — the live bound is stricter than `WebsiteAddress`'s 2048-byte cap, and stays authoritative at intake) and passes it through `safe_url()` — an absolute `http`/`https` URL with no userinfo and no CR/LF. Bare hosts like `example.com` are currently **rejected**.
 - Requires name, valid email, ≥20-char message, `consent=1`; honeypot + session token + 5/hour + 12/day rate limits apply before the lead is saved.
 - Saves a `leads` row (`service='Website review'`, detail records the URL and "Human-reviewed request; no automated audit performed").
 
@@ -26,11 +26,11 @@ Written 2026-10-13 on `devin/review-adapter` from main `b975915`. This is the L-
 `new WebsiteAddress($raw)` accepts `example.com` and normalizes to `https://example.com` via `->url()`; `safe_url` rejects bare hosts. Options:
 
 - **A (recommended):** construct `WebsiteAddress` on `current_url` and store `->url()`. Accepted input deliberately widens to include bare hosts — matching user expectation for a "website" field. This is an explicit, documented broadening, not a claim of identical behavior.
-- **B:** keep `safe_url` first, then construct `WebsiteAddress` — zero input change, but no normalization benefit.
+- **B:** keep `safe_url` first, then construct `WebsiteAddress` — no bare-host widening, but still not fully input-identical: `WebsiteAddress` rejects fragment URLs (`#section`) that `safe_url` currently accepts, so B also narrows at the fragment edge.
 
 Either way, no URL is fetched; `WebsiteAddress::isFetchCandidate()` exists only to label whether a future fetcher may attempt it. Staff UI should surface non-candidate flags so internal/private addresses can't be fetched accidentally.
 
-**Compatibility caveats (deliberate, not identical):** under option A, bare-host input that `safe_url` rejects becomes accepted — a broadening. In the other direction, `WebsiteAddress` rejects URL fragments (`#section`) that the current `safe_url` path may accept, and drops userinfo/credentials entirely rather than only rejecting some forms — a narrowing. The adapter must not promise every previously accepted/rejected input stays identical; the exact accepted set changes at both edges and that tradeoff is the documented decision.
+**Compatibility caveats (deliberate, not identical):** under option A, bare-host input that `safe_url` rejects becomes accepted — a broadening. In the other direction, `WebsiteAddress` rejects URL fragments (`#section`) that the current `safe_url` path may accept — a narrowing under either option. Both `safe_url` and `WebsiteAddress` reject all supplied userinfo/credentials outright, so userinfo handling is unchanged, not newly narrowed. The adapter must not promise every previously accepted/rejected input stays identical; the exact accepted set changes at the bare-host (A only) and fragment (A and B) edges and that tradeoff is the documented decision.
 
 ## Persistence additions (adapter-owned, additive)
 
@@ -54,7 +54,7 @@ Form rendering, `check_csrf()`, token/honeypot, rate limits, the `leads` insert,
 
 - `tests/native.php`: synthetic lead rows → `ReviewInbox::transition()` persists; illegal jumps (received→delivered, delivered with report lacking `deliveredAt`, delivered without consent) rejected; bare-host input normalizes (option A) or is rejected identically (option B).
 - `tests/browser_acceptance.py`: staff advances a review request through the full pipeline in the admin UI; delivery control blocked until a report with confirmed delivery exists.
-- **Input-compatibility evidence is enumerated, not blanket-claimed:** under option A, previously-rejected bare hosts become accepted (widening) and previously-accepted fragment/userinfo forms become rejected (narrowing); the test records each changed case explicitly rather than asserting identical behavior.
+- **Input-compatibility evidence is enumerated, not blanket-claimed:** under option A, previously-rejected bare hosts become accepted (widening) and previously-accepted fragment forms become rejected (narrowing — this edge applies under option B as well); the test records each changed case explicitly rather than asserting identical behavior.
 
 ## Open question for Codex
 
