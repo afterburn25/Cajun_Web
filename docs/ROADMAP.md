@@ -117,6 +117,8 @@ One form for service/project type, approximate pages/products, functionality, co
 
 ### L-02 — Website-review requests
 
+Candidate 1.14.0 implements the bounded human review/report workflow; combined acceptance and publication remain pending. [Contract and current implementation](WEBSITE_REVIEW_WORKFLOW.md). Automated audits, fetching and customer delivery remain separate work.
+
 Capture existing website, business goals, and contact details in the lead inbox. Start with human-reviewed findings and a saved review/report before sending. Automated performance data is optional later and must label sources, observation date, lab versus real-user evidence, and absent data. Acceptance: valid request persistence, admin workflow, appropriate consent and delivery tracking. Any later server-side URL fetching requires SSRF protections, limits, and no access to private/internal addresses.
 
 ### C-01 — Why custom / Wix and Squarespace comparisons
@@ -244,3 +246,5 @@ Move an item through `approved` → `in progress` → `implemented` → `verifie
 ## 2026-10-13 integration checkpoint
 
 L-01 standalone estimator PR #27 is being integrated with arithmetic/result validation fixes; application adaptation remains pending. W-01 PR #7 now includes a real portfolio adapter and will be integrated next. Neither full roadmap item is complete. [Contract](PUBLIC_COMPONENT_INTEGRATION.md).
+
+L-02 standalone review-request contract on `devin/review-requests` ([guide](REVIEW_REQUESTS_FOUNDATION.md)): capture normalization, consent-aware contacts, legal stage pipeline and human-reviewed findings with labeled evidence. No form, storage, mail or URL fetching yet — application adaptation is a separate agreed step.
