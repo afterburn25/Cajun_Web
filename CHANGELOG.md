@@ -2,6 +2,7 @@
 
 ## 1.17.0 candidate — bounded recent inbox headers (unreleased)
 
+- Route inbox authorization through the current account-scoped permission and assignment checks; the generic staff gate has no mailbox identity.
 - Correct updater path validation for exact maintained locale filenames containing @; preserve traversal, control-character and symlink rejection.
 - Add explicit assigned-staff INBOX header loading over verified TLS, using maintained pinned IMAP/MIME dependencies bundled for PHP shared hosting. Preserve account/folder/UIDVALIDITY/UID identity and existing read flags; no body, attachment, compose/send or background polling.
 - Enforce current session, global permission, mailbox assignment and saved revision before credentials and display. Limit refreshes to one per account per 15 seconds and 120 per staff hour. Commit started and terminal audits separately; retain only outcome/count metadata and personal request history, never header contents.

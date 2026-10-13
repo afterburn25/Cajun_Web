@@ -12,7 +12,7 @@ foreach (['access/AuthorizationVersion','access/AccessContext','access/MailboxGr
 }
 function staff_ready(): bool { return setting('staff_schema_version') === '1'; }
 require_once CWP_CODE_ROOT.'/database/schema/staff_schema.php';
-function staff_permissions(): array { return ['mail.read'=>'Read explicitly assigned email accounts (webmail preparation)', 'mail.send'=>'Send from explicitly assigned email accounts (sending unavailable)', 'mail.templates.manage'=>'Personal and shared email templates (no sending or mailbox access)', 'payments.manage'=>'Invoice payment requests and verified external receipts (also needs client access)', 'catalog.manage'=>'Service catalog, internal costs and catalog invoices (also needs client access)', 'website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support']; }
+function staff_permissions(): array { return ['mail.read'=>'Read recent headers from explicitly assigned email accounts', 'mail.send'=>'Send from explicitly assigned email accounts (sending unavailable)', 'mail.templates.manage'=>'Personal and shared email templates (no sending or mailbox access)', 'payments.manage'=>'Invoice payment requests and verified external receipts (also needs client access)', 'catalog.manage'=>'Service catalog, internal costs and catalog invoices (also needs client access)', 'website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support']; }
 function staff_profile(array $user): ?array {
     if (!staff_ready()) return $user + ['role'=>'owner','enabled'=>1,'permissions'=>'[]']; // Existing access until explicit upgrade.
     $p=one('SELECT role,enabled,permissions FROM '.table('staff_profiles').' WHERE user_id=?',[$user['id']]);
@@ -130,7 +130,8 @@ function staff_reset_token(string $email): ?array {
     }));
 }
 function staff_view_permission(string $view): ?string {
-    if($view==='mail-inbox')return 'mail.read';
+    // The inbox controller checks mail.read with its exact current mailbox grant.
+    if($view==='mail-inbox')return null;
     if($view==='consultation-settings')return 'staff.manage';
     if(in_array($view,['consultations','consultation'],true))return 'website.manage';
     if(in_array($view,['login','forgot','reset','staff-setup','security','mailboxes'],true))return null;
@@ -145,6 +146,7 @@ function staff_view_permission(string $view): ?string {
 }
 function staff_action_permission(string $action): ?string {
     if($action==='mail_inbox_setup')return 'staff.manage';
+    if($action==='mail_inbox_read')return null; // mail_inbox_read enforces the exact account scope.
     if(str_starts_with($action,'mail_inbox_'))return 'mail.read';
     if(in_array($action,['appointments_setup','appointments_configure'],true))return 'staff.manage';
     if(str_starts_with($action,'appointments_'))return 'website.manage';

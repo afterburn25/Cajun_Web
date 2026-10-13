@@ -1,5 +1,7 @@
 # Codex and Devin work allocation
 
+Latest [issue #2 assignment](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6156483996): Devin reviews #69 findings, then owns isolated provider contract/retry/reservation/redaction corrections in foundation/provider, tests/provider and its dedicated workflow/docs on #43 (0d3f51c). Codex retains inbox/application/build/release ownership. No real provider writes or shared application edits. Earlier assignments below are historical when they conflict.
+
 ## Active candidate — 1.17.0 recent inbox headers
 
 Codex continues A-06 on `codex/mail-inbox-reader` / [PR #69](https://github.com/afterburn25/Cajun_Web/pull/69), from verified 1.16.0 publication-record main `532dfe4`. The candidate now connects the bounded maintained receiving stack to assigned staff inboxes: explicit recent-header requests, current mailbox grants/revision, strict intent/result audit, per-account/staff limits, escaped display and personal request history. Headers exist only in the current response. Owner preparation is additive for upgrades; fresh installs create empty storage. Bodies, attachments, sending, OAuth and exact-message bells remain later work. Latest published version is still 1.16.0.
