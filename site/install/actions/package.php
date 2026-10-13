@@ -12,7 +12,7 @@ function setup_package_check(): array {
         if($linked){$problem='Symbolic link: use the regular file from this package.';}
         elseif(!@is_file($path)){$problem='Missing file.';}
         elseif(!@is_readable($path)){$problem='PHP cannot read this file.';}
-        elseif(!hash_equals($expected,(string)@hash_file('sha256',$path))){$problem='Different or incomplete file: merge the complete 1.11.0 package here.';}
+        elseif(!hash_equals($expected,(string)@hash_file('sha256',$path))){$problem='Different or incomplete file: merge the complete '.CWP_INSTALLER_BUILD.' package here.';}
         else{$passed++;continue;}
         $issues[]=['path'=>$relative,'problem'=>$problem];
     }
