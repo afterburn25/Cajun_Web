@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — HC-07 provider foundation (Devin, isolated component)
+
+- Added canonical `foundation/provider/` contract classes (adapter interface + capability matrix, lazy secret-resolving credentials, HTTPS-only transport boundary, operation/idempotency-key model, durable ledger interface, enforcing gateway, and external-resource reconciliation) plus `docs/PROVIDER_FOUNDATION.md`.
+- Added `tests/provider/run.php` (69 synthetic checks over a conspicuously-marked fixture adapter/transport) and the `provider.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes, schema, persistence, admin UI or real provider calls; HC-07 external gate remains `Awaiting API verification`. Not yet integrated or released.
+
 ## 2026-10-13 — Dependency-aware roadmap and agent instructions (docs only)
 
 - Added a mandatory owner-approved policy for Codex/Devin: unavailable third-party API/merchant/SSH verification blocks only the specific real integration or production operation, **not** safe independent development or unrelated features.

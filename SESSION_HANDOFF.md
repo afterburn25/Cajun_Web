@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Devin HC-07 provider foundation in review — 2026-10-13
+
+`devin/provider-foundation` (branched from `main` `5d810b1`) carries the isolated HC-07 provider contract: `foundation/provider/` (14 classes — adapter interface, capability matrix with explicit `unverified` state, lazy secret-resolving `ProviderCredential`, HTTPS-only `HttpTransport` boundary, `ProviderOperation` + `OperationResult` + `OperationLedger`, `ProviderGateway` enforcement, `ExternalResource` reconciliation), `tests/provider/run.php` (69 synthetic checks, fixture transport — no real 20i data), `docs/PROVIDER_FOUNDATION.md`, `.github/workflows/provider.yml`. Local PHP 8.4.25: all checks pass, all files lint clean.
+
+**Gate:** Awaiting API verification — nothing here calls 20i. **Not integrated:** no `site/` changes; bundling (`build.py` area list + inventory) is adapter-phase work after the refactor. Next for this lane: Codex review/merge alongside the other Devin foundations; adapter contract doc is the natural follow-up once the refactor lands.
+
 ## Owner instruction — keep development moving despite provider gates (2026-10-13)
 
 The owner approved [dependency gates policy](docs/DEPENDENCY_GATES.md) for all Codex and Devin sessions. Replace the four vague "Blocked" items in roadmap/tracker interpretation with: **HC-07 Awaiting API verification; HC-09/HC-10 Development pending — API verification; A-10 Architecture/security validation pending**. Do not mark those features implemented as a result of relabeling. Build and test all independently feasible designs, admin inputs, PHP logic, data models, fixtures/adapters, idempotent jobs, permissions and UI; then continue another authorized roadmap item if an external test cannot yet pass.

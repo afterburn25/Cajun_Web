@@ -1,5 +1,9 @@
 # Project status
 
+## 2026-10-13 — Devin HC-07 provider foundation (unreviewed, unintegrated)
+
+Devin implemented the safe-work portion of HC-07 as an isolated canonical component on `devin/provider-foundation`: `foundation/provider/` contract classes, `tests/provider/run.php` (69 checks), `provider.yml` workflow, and [PROVIDER_FOUNDATION](docs/PROVIDER_FOUNDATION.md). Implementation status: **Implemented (local/source)** — component + synthetic tests only. External gate: **Awaiting API verification** (no real 20i calls, endpoints or fabricated responses). No `site/` changes, schema, persistence, admin UI, deployment or release. Codex's `codex/priority-directory-refactor` remains the shared-path gate; this component merges alongside it cleanly.
+
 ## 2026-10-13 — Owner clarification: dependency gates ≠ stop-development (docs-only)
 
 Owner requested that Codex/Devin keep working on independent tasks while vendor access/testing is outstanding. The four earlier generic "Blocked" spreadsheet entries are now characterized in [dependency-gate policy](docs/DEPENDENCY_GATES.md): HC-07 **Awaiting API verification**; HC-09/HC-10 **Development pending — API verification**; A-10 **Architecture/security validation pending**. These are *external/technical gates*, not implementation-completion statuses. Continue safe mocked/UI/adapter/schema work and other ready roadmap work; no real payments, domains, provider provisioning or SSH until separately verified/approved.

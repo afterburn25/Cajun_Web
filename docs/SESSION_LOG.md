@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-13 — HC-07 provider foundation component
+
+Request: continue without stopping under the dependency-gate policy; PR #38 refactor remains Codex's open merge gate (current head `49eae7f`; install POST segfaults mod_php under the new OPcache fixture flags — diagnosed and reported on the PR; Devin #41 closed as superseded, #42 UTF-8 build fix still open).
+
+Started from `main` `5d810b1` on `devin/provider-foundation`. Implemented the safe-work portion of HC-07 per DEPENDENCY_GATES.md: canonical `foundation/provider/` contract — `ProviderAdapter` interface with declared capability matrix (`supported`/`unsupported`/`unverified`; unverified never executable), `ProviderCredential` with lazy secret resolver and last-4-only masking, HTTPS-only `HttpTransport`/`TransportRequest`/`TransportResponse`, `ProviderOperation` with caller idempotency keys, durable `OperationResult`, `OperationLedger` interface, `ProviderGateway` (support enforcement, idempotent replay, bounded retry), `ExternalResource` link/verify/mismatch reconciliation — plus `tests/provider/run.php` (69 checks over a marked fixture adapter), `provider.yml` workflow, `PROVIDER_FOUNDATION.md`, and continuity docs.
+
+Verified locally on PHP 8.4.25: 69/69 checks, all 14 files `php -l` clean. Scope: no `site/` changes, schema, persistence, admin UI, or real provider calls. External gate: Awaiting API verification. Next: Codex review/merge alongside #31/#32; adapter-phase contract after the refactor lands.
+
 ## 2026-10-13 — Sandbox trial release published and verified
 
 Continued roadmap from main `dd29436fa40c2a0f800bc02569b5fd5d1fb75c09` / 1.5.0 on `codex/sandbox-attempts`. Added owner-only tokenized sandbox UI, fixed sandbox reporting/charge adapter, additive attempt/events, exact amount/reference/account checks, idempotency and concurrency safeguards, unknown-result recovery, shared manual/catalog/request locks, strict audit and immutable 1.5.0 upgrade acceptance. PR #18 merged as `e5d4c17456faff0522429ab3f58093a06a523bd5`; exact-main run https://github.com/afterburn25/Cajun_Web/actions/runs/38380935411 passes 296 native / 421 HTTP/Chromium checks. Independent policy/invitation/documentation checks pass. Reviewed desktop/320px screenshots.
