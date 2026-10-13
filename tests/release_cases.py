@@ -4,6 +4,7 @@ from pathlib import Path
 from urllib.parse import urljoin
 import requests
 from playwright.sync_api import expect
+from release_version import VERSION
 
 def db(sql, params=()):
     result=subprocess.run([php,str(ROOT/'tests/fixture_db.php')],input=json.dumps({'sql':sql,'params':params}),text=True,capture_output=True,check=True)
@@ -210,6 +211,8 @@ def run_browser(env,browser,fixture):
     setup=WEB/'browser-setup';setup.mkdir()
     with zipfile.ZipFile(next((ROOT/'dist').glob('*COMPLETE-UPLOAD.zip'))) as package:package.extractall(setup)
     install=browser.new_context(viewport={'width':1440,'height':1000});p=install.new_page();p.goto(BASE+'/browser-setup/install.php',wait_until='networkidle')
+    check('Browser installer shows the current source build',('ONE-PAGE INSTALLER · '+VERSION) in p.locator('.build').inner_text())
+    check('Browser installer loads both original brand images',p.locator('.topbar img,.intro-sign img').count()==2 and p.locator('.topbar img,.intro-sign img').evaluate_all('items=>items.every(e=>e.complete && e.naturalWidth>0)'))
     values={'db_host':os.getenv('CWP_TEST_HOST','127.0.0.1'),'db_port':os.getenv('CWP_TEST_PORT','3306'),'db_name':'cwp_test','db_user':os.getenv('CWP_TEST_USER','cwp_test'),'db_password':os.getenv('CWP_TEST_PASSWORD','local-ci-only'),'db_prefix':'browser_','owner_name':'Browser owner','owner_email':'browser-owner@example.invalid','owner_password':'Synthetic browser owner passphrase','owner_confirm':'Deliberate mismatch passphrase','site_url':BASE+'/browser-setup'}
     for name,value in values.items():p.locator('[name='+name+']').fill(value)
     p.locator('[name=confirm_install]').check();p.locator('#install-button').click();expect(p.locator('#setup-error')).to_contain_text('passwords do not match');expect(p.locator('#install-form')).to_be_visible()

@@ -28,6 +28,7 @@ try:
     temporary('includes/.htaccess',b'Require all granted\n','Builder rejects weakened internal server denial')
     temporary('app/billing/stale.php',b"<?php require CWP_CODE_ROOT.'/app/core.php';",'Builder rejects stale moved code references')
     temporary('app/clients/old-route.php',b"<?php echo site_url('portal.php');",'Builder rejects old URL generation')
+    temporary('install/views/form.php',b'<img src="assets/logo.png">','Builder rejects a stale literal installer image')
     temporary('assets/css/missing.css',b"body{background:url('../../images/missing.png')}",'Builder rejects missing CSS images')
     p=build.SITE/'includes/security/csrf.php';old=p.read_bytes();p.unlink()
     try:rejects('Builder rejects a missing canonical module',build.inventory)
