@@ -10,6 +10,10 @@
 
 ## Active integration — A-07 administrator template library
 ## Active integration — A-06 email account preparation
+## Active integration — L-02 website review workflow
+
+Codex owns `codex/website-review-workflow` from verified 1.13.0 publication-record main `80f1c03`. Preserve reviewed #31 through `ea0a4d3` and #36 through `7958578`; their component/contract content is unchanged from the inspected corrected heads. All 86 local PHP 8.4 no-extension component checks pass. [Application contract](docs/WEBSITE_REVIEW_WORKFLOW.md) selects explicit bare-host normalization with retained 500-byte/control/userinfo boundaries, additive storage, current website staff permissions, evidence-labeled reports, revisions and honest recorded external delivery. Candidate 1.14.0 source now implements intake normalization/atomic capture, additive review/report/history storage, current staff authorization, explicit legacy adoption, evidence validation, report/stage/delivery lifecycle and administrative forms. Native/browser/actual 1.13.0 update-recovery fixtures are added; combined CI, screenshot review and release verification are pending. Latest published release remains 1.13.0. No automatic URL fetch, customer mail, fabricated audit or production deployment. Codex owns application/schema/UI/tests/build/release; preserve other Devin branches.
+
 ## Latest verified publication — 1.13.0
 
 [v1.13.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.13.0) is published and freshly downloaded/verified at source/tag `b83cb9fb6856bca4f333fe953bee2e68f5074d51` through [PR #63](https://github.com/afterburn25/Cajun_Web/pull/63), preserving corrected Devin #59 through `13c04f6`. Bounded A-06 now provides owner-managed multiple email profiles, encrypted private passwords, separate read/send permissions and current per-mailbox assignments, scoped staff listings, immutable metadata history and stale/concurrent-write protection. Even owners require mailbox assignments. [Guide](docs/ADMIN_EMAIL_ACCOUNTS.md). This prepares accounts only: no server connection, inbox, message fetching or sending.
@@ -89,6 +93,10 @@ Devin's existing-project adapter now drives exact published-only portfolio/categ
 Local PHP 8.4.25 passes 55 portfolio and 65 estimator checks; complete builder verifies 80 flat shipping files / 55 PHP files, 79 UPDATE files, exact bundled components and installer inventory. Combined GitHub acceptance, screenshots, actual retained 1.10.0 update and release download verification are pending. No full W-01/L-01 completion or deployment claim.
 
 Estimator [PR #29](https://github.com/afterburn25/Cajun_Web/pull/29) passed [combined application acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38405668799) and PHP 8.2/8.4 component checks before merge at `39de8ff`. Its core stays outside deployment; existing quantity pricing/custom exclusions need an adapter. Later Devin estimator refresh `65c2084` is preserved in this integration. Next: fix any combined failures, review desktop/mobile evidence, merge the exact checked candidate, run exact main and publish/verify immutable 1.11.0 assets. Mail, actual merchant acceptance/card checkout, broader 20i and VPS SSH remain pending.
+
+## 2026-10-13 — Devin L-02 review-request component
+
+Codex is integrating portfolio PR #7 at `016a405` on `codex/portfolio-browsing` toward a bounded v1.11.0; estimator PR #27 already landed through PR #29 at `39de8ff` with review fixes. Devin heads stay stable during integration. On `devin/review-requests` (from `39de8ff`), Devin added the independent L-02 website-review contract: `foundation/review-requests/` (seven classes — normalized website addresses with private-address/internal-name fetch flags, consent-aware contacts, a legal stage pipeline, human-reviewed findings with labeled lab/field/absent evidence, and delivery gated on a saved report plus consent) with 80 passing synthetic checks, `docs/REVIEW_REQUESTS_FOUNDATION.md`, and a dedicated workflow. No schema, form, mail, URL fetching, or shipping files — application adaptation is a later agreed step.
 
 ## 2026-10-13 — Devin estimator integration candidate
 
@@ -233,3 +241,8 @@ The owner approved a much larger CajunWebPro scope: **web design and white-label
 Release acceptance follow-up (parent `f007803`): HTTP/browser checks reached account revocation; console classification stopped on the intentionally invalid estimator response. The next commit scopes that expected resource message to the precise estimator URL, retains diagnostic JSON, adds original-contact and real-browser fresh-install coverage, scans PHP runtime diagnostics, and improves mobile consent wrapping. Full rerun required before publication.
 
 Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid versioned favicon URLs because it compared the query suffix as part of the path. Parse the URL path and fetch the actual referenced icon for byte equality. Application source is unchanged; rerun the full suite.
+
+
+## Historical 2026-10-13 — Devin L-02 adapter contract
+
+`devin/review-adapter` adds `docs/REVIEW_REQUESTS_ADAPTER.md` — contract for the live website-review route to adopt the L-02 foundation: URL normalization decision (bare hosts), additive `review_stages`/`review_reports` tables, stage-transition staff controls, consent+saved-report delivery gate. Docs only. Queue: #31/#32/#34/#35 mergeable+green.
