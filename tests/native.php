@@ -25,9 +25,10 @@ try {
     $server=(string)db()->getAttribute(PDO::ATTR_SERVER_VERSION);
     // This test schema is disposable. Never use application or customer credentials.
     foreach(all('SHOW TABLES') as $r){$name=(string)array_values($r)[0];if(!preg_match('/^ci_[a-z_]+$/D',$name))throw new RuntimeException('Unexpected table in isolated test DB.');db()->exec('DROP TABLE `'.$name.'`');}
-    $definitions=schema_statements('ci_');
+    $legacy=json_decode(file_get_contents(__DIR__.'/../test-runtime/legacy-schema.json'),true,32,JSON_THROW_ON_ERROR);
+    $definitions=$legacy['schema'];
     foreach($definitions as $key=>$sql)if(!str_starts_with($key,'studio_'))db()->exec($sql);
-    foreach(default_settings() as $key=>$value)save_setting($key,$value);
+    foreach($legacy['settings'] as $key=>$value)save_setting($key,$value);
     save_setting('studio_schema_version','0');
     $now=gmdate('Y-m-d H:i:s');$pw='Synthetic owner passphrase 2026';
     query('INSERT INTO '.table('users').' (id,name,email,password_hash,auth_version,created_at) VALUES (1,?,?,?,?,?)',['Owner','owner@example.invalid',password_hash($pw,PASSWORD_DEFAULT),str_repeat('a',32),$now]);
@@ -37,6 +38,8 @@ try {
     save_setting('sentinel_original','Preserve original settings');
     $oldLead=one('SELECT * FROM '.table('leads').' WHERE id=1');
     $owner=one('SELECT * FROM '.table('users').' WHERE id=1');
+    // Simulate an interrupted additive update that created only its first table.
+    db()->exec(studio_schema('ci_')['studio_clients']);
     admin_session();studio_migrate();
     ok('Additive upgrade creates seven workspace tables',count(all("SELECT table_name FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name LIKE 'ci_studio_%'"))===7);
     ok('Upgrade retains populated lead',one('SELECT * FROM '.table('leads').' WHERE id=1')===$oldLead);
@@ -71,6 +74,12 @@ try {
     $request=request_form('consultation');$request['timezone']='America/Chicago';$request['preferred_date']=(new DateTimeImmutable('+2 days',new DateTimeZone('America/Chicago')))->format('Y-m-d');$request['period']='Afternoon';$consult=growth_submit($request);
     ok('Consultation remains an unconfirmed request',str_contains(strtolower($consult['message']),'confirm')||str_contains(strtolower($consult['message']),'request'));
     $bad=request_form('estimate');$bad['consent']='0';rejected('Privacy acknowledgement required',fn()=>growth_submit($bad));
+    $bad=request_form('estimate');$bad['website_address']='spam';rejected('Honeypot blocks automated submissions',fn()=>growth_submit($bad));
+    $bad=request_form('estimate');$_SESSION['growth_tokens'][$bad['submission_token']]=time();rejected('Too-fast submission is blocked',fn()=>growth_submit($bad));
+    $bad=request_form('estimate');$_SESSION['growth_tokens'][$bad['submission_token']]=time()-7201;rejected('Expired public form token rejected',fn()=>growth_submit($bad));
+    $before=rowcount('leads');growth_submit(request_form('estimate'));growth_submit(request_form('estimate'));
+    rejected('Public hourly limit blocks further saved leads',fn()=>growth_submit(request_form('estimate')));
+    ok('Rate rejection does not create another lead',rowcount('leads')===$before+2);
     $_POST['csrf']='wrong';rejected('CSRF rejected before saving',fn()=>growth_submit(request_form_no_token()));
 } catch(Throwable $e) { $error=$e; }
 // Continue only when the first group passed; a test error must fail CI, not be hidden.
@@ -82,6 +91,10 @@ if(!isset($error))try {
     studio_activate($token,'Synthetic client passphrase 2026');
     ok('Activation hashes password and consumes invite',password_verify('Synthetic client passphrase 2026',one('SELECT password_hash FROM '.table('studio_clients').' WHERE id=1')['password_hash'])&&one('SELECT invite_hash FROM '.table('studio_clients').' WHERE id=1')['invite_hash']===null);
     rejected('Invitation replay rejected',fn()=>studio_activate($token,'Another synthetic passphrase 2026'));
+    $expired=studio_new_invite(2);parse_str((string)parse_url($expired,PHP_URL_QUERY),$parts);
+    query('UPDATE '.table('studio_clients').' SET invite_expires=? WHERE id=2',[time()-1]);
+    rejected('Expired client invitation cannot activate',fn()=>studio_activate($parts['invite'],'Synthetic client passphrase 2026'));
+    ok('Expired activation preserves unset password',one('SELECT password_hash FROM '.table('studio_clients').' WHERE id=2')['password_hash']==='');
     studio_login('alice@example.invalid','Synthetic client passphrase 2026');ok('Client authentication succeeds',(int)studio_client()['id']===1);
     rejected('Client cannot read another client project',fn()=>studio_job(2,1));
     admin_session();studio_publish(1,'design','Design one','Original version text','https://example.org/preview');$v1=(int)query('SELECT MAX(id) FROM '.table('studio_versions'))->fetchColumn();

@@ -47,7 +47,7 @@ for name in ['existing','fresh']:
     packages=list((ROOT/'dist').glob('CajunWebPro-*-COMPLETE-UPLOAD.zip'));assert len(packages)==1,'Build exactly one package'
     with zipfile.ZipFile(packages[0]) as package:package.extractall(dest)
 shutil.copyfile(ROOT/'test-runtime/config-fixture.php',WEB/'existing/config.php')
-php=shutil.which('php8.3') or shutil.which('php');log=open(QA/'http-server.log','w');proc=subprocess.Popen([php,'-S','127.0.0.1:8091','-t',str(WEB)],stdout=log,stderr=log)
+php=shutil.which('php8.3') or shutil.which('php');log=open(QA/'http-server.log','w');proc=subprocess.Popen([php,'-d','sendmail_path=python3 '+str(ROOT/'tests/mail_capture.py'),'-S','127.0.0.1:8091','-t',str(WEB)],stdout=log,stderr=log)
 error=None
 try:
     for _ in range(60):
@@ -97,6 +97,8 @@ try:
     r=alice.post(BASE+'/existing/portal.php?job=1',data=bad,files={'document':('blocked.php',b'<?php echo 123; ?>','image/png')});check('Disguised executable upload rejected','Only PDF, PNG and JPEG' in r.text)
     r=requests.get(BASE+'/existing/admin.php?view=studio-clients',allow_redirects=False);check('Anonymous admin workspace redirected to login',r.status_code==303 and 'login' in r.headers.get('Location',''))
     r=bob.get(BASE+'/existing/admin.php?view=studio-clients',allow_redirects=False);check('Client session does not grant admin access',r.status_code==303 and 'login' in r.headers.get('Location',''))
+    from release_cases import installer_failures
+    installer_failures(globals())
     # Fresh installation is a real combined POST using native PDO MySQL and GD.
     fresh=requests.Session();r=fresh.get(BASE+'/fresh/install.php');check('Fresh setup shows one form',len(soup(r).select('#install-form'))==1 and 'Unlock your installation' not in r.text and 'data-back=' not in r.text)
     data=form_data(soup(r).select_one('#install-form'));data.update({'db_host':os.getenv('CWP_TEST_HOST','127.0.0.1'),'db_port':os.getenv('CWP_TEST_PORT','3306'),'db_name':'cwp_test','db_user':os.getenv('CWP_TEST_USER','cwp_test'),'db_password':os.getenv('CWP_TEST_PASSWORD','local-ci-only'),'db_prefix':'fresh_','owner_name':'Fresh owner','owner_email':'fresh@example.invalid','owner_password':'Fresh synthetic passphrase 2026','owner_confirm':'Fresh synthetic passphrase 2026','site_url':BASE+'/fresh','business_email':'','private_parent':'','confirm_install':'1','preview':'1'})
@@ -108,8 +110,10 @@ try:
     check('Fresh configuration exists',(WEB/'fresh/config.php').is_file())
     check('Installer physically removed after successful setup',not (WEB/'fresh/install.php').exists())
     check('Installed homepage loads after cleanup',fresh.get(BASE+'/fresh/').status_code==200)
+    from release_cases import run_http, run_browser
+    release_fixture=run_http(globals())
     # Native browser traffic, not offline documents or mocked fetch.
-    from playwright.sync_api import sync_playwright
+    from playwright.sync_api import sync_playwright, expect
     with sync_playwright() as pw:
         browser=pw.chromium.launch(headless=True)
         context=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce')
@@ -119,10 +123,11 @@ try:
             check('Desktop no horizontal overflow '+name,page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
             page.set_viewport_size({'width':390,'height':844});page.screenshot(path=str(QA/(name+'-Mobile.png')),full_page=True)
             check('Mobile no horizontal overflow '+name,page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'));page.set_viewport_size({'width':1440,'height':1000})
-        page.goto(BASE+'/existing/index.php?page=estimate');page.locator('[name=project_type]').select_option('business');page.locator('[name=pages]').fill('7');page.locator('[data-estimate]').click();page.wait_for_function("document.querySelector('[data-estimate-label]').textContent.includes('$1,100.00')")
+        page.goto(BASE+'/existing/index.php?page=estimate');page.locator('[name=project_type]').select_option('business');page.locator('[name=pages]').fill('7');page.locator('[data-estimate]').click();expect(page.locator('[data-estimate-label]')).to_contain_text('$1,100.00')
         check('Browser estimator uses actual server response','$1,100.00' in page.locator('[data-estimate-label]').inner_text())
         page.goto(BASE+'/existing/portal.php');page.locator('[name=email]').fill('alice@example.invalid');page.locator('[name=password]').fill('Synthetic client passphrase 2026');page.locator('button[type=submit],form button').first.click();page.wait_for_url('**/portal.php');page.goto(BASE+'/existing/portal.php?job=1');page.screenshot(path=str(QA/'Client-Workspace-Desktop.png'),full_page=True)
         check('Browser private project renders','HTTP manual invoice' in page.content());check('No uncaught browser errors',not errors)
+        run_browser(globals(),browser,release_fixture)
         browser.close()
 except Exception as exc:
     error=repr(exc)

@@ -1,6 +1,8 @@
 # Approved branding and visual-reference provenance
 
-Verified/recorded: 2026-10-12. Original binary files are **not yet imported into Git**. Names below identify conversation artifacts or paths inside the baseline ZIP, not already-existing repository asset paths.
+Updated 2026-10-13: application assets are recovered under `site/assets/`; the exact original favicon source is retained at [brand/favicon-source.png](../brand/favicon-source.png), SHA-256 `9152404cc8d0a199e4c77f3fe4dd2595c8c45967267dd2bd8bbd855e5164a70d`, recovered from the owner's local `icon.png`. Visual comparison confirms the shipped square favicon depicts this same fleur-de-lis with transparent padding. The original horizontal `site/assets/logo.png` retains SHA-256 `9c44559bb716076c51ec40daff0f394956a32d24039efa6e3fe33039fc10fe29`. Public, admin, portal and installer heads reference `assets/favicon.png`; root `favicon.ico` is also packaged. Browser/package verification is recorded with the [release matrix](RELEASE_1.1.0.md).
+
+The following provenance notes describe the original 2026-10-12 artifacts; their former not-imported status is superseded above.
 
 ## Primary website wordmark — preserve exactly
 

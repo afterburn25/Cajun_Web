@@ -19,6 +19,7 @@ This log distinguishes repository work from application releases and deployment.
 - Aligned candidate labels at 1.1.0, enforced canonical line endings, and made the build compare shipping bytes with its recorded commit.
 - Client changes revoke outstanding invitations and sessions; activation rechecks expiry after locking/password hashing. Uploads reject executable extensions/code; form feedback respects reduced motion.
 - Expanded release acceptance and publication remain in progress.
+- Added the exact historical 1.0.8 test fixture and actual UPDATE-package/admin-upgrade checks, broader saved-state/browser/installer tests, local synthetic mail capture and the feature-to-test matrix. Preserved the original favicon source with its verified hash.
 
 ## 2026-10-13 — Staff invitations and source-compatible session tokens
 

@@ -51,7 +51,9 @@ jobs:
           mkdir -p qa
           python3 tools/build.py --commit "$GITHUB_SHA" | tee qa/build-results.txt
       - name: Native database, upgrade and authorization integration
-        run: php8.3 tests/native.php
+        run: |
+          python3 tests/prepare_legacy.py
+          php8.3 tests/native.php
       - name: Real HTTP and Chromium application workflows
         run: .ci-venv/bin/python tests/browser_acceptance.py
       - name: Verify tests did not mutate shipping source
