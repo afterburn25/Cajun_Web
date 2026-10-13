@@ -1,5 +1,9 @@
 # Project status
 
+## 2026-10-13 — Devin A-02 revision-history foundation (unreviewed, unintegrated)
+
+Devin implemented the safe-work portion of A-02 as an isolated canonical component on `devin/revisions-foundation`: `foundation/revisions/` (`ContentRevision`, `ApprovalContext`, `RevisionDiff`, `ContentDocument` — append-only versions, draft/publish separation, restore-as-draft with no silent overwrite, pinned approvals), `tests/revisions/run.php` (30 checks), `revisions.yml` workflow, and [REVISIONS_FOUNDATION](docs/REVISIONS_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer. No `site/` changes, deployment or release.
+
 ## Current directory and package contract — released 1.11.0
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](docs/DIRECTORY_STRUCTURE.md), [migration and recovery](docs/STRUCTURE_MIGRATION.md), and [START-HERE](START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.

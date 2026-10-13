@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — A-02 revision-history foundation (Devin, isolated component)
+
+- Added canonical `foundation/revisions/` classes (immutable `ContentRevision` snapshots with `restoredFrom` links, separately retained `ApprovalContext`, deterministic `RevisionDiff`, and `ContentDocument` enforcing meaningful-only saves, explicit publish, no-silent-overwrite restores and actor/time attribution) plus `docs/REVISIONS_FOUNDATION.md`.
+- Added `tests/revisions/run.php` (30 synthetic checks; fixture documents only) and the `revisions.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes, persistence, permissions or UI. Not yet integrated or released.
+
 ## 1.11.0 — organized application and verified three-package release
 
 Published from `de70c5da2e8f7bd35fbb92b9b829d0ab3e880372` after exact-main acceptance; all 16 assets downloaded and verified. Original history and all earlier releases retained. No live deployment.
