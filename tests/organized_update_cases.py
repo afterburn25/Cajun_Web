@@ -1,6 +1,6 @@
 """Real Apache upgrade/recovery from an installed, immutable 1.11.0 package."""
 from pathlib import Path
-import json,os,shutil,subprocess,zipfile
+import json,os,shutil,subprocess,zipfile,time
 import requests
 from bs4 import BeautifulSoup
 from release_version import VERSION,STAGE,RECOVERY
@@ -26,7 +26,13 @@ def run(web,base,check,qa,php,label,prefix,version):
         assert p.returncode==0,p.stderr
         return json.loads(p.stdout)
     before=records('seed')
-    prior_templates=records('templates') if version=='1.12.0' else None
+    prior_templates=records('templates') if version in ['1.12.0','1.13.0','1.14.0','1.15.0'] else None
+    prior_accounts=records('mail-accounts') if version in ['1.13.0','1.14.0','1.15.0'] else None
+    prior_key=(private/'mail-master.key').read_bytes() if version in ['1.13.0','1.14.0','1.15.0'] else None
+    prior_review=records('review-intake') if version in ['1.13.0','1.14.0','1.15.0'] else None
+    prior_reports=records('reviews') if version in ['1.14.0','1.15.0'] else None
+    prior_appointment=records('appointment-intake') if version in ['1.14.0','1.15.0'] else None
+    prior_schedule=records('appointments') if version=='1.15.0' else None
     check(label+' retained schema contains meaningful client project and invoice records',all(before[n]['count']>0 for n in before))
     session.get(url+'/admin/index.php?view=login')
     probe=root/'cache-probe.php';probe.write_text("<?php echo json_encode(['enabled'=>opcache_get_status(false)['opcache_enabled']??false,'timestamps'=>ini_get('opcache.validate_timestamps'),'cached'=>opcache_is_script_cached(__DIR__.'/config/defaults.php')]);")
@@ -86,3 +92,53 @@ def run(web,base,check,qa,php,label,prefix,version):
         r=action('apply');check(label+' reapplied update recognizes protected email account settings','<h2>Complete</h2>' in r.text and 'Retained upgraded account' in session.get(library).text and records('mail-accounts')==saved and (private/'mail-master.key').read_bytes()==key)
         r=session.post(detail,data={'csrf':token(session.get(detail)),'action':'mail_accounts_save','account_id':aid,'revision':'1','current_password':password,**{k:v for k,v in fields.items() if k in ['label','address','imap_host','imap_port','imap_encryption','imap_username','smtp_host','smtp_port','smtp_encryption','smtp_username','enabled']},'imap_password':'','smtp_password':''})
         check(label+' original private key still opens saved credentials after recovery','Email settings saved' in r.text and records('mail-accounts')['accounts'][0]['revision']==2)
+    if version=='1.13.0':
+        check(label+' upgrade preserves actual email settings assignments key and templates',records('mail-accounts')==prior_accounts and records('templates')==prior_templates and (private/'mail-master.key').read_bytes()==prior_key and len(prior_accounts['accounts'])==1 and len(prior_accounts['grants'])==1)
+        lid=prior_review['id'];review=url+'/admin/index.php?view=website-review&id='+str(lid)
+        def review_action(name,**fields):
+            return session.post(review,data={'csrf':token(session.get(review)),'action':name,'id':lid,**fields})
+        r=review_action('reviews_setup',current_password=password);check(label+' older owner enables additive review storage','Start this review' in r.text)
+        r=review_action('reviews_adopt',website='example.org/upgrade');r=review_action('reviews_stage',revision='1',stage='in-review')
+        r=review_action('reviews_report',revision='2',summary='Retained upgraded report',**{'findings[0][title]':'Retained observation','findings[0][detail]':'Synthetic human-authored evidence','findings[0][evidence]':'human-review','findings[0][source]':'','findings[0][observed_at]':''})
+        saved=records('reviews');check(label+' upgraded owner saves human report and retained revisions',len(saved['reviews'])==1 and len(saved['reports'])==1 and len(saved['history'])==3 and 'Retained upgraded report' in r.text)
+        check(label+' review setup preserves original inquiry email and template bytes',records('review-intake')==prior_review and records('mail-accounts')==prior_accounts and records('templates')==prior_templates)
+        r=action('recover');check(label+' file recovery retains review rows and original email key','<h2>Rolled-back</h2>' in r.text and records('reviews')==saved and records('mail-accounts')==prior_accounts and (private/'mail-master.key').read_bytes()==prior_key)
+        r=action('apply');check(label+' reapplication opens retained report and history','<h2>Complete</h2>' in r.text and 'Retained upgraded report' in session.get(review).text and records('reviews')==saved and records('review-intake')==prior_review)
+        account=prior_accounts['accounts'][0];mail=url+'/admin/index.php?view=mail-account&account_id='+account['id']
+        r=session.post(mail,data={'csrf':token(session.get(mail)),'action':'mail_accounts_save','account_id':account['id'],'revision':account['revision'],'current_password':password,**{k:account[k] for k in ['label','address','imap_host','imap_port','imap_encryption','imap_username','smtp_host','smtp_port','smtp_encryption','smtp_username','enabled']},'imap_password':'','smtp_password':''})
+        check(label+' original account key still decrypts after review update and recovery','Email settings saved' in r.text and records('mail-accounts')['accounts'][0]['revision']==account['revision']+1 and (private/'mail-master.key').read_bytes()==prior_key)
+
+    if version=='1.14.0':
+        check(label+' update preserves existing reviews and private email key',records('reviews')==prior_reports and len(prior_reports['history'])==3 and records('mail-accounts')==prior_accounts and records('templates')==prior_templates and (private/'mail-master.key').read_bytes()==prior_key)
+        settings=url+'/admin/index.php?view=consultation-settings'
+        r=session.post(settings,data={'csrf':token(session.get(settings)),'action':'appointments_setup','current_password':password})
+        check(label+' older owner prepares disabled appointment storage','Studio availability' in r.text and records('appointments')['settings'][0]['enabled']==0)
+        fields={'csrf':token(session.get(settings)),'action':'appointments_configure','revision':'1','current_password':password,'timezone':'UTC','slot_minutes':'30','buffer_minutes':'15','notice_minutes':'0','enabled':'1'}
+        for day in range(7):fields.update({f'hours[{day}][enabled]':'1',f'hours[{day}][start]':'00:00',f'hours[{day}][end]':'24:00'})
+        r=session.post(settings,data=fields);check(label+' owner enables explicit consultation availability','Availability saved' in r.text)
+        lid=prior_appointment['id'];detail=url+'/admin/index.php?view=consultation&id='+str(lid)
+        offered=BeautifulSoup(session.get(detail).text,'html.parser');chosen=next(o['value'] for o in offered.select('[name=slot] option[value]') if o['value'] and int(o['value'])>time.time()+86400)
+        r=session.post(detail,data={'csrf':token(session.get(detail)),'action':'appointments_adopt','id':lid,'revision':'1','slot':chosen,'timezone':'America/Chicago'})
+        r=session.post(detail,data={'csrf':token(session.get(detail)),'action':'appointments_confirm','id':lid,'revision':'1','current_password':password})
+        saved=records('appointments');check(label+' upgraded inquiry receives explicit confirmation and history',saved['appointments'][0]['status']=='confirmed' and len(saved['history'])==2 and len(saved['settings_history'])==2 and 'Confirmed' in r.text)
+        check(label+' scheduling keeps original inquiry review template and email bytes',records('appointment-intake')==prior_appointment and records('reviews')==prior_reports and records('mail-accounts')==prior_accounts and records('templates')==prior_templates)
+        r=action('recover');check(label+' file recovery retains appointments and earlier private records','<h2>Rolled-back</h2>' in r.text and records('appointments')==saved and records('reviews')==prior_reports and records('mail-accounts')==prior_accounts and (private/'mail-master.key').read_bytes()==prior_key)
+        r=action('apply');check(label+' reapplication reopens retained appointment history','<h2>Complete</h2>' in r.text and 'Confirmed' in session.get(detail).text and records('appointments')==saved and records('appointment-intake')==prior_appointment)
+        account=prior_accounts['accounts'][0];mail=url+'/admin/index.php?view=mail-account&account_id='+account['id']
+        r=session.post(mail,data={'csrf':token(session.get(mail)),'action':'mail_accounts_save','account_id':account['id'],'revision':account['revision'],'current_password':password,**{k:account[k] for k in ['label','address','imap_host','imap_port','imap_encryption','imap_username','smtp_host','smtp_port','smtp_encryption','smtp_username','enabled']},'imap_password':'','smtp_password':''})
+        check(label+' earlier email key still decrypts after scheduling recovery','Email settings saved' in r.text and records('mail-accounts')['accounts'][0]['revision']==account['revision']+1 and (private/'mail-master.key').read_bytes()==prior_key)
+
+    if version=='1.15.0':
+        check(label+' update retains calendar history and earlier private account records',records('appointments')==prior_schedule and len(prior_schedule['history'])==2 and records('reviews')==prior_reports and records('mail-accounts')==prior_accounts and records('templates')==prior_templates and (private/'mail-master.key').read_bytes()==prior_key)
+        account=prior_accounts['accounts'][0];mail=url+'/admin/index.php?view=mail-account&account_id='+account['id']
+        r=session.post(mail,data={'csrf':token(session.get(mail)),'action':'mail_accounts_connections_setup','account_id':account['id'],'current_password':password})
+        check(label+' older owner prepares empty check history','Connection-check history is ready' in r.text and records('mail-checks')=={'checks':[],'results':[]})
+        r=session.post(mail,data={'csrf':token(session.get(mail)),'action':'mail_accounts_check','account_id':account['id'],'revision':account['revision'],'target':'imap','current_password':password})
+        check(label+' upgraded check refuses fixture-only host before network','public server hostname' in r.text and records('mail-checks')=={'checks':[],'results':[]})
+        records('mail-checks-seed');saved_checks=records('mail-checks')
+        check(label+' synthetic failure history is displayed without claiming success',len(saved_checks['checks'])==1 and saved_checks['results'][0]['outcome']=='failed' and 'Check failed' in session.get(mail).text)
+        check(label+' check setup preserves scheduling reviews accounts and templates',records('appointments')==prior_schedule and records('reviews')==prior_reports and records('mail-accounts')==prior_accounts and records('templates')==prior_templates)
+        r=action('recover');check(label+' file recovery preserves check schema and earlier private records','<h2>Rolled-back</h2>' in r.text and records('mail-checks')==saved_checks and records('appointments')==prior_schedule and records('mail-accounts')==prior_accounts and (private/'mail-master.key').read_bytes()==prior_key)
+        r=action('apply');check(label+' reapplication recognizes prepared connection checks','<h2>Complete</h2>' in r.text and 'Test incoming connection' in session.get(mail).text and records('mail-checks')==saved_checks and records('appointments')==prior_schedule and records('reviews')==prior_reports)
+        r=session.post(mail,data={'csrf':token(session.get(mail)),'action':'mail_accounts_save','account_id':account['id'],'revision':account['revision'],'current_password':password,**{k:account[k] for k in ['label','address','imap_host','imap_port','imap_encryption','imap_username','smtp_host','smtp_port','smtp_encryption','smtp_username','enabled']},'imap_password':'','smtp_password':''})
+        check(label+' original key decrypts after connection-check recovery','Email settings saved' in r.text and records('mail-accounts')['accounts'][0]['revision']==account['revision']+1 and (private/'mail-master.key').read_bytes()==prior_key)

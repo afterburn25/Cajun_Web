@@ -1,5 +1,24 @@
 # Changelog
 
+## Unreleased — 1.16.0 candidate: explicit email connection checks
+
+- Add separate owner-only checks of saved incoming/outgoing settings, current password and matching mailbox assignment. Verify public DNS destinations, pin the numeric connection, validate TLS and authenticate without reading or sending messages.
+- Add auditable started/terminal history, saved-version labels, bounded response handling and per-account/owner repeat limits. Interrupted or unaudited final outcomes remain incomplete.
+- Add additive upgrade setup, fresh empty schema, isolated TLS/DNS/database/HTTP acceptance and actual 1.15.0 update/recovery coverage. Candidate acceptance and publication are pending; latest published version remains 1.15.0.
+
+## 1.15.0 — verified consultation scheduling
+
+- Preserve corrected Devin #32 scheduling ancestry and 71 isolated checks. Add one explicitly configured studio calendar, disabled by default, with timezone-aware offered slots, buffers, notice and a 30-day horizon.
+- Capture pending public appointments atomically with inquiries; keep honest preference-only intake when scheduling is disabled. Use one locked database configuration row for every conflict-changing write; stale forms, current permissions, contact consent and strict audit protect staff decisions.
+- Add explicit old-inquiry adoption, password-confirmed staff confirmation, cancellation/decline, rescheduling back to pending and retained revisions. Add public/admin forms and actual 1.14.0 update/recovery fixtures preserving earlier reviews/templates/email credentials and private key.
+- Published/download-verified from `8749bc5a89e52f8f35a193cc49d306136576ec8e` after exact-main run 38460197599; all 16 assets/tag pass. Native/HTTP/Chromium/Apache/build acceptance passes. No provider calendar, outgoing confirmation/cancellation mail or live deployment.
+
+## 1.14.0 — verified human website review workflow
+
+- Preserve corrected Devin #31/#36 and adapt the canonical review lifecycle into the existing inquiry system. Accept bare website hosts deliberately; retain the 500-byte bound and reject fragments, userinfo and control characters. Capture new review identity atomically with accepted leads; older inquiry adoption is explicit.
+- Add current website-staff authorization, owner-only additive setup, evidence-labeled findings, saved report revisions, stale/concurrent protection and strict audit. External delivery requires the exact saved draft, current consent, real entered time/reference and staff password; this records delivery outside the app and sends nothing.
+- Add escaped desktop/mobile forms, draft finding add/remove controls, history and explicit inquiry deletion of dependent personal review content. Recognize actual 1.13.0 upgrade/recovery with earlier email key/assignment/template retention. Published/download-verified from `f55879339e38769b4ec5fa81780a3d650b63da25` after exact-main run 38453775600; all 16 assets/tag pass. Native/HTTP/Chromium/Apache/build acceptance passes; no live deployment occurred.
+
 ## 1.13.0 — verified email account preparation
 
 - Preserve Devin #59 canonical profile/assignment/message models and isolated CI. Re-reviewed 64 no-extension component checks; future-issued grants, UIDVALIDITY, duplicate identities and tuple encoding are corrected. Combined application acceptance passes.
@@ -273,3 +292,8 @@ No application source/asset import, feature implementation, host repair, databas
 - Candidate 91ef30d: 50 native and 143 HTTP/browser checks passed; final browser-admin, sitemap and favicon-reference assertions added before merge.
 
 Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid versioned favicon URLs because it compared the query suffix as part of the path. Parse the URL path and fetch the actual referenced icon for byte equality. Application source is unchanged; rerun the full suite.
+
+
+## Historical component contract — review-request adapter contract (L-02 dependency)
+
+- Add `docs/REVIEW_REQUESTS_ADAPTER.md`: the contract for adopting the review-request foundation (PR #31) in the live `website-review` lead path — `WebsiteAddress` intake normalization, consent-aware `ReviewContact`, stage persistence via an additive `review_stages` table, `review_reports` as the delivery gate, and staff transition controls through `ReviewInbox`. No shipping code or schema changes; records two decisions for integration review.

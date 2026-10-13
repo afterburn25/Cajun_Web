@@ -9,23 +9,23 @@ intended website directory. There is no site/, version/ or upload/ wrapper.
 Keep its organized subdirectories. Open install.php over HTTPS, fill the one-page
 form and select Install. Setup is keyless. Do not use setup on an installed site.
 
-UPDATE is for a recognized installed 1.0.8 through 1.12.0 website. Back up the
+UPDATE is for a recognized installed 1.0.8 through 1.15.0 website. Back up the
 website files, database, and configured private storage before starting. Extract
 the update into the existing website directory; it creates only the new staging
-directory cwp-update-1.13.0/. Do not copy its site/ payload over the live site.
+directory cwp-update-1.16.0/. Do not copy its site/ payload over the live site.
 Do not overwrite an existing different staging directory. Open
-cwp-update-1.13.0/owner-update.php over HTTPS and authenticate as the owner.
+cwp-update-1.16.0/owner-update.php over HTTPS and authenticate as the owner.
 Confirm your recoverable backup, inspect, then apply. Keep the page and staging
 files available to retry or recover if interrupted. Customized conflicting files
 stop the update before activation; reconcile those using your backup. Unknown
 files and storage/upload protection are preserved. Fresh organized websites do
 not acquire legacy root compatibility files; existing ones remain supported. The temporary maintenance policy protects the site while
 changes are incomplete. Recovery copies/journal stay under your configured
-private storage in structure-1.13.0/. Configuration, keys, database and private
+private storage in structure-1.16.0/. Configuration, keys, database and private
 files are never replaced or reset by this structure update.
 
 After verifying the website, administration, portal, callbacks and private files,
-remove the exact cwp-update-1.13.0 staging directory using your hosting panel.
+remove the exact cwp-update-1.16.0 staging directory using your hosting panel.
 Keep recovery copies with your backup. Recovery after application changes may
 require manual review; never restore a database independently of its backup set.
 

@@ -1,5 +1,17 @@
 # Session log
 
+## 2026-10-13 — Devin review-request adapter contract (L-02 dependency)
+
+**Request:** Continue the roadmap while queued PRs await Codex integration. Following the estimator adapter contract (PR #35), document how the live `website-review` route adopts the L-02 foundation.
+
+**Starting commit:** `b975915` (main). New branch `devin/review-adapter`. Owned: `docs/REVIEW_REQUESTS_ADAPTER.md` + continuity docs. Documentation only.
+
+**Work:** Mapped `growth_submit`'s website-review branch to the foundation: `current_url` → `WebsiteAddress` (bare-host normalization flagged as a deliberate acceptance-widening decision A/B), name/email/consent → `ReviewContact`, additive `review_stages` and `review_reports` tables driving `ReviewInbox` transitions and the saved-report+consent delivery gate, staff stage controls scoped to website-review leads. All form/spam/lead-write behavior stays live-side; no fetching, mail, or delivery mechanism is added.
+
+**Verification:** `tools/check_docs.py` passes (444 links). No code executed or changed.
+
+**Next:** Codex review; L-03 consultation adapter contract is the natural next doc. Queued: #31, #32, #34, #35.
+
 ## 2026-10-13 — Devin estimator adapter contract (L-01 dependency)
 
 **Request:** Continue the roadmap while Codex sequences v1.11.0 and the queued Devin PRs. PUBLIC_COMPONENT_INTEGRATION.md names an explicit adapter contract as the prerequisite before the live estimator adopts `foundation/estimator`.
@@ -522,6 +534,14 @@ PR #55 merged at 4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36; exact-main acceptance
 **Changed:** byte-length check now uses `strlen()` — a byte cap is consistent with HTTP input limits. Workflow now reruns the suite under `php -n` as a no-optional-extension regression. Guide/handoff check counts updated to the actual 86.
 
 **Tests:** 86 checks pass on PHP 8.4.25 under both `php` and `php -n`.
+
+### 2026-10-13 — Devin L-02 adapter-contract reconciliation (Codex review)
+
+**Request:** Codex review on #36 required reconciling the adapter doc with the corrected component API and honest input-compatibility framing.
+
+**Changed (docs only):** `WebsiteAddress` now referenced via constructor + `->url()` (not `parse()`/`normalized()`); `ReviewInbox::transition()` replaces `record()`; evidence constants written as their actual values (`human-review`/`lab-data`/`field-data`/`absent-data`); delivery gate now requires a saved report with confirmed `deliveredAt` plus consent — a saved draft never enables `delivered`; input-equivalence promises removed and replaced with an explicit widening/narrowing analysis (bare hosts broaden under option A; fragments/userinfo narrow).
+
+**Tests:** documentation-only change; component checks remain 86 on `devin/review-requests`.
 ### 2026-10-13 — Devin A-06 webmail foundation
 
 **Request:** "Continue Without Stopping" — next feasible roadmap item (A-06 multi-account webmail contract layer, no external gate). Codex is mid-integration on `codex/admin-email-templates`; flagged that it carries the pre-correction #56 head (`ef5d4f9`, corrected head `f3522f6`).
@@ -593,3 +613,71 @@ First PR #63 application run 38445233085 at 62e9107 stops at installer inventory
 ## 2026-10-13 — 1.13.0 email account preparation published and verified
 
 PR #63 merged at b83cb9fb6856bca4f333fe953bee2e68f5074d51, preserving corrected #59 through 13c04f6. Exact-main 38446948573: 5192 named checks (745 native, 3084 estimator, 862 HTTP/Chromium, 101 filesystem, 381 Apache, 19 builder). All 16 draft/public assets and tag downloaded/verified; Windows/Linux bytes match; prior 1.12.0 fingerprints unchanged. Homepage pixels retained; real account desktop/mobile screens inspected. Source review and Devin's independent review found no outstanding defect. Updated current release records/guide/handoff. No live deployment, transport, sending or external provider activation. Next: bounded L-02 staff review workflow after preserving/re-reviewing #31/#36; mail transport has separate security/provider gates. The roadmap continues.
+
+## 2026-10-13 — claim bounded L-02 application integration
+
+Start publication-record main 80f1c0322238e54b5f189841a0e5bae6a5eaf631 after publishing/download-verifying 1.13.0. Branch codex/website-review-workflow preserves #31 ea0a4d3 through the component merge and #36 7958578 through this merge. Corrected component/contract content is unchanged from inspected 056bd02/ebc8793; 86 local PHP 8.4 no-extension checks pass. Resolve stale union-merge headings in favor of actual release facts while retaining historical contract records. Add the concrete application contract and ownership; source implementation/acceptance remain pending. No release bump or activation from this preservation step. Next implement additive storage and current-authorization report lifecycle, then actual UI/native/browser/update acceptance.
+
+## 2026-10-13 — L-02 application candidate implementation
+
+Continue from preserved b523ae5. Candidate 1.14.0 adds additive review/report/revision tables and validated cascading deletion relationships; current website-staff authorization; atomic structured intake and explicit legacy adoption; canonical transitions, human/measured/missing findings, immutable snapshots and strict audit; stale/concurrent protection; password/consent/time-bound external delivery records; escaped admin forms and no-JavaScript draft finding controls. Existing inquiry status is separate. Public database errors now return a generic logged reference. No URL is fetched and no report is sent.
+
+Add native database/security/concurrency/atomic-intake fixtures, actual HTTP/Chromium workflows, and immutable 1.13.0 Apache/file recovery tests retaining email settings/assignments/private key/templates and added review history. Local PHP/Python syntax and 86 no-extension component checks pass; generated installer and combined application acceptance are next, followed by actual screen/source review, exact-main tests and download-verified publication. This candidate is neither released nor deployed. The roadmap continues.
+
+### First L-02 acceptance correction
+
+Run 38450417076 at e207214 failed when the public growth module eagerly loaded reviews and the client workspace before the existing native/portal entry then required that workspace again. No review native or browser acceptance was established. Keep pure review content validation in the initial growth dependency; load review persistence only on submission after module initialization. The new native fixture uses require_once for growth already initialized by schema dependencies. Regenerate installer hashes and rerun combined acceptance. The first clean Windows build passed (256 shipping, FULL 470 / COMPLETE 256 / UPDATE 243); all independent component/documentation jobs passed. No release or deployment occurred.
+
+Run 38450894774 at 782dd1e passed the prior native suites, then exposed a fixture error: MariaDB correctly refuses to drop revision uniqueness while that index alone also supports the foreign key. Add a temporary nonunique parent index before dropping the unique index, verify setup rejects missing uniqueness, restore uniqueness and remove the temporary index. Foreign key enforcement stays enabled. This changes the test fixture, not production behavior; combined acceptance is rerun. Independent growth-first/schema-first loading smoke checks pass without database/network access.
+
+Run 38451409488 at c023c4f passed the complete application suite, including native database, real HTTP/Chromium, filesystem recovery and Apache protection. Add two final contract tests using separate PHP processes: simultaneous external-delivery records must produce one event and a stale rejection; report editing racing permanent inquiry deletion must never resurrect personal report/history data. PHP syntax passes. Rerun combined acceptance for this exact test commit before merging; screenshot inspection and exact-main release verification remain pending. No runtime change, release or deployment occurs in this test increment.
+
+## 2026-10-13 — 1.14.0 human website reviews published and verified
+
+PR #64 merged at f55879339e38769b4ec5fa81780a3d650b63da25, preserving corrected #31/#36 through ea0a4d3/7958578. Exact-main 38453775600: 5351 named checks (810 native, 3084 estimator, 890 HTTP/Chromium, 115 filesystem, 433 Apache, 19 builder). All 16 draft/public assets and tag downloaded/verified; Windows/Linux bytes match; prior 1.13.0 fingerprints unchanged. Homepage pixels retained; actual review desktop/mobile screens inspected. Source review found no outstanding defect. Updated current release records, review guide, mail roadmap scope and handoff. No live deployment, automatic audit/fetch, customer report sending or external provider activation. Next: preserve/re-review #32 and implement a bounded L-03 scheduling application contract with native conflict protection. The roadmap continues.
+
+## 2026-10-13 — Devin L-03 consultation-scheduling foundation
+
+Request: continue the roadmap without stopping. Estimator PR #27 landed through PR #29 at `39de8ff`; portfolio PR #7 is being integrated by Codex on `codex/portfolio-browsing` (PR #30) toward v1.11.0; completed Devin heads stay stable during integration. Devin also delivered the isolated L-02 review-request component on `devin/review-requests` as [PR #31](https://github.com/afterburn25/Cajun_Web/pull/31) at `a0959d6` (80 checks, all green). Starting commit here: `39de8ff`. Branch: `devin/consultation-scheduling`. Owned paths recorded on issue #2.
+
+Added `foundation/scheduling/` — the isolated L-03 contract: `TimeWindow` (half-open UTC intervals, overlap/contain/margin), `WeeklyRule` (weekly availability in a validated IANA timezone with real DST expansion — local time constant across spring-forward, gap occurrences skipped), `SchedulePolicy` (slot length, buffer, minimum notice), `Consultation` (validated contact/email/timezone; `requested → confirmed | declined | cancelled`, terminal states, reschedule returns to `requested`), `ConsultationCalendar` (boundary-aligned slot enumeration, bookability requiring inside-availability + notice + no overlap incl. buffer, request stays `requested`, transitions only via legal moves).
+
+Added `tests/scheduling/run.php` (64 synthetic checks — all pass on PHP 8.4.25), `.github/workflows/scheduling.yml`, and `docs/SCHEDULING_FOUNDATION.md` with the adapter contract (transactional booking guard, confirm-after-persist/provider semantics). No schema, form, mail, provider, or shipping files. PR checks pending.
+
+## 2026-10-13 — claim bounded L-03 scheduling integration
+
+Continue from verified 1.14.0 publication-record main c105e0456538eaf600042f5f4d053e578b7d19f0. Branch codex/consultation-workflow preserves corrected Devin #32 through 3617ad5 with this ancestry-preserving merge. Resolve stale union headings using current publication facts; retain the original scheduling records. All 71 local PHP 8.4 no-extension component checks pass, and independent 2026 fall-back probes confirm first occurrences for New York, London, Paris, Sydney, Lord Howe and Havana. Add the bounded application contract and ownership. No shipping code/version changes or application acceptance yet; the next step is additive storage and transactional conflicts, then public/admin screens and actual native/browser/update tests. No calendar provider, mail or live deployment is activated. The roadmap continues.
+
+## 2026-10-13 — L-03 application candidate implementation
+
+From preserved scheduling merge 719010b, implement candidate 1.15.0: pure canonical content/settings mapping, four validated additive schema tables and owner setup, a disabled-by-default studio calendar, current authorization, public offered-slot projection, atomic pending intake, explicit legacy adoption, password-confirmed future decisions, cancellation/decline/rescheduling and retained history/audit. Every conflict-changing write shares the configuration row lock; existing inquiry deletion takes the same order and cascades appointment content. Add escaped administrative/public forms and current permission routing. Keep preference-only intake when disabled; minimum notice applies to new/rescheduled requests, not confirming an existing future hold. No external calendar or confirmation/cancellation message is used.
+
+Add native schema/auth/consent/stale/rollback tests, held-lock multiprocess booking/confirmation/delete/configuration races, HTTP/Chromium public/admin flows and actual immutable 1.14.0 owner update/recovery retaining reviews/templates/email credentials/private key. Expand the supported matrix to 17 starting packages. Local syntax, 71 no-extension canonical checks and both source loading orders pass; six independent fall-back probes previously pass. Combined CI, actual screenshots, exact-main and release verification are next. This is a source candidate, not a published or deployed version; the roadmap continues.
+
+### First scheduling acceptance correction
+
+Run 38457318559 at 4cecc07 passed all prior native suites and the new setup/authorization/lifecycle cases, then failed the held-lock concurrent public-booking assertion. Source review identifies a REPEATABLE READ snapshot opened by readiness/authorization before waiting for the calendar row: a later nonlocking active-appointment query can still see the older snapshot. Use a current locking read for conflict queries within a transaction; public display remains an ordinary read. The existing two-process regression must prove one appointment and rollback of the losing inquiry. Filesystem and Apache tests passed, including actual 1.14.0 update/recovery; browser checks were skipped because native acceptance failed. Regenerate installer hashes and rerun the combined suite; no release or deployment occurred.
+
+### Scheduling acceptance and screenshot review
+
+Run 38457999787 at 6d72e02 passes all 5,535 named application checks: 893 native (83 scheduling), 3,084 estimator, 923 HTTP/Chromium, 129 filesystem/recovery, 487 Apache and 19 builder. The held-lock booking race now proves one saved appointment and rollback of the losing inquiry. Source and actual public/admin desktop/mobile screen review found no outstanding runtime defect. Public full-page screenshots retained a scrolled fixed header over the form; reset scroll and focus before captures so release evidence shows the controls clearly. This test-only correction requires fresh exact-head acceptance before merge; 1.15.0 remains unpublished.
+
+## 2026-10-13 — 1.15.0 consultation scheduling published and verified
+
+PR #66 merged at 8749bc5a89e52f8f35a193cc49d306136576ec8e, preserving corrected #32 through 3617ad5. Exact-main 38460197599: 5535 named checks (893 native, 3084 estimator, 923 HTTP/Chromium, 129 filesystem, 487 Apache, 19 builder). All 16 draft/public assets and tag downloaded/verified; Windows/Linux bytes match; prior 1.14.0 fingerprints unchanged. Homepage pixels retained; actual consultation public/admin desktop/mobile screens inspected. Snapshot concurrency defect corrected with current locking reads and retained process regression. Updated release records, guide and handoff. No live deployment, provider calendar or outgoing decision message. Next: scoped A-06 webmail transport/inbound-message work with current account/grant/key boundaries and isolated TLS/hostile-content acceptance. The roadmap continues.
+
+## 2026-10-13 — claim A-06 connection diagnostics after verified 1.15.0
+
+Continue the owner's roadmap from publication-record main ad2f39d on codex/mail-connection-checks. Review current email account/key/grant code and upstream PHP/PHPMailer/Webklex/Horde/MIME requirements. Choose a narrow dependency-free authentication diagnostic first; general inbox/MIME handling still requires a reviewed maintained stack and its own acceptance. Add the contract, non-shipping foundation/mail-transport classes and tests/mail-transport, plus independent PHP 8.2/8.4 CI. Local PHP 8.4 passes 103 no-extension policy checks and 147 actual loopback TLS/protocol checks with ephemeral fixture certificates and synthetic credentials, including pre-credential revocation. No production private-network override or test CA exists. Application schema/owner controls/history/rate/concurrency tests and combined release acceptance remain next. Latest publication is 1.15.0; no version bump, live mailbox, provider write or deployment occurs. Preserve independent Devin and ops branches. Separately verified the sanitized successful owner-requested 20i GET /package job 115510304263; secret availability is resolved for that diagnostic only, with issue #65 retaining other gates.
+
+## 2026-10-13 — implement owner mailbox diagnostics, candidate 1.16.0
+
+Continue the owner's roadmap from prototype parent 1209d84 on PR #67. Implement bounded DNS resolver, two-table intent/result schema, additive strict owner setup, current-authorized/password-confirmed controls, immutable sanitized history, cooldown/hourly limits and post-DNS/pre-credential authorization. No database transaction spans network work. Build the canonical shipping mirror and advance candidate version/staging to 1.16.0; retain actual 1.15.0 inventory and extend update/recovery with nonempty synthetic failed-check history alongside accounts/key/templates/reviews/appointments. Add native database/HTTP/Chromium suites and actual production-socket-option TLS assertions. Local 103 policy, 13 resolver and 185 TLS/protocol checks pass; fix a test closure's by-value counter capture found by resolver acceptance. Initial prototype PHP 8.2/8.4 and full application CI passed; new adapter/native/browser/upgrade checks are next and not yet claimed passing. Update guides/status/handoff/changelog. Latest publication remains 1.15.0; no real mailbox, message, external-provider call or deployment. Next: run candidate GitHub acceptance, fix failures, review actual screens and complete exact-main/package verification before any publication.
+
+## 2026-10-13 — broaden actual transport and concurrent-authority acceptance
+
+Parent d92a71c, PR #67. Local transport acceptance now passes 104 destination-policy, 13 resolver and 313 actual TLS/protocol checks. Exercise original-hostname SNI, SMTP LOGIN and revocation between its username/password payloads, buffered STARTTLS injection, abrupt EOF, oversized aggregate responses, reply floods and literal refusal. Add database schema/relationship refusal, disabled/future/revoked/changed-role identities and separate PHP processes where an owner edits/revokes an account while DNS waits; the resulting check must perform no credential transport. Candidate database/browser acceptance is running on GitHub; these added native cases remain pending until the new head completes. Devin independently reviewed prototype 1209d84 in issue #2. Correct the review's benchmarking-range nit with an explicit test: 2001:2::/48 is already excluded by 2001::/23. Preserve receiving PR #68 without integrating its overlapping custom parser; request focused adapter review on #67 in comment 6154797118. No real mailbox, message or deployment; latest publication is still 1.15.0. Next: resolve candidate CI findings and review actual screens before exact-main/release acceptance.
+
+## 2026-10-13 — first connection candidate passes application acceptance; visual correction
+
+Parent 45cfbd2. Full candidate d92a71c passed application run 38464539033 (synthetic PR merge source 6cd5e3bb268496bffe7cd2342a39b5a749e3e9a3): 936 native including 43 connection checks, 3,084 estimator, 948 HTTP/Chromium, 143 filesystem, 541 Apache and 19 builder checks. Actual 1.15.0 upgrade/recovery and all 18 starting packages passed. Downloaded named results and inspected actual connection screenshots. Desktop outgoing form inherited sibling-form top margin; wrap each grid column to align headings/fields. Mobile screenshot caught the sidebar mid-transition; wait for the existing drawer to leave the viewport before capture. Regenerate installer inventory. These source/test changes and the added 45cfbd2 authority/TLS checks require updated-head acceptance before merge, followed by exact-main acceptance and publication verification. No real mailbox or deployment. Latest published release remains 1.15.0.
