@@ -83,8 +83,6 @@ jobs:
           name: application-acceptance-${{ github.sha }}
           path: |
             qa/
-            dist/manifest.json
-            dist/SHA256SUMS.txt
-            dist/*.zip
+            dist/
           retention-days: 14
           if-no-files-found: error

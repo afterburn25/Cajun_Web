@@ -404,3 +404,8 @@ Candidate `57e28bf` passes all native/HTTP/Chromium suites plus 41 real filesyst
 ### Final guard coverage expansion
 
 Run `38417310703` retains passing native, expanded HTTP/Chromium and filesystem recovery suites. Apache now passes fresh root/subfolder setup, asset/session checks, internal denial, no listings and runtime-file protection, but the added interrupted-upgrade fixture needs its worker diagnostic captured before claiming that case. Added exact diagnostics, real builder negative tests (runtime data, missing/moved modules, root logic, weakened guards, symlinks and archive paths), and opcode-cache invalidation checks before activating changed PHP. Apache acceptance will use timestamp validation disabled to exercise stale-code prevention. These additions are not yet accepted.
+
+### 2026-10-13 — initialize Apache cache before requests
+
+Candidate 49eae7f passes the builder negative, native, HTTP/Chromium and filesystem suites. Apache run 38418701581 exposed a harness configuration error: OPcache was enabled per request after startup, which PHP forbids and the installed module crashed on. Configure the isolated Apache PHP scan directory at process startup instead. Preserve all distribution guides and per-artifact manifests in CI artifacts. The interrupted Apache update diagnostic remains to be reached and checked; publication remains pending.
+

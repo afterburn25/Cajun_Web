@@ -37,9 +37,6 @@ TypesConfig /etc/mime.types
 '''+''.join('LoadModule '+m+'_module /usr/lib/apache2/modules/mod_'+m+'.so\n' for m in modules)+'''
 LoadModule php_module /usr/lib/apache2/modules/libphp8.3.so
 PHPIniDir /etc/php/8.3/apache2
-php_admin_flag opcache.enable On
-php_admin_flag opcache.validate_timestamps Off
-php_admin_value opcache.file_update_protection 0
 <FilesMatch "\\.php$">
   SetHandler application/x-httpd-php
 </FilesMatch>
@@ -48,7 +45,10 @@ php_admin_value opcache.file_update_protection 0
   Require all granted
 </Directory>
 '''
-        config=work/'httpd.conf';config.write_text(conf);proc=subprocess.Popen(['/usr/sbin/apache2','-f',str(config),'-DFOREGROUND'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
+        # Enable the cache at PHP startup, not per request (which PHP forbids).
+        ini=work/'php-conf';ini.mkdir();(ini/'99-acceptance.ini').write_text('opcache.enable=1\nopcache.validate_timestamps=0\nopcache.file_update_protection=0\n')
+        env=dict(os.environ,PHP_INI_SCAN_DIR='/etc/php/8.3/apache2/conf.d:'+str(ini))
+        config=work/'httpd.conf';config.write_text(conf);proc=subprocess.Popen(['/usr/sbin/apache2','-f',str(config),'-DFOREGROUND'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True,env=env)
         base=f'http://127.0.0.1:{port}'
         try:
             r=wait(base);check(label+' real Apache serves one-page setup','Apache/' in r.headers.get('Server','') and r.status_code==200 and 'id="install-form"' in r.text)
