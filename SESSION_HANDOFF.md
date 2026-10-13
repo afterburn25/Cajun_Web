@@ -1,5 +1,6 @@
 # Session handoff — read before continuing
 
+<<<<<<< HEAD
 ## Devin active branch — `devin/pipeline-foundation` (A-01 board/lead model)
 
 Branched from `main` `02fc784` (published 1.11.0 baseline). Isolated A-01 contract layer: `foundation/pipeline/` (3 files), `tests/pipeline/run.php` (31 synthetic checks, all pass on PHP 8.4.25 locally), `docs/PIPELINE_FOUNDATION.md`, `.github/workflows/pipeline.yml`.
@@ -14,6 +15,12 @@ Branched from `main` `02fc784` (published 1.11.0 baseline). Isolated A-01 contra
 ## Active integration — A-06 email account preparation
 ## Active integration — L-02 website review workflow
 ## Active integration — L-03 consultation scheduling
+=======
+## Active integration — A-06 email connection checks
+
+Codex owns candidate **1.16.0**, branch codex/mail-connection-checks, [PR #67](https://github.com/afterburn25/Cajun_Web/pull/67), from verified 1.15.0 publication-record main ad2f39d. [Bounded contract](docs/MAIL_CONNECTION_CHECKS.md): explicit owner/password/revision/current-assignment incoming/outgoing diagnostics, pinned public destinations, verified TLS, finite authentication-only commands and versioned sanitized results. Application schema, additive owner setup, controls/history, strict started/final audit and limits are implemented in source. Tests now include actual 1.15.0 update/recovery with retained private key and nonempty synthetic check history. Local PHP 8.4 passes 104 destination, 13 DNS-resolver and 313 actual isolated TLS/protocol checks, including production socket options and permission rechecks before credentials. Candidate d92a71c passed full application run 38464539033: 936 native (43 connection), 3,084 estimator, 948 HTTP/Chromium, 143 filesystem, 541 Apache and 19 builder checks. The follow-up 45cfbd2 expands real TLS and database authority/concurrency coverage; screenshot review then corrected sibling-form alignment and a mobile capture during sidebar animation. Updated-head and exact-main/release acceptance remain pending. No real mailbox is contacted or message read/sent. Codex owns adapter/UI/tests/build/release; preserve Devin branches and keep his review focused on this contract. Latest published version remains 1.15.0; the roadmap continues.
+
+>>>>>>> origin/main
 ## Latest verified publication — 1.15.0
 
 [v1.15.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.15.0) is published and freshly downloaded/verified at source/tag `8749bc5a89e52f8f35a193cc49d306136576ec8e` through [PR #66](https://github.com/afterburn25/Cajun_Web/pull/66), preserving corrected Devin #32 through `3617ad5`. Bounded L-03 adds one owner-configured studio calendar, public pending slot requests, explicit old-inquiry adoption, staff confirmation/cancellation/decline/rescheduling and retained history. Scheduling starts disabled with no offered hours. Current permissions, consent, saved revisions and password-confirmed decisions protect the workflow; all conflict-changing writes use one configuration lock and current database reads. [Guide](docs/CONSULTATION_SCHEDULING.md). Decisions update the studio calendar only; contact prospects separately. No provider calendar or outgoing confirmation/cancellation message.
