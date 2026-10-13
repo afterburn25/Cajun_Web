@@ -3,6 +3,7 @@
 ## 2026-10-13 — Devin HC-09 domain lifecycle foundation (unreviewed, unintegrated)
 
 Devin implemented the safe-work portion of HC-09 as an isolated canonical component on `devin/domain-foundation`: `foundation/domains/` (DomainName, TldOffering, RegistrantContact, DomainPricing→DomainQuote, DomainOrder state machine), `tests/domains/run.php` (81 checks), `domains.yml` workflow, and [DOMAINS_FOUNDATION](docs/DOMAINS_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Development pending — API verification** (fixture TLDs/prices only; no registrar calls). No `site/` changes, cart UI, schema, persistence, deployment or release.
+
 ## Active roadmap increment — 1.11.1 candidate
 
 Codex owns `codex/motion-update-1.11.1` from main `02fc784`, preserving Devin PR #34 history at `e2b2a23` in merge `69ed304`. Scope: W-02 homepage pause/root scrolling and restrained brand sheen; honest browser motion evidence; safe staged updates from published organized 1.11.0 while retaining all older supported paths. Recovery journals are per target version; the permanent 1.11.0 lock is shared across retained updater versions. Existing private/configuration/scaffold bytes and prior recovery records stay intact; fresh organized sites gain no legacy root routes.

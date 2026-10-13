@@ -5,6 +5,7 @@
 `devin/domain-foundation` (branched from `main` `5d810b1`) carries the isolated HC-09 domain contract: `foundation/domains/` (LDH-validated `DomainName`, admin-configured `TldOffering` with null=not-offered pricing, `RegistrantContact` + privacy preference, honest-availability `DomainPricing`→`DomainQuote`, guarded `DomainOrder` lifecycle with append-only history and consent-gated submission), `tests/domains/run.php` (81 synthetic checks), `docs/DOMAINS_FOUNDATION.md`, `.github/workflows/domains.yml`. Local PHP 8.4.25: all checks pass, all files lint clean.
 
 **Gate:** Development pending — API verification; no registrar calls or fabricated data. **Not integrated:** additive-only outside `site/`. Next for this lane: Codex review/merge; adapter contract once the refactor lands.
+
 ## Active roadmap increment — 1.11.1 candidate
 
 Codex owns `codex/motion-update-1.11.1` from main `02fc784`, preserving Devin PR #34 history at `e2b2a23` in merge `69ed304`. Scope: W-02 homepage pause/root scrolling and restrained brand sheen; honest browser motion evidence; safe staged updates from published organized 1.11.0 while retaining all older supported paths. Recovery journals are per target version; the permanent 1.11.0 lock is shared across retained updater versions. Existing private/configuration/scaffold bytes and prior recovery records stay intact; fresh organized sites gain no legacy root routes.

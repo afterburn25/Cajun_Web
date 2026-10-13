@@ -5,6 +5,7 @@
 - Added canonical `foundation/domains/` classes (LDH-validated domain names, admin-configured TLD offerings, registrant contact with privacy preference, honest-availability pricing, and a guarded order lifecycle state machine) plus `docs/DOMAINS_FOUNDATION.md`.
 - Added `tests/domains/run.php` (81 synthetic checks; fixture TLDs/prices only) and the `domains.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, cart UI, schema, persistence or registrar calls; HC-09 gate remains `Development pending — API verification`. Not yet integrated or released.
+
 ## 1.11.1 — candidate, motion preferences and organized updates
 
 - Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.
