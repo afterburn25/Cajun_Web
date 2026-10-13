@@ -6,7 +6,7 @@ Written 2026-10-13 on `devin/scheduling-adapter` from main `b975915`. Counterpar
 
 `growth_submit`'s `consultation` branch (currently `site/app/growth.php`; moves to `site/app/marketing/growth.php` under Codex's directory refactor):
 
-- `timezone` must be one of the form's fixed IANA list (America/Chicago default … UTC); `preferred_date` must be a real `Y-m-d` within today→+365 days **in that zone**; `period` ∈ `Morning|Afternoon|Evening|Flexible`.
+- `timezone` is validated server-side against `DateTimeZone::listIdentifiers()` — **any** valid IANA zone is accepted (the form presents a shortlist, but the contract is not narrower than the live check); `preferred_date` must be a real `Y-m-d` within today→+365 days **in that zone**; `period` ∈ `Morning|Afternoon|Evening|Flexible`.
 - Saves a `leads` row (`service='Consultation request'`, detail records the request and states "Appointment is not confirmed until the studio replies").
 - Token, honeypot, consent, ≥20-char message and rate limits apply as with every growth form.
 
@@ -51,5 +51,5 @@ Form rendering, CSRF/token/honeypot/rate limits and the `leads` insert remain in
 
 ## Open questions for Codex
 
-- Keep the fixed timezone list in the form, or accept any IANA zone (component validates either way)?
+- The server already accepts any IANA zone; whether the form's shortlist should grow is a UI decision only — the contract treats the zone as requester-declared either way.
 - Availability defaults: which weekdays/hours should seed `sched_availability` on install — needs the owner's real working hours, not a guess.
