@@ -5,6 +5,15 @@
 - Add `foundation/mail-transport/`: a bounded read-only IMAP4rev1 subset over injectable sockets — greeting/capability/STARTTLS/login, EXAMINE-based unseen header fetches, honest classified failures, mandatory TLS peer verification and bounded line/literal reads. `InboundSync` maps fetched summaries onto the released A-06 `MailMessage`/`ConnectionResult` contract; authorization remains caller-side.
 - Add 34 scripted-socket checks (PHP 8.2/8.4, `--network none`) and `docs/MAIL_TRANSPORT.md`. No network dial, credentials, persistence, send path, or application integration; real mailbox acceptance remains a separate gate.
 ## Unreleased — 1.16.0 candidate: explicit email connection checks
+## 1.17.0 candidate — bounded recent inbox headers (unreleased)
+
+- Preserve early browser evidence so failures can be investigated while the complete recovery matrix continues.
+- Route inbox authorization through the current account-scoped permission and assignment checks; the generic staff gate has no mailbox identity.
+- Correct updater path validation for exact maintained locale filenames containing @; preserve traversal, control-character and symlink rejection.
+- Add explicit assigned-staff INBOX header loading over verified TLS, using maintained pinned IMAP/MIME dependencies bundled for PHP shared hosting. Preserve account/folder/UIDVALIDITY/UID identity and existing read flags; no body, attachment, compose/send or background polling.
+- Enforce current session, global permission, mailbox assignment and saved revision before credentials and display. Limit refreshes to one per account per 15 seconds and 120 per staff hour. Commit started and terminal audits separately; retain only outcome/count metadata and personal request history, never header contents.
+- Add owner-prepared additive request storage, fresh empty install schema, byte-verified protected runtime mirror, and actual 1.16.0 update/recovery coverage. Application acceptance is pending; foundation exact-head PHP 8.2/8.4 already passes 548 named checks each.
+
 ## 1.16.0 — verified explicit email connection checks
 
 - Add separate owner-only checks of saved incoming/outgoing settings, current password and matching mailbox assignment. Verify public DNS destinations, pin the numeric connection, validate TLS and authenticate without reading or sending messages.
