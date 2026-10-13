@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace CajunWebPro\Foundation\Portfolio;
 
+if (PHP_SAPI !== 'cli' && !defined('CWP_BOOT')) { http_response_code(404); exit; }
+
 /**
  * A public portfolio browsing request after normalization.
  * An empty selection means unfiltered; unknown categories simply match nothing.

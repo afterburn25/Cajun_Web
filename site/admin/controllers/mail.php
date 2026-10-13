@@ -1,0 +1,11 @@
+<?php
+declare(strict_types=1);
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+    if($action==='email_save'){
+        $mode=posted('email_mode',20);$host=posted('smtp_host',253);$port=posted('smtp_port',5);$security=posted('smtp_security',5);$username=posted('smtp_user',190);$from=posted('mail_from',190);$recipient=posted('notification_email',190);$password=posted('smtp_password',512);
+        if(!in_array($mode,['disabled','smtp','mail'],true)||!in_array($security,['tls','ssl'],true)||!in_array((int)$port,[465,587,2525],true))throw new InvalidArgumentException('Choose a valid delivery method, TLS mode and SMTP port.');
+        if($mode!=='disabled'&&(!filter_var($from,FILTER_VALIDATE_EMAIL)||!filter_var($recipient,FILTER_VALIDATE_EMAIL)))throw new InvalidArgumentException('A valid sender and notification email are required.');if($mode==='smtp'&&!preg_match('/^[a-zA-Z0-9.-]+$/D',$host))throw new InvalidArgumentException('Enter a valid SMTP hostname.');
+        db()->beginTransaction();try{foreach(['email_mode'=>$mode,'smtp_host'=>$host,'smtp_port'=>$port,'smtp_security'=>$security,'smtp_user'=>$username,'mail_from'=>$from,'notification_email'=>$recipient] as $k=>$v)save_setting($k,$v);if($password!=='')save_setting('smtp_password',encrypt_secret($password));elseif(isset($_POST['clear_smtp_password']))save_setting('smtp_password','');db()->commit();}catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
+        log_event('email.configure','Transport '.$mode);flash('Email settings saved. Send a test to verify your hosting mail service.');redirect(admin_url('email'));
+    }
+    if($action==='email_test'){if(!consume_rate('admin-mail-test-'.$user['id'],5,3600))throw new InvalidArgumentException('The hourly mail-test limit has been reached.');$status=send_message($user['email'],'CajunWebPro Studio · Email delivery test',"Your CajunWebPro website sent this test using the configured email transport.\n\nWebsite: ".site_url()."\nSent: ".gmdate('c')."\n\nReceiving this message confirms delivery to this inbox.");if($status!=='accepted')throw new InvalidArgumentException('Select and save an email delivery method first.');log_event('email.test');flash('The mail service accepted the test for '.$user['email'].'. Check the inbox and spam folder to confirm delivery.');redirect(admin_url('email'));}

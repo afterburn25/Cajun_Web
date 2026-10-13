@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace CajunWebPro\Foundation\Access;
 
+if (PHP_SAPI !== 'cli' && !defined('CWP_BOOT')) { http_response_code(404); exit; }
+
 /** Pure permission decisions. Account mutations and authentication live in the adapter. */
 final class PermissionPolicy
 {
