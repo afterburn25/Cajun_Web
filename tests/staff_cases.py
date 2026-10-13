@@ -95,6 +95,8 @@ def run_browser(env,browser):
     nav=s.locator('nav[aria-label=Administration]')
     check('Assigned website navigation hides owner and client sections',nav.get_by_role('link',name='Portfolio',exact=True).count()==1 and nav.get_by_role('link',name='Administrators',exact=True).count()==0 and nav.get_by_role('link',name='Client workspace',exact=True).count()==0 and nav.get_by_role('link',name='Email delivery',exact=True).count()==0)
     web=requests.Session();r=submit(web,BASE+'/existing/admin.php?view=login','login',{'email':'website-staff@example.invalid','password':STAFF})
+    chosen_form(web,BASE+'/existing/admin.php?view=studio-pipeline','studio_pipeline','id',1,{'status':'qualified','notes':'Website staff saved this note','follow_up':''})
+    check('Website staff can save authorized inquiry work',db('SELECT notes FROM ci_leads WHERE id=1')[0]['notes']=='Website staff saved this note')
     for view in ['staff','email','health','studio-upgrade','studio-clients','studio-job&id=1','studio-job&file=1']:
         r=web.get(BASE+'/existing/admin.php?view='+view);check('Direct website staff denial '+view,r.status_code==403)
     count=db('SELECT COUNT(*) AS n FROM ci_studio_clients')[0]['n']
@@ -106,6 +108,8 @@ def run_browser(env,browser):
     check('No-JavaScript setup and client-only landing work',c.locator('h1').inner_text()=='Client workspace')
     nav=c.locator('nav[aria-label=Administration]');check('Client-only navigation excludes inquiries website and accounts',nav.get_by_role('link',name='Inquiries',exact=True).count()==0 and nav.get_by_role('link',name='Portfolio',exact=True).count()==0 and nav.get_by_role('link',name='Administrators',exact=True).count()==0)
     client=requests.Session();submit(client,BASE+'/existing/admin.php?view=login','login',{'email':'client-staff@example.invalid','password':STAFF})
+    submit(client,BASE+'/existing/admin.php?view=studio-job&id=1','studio_message',{'body':'Client support staff can update this project.'})
+    check('Client-only staff can save authorized project updates',bool(db('SELECT id FROM ci_studio_messages WHERE job_id=1 AND body=?',['Client support staff can update this project.'])))
     for view in ['leads','projects','staff','email','studio-content']:
         check('Direct client-only staff denial '+view,client.get(BASE+'/existing/admin.php?view='+view).status_code==403)
     r=client.get(BASE+'/existing/admin.php?view=security');client.post(r.url,data={'csrf':token(r),'action':'project_delete','id':'1'})
@@ -123,6 +127,10 @@ def run_browser(env,browser):
     # Forbidden delegation cannot smuggle management capabilities into explicit grants.
     r=client.get(BASE+'/existing/admin.php?view=security');client.post(r.url,data={'csrf':token(r),'action':'staff_save','id':cid,'name':'Attack','email':'client-staff@example.invalid','role':'owner','enabled':'1','owner_password':STAFF})
     check('Administrator cannot promote itself through forged POST',db('SELECT role FROM ci_staff_profiles WHERE user_id=?',[cid])[0]['role']=='administrator')
+    chosen_form(admin,url,'staff_save','id',cid,{'permissions[]':[],'owner_password':OWNER})
+    r=client.get(BASE+'/existing/admin.php?view=studio-clients');check('Removing grants revokes the active session','view=login' in r.url)
+    r=submit(client,BASE+'/existing/admin.php?view=login','login',{'email':'client-staff@example.invalid','password':STAFF})
+    check('No-grant staff can sign in to own account only','view=security' in r.url and client.get(BASE+'/existing/admin.php?view=studio-clients').status_code==403)
     check('Staff browser has no uncaught page errors',not errors)
     check('Setup secret absent from server request log',fixture['code'] not in (QA/'http-server.log').read_text())
     (QA/'staff-browser-diagnostics.json').write_text(json.dumps({'page_errors':errors},indent=2))

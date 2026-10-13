@@ -20,7 +20,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         $u=one('SELECT * FROM '.table('users').' WHERE email=?',[$email]);
         $hash=($u['password_hash']??'')?:'$2y$12$k41gRE1TEYzHWgNYkc/yDuDTWYfPr6HvCaDvQfmUTDpAWPSgwOI6u';
         $verified=password_verify($password,$hash);
-        if(!$u||!$verified||!staff_profile($u)){log_event('auth.failed','Sign-in rejected');throw new InvalidArgumentException('The email or password is not correct.');}
+        if(!$u||$u['password_hash']===''||!$verified||!staff_profile($u)){log_event('auth.failed','Sign-in rejected');throw new InvalidArgumentException('The email or password is not correct.');}
         if(password_needs_rehash($hash,PASSWORD_DEFAULT)){query('UPDATE '.table('users').' SET password_hash=? WHERE id=? AND auth_version=?',[password_hash($password,PASSWORD_DEFAULT),$u['id'],$u['auth_version']]);}
         login_user($u);query('DELETE FROM '.table('rate_limits').' WHERE expires<?',[time()]);query('DELETE FROM '.table('resets').' WHERE expires<?',[time()]);log_event('auth.login');redirect(admin_url(staff_home($u)));
     }

@@ -282,7 +282,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['cwp_check'])) {
 /** Only immutable public application files: never config, locks or customer data. */
 function setup_expected_files(): array { return [
         '.htaccess' => '2cbbbf4de31257d939c6ddaabb570e1f309a2c418be31fdcc7b269f19b3078fb',
-        'admin.php' => 'c0e834cdb7eb3408f409d6ea9b2a156babf35aeb1dc3e62243e50312b9dd52ca',
+        'admin.php' => '1f149ec19a781884ba17a8f81f289debbaea35277efd8a61b794e8b0244cbb32',
         'api.php' => '500e1a3b1d33ed693bf91f6fa9fa723451dea38c49f83b061fa9de8eabd688b2',
         'app/.htaccess' => 'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
         'app/admin-view.php' => '992b97ff4f7b7579e5666ff9eb61a7193af5f450efcb0cfe5324e6d1cdfb1d69',
@@ -299,7 +299,7 @@ function setup_expected_files(): array { return [
         'app/index.php' => '696138b31bbb2a20c4bb53eb98b68dbe25557947dd6a7513c81e1c8b9446ce0d',
         'app/mail.php' => 'b841a8f23acc147748a829dea230e5e0053489623688c6cbf3f8b18af71fe3d8',
         'app/schema.php' => '7a7f9209425f06dcae58413cebf6cc3576034ac80a465fdcbdd57763e9a5388a',
-        'app/staff-admin.php' => 'aea04f1f72567d5925dfbf28bd8d6fa609010fafc6bd879916c16dc4ccb27378',
+        'app/staff-admin.php' => '114864641e0f30f66c2c7535f8e28ce3ffb33446e0be6eca27ea8fade4bdf96f',
         'app/staff.php' => '6eb182a3c990e899430d8827c7345b129a64c686d2f66f1c5858261c329d8dc8',
         'app/studio-admin.php' => 'db29e3d63b3a9ad60566ad90183905f4f7f57247f64b76ddf5ea39391e99f77f',
         'app/view.php' => 'ebf2a24ebf86ff7fba26abdb6c475ffc48be3b90a25dcc6c7a59745a9173f1a4',

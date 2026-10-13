@@ -1,10 +1,12 @@
 # Staff and mailbox permission foundation
 
+**Application integration — 1.2.0 candidate:** [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10) supplies the [staff adapter and UI](ADMIN_ACCOUNTS.md), explicit migration, account/reset/session lifecycle and last-owner serialization. These canonical classes are bundled verbatim by the release builder. Original independent-component history below is retained; statements about absent application integration describe that earlier checkpoint. Mailbox connections and grants remain deferred.
+
 Started 2026-10-13 under the owner's instruction to start independent work while another worker finishes 1.1.0 and publishes its source to GitHub. Branch: `codex/platform-foundation`. Scope: the decision component for A-05/A-06, not a completed admin-account or webmail feature.
 
 ## Implemented component
 
-The standalone PHP 8.2+ classes in [foundation/access](../foundation/access) need no framework, database, network access or Composer installation. They do not replace the existing application's authentication. Keep this directory outside deployment packages until the verified 1.1.0 source is inspected, an adapter is integrated and the release inventory is updated.
+The standalone PHP 8.2+ classes in [foundation/access](../foundation/access) need no framework, database, network access or Composer installation. They do not replace the existing application's authentication. Keep this canonical directory outside the document root; 1.2.0 ships only builder-verified copies under `app/foundation`.
 
 - [AccessContext](../foundation/access/AccessContext.php) carries an immutable snapshot of current server-side identity, permissions and mailbox grants.
 - [MailboxGrant](../foundation/access/MailboxGrant.php) carries exact mailbox identity, separate read/send rights and explicit enabled state. Duplicate grants for the same identifier are rejected rather than resolved by array order.
@@ -20,6 +22,8 @@ These are adapter contract identifiers, not assumed existing routes or database 
 
 | Identifier | Scope / purpose |
 |---|---|
+| `website.manage` | Current application website, portfolio, inquiries and sales content |
+| `clients.manage` | Current agency-wide client workspace, documents and manual invoices |
 | `staff.manage` | Global: staff-account management entry point |
 | `staff.permissions.manage` | Global: permission assignment entry point; separate from ordinary staff management |
 | `mail.accounts.manage` | Global: configure mailbox connections; does not grant message read/send access |

@@ -1,8 +1,8 @@
 # Changelog
 
-## Unreleased — A-05 administrator access
+## 1.2.0 candidate — administrator accounts
 
-Owner resumed roadmap after v1.1.0. Application integration begins on codex/admin-accounts; no new release or deployment yet.
+Owner-controlled creation, selected website/client-workspace permissions, enable/disable and private 24-hour setup/recovery links are integrated with existing users. Current-password confirmation, per-request authorization, reset/setup/session revocation and concurrent last-owner protection are enforced. Fresh installs initialize the owner; existing installations explicitly select an owner and add two tables without changing legacy credentials. Original and actual released-1.1.0 package upgrades are tested. Canonical foundation components and the embedded installer core are verified by the builder. [User/developer guide](docs/ADMIN_ACCOUNTS.md), [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10). No new publication or target-host deployment claimed until the release register records verified assets.
 
 ## v1.1.0 — 2026-10-13
 

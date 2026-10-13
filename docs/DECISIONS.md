@@ -98,3 +98,13 @@ The access component's logical capability/context identifiers are integration co
 | ID | Status | Decision | Consequence |
 |---|---|---|---|
 | D-037 | Source-driven correction | The inspected 1.1.0 draft uses random hex strings for staff auth_version | Replace the preliminary integer foundation contract with opaque string comparison; preserve existing tokens and do not invent an integer migration. Staff invitations bind to the exact version and require transactional activation against a freshly loaded account. |
+
+## 2026-10-13 — Administrator integration after roadmap resume
+
+| ID | Status | Decision | Consequence |
+|---|---|---|---|
+| D-038 | Owner resumed | Continue the roadmap after verified v1.1.0 | Supersedes the earlier completed release-task stop. Codex takes bounded A-05 integration on its own branch; Devin's portfolio branch is preserved. |
+| D-039 | Source-driven implementation | Reuse users and opaque auth_version; add explicit profiles/invitations | No replacement identity store. Migration requires existing-admin reauthentication and initial owner selection; other legacy administrators receive website/client access. |
+| D-040 | Scope choice | Ship website/client staff grants and manual private setup links first | Delivers useful additional administrator accounts without pretending mailbox access, MFA or automatic delivery exists. Owner-assisted setup recovery retires previous password/sessions. |
+| D-041 | Invariant | Serialize every administrator credential/owner transition per installation | Activation, reset, account edits and owner changes use one advisory lock plus transactions, preventing concurrent last-owner removal. Full code/data backup is required for downgrade. |
+| D-042 | Packaging | Keep canonical foundations and bundle verified copies; derive embedded core | Prevents deployed copies drifting from tested components or installer bootstrap. Customer installation still requires no build tools. |
