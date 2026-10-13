@@ -5,6 +5,7 @@
 - Added canonical `foundation/revisions/` classes (immutable `ContentRevision` snapshots with `restoredFrom` links, separately retained `ApprovalContext`, deterministic `RevisionDiff`, and `ContentDocument` enforcing meaningful-only saves, explicit publish, no-silent-overwrite restores and actor/time attribution) plus `docs/REVISIONS_FOUNDATION.md`.
 - Added `tests/revisions/run.php` (30 synthetic checks; fixture documents only) and the `revisions.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, persistence, permissions or UI. Not yet integrated or released.
+
 ## 1.11.1 — candidate, motion preferences and organized updates
 
 - Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.
