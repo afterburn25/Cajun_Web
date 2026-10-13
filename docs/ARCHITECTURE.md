@@ -180,3 +180,7 @@ VPS terminal launch validates staff role and the mapped server/service, then iss
 ## Reviewed estimator boundary — 2026-10-13
 
 [Standalone estimator](ESTIMATOR_FOUNDATION.md) remains outside `site/`. The current `growth_estimate` still owns configured quantity pricing, custom/integration consultation, amount limits and lead recomputation. [Integration contract](PUBLIC_COMPONENT_INTEGRATION.md) records the adapter gap; no competing schema is introduced.
+
+## Review-request boundary — 2026-10-13
+
+[Standalone review-request component](REVIEW_REQUESTS_FOUNDATION.md) stays outside `site/`; no review-request schema, form or admin workflow exists yet. The contract owns capture normalization (http/https website addresses, consent, goals), the `received → in-review → report-drafted → delivered → closed` pipeline, and evidence-labeled findings. Any future server-side fetching must re-verify resolved DNS — the component's literal-address flags are a first line, not complete SSRF protection.
