@@ -1,8 +1,6 @@
 # Architecture notes
 
-## 2026-10-13 — Candidate 1.5.0 payment foundation
-
-Implemented on `codex/payment-foundation`, parent `e0f8968` after main `f659adf`: owner-only protected separate Authorize.net settings, sandbox-authentication-only adapter and reviewed invoice-bound prepared requests. Existing invoices, catalog snapshots, permissions and client identities are retained. Card collection/production processing remain disabled. [Guide](PAYMENT_PREPARATION.md). Local PHP syntax, deterministic 58/57-file build and 251 permission checks pass. Native MariaDB/actual HTTP/browser and retained 1.4.0 upgrade tests are added; CI is pending and no provider success is claimed. No real credentials, live host, customer mail or provider operation. Next: run/fix full application acceptance, review screenshots, merge only when green and verify an exact-main release. Devin PR #7 is unchanged.
+Released 1.5.0 adds [payment preparation](PAYMENT_PREPARATION.md): two additive tables, owner-only external-key credential protection and reviewed existing-invoice requests. Charges and production connections stay disabled. 227 native / 401 HTTP-browser checks passed; [report](TEST_REPORT_1.5.0.md). Complete/update: 58/57 files. After backup and UPDATE merge, owners enable Payment preparation; private gateway storage must be outside the document root. Existing manual billing remains unchanged.
 
 
 Released 1.4.0 adds `catalog.php`, `catalog-admin.php` and shared `catalog-view.php`. Products append revision history and use explicit catalog permission; public reads select only safe fields. Existing studio invoices receive immutable catalog snapshots with unique request keys and serialized issuance. Product saves and issue/paid/void transitions use strict transactional audit. [Catalog guide](SERVICE_CATALOG.md).

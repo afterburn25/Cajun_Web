@@ -1,5 +1,7 @@
 # CajunWebPro custom hosting commerce, billing and client platform
 
+**2026-10-13 payment checkpoint:** [1.5.0](RELEASE_1.5.0.md) delivers partial M2 / HC-04 / HC-11 settings and prepared invoice requests. [Guide](PAYMENT_PREPARATION.md). Requests require explicit payment and client-workspace grants; credentials remain owner-only. Card collection/production processing remain disabled. Real merchant/provider acceptance and broader roadmap capabilities remain pending.
+
 **2026-10-13 catalog checkpoint:** [v1.4.0](RELEASE_1.4.0.md) releases partial HC-01/HC-06: managed service prices and reviewed immutable snapshots on current project invoices. [Guide](SERVICE_CATALOG.md). It does not complete checkout, taxes, recurring billing or provider services. Current source and prior account/support capabilities remain verified; older pending-source statements below are historical.
 
 **2026-10-13 released checkpoint:** [1.3.0](RELEASE_1.3.0.md) delivers A-09 for the existing project portal, following core staff lifecycle in 1.2.0. [Support scope and limits](CLIENT_SUPPORT.md). Provider SSO/A-10 SSH, full billing/catalog, native 20i management, mail and website ZIP delivery remain incomplete. Older pending-source statements below are historical; current PHP source is verified on main.

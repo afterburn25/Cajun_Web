@@ -1,6 +1,6 @@
 # Payment settings and request preparation
 
-Candidate 1.5.0 implements a bounded part of M2 / HC-04 and HC-11. **Card collection and production processing are disabled.** This is not completed checkout, a payment receipt, or evidence of a real Authorize.net sandbox transaction. Current published versions and acceptance reports are in [Releases](RELEASES.md).
+Released 1.5.0 implements a bounded part of M2 / HC-04 and HC-11. **Card collection and production processing are disabled.** This is not completed checkout, a payment receipt, or evidence of a real Authorize.net sandbox transaction. Current published versions and acceptance reports are in [Releases](RELEASES.md).
 
 ## Setup and access
 

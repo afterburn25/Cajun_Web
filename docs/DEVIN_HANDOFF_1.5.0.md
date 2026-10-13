@@ -1,0 +1,11 @@
+# Devin handoff — verified 1.5.0 payment-preparation baseline
+
+Codex published and downloaded-back verified [v1.5.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.5.0) at `3e95bdf81ca0126d99a69c41f2ff6eb0c08da1e1` via [PR #16](https://github.com/afterburn25/Cajun_Web/pull/16). Exact-main acceptance: 227 native and 401 actual HTTP/Chromium checks, all eight permanent assets/tag verified. [Status](../PROJECT_STATUS.md), [payment guide](PAYMENT_PREPARATION.md), [release register](RELEASES.md). No live deployment/provider operation. Card collection and production processing remain disabled; provider tests are synthetic fixtures only.
+
+Preserve `devin/public-experience` and [PR #7](https://github.com/afterburn25/Cajun_Web/pull/7), latest observed head `55d60670497d987286e64630e037e1ba2ec3a318`. Save local work, fetch and non-destructively merge current main; never reset/force-push. The [detailed portfolio assignment](DEVIN_HANDOFF_1.1.0.md) remains scoped to numeric-category handling, duplicate published-slug behavior, regressions and the authoritative project/media/settings adapter. Its historical source/version/stop statements are superseded. Return a bounded adapter/test PR and identify shared template changes.
+
+Existing portfolio and estimator flows already ship. Preserve any independent estimator work for reconciliation; do not duplicate price/client/invoice systems. Catalog invoices and public approved packages use the existing catalog; payment preparation reuses their issued invoice amounts and snapshots. No raw card fields, credential values or payment tokens belong in public templates.
+
+Codex retains shared identity/permissions, billing/payment preparation and future tokenized sandbox checkout/reconciliation, migrations, installer/build and release integration. New `payments.manage` plus `clients.manage` grants authorize request operations; gateway credentials are owner-only; support contexts cannot mutate billing. Your component paths/branch were not modified or merged. Coordinate shared files before integration.
+
+Run component checks plus current application acceptance, update continuity docs without erasing current release facts, and leave provider/deployment operations to separately authorized work. This GitHub assignment does not establish Devin receipt or execution.
