@@ -18,6 +18,9 @@ final class PermissionPolicy
     private const GLOBAL_PERMISSIONS = [
         'website.manage',
         'clients.manage',
+        'support.login',
+        'support.write',
+        'support.download',
         self::STAFF_MANAGE,
         self::STAFF_GRANT,
         self::MAIL_ACCOUNTS_MANAGE,

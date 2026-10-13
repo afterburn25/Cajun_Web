@@ -1,6 +1,7 @@
 <?php
 /** Optional private client workspace; database setup is explicit for existing sites. */
 declare(strict_types=1);defined('CWP_BOOT') || exit;
+require_once __DIR__.'/support.php';
 function studio_schema(string $prefix): array {
  if(!preg_match('/^[a-zA-Z][a-zA-Z0-9_]{1,19}$/D',$prefix))throw new InvalidArgumentException('Invalid prefix.');
  $t=fn($n)=>'`'.$prefix.$n.'`';$e=' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci';return [
@@ -25,8 +26,9 @@ function studio_migrate(): void {
  finally{query('SELECT RELEASE_LOCK(?)',[$name]);}
 }
 function studio_stages(): array {return ['discovery'=>'Discovery','design'=>'Design','development'=>'Development','review'=>'Final review','launched'=>'Launched','care'=>'Ongoing care','paused'=>'Paused'];}
-function studio_url(array $p=[]): string {return site_url('portal.php').($p?'?'.http_build_query($p):'');}
+function studio_url(array $p=[]): string {if($ctx=support_current())$p=['support'=>$ctx['session']['id']]+$p;return site_url('portal.php').($p?'?'.http_build_query($p):'');}
 function studio_client(): ?array {
+ if($ctx=support_current())return $ctx['client'];
  if(!studio_ready()||empty($_SESSION['client_id']))return null;
  if(time()-(int)($_SESSION['client_last']??0)>1800||time()-(int)($_SESSION['client_login']??0)>28800){unset($_SESSION['client_id']);return null;}
  $c=one('SELECT * FROM '.table('studio_clients').' WHERE id=? AND active=1',[(int)$_SESSION['client_id']]);
@@ -37,15 +39,18 @@ function studio_job(int $id,?int $clientId=null): array {
 }
 function studio_new_invite(int $id): string {require_admin();if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$id]))throw new InvalidArgumentException('Active client not found.');$token=bin2hex(random_bytes(32));query('UPDATE '.table('studio_clients').' SET invite_hash=?,invite_expires=?,auth_version=? WHERE id=?',[hash('sha256',$token),time()+86400,bin2hex(random_bytes(16)),$id]);return studio_url(['invite'=>$token]);}
 function studio_activate(string $token,string $password): void {
+ if(support_current())throw new RuntimeException('Client security changes are blocked during support.');
  validate_password($password);if(!preg_match('/^[a-f0-9]{64}$/D',$token))throw new InvalidArgumentException('Invalid invitation.');
  db()->beginTransaction();try{$c=one('SELECT * FROM '.table('studio_clients').' WHERE invite_hash=? AND active=1 FOR UPDATE',[hash('sha256',$token)]);if(!$c||(int)$c['invite_expires']<=time())throw new InvalidArgumentException('This invitation expired or has already been used. Ask the studio for a new link.');$hash=password_hash($password,PASSWORD_DEFAULT);if((int)$c['invite_expires']<=time())throw new InvalidArgumentException('This invitation expired. Ask the studio for a new link.');query('UPDATE '.table('studio_clients').' SET password_hash=?,auth_version=?,invite_hash=NULL,invite_expires=NULL WHERE id=?',[$hash,bin2hex(random_bytes(16)),$c['id']]);db()->commit();}catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
 }
 function studio_login(string $email,string $password): void {
+ if(support_current())throw new RuntimeException('Client login is blocked during support.');
  $allow1=consume_rate(ip_key('client-login'),15,900);$allow2=consume_rate(hash_hmac('sha256','client|'.$email,config()['key']),8,900);if(!$allow1||!$allow2)throw new RuntimeException('Too many attempts. Wait 15 minutes.');
  $c=one('SELECT * FROM '.table('studio_clients').' WHERE email=? AND active=1',[$email]);$hash=$c['password_hash']??'$2y$12$k41gRE1TEYzHWgNYkc/yDuDTWYfPr6HvCaDvQfmUTDpAWPSgwOI6u';$ok=password_verify($password,$hash);if(!$c||!$ok)throw new InvalidArgumentException('Email or password not recognized.');session_regenerate_id(true);$_SESSION['client_id']=(int)$c['id'];$_SESSION['client_auth']=$c['auth_version'];$_SESSION['client_last']=$_SESSION['client_login']=time();$_SESSION['csrf']=bin2hex(random_bytes(32));
 }
 /** Decision attached to an immutable version, with a project row lock shared by publication. */
 function studio_decide(int $clientId,int $versionId,string $choice,string $feedback): void {
+ if(support_current())throw new RuntimeException('Client decisions are blocked during support.');
  $acting=studio_client();if(!$acting||(int)$acting['id']!==$clientId)throw new InvalidArgumentException('Sign in to review your own project.');
  if(!in_array($choice,['approved','changes'],true)||strlen($feedback)>5000||($choice==='changes'&&strlen(trim($feedback))<5))throw new InvalidArgumentException('Add change details or choose approval.');
  db()->beginTransaction();try{
@@ -75,17 +80,24 @@ function studio_upload(int $jobId,string $actor): void {
  $name=substr(preg_replace('/[^a-zA-Z0-9 ._()-]/','_',basename(is_string($f['name']??null)?$f['name']:'document')),0,180)?:'document';
  $id=bin2hex(random_bytes(16));$path=config()['storage'].'/media/studio-'.$id.'.php';
  db()->beginTransaction();$written=false;try {
-  if(!one('SELECT id FROM '.table('studio_jobs').' WHERE id=? FOR UPDATE',[$jobId]))throw new InvalidArgumentException('Project not found.');
+  if($ctx=support_current()){
+   $fresh=support_check($ctx['session']['id']);if(!$fresh||!staff_can('support.write',$fresh['actor']))throw new RuntimeException('Support upload is no longer permitted.');
+   if(!one('SELECT id FROM '.table('studio_jobs').' WHERE id=? AND client_id=? FOR UPDATE',[$jobId,$fresh['client']['id']]))throw new InvalidArgumentException('Project not found.');
+  }elseif(!one('SELECT id FROM '.table('studio_jobs').' WHERE id=? FOR UPDATE',[$jobId]))throw new InvalidArgumentException('Project not found.');
   $sum=(int)query('SELECT COALESCE(SUM(bytes),0) FROM '.table('studio_files').' WHERE job_id=?',[$jobId])->fetchColumn();if($sum+$size>100*1024*1024)throw new RuntimeException('This project has reached its 100 MB file limit.');
   write_private_file($path,CWP_GUARD.$bytes);$written=true;
-  query('INSERT INTO '.table('studio_files').' (id,job_id,author_type,original_name,stored_name,mime,bytes,sha256,created_at) VALUES (?,?,?,?,?,?,?,?,?)',[$id,$jobId,$actor,$name,basename($path),$mime,$size,hash('sha256',$bytes),gmdate('Y-m-d H:i:s')]);db()->commit();
+  query('INSERT INTO '.table('studio_files').' (id,job_id,author_type,original_name,stored_name,mime,bytes,sha256,created_at) VALUES (?,?,?,?,?,?,?,?,?)',[$id,$jobId,$actor,$name,basename($path),$mime,$size,hash('sha256',$bytes),gmdate('Y-m-d H:i:s')]);if(support_current())support_record('file.upload','file',$id);db()->commit();
  }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();if($written)@unlink($path);throw $e;}
 }
 function studio_download(string $id,?int $clientId): never {
+ if($ctx=support_current()){
+  $fresh=support_resolve($ctx['session']['id']);if(!$fresh||!staff_can('support.download',$fresh['actor'])||$clientId!==(int)$fresh['client']['id']){support_record('file.download','file',preg_match('/^[a-f0-9]{32}$/D',$id)?$id:'','denied');fail_page('Support download is not permitted.',403);}
+  $GLOBALS['cwp_support']=$fresh;
+ }
  if(!preg_match('/^[a-f0-9]{32}$/D',$id))fail_page('File not found.',404);
  $p=[$id];$sql='SELECT f.* FROM '.table('studio_files').' f JOIN '.table('studio_jobs').' j ON j.id=f.job_id WHERE f.id=?';if($clientId!==null){$c=studio_client();if(!$c||(int)$c['id']!==$clientId)fail_page('Sign in to view this file.',403);$sql.=' AND j.client_id=?';$p[]=$clientId;}else require_admin();
- $f=one($sql,$p);if(!$f)fail_page('File not found.',404);if(!preg_match('/^studio-[a-f0-9]{32}\.php$/D',$f['stored_name']))fail_page('Invalid file record.',500);
- $path=config()['storage'].'/media/'.$f['stored_name'];if(is_link($path)||!is_file($path))fail_page('File unavailable.',404);$fh=fopen($path,'rb');if(!$fh)fail_page('File unavailable.',404);if(fread($fh,strlen(CWP_GUARD))!==CWP_GUARD){fclose($fh);fail_page('File failed its safety check.',500);}$ctx=hash_init('sha256');$count=hash_update_stream($ctx,$fh);if($count!==(int)$f['bytes']||!hash_equals($f['sha256'],hash_final($ctx))){fclose($fh);fail_page('File integrity check failed.',500);}fseek($fh,strlen(CWP_GUARD));header('Content-Type: application/octet-stream');header('Content-Disposition: attachment; filename="'.str_replace(['"',"\r","\n"],'',$f['original_name']).'"');header('Content-Length: '.$f['bytes']);header('Cache-Control: no-store, private');fpassthru($fh);fclose($fh);exit;
+ $f=one($sql,$p);if(!$f){if(support_current())support_record('file.download','file',$id,'denied');fail_page('File not found.',404);}if(!preg_match('/^studio-[a-f0-9]{32}\.php$/D',$f['stored_name']))fail_page('Invalid file record.',500);
+ $path=config()['storage'].'/media/'.$f['stored_name'];if(is_link($path)||!is_file($path))fail_page('File unavailable.',404);$fh=fopen($path,'rb');if(!$fh)fail_page('File unavailable.',404);if(fread($fh,strlen(CWP_GUARD))!==CWP_GUARD){fclose($fh);fail_page('File failed its safety check.',500);}$ctx=hash_init('sha256');$count=hash_update_stream($ctx,$fh);if($count!==(int)$f['bytes']||!hash_equals($f['sha256'],hash_final($ctx))){fclose($fh);fail_page('File integrity check failed.',500);}fseek($fh,strlen(CWP_GUARD));if(support_current())support_record('file.download','file',$id);header('Content-Type: application/octet-stream');header('Content-Disposition: attachment; filename="'.str_replace(['"',"\r","\n"],'',$f['original_name']).'"');header('Content-Length: '.$f['bytes']);header('Cache-Control: no-store, private');fpassthru($fh);fclose($fh);exit;
 }
 
 /** Verify existing table types, transaction engine and required unique keys before adoption. */

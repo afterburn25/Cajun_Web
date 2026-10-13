@@ -18,7 +18,7 @@ function staff_schema(string $prefix): array {
         'staff_invitations'=>StaffInvitationStore::createTableSql($prefix.'staff_invitations'),
     ];
 }
-function staff_permissions(): array { return ['website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices']; }
+function staff_permissions(): array { return ['website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support']; }
 function staff_profile(array $user): ?array {
     if (!staff_ready()) return $user + ['role'=>'owner','enabled'=>1,'permissions'=>'[]']; // Existing access until explicit upgrade.
     $p=one('SELECT role,enabled,permissions FROM '.table('staff_profiles').' WHERE user_id=?',[$user['id']]);
@@ -87,7 +87,7 @@ function staff_migrate(int $ownerId,#[\SensitiveParameter] string $password): vo
         if(staff_ready())return;
         staff_transaction(function() use($ownerId): void {
             if((int)query('SELECT COUNT(*) FROM '.table('staff_profiles'))->fetchColumn()!==0||(int)query('SELECT COUNT(*) FROM '.table('staff_invitations'))->fetchColumn()!==0)throw new RuntimeException('Unrecognized staff records already exist. No accounts were overwritten.');
-            foreach(all('SELECT id FROM '.table('users').' ORDER BY id') as $u)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$u['id'],(int)$u['id']===$ownerId?'owner':'administrator',json_encode(array_keys(staff_permissions()),JSON_THROW_ON_ERROR)]);
+            foreach(all('SELECT id FROM '.table('users').' ORDER BY id') as $u)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$u['id'],(int)$u['id']===$ownerId?'owner':'administrator',json_encode(['website.manage','clients.manage'],JSON_THROW_ON_ERROR)]);
             save_setting('staff_schema_version','1');log_event('staff.upgrade','Initial owner '.$ownerId);
         });
     });
@@ -171,16 +171,19 @@ function staff_reset_token(string $email): ?array {
 function staff_view_permission(string $view): ?string {
     if(in_array($view,['login','forgot','reset','staff-setup','security'],true))return null;
     if($view==='staff')return 'staff.manage';
+    if($view==='support')return 'support.login';
     if(in_array($view,['email','health','studio-upgrade'],true))return 'staff.manage';
     if(in_array($view,['studio-clients','studio-job'],true))return 'clients.manage';
     return 'website.manage';
 }
 function staff_action_permission(string $action): ?string {
     if(in_array($action,['logout','account_save'],true))return null;
+    if($action==='support_start')return 'support.login';
+    if(in_array($action,['support_migrate','support_policy'],true))return 'staff.manage';
     if(str_starts_with($action,'staff_')||in_array($action,['email_save','email_test','installer_cleanup','storage_repair','clear_limits','media_cleanup','studio_migrate'],true))return 'staff.manage';
     if(in_array($action,['studio_client','studio_invite','studio_job','studio_message','studio_publish','studio_upload','studio_invoice','studio_paid'],true))return 'clients.manage';
     return 'website.manage';
 }
 function staff_home(array $user): string {
-    return staff_can('website.manage',$user)?'dashboard':(staff_can('clients.manage',$user)?'studio-clients':'security');
+    return staff_can('website.manage',$user)?'dashboard':(staff_can('clients.manage',$user)?'studio-clients':(staff_can('support.login',$user)?'support':'security'));
 }
