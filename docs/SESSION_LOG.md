@@ -48,3 +48,79 @@ Append dated entries. Keep this chronological. Use `SESSION_TEMPLATE.md`; link d
 **Known blockers:** Source baseline not yet imported; last target host installer/storage state and old v1.1.0 release claims unresolved. 20i account-only API capabilities, wholesale VPS/domain costs, and Authorize.net merchant/sandbox account not supplied; PCI compliance and release controls not yet confirmed. Avoid all pricing or deployment claims.
 
 **Next:** Import the fingerprinted 1.0.8 baseline into Git, inspect live deployment and API capabilities, implement and test M0→M6 incrementally. Preserve existing logo/favicon/site and one-page keyless installer, customer data and modular structure. This documentation commit makes no release claim.
+
+## 2026-10-12 — Verify current roadmap and available build
+
+**Request:** Check the owner's Cajun_Web GitHub roadmap and intended product, and ensure the latest available build is present locally.
+
+**Starting commit:** Fresh clone of main at `43bebd019a6f548d7a059b2c8e259beed3efe561`, reconfirmed by a final fetch. Read AGENTS, README, status, handoff, direction, full roadmap, hosting/billing roadmap, baseline inventory, brand provenance, installation requirements, delivery incident, changelog and prior session log.
+
+**Remote findings:** Main's latest commit records custom hosting resale, Authorize.net billing and unified clients. `feature/growth-suite-1.1.0` is two commits behind main; `feature/public-growth-rc1` is one commit behind; neither is ahead. GitHub returns no releases, tags, Actions runs, open PRs or open issues. The remote tree contains documentation only.
+
+**Local actions and checks:** Scoped filename search across Downloads, Desktop and Documents found the original and recovered 1.0.8 ZIPs, with no matching newer CajunWebPro archive. Both copies are 1,185,879 bytes and SHA-256 `13bcf66cf069896017a6168556eba5211ec5bf3b1bee2aa23d354b4e9be5b6cf`. Retained an unchanged archive and extracted source outside the repository. ZIP CRC, 33-file extraction byte equality, all 32 embedded installer dependency hashes, original logo hash, consistent 1.0.8 app/installer constants and one-page layout passed. Syntax checks passed for 14 PHP files using PHP 8.4.25 and two JavaScript files using Node. Local detailed evidence is in the parent chat workspace's `work/baseline-verification.json`.
+
+**Tracked changes:** PROJECT_STATUS.md, SESSION_HANDOFF.md, CHANGELOG.md and this log, on local branch `docs/verify-latest-baseline-20261012`. Commit message: `docs: verify current roadmap and recover local 1.0.8 baseline`; parent is the starting commit above. No push or remote mutation.
+
+**Limits and remaining blockers:** These checks establish artifact identity and syntax, not working installation or full application correctness. No source import, new feature build, favicon integration, database test, SMTP test, hosted browser flow, payment/provisioning test or live deployment. B-001 through B-006 remain open, and the running host version remains unknown. Missing v1.1.0 release claims remain withdrawn. The selected Authorize.net direction supersedes the earlier Stripe proposal.
+
+**Next concrete action:** Import the verified baseline and original branding after a secrets/private-data review, retain source-to-package provenance, then complete native staging and real installer/storage checks before extending the approved M0–M6 roadmap.
+
+## 2026-10-12 — Owner confirms current version is 1.1.0
+
+**Request:** Owner corrected the latest version to 1.1.0.
+
+**Starting commit:** Local `1eab202` on `docs/verify-latest-baseline-20261012`; remote main remains `43bebd019a6f548d7a059b2c8e259beed3efe561` after another fetch.
+
+**Actions and evidence:** Rechecked GitHub history, branches, releases and workflow runs. No newer application commit or published release appeared. Repeated scoped local filename searches without locating a matching 1.1.0 build. Asked the owner for its local folder, download link or repository/branch. Updated PROJECT_STATUS, SESSION_HANDOFF, CHANGELOG and this log to accept 1.1.0 as the owner-confirmed latest version while keeping artifact verification distinct.
+
+**Limits:** No 1.1.0 source/package was inspected, no runtime tests ran, and no source, host, provider or remote GitHub changes occurred. The earlier 1.0.8 verification remains valid for that historical artifact only.
+
+**Next concrete action:** Locate and verify the owner's 1.1.0 build, then reconcile/import the current source and reassess roadmap status. Do not start new feature work or downgrade the host using 1.0.8. Local documentation commit message: `docs: record owner-confirmed 1.1.0 current version`; parent is `1eab202`.
+
+## 2026-10-12 — Specify web-design service payment forms
+
+**Request:** The owner also wants payment forms for web-design services.
+
+**Starting state:** Local commit `072449c7596c8c3af0e2b7b28149b2508203c152`; clean worktree; refreshed origin/main remains `43bebd019a6f548d7a059b2c8e259beed3efe561`. Created branch `docs/web-design-payment-forms`. The repository contains documentation only, and the owner's current 1.1.0 source/package is still awaiting location/verification.
+
+**Changes:** Expanded P-03 and HC-11 with standalone branded Authorize.net forms, full service payments, fixed/percentage quote deposits, milestones, final balance, approved extras and opt-in maintenance. Defined admin payment-request configuration, secure links, portal entry, invoice/project ownership and balances, receipts/refunds, immutable terms and duplicate/timeout recovery. Moved payment-form delivery into M2, independent of 20i/hosting purchases; richer project/bundle integration remains M4. Updated README and current import prerequisites to 1.1.0, retaining 1.0.8 as historical evidence. Synchronized PROJECT_STATUS, SESSION_HANDOFF, CHANGELOG, PROJECT_DIRECTION, ARCHITECTURE, DECISIONS and this log.
+
+**Verification:** `git diff --check` passed; all 21 relative documentation links resolved. These are documentation checks only. No current application source was available, so no PHP/database/browser/payment integration tests were run. New sandbox acceptance scenarios are requirements, not passing test results. No external gateway research or configuration occurred in this scope clarification.
+
+**Blockers / next action:** Recover and verify the owner's 1.1.0 source, reconcile implemented capabilities against P-03/HC-11, then implement/test standalone service payments against Authorize.net sandbox. No actual form, charge, 20i operation, host change or deployment is claimed. Commit message: `docs: specify standalone web-design payment forms`; parent is the starting local commit above. Prepare this documentation branch for GitHub review with the current-version correction included.
+
+## 2026-10-12 — Specify custom platform, admin webmail and team access
+
+**Request:** Add admin email send/receive from multiple accounts with setup, reusable sending templates, additional administrator accounts, and unread-mail bells in admin and on the public site for admins only, linking to individual messages. During this work the owner additionally clarified: build our own WHMCS from scratch.
+
+**Starting state:** `29a550621bcce454eee378e050d89777037382dc` on `docs/web-design-payment-forms`, clean and tracking origin. Refreshed GitHub and confirmed [PR #1](https://github.com/afterburn25/Cajun_Web/pull/1) is open and draft on that head. Current 1.1.0 application source remains unavailable for inspection.
+
+**Changes:** Added `docs/ADMIN_MAIL_ROADMAP.md` and A-05 to A-08. Specified admin lifecycle/roles and mailbox grants; secure multi-account setup, send/receive and connection/error handling; templates with safe placeholders and previews; permission-filtered unread bells, message links, synchronization and public-cache isolation. Added `docs/CUSTOM_PLATFORM_BLUEPRINT.md` to explicitly map the owner's custom WHMCS-style direction to first-party modules, shared customer/financial data and direct provider integrations. Integrated HC-12 and milestones, and synchronized README, direction, architecture, decisions, status, handoff, changelog and this session log. Retained all prior web-design payment requirements and the current-version correction.
+
+**Verification:** `git diff --check` passed; all 40 relative documentation links resolved, including four links to specific headings. Native provider, multi-user, browser/cache, template-rendering and notification scenarios are future acceptance criteria, not executed tests. No 1.1.0 source, runtime implementation, administrator creation, mailbox connection, customer message or deployment occurred.
+
+**Next action / blockers:** Recover and verify 1.1.0, review existing authentication/mail/business structure, then build the custom platform foundation and admin/mailbox authorization before webmail/templates/bells; verify with isolated test accounts. Mailbox/provider/hosting capability checks remain pending and credentials must be configured securely in admin. Continue the existing documentation PR with commit message `docs: define custom platform and admin mail requirements`; parent is the starting commit above.
+
+## 2026-10-12 — Complete client workspace, ZIP delivery and support access
+
+**Request:** Identify gaps for full 20i/client-portal use; place every customer service and web-design project in one portal, with progress monitoring, updates and website ZIP downloads. During this work the owner also requested one-click access to any permitted client portal for support, including VPS SSH.
+
+**Starting state:** Clean `docs/web-design-payment-forms` at `b4d96f9ca2acd9bf0241fbd5429c8b30a74df26f`; fetched GitHub and confirmed draft PR #1 is open on the same head. The current 1.1.0 source remains unavailable.
+
+**Changes:** Added `docs/CLIENT_PORTAL_ROADMAP.md` with native 20i capability/entitlement mapping, explicit customer/service grants, P-05 project workspace, P-06 immutable private website ZIP/data handover, P-07 client updates/monitoring, A-09 audited one-click support portal sessions and A-10 authorized VPS SSH with a real transport feasibility gate. Distinguished admin mail/customer notifications, published deliverables/provider backups and portal impersonation/SSH privileges. Updated HC-02/07/08/11/12, milestones, roadmap, admin-mail scope, blueprint, README, direction, architecture, decisions, status, handoff and changelog.
+
+**Research and verification:** Reviewed public official 20i API, StackCP grants/features, webmail, backup and SSH guides on 2026-10-12. Exact source links and product scopes are in the new roadmap. `git diff --check` passed; all 54 relative documentation links resolved, including nine heading links. No logged-in API, account entitlement, endpoint/SSO/browser-terminal, native database, live client/provider, SSH or archive/restore test ran. Documentation checks are the only local validation in this change.
+
+**Next action / blockers:** Recover and inspect 1.1.0, inspect the reseller's actual API capabilities and grants, then implement the scoped platform/client foundation and verify individual services. Establish secure VPS support authentication and a provider terminal handoff or independently hosted gateway before claiming one-click SSH. No client impersonation, SSH connection, secret collection, payment/mail send, provider write, downloadable release or deployment occurred. Continue draft PR #1 with commit message `docs: complete client portal delivery and support access scope`; parent is the starting commit above.
+
+## 2026-10-12 — Establish GitHub delivery workflow and Codex/Devin split
+
+**Request:** Use GitHub for testing, incremental versioned releases and retained copies; keep documentation current for other agents. During the work the owner requested splitting tasks with Devin on separate branches and integrating as each finishes.
+
+**Starting state:** `fccce34ed2238749766bf0879b87a26288ffe9d7` on clean `docs/web-design-payment-forms`; refreshed main remains `43bebd019a6f548d7a059b2c8e259beed3efe561`. PR #1 is open/draft and mergeable, with no existing checks/reviews. No published releases or application source. Read current instructions, direction, release constraints and roadmap.
+
+**Changes:** Added scoped read-only GitHub documentation CI and a standard-library local-link/continuity checker; release/version/retention workflow and truthful release register; Codex/Devin work allocation, handoff and branch/integration rules. Updated AGENTS, README, PR template, installation guidance, roadmap F-04, decisions D-034/035, status, handoff and changelog. Current source prerequisite remains 1.1.0. No direct Devin tool is available; asked the owner whether to use a prepared GitHub handoff or an existing session link.
+
+**Verification:** Local `python tools/check_docs.py` passed: 12 required documents, 23 Markdown files, 77 relative links including 10 heading links. Deliberate isolated fixtures passed five checks: valid links succeed; missing files, missing headings, outside-repository links and empty required documents fail. `git diff --check` passed. The fixture harness lives outside the repository in the local work directory. GitHub run links will be recorded after execution. Official GitHub workflow/releases/source-archive documentation was reviewed. These are documentation checks, not PHP/database/browser/provider/payment/mail/SSH/deployment acceptance; application checks remain pending source recovery.
+
+**Next action / limitations:** Push this branch, verify the GitHub job, integrate the accumulated roadmap/workflow into main and prepare separate work branches. The owner selected a GitHub assignment to paste into Devin; create and link it without claiming Devin is running. No application release, version bump, provider operation, customer communication or host change is included. Then recover/import 1.1.0 and start the bounded implementation streams. Commit message: `ci: establish release workflow and Codex Devin coordination`; parent is the starting commit above.

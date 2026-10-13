@@ -1,7 +1,53 @@
 # Project status
 
-Updated: 2026-10-12 — download recovery / release-claim correction.
+Updated: 2026-10-12 — GitHub testing/release workflow and Codex/Devin split added; current 1.1.0 artifact location pending.
 Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
+
+## Current repository delivery and coordination checkpoint
+
+The owner authorizes GitHub testing, incremental version releases with retained copies, ongoing agent documentation, and separate Codex/Devin work branches integrated as they finish. Added [release workflow](docs/RELEASE_WORKFLOW.md), [release register](docs/RELEASES.md), [agent coordination and Devin handoff](docs/AGENT_COORDINATION.md), and read-only GitHub Actions documentation checks. This workflow does not yet test application code or build packages.
+
+Current work continues on `docs/web-design-payment-forms` in [PR #1](https://github.com/afterburn25/Cajun_Web/pull/1), with integration into `main` planned after checks. Read the actual PR/check state before resuming; the sections below record earlier checkpoints and do not override this one. Codex owns the platform foundation/integration stream; Devin's first bounded assignment is W-01 portfolio work. Devin has not been dispatched from this chat. Separate branches are specified in the coordination document and must be updated to verified current source before implementation.
+
+**Blocking next step:** locate/import the owner's 1.1.0 source and reconcile existing features. No application version bump, public release ZIP, payment/provider operation, mail send or host deployment has occurred. Historical 1.0.8 remains reference only. GitHub documentation checks are not runtime acceptance.
+
+## Latest requirements — complete client portal and support access
+
+Added `docs/CLIENT_PORTAL_ROADMAP.md`, P-05/06/07 and A-09/10: native verified 20i service controls, explicit existing-service mapping, design progress/updates/approvals, client notifications, versioned website ZIP/data handover, one-click client portal support sessions and separately authorized VPS SSH. Public official 20i documentation supports the broad integration direction; exact account API/entitlement and terminal transport remain unverified.
+
+**Status:** documentation only in [draft PR #1](https://github.com/afterburn25/Cajun_Web/pull/1). No client login, SSH connection, download build, account/provider write or deployment occurred. Recover/inspect current 1.1.0 and verify account capabilities before implementation. All earlier payment/admin-mail requirements remain in scope.
+
+## Explicit platform direction — our own WHMCS
+
+The owner clarified that the business needs its own platform built from scratch for the agreed WHMCS-style functions. `docs/CUSTOM_PLATFORM_BLUEPRINT.md` maps first-party catalog, customer/staff accounts, orders, invoices, recurring billing, 20i service automation, support and admin/portal modules, including Authorize.net design payments and admin email. This confirms the custom-software direction and ties the existing roadmap together; it does not establish any new runtime implementation. Recover/inspect 1.1.0 and preserve current work before foundation development.
+
+## Latest requirement — admin email, team accounts and notifications
+
+Added A-05 through A-08 and `docs/ADMIN_MAIL_ROADMAP.md`: owner-managed additional administrators, mailbox permissions, multiple email accounts with setup and webmail send/receive, reusable compose templates, and unread-email bells in admin and the public header for authenticated admins only. Notifications open the exact authorized webmail message. Defined setup errors, message/attachment safety, template previews, read-state sync and anonymous/cache isolation tests.
+
+**Status:** approved requirements only, added to the existing documentation review [PR #1](https://github.com/afterburn25/Cajun_Web/pull/1). No additional administrator, mailbox connection, outgoing email, deployed notification bell or source implementation is established. Current 1.1.0 source and eventual secure mailbox setup remain prerequisites; existing design-payment requirements are retained.
+
+## Latest requirement — payment forms for web-design services
+
+The owner explicitly requested payment forms for web-design services as well as hosting checkout. P-03 and HC-11 now specify branded Authorize.net forms for full service payments, quote deposits, milestones, final balances and optional recurring maintenance; admin-configured payment requests, secure shareable links, portal invoice payment, receipts and correct project balances. Design-only payments must work without hosting purchases or 20i setup. The core forms belong in M2; richer project/hosting integration remains M4.
+
+**Status:** requirements captured, pending current 1.1.0 source inspection and implementation evidence. Documentation, direction, architecture, decisions and release handoff are synchronized. No card charge, gateway configuration, actual payment form, runtime change or deployment was performed. The artifact-location question below remains open.
+
+## Owner correction — latest version is 1.1.0
+
+The owner explicitly confirmed that **1.1.0 is the latest version** after the verification below. Treat 1.1.0 as the current version to recover and inspect. The verified 1.0.8 copy is historical reference only; its availability does not make it the owner's latest build.
+
+A fresh GitHub fetch still finds main at `43bebd019a6f548d7a059b2c8e259beed3efe561`, with no published releases or newer application commits. The current 1.1.0 artifact has not yet been located or inspected in this chat. The owner has been asked for its local folder, download link, or repository/branch. Prior missing-download records document earlier evidence limitations; they do not override the owner's current version correction. No 1.1.0 implementation or test result is inferred from the version number alone.
+
+**Immediate next step:** Locate and verify the actual 1.1.0 source/package, then reconcile it with Git and the roadmap before implementation. Do not begin new work from 1.0.8 or replace the owner's current installation with it.
+
+## Latest verification — 2026-10-12
+
+Fresh clone and final fetch found GitHub `main` at `43bebd019a6f548d7a059b2c8e259beed3efe561` (October 12, 7:59 p.m. America/Chicago). Both feature branches are ancestors of main; neither contains newer application work. The remote tree remains documentation only. GitHub returned no releases, tags, workflow runs, open pull requests, or open issues.
+
+The owner's local Downloads folder contains both the original and recovered 1.0.8 complete ZIPs. Both are 1,185,879 bytes and match SHA-256 `13bcf66cf069896017a6168556eba5211ec5bf3b1bee2aa23d354b4e9be5b6cf`. A byte-identical archive and extracted working copy were retained outside the repository. Fresh checks passed: ZIP CRC, all 33 extracted files, all 32 installer dependency hashes, original logo hash, consistent 1.0.8 app/installer constants and one-page layout, PHP syntax for 14 files under PHP 8.4.25, and JavaScript syntax for two files.
+
+This establishes the latest verifiable available baseline as **1.0.8**, not a newly built release. No CajunWebPro 1.1.0 archive was found in the scoped Downloads/Desktop/Documents filename search. No live host, database, SMTP, payment or provisioning tests ran. Source import and original favicon recovery/integration remain pending; the extracted baseline is not yet tracked application source. The accepted hosting/billing roadmap selects **Authorize.net**, superseding the older Stripe proposal in P-03.
 
 ## Critical correction
 

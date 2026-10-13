@@ -2,6 +2,50 @@
 
 This log distinguishes repository work from application releases and deployment. Documentation-only work does not advance the application version.
 
+## 2026-10-12 — GitHub checks, release retention and Codex/Devin coordination
+
+- Added a read-only GitHub Actions workflow and standard-library documentation checker for continuity files and local Markdown links/headings. Application CI remains pending current-source recovery.
+- Defined incremental versioning, retained complete GitHub Release ZIPs, manifests/checksums/test reports, exact-artifact verification and a truthful release register.
+- Added separate Codex/Devin work assignments, branch ownership, a ready-to-use Devin handoff and sequential PR integration with combined checks.
+- Updated agent rules, PR checklist, roadmap F-04, status/handoff and release documentation. No application version bump, deployment or public application release is included.
+
+## 2026-10-12 — Full client portal, website delivery and support access (requirements only)
+
+- Added client-portal capability coverage for verified 20i services and native controls, explicit existing-service grants, project monitoring/updates/approvals and a separate client notification center.
+- Added P-05/06/07: design workspace, authorized versioned website ZIP/data downloads with integrity/restore/retention criteria, and measured service observations without fabricated metrics.
+- Added A-09/10: one-click staff support sessions into client portals and separately authorized VPS SSH with real verified transport, secure session scope and staff audit identity.
+- Reviewed official public 20i documentation and recorded sources/account-specific limitations. Synchronized roadmaps, blueprint, direction, architecture, decisions, status and handoff.
+- No current-source implementation, archive release, client login, SSH connection, provider/account change or deployment performed.
+
+## 2026-10-12 — Custom platform, admin webmail, staff access and notifications (requirements only)
+
+- Added `docs/CUSTOM_PLATFORM_BLUEPRINT.md` for the owner's explicit instruction to build our own WHMCS-style platform, mapping owned business modules, shared identity/ledger, provider adapters and phased delivery to the existing roadmap.
+
+- Added A-05 to A-08 and `docs/ADMIN_MAIL_ROADMAP.md` for additional admin accounts, scoped mailbox access, multiple email account setup and webmail, reusable sending templates, and unread-mail bells in admin and the admin-only public header.
+- Specified account connection checks, inbox/compose/drafts/attachments, safe email rendering, template preview/variables, provider read-state sync, exact-message links and private endpoint/cache isolation.
+- Integrated staff identity in M1 and the independent mail milestone within M5/HC-12, synchronized direction/architecture/decisions/status/handoff, and retained the design-payment roadmap and 1.1.0 source prerequisite.
+- No admin or mailbox account created, no provider connection, no email sent, and no runtime feature or deployment performed.
+
+## 2026-10-12 — Dedicated web-design payment forms (requirements only)
+
+- Expanded P-03/HC-11 to define themed Authorize.net forms for full service payments, quote deposits, milestones, final balances and optional maintenance, plus admin-created payment links and portal invoices.
+- Specified shared invoice/payment records, accurate project balances, secure request lifecycle, sandbox acceptance, refunds and duplicate/timeout recovery. Design payments operate independently of 20i or a hosting purchase.
+- Assigned standalone forms to M2; kept richer project/hosting bundles in M4. Synchronized direction, architecture, decisions, status and handoff, and corrected current source-import prerequisites to owner-confirmed 1.1.0.
+- No application source, working form, gateway setup, card charge or deployment changed. Current 1.1.0 source remains to be located and inspected.
+
+## 2026-10-12 — Owner corrects latest version to 1.1.0 (local docs only)
+
+- Recorded the owner's explicit confirmation that 1.1.0 is current; retained verified 1.0.8 only as historical reference.
+- Updated status/handoff to locate and verify 1.1.0 before source import or implementation, superseding older 1.0.8 starting-point instructions.
+- Rechecked GitHub; remote main remains documentation commit `43bebd0`. Requested the current build's location. No 1.1.0 tests, code changes, push or deployment claimed.
+
+## 2026-10-12 — Current roadmap and available build verification (local docs only)
+
+- Confirmed GitHub main at `43bebd019a6f548d7a059b2c8e259beed3efe561`; feature branches contain no newer source, and no release/tag/workflow run was available.
+- Located both original/recovered 1.0.8 archives in local Downloads, verified their recorded SHA-256, and retained an unchanged archive and extracted working copy outside the repository.
+- Fresh checks passed ZIP CRC, 33-file byte equality, 32 installer dependency hashes, version/layout constants, original logo hash, 14 PHP syntax checks and two JavaScript syntax checks.
+- Updated status, handoff and session log. No source import, feature implementation, new release, host repair, provider action or deployment; remote GitHub content unchanged.
+
 ## 2026-10-12 — Hosting resale and custom billing roadmap (docs only)
 
 - Approved first-party hosting/domain/VPS storefront integrated with CajunWebPro web-design services; created docs/HOSTING_AND_BILLING_ROADMAP.md (HC-01 through HC-14, M0–M6 phases and acceptance tests).

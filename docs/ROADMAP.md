@@ -2,11 +2,13 @@
 
 Updated: 2026-10-12. **All items below are pending implementation/verification in Git unless their status is changed with commit and test evidence.** The initial repository work is documentation only. A rendered concept is not a finished feature.
 
+The owner explicitly wants to build our own WHMCS from scratch: a custom CajunWebPro hosting/billing/client-management platform. The [platform blueprint](CUSTOM_PLATFORM_BLUEPRINT.md) maps that direction to this roadmap, including web-design payments, additional admins, webmail/templates and private mail notifications. Preserve current 1.1.0 source and branding when implementing these modules; no WHMCS installation is required.
+
 ## Foundation and release recovery
 
 ### F-01 — Import the exact application baseline
 
-Import the complete inspected 1.0.8 PHP distribution and original assets, preserve filenames and functionality, document repository-to-upload layout, exclude secrets/private data, and make repeatable flat packages with manifests. Verify version constants and the installer's embedded hashes after every shipping-file change. Acceptance: no missing includes/assets, no wrapper folders, no mixed-build files, no stale direct-download installer, and a source/commit/artifact provenance record.
+Recover and verify the owner's current 1.1.0 PHP distribution and original assets before importing source. The inspected 1.0.8 distribution is historical reference only. Preserve current filenames and functionality, document repository-to-upload layout, exclude secrets/private data, and make repeatable flat packages with manifests. Verify version constants and the installer's embedded hashes after every shipping-file change. Acceptance: verified current-build provenance, no missing includes/assets, no wrapper folders, no mixed-build files, no stale direct-download installer, and a source/commit/artifact record.
 
 ### F-02 — Real staging acceptance
 
@@ -15,6 +17,10 @@ Reconcile the user's reported 1.0.5 running screen and root-owned storage agains
 ### F-03 — Exact favicon and brand preservation
 
 Use `icon(1).png`, not a generated replacement. Produce appropriate square transparent icon variants and ICO/PNG references without stretching/cropping the fleur-de-lis. Keep the original horizontal wordmark unchanged. Verify public/admin/installer icon references, browser rendering, subfolder paths, and updated installer integrity hashes. Record sizes and source fingerprint. App-icon/PWA installation is not implied merely by shipping icon files.
+
+### F-04 — GitHub testing, incremental releases and agent coordination
+
+Owner-approved: automated GitHub tests, small versioned releases, retained complete ZIP copies, continuously updated agent documentation, and separate Codex/Devin branches integrated as work finishes. [Release workflow](RELEASE_WORKFLOW.md) defines CI/version/package gates; [release register](RELEASES.md) tracks actual artifacts; [agent coordination](AGENT_COORDINATION.md) assigns ownership and integration rules. Documentation CI is implemented in this change. Application CI, versioned deployment packages and parallel application work require verified 1.1.0 source first. Do not treat a green documentation check as application acceptance.
 
 ## Public experience and lead generation
 
@@ -52,17 +58,35 @@ Start with an honest appointment-request workflow or integrate the selected cale
 
 Admin-controlled invitation/access, client-isolated projects, milestone status, design previews, comments, revision requests, files, messages, and handover materials. Acceptance: authorization on every project/file/action; one client cannot access another client's records; protected uploads; audit events; session/reset controls; actual milestone updates rather than fabricated progress percentages.
 
+The portal is the single customer workspace for design and all supported 20i-backed services. [Client portal roadmap](CLIENT_PORTAL_ROADMAP.md) specifies native hosting controls, explicit service ownership, project monitoring, update notifications and versioned website ZIP delivery. Secure StackCP access is a labeled bridge for unimplemented controls, not completion of the requested native integration.
+
 ### P-02 — Versioned approvals and proposals
 
 Freeze the exact design/proposal version under review; capture authorized approval or change requests against that version. Proposals contain approved deliverables, exclusions, revisions, schedule assumptions and payment milestones. Acceptance: immutable approved snapshots/audit history, clear superseded versions, ownership checks, deliberate confirmation, and no implied legal e-signature compliance without separate review.
 
-### P-03 — Deposits, invoices and maintenance payments
+### P-03 — Web-design payment forms, deposits, invoices and maintenance payments
 
-Integrate an owner-selected hosted payment/invoice provider; Stripe was proposed, not configured or activated. Use provider-hosted card handling. Map customer/project/proposal/milestones, deposits, invoice status, and opt-in care-plan subscriptions. Acceptance: verified signed notifications, idempotent events, amount/currency/project validation, replay/error handling, reconciliation, separate test/live configuration, no raw card storage, and no 'paid' status from a success-page visit alone. Real charges/subscriptions are not authorized by documentation work.
+Provide dedicated CajunWebPro-styled payment forms for web-design services through the selected Authorize.net integration. Support full payment for an admin-published fixed-price service, a fixed-amount or percentage deposit against an approved quote, milestone invoices, final balance, and separately consented recurring maintenance. A customer must be able to pay for design work without buying hosting, a domain or VPS, and without a configured 20i account.
+
+Admin creates a payment request from the customer/project/proposal/invoice with service description, approved amount, currency, due date and applicable terms; preview it and generate a secure shareable payment link. The client can also select Pay from their own portal invoice. Show invoice/reference, service scope, amount due now, prior payments and remaining project balance where applicable. Lock pricing to server-side invoice/quote records; an estimator result alone cannot authorize a charge. Paid, canceled, expired or superseded requests must not accept another payment. Links must not expose other invoices, files or customer records.
+
+Use the same tokenized Authorize.net payment service, transaction records, verified notifications, receipts and reconciliation as hosting checkout; no separate gateway or raw card storage. Reflect confirmed payments and refunds in both invoice and project balance while keeping project completion/approval independent. See HC-11 for detailed workflow and acceptance. Acceptance includes standalone design-only sandbox payments, duplicate/timeout recovery, tampered amounts, link access/expiry/revocation, deposits/milestones/final balance, correct receipts, separate test/live configuration, and no 'paid' status from a success-page visit alone. Status: approved requirement, pending implementation/current-source inspection. Real charges/subscriptions are not authorized by documentation work.
 
 ### P-04 — Maintenance/service plans
 
 Owner-defined inclusions, exclusions, limits, support expectations and request workflow. Acceptance: agreed prices and terms, explicit recurring-payment consent where applicable, genuine service status, and no invented 'unlimited support' promise.
+
+### P-05 — Web-design project progress and delivery workspace
+
+Client-visible stages, milestones, dates, blockers, required customer actions and a dated update timeline; protected previews, content uploads, versioned design approvals/revisions and project invoices. Staff controls what is published, and design-only clients need no hosting subscription. No invented progress percentages. Workflow and acceptance: [Project workspace](CLIENT_PORTAL_ROADMAP.md#p-05--web-design-project-workspace-and-progress).
+
+### P-06 — Downloadable website ZIPs and handover
+
+Latest and retained prior website releases with version, notes, date, size, checksum and scope. Admin publishes a verified client-specific ZIP plus necessary authorized database/content exports and instructions; omit secrets, agency records and other clients. Private permission-checked downloads, safe packaging jobs, retention, integrity and isolated restore tests are required. Keep deliverable releases distinct from expiring provider backups. Full requirements: [Website downloads](CLIENT_PORTAL_ROADMAP.md#p-06--versioned-website-zip-delivery-and-client-downloads).
+
+### P-07 — Client notification center and real monitoring
+
+Portal bell/timeline and configured email updates for project work, approval requests, new downloads, support, billing and service events. Link to the correct authorized object; record read/unread, preferences and delivery retries. Show actual project progress and verified hosting health/usage/check timestamps; mark stale/absent metrics honestly. Client notifications never include internal admin email or staff-only notes. Full acceptance: [Updates and monitoring](CLIENT_PORTAL_ROADMAP.md#p-07--client-updates-notifications-and-service-monitoring).
 
 ## Administration and resilience
 
@@ -82,9 +106,39 @@ Protected export of required database/media/configuration with clear scope, inte
 
 Identify installed and available versions, verify trusted package integrity/compatibility, preserve private data/configuration, back up affected material, apply ordered migrations, report failures, and offer a tested recovery path. Acceptance: path-traversal/symlink/partial-write protections, concurrent-run prevention, migration tracking, exact artifact manifest, and no reintroduction of install keys or multi-step setup. Signing/trust provisioning must be designed before automatic updates are enabled.
 
+### A-05 — Additional admin accounts and permissions
+
+Owner-controlled creation/invitation, role and mailbox grants, reset and deactivation for additional administrators. Preserve the owner account, deny privilege escalation, revoke disabled sessions and protect the last active owner. Keep staff identities separate from client accounts. Acceptance and permission tests: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-05--additional-admin-accounts-and-access-foundation).
+
+### A-06 — Multi-account admin webmail and setup
+
+Add Email with incoming/outgoing account configuration, separate connection tests, mailbox access grants, account switching/combined inbox, folders, read/unread, search, compose/reply/forward, drafts and attachments. Preserve server-side mailbox permissions, encrypted credentials, safe message rendering and correct send/sync failure handling. Full workflows and native two-account tests: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-06--multiple-email-accounts-and-webmail).
+
+### A-07 — Reusable email templates
+
+Create/edit/duplicate/preview/archive templates with subject/body, safe allowlisted placeholders, shared/personal visibility and compose insertion. Preview resolved values and edit the draft before explicit sending. Keep signatures/account selection clear and transactional templates controlled. Acceptance: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-07--reusable-sending-templates).
+
+### A-08 — Admin-only unread-mail notifications
+
+Show an unread-mail bell in admin and the public-site header for authenticated admins only. List unread messages from authorized accounts; clicking a notification opens the exact message in admin webmail. Synchronize counts/read state, show stale/error status, and exclude all private notification data from anonymous/client responses and public caches. Acceptance: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-08--unread-mail-bell-in-admin-and-on-the-public-site).
+
+### A-09 — One-click client portal support access
+
+Owner/authorized staff can open any permitted client's portal from the customer record or support ticket without the client password. Maintain separate staff/customer identities, a visible support-session banner, Return to admin, expiry/revocation and action-attributed audit. Respect client data scope and independent permissions for sensitive actions; ordinary customer sessions cannot impersonate. Full acceptance: [Portal support access](CLIENT_PORTAL_ROADMAP.md#a-09--one-click-client-portal-access-for-support).
+
+### A-10 — One-click VPS SSH for support
+
+An Open SSH action launches a real interactive session for the selected authorized VPS once its support connection is configured. Verify product-specific authentication/privileges, staff terminal permissions, protected keys, verified host identity, short-lived scoped launch, audit and disconnect. Provider terminal handoff or a separate secure gateway must be proven; shared-host installation must not acquire a hidden daemon/root dependency. Full acceptance: [VPS support SSH](CLIENT_PORTAL_ROADMAP.md#a-10--vps-ssh-access-from-the-support-workspace).
+
 ## Implementation order and completion rule
 
 Import and validate the baseline first. Land exact branding/favicon and public experience/content plus lead workflows next, then client operations and resilience in tested increments. Access control and backup/recovery checks must precede storing real client documents or enabling payments/automatic updates.
+
+Add A-05 staff access in M1. A-06/A-07/A-08 form the M5/HC-12 admin-mail milestone after identity and mail-host/private-storage prerequisites; they do not depend on VPS availability. [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md) provides setup, workflows and acceptance tests.
+
+Establish client-notification permissions/data in M1, then connect billing/hosting/design/support events during M2–M5. P-05/P-06 complete design progress and ZIP handover in M4. Client hosting controls must be tracked against actual 20i capabilities during M3–M5; M6 includes cross-client/download/restore and cache-isolation gates.
+
+Establish A-09 support-session identity/permissions alongside M1 and connect it to the client portal; deliver A-10 when real VPS authentication and terminal transport are verified in M5. One-click convenience does not substitute for initial server access setup.
 
 Move an item through `approved` → `in progress` → `implemented` → `verified` → `deployed` only with evidence for each transition. Record branch/commit, routes, schema/config changes, tests, limitations, and deployment status. Update this roadmap and the session handoff with every meaningful change.
 

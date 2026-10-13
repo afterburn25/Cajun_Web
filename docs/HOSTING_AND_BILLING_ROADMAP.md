@@ -6,11 +6,13 @@ Approved scope: 2026-10-12. Planning only — NOT implemented, integrated, paid 
 
 CajunWebPro is BOTH (1) a done-for-you web design/development/maintenance company and (2) a first-party branded hosting/domain/VPS reseller storefront. Use the existing navy-and-metallic-gold website language, original horizontal brand logo and supplied favicon. One brand, shared customer identity, coherent navigation, separate service modules. This is not a self-service website builder.
 
+The owner's explicit clarification is to **build our own WHMCS from scratch**: our own customer/order/billing/service/support/admin platform, including design payments and admin email. The [custom platform blueprint](CUSTOM_PLATFORM_BLUEPRINT.md) defines ownership, module boundaries and phased delivery. Existing HC-01 through HC-14 are the implementation requirements for this platform; it must not become merely a themed wrapper around WHMCS or HostShop.
+
 **Selected stack:** existing PHP 8.2+ and MySQL/MariaDB shared-hosting architecture; 20i reseller APIs for infrastructure; Authorize.net for payments and card-on-file; first-party custom storefront, shopping cart, checkout, invoice engine, subscription management, client portal, admin console, notification system and support workflows. Do not make WHMCS, HostShop, Stripe, WordPress, Node, SSH, Docker or a daemon a required runtime dependency. Client control-panel access may link securely into 20i's white-label StackCP where necessary; do not pretend it is first-party software.
 
 The owner wants an attractive **custom on-site card payment form** fitting CajunWebPro's theme, NOT a visually disconnected third-party checkout. Authorize.net Accept.js with first-party card form is an available candidate; card entry must go directly to Authorize.net tokenization and never traverse CajunWebPro servers. It typically falls under PCI DSS SAQ A-EP rather than SAQ A; complete merchant-specific PCI review before live launch. Offer an integrated Authorize.net-hosted-fields/Accept Hosted fallback if a lower PCI footprint becomes necessary. Never represent a hosted iframe as wholly custom-controlled card fields.
 
-**Dependency:** Import and verify the actual 1.0.8 source baseline into Git first. As of this decision the repo contains documentation only. All work below is APPROVED / NOT IMPLEMENTED. No live API credentials, products, wholesale costs, retail prices, licenses or merchant account access have been supplied. Price examples from chat are proposals, not authorized published rates.
+**Dependency:** Recover, verify and import the owner's current 1.1.0 source before implementation. The locally inspected 1.0.8 archive is historical reference only. The repo contains documentation only; current 1.1.0 source has not been inspected here, so reconcile existing capabilities before adding them. All work below is approved scope without implementation evidence in Git. No live API credentials, products, wholesale costs, retail prices, licenses or merchant account access have been supplied. Price examples from chat are proposals, not authorized published rates.
 
 ## Public experience and site architecture
 
@@ -40,7 +42,11 @@ Store wholesale 20i catalog IDs/package type IDs and capability mapping separate
 - Web design: documents, project milestones, previews, proposal approvals, invoices/deposits, communication and revision requests. Integrate existing approved P-01/P-02/P-03/P-04 roadmap work; do not create a second disconnected client database.
 - Client-isolation on every record, route, file, signed download and API operation. System-generated account activity and audit trail.
 
+**Expanded owner requirement:** Everything customer-facing belongs in the client portal, including native management of verified 20i services, actual design-project progress, updates/notifications and downloadable versioned website ZIPs. Use [Client portal roadmap](CLIENT_PORTAL_ROADMAP.md), P-05/P-06/P-07 for full acceptance, explicit existing-service/StackCP-user mapping and the hosting-control capability checklist. Native controls are the goal; a labeled provider-panel handoff is a transitional bridge, not a completed native feature. Client notifications and customer-owned email tools are isolated from admin webmail/internal notes.
+
 **Acceptance:** Real authenticated buyer can complete an order then see only their own service, invoice and support history. Role and cross-tenant access tests pass.
+
+Also verify that a design-only customer can follow progress/approvals, receive an update and download their published website release, while a combined customer manages both project and verified hosting controls under one identity. Validate artifact integrity and safe restore, and deny cross-client downloads and notifications.
 
 ## HC-03 — Branded cart, checkout and order management (P0)
 
@@ -94,6 +100,8 @@ Create provider-adapter interface with explicit support matrix, contract/fixture
 
 **Acceptance:** Fetch verified plan types and provision an isolated test hosting account once; retain provider package ID; safely inspect/retry errors and reconcile external state. Do not take payment for an unavailable unsupported SKU.
 
+Maintain a per-feature endpoint/permission/entitlement/test register for the client portal, and a reviewed import/linking flow for existing users, packages, domains and VPS. Reconcile provider IDs and service grants before creating or assigning resources; avoid automatic ownership inference from email/domain matches. Verify actual delegated-login capabilities before promising SSO.
+
 References: https://docs.20i.com/api/20i-api-documentation ; https://docs.20i.com/api/provision-hosting-package-api ; https://docs.20i.com/api/retrieve-packages-api
 
 ## HC-08 — Shared hosting lifecycle (P0/P1)
@@ -101,6 +109,8 @@ References: https://docs.20i.com/api/20i-api-documentation ; https://docs.20i.co
 Map each first-party shared-hosting SKU to actual 20i package type and limits. Create package after cleared payment and checks; link domain reference if registration is pending; create/update allowed StackCP access; sync primary domain, plan, region, status and usage if supported. Queue upgrades, downgrades, renewal, suspension/restore with grace windows, controlled cancellation and deprovisioning only after approval/retention protections. Preserve backups and access during billing disputes and technical outages per policy.
 
 **Acceptance:** Provision, reconcile, change plan, fail and recover from timeout, payment lapse/recovery, restore access and cancel in staging with no accidental duplicate package or data loss.
+
+The service workspace must also cover authorized website/email/database/DNS/security/backup/runtime controls and measured status where account APIs and plan permissions permit. Follow the client-portal capability register; expose unsupported or unverified operations honestly. Website delivery ZIPs belong to P-06 and must not be confused with provider backup snapshots or their retention.
 
 ## HC-09 — Domain catalog, resale and registrar lifecycle (P1)
 
@@ -114,19 +124,44 @@ Sell unmanaged/managed VPS only if 20i account product access, API endpoints, pr
 
 **Acceptance:** Real test provision/build readiness, safe retry, start/stop as available, billing synchronization and teardown verified. Don't publish VPS inventory and accept money before tested provisioning supports it.
 
-## HC-11 — Web design + maintenance commerce (P1)
+## HC-11 — Web-design payment forms and maintenance commerce (P0 payments / P1 project integration)
 
-Join current proposal/lead/project roadmap: public service packages and estimator with honest starting ranges; deposit checkout from accepted proposal; milestone invoices; retainer/maintenance subscriptions; project progress/file/approval, support and site handover. Optional packages include a domain and hosting plan with separate line-item financial treatment and ownership/transfer terms. Prevent automation from treating website design as instantly fulfilled infrastructure.
+The owner explicitly wants payment forms for web-design services as well as infrastructure checkout. Deliver a standalone design-payment flow in the approved navy/gold theme using the same Authorize.net settings and payment engine. It must work with 20i disabled and no hosting/domain/VPS purchase. Do not delay design payments until domain provisioning is available. This is a planned requirement; inspect current 1.1.0 source before determining the implementation gap.
 
-**Acceptance:** A signed-in client can purchase hosting and pay for an approved custom-design milestone, see both in one dashboard, receive separate correct fulfillment states, approve project deliverables and open support requests.
+### Payment options and customer form
+
+- Full payment for a real fixed-price web-design service published by admin.
+- Fixed-amount or percentage deposit calculated from the accepted project quote; show both amount due now and remaining quoted balance.
+- Milestone payment requests tied to the exact approved proposal/project stage, followed by final-balance payment.
+- One-off additional work on an approved invoice, and optional recurring maintenance/retainers with explicit recurring consent and separate terms.
+- Entry from a published service, the client's own portal invoice, or an admin-generated secure payment link. Quote-specific prices remain private and cannot be inferred from an estimator or URL parameter.
+- Responsive form with customer/billing details, service/invoice reference, itemized amount, applicable tax, total due now, prior payments and remaining balance where relevant, terms, clear Pay action, recoverable inline errors and confirmed receipt. Do not preselect optional purchases or recurring consent.
+
+### Admin and payment-request lifecycle
+
+Admin can create, preview, activate, expire and revoke a service payment request linked to customer, project, proposal version and invoice. Configure description, approved line items/prices, currency, due date, deposit rule and allowed payment stage; preserve an immutable snapshot when issued. The generated link can be copied for sharing. Issued price/term changes supersede the old request; paid invoices cannot be silently rewritten. Track draft, awaiting payment, processing, paid, failed, canceled/expired and refund states with amount due and an audit trail.
+
+Require authenticated invoice ownership or a narrowly scoped, unpredictable, expiring and revocable payment token that grants no other portal access. Keep tokens protected and out of logs/referrers; no personal details, card data or gateway credentials in the URL. Resolve payable amount and eligibility server-side on every submission. Serialize payment attempts so duplicate links, tabs or retries cannot charge the same obligation twice or overpay the project. A timed-out attempt remains pending until gateway reconciliation establishes whether it succeeded.
+
+Use HC-04/05/06 for tokenized card processing, sandbox/live separation, verified transaction/webhook handling, receipts, refunds and reconciliation. A failed charge retains the invoice as unpaid. A confirmed payment updates the invoice, project financial balance, admin and client history; it does not automatically approve a design, mark work finished or provision infrastructure. Reconcile partial/full refunds and remaining balance according to recorded policy. Recurring maintenance is a distinct opted-in subscription, never an automatic consequence of paying a one-off invoice.
+
+### Project and hosting integration
+
+Join the proposal/lead/project roadmap: public service packages and estimator with honest ranges; quote approval; progress/files/approvals; support and handover. Optional bundles include a domain and hosting plan with separate financial treatment and ownership terms. The single client dashboard displays both design payments and infrastructure services, with distinct fulfillment states. Payment-only requests can launch with M2 once their own security/staging gates pass; richer project workflow and cross-sell remain M4.
+
+P-05/P-06/P-07 require the full client project workspace: milestones and real updates, preview/revision/approval history, portal/email notifications, latest and prior website ZIPs, authorized data exports and handover instructions. Staff explicitly publishes deliverables; payment or project completion alone cannot fabricate a ready download. Use [Client portal roadmap](CLIENT_PORTAL_ROADMAP.md) for secure publication, ownership, archive verification and restore acceptance.
+
+**Acceptance:** In sandbox with 20i disabled, complete a design-only full payment, deposit, milestone and final balance; confirm invoice/project balances and receipts. Demonstrate declined, duplicate, concurrent and uncertain/timeout attempts recover without duplicate charges; server-side amount/currency validation; wrong-client access denial; expired/revoked/superseded/already-paid link handling; verified webhook replay handling; partial/full refund reconciliation; and explicit recurring-maintenance consent. Then verify a mixed hosting/design order gives each item its correct fulfillment state and the client can see both in the same dashboard. No existing implementation or live charge is claimed by these criteria.
 
 ## HC-12 — Admin operations and service desk (P1)
 
-Admin navigation groups: Overview, Sales/Orders, Customers, Services/Hosting, Domains, VPS, Web Design/Projects, Plans/Pricing, Subscriptions/Invoices/Refunds, Support, Marketing/Coupons, Reports, Integrations (20i/Authorize.net/SMTP), Security/Audit, Settings/Appearance.
+Admin navigation groups: Overview, Sales/Orders, Customers, Services/Hosting, Domains, VPS, Web Design/Projects, Plans/Pricing, Subscriptions/Invoices/Refunds, Support, Email (Inboxes/Compose/Accounts/Templates), Administrators, Marketing/Coupons, Reports, Integrations (20i/Authorize.net/SMTP), Security/Audit, Settings/Appearance.
 
-Admin functions: search/filter/export, impersonation only with explicit consent and audit if introduced, provisioning job queue, provider error diagnostics, manually retry stuck tasks, reconcile or manually fulfill with safeguards, CRUD product families/prices, stock/capacity rules, branded email templates, tax rules, staff permissions, role-based approvals for refunds/irreversible operations and comprehensive audit records. Never store or display full payment cards. An admin switch cannot fake a completed provider operation.
+Admin functions: search/filter/export; owner/authorized staff one-click client portal support access with configured customer-support authorization, separate actor identity, visible banner and audit (A-09); separately permissioned one-click VPS SSH after verified authentication/transport setup (A-10); provisioning queue/error diagnostics, safe task retries, reconciliation/manual fulfillment, product/pricing CRUD, stock/capacity rules, branded email templates, tax rules, staff permissions, role-based approvals for refunds/irreversible operations and comprehensive audit records. Never store or display full payment cards. An admin switch cannot fake a completed provider operation.
 
-**Acceptance:** Staff can trace any paid order → provider operation → invoice/service/client record and safely recover interrupted jobs without code edits or raw database access.
+Include owner-managed additional admin accounts, scoped mailbox read/send/setup access, multi-account webmail with IMAP/SMTP setup, reusable email templates, and unread-mail notification bells in admin and on public pages for authenticated admins only. Each notification opens the corresponding protected webmail message. Full requirements and acceptance are in [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md), A-05 through A-08; keep actual mailbox email separate from internal support-ticket messages and application notification SMTP.
+
+**Acceptance:** Staff can trace any paid order → provider operation → invoice/service/client record and safely recover interrupted jobs without code edits or raw database access. Additional-admin and mailbox permissions, two-account send/receive, template compose/preview, unread-message deep links and anonymous/public-cache isolation pass the A-05 to A-08 matrix.
 
 ## HC-13 — Technical design, installation and migrations (P0)
 
@@ -149,11 +184,11 @@ Operational features: scheduled job heartbeat, daily financial/provider reconcil
 | Milestone | IDs | Definition of done |
 |---|---|---|
 | M0 Source and integration discovery | Existing F-01/F-02, HC-07 investigation | Import true baseline; inspect actual 20i account capabilities, Authorize.net sandbox and webhook settings; collect no secrets in Git; document feasible SKUs, costs, compliance choice |
-| M1 Product UI + clients foundation | HC-01, HC-02 | Matching branded responsive plan pages, client authentication, price/config CRUD, tenant isolation, no fake checkout |
-| M2 Payments + billing engine | HC-03 to HC-06 | Authorize.net admin's four keys in both environments, themed tokenized card form, webhook signature and idempotency, sandbox payments, invoices/receipts/profiles and recurring-billing test suite |
-| M3 Shared hosting fulfillment | HC-07, HC-08 | Paid order→one provider package→client dashboard→renewal/cancellation recovery, in a tested isolated account |
-| M4 Domains and design service cross-sell | HC-09, HC-11 | Dynamic domain catalog/registration/renewals; web design/maintenance invoices and project dashboard integrated without mis-fulfillment |
-| M5 VPS and support/admin operations | HC-10, HC-12 | Real endpoint/cost validation, tested VPS provisioning/teardown, queues/support/reporting/admin recovery |
+| M1 Product UI + clients/staff foundation | HC-01, HC-02, A-05/A-09, P-07 foundation | Matching branded responsive plan pages, client/staff authentication and scoped support-session permissions, one portal, notification records/preferences, price/config CRUD and tenant isolation |
+| M2 Payments + billing engine | HC-03 to HC-06, HC-11 payment forms, P-03 | Authorize.net admin's four keys in both environments; themed checkout and standalone web-design payment forms; full/deposit/milestone/final-balance sandbox payments with 20i disabled; secure invoice links, verified events, duplicate protection, receipts/profiles and recurring-billing tests |
+| M3 Shared hosting fulfillment | HC-07, HC-08, P-07 hosting events | Paid order→one provider package→client dashboard→renewal/cancellation recovery; reviewed existing-service grants and verified native client controls/status/events in isolated test accounts |
+| M4 Domains and full design workspace | HC-09, HC-11, P-05/P-06/P-07 | Verified domain lifecycle; design stages/updates/previews/approvals and payment history; client notifications plus latest/prior verified website ZIPs, authorized content/database exports and tested handover |
+| M5 VPS and support/admin operations | HC-10, HC-12, A-06/A-07/A-08/A-10 | Real endpoint/cost validation, VPS lifecycle and verified one-click support SSH; queues/support/reporting/admin recovery; multi-account webmail/templates and admin-only bells. Mail operations remain independent of VPS readiness |
 | M6 Hardening, release and rollout | HC-13, HC-14 and A-03/A-04 | Threat model, native integration tests, PCI review, migration/rollback/backup restore, real package hash and tested staging HTTPS checkout; only then authorize live merchant/provisioning |
 
 Every item moves approved → in progress → implemented → verified → deployed with Git commit, test records, artifact provenance, target-host verification and owner approval for real charges. Tasks can be delivered incrementally after dependencies, but **do not skip the gates** or imply a roadmap is a working service.
@@ -170,6 +205,17 @@ Every item moves approved → in progress → implemented → verified → deplo
 8. Admin roles/secret masked/credential rotation and live-vs-sandbox separation.
 9. One-page installer, app upgrade/migration, backup/restore, subdirectory installation and shared-host cron/permission preflight.
 10. Responsive desktop/mobile, keyboard navigation, reduced motion, clear invoice/legal text and transactionally accurate emails.
+11. Standalone web-design payment form with 20i disabled: full service price, fixed/percentage deposit, milestones, final balance, approved extras, invoice/receipt/project balance and opt-in maintenance.
+12. Design-payment request security and lifecycle: foreign-client invoice, altered amount/currency, expired/revoked/superseded/paid link, concurrent duplicate attempts, ambiguous gateway timeout, webhook replay and partial/full refund reconciliation.
+13. Additional administrator creation/invitation, scoped role/mailbox permissions, reset, deactivation/session revocation, privilege-escalation denial and last-owner protection.
+14. Two real test mailboxes: secure setup, send/receive/reply/forward/drafts/attachments, template preview/variables, provider failure/uncertain send and malicious-message rendering protection.
+15. Unread-email bell and exact-message links in admin and the admin-only public header; mailbox read-state synchronization, revoked permissions, moved/deleted messages and anonymous/client/cache isolation.
+16. Unified client service mapping and native control coverage: existing/new service grants, plan restrictions, unsupported endpoints, stale data and secure provider handoffs without cross-client or reseller access.
+17. Design-only and combined-client progress updates, protected preview/revision approval, notification delivery/read state and absence of internal staff notes/mail.
+18. Latest/prior website ZIP publication/download, checksum and isolated dynamic-site restore, client-scoped database export, secret exclusion, expired/revoked links, cross-client denial and large/failed package jobs.
+19. Measured service-health observations and outdated/unavailable data, renewal/SSL/backup-age notices where implemented, correct per-contact permissions and deduplicated update delivery.
+20. One-click client support session: real staff attribution, customer scope, visible exit/banner, multiple tabs, expiry/revocation, permissions and denial of customer-identity financial/approval actions.
+21. Real isolated VPS SSH launch/disconnect: correct product/user/host, staff role, single-use token, protected credentials, host-key verification, failure/timeout/revocation, and gateway independence from shared-host storefront.
 
 No credentials, payment cards, provider IDs from real customers, or private billing information are to be inserted in GitHub issues, commits, screenshots or test fixtures.
 

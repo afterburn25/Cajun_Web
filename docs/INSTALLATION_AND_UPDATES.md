@@ -2,6 +2,8 @@
 
 These are release requirements, not a declaration that the target host is fixed. The repository currently contains documentation, not a deployable source import.
 
+Use [the GitHub release workflow](RELEASE_WORKFLOW.md) for incremental versioning, CI evidence and retained complete deployment ZIPs. Track real source/package versions in [the release register](RELEASES.md). GitHub's automatic source ZIP and temporary CI artifacts are not substitutes for the tested complete upload release.
+
 ## One-page means one visible form
 
 All database, owner, website, private-storage and confirmation fields must be visible within the same installer document. One Install action submits the configuration. Optional preflight, progress, errors and completion render inline. No Next/Back screens, mandatory tabs, access-key input, activation key, or separate setup/repair filename.

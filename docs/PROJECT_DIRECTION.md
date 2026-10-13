@@ -52,3 +52,21 @@ CajunWebPro must grow into a fully branded **web design, hosting, domains and VP
 The owner chose a **100% custom PHP/MySQL storefront, billing platform, checkout, subscription engine and portal** (no WHMCS, no HostShop front end or Stripe). Integrate directly with 20i reseller APIs for provisioning and Authorize.net for payment processing. Admin must configure API Login ID, Transaction Key, Signature Key and Public Client Key separately for sandbox/live. Payment forms must blend into the site design, with Accept.js tokenization and PCI obligations explicitly addressed. Products/prices and service options belong in admin, not hardcoded guesses.
 
 Reference [full hosting and billing scope](HOSTING_AND_BILLING_ROADMAP.md). Adding scope does not indicate these services are available or implemented.
+
+## Web-design service payment forms — clarified 2026-10-12
+
+Customers must be able to pay CajunWebPro for web-design work directly through branded Authorize.net forms, independently of a hosting purchase or 20i setup. Include fixed-price services, approved quote deposits, milestone invoices, final balances and optional expressly agreed maintenance subscriptions. Admin creates service-specific payment requests and secure links; customers can also pay their own invoices from the unified portal. Amounts come from approved admin prices/quotes, with receipts and accurate project balances. Deliver the standalone forms with the payment foundation (M2); deeper project and hosting bundles follow in M4. This is approved scope pending current 1.1.0 source inspection and implementation evidence.
+
+## Admin webmail and team access — added 2026-10-12
+
+Admin must support multiple connected email accounts with setup, receiving/reading and sending mail, account switching and a clear combined inbox, drafts/attachments and reusable sending templates. The owner can add additional administrator accounts and assign appropriate access, including mailbox permissions. Provide an unread-email bell in admin and the public-site header for signed-in admins only; selecting a notification opens that exact message in protected admin webmail. Visitors and ordinary clients must receive no private mail data. Keep the experience within the existing CajunWebPro design; exact setup, workflow and acceptance requirements are in [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md). These are approved additions awaiting current-source inspection and implementation.
+
+## Own hosting-management platform — explicit owner direction 2026-10-12
+
+Build our own WHMCS from scratch: CajunWebPro owns its storefront, customer/staff accounts, orders, invoicing, recurring billing, service lifecycle, support, admin and client interfaces. Direct 20i and Authorize.net integrations support those workflows. Include web-design projects/payments and admin email/templates/bells in the same coherent platform. Preserve the existing website and verified current source; implement custom modules incrementally rather than requiring a WHMCS installation. [Custom platform blueprint](CUSTOM_PLATFORM_BLUEPRINT.md) records the agreed boundaries and M0–M6 delivery sequence.
+
+## Complete client workspace and support access — 2026-10-12
+
+The client portal must be the home for every purchased service and web-design project: verified native 20i controls, project stages and dated updates, previews/approvals, support, payments and versioned website ZIP downloads with needed authorized content/database exports. Customers need a notification center and genuine progress/service observations. Keep admin email private. [Client portal roadmap](CLIENT_PORTAL_ROADMAP.md) defines capability coverage and release acceptance; StackCP handoffs are identified bridges, not completed native controls.
+
+The owner and explicitly authorized support staff also need one-click access to a selected client's portal and an Open SSH action for their eligible VPS. Preserve staff attribution, visible support-session context and audit without requesting client passwords. VPS terminal access requires separately verified permissions, server authentication and a working supported transport; a portal login alone is not SSH. Implement A-09/A-10 with the client-data boundaries and shared-host-compatible deployment specified in the client-portal roadmap.
