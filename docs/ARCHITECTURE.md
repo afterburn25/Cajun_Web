@@ -1,6 +1,8 @@
 # Architecture notes
 
-**1.10.0 candidate:** additive `activity_reads` stores per-person typed-source read status. Owners enable Workspace activity after backup and merging UPDATE; fresh installation enables an empty table. Authorized queries project existing source history without copying bodies or adding business-write hooks. Activity failure cannot undo business operations. Private count polling preserves idle expiry. [Activity guide](WORKSPACE_ACTIVITY.md). Publication pending.
+## 2026-10-13 — Verified 1.10.0 workspace activity increment
+
+Separate client/staff activity centers and private workspace bells are delivered in [v1.10.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0) / `4649a913d40166b9874f9550e57b4186edfc43ab`. Additive per-person read state projects retained sources without changing business writes. Exact links, bounded mark-visible actions, history, current authorization and passive idle expiry pass 603 native / 630 HTTP/Chromium checks including actual 1.9.0 UPDATE. Full P-07 remains partial; SMTP dispatch/preferences/stage/hosting/ticket/renewal events and A-06–A-08 multi-account webmail/templates/email bells remain pending. [Guide](WORKSPACE_ACTIVITY.md) · [report](TEST_REPORT_1.10.0.md).
 
 ## 2026-10-13 — Verified 1.9.0 client ZIP delivery increment
 

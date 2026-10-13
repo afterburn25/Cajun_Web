@@ -1,6 +1,8 @@
 # Installation, packaging and updates
 
-**1.10.0 candidate:** additive `activity_reads` stores per-person typed-source read status. Owners enable Workspace activity after backup and merging UPDATE; fresh installation enables an empty table. Authorized queries project existing source history without copying bodies or adding business-write hooks. Activity failure cannot undo business operations. Private count polling preserves idle expiry. [Activity guide](WORKSPACE_ACTIVITY.md). Publication pending.
+## 2026-10-13 — Verified 1.10.0 workspace activity increment
+
+Separate client/staff activity centers and private workspace bells are delivered in [v1.10.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0) / `4649a913d40166b9874f9550e57b4186edfc43ab`. Additive per-person read state projects retained sources without changing business writes. Exact links, bounded mark-visible actions, history, current authorization and passive idle expiry pass 603 native / 630 HTTP/Chromium checks including actual 1.9.0 UPDATE. Full P-07 remains partial; SMTP dispatch/preferences/stage/hosting/ticket/renewal events and A-06–A-08 multi-account webmail/templates/email bells remain pending. [Guide](WORKSPACE_ACTIVITY.md) · [report](TEST_REPORT_1.10.0.md).
 
 ## 2026-10-13 — Verified 1.9.0 client ZIP delivery increment
 
@@ -25,7 +27,7 @@ Released 1.5.0 adds [payment preparation](PAYMENT_PREPARATION.md): two additive 
 Released 1.4.0: after a full backup and UPDATE merge, owners enable **Service catalog** with their current password. Three additive catalog tables preserve clients, support policy, staff access and existing invoices. Fresh installation initializes an empty catalog. No sample prices publish. Read [Service catalog](SERVICE_CATALOG.md); publication evidence remains in the release register. Complete/update inventory: 55/54 files.
 
 
-Current verified release: [v1.9.0](RELEASES.md#v190--published-13-october-2026). [1.9.0 test report](TEST_REPORT_1.9.0.md). Earlier version instructions below are retained for their supported upgrade steps.
+Current verified release: [v1.10.0](RELEASES.md#v1100--published-13-october-2026). [1.10.0 test report](TEST_REPORT_1.10.0.md). Earlier version instructions below are retained for their supported upgrade steps.
 
 Released 1.3.0 adds [client support sessions](CLIENT_SUPPORT.md). From 1.2.0, merge the verified UPDATE package after backup, then explicitly enable Client support with the owner password and allow individual clients under the support agreement. Existing roles and customer credentials are retained. From earlier versions, complete the existing workspace/administrator setup first. Fresh setup remains one-page; support policy still requires explicit confirmation. Package inventory: 52 complete / 51 update files. Publication and evidence are tracked in the release register.
 

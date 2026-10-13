@@ -1,12 +1,12 @@
 # Changelog
 
-## 1.10.0 candidate — workspace activity
+## 1.10.0 — workspace activity
 
 - Personal client and staff activity centers with explicit read/unread and bounded mark-visible actions.
 - Unread bells, exact source links and paginated history with current ownership/role checks.
 - Generic public mount point; private cookie-authorized count, no-store and active-page polling without extending idle sessions.
 - Additive read-state schema, existing-source projections, failure recovery and retained 1.9.0 update coverage.
-- Acceptance/publication pending. Full P-07, email dispatch and A-06–A-08 webmail/templates/mail bells remain incomplete.
+- Published/download-verified at `4649a913d40166b9874f9550e57b4186edfc43ab`; 603 native / 630 HTTP/Chromium checks pass. Full P-07, email dispatch and A-06–A-08 webmail/templates/mail bells remain incomplete.
 
 ## 1.9.0 — client website downloads
 
