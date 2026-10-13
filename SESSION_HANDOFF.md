@@ -5,6 +5,7 @@
 `devin/domain-foundation` (branched from `main` `5d810b1`) carries the isolated HC-09 domain contract: `foundation/domains/` (LDH-validated `DomainName`, admin-configured `TldOffering` with null=not-offered pricing, `RegistrantContact` + privacy preference, honest-availability `DomainPricing`→`DomainQuote`, guarded `DomainOrder` lifecycle with append-only history and consent-gated submission), `tests/domains/run.php` (81 synthetic checks), `docs/DOMAINS_FOUNDATION.md`, `.github/workflows/domains.yml`. Local PHP 8.4.25: all checks pass, all files lint clean.
 
 **Gate:** Development pending — API verification; no registrar calls or fabricated data. **Not integrated:** additive-only outside `site/`. Next for this lane: Codex review/merge; adapter contract once the refactor lands.
+
 ## Current directory and package contract — released 1.11.0
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](docs/DIRECTORY_STRUCTURE.md), [migration and recovery](docs/STRUCTURE_MIGRATION.md), and [START-HERE](START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.
