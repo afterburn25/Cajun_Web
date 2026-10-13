@@ -93,7 +93,7 @@ PHPIniDir /etc/php/8.3/apache2
             check(label+' old privileged entry was served before migration',warm.status_code==200 and 'Sign in to manage' in warm.text)
             with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(legacy)
             failed=subprocess.run([php,str(ROOT/'tests/structure_worker.php'),str(legacy),'apply','5'],capture_output=True,text=True)
-            (QA/('apache-'+label+'-interruption.log')).write_text(failed.stdout+failed.stderr)
+            (QA/('apache-'+label+'-interruption.log')).write_text('rc='+str(failed.returncode)+'\n'+failed.stdout+failed.stderr)
             check(label+' actual migration interrupts after journaled operation: '+failed.stderr.strip(),failed.returncode!=0 and 'Synthetic interruption' in failed.stderr)
             for route in ['admin.php','portal.php','index.php','assets/site.css']:
                 check(label+' maintenance denies old application '+route,requests.get(base+'/legacy/'+route).status_code==403)
