@@ -13,7 +13,7 @@ def safe(name):
     if p.is_absolute() or '..' in p.parts or '\\' in name or ':' in name or str(p)!=name:raise RuntimeError('Unsafe path: '+name)
 def inventory():
     result={}
-    for p in sorted(SITE.rglob('*')):
+    for p in sorted(SITE.rglob('*'),key=lambda path:path.relative_to(SITE).as_posix()):
         if p.is_symlink():raise RuntimeError('Symlink in shipping source')
         if not p.is_file():continue
         n=p.relative_to(SITE).as_posix();safe(n)

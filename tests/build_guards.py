@@ -19,6 +19,7 @@ def temporary(name,data,test):
         else:p.write_bytes(old)
 try:
     check('Builder accepts exact organized scaffold inventory',len(build.inventory())>100)
+    check('Installer inventory uses portable case-sensitive path order',list(build.inventory())==sorted(build.inventory()))
     temporary('storage/client.zip',b'customer bytes','Builder rejects runtime storage contents')
     temporary('upload/staging.php',b'<?php exit; ?>private','Builder rejects upload staging contents')
     temporary('storage/index.php',b'<?php echo "changed";','Builder rejects altered scaffold metadata')
