@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — A-06 connection diagnostics in progress
+
+- Add a bounded connection-check contract and non-shipping transport prototype: conservative public destination policy, pinned numeric sockets with verified original TLS hostname, bounded response handling and IMAP/SMTP authentication-only exchanges.
+- Add actual isolated TLS fixtures and current-authorization callback before credential payloads; no real mailbox, message fetch/send, application controls or new release is enabled by this checkpoint.
+
 ## 1.15.0 — verified consultation scheduling
 
 - Preserve corrected Devin #32 scheduling ancestry and 71 isolated checks. Add one explicitly configured studio calendar, disabled by default, with timezone-aware offered slots, buffers, notice and a 30-day horizon.

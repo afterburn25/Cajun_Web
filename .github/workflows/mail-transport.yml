@@ -1,0 +1,40 @@
+name: Mail transport checks
+on:
+  push:
+    branches: [main]
+    paths: ['foundation/mail-transport/**', 'tests/mail-transport/**', '.github/workflows/mail-transport.yml']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  transport:
+    name: Mail transport PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@d52fc211a0436f8839a587b3b5b8efddab4744ea
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: openssl
+          coverage: none
+      - name: Synthetic destination and actual loopback TLS tests
+        run: |
+          mkdir -p qa
+          php -n tests/mail-transport/policy_test.php > qa/mail-transport-policy-results.json
+          python3 -m venv .ci-venv
+          .ci-venv/bin/pip install --disable-pip-version-check cryptography==50.0.1
+          .ci-venv/bin/python tests/mail-transport/tls_test.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mail-transport-${{ matrix.php }}-${{ github.sha }}
+          path: qa/mail-transport-*-results.json
+          if-no-files-found: error
