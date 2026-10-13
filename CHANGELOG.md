@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — C-01 comparison-facts foundation (Devin, isolated component)
+
+- Added canonical `foundation/comparisons/` classes (`ComparisonFact` requiring https source/observation date/plan scope/evidence kind and rejecting absolutist phrasing, `ComparisonRegistry`, `ComparisonSection` with fail-closed publishable/staleCitations) plus `docs/COMPARISONS_FOUNDATION.md`.
+- Added `tests/comparisons/run.php` (30 synthetic checks; fixture `.invalid` sources only) and the `comparisons.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes and no actual competitor facts — real claims require primary-source review. Not yet integrated or released.
+
 ## 1.11.0 — organized application and verified three-package release
 
 Published from `de70c5da2e8f7bd35fbb92b9b829d0ab3e880372` after exact-main acceptance; all 16 assets downloaded and verified. Original history and all earlier releases retained. No live deployment.
