@@ -225,6 +225,18 @@ $authFail = "* OK ready\r\na1 NO bad creds\r\n";
 $r4 = InboundSync::checkMailbox(profile(), 'u', 'pw', fn ($p) => new ScriptSocket($authFail), ['INBOX'], 1760000000);
 check('auth failure classified', $r4['result']->outcome === ConnectionResult::OUTCOME_FAILED && str_contains($r4['result']->error, 'auth'));
 
+// Mailbox with 250 unseen UIDs: only the newest 200 are fetched.
+$bigScript = "* OK ready\r\na1 OK LOGIN\r\n* 250 EXISTS\r\n* OK [UIDVALIDITY 9] ok\r\na2 OK EXAMINE\r\n"
+    . '* SEARCH ' . implode(' ', range(1, 250)) . "\r\na3 OK SEARCH\r\n";
+foreach (range(51, 250) as $i => $uid) {
+    $bigScript .= '* ' . ($i + 1) . " FETCH (UID {$uid} FLAGS () INTERNALDATE \"13-Oct-2026 12:00:00 +0000\" ENVELOPE (NIL \"M{$uid}\" ((NIL NIL \"a\" \"b.invalid\")) NIL NIL NIL NIL NIL NIL NIL))\r\n";
+}
+$bigScript .= "a4 OK FETCH\r\na5 OK LOGOUT\r\n";
+$bigSocket = new ScriptSocket($bigScript);
+$r5 = InboundSync::checkMailbox(profile(), 'u', 'pw', fn ($p) => $bigSocket, ['INBOX'], 1760000000);
+check('flooded folder bounded to newest 200', count($r5['messages']) === 200 && $r5['messages'][0]->uid === 51 && $r5['messages'][199]->uid === 250);
+check('fetch command sent truncated uid set', str_contains(implode('', $bigSocket->sent), 'UID FETCH 51,') && !str_contains(implode('', $bigSocket->sent), 'UID FETCH 1,'));
+
 // --- summary ---------------------------------------------------------------
 
 echo ($failures ? "FAIL\n" : "PASS\n") . $checks . " checks\n";

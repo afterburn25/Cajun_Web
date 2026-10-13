@@ -30,6 +30,9 @@ require_once __DIR__ . '/../webmail/MailboxProfile.php';
  */
 final class InboundSync
 {
+    /** Unseen summaries collected per folder per check; the newest bound. */
+    public const MAX_MESSAGES_PER_FOLDER = 200;
+
     /**
      * @param callable(MailboxProfile):MailSocket $socketFactory opens the
      *        connection for the profile's host/port/encryption. For
@@ -65,7 +68,7 @@ final class InboundSync
             $messages = [];
             foreach ($folders as $folder) {
                 $box = $session->examine($folder);
-                $uids = $session->searchUnseen();
+                $uids = array_slice($session->searchUnseen(), -self::MAX_MESSAGES_PER_FOLDER);
                 foreach ($session->fetchSummaries($uids) as $row) {
                     $flags = array_values(array_intersect($row['flags'], MailMessage::FLAGS));
                     $messages[] = new MailMessage(

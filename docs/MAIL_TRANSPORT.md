@@ -27,6 +27,10 @@ protocol framing, and the A-06 model owns identity/authorization.
 - **Read-only.** `EXAMINE` + `UID SEARCH UNSEEN` +
   `UID FETCH (UID FLAGS ENVELOPE INTERNALDATE)`; no body parts, no flags
   written, nothing deleted. SMTP send is out of scope entirely.
+- **Bounded sync.** Each folder contributes at most
+  `InboundSync::MAX_MESSAGES_PER_FOLDER` (200) unseen summaries per check
+  — the *newest* UIDs when more exist — so a flooded mailbox cannot
+  produce unbounded work or responses.
 - **Honest outcomes.** `checkMailbox` always returns a `ConnectionResult`;
   a disabled profile is `untested` (never dialed), failures name a
   classified error, and `success` is only returned after the server
