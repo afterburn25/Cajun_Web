@@ -178,6 +178,8 @@ try:
         mail_templates_browser(globals(),browser)
         from mail_accounts_cases import run_browser as mail_accounts_browser
         mail_accounts_browser(globals(),browser)
+        from reviews_cases import run_browser as reviews_browser
+        reviews_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)
