@@ -1,5 +1,9 @@
 # Changelog
 
+## Next increment — exact-message reading (unreleased)
+
+- Claim the bounded A-06 message identity, read-only transport, MIME/HTML and application acceptance contract after verified 1.17.0. Local prototypes remain outside deployment pending canonical integration and complete acceptance.
+
 ## 1.17.0 — verified recent inbox headers
 
 - Preserve early browser evidence so failures can be investigated while the complete recovery matrix continues.

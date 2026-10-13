@@ -1,5 +1,11 @@
 # Codex and Devin work allocation
 
+## Active development — exact-message reading after 1.17.0
+
+Codex owns `codex/mail-message-reader` from publication-record main `8a8127c`. [The bounded contract](MAIL_MESSAGE_READER.md) binds a request to current account revision plus INBOX/UIDVALIDITY/UID, preserves read flags and the released header limits, and defines raw/MIME/decoded-content and isolated HTML rendering boundaries. Local PHP 8.4 prototypes and synthetic TLS/browser studies exist; canonical integration, actual PHP 8.2, application permissions/audit/rate/UI and upgrade/recovery acceptance remain pending. This is development, not a deployed message-body feature. Latest published version remains verified 1.17.0 below.
+
+Devin retains isolated provider #43 corrections from issue #2 comment 6156483996; feb0ed8 merges main but does not change the affected provider source. Preserve #62/#68 separately. Codex retains receiving/application/schema/build/release ownership. Next: integrate the prepared maintained-stack components, reproduce their bounded tests, then complete a useful assigned-staff exact-message workflow and a verified incremental release. No real mailbox, sending, provider write, charge, SSH activation or live deployment.
+
 ## Latest verified publication — 1.17.0
 
 [v1.17.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.17.0) is published and freshly downloaded/verified at immutable source/tag `fc3bd89c5e1c286f9dc4df12d50dd566a4d4ab86` through [PR #69](https://github.com/afterburn25/Cajun_Web/pull/69). Assigned staff can explicitly load the newest 20 INBOX headers over pinned verified TLS using maintained bundled IMAP/MIME dependencies. Current session, global permission, account assignment and saved revision protect credential use and display. Strict started/terminal audit, refresh limits and personal request history retain outcomes/counts; header contents exist only in the current escaped response. [Owner workflow](MAIL_INBOX_READER.md). Bodies, attachments, sending, OAuth and exact-message bells remain incomplete.

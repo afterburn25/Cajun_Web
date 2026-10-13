@@ -1,0 +1,41 @@
+# A-06 exact-message reading — active development contract
+
+Codex owns `codex/mail-message-reader` from publication-record main `8a8127c`, after published/download-verified [1.17.0](TEST_REPORT_1.17.0.md) at `fc3bd89`. This is the next bounded A-06 increment. Latest published version remains 1.17.0; no message-body application feature or real mailbox acceptance is claimed. Preserve Devin provider #43 and mail-bell #62 independently.
+
+## User outcome
+
+Assigned staff can select a recent inbox header and explicitly load that exact message. The page shows escaped sender/subject/date claims, a plain-text body and, when available, a sanitized formatted view. It explains excluded remote images and attachments. Opening preserves mailbox flags. Sending, downloads, arbitrary folders and automatic sync remain separate increments.
+
+## Identity and transport
+
+Bind the request to account ID, saved revision, literal INBOX, validated unsigned-32-bit UIDVALIDITY and UID. Revalidate current global/read assignment and session before accepting intent, after DNS, before credentials, before UID FETCH, after transport and before display. A changed revision, epoch, deleted/missing UID or mismatched response must return unavailable. Do not fall back to sequence numbers or another message.
+
+Use a separate fixed message operation over the maintained parser. Preserve the current header reader's 16 KiB literal profile. Proposed message profile: one message, raw MIME <=256 KiB, fixed total receive budget with explicit protocol overhead, read-only EXAMINE and UID FETCH BODY.PEEK[], unchanged public DNS pinning/original-host verified TLS, 5-second I/O and 20-second total after DNS. Query exact UID/FLAGS/RFC822.SIZE before requesting MIME; require matching identity and size in the body response, exact literal length, complete tagged success, no unexpected message/body or unsolicited mutation responses. Reject oversize before fetching the body. No arbitrary command or larger caller-supplied limit.
+
+Retain strict started/terminal access audit without body/header text. Reuse the staff serialization and no-DB-transaction-over-network pattern. Message reads need their own current-purpose request/result records, rate limits and finite outcomes, rather than pretending header-list results are body accesses. They must survive update/recovery with their original key and account history. Rate design should allow normal consecutive message opens without enabling unbounded remote requests; settle exact per-account/staff limits before application integration.
+
+## MIME and display boundaries
+
+Reuse the pinned maintained MIME parser with instance-local NullLogger and global definitions/plugins disabled. Proposed limits: 32 parts, nesting 8, 128 headers per part / 512 aggregate, 16 KiB part header / 64 KiB aggregate header, bounded token/comment work. Force full bounded part enumeration before selection; read only selected inline text/plain and text/html streams in bounded chunks, never unrestricted getContents. Refuse decoded text >128 KiB or HTML >64 KiB. Do not decode or expose attachment bytes. Reject parser budget errors before returning content. Plain text is escaped and control/bidi handling must be explicit without destroying line breaks or normal Unicode.
+
+Local study confirms plain, multipart alternative, base64 and ISO-8859-1 quoted-printable decoding with those limits; part/depth/header/raw/decoded excesses are refused. The maintained parser tolerates a missing final multipart boundary with no default ERROR. This must be documented/tested explicitly: a complete fetched malformed message is distinct from a truncated network response, whose exact literal/size/tag checks must always reject. Do not claim the dependency rejects every malformed MIME message. Consider validation-level diagnostics and honest unavailable/format-recovery outcomes without leaking remote exception text.
+
+Candidate formatted renderer: Symfony HTML Sanitizer 7.4.20 with minimal formatting allowlist, no styles/classes/IDs, no media/forms/frames/scripts/SVG/MathML/unknown subtrees, and only explicit http/https links with forced noopener/noreferrer. This adds ext-dom and four packages relative to the existing bundle; verify host requirement behavior and bundle every exact byte/license. The built-in max-input setting truncates silently, so refuse input before invoking it. Iteratively bound the parsed tree before recursive visiting (<=2,048 nodes, depth <=32); test both maintained parser paths on actual PHP 8.2 and 8.4. No upstream source edits.
+
+Use a sandboxed isolated iframe with restrictive CSP, no-referrer and private/no-store. Decide explicit user-initiated external-link behavior without granting scripts, forms, same-origin or top navigation. UI must never inject provider HTML into the application DOM. Test reparsing/mutation, encoded dangerous URLs, namespace transitions, remote trackers, CSS/resources, event handlers, malformed UTF-8, excessive nodes/depth, DOM clobbering and attempts to escape the iframe. Content remains in the authorized response, not shared DB/session caches.
+
+## Required acceptance
+
+Exact component fixtures on PHP 8.2/8.4; actual isolated TLS with malformed/oversized/partial/different-UID/different-epoch/revoked-authority cases; native schema/grant/audit/rate/concurrency tests; packaged HTTP and Chromium on actual plaintext/formatted messages; no external requests or script execution; current-grant revoke/revision checks; actual prior-release installation/update/recovery with retained records and original key; direct Apache denial with/without rewriting; package reproducibility and desktop/mobile inspection. Independent review precedes application release. No real mailbox acceptance or live deployment is inferred.
+
+## Notifications follow later
+
+A bell must filter metadata and counts by current grants and saved account generation before returning any feed, and carry the complete validated identity. The newest-20 response does not prove an overall unread count or complete synchronization. Opening/dismissing a local alert must not imply a remote seen-flag change.
+
+## Developer prototype evidence and next integration
+
+Isolated local PHP 8.4.25 prototypes pass 29 MIME/body cases and 42 exact-message memory-session cases. The common session/profile refactor also passes the existing 48 header memory and 483 actual TLS checks unchanged; the proposed message operation passes 597 named actual loopback TLS checks. Separate offline Chromium studies pass 28 sanitizer/parser cases and 10 iframe/CSP/link-isolation cases. These are local developer evidence, not PHP 8.2, installed-application or release acceptance. Canonical integration and dedicated CI must reproduce them before an application adapter is accepted.
+
+The isolated combined dependency resolution retains every existing one of the 36 package versions/source references and adds four MIT packages: symfony/html-sanitizer 7.4.20, masterminds/html5 2.11.0, league/uri 7.8.1 and league/uri-interfaces 7.8.1. Exact locks, source references and every vendor/license byte must be preserved and independently reproduced. DOM is required for formatted rendering; design and test an honest plaintext/unavailable-format fallback rather than breaking the existing header reader on a host without it.
+
+Next: integrate/reproduce the bounded receiving/message and content components, then implement current-authorized request storage, UI and real HTTP/Chromium/upgrade acceptance. Keep older header limits unchanged. Preserve immutable 1.17.0 assets and its source tag. No live mailbox or provider operation is authorized by this contract.
