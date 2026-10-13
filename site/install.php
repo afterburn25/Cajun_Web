@@ -10,7 +10,7 @@ header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
 header('X-Robots-Tag: noindex, nofollow, noarchive');
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
-header('X-CWP-Installer: one-page-1.11.0');
+header('X-CWP-Installer: one-page-'.CWP_INSTALLER_BUILD);
 // lstat reads the guard's existence without executing config or following links.
 function cwp_installer_installed(): bool {
     foreach (['config.php', '.installed.php', 'storage/install.lock.php'] as $name) {
@@ -31,7 +31,7 @@ function cwp_installer_stop(string $heading, string $message, int $status): neve
         header("Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'");
         $h = htmlspecialchars($heading, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $m = htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        echo '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="images/icons/favicon.png?v=1.11.0"><title>CajunWebPro · Setup 1.11.0</title><body style="background:#031021;color:#eaf2ff;font:17px/1.65 system-ui;padding:8vw;max-width:900px"><p style="color:#f6cd74">CAJUNWEBPRO · KEY-FREE SETUP 1.11.0</p><h1>'.$h.'</h1><p>'.$m.'</p></body></html>';
+        echo '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="images/icons/favicon.png?v='.CWP_INSTALLER_BUILD.'"><title>CajunWebPro · Setup '.CWP_INSTALLER_BUILD.'</title><body style="background:#031021;color:#eaf2ff;font:17px/1.65 system-ui;padding:8vw;max-width:900px"><p style="color:#f6cd74">CAJUNWEBPRO · KEY-FREE SETUP '.CWP_INSTALLER_BUILD.'</p><h1>'.$h.'</h1><p>'.$m.'</p></body></html>';
     }
     exit;
 }
