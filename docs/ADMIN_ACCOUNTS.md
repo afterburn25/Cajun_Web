@@ -1,5 +1,7 @@
 # Administrator accounts — 1.2.0
 
+**2026-10-13 payment checkpoint:** [1.5.0](RELEASE_1.5.0.md) delivers partial M2 / HC-04 / HC-11 settings and prepared invoice requests. [Guide](PAYMENT_PREPARATION.md). Requests require explicit payment and client-workspace grants; credentials remain owner-only. Card collection/production processing remain disabled. Real merchant/provider acceptance and broader roadmap capabilities remain pending.
+
 Released 1.4.0 adds explicit catalog permission, including internal costs. Catalog invoices additionally require client-workspace permission. Existing staff receive no automatic catalog grant. [Catalog guide](SERVICE_CATALOG.md).
 
 
