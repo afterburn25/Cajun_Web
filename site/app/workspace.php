@@ -2,6 +2,8 @@
 /** Optional private client workspace; database setup is explicit for existing sites. */
 declare(strict_types=1);defined('CWP_BOOT') || exit;
 require_once __DIR__.'/support.php';
+require_once __DIR__.'/catalog.php';
+require_once __DIR__.'/catalog-view.php';
 function studio_schema(string $prefix): array {
  if(!preg_match('/^[a-zA-Z][a-zA-Z0-9_]{1,19}$/D',$prefix))throw new InvalidArgumentException('Invalid prefix.');
  $t=fn($n)=>'`'.$prefix.$n.'`';$e=' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci';return [

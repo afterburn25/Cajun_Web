@@ -6,9 +6,9 @@ define('CWP_BOOT', true);
 require __DIR__.'/../site/app/core.php';
 $GLOBALS['cwp_config'] = require __DIR__.'/../test-runtime/config-fixture.php';
 $request = json_decode(stream_get_contents(STDIN), true, 32, JSON_THROW_ON_ERROR);
-if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','seed-support-upgrade'],true)) {
-    $supportUpgrade=$request['operation']==='seed-support-upgrade';$staffUpgrade=$supportUpgrade||$request['operation']==='seed-staff-upgrade';$folder=$supportUpgrade?'support-upgrade':($staffUpgrade?'staff-upgrade':'upgrade');$prefix=$supportUpgrade?'supportup_':($staffUpgrade?'staffup_':'upgrade_');
-    require __DIR__.'/../test-runtime/'.($supportUpgrade?'released-1.2.0':($staffUpgrade?'released-1.1.0':'legacy')).'/app/schema.php';
+if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','seed-support-upgrade','seed-catalog-upgrade'],true)) {
+    $catalogUpgrade=$request['operation']==='seed-catalog-upgrade';$supportUpgrade=$catalogUpgrade||$request['operation']==='seed-support-upgrade';$staffUpgrade=$supportUpgrade||$request['operation']==='seed-staff-upgrade';$folder=$catalogUpgrade?'catalog-upgrade':($supportUpgrade?'support-upgrade':($staffUpgrade?'staff-upgrade':'upgrade'));$prefix=$catalogUpgrade?'catalogup_':($supportUpgrade?'supportup_':($staffUpgrade?'staffup_':'upgrade_'));
+    require __DIR__.'/../test-runtime/'.($catalogUpgrade?'released-1.3.0':($supportUpgrade?'released-1.2.0':($staffUpgrade?'released-1.1.0':'legacy'))).'/app/schema.php';
     $GLOBALS['cwp_config']['db']['prefix'] = $prefix;
     $GLOBALS['cwp_config']['site_url'] = 'http://127.0.0.1:8091/'.$folder;
     $private = __DIR__.'/../test-runtime/'.$folder.'-private';
@@ -35,6 +35,12 @@ if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','se
         query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (2,'administrator',1,?)",[json_encode(['website.manage','clients.manage'])]);
         query('UPDATE '.table('studio_clients').' SET password_hash=? WHERE id=1',[password_hash('Synthetic retained client passphrase',PASSWORD_DEFAULT)]);
         staff_store()->issue('2',str_repeat('f',32));
+    }
+    if($catalogUpgrade){
+        save_setting('support_schema_version','1');save_setting('support_policy_confirmed','1');
+        query('INSERT INTO '.table('support_clients').' (client_id,allowed,updated_by,updated_at) VALUES (1,1,1,?)',[time()]);
+        query('INSERT INTO '.table('support_events')." (actor_id,client_id,action,object_type,object_id,outcome,occurred_at) VALUES (1,1,'client.allowed','client','1','allowed',?)",[time()]);
+        query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,instructions,created_at) VALUES (1,?,?,?,?,?)',['OLD-MANUAL','Retained manual invoice',9900,'Preserve these instructions',$now]);
     }
     file_put_contents(__DIR__.'/../test-runtime/'.$folder.'-config.php','<?php return '.var_export(config(),true).';');
     echo json_encode(['ok'=>true]);

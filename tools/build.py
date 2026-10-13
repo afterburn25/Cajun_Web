@@ -59,7 +59,7 @@ def main():
         try:subprocess.run(['node','--check',str(check)],check=True,capture_output=True)
         finally:check.unlink()
     out=ROOT/'dist';out.mkdir(exist_ok=True)
-    manifest={'version':version,'source_commit':args.commit,'layout':'flat','files':inv,'fresh_install':'install.php','existing_install':'Back up first. Merge UPDATE files; sign into admin.php. From 1.0.8 use Version & database first. If needed, open Administrators to select the initial owner and enable account access. Owners enable Client support explicitly and allow each client under their support agreement. Never rerun fresh setup.'}
+    manifest={'version':version,'source_commit':args.commit,'layout':'flat','files':inv,'fresh_install':'install.php','existing_install':'Back up first. Merge UPDATE files; sign into admin.php. From 1.0.8 use Version & database first. If needed, open Administrators to select the initial owner and enable account access. Owners enable Client support explicitly and allow each client under their support agreement. Owners enable Service catalog explicitly for approved prices and existing-project invoice snapshots. Never rerun fresh setup.'}
     (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8',newline='\n')
     for kind in ['COMPLETE-UPLOAD','UPDATE']:
         target=out/f'CajunWebPro-{version}-{kind}.zip'
