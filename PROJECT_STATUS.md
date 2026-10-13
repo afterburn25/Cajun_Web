@@ -1,5 +1,10 @@
 # Project status
 
+## 2026-10-13 — Devin estimator adapter contract
+
+On `devin/estimator-adapter` (from main `b975915`), Devin wrote `docs/ESTIMATOR_ADAPTER.md` — the explicit L-01 adapter contract required before the reviewed estimator foundation can serve `growth_estimate`: quantity keys fold into `PriceRule` ranges, all consultation conditions preserved, byte-for-byte fixture equivalence required. Documentation only; implementation awaits Codex review. Queued Devin PRs: #31 (L-02), #32 (L-03), #34 (W-02 slice, installer-hash fix `ac91f0e`).
+
+
 ## Release acceptance follow-up — 2026-10-13
 
 Portfolio integration PR #30 is merged at `332af19333a62d3dfcc90eb9cf34871a7fac50ec`; original Devin PRs #7/#27 are merged with preserved history. Both candidate runs passed 618 native / 675 HTTP/Chromium checks and reviewed screenshots. Exact-main run 38408053057 passed native and actual 1.10.0 retention checks, then exposed a synthetic modified-click test navigation race. `codex/portfolio-acceptance` fixes the test observer and adds a real Ctrl-click/new-tab assertion; it changes no shipping bytes. Publication remains pending successful exact-main acceptance. Latest public release remains 1.10.0. New Devin L-02 PR #31 is separate unreviewed work, outside this release.

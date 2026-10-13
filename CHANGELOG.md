@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — estimator adapter contract (L-01 dependency)
+
+- Add `docs/ESTIMATOR_ADAPTER.md`: the explicit contract for adopting the reviewed estimator foundation in the live `growth_estimate` path. Quantities fold into adapter-built `PriceRule` ranges; consultation conditions (disabled pricing, `custom` type, `integration` option, unpriced keys, the 99999999-cent cap) are preserved verbatim; a fixture-equivalence test plan is required before implementation. No shipping code changes.
+
 ## 1.11.0 — portfolio integration candidate, not yet released
 
 - Stabilize modified-click acceptance by observing the application decision before suppressing synthetic navigation; add an actual Ctrl-click/new-tab check. Shipping bytes are unchanged by this test-only correction.

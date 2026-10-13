@@ -1,5 +1,18 @@
 # Session log
 
+## 2026-10-13 — Devin estimator adapter contract (L-01 dependency)
+
+**Request:** Continue the roadmap while Codex sequences v1.11.0 and the queued Devin PRs. PUBLIC_COMPONENT_INTEGRATION.md names an explicit adapter contract as the prerequisite before the live estimator adopts `foundation/estimator`.
+
+**Starting commit:** `b975915` (main after Codex PR #33). New branch `devin/estimator-adapter`. Owned paths: `docs/ESTIMATOR_ADAPTER.md` plus continuity docs. No `site/` or foundation changes.
+
+**Work:** Documented the adapter contract: `EstimateRequest` maps `project_type` → `serviceType`; quantity-priced live keys (`page` × pages−5, `product` × products) fold into adapter-built `PriceRule` low/high ranges with a pre-multiplication overflow guard; every live consultation condition (disabled pricing, `custom` type, `integration` option, missing/null key, summed high over 99999999) is mapped to either an adapter short-circuit or a component path; result kinds map back to the existing `mode`/`low`/`high`/`label` payload. Recorded a byte-for-byte fixture-equivalence test plan as required acceptance, and an open question on quantity-in-component vs adapter folding for Codex.
+
+**Verification:** Documentation only — `tools/check_docs.py` link check run before commit. No code executed, no estimator behavior changed.
+
+**Next:** Codex review; implementation PR follows only after the contract is accepted. PRs #31/#32/#34 remain queued and mergeable; PR #34 received an installer-hash fix at `ac91f0e` (CRLF-hashed site.css → LF).
+
+
 ## 2026-10-13 — Sandbox trial release published and verified
 
 Continued roadmap from main `dd29436fa40c2a0f800bc02569b5fd5d1fb75c09` / 1.5.0 on `codex/sandbox-attempts`. Added owner-only tokenized sandbox UI, fixed sandbox reporting/charge adapter, additive attempt/events, exact amount/reference/account checks, idempotency and concurrency safeguards, unknown-result recovery, shared manual/catalog/request locks, strict audit and immutable 1.5.0 upgrade acceptance. PR #18 merged as `e5d4c17456faff0522429ab3f58093a06a523bd5`; exact-main run https://github.com/afterburn25/Cajun_Web/actions/runs/38380935411 passes 296 native / 421 HTTP/Chromium checks. Independent policy/invitation/documentation checks pass. Reviewed desktop/320px screenshots.
