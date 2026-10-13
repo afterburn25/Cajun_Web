@@ -5,6 +5,14 @@ define('CWP_BOOT',true);
 define('CWP_ROOT',dirname(__DIR__));
 define('CWP_CODE_ROOT',__DIR__.'/site');
 if(!is_file(CWP_ROOT.'/config.php') || is_link(CWP_ROOT.'/config.php')){http_response_code(403);exit('An existing installed website is required. Use COMPLETE-UPLOAD for fresh installation.');}
+// Verify every staged file before loading any staged code: a partial upload must fail cleanly here.
+try{$manifest=require __DIR__.'/manifest.php';}catch(Throwable){$manifest=null;}
+if(!is_array($manifest)||count($manifest['files']??[])<100){http_response_code(500);exit('Unrecognized structure update manifest.');}
+foreach($manifest['files'] as $name=>$hash){
+    if(!is_string($name)||!preg_match('~^[a-zA-Z0-9_.-]+(?:/[a-zA-Z0-9_.-]+)*$~D',$name)||str_contains($name,'..')){http_response_code(500);exit('Unsafe name in update manifest.');}
+    $path=CWP_CODE_ROOT.'/'.$name;
+    if(!is_file($path)||!hash_equals((string)$hash,(string)hash_file('sha256',$path))){http_response_code(500);exit('Restore the exact UPDATE package; missing or mismatched replacement: '.$name);}
+}
 require CWP_CODE_ROOT.'/includes/bootstrap.php';
 boot();
 require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
