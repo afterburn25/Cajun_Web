@@ -350,7 +350,7 @@ function setup_expected_files(): array { return [
         'assets/project-placeholder.svg' => '690a4304eb273f3ec01765350883dcde4a4787852f27de7f501edb442c49fa11',
         'assets/project-restaurant.webp' => 'efdb940754d22aef36985860e289e313c8d1d3b8f909658fe97ed97125581e3a',
         'assets/project-wellness.webp' => '6166fbc5728bb77fc86352c7e36cabe3adc9117a4a183311bacf6896541085f1',
-        'assets/site.css' => '84de335244e5ca380a3a24bdfa894a08a13ea6540e8979a8333394aae200f17e',
+        'assets/site.css' => 'e537a75c803e8d1ac25c607103d53369a667b529426c3ece0e2b16fe07fb8944',
         'assets/site.js' => '19b64ea557e67ab2ea685466d7ae6049067e94c3dc88238ac99efb06a79e9050',
         'assets/staff-setup.js' => 'd98fc658d80782e394403fc2d54c6bc8489d6dee2c9c29a9e33bf461da7b6c6a',
         'favicon.ico' => 'c4e4fe3038ef2cf63978f940d9c43402d9474b1c93e4e0334bbd73a0c8a9ec13',
