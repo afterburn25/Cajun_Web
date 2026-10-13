@@ -7,6 +7,12 @@ define('CWP_BOOT',true);define('CWP_ROOT',$root);
 require $root.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=require $root.'/config.php';
 if(config()['db']['name']!=='cwp_test')exit(2);
+if(($argv[2]??'')==='appointments'){
+    echo json_encode(['settings'=>all('SELECT * FROM '.table('appointment_settings')),'settings_history'=>all('SELECT * FROM '.table('appointment_settings_revisions')),'appointments'=>all('SELECT * FROM '.table('appointments')),'history'=>all('SELECT * FROM '.table('appointment_revisions'))],JSON_THROW_ON_ERROR);exit;
+}
+if(($argv[2]??'')==='appointment-intake'){
+    echo json_encode(one('SELECT * FROM '.table('leads').' WHERE reference=?',['ORGANIZED-APPT']),JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='reviews'){
     echo json_encode(['reviews'=>all('SELECT * FROM '.table('website_reviews')),'reports'=>all('SELECT * FROM '.table('website_review_reports')),'history'=>all('SELECT * FROM '.table('website_review_revisions'))],JSON_THROW_ON_ERROR);exit;
 }
@@ -36,6 +42,12 @@ if(($argv[2]??'')==='seed'){
         $id=mail_accounts_save('',0,['label'=>'Earlier saved email account','address'=>'earlier@example.invalid','imap_host'=>'imap.example.invalid','imap_port'=>'993','imap_encryption'=>'ssl','imap_username'=>'earlier-incoming','smtp_host'=>'smtp.example.invalid','smtp_port'=>'587','smtp_encryption'=>'starttls','smtp_username'=>'earlier-outgoing'],true,['imap_password'=>'Synthetic earlier incoming password','smtp_password'=>'Synthetic earlier outgoing password'],$password);
         mail_accounts_grant($id,1,0,true,false,true,0,$password);
         query('INSERT INTO '.table('leads')." (reference,request_key,name,email,service,budget,timeline,message,consent,ip_hash,status,notes,created_at) VALUES (?,?,?,?,'Website review','Agreed','Flexible','Original review inquiry text',1,?,'new','Original private review note',?)",['ORGANIZED-REVIEW',str_repeat('a',64),'Earlier review prospect','review-upgrade@example.invalid',str_repeat('b',64),$now]);
+    }
+    if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'website_reviews'])){
+        require_once $root.'/app/marketing/reviews.php';
+        $lid=(int)one('SELECT id FROM '.table('leads').' WHERE reference=?',['ORGANIZED-REVIEW'])['id'];
+        reviews_adopt($lid,'example.org/retained');reviews_stage($lid,1,'in-review');reviews_save_report($lid,2,'Earlier saved human review',[['title'=>'Earlier observation','detail'=>'Retained human-authored review detail','evidence'=>'human-review','source'=>'','observed_at'=>'']]);
+        query('INSERT INTO '.table('leads')." (reference,request_key,name,email,service,budget,timeline,message,consent,ip_hash,status,notes,created_at) VALUES (?,?,?,?,'Consultation request','Agreed','Flexible','Original consultation preference text',1,?,'new','Original private consultation note',?)",['ORGANIZED-APPT',str_repeat('d',64),'Earlier consultation prospect','appointment-upgrade@example.invalid',str_repeat('b',64),$now]);
     }
 }
 $result=[];
