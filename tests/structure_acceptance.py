@@ -23,6 +23,8 @@ def fixture(name,version='1.10.0'):
 def snapshot(root):return {p.relative_to(root).as_posix():p.read_bytes() for p in root.rglob('*') if p.is_file() and STAGE not in p.parts}
 try:
     check('Structure filesystem worker is unprivileged',os.geteuid()!=0)
+    for result in json.loads(subprocess.check_output([PHP,str(ROOT/'tests/structure_paths.php')])):
+        check(result['name'],result['passed'])
     RUNTIME.mkdir(parents=True,exist_ok=True)
     complete=next((ROOT/'dist').glob('*-COMPLETE-UPLOAD.zip'));full=next((ROOT/'dist').glob('*-FULL-PROJECT.zip'))
     with zipfile.ZipFile(complete) as z:
