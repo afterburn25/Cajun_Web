@@ -2,6 +2,13 @@
 
 This log distinguishes repository work from application releases and deployment. Documentation-only work does not advance the application version.
 
+## 2026-10-13 — Staff invitations and source-compatible session tokens
+
+- Inspected the recovered draft's real login/schema and corrected access contexts from integer revisions to opaque authorization strings with strict comparison.
+- Added independent PDO staff invitation persistence: hashed single-use links, bounded expiry, replacement/revocation, transactional activation/consumption and rollback.
+- Added a native MariaDB test workflow covering concurrency and failures using synthetic accounts; kept application migration, delivery, UI and release integration separate.
+- Verified 146 access and 46 native invitation checks on each of PHP 8.2.34/8.4.26 with MariaDB 11.4.13; recorded branch and PR evidence in the invitation contract and continuity documents.
+
 ## 2026-10-13 — Independent staff and mailbox permission component
 
 - Added standalone PHP 8.2+ immutable access contexts and permission policy: deny unknown/inactive/stale identities, separate staff management/permission grants, require exact mailbox read/send memberships, and reject conflicting duplicate grants.

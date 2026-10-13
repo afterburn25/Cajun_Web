@@ -1,0 +1,63 @@
+name: Staff invitation checks
+
+on:
+  pull_request:
+  push:
+    branches: [main, codex/platform-foundation]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staff-invitations-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-invitations:
+    name: Staff invitations PHP ${{ matrix.php }} and MariaDB
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    services:
+      database:
+        image: mariadb:11.4
+        env:
+          MARIADB_DATABASE: cwp_invitation_test
+          MARIADB_USER: invitation_test
+          MARIADB_PASSWORD: synthetic-test-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mariadb-admin ping -h 127.0.0.1 -uinvitation_test -psynthetic-test-only"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    steps:
+      - name: Check out the revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Prepare official PHP with native PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-invitation-test -f tests/invitations/Dockerfile tests/invitations
+      - name: Check syntax and transactional invitation behavior
+        env:
+          CWP_INVITATION_TEST_DSN: mysql:host=127.0.0.1;port=3306;dbname=cwp_invitation_test;charset=utf8mb4
+          CWP_INVITATION_TEST_USER: invitation_test
+          CWP_INVITATION_TEST_PASSWORD: synthetic-test-only
+          CWP_INVITATION_TEST_ALLOW: synthetic-only
+        run: |
+          docker run --rm --network host -v "$PWD:/workspace:ro" \
+            -e CWP_INVITATION_TEST_DSN -e CWP_INVITATION_TEST_USER \
+            -e CWP_INVITATION_TEST_PASSWORD -e CWP_INVITATION_TEST_ALLOW \
+            cwp-invitation-test sh -ec '
+              for source in foundation/access/*.php foundation/invitations/*.php tests/invitations/*.php; do php -l "$source"; done
+              php tests/access/run.php
+              php tests/invitations/native.php
+            '
+      - name: Record scope
+        if: always()
+        run: |
+          echo 'Synthetic native MariaDB invitation tests, including concurrent one-use redemption and rollback. No application migration, staff UI, SMTP send, production account or deployment is tested.' >> "$GITHUB_STEP_SUMMARY"
