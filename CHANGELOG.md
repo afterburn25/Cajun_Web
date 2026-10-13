@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.12.0 — candidate, administrator email-template library
+
+- Add explicit template permissions, personal/shared drafts, create/edit/duplicate/activate/archive and escaped sample previews. Reuse the corrected Devin #56 model with literal single-pass substitutions and strict field grammar.
+- Retain immutable versions and strict actor audit with transaction rollback, row locking and stale-edit rejection. Add owner-authenticated, idempotent schema setup; fresh installs prepare an empty library automatically.
+- Keep personal templates private even from other owners; shared modification requires creator/owner access. Exclude support/client identities. Preview never reads client records or sends mail.
+- Recognize verified 1.11.2 update inventory, exercise actual latest upgrade/schema/file recovery and all prior supported baselines. Local 50 component checks and syntax pass; native/application/browser/Apache/release acceptance remain pending.
+- Full webmail, compose insertion, real sending and transactional messages remain outside this bounded increment.
+
+## Unreleased — A-07 email-template foundation (Devin, isolated component)
+
+- Added canonical `foundation/email-templates/` classes (`PlaceholderRegistry` allowlist with descriptions, `EmailTemplate` with structural placeholder allowlisting, draft→active→archived lifecycle, non-mutating edits, personal-duplicate, shared/personal visibility, transactional compose exclusion, and honest `preview()` that names unresolved placeholders) plus `docs/EMAIL_TEMPLATES_FOUNDATION.md`.
+- Added `tests/email-templates/run.php` (50 synthetic checks; fixture templates only) and the `email-templates.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes, compose UI, sending or persistence. Not yet integrated or released.
+
 ## 1.11.2 — verified canonical live estimator integration
 
 - Preserve Devin's reviewed adapter contract and route existing calculator arithmetic through the canonical estimator, folding quantities with exact integer guards. Existing field validation, missing-price early returns, invalid-range errors, consultation exclusions/cap and displayed results remain compatible.
@@ -89,13 +103,9 @@ Continued roadmap from main `dd29436fa40c2a0f800bc02569b5fd5d1fb75c09` / 1.5.0 o
 
 First candidate 4158d37 failed installer inventory due to Windows line endings; normalized LF and regenerated. f36e44a passed native tests but HTTP expected the established duplicate-payment message; restored the message without removing safeguards. 3ebc8a8 passed complete acceptance; final wording clarifies owner sandbox versus disabled client checkout. Final merged source and packages were checked independently. All eight draft and published release assets, extracted hashes, version labels and tag were downloaded-back verified. [Report](docs/TEST_REPORT_1.6.0.md), [verification](docs/RELEASE_VERIFICATION_1.6.0.json). Earlier releases untouched. No live deployment, provider operation or customer mail/data. Real merchant acceptance remains unverified; tests use synthetic gateway/Accept.js boundaries. Next: signed events, actual sandbox acceptance, distinct client/real-money checkout. Preserve Devin PR #7. Publication records are docs-only.
 
-
-
 ## v1.5.0 — 2026-10-13
 
 **Current release — 2026-10-13:** [v1.5.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.5.0) is published and downloaded-back verified at `3e95bdf81ca0126d99a69c41f2ff6eb0c08da1e1` via [PR #16](https://github.com/afterburn25/Cajun_Web/pull/16). Bounded M2 preparation: owner-only protected separate Authorize.net credentials, sandbox-authentication diagnostics, reviewed invoice requests with expiry/revocation/replacement and strict audit. Card collection, production connections and transaction processing remain disabled. [Payment guide](docs/PAYMENT_PREPARATION.md). Exact-main acceptance: 227 native and 401 HTTP/Chromium checks; all eight assets/tag verified. Provider results use synthetic fixtures, not real merchant authentication. Earlier releases and Devin PR #7 remain unchanged. No live deployment/customer/provider operation. Next: tokenized sandbox payment attempts, verified events and reconciliation before actual design-only checkout; full M2/20i/mail/ZIP/SSH remain pending. [Devin handoff](docs/DEVIN_HANDOFF_1.5.0.md).
-
-
 
 ## v1.4.0 — 2026-10-13
 
@@ -109,8 +119,6 @@ M1 / partial HC-01 and HC-06: managed service prices, public configured cards, p
 - Additive support schema, preserved 1.2.0 update state, native and HTTP/Chromium acceptance.
 - Published and downloaded-back verified at `7856cccf230a1646d02a4a92ad4bfb1c280efa19` through PR #12; 116 native and 289 HTTP/Chromium checks, eight retained assets. No host deployment. SSH/provider access remains separate.
 
-
-
 ## v1.2.0 — 2026-10-13
 
 Owner-controlled creation, selected website/client-workspace permissions, enable/disable and private 24-hour setup/recovery links are integrated with existing users. Current-password confirmation, per-request authorization, reset/setup/session revocation and concurrent last-owner protection are enforced. Fresh installs initialize the owner; existing installations explicitly select an owner and add two tables without changing legacy credentials. Original and actual released-1.1.0 package upgrades are tested. Canonical foundation components and the embedded installer core are verified by the builder. [User/developer guide](docs/ADMIN_ACCOUNTS.md), [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10). Published and downloaded-back verified at `f85627e05b171e4ee8508231e2ed6ee7b9374274`: eight retained assets; 81 native and 216 HTTP/Chromium checks plus independent suites. See [release register](docs/RELEASES.md). No target-host deployment.
@@ -123,11 +131,9 @@ Published [v1.1.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.1.0)
 
 First MariaDB acceptance found a real schema-idempotency failure: digit-bearing `sha256` was omitted by the column parser. Fixed both column-name patterns without weakening type/engine/unique-key checks. Local native tests then passed, and real unprivileged PHP HTTP tests completed fresh one-page installation and physical cleanup. Also fixed the existing lead editor's seven-status/six-label mismatch and corrected the test's portfolio route to the actual `work` endpoint. Tests now run extracted package bytes and cover incompatible schema preservation, cross-client/CSRF rejection and disguised executable uploads. Public service copy was polished and official comparison sources rechecked on 13 October. Complete browser acceptance and release publication remain pending. No customer host or database was changed.
 
-
 ## 2026-10-13 — Source recovery checkpoint
 
 Recovered 41 actual website files plus native/HTTP tests and a build tool from the nine preserved source fragments. Original external assets were fetched only at the recorded public paths and checked against recorded SHA-256 values. Executable source is now under `site/` on `codex/finish-1.1.0`. This supersedes the older no-source-in-Git blocker on this branch, NOT the unverified runtime or release claims. No production files, database, mail or payments were changed. Review `docs/SOURCE_RECOVERY_2026-10-13.json`; run native integration and authorization tests next. No 1.1.0 release is declared by source recovery.
-
 
 This log distinguishes repository work from application releases and deployment. Documentation-only work does not advance the application version.
 
