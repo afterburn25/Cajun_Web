@@ -1,0 +1,71 @@
+name: Apply native regression fixes
+on:
+  push:
+    branches: [codex/finish-1.1.0]
+    paths: [.github/workflows/repair-native-regressions.yml]
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - name: Apply reviewed changes and regenerate installer inventory
+        shell: python
+        run: |
+          from pathlib import Path
+          import subprocess
+          def replace(path,a,b,count=1):
+              p=Path(path);s=p.read_text();assert s.count(a)==count,(path,a);p.write_text(s.replace(a,b))
+          replace('site/app/workspace.php','([a-z_]+) ','([a-z_][a-z0-9_]*) ',2)
+          replace('site/admin.php',"['New','Contacted','Qualified','Won','Closed','Spam']","['New','Contacted','Qualified','Proposal sent','Won','Closed','Spam']")
+          for a,b in {
+              'Provider sources reviewed 12 October 2026.':'Provider sources reviewed 13 October 2026.',
+              'No invented fixed prices or hidden promise of unlimited work. Each proposal defines what will be designed, developed and delivered.':'A clear starting point, an individual design, and a scope you approve. Your proposal defines the design, development, deliverables and investment.',
+              'Share your website and goals for a human-reviewed assessment. Submitting this request does not produce a fabricated automated score.':'Share your website and goals for a thoughtful, human-reviewed assessment of your design, content and customer journey.',
+              'No automatic subscription. No charge for submitting the form. No invented launch promise.':'No charge to send your brief. We will discuss scope, investment and a realistic launch plan before you commit.'
+          }.items():replace('site/app/growth-pages.php',a,b)
+          replace('tests/native.php','catch (InvalidArgumentException|RuntimeException $e) { ok($name,true);return; }','catch (InvalidArgumentException|RuntimeException $e) { if($e instanceof PDOException)throw $e;ok($name,true);return; }')
+          extra="""    // Digit-bearing fields must be recognized; incompatible schemas still fail.
+              db()->exec('ALTER TABLE '.table('studio_files').' MODIFY sha256 VARCHAR(64) NOT NULL');
+              rejected('Migration rejects mismatched digest column type',fn()=>studio_migrate());
+              ok('Failed migration leaves foreign column untouched',one('SHOW COLUMNS FROM '.table('studio_files').\" LIKE 'sha256'\")['Type']==='varchar(64)');
+              db()->exec('ALTER TABLE '.table('studio_files').' MODIFY sha256 CHAR(64) NOT NULL');
+              studio_migrate();ok('Matching digit-bearing digest column is accepted',studio_ready());
+          """
+          replace('tests/native.php',"    $r=['enabled'=>true,",extra+"    $r=['enabled'=>true,")
+          replace('tests/http.py',"index.php?page=portfolio'","index.php?page=work'")
+          replace('tests/http.py','import os,json,shutil,subprocess,time,hashlib','import os,json,shutil,subprocess,time,hashlib,zipfile')
+          replace('tests/http.py',"    shutil.copytree(ROOT/'site',dest)","    dest.mkdir(parents=True)\n    packages=list((ROOT/'dist').glob('CajunWebPro-*-COMPLETE-UPLOAD.zip'));assert len(packages)==1,'Build exactly one package'\n    with zipfile.ZipFile(packages[0]) as package:package.extractall(dest)")
+          replace('tests/http.py',"'studio-upgrade']:","'studio-upgrade','lead&id=1']:")
+          extra="""    # Negative real HTTP cases: authorization must prevent writes and disclosures.
+              r=bob.get(BASE+'/existing/portal.php?job=2');bad={'csrf':token(r),'action':'message','body':'Cross-client write must fail.'}
+              r=bob.post(BASE+'/existing/portal.php?job=1',data=bad);check('Cross-client message POST denied',r.status_code==404)
+              r=alice.get(BASE+'/existing/portal.php?job=1');check('Cross-client message not saved','Cross-client write must fail.' not in r.text)
+              r=alice.post(BASE+'/existing/portal.php?job=1',data={'csrf':'invalid','action':'message','body':'CSRF write must fail.'});check('Portal CSRF rejected','session expired' in r.text.lower())
+              r=alice.get(BASE+'/existing/portal.php?job=1');check('CSRF message not saved','CSRF write must fail.' not in r.text)
+              f=form_for(r,'upload');bad=form_data(f)
+              r=alice.post(BASE+'/existing/portal.php?job=1',data=bad,files={'document':('blocked.php',b'<?php echo 123; ?>','image/png')});check('Disguised executable upload rejected','Only PDF, PNG and JPEG' in r.text)
+              r=requests.get(BASE+'/existing/admin.php?view=studio-clients',allow_redirects=False);check('Anonymous admin workspace redirected to login',r.status_code==303 and 'login' in r.headers.get('Location',''))
+              r=bob.get(BASE+'/existing/admin.php?view=studio-clients',allow_redirects=False);check('Client session does not grant admin access',r.status_code==303 and 'login' in r.headers.get('Location',''))
+          """
+          # Preserve the surrounding try-block indentation in the Python test.
+          extra='\n'.join(line[10:] if line.startswith('              ') else line for line in extra.split('\n'))
+          marker='    # Fresh installation is a real combined POST using native PDO MySQL and GD.'
+          replace('tests/http.py',marker,extra+marker)
+          subprocess.run(['python3','-m','py_compile','tests/http.py'],check=True)
+          subprocess.run(['python3','tools/build.py','--refresh'],check=True)
+          note='\n## 2026-10-13 — Native regression fixes\n\nFirst MariaDB acceptance found a real schema-idempotency failure: digit-bearing `sha256` was omitted by the column parser. Fixed both column-name patterns without weakening type/engine/unique-key checks. Local native tests then passed, and real unprivileged PHP HTTP tests completed fresh one-page installation and physical cleanup. Also fixed the existing lead editor\'s seven-status/six-label mismatch and corrected the test\'s portfolio route to the actual `work` endpoint. Tests now run extracted package bytes and cover incompatible schema preservation, cross-client/CSRF rejection and disguised executable uploads. Public service copy was polished and official comparison sources rechecked on 13 October. Complete browser acceptance and release publication remain pending. No customer host or database was changed.\n'
+          for name in ['PROJECT_STATUS.md','SESSION_HANDOFF.md','CHANGELOG.md']:
+              p=Path(name);head,_,rest=p.read_text().partition('\n');p.write_text(head+'\n'+note+'\n'+rest)
+          p=Path('docs/SESSION_LOG.md');p.write_text(p.read_text()+note)
+      - name: Commit corrected code and tests without changing main
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add site/app/workspace.php site/admin.php site/app/growth-pages.php site/install.php tests/native.php tests/http.py PROJECT_STATUS.md SESSION_HANDOFF.md CHANGELOG.md docs/SESSION_LOG.md
+          git commit -m 'fix: preserve digest columns on upgrades and repair lead editing; test package workflows'
+          git push origin HEAD:codex/finish-1.1.0
