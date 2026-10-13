@@ -1,5 +1,7 @@
 # Email-template foundation (A-07 contract layer)
 
+The corrected model is integrated in published [1.12.0](TEST_REPORT_1.12.0.md). The [administrator library](ADMIN_EMAIL_TEMPLATES.md) supplies saved draft editing, lifecycle, previews and history. Component-only scope below describes this model; compose insertion and sending remain later work.
+
 Canonical component: `foundation/email-templates/`. Implementation status: **Implemented (local/source)**. External gate: **Not required** for this contract layer — compose UI, persistence and sending are application work owned by Codex.
 
 This is the safe portion of [A-07](ROADMAP.md#a-07--reusable-email-templates): the template/placeholder rules a reusable-email-template feature must satisfy, as a pure model that never sends.
@@ -23,7 +25,7 @@ This is the safe portion of [A-07](ROADMAP.md#a-07--reusable-email-templates): t
 
 ## Explicitly not here
 
-No compose UI, placeholder insertion UX, draft editing surface, sending, signatures, account selection, or persistence — all adapter concerns. A-07's full acceptance (create/edit/duplicate/preview/archive workflow, compose insertion, resolved preview before send) still needs the integrated implementation.
+This pure component provides no compose UI, placeholder insertion UX, sending, signatures, account selection or persistence. Published 1.12.0 supplies the separate draft editing, storage, preview and lifecycle adapter; compose insertion and resolved preview before actual sending still need their own integration acceptance.
 
 ## Integration contract
 
