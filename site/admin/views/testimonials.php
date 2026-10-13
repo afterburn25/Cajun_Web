@@ -1,0 +1,5 @@
+<?php
+declare(strict_types=1);
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+
+ $rows=all('SELECT * FROM '.table('testimonials').' ORDER BY sort_order,id');?><div class="admin-toolbar"><p>Publish only genuine feedback you have permission to use. No testimonials are pre-filled.</p><a class="btn gold small" href="<?=esc(admin_url('testimonial'))?>">Add Testimonial +</a></div><?php if(!$rows):empty_admin('Let your clients tell the story.','When you have real, approved feedback, add it here. Until then, the homepage displays your process instead.',admin_url('testimonial'),'Add genuine feedback');else:?><div class="admin-card table-wrap"><table><thead><tr><th>Client</th><th>Feedback</th><th>Visibility</th><th></th></tr></thead><tbody><?php foreach($rows as $t):?><tr><td><strong><?=esc($t['name'])?></strong><small><?=esc($t['role'])?></small></td><td><?=esc(substr($t['quote'],0,150))?></td><td><?=badge($t['published']&&$t['consent']?'published':'draft')?></td><td><a class="row-link" href="<?=esc(admin_url('testimonial',['id'=>$t['id']]))?>">Edit ↗</a></td></tr><?php endforeach;?></tbody></table></div><?php endif;
