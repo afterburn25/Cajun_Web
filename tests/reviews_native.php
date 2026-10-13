@@ -33,7 +33,9 @@ try {
     r_deny('Setup needs owner current password',fn()=>reviews_migrate('wrong'));
     r_actor(2);r_deny('Website staff cannot initialize schema',fn()=>reviews_migrate($password));r_deny('Review unavailable before setup',fn()=>reviews_get($lead));r_actor();
     foreach (reviews_schema('revci_') as $sql) db()->exec($sql);
+    db()->exec('ALTER TABLE '.table('website_review_revisions').' ADD INDEX fixture_parent(review_id)');
     db()->exec('ALTER TABLE '.table('website_review_revisions').' DROP INDEX review_revision');r_deny('Setup refuses missing revision uniqueness',fn()=>reviews_migrate($password));db()->exec('ALTER TABLE '.table('website_review_revisions').' ADD UNIQUE review_revision(review_id,revision)');
+    db()->exec('ALTER TABLE '.table('website_review_revisions').' DROP INDEX fixture_parent');
     $fk=one('SELECT CONSTRAINT_NAME FROM information_schema.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_SCHEMA=DATABASE() AND TABLE_NAME=?',['revci_website_review_reports'])['CONSTRAINT_NAME'];
     if (!preg_match('/^[a-z0-9_]+$/D',$fk)) throw new RuntimeException('Unexpected synthetic foreign key identifier.');
     db()->exec('ALTER TABLE '.table('website_review_reports').' DROP FOREIGN KEY `'.$fk.'`');r_deny('Setup refuses missing personal-report deletion relationship',fn()=>reviews_migrate($password));db()->exec('ALTER TABLE '.table('website_review_reports').' ADD FOREIGN KEY (review_id) REFERENCES '.table('website_reviews').'(id) ON DELETE CASCADE');
