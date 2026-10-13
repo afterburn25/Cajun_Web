@@ -7,11 +7,12 @@
 ## 1.13.0 — candidate, email account preparation
 ## 1.14.0 — candidate, human website review workflow
 ## 1.15.0 — candidate, consultation scheduling
+## 1.15.0 — verified consultation scheduling
 
 - Preserve corrected Devin #32 scheduling ancestry and 71 isolated checks. Add one explicitly configured studio calendar, disabled by default, with timezone-aware offered slots, buffers, notice and a 30-day horizon.
 - Capture pending public appointments atomically with inquiries; keep honest preference-only intake when scheduling is disabled. Use one locked database configuration row for every conflict-changing write; stale forms, current permissions, contact consent and strict audit protect staff decisions.
 - Add explicit old-inquiry adoption, password-confirmed staff confirmation, cancellation/decline, rescheduling back to pending and retained revisions. Add public/admin forms and actual 1.14.0 update/recovery fixtures preserving earlier reviews/templates/email credentials and private key.
-- Native/HTTP/Chromium/Apache/build acceptance is pending. No provider calendar, outgoing confirmation/cancellation mail or live deployment.
+- Published/download-verified from `8749bc5a89e52f8f35a193cc49d306136576ec8e` after exact-main run 38460197599; all 16 assets/tag pass. Native/HTTP/Chromium/Apache/build acceptance passes. No provider calendar, outgoing confirmation/cancellation mail or live deployment.
 
 ## 1.14.0 — verified human website review workflow
 
