@@ -177,6 +177,8 @@ Add Email with incoming/outgoing account configuration, separate connection test
 
 ### A-07 — Reusable email templates
 
+Current integration: candidate 1.12.0 implements a private administrator library, retained revisions, explicit grants and escaped sample preview. [Scope and required acceptance](ADMIN_EMAIL_TEMPLATES.md). Full application acceptance/publication is pending; mailbox compose insertion and sending remain separate work.
+
 Create/edit/duplicate/preview/archive templates with subject/body, safe allowlisted placeholders, shared/personal visibility and compose insertion. Preview resolved values and edit the draft before explicit sending. Keep signatures/account selection clear and transactional templates controlled. Acceptance: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-07--reusable-sending-templates).
 
 ### A-08 — Admin-only unread-mail notifications
