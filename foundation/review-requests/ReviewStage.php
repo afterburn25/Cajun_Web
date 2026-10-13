@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace CajunWebPro\Foundation\ReviewRequests;
 
+if (PHP_SAPI !== 'cli' && !defined('CWP_BOOT')) { http_response_code(404); exit; }
+
 /**
  * Request lifecycle. `delivered` is only reachable after a drafted report;
  * `closed` is terminal. No stage implies anything was sent to the visitor.
