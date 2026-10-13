@@ -6,6 +6,8 @@ Continue [draft PR #8](https://github.com/afterburn25/Cajun_Web/pull/8). The com
 
 Expanded tests and the [release matrix](docs/RELEASE_1.1.0.md) now cover the actual retained 1.0.8 upgrade fixture, captured synthetic mail, admin saved-state, private client workflows, installer failures and root/narrow-mobile browser behavior. Verify the next run before recording results. Last run at `a654a43` reached Chromium but used an eval-based wait rejected by CSP; locator assertions replace that test bug.
 
+The next run at `01e7706` reached browser estimator execution after passing expanded HTTP checks, and exposed form.action shadowing by named controls. Public scripts now read the action attribute; rerun complete acceptance and inspect screenshots. No release is yet published.
+
 The owner paused later roadmap work and authorized finishing, testing, merging and publishing the existing **1.1.0 website/client workspace** before further features. Completion branch: `codex/release-1.1.0`, started from `90ba4f5e0c824e422de8cb2232f5d3ee92b7bec6` on `codex/finish-1.1.0`, reconciled with main `b28a67cdbf20c81842cf73735ee4e6024030262f`. Actual application source is in `site/`; do not follow historical source-recovery blockers below. The original worker branch remains untouched.
 
 Staff/access and invitation components from PRs #5/#6 are preserved outside the deployment package. Devin's PR #7 at `55d60670497d987286e64630e037e1ba2ec3a318` remains on his branch; the tentative local integration was aborted cleanly when priority changed. No portfolio changes were lost. Review follow-up after release: numeric category strings must remain strings, and duplicate published slugs need unambiguous detail behavior. Do not develop later roadmap work during this release task.

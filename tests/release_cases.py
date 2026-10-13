@@ -158,6 +158,13 @@ def run_browser(env,browser,fixture):
     slider=page.locator('[data-compare-slider]');slider.focus();slider.press('ArrowRight');check('Keyboard changes before-after slider',slider.input_value()=='51')
     check('Portfolio fixture is honestly labeled','DESIGN CONCEPT' in page.content() and 'Synthetic acceptance captures only' in page.content())
     page.screenshot(path=str(QA/'Portfolio-Narrow-Mobile.png'),full_page=True)
+    for kind in ['website-review','consultation']:
+        page.goto(BASE+'/existing/index.php?page='+kind)
+        page.locator('[name=name]').fill('Browser fixture prospect');page.locator('[name=email]').fill('browser@example.invalid');page.locator('[name=message]').fill('Synthetic browser request verifying the real submission destination.');page.locator('[name=consent]').check()
+        if kind=='website-review':page.locator('[name=current_url]').fill('https://example.invalid/browser-fixture')
+        else:page.locator('[name=preferred_date]').fill('2026-12-01')
+        page.wait_for_timeout(2100);page.get_by_role('button',name='Send my request').click();expect(page.locator('[data-growth-success]')).to_be_visible()
+        check('Browser '+kind+' persisted',bool(db('SELECT id FROM ci_leads WHERE email=? AND service=?',['browser@example.invalid','Website review' if kind=='website-review' else 'Consultation request'])))
     # Invalid form feedback preserves values and does not weaken the site's CSP.
     page.goto(BASE+'/existing/index.php?page=estimate');page.locator('[name=pages]').fill('-2');page.locator('[data-estimate]').click();expect(page.locator('[data-growth-error]')).to_be_visible();check('Browser estimator error preserves entered value',page.locator('[name=pages]').input_value()=='-2')
     page.goto(fixture['invite']);page.locator('[name=password]').fill('Synthetic browser client passphrase');page.locator('[name=confirm_password]').fill('Synthetic browser client passphrase');page.get_by_role('button',name='Set password').click();expect(page.locator('[name=email]')).to_be_visible()
@@ -168,10 +175,14 @@ def run_browser(env,browser,fixture):
     form=page.locator('form').filter(has=page.locator('[name=action][value=decision]'));form.locator('[name=choice]').select_option('changes');form.locator('[name=feedback]').fill('Clarify the synthetic proposal scope.');form.locator('[name=confirm]').check();form.locator('button').click()
     check('Browser version-specific change request saved',db('SELECT decision FROM ci_studio_versions WHERE job_id=?',[fixture['job_id']])[0]['decision']=='changes')
     check('Narrow client workspace fits',page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'));page.screenshot(path=str(QA/'Client-Workspace-Narrow.png'),full_page=True)
-    chosen_form(admin,fixture['clients_url'],'studio_client','id',fixture['client_id'],{'name':'HTTP client','email':'newclient@example.invalid','active':'1'})
+    chosen_form(admin,fixture['clients_url'],'studio_invite','id',fixture['client_id'],{})
+    check('Pending invitation exists before account revocation',db('SELECT invite_hash FROM ci_studio_clients WHERE id=?',[fixture['client_id']])[0]['invite_hash'] is not None)
+    chosen_form(admin,fixture['clients_url'],'studio_client','id',fixture['client_id'],{'name':'HTTP client','email':'newclient@example.invalid','active':None})
     page.reload();expect(page.locator('[name=email]')).to_be_visible();check('Client change revokes real browser session',True)
     check('Client update revokes outstanding setup token',db('SELECT invite_hash FROM ci_studio_clients WHERE id=?',[fixture['client_id']])[0]['invite_hash'] is None)
-    check('Extended browser has no console or page errors',not errors);check('Extended browser has no failed network requests',not failed)
+    # A deliberate 422 validation response may generate a Chromium resource-error line.
+    unexpected=[e for e in errors if '422 (Unprocessable Content)' not in e and '422 (Unknown)' not in e]
+    check('Extended browser has no unexpected console or page errors',not unexpected);check('Extended browser has no failed network requests',not failed)
     context.close()
     # Owner controls also run in Chromium, with saved database evidence.
     owner=browser.new_context(viewport={'width':1440,'height':1000});p=owner.new_page();p.goto(BASE+'/existing/admin.php?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill('Synthetic owner passphrase 2026');p.locator('form button').first.click();p.goto(BASE+'/existing/admin.php?view=studio-job&id=1');form=p.locator('form').filter(has=p.locator('[name=action][value=studio_job]'));form.locator('[name=milestones]').fill('Browser-verified milestone update.');form.get_by_role('button',name='Save project').click();expect(form.locator('[name=milestones]')).to_have_value('Browser-verified milestone update.');check('Browser admin change persisted',db('SELECT milestones FROM ci_studio_jobs WHERE id=1')[0]['milestones']=='Browser-verified milestone update.');p.screenshot(path=str(QA/'Admin-Workspace-Desktop.png'),full_page=True);p.set_viewport_size({'width':390,'height':844});check('Admin mobile workspace fits',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'));p.screenshot(path=str(QA/'Admin-Workspace-Mobile.png'),full_page=True);owner.close()

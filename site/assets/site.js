@@ -127,7 +127,7 @@
             const original = button.innerHTML;
             button.disabled = true; button.textContent = 'Sending your inquiry…'; result.hidden = true;
             try {
-                const response = await fetch(form.action, {method:'POST', body:new FormData(form), credentials:'same-origin', headers:{'Accept':'application/json'}});
+                const response = await fetch(form.getAttribute('action') || location.href, {method:'POST', body:new FormData(form), credentials:'same-origin', headers:{'Accept':'application/json'}});
                 let body;
                 try { body = await response.json(); }
                 catch (_) { throw new Error('The server returned an unexpected response. Your details remain in this form. Please try again.'); }

@@ -6,6 +6,8 @@
 
 Read the [feature-to-test matrix](docs/RELEASE_1.1.0.md). `a654a43` then passed native and HTTP/fresh-install checks but the browser wait attempted eval under the site's CSP; the assertion is corrected without weakening CSP. Expanded real-package upgrade, saved-state, native and browser tests are now in the completion branch, pending CI. Original favicon source is retained with its verified fingerprint.
 
+`01e7706` passed expanded native/HTTP upgrade and saved-state checks, then exposed a real browser submission defect: the named action controls hid the form destination. Both public scripts are corrected and installer hashes refreshed. Final whole-suite verification is pending.
+
 The owner paused later roadmap work and authorized finishing, testing, merging and publishing the existing **1.1.0 website/client workspace** before further features. Completion branch: `codex/release-1.1.0`, started from `90ba4f5e0c824e422de8cb2232f5d3ee92b7bec6` on `codex/finish-1.1.0`, reconciled with main `b28a67cdbf20c81842cf73735ee4e6024030262f`. Actual application source is in `site/`; do not follow historical source-recovery blockers below. The original worker branch remains untouched.
 
 Staff/access and invitation components from PRs #5/#6 are preserved outside the deployment package. Devin's PR #7 at `55d60670497d987286e64630e037e1ba2ec3a318` remains on his branch; the tentative local integration was aborted cleanly when priority changed. No portfolio changes were lost. Review follow-up after release: numeric category strings must remain strings, and duplicate published slugs need unambiguous detail behavior. Do not develop later roadmap work during this release task.
