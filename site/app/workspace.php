@@ -38,7 +38,7 @@ function studio_job(int $id,?int $clientId=null): array {
 function studio_new_invite(int $id): string {require_admin();if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$id]))throw new InvalidArgumentException('Active client not found.');$token=bin2hex(random_bytes(32));query('UPDATE '.table('studio_clients').' SET invite_hash=?,invite_expires=?,auth_version=? WHERE id=?',[hash('sha256',$token),time()+86400,bin2hex(random_bytes(16)),$id]);return studio_url(['invite'=>$token]);}
 function studio_activate(string $token,string $password): void {
  validate_password($password);if(!preg_match('/^[a-f0-9]{64}$/D',$token))throw new InvalidArgumentException('Invalid invitation.');
- db()->beginTransaction();try{$c=one('SELECT * FROM '.table('studio_clients').' WHERE invite_hash=? AND invite_expires>? AND active=1 FOR UPDATE',[hash('sha256',$token),time()]);if(!$c)throw new InvalidArgumentException('This invitation expired or has already been used. Ask the studio for a new link.');query('UPDATE '.table('studio_clients').' SET password_hash=?,auth_version=?,invite_hash=NULL,invite_expires=NULL WHERE id=?',[password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),$c['id']]);db()->commit();}catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
+ db()->beginTransaction();try{$c=one('SELECT * FROM '.table('studio_clients').' WHERE invite_hash=? AND active=1 FOR UPDATE',[hash('sha256',$token)]);if(!$c||(int)$c['invite_expires']<=time())throw new InvalidArgumentException('This invitation expired or has already been used. Ask the studio for a new link.');$hash=password_hash($password,PASSWORD_DEFAULT);if((int)$c['invite_expires']<=time())throw new InvalidArgumentException('This invitation expired. Ask the studio for a new link.');query('UPDATE '.table('studio_clients').' SET password_hash=?,auth_version=?,invite_hash=NULL,invite_expires=NULL WHERE id=?',[$hash,bin2hex(random_bytes(16)),$c['id']]);db()->commit();}catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
 }
 function studio_login(string $email,string $password): void {
  $allow1=consume_rate(ip_key('client-login'),15,900);$allow2=consume_rate(hash_hmac('sha256','client|'.$email,config()['key']),8,900);if(!$allow1||!$allow2)throw new RuntimeException('Too many attempts. Wait 15 minutes.');
@@ -70,6 +70,8 @@ function studio_upload(int $jobId,string $actor): void {
  $size=filesize($f['tmp_name']);if($size===false||$size<1||$size>8*1024*1024)throw new InvalidArgumentException('Files must be between 1 byte and 8 MB.');
  $mime=(new finfo(FILEINFO_MIME_TYPE))->file($f['tmp_name']);if(!in_array($mime,['application/pdf','image/png','image/jpeg'],true))throw new InvalidArgumentException('Only PDF, PNG and JPEG files are accepted.');
  $bytes=file_get_contents($f['tmp_name']);if($bytes===false||strlen($bytes)!==$size)throw new RuntimeException('File could not be read completely.');
+ $extension=strtolower(pathinfo(is_string($f['name']??null)?$f['name']:'',PATHINFO_EXTENSION));
+ if(!in_array($extension,['pdf','png','jpg','jpeg'],true)||preg_match('/<\?(?:php|=)/i',$bytes))throw new InvalidArgumentException('Only PDF, PNG and JPEG files without executable code are accepted.');
  $name=substr(preg_replace('/[^a-zA-Z0-9 ._()-]/','_',basename(is_string($f['name']??null)?$f['name']:'document')),0,180)?:'document';
  $id=bin2hex(random_bytes(16));$path=config()['storage'].'/media/studio-'.$id.'.php';
  db()->beginTransaction();$written=false;try {

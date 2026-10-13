@@ -2,6 +2,8 @@
 
 ## 2026-10-13 — Release completion is the priority
 
+[Completion PR #8](https://github.com/afterburn25/Cajun_Web/pull/8) is open as a draft. Combined native database tests passed at `df57b40`, but browser execution failed because `tests/http.py` shadowed Python's standard HTTP library. The runner is now `tests/browser_acceptance.py`; release acceptance is being extended before publication. Candidate version labels are 1.1.0; this is not yet a published release.
+
 The owner paused later roadmap work and authorized finishing, testing, merging and publishing the existing **1.1.0 website/client workspace** before further features. Completion branch: `codex/release-1.1.0`, started from `90ba4f5e0c824e422de8cb2232f5d3ee92b7bec6` on `codex/finish-1.1.0`, reconciled with main `b28a67cdbf20c81842cf73735ee4e6024030262f`. Actual application source is in `site/`; do not follow historical source-recovery blockers below. The original worker branch remains untouched.
 
 Staff/access and invitation components from PRs #5/#6 are preserved outside the deployment package. Devin's PR #7 at `55d60670497d987286e64630e037e1ba2ec3a318` remains on his branch; the tentative local integration was aborted cleanly when priority changed. No portfolio changes were lost. Review follow-up after release: numeric category strings must remain strings, and duplicate published slugs need unambiguous detail behavior. Do not develop later roadmap work during this release task.

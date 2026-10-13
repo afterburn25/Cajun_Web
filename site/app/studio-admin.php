@@ -21,7 +21,7 @@ function studio_admin_action(string $action,array $user): never {
     if($action==='studio_client'){
         $id=gint($_POST,'id',0,2147483647);$name=posted('name',120);$email=strtolower(posted('email',190));
         if($name===''||!filter_var($email,FILTER_VALIDATE_EMAIL))throw new InvalidArgumentException('Enter the client name and a valid email.');
-        if($id){if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=?',[$id]))throw new InvalidArgumentException('Client not found.');query('UPDATE '.table('studio_clients').' SET name=?,email=?,active=?,auth_version=? WHERE id=?',[$name,$email,isset($_POST['active'])?1:0,bin2hex(random_bytes(16)),$id]);}
+        if($id){if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=?',[$id]))throw new InvalidArgumentException('Client not found.');query('UPDATE '.table('studio_clients').' SET name=?,email=?,active=?,auth_version=?,invite_hash=NULL,invite_expires=NULL WHERE id=?',[$name,$email,isset($_POST['active'])?1:0,bin2hex(random_bytes(16)),$id]);}
         else{query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',[$name,$email,bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);}
     }elseif($action==='studio_invite'){
         $id=gint($_POST,'id',1,2147483647);$c=one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$id]);if(!$c)throw new InvalidArgumentException('Active client not found.');

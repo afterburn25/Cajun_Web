@@ -1,7 +1,7 @@
 name: Application acceptance
 on:
   push:
-    branches: [main, codex/finish-1.1.0]
+    branches: [main, codex/finish-1.1.0, codex/release-1.1.0]
     paths: ['site/**', 'tests/**', 'tools/build.py', '.github/workflows/application-tests.yml']
   pull_request:
     branches: [main]
@@ -34,7 +34,7 @@ jobs:
       CWP_TEST_USER: cwp_test
       CWP_TEST_PASSWORD: local-ci-only
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
       - name: Native runtime and browser dependencies
@@ -53,7 +53,7 @@ jobs:
       - name: Native database, upgrade and authorization integration
         run: php8.3 tests/native.php
       - name: Real HTTP and Chromium application workflows
-        run: .ci-venv/bin/python tests/http.py
+        run: .ci-venv/bin/python tests/browser_acceptance.py
       - name: Verify tests did not mutate shipping source
         run: git diff --exit-code -- site/
       - name: Preserve named test evidence
@@ -65,5 +65,6 @@ jobs:
             qa/
             dist/manifest.json
             dist/SHA256SUMS.txt
+            dist/*.zip
           retention-days: 14
           if-no-files-found: error

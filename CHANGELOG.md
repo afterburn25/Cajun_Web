@@ -12,6 +12,14 @@ Recovered 41 actual website files plus native/HTTP tests and a build tool from t
 
 This log distinguishes repository work from application releases and deployment. Documentation-only work does not advance the application version.
 
+## 2026-10-13 — 1.1.0 release acceptance in progress
+
+- Reconciled recovered application source with main while preserving foundation components and Devin's separate work.
+- Renamed the browser runner to avoid shadowing Python's standard HTTP library; the first combined run passed native database tests but failed on that import.
+- Aligned candidate labels at 1.1.0, enforced canonical line endings, and made the build compare shipping bytes with its recorded commit.
+- Client changes revoke outstanding invitations and sessions; activation rechecks expiry after locking/password hashing. Uploads reject executable extensions/code; form feedback respects reduced motion.
+- Expanded release acceptance and publication remain in progress.
+
 ## 2026-10-13 — Staff invitations and source-compatible session tokens
 
 - Inspected the recovered draft's real login/schema and corrected access contexts from integer revisions to opaque authorization strings with strict comparison.
