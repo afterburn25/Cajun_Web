@@ -175,7 +175,7 @@ function staff_view_permission(string $view): ?string {
     if($view==='support')return 'support.login';
     if(in_array($view,['catalog','catalog-invoice'],true))return 'catalog.manage';
     if(in_array($view,['email','health','studio-upgrade'],true))return 'staff.manage';
-    if(in_array($view,['studio-clients','studio-job'],true))return 'clients.manage';
+    if(in_array($view,['studio-clients','studio-job','deliveries'],true))return 'clients.manage';
     return 'website.manage';
 }
 function staff_action_permission(string $action): ?string {
@@ -183,6 +183,8 @@ function staff_action_permission(string $action): ?string {
     if($action==='support_start')return 'support.login';
     if(in_array($action,['payments_migrate','payments_ledger_setup','payments_ledger_reverse','payments_save','payments_clear','payments_verify','payments_trial_setup','payments_trial_submit','payments_trial_verify','payments_notification_setup','payments_notification_configure','payments_notification_verify'],true))return 'staff.manage';
     if(str_starts_with($action,'payments_'))return 'payments.manage';
+    if(in_array($action,['delivery_setup','delivery_publish'],true))return 'staff.manage';
+    if($action==='delivery_upload')return 'clients.manage';
     if($action==='catalog_migrate')return 'staff.manage';
     if(str_starts_with($action,'catalog_'))return 'catalog.manage';
     if(in_array($action,['support_migrate','support_policy'],true))return 'staff.manage';

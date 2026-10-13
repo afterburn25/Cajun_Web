@@ -148,6 +148,8 @@ try:
         notifications_browser(globals(),browser)
         from ledger_cases import run_browser as ledger_browser
         ledger_browser(globals(),browser)
+        from delivery_cases import run_browser as delivery_browser
+        delivery_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)
