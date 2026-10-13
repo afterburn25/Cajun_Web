@@ -6,6 +6,13 @@ Devin implemented the safe-work portion of HC-10 as an isolated canonical compon
 
 ## Active roadmap increment — 1.11.1 candidate
 
+## Active integration — 1.11.2 estimator candidate
+
+Codex owns `codex/estimator-live-adapter`, from publication-record main `855981b`, preserving Devin PR #35 at `91a12cc` in merge `9070609`. The existing live estimator now delegates exact arithmetic to the canonical foundation through a quantity-folding adapter; form fields, server authority, existing range labels, exceptions/early returns, consultation policy and saved leads stay consistent. Canonical foundation HTTP guards and package mirroring are included. No schema or externally enabled feature is added.
+
+Local PHP 8.4 acceptance passes 3,084 comparisons/boundaries against the actual verified 1.11.1 calculator and 65 isolated component checks. Full application/browser/Apache/upgrade acceptance and publication are pending. The candidate update inventory includes published 1.11.1; both organized starting versions and all older supported paths remain required. Latest verified release remains 1.11.1. Next: finish combined acceptance, review, merge/test exact main, publish/download-verify the separate 1.11.2 packages, then continue the next ready bounded roadmap increment. Devin's #31/#32 corrections remain assigned; other foundation branches are preserved.
+
+
 ## Latest verified publication — 1.11.1
 
 [v1.11.1](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.1) is published and freshly downloaded/verified at source/tag `cefcc41bcd5297715f2a49d6526900ebe8ad4eb4` through [PR #50](https://github.com/afterburn25/Cajun_Web/pull/50), preserving Devin PR #34 ancestry. Delivers the bounded W-02 motion/preferences fix, canonical installer build/brand-path corrections and tested organized 1.11.0 owner-update/recovery path. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38429347222): 618 native, 800 HTTP/Chromium, 59 filesystem/recovery, 241 Apache and 17 package-builder checks; all 16 published assets, ZIP members/directories/checksums and immutable tag verified. Windows/Linux package bytes agree. [Test report](docs/TEST_REPORT_1.11.1.md); [handoff](docs/DEVIN_HANDOFF_1.11.1.md).

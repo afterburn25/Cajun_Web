@@ -46,10 +46,11 @@ def inventory():
     return result
 
 def generated(refresh):
-    for area in ['access','invitations','portfolio']:
+    for area in ['access','invitations','portfolio','estimator']:
         for source in (ROOT/'foundation'/area).glob('*.php'):
             target=SITE/'includes/foundation'/area/source.name
-            if refresh:target.write_bytes(source.read_bytes())
+            if refresh:
+                target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(source.read_bytes())
             elif source.read_bytes()!=target.read_bytes():raise RuntimeError('Divergent canonical component: '+str(source))
     # One maintainable implementation. Installer's self-contained copy is generated, never edited.
     bootstrap=(SITE/'includes/bootstrap.php').read_text(encoding="utf-8")
