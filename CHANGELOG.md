@@ -3,7 +3,7 @@
 ## Unreleased — A-07 email-template foundation (Devin, isolated component)
 
 - Added canonical `foundation/email-templates/` classes (`PlaceholderRegistry` allowlist with descriptions, `EmailTemplate` with structural placeholder allowlisting, draft→active→archived lifecycle, non-mutating edits, personal-duplicate, shared/personal visibility, transactional compose exclusion, and honest `preview()` that names unresolved placeholders) plus `docs/EMAIL_TEMPLATES_FOUNDATION.md`.
-- Added `tests/email-templates/run.php` (36 synthetic checks; fixture templates only) and the `email-templates.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- Added `tests/email-templates/run.php` (50 synthetic checks; fixture templates only) and the `email-templates.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, compose UI, sending or persistence. Not yet integrated or released.
 
 ## 1.11.2 — candidate, canonical live estimator integration

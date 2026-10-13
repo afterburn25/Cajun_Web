@@ -29,6 +29,16 @@ final readonly class EmailTemplate
     private const PLACEHOLDER = '#\{\{([a-z][a-z0-9_]*)\}\}#';
 
     /**
+     * Strict double-brace grammar: every `{{` or `}}` in the source must be
+     * part of a complete `{{lower_snake}}` token. This pattern also matches a
+     * bare `{{`, a stray `}}`, or a malformed `{{...}}` (spaces, uppercase,
+     * dots) so they can be rejected instead of slipping through as literal
+     * text that would masquerade as "fully resolved" in preview. Ordinary
+     * single braces stay usable.
+     */
+    private const BRACE_TOKEN = '#\{\{[^{}]*\}\}|\{\{|\}\}#';
+
+    /**
      * @param list<string> $allowedPlaceholders registered names from PlaceholderRegistry
      */
     private function __construct(
@@ -76,7 +86,7 @@ final readonly class EmailTemplate
         PlaceholderRegistry $registry,
     ): self {
         $template = new self($id, $name, $subject, $body, self::DRAFT, $visibility, $ownerId, $transactional, $updatedBy, $updatedAt);
-        $template->assertPlaceholdersAllowed($registry);
+        $template->assertGrammarAndAllowlist($registry);
         return $template;
     }
 
@@ -87,7 +97,7 @@ final readonly class EmailTemplate
             throw new InvalidArgumentException('An archived template cannot be edited; duplicate it first.');
         }
         $copy = new self($this->id, $this->name, $subject, $body, self::DRAFT, $this->visibility, $this->ownerId, $this->transactional, $by, $at);
-        $copy->assertPlaceholdersAllowed($registry);
+        $copy->assertGrammarAndAllowlist($registry);
         return $copy;
     }
 
@@ -137,31 +147,55 @@ final readonly class EmailTemplate
     }
 
     /**
-     * Resolve placeholders for preview. Missing values are NOT
-     * substituted — the result carries them in `unresolved` so a preview
-     * never silently emits raw `{{name}}` text as if it were content.
+     * Resolve placeholders for preview in a SINGLE pass over the original
+     * subject/body: merge values are literal data and are never re-scanned,
+     * so a value containing `{{other_name}}` stays literal rather than
+     * leaking another field's content.
      *
-     * @param array<string,string> $values
+     * Missing or empty-string values are NOT substituted — the result
+     * carries them in `unresolved` so a preview never silently emits raw
+     * `{{name}}` text as if it were content.
+     *
+     * Rendered subject/body are PLAIN TEXT: a UI must escape them for
+     * HTML display, and a mail adapter must reject header line breaks
+     * before sending.
+     *
+     * @param array<string,string> $values string values only — anything
+     *        else fails predictably instead of string-casting silently.
      * @return array{subject:string,body:string,unresolved:list<string>}
      */
     public function preview(array $values): array
     {
-        $resolvedSubject = $this->subject;
-        $resolvedBody = $this->body;
+        foreach ($values as $name => $value) {
+            if (!is_string($value)) {
+                throw new InvalidArgumentException("Merge value '{$name}' must be a string.");
+            }
+        }
         $unresolved = [];
         foreach ($this->placeholders() as $name) {
-            if (array_key_exists($name, $values) && $values[$name] !== '') {
-                $resolvedSubject = str_replace('{{' . $name . '}}', $values[$name], $resolvedSubject);
-                $resolvedBody = str_replace('{{' . $name . '}}', $values[$name], $resolvedBody);
-            } else {
+            if (!isset($values[$name]) || $values[$name] === '') {
                 $unresolved[] = $name;
             }
         }
-        return ['subject' => $resolvedSubject, 'body' => $resolvedBody, 'unresolved' => $unresolved];
+        $resolve = static fn (array $m): string =>
+            isset($values[$m[1]]) && $values[$m[1]] !== '' ? $values[$m[1]] : $m[0];
+        return [
+            'subject' => preg_replace_callback(self::PLACEHOLDER, $resolve, $this->subject),
+            'body' => preg_replace_callback(self::PLACEHOLDER, $resolve, $this->body),
+            'unresolved' => $unresolved,
+        ];
     }
 
-    private function assertPlaceholdersAllowed(PlaceholderRegistry $registry): void
+    private function assertGrammarAndAllowlist(PlaceholderRegistry $registry): void
     {
+        preg_match_all(self::BRACE_TOKEN, $this->subject . "\n" . $this->body, $tokens);
+        foreach ($tokens[0] as $token) {
+            if (!preg_match('#^\{\{[a-z][a-z0-9_]*\}\}$#', $token)) {
+                throw new InvalidArgumentException(
+                    "Malformed placeholder token '{$token}'; use {{lower_snake}}."
+                );
+            }
+        }
         foreach ($this->placeholders() as $name) {
             if (!$registry->allows($name)) {
                 throw new InvalidArgumentException("Placeholder '{{$name}}' is not in the allowlist.");

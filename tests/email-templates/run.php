@@ -124,6 +124,32 @@ check('raw placeholders survive unresolved', str_contains($partial['body'], '{{p
 
 check('preview never mutates template', $active->subject === 'Welcome {{client_name}}');
 
+// --- Preview literal-data safety (Codex review 1.11.2) ----------------------------
+
+// A merge value containing another registered placeholder must remain
+// literal data in BOTH directions — never re-scanned for substitution.
+$escape = EmailTemplate::draft('tpl-esc', 'Escape', 'Hello {{client_name}}', 'Project {{project_name}}', EmailTemplate::VISIBILITY_SHARED, 'staff-amy', false, 'staff-amy', 1700000700, registry());
+$leak = $escape->preview(['client_name' => '{{project_name}}', 'project_name' => 'Secret project']);
+check('value with later placeholder stays literal', $leak['subject'] === 'Hello {{project_name}}');
+check('other field still resolves in body', $leak['body'] === 'Project Secret project');
+$leak2 = $escape->preview(['project_name' => '{{client_name}}', 'client_name' => 'Acme Co']);
+check('value with earlier placeholder stays literal', $leak2['body'] === 'Project {{client_name}}');
+check('other field still resolves in subject', $leak2['subject'] === 'Hello Acme Co');
+
+throws('non-string value rejected', fn () => $active->preview(['client_name' => ['x']]));
+throws('integer value rejected', fn () => $active->preview(['client_name' => 42]));
+
+// --- Strict double-brace grammar (Codex review 1.11.2) --------------------------
+
+throws('uppercase placeholder rejected at draft', fn () => tpl(['subject' => 'Hi {{CLIENT_NAME}}']));
+throws('spaced placeholder rejected at draft', fn () => tpl(['subject' => 'Hi {{ client_name }}']));
+throws('dotted placeholder rejected at draft', fn () => tpl(['subject' => 'Hi {{unknown.field}}']));
+throws('unmatched open brace rejected at draft', fn () => tpl(['subject' => 'Hi {{client_name']));
+throws('stray close brace rejected at draft', fn () => tpl(['subject' => 'Hi }} there']));
+throws('triple brace rejected at draft', fn () => tpl(['subject' => 'Hi {{{client_name}}}']));
+throws('malformed token rejected on edit', fn () => $active->edit('Hi {{ CLIENT}}', 'B', 'x', 1, registry()));
+check('ordinary single braces usable', tpl(['subject' => 'Use {today} rates'])->subject === 'Use {today} rates');
+
 // --- Result -------------------------------------------------------------------
 
 if ($failures !== []) {

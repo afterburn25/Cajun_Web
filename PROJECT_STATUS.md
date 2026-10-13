@@ -2,7 +2,7 @@
 
 ## 2026-10-13 — Devin A-07 email-template foundation (unreviewed, unintegrated)
 
-Devin implemented the safe-work portion of A-07 as an isolated canonical component on `devin/email-templates`: `foundation/email-templates/` (`PlaceholderRegistry`, `EmailTemplate`), `tests/email-templates/run.php` (36 checks), `email-templates.yml` workflow, and [EMAIL_TEMPLATES_FOUNDATION](docs/EMAIL_TEMPLATES_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer; compose UI, persistence and sending remain Codex integration work. No `site/` changes, deployment or release.
+Devin implemented the safe-work portion of A-07 as an isolated canonical component on `devin/email-templates`: `foundation/email-templates/` (`PlaceholderRegistry`, `EmailTemplate`), `tests/email-templates/run.php` (50 checks), `email-templates.yml` workflow, and [EMAIL_TEMPLATES_FOUNDATION](docs/EMAIL_TEMPLATES_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer; compose UI, persistence and sending remain Codex integration work. No `site/` changes, deployment or release.
 
 ## Active integration — 1.11.2 estimator candidate
 

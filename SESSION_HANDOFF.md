@@ -2,7 +2,7 @@
 
 ## Devin active branch — `devin/email-templates` (A-07 template/placeholder model)
 
-Branched from `main` `855981b` (published 1.11.1). Isolated A-07 contract layer: `foundation/email-templates/` (2 files), `tests/email-templates/run.php` (36 synthetic checks, all pass on PHP 8.4.25 locally), `docs/EMAIL_TEMPLATES_FOUNDATION.md`, `.github/workflows/email-templates.yml`.
+Branched from `main` `855981b` (published 1.11.1). Isolated A-07 contract layer: `foundation/email-templates/` (2 files), `tests/email-templates/run.php` (50 synthetic checks, all pass on PHP 8.4.25 locally), `docs/EMAIL_TEMPLATES_FOUNDATION.md`, `.github/workflows/email-templates.yml`.
 
 **Gate:** none for the contract layer; compose UI, persistence and sending remain Codex integration work. **Not integrated:** additive-only outside `site/`.
 
