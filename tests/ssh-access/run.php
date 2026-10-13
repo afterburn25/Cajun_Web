@@ -180,6 +180,15 @@ check('terminate transitions', $killed->state() === TerminalSession::TERMINATED)
 check('history records lifecycle', count($killed->history()) === 2 && $killed->history()[1]['event'] === 'terminated');
 rejects('absolute < idle rejected', fn () => new TerminalSession('sess-5', 'staff-9', 'client-4', target(), 300, 60, 1000));
 
+// Lifecycle times are non-negative and monotonic — backwards writes corrupt audit history
+rejects('negative open time rejected', fn () => new TerminalSession('sess-6', 'staff-9', 'client-4', target(), 60, 300, -5));
+$skewed = new TerminalSession('sess-7', 'staff-9', 'client-4', target(), 60, 300, 1000);
+$skewed->activity(1500);
+rejects('backwards activity rejected', fn () => $skewed->activity(1200));
+rejects('close before last activity rejected', fn () => $skewed->close(1200));
+rejects('refresh before open rejected', fn () => $skewed->refresh(900));
+check('monotonic close succeeds', $skewed->close(1500)->state() === TerminalSession::CLOSED);
+
 // --- SessionBroker --------------------------------------------------------
 
 $transport = new FixtureTransport();

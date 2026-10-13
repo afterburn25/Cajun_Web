@@ -47,6 +47,9 @@ final class TerminalSession
         if ($idleTimeoutSeconds < 1 || $absoluteTimeoutSeconds < $idleTimeoutSeconds) {
             throw new InvalidArgumentException('Timeouts must be positive, absolute >= idle.');
         }
+        if ($openedAt < 0) {
+            throw new InvalidArgumentException('Session times must be non-negative.');
+        }
         $this->lastActivityAt = $openedAt;
         $this->record($openedAt, 'opened');
     }
@@ -55,6 +58,7 @@ final class TerminalSession
     public function activity(int $at): self
     {
         $this->requireActive();
+        $this->requireMonotonic($at);
         $this->lastActivityAt = $at;
         $this->record($at, 'activity');
         return $this;
@@ -63,6 +67,9 @@ final class TerminalSession
     /** Apply timeouts — the caller asks before each use. */
     public function refresh(int $now): string
     {
+        if ($now < 0 || $now < $this->openedAt()) {
+            throw new InvalidArgumentException('Refresh time must be non-negative and at/after session open.');
+        }
         if ($this->state !== self::ACTIVE) {
             return $this->state;
         }
@@ -114,10 +121,19 @@ final class TerminalSession
 
     private function settle(string $state, int $at): self
     {
+        $this->requireMonotonic($at);
         $this->state = $state;
         $this->endedAt = $at;
         $this->record($at, $state);
         return $this;
+    }
+
+    /** Lifecycle events must be non-negative and never reorder history. */
+    private function requireMonotonic(int $at): void
+    {
+        if ($at < 0 || $at < $this->lastActivityAt) {
+            throw new InvalidArgumentException('Session event times must be non-negative and monotonic.');
+        }
     }
 
     private function requireActive(): void
