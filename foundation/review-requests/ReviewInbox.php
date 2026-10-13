@@ -64,8 +64,9 @@ final class ReviewInbox
 
     /**
      * Apply a legal stage move. Delivery is guarded: the saved report for the
-     * request must exist and the contact must have consented to being
-     * contacted, otherwise nothing can honestly be called delivered.
+     * request must exist with confirmed delivery (`deliveredAt`), and the
+     * contact must have consented to being contacted, otherwise nothing can
+     * honestly be called delivered.
      */
     public function transition(ReviewRequest $request, string $to, ?ReviewReport $report = null): ReviewRequest
     {
@@ -78,6 +79,9 @@ final class ReviewInbox
         if ($to === ReviewStage::DELIVERED) {
             if ($report === null || $report->requestId !== $request->id) {
                 throw new InvalidArgumentException('A request can only be marked delivered with its saved report.');
+            }
+            if ($report->deliveredAt === null) {
+                throw new InvalidArgumentException('Delivery must be confirmed on the saved report before the request can be marked delivered.');
             }
             if (!$request->contact->consentToContact) {
                 throw new InvalidArgumentException('A report cannot be delivered to a contact who did not consent.');

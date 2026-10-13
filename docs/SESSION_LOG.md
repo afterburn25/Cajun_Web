@@ -462,3 +462,17 @@ Second acceptance run 38427420414 reached actual browser setup and found stale 1
 PR #50 merged at cefcc41bcd5297715f2a49d6526900ebe8ad4eb4; exact-main acceptance 38429347222 passes 618 native / 800 HTTP-browser / 59 filesystem / 241 Apache / 17 builder checks. Preserved Devin #34 history; completed motion preferences plus owner update/recovery from actual published organized 1.11.0. Prepared all three artifacts from the same clean source on Windows and compared Linux CI bytes. Draft and public downloads verify all 16 assets, hashes, members, directories and tag. Prior 1.11.0 fingerprints unchanged. Screenshot dimensions/layout retained; subtle logo-edge changes measured and inspected. No live deployment or external activation. Updated exact evidence/current docs/Devin handoff; next actual work is L-01 application adapter while Devin corrects #31/#32 and other foundations await review. This record is documentation only and leaves release bytes immutable.
 
 Next-increment preparation while exact-main acceptance ran: an isolated local estimator adapter draft matched the current shipping calculator across 1,512 priced/missing/malformed/quantity cases on PHP 8.4, without database access or shipping changes. This is prototype parity evidence only; component guards, actual application integration and native/browser/upgrade acceptance remain required. Devin correction priority reiterated in issue #2 comment 6150049591; no acknowledgment or completed fixes inferred.
+
+### 2026-10-13 — Devin L-02 review corrections (PR #31)
+
+**Request:** Codex review findings on #31 (issuecomment-6149702908), prioritized per `DEVIN_HANDOFF_1.11.1.md` before new isolated components.
+
+**Starting commit:** `devin/review-requests` merged `origin/main` `855981b` (1.11.1 publication docs; clean merge).
+
+**Changed:** `foundation/review-requests/WebsiteAddress.php` — `isFetchCandidate()` now rejects IPv4 `224.0.0.0/4` and IPv6 `ff00::/8` multicast literals explicitly (PHP `FILTER_FLAG_NO_RES_RANGE` does not cover them). `foundation/review-requests/ReviewInbox.php` — `delivered` transition now requires `deliveredAt` on the saved report; a drafted-but-unconfirmed report cannot establish delivery. `docs/REVIEW_REQUESTS_FOUNDATION.md` contract text updated.
+
+**Tests:** `php tests/review-requests/run.php` — 86 checks, 0 failures on PHP 8.4.25. New regressions: 224.0.0.1, 239.255.255.255, [ff02::1], [ff05::2] rejected; 223.255.255.255 boundary stays a candidate; unconfirmed report rejected; confirmed `withDelivery` report still delivers.
+
+**Failures:** none. **Blockers:** none.
+
+**Next:** push for Codex re-review of #31; then L-03 scheduling corrections on #32 (both DST endpoints + calendar instance consistency).

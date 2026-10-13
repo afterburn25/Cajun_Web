@@ -14,7 +14,9 @@ dependencies, and it performs **no network access**.
   hosts (`example.com`) become `https://example.com/`; schemes/hosts are
   lowercased, default ports dropped, fragments and embedded credentials
   rejected, and only `http`/`https` are allowed. `isFetchCandidate()` rejects
-  literal private/reserved IP addresses and well-known internal names
+  literal private/reserved IP addresses, IPv4 `224.0.0.0/4` and IPv6 `ff00::/8`
+  multicast (which PHP's reserved-range flag does not cover), and well-known
+  internal names
   (`localhost`, `.local`, `.internal`, `.test`, `.example`, `.invalid`).
 - **`ReviewContact`** — validated name, email, optional phone, and an explicit
   `consentToContact` flag (defaults to `false`).
@@ -34,8 +36,9 @@ dependencies, and it performs **no network access**.
 - **`ReviewInbox`** — ordered collection and pipeline. Requests are
   de-duplicated by id and ordered deterministically by `submittedAt` then id,
   independent of input order. `transition()` applies only legal stage moves;
-  `delivered` additionally requires the saved report for that request **and**
-  the contact's recorded consent.
+  `delivered` additionally requires the saved report for that request with
+  confirmed `deliveredAt` (a drafted-but-unsent report cannot establish
+  delivery) **and** the contact's recorded consent.
 
 ## What it deliberately does not do
 

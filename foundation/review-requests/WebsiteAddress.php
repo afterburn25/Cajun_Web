@@ -97,12 +97,30 @@ final readonly class WebsiteAddress
         $ipv4 = filter_var($this->host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
         $ipv6 = filter_var(trim($this->host, '[]'), FILTER_VALIDATE_IP, FILTER_FLAG_IPV6);
         if ($ipv4 !== false) {
+            // PHP's NO_RES_RANGE does not cover 224.0.0.0/4 multicast.
+            if (self::isMulticastPacked(inet_pton($this->host))) {
+                return false;
+            }
             return filter_var($this->host, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false;
         }
         if ($ipv6 !== false) {
+            // ff00::/8 multicast is likewise outside the reserved-range flag.
+            if (self::isMulticastPacked(inet_pton(trim($this->host, '[]')))) {
+                return false;
+            }
             return filter_var(trim($this->host, '[]'), FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false;
         }
         return true;
+    }
+
+    /** IPv4 224.0.0.0/4 (first octet 224–239) or IPv6 ff00::/8 (first byte 0xff). */
+    private static function isMulticastPacked(string $packed): bool
+    {
+        return match (strlen($packed)) {
+            4 => ord($packed[0]) >= 224 && ord($packed[0]) <= 239,
+            16 => ord($packed[0]) === 0xff,
+            default => false,
+        };
     }
 
     private static function isPlausibleHost(string $host): bool

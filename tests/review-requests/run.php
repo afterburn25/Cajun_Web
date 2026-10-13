@@ -89,6 +89,11 @@ check('loopback IPv4 is not', !(new WebsiteAddress('http://127.0.0.1/'))->isFetc
 check('link-local IPv4 is not', !(new WebsiteAddress('http://169.254.169.254/'))->isFetchCandidate());
 check('ULA IPv6 is not', !(new WebsiteAddress('http://[fd00::1]/'))->isFetchCandidate());
 check('public IPv4 remains a candidate', (new WebsiteAddress('http://8.8.8.8/'))->isFetchCandidate());
+check('multicast IPv4 is not', !(new WebsiteAddress('http://224.0.0.1/'))->isFetchCandidate());
+check('high multicast IPv4 is not', !(new WebsiteAddress('http://239.255.255.255/'))->isFetchCandidate());
+check('multicast IPv6 is not', !(new WebsiteAddress('http://[ff02::1]/'))->isFetchCandidate());
+check('site-local multicast IPv6 is not', !(new WebsiteAddress('http://[ff05::2]/'))->isFetchCandidate());
+check('boundary below multicast remains a candidate', (new WebsiteAddress('http://223.255.255.255/'))->isFetchCandidate());
 
 // --- ReviewContact ------------------------------------------------------------------
 
@@ -184,9 +189,11 @@ $noConsent = fixtureRequest('fx-101', 1, [
     'status' => ReviewStage::REPORT_DRAFTED,
     'contact' => new ReviewContact('No Consent', 'n@fx.example.com', null, false),
 ]);
-throws('delivered requires consent', fn () => $inbox3->transition($noConsent, ReviewStage::DELIVERED, fixtureReport('fx-101')));
-check('delivered ok with report and consent', $inbox3->transition($drafted, ReviewStage::DELIVERED, fixtureReport('fx-100'))->status === ReviewStage::DELIVERED);
-$closed = $inbox3->transition($inbox3->transition($drafted, ReviewStage::DELIVERED, fixtureReport('fx-100')), ReviewStage::CLOSED);
+throws('delivered requires consent', fn () => $inbox3->transition($noConsent, ReviewStage::DELIVERED, fixtureReport('fx-101')->withDelivery(1700002000)));
+throws('delivered rejects unconfirmed report', fn () => $inbox3->transition($drafted, ReviewStage::DELIVERED, fixtureReport('fx-100')));
+$confirmed = fixtureReport('fx-100')->withDelivery(1700002000);
+check('delivered ok with confirmed report and consent', $inbox3->transition($drafted, ReviewStage::DELIVERED, $confirmed)->status === ReviewStage::DELIVERED);
+$closed = $inbox3->transition($inbox3->transition($drafted, ReviewStage::DELIVERED, $confirmed), ReviewStage::CLOSED);
 throws('closed cannot reopen', fn () => $inbox3->transition($closed, ReviewStage::IN_REVIEW));
 throws('illegal jump rejected', fn () => $inbox3->transition(fixtureRequest('fx-200'), ReviewStage::DELIVERED, fixtureReport('fx-200')));
 
