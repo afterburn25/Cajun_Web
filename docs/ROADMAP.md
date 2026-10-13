@@ -87,3 +87,18 @@ Identify installed and available versions, verify trusted package integrity/comp
 Import and validate the baseline first. Land exact branding/favicon and public experience/content plus lead workflows next, then client operations and resilience in tested increments. Access control and backup/recovery checks must precede storing real client documents or enabling payments/automatic updates.
 
 Move an item through `approved` → `in progress` → `implemented` → `verified` → `deployed` only with evidence for each transition. Record branch/commit, routes, schema/config changes, tests, limitations, and deployment status. Update this roadmap and the session handoff with every meaningful change.
+
+
+## H — Hosting commerce, white-label resale, custom billing and unified clients (approved 2026-10-12)
+
+**Full requirements and phase gates:** [Custom hosting and billing roadmap](HOSTING_AND_BILLING_ROADMAP.md). This expands P-01/P-03/P-04 and adds the owner's selected payment/provider direction; existing web-design, branding, installer and safety requirements still apply. Do not treat a future launch as implemented.
+
+- **HC-01/02:** Real hosting/domain/VPS/web-design catalog and prices editable in admin; branded unified client portal and strict tenant isolation.
+- **HC-03/04/05:** Cart and first-party checkout; Authorize.net settings with API Login ID, Transaction Key, Signature Key, Public Client Key (separate sandbox/live), custom theme-matched Accept.js card form and cryptographically verified webhooks; no raw card storage.
+- **HC-06:** Own invoice, recurring billing, deposits, refunds, dunning and payment-profile/token management; no WHMCS/HostShop dependency.
+- **HC-07/08:** 20i Reseller API configuration, package types and automated shared hosting fulfillment/reconciliation/suspension safeguards.
+- **HC-09/10:** Real domain catalog/register/transfer/renew; separately priced VPS/managed cloud products, only after API/cost and operational validation.
+- **HC-11/12:** Web design projects/proposals/maintenance alongside hosting; staff admin, service desk, support tickets, queue recovery, financial reports.
+- **HC-13/14:** Modular shared-host PHP/MySQL source, one-page/keyless installer compatibility, upgrade migrations, cron/reliability, PCI/privacy/compliance and backup/restore release gates.
+
+**Implementation order:** M0 baseline import/API feasibility → M1 plans + clients → M2 Authorize.net custom checkout + billing → M3 20i shared hosting → M4 domains + web-design workflows → M5 VPS/support → M6 hardened staging/live approval. Prices are owner-administered; past illustrative rates are not approved retail or verified wholesale.

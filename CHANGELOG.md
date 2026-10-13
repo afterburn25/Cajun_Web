@@ -2,6 +2,13 @@
 
 This log distinguishes repository work from application releases and deployment. Documentation-only work does not advance the application version.
 
+## 2026-10-12 — Hosting resale and custom billing roadmap (docs only)
+
+- Approved first-party hosting/domain/VPS storefront integrated with CajunWebPro web-design services; created docs/HOSTING_AND_BILLING_ROADMAP.md (HC-01 through HC-14, M0–M6 phases and acceptance tests).
+- Selected 20i reseller API for infrastructure and Authorize.net for payments (replacing the earlier generic/Stripe proposal), without WHMCS/HostShop requirement. Configurable admin key fields: API Login ID, Transaction Key, Signature Key and Public Client Key; custom themed Accept.js payment flow with PCI gate.
+- Added unified client portal, products/plans, domains, VPS, invoices, recurring payments, refunds, provisioning jobs, admin, security and shared-host/installer constraints to roadmap, direction, architecture, status, decisions, handoff and session log.
+- **Not shipped:** no application source import, live credentials, integration, checkout, plan prices, hosting account or deployable artifact. Existing download/installer/storage issues remain open.
+
 ## 2026-10-12 — Download recovery and release-claim correction
 
 ### Corrected

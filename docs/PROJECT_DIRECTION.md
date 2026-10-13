@@ -43,3 +43,12 @@ The owner accepted all features proposed in the preceding planning discussion: i
 Keep PHP/MySQL or MariaDB shared-host deployment and the existing app/assets separation. Installation is browser based, keyless, and truly one page. Package and test actual complete releases with no wrapper-folder confusion or multi-patch dependency.
 
 Git `main` is the continuing source of truth once the application baseline is imported. Every session documents what changed, how it was checked, what remains unresolved, and what to do next. Preserve functioning work and existing customer data while extending the product.
+
+
+## Expansion approved 2026-10-12 — web design PLUS branded hosting resale
+
+CajunWebPro must grow into a fully branded **web design, hosting, domains and VPS company**, not a generic template or site-builder product. Add polished hosting plan comparisons, domain search and checkout, VPS pages, account registration and a unified /clients portal for both website design projects and hosting accounts. Keep the original navy/gold visual design and source structure.
+
+The owner chose a **100% custom PHP/MySQL storefront, billing platform, checkout, subscription engine and portal** (no WHMCS, no HostShop front end or Stripe). Integrate directly with 20i reseller APIs for provisioning and Authorize.net for payment processing. Admin must configure API Login ID, Transaction Key, Signature Key and Public Client Key separately for sandbox/live. Payment forms must blend into the site design, with Accept.js tokenization and PCI obligations explicitly addressed. Products/prices and service options belong in admin, not hardcoded guesses.
+
+Reference [full hosting and billing scope](HOSTING_AND_BILLING_ROADMAP.md). Adding scope does not indicate these services are available or implemented.

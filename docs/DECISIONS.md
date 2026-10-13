@@ -26,3 +26,17 @@ No actual payment/calendar provider account, package pricing, contract wording, 
 ## Future entry format
 
 `ID · date · status (accepted/superseded) · request/context · decision · consequences · affected files/roadmap items · verification · supersedes (if any)`.
+
+
+## 2026-10-12 — Hosting and payment direction
+
+| ID | Status | Decision | Consequence |
+|---|---|---|---|
+| D-015 | Accepted | CajunWebPro will sell custom web design PLUS white-label hosting, domains and VPS | Unified marketing site/client dashboard and fulfillment lifecycle |
+| D-016 | Accepted | Use 20i reseller API directly, not a HostShop or WHMCS branded checkout | Must implement and test first-party catalog, billing, portal, automation and API adapters |
+| D-017 | Accepted | Use Authorize.net instead of Stripe for the selected custom billing platform | P-03's generic/Stripe suggestion is superseded for this product; API Login ID, Transaction Key, Signature Key and Public Client Key configurable in admin with separate sandbox/live |
+| D-018 | Accepted with launch gate | Custom brand-matched payment form using Accept.js tokenization | Never collect PAN/CVV on server; own-field SAQ A-EP scope and merchant PCI review before live acceptance; hosted-field/Accept Hosted alternative if required |
+| D-019 | Accepted | Offer admin-managed real plans/prices for hosting, domains, VPS, web design and maintenance | No invented public prices/provider costs; verify capability and margin before activation |
+| D-020 | Accepted | Preserve existing single-page keyless installer, PHP/MySQL shared host, navy/gold logo and client data | Add modular code and safe migrations, not a root-file monolith or forced fresh install |
+
+Unresolved verification items: actual 20i API credentials/capabilities (especially domain/VPS), Authorize.net merchant account/test credentials, final published plan prices, tax/legal/PCI determinations, cron support on target host and live payment activation authorization. See docs/HOSTING_AND_BILLING_ROADMAP.md.

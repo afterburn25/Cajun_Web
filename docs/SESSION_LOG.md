@@ -33,3 +33,18 @@ Append dated entries. Keep this chronological. Use `SESSION_TEMPLATE.md`; link d
 **Limits / no external implementation:** No website source import or feature build in this recovery session, no staging acceptance, no hosting modification, and no customer-data changes. No complete v1.1.0 package or supporting test evidence was recovered. A favicon asset archive does not establish its live integration.
 
 **Next action:** Commit the recoverable complete baseline and originals into the source tree before rebuilding requested additions in tested, committed increments. Verify real artifacts and attach only existing files before declaring another downloadable release. Keep the current website intact rather than downgrade/reinstall it to address a chat download failure.
+
+
+## 2026-10-12 — Add custom hosting commerce and Authorize.net roadmap
+
+**Request:** Owner wants a GitHub roadmap for a full-fledged custom CajunWebPro web design + hosting company: product plans, direct 20i shared hosting/domain/VPS resale, native client portal and custom Authorize.net checkout. Admin must configure API Login ID, Transaction Key, Signature Key and Public Client Key.
+
+**Starting branch/head:** main at 74d1892ca96c3e5080346a3886b3440afd7dcab6. Existing README, AGENTS, status, roadmap, project direction, architecture and prior handoff were reviewed. Git tree was documentation only, with source import unresolved.
+
+**Changes:** Added docs/HOSTING_AND_BILLING_ROADMAP.md; updated ROADMAP, PROJECT_DIRECTION, ARCHITECTURE, DECISIONS, PROJECT_STATUS, SESSION_HANDOFF, CHANGELOG and this session log. Scope HC-01 through HC-14; milestone gates M0–M6; real custom PHP/MySQL billing system; separate sandbox/live key configuration; branded Accept.js form; 20i provisioning, domain/VPS catalog, unified clients for design + hosting, admin pricing, service recovery and security acceptance.
+
+**Verification:** Read current connected GitHub files, source-only inventory/status, and public 20i/Authorize.net technical documentation. Checked 20i documented hosting package API and Authorize.net Accept.js tokenization/webhook signature requirements. No PHP execution, native DB, integration calls, PCI certification, charge, test domain registration, hosting API provisioning or live host/browser test was performed.
+
+**Known blockers:** Source baseline not yet imported; last target host installer/storage state and old v1.1.0 release claims unresolved. 20i account-only API capabilities, wholesale VPS/domain costs, and Authorize.net merchant/sandbox account not supplied; PCI compliance and release controls not yet confirmed. Avoid all pricing or deployment claims.
+
+**Next:** Import the fingerprinted 1.0.8 baseline into Git, inspect live deployment and API capabilities, implement and test M0→M6 incrementally. Preserve existing logo/favicon/site and one-page keyless installer, customer data and modular structure. This documentation commit makes no release claim.

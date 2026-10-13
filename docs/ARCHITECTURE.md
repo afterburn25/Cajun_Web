@@ -51,3 +51,13 @@ The installer contains an exact dependent-file inventory. Altering CSS, JavaScri
 - Background integrations must fit real hosting capabilities; do not silently depend on a daemon or a cron job that has not been configured.
 
 Architecture choices for these extensions remain to be implemented and tested. Update this file with actual routes, classes/modules, schema migrations, provider selections and data flows when they land.
+
+
+## Planned hosting/business-commerce extension (approved 2026-10-12; not yet implemented)
+
+- Custom PHP storefront and /clients identity/portal with service-family modules, organized under app/ (commerce, billing, payments/authorize-net, providers/twentyi, domains, vps, clients, support, jobs, admin) after baseline is imported. Preserve current entry points and the one-page keyless installer.
+- 20i authenticated reseller API adapter with explicit feature discovery, package-type mapping and external IDs. Public docs support hosting package operations; actual domain/VPS API endpoints and capabilities must be checked within account documentation before coding or promising full automation.
+- Authorize.net hosted tokenization via Accept.js in a themed first-party checkout, with token-driven PHP charges, customer/payment profiles, signed webhooks, transaction idempotency, reconciliation and separate sandbox/live configuration. Four admin inputs: API Login ID, Transaction Key, Signature Key, Public Client Key. Secret keys encrypted outside public reach. PCI SAQ A-EP implications require review for own HTML card form; Accept Hosted is a fallback.
+- Persist customer/orders/line items/plan price snapshots/invoices/payments/subscriptions/provider fulfillment status/jobs and audit trails independently; split custom web-design/manual milestones from server provisioning.
+- PHP web requests plus scheduled PHP CLI cron for reliable recurring billing, reconciliation and queue progression. Browser installer remains one-page; scheduled-job configuration is a go-live requirement, not a new installer wizard.
+- Precise architecture, migrations, data flow, endpoints and test results are not yet available. See docs/HOSTING_AND_BILLING_ROADMAP.md for acceptance requirements.
