@@ -8,7 +8,7 @@
     const paused = () => motionQuery.matches || userPaused;
     const motionButton = document.querySelector('.motion-toggle');
     function applyMotion() {
-        document.body.classList.toggle('motion-off', paused());
+        document.documentElement.classList.toggle('motion-off', paused());
         if (motionButton) {
             motionButton.hidden = false;
             motionButton.textContent = paused() ? 'Motion off' : 'Motion on';

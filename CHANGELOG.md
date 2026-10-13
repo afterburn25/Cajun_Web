@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — homepage motion fixes (W-02 slice)
+
+- Move the `motion-off` marker to `documentElement` and give it real CSS coverage: paused motion now stops CSS animations/transitions, disables smooth-scroll, resets the hero transform and force-reveals pending `.reveal` sections that a mid-session pause previously left invisible.
+- Add a restrained hover/focus metallic sheen on the brand logo; both pause paths suppress it.
+
 ## 1.11.0 — portfolio integration candidate, not yet released
 
 - Preserve and integrate Devin's W-01 component and real-project adapter. Public category URLs, no-JavaScript navigation, enhanced history and result counts use published records with truthful labels.

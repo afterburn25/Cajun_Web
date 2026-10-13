@@ -63,7 +63,7 @@ Real desktop/mobile captures, accessible before/after slider for actual redesign
 
 ### W-02 — Signature homepage motion
 
-Preserve approved navy/gold composition while adding restrained metallic logo highlights, layered device depth, polished service/portfolio responses, and section reveals. Acceptance: immediate readable content, reduced-motion and no-JavaScript behavior, touch-safe controls, no flying pixels/autoplay audio/forced loading, and measured load/layout/interactivity before claiming performance improvements.
+Preserve approved navy/gold composition while adding restrained metallic logo highlights, layered device depth, polished service/portfolio responses, and section reveals. Acceptance: immediate readable content, reduced-motion and no-JavaScript behavior, touch-safe controls, no flying pixels/autoplay audio/forced loading, and measured load/layout/interactivity before claiming performance improvements. Partially delivered on `devin/homepage-motion`: a working motion pause (`motion-off` now actually disables CSS motion and force-reveals pending sections — previously a no-op) plus a restrained metallic logo sheen; layered device depth and measured load/layout evidence remain.
 
 ### L-01 — Single-page project estimator
 

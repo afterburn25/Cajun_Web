@@ -1,5 +1,9 @@
 # Project status
 
+## 2026-10-13 — Devin W-02 motion slice + L-02/L-03 components
+
+On `devin/homepage-motion` (from main `332af19`), Devin fixed a real defect: the motion toggle set `motion-off` on `body` but no CSS consumed it — manual pause left animations, smooth-scroll and hidden `.reveal` sections unaffected. The class now lives on `documentElement` with matching rules (kill animations/transitions, `scroll-behavior:auto`, force-reveal pending sections), plus a restrained metallic sheen on the brand logo suppressed by both pause paths. Five Chromium acceptance checks added; build verification passes. Devin also has isolated components queued: L-02 review requests ([PR #31](https://github.com/afterburn25/Cajun_Web/pull/31)) and L-03 scheduling ([PR #32](https://github.com/afterburn25/Cajun_Web/pull/32)), both refreshed onto `332af19` and mergeable.
+
 ## 2026-10-13 — Portfolio integration candidate 1.11.0
 
 Codex is integrating Devin portfolio [PR #7](https://github.com/afterburn25/Cajun_Web/pull/7) at `016a4057a3a17b62b2edcf583252f52cb9ff06a2` on `codex/portfolio-browsing`, starting after estimator integration main `39de8ff50ea245928a1f6528f10057afcf55e5b7`. Original branch/history remain intact. **Candidate source 1.11.0; latest published release remains v1.10.0.** [Contract](docs/PUBLIC_COMPONENT_INTEGRATION.md) and [browsing guide](docs/PORTFOLIO_BROWSING.md).
