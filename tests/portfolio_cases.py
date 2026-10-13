@@ -49,8 +49,16 @@ def run_browser(env,browser):
     p.go_back();expect(p.locator('.project-card:not([hidden])')).to_have_count(3)
     p.go_forward();expect(p.locator('.project-card:not([hidden])')).to_have_count(1)
     check('Back and forward restore selection and count',construction.get_attribute('aria-current')=='true' and '1 of 3' in p.locator('[data-portfolio-status]').inner_text())
-    modified=p.evaluate('''() => {const link=document.querySelector('.filters a[data-filter="Hospitality"]'); return ['ctrlKey','metaKey','shiftKey','altKey'].every(key => {const e=new MouseEvent('click',{bubbles:true,cancelable:true,[key]:true});link.dispatchEvent(e);return !e.defaultPrevented;});}''')
+    modified=p.evaluate('''() => {const link=document.querySelector('.filters a[data-filter="Hospitality"]'); return ['ctrlKey','metaKey','shiftKey','altKey'].every(key => {let allowed=false;link.addEventListener('click',event=>{allowed=!event.defaultPrevented;event.preventDefault();},{once:true});const e=new MouseEvent('click',{bubbles:true,cancelable:true,[key]:true});link.dispatchEvent(e);return allowed;});}''')
     check('Modified filter clicks retain native navigation',modified)
+    # The observer above prevents only the test event's browser default, after
+    # recording the application handler's decision, so synthetic events cannot
+    # race the next navigation. Exercise actual native Ctrl-click separately.
+    with context.expect_page() as opened:
+        p.locator('.filters a[data-filter="Hospitality"]').click(modifiers=['Control'])
+    popup=opened.value;popup.wait_for_load_state('domcontentloaded')
+    check('Real Ctrl-click opens filtered portfolio in a new tab','cat=Hospitality' in popup.url and popup.locator('.project-card:not([hidden])').count()==1 and 'cat=Construction' in p.url)
+    popup.close()
     p.goto(work,wait_until='networkidle')
     for width,label in [(1440,'Desktop'),(320,'Mobile')]:
         p.set_viewport_size({'width':width,'height':1000});p.screenshot(path=str(QA/f'Portfolio-Reviewed-{label}.png'),full_page=True)

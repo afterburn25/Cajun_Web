@@ -1,5 +1,8 @@
 # Session handoff — read before continuing
 
+## Release acceptance follow-up — 2026-10-13
+
+Portfolio integration PR #30 is merged at `332af19333a62d3dfcc90eb9cf34871a7fac50ec`; original Devin PRs #7/#27 are merged with preserved history. Both candidate runs passed 618 native / 675 HTTP/Chromium checks and reviewed screenshots. Exact-main run 38408053057 passed native and actual 1.10.0 retention checks, then exposed a synthetic modified-click test navigation race. `codex/portfolio-acceptance` fixes the test observer and adds a real Ctrl-click/new-tab assertion; it changes no shipping bytes. Publication remains pending successful exact-main acceptance. Latest public release remains 1.10.0. New Devin L-02 PR #31 is separate unreviewed work, outside this release.
 ## 2026-10-13 — Devin W-02 motion slice + queued components
 
 On `devin/homepage-motion` (from `332af19`): the motion pause toggle now works — `motion-off` moved to `documentElement` with real CSS coverage (animations/transitions off, smooth-scroll off, pending `.reveal` sections force-shown so a mid-session pause can't leave content invisible), plus a restrained brand-logo sheen honoring both pause paths. Five Chromium checks added in `tests/browser_acceptance.py`; installer hashes refreshed. Queued Devin PRs awaiting Codex order: [#31](https://github.com/afterburn25/Cajun_Web/pull/31) L-02 review-request contract and [#32](https://github.com/afterburn25/Cajun_Web/pull/32) L-03 scheduling contract, both isolated foundations only (no `site/` changes). This W-02 slice touches `site.js`/`site.css` — merge after the v1.11.0 release lands to avoid churn.

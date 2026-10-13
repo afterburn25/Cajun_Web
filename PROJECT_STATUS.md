@@ -1,5 +1,8 @@
 # Project status
 
+## Release acceptance follow-up — 2026-10-13
+
+Portfolio integration PR #30 is merged at `332af19333a62d3dfcc90eb9cf34871a7fac50ec`; original Devin PRs #7/#27 are merged with preserved history. Both candidate runs passed 618 native / 675 HTTP/Chromium checks and reviewed screenshots. Exact-main run 38408053057 passed native and actual 1.10.0 retention checks, then exposed a synthetic modified-click test navigation race. `codex/portfolio-acceptance` fixes the test observer and adds a real Ctrl-click/new-tab assertion; it changes no shipping bytes. Publication remains pending successful exact-main acceptance. Latest public release remains 1.10.0. New Devin L-02 PR #31 is separate unreviewed work, outside this release.
 ## 2026-10-13 — Devin W-02 motion slice + L-02/L-03 components
 
 On `devin/homepage-motion` (from main `332af19`), Devin fixed a real defect: the motion toggle set `motion-off` on `body` but no CSS consumed it — manual pause left animations, smooth-scroll and hidden `.reveal` sections unaffected. The class now lives on `documentElement` with matching rules (kill animations/transitions, `scroll-behavior:auto`, force-reveal pending sections), plus a restrained metallic sheen on the brand logo suppressed by both pause paths. Five Chromium acceptance checks added; build verification passes. Devin also has isolated components queued: L-02 review requests ([PR #31](https://github.com/afterburn25/Cajun_Web/pull/31)) and L-03 scheduling ([PR #32](https://github.com/afterburn25/Cajun_Web/pull/32)), both refreshed onto `332af19` and mergeable.
