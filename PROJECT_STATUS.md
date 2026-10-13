@@ -1,5 +1,7 @@
 # Project status
 
+**Directory correction in progress (not release acceptance):** branch `codex/priority-directory-refactor` now contains organized routes/assets, focused bootstrap/security/database modules, split admin/portal/public/setup source, protected scaffolds, and a staged owner-only structural updater with protected rollback journal. The builder produces three distinct artifacts only from a clean commit. Existing native/HTTP tests now target canonical routes and perform real staged updates from each retained release. Next: finish Apache, interruption/recovery and package guard tests; fix all full-suite failures; checked PR/main and publication remain mandatory. Nothing deployed or published.
+
 ## Owner priority override — directory structure and packaging, 2026-10-13
 
 The owner requires an actual structural refactor and three separately verified downloads before any unrelated roadmap work resumes. This supersedes earlier constraints that kept substantial root PHP files or interpreted a no-wrapper ZIP as a flat application. Work on `codex/priority-directory-refactor` from main `b975915` preserves integrated portfolio/estimator work and the tested browser correction. Latest published version is **1.10.0**; the 1.11.0 portfolio-only release was stopped before draft/tag creation. The unused 1.11.0 candidate will be corrected before release. Do not publish the old-layout candidate.

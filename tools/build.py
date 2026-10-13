@@ -1,83 +1,132 @@
 #!/usr/bin/env python3
-"""Deterministic complete/update archives. No deployment, secrets, or wrapper directory."""
-from pathlib import Path
-import argparse, hashlib, json, re, subprocess, zipfile
-ROOT=Path(__file__).resolve().parents[1]
-SITE=ROOT/'site'
-
-def sha(data): return hashlib.sha256(data).hexdigest()
+"""Three deterministic, sanitized artifacts from one clean recorded commit."""
+from pathlib import Path, PurePosixPath
+import argparse,hashlib,json,re,subprocess,zipfile,shutil
+ROOT=Path(__file__).resolve().parents[1];SITE=ROOT/'site'
+MAP=json.loads((ROOT/'tools/directory-map.json').read_text())
+SCAFFOLDS={'storage/.htaccess','storage/index.php','upload/.htaccess','upload/index.php'}
+ROOT_FILES={'.htaccess','favicon.ico','index.php','install.php','robots.php','sitemap.php'}
+def sha(data):return hashlib.sha256(data).hexdigest()
+def write(path,data):path.parent.mkdir(parents=True,exist_ok=True);path.write_text(data,encoding='utf-8',newline='\n')
+def safe(name):
+    p=PurePosixPath(name)
+    if p.is_absolute() or '..' in p.parts or '\\' in name or ':' in name or str(p)!=name:raise RuntimeError('Unsafe path: '+name)
 def inventory():
-    paths=sorted(p for p in SITE.rglob('*') if p.is_file())
-    if any(p.is_symlink() for p in SITE.rglob('*')): raise RuntimeError('Symlink in release source')
-    if any(p.name in {'config.php','.installed.php','proxy-config.php','payment-master.key'} or 'storage' in p.relative_to(SITE).parts for p in paths):
-        raise RuntimeError('Private runtime data must not be packaged')
-    return {p.relative_to(SITE).as_posix():sha(p.read_bytes()) for p in paths}
-def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--refresh',action='store_true');ap.add_argument('--commit',default='local-uncommitted');args=ap.parse_args()
-    # Canonical independent components are bundled verbatim; verification rejects divergent copies.
+    result={}
+    for p in sorted(SITE.rglob('*')):
+        if p.is_symlink():raise RuntimeError('Symlink in shipping source')
+        if not p.is_file():continue
+        n=p.relative_to(SITE).as_posix();safe(n)
+        if n.split('/')[0] in {'storage','upload'} and n not in SCAFFOLDS:raise RuntimeError('Runtime storage in package: '+n)
+        if p.name in {'config.php','.installed.php','proxy-config.php','payment-master.key','.installation-mutex.php'} or p.name.startswith('config-pending-'):raise RuntimeError('Private configuration in package: '+n)
+        result[n]=sha(p.read_bytes())
+    if {n for n in result if '/' not in n}!=ROOT_FILES:raise RuntimeError('Unexpected production root files')
+    for directory in ['admin','portal','pages','includes','images','storage','upload','app','api','webhooks','media','install','database','config','assets/css','assets/js']:
+        if not any(n.startswith(directory+'/') for n in result):raise RuntimeError('Missing functional directory: '+directory)
+    if len((SITE/'admin/index.php').read_bytes())>1000 or len((SITE/'index.php').read_bytes())>1000:raise RuntimeError('Business logic in a root entry')
+    for src,dst in MAP['paths'].items():
+        if not (SITE/dst).is_file():raise RuntimeError('Missing mapped destination: '+dst)
+        if src!=dst and src not in ROOT_FILES and (SITE/src).is_file():raise RuntimeError('Stale moved source: '+src)
+    for directory in MAP['protected_directories']:
+        if (SITE/directory/'.htaccess').read_text()!='Require all denied\n':raise RuntimeError('Missing internal denial: '+directory)
+    return result
+
+def generated(refresh):
     for area in ['access','invitations','portfolio']:
         for source in (ROOT/'foundation'/area).glob('*.php'):
-            bundled=SITE/'app/foundation'/area/source.name
-            if args.refresh:
-                bundled.parent.mkdir(parents=True,exist_ok=True);bundled.write_bytes(source.read_bytes())
-            elif not bundled.is_file() or bundled.read_bytes()!=source.read_bytes():
-                raise RuntimeError('Stale bundled foundation: '+str(source))
-    inv=inventory();install=SITE/'install.php';s=install.read_text(encoding='utf-8')
-    core=(SITE/'app/core.php').read_text(encoding='utf-8').removeprefix('<?php\ndeclare(strict_types=1);\n').replace("const CWP_ROOT = __DIR__ . '/..';","const CWP_ROOT = __DIR__;")
-    begin=s.index("defined('CWP_BOOT') || exit;");end=s.index('\nsecurity_headers();',begin)
-    if args.refresh:s=s[:begin]+core+s[end:]
-    elif s[begin:end]!=core:raise RuntimeError('Embedded installer bootstrap differs from application core')
-    expected={k:v for k,v in inv.items() if k!='install.php'}
-    body='function setup_expected_files(): array { return [\n'+''.join(f"        '{k}' => '{v}',\n" for k,v in expected.items())+'    ]; }'
-    pattern=r'function setup_expected_files\(\): array \{ return \[.*?\n    \]; \}'
+            target=SITE/'includes/foundation'/area/source.name
+            if refresh:target.write_bytes(source.read_bytes())
+            elif source.read_bytes()!=target.read_bytes():raise RuntimeError('Divergent canonical component: '+str(source))
+    # One maintainable implementation. Installer's self-contained copy is generated, never edited.
+    bootstrap=(SITE/'includes/bootstrap.php').read_text()
+    modules=['config/defaults.php']+list(MAP['core_modules'])+['includes/filesystem/uploads.php']
+    guard="<?php\ndeclare(strict_types=1);\nif (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); exit; }\n"
+    embedded=guard+"// GENERATED from canonical bootstrap modules by tools/build.py.\n"
+    for name in modules:
+        text=(SITE/name).read_text();text=re.sub(r'^<\?php\ndeclare\(strict_types=1\);\nif \(!defined\(\'CWP_BOOT\'\)\) \{ http_response_code\(404\); exit; \}\n','',text)
+        if text.startswith('<?php'):raise RuntimeError('Unexpected bootstrap module preamble: '+name)
+        embedded+='\n// '+name+'\n'+text
+    path=SITE/'install/bootstrap.generated.php'
+    if refresh:write(path,embedded)
+    elif not path.is_file() or path.read_text()!=embedded:raise RuntimeError('Generated installer bootstrap is stale')
+    inv=inventory();expected={n:h for n,h in inv.items() if n!='install/inventory.generated.php'}
+    body=guard+'function setup_expected_files(): array { return [\n'+''.join("    '"+n+"'=>'"+h+"',\n" for n,h in expected.items())+']; }\n'
+    path=SITE/'install/inventory.generated.php'
+    if refresh:write(path,body)
+    elif not path.is_file() or path.read_text()!=body:raise RuntimeError('Installer dependency hashes are stale')
+    return inventory()
+
+def archive(out,name,files,commit,version):
+    seen=set()
+    for n in files:
+        safe(n)
+        if n.casefold() in seen:raise RuntimeError('Duplicate or case-colliding ZIP member: '+n)
+        seen.add(n.casefold())
+    target=out/name
+    with zipfile.ZipFile(target,'w',compression=zipfile.ZIP_STORED) as z:
+        for n,data in sorted(files.items()):
+            i=zipfile.ZipInfo(n,date_time=(2026,10,13,0,0,0));i.create_system=3;i.external_attr=0o100644<<16;z.writestr(i,data)
+    with zipfile.ZipFile(target) as z:
+        if z.testzip() is not None or len(z.namelist())!=len(files):raise RuntimeError('ZIP verification failed')
+        for n,data in files.items():
+            if z.read(n)!=data:raise RuntimeError('ZIP bytes differ: '+n)
+    directories=sorted({str(parent)+'/' for n in files for parent in PurePosixPath(n).parents if str(parent)!='.'})
+    manifest={'version':version,'source_commit':commit,'artifact':name,'sha256':sha(target.read_bytes()),'directories':directories,'files':{n:sha(data) for n,data in sorted(files.items())}}
+    prefix=name.removesuffix('.zip')
+    write(out/(prefix+'.manifest.json'),json.dumps(manifest,indent=2)+'\n')
+    write(out/(prefix+'.directories.txt'),'\n'.join(directories)+'\n')
+    return manifest
+
+def main():
+    ap=argparse.ArgumentParser();ap.add_argument('--refresh',action='store_true');ap.add_argument('--commit');args=ap.parse_args()
+    inv=generated(args.refresh)
+    version=re.search(r"const CWP_VERSION = '([^']+)'",(SITE/'config/defaults.php').read_text()).group(1)
+    if "const CWP_INSTALLER_BUILD = '"+version+"'" not in (SITE/'install.php').read_text():raise RuntimeError('Installer version mismatch')
+    view=(SITE/'install/views/form.php').read_text()
+    if view.count('id="install-form"')!=1 or 'data-back=' in view or 'Unlock your installation.' in view:raise RuntimeError('One-page installation contract broken')
+    php=shutil.which('php8.3') or shutil.which('php')
+    for path in SITE.rglob('*.php'):
+        p=subprocess.run([php,'-l',str(path)],capture_output=True,text=True)
+        if p.returncode:raise RuntimeError(p.stdout+p.stderr)
+    for path in (SITE/'assets/js').glob('*.js'):subprocess.run(['node','--check',str(path)],check=True,capture_output=True)
+    script=(SITE/'install/views/script.php').read_text().split('?>\n',1)[1].replace('<?=json_encode($secure)?>','true')
+    if '<?' in script:raise RuntimeError('Unexpected installer JavaScript interpolation')
+    subprocess.run(['node','--check'],input=script,text=True,check=True,capture_output=True)
     if args.refresh:
-        s,n=re.subn(pattern,lambda _:body,s,count=1,flags=re.S)
-        if n!=1:raise RuntimeError('Installer inventory block not found exactly once')
-        install.write_text(s,encoding='utf-8',newline='\n');inv=inventory()
-    else:
-        actual=re.search(pattern,s,re.S)
-        if not actual or actual.group()!=body:raise RuntimeError('Installer hashes are stale; run build.py --refresh after changes')
-    version=re.search(r"const CWP_VERSION\s*=\s*'([^']+)'",(SITE/'app/core.php').read_text(encoding='utf-8')).group(1)
-    if f"const CWP_INSTALLER_BUILD = '{version}'" not in s or "const CWP_INSTALLER_LAYOUT = 'one-page'" not in s:raise RuntimeError('Version/layout mismatch')
-    for match in re.findall(r"(?:one-page-|ONE-PAGE INSTALLER Â· |BUILD |installer_build!==')[0-9]+\.[0-9]+\.[0-9]+",s):
-        if not match.endswith(version):raise RuntimeError('Stale installer label or browser response guard: '+match)
-    if 'Unlock your installation.' in s or 'data-back=' in s:raise RuntimeError('Legacy installer gate or wizard returned')
-    if s.count('id="install-form"')!=1:raise RuntimeError('Expected one visible installation form')
-    if args.commit!='local-uncommitted' and not args.refresh:
-        args.commit=subprocess.check_output(['git','rev-parse',args.commit+'^{commit}'],cwd=ROOT,text=True).strip()
-        tracked=subprocess.check_output(['git','ls-tree','-r','--name-only',args.commit,'--','site'],cwd=ROOT,text=True).splitlines()
-        if {name.removeprefix('site/') for name in tracked}!=set(inv):raise RuntimeError('Shipping inventory differs from recorded source commit')
-        for name,digest in inv.items():
-            data=subprocess.check_output(['git','show',args.commit+':site/'+name],cwd=ROOT)
-            if sha(data)!=digest:raise RuntimeError('Shipping bytes differ from recorded source commit: '+name)
-    php='php8.3' if __import__('shutil').which('php8.3') else 'php'
-    for path in SITE.rglob('*.php'):subprocess.run([php,'-l',str(path)],check=True,capture_output=True)
-    for path in SITE.rglob('*.js'):subprocess.run(['node','--check',str(path)],check=True,capture_output=True)
-    for idx,script in enumerate(re.findall(r'<script[^\n]*>\n(.*?)</script>',s,re.S)):
-        # Only a JSON boolean is interpolated; validate the known template explicitly.
-        script=script.replace('<?=json_encode($secure)?>','true')
-        if '<?' in script:raise RuntimeError('Unexpected PHP interpolation in embedded script')
-        check=ROOT/f'.installer-script-{idx}.js';check.write_text(script,encoding='utf-8',newline='\n')
-        try:subprocess.run(['node','--check',str(check)],check=True,capture_output=True)
-        finally:check.unlink()
+        print('Refreshed and checked canonical installer; no release built from uncommitted files.');return
+    if not args.commit:raise RuntimeError('A clean recorded --commit is required to build archives')
+    commit=subprocess.check_output(['git','rev-parse',args.commit+'^{commit}'],cwd=ROOT,text=True).strip()
+    if subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()!=commit:raise RuntimeError('Build checkout must be the recorded commit')
+    if subprocess.check_output(['git','status','--porcelain','--untracked-files=all'],cwd=ROOT,text=True).strip():raise RuntimeError('Release source must be clean, including untracked files')
+    tracked=subprocess.check_output(['git','ls-tree','-r','--name-only',commit],cwd=ROOT,text=True).splitlines()
+    if {n[5:] for n in tracked if n.startswith('site/')}!=set(inv):raise RuntimeError('Shipping inventory differs from source commit')
+    full={};allowed={'.github','docs','tests','tools','brand','foundation','site'}
+    for n in tracked:
+        safe(n);p=ROOT/n
+        if p.is_symlink():raise RuntimeError('Project contains symlink')
+        if '/' in n and n.split('/')[0] not in allowed:raise RuntimeError('Unapproved full-project area: '+n)
+        if p.name in {'config.php','proxy-config.php','.installed.php','payment-master.key'} or any(part in {'.git','node_modules','__pycache__','qa','dist','test-runtime'} for part in PurePosixPath(n).parts):raise RuntimeError('Unsanitized full-project source: '+n)
+        data=subprocess.check_output(['git','show',commit+':'+n],cwd=ROOT)
+        if p.read_bytes()!=data:raise RuntimeError('Working bytes differ from recorded source: '+n)
+        full[n]=data
+    site={n:(SITE/n).read_bytes() for n in inv}
+    payload={n:data for n,data in site.items() if n!='install.php' and not n.startswith(('install/','storage/','upload/'))}
+    shims={old:"<?php\n/** Upgrade compatibility: directly preserves method, query, body and cookies. */\ndeclare(strict_types=1);\nrequire __DIR__.'/"+new+"';\n" for old,new in MAP['routes'].items() if old not in {'robots.php','sitemap.php'}}
+    manifest={'version':version,'source_commit':commit,'files':{n:sha(data) for n,data in payload.items()},'shims':shims}
+    # JSON is encoded as a PHP string through base64, avoiding PHP string-escape ambiguities.
+    import base64
+    encoded=base64.b64encode(json.dumps(manifest).encode()).decode()
+    stage=f'cwp-update-{version}/'
+    update={stage+'site/'+n:data for n,data in payload.items()}
+    update[stage+'owner-update.php']=(ROOT/'tools/update/owner-update.php').read_bytes()
+    update[stage+'manifest.php']=("<?php\nif (!defined('CWP_BOOT')) { http_response_code(404); exit; }\nreturn json_decode(base64_decode('"+encoded+"'),true,64,JSON_THROW_ON_ERROR);\n").encode()
+    update[stage+'legacy-release-files.json']=(ROOT/'tools/legacy-release-files.json').read_bytes()
+    update[stage+'.htaccess']=b'Options -Indexes\nRequire all denied\n<Files "owner-update.php">\nRequire all granted\n</Files>\n'
     out=ROOT/'dist';out.mkdir(exist_ok=True)
-    manifest={'version':version,'source_commit':args.commit,'layout':'flat','files':inv,'fresh_install':'install.php','existing_install':'Back up first. Merge UPDATE files; sign into admin.php. From 1.0.8 use Version & database first. If needed, open Administrators to select the initial owner and enable account access. Owners enable Client support explicitly and allow each client under their support agreement. Owners enable Service catalog explicitly for approved prices and existing-project invoice snapshots. Owners enable Payment preparation explicitly. Credential storage requires a private path outside the web document root; production charging remains disabled. Owners may enable Sandbox trials separately for test-card attempts and verification; sandbox results never pay real invoices. Owners may add Sandbox notifications explicitly, then configure the HTTPS sandbox receiver; receipt is disabled by default and queued verification is manual. Owners may enable Invoice payments for external receipts, imported legacy paid balances and client statements; no card processing or refunds are enabled. Owners may enable Website deliveries for reviewed client ZIP releases; PHP ZIP and private storage outside the web root are required for uploads. See CLIENT_DELIVERIES.md for limits and supported scopes. Never rerun fresh setup.'}
-    (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8',newline='\n')
-    for kind in ['COMPLETE-UPLOAD','UPDATE']:
-        target=out/f'CajunWebPro-{version}-{kind}.zip'
-        with zipfile.ZipFile(target,'w',compression=zipfile.ZIP_STORED) as z:
-            for name in inv:
-                if kind=='UPDATE' and name=='install.php':continue
-                i=zipfile.ZipInfo(name,date_time=(2026,10,12,0,0,0));i.create_system=3;i.external_attr=0o100644<<16;i.compress_type=zipfile.ZIP_STORED
-                z.writestr(i,(SITE/name).read_bytes())
-        with zipfile.ZipFile(target) as z:
-            if z.testzip() is not None:raise RuntimeError('Archive CRC failure')
-            wanted=set(inv)-({'install.php'} if kind=='UPDATE' else set())
-            if len(z.namelist())!=len(wanted) or set(z.namelist())!=wanted:raise RuntimeError('Unexpected archive inventory')
-            for name in z.namelist():
-                if name.startswith('/') or '\\' in name or '..' in Path(name).parts:raise RuntimeError('Unsafe archive path')
-                if sha(z.read(name))!=inv[name]:raise RuntimeError('Packaged bytes mismatch: '+name)
-    files=[out/f'CajunWebPro-{version}-{kind}.zip' for kind in ['COMPLETE-UPLOAD','UPDATE']]+[out/'manifest.json']
-    (out/'SHA256SUMS.txt').write_text(''.join(f'{sha(p.read_bytes())}  {p.name}\n' for p in files),encoding='utf-8',newline='\n')
-    print(json.dumps({'version':version,'shipping_files':len(inv),'php_files':len(list(SITE.rglob('*.php'))),'zip_bytes':{p.name:p.stat().st_size for p in files if p.suffix=='.zip'}},indent=2))
+    reports=[archive(out,f'CajunWebPro-{version}-{kind}.zip',files,commit,version) for kind,files in [('FULL-PROJECT',full),('COMPLETE-UPLOAD',site),('UPDATE',update)]]
+    write(out/'manifest.json',json.dumps({'version':version,'source_commit':commit,'layout':'organized','files':inv,'artifacts':[{k:v for k,v in m.items() if k!='files'} for m in reports]},indent=2)+'\n')
+    (out/'START-HERE.txt').write_bytes((ROOT/'START-HERE.txt').read_bytes())
+    files=sorted([out/'manifest.json',out/'START-HERE.txt']+[out/m['artifact'] for m in reports]+[out/(m['artifact'].removesuffix('.zip')+ext) for m in reports for ext in ['.manifest.json','.directories.txt']])
+    write(out/'SHA256SUMS.txt',''.join(sha(p.read_bytes())+'  '+p.name+'\n' for p in files))
+    print(json.dumps({'version':version,'source_commit':commit,'shipping_files':len(inv),'artifacts':{m['artifact']:len(m['files']) for m in reports}},indent=2))
 if __name__=='__main__':main()

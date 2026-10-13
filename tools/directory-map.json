@@ -1,0 +1,269 @@
+{
+  "paths": {
+    "app/core.php": "includes/bootstrap.php",
+    "app/view.php": "includes/layout/public.php",
+    "app/admin-view.php": "includes/layout/admin.php",
+    "app/home.php": "pages/home/body.php",
+    "app/schema.php": "database/schema/base.php",
+    "app/mail.php": "app/mail/transport.php",
+    "app/workspace.php": "app/clients/workspace.php",
+    "app/growth.php": "app/marketing/growth.php",
+    "app/growth-pages.php": "pages/marketing/controller.php",
+    "app/portfolio.php": "app/portfolio/browse.php",
+    "app/staff.php": "app/staff/accounts.php",
+    "app/support.php": "app/support/sessions.php",
+    "app/catalog.php": "app/billing/catalog.php",
+    "app/catalog-view.php": "includes/layout/catalog.php",
+    "app/payments.php": "app/billing/payments.php",
+    "app/authorize.php": "app/billing/authorize.php",
+    "app/payment-attempts.php": "app/billing/attempts.php",
+    "app/payment-notifications.php": "app/billing/notifications.php",
+    "app/invoice-ledger.php": "app/billing/ledger.php",
+    "app/deliveries.php": "app/projects/deliveries.php",
+    "app/delivery-archive.php": "app/projects/archive.php",
+    "app/activity.php": "app/activity/events.php",
+    "app/studio-admin.php": "admin/controllers/studio.php",
+    "app/staff-admin.php": "admin/controllers/staff.php",
+    "app/support-admin.php": "admin/controllers/support.php",
+    "app/catalog-admin.php": "admin/controllers/catalog.php",
+    "app/payments-admin.php": "admin/controllers/payments.php",
+    "app/payment-trial-view.php": "admin/views/payment-trials.php",
+    "app/payment-notification-view.php": "admin/views/payment-notifications.php",
+    "app/invoice-ledger-view.php": "includes/layout/ledger.php",
+    "app/delivery-view.php": "includes/layout/deliveries.php",
+    "app/activity-view.php": "includes/layout/activity.php",
+    "admin.php": "admin/controllers/router.php",
+    "portal.php": "portal/controllers/router.php",
+    "index.php": "pages/controller.php",
+    "api.php": "api/handlers/inquiry.php",
+    "activity.php": "api/handlers/activity.php",
+    "media.php": "media/serve.php",
+    "sandbox-notifications.php": "webhooks/authorize-net/receive.php",
+    "robots.php": "api/handlers/robots.php",
+    "sitemap.php": "api/handlers/sitemap.php",
+    "app/foundation/access/AccessContext.php": "includes/foundation/access/AccessContext.php",
+    "app/foundation/access/AuthorizationVersion.php": "includes/foundation/access/AuthorizationVersion.php",
+    "app/foundation/access/MailboxGrant.php": "includes/foundation/access/MailboxGrant.php",
+    "app/foundation/access/PermissionPolicy.php": "includes/foundation/access/PermissionPolicy.php",
+    "app/foundation/invitations/IssuedInvitation.php": "includes/foundation/invitations/IssuedInvitation.php",
+    "app/foundation/invitations/StaffInvitationStore.php": "includes/foundation/invitations/StaffInvitationStore.php",
+    "app/foundation/portfolio/BeforeAfterPair.php": "includes/foundation/portfolio/BeforeAfterPair.php",
+    "app/foundation/portfolio/CaseStudy.php": "includes/foundation/portfolio/CaseStudy.php",
+    "app/foundation/portfolio/PortfolioCatalog.php": "includes/foundation/portfolio/PortfolioCatalog.php",
+    "app/foundation/portfolio/PortfolioItem.php": "includes/foundation/portfolio/PortfolioItem.php",
+    "app/foundation/portfolio/PortfolioMedia.php": "includes/foundation/portfolio/PortfolioMedia.php",
+    "app/foundation/portfolio/PortfolioQuery.php": "includes/foundation/portfolio/PortfolioQuery.php",
+    "assets/activity.js": "assets/js/activity.js",
+    "assets/admin.css": "assets/css/admin.css",
+    "assets/admin.js": "assets/js/admin.js",
+    "assets/bayou-detail.webp": "images/backgrounds/bayou-detail.webp",
+    "assets/bayou.webp": "images/backgrounds/bayou.webp",
+    "assets/emblem.png": "images/branding/emblem.png",
+    "assets/favicon.png": "images/icons/favicon.png",
+    "assets/growth.css": "assets/css/growth.css",
+    "assets/growth.js": "assets/js/growth.js",
+    "assets/hero-detail.webp": "images/backgrounds/hero-detail.webp",
+    "assets/hero.webp": "images/backgrounds/hero.webp",
+    "assets/logo.png": "images/branding/logo.png",
+    "assets/micrograin.png": "images/backgrounds/micrograin.png",
+    "assets/payment-trial.js": "assets/js/payment-trial.js",
+    "assets/premium.css": "assets/css/premium.css",
+    "assets/project-construction.webp": "images/portfolio/project-construction.webp",
+    "assets/project-placeholder.svg": "images/portfolio/project-placeholder.svg",
+    "assets/project-restaurant.webp": "images/portfolio/project-restaurant.webp",
+    "assets/project-wellness.webp": "images/portfolio/project-wellness.webp",
+    "assets/site.css": "assets/css/site.css",
+    "assets/site.js": "assets/js/site.js",
+    "assets/staff-setup.js": "assets/js/staff-setup.js"
+  },
+  "core_modules": {
+    "includes/security/input.php": [
+      "esc",
+      "posted",
+      "safe_url",
+      "slugify",
+      "validate_password",
+      "format_date"
+    ],
+    "includes/security/http.php": [
+      "https_request",
+      "local_request",
+      "security_headers",
+      "nonce",
+      "redirect",
+      "fail_page"
+    ],
+    "includes/security/csrf.php": [
+      "csrf",
+      "csrf_field",
+      "check_csrf"
+    ],
+    "includes/security/crypto.php": [
+      "encrypt_secret",
+      "decrypt_secret"
+    ],
+    "includes/security/rate-limits.php": [
+      "ip_key",
+      "consume_rate"
+    ],
+    "includes/auth/session.php": [
+      "start_session",
+      "flash",
+      "show_flash"
+    ],
+    "includes/auth/admin.php": [
+      "admin_user",
+      "require_admin",
+      "login_user"
+    ],
+    "includes/database.php": [
+      "db",
+      "table",
+      "query",
+      "all",
+      "one"
+    ],
+    "app/settings/store.php": [
+      "setting",
+      "save_setting",
+      "log_event",
+      "report_error"
+    ],
+    "includes/urls.php": [
+      "base_path",
+      "config",
+      "site_url",
+      "page_url",
+      "admin_url",
+      "asset"
+    ],
+    "includes/filesystem/private.php": [
+      "write_private_file",
+      "writable_probe"
+    ],
+    "includes/filesystem/setup.php": [
+      "acquire_installation_mutex",
+      "cleanup_installer_files"
+    ],
+    "app/media/images.php": [
+      "image_url",
+      "upload_image"
+    ],
+    "includes/runtime.php": [
+      "boot"
+    ]
+  },
+  "public_entries": {
+    "index.php": "pages/controller.php",
+    "admin/index.php": "admin/controllers/router.php",
+    "portal/index.php": "portal/controllers/router.php",
+    "api/index.php": "api/handlers/inquiry.php",
+    "api/activity.php": "api/handlers/activity.php",
+    "api/robots.php": "api/handlers/robots.php",
+    "api/sitemap.php": "api/handlers/sitemap.php",
+    "media/index.php": "media/serve.php",
+    "webhooks/authorize-net/index.php": "webhooks/authorize-net/receive.php"
+  },
+  "workspace_modules": {
+    "database/schema/workspace.php": [
+      "studio_schema"
+    ],
+    "database/migrations/workspace.php": [
+      "studio_migrate",
+      "studio_schema_compatible"
+    ],
+    "app/clients/identity.php": [
+      "studio_client",
+      "studio_new_invite",
+      "studio_activate",
+      "studio_login"
+    ],
+    "app/projects/reviews.php": [
+      "studio_job",
+      "studio_decide",
+      "studio_publish"
+    ],
+    "app/clients/files.php": [
+      "studio_upload",
+      "studio_download"
+    ]
+  },
+  "routes": {
+    "admin.php": "admin/index.php",
+    "portal.php": "portal/index.php",
+    "api.php": "api/index.php",
+    "media.php": "media/index.php",
+    "activity.php": "api/activity.php",
+    "sandbox-notifications.php": "webhooks/authorize-net/index.php",
+    "robots.php": "api/robots.php",
+    "sitemap.php": "api/sitemap.php"
+  },
+  "setup_files": [
+    "install/bootstrap.generated.php",
+    "install/inventory.generated.php",
+    "install/actions/package.php",
+    "install/actions/storage.php",
+    "install/actions/checks.php",
+    "install/actions/cleanup.php",
+    "install/actions/deploy.php",
+    "install/controller.php",
+    "install/views/form.php",
+    "install/views/styles.php",
+    "install/views/script.php"
+  ],
+  "protected_directories": [
+    "includes",
+    "app",
+    "pages",
+    "database",
+    "config",
+    "install",
+    "storage",
+    "upload",
+    "admin/controllers",
+    "admin/views",
+    "portal/controllers",
+    "portal/views",
+    "api/handlers"
+  ],
+  "schema_modules": {
+    "app/staff/accounts.php": [
+      "database/migrations/staff_migrate.php",
+      "database/schema/staff_validate_schema.php",
+      "database/schema/staff_schema.php"
+    ],
+    "app/support/sessions.php": [
+      "database/migrations/support_migrate.php",
+      "database/schema/support_schema.php"
+    ],
+    "app/billing/catalog.php": [
+      "database/migrations/catalog_migrate.php",
+      "database/schema/catalog_validate_schema.php",
+      "database/schema/catalog_schema.php"
+    ],
+    "app/billing/payments.php": [
+      "database/migrations/payments_migrate.php",
+      "database/schema/payments_schema.php"
+    ],
+    "app/billing/attempts.php": [
+      "database/migrations/attempts_migrate.php",
+      "database/schema/attempts_schema.php"
+    ],
+    "app/billing/notifications.php": [
+      "database/migrations/notifications_migrate.php",
+      "database/schema/notifications_schema.php"
+    ],
+    "app/billing/ledger.php": [
+      "database/migrations/ledger_migrate.php",
+      "database/schema/ledger_schema.php"
+    ],
+    "app/projects/deliveries.php": [
+      "database/migrations/delivery_migrate.php",
+      "database/schema/delivery_schema.php"
+    ],
+    "app/activity/events.php": [
+      "database/migrations/activity_migrate.php",
+      "database/schema/activity_schema.php"
+    ]
+  }
+}

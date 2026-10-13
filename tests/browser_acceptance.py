@@ -35,7 +35,7 @@ def submit(s,url,action,overrides=None,files=None):
     r=s.get(url,timeout=15);f=form_for(r,action);data=form_data(f);data.update(overrides or {})
     return s.post(urljoin(url,f.get('action') or url),data=data,files=files,timeout=25)
 def login(email,password,portal=False):
-    s=requests.Session();url=BASE+'/existing/'+('portal.php' if portal else 'admin.php?view=login')
+    s=requests.Session();url=BASE+'/existing/'+('portal/index.php' if portal else 'admin/index.php?view=login')
     r=submit(s,url,'login',{'email':email,'password':password})
     check('HTTP '+('client' if portal else 'admin')+' login '+email, r.status_code==200 and ('Welcome, ' in r.text if portal else 'Sales pipeline' in r.text))
     return s
@@ -57,7 +57,7 @@ try:
     routes=['','index.php?page=services','index.php?page=work','index.php?page=work&cat=Construction','index.php?page=about','index.php?page=process','index.php?page=contact','index.php?page=why-custom','index.php?page=compare-wix','index.php?page=compare-squarespace','index.php?page=switch','index.php?page=packages','index.php?page=faq','index.php?page=industries','index.php?page=estimate','index.php?page=website-review','index.php?page=consultation']
     for path in routes:
         r=requests.get(BASE+'/existing/'+path,timeout=15);check('Public route '+(path or 'home'),r.status_code==200 and 'CajunWebPro' in r.text and 'We could not complete this request' not in r.text)
-    for path in ['assets/favicon.png','favicon.ico','assets/growth.css','assets/growth.js','assets/logo.png']:
+    for path in ['images/icons/favicon.png','favicon.ico','assets/css/growth.css','assets/js/growth.js','images/branding/logo.png']:
         r=requests.get(BASE+'/existing/'+path,timeout=15);check('Asset bytes '+path,r.status_code==200 and hashlib.sha256(r.content).digest()==hashlib.sha256((ROOT/'site'/path).read_bytes()).digest())
     r=requests.get(BASE+'/existing/install.php');check('Installed-site guard blocks setup',r.status_code==403)
     doc=soup(requests.get(BASE+'/existing/index.php?page=work&cat=Construction',timeout=15))
@@ -75,39 +75,39 @@ try:
     again=s.post(BASE+'/existing/index.php?page=estimate',data=data,headers={'Accept':'application/json'});check('HTTP duplicate has same saved reference',again.status_code==200 and again.json()['result']['reference']==ref)
     data['csrf']='wrong';r=s.post(BASE+'/existing/index.php?page=estimate',data=data,headers={'Accept':'application/json'});check('HTTP bad CSRF is rejected',r.status_code==422 and not r.json()['ok'])
     admin=login('owner@example.invalid','Synthetic owner passphrase 2026')
-    for label,url,session in [('Public','/existing/',requests),('Admin','/existing/admin.php',admin),('Client','/existing/portal.php',requests),('Installer','/fresh/install.php',requests)]:
+    for label,url,session in [('Public','/existing/',requests),('Admin','/existing/admin/index.php',admin),('Client','/existing/portal/index.php',requests),('Installer','/fresh/install.php',requests)]:
         head=soup(session.get(BASE+url));icons=head.select('link[rel=icon]')
-        check(label+' head references original favicon',bool(icons) and all(urlparse(urljoin(BASE+url,n['href'])).path.endswith('/assets/favicon.png') and session.get(urljoin(BASE+url,n['href'])).content==(ROOT/'site/assets/favicon.png').read_bytes() for n in icons))
+        check(label+' head references original favicon',bool(icons) and all(urlparse(urljoin(BASE+url,n['href'])).path.endswith('/images/icons/favicon.png') and session.get(urljoin(BASE+url,n['href'])).content==(ROOT/'site/images/icons/favicon.png').read_bytes() for n in icons))
     for view in ['studio-clients','studio-job&id=1','studio-pipeline','studio-content','studio-prices','studio-history','studio-portfolio','studio-upgrade','lead&id=1']:
-        r=admin.get(BASE+'/existing/admin.php?view='+view);check('Admin route '+view,r.status_code==200 and 'We could not complete this request' not in r.text and 'This request could not complete' not in r.text)
-    r=submit(admin,BASE+'/existing/admin.php?view=studio-clients','studio_client',{'name':'HTTP client','email':'newclient@example.invalid'});check('Admin client create persists',r.status_code==200 and 'newclient@example.invalid' in r.text)
-    r=submit(admin,BASE+'/existing/admin.php?view=studio-job&id=1','studio_message',{'body':'A message recorded through HTTP.'});check('Staff message persists',r.status_code==200 and 'A message recorded through HTTP.' in r.text)
-    r=submit(admin,BASE+'/existing/admin.php?view=studio-job&id=1','studio_publish',{'kind':'design','title':'HTTP review version','body':'Review the precise version in this test.','preview_url':'https://example.org/preview'});check('Published review appears in admin',r.status_code==200 and 'HTTP review version' in r.text)
+        r=admin.get(BASE+'/existing/admin/index.php?view='+view);check('Admin route '+view,r.status_code==200 and 'We could not complete this request' not in r.text and 'This request could not complete' not in r.text)
+    r=submit(admin,BASE+'/existing/admin/index.php?view=studio-clients','studio_client',{'name':'HTTP client','email':'newclient@example.invalid'});check('Admin client create persists',r.status_code==200 and 'newclient@example.invalid' in r.text)
+    r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_message',{'body':'A message recorded through HTTP.'});check('Staff message persists',r.status_code==200 and 'A message recorded through HTTP.' in r.text)
+    r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_publish',{'kind':'design','title':'HTTP review version','body':'Review the precise version in this test.','preview_url':'https://example.org/preview'});check('Published review appears in admin',r.status_code==200 and 'HTTP review version' in r.text)
     alice=login('alice@example.invalid','Synthetic client passphrase 2026',True);bob=login('bob@example.invalid','Synthetic client passphrase 2026',True)
-    r=alice.get(BASE+'/existing/portal.php?job=2');check('Other client project is not accessible',r.status_code==404 and 'Private project 2' not in r.text)
-    r=alice.get(BASE+'/existing/portal.php?job=1');f=form_for(r,'decision');decision=form_data(f);decision.update({'choice':'approved','feedback':'Approved in HTTP test','confirm':'1'})
-    r=alice.post(BASE+'/existing/portal.php?job=1',data=decision);check('Client approval persists',r.status_code==200 and 'Approved in HTTP test' in r.text)
-    r=alice.post(BASE+'/existing/portal.php?job=1',data=decision);check('HTTP duplicate approval rejected','already decided or has been superseded' in r.text)
-    with open(ROOT/'site/assets/favicon.png','rb') as f:r=submit(alice,BASE+'/existing/portal.php?job=1','upload',files={'document':('client-capture.png',f,'image/png')})
-    links=[a['href'] for a in soup(r).select('a[href]') if 'portal.php?file=' in a['href']];check('Private upload saved',bool(links));fileurl=links[0]
-    r=alice.get(fileurl);check('Owner downloads identical private file',r.status_code==200 and r.content==(ROOT/'site/assets/favicon.png').read_bytes() and r.headers.get('Content-Disposition','').startswith('attachment'))
+    r=alice.get(BASE+'/existing/portal/index.php?job=2');check('Other client project is not accessible',r.status_code==404 and 'Private project 2' not in r.text)
+    r=alice.get(BASE+'/existing/portal/index.php?job=1');f=form_for(r,'decision');decision=form_data(f);decision.update({'choice':'approved','feedback':'Approved in HTTP test','confirm':'1'})
+    r=alice.post(BASE+'/existing/portal/index.php?job=1',data=decision);check('Client approval persists',r.status_code==200 and 'Approved in HTTP test' in r.text)
+    r=alice.post(BASE+'/existing/portal/index.php?job=1',data=decision);check('HTTP duplicate approval rejected','already decided or has been superseded' in r.text)
+    with open(ROOT/'site/images/icons/favicon.png','rb') as f:r=submit(alice,BASE+'/existing/portal/index.php?job=1','upload',files={'document':('client-capture.png',f,'image/png')})
+    links=[a['href'] for a in soup(r).select('a[href]') if 'portal/index.php?file=' in a['href']];check('Private upload saved',bool(links));fileurl=links[0]
+    r=alice.get(fileurl);check('Owner downloads identical private file',r.status_code==200 and r.content==(ROOT/'site/images/icons/favicon.png').read_bytes() and r.headers.get('Content-Disposition','').startswith('attachment'))
     r=bob.get(fileurl);check('Another client cannot download private file',r.status_code==404)
     r=requests.get(fileurl);check('Anonymous private-file request denied',r.status_code==403)
-    r=submit(admin,BASE+'/existing/admin.php?view=studio-job&id=1','studio_invoice',{'title':'HTTP manual invoice','amount':'125.00','instructions':'Synthetic manual payment instructions; do not send money.'});check('Manual invoice created',r.status_code==200 and 'HTTP manual invoice' in r.text and '$125.00' in r.text)
-    r=alice.get(BASE+'/existing/portal.php?job=1');check('Client sees own invoice','HTTP manual invoice' in r.text)
-    r=bob.get(BASE+'/existing/portal.php?job=2');check('Other client does not see invoice','HTTP manual invoice' not in r.text)
-    with open(ROOT/'site/assets/favicon.png','rb') as f:r=submit(admin,BASE+'/existing/admin.php?view=studio-portfolio','studio_media',files={'image':('public-capture.png',f,'image/png')})
+    r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_invoice',{'title':'HTTP manual invoice','amount':'125.00','instructions':'Synthetic manual payment instructions; do not send money.'});check('Manual invoice created',r.status_code==200 and 'HTTP manual invoice' in r.text and '$125.00' in r.text)
+    r=alice.get(BASE+'/existing/portal/index.php?job=1');check('Client sees own invoice','HTTP manual invoice' in r.text)
+    r=bob.get(BASE+'/existing/portal/index.php?job=2');check('Other client does not see invoice','HTTP manual invoice' not in r.text)
+    with open(ROOT/'site/images/icons/favicon.png','rb') as f:r=submit(admin,BASE+'/existing/admin/index.php?view=studio-portfolio','studio_media',files={'image':('public-capture.png',f,'image/png')})
     check('Real GD image upload returns successfully',r.status_code==200 and 'Saved.' in r.text and 'could not' not in r.text.lower())
     # Negative real HTTP cases: authorization must prevent writes and disclosures.
-    r=bob.get(BASE+'/existing/portal.php?job=2');bad={'csrf':token(r),'action':'message','body':'Cross-client write must fail.'}
-    r=bob.post(BASE+'/existing/portal.php?job=1',data=bad);check('Cross-client message POST denied',r.status_code==404)
-    r=alice.get(BASE+'/existing/portal.php?job=1');check('Cross-client message not saved','Cross-client write must fail.' not in r.text)
-    r=alice.post(BASE+'/existing/portal.php?job=1',data={'csrf':'invalid','action':'message','body':'CSRF write must fail.'});check('Portal CSRF rejected','session expired' in r.text.lower())
-    r=alice.get(BASE+'/existing/portal.php?job=1');check('CSRF message not saved','CSRF write must fail.' not in r.text)
+    r=bob.get(BASE+'/existing/portal/index.php?job=2');bad={'csrf':token(r),'action':'message','body':'Cross-client write must fail.'}
+    r=bob.post(BASE+'/existing/portal/index.php?job=1',data=bad);check('Cross-client message POST denied',r.status_code==404)
+    r=alice.get(BASE+'/existing/portal/index.php?job=1');check('Cross-client message not saved','Cross-client write must fail.' not in r.text)
+    r=alice.post(BASE+'/existing/portal/index.php?job=1',data={'csrf':'invalid','action':'message','body':'CSRF write must fail.'});check('Portal CSRF rejected','session expired' in r.text.lower())
+    r=alice.get(BASE+'/existing/portal/index.php?job=1');check('CSRF message not saved','CSRF write must fail.' not in r.text)
     f=form_for(r,'upload');bad=form_data(f)
-    r=alice.post(BASE+'/existing/portal.php?job=1',data=bad,files={'document':('blocked.php',b'<?php echo 123; ?>','image/png')});check('Disguised executable upload rejected','Only PDF, PNG and JPEG' in r.text)
-    r=requests.get(BASE+'/existing/admin.php?view=studio-clients',allow_redirects=False);check('Anonymous admin workspace redirected to login',r.status_code==303 and 'login' in r.headers.get('Location',''))
-    r=bob.get(BASE+'/existing/admin.php?view=studio-clients',allow_redirects=False);check('Client session does not grant admin access',r.status_code==303 and 'login' in r.headers.get('Location',''))
+    r=alice.post(BASE+'/existing/portal/index.php?job=1',data=bad,files={'document':('blocked.php',b'<?php echo 123; ?>','image/png')});check('Disguised executable upload rejected','Only PDF, PNG and JPEG' in r.text)
+    r=requests.get(BASE+'/existing/admin/index.php?view=studio-clients',allow_redirects=False);check('Anonymous admin workspace redirected to login',r.status_code==303 and 'login' in r.headers.get('Location',''))
+    r=bob.get(BASE+'/existing/admin/index.php?view=studio-clients',allow_redirects=False);check('Client session does not grant admin access',r.status_code==303 and 'login' in r.headers.get('Location',''))
     from release_cases import installer_failures
     installer_failures(globals())
     # Fresh installation is a real combined POST using native PDO MySQL and GD.
@@ -140,10 +140,10 @@ try:
         page.locator('.filters a[data-filter="Construction"]').click()
         check('Browser filter link updates URL and grid','cat=Construction' in page.url and page.locator('.project-card:not([hidden])').count()==1)
         page.go_back();expect(page.locator('.project-card:not([hidden])')).to_have_count(3);check('Browser back restores full portfolio',page.locator('.project-card:not([hidden])').count()==3)
-        page.goto(BASE+'/existing/portal.php');page.locator('[name=email]').fill('alice@example.invalid');page.locator('[name=password]').fill('Synthetic client passphrase 2026');page.locator('button[type=submit],form button').first.click();page.wait_for_url('**/portal.php');page.goto(BASE+'/existing/portal.php?job=1');page.screenshot(path=str(QA/'Client-Workspace-Desktop.png'),full_page=True)
+        page.goto(BASE+'/existing/portal/index.php');page.locator('[name=email]').fill('alice@example.invalid');page.locator('[name=password]').fill('Synthetic client passphrase 2026');page.locator('button[type=submit],form button').first.click();page.wait_for_url('**/portal/index.php');page.goto(BASE+'/existing/portal/index.php?job=1');page.screenshot(path=str(QA/'Client-Workspace-Desktop.png'),full_page=True)
         check('Browser private project renders','HTTP manual invoice' in page.content());check('No uncaught browser errors',not errors)
-        with page.expect_download() as download:page.locator('a[href*="portal.php?file="]').first.click()
-        check('Browser authorized download matches stored file',Path(download.value.path()).read_bytes()==(ROOT/'site/assets/favicon.png').read_bytes())
+        with page.expect_download() as download:page.locator('a[href*="portal/index.php?file="]').first.click()
+        check('Browser authorized download matches stored file',Path(download.value.path()).read_bytes()==(ROOT/'site/images/icons/favicon.png').read_bytes())
         page.get_by_role('button',name='Sign out').click();expect(page.locator('[name=email]')).to_be_visible();check('Browser client logout clears access',True)
         run_browser(globals(),browser,release_fixture)
         from staff_cases import run_browser as staff_browser

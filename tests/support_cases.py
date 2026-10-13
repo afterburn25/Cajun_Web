@@ -15,8 +15,10 @@ def run_upgrade():
     tables=['users','settings','staff_profiles','staff_invitations','studio_clients','studio_jobs','leads','projects']
     before={t:db('SELECT * FROM supportup_'+t) for t in tables}
     with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(dest)
+    from structure_helpers import apply_file_update
+    apply_file_update(globals(),dest)
     check('Actual 1.2.0 update preserves configuration locks private media and unrelated files',all(p.read_bytes()==v for p,v in preserved.items()))
-    up=requests.Session();root=BASE+'/support-upgrade/admin.php'
+    up=requests.Session();root=BASE+'/support-upgrade/admin/index.php'
     r=submit(up,root+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
     check('Actual 1.2.0 owner signs in before support migration','Sales pipeline' in r.text)
     r=submit(up,root+'?view=support','support_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})
@@ -28,7 +30,7 @@ def run_upgrade():
     users=db('SELECT * FROM supportup_users')
     check('Actual 1.2.0 retains passwords and auth versions',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(users,before['users'])))
     check('Actual 1.2.0 has no implicit client support grants',not db('SELECT * FROM supportup_support_clients'))
-    check('Actual 1.2.0 installed guard still blocks fresh setup',requests.get(BASE+'/support-upgrade/install.php').status_code==403)
+    check('Actual 1.2.0 installed guard still blocks fresh setup',requests.get(BASE+'/support-upgrade/install.php').status_code==404)
 
 def start(session,client):
     r=chosen_form(session,ADMIN+'?view=support','support_start','client_id',client,{})
@@ -45,7 +47,7 @@ def end(session,sid):
 def run_http(env):
     globals().update({k:env[k] for k in ['ROOT','WEB','BASE','QA','check','soup','token','form_data','form_for','submit','php','admin','bob']})
     global ADMIN, PORTAL
-    ADMIN=BASE+'/existing/admin.php';PORTAL=BASE+'/existing/portal.php'
+    ADMIN=BASE+'/existing/admin/index.php';PORTAL=BASE+'/existing/portal/index.php'
     db('DELETE FROM ci_rate_limits');run_upgrade()
     check('Fresh installation includes support tables but no automatic client access',db("SELECT value FROM fresh_settings WHERE name='support_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_support_clients'))
     r=submit(admin,ADMIN+'?view=support','support_migrate',{'owner_password':'wrong','confirm':'1'})
@@ -84,7 +86,7 @@ def run_http(env):
     submit(admin,portal(sid,job=1),'message',{'body':'HTTP attributed support update'})
     m=db('SELECT author_type,author_id FROM ci_studio_messages WHERE body=?',['HTTP attributed support update'])[0]
     check('HTTP support message is attributed to real staff',m=={'author_type':'admin','author_id':1})
-    png=(ROOT/'site/assets/favicon.png').read_bytes()
+    png=(ROOT/'site/images/icons/favicon.png').read_bytes()
     submit(admin,portal(sid,job=1),'upload',files={'document':('support-upload.png',png,'image/png')})
     file=db('SELECT id,author_type FROM ci_studio_files WHERE original_name=?',['support-upload.png'])[0]
     check('HTTP support upload retains staff author',file['author_type']=='admin')
@@ -136,7 +138,7 @@ def run_browser(env,browser):
     run_http(env)
     owner=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce');p=owner.new_page();errors=[]
     p.on('pageerror',lambda e:errors.append(str(e)))
-    p.goto(ADMIN+'?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill(OWNER);p.locator('form button').click();p.wait_for_url('**/admin.php?view=dashboard')
+    p.goto(ADMIN+'?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill(OWNER);p.locator('form button').click();p.wait_for_url('**/admin/index.php?view=dashboard')
     p.goto(ADMIN+'?view=support');p.screenshot(path=str(QA/'Client-Support-Desktop.png'),full_page=True)
     check('Support admin desktop fits',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
     p.set_viewport_size({'width':320,'height':800});p.screenshot(path=str(QA/'Client-Support-Narrow.png'),full_page=True)
@@ -151,7 +153,7 @@ def run_browser(env,browser):
     check('Browser support message preserves real staff author',db('SELECT author_type,author_id FROM ci_studio_messages WHERE body=?',['Browser staff support message'])==[{'author_type':'admin','author_id':1}])
     p.set_viewport_size({'width':1440,'height':1000});p.screenshot(path=str(QA/'Support-Portal-Desktop.png'),full_page=True)
     p.evaluate('window.scrollTo(0, document.body.scrollHeight)');check('Support banner remains visible while scrolling',p.locator('[aria-label="Support session"]').bounding_box()['y']>=0)
-    p.get_by_role('button',name='Return to admin').click();p.wait_for_url('**/admin.php?view=support')
+    p.get_by_role('button',name='Return to admin').click();p.wait_for_url('**/admin/index.php?view=support')
     check('Browser return ends support session',db('SELECT end_reason FROM ci_support_sessions WHERE id=?',[sid])[0]['end_reason']=='returned-to-admin')
     check('Support browser has no uncaught page errors',not errors)
     (QA/'support-browser-diagnostics.json').write_text(json.dumps({'page_errors':errors},indent=2));owner.close()
