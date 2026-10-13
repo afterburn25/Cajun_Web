@@ -12,7 +12,7 @@ Inspection found the current application already has `growth_estimate`, admin `g
 
 ## Portfolio, second integration
 
-After estimator checks and merge, Codex owns a separate `codex/integrate-portfolio` branch. Reviewed target is Devin PR #7 at `c8821f8a515e2e28d55443f1f7608d5b01ee2875` (new application adapter received during review). Preserve original branch/history. Own its portfolio component, application adapter, public work/detail routes, narrowly scoped view/CSS/JavaScript changes, build inventory and acceptance tests. Preserve current activity header and v1.10.0 schema/business modules.
+After estimator checks and merge, Codex owns a separate `codex/portfolio-browsing` branch. Reviewed target is Devin PR #7 at `016a4057a3a17b62b2edcf583252f52cb9ff06a2`, including adapter `c8821f8` and its subsequent 1.10.0 refresh. Estimator PR #29 passed combined acceptance and merged at `39de8ff50ea245928a1f6528f10057afcf55e5b7`; its later no-code refresh `65c2084` is also preserved. An older unused local branch already had the planned integration name; the distinct branch avoids replacing it. Preserve original branch/history. Own its portfolio component, application adapter, public work/detail routes, narrowly scoped view/CSS/JavaScript changes, build inventory and acceptance tests. Preserve current activity header and v1.10.0 schema/business modules.
 
 Existing projects have unique slugs, explicit published status, `is_demo`, one category, sort order and private media references. Existing case-study rendering and device/before-after controls remain. No invented projects/results, schema migration or new admin subsystem.
 

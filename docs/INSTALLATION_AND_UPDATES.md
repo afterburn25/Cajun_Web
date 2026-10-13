@@ -1,5 +1,9 @@
 # Installation, packaging and updates
 
+## Candidate 1.11.0 update
+
+Portfolio browsing adds no database schema or setup step. Back up files/database/private storage, merge the exact UPDATE, and retain configuration/locks. Candidate COMPLETE has 80 flat files / 55 PHP files; UPDATE has 79 and omits install.php. Never rerun fresh setup. Current 1.10.0 activity read state and all other module setup choices remain intact. New installs still use the one-page keyless installer. Release/retained-update acceptance pending; [guide](PORTFOLIO_BROWSING.md).
+
 ## 2026-10-13 — Verified 1.10.0 workspace activity increment
 
 Separate client/staff activity centers and private workspace bells are delivered in [v1.10.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0) / `4649a913d40166b9874f9550e57b4186edfc43ab`. Additive per-person read state projects retained sources without changing business writes. Exact links, bounded mark-visible actions, history, current authorization and passive idle expiry pass 603 native / 630 HTTP/Chromium checks including actual 1.9.0 UPDATE. Full P-07 remains partial; SMTP dispatch/preferences/stage/hosting/ticket/renewal events and A-06–A-08 multi-account webmail/templates/email bells remain pending. [Guide](WORKSPACE_ACTIVITY.md) · [report](TEST_REPORT_1.10.0.md).
