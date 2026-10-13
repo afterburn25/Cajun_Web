@@ -1,12 +1,12 @@
 # Changelog
 
-## 1.9.0 candidate — client website downloads
+## 1.9.0 — client website downloads
 
 - Private staff uploads, immutable manifests and owner-reviewed publication of versioned client ZIPs.
 - Client/project history, notes, package scope, SHA-256 checksums and authenticated resumable downloads; strict ownership and support attribution.
 - Bounded archive inspection without extraction/execution; reject unsafe paths, links, credentials, encrypted/nested archives and databases. Outside-web-root guarded storage with project/site quotas.
 - Additive setup and retained 1.8.0 upgrade coverage preserve the existing portal, payment ledger and credentials.
-- Acceptance/publication pending. Automated packaging, database transfer, larger jobs and full P-06 remain incomplete.
+- Published/download-verified at `080f14aea8fe5c35e04e4eba62976609aef7cd67`; 539 native / 569 HTTP/Chromium checks pass. Automated packaging, database transfer, larger jobs and full P-06 remain incomplete.
 
 ## 1.8.0 — invoice payments and client receipts
 

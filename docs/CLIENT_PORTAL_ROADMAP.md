@@ -1,6 +1,8 @@
 # Unified client portal: hosting, design projects, updates and website downloads
 
-**P-06 continuation, 2026-10-13:** 1.9.0 candidate adds prepared, reviewed, versioned client ZIP delivery with private history/downloads. [Delivery guide](CLIENT_DELIVERIES.md). Full P-06 remains partial: automatic build packaging, databases, larger jobs and restore orchestration are deferred. Candidate acceptance/publication pending. Actual merchant acceptance still gates production card checkout.
+## 2026-10-13 — Verified 1.9.0 client ZIP delivery increment
+
+Prepared, reviewed and versioned client ZIP handover is delivered in [v1.9.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.9.0) / `080f14aea8fe5c35e04e4eba62976609aef7cd67`. Guarded private storage, immutable manifests, owner publication, client history and authenticated resumable downloads preserve previous records through actual 1.8.0 UPDATE acceptance. 539 native / 569 HTTP/Chromium checks pass. Full P-06 remains partial: generated builds, database handover, larger jobs, dynamic restore and notifications remain pending. Actual merchant acceptance/card checkout and broader 20i/mail/SSH remain pending. [Guide](CLIENT_DELIVERIES.md) · [report](TEST_REPORT_1.9.0.md).
 
 ## 2026-10-13 — Verified 1.8.0 invoice payment increment
 
@@ -69,6 +71,8 @@ Admin can publish an update, request feedback/content, attach an authorized file
 **Acceptance:** Follow one design-only client and one combined design/hosting client through scope approval, content upload, design review/revision, milestone updates/payment and final delivery. Verify chronological history, correct version approvals, notification links, staff-note privacy and cross-client/file isolation. Failure to send a notice must not lose the saved project update.
 
 ## P-06 — Versioned website ZIP delivery and client downloads
+
+**Partial delivery in 1.9.0:** prepared ZIP upload/review/publication, immutable versions/manifests, private client history and resumable downloads are verified. Representative static-site extraction/opening is tested. Automatic builds, databases/dynamic restore, larger jobs and retention/notification workflows below remain pending. [Implemented scope and limits](CLIENT_DELIVERIES.md).
 
 Provide Files & Downloads inside each project and a portal-wide authorized list. Clients can download the latest published website ZIP and retained earlier releases with a clear version, release date, notes, archive size, checksum and contents/scope description. Admin uploads an approved archive or generates one from that client's verified source/build, links its source revision where available, previews its manifest and explicitly publishes it. Record who published/downloaded it and keep artifact versions immutable.
 
