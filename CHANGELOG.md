@@ -131,3 +131,5 @@ No application source/asset import, feature implementation, host repair, databas
 ## Pre-repository baseline — supplied 1.0.8 distribution
 
 `CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip` is the latest recoverable complete artifact identified in the conversation. It contains the PHP application and one-page installer source. It is not a Git release/tag created by the bootstrap, and its live deployment is unverified. See `docs/BASELINE_INVENTORY.md` and `PROJECT_STATUS.md`.
+
+- 1.1.0 acceptance follow-up: mobile consent text wraps as one paragraph; expanded browser installer/contact checks and retained runtime diagnostics.

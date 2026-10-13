@@ -284,7 +284,7 @@ function setup_expected_files(): array { return [
         'app/.htaccess' => 'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
         'app/admin-view.php' => 'e1f86ed283eb86e5b39c0186c7b9de4de71a3b18e069d69407b93929f0f0dd5c',
         'app/core.php' => 'f8dc640a843d6e87738bfa783f333b4aa728915122a357ae08c1cb4255c27db1',
-        'app/growth-pages.php' => '10faeff6cccb93c7e7fd6a1d7fce01c54673fab1dba14fd6e94f1aee17c509a2',
+        'app/growth-pages.php' => '4d1b462422d990644503b2a435de8cf6414b55ef3c82ed777c91e5f86e4aedba',
         'app/growth.php' => '9d83c5e45ef6a9eb53e0448eacf830a188c02093da252fd5f07f977e6fbfef35',
         'app/home.php' => '884af04ad7d0b584af6db50a87df30af9327c6cabbae5fd752da28e3da53d243',
         'app/index.php' => '696138b31bbb2a20c4bb53eb98b68dbe25557947dd6a7513c81e1c8b9446ce0d',

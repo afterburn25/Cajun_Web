@@ -192,3 +192,7 @@ Next: run native MariaDB and real HTTP/Chromium acceptance on the reconciled can
 
 
 **Release documentation and browser continuation:** parent 7f8a6af. Actual browser forms now submit and persist; remaining run stopped on a test locator expecting Sign in without the displayed arrow. Corrected the locator and added browser protected-download/logout verification. Updated source layout, installation versus 1.0.8 upgrade, current roadmap/ownership/release status and official competitor reference review. No published release yet; run final combined acceptance before merging. Commit: docs: reconcile release instructions and browser acceptance.
+
+### 2026-10-13 — Final browser acceptance coverage
+
+Parent `f007803`; request remains finish and publish 1.1.0. Native and package-upgrade tests passed; run 38354497138 stopped at browser console classification after account revocation. Added scoped expected-422 handling with retained diagnostics, original inquiry regression, actual browser installer with saved-state and cleanup checks, and PHP log scanning. Wrapped consent prose for mobile layout and refreshed package hashes. Corrected obsolete documentation-job summary. No external mail or live operations; next action is complete candidate CI and visual review.

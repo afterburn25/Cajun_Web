@@ -147,8 +147,8 @@ def run_browser(env,browser,fixture):
     # Real network responses and DOM assertions; no request stubs or CSP bypass.
     context=browser.new_context(viewport={'width':320,'height':800},has_touch=True,reduced_motion='reduce')
     page=context.new_page();errors=[];failed=[]
-    page.on('pageerror',lambda e:errors.append(str(e)))
-    page.on('console',lambda m:errors.append(m.text) if m.type=='error' else None)
+    page.on('pageerror',lambda e:errors.append({'text':str(e),'url':'pageerror'}))
+    page.on('console',lambda m:errors.append({'text':m.text,'url':m.location.get('url','')}) if m.type=='error' else None)
     page.on('requestfailed',lambda r:failed.append(r.url))
     for route in ['','index.php?page=compare-squarespace','index.php?page=work','index.php?page=faq','index.php?page=consultation']:
         page.goto(BASE+'/existing/'+route,wait_until='networkidle')
@@ -181,9 +181,26 @@ def run_browser(env,browser,fixture):
     page.reload();expect(page.locator('[name=email]')).to_be_visible();check('Client change revokes real browser session',True)
     check('Client update revokes outstanding setup token',db('SELECT invite_hash FROM ci_studio_clients WHERE id=?',[fixture['client_id']])[0]['invite_hash'] is None)
     # A deliberate 422 validation response may generate a Chromium resource-error line.
-    unexpected=[e for e in errors if '422 (Unprocessable Content)' not in e and '422 (Unknown)' not in e]
+    unexpected=[e for e in errors if not (e['text'].startswith('Failed to load resource: the server responded with a status of 422') and e['url']==BASE+'/existing/index.php?page=estimate')]
+    (QA/'browser-diagnostics.json').write_text(json.dumps({'console_and_page_errors':errors,'unexpected':unexpected,'failed_requests':failed},indent=2))
     check('Extended browser has no unexpected console or page errors',not unexpected);check('Extended browser has no failed network requests',not failed)
     context.close()
+    # Regression for the original inquiry form, whose named action input also shadows form.action.
+    contact=browser.new_context();p=contact.new_page();p.goto(BASE+'/existing/index.php?page=contact')
+    form=p.locator('[data-inquiry]');form.locator('[name=name]').fill('Browser contact fixture');form.locator('[name=email]').fill('contact-browser@example.invalid');form.locator('[name=service]').select_option('Website redesign');form.locator('[name=budget]').select_option('Help me estimate');form.locator('[name=message]').fill('Synthetic original contact form destination regression.');form.locator('[name=consent]').check();p.wait_for_timeout(2100);form.locator('button[type=submit]').click();expect(form.locator('.form-result')).to_be_visible()
+    check('Original inquiry browser submission persisted',bool(db('SELECT id FROM ci_leads WHERE email=?',['contact-browser@example.invalid'])));contact.close()
+    # Install another actual extracted COMPLETE package entirely through the browser.
+    setup=WEB/'browser-setup';setup.mkdir()
+    with zipfile.ZipFile(next((ROOT/'dist').glob('*COMPLETE-UPLOAD.zip'))) as package:package.extractall(setup)
+    install=browser.new_context(viewport={'width':1440,'height':1000});p=install.new_page();p.goto(BASE+'/browser-setup/install.php',wait_until='networkidle')
+    values={'db_host':os.getenv('CWP_TEST_HOST','127.0.0.1'),'db_port':os.getenv('CWP_TEST_PORT','3306'),'db_name':'cwp_test','db_user':os.getenv('CWP_TEST_USER','cwp_test'),'db_password':os.getenv('CWP_TEST_PASSWORD','local-ci-only'),'db_prefix':'browser_','owner_name':'Browser owner','owner_email':'browser-owner@example.invalid','owner_password':'Synthetic browser owner passphrase','owner_confirm':'Deliberate mismatch passphrase','site_url':BASE+'/browser-setup'}
+    for name,value in values.items():p.locator('[name='+name+']').fill(value)
+    p.locator('[name=confirm_install]').check();p.locator('#install-button').click();expect(p.locator('#setup-error')).to_contain_text('passwords do not match');expect(p.locator('#install-form')).to_be_visible()
+    check('Browser setup validation preserves entered fields',p.locator('[name=owner_email]').input_value()==values['owner_email'] and not (setup/'config.php').exists())
+    p.locator('[name=owner_confirm]').fill(values['owner_password']);p.screenshot(path=str(QA/'Installer-Desktop.png'),full_page=True);p.set_viewport_size({'width':390,'height':844});check('One-page installer fits mobile',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'));p.screenshot(path=str(QA/'Installer-Mobile.png'),full_page=True)
+    p.locator('#install-button').click();expect(p.locator('#completion')).to_be_visible(timeout=90000)
+    check('Browser single-form install creates native database and removes setup',(setup/'config.php').is_file() and not (setup/'install.php').exists() and bool(db('SELECT id FROM browser_users WHERE email=?',[values['owner_email']])))
+    p.screenshot(path=str(QA/'Installer-Complete.png'),full_page=True);install.close()
     # Owner controls also run in Chromium, with saved database evidence.
     owner=browser.new_context(viewport={'width':1440,'height':1000});p=owner.new_page();p.goto(BASE+'/existing/admin.php?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill('Synthetic owner passphrase 2026');p.locator('form button').first.click();p.goto(BASE+'/existing/admin.php?view=studio-job&id=1');form=p.locator('form').filter(has=p.locator('[name=action][value=studio_job]'));form.locator('[name=milestones]').fill('Browser-verified milestone update.');form.get_by_role('button',name='Save project').click();expect(form.locator('[name=milestones]')).to_have_value('Browser-verified milestone update.');check('Browser admin change persisted',db('SELECT milestones FROM ci_studio_jobs WHERE id=1')[0]['milestones']=='Browser-verified milestone update.');p.screenshot(path=str(QA/'Admin-Workspace-Desktop.png'),full_page=True);p.set_viewport_size({'width':390,'height':844});check('Admin mobile workspace fits',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'));p.screenshot(path=str(QA/'Admin-Workspace-Mobile.png'),full_page=True);owner.close()
     # Public forms remain functional with JavaScript disabled.

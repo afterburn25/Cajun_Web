@@ -115,3 +115,5 @@ Create an actionable GitHub roadmap expanding CajunWebPro into a **web design AN
 The verified baseline ZIP is CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip (33 files, SHA-256 13bcf66cf069896017a6168556eba5211ec5bf3b1bee2aa23d354b4e9be5b6cf). Favicon source hash, installer incident and missing v1.1.0 details remain in PROJECT_STATUS.md, docs/BASELINE_INVENTORY.md and docs/DELIVERY_INCIDENT_2026-10-12.md. Do not downgrade the hosted site to repair a missing chat download.
 
 The latest session verified existing documentation and the local distribution only. Next implementation session should record source-import and runtime-test evidence and update every continuity file.
+
+Release acceptance follow-up (parent `f007803`): HTTP/browser checks reached account revocation; console classification stopped on the intentionally invalid estimator response. The next commit scopes that expected resource message to the precise estimator URL, retains diagnostic JSON, adds original-contact and real-browser fresh-install coverage, scans PHP runtime diagnostics, and improves mobile consent wrapping. Full rerun required before publication.

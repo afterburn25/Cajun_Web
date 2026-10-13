@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Real HTTP tests against a PHP server and native MySQL fixtures. Not shipping code."""
-import os,json,shutil,subprocess,time,hashlib,zipfile
+import os,json,shutil,subprocess,time,hashlib,zipfile,re
 from pathlib import Path
 from urllib.parse import urlparse,parse_qs,urljoin
 import requests
@@ -132,6 +132,10 @@ try:
         page.get_by_role('button',name='Sign out').click();expect(page.locator('[name=email]')).to_be_visible();check('Browser client logout clears access',True)
         run_browser(globals(),browser,release_fixture)
         browser.close()
+    log.flush()
+    diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)
+    (QA/'php-diagnostics.json').write_text(json.dumps(diagnostics,indent=2))
+    check('Application server has no PHP runtime warnings or errors',not diagnostics)
 except Exception as exc:
     error=repr(exc)
 finally:
