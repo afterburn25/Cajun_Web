@@ -3,6 +3,7 @@
 ## 2026-10-13 — Devin estimator adapter contract
 
 On `devin/estimator-adapter` (from main `b975915`), Devin wrote `docs/ESTIMATOR_ADAPTER.md` — the explicit L-01 adapter contract required before the reviewed estimator foundation can serve `growth_estimate`: quantity keys fold into `PriceRule` ranges, all consultation conditions preserved, byte-for-byte fixture equivalence required. Documentation only; implementation awaits Codex review. Queued Devin PRs: #31 (L-02), #32 (L-03), #34 (W-02 slice, installer-hash fix `ac91f0e`).
+
 ## Active roadmap increment — 1.11.1 candidate
 
 Codex owns `codex/motion-update-1.11.1` from main `02fc784`, preserving Devin PR #34 history at `e2b2a23` in merge `69ed304`. Scope: W-02 homepage pause/root scrolling and restrained brand sheen; honest browser motion evidence; safe staged updates from published organized 1.11.0 while retaining all older supported paths. Recovery journals are per target version; the permanent 1.11.0 lock is shared across retained updater versions. Existing private/configuration/scaffold bytes and prior recovery records stay intact; fresh organized sites gain no legacy root routes.

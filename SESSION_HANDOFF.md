@@ -3,6 +3,7 @@
 ## 2026-10-13 — Devin estimator adapter contract (L-01)
 
 `devin/estimator-adapter` (off `b975915`) carries `docs/ESTIMATOR_ADAPTER.md`: exact `growth_estimate` → `foundation/estimator` mapping. Key decisions: live low/high ranges fit the component natively; `page`/`product` quantities fold into adapter-built `PriceRule`s (pre-multiply with overflow guard → unpriced on overflow); live's 99999999-cent cap applies as an adapter post-check on top of the component's integer-overflow guard; `custom`/`integration`/disabled consult via adapter short-circuit. Acceptance = byte-for-byte fixture equivalence matrix vs `growth_estimate`. Implementation is Codex-reviewed; nothing ships from this doc.
+
 ## Active roadmap increment — 1.11.1 candidate
 
 Codex owns `codex/motion-update-1.11.1` from main `02fc784`, preserving Devin PR #34 history at `e2b2a23` in merge `69ed304`. Scope: W-02 homepage pause/root scrolling and restrained brand sheen; honest browser motion evidence; safe staged updates from published organized 1.11.0 while retaining all older supported paths. Recovery journals are per target version; the permanent 1.11.0 lock is shared across retained updater versions. Existing private/configuration/scaffold bytes and prior recovery records stay intact; fresh organized sites gain no legacy root routes.

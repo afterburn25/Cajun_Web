@@ -3,6 +3,7 @@
 ## Unreleased — estimator adapter contract (L-01 dependency)
 
 - Add `docs/ESTIMATOR_ADAPTER.md`: the explicit contract for adopting the reviewed estimator foundation in the live `growth_estimate` path. Quantities fold into adapter-built `PriceRule` ranges; consultation conditions (disabled pricing, `custom` type, `integration` option, unpriced keys, the 99999999-cent cap) are preserved verbatim; a fixture-equivalence test plan is required before implementation. No shipping code changes.
+
 ## 1.11.1 — candidate, motion preferences and organized updates
 
 - Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.
