@@ -1,7 +1,7 @@
 <?php
 /** Temporary one-page setup entry; all business code lives in organized modules. */
 declare(strict_types=1);
-const CWP_INSTALLER_BUILD = '1.15.0';
+const CWP_INSTALLER_BUILD = '1.16.0';
 const CWP_INSTALLER_LAYOUT = 'one-page';
 ini_set('display_errors', '0');
 header('Cache-Control: no-store, private, max-age=0, must-revalidate');
