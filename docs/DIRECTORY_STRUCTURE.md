@@ -1,5 +1,10 @@
 # Directory structure — current source contract
 
+## Candidate 1.17.0 — acceptance pending
+
+[PR #69](https://github.com/afterburn25/Cajun_Web/pull/69) adds explicit assigned-staff INBOX header reading, protected bundled dependencies, strict request auditing and an additive upgrade setup. See the [receiving contract](MAIL_INBOX_READER.md). New native/HTTP/TLS/browser/Apache and 1.16.0 upgrade/recovery acceptance is pending. Latest published version remains 1.16.0; publication summaries below describe their recorded release, not the active candidate. The permanent organized structure remains in force.
+
+
 This organized layout supersedes the historical flat-root conventions. A ZIP without a wrapper still contains normal application subdirectories. Do not add root business logic, restore app/core.php, or put public images back beside scripts and styles.
 
 ## Before
