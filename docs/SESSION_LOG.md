@@ -382,6 +382,14 @@ Request: continue roadmap and integrate Devin work. Started main `6f01209`; cont
 
 On `codex/portfolio-browsing`, preserve actual adapter/source and reconcile current docs. Fix numeric category key coercion, duplicate public slug ambiguity, `all` wildcard collision, whitespace mismatch, intercepted modified clicks, missing announced counts and identical-media comparison. Added 55 isolated checks total, native adapter boundaries and real HTTP/Chromium/no-JS/history/keyboard/320px acceptance plus actual retained 1.10.0 update including read markers. Package builder local syntax/inventory verification passes (80/79 files, 55 PHP); 55 portfolio and 65 estimator checks pass PHP 8.4.25. Combined CI/release pending; no full W-01/L-01 completion, provider operations or live deployment. Next: accept exact candidate, review screenshots, checked merge/exact main and immutable draft/public downloads.
 
+## 2026-10-13 — Devin L-02 review-request foundation
+
+Request: continue the roadmap without stopping. Codex is integrating portfolio PR #7 at `016a405` on `codex/portfolio-browsing` for bounded v1.11.0 and asked that completed Devin heads stay stable; estimator PR #27 landed through PR #29 at `39de8ff` with overflow/result-invariant fixes. Starting commit: `39de8ff` (current main). Branch: `devin/review-requests`. Owned paths recorded on issue #2.
+
+Added `foundation/review-requests/` — the isolated L-02 website-review contract: `WebsiteAddress` (bare-host normalization to https, credentials/fragment/non-http rejection, private/reserved literal and internal-name `isFetchCandidate()` flags), `ReviewContact` (validated email, explicit consent flag), `ReviewStage` (received→in-review→report-drafted→delivered→closed, closed terminal), `ReviewRequest` (immutable, adapter-supplied timestamp), `ReviewFinding` (human/lab/field/absent evidence — non-human evidence requires observation timestamp plus source label), `ReviewReport` (named reviewer, at least one finding, delivery cannot predate the report), `ReviewInbox` (duplicate-id rejection, submittedAt→id ordering independent of input order, transitions requiring the saved report and contact consent before `delivered`).
+
+Added `tests/review-requests/run.php` (86 synthetic `fx-*` checks — all pass on PHP 8.4.25), `.github/workflows/review-requests.yml`, and `docs/REVIEW_REQUESTS_FOUNDATION.md` including the future adapter contract and explicit SSRF/DNS-rebinding caveat for any later URL fetching. No application files, schema, mail, admin UI, or network access; the component is deliberately not in the deployment tree. PR checks pending.
+
 ## 2026-10-13 — Exact-main portfolio acceptance race correction
 
 Starting main `332af19333a62d3dfcc90eb9cf34871a7fac50ec` after checked PR #30 merge. Branch and merge-ref runs 38407152040/38407159542 passed 618 native / 675 HTTP/Chromium checks and screenshots were reviewed. Exact-main 38408053057 passed native/full earlier suites and actual retained 1.10.0 update, then failed because a synthetic Alt-modified click correctly performed browser navigation asynchronously, interrupting the next test goto. No application assertion failed. On `codex/portfolio-acceptance`, observe whether the app canceled each synthetic modified click, then prevent the test event's browser default. Also exercise actual Ctrl-click and a new filtered browser tab. Python syntax/docs pass locally; combined rerun pending. No shipping-file change, release or live operation. Next: checked test-fix merge and exact-main acceptance before publication.
@@ -460,6 +468,20 @@ PR #50 merged at cefcc41bcd5297715f2a49d6526900ebe8ad4eb4; exact-main acceptance
 
 Next-increment preparation while exact-main acceptance ran: an isolated local estimator adapter draft matched the current shipping calculator across 1,512 priced/missing/malformed/quantity cases on PHP 8.4, without database access or shipping changes. This is prototype parity evidence only; component guards, actual application integration and native/browser/upgrade acceptance remain required. Devin correction priority reiterated in issue #2 comment 6150049591; no acknowledgment or completed fixes inferred.
 
+### 2026-10-13 — Devin L-02 review corrections (PR #31)
+
+**Request:** Codex review findings on #31 (issuecomment-6149702908), prioritized per `DEVIN_HANDOFF_1.11.1.md` before new isolated components.
+
+**Starting commit:** `devin/review-requests` merged `origin/main` `855981b` (1.11.1 publication docs; clean merge).
+
+**Changed:** `foundation/review-requests/WebsiteAddress.php` — `isFetchCandidate()` now rejects IPv4 `224.0.0.0/4` and IPv6 `ff00::/8` multicast literals explicitly (PHP `FILTER_FLAG_NO_RES_RANGE` does not cover them). `foundation/review-requests/ReviewInbox.php` — `delivered` transition now requires `deliveredAt` on the saved report; a drafted-but-unconfirmed report cannot establish delivery. `docs/REVIEW_REQUESTS_FOUNDATION.md` contract text updated.
+
+**Tests:** `php tests/review-requests/run.php` — 86 checks, 0 failures on PHP 8.4.25. New regressions: 224.0.0.1, 239.255.255.255, [ff02::1], [ff05::2] rejected; 223.255.255.255 boundary stays a candidate; unconfirmed report rejected; confirmed `withDelivery` report still delivers.
+
+**Failures:** none. **Blockers:** none.
+
+**Next:** push for Codex re-review of #31; then L-03 scheduling corrections on #32 (both DST endpoints + calendar instance consistency).
+
 ### 2026-10-13 — Devin A-07 email-template foundation
 
 **Request:** "Continue Without Stopping" — next feasible roadmap item (A-07 template/placeholder contract layer, no external gate). Codex review corrections on #31/#32 were delivered and pushed first this session.
@@ -492,6 +514,14 @@ Integration refresh: preserved latest Devin #35 head efc967a (publication-record
 
 PR #55 merged at 4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36; exact-main acceptance 38433670555 passes 4873 named checks (3084 estimator / 618 native / 802 HTTP-browser / 73 filesystem / 279 Apache / 17 builder). Preserved #35 through efc967a. All three clean-source artifacts match Windows/Linux; all 16 draft and public assets, hashes, members, directories and immutable tag verified. Prior 1.11.1 fingerprints unchanged. Homepage desktop/mobile pixels identical; inspected real screenshots. No live deployment/external activation. Reviewed #56: 36 checks pass, but reproduced second-order substitutions and malformed placeholders falsely resolving; requested precise corrections. #31 still needs no-mbstring portability and #36 accurate APIs/semantics; #32 corrected 71 checks pass locally. Next actual work is A-07 template persistence/admin preview after component correction, with existing staff isolation and no real mail sending. Publication records are documentation only.
 
+
+### 2026-10-13 — Devin L-02 portability correction (Codex review)
+
+**Request:** Codex review on #31 confirmed the multicast/delivery fixes but found `WebsiteAddress` called `mb_strlen()` — an incidental extension dependency, since the installer does not require mbstring (`php -n` run failed immediately).
+
+**Changed:** byte-length check now uses `strlen()` — a byte cap is consistent with HTTP input limits. Workflow now reruns the suite under `php -n` as a no-optional-extension regression. Guide/handoff check counts updated to the actual 86.
+
+**Tests:** 86 checks pass on PHP 8.4.25 under both `php` and `php -n`.
 ### 2026-10-13 — Devin A-06 webmail foundation
 
 **Request:** "Continue Without Stopping" — next feasible roadmap item (A-06 multi-account webmail contract layer, no external gate). Codex is mid-integration on `codex/admin-email-templates`; flagged that it carries the pre-correction #56 head (`ef5d4f9`, corrected head `f3522f6`).
