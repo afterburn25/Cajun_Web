@@ -9,6 +9,12 @@
 ## Active integration — 1.11.2 estimator candidate
 
 ## Active integration — A-07 administrator template library
+## Active integration — A-06 email account preparation
+
+Codex owns `codex/admin-mail-accounts` from verified 1.12.0 publication-record main `2d46c70`, preserving Devin #59 through `13c04f6`. The corrected profile/assignment model passes 64 PHP 8.4 checks without optional extensions; independent boundary/duplicate/flag checks pass. The reproduced tuple-encoding collision is corrected with length-prefixed identities; re-review confirms distinct separator-bearing values stay distinct. Component preservation here is not release acceptance.
+
+Bounded candidate 1.13.0: owner-managed multiple IMAP/SMTP profiles, encrypted private passwords, explicit read/send staff capabilities plus current per-mailbox assignments, additive storage, retained metadata history, stale-write protection and administrative UI. Saved/disabled/untested states must be accurate. No transport, fake inbox/connection success or sending, and existing system SMTP remains intact. Codex owns application/schema/UI/tests/build/release; Devin owns the isolated canonical correction. Full A-06/A-08 and compose/send remain later work. Latest verified release is 1.12.0. Follow permanent organized packaging and dependency gates. Application source and acceptance fixtures are now implemented; combined CI and screenshot/release verification remain pending. [Guide](docs/ADMIN_EMAIL_ACCOUNTS.md).
+
 ## Latest verified publication — 1.12.0
 
 [v1.12.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.12.0) is published and freshly downloaded/verified at source/tag `c526e960db13246c217f2b9d6f421c17b8d48261` through [PR #58](https://github.com/afterburn25/Cajun_Web/pull/58), preserving corrected Devin #56 through `f3522f6`. Bounded A-07 now provides an administrator template library: personal/shared drafts, explicit permission, create/edit/duplicate/activate/archive, escaped sample previews, immutable history and stale-write protection. Additive owner setup preserves existing records; fresh setup prepares an empty library. [User/technical guide](docs/ADMIN_EMAIL_TEMPLATES.md).
