@@ -10,11 +10,19 @@ if(config()['db']['name']!=='cwp_test')exit(2);
 if(($argv[2]??'')==='templates'){
     echo json_encode(['templates'=>all('SELECT * FROM '.table('mail_templates')),'history'=>all('SELECT * FROM '.table('mail_template_revisions'))],JSON_THROW_ON_ERROR);exit;
 }
+if(($argv[2]??'')==='mail-accounts'){
+    echo json_encode(['accounts'=>all('SELECT * FROM '.table('mail_accounts')),'history'=>all('SELECT * FROM '.table('mail_account_revisions')),'grants'=>all('SELECT * FROM '.table('mail_account_grants')),'grant_history'=>all('SELECT * FROM '.table('mail_grant_revisions'))],JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='seed'){
     $now=gmdate('Y-m-d H:i:s');
     query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Organized retained client','organized-client@example.invalid',str_repeat('e',32),$now]);
     query('INSERT INTO '.table('studio_jobs').' (client_id,title,stage,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?,?)',[1,'Organized retained website','design','Retain summary','Retain progress',$now,$now]);
     query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,instructions,created_at) VALUES (1,?,?,?,?,?)',['ORGANIZED-RETAIN','Retained website invoice',25500,'Preserve invoice instructions',$now]);
+    if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'mail_templates'])){
+        $id=str_repeat('c',32);$values=['Earlier saved template','Earlier subject','Retained 1.12.0 draft','draft','personal',1];
+        query('INSERT INTO '.table('mail_templates').' (id,revision,name,subject,body,status,visibility,owner_id,updated_by,updated_at) VALUES (?,1,?,?,?,?,?,?,1,?)',[$id,...$values,$now]);
+        query('INSERT INTO '.table('mail_template_revisions').' (template_id,revision,name,subject,body,status,visibility,owner_id,action,actor_id,recorded_at) VALUES (?,1,?,?,?,?,?,?,?,1,?)',[$id,...$values,'create',$now]);
+    }
 }
 $result=[];
 foreach(['settings','services','projects','studio_clients','studio_jobs','studio_invoices'] as $name){
