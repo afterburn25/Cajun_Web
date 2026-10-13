@@ -2,6 +2,7 @@
 
 ## Unreleased — bounded inbox receiving in progress
 
+- Normalize root dependency metadata to Git-stable LF bytes while retaining original upstream vendor bytes.
 - Retain the exact maintained dependency bundle, licenses, bounded tokenizer and 17 isolated fixtures; add fresh-install byte reproduction and PHP 8.2/8.4 CI. Deployment remains unchanged.
 - Define a maintained IMAP/MIME dependency and bounded header-reading contract. Preserve explicit current mailbox authority and the released authentication diagnostics.
 - Initial source/dependency work is excluded from deployment; inbox UI, real mailbox acceptance, message bodies and sending are not enabled by this checkpoint.

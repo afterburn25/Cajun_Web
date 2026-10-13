@@ -445,7 +445,7 @@
     }
   ],
   "files": {
-    "composer.json": "7c0c988377af1817901cebbfc87b41108b0878875acb713b967e6ff75242a1e7",
+    "composer.json": "2685eeb729b297068738193c201ed2c6743d17551976d7f6e2466f29b50ba8f9",
     "composer.lock": "ffb41eb47a2baf2d5198217e53ddcd32d7c86fe3cf8a8e0e34b50c10abc9daeb",
     "licenses/directorytree-imapengine-MIT.txt": "a4670f2f36b1389a6f88d5ba29581e4a829b202ed765f1aeb7725f2319e62ab9",
     "vendor/autoload.php": "0ccf5ba29ad6f55eab9e16c36429e47e3cf0f590217449375e75801cf53b5f28",
