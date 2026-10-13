@@ -1,5 +1,9 @@
 # Decision record
 
+## 2026-10-13 — prepared and reviewed client handover before automatic builds
+
+Advance independent P-06 while actual payment merchant acceptance remains pending. Accept bounded prepared client ZIPs with explicit scope and root handover/license documents. Never blindly package the agency installation, execute uploaded code or claim a files-only package includes a database. Automated checks supplement mandatory owner content/rights review. Retain immutable originals and do not impose a paid-in-full gate. Use existing staff/client/support identities, the shared mutation lock, strict event writes and fresh download authorization. Large builds, database handover, deletion/retention automation and full restore orchestration require separate designs.
+
 ## 2026-10-13 — Verified 1.8.0 invoice payment increment
 
 External USD receipts, partial/full balances, retained owner corrections, legacy balance import and client-owned statements/printable receipts are delivered in [v1.8.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.8.0) / `c36a36e80c40485c9e3e7e6cdd4884ced25db961`. Existing 1.7.0 invoices, attempts/notifications, credentials/keys and earlier data survive UPDATE. New requests/trials use remaining balances; sandbox evidence never becomes revenue. 427 native / 503 HTTP/Chromium checks pass. Actual merchant acceptance, production/client checkout, refunds/tax/credits/subscriptions remain pending. [Guide](INVOICE_LEDGER.md) · [report](TEST_REPORT_1.8.0.md).

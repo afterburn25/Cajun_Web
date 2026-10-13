@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.9.0 candidate — client website downloads
+
+- Private staff uploads, immutable manifests and owner-reviewed publication of versioned client ZIPs.
+- Client/project history, notes, package scope, SHA-256 checksums and authenticated resumable downloads; strict ownership and support attribution.
+- Bounded archive inspection without extraction/execution; reject unsafe paths, links, credentials, encrypted/nested archives and databases. Outside-web-root guarded storage with project/site quotas.
+- Additive setup and retained 1.8.0 upgrade coverage preserve the existing portal, payment ledger and credentials.
+- Acceptance/publication pending. Automated packaging, database transfer, larger jobs and full P-06 remain incomplete.
+
 ## 1.8.0 — invoice payments and client receipts
 
 - Record verified external USD payments in full or in parts; show total paid and remaining invoice balances. Replay, stale review, duplicate reference and overpayment guards share the existing financial lock.

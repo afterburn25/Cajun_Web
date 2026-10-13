@@ -1,7 +1,7 @@
 name: Application acceptance
 on:
   push:
-    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger]
+    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries]
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/build.py', '.github/workflows/application-tests.yml']
   pull_request:
     branches: [main]
@@ -62,6 +62,8 @@ jobs:
           php8.3 tests/attempts_native.php
           php8.3 tests/notifications_native.php
           php8.3 tests/ledger_native.php
+          php8.3 tests/delivery_archive.php
+          php8.3 tests/delivery_native.php
       - name: Real HTTP and Chromium application workflows
         run: .ci-venv/bin/python tests/browser_acceptance.py
       - name: Verify tests did not mutate shipping source

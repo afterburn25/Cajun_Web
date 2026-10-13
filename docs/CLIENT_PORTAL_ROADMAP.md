@@ -1,5 +1,7 @@
 # Unified client portal: hosting, design projects, updates and website downloads
 
+**P-06 continuation, 2026-10-13:** 1.9.0 candidate adds prepared, reviewed, versioned client ZIP delivery with private history/downloads. [Delivery guide](CLIENT_DELIVERIES.md). Full P-06 remains partial: automatic build packaging, databases, larger jobs and restore orchestration are deferred. Candidate acceptance/publication pending. Actual merchant acceptance still gates production card checkout.
+
 ## 2026-10-13 — Verified 1.8.0 invoice payment increment
 
 External USD receipts, partial/full balances, retained owner corrections, legacy balance import and client-owned statements/printable receipts are delivered in [v1.8.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.8.0) / `c36a36e80c40485c9e3e7e6cdd4884ced25db961`. Existing 1.7.0 invoices, attempts/notifications, credentials/keys and earlier data survive UPDATE. New requests/trials use remaining balances; sandbox evidence never becomes revenue. 427 native / 503 HTTP/Chromium checks pass. Actual merchant acceptance, production/client checkout, refunds/tax/credits/subscriptions remain pending. [Guide](INVOICE_LEDGER.md) · [report](TEST_REPORT_1.8.0.md).
