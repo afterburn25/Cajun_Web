@@ -10,7 +10,12 @@ Dependencies: `foundation/webmail` (PR #59 — integrated into the
 application in v1.13.0; mirrors live at `site/includes/foundation/webmail/`),
 `foundation/notifications` (PR #57 — still an isolated component pending
 integration). Neither canonical contract changes beyond the two recorded
-extensions below.
+extensions below. The "webmail sync job" referenced below is the receiving
+transport: `devin/mail-transport` ([PR #68](https://github.com/afterburn25/Cajun_Web/pull/68))
+provides `InboundSync::checkMailbox()`, which yields the `MailMessage`
+values this store keys on; Codex's connection-checks increment
+([PR #67](https://github.com/afterburn25/Cajun_Web/pull/67)) is the
+separate diagnostics path and does not deliver messages.
 
 ## Required canonical extensions
 
