@@ -1,5 +1,7 @@
 # v1.1.0 integration progress — not release acceptance
 
+**Completed release checkpoint:** source/assets/tests/tooling merged through PR #8; [v1.1.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.1.0) published at `3703783e979abab38e8d72e9092c51dc835833b3` after [exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38357271480) and downloaded-back verification. See [release register](RELEASES.md) and [Devin handoff](DEVIN_HANDOFF_1.1.0.md). Older recovery blockers below are historical; no production deployment is claimed.
+
 Current 2026-10-13 continuation: executable source is recovered in `site/` and release completion is tracked by [PR #8](https://github.com/afterburn25/Cajun_Web/pull/8) and the [acceptance matrix](RELEASE_1.1.0.md). The following investigation describes an earlier checkpoint and must not be used as an absent-source blocker.
 
 ## Request and scope

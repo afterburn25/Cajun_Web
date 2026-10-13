@@ -1,5 +1,7 @@
 # GitHub testing, incremental releases and agent continuity
 
+The first v1.1.0 publication completed this workflow: exact-main tests, deterministic packages, draft verification, publication, clean download verification and retained evidence. See [release register](RELEASES.md) and [test report](TEST_REPORT_1.1.0.md).
+
 Owner direction recorded 2026-10-12: use GitHub for testing, deliver incremental versions, retain copies of released versions on GitHub, and document the project so other agents can resume without reconstructing chat history. This is standing authorization for ordinary repository updates, isolated CI tests and publishing verified project release packages. It does not itself activate production deployments, live charges, customer mail or paid provider operations.
 
 ## Current implementation
