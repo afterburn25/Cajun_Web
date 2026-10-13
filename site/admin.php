@@ -2,12 +2,12 @@
 declare(strict_types=1);
 define('CWP_BOOT',true);require __DIR__.'/app/core.php';boot();require __DIR__.'/app/view.php';require __DIR__.'/app/admin-view.php';require __DIR__.'/app/mail.php';
 require_once __DIR__.'/app/growth.php';require_once __DIR__.'/app/workspace.php';require_once __DIR__.'/app/studio-admin.php';
-require_once __DIR__.'/app/staff.php';require_once __DIR__.'/app/staff-admin.php';
+require_once __DIR__.'/app/staff.php';require_once __DIR__.'/app/staff-admin.php';require_once __DIR__.'/app/support-admin.php';
 header('X-Robots-Tag: noindex, nofollow');
 if(in_array($_GET['view']??'', ['staff-setup','reset'],true))header('Referrer-Policy: no-referrer');
 $view=is_string($_GET['view']??null)?$_GET['view']:'dashboard';
 $validViews=['login','forgot','reset','dashboard','projects','project','services','service','leads','lead','testimonials','testimonial','settings','email','security','health'];
-$validViews=array_merge($validViews,['staff','staff-setup'],array_keys(studio_admin_views()));
+$validViews=array_merge($validViews,['staff','staff-setup','support'],array_keys(studio_admin_views()));
 if(!in_array($view,$validViews,true)){$view='dashboard';}
 $error='';$id=(int)($_GET['id']??0);
 if($_SERVER['REQUEST_METHOD']==='POST'){
@@ -22,7 +22,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         $verified=password_verify($password,$hash);
         if(!$u||$u['password_hash']===''||!$verified||!staff_profile($u)){log_event('auth.failed','Sign-in rejected');throw new InvalidArgumentException('The email or password is not correct.');}
         if(password_needs_rehash($hash,PASSWORD_DEFAULT)){query('UPDATE '.table('users').' SET password_hash=? WHERE id=? AND auth_version=?',[password_hash($password,PASSWORD_DEFAULT),$u['id'],$u['auth_version']]);}
-        login_user($u);query('DELETE FROM '.table('rate_limits').' WHERE expires<?',[time()]);query('DELETE FROM '.table('resets').' WHERE expires<?',[time()]);log_event('auth.login');redirect(admin_url(staff_home($u)));
+        support_end_browser('admin-login');login_user($u);query('DELETE FROM '.table('rate_limits').' WHERE expires<?',[time()]);query('DELETE FROM '.table('resets').' WHERE expires<?',[time()]);log_event('auth.login');redirect(admin_url(staff_home($u)));
     }
     if($action==='forgot'){
         $email=strtolower(posted('email',190));
@@ -50,8 +50,9 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     $user=require_admin();
     $permission=staff_action_permission($action);if($permission!==null)staff_require($permission);
     if(in_array($action,['staff_migrate','staff_save','staff_invite'],true))staff_admin_action($action);
+    if(in_array($action,['support_migrate','support_policy','support_start'],true))support_admin_action($action);
     if(str_starts_with($action,'studio_')){studio_admin_action($action,$user);}
-    if($action==='logout'){log_event('auth.logout');$_SESSION=[];if(ini_get('session.use_cookies')){$p=session_get_cookie_params();setcookie(session_name(),'', ['expires'=>time()-42000,'path'=>$p['path'],'secure'=>$p['secure'],'httponly'=>true,'samesite'=>'Lax']);}session_destroy();redirect(admin_url('login'));}
+    if($action==='logout'){support_end_browser('admin-logout');log_event('auth.logout');$_SESSION=[];if(ini_get('session.use_cookies')){$p=session_get_cookie_params();setcookie(session_name(),'', ['expires'=>time()-42000,'path'=>$p['path'],'secure'=>$p['secure'],'httponly'=>true,'samesite'=>'Lax']);}session_destroy();redirect(admin_url('login'));}
     if($action==='project_save'){
         $recordId=(int)posted('id',12);$title=posted('title',160);$slug=slugify(posted('slug',160)?:$title);$category=posted('category',80);$summary=posted('summary',2000);$description=posted('description',16000);$challenge=posted('challenge',6000);$solution=posted('solution',6000);$deliver=posted('deliverables',6000);$website=safe_url(posted('website_url',500));$status=posted('status',20);$order=(int)posted('sort_order',6);$demo=isset($_POST['is_demo'])?1:0;$featured=isset($_POST['featured'])?1:0;
         if($title===''||$slug===''||$category===''||$summary===''||!in_array($status,['draft','published'],true))throw new InvalidArgumentException('A title, URL slug, category, summary and valid publication status are required.');
@@ -132,6 +133,7 @@ if($permission!==null&&!staff_can($permission,$user)){
     http_response_code(403);admin_head('Access unavailable','security',$user);echo '<div class="notice error">Your account does not have access to this section.</div>';admin_foot();exit;
 }
 if($view==='staff'){staff_admin_render($user,$error);exit;}
+if($view==='support')support_admin_render($user,$error);
 if(array_key_exists($view,studio_admin_views())){studio_admin_render($view,$user,$error);exit;}
 $titles=['dashboard'=>'Your studio, at a glance.','projects'=>'Portfolio','project'=>$id?'Edit project':'New project','services'=>'Services','service'=>$id?'Edit service':'New service','leads'=>'Project inquiries','lead'=>'Inquiry details','testimonials'=>'Client testimonials','testimonial'=>$id?'Edit testimonial':'New testimonial','settings'=>'Website settings','email'=>'Email delivery','security'=>'Your account','health'=>'System health'];admin_head($titles[$view],$view,$user);if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';
 if($view==='dashboard'){
