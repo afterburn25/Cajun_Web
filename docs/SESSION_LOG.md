@@ -64,3 +64,15 @@ Append dated entries. Keep this chronological. Use `SESSION_TEMPLATE.md`; link d
 **Limits and remaining blockers:** These checks establish artifact identity and syntax, not working installation or full application correctness. No source import, new feature build, favicon integration, database test, SMTP test, hosted browser flow, payment/provisioning test or live deployment. B-001 through B-006 remain open, and the running host version remains unknown. Missing v1.1.0 release claims remain withdrawn. The selected Authorize.net direction supersedes the earlier Stripe proposal.
 
 **Next concrete action:** Import the verified baseline and original branding after a secrets/private-data review, retain source-to-package provenance, then complete native staging and real installer/storage checks before extending the approved M0–M6 roadmap.
+
+## 2026-10-12 — Owner confirms current version is 1.1.0
+
+**Request:** Owner corrected the latest version to 1.1.0.
+
+**Starting commit:** Local `1eab202` on `docs/verify-latest-baseline-20261012`; remote main remains `43bebd019a6f548d7a059b2c8e259beed3efe561` after another fetch.
+
+**Actions and evidence:** Rechecked GitHub history, branches, releases and workflow runs. No newer application commit or published release appeared. Repeated scoped local filename searches without locating a matching 1.1.0 build. Asked the owner for its local folder, download link or repository/branch. Updated PROJECT_STATUS, SESSION_HANDOFF, CHANGELOG and this log to accept 1.1.0 as the owner-confirmed latest version while keeping artifact verification distinct.
+
+**Limits:** No 1.1.0 source/package was inspected, no runtime tests ran, and no source, host, provider or remote GitHub changes occurred. The earlier 1.0.8 verification remains valid for that historical artifact only.
+
+**Next concrete action:** Locate and verify the owner's 1.1.0 build, then reconcile/import the current source and reassess roadmap status. Do not start new feature work or downgrade the host using 1.0.8. Local documentation commit message: `docs: record owner-confirmed 1.1.0 current version`; parent is `1eab202`.

@@ -1,7 +1,15 @@
 # Project status
 
-Updated: 2026-10-12 — current GitHub roadmap and local baseline reverified.
+Updated: 2026-10-12 — owner confirms latest version is 1.1.0; current artifact location pending.
 Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
+
+## Owner correction — latest version is 1.1.0
+
+The owner explicitly confirmed that **1.1.0 is the latest version** after the verification below. Treat 1.1.0 as the current version to recover and inspect. The verified 1.0.8 copy is historical reference only; its availability does not make it the owner's latest build.
+
+A fresh GitHub fetch still finds main at `43bebd019a6f548d7a059b2c8e259beed3efe561`, with no published releases or newer application commits. The current 1.1.0 artifact has not yet been located or inspected in this chat. The owner has been asked for its local folder, download link, or repository/branch. Prior missing-download records document earlier evidence limitations; they do not override the owner's current version correction. No 1.1.0 implementation or test result is inferred from the version number alone.
+
+**Immediate next step:** Locate and verify the actual 1.1.0 source/package, then reconcile it with Git and the roadmap before implementation. Do not begin new work from 1.0.8 or replace the owner's current installation with it.
 
 ## Latest verification — 2026-10-12
 

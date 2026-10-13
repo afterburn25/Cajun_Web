@@ -1,7 +1,13 @@
 # Session handoff — read before continuing
 
-Checkpoint: 2026-10-12 — latest GitHub roadmap and available baseline verified locally.
+Checkpoint: 2026-10-12 — owner confirms latest version is 1.1.0; locate that artifact next.
 Repository: afterburn25/Cajun_Web · Authoritative branch: main.
+
+## Current owner correction — takes precedence over older baseline instructions
+
+The owner says the latest version is **1.1.0**. Obtain and inspect that exact build before source import or feature work. Only 1.0.8 has been located and verified in this chat; keep it as historical evidence, not the implementation starting point. GitHub currently has documentation only, so ask for the 1.1.0 local folder/download link or another repository/branch when its location is not available. That location question is pending with the owner.
+
+This correction supersedes older instructions below to import 1.0.8 first. Preserve those earlier investigation results as history. No current 1.1.0 archive, version constants, test evidence or hosted version has yet been verified here.
 
 ## Latest owner request and result
 
