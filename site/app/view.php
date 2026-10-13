@@ -45,7 +45,7 @@ function site_head(string $title, string $active='home', string $description='')
 <link rel="stylesheet" href="<?=esc(asset('site.css'))?>">
 <link rel="stylesheet" href="<?=esc(asset('premium.css'))?>">
 <?php if ($active === 'home'): ?><link rel="preload" as="image" href="<?=esc(asset('hero-detail.webp'))?>"><?php endif; ?>
-<link rel="stylesheet" href="<?=esc(asset('growth.css'))?>"><script defer src="<?=esc(asset('growth.js'))?>"></script><script defer src="<?=esc(asset('site.js'))?>"></script>
+<link rel="stylesheet" href="<?=esc(asset('growth.css'))?>"><script defer src="<?=esc(asset('growth.js'))?>"></script><script defer src="<?=esc(asset('site.js'))?>"></script><script defer src="<?=esc(asset('activity.js'))?>"></script>
 <script type="application/ld+json" nonce="<?=nonce()?>"><?=json_encode(['@context'=>'https://schema.org','@type'=>'Organization','name'=>$brand,'url'=>site_url(),'logo'=>asset('logo.png')],JSON_UNESCAPED_SLASHES|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT)?></script>
 </head>
 <body class="cwp-site <?= $active === 'home' ? 'is-home' : 'is-inner' ?>" data-release="<?=esc(CWP_VERSION)?>">
@@ -63,6 +63,7 @@ function site_head(string $title, string $active='home', string $description='')
         <a class="btn outline nav-cta" href="<?=esc(page_url('contact'))?>">Start a Project <?=icon('arrow')?></a>
     </div>
 </header><nav class="growth-subnav" aria-label="Explore our services"><a href="<?=esc(page_url('why-custom'))?>">Why custom</a><a href="<?=esc(page_url('compare-wix'))?>">Wix comparison</a><a href="<?=esc(page_url('compare-squarespace'))?>">Squarespace comparison</a><a href="<?=esc(page_url('packages'))?>">Packages</a><a href="<?=esc(page_url('faq'))?>">Questions</a><a href="<?=esc(page_url('estimate'))?>">Plan a project</a><a href="<?=esc(page_url('consultation'))?>">Consultation</a><a href="<?=esc(site_url('portal.php'))?>">Client workspace</a></nav>
+<?php if(!function_exists('support_current')||!support_current()):?><div class="container activity-strip" hidden data-activity-bell data-activity-endpoint="<?=esc(site_url('activity.php').'?audience='.($active==='portal'?'client':'admin'))?>"></div><?php endif;?>
 <main id="main">
 <?php
 }

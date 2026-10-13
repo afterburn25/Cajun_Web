@@ -4,11 +4,12 @@ define('CWP_BOOT',true);require __DIR__.'/app/core.php';boot();require __DIR__.'
 require_once __DIR__.'/app/growth.php';require_once __DIR__.'/app/workspace.php';require_once __DIR__.'/app/studio-admin.php';
 require_once __DIR__.'/app/staff.php';require_once __DIR__.'/app/staff-admin.php';require_once __DIR__.'/app/support-admin.php';require_once __DIR__.'/app/catalog-admin.php';require_once __DIR__.'/app/payments-admin.php';
 require_once __DIR__.'/app/delivery-view.php';
+require_once __DIR__.'/app/activity-view.php';
 header('X-Robots-Tag: noindex, nofollow');
 if(in_array($_GET['view']??'', ['staff-setup','reset'],true))header('Referrer-Policy: no-referrer');
 $view=is_string($_GET['view']??null)?$_GET['view']:'dashboard';
 $validViews=['login','forgot','reset','dashboard','projects','project','services','service','leads','lead','testimonials','testimonial','settings','email','security','health'];
-$validViews=array_merge($validViews,['deliveries','staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],array_keys(studio_admin_views()));
+$validViews=array_merge($validViews,['activity','deliveries','staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],array_keys(studio_admin_views()));
 if(!in_array($view,$validViews,true)){$view='dashboard';}
 $error='';$id=(int)($_GET['id']??0);
 if($_SERVER['REQUEST_METHOD']==='POST'){
@@ -54,6 +55,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     if(in_array($action,['support_migrate','support_policy','support_start'],true))support_admin_action($action);
     if(str_starts_with($action,'catalog_'))catalog_admin_action($action,$user);
     if(str_starts_with($action,'payments_'))payments_admin_action($action);
+    if(str_starts_with($action,'activity_'))activity_post('admin');
     if(str_starts_with($action,'delivery_'))delivery_admin_action($action);
     if(str_starts_with($action,'studio_')){studio_admin_action($action,$user);}
     if($action==='logout'){support_end_browser('admin-logout');log_event('auth.logout');$_SESSION=[];if(ini_get('session.use_cookies')){$p=session_get_cookie_params();setcookie(session_name(),'', ['expires'=>time()-42000,'path'=>$p['path'],'secure'=>$p['secure'],'httponly'=>true,'samesite'=>'Lax']);}session_destroy();redirect(admin_url('login'));}
@@ -141,6 +143,7 @@ if($view==='support')support_admin_render($user,$error);
 if(in_array($view,['catalog','catalog-invoice'],true))catalog_admin_render($view,$user,$error);
 if(in_array($view,['payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],true))payments_admin_render($view,$user,$error);
 if($view==='deliveries')delivery_admin_render($user,$error);
+if($view==='activity')activity_render('admin',$error);
 if(array_key_exists($view,studio_admin_views())){studio_admin_render($view,$user,$error);exit;}
 $titles=['dashboard'=>'Your studio, at a glance.','projects'=>'Portfolio','project'=>$id?'Edit project':'New project','services'=>'Services','service'=>$id?'Edit service':'New service','leads'=>'Project inquiries','lead'=>'Inquiry details','testimonials'=>'Client testimonials','testimonial'=>$id?'Edit testimonial':'New testimonial','settings'=>'Website settings','email'=>'Email delivery','security'=>'Your account','health'=>'System health'];admin_head($titles[$view],$view,$user);if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';
 if($view==='dashboard'){

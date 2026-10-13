@@ -1,5 +1,9 @@
 # Decision record
 
+## 2026-10-13 — project activity from retained business records
+
+Advance bounded P-07 independently of Devin W-01 and unconfigured merchant/mail integrations. Project existing durable sources and retain only per-person read status; business creation must not depend on notification delivery. Explicit audiences prevent a dual login from substituting staff for clients. Every action revalidates ownership/grants, support cannot mutate client activity, and passive polls preserve idle clocks. Read state changes only for explicit reviewed keys. Outbound mail, full webmail and event types without retained source history need separate contracts.
+
 ## 2026-10-13 — prepared and reviewed client handover before automatic builds
 
 Advance independent P-06 while actual payment merchant acceptance remains pending. Accept bounded prepared client ZIPs with explicit scope and root handover/license documents. Never blindly package the agency installation, execute uploaded code or claim a files-only package includes a database. Automated checks supplement mandatory owner content/rights review. Retain immutable originals and do not impose a paid-in-full gate. Use existing staff/client/support identities, the shared mutation lock, strict event writes and fresh download authorization. Large builds, database handover, deletion/retention automation and full restore orchestration require separate designs.
