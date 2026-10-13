@@ -187,3 +187,7 @@ Move an item through `approved` → `in progress` → `implemented` → `verifie
 - **HC-13/14:** Modular shared-host PHP/MySQL source, one-page/keyless installer compatibility, upgrade migrations, cron/reliability, PCI/privacy/compliance and backup/restore release gates.
 
 **Implementation order:** M0 baseline import/API feasibility → M1 plans + clients → M2 Authorize.net custom checkout + billing → M3 20i shared hosting → M4 domains + web-design workflows → M5 VPS/support → M6 hardened staging/live approval. Prices are owner-administered; past illustrative rates are not approved retail or verified wholesale.
+
+## 2026-10-13 integration checkpoint
+
+L-01 standalone estimator PR #27 is being integrated with arithmetic/result validation fixes; application adaptation remains pending. W-01 PR #7 now includes a real portfolio adapter and will be integrated next. Neither full roadmap item is complete. [Contract](PUBLIC_COMPONENT_INTEGRATION.md).

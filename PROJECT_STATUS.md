@@ -1,5 +1,9 @@
 # Project status
 
+## 2026-10-13 — Devin estimator integration candidate
+
+Codex is integrating [Devin PR #27](https://github.com/afterburn25/Cajun_Web/pull/27) at `b69da9626448a2ddfdf30b425dc7c2d5e16d1582` on `codex/integrate-estimator`, from main `6f0120913c93eace492b6c5f333c754fea3bea31`. The ancestry-preserving merge keeps the standalone core outside deployment. Review adds integer-overflow consultation and strict explained-result invariants. Current shipping application/release remains **v1.10.0**; no new form or pricing behavior is claimed. Local PHP 8.4.25 passes 65 named estimator checks and syntax; documentation links pass. Combined GitHub verification is pending. Next: merge only after checks, then integrate portfolio PR #7's new real-route adapter at `c8821f8` against current source. [Integration contract](docs/PUBLIC_COMPONENT_INTEGRATION.md).
+
 ## 2026-10-13 — Verified workspace activity release
 
 **Published and downloaded-back verified: [CajunWebPro v1.10.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0).** Source/tag `4649a913d40166b9874f9550e57b4186edfc43ab`, [PR #26](https://github.com/afterburn25/Cajun_Web/pull/26). [Complete upload ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/CajunWebPro-1.10.0-COMPLETE-UPLOAD.zip) · [UPDATE ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/CajunWebPro-1.10.0-UPDATE.zip). Prior releases remain immutable; publication documentation does not alter release bytes.

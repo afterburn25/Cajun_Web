@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — reviewed estimator foundation
+
+- Integrate Devin PR #27 with preserved ancestry; retain the standalone component outside shipping files. Add exact-integer overflow handling and reject inconsistent direct result objects. Application version remains 1.10.0; adapter and UI acceptance remain pending.
+
 ## 1.10.0 — workspace activity
 
 - Personal client and staff activity centers with explicit read/unread and bounded mark-visible actions.

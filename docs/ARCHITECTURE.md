@@ -122,3 +122,7 @@ Store immutable deliverable versions with project/source identity, approved scop
 Support sessions preserve an authenticated admin actor plus a single customer context with their own token, expiry and permissions; never replace the staff actor with the customer in audit. Separate per-tab/context routing avoids accidental cross-customer writes. Sensitive customer commitments and financial/authentication actions require their explicit authorized workflows. A-09 views do not grant A-10 terminal privileges.
 
 VPS terminal launch validates staff role and the mapped server/service, then issues a one-use scoped short-lived transport token. Verify a provider terminal handoff if available, or use an independently hosted authenticated SSH gateway with protected per-target credentials, host-key validation, allowlisted targets, timeout and revocation. Keep any persistent terminal transport outside the normal PHP shared-host installation. This transport design and product-specific SSH privileges remain feasibility gates, not verified provider capabilities or deployed infrastructure.
+
+## Reviewed estimator boundary — 2026-10-13
+
+[Standalone estimator](ESTIMATOR_FOUNDATION.md) remains outside `site/`. The current `growth_estimate` still owns configured quantity pricing, custom/integration consultation, amount limits and lead recomputation. [Integration contract](PUBLIC_COMPONENT_INTEGRATION.md) records the adapter gap; no competing schema is introduced.

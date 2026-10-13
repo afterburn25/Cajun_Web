@@ -68,3 +68,7 @@ Existing sites back up files/database/private storage, merge UPDATE and have an 
 | [Session template](docs/SESSION_TEMPLATE.md) | Required end-of-session record |
 
 The Git repository is not the public document root. Do not upload project documentation, private configuration, customer records, or development tooling as website assets.
+
+## Public-component integration in progress
+
+[Integration contract](docs/PUBLIC_COMPONENT_INTEGRATION.md): reviewing Devin estimator PR #27 first, portfolio PR #7 second. The estimator core remains outside deployment; current estimator quantity pricing and persistence stay authoritative. Latest release remains v1.10.0.
