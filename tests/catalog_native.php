@@ -43,7 +43,7 @@ try{
     cat_ok('Snapshot excludes private costs and provider IDs',!str_contains(json_encode($snapshot),'private-provider-identifier')&&!array_key_exists('cost_cents',$snapshot));
     cat_ok('Duplicate identical issue returns same invoice',catalog_issue(1,$id,2,3,'Manual instructions',str_repeat('1',64))===$invoice);
     cat_deny('Duplicate key cannot change invoice details',fn()=>catalog_issue(1,$id,2,4,'Manual instructions',str_repeat('1',64)));
-    catalog_save($id,2,array_replace($data,['status'=>'published','amount'=>'999999.99','title'=>'Changed service']));
+    catalog_save($id,2,array_replace($data,['status'=>'published','amount'=>'500000.00','setup'=>'0.00','title'=>'Changed service']));
     cat_ok('Catalog changes cannot rewrite issued price or text',catalog_snapshot($invoice)===$snapshot&&one('SELECT amount_cents FROM '.table('studio_invoices').' WHERE id=?',[$invoice])['amount_cents']===38530);
     cat_deny('Overflowing invoice rejected',fn()=>catalog_quote($id,3,2));
     catalog_save($id,3,array_replace($data,['status'=>'retired']));cat_ok('Retired products disappear publicly',catalog_public()===[]);

@@ -288,7 +288,7 @@ function setup_expected_files(): array { return [
         'app/admin-view.php' => '995db8cdfc0802a80a37718937afb9e77571cc83a46e1c7f70cb8700abb1ada2',
         'app/catalog-admin.php' => '8b5de8a5bcfa53eabf3fd0b65224d08f5393888ffb4369b1a914e9b9fa9e1eeb',
         'app/catalog-view.php' => '006d083ebe5d9571e7fde0e24dc742b452020725af606386028d1750e82c448b',
-        'app/catalog.php' => '6dfe36e7cb6902c5f892648e07b008df65c34a8424d400a5746e1287559c98fc',
+        'app/catalog.php' => '934218120d634bf9d7f978c37e2094b4722aa3787d950b3efd3ea62cb6084be4',
         'app/core.php' => 'e308523ee00b3e561640a14173a6fea51dce1b08e8c9cac5575415bb9fa669dd',
         'app/foundation/access/AccessContext.php' => '1ff80e17334bffedc443810220cb18aff79ee476132081142d483a7437a6ebfd',
         'app/foundation/access/AuthorizationVersion.php' => 'ec1ed3d2f9473518e97164dab76dca0293d3ea28919c0234e145bc802be7caf1',

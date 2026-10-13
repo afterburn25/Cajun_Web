@@ -1,5 +1,8 @@
 # Working agreement for CajunWebPro
 
+**Catalog acceptance checkpoint — 2026-10-13:** [PR #14](https://github.com/afterburn25/Cajun_Web/pull/14), `codex/service-catalog`, candidate 1.4.0. Implementation 484b55b passed GitHub run 38370183513: 49 catalog native plus all 116 earlier native and 289 existing HTTP/Chromium checks. New actual published-1.3.0 update and catalog HTTP/browser acceptance cases are now added; their run is pending. Hardened publication to reject an un-invoiceable unit-plus-setup total and validate snapshot currency/period. Current package: 55 complete / 54 update files. No new publication or live operations; v1.3.0 and Devin PR #7 unchanged. Next complete candidate acceptance and review screenshots, then checked exact-main release workflow.
+
+
 **Active M1 catalog increment — 2026-10-13:** owner requested Continue With Roadmap. Starting main `9b836e81bde67710c1b672d8204b9395d5b17cd3`, released v1.3.0 unchanged. Codex claims `codex/service-catalog`: owner/explicit catalog permission, draft/published/retired service SKUs and exact USD prices, private cost and revision history, public configured service cards, reviewed/idempotent invoice snapshots on existing projects with strict audit and paid/void transitions. Provider-dependent families remain draft; no tax/subscription/gateway/provisioning implementation is claimed. Own new catalog adapter/UI and necessary staff/portal/workspace/installer/tests integration. Devin PR #7 remains unchanged at 55d6067; independent portfolio paths remain its scope. Candidate v1.4.0 requires native, actual-package upgrade, HTTP/browser and exact-release verification before publication. No live customer/provider operation.
 
 

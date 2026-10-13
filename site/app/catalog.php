@@ -56,7 +56,7 @@ function catalog_save(int $id,int $expected,array $input): int {
     $data['sku']=strtoupper($data['sku']);
     if(!preg_match('/^[A-Z0-9][A-Z0-9_-]{1,59}$/D',$data['sku'])||$data['title']===''||!isset(catalog_families()[$data['family']])||!isset(catalog_terms()[$data['term']])||!in_array($data['status'],['draft','published','retired'],true)||$data['currency']!=='USD')throw new InvalidArgumentException('Enter a unique SKU, title, valid family, status, service period and USD currency.');
     $data['amount_cents']=gcents(gtext($input,'amount',20));$data['setup_cents']=gcents(gtext($input,'setup',20))??0;$data['cost_cents']=gcents(gtext($input,'cost',20));$data['sort_order']=gint($input,'sort_order',0,9999);
-    if($data['status']==='published'&&(!in_array($data['family'],['web-design','maintenance','addon'],true)||($data['amount_cents']??0)<=0||$data['summary']===''||$data['terms']===''))throw new InvalidArgumentException('Publish only a configured design, care or additional service with a positive price, summary and agreed service terms. Provider products remain draft.');
+    if($data['status']==='published'&&(!in_array($data['family'],['web-design','maintenance','addon'],true)||($data['amount_cents']??0)<=0||$data['amount_cents']+$data['setup_cents']>99999999||$data['summary']===''||$data['terms']===''))throw new InvalidArgumentException('Publish only a configured design, care or additional service with a positive price, summary and agreed service terms. Unit price plus setup cannot exceed 999999.99 USD. Provider products remain draft.');
     return staff_locked(fn()=>staff_transaction(function() use($id,$expected,$data): int {
         $actor=catalog_require();$old=$id?one('SELECT * FROM '.table('catalog_products').' WHERE id=? FOR UPDATE',[$id]):null;
         if(($id&&!$old)||($old&&(int)$old['revision']!==$expected)||(!$id&&$expected!==0))throw new RuntimeException('This product changed. Reload and review its latest version before saving.');
@@ -74,7 +74,7 @@ function catalog_public(): array {return catalog_ready()?all('SELECT '.catalog_p
 function catalog_quote(int $productId,int $revision,int $quantity,bool $lock=false): array {
     if($quantity<1||$quantity>100)throw new InvalidArgumentException('Choose between 1 and 100 units.');
     $p=one('SELECT '.catalog_public_fields().' FROM '.table('catalog_products')." WHERE id=? AND status='published' AND family IN ('web-design','maintenance','addon')".($lock?' FOR UPDATE':''),[$productId]);
-    if(!$p||(int)$p['revision']!==$revision)throw new RuntimeException('This product or price changed. Reload and review the current offer.');
+    if(!$p||(int)$p['revision']!==$revision||$p['currency']!=='USD'||!isset(catalog_terms()[$p['term']]))throw new RuntimeException('This product or price changed. Reload and review the current offer.');
     $total=(int)$p['amount_cents']*$quantity+(int)$p['setup_cents'];if((int)$p['amount_cents']<=0||$total>99999999||$total<=0)throw new InvalidArgumentException('The invoice total must be between 0.01 and 999999.99 USD.');
     return $p+['quantity'=>$quantity,'total_cents'=>$total];
 }
