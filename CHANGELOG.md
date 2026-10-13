@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — A-05 administrator access
+
+Owner resumed roadmap after v1.1.0. Application integration begins on codex/admin-accounts; no new release or deployment yet.
+
 ## v1.1.0 — 2026-10-13
 
 Published [v1.1.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.1.0) at `3703783e979abab38e8d72e9092c51dc835833b3` after PR #8. Delivered website/client-workspace scope and release fixes are listed in [the matrix](docs/RELEASE_1.1.0.md). Exact-main tests passed: 50 native, 157 HTTP/browser, all independent component/documentation checks. Seven retained assets were downloaded back and verified. Complete/update ZIPs support fresh setup and the tested populated 1.0.8 upgrade; no live deployment. This later documentation-only checkpoint records publication, remaining roadmap and the exact-release Devin handoff. Older pending statements below are historical.

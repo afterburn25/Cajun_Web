@@ -1,5 +1,8 @@
 # CajunWebPro — project source of truth
 
+**Roadmap resumed by the owner, 2026-10-13:** the new request "Continue With Roadmap" supersedes the completed release-task stop. Starting main: `ffdcef36bc71a10a456987808c70d4abd61afa9d`; released v1.1.0 stays immutable. Codex claims A-05 application integration on `codex/admin-accounts`: additional staff invitations/accounts, explicit website/client permissions, revocation and last-owner protection using existing identities and foundation components. Own staff adapter/UI, necessary auth/schema/installer/build integration and native/browser tests. Devin PR #7 remains at `55d6067` with its portfolio paths untouched. No live hosting/customer mail/payments/provider actions. Next: implement and verify the bounded admin-account increment, then integrate/release only after checks.
+
+
 Custom web design and development services, portfolio, and business-management website. **This is a service business website, not a do-it-yourself website builder.**
 
 Approved expansion: our own custom hosting/billing/client-management platform covering the agreed functions otherwise handled by WHMCS, with 20i infrastructure, Authorize.net payments, web-design services, staff accounts and admin webmail. See the [custom platform blueprint](docs/CUSTOM_PLATFORM_BLUEPRINT.md); this is planned scope, not a completed platform.
