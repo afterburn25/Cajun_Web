@@ -15,8 +15,10 @@ def upgrade():
     tables=['staff_profiles','staff_invitations','support_clients','support_events','studio_clients','studio_jobs','studio_messages','studio_versions','studio_invoices','catalog_products','catalog_revisions','catalog_invoice_snapshots','payment_gateways','payment_requests','payment_attempts','payment_attempt_events','payment_notifications','invoice_payments','website_releases','delivery_events','leads','projects']
     before={t:db('SELECT * FROM activityup_'+t) for t in tables};settings=db('SELECT * FROM activityup_settings');users=db('SELECT * FROM activityup_users')
     with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(dest)
+    from structure_helpers import apply_file_update
+    apply_file_update(globals(),dest)
     check('Actual 1.9 update preserves configuration guards private ZIPs media and master key',all(p.read_bytes()==b for p,b in preserved.items()))
-    owner=requests.Session();root=BASE+'/activity-upgrade/admin.php';url=root+'?view=activity';portal=BASE+'/activity-upgrade/portal.php'
+    owner=requests.Session();root=BASE+'/activity-upgrade/admin/index.php';url=root+'?view=activity';portal=BASE+'/activity-upgrade/portal/index.php'
     submit(owner,root+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
     r=submit(owner,url,'activity_setup',{'password':'Synthetic upgrade passphrase 2026'});check('Actual 1.9 owner enables empty per-person read state','Workspace activity is enabled' in r.text and db('SELECT * FROM activityup_activity_reads')==[])
     check('Actual 1.9 activity setup preserves retained business and delivery records',all(db('SELECT * FROM activityup_'+t)==rows for t,rows in before.items()))
@@ -36,7 +38,7 @@ def run_browser(env,browser):
     globals().update({k:env[k] for k in ['ROOT','WEB','BASE','QA','check','soup','token','form_data','form_for','submit','php']})
     db('DELETE FROM ci_rate_limits');upgrade()
     check('Fresh install enables empty activity state',db("SELECT value FROM fresh_settings WHERE name='activity_schema_version'")==[{'value':'1'}] and db('SELECT * FROM fresh_activity_reads')==[])
-    root=BASE+'/existing/admin.php';url=root+'?view=activity';portal=BASE+'/existing/portal.php';center=portal+'?activity=1';endpoint=BASE+'/existing/activity.php'
+    root=BASE+'/existing/admin/index.php';url=root+'?view=activity';portal=BASE+'/existing/portal/index.php';center=portal+'?activity=1';endpoint=BASE+'/existing/api/activity.php'
     admin=requests.Session();submit(admin,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     r=submit(admin,url,'activity_setup',{'password':OWNER,'csrf':'wrong'});check('Activity setup rejects CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='activity_schema_version'"))
     r=submit(admin,url,'activity_setup',{'password':'wrong'});check('Activity setup requires owner password','current password' in r.text.lower())
@@ -55,7 +57,7 @@ def run_browser(env,browser):
     r=alice.get(center);check('Client center lists safe metadata and escapes project title',key in r.text and '&lt;img src=x onerror=alert(1)&gt;' in r.text and '<img src=x onerror=alert(1)>' not in r.text and 'Activity exact-source secret body' not in r.text)
     check('Cross-client center and exact source stay private',key not in bob.get(center).text and bob.get(center+'&open='+key).status_code==403)
     check('Malformed source is refused',alice.get(center+'&open=message:1%20OR%201=1').status_code==403)
-    with (ROOT/'site/assets/favicon.png').open('rb') as f:submit(admin,root+'?view=studio-job&id=1','studio_upload',files={'document':('Activity-studio-file.png',f,'image/png')})
+    with (ROOT/'site/images/icons/favicon.png').open('rb') as f:submit(admin,root+'?view=studio-job&id=1','studio_upload',files={'document':('Activity-studio-file.png',f,'image/png')})
     source_keys=[];next_url=center
     while next_url:
         page=soup(alice.get(next_url));source_keys.extend(n['data-event-key'] for n in page.select('[data-event-key]'));link=page.find('a',string='Older updates →');next_url=link['href'] if link else None
@@ -108,20 +110,20 @@ def run_browser(env,browser):
     db('UPDATE ci_studio_clients SET active=0 WHERE id=1');check('Client deactivation removes count and exact navigation',alice.get(endpoint+'?audience=client').status_code==204 and alice.get(center+'&open='+key).status_code==403);db('UPDATE ci_studio_clients SET active=1 WHERE id=1')
     # Actual Chromium rendering and controlled browser clock for one-minute polling.
     ctx=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce');p=ctx.new_page();p.bring_to_front();errors=[];p.on('pageerror',lambda e:errors.append(str(e)))
-    p.goto(root+'?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill(OWNER);p.locator('form button').click();p.wait_for_url('**/admin.php?view=dashboard');p.goto(url);expect(p.locator('.activity-bell')).to_be_visible();p.screenshot(path=str(QA/'Activity-Admin-Desktop.png'),full_page=True)
+    p.goto(root+'?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill(OWNER);p.locator('form button').click();p.wait_for_url('**/admin/index.php?view=dashboard');p.goto(url);expect(p.locator('.activity-bell')).to_be_visible();p.screenshot(path=str(QA/'Activity-Admin-Desktop.png'),full_page=True)
     p.set_viewport_size({'width':320,'height':844});p.goto(url);p.wait_for_load_state('networkidle');p.evaluate('document.fonts.ready');p.screenshot(path=str(QA/'Activity-Admin-Narrow.png'),full_page=True);check('Admin activity center and bell fit 320px',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1'))
     p.goto(BASE+'/existing/index.php');expect(p.locator('.activity-bell')).to_be_visible();check('Authenticated administrator gets public-site workspace bell',p.locator('.activity-bell').get_attribute('href')==url)
-    p.goto(portal);p.locator('[name=email]').fill('alice@example.invalid');p.locator('[name=password]').fill('Synthetic client passphrase 2026');p.locator('form button').click();p.wait_for_url('**/portal.php');p.goto(center);expect(p.locator('.activity-bell')).to_have_text('🔔 99+');p.wait_for_load_state('networkidle');p.evaluate('document.fonts.ready');p.screenshot(path=str(QA/'Activity-Client-Narrow.png'),full_page=True);check('Client activity fits 320px and bell opens client center',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1') and p.locator('.activity-bell').get_attribute('href')==center)
+    p.goto(portal);p.locator('[name=email]').fill('alice@example.invalid');p.locator('[name=password]').fill('Synthetic client passphrase 2026');p.locator('form button').click();p.wait_for_url('**/portal/index.php');p.goto(center);expect(p.locator('.activity-bell')).to_have_text('🔔 99+');p.wait_for_load_state('networkidle');p.evaluate('document.fonts.ready');p.screenshot(path=str(QA/'Activity-Client-Narrow.png'),full_page=True);check('Client activity fits 320px and bell opens client center',p.evaluate('document.documentElement.scrollWidth<=innerWidth+1') and p.locator('.activity-bell').get_attribute('href')==center)
     p.set_viewport_size({'width':1440,'height':1000});p.screenshot(path=str(QA/'Activity-Client-Desktop.png'),full_page=True)
-    calls=[];p.on('request',lambda request:calls.append(request.url) if '/activity.php?' in request.url else None);p.clock.install();p.goto(center);expect(p.locator('.activity-bell')).to_be_visible();initial=len(calls)
+    calls=[];p.on('request',lambda request:calls.append(request.url) if '/api/activity.php?' in request.url else None);p.clock.install();p.goto(center);expect(p.locator('.activity-bell')).to_be_visible();initial=len(calls)
     p.evaluate("window.dispatchEvent(new Event('focus'));document.dispatchEvent(new Event('visibilitychange'))");p.clock.fast_forward(59000);check('Focus and early timer do not over-poll',len(calls)==initial)
-    with p.expect_response('**/activity.php?audience=client'):p.clock.fast_forward(2000)
+    with p.expect_response('**/api/activity.php?audience=client'):p.clock.fast_forward(2000)
     check('Visible active page checks again after one minute',len(calls)==initial+1)
     p.evaluate("Object.defineProperty(document,'hidden',{configurable:true,get:()=>true})");p.clock.fast_forward(120000);check('Hidden pages stop polling',len(calls)==initial+1)
     p.evaluate("Object.defineProperty(document,'hidden',{configurable:true,get:()=>false})")
-    p.route('**/activity.php?audience=client',lambda route:route.fulfill(status=503,body='{"unavailable":true}',content_type='application/json'))
+    p.route('**/api/activity.php?audience=client',lambda route:route.fulfill(status=503,body='{"unavailable":true}',content_type='application/json'))
     p.evaluate("document.dispatchEvent(new Event('visibilitychange'))");expect(p.locator('.activity-bell')).to_have_text('🔔 ?');check('Failed refresh marks established count unavailable',p.locator('.activity-bell').get_attribute('aria-label').startswith('Workspace activity unavailable'))
-    p.unroute('**/activity.php?audience=client');p.clock.fast_forward(61000);expect(p.locator('.activity-bell')).to_have_text('🔔 99+');check('Recovered count restores live display',True)
+    p.unroute('**/api/activity.php?audience=client');p.clock.fast_forward(61000);expect(p.locator('.activity-bell')).to_have_text('🔔 99+');check('Recovered count restores live display',True)
     db('UPDATE ci_studio_clients SET auth_version=? WHERE id=1',['c'*32]);p.clock.fast_forward(61000);expect(p.locator('[data-activity-bell]')).to_be_hidden();check('Revoked client browser loses bell payload',p.locator('.activity-bell').count()==0)
     check('Activity browser emits no uncaught errors',not errors);ctx.close()
     anon=browser.new_context(viewport={'width':320,'height':844});p=anon.new_page();p.goto(BASE+'/existing/index.php');p.wait_for_load_state('networkidle');check('Anonymous public page never reveals staff bell or metadata',p.locator('.activity-bell').count()==0 and key not in p.content() and 'Project &lt;img' not in p.content());anon.close()

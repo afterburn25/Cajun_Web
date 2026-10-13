@@ -1,0 +1,4 @@
+Options -Indexes
+<Files "serve.php">
+Require all denied
+</Files>
