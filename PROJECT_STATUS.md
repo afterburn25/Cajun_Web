@@ -12,7 +12,6 @@ Codex owns `codex/estimator-live-adapter`, from publication-record main `855981b
 
 Local PHP 8.4 acceptance passes 3,084 comparisons/boundaries against the actual verified 1.11.1 calculator and 65 isolated component checks. Full application/browser/Apache/upgrade acceptance and publication are pending. The candidate update inventory includes published 1.11.1; both organized starting versions and all older supported paths remain required. Latest verified release remains 1.11.1. Next: finish combined acceptance, review, merge/test exact main, publish/download-verify the separate 1.11.2 packages, then continue the next ready bounded roadmap increment. Devin's #31/#32 corrections remain assigned; other foundation branches are preserved.
 
-
 ## Latest verified publication — 1.11.1
 
 [v1.11.1](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.1) is published and freshly downloaded/verified at source/tag `cefcc41bcd5297715f2a49d6526900ebe8ad4eb4` through [PR #50](https://github.com/afterburn25/Cajun_Web/pull/50), preserving Devin PR #34 ancestry. Delivers the bounded W-02 motion/preferences fix, canonical installer build/brand-path corrections and tested organized 1.11.0 owner-update/recovery path. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38429347222): 618 native, 800 HTTP/Chromium, 59 filesystem/recovery, 241 Apache and 17 package-builder checks; all 16 published assets, ZIP members/directories/checksums and immutable tag verified. Windows/Linux package bytes agree. [Test report](docs/TEST_REPORT_1.11.1.md); [handoff](docs/DEVIN_HANDOFF_1.11.1.md).
@@ -89,11 +88,9 @@ A new independent L-01 estimator component arrived during release: [PR #27](http
 
 First MariaDB acceptance found a real schema-idempotency failure: digit-bearing `sha256` was omitted by the column parser. Fixed both column-name patterns without weakening type/engine/unique-key checks. Local native tests then passed, and real unprivileged PHP HTTP tests completed fresh one-page installation and physical cleanup. Also fixed the existing lead editor's seven-status/six-label mismatch and corrected the test's portfolio route to the actual `work` endpoint. Tests now run extracted package bytes and cover incompatible schema preservation, cross-client/CSRF rejection and disguised executable uploads. Public service copy was polished and official comparison sources rechecked on 13 October. Complete browser acceptance and release publication remain pending. No customer host or database was changed.
 
-
 ## 2026-10-13 — Source recovery checkpoint
 
 Recovered 41 actual website files plus native/HTTP tests and a build tool from the nine preserved source fragments. Original external assets were fetched only at the recorded public paths and checked against recorded SHA-256 values. Executable source is now under `site/` on `codex/finish-1.1.0`. This supersedes the older no-source-in-Git blocker on this branch, NOT the unverified runtime or release claims. No production files, database, mail or payments were changed. Review `docs/SOURCE_RECOVERY_2026-10-13.json`; run native integration and authorization tests next. No 1.1.0 release is declared by source recovery.
-
 
 Updated: 2026-10-12 — GitHub testing/release workflow and Codex/Devin split added; current 1.1.0 artifact location pending.
 
@@ -196,7 +193,6 @@ The baseline includes public PHP routes, admin/API/media/mail code, robots/sitem
 ## Owner direction remains unchanged
 
 Keep the rich navy/gold design and original horizontal logo without .com, use the exact fleur-de-lis favicon, retain PHP shared hosting and one-page/no-key installation, add the full agreed feature suite and accurate Wix/Squarespace comparison content. Prices, payment/calendar accounts and contractual commitments must not be invented. Keep existing hosting files and data intact during recovery.
-
 
 ## 2026-10-12 — Approved custom hosting and billing expansion (documentation only)
 
