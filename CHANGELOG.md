@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — review-request foundation
+
+- Add independent L-02 review-request contract (`foundation/review-requests/`): normalized website addresses with SSRF-readiness flags, contact consent, legal stage transitions, human-reviewed findings with labeled lab/field/absent evidence, and delivery guarded by a saved report plus consent. Not integrated; no schema, form, mail, or URL fetching.
+
 ## Unreleased — reviewed estimator foundation
 
 - Integrate Devin PR #27 with preserved ancestry; retain the standalone component outside shipping files. Add exact-integer overflow handling and reject inconsistent direct result objects. Application version remains 1.10.0; adapter and UI acceptance remain pending.

@@ -61,6 +61,7 @@ Existing sites back up files/database/private storage, merge UPDATE and have an 
 | [Codex and Devin coordination](docs/AGENT_COORDINATION.md) | Separate work branches, task ownership, Devin handoff and integration checks |
 | [Access foundation](docs/ACCESS_FOUNDATION.md) | Implemented permission component, test scope and pending 1.1.0 adapter requirements |
 | [Staff invitations](docs/STAFF_INVITATIONS.md) | Expiring one-use setup tokens, native transaction tests and account-adapter requirements |
+| [Review-request foundation](docs/REVIEW_REQUESTS_FOUNDATION.md) | Independent L-02 capture/workflow contract, evidence labeling and adapter requirements |
 | [Brand assets](docs/BRAND_ASSETS.md) | Exact logo, favicon source, and visual-reference provenance |
 | [Baseline inventory](docs/BASELINE_INVENTORY.md) | Artifact identity, file inventory, and inspection limits |
 | [Decisions](docs/DECISIONS.md) | Accepted constraints and why earlier approaches were rejected |
