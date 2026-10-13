@@ -1,5 +1,9 @@
 # Decision record
 
+## 2026-10-13 — Owner-approved dependency-aware development
+
+**D-034 — Accepted:** Missing 20i account entitlements/API credentials, domain/VPS endpoint access, merchant production acceptance or SSH transport does not constitute a blanket development halt. Separate independent source work from external acceptance and label implementation progress separately from external gate/release/deployment state. Reclassify HC-07 as "Awaiting API verification", HC-09/HC-10 as "Development pending — API verification", and A-10 as "Architecture/security validation pending". Continue mocked and isolated safe feature work, then move to next feasible priority if an integration cannot be completed. No real financial/provider/SSH action until its specific security, customer-authorization and owner-approved launch gate passes. See [dependency gates](DEPENDENCY_GATES.md). This is a planning/agent instruction, not evidence those items are implemented.
+
 ## 2026-10-13 — Integrate reviewed public components sequentially
 
 Preserve Devin's original ancestry while fixing review defects on Codex integration branches. The standalone estimator is accepted into the repository but excluded from deployment because live quantity rules and custom-scope behavior require an explicit compatible adapter. Portfolio already maps current storage and is the bounded 1.11.0 shipping candidate. Numeric category IDs remain exact strings; blank alone is unfiltered, so `all` remains a real category. Reject duplicate published slugs rather than select an input-order-dependent case study. No schema change or replacement application.

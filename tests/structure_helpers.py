@@ -1,12 +1,13 @@
 """Use the delivered owner workflow, never emulate migration by copying payload files."""
+from release_version import VERSION,STAGE,RECOVERY,LOCK_RECOVERY
 import requests
 
 
 def apply_file_update(env, destination):
     base=env['BASE'];check=env['check'];soup=env['soup'];token=env['token']
-    url=base+'/'+destination.name+'/cwp-update-1.11.0/owner-update.php'
+    url=base+'/'+destination.name+'/'+STAGE+'/owner-update.php'
     if destination.name=='portfolio-upgrade':
-        path=destination/'cwp-update-1.11.0/site/includes/security/csrf.php';saved=path.read_bytes();path.unlink()
+        path=destination/STAGE/'site/includes/security/csrf.php';saved=path.read_bytes();path.unlink()
         try:
             broken=requests.get(url,timeout=20)
             check('Interrupted staged bootstrap upload has useful fallback before application loading',broken.status_code==503 and 'Update support is missing or mismatched' in broken.text and not (destination/'admin/index.php').exists())
@@ -27,4 +28,8 @@ def apply_file_update(env, destination):
     check(destination.name+' setup cannot be reused after update',not (destination/'install.php').exists() and session.get(base+'/'+destination.name+'/install.php').status_code==404)
     old=session.get(base+'/'+destination.name+'/admin.php',timeout=20)
     check(destination.name+' pre-switch owner session survives old and new URLs',old.status_code==200 and 'Sales pipeline' in old.text and 'Sales pipeline' in session.get(base+'/'+destination.name+'/admin/index.php').text)
+    legacy=base+'/'+destination.name+'/admin.php?view=security';r=session.get(legacy)
+    fields=env['form_data'](env['form_for'](r,'account_save'));fields['current_password']='Incorrect synthetic password'
+    r=session.post(legacy,data=fields,allow_redirects=False,timeout=20)
+    check(destination.name+' legacy POST body and query reach canonical action without redirect',r.status_code==200 and 'current password' in r.text.lower() and 'Location' not in r.headers)
     return session

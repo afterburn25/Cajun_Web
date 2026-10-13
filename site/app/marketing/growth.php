@@ -2,6 +2,8 @@
 /** 1.1.0 public growth workflows. Existing settings/leads schema is retained. */
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+require_once CWP_CODE_ROOT.'/app/marketing/estimator.php';
+require_once CWP_CODE_ROOT.'/app/marketing/review_content.php';
 function growth_routes(): array { return ['why-custom','compare-wix','compare-squarespace','switch','packages','faq','industries','estimate','website-review','consultation']; }
 function growth_types(): array { return ['business'=>'Business website','redesign'=>'Website redesign','store'=>'Online store','custom'=>'Custom application']; }
 function growth_options(): array { return ['copy'=>'Copywriting','brand'=>'Brand identity','migration'=>'Content migration','booking'=>'Booking integration','accounts'=>'Member accounts','integration'=>'Custom integration']; }
@@ -19,8 +21,8 @@ function growth_estimate(array $a,array $r): array {
  $out=['mode'=>'consultation','label'=>'Let’s scope your project together','low'=>null,'high'=>null,'type'=>$type,'pages'=>$pages,'products'=>$products,'options'=>$opts,'note'=>'An estimate is not a final quote. Hosting, third-party fees, taxes and ongoing care are scoped separately.'];
  if(($r['enabled']??false)!==true||$type==='custom'||in_array('integration',$opts,true))return $out;
  $keys=[$type=>1];if($pages>5)$keys['page']=$pages-5;if($products>0)$keys['product']=$products;foreach($opts as $o)$keys[$o]=1;
- $lo=$hi=0;foreach($keys as $k=>$qty){$p=grange($r[$k]??[null,null]);if($p[0]===null)return $out;$lo+=$p[0]*$qty;$hi+=$p[1]*$qty;}
- if($hi>99999999)return $out;$out['mode']='range';$out['low']=$lo;$out['high']=$hi;$out['label']='$'.number_format($lo/100,2).' – $'.number_format($hi/100,2).' USD';return $out;
+ $range=growth_estimator_range($keys,$r);if($range===null)return $out;[$lo,$hi]=$range;
+ $out['mode']='range';$out['low']=$lo;$out['high']=$hi;$out['label']='$'.number_format($lo/100,2).' – $'.number_format($hi/100,2).' USD';return $out;
 }
 function growth_faq_defaults(): array {return [
  ['Why hire CajunWebPro rather than build it myself?','You bring the business knowledge. We plan the structure, design the experience and develop the agreed features. You get a scoped, done-for-you service—not just access to an editor.'],
@@ -46,6 +48,8 @@ function growth_sources(): array {return [
  ];}
 function growth_token(): string {$_SESSION['growth_tokens']=array_filter($_SESSION['growth_tokens']??[],fn($t)=>is_int($t)&&$t>time()-7200);if(count($_SESSION['growth_tokens'])>=20)array_shift($_SESSION['growth_tokens']);$t=bin2hex(random_bytes(24));$_SESSION['growth_tokens'][$t]=time();return $t;}
 function growth_submit(array $a): array {
+ require_once CWP_CODE_ROOT.'/app/marketing/reviews.php';
+ require_once CWP_CODE_ROOT.'/app/marketing/appointments.php';
  check_csrf();$token=gtext($a,'submission_token',48);$start=$_SESSION['growth_tokens'][$token]??0;
  if(!preg_match('/^[a-f0-9]{48}$/D',$token)||!$start||$start<time()-7200)throw new InvalidArgumentException('This form expired. Reload before sending.');
  if($start>time()-2||gtext($a,'website_address',500)!=='')throw new InvalidArgumentException('Wait a moment before sending.');
@@ -53,13 +57,13 @@ function growth_submit(array $a): array {
  $kind=gtext($a,'kind',30);if(!in_array($kind,['estimate','website-review','consultation'],true))throw new InvalidArgumentException('Invalid request type.');
  $d=['name'=>gtext($a,'name',120),'email'=>strtolower(gtext($a,'email',190)),'company'=>gtext($a,'company',160),'phone'=>gtext($a,'phone',80),'timeline'=>gtext($a,'timeline',100),'message'=>gtext($a,'message',5000)];
  if($d['name']===''||!filter_var($d['email'],FILTER_VALIDATE_EMAIL)||strlen($d['message'])<20||gtext($a,'consent',1)!=='1')throw new InvalidArgumentException('Add your name, valid email, at least 20 characters about the project, and accept the privacy notice.');
- $d['budget']='Tailored quote';$detail='';
+ $d['budget']='Tailored quote';$detail='';$reviewUrl=null;$appointment=null;
  if($kind==='estimate'){$e=growth_estimate($a,growth_rules());$d['service']='Estimate: '.growth_types()[$e['type']];$d['budget']=$e['mode']==='range'?$e['label']:'Tailored quote';$detail='Pages: '.$e['pages'].'; products: '.$e['products'].'; options: '.implode(', ',$e['options'])."\nServer estimate: ".$e['label']."\n".$e['note'];}
- elseif($kind==='website-review'){$url=gtext($a,'current_url',500);if($url==='')throw new InvalidArgumentException('Add the current website address.');safe_url($url);$d['service']='Website review';$detail='Website: '.$url."\nHuman-reviewed request; no automated audit performed.";}
- else{$tz=gtext($a,'timezone',80);if(!in_array($tz,DateTimeZone::listIdentifiers(),true))throw new InvalidArgumentException('Choose a time zone.');$date=gtext($a,'preferred_date',10);$zone=new DateTimeZone($tz);$dt=DateTimeImmutable::createFromFormat('!Y-m-d',$date,$zone);$today=new DateTimeImmutable('today',$zone);if(!$dt||$dt->format('Y-m-d')!==$date||$dt<$today||$dt>$today->modify('+365 days'))throw new InvalidArgumentException('Choose a preferred date within the next year.');$period=gtext($a,'period',20);if(!in_array($period,['Morning','Afternoon','Evening','Flexible'],true))throw new InvalidArgumentException('Choose a preferred time.');$d['service']='Consultation request';$detail='Requested: '.$date.' '.$period.' ('.$tz.").\nAppointment is not confirmed until the studio replies.";}
+ elseif($kind==='website-review'){$url=reviews_address($a['current_url']??null)->url();$reviewUrl=$url;$d['service']='Website review';$detail='Website: '.$url."\nHuman-reviewed request; no automated audit performed.";}
+ else{$appointment=appointments_intake($a);if($appointment!==null){$d['service']='Consultation request';$detail=$appointment['detail'];}else{$tz=gtext($a,'timezone',80);if(!in_array($tz,DateTimeZone::listIdentifiers(),true))throw new InvalidArgumentException('Choose a time zone.');$date=gtext($a,'preferred_date',10);$zone=new DateTimeZone($tz);$dt=DateTimeImmutable::createFromFormat('!Y-m-d',$date,$zone);$today=new DateTimeImmutable('today',$zone);if(!$dt||$dt->format('Y-m-d')!==$date||$dt<$today||$dt>$today->modify('+365 days'))throw new InvalidArgumentException('Choose a preferred date within the next year.');$period=gtext($a,'period',20);if(!in_array($period,['Morning','Afternoon','Evening','Flexible'],true))throw new InvalidArgumentException('Choose a preferred time.');$d['service']='Consultation request';$detail='Requested: '.$date.' '.$period.' ('.$tz.").\nAppointment is not confirmed until the studio replies.";}}
  if(!consume_rate(ip_key('growth-hour'),5,3600)||!consume_rate(ip_key('growth-day'),12,86400))throw new RuntimeException('Please wait before sending another request.');
  $d['reference']='CWP-'.strtoupper(bin2hex(random_bytes(5)));$d['message']=$detail."\n\nBUSINESS GOALS\n".$d['message'];
- try{query('INSERT INTO '.table('leads')." (reference,request_key,name,email,company,phone,service,budget,timeline,message,consent,ip_hash,status,notes,notification_status,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,1,?,'new','','pending',?)",[$d['reference'],$key,$d['name'],$d['email'],$d['company'],$d['phone'],$d['service'],$d['budget'],$d['timeline'],$d['message'],ip_key('lead'),gmdate('Y-m-d H:i:s')]);$id=(int)db()->lastInsertId();}catch(PDOException $e){$old=one('SELECT reference FROM '.table('leads').' WHERE request_key=?',[$key]);if($old)return ['reference'=>$old['reference'],'message'=>'Your request is saved.'];throw $e;}
+ try{$id=staff_transaction(function() use ($d,$key,$reviewUrl,$kind,$appointment): int {$calendar=null;if($kind==='consultation' && appointments_ready()){$calendar=appointments_settings(true);appointments_check_intake($appointment,$calendar);}elseif($appointment!==null)throw new RuntimeException('Scheduling became unavailable. Reload before sending.');query('INSERT INTO '.table('leads')." (reference,request_key,name,email,company,phone,service,budget,timeline,message,consent,ip_hash,status,notes,notification_status,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,1,?,'new','','pending',?)",[$d['reference'],$key,$d['name'],$d['email'],$d['company'],$d['phone'],$d['service'],$d['budget'],$d['timeline'],$d['message'],ip_key('lead'),gmdate('Y-m-d H:i:s')]);$id=(int)db()->lastInsertId();if($reviewUrl!==null && reviews_ready())reviews_capture($id,$reviewUrl);if($appointment!==null)appointments_capture($id,$calendar,$appointment['start'],$appointment['zone']);return $id;});}catch(PDOException $e){$old=one('SELECT reference FROM '.table('leads').' WHERE request_key=?',[$key]);if($old)return ['reference'=>$old['reference'],'message'=>'Your request is saved.'];throw $e;}
  require_once CWP_CODE_ROOT.'/app/mail/transport.php';try{$n=notify_lead($d);}catch(Throwable $e){report_error($e);$n='failed';}try{query('UPDATE '.table('leads').' SET notification_status=? WHERE id=?',[$n,$id]);}catch(Throwable $e){report_error($e);}
  return ['reference'=>$d['reference'],'message'=>$kind==='consultation'?'Your consultation request is saved. We will reply to arrange a time; this is not a confirmed booking.':'Your brief is saved for review. No payment or subscription has been created.'];
 }

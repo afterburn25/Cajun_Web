@@ -59,6 +59,12 @@ try:
         r=requests.get(BASE+'/existing/'+path,timeout=15);check('Public route '+(path or 'home'),r.status_code==200 and 'CajunWebPro' in r.text and 'We could not complete this request' not in r.text)
     for path in ['images/icons/favicon.png','favicon.ico','assets/css/growth.css','assets/js/growth.js','images/branding/logo.png']:
         r=requests.get(BASE+'/existing/'+path,timeout=15);check('Asset bytes '+path,r.status_code==200 and hashlib.sha256(r.content).digest()==hashlib.sha256((ROOT/'site'/path).read_bytes()).digest())
+    for path in ['includes/bootstrap.php','includes/security/csrf.php','includes/foundation/estimator/PriceRule.php','app/marketing/estimator.php','app/staff/accounts.php','config/example.php','database/schema/base.php','admin/controllers/router.php','admin/views/auth.php','portal/views/workspace.php','pages/home/body.php','includes/foundation/access/AccessContext.php','install/actions/deploy.php']:
+        check('PHP guard denies direct internal entry '+path,requests.get(BASE+'/existing/'+path).status_code==404)
+    r=requests.get(BASE+'/fresh/admin/index.php',allow_redirects=False)
+    check('Uninstalled nested entry redirects to actual site-root setup',r.status_code==302 and r.headers['Location']=='/fresh/install.php')
+    r=requests.post(BASE+'/existing/admin/index.php?view=security',data={'action':'account_save','marker':'keep-method'},headers={'Host':'untrusted.example.invalid'},allow_redirects=False)
+    check('Transport enforcement retains nested canonical path query and POST method',r.status_code==307 and r.headers['Location']==BASE+'/existing/admin/index.php?view=security')
     r=requests.get(BASE+'/existing/install.php');check('Installed-site guard blocks setup',r.status_code==403)
     doc=soup(requests.get(BASE+'/existing/index.php?page=work&cat=Construction',timeout=15))
     cards={c['data-category']:c.has_attr('hidden') for c in doc.select('.portfolio-grid .project-card')}
@@ -140,6 +146,8 @@ try:
         page.locator('.filters a[data-filter="Construction"]').click()
         check('Browser filter link updates URL and grid','cat=Construction' in page.url and page.locator('.project-card:not([hidden])').count()==1)
         page.go_back();expect(page.locator('.project-card:not([hidden])')).to_have_count(3);check('Browser back restores full portfolio',page.locator('.project-card:not([hidden])').count()==3)
+        from motion_cases import run as motion_checks
+        motion_checks(globals(),browser)
         page.goto(BASE+'/existing/portal/index.php');page.locator('[name=email]').fill('alice@example.invalid');page.locator('[name=password]').fill('Synthetic client passphrase 2026');page.locator('button[type=submit],form button').first.click();page.wait_for_url('**/portal/index.php');page.goto(BASE+'/existing/portal/index.php?job=1');page.screenshot(path=str(QA/'Client-Workspace-Desktop.png'),full_page=True)
         check('Browser private project renders','HTTP manual invoice' in page.content());check('No uncaught browser errors',not errors)
         with page.expect_download() as download:page.locator('a[href*="portal/index.php?file="]').first.click()
@@ -166,6 +174,16 @@ try:
         activity_browser(globals(),browser)
         from portfolio_cases import run_browser as portfolio_browser
         portfolio_browser(globals(),browser)
+        from mail_templates_cases import run_browser as mail_templates_browser
+        mail_templates_browser(globals(),browser)
+        from mail_accounts_cases import run_browser as mail_accounts_browser
+        mail_accounts_browser(globals(),browser)
+        from reviews_cases import run_browser as reviews_browser
+        reviews_browser(globals(),browser)
+        from appointments_cases import run_browser as appointments_browser
+        appointments_browser(globals(),browser)
+        from mail_connections_cases import run_browser as connections_browser
+        connections_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)

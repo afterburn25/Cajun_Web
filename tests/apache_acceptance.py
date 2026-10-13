@@ -1,6 +1,7 @@
 """Apache 2.4 + mod_php, unprivileged worker, actual COMPLETE ZIP, rewrite on/off."""
 from pathlib import Path
 import getpass,grp,json,os,shutil,subprocess,time,zipfile
+from release_version import VERSION,STAGE,RECOVERY,LOCK_RECOVERY
 import requests
 from bs4 import BeautifulSoup
 ROOT=Path(__file__).resolve().parents[1];QA=ROOT/'qa';RUNTIME=ROOT/'test-runtime/apache';checks=[]
@@ -23,7 +24,10 @@ try:
         # Exact readable, root-owned unused scaffold fixture; PHP must select external storage.
         subprocess.run(['sudo','chown','root:root',str(web/'storage')],check=True)
         before=(web/'storage').stat().st_uid
+<<<<<<< HEAD
         # mod_autoindex matches real shared hosts: with Options -Indexes it produces the 403 a bare directory must get.
+=======
+>>>>>>> origin/main
         modules=['mpm_prefork','authz_core','authz_host','dir','mime','alias','env','headers','autoindex']+(['rewrite'] if rewrite else [])
         conf=f'''ServerRoot "{work}"
 ServerName localhost
@@ -46,7 +50,10 @@ PHPIniDir /etc/php/8.3/apache2
   Require all granted
 </Directory>
 '''
-        config=work/'httpd.conf';config.write_text(conf);proc=subprocess.Popen(['/usr/sbin/apache2','-f',str(config),'-DFOREGROUND'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
+        # Enable the cache at PHP startup, not per request (which PHP forbids).
+        ini=work/'php-conf';ini.mkdir();(ini/'99-acceptance.ini').write_text('opcache.enable=1\nopcache.validate_timestamps=0\nopcache.file_update_protection=0\n')
+        env=dict(os.environ,PHP_INI_SCAN_DIR='/etc/php/8.3/apache2/conf.d:'+str(ini))
+        config=work/'httpd.conf';config.write_text(conf);proc=subprocess.Popen(['/usr/sbin/apache2','-f',str(config),'-DFOREGROUND'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True,env=env)
         base=f'http://127.0.0.1:{port}'
         try:
             r=wait(base);check(label+' real Apache serves one-page setup','Apache/' in r.headers.get('Server','') and r.status_code==200 and 'id="install-form"' in r.text)
@@ -79,6 +86,40 @@ PHPIniDir /etc/php/8.3/apache2
                 if rewrite:check(label+suffix+' optional crawler rewrite',session.get(url+'/robots.txt').status_code==200 and 'User-agent:' in session.get(url+'/robots.txt').text)
                 else:check(label+suffix+' navigation independent of rewrite',session.get(url+'/index.php?page=work').status_code==200 and session.get(url+'/robots.php').status_code==200)
             check(label+' unused root-owned scaffold remains untouched',(web/'storage').stat().st_uid==before==0)
+            # Real Apache protection during an interrupted old-layout file switch.
+            # This fixture reuses the isolated fresh schema; the comprehensive HTTP
+            # suite separately retains actual old databases and business records.
+            legacy=web/'legacy';shutil.copytree(ROOT/'test-runtime/released-1.10.0',legacy)
+            code="define('CWP_BOOT',true);$c=require $argv[1];$c['site_url']=$argv[3];file_put_contents($argv[2],'<?php return '.var_export($c,true).';');"
+            php=shutil.which('php8.3') or shutil.which('php')
+            subprocess.run([php,'-r',code,str(web/'config.php'),str(legacy/'config.php'),base+'/legacy'],check=True)
+            shutil.copyfile(web/'.installed.php',legacy/'.installed.php')
+            warm=requests.get(base+'/legacy/admin.php?view=login')
+            check(label+' old privileged entry was served before migration',warm.status_code==200 and 'Sign in to manage' in warm.text)
+            # Synthetic test-only diagnostic, never part of a distribution.
+            probe=web/'cache-probe.php';probe.write_text("<?php echo json_encode(['enabled'=>opcache_get_status(false)['opcache_enabled']??false,'timestamps'=>ini_get('opcache.validate_timestamps'),'cached'=>opcache_is_script_cached(__DIR__.'/legacy/admin.php')]);")
+            cache=requests.get(base+'/cache-probe.php').json();probe.unlink()
+            check(label+' old entry is actually cached with timestamp validation disabled',cache['enabled'] and cache['timestamps']=='0' and cache['cached'])
+            with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(legacy)
+            failed=subprocess.run([php,str(ROOT/'tests/structure_worker.php'),str(legacy),'apply','5'],capture_output=True,text=True)
+            (QA/('apache-'+label+'-interruption.log')).write_text('rc='+str(failed.returncode)+'\n'+failed.stdout+failed.stderr)
+            check(label+' actual migration interrupts after journaled operation: '+failed.stderr.strip(),failed.returncode!=0 and 'Synthetic interruption' in failed.stderr)
+            for route in ['admin.php','portal.php','index.php','assets/site.css']:
+                check(label+' maintenance denies old application '+route,requests.get(base+'/legacy/'+route).status_code==403)
+            session=requests.Session();url=base+'/legacy/'+STAGE+'/owner-update.php';r=session.get(url)
+            check(label+' authenticated owner recovery page remains reachable in maintenance',r.status_code==200 and 'Current owner password' in r.text)
+            check(label+' staged payload is denied independently of rewriting',requests.get(base+'/legacy/'+STAGE+'/site/admin/index.php').status_code==403)
+            r=session.post(url,data={'csrf':csrf(r),'email':'apache@example.invalid','owner_password':'Synthetic Apache owner passphrase','backup_confirm':'1','action':'apply'},timeout=90)
+            (QA/('apache-'+label+'-owner-update.html')).write_text(r.text)
+            check(label+' owner resumes interrupted migration through actual Apache','<h2>Complete</h2>' in r.text and r.status_code==200)
+            r=session.get(base+'/legacy/admin.php?view=security');doc=BeautifulSoup(r.text,'html.parser');form=next(f for f in doc.select('form') if f.select_one('[name=action][value=account_save]'))
+            fields={n['name']:n.get('value','') for n in form.select('input[name]')};fields['current_password']='Incorrect fixture password'
+            r=session.post(base+'/legacy/admin.php?view=security',data=fields,allow_redirects=False)
+            check(label+' Apache legacy POST invokes canonical action with body and session',r.status_code==200 and 'current password' in r.text.lower() and 'Location' not in r.headers and ('STUDIO RELEASE '+VERSION) in r.text)
+            check(label+' Apache upgraded canonical portal still serves',session.get(base+'/legacy/portal/index.php').status_code==200)
+            from organized_update_cases import run as organized_update
+            for number,version in enumerate(['1.11.0','1.11.1','1.11.2','1.12.0','1.13.0','1.14.0','1.15.0']):
+                organized_update(web,base,check,QA,php,label,('aor' if rewrite else 'aon')+str(number)+'_',version)
         finally:
             proc.terminate()
             try:proc.wait(timeout=10)
