@@ -1,5 +1,9 @@
 # Approved roadmap and acceptance criteria
 
+## Active candidate — A-06 connection checks
+
+Candidate 1.16.0, [PR #67](https://github.com/afterburn25/Cajun_Web/pull/67), adds explicit current-authorized owner checks of saved IMAP/SMTP credentials with verified public-destination TLS and truthful versioned history. [Contract](MAIL_CONNECTION_CHECKS.md). Application/release acceptance is pending; full inbox/compose and A-08 email bells remain incomplete. This does not activate or test a live mailbox. Latest published release remains 1.15.0.
+
 ## Latest verified publication — 1.15.0
 
 [v1.15.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.15.0) is published and freshly downloaded/verified at source/tag `8749bc5a89e52f8f35a193cc49d306136576ec8e` through [PR #66](https://github.com/afterburn25/Cajun_Web/pull/66), preserving corrected Devin #32 through `3617ad5`. Bounded L-03 adds one owner-configured studio calendar, public pending slot requests, explicit old-inquiry adoption, staff confirmation/cancellation/decline/rescheduling and retained history. Scheduling starts disabled with no offered hours. Current permissions, consent, saved revisions and password-confirmed decisions protect the workflow; all conflict-changing writes use one configuration lock and current database reads. [Guide](CONSULTATION_SCHEDULING.md). Decisions update the studio calendar only; contact prospects separately. No provider calendar or outgoing confirmation/cancellation message.

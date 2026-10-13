@@ -7,6 +7,17 @@ define('CWP_BOOT',true);define('CWP_ROOT',$root);
 require $root.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=require $root.'/config.php';
 if(config()['db']['name']!=='cwp_test')exit(2);
+if(($argv[2]??'')==='mail-checks-seed'){
+    require_once $root.'/app/mail/connections.php';
+    $account=one('SELECT id,revision FROM '.table('mail_accounts').' ORDER BY id LIMIT 1');
+    $started=['id'=>str_repeat('e',32),'account_id'=>$account['id'],'account_revision'=>(int)$account['revision'],'target'=>'imap','actor_id'=>1,'started_at'=>gmdate('Y-m-d H:i:s'),'started_epoch'=>time()];
+    query('INSERT INTO '.table('mail_connection_checks').' (id,account_id,account_revision,target,actor_id,started_at,started_epoch) VALUES (?,?,?,?,?,?,?)',array_values($started));
+    mail_connections_record($started,'connection',1);
+    echo json_encode(['fixture'=>'Synthetic failed-check history only; no network attempted'],JSON_THROW_ON_ERROR);exit;
+}
+if(($argv[2]??'')==='mail-checks'){
+    echo json_encode(['checks'=>all('SELECT * FROM '.table('mail_connection_checks').' ORDER BY id'),'results'=>all('SELECT * FROM '.table('mail_connection_results').' ORDER BY id')],JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='appointments'){
     echo json_encode(['settings'=>all('SELECT * FROM '.table('appointment_settings')),'settings_history'=>all('SELECT * FROM '.table('appointment_settings_revisions')),'appointments'=>all('SELECT * FROM '.table('appointments')),'history'=>all('SELECT * FROM '.table('appointment_revisions'))],JSON_THROW_ON_ERROR);exit;
 }
@@ -48,6 +59,13 @@ if(($argv[2]??'')==='seed'){
         $lid=(int)one('SELECT id FROM '.table('leads').' WHERE reference=?',['ORGANIZED-REVIEW'])['id'];
         reviews_adopt($lid,'example.org/retained');reviews_stage($lid,1,'in-review');reviews_save_report($lid,2,'Earlier saved human review',[['title'=>'Earlier observation','detail'=>'Retained human-authored review detail','evidence'=>'human-review','source'=>'','observed_at'=>'']]);
         query('INSERT INTO '.table('leads')." (reference,request_key,name,email,service,budget,timeline,message,consent,ip_hash,status,notes,created_at) VALUES (?,?,?,?,'Consultation request','Agreed','Flexible','Original consultation preference text',1,?,'new','Original private consultation note',?)",['ORGANIZED-APPT',str_repeat('d',64),'Earlier consultation prospect','appointment-upgrade@example.invalid',str_repeat('b',64),$now]);
+    }
+    if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'appointment_settings'])){
+        require_once $root.'/app/marketing/appointments.php';
+        $hours=[];for($day=0;$day<7;$day++)$hours[$day]=['enabled'=>'1','start'=>'00:00','end'=>'24:00'];
+        appointments_configure(1,['timezone'=>'UTC','slot_minutes'=>'30','buffer_minutes'=>'15','notice_minutes'=>'0','enabled'=>'1','hours'=>$hours],$password);
+        $lid=(int)one('SELECT id FROM '.table('leads').' WHERE reference=?',['ORGANIZED-APPT'])['id'];
+        appointments_adopt($lid,(int)(ceil((time()+86400)/1800)*1800),'America/Chicago');appointments_mutate($lid,1,'confirm',null,null,$password);
     }
 }
 $result=[];
