@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — A-08 mail-bell adapter contract (Devin, docs only)
+
+- Added `docs/MAIL_BELLS_ADAPTER.md`: the contract for wiring A-06 webmail unread state to P-07 staff notifications with protected deep links. Records two required canonical extensions — a `mail-message` notification kind and a grammar-safe deterministic sync-id link — plus grant-checked-at-open, no-body-in-bell, and authenticated-admin-only public-page rules. No shipping code changes.
+
 ## 1.11.2 — verified canonical live estimator integration
 
 - Preserve Devin's reviewed adapter contract and route existing calculator arithmetic through the canonical estimator, folding quantities with exact integer guards. Existing field validation, missing-price early returns, invalid-range errors, consultation exclusions/cap and displayed results remain compatible.
