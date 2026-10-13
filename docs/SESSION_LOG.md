@@ -1,5 +1,10 @@
 # Session log
 
+## 2026-10-13 — Sandbox trial increment in progress
+
+Starting from verified main `dd29436fa40c2a0f800bc02569b5fd5d1fb75c09` / published 1.5.0. Codex owns `codex/sandbox-attempts`: bounded M2 owner-only Accept.js sandbox trials, durable one-attempt request ledger, safe transaction-detail observations/reconciliation and shared manual/catalog/request locking. Sandbox results never pay real invoices. Production/client checkout, webhooks, receipts and recurring billing remain disabled or pending. Source candidate 1.6.0 is not a release until exact-source/upgrade/artifact gates pass. Real merchant credentials are unavailable; synthetic gateway/browser fixtures must remain labeled. Preserve Devin PR #7 / `55d6067` and its portfolio ownership. Next: finish implementation and native/HTTP/browser/retained-1.5 upgrade acceptance, then checked integration/publication if passing. No live deployment, real charge, customer mail or provider operation authorized here.
+
+
 ## 2026-10-13 — Administrator application integration candidate
 
 Request: continue the roadmap after verified v1.1.0. Parent: `d6de19c` on `codex/admin-accounts`. Added the staff adapter, owner-controlled account forms and setup flow; wired per-request account state, explicit website/client permissions, password/reset/session revocation and serialized last-owner protection into the existing identities. Added compatible staff tables and an explicit owner-selection migration; fresh installs initialize the owner. Canonical access/invitation components now bundle verbatim into the application; the builder also verifies the installer's embedded core. Candidate source version is 1.2.0; no new release or host deployment yet. Devin's portfolio branch is untouched.

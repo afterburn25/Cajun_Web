@@ -1,8 +1,10 @@
 <?php
 declare(strict_types=1);
 defined('CWP_BOOT') || exit;
+require_once __DIR__.'/payment-trial-view.php';
 function payments_admin_action(string $action): never {
     check_csrf();
+    if(str_starts_with($action,'payments_trial_'))attempts_admin_action($action);
     if($action==='payments_migrate'){
         if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you have a current backup.');
         payments_migrate(posted('owner_password',1000));flash('Payment preparation enabled. Card collection remains disabled.');redirect(admin_url('payments'));
@@ -30,6 +32,7 @@ function payments_admin_action(string $action): never {
     throw new InvalidArgumentException('Unknown payment preparation action.');
 }
 function payments_admin_render(string $view,array $user,string $error): never {
+    if($view==='payment-trials')attempts_admin_render($user,$error);
     if($view==='payments'&&!staff_can('clients.manage',$user)){http_response_code(403);admin_head('Payment requests',$view,$user);echo '<p>Payment-request and client-workspace permissions are both required.</p>';admin_foot();exit;}
     admin_head($view==='payment-settings'?'Authorize.net settings':'Payment requests',$view,$user);
     if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';

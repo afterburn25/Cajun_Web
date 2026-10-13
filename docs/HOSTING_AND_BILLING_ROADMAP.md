@@ -1,5 +1,9 @@
 # CajunWebPro custom hosting commerce, billing and client platform
 
+## 2026-10-13 — Candidate 1.6.0 sandbox trials
+
+Bounded M2 / partial HC-04 and HC-11 adds owner-only tokenized sandbox trials, durable attempt/event records, transaction-details matching, explicit reconciliation and shared invoice/request financial locking. Sandbox outcomes never settle real invoices. Existing 1.5 credentials/requests remain intact through additive setup. Client/production checkout, webhooks, receipts, refunds and recurring billing remain pending. Native gateway fixtures and intercepted browser tokenization are not real provider acceptance; credentials were not supplied. See [sandbox guide](SANDBOX_PAYMENTS.md). Candidate acceptance and publication remain pending.
+
 **2026-10-13 payment checkpoint:** [1.5.0](RELEASE_1.5.0.md) delivers partial M2 / HC-04 / HC-11 settings and prepared invoice requests. [Guide](PAYMENT_PREPARATION.md). Requests require explicit payment and client-workspace grants; credentials remain owner-only. Card collection/production processing remain disabled. Real merchant/provider acceptance and broader roadmap capabilities remain pending.
 
 **2026-10-13 catalog checkpoint:** [v1.4.0](RELEASE_1.4.0.md) releases partial HC-01/HC-06: managed service prices and reviewed immutable snapshots on current project invoices. [Guide](SERVICE_CATALOG.md). It does not complete checkout, taxes, recurring billing or provider services. Current source and prior account/support capabilities remain verified; older pending-source statements below are historical.

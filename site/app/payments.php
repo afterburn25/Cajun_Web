@@ -1,9 +1,10 @@
 <?php
-/** Payment preparation only. No card collection or transaction operation exists here. */
+/** Protected gateway settings and invoice request preparation. Trials are a separate sandbox module. */
 declare(strict_types=1);
 defined('CWP_BOOT') || exit;
 require_once __DIR__.'/catalog.php';
 require_once __DIR__.'/authorize.php';
+require_once __DIR__.'/payment-attempts.php';
 
 function payments_schema(string $prefix): array {
     if(!preg_match('/^[a-zA-Z][a-zA-Z0-9_]{1,19}$/D',$prefix))throw new InvalidArgumentException('Invalid prefix.');
@@ -131,6 +132,7 @@ function payments_prepare(int $invoice,string $purpose,int $days,string $fingerp
         $old=one('SELECT * FROM '.table('payment_requests').' WHERE request_key=? FOR UPDATE',[$key]);
         if($old){if((int)$old['actor_id']!==(int)$actor['id']||!hash_equals($old['request_hash'],$hash))throw new RuntimeException('This request was already submitted with different details.');return (int)$old['id'];}
         $i=payments_invoice($invoice);if(!hash_equals(payments_invoice_hash($i),$fingerprint))throw new RuntimeException('The invoice changed. Reload and review its current amount.');
+        attempts_assert_clear($invoice);
         query('UPDATE '.table('payment_requests')." SET status='superseded' WHERE invoice_id=? AND status='prepared'",[$invoice]);
         query('INSERT INTO '.table('payment_requests').' (invoice_id,job_id,client_id,actor_id,request_key,request_hash,invoice_hash,purpose,status,amount_cents,currency,expires_at,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',[$invoice,$i['job_id'],$i['client_id'],$actor['id'],$key,$hash,$fingerprint,$purpose,'prepared',$i['amount_cents'],$i['currency'],time()+$days*86400,gmdate('Y-m-d H:i:s')]);
         $id=(int)db()->lastInsertId();payments_audit((int)$actor['id'],'request.prepare','Request '.$id.' invoice '.$invoice.'; charging disabled');return $id;
@@ -140,6 +142,7 @@ function payments_revoke(int $id): void {
     staff_locked(fn()=>staff_transaction(function() use($id): void {
         $actor=payments_require();$r=one('SELECT * FROM '.table('payment_requests').' WHERE id=? FOR UPDATE',[$id]);
         if(!$r||$r['status']!=='prepared')throw new RuntimeException('Only a prepared request can be revoked.');
+        attempts_assert_clear((int)$r['invoice_id']);
         query('UPDATE '.table('payment_requests')." SET status='revoked' WHERE id=?",[$id]);payments_audit((int)$actor['id'],'request.revoke','Request '.$id.' invoice '.$r['invoice_id']);
     }));
 }

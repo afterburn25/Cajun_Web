@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-13 — Sandbox trial increment in progress
+
+Starting from verified main `dd29436fa40c2a0f800bc02569b5fd5d1fb75c09` / published 1.5.0. Codex owns `codex/sandbox-attempts`: bounded M2 owner-only Accept.js sandbox trials, durable one-attempt request ledger, safe transaction-detail observations/reconciliation and shared manual/catalog/request locking. Sandbox results never pay real invoices. Production/client checkout, webhooks, receipts and recurring billing remain disabled or pending. Source candidate 1.6.0 is not a release until exact-source/upgrade/artifact gates pass. Real merchant credentials are unavailable; synthetic gateway/browser fixtures must remain labeled. Preserve Devin PR #7 / `55d6067` and its portfolio ownership. Next: finish implementation and native/HTTP/browser/retained-1.5 upgrade acceptance, then checked integration/publication if passing. No live deployment, real charge, customer mail or provider operation authorized here.
+
+
 ## v1.5.0 — 2026-10-13
 
 **Current release — 2026-10-13:** [v1.5.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.5.0) is published and downloaded-back verified at `3e95bdf81ca0126d99a69c41f2ff6eb0c08da1e1` via [PR #16](https://github.com/afterburn25/Cajun_Web/pull/16). Bounded M2 preparation: owner-only protected separate Authorize.net credentials, sandbox-authentication diagnostics, reviewed invoice requests with expiry/revocation/replacement and strict audit. Card collection, production connections and transaction processing remain disabled. [Payment guide](docs/PAYMENT_PREPARATION.md). Exact-main acceptance: 227 native and 401 HTTP/Chromium checks; all eight assets/tag verified. Provider results use synthetic fixtures, not real merchant authentication. Earlier releases and Devin PR #7 remain unchanged. No live deployment/customer/provider operation. Next: tokenized sandbox payment attempts, verified events and reconciliation before actual design-only checkout; full M2/20i/mail/ZIP/SSH remain pending. [Devin handoff](docs/DEVIN_HANDOFF_1.5.0.md).

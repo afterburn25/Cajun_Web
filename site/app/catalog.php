@@ -99,6 +99,7 @@ function catalog_transition(int $jobId,int $invoiceId,string $status,string $not
     staff_locked(fn()=>staff_transaction(function() use($jobId,$invoiceId,$status,$note): void {
         $actor=catalog_require(true);$r=one('SELECT i.* FROM '.table('studio_invoices').' i JOIN '.table('catalog_invoice_snapshots').' s ON s.invoice_id=i.id WHERE i.id=? AND i.job_id=? FOR UPDATE',[$invoiceId,$jobId]);
         if(!$r||$r['status']!=='issued')throw new RuntimeException('Only an unpaid issued catalog invoice can be changed.');
+        attempts_assert_clear($invoiceId);
         query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=? WHERE id=?',[$status,$note,$status==='paid'?gmdate('Y-m-d H:i:s'):null,$invoiceId]);
         catalog_audit((int)$actor['id'],'invoice.'.$status,'Invoice '.$invoiceId.' project '.$jobId);
     }));

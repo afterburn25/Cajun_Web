@@ -1,5 +1,9 @@
 # Approved roadmap and acceptance criteria
 
+## 2026-10-13 — Candidate 1.6.0 sandbox trials
+
+Bounded M2 / partial HC-04 and HC-11 adds owner-only tokenized sandbox trials, durable attempt/event records, transaction-details matching, explicit reconciliation and shared invoice/request financial locking. Sandbox outcomes never settle real invoices. Existing 1.5 credentials/requests remain intact through additive setup. Client/production checkout, webhooks, receipts, refunds and recurring billing remain pending. Native gateway fixtures and intercepted browser tokenization are not real provider acceptance; credentials were not supplied. See [sandbox guide](SANDBOX_PAYMENTS.md). Candidate acceptance and publication remain pending.
+
 **Current release — 2026-10-13:** [v1.5.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.5.0) is published and downloaded-back verified at `3e95bdf81ca0126d99a69c41f2ff6eb0c08da1e1` via [PR #16](https://github.com/afterburn25/Cajun_Web/pull/16). Bounded M2 preparation: owner-only protected separate Authorize.net credentials, sandbox-authentication diagnostics, reviewed invoice requests with expiry/revocation/replacement and strict audit. Card collection, production connections and transaction processing remain disabled. [Payment guide](PAYMENT_PREPARATION.md). Exact-main acceptance: 227 native and 401 HTTP/Chromium checks; all eight assets/tag verified. Provider results use synthetic fixtures, not real merchant authentication. Earlier releases and Devin PR #7 remain unchanged. No live deployment/customer/provider operation. Next: tokenized sandbox payment attempts, verified events and reconciliation before actual design-only checkout; full M2/20i/mail/ZIP/SSH remain pending. [Devin handoff](DEVIN_HANDOFF_1.5.0.md).
 
 
