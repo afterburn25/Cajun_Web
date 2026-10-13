@@ -6,11 +6,14 @@ define('CWP_BOOT', true);
 $request = json_decode(stream_get_contents(STDIN), true, 32, JSON_THROW_ON_ERROR);
 // A populated catalog fixture calls the old authorization adapter. Its core must
 // resolve CWP_ROOT to that same retained release, never include two staff adapters.
-require ($request['operation']??'')==='seed-trial-upgrade' ? __DIR__.'/../test-runtime/released-1.5.0/app/core.php' : (($request['operation']??'')==='seed-payment-upgrade' ? __DIR__.'/../test-runtime/released-1.4.0/app/core.php' : __DIR__.'/../site/app/core.php');
+$oldCore=match($request['operation']??''){'seed-notification-upgrade'=>'test-runtime/released-1.6.0','seed-trial-upgrade'=>'test-runtime/released-1.5.0','seed-payment-upgrade'=>'test-runtime/released-1.4.0',default=>'site'};
+require __DIR__.'/../'.$oldCore.'/app/core.php';
 $GLOBALS['cwp_config'] = require __DIR__.'/../test-runtime/config-fixture.php';
-if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','seed-support-upgrade','seed-catalog-upgrade','seed-payment-upgrade','seed-trial-upgrade'],true)) {
-    $trialUpgrade=$request['operation']==='seed-trial-upgrade';$paymentUpgrade=$trialUpgrade||$request['operation']==='seed-payment-upgrade';$catalogUpgrade=$paymentUpgrade||$request['operation']==='seed-catalog-upgrade';$supportUpgrade=$catalogUpgrade||$request['operation']==='seed-support-upgrade';$staffUpgrade=$supportUpgrade||$request['operation']==='seed-staff-upgrade';$folder=$trialUpgrade?'trial-upgrade':($paymentUpgrade?'payment-upgrade':($catalogUpgrade?'catalog-upgrade':($supportUpgrade?'support-upgrade':($staffUpgrade?'staff-upgrade':'upgrade'))));$prefix=$trialUpgrade?'trialup_':($paymentUpgrade?'paymentup_':($catalogUpgrade?'catalogup_':($supportUpgrade?'supportup_':($staffUpgrade?'staffup_':'upgrade_'))));
-    require __DIR__.'/../test-runtime/'.($trialUpgrade?'released-1.5.0':($paymentUpgrade?'released-1.4.0':($catalogUpgrade?'released-1.3.0':($supportUpgrade?'released-1.2.0':($staffUpgrade?'released-1.1.0':'legacy'))))).'/app/schema.php';
+if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','seed-support-upgrade','seed-catalog-upgrade','seed-payment-upgrade','seed-trial-upgrade','seed-notification-upgrade'],true)) {
+    $notificationUpgrade=$request['operation']==='seed-notification-upgrade';
+    $trialUpgrade=$notificationUpgrade||$request['operation']==='seed-trial-upgrade';$paymentUpgrade=$trialUpgrade||$request['operation']==='seed-payment-upgrade';$catalogUpgrade=$paymentUpgrade||$request['operation']==='seed-catalog-upgrade';$supportUpgrade=$catalogUpgrade||$request['operation']==='seed-support-upgrade';$staffUpgrade=$supportUpgrade||$request['operation']==='seed-staff-upgrade';$folder=$trialUpgrade?'trial-upgrade':($paymentUpgrade?'payment-upgrade':($catalogUpgrade?'catalog-upgrade':($supportUpgrade?'support-upgrade':($staffUpgrade?'staff-upgrade':'upgrade'))));$prefix=$trialUpgrade?'trialup_':($paymentUpgrade?'paymentup_':($catalogUpgrade?'catalogup_':($supportUpgrade?'supportup_':($staffUpgrade?'staffup_':'upgrade_'))));
+    if($notificationUpgrade){$folder='notification-upgrade';$prefix='notifyup_';}
+    require __DIR__.'/../test-runtime/'.($notificationUpgrade?'released-1.6.0':($trialUpgrade?'released-1.5.0':($paymentUpgrade?'released-1.4.0':($catalogUpgrade?'released-1.3.0':($supportUpgrade?'released-1.2.0':($staffUpgrade?'released-1.1.0':'legacy')))))).'/app/schema.php';
     $GLOBALS['cwp_config']['db']['prefix'] = $prefix;
     $GLOBALS['cwp_config']['site_url'] = 'http://127.0.0.1:8091/'.$folder;
     $private = __DIR__.'/../test-runtime/'.$folder.'-private';
@@ -51,10 +54,15 @@ if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','se
         catalog_issue(1,$product,1,1,'Retained catalog invoice',str_repeat('9',64));
     }
     if($trialUpgrade){
-        $_SERVER['DOCUMENT_ROOT']=realpath(__DIR__.'/../test-runtime/released-1.5.0');
+        $_SERVER['DOCUMENT_ROOT']=realpath(__DIR__.'/../'.$oldCore);
         save_setting('payments_schema_version','1');
         payments_save('sandbox',0,['api_login_id'=>'RetainedSandboxFixture','transaction_key'=>'FixtureKey123456','signature_key'=>str_repeat('b',128),'public_client_key'=>'RetainedPublicFixture'],'Synthetic upgrade passphrase 2026');
         payments_prepare(1,'deposit',7,payments_invoice_hash(payments_invoice(1)),str_repeat('8',64));
+    }
+    if($notificationUpgrade){
+        save_setting('payment_attempts_schema_version','1');
+        query('INSERT INTO '.table('payment_attempts').' (request_id,invoice_id,actor_id,attempt_key,reference,environment,account_hash,gateway_revision,amount_cents,currency,state,transaction_id,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[1,1,1,str_repeat('7',64),'CW'.str_repeat('a',18),'sandbox',hash('sha256','sandbox|RetainedSandboxFixture'),1,9900,'USD','unknown',null,$now,$now]);
+        attempts_event(1,1,'submitted');
     }
     file_put_contents(__DIR__.'/../test-runtime/'.$folder.'-config.php','<?php return '.var_export(config(),true).';');
     echo json_encode(['ok'=>true]);

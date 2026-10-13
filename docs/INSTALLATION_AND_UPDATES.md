@@ -1,5 +1,7 @@
 # Installation, packaging and updates
 
+**1.7.0 candidate:** `sandbox-notifications.php` is a fixed sandbox-only HTTPS POST endpoint with no session, redirects or provider call. One additive `payment_notifications` table and an owner-configured receiver setting are added; receipt defaults to disabled. Existing sites back up files/database/external credential master key, merge UPDATE, then enable Sandbox notifications after Sandbox trials. No runtime CLI/daemon is required. Credential edits pause receipt until rechecked and reconfigured. Owners process queued notifications manually. [Setup and limits](SANDBOX_NOTIFICATIONS.md). Publication pending.
+
 ## 2026-10-13 — Verified 1.6.0 sandbox increment
 
 Owner-only tokenized sandbox trials, durable intent/events, transaction-detail reconciliation and shared manual/catalog/request locking are delivered in [v1.6.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.6.0) / `e5d4c17456faff0522429ab3f58093a06a523bd5`. Sandbox never pays real invoices. Production/client checkout, webhooks, receipts/refunds and recurring billing remain pending. Original 1.5.0 UPDATE preserves credentials/key, requests and existing records. 296 native / 421 HTTP/Chromium checks pass; gateway and browser tokenization fixtures remain synthetic. Back up and enable Sandbox trials after UPDATE. [Guide](SANDBOX_PAYMENTS.md) · [report](TEST_REPORT_1.6.0.md).
