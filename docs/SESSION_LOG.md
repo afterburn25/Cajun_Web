@@ -500,6 +500,20 @@ Integration refresh: preserved latest Devin #35 head efc967a (publication-record
 
 PR #55 merged at 4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36; exact-main acceptance 38433670555 passes 4873 named checks (3084 estimator / 618 native / 802 HTTP-browser / 73 filesystem / 279 Apache / 17 builder). Preserved #35 through efc967a. All three clean-source artifacts match Windows/Linux; all 16 draft and public assets, hashes, members, directories and immutable tag verified. Prior 1.11.1 fingerprints unchanged. Homepage desktop/mobile pixels identical; inspected real screenshots. No live deployment/external activation. Reviewed #56: 36 checks pass, but reproduced second-order substitutions and malformed placeholders falsely resolving; requested precise corrections. #31 still needs no-mbstring portability and #36 accurate APIs/semantics; #32 corrected 71 checks pass locally. Next actual work is A-07 template persistence/admin preview after component correction, with existing staff isolation and no real mail sending. Publication records are documentation only.
 
+### 2026-10-13 — Devin A-06 webmail foundation
+
+**Request:** "Continue Without Stopping" — next feasible roadmap item (A-06 multi-account webmail contract layer, no external gate). Codex is mid-integration on `codex/admin-email-templates`; flagged that it carries the pre-correction #56 head (`ef5d4f9`, corrected head `f3522f6`).
+
+**Starting commit:** `main` `a1581d4` (published 1.11.2). New branch `devin/webmail-foundation`.
+
+**Changed:** added `foundation/webmail/` (MailboxProfile, MailboxGrant, ConnectionResult, MailMessage, UnifiedInbox), `tests/webmail/run.php`, `docs/WEBMAIL_FOUNDATION.md`, `.github/workflows/webmail.yml`, and additive continuity entries. No `site/` or shared-path changes.
+
+**Tests:** 46 synthetic checks pass on PHP 8.4.25 under both `php` and `php -n`; all files lint clean. Covers: host/port/encryption validation (plaintext refused), opaque credential refs, grant lifecycle/expiry/revocation, honest probe outcomes, flag semantics, combined-inbox structural privacy.
+
+**Failures:** none. **Blockers:** none for the contract layer; transport, credential storage, sync and UI remain Codex integration work.
+
+**Next:** PR `devin/webmail-foundation`; queue now 18 open Devin PRs awaiting Codex sequencing.
+
 ## 2026-10-13 — A-07 application integration claimed
 
 Started from publication-record main a1581d4 on codex/admin-email-templates; preserve #56 through ef5d4f9. Shared-doc conflicts retain actual published 1.11.2 and historical component records. Original 36 component checks pass, but sequential substitution and malformed-token acceptance are reproduced and assigned to Devin before release. Next: implement additive staff template storage/revisions/permissions/UI and native/browser acceptance while corrections proceed. No production send or account connection. Issue #2 claim and verified 1.11.2 handoff are posted.
@@ -529,3 +543,27 @@ Run 38439521027 confirms template create/preview/activation plus native/filesyst
 PR #58 merged at c526e960db13246c217f2b9d6f421c17b8d48261, preserving corrected #56 through f3522f6. Exact-main 38441087438: 5026 named checks (677 native, 3084 estimator, 834 HTTP/Chromium, 87 filesystem, 327 Apache, 17 builder). All 16 draft/public assets and tag downloaded/verified; Windows/Linux bytes match; prior 1.11.2 fingerprints unchanged. Homepage pixels retained; real template desktop/mobile screens inspected. Updated current release records/guide/Devin handoff. No live deployment, sending or external provider activation. Next: reviewed A-06 account/configuration/grant adapter from #59 while L-02/L-03 corrections remain independently tracked. The roadmap continues.
 
 Publication follow-through: exact-main desktop/mobile template and retained admin/client workspace screenshots inspected; public home pixel comparison passes. Historical component headings and scope notes are explicitly superseded by the new integration record. Issue #2 integration claim is comment 6151630184. Draft A-06 vault/schema preparation stays outside released source pending component corrections and dedicated native acceptance.
+
+## 2026-10-13 — A-06 account preparation claimed and canonical branch preserved
+
+From verified 1.12.0 publication-record 2d46c70, created codex/admin-mail-accounts and merged #59 through 7a52e19 without changing Devin's branch. Documentation conflicts retain the published 1.12.0 record and accurate current ownership. Local PHP 8.4 -n: all 62 webmail model checks pass; independent issuance/expiry/duplicate/flag checks pass, but pipe-delimited message identity has a reproduced tuple collision, assigned in #59 comment 6151792141. No identity consumer or mail transport is enabled. Scratch account vault/schema preparations lint but are not yet application-tested. Issue #2 release/ownership handoff is comment 6151774409. Next: implement owner settings, protected passwords, current grants and native/UI acceptance while the canonical identity correction proceeds. No production activation.
+
+## 2026-10-13 — Devin A-06 webmail corrections (Codex review rounds 1-2)
+
+**Request:** "Continue Without Stopping"; Codex review of PR #59 assigned two correction rounds before the `codex/admin-mail-accounts` adapter proceeds.
+
+**Work:** round 1 (`7a52e19`) — renamed `MailboxGrant` to `MailboxAssignment` so the temporal lifecycle record cannot read as a competing authority to canonical `Access\MailboxGrant`/`PermissionPolicy`; assignments require non-negative times, `active()` now requires `now >= issuedAt` (fixing active(100)=true for a grant issued at 200), `revoke()` refuses pre-issuance times; `MailMessage` gained the RFC 9051 §2.3.1.1 `uidValidity` generation field; `UnifiedInbox` rejects duplicate full identities; honesty claims narrowed (untrusted envelope text, intended-opaque credentialRef, caller-asserted success, snapshot semantics). Round 2 (`91d9106`) — `identity()` re-encoded as a length-prefixed tuple `len:mailboxId|len:folder|uidValidity|uid` after Codex reproduced the `a|b`+`INBOX` vs `a`+`b|INBOX` collision; separator-bearing names stay valid, true duplicates still reject.
+
+**Tests:** 64 synthetic checks pass on PHP 8.4.25 and `php -n`. Fixture records only; no transport, credentials, persistence or UI.
+
+**Next:** #59 awaits Codex re-review; `codex/admin-mail-accounts` adapter is Codex's next integration step.
+
+Codex re-review: preserved 13c04f6 correction ancestry, all 64 PHP 8.4 no-extension checks pass and the independent original collision no longer reproduces. Actual application integration/native/UI acceptance remains pending; original Devin work stays preserved.
+
+## 2026-10-13 — A-06 account adapter implemented for combined acceptance
+
+From preserved corrected model merge 9fbc2f9, added organized mail account/credential modules, four additive schema tables and guarded owner migration, administrator controller/views, explicit staff read/send options, current assignment authorization and scoped metadata listing. Current passwords are AES-GCM protected with a dedicated external private key; retained revisions/audit contain metadata only. Current rows/history/audit share transactions and existing staff locking; stale writes, profile disabling and assignment expiry/revocation are enforced. No network transport exists in this increment. Fresh setup prepares empty tables; build mirrors corrected canonical components and rejects the mail key. Candidate 1.13.0 recognizes actual immutable 1.12.0 and tests retained templates, new encrypted account/assignment data and original key through file recovery/reapplication. Added native database/vault/concurrency tests and actual HTTP/Chromium workflows. Local 64 no-extension component checks, PHP/Python syntax, generated inventory and documentation checks pass; combined CI and screenshots remain pending. No production connection, mail, charge or deployment. Next: run the real combined suite, repair observed failures, inspect UI, then exact-main and release verification before publication.
+
+## 2026-10-13 — Portable generated inventory ordering
+
+First PR #63 application run 38445233085 at 62e9107 stops at installer inventory comparison before native/browser tests. Every recorded dependency hash and working byte matches its Git source. Reproducer shows WindowsPath sorting places MailboxAssignment/MailboxProfile before MailMessage, while Linux case-sensitive ordering differs. Sort inventory by explicit repository-relative POSIX strings and add a portable-order regression; regenerate canonical inventory without changing dependency contents. Downstream filesystem/Apache failures are missing-package consequences, not acceptance passes. Next: rerun the full application suite.
