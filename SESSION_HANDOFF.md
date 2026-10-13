@@ -2,7 +2,7 @@
 
 ## Devin active branch — `devin/webmail-foundation` (A-06 mailbox model)
 
-Branched from `main` `a1581d4` (published 1.11.2). Isolated A-06 contract layer: `foundation/webmail/` (5 files), `tests/webmail/run.php` (46 synthetic checks, all pass on PHP 8.4.25 incl. `php -n`), `docs/WEBMAIL_FOUNDATION.md`, `.github/workflows/webmail.yml`.
+Branched from `main` `a1581d4` (published 1.11.2). Isolated A-06 contract layer: `foundation/webmail/` (5 files), `tests/webmail/run.php` (64 synthetic checks incl. Codex-review corrections — temporal grant validity, UIDVALIDITY generation identity, length-prefixed tuple encoding, duplicate rejection — all pass on PHP 8.4.25 incl. `php -n`), `docs/WEBMAIL_FOUNDATION.md`, `.github/workflows/webmail.yml`.
 
 **Gate:** none for the contract layer; transport, credential storage, sync and UI remain Codex integration work. **Not integrated:** additive-only outside `site/`.
 

@@ -2,7 +2,7 @@
 
 ## 2026-10-13 — Devin A-06 webmail foundation (unreviewed, unintegrated)
 
-Devin implemented the contract-layer portion of A-06 as an isolated canonical component on `devin/webmail-foundation`: `foundation/webmail/` (`MailboxProfile`, `MailboxGrant`, `ConnectionResult`, `MailMessage`, `UnifiedInbox`), `tests/webmail/run.php` (46 checks), `webmail.yml` workflow, and [WEBMAIL_FOUNDATION](docs/WEBMAIL_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer; transport, credential storage, sync, compose UI and sending remain Codex integration work. No `site/` changes, deployment or release.
+Devin implemented the contract-layer portion of A-06 as an isolated canonical component on `devin/webmail-foundation`: `foundation/webmail/` (`MailboxProfile`, `MailboxAssignment`, `ConnectionResult`, `MailMessage`, `UnifiedInbox`), `tests/webmail/run.php` (64 checks — post-review corrections applied), `webmail.yml` workflow, and [WEBMAIL_FOUNDATION](docs/WEBMAIL_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer; transport, credential storage, sync, compose UI and sending remain Codex integration work. No `site/` changes, deployment or release.
 
 ## Active integration — A-07 administrator template library
 ## Latest verified publication — 1.12.0

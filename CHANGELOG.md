@@ -2,8 +2,8 @@
 
 ## Unreleased — A-06 webmail foundation (Devin, isolated component)
 
-- Added canonical `foundation/webmail/` classes (`MailboxProfile` with ssl/starttls-only transports and opaque credential references — never stored secrets; `MailboxGrant` staff↔mailbox authorization with issuer/expiry/revocation; `ConnectionResult` honest success/failed/untested probe records; `MailMessage` listing-level flag model with no body; `UnifiedInbox` combined view that structurally rejects mailboxes lacking an active grant) plus `docs/WEBMAIL_FOUNDATION.md`.
-- Added `tests/webmail/run.php` (46 synthetic checks; fixture records only, `php -n` clean) and the `webmail.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- Added canonical `foundation/webmail/` classes (`MailboxProfile` with ssl/starttls-only transports and opaque credential references — never stored secrets; `MailboxAssignment` temporal staff↔mailbox authorization (active only at/after issuance, expiry/revocation; bridges to canonical `Access\MailboxGrant`); `ConnectionResult` honest success/failed/untested probe records; `MailMessage` listing-level flag model with RFC 9051 `uidValidity` identity and no body; `UnifiedInbox` combined view that structurally rejects mailboxes lacking an active grant) plus `docs/WEBMAIL_FOUNDATION.md`.
+- Added `tests/webmail/run.php` (64 synthetic checks; fixture records only, `php -n` clean) and the `webmail.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, IMAP/SMTP transport, credentials or UI. Not yet integrated or released.
 
 ## 1.12.0 — candidate, administrator email-template library

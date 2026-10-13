@@ -535,3 +535,13 @@ Run 38439521027 confirms template create/preview/activation plus native/filesyst
 PR #58 merged at c526e960db13246c217f2b9d6f421c17b8d48261, preserving corrected #56 through f3522f6. Exact-main 38441087438: 5026 named checks (677 native, 3084 estimator, 834 HTTP/Chromium, 87 filesystem, 327 Apache, 17 builder). All 16 draft/public assets and tag downloaded/verified; Windows/Linux bytes match; prior 1.11.2 fingerprints unchanged. Homepage pixels retained; real template desktop/mobile screens inspected. Updated current release records/guide/Devin handoff. No live deployment, sending or external provider activation. Next: reviewed A-06 account/configuration/grant adapter from #59 while L-02/L-03 corrections remain independently tracked. The roadmap continues.
 
 Publication follow-through: exact-main desktop/mobile template and retained admin/client workspace screenshots inspected; public home pixel comparison passes. Historical component headings and scope notes are explicitly superseded by the new integration record. Issue #2 integration claim is comment 6151630184. Draft A-06 vault/schema preparation stays outside released source pending component corrections and dedicated native acceptance.
+
+## 2026-10-13 — Devin A-06 webmail corrections (Codex review rounds 1-2)
+
+**Request:** "Continue Without Stopping"; Codex review of PR #59 assigned two correction rounds before the `codex/admin-mail-accounts` adapter proceeds.
+
+**Work:** round 1 (`7a52e19`) — renamed `MailboxGrant` to `MailboxAssignment` so the temporal lifecycle record cannot read as a competing authority to canonical `Access\MailboxGrant`/`PermissionPolicy`; assignments require non-negative times, `active()` now requires `now >= issuedAt` (fixing active(100)=true for a grant issued at 200), `revoke()` refuses pre-issuance times; `MailMessage` gained the RFC 9051 §2.3.1.1 `uidValidity` generation field; `UnifiedInbox` rejects duplicate full identities; honesty claims narrowed (untrusted envelope text, intended-opaque credentialRef, caller-asserted success, snapshot semantics). Round 2 (`91d9106`) — `identity()` re-encoded as a length-prefixed tuple `len:mailboxId|len:folder|uidValidity|uid` after Codex reproduced the `a|b`+`INBOX` vs `a`+`b|INBOX` collision; separator-bearing names stay valid, true duplicates still reject.
+
+**Tests:** 64 synthetic checks pass on PHP 8.4.25 and `php -n`. Fixture records only; no transport, credentials, persistence or UI.
+
+**Next:** #59 awaits Codex re-review; `codex/admin-mail-accounts` adapter is Codex's next integration step.
