@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace CajunWebPro\Foundation\Estimator;
 
+if (PHP_SAPI !== 'cli' && !defined('CWP_BOOT')) { http_response_code(404); exit; }
+
 use InvalidArgumentException;
 
 /** One explained contribution to an estimate range. */
