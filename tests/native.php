@@ -8,6 +8,7 @@ require __DIR__.'/../site/app/growth.php';
 require __DIR__.'/../site/app/workspace.php';
 require __DIR__.'/../site/app/schema.php';
 require __DIR__.'/../site/app/studio-admin.php';
+require __DIR__.'/../site/app/portfolio.php';
 $private = __DIR__.'/../test-runtime/private';
 @mkdir($private.'/media',0700,true);
 $GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/existing','storage'=>realpath($private),'key'=>str_repeat('synthetic-test-key-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:3306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'ci_']];
@@ -36,6 +37,30 @@ try {
     foreach(default_projects() as $i=>$v)query('INSERT INTO '.table('projects').' (slug,title,category,summary,description,challenge,solution,deliverables,cover,status,is_demo,featured,sort_order,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,\'published\',1,1,?,?,?)',[...$v,$i,$now,$now]);
     foreach(default_services() as $i=>$v)query('INSERT INTO '.table('services').' (slug,title,summary,body,icon,sort_order,active) VALUES (?,?,?,?,?,?,1)',[...$v,$i]);
     save_setting('sentinel_original','Preserve original settings');
+    query('INSERT INTO '.table('projects')." (slug,title,category,summary,description,challenge,solution,deliverables,cover,status,is_demo,featured,sort_order,created_at,updated_at) VALUES ('draft-fixture','Draft fixture','Internal','s','d','c','s','d','','draft',0,0,9,?,?)",[$now,$now]);
+    $publicView=portfolio_view(null);
+    ok('Adapter orders published portfolio deterministically',array_column($publicView['rows'],'slug')===['river-and-oak','magnolia-built','the-wellness-haus']);
+    ok('Published categories feed the filter list',$publicView['categories']===['Construction','Hospitality','Wellness']);
+    ok('Exact category selects its projects',portfolio_view('Construction')['visible']===[2]);
+    ok('Unknown category matches nothing',portfolio_view('Retail')['visible']===[]);
+    ok('Blank category stays unfiltered',portfolio_view(' ')['visible']===null);
+    ok('Draft project never appears publicly',portfolio_row_by_slug('draft-fixture')===null&&count($publicView['rows'])===3);
+    $record=one('SELECT * FROM '.table('projects').' WHERE id=1');$item=portfolio_item($record);
+    ok('Adapter preserves explicit concept label',$item->kind==='concept');
+    $record['is_demo']=0;ok('Adapter preserves approved client-work label',portfolio_item($record)->kind==='client-work');
+    $record['category']=' 1 ';ok('Adapter normalizes numeric category as string',portfolio_item($record)->categories===['1']);
+    $record['status']='unknown';ok('Unrecognized adapter status defaults to draft',portfolio_item($record)->status==='draft');
+    $record['title']=' ';rejected('Malformed portfolio title is rejected',fn()=>portfolio_item($record));
+    ok('Slug lookup does not case-fold',portfolio_row_by_slug('Magnolia-Built')===null);
+    db()->beginTransaction();
+    try{
+        query('UPDATE '.table('projects')." SET category='1' WHERE id=1");
+        query('UPDATE '.table('projects')." SET category='all' WHERE id=2");
+        query('UPDATE '.table('projects')." SET category=' Café & Studio ' WHERE id=3");
+        ok('Numeric category stays a string through adapter',portfolio_view('1')['categories']===['1','Café & Studio','all']);
+        ok('Category all selects only its own project',portfolio_view('all')['visible']===[2]);
+        $v=portfolio_view('Café & Studio');ok('Normalized Unicode category agrees with card data',$v['visible']===[3]&&$v['rows'][2]['category']==='Café & Studio');
+    }finally{db()->rollBack();}
     $oldLead=one('SELECT * FROM '.table('leads').' WHERE id=1');
     $owner=one('SELECT * FROM '.table('users').' WHERE id=1');
     // Simulate an interrupted additive update that created only its first table.

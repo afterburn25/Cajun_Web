@@ -1,7 +1,8 @@
 # CajunWebPro — project source of truth
 
+## Integration in progress — 1.11.0 portfolio browsing
 
-
+[Portfolio browsing](docs/PORTFOLIO_BROWSING.md) is an integration candidate on `codex/portfolio-browsing`, combining Devin PR #7 with current 1.10.0. Latest published release is still 1.10.0 until exact-main/download verification passes. Estimator PR #29 is merged as a nonshipping foundation; quantity-based live pricing is unchanged. Read the top of [session handoff](SESSION_HANDOFF.md) before using older Next instructions below.
 
 Custom web design and development services, portfolio, and business-management website. **This is a service business website, not a do-it-yourself website builder.**
 

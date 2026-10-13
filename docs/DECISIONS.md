@@ -1,5 +1,9 @@
 # Decision record
 
+## 2026-10-13 — Integrate reviewed public components sequentially
+
+Preserve Devin's original ancestry while fixing review defects on Codex integration branches. The standalone estimator is accepted into the repository but excluded from deployment because live quantity rules and custom-scope behavior require an explicit compatible adapter. Portfolio already maps current storage and is the bounded 1.11.0 shipping candidate. Numeric category IDs remain exact strings; blank alone is unfiltered, so `all` remains a real category. Reject duplicate published slugs rather than select an input-order-dependent case study. No schema change or replacement application.
+
 ## 2026-10-13 — project activity from retained business records
 
 Advance bounded P-07 independently of Devin W-01 and unconfigured merchant/mail integrations. Project existing durable sources and retain only per-person read status; business creation must not depend on notification delivery. Explicit audiences prevent a dual login from substituting staff for clients. Every action revalidates ownership/grants, support cannot mutate client activity, and passive polls preserve idle clocks. Read state changes only for explicit reviewed keys. Outbound mail, full webmail and event types without retained source history need separate contracts.
