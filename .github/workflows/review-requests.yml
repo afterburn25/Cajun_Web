@@ -1,0 +1,40 @@
+name: Review request checks
+
+on:
+  pull_request:
+  push:
+    branches: [main, devin/review-requests]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: review-requests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review-requests:
+    name: Review requests PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - name: Check out the revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Syntax and review-request decisions using the official PHP image
+        run: |
+          docker run --rm --network none -v "$PWD:/workspace:ro" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            for source in foundation/review-requests/*.php tests/review-requests/*.php; do php -l "$source"; done
+            php tests/review-requests/run.php
+            php -n tests/review-requests/run.php  # regression: no php.ini, no optional extensions (mbstring must not be required)
+          '
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Review-request contract unit checks only. Forms, persistence, lead inbox UI, admin workflow, mail delivery, URL fetching and application integration remain untested by this job.' >> "$GITHUB_STEP_SUMMARY"
