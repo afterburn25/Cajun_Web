@@ -46,7 +46,7 @@ def inventory():
     return result
 
 def generated(refresh):
-    for area in ['access','invitations','portfolio','estimator']:
+    for area in ['access','invitations','portfolio','estimator','email-templates']:
         for source in (ROOT/'foundation'/area).glob('*.php'):
             target=SITE/'includes/foundation'/area/source.name
             if refresh:
