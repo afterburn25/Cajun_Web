@@ -5,6 +5,17 @@
 - Added canonical `foundation/vps/` classes (validated specs, admin-priced offerings with null=not-orderable, entitlement/usage quota display, and a guarded server lifecycle with two-actor teardown and in-flight failure rollback) plus `docs/VPS_FOUNDATION.md`.
 - Added `tests/vps/run.php` (58 synthetic checks; fixture specs/prices only) and the `vps.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, catalog UI, schema, persistence or provider calls; HC-10 gate remains `Development pending — API verification`. Not yet integrated or released.
+## 1.11.0 — directory correction candidate (not published)
+
+- Organized administration, portal, public templates, shared bootstrap/security, business services, database migrations, API/webhooks/media and setup source; retained existing visuals and exact image bytes.
+- Canonical root/subfolder URLs, shared session identity, guarded internal paths and private upload staging within the configured store.
+- Staged owner update with recognized-source verification, backup confirmation, serialized journaled replacement, known-hash retirement, direct legacy callbacks and recovery.
+- Three clean-commit artifacts: sanitized FULL-PROJECT, organized COMPLETE-UPLOAD and independently exercised UPDATE; per-artifact inventories/checksums and START-HERE.
+- Expanded application, historical upgrade, Apache and filesystem recovery acceptance. Publication depends on completed checks and exact-main verification.
+
+## Unreleased priority correction — organized directory layout and complete project packages
+
+Owner override stops the portfolio-only 1.11.0 publication. Preserve integrated source and implement organized modules/assets, protected storage/upload scaffolding, bounded owner migration/recovery, and FULL-PROJECT/COMPLETE-UPLOAD/UPDATE artifacts. Latest published version remains 1.10.0; no corrected release claimed yet.
 
 ## 2026-10-13 — Dependency-aware roadmap and agent instructions (docs only)
 

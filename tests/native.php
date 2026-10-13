@@ -3,12 +3,12 @@
 declare(strict_types=1);
 if (PHP_SAPI !== 'cli' || getenv('CWP_TEST_DATABASE') !== 'cwp_test') { fwrite(STDERR,"Refusing tests without explicit isolated cwp_test database.\n"); exit(2); }
 define('CWP_BOOT', true);
-require __DIR__.'/../site/app/core.php';
-require __DIR__.'/../site/app/growth.php';
-require __DIR__.'/../site/app/workspace.php';
-require __DIR__.'/../site/app/schema.php';
-require __DIR__.'/../site/app/studio-admin.php';
-require __DIR__.'/../site/app/portfolio.php';
+require __DIR__.'/../site/includes/bootstrap.php';
+require __DIR__.'/../site/app/marketing/growth.php';
+require __DIR__.'/../site/app/clients/workspace.php';
+require __DIR__.'/../site/database/schema/base.php';
+require __DIR__.'/../site/admin/controllers/studio.php';
+require __DIR__.'/../site/app/portfolio/browse.php';
 $private = __DIR__.'/../test-runtime/private';
 @mkdir($private.'/media',0700,true);
 $GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/existing','storage'=>realpath($private),'key'=>str_repeat('synthetic-test-key-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:3306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'ci_']];

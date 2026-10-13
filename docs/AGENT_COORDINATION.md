@@ -1,5 +1,19 @@
 # Codex and Devin work allocation
 
+## Current directory and package contract — 1.11.0 candidate
+
+The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](DIRECTORY_STRUCTURE.md), [migration and recovery](STRUCTURE_MIGRATION.md), and [START-HERE](../START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.
+
+Candidate `9e8dedf` in [PR #38](https://github.com/afterburn25/Cajun_Web/pull/38) passes 618 native, 782 HTTP/Chromium, 41 filesystem/recovery, 203 Apache and 16 package-builder checks. [Acceptance record](TEST_REPORT_1.11.0.md); [Devin handoff](DEVIN_HANDOFF_1.11.0.md). Final cleanup/docs acceptance, merge, exact-main tests and immutable publication remain mandatory. Latest published release remains 1.10.0. No live deployment.
+
+## Owner priority override — directory structure and packaging, 2026-10-13
+
+The owner requires an actual structural refactor and three separately verified downloads before any unrelated roadmap work resumes. This supersedes earlier constraints that kept substantial root PHP files or interpreted a no-wrapper ZIP as a flat application. Work on `codex/priority-directory-refactor` from main `b975915` preserves integrated portfolio/estimator work and the tested browser correction. Latest published version is **1.10.0**; the 1.11.0 portfolio-only release was stopped before draft/tag creation. The unused 1.11.0 candidate will be corrected before release. Do not publish the old-layout candidate.
+
+Required meaningful areas: admin, portal, pages, includes, business app modules, API/webhooks/media, install, database, config, assets/css and assets/js, categorized images, protected storage/upload scaffolds. Root entry points must be thin. FULL-PROJECT includes docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD extracts organized site contents directly; UPDATE includes tested compatibility/migration support. Keep private configured data locations, exact brand bytes, one-page keyless setup, all existing behavior and no-rewrite/root/subfolder support. [Refactor contract](DIRECTORY_REFACTOR_CONTRACT.md). No live deployment is authorized.
+
+Devin PRs #31/#32 are separate independent components, preserved and paused for integration while paths change. Supply the exact mapping and corrected baseline before further application adapters. Next action is structure implementation, migration/recovery and Apache/native/browser/package acceptance—not another roadmap feature.
+
 ## Mandatory agent workflow for external dependencies — 2026-10-13
 
 Codex and Devin must apply [dependency gate policy](DEPENDENCY_GATES.md) and the four [reclassified roadmap gates](ROADMAP.md#dependency-aware-roadmap-status--owner-instruction-2026-10-13). A missing 20i reseller key, live domain/VPS API evidence, merchant acceptance or SSH transport **does not pause all development**. Split tasks into mock-tested implementable pieces and real integration acceptance gates; select bounded independent tasks for parallel workers without colliding with another branch. A blocked live operation is disabled, never simulated as production. Handoff must name code actually implemented, exact gate/owner action and the next actionable task. Neither PRs nor documentation imply live release or deployment.
