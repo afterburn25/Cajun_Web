@@ -3,7 +3,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/marketing/estimator.php';
-require_once CWP_CODE_ROOT.'/app/marketing/reviews.php';
+require_once CWP_CODE_ROOT.'/app/marketing/review_content.php';
 function growth_routes(): array { return ['why-custom','compare-wix','compare-squarespace','switch','packages','faq','industries','estimate','website-review','consultation']; }
 function growth_types(): array { return ['business'=>'Business website','redesign'=>'Website redesign','store'=>'Online store','custom'=>'Custom application']; }
 function growth_options(): array { return ['copy'=>'Copywriting','brand'=>'Brand identity','migration'=>'Content migration','booking'=>'Booking integration','accounts'=>'Member accounts','integration'=>'Custom integration']; }
@@ -48,6 +48,7 @@ function growth_sources(): array {return [
  ];}
 function growth_token(): string {$_SESSION['growth_tokens']=array_filter($_SESSION['growth_tokens']??[],fn($t)=>is_int($t)&&$t>time()-7200);if(count($_SESSION['growth_tokens'])>=20)array_shift($_SESSION['growth_tokens']);$t=bin2hex(random_bytes(24));$_SESSION['growth_tokens'][$t]=time();return $t;}
 function growth_submit(array $a): array {
+ require_once CWP_CODE_ROOT.'/app/marketing/reviews.php';
  check_csrf();$token=gtext($a,'submission_token',48);$start=$_SESSION['growth_tokens'][$token]??0;
  if(!preg_match('/^[a-f0-9]{48}$/D',$token)||!$start||$start<time()-7200)throw new InvalidArgumentException('This form expired. Reload before sending.');
  if($start>time()-2||gtext($a,'website_address',500)!=='')throw new InvalidArgumentException('Wait a moment before sending.');

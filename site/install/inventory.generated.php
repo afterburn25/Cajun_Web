@@ -79,7 +79,7 @@ function setup_expected_files(): array { return [
     'app/mail/templates.php'=>'367c852948c04e8ff5f6fa9e333f5e5f8e7b0b65c58962c2bf2f6b8d2d35842e',
     'app/mail/transport.php'=>'f589cfeddbc2e70d784202dddbccc91d7f0e0c00814f8b2043e6e5f1895a4676',
     'app/marketing/estimator.php'=>'e20ba646dd9882a8c2ac34bec250a4e4a2a57649d837e8776f69d96bd06c25d4',
-    'app/marketing/growth.php'=>'5d175e3e06f50b64542aa74d514b57da0484992e94d7326dfb736e7785f28083',
+    'app/marketing/growth.php'=>'f6f1302de06913788c82fd8f3f479f44912f8030d3b086afcee813d775943425',
     'app/marketing/review_content.php'=>'413fcf7ac6f6b47d9f3b20d8cdc4187c82f224e03e34512b5f38c5a76c807388',
     'app/marketing/reviews.php'=>'8b212581931089b2369f017f3190767dc29e460b554a12e9d4965ebe76cdb9d2',
     'app/media/images.php'=>'9262a28d87a1d758bd2c40da67fb05e9501df6f5dc9848e476cf571684263f69',
