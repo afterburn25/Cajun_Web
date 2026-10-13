@@ -6,9 +6,11 @@ protected webmail message. This document is the contract for that
 bridge — **documentation only**. The integration itself (sync,
 persistence, public-page bell rendering) is Codex's lane.
 
-Dependencies: `foundation/webmail` (PR #59), `foundation/notifications`
-(PR #57). Both are contract layers; nothing below changes them beyond
-the two recorded canonical extensions.
+Dependencies: `foundation/webmail` (PR #59 — integrated into the
+application in v1.13.0; mirrors live at `site/includes/foundation/webmail/`),
+`foundation/notifications` (PR #57 — still an isolated component pending
+integration). Neither canonical contract changes beyond the two recorded
+extensions below.
 
 ## Required canonical extensions
 
