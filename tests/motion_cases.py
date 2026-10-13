@@ -57,5 +57,10 @@ def run(env,browser):
     context.close()
     context=browser.new_context(java_script_enabled=False,viewport={'width':390,'height':844},reduced_motion='reduce')
     page=context.new_page();page.goto(base+'/existing/',wait_until='networkidle')
-    check('Homepage remains readable without JavaScript',page.locator('.reveal').count()>0 and page.locator('.reveal').evaluate_all("items=>items.every(e=>getComputedStyle(e).opacity==='1')"))
+    # Reveal classes are added by JavaScript. Inspect the actual server-rendered
+    # content, not an enhancement class which correctly does not exist here.
+    content=page.locator('.hero h1,.section-head,.service-card')
+    check('Homepage remains readable without JavaScript',content.count()>3 and content.evaluate_all("items=>items.every(e=>getComputedStyle(e).opacity==='1' && e.getBoundingClientRect().height>0)"))
+    page.locator('.hero .button-row a').first.click()
+    check('Homepage work link navigates without JavaScript','page=work' in page.url and page.locator('.project-card').count()>0)
     context.close()
