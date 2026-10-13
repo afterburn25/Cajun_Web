@@ -117,6 +117,8 @@ One form for service/project type, approximate pages/products, functionality, co
 
 ### L-02 — Website-review requests
 
+Candidate 1.14.0 implements the bounded human review/report workflow; combined acceptance and publication remain pending. [Contract and current implementation](WEBSITE_REVIEW_WORKFLOW.md). Automated audits, fetching and customer delivery remain separate work.
+
 Capture existing website, business goals, and contact details in the lead inbox. Start with human-reviewed findings and a saved review/report before sending. Automated performance data is optional later and must label sources, observation date, lab versus real-user evidence, and absent data. Acceptance: valid request persistence, admin workflow, appropriate consent and delivery tracking. Any later server-side URL fetching requires SSRF protections, limits, and no access to private/internal addresses.
 
 ### C-01 — Why custom / Wix and Squarespace comparisons

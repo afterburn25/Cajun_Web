@@ -1,6 +1,6 @@
 # Website review workflow — bounded L-02 application contract
 
-Codex owns `codex/website-review-workflow`, continuing verified 1.13.0. Preserve Devin #31 and #36 ancestry; reuse the canonical review classes rather than a parallel lifecycle. This document defines implementation and acceptance, not completion.
+Codex owns `codex/website-review-workflow`, continuing verified 1.13.0. Preserve Devin #31 and #36 ancestry; reuse the canonical review classes rather than a parallel lifecycle. Candidate 1.14.0 source implements this contract. Combined acceptance, actual screenshots and publication verification are pending; latest verified publication remains 1.13.0.
 
 ## User workflow
 
@@ -27,3 +27,9 @@ No new root business module, framework, daemon, customer CLI or Composer require
 - Exact generated installer and deterministic three-package build; actual immutable 1.13.0 update/recovery preserves email credentials/assignments/templates and added review records. Retain all earlier supported update/protection tests, then test merged main and verify draft/public release bytes.
 
 Real automatic audits, sending, client report delivery, appointments and production activation remain separate work. No live customer message, provider operation or deployment is authorized by this increment.
+
+## Current implementation map
+
+`site/app/marketing/reviews.php` handles current staff authorization, atomic capture/adoption, versioned report/stage/delivery writes and explicit inquiry deletion. `review_content.php` applies byte/text/time/evidence validation and canonical object construction. Schema and setup live under `site/database/schema/reviews_schema.php` and `site/database/migrations/reviews_migrate.php`; review/report/history foreign keys cascade only on explicit parent deletion. Administration uses `site/admin/controllers/reviews.php` and `site/admin/views/reviews.php`, reached from the Website review inquiry. Public form handling remains in the existing growth module. No additional public endpoint or network fetcher is introduced.
+
+Existing owners first enable Administrators if needed, then open a Website review inquiry and choose Website review report and history to enable storage. Fresh installation prepares empty review tables. New submissions become tracked reviews only after storage is ready; older submissions remain intact and can be adopted explicitly. Editing is limited to In review/Report drafted and a changed draft returns to In review. Enter all timestamps in UTC; delivery accepts seconds so the recorded time cannot predate the report. Record only delivery that has already happened.
