@@ -5,6 +5,15 @@
 - Added canonical `foundation/pipeline/` classes (`PipelineStage`/`PipelineBoard` validated ordered stages with explicit transition lists and won/lost markers, `LeadRecord` with board-checked moves, typed record links, follow-up dates and append-only actor-attributed history) plus `docs/PIPELINE_FOUNDATION.md`.
 - Added `tests/pipeline/run.php` (31 synthetic checks; fixture boards/leads only) and the `pipeline.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, persistence, permissions or board UI. Not yet integrated or released.
+## 1.11.1 — candidate, motion preferences and organized updates
+
+- Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.
+- Measure homepage lab layout shifts with a real buffered PerformanceObserver and session-window calculation; test saved pause/resume, device reduced motion and no-JavaScript readability. This is synthetic browser evidence, not a production performance guarantee.
+- Recognize the verified 1.11.0 package for owner updates; retain known upgrade-only routes without adding them to fresh organized sites. Preserve private scaffolds, previous recovery records and all configuration/business data. Separate target-version journals share the original permanent update lock.
+- Extend real Apache update/recovery acceptance with the actual retained 1.11.0 installer, database records, session continuity and opcode caching enabled without timestamp validation. Retain old-layout historical acceptance.
+- Derive installer page/JavaScript/diagnostic build labels from its canonical build constant; restore organized installer logo/emblem paths. Browser setup now explicitly checks version and loaded brand images; the builder rejects stale literal image paths.
+- Make package checksum ordering identical on Windows and Linux; use committed history and guide bytes in exact-source artifacts.
+- Acceptance/publication pending. Prior releases remain immutable; no live deployment or new external payment/provider operations.
 
 ## 1.11.0 — organized application and verified three-package release
 
@@ -143,6 +152,7 @@ This log distinguishes repository work from application releases and deployment.
 - Verified the source and PR checks on GitHub: 142 decisions and four syntax checks pass on PHP 8.2.34/8.4.26. Evidence is linked from the access foundation and status/handoff; the isolated component is not current-application acceptance.
 - Documented the trusted adapter boundary and pending lifecycle/database/browser integration; updated ownership and Devin's independent portfolio scope while another worker finishes 1.1.0.
 - No version bump, current-source replacement, admin UI, real account/mail operation, release ZIP or deployment. This component remains outside application packaging.
+
 ## 2026-10-12 — GitHub checks, release retention and Codex/Devin coordination
 
 - Integrated roadmap/workflow PR #1 into main, verified passing PR and merged-main documentation jobs, created both work branches and published Devin assignment issue #2. Current status/handoff links the evidence and states that Devin has not been dispatched.

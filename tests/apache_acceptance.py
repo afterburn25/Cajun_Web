@@ -1,6 +1,7 @@
 """Apache 2.4 + mod_php, unprivileged worker, actual COMPLETE ZIP, rewrite on/off."""
 from pathlib import Path
 import getpass,grp,json,os,shutil,subprocess,time,zipfile
+from release_version import VERSION,STAGE,RECOVERY,LOCK_RECOVERY
 import requests
 from bs4 import BeautifulSoup
 ROOT=Path(__file__).resolve().parents[1];QA=ROOT/'qa';RUNTIME=ROOT/'test-runtime/apache';checks=[]
@@ -101,17 +102,19 @@ PHPIniDir /etc/php/8.3/apache2
             check(label+' actual migration interrupts after journaled operation: '+failed.stderr.strip(),failed.returncode!=0 and 'Synthetic interruption' in failed.stderr)
             for route in ['admin.php','portal.php','index.php','assets/site.css']:
                 check(label+' maintenance denies old application '+route,requests.get(base+'/legacy/'+route).status_code==403)
-            session=requests.Session();url=base+'/legacy/cwp-update-1.11.0/owner-update.php';r=session.get(url)
+            session=requests.Session();url=base+'/legacy/'+STAGE+'/owner-update.php';r=session.get(url)
             check(label+' authenticated owner recovery page remains reachable in maintenance',r.status_code==200 and 'Current owner password' in r.text)
-            check(label+' staged payload is denied independently of rewriting',requests.get(base+'/legacy/cwp-update-1.11.0/site/admin/index.php').status_code==403)
+            check(label+' staged payload is denied independently of rewriting',requests.get(base+'/legacy/'+STAGE+'/site/admin/index.php').status_code==403)
             r=session.post(url,data={'csrf':csrf(r),'email':'apache@example.invalid','owner_password':'Synthetic Apache owner passphrase','backup_confirm':'1','action':'apply'},timeout=90)
             (QA/('apache-'+label+'-owner-update.html')).write_text(r.text)
             check(label+' owner resumes interrupted migration through actual Apache','<h2>Complete</h2>' in r.text and r.status_code==200)
             r=session.get(base+'/legacy/admin.php?view=security');doc=BeautifulSoup(r.text,'html.parser');form=next(f for f in doc.select('form') if f.select_one('[name=action][value=account_save]'))
             fields={n['name']:n.get('value','') for n in form.select('input[name]')};fields['current_password']='Incorrect fixture password'
             r=session.post(base+'/legacy/admin.php?view=security',data=fields,allow_redirects=False)
-            check(label+' Apache legacy POST invokes canonical action with body and session',r.status_code==200 and 'current password' in r.text.lower() and 'Location' not in r.headers and 'STUDIO RELEASE 1.11.0' in r.text)
+            check(label+' Apache legacy POST invokes canonical action with body and session',r.status_code==200 and 'current password' in r.text.lower() and 'Location' not in r.headers and ('STUDIO RELEASE '+VERSION) in r.text)
             check(label+' Apache upgraded canonical portal still serves',session.get(base+'/legacy/portal/index.php').status_code==200)
+            from organized_update_cases import run as organized_update
+            organized_update(web,base,check,QA,php,label,'aor_' if rewrite else 'aon_')
         finally:
             proc.terminate()
             try:proc.wait(timeout=10)
