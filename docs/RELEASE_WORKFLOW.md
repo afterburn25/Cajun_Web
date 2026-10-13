@@ -8,6 +8,7 @@ Owner direction recorded 2026-10-12: use GitHub for testing, deliver incremental
 - [Documentation checker](../tools/check_docs.py) verifies required continuity files and inline relative Markdown links, including heading targets. Use `python tools/check_docs.py` locally. External URLs, reference-style links, HTML links and application behavior are outside this check's scope.
 - Application CI, builds and release publishing are **pending verified 1.1.0 source import**. A green documentation job does not mean the website, installer, payments or hosting integration works.
 - The independent [access-policy workflow](../.github/workflows/access-policy.yml) now tests isolated PHP permission decisions on 8.2/8.4. This is component verification only; application CI/build/release gates still await 1.1.0 integration. Independent foundation code is excluded from deployment packages until adapted and accepted.
+- The independent [estimator workflow](../.github/workflows/estimator.yml) tests the isolated Devin estimator component on 8.2/8.4 under the same read-only, network-free constraints. It does not exercise forms, persistence, routes, UI, database or the installer.
 - [Release register](RELEASES.md) distinguishes owner-reported versions, verified source and published deployment packages. No placeholder application release or version bump is justified by this documentation change.
 
 ## Work in reviewable increments

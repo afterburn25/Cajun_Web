@@ -2,6 +2,13 @@
 
 This log distinguishes repository work from application releases and deployment. Documentation-only work does not advance the application version.
 
+## 2026-10-13 — Independent estimator component (Devin)
+
+- Added standalone PHP 8.2+ estimator contract and deterministic evaluation on `devin/lead-estimator`: normalized requests, admin-supplied price rules with duplicate rejection, explained low/high ranges, and consultation routing for unpriced or custom scope — never a 'final quote'.
+- Added 40 synthetic-fixture checks and a separate read-only GitHub PHP 8.2/8.4 workflow (`estimator.yml`). No Composer or runtime-service requirement; no prices are embedded in code.
+- Documented the adapter-input contract and pending 1.1.0 integration in `docs/ESTIMATOR_FOUNDATION.md`. No form, persistence, lead capture or notification exists yet.
+- No version bump, UI, routes, database, release ZIP or deployment. The component stays outside application packaging until adapted to verified current source.
+
 ## 2026-10-13 — Independent staff and mailbox permission component
 
 - Added standalone PHP 8.2+ immutable access contexts and permission policy: deny unknown/inactive/stale identities, separate staff management/permission grants, require exact mailbox read/send memberships, and reject conflicting duplicate grants.

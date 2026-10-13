@@ -38,6 +38,8 @@ Preserve approved navy/gold composition while adding restrained metallic logo hi
 
 One form for service/project type, approximate pages/products, functionality, content/branding/migration/maintenance options, timing, and contact information. Optional fields can appear in place; no wizard. Admin-editable price rules and ranges, an explanation of assumptions, and a consultation result for uncertain/custom scopes. Acceptance: server-side recomputation, validation, spam controls, saved lead/brief before notification, input preservation on failure, no invented starting prices, and 'estimate, not final quote' labeling.
 
+Status 2026-10-13: **in progress (independent component only).** The standalone contract/evaluation component and synthetic tests exist on `devin/lead-estimator` ([estimator foundation](ESTIMATOR_FOUNDATION.md)); no form, persistence, notification or admin pricing integration exists yet, and none is claimed until verified 1.1.0 source is inspected and shared contracts are agreed with Codex.
+
 ### L-02 — Website-review requests
 
 Capture existing website, business goals, and contact details in the lead inbox. Start with human-reviewed findings and a saved review/report before sending. Automated performance data is optional later and must label sources, observation date, lab versus real-user evidence, and absent data. Acceptance: valid request persistence, admin workflow, appropriate consent and delivery tracking. Any later server-side URL fetching requires SSRF protections, limits, and no access to private/internal addresses.

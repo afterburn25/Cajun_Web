@@ -17,7 +17,7 @@ Every working session must update the status, handoff, and [session log](docs/SE
 
 ## Current checkpoint — 2026-10-12
 
-Parallel work started 2026-10-13 while a separate worker finishes 1.1.0: an isolated [staff/mailbox permission foundation](docs/ACCESS_FOUNDATION.md) and tests are being developed on `codex/platform-foundation`. [Agent coordination](docs/AGENT_COORDINATION.md) defines an independent Devin portfolio stream. These components are not yet integrated into a deployable website; the current-source gate below applies to integration, not independent preparation.
+Parallel work started 2026-10-13 while a separate worker finishes 1.1.0: an isolated [staff/mailbox permission foundation](docs/ACCESS_FOUNDATION.md) and tests are on `codex/platform-foundation`, and Devin's independent [estimator evaluation foundation](docs/ESTIMATOR_FOUNDATION.md) is on `devin/lead-estimator`. [Agent coordination](docs/AGENT_COORDINATION.md) defines the stream split. These components are not yet integrated into a deployable website; the current-source gate below applies to integration, not independent preparation.
 
 The repository was empty when inspected. This bootstrap records the project requirements, inspected distribution baseline, approved backlog, and continuity process. **Application source and original image assets have not yet been imported into Git. This is not a deployable website release.**
 
@@ -49,6 +49,7 @@ The owner confirms **1.1.0 is the latest version**. Its source/package must be l
 | [Release register](docs/RELEASES.md) | Version provenance, published package links and verification limits |
 | [Codex and Devin coordination](docs/AGENT_COORDINATION.md) | Separate work branches, task ownership, Devin handoff and integration checks |
 | [Access foundation](docs/ACCESS_FOUNDATION.md) | Implemented permission component, test scope and pending 1.1.0 adapter requirements |
+| [Estimator foundation](docs/ESTIMATOR_FOUNDATION.md) | Implemented estimate contract/evaluation component, test scope and pending 1.1.0 adapter requirements |
 | [Brand assets](docs/BRAND_ASSETS.md) | Exact logo, favicon source, and visual-reference provenance |
 | [Baseline inventory](docs/BASELINE_INVENTORY.md) | Artifact identity, file inventory, and inspection limits |
 | [Decisions](docs/DECISIONS.md) | Accepted constraints and why earlier approaches were rejected |
