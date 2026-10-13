@@ -1,5 +1,21 @@
 # Session log
 
+## 2026-10-13 — Devin v1.16.0 verification and branch-refresh repair
+
+**Request:** Continue Without Stopping. After PR #67 merged (`372ea28`) and v1.16.0 published (record `532dfe4`), verify the release and refresh the Devin queue.
+
+**Starting state:** `devin/mail-transport` after a failed scripted refresh that had committed conflict markers into 5 branches, truncated `CHANGELOG.md`/`PROJECT_STATUS.md`/`SESSION_HANDOFF.md` on 13 branches, and committed scratch files here.
+
+**Work:**
+- Repaired all damaged branches by recomputing true three-way union merges per file against each merge commit's real parents (stage 1/2/3 blobs, temp files outside the repo, guards rejecting empty or marker output). Hand-resolved the two genuine code conflicts: `devin/refactor-payload-verify` (`tools/update/owner-update.php` took main's stronger manifest/history verification; `tests/structure_worker.php` retains the staged-manifest hash-check adapted to main's dynamic update version — PHP -l clean) and `devin/apache-autoindex-fix` (intended comment-only diff verified, python ast parse clean). Removed accidentally committed `tmp-mergefix/*` from this branch.
+- Refreshed every `devin/*` branch onto `532dfe4` (v1.16.0 publication record) using normal merges plus guarded stage-3 union for doc anchors.
+- Final remote survey: zero `<<<<<<<` markers, zero scratch files, zero unintended empty files across all 28 devin/codex remote branches; `origin/main` is an ancestor of every Devin head.
+- Independent v1.16.0 verification: tag → `372ea28b`; all manifest `source_commit` fields agree; SHA256SUMS OK on downloaded assets; COMPLETE-UPLOAD 280/280, UPDATE 267/267 (`cwp-update-1.16.0/` staging), FULL-PROJECT 524/524 file hashes; 6 thin shims correct; `history_sha256` `620d6dd7…` matches; 18 supported starting packages; no `config.php`/`mail-master.key` leakage. Posted to issue #2.
+
+**Known state:** `devin/mail-transport` is preserved per the 1.16.0 handoff — its custom parser is not accepted for shipment; Codex's `foundation/mail-receiving/` (PR #69, vendored pinned `directorytree/imapengine`) is the receiving path. This branch remains a reference implementation with the bounded-sync improvement intact.
+
+**Next:** review PR #69 when it leaves draft; verify 1.17.0 byte-for-byte on publication.
+
 ## 2026-10-13 — Devin review-request adapter contract (L-02 dependency)
 
 **Request:** Continue the roadmap while queued PRs await Codex integration. Following the estimator adapter contract (PR #35), document how the live `website-review` route adopts the L-02 foundation.
