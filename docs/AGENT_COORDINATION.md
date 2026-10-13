@@ -1,5 +1,11 @@
 # Codex and Devin work allocation
 
+## Active integration — A-07 administrator template library
+
+Codex owns `codex/admin-email-templates` from verified 1.11.2 publication-record main `a1581d4`. Preserves Devin #56 through `ef5d4f9`; its original 36 checks pass but reviewed preview/parser defects remain assigned and must be corrected before release. Candidate version is the unused 1.12.0, subject to all normal acceptance/publication gates. Latest verified release remains 1.11.2.
+
+Bounded scope: saved personal/shared plain-text templates, explicit mail.templates.manage permission, additive storage with immutable revisions, create/edit/duplicate/activate/archive, safe escaped previews and stale-write protection. Codex owns site/database/build/tests; Devin owns canonical model corrections. No sending, mailbox/inbox setup or replacement of transactional messages. Owner-authorized additive migration preserves existing records; support/client identities cannot access staff templates. Full A-07 compose/send and A-06/A-08 webmail remain later work. Follow the permanent directory/update contract and keep real external operations gated.
+
 ## Latest verified publication — 1.11.2
 
 [v1.11.2](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.2) is published and freshly downloaded/verified at source/tag `4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36` through [PR #55](https://github.com/afterburn25/Cajun_Web/pull/55), preserving Devin PR #35 ancestry through `efc967a`. The live public estimator now uses canonical exact arithmetic while preserving existing form, validation, prices, results and saved-lead behavior. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38433670555): 3,084 estimator comparisons/boundaries, 618 native, 802 HTTP/Chromium, 73 filesystem/recovery, 279 Apache and 17 builder checks. All 16 published assets, archive members/directories/checksums and immutable tag verified; Windows/Linux package bytes agree. [Test report](TEST_REPORT_1.11.2.md); [handoff](DEVIN_HANDOFF_1.11.2.md).

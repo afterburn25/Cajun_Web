@@ -1,5 +1,17 @@
 # Session handoff — read before continuing
 
+## Active integration — A-07 administrator template library
+
+Codex owns `codex/admin-email-templates` from verified 1.11.2 publication-record main `a1581d4`. Preserves Devin #56 through `ef5d4f9`; its original 36 checks pass but reviewed preview/parser defects remain assigned and must be corrected before release. Candidate version is the unused 1.12.0, subject to all normal acceptance/publication gates. Latest verified release remains 1.11.2.
+
+Bounded scope: saved personal/shared plain-text templates, explicit mail.templates.manage permission, additive storage with immutable revisions, create/edit/duplicate/activate/archive, safe escaped previews and stale-write protection. Codex owns site/database/build/tests; Devin owns canonical model corrections. No sending, mailbox/inbox setup or replacement of transactional messages. Owner-authorized additive migration preserves existing records; support/client identities cannot access staff templates. Full A-07 compose/send and A-06/A-08 webmail remain later work. Follow the permanent directory/update contract and keep real external operations gated.
+
+## Devin active branch — `devin/email-templates` (A-07 template/placeholder model)
+
+Branched from `main` `855981b` (published 1.11.1). Isolated A-07 contract layer: `foundation/email-templates/` (2 files), `tests/email-templates/run.php` (36 synthetic checks, all pass on PHP 8.4.25 locally), `docs/EMAIL_TEMPLATES_FOUNDATION.md`, `.github/workflows/email-templates.yml`.
+
+**Gate:** none for the contract layer; compose UI, persistence and sending remain Codex integration work. **Not integrated:** additive-only outside `site/`.
+
 ## Latest verified publication — 1.11.2
 
 [v1.11.2](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.2) is published and freshly downloaded/verified at source/tag `4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36` through [PR #55](https://github.com/afterburn25/Cajun_Web/pull/55), preserving Devin PR #35 ancestry through `efc967a`. The live public estimator now uses canonical exact arithmetic while preserving existing form, validation, prices, results and saved-lead behavior. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38433670555): 3,084 estimator comparisons/boundaries, 618 native, 802 HTTP/Chromium, 73 filesystem/recovery, 279 Apache and 17 builder checks. All 16 published assets, archive members/directories/checksums and immutable tag verified; Windows/Linux package bytes agree. [Test report](docs/TEST_REPORT_1.11.2.md); [handoff](docs/DEVIN_HANDOFF_1.11.2.md).
@@ -84,11 +96,9 @@ A new independent L-01 estimator component arrived during release: [PR #27](http
 
 First MariaDB acceptance found a real schema-idempotency failure: digit-bearing `sha256` was omitted by the column parser. Fixed both column-name patterns without weakening type/engine/unique-key checks. Local native tests then passed, and real unprivileged PHP HTTP tests completed fresh one-page installation and physical cleanup. Also fixed the existing lead editor's seven-status/six-label mismatch and corrected the test's portfolio route to the actual `work` endpoint. Tests now run extracted package bytes and cover incompatible schema preservation, cross-client/CSRF rejection and disguised executable uploads. Public service copy was polished and official comparison sources rechecked on 13 October. Complete browser acceptance and release publication remain pending. No customer host or database was changed.
 
-
 ## 2026-10-13 — Source recovery checkpoint
 
 Recovered 41 actual website files plus native/HTTP tests and a build tool from the nine preserved source fragments. Original external assets were fetched only at the recorded public paths and checked against recorded SHA-256 values. Executable source is now under `site/` on `codex/finish-1.1.0`. This supersedes the older no-source-in-Git blocker on this branch, NOT the unverified runtime or release claims. No production files, database, mail or payments were changed. Review `docs/SOURCE_RECOVERY_2026-10-13.json`; run native integration and authorization tests next. No 1.1.0 release is declared by source recovery.
-
 
 Checkpoint: 2026-10-12 — GitHub release/testing discipline and Codex/Devin coordination established; recover current 1.1.0 source next.
 
