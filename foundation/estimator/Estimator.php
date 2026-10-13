@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace CajunWebPro\Foundation\Estimator;
 
+if (PHP_SAPI !== 'cli' && !defined('CWP_BOOT')) { http_response_code(404); exit; }
+
 /**
  * Pure deterministic evaluation: the same request and rule set always
  * produce the same result, and every shown number traces to a supplied rule.

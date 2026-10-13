@@ -63,33 +63,34 @@ try:
     try:r=run(root);check('Unprivileged replacement denial is actionable',r.returncode!=0 and ('Cannot' in r.stderr or 'cannot' in r.stderr))
     finally:root.chmod(0o755)
     r=run(root);check('Denied filesystem operation can retry after permission correction',r.returncode==0)
-    for with_shims in [False,True]:
-        label='organized-retained-routes' if with_shims else 'organized-fresh-routes'
-        root,private=fixture(label,'1.11.0')
+    for version,with_shims in [(v,shims) for v in ['1.11.0','1.11.1'] for shims in [False,True]]:
+        label=('organized-retained-routes-' if with_shims else 'organized-fresh-routes-')+version
+        root,private=fixture(label,version)
         if with_shims:
             # Use the original published shim bytes, verified against its retained inventory.
             import base64
             manifest=json.loads((ROOT/'test-runtime/organized-shims.json').read_text())
-            history=json.loads((ROOT/'tools/legacy-release-files.json').read_text())['1.11.0']['upgrade_shims']
+            history=json.loads((ROOT/'tools/legacy-release-files.json').read_text())[version]['upgrade_shims']
             for name,encoded in manifest.items():
                 content=base64.b64decode(encoded)
                 assert hashlib.sha256(content).hexdigest()==history[name]
                 (root/name).write_bytes(content)
         old_recovery=private/LOCK_RECOVERY;old_recovery.mkdir(mode=0o700)
+        previous_dir=private/('structure-'+version);previous_dir.mkdir(mode=0o700,exist_ok=True)
         previous=b'<?php exit; ?>retained prior-release recovery evidence'
-        (old_recovery/'journal.php').write_bytes(previous)
+        (previous_dir/'journal.php').write_bytes(previous)
         for area in ['storage','upload']:
             (root/area/'customer.php').write_bytes(b'<?php exit; ?>private original bytes')
             (root/area/'.htaccess').write_text('Require all denied\n# Owner protection preserved\n')
         original=snapshot(root)
         r=run(root,stop=2);check(label+' interrupted update is recoverable',r.returncode!=0 and 'Synthetic interruption' in r.stderr)
         inode=(old_recovery/'mutex.php').stat().st_ino
-        r=run(root);check(label+' resumes from actual published organized source',r.returncode==0 and json.loads(r.stdout)['version']=='1.11.0' and json.loads(r.stdout)['state']=='complete')
+        r=run(root);check(label+' resumes from actual published organized source',r.returncode==0 and json.loads(r.stdout)['version']==version and json.loads(r.stdout)['state']=='complete')
         check(label+' preserves private scaffolds files config and guards',all((root/n).read_bytes()==b for n,b in original.items() if n.startswith(('storage/','upload/')) or n in ['config.php','.installed.php']))
         check(label+' does not add unwanted legacy root routes',all((root/n).exists()==with_shims for n in ['admin.php','portal.php','api.php','activity.php','media.php','sandbox-notifications.php']))
-        check(label+' retains previous recovery and shared permanent lock',(old_recovery/'journal.php').read_bytes()==previous and (old_recovery/'mutex.php').stat().st_ino==inode and (private/RECOVERY/'journal.php').exists())
+        check(label+' retains previous recovery and shared permanent lock',(previous_dir/'journal.php').read_bytes()==previous and (old_recovery/'mutex.php').stat().st_ino==inode and (private/RECOVERY/'journal.php').exists())
         r=run(root,'recover');check(label+' recovery restores exact original website',r.returncode==0 and snapshot(root)==original)
-        check(label+' recovery leaves prior-release journal intact',(old_recovery/'journal.php').read_bytes()==previous)
+        check(label+' recovery leaves prior-release journal intact',(previous_dir/'journal.php').read_bytes()==previous)
     root,private=fixture('organized-custom','1.11.0');(root/'config/defaults.php').write_text('<?php /* customized version */');original=snapshot(root);r=run(root)
     check('Unknown organized version cannot fall back to legacy recognition',r.returncode!=0 and 'verified release inventory' in r.stderr and snapshot(root)==original)
     root,private=fixture('organized-old-lock','1.11.0');old_recovery=private/LOCK_RECOVERY;old_recovery.mkdir(mode=0o700)
