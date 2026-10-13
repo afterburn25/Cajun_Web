@@ -1,12 +1,20 @@
 # Architecture notes
 
-## Current directory and package contract — 1.11.0 candidate
+## Latest verified publication — 1.11.1
+
+[v1.11.1](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.1) is published and freshly downloaded/verified at source/tag `cefcc41bcd5297715f2a49d6526900ebe8ad4eb4` through [PR #50](https://github.com/afterburn25/Cajun_Web/pull/50), preserving Devin PR #34 ancestry. Delivers the bounded W-02 motion/preferences fix, canonical installer build/brand-path corrections and tested organized 1.11.0 owner-update/recovery path. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38429347222): 618 native, 800 HTTP/Chromium, 59 filesystem/recovery, 241 Apache and 17 package-builder checks; all 16 published assets, ZIP members/directories/checksums and immutable tag verified. Windows/Linux package bytes agree. [Test report](TEST_REPORT_1.11.1.md); [handoff](DEVIN_HANDOFF_1.11.1.md).
+
+The organized directory and three-package contract remain permanent. Updates recognize 1.0.8 and 1.1.0 through 1.11.0; current staging is cwp-update-1.11.1, recovery is per target version and the original structure-1.11.0/mutex.php lock is shared. Existing private data/scaffolds and older recovery records are preserved; fresh organized sites gain no legacy entries. Previous releases remain immutable. No live deployment or external payment/provider/mail/SSH activation.
+
+Next executable work: integrate the reviewed L-01 estimator adapter contract from PR #35 with exact existing behavior; review corrected L-02/L-03 components in #31/#32 before their application adapters. Keep other Devin foundations isolated and review sequentially. The roadmap continues; this bounded release does not complete W-02 or the full client/billing/mail/provider platform.
+
+## Current directory and package contract — released 1.11.0
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](DIRECTORY_STRUCTURE.md), [migration and recovery](STRUCTURE_MIGRATION.md), and [START-HERE](../START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.
 
-Candidate `9e8dedf` in [PR #38](https://github.com/afterburn25/Cajun_Web/pull/38) passes 618 native, 782 HTTP/Chromium, 41 filesystem/recovery, 203 Apache and 16 package-builder checks. [Acceptance record](TEST_REPORT_1.11.0.md); [Devin handoff](DEVIN_HANDOFF_1.11.0.md). Final cleanup/docs acceptance, merge, exact-main tests and immutable publication remain mandatory. Latest published release remains 1.10.0. No live deployment.
+**Published and downloaded-back verified:** [v1.11.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.0), exact source/tag `de70c5da2e8f7bd35fbb92b9b829d0ab3e880372`, [PR #38](https://github.com/afterburn25/Cajun_Web/pull/38). [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38422422077) passes 618 native, 782 HTTP/Chromium, 41 filesystem/recovery, 203 Apache and 16 package-builder checks. All 16 published assets match the prepared bytes; all three package manifests, paths, contents, checksums and immutable tag target pass. [Test report](TEST_REPORT_1.11.0.md); [Devin handoff](DEVIN_HANDOFF_1.11.0.md). No live deployment. The priority directory correction is complete; the earlier pending/candidate instructions below are historical.
 
-## Owner priority override — directory structure and packaging, 2026-10-13
+## Historical owner priority — fulfilled by verified 1.11.0 delivery
 
 The owner requires an actual structural refactor and three separately verified downloads before any unrelated roadmap work resumes. This supersedes earlier constraints that kept substantial root PHP files or interpreted a no-wrapper ZIP as a flat application. Work on `codex/priority-directory-refactor` from main `b975915` preserves integrated portfolio/estimator work and the tested browser correction. Latest published version is **1.10.0**; the 1.11.0 portfolio-only release was stopped before draft/tag creation. The unused 1.11.0 candidate will be corrected before release. Do not publish the old-layout candidate.
 

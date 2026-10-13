@@ -1,5 +1,13 @@
 # Approved roadmap and acceptance criteria
 
+## Latest verified publication — 1.11.1
+
+[v1.11.1](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.1) is published and freshly downloaded/verified at source/tag `cefcc41bcd5297715f2a49d6526900ebe8ad4eb4` through [PR #50](https://github.com/afterburn25/Cajun_Web/pull/50), preserving Devin PR #34 ancestry. Delivers the bounded W-02 motion/preferences fix, canonical installer build/brand-path corrections and tested organized 1.11.0 owner-update/recovery path. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38429347222): 618 native, 800 HTTP/Chromium, 59 filesystem/recovery, 241 Apache and 17 package-builder checks; all 16 published assets, ZIP members/directories/checksums and immutable tag verified. Windows/Linux package bytes agree. [Test report](TEST_REPORT_1.11.1.md); [handoff](DEVIN_HANDOFF_1.11.1.md).
+
+The organized directory and three-package contract remain permanent. Updates recognize 1.0.8 and 1.1.0 through 1.11.0; current staging is cwp-update-1.11.1, recovery is per target version and the original structure-1.11.0/mutex.php lock is shared. Existing private data/scaffolds and older recovery records are preserved; fresh organized sites gain no legacy entries. Previous releases remain immutable. No live deployment or external payment/provider/mail/SSH activation.
+
+Next executable work: integrate the reviewed L-01 estimator adapter contract from PR #35 with exact existing behavior; review corrected L-02/L-03 components in #31/#32 before their application adapters. Keep other Devin foundations isolated and review sequentially. The roadmap continues; this bounded release does not complete W-02 or the full client/billing/mail/provider platform.
+
 ## Dependency-aware roadmap status — owner instruction (2026-10-13)
 
 **External verification is not a stop-work order.** All workers must follow [dependency and verification gates](DEPENDENCY_GATES.md), separating *implementation progress* from *provider access/production gate* and *released/deployed*. Implement and test independent work; defer only unsupported real provider/merchant/SSH operations, not entire workstreams.
@@ -76,7 +84,7 @@ Real desktop/mobile captures, accessible before/after slider for actual redesign
 
 ### W-02 — Signature homepage motion
 
-Preserve approved navy/gold composition while adding restrained metallic logo highlights, layered device depth, polished service/portfolio responses, and section reveals. Acceptance: immediate readable content, reduced-motion and no-JavaScript behavior, touch-safe controls, no flying pixels/autoplay audio/forced loading, and measured load/layout/interactivity before claiming performance improvements.
+Preserve approved navy/gold composition while adding restrained metallic logo highlights, layered device depth, polished service/portfolio responses, and section reveals. Acceptance: immediate readable content, reduced-motion and no-JavaScript behavior, touch-safe controls, no flying pixels/autoplay audio/forced loading, and measured load/layout/interactivity before claiming performance improvements. Partially delivered on `devin/homepage-motion`: a working motion pause (`motion-off` now actually disables CSS motion and force-reveals pending sections — previously a no-op) plus a restrained metallic logo sheen; layered device depth and measured load/layout evidence remain.
 
 ### L-01 — Single-page project estimator
 

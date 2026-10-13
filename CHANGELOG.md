@@ -1,6 +1,18 @@
 # Changelog
 
-## 1.11.0 — directory correction candidate (not published)
+## 1.11.1 — motion preferences and verified organized updates
+
+- Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.
+- Measure homepage lab layout shifts with a real buffered PerformanceObserver and session-window calculation; test saved pause/resume, device reduced motion and no-JavaScript readability. This is synthetic browser evidence, not a production performance guarantee.
+- Recognize the verified 1.11.0 package for owner updates; retain known upgrade-only routes without adding them to fresh organized sites. Preserve private scaffolds, previous recovery records and all configuration/business data. Separate target-version journals share the original permanent update lock.
+- Extend real Apache update/recovery acceptance with the actual retained 1.11.0 installer, database records, session continuity and opcode caching enabled without timestamp validation. Retain old-layout historical acceptance.
+- Derive installer page/JavaScript/diagnostic build labels from its canonical build constant; restore organized installer logo/emblem paths. Browser setup now explicitly checks version and loaded brand images; the builder rejects stale literal image paths.
+- Make package checksum ordering identical on Windows and Linux; use committed history and guide bytes in exact-source artifacts.
+- Published/download-verified from `cefcc41bcd5297715f2a49d6526900ebe8ad4eb4` after exact-main run 38429347222. All 16 assets and tag pass. Prior releases remain immutable; no live deployment or new external payment/provider operations.
+
+## 1.11.0 — organized application and verified three-package release
+
+Published from `de70c5da2e8f7bd35fbb92b9b829d0ab3e880372` after exact-main acceptance; all 16 assets downloaded and verified. Original history and all earlier releases retained. No live deployment.
 
 - Organized administration, portal, public templates, shared bootstrap/security, business services, database migrations, API/webhooks/media and setup source; retained existing visuals and exact image bytes.
 - Canonical root/subfolder URLs, shared session identity, guarded internal paths and private upload staging within the configured store.
@@ -8,7 +20,7 @@
 - Three clean-commit artifacts: sanitized FULL-PROJECT, organized COMPLETE-UPLOAD and independently exercised UPDATE; per-artifact inventories/checksums and START-HERE.
 - Expanded application, historical upgrade, Apache and filesystem recovery acceptance. Publication depends on completed checks and exact-main verification.
 
-## Unreleased priority correction — organized directory layout and complete project packages
+## Historical priority request — fulfilled by 1.11.0
 
 Owner override stops the portfolio-only 1.11.0 publication. Preserve integrated source and implement organized modules/assets, protected storage/upload scaffolding, bounded owner migration/recovery, and FULL-PROJECT/COMPLETE-UPLOAD/UPDATE artifacts. Latest published version remains 1.10.0; no corrected release claimed yet.
 
@@ -19,7 +31,7 @@ Owner override stops the portfolio-only 1.11.0 publication. Preserve integrated 
 - Linked the rules from agent instructions, roadmap, provider/client roadmaps, coordination, status, handoff and decisions. Explicit production restrictions remain.
 - No PHP/runtime feature, integration, live transaction, deployment or app version bump; previously released v1.10.0 stays unchanged.
 
-## 1.11.0 — portfolio integration candidate, not yet released
+## Historical 1.11.0 portfolio candidate — included in the corrected release
 
 - Stabilize modified-click acceptance by observing the application decision before suppressing synthetic navigation; add an actual Ctrl-click/new-tab check. Shipping bytes are unchanged by this test-only correction.
 
@@ -139,6 +151,7 @@ This log distinguishes repository work from application releases and deployment.
 - Verified the source and PR checks on GitHub: 142 decisions and four syntax checks pass on PHP 8.2.34/8.4.26. Evidence is linked from the access foundation and status/handoff; the isolated component is not current-application acceptance.
 - Documented the trusted adapter boundary and pending lifecycle/database/browser integration; updated ownership and Devin's independent portfolio scope while another worker finishes 1.1.0.
 - No version bump, current-source replacement, admin UI, real account/mail operation, release ZIP or deployment. This component remains outside application packaging.
+
 ## 2026-10-12 — GitHub checks, release retention and Codex/Devin coordination
 
 - Integrated roadmap/workflow PR #1 into main, verified passing PR and merged-main documentation jobs, created both work branches and published Devin assignment issue #2. Current status/handoff links the evidence and states that Devin has not been dispatched.
