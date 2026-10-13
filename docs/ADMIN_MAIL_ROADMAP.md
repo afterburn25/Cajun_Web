@@ -1,5 +1,11 @@
 # Admin webmail, staff access, templates and email notifications
 
+## Current released scope — 1.14.0 baseline
+
+Administrator accounts and client-support access remain released. [1.12.0](TEST_REPORT_1.12.0.md) adds the bounded personal/shared template library with previews and history. [1.13.0](TEST_REPORT_1.13.0.md) adds multiple owner-managed email profiles, encrypted private passwords, separate read/send permissions and explicit current per-mailbox assignments, including for owners. [Accounts guide](ADMIN_EMAIL_ACCOUNTS.md) and [template guide](ADMIN_EMAIL_TEMPLATES.md) define those accepted subsets. These remain preserved in 1.14.0.
+
+Full webmail remains incomplete: no account connection, IMAP synchronization, message rendering, compose/send or email notification bell is implemented by these releases. Existing workspace activity bells represent workspace activity, not received mail. No external mailbox is connected. Historical checkpoints below describe their dated state and do not override this current scope.
+
 ## 2026-10-13 — Verified 1.10.0 workspace activity increment
 
 Separate client/staff activity centers and private workspace bells are delivered in [v1.10.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0) / `4649a913d40166b9874f9550e57b4186edfc43ab`. Additive per-person read state projects retained sources without changing business writes. Exact links, bounded mark-visible actions, history, current authorization and passive idle expiry pass 603 native / 630 HTTP/Chromium checks including actual 1.9.0 UPDATE. Full P-07 remains partial; SMTP dispatch/preferences/stage/hosting/ticket/renewal events and A-06–A-08 multi-account webmail/templates/email bells remain pending. [Guide](WORKSPACE_ACTIVITY.md) · [report](TEST_REPORT_1.10.0.md).
@@ -14,7 +20,7 @@ Add an Email section inside CajunWebPro admin for sending and receiving mail fro
 
 ## A-05 — Additional admin accounts and access (foundation)
 
-**Current A-05 status:** account creation, explicit website/client grants, setup/recovery, role edits, deactivation, existing-session revocation and concurrent last-owner protection are implemented and have exact-main native/browser evidence in PR #10. MFA and mailbox assignments are deferred; mailbox access awaits A-06. Release/deployment status is in the release register.
+**A-05 account lifecycle:** account creation, explicit website/client grants, setup/recovery, role edits, deactivation, existing-session revocation and concurrent last-owner protection are implemented and have exact-main native/browser evidence in PR #10. MFA is deferred. Explicit mailbox assignments are released in bounded 1.13.0 account preparation; actual mailbox transport/content access remains pending. Release/deployment status is in the release register.
 
 Historical component progress: [staff invitation persistence](STAFF_INVITATIONS.md) implements hashed expiring setup links, resend/revoke and transactional consumption with an activation callback. The application still needs issuance authorization, final-schema migration, account lifecycle/last-owner controls, setup UI, delivery and native/browser integration acceptance. No actual administrator is created by this component work.
 
