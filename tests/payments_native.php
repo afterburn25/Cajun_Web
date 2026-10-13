@@ -1,0 +1,95 @@
+<?php
+/** Native MariaDB fixtures; gateway responses are explicitly synthetic, no provider traffic. */
+declare(strict_types=1);
+if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
+define('CWP_BOOT',true);require __DIR__.'/../site/app/core.php';require __DIR__.'/../site/app/schema.php';
+$GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='payci_';
+$_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=realpath(__DIR__.'/../site');start_session();
+$checks=[];$password='Synthetic payment owner passphrase';
+function pay_ok(string $name,bool $ok): void {global $checks;$checks[]=['name'=>$name,'passed'=>$ok];if(!$ok)throw new RuntimeException($name);}
+function pay_deny(string $name,callable $fn): void {try{$fn();}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;pay_ok($name,true);return;}pay_ok($name,false);}
+function pay_actor(int $id): void {$u=one('SELECT * FROM '.table('users').' WHERE id=?',[$id]);$_SESSION['uid']=$id;$_SESSION['auth_version']=$u['auth_version'];$_SESSION['login_at']=$_SESSION['last_activity']=time();}
+function pay_request(string $key,string $purpose='full',int $days=7): int {return payments_prepare(1,$purpose,$days,payments_invoice_hash(payments_invoice(1)),$key);}
+if(($argv[1]??'')==='request-worker'){pay_actor(1);echo pay_request(str_repeat('c',64));exit;}
+try{
+    foreach(schema_statements('payci_') as $name=>$sql)if(!str_starts_with($name,'payment_'))db()->exec($sql);
+    foreach(default_settings() as $k=>$v)save_setting($k,$v);
+    query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Payment owner','payment-owner@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat('a',32),gmdate('Y-m-d H:i:s')]);staff_seed_owner(1);pay_actor(1);
+    query('INSERT INTO '.table('studio_clients').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Payment client','payment-client@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat('b',32),gmdate('Y-m-d H:i:s')]);
+    query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?)',[1,'Payment project','Existing project','Existing milestones',gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);
+    query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,instructions,created_at) VALUES (1,?,?,?,?,?)',['PAY-FIXTURE','Agreed synthetic milestone',12510,'Existing manual instructions',gmdate('Y-m-d H:i:s')]);
+    $original=one('SELECT * FROM '.table('studio_invoices'));
+    pay_deny('Payment migration requires owner reauthentication',fn()=>payments_migrate('wrong'));
+    db()->exec(payments_schema('payci_')['payment_gateways']);db()->exec('ALTER TABLE '.table('payment_gateways').' MODIFY revision VARCHAR(10) NOT NULL');
+    pay_deny('Incompatible payment schema rejected without adoption',fn()=>payments_migrate($password));
+    pay_ok('Unknown incompatible column retained',one('SHOW COLUMNS FROM '.table('payment_gateways')." LIKE 'revision'")['Type']==='varchar(10)');
+    db()->exec('ALTER TABLE '.table('payment_gateways').' MODIFY revision INT UNSIGNED NOT NULL');payments_migrate($password);payments_migrate($password);
+    pay_ok('Additive repeated setup preserves existing invoice',payments_ready()&&one('SELECT * FROM '.table('studio_invoices'))===$original);
+    $creds=['api_login_id'=>'FixtureLogin','transaction_key'=>'FixtureKey123456','signature_key'=>str_repeat('a',128),'public_client_key'=>'FixturePublicClientKey'];
+    pay_deny('First setup requires all four fields',fn()=>payments_save('sandbox',0,[],$password));
+    pay_deny('Invalid secret format rejected',fn()=>payments_save('sandbox',0,array_replace($creds,['signature_key'=>'not-a-signature']),$password));
+    pay_deny('Unsupported environment rejected',fn()=>payments_save('test',0,$creds,$password));
+    pay_deny('Credential save requires current owner password',fn()=>payments_save('sandbox',0,$creds,'wrong'));
+    $storage=config()['storage'];$GLOBALS['cwp_config']['storage']=CWP_ROOT;
+    pay_deny('Credential master key cannot be under served site',fn()=>payments_save('sandbox',0,$creds,$password));$GLOBALS['cwp_config']['storage']=$storage;
+    payments_save('sandbox',0,$creds,$password);$stored=one('SELECT credentials FROM '.table('payment_gateways')." WHERE environment='sandbox'")['credentials'];
+    pay_ok('Credentials encrypted in native database',!str_contains($stored,'Fixture')&&payments_unseal('sandbox',$stored)===$creds);
+    pay_ok('Master key is external and owner-only',(fileperms($storage.'/payment-master.key')&0777)===0600&&filesize($storage.'/payment-master.key')===32);
+    pay_ok('Metadata projection contains no credential material',!str_contains(json_encode(payments_gateway('sandbox')),'Fixture')&&!array_key_exists('credentials',payments_gateway('sandbox')));
+    pay_deny('Environment swap fails authenticated decryption',fn()=>payments_unseal('production',$stored));
+    $raw=base64_decode($stored);$raw[30]=chr(ord($raw[30])^1);pay_deny('Ciphertext tampering fails closed',fn()=>payments_unseal('sandbox',base64_encode($raw)));
+    rename($storage.'/payment-master.key',$storage.'/payment-master-held.key');pay_deny('Missing master key never silently replaces existing key',fn()=>payments_save('sandbox',1,$creds,$password));
+    pay_ok('Missing master leaves ciphertext and revision intact',payments_gateway('sandbox')['revision']===1&&!file_exists($storage.'/payment-master.key'));rename($storage.'/payment-master-held.key',$storage.'/payment-master.key');
+    pay_deny('Stale credential form cannot overwrite saved revision',fn()=>payments_save('sandbox',0,$creds,$password));
+    payments_save('sandbox',1,['public_client_key'=>'ReplacementPublicClientKey'],$password);$changed=payments_unseal('sandbox',one('SELECT credentials FROM '.table('payment_gateways')." WHERE environment='sandbox'")['credentials']);
+    pay_ok('Blank secret edits retain old values and replacement resets verification',$changed['transaction_key']===$creds['transaction_key']&&$changed['public_client_key']==='ReplacementPublicClientKey'&&payments_gateway('sandbox')['validation']==='not_verified');
+    $prod=array_replace($creds,['api_login_id'=>'ProductionFixture']);payments_save('production',0,$prod,$password);
+    pay_ok('Production and sandbox ciphertext sets are separate',payments_unseal('production',one('SELECT credentials FROM '.table('payment_gateways')." WHERE environment='production'")['credentials'])===$prod&&payments_gateway('sandbox')['revision']===2);
+    pay_deny('Production connection is disabled before transport invocation',fn()=>payments_verify('production',1,$password,fn()=>throw new LogicException('Must not call')));
+    $seen=null;$transport=function($body) use(&$seen){$seen=json_decode($body,true);return [200,"\xEF\xBB\xBF".json_encode(['messages'=>['resultCode'=>'Ok','message'=>[['code'=>'I00001','text'=>'Ignored synthetic text']]]])];};
+    pay_ok('Synthetic authentication response records only authentication status',payments_verify('sandbox',2,$password,$transport)==='authenticated'&&payments_gateway('sandbox')['validation']==='authenticated');
+    pay_ok('Authentication body contains no signature public key or payment',array_keys($seen)===['authenticateTestRequest']&&array_keys($seen['authenticateTestRequest']['merchantAuthentication'])===['name','transactionKey']);
+    foreach([[200,'not json','unavailable'],[200,'[]','unavailable'],[302,'{}','unavailable'],[500,'{}','unavailable'],[200,str_repeat('x',65537),'unavailable'],[200,'{"messages":{"resultCode":"Ok","message":[{"code":"E00007"}]}}','unavailable'],[200,'{"messages":{"resultCode":"Error","message":[{"code":"E00007","text":"UNTRUSTED_SECRET"}]}}','rejected']] as $n=>$case)pay_ok('Sanitized synthetic transport result '.$n,authorize_result($case[0],$case[1])===$case[2]);
+    pay_ok('Synthetic timeout keeps a distinct unverified state',payments_verify('sandbox',2,$password,fn()=>[0,''])==='unavailable');
+    pay_deny('Credentials rotated during authentication cannot receive stale success',fn()=>payments_verify('sandbox',2,$password,function() use($password){payments_save('sandbox',2,[],$password);return [200,'{"messages":{"resultCode":"Ok","message":[{"code":"I00001"}]}}'];}));
+    pay_ok('Rotation invalidates last check',payments_gateway('sandbox')['validation']==='not_verified'&&payments_gateway('sandbox')['validated_at']===null);
+    pay_deny('Authentication attempts are rate limited',fn()=>payments_verify('sandbox',3,$password,$transport));
+    payments_save('sandbox',3,[],$password,true);pay_ok('Explicit clear removes only chosen environment',payments_gateway('sandbox')['validation']==='not_configured'&&payments_gateway('production')['validation']==='not_verified');
+    $request=pay_request(str_repeat('1',64),'milestone');$r=one('SELECT * FROM '.table('payment_requests').' WHERE id=?',[$request]);
+    pay_ok('Request uses authoritative existing invoice identity and amount',$r['amount_cents']===12510&&$r['client_id']===1&&$r['job_id']===1&&$r['purpose']==='milestone');
+    pay_ok('Preparing request cannot mark invoice paid',one('SELECT * FROM '.table('studio_invoices'))===$original&&payments_request_state($r)==='prepared');
+    pay_ok('Identical retry creates one request',pay_request(str_repeat('1',64),'milestone')===$request&&(int)query('SELECT COUNT(*) FROM '.table('payment_requests'))->fetchColumn()===1);
+    pay_deny('Same request key with changed payload rejected',fn()=>pay_request(str_repeat('1',64),'deposit'));
+    foreach([0,31] as $days)pay_deny('Invalid expiry '.$days,fn()=>pay_request(str_repeat('2',64),'full',$days));
+    pay_deny('Unknown payment purpose denied',fn()=>pay_request(str_repeat('2',64),'automatic'));
+    $hash=payments_invoice_hash(payments_invoice(1));query('UPDATE '.table('studio_invoices').' SET amount_cents=20000 WHERE id=1');
+    pay_deny('Invoice changed since review cannot be prepared',fn()=>payments_prepare(1,'full',7,$hash,str_repeat('2',64)));
+    pay_ok('Changed invoice invalidates earlier prepared record',payments_request_state($r)==='invoice changed');query('UPDATE '.table('studio_invoices').' SET amount_cents=12510 WHERE id=1');
+    $next=pay_request(str_repeat('2',64),'deposit');pay_ok('Replacement supersedes prior request without rewriting amount',one('SELECT status FROM '.table('payment_requests').' WHERE id=?',[$request])['status']==='superseded');
+    payments_revoke($next);pay_ok('Revocation retains original invoice and request',one('SELECT status FROM '.table('payment_requests').' WHERE id=?',[$next])['status']==='revoked'&&one('SELECT * FROM '.table('studio_invoices'))===$original);
+    pay_deny('Revoked request cannot be revoked again',fn()=>payments_revoke($next));
+    $expired=pay_request(str_repeat('3',64));query('UPDATE '.table('payment_requests').' SET expires_at=? WHERE id=?',[time()-1,$expired]);pay_ok('Expired requests cannot remain prepared',payments_request_state(one('SELECT * FROM '.table('payment_requests').' WHERE id=?',[$expired]))==='expired');
+    query('UPDATE '.table('studio_clients').' SET active=0 WHERE id=1');pay_deny('Revoked client cannot receive new requests',fn()=>pay_request(str_repeat('4',64)));query('UPDATE '.table('studio_clients').' SET active=1 WHERE id=1');
+    foreach(['paid','void'] as $status){query('UPDATE '.table('studio_invoices').' SET status=? WHERE id=1',[$status]);pay_deny('Nonpayable invoice '.$status.' rejected',fn()=>pay_request(str_repeat('4',64)));}query('UPDATE '.table('studio_invoices')." SET status='issued' WHERE id=1");
+    $workers=[];for($n=0;$n<2;$n++){$pipes=[];$p=proc_open([PHP_BINARY,__FILE__,'request-worker'],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);fclose($pipes[0]);$workers[]=[$p,$pipes];}$ids=[];foreach($workers as [$p,$pipes]){$ids[]=trim(stream_get_contents($pipes[1]));$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);if(proc_close($p)!==0)throw new RuntimeException('Concurrent worker failed: '.$err);}
+    pay_ok('Concurrent native processes prepare exactly one request',$ids[0]===$ids[1]&&(int)query('SELECT COUNT(*) FROM '.table('payment_requests')." WHERE request_key='".str_repeat('c',64)."'")->fetchColumn()===1);
+    pay_ok('Only one prepared request remains after replacement',(int)query('SELECT COUNT(*) FROM '.table('payment_requests')." WHERE status='prepared'")->fetchColumn()===1);
+    query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Payment staff','payment-staff@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat('d',32),gmdate('Y-m-d H:i:s')]);
+    query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (2,'administrator',1,?)",['["clients.manage"]']);pay_actor(2);
+    pay_deny('Existing client permission does not grant payment requests',fn()=>pay_request(str_repeat('4',64)));
+    query('UPDATE '.table('staff_profiles').' SET permissions=? WHERE user_id=2',['["payments.manage"]']);pay_deny('Payment permission alone does not grant client invoice access',fn()=>pay_request(str_repeat('4',64)));
+    query('UPDATE '.table('staff_profiles').' SET permissions=? WHERE user_id=2',['["payments.manage","clients.manage"]']);pay_deny('Payment staff cannot change gateway credentials',fn()=>payments_save('sandbox',4,$creds,$password));
+    pay_ok('Explicit payment and client grants permit requests',pay_request(str_repeat('4',64))>0);pay_actor(1);
+    $GLOBALS['cwp_support']=['actor'=>['id'=>1]];
+    pay_deny('Support context cannot prepare payment requests',fn()=>pay_request(str_repeat('5',64)));
+    pay_deny('Support context cannot change gateway credentials',fn()=>payments_save('production',1,[],$password));unset($GLOBALS['cwp_support']);
+    db()->exec('CREATE TRIGGER payci_audit_failure BEFORE INSERT ON '.table('audit')." FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic strict audit failure'");
+    $before=all('SELECT * FROM '.table('payment_requests'));$failed=false;try{pay_request(str_repeat('5',64));}catch(PDOException){$failed=true;}pay_ok('Audit failure rolls back insert and supersession',$failed&&all('SELECT * FROM '.table('payment_requests'))===$before);
+    $gateway=one('SELECT * FROM '.table('payment_gateways')." WHERE environment='production'");$failed=false;try{payments_save('production',1,[],$password,true);}catch(PDOException){$failed=true;}pay_ok('Audit failure rolls back credential deletion',$failed&&one('SELECT * FROM '.table('payment_gateways')." WHERE environment='production'")===$gateway);
+    db()->exec('DROP TRIGGER payci_audit_failure');
+    pay_ok('General audit never includes credentials',!str_contains(json_encode(all('SELECT * FROM '.table('audit'))),'FixtureLogin')&&!str_contains(json_encode(all('SELECT * FROM '.table('audit'))),'FixtureKey'));
+    pay_ok('Native preparation tests leave invoice financial state unchanged',one('SELECT * FROM '.table('studio_invoices'))===$original);
+}catch(Throwable $e){$error=$e;}
+file_put_contents(__DIR__.'/../qa/payments-native-results.json',json_encode(['passed'=>!isset($error),'gateway'=>'Synthetic response/transport fixtures only; no Authorize.net calls','checks'=>$checks,'failure'=>isset($error)?get_class($error).': '.$error->getMessage():null],JSON_PRETTY_PRINT));
+foreach($checks as $c)echo ($c['passed']?'PASS ':'FAIL ').$c['name']."\n";
+if(isset($error)){fwrite(STDERR,$error."\n");exit(1);}echo count($checks)." payment foundation checks passed\n";

@@ -1,5 +1,10 @@
 # Approved roadmap and acceptance criteria
 
+## 2026-10-13 — Candidate 1.5.0 payment foundation
+
+Implemented on `codex/payment-foundation`, parent `e0f8968` after main `f659adf`: owner-only protected separate Authorize.net settings, sandbox-authentication-only adapter and reviewed invoice-bound prepared requests. Existing invoices, catalog snapshots, permissions and client identities are retained. Card collection/production processing remain disabled. [Guide](PAYMENT_PREPARATION.md). Local PHP syntax, deterministic 58/57-file build and 251 permission checks pass. Native MariaDB/actual HTTP/browser and retained 1.4.0 upgrade tests are added; CI is pending and no provider success is claimed. No real credentials, live host, customer mail or provider operation. Next: run/fix full application acceptance, review screenshots, merge only when green and verify an exact-main release. Devin PR #7 is unchanged.
+
+
 **Current release — 2026-10-13:** [v1.4.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.4.0) is published and downloaded-back verified at `0cdea7fbd17e887d3f4bc0574a411b157431b7df` through [PR #14](https://github.com/afterburn25/Cajun_Web/pull/14). Bounded M1 catalog/billing groundwork: approved service SKUs and exact USD prices, private costs, public configured cards, price revisions, reviewed immutable snapshots on existing invoices, duplicate prevention and audited manual paid/void transitions. [Catalog guide](SERVICE_CATALOG.md). Exact-main acceptance: 165 native and 345 HTTP/Chromium checks, all eight retained assets/tag verified. Earlier releases and Devin PR #7 remain unchanged. No live deployment or payment/provider operation. Next bounded work: M2 Authorize.net sandbox settings and payment-request foundation, followed by verified design-only checkout. Broader catalog/order/tax/subscription/20i/mail/ZIP/SSH work remains incomplete. [Devin handoff](DEVIN_HANDOFF_1.4.0.md).
 
 

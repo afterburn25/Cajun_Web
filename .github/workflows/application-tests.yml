@@ -1,7 +1,7 @@
 name: Application acceptance
 on:
   push:
-    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog]
+    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation]
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/build.py', '.github/workflows/application-tests.yml']
   pull_request:
     branches: [main]
@@ -40,7 +40,7 @@ jobs:
       - name: Native runtime and browser dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl
           php8.3 -v
           php8.3 -m
           python3 -m venv .ci-venv
@@ -58,6 +58,7 @@ jobs:
           php8.3 tests/staff_native.php
           php8.3 tests/support_native.php
           php8.3 tests/catalog_native.php
+          php8.3 tests/payments_native.php
       - name: Real HTTP and Chromium application workflows
         run: .ci-venv/bin/python tests/browser_acceptance.py
       - name: Verify tests did not mutate shipping source

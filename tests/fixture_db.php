@@ -3,12 +3,14 @@
 declare(strict_types=1);
 if (PHP_SAPI !== 'cli' || getenv('CWP_TEST_DATABASE') !== 'cwp_test') exit(2);
 define('CWP_BOOT', true);
-require __DIR__.'/../site/app/core.php';
-$GLOBALS['cwp_config'] = require __DIR__.'/../test-runtime/config-fixture.php';
 $request = json_decode(stream_get_contents(STDIN), true, 32, JSON_THROW_ON_ERROR);
-if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','seed-support-upgrade','seed-catalog-upgrade'],true)) {
-    $catalogUpgrade=$request['operation']==='seed-catalog-upgrade';$supportUpgrade=$catalogUpgrade||$request['operation']==='seed-support-upgrade';$staffUpgrade=$supportUpgrade||$request['operation']==='seed-staff-upgrade';$folder=$catalogUpgrade?'catalog-upgrade':($supportUpgrade?'support-upgrade':($staffUpgrade?'staff-upgrade':'upgrade'));$prefix=$catalogUpgrade?'catalogup_':($supportUpgrade?'supportup_':($staffUpgrade?'staffup_':'upgrade_'));
-    require __DIR__.'/../test-runtime/'.($catalogUpgrade?'released-1.3.0':($supportUpgrade?'released-1.2.0':($staffUpgrade?'released-1.1.0':'legacy'))).'/app/schema.php';
+// A populated catalog fixture calls the old authorization adapter. Its core must
+// resolve CWP_ROOT to that same retained release, never include two staff adapters.
+require ($request['operation']??'')==='seed-payment-upgrade' ? __DIR__.'/../test-runtime/released-1.4.0/app/core.php' : __DIR__.'/../site/app/core.php';
+$GLOBALS['cwp_config'] = require __DIR__.'/../test-runtime/config-fixture.php';
+if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','seed-support-upgrade','seed-catalog-upgrade','seed-payment-upgrade'],true)) {
+    $paymentUpgrade=$request['operation']==='seed-payment-upgrade';$catalogUpgrade=$paymentUpgrade||$request['operation']==='seed-catalog-upgrade';$supportUpgrade=$catalogUpgrade||$request['operation']==='seed-support-upgrade';$staffUpgrade=$supportUpgrade||$request['operation']==='seed-staff-upgrade';$folder=$paymentUpgrade?'payment-upgrade':($catalogUpgrade?'catalog-upgrade':($supportUpgrade?'support-upgrade':($staffUpgrade?'staff-upgrade':'upgrade')));$prefix=$paymentUpgrade?'paymentup_':($catalogUpgrade?'catalogup_':($supportUpgrade?'supportup_':($staffUpgrade?'staffup_':'upgrade_')));
+    require __DIR__.'/../test-runtime/'.($paymentUpgrade?'released-1.4.0':($catalogUpgrade?'released-1.3.0':($supportUpgrade?'released-1.2.0':($staffUpgrade?'released-1.1.0':'legacy')))).'/app/schema.php';
     $GLOBALS['cwp_config']['db']['prefix'] = $prefix;
     $GLOBALS['cwp_config']['site_url'] = 'http://127.0.0.1:8091/'.$folder;
     $private = __DIR__.'/../test-runtime/'.$folder.'-private';
@@ -41,6 +43,12 @@ if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','se
         query('INSERT INTO '.table('support_clients').' (client_id,allowed,updated_by,updated_at) VALUES (1,1,1,?)',[time()]);
         query('INSERT INTO '.table('support_events')." (actor_id,client_id,action,object_type,object_id,outcome,occurred_at) VALUES (1,1,'client.allowed','client','1','allowed',?)",[time()]);
         query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,instructions,created_at) VALUES (1,?,?,?,?,?)',['OLD-MANUAL','Retained manual invoice',9900,'Preserve these instructions',$now]);
+    }
+    if($paymentUpgrade){
+        save_setting('catalog_schema_version','1');
+        $_SESSION=['uid'=>1,'auth_version'=>str_repeat('c',32),'login_at'=>time(),'last_activity'=>time()];
+        $product=catalog_save(0,0,['sku'=>'RETAINED-DESIGN','title'=>'Retained catalog service','family'=>'web-design','status'=>'published','term'=>'once','currency'=>'USD','amount'=>'175.50','setup'=>'5.00','cost'=>'40.00','provider_ref'=>'Retained private reference','summary'=>'Retain scope','features'=>'Retain features','terms'=>'Retain agreed terms','sort_order'=>'0']);
+        catalog_issue(1,$product,1,1,'Retained catalog invoice',str_repeat('9',64));
     }
     file_put_contents(__DIR__.'/../test-runtime/'.$folder.'-config.php','<?php return '.var_export(config(),true).';');
     echo json_encode(['ok'=>true]);

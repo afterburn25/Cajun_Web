@@ -18,7 +18,7 @@ function staff_schema(string $prefix): array {
         'staff_invitations'=>StaffInvitationStore::createTableSql($prefix.'staff_invitations'),
     ];
 }
-function staff_permissions(): array { return ['catalog.manage'=>'Service catalog, internal costs and catalog invoices (also needs client access)', 'website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support']; }
+function staff_permissions(): array { return ['payments.manage'=>'Prepare and revoke invoice payment requests (also needs client access)', 'catalog.manage'=>'Service catalog, internal costs and catalog invoices (also needs client access)', 'website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support']; }
 function staff_profile(array $user): ?array {
     if (!staff_ready()) return $user + ['role'=>'owner','enabled'=>1,'permissions'=>'[]']; // Existing access until explicit upgrade.
     $p=one('SELECT role,enabled,permissions FROM '.table('staff_profiles').' WHERE user_id=?',[$user['id']]);
@@ -170,7 +170,8 @@ function staff_reset_token(string $email): ?array {
 }
 function staff_view_permission(string $view): ?string {
     if(in_array($view,['login','forgot','reset','staff-setup','security'],true))return null;
-    if($view==='staff')return 'staff.manage';
+    if(in_array($view,['staff','payment-settings'],true))return 'staff.manage';
+    if($view==='payments')return 'payments.manage';
     if($view==='support')return 'support.login';
     if(in_array($view,['catalog','catalog-invoice'],true))return 'catalog.manage';
     if(in_array($view,['email','health','studio-upgrade'],true))return 'staff.manage';
@@ -180,6 +181,8 @@ function staff_view_permission(string $view): ?string {
 function staff_action_permission(string $action): ?string {
     if(in_array($action,['logout','account_save'],true))return null;
     if($action==='support_start')return 'support.login';
+    if(in_array($action,['payments_migrate','payments_save','payments_clear','payments_verify'],true))return 'staff.manage';
+    if(str_starts_with($action,'payments_'))return 'payments.manage';
     if($action==='catalog_migrate')return 'staff.manage';
     if(str_starts_with($action,'catalog_'))return 'catalog.manage';
     if(in_array($action,['support_migrate','support_policy'],true))return 'staff.manage';
