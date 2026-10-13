@@ -2,6 +2,7 @@
 
 ## Unreleased — bounded inbox receiving in progress
 
+- Add the isolated pinned TLS/header-reading foundation, exact UID identities, explicit limits, private bounded header decoding and 531 additional session/TLS checks. No deployment integration yet.
 - Pin Composer cross-platform helper generation after Linux reproduction identified an auto-mode difference.
 - Normalize root dependency metadata to Git-stable LF bytes while retaining original upstream vendor bytes.
 - Retain the exact maintained dependency bundle, licenses, bounded tokenizer and 17 isolated fixtures; add fresh-install byte reproduction and PHP 8.2/8.4 CI. Deployment remains unchanged.

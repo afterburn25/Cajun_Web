@@ -12,13 +12,13 @@ final class BoundedTokenizer extends ImapTokenizer
     private array $groups=[];
     public function nextToken(): ?Token
     {
-        if(++$this->tokens>4096)throw new \RuntimeException('limit');
+        if(++$this->tokens>4096)throw new ReceivingFailure('limit');
         $token=parent::nextToken();
         if($token instanceof ListOpen || $token instanceof ResponseCodeOpen){
-            if(count($this->groups)>=12)throw new \RuntimeException('limit');
+            if(count($this->groups)>=12)throw new ReceivingFailure('limit');
             $this->groups[]=$token instanceof ListOpen?'list':'code';
         } elseif($token instanceof ListClose || $token instanceof ResponseCodeClose){
-            if(array_pop($this->groups)!==($token instanceof ListClose?'list':'code'))throw new \RuntimeException('protocol');
+            if(array_pop($this->groups)!==($token instanceof ListClose?'list':'code'))throw new ReceivingFailure('protocol');
         }
         return $token;
     }
@@ -26,8 +26,14 @@ final class BoundedTokenizer extends ImapTokenizer
     {
         // The bounded line stream must supply one physical line at a time, through CRLF.
         $marker=substr($this->buffer,$this->position);
-        if(!preg_match('/\A\{(0|[1-9][0-9]{0,5})\}\r\n\z/D',$marker,$m))throw new \RuntimeException('protocol');
-        if((int)$m[1]>16384)throw new \RuntimeException('limit');
+        if(!preg_match('/\A\{(0|[1-9][0-9]{0,5})\}\r\n\z/D',$marker,$m))throw new ReceivingFailure('protocol');
+        if((int)$m[1]>16384)throw new ReceivingFailure('limit');
         return parent::readLiteral();
+    }
+
+    /** A TLS upgrade is valid only at a complete response boundary. */
+    public function assertBoundary(): void
+    {
+        if($this->groups || $this->position<strlen($this->buffer))throw new ReceivingFailure('protocol');
     }
 }
