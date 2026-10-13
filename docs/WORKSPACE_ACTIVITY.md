@@ -10,11 +10,11 @@ All list/count/action/navigation paths recheck active identity and current clien
 
 No SMTP/email outbox, delivery claim, preferences, project-stage timeline, hosting monitoring, renewal alerts, support-ticket events or admin-mail subjects/counts are included. These remain P-05/P-07/A-06–A-08 work. Source retention governs this activity history; no automatic deletion is introduced. No actual customer mail, payment, provider operation or live deployment.
 
-Additive owner setup preserves existing records and refuses incompatible or unknown populated activity tables. Acceptance must cover fresh setup and the real retained 1.9.0 update; independent recipient state, old/new sources, deduplication, exact links, pagination/count caps, mutations racing a new event, role/client revocation, support denial, CSRF/XSS, failure recovery without business changes, private cache/anonymous isolation, browser polling and desktop/320px UI. Version 1.10.0 implementation/acceptance/publication gates are pending.
+Additive owner setup preserves existing records and refuses incompatible or unknown populated activity tables. Acceptance must cover fresh setup and the real retained 1.9.0 update; independent recipient state, old/new sources, deduplication, exact links, pagination/count caps, mutations racing a new event, role/client revocation, support denial, CSRF/XSS, failure recovery without business changes, private cache/anonymous isolation, browser polling and desktop/320px UI. Version 1.10.0 implementation, acceptance and draft/public download verification gates passed.
 
 ## Setup and use
 
-Candidate implementation is present; integrated acceptance and publication remain pending.
+Published/download-verified in [v1.10.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0) at `4649a913d40166b9874f9550e57b4186edfc43ab` through PR #26; 603 native / 630 HTTP/Chromium checks pass. [Report](TEST_REPORT_1.10.0.md).
 
 Existing sites back up the website, database and private storage, merge the flat UPDATE archive, then open **Workspace activity** as an owner and confirm the current password. Older sites first enable the client workspace and administrator accounts. Fresh one-page installation includes enabled empty read state. No daemon, SMTP account, hosting CLI or additional provider is required. Retained historical updates initially appear unread.
 

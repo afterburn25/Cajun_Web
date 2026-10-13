@@ -1,5 +1,9 @@
 # Admin webmail, staff access, templates and email notifications
 
+## 2026-10-13 — Verified 1.10.0 workspace activity increment
+
+Separate client/staff activity centers and private workspace bells are delivered in [v1.10.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0) / `4649a913d40166b9874f9550e57b4186edfc43ab`. Additive per-person read state projects retained sources without changing business writes. Exact links, bounded mark-visible actions, history, current authorization and passive idle expiry pass 603 native / 630 HTTP/Chromium checks including actual 1.9.0 UPDATE. Full P-07 remains partial; SMTP dispatch/preferences/stage/hosting/ticket/renewal events and A-06–A-08 multi-account webmail/templates/email bells remain pending. [Guide](WORKSPACE_ACTIVITY.md) · [report](TEST_REPORT_1.10.0.md).
+
 Approved scope: 2026-10-12. The core A-05 account lifecycle is now integrated in released 1.2.0; [administrator guide and acceptance](ADMIN_ACCOUNTS.md). A-06/A-07/A-08 and mailbox grants remain requirements; no external mailbox is connected.
 
 Historical component checkpoint: the isolated [access foundation](ACCESS_FOUNDATION.md) implements staff/mailbox permission decisions and local unit tests while the separate worker completes 1.1.0. It does not implement administrator creation, sessions, invitations, mailbox connections, mail UI or sending; A-05/A-06 remain incomplete until application integration and acceptance.

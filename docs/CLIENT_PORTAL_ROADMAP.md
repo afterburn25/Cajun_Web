@@ -1,6 +1,8 @@
 # Unified client portal: hosting, design projects, updates and website downloads
 
-**P-07 continuation, 2026-10-13:** 1.10.0 candidate provides workspace activity centers and unread bells for durable project records. [Activity guide](WORKSPACE_ACTIVITY.md). Full P-07 remains partial: outbound email, preferences, project-stage history, hosting/renewal/ticket events remain separate. A-06–A-08 multi-account webmail, templates and email bells remain incomplete. Candidate acceptance/publication pending.
+## 2026-10-13 — Verified 1.10.0 workspace activity increment
+
+Separate client/staff activity centers and private workspace bells are delivered in [v1.10.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0) / `4649a913d40166b9874f9550e57b4186edfc43ab`. Additive per-person read state projects retained sources without changing business writes. Exact links, bounded mark-visible actions, history, current authorization and passive idle expiry pass 603 native / 630 HTTP/Chromium checks including actual 1.9.0 UPDATE. Full P-07 remains partial; SMTP dispatch/preferences/stage/hosting/ticket/renewal events and A-06–A-08 multi-account webmail/templates/email bells remain pending. [Guide](WORKSPACE_ACTIVITY.md) · [report](TEST_REPORT_1.10.0.md).
 
 ## 2026-10-13 — Verified 1.9.0 client ZIP delivery increment
 
@@ -89,6 +91,8 @@ Keep **website delivery releases** and **hosting backup snapshots** as different
 **Acceptance:** Build/upload and publish two real test-project releases; client can download the authorized latest and prior ZIP with matching checksum and notes. Extract and run/restore a representative dynamic site in isolated staging using the documented files/database/configuration path. Deny another client's download, expired/revoked access and unsafe paths; verify exclusion of secrets/other tenants. Exercise large-file packaging, failed job, repeat/resumed download, retention and missing-database labeling. A ready badge appears only after the artifact actually exists and passes release checks.
 
 ## P-07 — Client updates, notifications and service monitoring
+
+**Partial delivery in 1.10.0:** client/staff workspace centers, retained project/message/review/file/invoice/payment/published-ZIP updates, personal read/unread state, exact links, history and private bells are verified. Business-write independence, current ownership, support denial and passive idle expiry are tested. Outbound email, preferences, stage history, ticket/hosting/renewal events and monitoring below remain pending. [Implemented scope](WORKSPACE_ACTIVITY.md).
 
 Add a client-portal bell and notification center for project updates, comments, approval/content requests, published ZIPs, support replies, invoice/payment events and domain/service renewals. Notifications link to the exact authorized project, deliverable, invoice or ticket. Maintain read/unread state, preferences and a delivery outbox with retries/deduplication. Support in-portal and configured email delivery; distinguish sent/failed from delivery confirmation. The client's notification stream never includes internal admin mailbox subjects/counts or staff notes.
 

@@ -1,5 +1,17 @@
 # Release register
 
+## v1.10.0 — published 13 October 2026
+
+[Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0) published `2026-10-13T13:16:03Z`; immutable source/tag `4649a913d40166b9874f9550e57b4186edfc43ab`, [PR #26](https://github.com/afterburn25/Cajun_Web/pull/26). Later records do not alter release bytes.
+
+| Asset | Bytes | SHA-256 |
+|---|---:|---|
+| [COMPLETE-UPLOAD](https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/CajunWebPro-1.10.0-COMPLETE-UPLOAD.zip) | 1608483 | `a9003b041552c6759ade64a471fbfb940e192dcb5ad6d8bcb4d610902f154885` |
+| [UPDATE](https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/CajunWebPro-1.10.0-UPDATE.zip) | 1513299 | `5095fea4de7240c1d1d47b4c04e18e3197c56863b0f1e138b8be566cf2cbfb2c` |
+
+Eight assets/tag downloaded and byte/hash/extraction checked against exact-main CI/local rebuild. 603 native / 630 HTTP/Chromium checks pass. Bounded P-07 workspace activity; full P-07, webmail/email bells and real card checkout/merchant acceptance remain incomplete. [Report](TEST_REPORT_1.10.0.md), [scope](RELEASE_1.10.0.md), [verification](RELEASE_VERIFICATION_1.10.0.json), [guide](WORKSPACE_ACTIVITY.md).
+
+
 ## v1.9.0 — published 13 October 2026
 
 [Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.9.0) published `2026-10-13T12:23:40Z`; immutable source/tag `080f14aea8fe5c35e04e4eba62976609aef7cd67`, [PR #24](https://github.com/afterburn25/Cajun_Web/pull/24). Later documentation commits do not change release bytes.
