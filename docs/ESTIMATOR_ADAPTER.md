@@ -1,10 +1,10 @@
 # Estimator adapter contract — L-01
 
-Written 2026-10-13 on `devin/estimator-adapter` from main `b975915`. This document is the explicit adapter contract named as the L-01 prerequisite in [PUBLIC_COMPONENT_INTEGRATION.md](PUBLIC_COMPONENT_INTEGRATION.md). It specifies how the live `growth_estimate` path can delegate arithmetic to the reviewed [estimator foundation](../foundation/estimator) without changing visible behavior. **No `site/` code changes are proposed here** — implementing this adapter is a separate, reviewed step.
+Written 2026-10-13 on `devin/estimator-adapter` from main `b975915`. This document is the explicit adapter contract named as the L-01 prerequisite in [PUBLIC_COMPONENT_INTEGRATION.md](PUBLIC_COMPONENT_INTEGRATION.md). It specifies how the live `growth_estimate` path can delegate arithmetic to the reviewed [estimator foundation](../foundation/estimator) without changing visible behavior. The original contract was documentation only. Codex accepted adapter-side folding and is implementing it on `codex/estimator-live-adapter` from verified 1.11.1; application acceptance and the 1.11.2 candidate release remain pending.
 
 ## Live semantics that must be preserved
 
-`growth_estimate(array $a, array $r)` — currently `site/app/growth.php`, moving to `site/app/marketing/growth.php` under Codex's directory refactor — is authoritative. Its exact behavior:
+`growth_estimate(array $a, array $r)` — at `site/app/marketing/growth.php` — is authoritative. Its exact behavior:
 
 - Inputs: `project_type` ∈ `growth_types()` (`business`, `redesign`, `store`, `custom`); `pages` integer 1–100 (default 5); `products` integer 0–10000, forced to 0 unless the type is `store`; `options` a list of at most 6 keys from `growth_options()` (`copy`, `brand`, `migration`, `booking`, `accounts`, `integration`), deduplicated.
 - Rules: `growth_rules()` decodes the `growth_prices` setting. Each priced key maps to `[low, high]` integer cents with `0 ≤ low ≤ high ≤ 99999999` (validated by `grange`); a missing key or `null` pair means *unpriced*. Pricing is active only when `$r['enabled'] === true`.
@@ -65,9 +65,9 @@ Session tokens, honeypot, `check_csrf()`, rate limits, lead persistence, JSON/fo
 ## Acceptance evidence required
 
 - `tests/native.php` fixtures: for a matrix over types × pages {1,5,6,100} × products {0,7,10000} × option subsets including `integration`, with `enabled` on/off and keys missing/null/malformed, the adapter output must equal `growth_estimate` byte-for-byte (`mode`, `low`, `high`, `label`).
-- Boundary: configured `high` of exactly `99999999` still prices; `100000000` consults.
+- Boundary: an individual configured range above `99999999` is invalid and keeps its existing exception. Valid line amounts totaling exactly `99999999` still price; a valid total above that cap consults. Preserve malformed-rule exceptions and early-return order when an earlier selection is unpriced.
 - Component suite remains green; no changes to `foundation/estimator` are required by this contract.
 
-## Open question for Codex
+## Accepted integration decision
 
-If Codex prefers quantity support inside the component (e.g. `EstimateLine` carrying a `quantity`) instead of adapter-side folding, that is a component revision owned by integration review — this contract deliberately chooses the zero-component-change path.
+Use adapter-side folding. Keep the pure pricing model unchanged; only canonical direct-HTTP guards are added before mirroring it into the shipping tree.
