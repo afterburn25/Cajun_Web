@@ -8,7 +8,7 @@ Enabling the ledger imports previously paid invoices as clearly labeled legacy p
 
 Client-owned statements show invoice total, recorded payments and remaining balance, with receipt history and printable views. Private administrator references/reversal reasons and other clients' records are never exposed. Support may view client-safe statements with its existing attribution but may not download receipts or perform financial actions. Statement totals describe issued invoices, not an agreed overall project quote or completed delivery.
 
-This increment records external/manual receipts; it does not send money, connect to a production gateway, create tax advice, run subscriptions or enable client card checkout. Actual merchant acceptance and the later real card-processing adapter remain separate gates. Implementation is present on the candidate branch; native/HTTP acceptance and release publication are pending.
+This increment records external/manual receipts; it does not send money, connect to a production gateway, create tax advice, run subscriptions or enable client card checkout. Actual merchant acceptance and the later real card-processing adapter remain separate gates. Published and verified in [v1.8.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.8.0) / `c36a36e80c40485c9e3e7e6cdd4884ced25db961` through PR #22. Exact-main acceptance passed 427 native and 503 HTTP/Chromium checks. [Retained report](TEST_REPORT_1.8.0.md).
 
 ## Owner setup and daily use
 

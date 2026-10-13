@@ -1,12 +1,12 @@
 # Changelog
 
-## 1.8.0 candidate — invoice payments and client receipts
+## 1.8.0 — invoice payments and client receipts
 
 - Record verified external USD payments in full or in parts; show total paid and remaining invoice balances. Replay, stale review, duplicate reference and overpayment guards share the existing financial lock.
 - Owners correct mistakes with an audited full reversal while retaining original entries. No money is sent or refunded.
 - Clients view owned statements and printable receipts; staff-only references remain private, and support receipt access is blocked and audited.
 - Additive migration imports legacy paid balances without fabricating receipts. Partial payments/corrections retire earlier requests; new requests use the remaining amount.
-- Acceptance and release gates pending. Card checkout, actual merchant acceptance and recurring/refund processing remain pending.
+- Published/download-verified at `c36a36e80c40485c9e3e7e6cdd4884ced25db961`; 427 native / 503 HTTP/Chromium checks pass. Card checkout, actual merchant acceptance and recurring/refund processing remain pending.
 
 ## 1.7.0 — sandbox notification inbox
 

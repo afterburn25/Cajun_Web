@@ -1,9 +1,7 @@
 # CajunWebPro 1.8.0 release scope
 
-Candidate: external-payment history and client statements/receipts. Source starts at main `2eee5719ccd85d6661b2677dbc8c1415853d9ec3`; implementation branch `codex/invoice-ledger`, contract `61b0b47`. Exact accepted source/CI/download hashes will be recorded after release gates pass.
+Published and downloaded-back verified at `c36a36e80c40485c9e3e7e6cdd4884ced25db961` through [PR #22](https://github.com/afterburn25/Cajun_Web/pull/22). [Exact-main run](https://github.com/afterburn25/Cajun_Web/actions/runs/38390645499): 427 native / 503 HTTP/Chromium checks. [Retained report](TEST_REPORT_1.8.0.md) and [download verification](RELEASE_VERIFICATION_1.8.0.json) hold evidence.
 
-Delivered scope: partial/full external USD receipt recording, owner-audited retained corrections, legacy paid balance import, remaining amounts for prepared requests/trials, client-owned invoice statements and printable receipts. No actual card charge, refund, recurring billing, tax calculation or customer mail. Sandbox observations never settle invoices.
+Delivers full/partial externally verified USD payment history, owner-audited retained corrections, legacy paid balance import, remaining amounts for prepared requests/trials, and client-owned statements/printable receipts. No production card checkout, refunds, tax/credits/subscriptions or customer mail. Sandbox observations never settle real invoices.
 
-Acceptance: local syntax/inventory/package checks and GitHub native MariaDB/concurrency/HTTP/Chromium/fresh and retained upgrade paths required. Existing v1.7.0 retained package is pinned by SHA-256 for update acceptance. All eight versioned assets require draft/public download verification against exact-main CI. No shared-host/live-merchant deployment claim.
-
-See [setup and limitations](INVOICE_LEDGER.md). Devin PR #7 remains independent; portfolio integration is pending its readiness.
+Actual retained 1.7.0 update and all earlier update/fresh paths pass. All eight release assets match tested source/packages. No target-host or actual merchant acceptance is claimed. [Setup and limits](INVOICE_LEDGER.md). Devin PR #7 remains independent.
