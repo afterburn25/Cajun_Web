@@ -4,15 +4,15 @@
 
 On `devin/estimator-adapter` (from main `b975915`), Devin wrote `docs/ESTIMATOR_ADAPTER.md` — the explicit L-01 adapter contract required before the reviewed estimator foundation can serve `growth_estimate`: quantity keys fold into `PriceRule` ranges, all consultation conditions preserved, byte-for-byte fixture equivalence required. Documentation only; implementation awaits Codex review. Queued Devin PRs: #31 (L-02), #32 (L-03), #34 (W-02 slice, installer-hash fix `ac91f0e`).
 
-## Current directory and package contract — 1.11.0 candidate
+## Current directory and package contract — released 1.11.0
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](docs/DIRECTORY_STRUCTURE.md), [migration and recovery](docs/STRUCTURE_MIGRATION.md), and [START-HERE](START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.
 
-Candidate `9e8dedf` in [PR #38](https://github.com/afterburn25/Cajun_Web/pull/38) passes 618 native, 782 HTTP/Chromium, 41 filesystem/recovery, 203 Apache and 16 package-builder checks. [Acceptance record](docs/TEST_REPORT_1.11.0.md); [Devin handoff](docs/DEVIN_HANDOFF_1.11.0.md). Final cleanup/docs acceptance, merge, exact-main tests and immutable publication remain mandatory. Latest published release remains 1.10.0. No live deployment.
+**Published and downloaded-back verified:** [v1.11.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.0), exact source/tag `de70c5da2e8f7bd35fbb92b9b829d0ab3e880372`, [PR #38](https://github.com/afterburn25/Cajun_Web/pull/38). [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38422422077) passes 618 native, 782 HTTP/Chromium, 41 filesystem/recovery, 203 Apache and 16 package-builder checks. All 16 published assets match the prepared bytes; all three package manifests, paths, contents, checksums and immutable tag target pass. [Test report](docs/TEST_REPORT_1.11.0.md); [Devin handoff](docs/DEVIN_HANDOFF_1.11.0.md). No live deployment. The priority directory correction is complete; the earlier pending/candidate instructions below are historical.
 
-**Directory correction in progress (not release acceptance):** branch `codex/priority-directory-refactor` now contains organized routes/assets, focused bootstrap/security/database modules, split admin/portal/public/setup source, protected scaffolds, and a staged owner-only structural updater with protected rollback journal. The builder produces three distinct artifacts only from a clean commit. Existing native/HTTP tests now target canonical routes and perform real staged updates from each retained release. Expanded Apache, interruption/recovery and package guard suites now pass; next: verify final cleanup/docs, merge, test exact main and publish. Nothing deployed or published.
+**Historical pre-release progress (superseded by the verified release above):** branch `codex/priority-directory-refactor` now contains organized routes/assets, focused bootstrap/security/database modules, split admin/portal/public/setup source, protected scaffolds, and a staged owner-only structural updater with protected rollback journal. The builder produces three distinct artifacts only from a clean commit. Existing native/HTTP tests now target canonical routes and perform real staged updates from each retained release. Expanded Apache, interruption/recovery and package guard suites now pass; next: verify final cleanup/docs, merge, test exact main and publish. Nothing deployed or published.
 
-## Owner priority override — directory structure and packaging, 2026-10-13
+## Historical owner priority — fulfilled by verified 1.11.0 delivery
 
 The owner requires an actual structural refactor and three separately verified downloads before any unrelated roadmap work resumes. This supersedes earlier constraints that kept substantial root PHP files or interpreted a no-wrapper ZIP as a flat application. Work on `codex/priority-directory-refactor` from main `b975915` preserves integrated portfolio/estimator work and the tested browser correction. Latest published version is **1.10.0**; the 1.11.0 portfolio-only release was stopped before draft/tag creation. The unused 1.11.0 candidate will be corrected before release. Do not publish the old-layout candidate.
 
@@ -26,11 +26,11 @@ Owner requested that Codex/Devin keep working on independent tasks while vendor 
 
 **No runtime changes, vendor API connections, new tests, deployment or application version bump from this policy-only change.** Existing v1.10.0 publication and 1.11.0 candidate context remain separate; refresh current main and open PRs before implementation.
 
-## Release acceptance follow-up — 2026-10-13
+## Historical portfolio acceptance follow-up — superseded by 1.11.0 publication
 
 Portfolio integration PR #30 is merged at `332af19333a62d3dfcc90eb9cf34871a7fac50ec`; original Devin PRs #7/#27 are merged with preserved history. Both candidate runs passed 618 native / 675 HTTP/Chromium checks and reviewed screenshots. Exact-main run 38408053057 passed native and actual 1.10.0 retention checks, then exposed a synthetic modified-click test navigation race. `codex/portfolio-acceptance` fixes the test observer and adds a real Ctrl-click/new-tab assertion; it changes no shipping bytes. Publication remains pending successful exact-main acceptance. Latest public release remains 1.10.0. New Devin L-02 PR #31 is separate unreviewed work, outside this release.
 
-## 2026-10-13 — Portfolio integration candidate 1.11.0
+## Historical portfolio integration candidate — included in released 1.11.0
 
 Codex is integrating Devin portfolio [PR #7](https://github.com/afterburn25/Cajun_Web/pull/7) at `016a4057a3a17b62b2edcf583252f52cb9ff06a2` on `codex/portfolio-browsing`, starting after estimator integration main `39de8ff50ea245928a1f6528f10057afcf55e5b7`. Original branch/history remain intact. **Candidate source 1.11.0; latest published release remains v1.10.0.** [Contract](docs/PUBLIC_COMPONENT_INTEGRATION.md) and [browsing guide](docs/PORTFOLIO_BROWSING.md).
 
