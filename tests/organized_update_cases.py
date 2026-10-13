@@ -26,6 +26,7 @@ def run(web,base,check,qa,php,label,prefix,version):
         assert p.returncode==0,p.stderr
         return json.loads(p.stdout)
     before=records('seed')
+    prior_templates=records('templates') if version=='1.12.0' else None
     check(label+' retained schema contains meaningful client project and invoice records',all(before[n]['count']>0 for n in before))
     session.get(url+'/admin/index.php?view=login')
     probe=root/'cache-probe.php';probe.write_text("<?php echo json_encode(['enabled'=>opcache_get_status(false)['opcache_enabled']??false,'timestamps'=>ini_get('opcache.validate_timestamps'),'cached'=>opcache_is_script_cached(__DIR__.'/config/defaults.php')]);")
@@ -69,3 +70,19 @@ def run(web,base,check,qa,php,label,prefix,version):
         after=records();check(label+' template setup preserves original business records',all(after[n]==v for n,v in before.items() if n!='settings'))
         r=action('recover');check(label+' file recovery leaves new template records intact','<h2>Rolled-back</h2>' in r.text and records('templates')==saved)
         r=action('apply');check(label+' reapplied update recognizes retained templates','<h2>Complete</h2>' in r.text and 'Retained template' in session.get(library).text and records('templates')==saved)
+    if version=='1.12.0':
+        check(label+' upgrade retains actual earlier template and history',len(prior_templates['templates'])==1 and records('templates')==prior_templates)
+        library=url+'/admin/index.php?view=mail-accounts';new=url+'/admin/index.php?view=mail-account'
+        r=session.post(library,data={'csrf':token(session.get(library)),'action':'mail_accounts_setup','current_password':password})
+        check(label+' owner enables additive email account storage','Email account storage enabled' in r.text)
+        fields={'csrf':token(session.get(new)),'action':'mail_accounts_save','account_id':'','revision':'0','current_password':password,'label':'Retained upgraded account','address':'upgrade@example.invalid','imap_host':'imap.example.invalid','imap_port':'993','imap_encryption':'ssl','imap_username':'upgrade-incoming','imap_password':'Synthetic upgrade incoming password','smtp_host':'smtp.example.invalid','smtp_port':'587','smtp_encryption':'starttls','smtp_username':'upgrade-outgoing','smtp_password':'Synthetic upgrade outgoing password','enabled':'1'}
+        r=session.post(new,data=fields);saved=records('mail-accounts');aid=saved['accounts'][0]['id'];detail=new+'&account_id='+aid
+        check(label+' upgraded site saves encrypted account and metadata history','Retained upgraded account' in r.text and len(saved['accounts'])==1 and len(saved['history'])==1 and fields['imap_password'] not in saved['accounts'][0]['credentials'])
+        r=session.post(detail,data={'csrf':token(session.get(detail)),'action':'mail_accounts_grant','account_id':aid,'revision':'0','user_id':'1','can_read':'1','enabled':'1','days':'7','current_password':password})
+        saved=records('mail-accounts');key=(private/'mail-master.key').read_bytes()
+        check(label+' upgraded site retains explicit assignment and private key',len(saved['grants'])==1 and len(saved['grant_history'])==1 and len(key)==32 and (private/'mail-master.key').stat().st_mode&0o777==0o600)
+        after=records();check(label+' account setup preserves existing business and template records',all(after[n]==v for n,v in before.items() if n!='settings') and records('templates')==prior_templates)
+        r=action('recover');check(label+' file recovery preserves new account data and credential key','<h2>Rolled-back</h2>' in r.text and records('mail-accounts')==saved and (private/'mail-master.key').read_bytes()==key and records('templates')==prior_templates)
+        r=action('apply');check(label+' reapplied update recognizes protected email account settings','<h2>Complete</h2>' in r.text and 'Retained upgraded account' in session.get(library).text and records('mail-accounts')==saved and (private/'mail-master.key').read_bytes()==key)
+        r=session.post(detail,data={'csrf':token(session.get(detail)),'action':'mail_accounts_save','account_id':aid,'revision':'1','current_password':password,**{k:v for k,v in fields.items() if k in ['label','address','imap_host','imap_port','imap_encryption','imap_username','smtp_host','smtp_port','smtp_encryption','smtp_username','enabled']},'imap_password':'','smtp_password':''})
+        check(label+' original private key still opens saved credentials after recovery','Email settings saved' in r.text and records('mail-accounts')['accounts'][0]['revision']==2)
