@@ -1,8 +1,8 @@
-# Bounded A-06 connection checks — candidate 1.16.0
+# Bounded A-06 connection checks — released 1.16.0
 
-Starting point: verified [1.15.0](TEST_REPORT_1.15.0.md), publication-record main ad2f39d, branch codex/mail-connection-checks. Existing multiple-account preparation, encrypted private key and explicit read/send assignments remain authoritative. Codex owns application transport, owner controls, tests and release. Application adaptation is implemented in candidate source, mirrored from canonical foundation/mail-transport. Local PHP 8.4 passes 104 policy, 13 resolver and 313 actual loopback TLS checks. The initial prototype passed PHP 8.2/8.4 CI; candidate database/HTTP/upgrade/release acceptance remains pending. This is not a release or a real-provider test.
+Published and downloaded/verified [1.16.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.16.0) at `372ea28bf0d3081180c836e2c90aa14b7a90bdd3` implements this bounded A-06 contract. [Acceptance report](TEST_REPORT_1.16.0.md) records native/HTTP/Chromium/update/recovery plus separate real isolated TLS suites on PHP 8.2/8.4. No real mailbox or message is used in acceptance. Existing multiple-account preparation, encrypted private key and current read/send assignments remain authoritative. Canonical foundation/mail-transport is mirrored into protected shipping source by the builder.
 
-## Next usable increment
+## Released behavior
 
 An owner explicitly tests the saved incoming or outgoing connection from Email accounts, with CSRF, current password, exact saved account revision and an active corresponding mailbox assignment. Each button explains that it logs into that one configured server and logs out, without reading, changing or sending messages. Saved configuration never automatically connects. Plaintext transport is never offered. A success means TLS and password authentication worked at the recorded time for that saved revision; it does not establish inbox synchronization, sending eligibility, deliverability or future availability.
 
@@ -14,7 +14,7 @@ The diagnostic is a deliberately narrow finite command exchange, not a general I
 
 Under the existing staff advisory mutex, validate current owner/password/assignment/revision and endpoint shape, enforce a 30-second account/target cooldown and 20 attempts per owner per hour, then commit a started record and strict audit before DNS. Resolve outside the mutex and without an InnoDB transaction. Reacquire the mutex and recheck current actor, password, assignment/expiry and account revision; decrypt only then and perform the bounded handshake/auth exchange. Repeat authorization/expiry immediately before every credential payload and after authentication. Network work never holds an InnoDB transaction. The advisory mutex serializes revocation/account edits with the bounded transport wait; a competing administrator change may need to retry. Process termination leaves an honest incomplete record, never presumed success. A separate immutable terminal result and strict audit commit together; failed final audit leaves the started record incomplete. Check results are metadata and version-bound; editing an account makes previous checks historical.
 
-## Acceptance before release
+## Acceptance retained for this release
 
 Use actual TLS sockets with a private ephemeral test CA in isolated CI: IMAPS, SMTP TLS, both STARTTLS modes, valid login, wrong credentials, hostname mismatch, untrusted/self-signed/expired certificate, missing upgrade, authentication before TLS prevention, malformed/mixed/tag-confused/oversized replies, abrupt EOF, slow peer, byte/time caps and command injection. Test DNS/IP policy separately (IPv4/IPv6, mapped/translated forms, mixed results and pinning). Capture allowed command names only, never AUTH payloads. Prove no mail submission or mailbox selection occurs.
 
@@ -37,3 +37,5 @@ Open **Email accounts**, select a saved account and use **Prepare connection che
 Supported password mechanisms are IMAP AUTHENTICATE PLAIN and SMTP AUTH PLAIN or LOGIN over verified TLS. An app password may be required by your provider. The server trust store and bounded operating-system DNS resolver must be configured by the hosting provider. No custom certificate/private-network bypass is offered. This feature does not read a mailbox, send a message, prove delivery or alter the website's separate system-email settings. Mailbox rendering/compose and email notification bells remain future work.
 
 Application code is app/mail/connections.php, database/schema/mail_connections_schema.php, database/migrations/mail_connections_migrate.php and admin/views/mail_connections.php under site/. Canonical protocol/policy code remains foundation/mail-transport; the builder generates the protected shipping mirror. Tests use synthetic credentials only, with actual isolated TLS sockets plus separate injected database boundaries and clearly identified synthetic history-display fixtures. No application input selects test connectors or overrides TLS.
+
+DNS policy note: every encountered A/AAAA answer, including intermediate CNAME responses, is validated and retained in the bounded answer set; any unsafe answer rejects the entire attempt. The first validated address is used once, with the original configured hostname still verified by TLS. No referral, address retry or hostname redial occurs.
