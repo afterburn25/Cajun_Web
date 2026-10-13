@@ -1,6 +1,6 @@
 <?php
 /**
- * CajunWebPro browser installer 1.5.0 — single-page installer; flat complete package; embedded bootstrap and file inventory.
+ * CajunWebPro browser installer 1.6.0 — single-page installer; flat complete package; embedded bootstrap and file inventory.
  * Replace the existing install.php beside index.php with THIS file.
  * No installation-key file, input, token, activation or unlock action is used.
  * Bootstrap and branding are embedded so missing website files never hide the form.
@@ -9,7 +9,7 @@
  * Existing-site guards remain. Never delete config.php or permanent locks.
  */
 declare(strict_types=1);
-const CWP_INSTALLER_BUILD = '1.5.0';
+const CWP_INSTALLER_BUILD = '1.6.0';
 const CWP_INSTALLER_LAYOUT = 'one-page';
 ini_set('display_errors', '0');
 header('Cache-Control: no-store, private, max-age=0, must-revalidate');
@@ -18,7 +18,7 @@ header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
 header('X-Robots-Tag: noindex, nofollow, noarchive');
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
-header('X-CWP-Installer: one-page-1.5.0');
+header('X-CWP-Installer: one-page-1.6.0');
 // lstat reads the guard's existence without executing config or following links.
 function cwp_installer_installed(): bool {
     foreach (['config.php', '.installed.php', 'storage/install.lock.php'] as $name) {
@@ -39,7 +39,7 @@ function cwp_installer_stop(string $heading, string $message, int $status): neve
         header("Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'");
         $h = htmlspecialchars($heading, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         $m = htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-        echo '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="assets/favicon.png?v=1.5.0"><title>CajunWebPro · Setup 1.5.0</title><body style="background:#031021;color:#eaf2ff;font:17px/1.65 system-ui;padding:8vw;max-width:900px"><p style="color:#f6cd74">CAJUNWEBPRO · KEY-FREE SETUP 1.5.0</p><h1>'.$h.'</h1><p>'.$m.'</p></body></html>';
+        echo '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="assets/favicon.png?v=1.6.0"><title>CajunWebPro · Setup 1.6.0</title><body style="background:#031021;color:#eaf2ff;font:17px/1.65 system-ui;padding:8vw;max-width:900px"><p style="color:#f6cd74">CAJUNWEBPRO · KEY-FREE SETUP 1.6.0</p><h1>'.$h.'</h1><p>'.$m.'</p></body></html>';
     }
     exit;
 }
@@ -56,7 +56,7 @@ define('CWP_BOOT', true);
 defined('CWP_BOOT') || exit;
 ini_set('display_errors','0');
 ini_set('log_errors','1');
-const CWP_VERSION = '1.5.0';
+const CWP_VERSION = '1.6.0';
 const CWP_GUARD = "<?php http_response_code(404); exit; ?>\n";
 const CWP_ROOT = __DIR__;
 
@@ -268,7 +268,7 @@ security_headers();
 // are loaded. This is the original install.php entry point, replaced in place.
 header('Cache-Control: no-store, private, max-age=0, must-revalidate');
 header('X-Robots-Tag: noindex, nofollow, noarchive');
-header('X-CWP-Installer: one-page-1.5.0');
+header('X-CWP-Installer: one-page-1.6.0');
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['cwp_check'])) {
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(['ok'=>true, 'installer_build'=>CWP_INSTALLER_BUILD,
@@ -282,15 +282,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['cwp_check'])) {
 /** Only immutable public application files: never config, locks or customer data. */
 function setup_expected_files(): array { return [
         '.htaccess' => '2cbbbf4de31257d939c6ddaabb570e1f309a2c418be31fdcc7b269f19b3078fb',
-        'admin.php' => '4bce1d7b3f888fc0a4618077304be25eb6b92eab5aac7f7bf00a662a535f2b7f',
+        'admin.php' => '9f49c0222191260d3afd84e8c7a1abde811bcf61e3f5de524e4c7e0ba13593f1',
         'api.php' => '500e1a3b1d33ed693bf91f6fa9fa723451dea38c49f83b061fa9de8eabd688b2',
         'app/.htaccess' => 'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
-        'app/admin-view.php' => '2aeb68f95d36147c310545e35d511cd976738e3dd6d5dc2e174ca02c1e03323f',
-        'app/authorize.php' => '1395596d5819df9b7015c7a032888703064aeb1ac1bc256699ba625caa8652ff',
+        'app/admin-view.php' => 'd54adf7ec1e84ffdd685182103d93ed342a3190ac66ff3ae030ebe2b12a43e93',
+        'app/authorize.php' => 'a654d480471cfbc67b64f593ce16c7f0574701ce0632f80471f3e14311d14c46',
         'app/catalog-admin.php' => '8b5de8a5bcfa53eabf3fd0b65224d08f5393888ffb4369b1a914e9b9fa9e1eeb',
         'app/catalog-view.php' => '006d083ebe5d9571e7fde0e24dc742b452020725af606386028d1750e82c448b',
-        'app/catalog.php' => '2b80a1fe602a335c879aec0532a7f1289b4a03e1943c19bcdab7d0dbfe5d8845',
-        'app/core.php' => '4dc1ba59b26f2e8e33c2b2d4f94142484e08f3e48d58ece993797a95ca44863a',
+        'app/catalog.php' => '92baa258865c4d6d31595451fda9dc1f4d7ba51885ae1650e947c7e698404278',
+        'app/core.php' => '72306b906659ae8522e0b173ddcc986b37c186f0bdfb34d75ee20cdfa9792ef5',
         'app/foundation/access/AccessContext.php' => '1ff80e17334bffedc443810220cb18aff79ee476132081142d483a7437a6ebfd',
         'app/foundation/access/AuthorizationVersion.php' => 'ec1ed3d2f9473518e97164dab76dca0293d3ea28919c0234e145bc802be7caf1',
         'app/foundation/access/MailboxGrant.php' => '79f61e27a2b12711c5f5a4324e8e8150c2f2a2549f8672c0dfec25f140ca1109',
@@ -302,12 +302,14 @@ function setup_expected_files(): array { return [
         'app/home.php' => '884af04ad7d0b584af6db50a87df30af9327c6cabbae5fd752da28e3da53d243',
         'app/index.php' => '696138b31bbb2a20c4bb53eb98b68dbe25557947dd6a7513c81e1c8b9446ce0d',
         'app/mail.php' => 'b841a8f23acc147748a829dea230e5e0053489623688c6cbf3f8b18af71fe3d8',
-        'app/payments-admin.php' => '1256e9accf6b386271a49e06818d984f860fd15734ba83e97689f966337505c4',
-        'app/payments.php' => '7be53807e7b45d28342d2cd0b4dfca9a41dc4f6d6f65ea25691bd40169887456',
-        'app/schema.php' => 'b75dd32dfd4229a45224d4fcccfe1b734022acbb4ddb82a907f3aba465e88f54',
+        'app/payment-attempts.php' => 'a99aaafa411b80af996e99ff689d01e1fcaae077ccbdae7e412eda3c130b09fc',
+        'app/payment-trial-view.php' => '17ce2185949a0d879bccdef1014b15b99747ea23e80d5303de19f3e9850dcf40',
+        'app/payments-admin.php' => '491bbf6e1945c00df94babd1880dfe0365fa150c232bda66e9f4b5c1dfe17a12',
+        'app/payments.php' => '7106a84f63140bd0ace0173391d75874c24fc0a61ff5a67a374a2ebe8afedff6',
+        'app/schema.php' => '17ea4469683de405362cfb6ccb23c47fb800e02c171ff0cd2f6f53edf2251ebe',
         'app/staff-admin.php' => 'cbfb94bcfc9cbf66beefb3bf86cfb0f2c440814a529c1d8b714020b5dcbdb61e',
-        'app/staff.php' => '4e7c46c53785987da1a609f0a1b6a1566fefba48f18ba7bbd5f7a54674cb398f',
-        'app/studio-admin.php' => '206aa4a0a903cb7a018147a3119106f9e7058858ffa9a37710d6a5214be3764f',
+        'app/staff.php' => '2ae4826874effd1a439d9dd95d68803d45e1bde7ba1c176af0416700de6169e9',
+        'app/studio-admin.php' => '215a570b2957732a43e9b955c9d96b82d8c77c7d3507d1c5b86263b6233e281d',
         'app/support-admin.php' => '771ee8a645f393a23cf3fc151e582aa6fd4bc8dde2807a6830cb057d2e8ef8f0',
         'app/support.php' => 'd6090f02f4d4d97c77376a028ac50461f07f63ed103626e25b16b37c5dd3fa55',
         'app/view.php' => 'ebf2a24ebf86ff7fba26abdb6c475ffc48be3b90a25dcc6c7a59745a9173f1a4',
@@ -324,6 +326,7 @@ function setup_expected_files(): array { return [
         'assets/hero.webp' => '5a00c10a6514db0760dc8d3c915975c22aa3a8745b85dbe74c48954ffd1c41d5',
         'assets/logo.png' => '9c44559bb716076c51ec40daff0f394956a32d24039efa6e3fe33039fc10fe29',
         'assets/micrograin.png' => 'bcb31a9b59c9330ba24da53a2dea6eae06ea242326212fd941af255b51b7303a',
+        'assets/payment-trial.js' => '258c3281f3018aaf335e4ff613f367cd3329af90d3e59217681d29d569b76105',
         'assets/premium.css' => '46dc5170e9e4d393af18cd60f513f1141700c957b5d0afc7bfa25242667aa0cf',
         'assets/project-construction.webp' => '222847f2b35bc0e665fb51902c396cb73b3f24d0e02088a56ee8c62cbdfcbd61',
         'assets/project-placeholder.svg' => '690a4304eb273f3ec01765350883dcde4a4787852f27de7f501edb442c49fa11',
@@ -350,7 +353,7 @@ function setup_package_check(): array {
         if($linked){$problem='Symbolic link: use the regular file from this package.';}
         elseif(!@is_file($path)){$problem='Missing file.';}
         elseif(!@is_readable($path)){$problem='PHP cannot read this file.';}
-        elseif(!hash_equals($expected,(string)@hash_file('sha256',$path))){$problem='Different or incomplete file: merge the complete 1.5.0 package here.';}
+        elseif(!hash_equals($expected,(string)@hash_file('sha256',$path))){$problem='Different or incomplete file: merge the complete 1.6.0 package here.';}
         else{$passed++;continue;}
         $issues[]=['path'=>$relative,'problem'=>$problem];
     }
@@ -664,7 +667,7 @@ function setup_deploy(array $o,array $c,string $storage): array {
         save_setting('contact_email',$o['business_email']);save_setting('notification_email',$o['email']);save_setting('mail_from',$o['business_email']);save_setting('site_published',$o['preview']?'0':'1');
         query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',[$o['name'],$o['email'],$o['hash'],bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
         staff_seed_owner((int)$pdo->lastInsertId());
-        save_setting('support_schema_version','1');save_setting('catalog_schema_version','1');save_setting('payments_schema_version','1');
+        save_setting('support_schema_version','1');save_setting('catalog_schema_version','1');save_setting('payments_schema_version','1');save_setting('payment_attempts_schema_version','1');
         foreach(default_services() as $i=>$v)query('INSERT INTO '.table('services').' (slug,title,summary,body,icon,sort_order,active) VALUES (?,?,?,?,?,?,1)',[...$v,$i]);
         if($o['seed'])foreach(default_projects() as $i=>$v)query('INSERT INTO '.table('projects').' (slug,title,category,summary,description,challenge,solution,deliverables,cover,status,is_demo,featured,sort_order,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,\'published\',1,1,?,?,?)',[...$v,$i,gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);
         log_event('install.complete','Installer '.CWP_INSTALLER_BUILD);$pdo->commit();$events[]='Saved the administrator account and website content.';
@@ -739,7 +742,7 @@ $package=setup_package_check();
 $path=base_path();$suggested=(https_request()?'https':'http').'://'.preg_replace('/[^A-Za-z0-9.\-:\[\]]/','',$_SERVER['HTTP_HOST']??'example.com').$path;
 ?>
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="csrf-token" content="<?=esc(csrf())?>"><title>CajunWebPro · One-page installer 1.5.0</title><link rel="icon" href="assets/favicon.png">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="csrf-token" content="<?=esc(csrf())?>"><title>CajunWebPro · One-page installer 1.6.0</title><link rel="icon" href="assets/favicon.png">
 <style>
 :root{color-scheme:dark;--gold:#f5c96c;--blue:#60b9ff;--muted:#a0b4cf;--line:#47628565;--surface:#091b32;--white:#edf5ff;--ease:cubic-bezier(.2,.8,.2,1)}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#153f716b,transparent 48%),radial-gradient(ellipse at 0% 62%,#09274b9c,transparent 50%),#020914;color:var(--white);font:14px/1.6 "Segoe UI",Arial,sans-serif;-webkit-font-smoothing:antialiased}body:before{content:"";pointer-events:none;position:fixed;inset:0;z-index:-1;background:linear-gradient(115deg,transparent 10%,#c9a25808 11%,transparent 12%),repeating-linear-gradient(90deg,transparent 0 95px,#4261820c 96px);mask-image:linear-gradient(#000,transparent 80%)}a{color:#ffe0a2;text-decoration:none}a:hover{text-decoration:underline}button,input{font:inherit}button{cursor:pointer;touch-action:manipulation}button:disabled{cursor:wait;opacity:.6}input:disabled{opacity:.75}h1,h2,p{margin:0}h1{font-size:38px;line-height:1.15;letter-spacing:-.045em;font-weight:750}h2{font-size:21px;letter-spacing:-.025em;line-height:1.25}strong{font-weight:650}[hidden]{display:none!important}img{display:block;max-width:100%;height:auto}::selection{background:var(--gold);color:#07101e}:focus-visible{outline:2px solid #ffe1a0;outline-offset:4px}.shell{width:min(1180px,calc(100% - 64px));margin:0 auto}.topbar{height:106px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line)}.logo{width:308px}.build{color:#ffdf91;font-size:11px;letter-spacing:.07em;text-align:right;line-height:1.8}.build span{display:block;color:#82a9d4;font-size:10px;letter-spacing:.1em}.intro{display:flex;align-items:center;justify-content:space-between;gap:25px;padding:32px 0}.eyebrow{font-size:10px;font-weight:700;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:10px}.metal{background:linear-gradient(168deg,#fff8e1,#f5cd78 40%,#c79030 67%,#fff1c5);color:transparent;background-clip:text;-webkit-background-clip:text}.intro p{font-size:13px;color:#adc2db;max-width:590px;margin-top:12px}.intro-sign{display:flex;align-items:center;gap:15px;color:#c9dcf0;font-size:10px;letter-spacing:.1em;white-space:nowrap}.intro-sign img{width:64px;filter:drop-shadow(0 0 17px #f0b73635)}.intro-sign span{display:block;color:#b3965d;margin-top:5px;font-size:9px}.panel{position:relative;border:1px solid #466c9878;border-top-color:#c7a7689c;border-radius:14px;background:radial-gradient(ellipse at 100% 0%,#254f7526,transparent 75%),linear-gradient(145deg,#0a2038f5,#060f20fa);box-shadow:0 13px 30px #0003,inset 0 1px 0 #ffffff09;margin-bottom:22px;overflow:hidden}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 25px;border-bottom:1px solid #6380a230;background:linear-gradient(95deg,#1837516b,#13223422)}.head-title{display:flex;align-items:center;gap:13px}.section-icon{display:grid;place-items:center;width:39px;height:39px;border:1px solid #c19b595e;background:linear-gradient(140deg,#284159,#111c29);box-shadow:inset 0 0 10px #b5904825;border-radius:9px;color:var(--gold);font-size:19px;flex-shrink:0}.head-copy p{color:#8fabcc;font-size:11px;margin-top:5px}.pill{border:1px solid #8babb843;padding:5px 11px;border-radius:30px;font-size:10px;letter-spacing:.06em;color:#b0cae3;white-space:nowrap}.body{padding:24px 25px}.button{border-radius:8px;padding:10px 17px;line-height:1.3;display:inline-flex;align-items:center;justify-content:center;gap:15px;font-size:12px;font-weight:650;text-decoration:none;min-height:41px;border:1px solid #768fac75;color:#dfeaff;background:linear-gradient(#1e3953,#0a1729);box-shadow:inset 0 1px 0 #d8e6ff16;transition:filter .2s,transform .2s}.button:hover:not(:disabled){filter:brightness(1.12);text-decoration:none}.button.gold{background:linear-gradient(175deg,#fff2b5 0%,#f3cc73 31%,#d8a342 75%,#fbd68c 100%);color:#171208;border:1px solid #ffe3a4;box-shadow:inset 0 1px 2px #fff9d9,0 0 20px #d9a63828}.button.gold:hover:not(:disabled){transform:translateY(-1px)}.server-summary{font-size:13px;color:#b0c6df;margin-bottom:16px}.server-summary.ready{color:#abdabb}.server-summary.attention{color:#ffd38c}.checks-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px}.check-row{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid #536f8e45;border-radius:8px;background:#03101e80;min-width:0}.check-icon{border:1px solid #5b9c8280;border-radius:50%;color:#a4e2ba;display:grid;place-items:center;width:21px;height:21px;font-size:12px;flex-shrink:0}.check-row.failed{border-color:#c1884d62}.failed .check-icon{color:#ffd396;border-color:#bb885c}.check-row strong{font-size:11px;display:block;margin-bottom:3px}.check-row small{font-size:10px;line-height:1.5;display:block;color:#9bb3cc}.check-row .path{font:9px/1.6 ui-monospace,Consolas,monospace;color:#82a3c6;margin-top:7px;overflow-wrap:anywhere}.check-row>div{min-width:0}.storage-line{display:grid;grid-template-columns:1fr 1fr;gap:22px;padding-top:18px;border-top:1px solid #576f8a40}.storage-line p{color:#93adca;font-size:11px;line-height:1.8;align-self:center}.storage-line label{margin:0}.hint{font-size:11px;line-height:1.8;color:#8faac7;margin-top:9px}.path-note{font-size:11px;color:#c3d5e9;overflow-wrap:anywhere;margin:0 0 16px}.diagnostics{font-size:11px;color:#94b0cd;margin:12px 0 0}.diagnostics summary{cursor:pointer;color:#d9c18d}.diagnostics li{overflow-wrap:anywhere;margin-top:9px}.fields-columns{display:grid;grid-template-columns:1fr 1fr;gap:22px}.fields-columns>.panel{height:calc(100% - 22px)}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}.fields .full{grid-column:1/-1}.host-port{grid-template-columns:minmax(0,1fr) 105px}label{display:block;font-size:12px;font-weight:550;color:#cad9e9;margin:0 0 17px}.fields label{margin-bottom:0}.optional{font-size:10px;font-weight:400;color:#829dba}input:not([type="checkbox"]){display:block;min-width:0;width:100%;border:1px solid #4260829c;background:linear-gradient(180deg,#020b17,#061326);border-radius:7px;color:#f0f6ff;font-size:14px;padding:10px 12px;min-height:43px;outline:none;margin-top:7px;transition:border-color .2s,box-shadow .2s}input:not([type="checkbox"]):focus{border-color:#e6c16e;box-shadow:0 0 0 3px #a7853822}input::placeholder{color:#6c88a5}input[aria-invalid="true"]{border-color:#de9e71}.spaced{margin-top:17px}.db-test{display:flex;gap:15px;align-items:center;margin-top:18px;min-height:41px}.inline-result{color:#9ebcd8;font-size:11px;overflow-wrap:anywhere}.inline-result.bad{color:#ffd195}.checkbox{display:flex;gap:10px;align-items:flex-start;font-size:11px;font-weight:400;line-height:1.7;color:#adbed0;margin-bottom:13px}.checkbox input{width:16px;height:16px;accent-color:#e6bd67;flex-shrink:0;margin:2px 0 0}.option-row{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:21px}.option-row strong{color:#d4e1ee;display:block;font-size:12px;margin-bottom:3px}.launch-bar{background:radial-gradient(ellipse at 100% 0%,#d8a2451c,transparent 65%),linear-gradient(100deg,#0b2440,#071321);border:1px solid #d5ac616b;border-radius:12px;padding:23px 25px;display:flex;align-items:center;justify-content:space-between;gap:30px;box-shadow:inset 0 1px 0 #e7bd612a,0 15px 30px #0003;margin:0 0 18px}.launch-bar .checkbox{margin:0;max-width:645px;font-size:12px}.launch-bar .button{font-size:14px;min-width:237px;min-height:53px;padding:14px 20px}.status-box{border:1px solid #5189b278;background:#0d294466;border-radius:10px;padding:18px 22px;margin:0 0 20px;color:#bed8f2;font-size:13px;line-height:1.8;overflow-wrap:anywhere}.status-box.error{border-color:#b9816270;background:#61372030;color:#ffcfaf}.status-box.success{border-color:#719e797d;background:#194c3036;color:#c0e8c9}.wait{display:flex;align-items:center;gap:14px}.spinner{width:24px;height:24px;border:2px solid #d9c38635;border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;flex-shrink:0}.fineprint{color:#819bb6;font-size:11px;line-height:1.9;margin:0 0 26px}.bottom{display:flex;justify-content:space-between;gap:20px;padding:22px 0 30px;border-top:1px solid var(--line);color:#6e8ead;font-size:10px;letter-spacing:.09em}.complete{padding:30px}.complete h2{font-size:30px;color:#ffe1a2;margin-bottom:14px}.complete p{color:#b3ccdf}.complete ul{padding-left:21px;margin:22px 0;color:#bde4ce}.complete li{padding:7px 0}.complete .button{margin:10px 12px 0 0}.warning{border:1px solid #aa89525e;background:#6651282e;color:#f6d699;font-size:12px;padding:13px;border-radius:7px;margin-bottom:9px;overflow-wrap:anywhere}@keyframes spin{to{transform:rotate(360deg)}}@media(max-width:1000px){.shell{width:calc(100% - 40px)}.intro-sign{display:none}.checks-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.panel-head{padding:20px}.body{padding:21px 20px}.head-title{gap:10px}h2{font-size:19px}.pill{font-size:9px;padding:4px 8px}.fields-columns{gap:17px}.launch-bar{gap:20px}.launch-bar .button{min-width:210px}.section-icon{width:35px;height:35px}}@media(max-width:720px){.shell{width:calc(100% - 28px)}.topbar{height:88px;gap:12px}.logo{width:225px}.build{font-size:9px;line-height:1.6}.build span{font-size:8px;letter-spacing:0}.intro{padding:27px 3px}.intro h1{font-size:33px}.intro p{font-size:12px}.eyebrow{font-size:9px}.fields-columns{grid-template-columns:1fr;gap:0}.fields-columns>.panel{height:auto}.panel{margin-bottom:17px;border-radius:11px}.panel-head{padding:18px}.body{padding:18px}.checks-grid{gap:8px}.check-row{padding:10px;gap:8px}.check-row strong{font-size:10px}.check-row small{font-size:9px}.check-row .path{font-size:9px}.storage-line{grid-template-columns:1fr;gap:10px}.option-row{grid-template-columns:1fr;gap:0}.launch-bar{padding:20px;flex-direction:column;align-items:stretch;gap:20px}.launch-bar .button{width:100%}.launch-bar .checkbox{font-size:11px}.bottom{font-size:8px;gap:10px}.complete{padding:23px}.complete h2{font-size:27px}input:not([type="checkbox"]){font-size:16px}.fields-columns .panel-head{min-height:84px}}@media(max-width:430px){.shell{width:calc(100% - 22px)}.logo{width:200px}.topbar{height:82px}.build{font-size:8px}.build span{font-size:7px}.intro h1{font-size:30px}.checks-grid{grid-template-columns:1fr}.check-row{min-height:58px}.check-row strong{font-size:11px}.check-row small{font-size:10px}.panel-head{padding:16px 14px;gap:8px}.body{padding:17px 14px}h2{font-size:18px}.head-copy p{font-size:10px}.button{font-size:11px;padding:9px 11px;gap:9px}.head-title{gap:9px}.section-icon{width:30px;height:33px;font-size:17px}.fields{grid-template-columns:1fr;gap:15px}.host-port{grid-template-columns:minmax(0,1fr) 90px}.panel-head .pill{display:none}.launch-bar{padding:18px}.bottom{flex-direction:column;gap:6px}.check-row .path{font-size:9px}.db-test{align-items:flex-start;flex-direction:column;gap:8px}}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
@@ -750,14 +753,14 @@ $path=base_path();$suggested=(https_request()?'https':'http').'://'.preg_replace
 #host-report{width:100%;box-sizing:border-box;min-height:180px;border:1px solid #556a844f;background:#040d19;color:#dae5f4;border-radius:8px;font:12px/1.6 ui-monospace,monospace;padding:14px;resize:vertical}
 @media(max-width:600px){.onepage-note{padding:12px 15px;font-size:11px}#host-report{font-size:11px}}
 </style></head><body><main class="shell">
-<header class="topbar"><img class="logo" src="assets/logo.png" alt="CajunWebPro"><div class="build"><strong>ONE-PAGE INSTALLER · 1.5.0</strong><span>NO INSTALLATION KEY</span></div></header>
+<header class="topbar"><img class="logo" src="assets/logo.png" alt="CajunWebPro"><div class="build"><strong>ONE-PAGE INSTALLER · 1.6.0</strong><span>NO INSTALLATION KEY</span></div></header>
 <div class="intro"><div><div class="eyebrow">LAUNCH STUDIO / YOUR SERVER. YOUR WEBSITE.</div><h1>Everything here.<br><span class="metal">Ready for launch.</span></h1><p>Connect your database, create your administrator account, and install. All fields are shown below. Enter your details once, then press Install.</p></div><div class="intro-sign"><img src="assets/emblem.png" alt=""><div>BUILT ON YOUR TERMS<span>PHP / MYSQL / PRIVATE STORAGE</span></div></div></div>
 <noscript><div class="status-box error">Enable JavaScript for the inline server checks and one-page installation form.</div></noscript>
 <?php if(!$secure):?><div class="status-box error">HTTPS is not active. Enable SSL for this domain before entering credentials. Behind a proxy? Configure only the trusted proxy IPs in proxy-config.php.</div><?php endif?>
 <div class="onepage-note"><strong>Database · Administrator · Website · Server checks</strong><span>One form. No Next/Back screens. No wizard. No key. Missing files and storage errors stay on this screen.</span></div>
 
 <section id="package-panel" class="panel package-panel" aria-labelledby="package-heading">
-<div class="panel-head"><div class="head-title"><span class="section-icon" aria-hidden="true">✓</span><div class="head-copy"><h2 id="package-heading">Website files</h2><p id="package-summary"><?=esc($package['ok'] ? $package['passed'].' / '.$package['expected'].' required files verified.' : count($package['issues']).' missing or mismatched files. Your setup form is still below.')?></p></div></div><span class="pill">BUILD 1.5.0</span></div>
+<div class="panel-head"><div class="head-title"><span class="section-icon" aria-hidden="true">✓</span><div class="head-copy"><h2 id="package-heading">Website files</h2><p id="package-summary"><?=esc($package['ok'] ? $package['passed'].' / '.$package['expected'].' required files verified.' : count($package['issues']).' missing or mismatched files. Your setup form is still below.')?></p></div></div><span class="pill">BUILD 1.6.0</span></div>
 <div class="body compact"><p class="path-note">This installer is running from <strong><?=esc(__FILE__)?></strong></p><ul id="package-issues" class="package-issues" <?=$package['ok']?'hidden':''?>><?php foreach($package['issues'] as $issue):?><li><code><?=esc($issue['path'])?></code> — <?=esc($issue['problem'])?></li><?php endforeach?></ul><p class="hint">The ZIP extracts directly into this website folder. There is no enclosing upload/ or version folder. Configuration and private media are created during installation, not supplied as empty credential files.</p></div></section>
 <div id="setup-error" class="status-box error" role="alert" hidden></div>
 <section id="completion" class="panel complete" aria-live="polite" hidden><div class="eyebrow">INSTALLATION COMPLETE</div><h2>Your website is ready.</h2><p>The completed actions and any cleanup warnings appear below.</p><ul id="completion-log"></ul><div id="completion-warnings"></div><a class="button gold" id="open-dashboard">Open dashboard →</a><a class="button" id="open-website">View website ↗</a></section>
@@ -776,7 +779,7 @@ $path=base_path();$suggested=(https_request()?'https':'http').'://'.preg_replace
 <div class="launch-bar"><label class="checkbox"><input name="confirm_install" type="checkbox" required><span>I confirm this is the intended website directory and I have backed up any existing files. Existing application tables and installed websites will not be overwritten.</span></label><button type="submit" class="button gold" id="install-button" <?=$secure?'':'disabled'?>>Install CajunWebPro ↗</button></div>
 <div id="working" class="status-box wait" role="status" hidden><span class="spinner" aria-hidden="true"></span><span id="working-text">Installing… Keep this page open.</span></div>
 <p class="fineprint">Installation repeats the server and database checks, saves your account and configuration, locks setup, and attempts to delete this installer and its legacy files. Any failed deletion is reported. Finish setup promptly: an unfinished key-free installer is accessible to anyone who can reach this address.</p>
-</form><footer class="bottom"><span>CAJUNWEBPRO / LAUNCH STUDIO</span><span>ONE PAGE · BUILD 1.5.0 · NO KEY</span></footer></main>
+</form><footer class="bottom"><span>CAJUNWEBPRO / LAUNCH STUDIO</span><span>ONE PAGE · BUILD 1.6.0 · NO KEY</span></footer></main>
 <script nonce="<?=nonce()?>">
 'use strict';
 const form=document.getElementById('install-form');
@@ -798,12 +801,12 @@ async function send(action,data){
  const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),action==='install'?180000:30000);
  let res,result;
  try{
-  const endpoint=window.location.pathname+'?build=1.5.0';
+  const endpoint=window.location.pathname+'?build=1.6.0';
   res=await fetch(endpoint,{method:'POST',body:data,cache:'no-store',credentials:'same-origin',signal:controller.signal,headers:{Accept:'application/json'}});
   try{result=await res.json();}catch(e){if(e.name==='AbortError')throw e;throw new Error('The server returned an unexpected response. Check admin.php before retrying an interrupted installation.');}
  }catch(e){if(e.name==='AbortError')throw new Error(action==='install'?'The request timed out; installation may still be running on the server. Open admin.php to check before trying again.':'The server check timed out. All your fields remain available. Recheck after reviewing the hosting error log.');throw e;}
  finally{clearTimeout(timer);}
- if(result.installer_build!=='1.5.0')throw new Error('This response came from another installer build. Replace install.php in this website folder and reload. The page must say ONE-PAGE INSTALLER 1.5.0.');
+ if(result.installer_build!=='1.6.0')throw new Error('This response came from another installer build. Replace install.php in this website folder and reload. The page must say ONE-PAGE INSTALLER 1.6.0.');
  if(!res.ok&&!result.message)result.message='This request could not complete. Check the host error log.';
  return result;
 }

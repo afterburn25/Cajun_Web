@@ -3,7 +3,7 @@ declare(strict_types=1);
 defined('CWP_BOOT') || exit;
 ini_set('display_errors','0');
 ini_set('log_errors','1');
-const CWP_VERSION = '1.5.0';
+const CWP_VERSION = '1.6.0';
 const CWP_GUARD = "<?php http_response_code(404); exit; ?>\n";
 const CWP_ROOT = __DIR__ . '/..';
 

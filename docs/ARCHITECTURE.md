@@ -1,5 +1,9 @@
 # Architecture notes
 
+## 2026-10-13 — Candidate 1.6.0 sandbox trials
+
+Bounded M2 / partial HC-04 and HC-11 adds owner-only tokenized sandbox trials, durable attempt/event records, transaction-details matching, explicit reconciliation and shared invoice/request financial locking. Sandbox outcomes never settle real invoices. Existing 1.5 credentials/requests remain intact through additive setup. Client/production checkout, webhooks, receipts, refunds and recurring billing remain pending. Native gateway fixtures and intercepted browser tokenization are not real provider acceptance; credentials were not supplied. See [sandbox guide](SANDBOX_PAYMENTS.md). Candidate acceptance and publication remain pending.
+
 Released 1.5.0 adds [payment preparation](PAYMENT_PREPARATION.md): two additive tables, owner-only external-key credential protection and reviewed existing-invoice requests. Charges and production connections stay disabled. 227 native / 401 HTTP-browser checks passed; [report](TEST_REPORT_1.5.0.md). Complete/update: 58/57 files. After backup and UPDATE merge, owners enable Payment preparation; private gateway storage must be outside the document root. Existing manual billing remains unchanged.
 
 

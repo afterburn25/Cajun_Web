@@ -1,5 +1,9 @@
 # Decision record
 
+## 2026-10-13 — Candidate 1.6.0 sandbox trials
+
+Bounded M2 / partial HC-04 and HC-11 adds owner-only tokenized sandbox trials, durable attempt/event records, transaction-details matching, explicit reconciliation and shared invoice/request financial locking. Sandbox outcomes never settle real invoices. Existing 1.5 credentials/requests remain intact through additive setup. Client/production checkout, webhooks, receipts, refunds and recurring billing remain pending. Native gateway fixtures and intercepted browser tokenization are not real provider acceptance; credentials were not supplied. See [sandbox guide](SANDBOX_PAYMENTS.md). Candidate acceptance and publication remain pending.
+
 Recorded on 2026-10-12 from the owner's project instructions. This is a consolidated record, not an invented timestamp-by-timestamp history of earlier work. Supersede decisions explicitly; do not silently reverse them.
 
 | ID | Accepted decision | Reason / practical consequence |

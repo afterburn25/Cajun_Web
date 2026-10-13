@@ -142,6 +142,8 @@ try:
         catalog_browser(globals(),browser)
         from payments_cases import run_browser as payments_browser
         payments_browser(globals(),browser)
+        from attempts_cases import run_browser as attempts_browser
+        attempts_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)
