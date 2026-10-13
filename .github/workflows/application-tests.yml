@@ -69,6 +69,7 @@ jobs:
           php8.3 tests/activity_native.php
           php8.3 tests/mail_templates_native.php
           php8.3 tests/mail_accounts_native.php
+          php8.3 tests/reviews_native.php
       - name: Real HTTP and Chromium application workflows
         run: .ci-venv/bin/python tests/browser_acceptance.py
       - name: Unprivileged structure update interruption and recovery
