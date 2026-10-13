@@ -1,6 +1,6 @@
 # Owner sandbox payment trials
 
-Candidate 1.6.0 adds a bounded M2 trial workflow to the existing 1.5.0 invoice requests. It is not production checkout. Only an owner can use **Sandbox trials**; ordinary payment staff, clients, visitors and support sessions cannot start or verify trials. Existing request permissions remain unchanged.
+1.6.0 adds a bounded M2 trial workflow to the existing 1.5.0 invoice requests. It is not production checkout. Only an owner can use **Sandbox trials**; ordinary payment staff, clients, visitors and support sessions cannot start or verify trials. Existing request permissions remain unchanged.
 
 ## Setup and use
 

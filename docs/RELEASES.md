@@ -1,5 +1,17 @@
 # Release register
 
+## v1.6.0 — published 13 October 2026
+
+[Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.6.0) published `2026-10-13T10:09:19Z`; immutable source/tag `e5d4c17456faff0522429ab3f58093a06a523bd5`, [PR #18](https://github.com/afterburn25/Cajun_Web/pull/18). Later publication records do not alter release bytes.
+
+| Asset | Bytes | SHA-256 |
+|---|---:|---|
+| [COMPLETE-UPLOAD](https://github.com/afterburn25/Cajun_Web/releases/download/v1.6.0/CajunWebPro-1.6.0-COMPLETE-UPLOAD.zip) | 1494827 | `b8c25c79f60616a30685490fd1185d2964759091efbb31dc83e57819b232b7ec` |
+| [UPDATE](https://github.com/afterburn25/Cajun_Web/releases/download/v1.6.0/CajunWebPro-1.6.0-UPDATE.zip) | 1401104 | `97ffbad970d173de6958ef8ddb0c281a535a233fc50bed44d81664f211fd7ce1` |
+
+Eight public assets/tag were freshly downloaded and checked against exact-main CI and local rebuild. 296 native / 421 HTTP/Chromium checks pass. Owner-only sandbox trials/reconciliation and shared invoice locking; real invoices remain unchanged. Real provider acceptance is pending; gateway/tokenization tests are synthetic. [Report](TEST_REPORT_1.6.0.md), [scope](RELEASE_1.6.0.md), [verification](RELEASE_VERIFICATION_1.6.0.json), [guide](SANDBOX_PAYMENTS.md).
+
+
 ## v1.5.0 — published 13 October 2026
 
 [Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.5.0) published `2026-10-13T09:27:36Z`; immutable source/tag `3e95bdf81ca0126d99a69c41f2ff6eb0c08da1e1`, [PR #16](https://github.com/afterburn25/Cajun_Web/pull/16). Later publication records are documentation only.

@@ -1,6 +1,6 @@
 # 1.6.0 bounded scope and acceptance
 
-PR [#18](https://github.com/afterburn25/Cajun_Web/pull/18) continues M2 / partial HC-04 and HC-11 from verified 1.5.0. Final exact-main acceptance and publication evidence are recorded separately when complete. [Sandbox guide](SANDBOX_PAYMENTS.md).
+PR [#18](https://github.com/afterburn25/Cajun_Web/pull/18) continues M2 / partial HC-04 and HC-11 from verified 1.5.0. Published and verified at `e5d4c17456faff0522429ab3f58093a06a523bd5`. [Exact-main run](https://github.com/afterburn25/Cajun_Web/actions/runs/38380935411) passes 296 native and 421 HTTP/Chromium checks. [Report](TEST_REPORT_1.6.0.md) and [download verification](RELEASE_VERIFICATION_1.6.0.json) retain evidence. [Sandbox guide](SANDBOX_PAYMENTS.md).
 
 | Boundary | Delivered behavior | Acceptance |
 |---|---|---|
