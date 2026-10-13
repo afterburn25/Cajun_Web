@@ -1,5 +1,18 @@
 # Approved roadmap and acceptance criteria
 
+## Dependency-aware roadmap status — owner instruction (2026-10-13)
+
+**External verification is not a stop-work order.** All workers must follow [dependency and verification gates](DEPENDENCY_GATES.md), separating *implementation progress* from *provider access/production gate* and *released/deployed*. Implement and test independent work; defer only unsupported real provider/merchant/SSH operations, not entire workstreams.
+
+| Item | Gate label (replaces generic "Blocked" in trackers) | Continue now | Cannot activate until |
+|---|---|---|---|
+| HC-07 20i API | Awaiting API verification | Provider adapter, admin settings, connection/fixture tests, inventory mapping | Actual account authorization, capability checks and staging test |
+| HC-09 Domains | Development pending — API verification | Search UI, TLD/pricing models, domain lifecycle and synthetic tests | Domain entitlement, wholesale funding and safe end-to-end provider test |
+| HC-10 VPS | Development pending — API verification | VPS catalog/UX, order/lifecycle adapter and synthetic tests | Verified VPS API/prices and provision/cancel acceptance |
+| A-10 VPS SSH | Architecture/security validation pending | Secure access model, audited UX and isolated transport tests | Authenticated vetted gateway/provider handoff and real security acceptance |
+
+This table updates **dependency labels only**; none of these four roadmap features is hereby claimed complete, released or live. No real charges, domain changes, hosting/VPS writes or SSH connections without their operation-specific owner-approved gates. Agents must choose another executable scoped task rather than idling when a gate cannot pass.
+
 ## Current integration checkpoint — 2026-10-13
 
 W-01: candidate 1.11.0 integrates existing portfolio browsing, real category URLs, no-JavaScript filtering, exact published-only detail lookup and accessible enhanced history/result count. Full case-study galleries/results editing and broader interaction/media acceptance remain partial. L-01: reviewed standalone estimator merged through PR #29; live quantity-price adapter is deferred. [Scope and tests](PORTFOLIO_BROWSING.md); publication pending.

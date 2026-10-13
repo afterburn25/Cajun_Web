@@ -2,7 +2,7 @@
 /** Native ZIP inspection, no database, network, extraction or executable payload invocation. */
 declare(strict_types=1);
 if(PHP_SAPI!=='cli')exit(2);
-define('CWP_BOOT',true);require __DIR__.'/../site/app/delivery-archive.php';require __DIR__.'/delivery_fixture.php';
+define('CWP_BOOT',true);require __DIR__.'/../site/app/projects/archive.php';require __DIR__.'/delivery_fixture.php';
 $checks=[];$tmp=sys_get_temp_dir().'/cwp-delivery-'.bin2hex(random_bytes(8));mkdir($tmp,0700);
 function da_ok(string $name,bool $ok): void {global $checks;$checks[]=['name'=>$name,'passed'=>$ok];if(!$ok)throw new RuntimeException($name);}
 function da_deny(string $name,callable $fn): void {try{$fn();}catch(InvalidArgumentException|RuntimeException){da_ok($name,true);return;}da_ok($name,false);}

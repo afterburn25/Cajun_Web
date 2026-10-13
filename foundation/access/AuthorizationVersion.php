@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace CajunWebPro\Foundation\Access;
 
+if (PHP_SAPI !== 'cli' && !defined('CWP_BOOT')) { http_response_code(404); exit; }
+
 /** Opaque random hex tokens, compatible with the inspected 1.1.0 auth_version. */
 final class AuthorizationVersion
 {
