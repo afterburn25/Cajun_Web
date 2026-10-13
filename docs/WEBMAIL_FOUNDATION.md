@@ -17,7 +17,7 @@ folder sync, rendering, sending) is a separate gate.
 | `foundation/webmail/MailboxProfile.php` | One account profile: labelled, owner-attributed, validated host/port per protocol, **`ssl`/`starttls` only** — plaintext transports refused. `credentialRef` is an *intended-opaque* handle into the app's encrypted credential store; persistence-layer rules, not this object, keep secrets out of it. Explicit `configured`/`disabled` status. |
 | `foundation/webmail/MailboxAssignment.php` | Temporal record assigning one mailbox to one staff member: issuer attribution, non-negative times, active only at/after `issuedAt`, optional bounded expiry, revocation. This is the *lifecycle* half of authorization — see the bridge note below. |
 | `foundation/webmail/ConnectionResult.php` | Recorded outcome of a *real* probe: `success`/`failed` (named error required)/`untested`. `success()` records what the caller asserts — the factory cannot prove a connection happened; that obligation is adapter-side. |
-| `foundation/webmail/MailMessage.php` | Immutable listing summary: uid, `uidValidity` generation, folder, envelope fields, flag set (`seen`/`answered`/`flagged`/`draft`/`attachment`). `identity()` is mailbox + folder + uidValidity + uid per RFC 9051 §2.3.1.1 — safe to key caches and notification links. No body. |
+| `foundation/webmail/MailMessage.php` | Immutable listing summary: uid, `uidValidity` generation, folder, envelope fields, flag set (`seen`/`answered`/`flagged`/`draft`/`attachment`). `identity()` is an unambiguous `len:mailboxId|len:folder|uidValidity|uid` tuple per RFC 9051 §2.3.1.1 — length-prefixing keeps separator-bearing mailbox/folder values from colliding, so the key is safe for caches and notification links. No body. |
 | `foundation/webmail/UnifiedInbox.php` | Combined-inbox snapshot for one staff id: messages from any mailbox without an **active** assignment are construction-time errors; duplicate full identities are rejected rather than double-counted. Newest-first paging, global and per-mailbox unread counts. |
 
 ## Authorization bridge
@@ -41,8 +41,10 @@ plus the capability grant.
 - Connection state is honest: `untested` is distinct from `failed`, a
   failure must name its error, and `success` records a caller-asserted
   probe outcome.
-- Message identity is generation-aware: the same uid under a new
-  `uidValidity` is a different message.
+- Message identity is generation-aware and unambiguously encoded:
+  the same uid under a new `uidValidity` is a different message, and
+  `len:`-prefixed free-text fields mean separator characters in
+  mailbox/folder values can never forge a collision.
 - An inbox is a **snapshot** — it freezes the assignments and messages
   given at construction and must be rebuilt after assignment changes or
   a new sync; a stale snapshot never silently widens access.

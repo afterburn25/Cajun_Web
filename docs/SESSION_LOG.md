@@ -539,3 +539,15 @@ Publication follow-through: exact-main desktop/mobile template and retained admi
 ## 2026-10-13 — A-06 account preparation claimed and canonical branch preserved
 
 From verified 1.12.0 publication-record 2d46c70, created codex/admin-mail-accounts and merged #59 through 7a52e19 without changing Devin's branch. Documentation conflicts retain the published 1.12.0 record and accurate current ownership. Local PHP 8.4 -n: all 62 webmail model checks pass; independent issuance/expiry/duplicate/flag checks pass, but pipe-delimited message identity has a reproduced tuple collision, assigned in #59 comment 6151792141. No identity consumer or mail transport is enabled. Scratch account vault/schema preparations lint but are not yet application-tested. Issue #2 release/ownership handoff is comment 6151774409. Next: implement owner settings, protected passwords, current grants and native/UI acceptance while the canonical identity correction proceeds. No production activation.
+
+## 2026-10-13 — Devin A-06 webmail corrections (Codex review rounds 1-2)
+
+**Request:** "Continue Without Stopping"; Codex review of PR #59 assigned two correction rounds before the `codex/admin-mail-accounts` adapter proceeds.
+
+**Work:** round 1 (`7a52e19`) — renamed `MailboxGrant` to `MailboxAssignment` so the temporal lifecycle record cannot read as a competing authority to canonical `Access\MailboxGrant`/`PermissionPolicy`; assignments require non-negative times, `active()` now requires `now >= issuedAt` (fixing active(100)=true for a grant issued at 200), `revoke()` refuses pre-issuance times; `MailMessage` gained the RFC 9051 §2.3.1.1 `uidValidity` generation field; `UnifiedInbox` rejects duplicate full identities; honesty claims narrowed (untrusted envelope text, intended-opaque credentialRef, caller-asserted success, snapshot semantics). Round 2 (`91d9106`) — `identity()` re-encoded as a length-prefixed tuple `len:mailboxId|len:folder|uidValidity|uid` after Codex reproduced the `a|b`+`INBOX` vs `a`+`b|INBOX` collision; separator-bearing names stay valid, true duplicates still reject.
+
+**Tests:** 64 synthetic checks pass on PHP 8.4.25 and `php -n`. Fixture records only; no transport, credentials, persistence or UI.
+
+**Next:** #59 awaits Codex re-review; `codex/admin-mail-accounts` adapter is Codex's next integration step.
+
+Codex re-review: preserved 13c04f6 correction ancestry, all 64 PHP 8.4 no-extension checks pass and the independent original collision no longer reproduces. Actual application integration/native/UI acceptance remains pending; original Devin work stays preserved.

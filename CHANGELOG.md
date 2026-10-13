@@ -2,7 +2,7 @@
 
 ## Unreleased — A-06 email account preparation
 
-- Preserve Devin #59 canonical profile/assignment/message models and isolated CI. Re-reviewed 62 no-extension component checks; identity tuple encoding still needs its assigned correction before acceptance.
+- Preserve Devin #59 canonical profile/assignment/message models and isolated CI. Re-reviewed 64 no-extension component checks; future-issued grants, UIDVALIDITY, duplicate identities and tuple encoding are corrected. Application acceptance remains pending.
 - Codex application, storage and credential preparation is in development on its separate branch. No transport, mailbox contents, connection success, sending, release or deployment is implied.
 
 ## 1.12.0 — verified administrator email-template library

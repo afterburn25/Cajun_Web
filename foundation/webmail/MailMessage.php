@@ -66,10 +66,17 @@ final readonly class MailMessage
         }
     }
 
-    /** The full RFC-stable identity: mailbox + folder + generation + uid. */
+    /**
+     * The full RFC-stable identity as an unambiguous tuple encoding:
+     * `len:mailboxId|len:folder|uidValidity|uid`. Length-prefixing the
+     * free-text fields keeps mailbox/folder values that contain `|`
+     * from colliding — `a|b`+`INBOX` and `a`+`b|INBOX` are distinct.
+     */
     public function identity(): string
     {
-        return $this->mailboxId . '|' . $this->folder . '|' . $this->uidValidity . '|' . $this->uid;
+        return strlen($this->mailboxId) . ':' . $this->mailboxId . '|'
+            . strlen($this->folder) . ':' . $this->folder . '|'
+            . $this->uidValidity . '|' . $this->uid;
     }
 
     public function isUnread(): bool
