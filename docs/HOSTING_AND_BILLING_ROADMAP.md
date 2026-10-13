@@ -1,6 +1,8 @@
 # CajunWebPro custom hosting commerce, billing and client platform
 
-**M2 / HC-06 / HC-11 continuation, 2026-10-13:** 1.8.0 candidate implements verified external payment history, balances, client statements and printable receipts. [Ledger guide](INVOICE_LEDGER.md). Production card checkout, actual merchant acceptance, tax/credit/refund/subscription workflows remain incomplete. Candidate acceptance/publication pending.
+## 2026-10-13 — Verified 1.8.0 invoice payment increment
+
+External USD receipts, partial/full balances, retained owner corrections, legacy balance import and client-owned statements/printable receipts are delivered in [v1.8.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.8.0) / `c36a36e80c40485c9e3e7e6cdd4884ced25db961`. Existing 1.7.0 invoices, attempts/notifications, credentials/keys and earlier data survive UPDATE. New requests/trials use remaining balances; sandbox evidence never becomes revenue. 427 native / 503 HTTP/Chromium checks pass. Actual merchant acceptance, production/client checkout, refunds/tax/credits/subscriptions remain pending. [Guide](INVOICE_LEDGER.md) · [report](TEST_REPORT_1.8.0.md).
 
 ## 2026-10-13 — Verified 1.7.0 sandbox notification increment
 

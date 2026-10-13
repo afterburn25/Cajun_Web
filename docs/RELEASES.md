@@ -1,5 +1,17 @@
 # Release register
 
+## v1.8.0 — published 13 October 2026
+
+[Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.8.0) published `2026-10-13T11:34:03Z`; immutable source/tag `c36a36e80c40485c9e3e7e6cdd4884ced25db961`, [PR #22](https://github.com/afterburn25/Cajun_Web/pull/22). Later documentation commits do not change release bytes.
+
+| Asset | Bytes | SHA-256 |
+|---|---:|---|
+| [COMPLETE-UPLOAD](https://github.com/afterburn25/Cajun_Web/releases/download/v1.8.0/CajunWebPro-1.8.0-COMPLETE-UPLOAD.zip) | 1547093 | `a3aa9d335e5cf39904c757aa94631d9bae80f47896be695819523849d8f2f190` |
+| [UPDATE](https://github.com/afterburn25/Cajun_Web/releases/download/v1.8.0/CajunWebPro-1.8.0-UPDATE.zip) | 1452717 | `357984c623810e6f760ee54d15275c678c558e596019ec822e305e81161db472` |
+
+Eight assets/tag were freshly downloaded and byte/hash/extraction checked against exact-main CI and local rebuild. 427 native / 503 HTTP/Chromium checks pass. External receipts, legacy balances and recording corrections are distinct from sandbox evidence; production card checkout is not enabled. [Report](TEST_REPORT_1.8.0.md), [scope](RELEASE_1.8.0.md), [verification](RELEASE_VERIFICATION_1.8.0.json), [guide](INVOICE_LEDGER.md).
+
+
 ## v1.7.0 — published 13 October 2026
 
 [Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.7.0) published `2026-10-13T10:47:40Z`; immutable source/tag `1fe0670142755f86aee235fabe1847e5d118ee52`, [PR #20](https://github.com/afterburn25/Cajun_Web/pull/20). Later publication records do not change release bytes.

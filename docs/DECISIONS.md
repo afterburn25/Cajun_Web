@@ -1,5 +1,9 @@
 # Decision record
 
+## 2026-10-13 — Verified 1.8.0 invoice payment increment
+
+External USD receipts, partial/full balances, retained owner corrections, legacy balance import and client-owned statements/printable receipts are delivered in [v1.8.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.8.0) / `c36a36e80c40485c9e3e7e6cdd4884ced25db961`. Existing 1.7.0 invoices, attempts/notifications, credentials/keys and earlier data survive UPDATE. New requests/trials use remaining balances; sandbox evidence never becomes revenue. 427 native / 503 HTTP/Chromium checks pass. Actual merchant acceptance, production/client checkout, refunds/tax/credits/subscriptions remain pending. [Guide](INVOICE_LEDGER.md) · [report](TEST_REPORT_1.8.0.md).
+
 ## 2026-10-13 — separate external-money records from sandbox evidence
 
 Real bookkeeping records independently verified external receipts; sandbox trial states never become revenue. Remaining balances derive from immutable signed-cent history under the shared financial lock. Corrections append whole-entry reversals with owner reauthentication and do not process refunds. Existing paid invoices import as legacy balance facts, not new receipts. Private references stay in admin; clients receive owned statement and receipt projections. Live card processing remains a later adapter with actual merchant acceptance.

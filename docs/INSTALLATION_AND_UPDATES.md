@@ -1,6 +1,8 @@
 # Installation, packaging and updates
 
-**1.8.0 candidate:** one additive `invoice_payments` table holds external receipts, legacy balances and append-only recording reversals, separate from sandbox tables. After a current file/database/private-key backup and UPDATE upload, owners enable Invoice payments after Payment preparation. Fresh setup includes empty enabled history. Original invoice amounts and retained credentials/trials/notifications remain intact. Client receipts are private HTML views suitable for browser Print/Save as PDF. [Ledger guide](INVOICE_LEDGER.md). No runtime CLI/daemon or provider connection added; publication pending.
+## 2026-10-13 — Verified 1.8.0 invoice payment increment
+
+External USD receipts, partial/full balances, retained owner corrections, legacy balance import and client-owned statements/printable receipts are delivered in [v1.8.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.8.0) / `c36a36e80c40485c9e3e7e6cdd4884ced25db961`. Existing 1.7.0 invoices, attempts/notifications, credentials/keys and earlier data survive UPDATE. New requests/trials use remaining balances; sandbox evidence never becomes revenue. 427 native / 503 HTTP/Chromium checks pass. Actual merchant acceptance, production/client checkout, refunds/tax/credits/subscriptions remain pending. [Guide](INVOICE_LEDGER.md) · [report](TEST_REPORT_1.8.0.md).
 
 ## 2026-10-13 — Verified 1.7.0 sandbox notification increment
 
@@ -17,7 +19,7 @@ Released 1.5.0 adds [payment preparation](PAYMENT_PREPARATION.md): two additive 
 Released 1.4.0: after a full backup and UPDATE merge, owners enable **Service catalog** with their current password. Three additive catalog tables preserve clients, support policy, staff access and existing invoices. Fresh installation initializes an empty catalog. No sample prices publish. Read [Service catalog](SERVICE_CATALOG.md); publication evidence remains in the release register. Complete/update inventory: 55/54 files.
 
 
-Current verified release: [v1.7.0](RELEASES.md#v170--published-13-october-2026). [1.7.0 test report](TEST_REPORT_1.7.0.md). Earlier version instructions below are retained for their supported upgrade steps.
+Current verified release: [v1.8.0](RELEASES.md#v180--published-13-october-2026). [1.8.0 test report](TEST_REPORT_1.8.0.md). Earlier version instructions below are retained for their supported upgrade steps.
 
 Released 1.3.0 adds [client support sessions](CLIENT_SUPPORT.md). From 1.2.0, merge the verified UPDATE package after backup, then explicitly enable Client support with the owner password and allow individual clients under the support agreement. Existing roles and customer credentials are retained. From earlier versions, complete the existing workspace/administrator setup first. Fresh setup remains one-page; support policy still requires explicit confirmation. Package inventory: 52 complete / 51 update files. Publication and evidence are tracked in the release register.
 
