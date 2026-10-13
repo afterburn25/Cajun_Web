@@ -38,6 +38,15 @@ admin screens and ticket views are the integration gate.
 - Job runner/cron, persistence schema, queue locking, provider calls,
   admin ticket/search/report UI, mail compose, export.
 
+The persistence adapter must re-check the approval inside the job-claim
+transaction with a **current** read: under InnoDB REPEATABLE READ a plain
+`SELECT` earlier in the transaction pins the snapshot at a pre-lock
+instant, so the approval gate must run after the queue lock (or use
+`SELECT … FOR UPDATE`) — same requirement recorded in
+`SCHEDULING_ADAPTER.md` after the L-03 integration race. An approval that
+expired or was denied between snapshot and lock must never release an
+irreversible job.
+
 ## Tests
 
 `tests/desk/run.php` — 52 synthetic checks covering link grammar,
