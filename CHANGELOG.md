@@ -15,10 +15,11 @@
 ## 1.14.0 — candidate, human website review workflow
 ## 1.15.0 — candidate, consultation scheduling
 ## Unreleased — 1.16.0 candidate: explicit email connection checks
+## 1.16.0 — verified explicit email connection checks
 
 - Add separate owner-only checks of saved incoming/outgoing settings, current password and matching mailbox assignment. Verify public DNS destinations, pin the numeric connection, validate TLS and authenticate without reading or sending messages.
 - Add auditable started/terminal history, saved-version labels, bounded response handling and per-account/owner repeat limits. Interrupted or unaudited final outcomes remain incomplete.
-- Add additive upgrade setup, fresh empty schema, isolated TLS/DNS/database/HTTP acceptance and actual 1.15.0 update/recovery coverage. Candidate acceptance and publication are pending; latest published version remains 1.15.0.
+- Add additive upgrade setup, fresh empty schema, isolated TLS/DNS/database/HTTP acceptance and actual 1.15.0 update/recovery coverage. Published and downloaded/verified from `372ea28bf0d3081180c836e2c90aa14b7a90bdd3` after exact-main 38466626819; all 16 assets/tag pass. No real mailbox or deployment.
 
 ## 1.15.0 — verified consultation scheduling
 
