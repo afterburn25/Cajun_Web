@@ -5,6 +5,7 @@
 Branched from `main` `02fc784` (published 1.11.0 baseline). Isolated A-03 contract layer: `foundation/backups/` (2 files), `tests/backups/run.php` (31 synthetic checks, all pass on PHP 8.4.25 locally), `docs/BACKUPS_FOUNDATION.md`, `.github/workflows/backups.yml`.
 
 **Gate:** none for the contract layer; archive/extract/restore-drill remain Codex integration work. **Not integrated:** additive-only outside `site/`.
+
 ## Active roadmap increment — 1.11.1 candidate
 
 Codex owns `codex/motion-update-1.11.1` from main `02fc784`, preserving Devin PR #34 history at `e2b2a23` in merge `69ed304`. Scope: W-02 homepage pause/root scrolling and restrained brand sheen; honest browser motion evidence; safe staged updates from published organized 1.11.0 while retaining all older supported paths. Recovery journals are per target version; the permanent 1.11.0 lock is shared across retained updater versions. Existing private/configuration/scaffold bytes and prior recovery records stay intact; fresh organized sites gain no legacy root routes.

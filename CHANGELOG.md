@@ -5,6 +5,7 @@
 - Added canonical `foundation/backups/` classes (`BackupManifest` with per-item sha256 + whole-scope `manifestHash()` and structural secrets exclusion — config/keys/env/private storage can never enter scope; `RestorePlan` with hash-computed impact preview, exact-phrase actor authorization, retention/format gates and guarded applied/abandoned states) plus `docs/BACKUPS_FOUNDATION.md`.
 - Added `tests/backups/run.php` (31 synthetic checks; fixture manifests only) and the `backups.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, archives, filesystem or database restore. Not yet integrated or released.
+
 ## 1.11.1 — candidate, motion preferences and organized updates
 
 - Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.
