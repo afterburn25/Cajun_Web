@@ -4,7 +4,7 @@ Written 2026-10-13 on `devin/scheduling-adapter` from main `b975915`. Counterpar
 
 ## Live semantics that must be preserved
 
-`growth_submit`'s `consultation` branch (`site/app/growth.php`):
+`growth_submit`'s `consultation` branch (currently `site/app/growth.php`; moves to `site/app/marketing/growth.php` under Codex's directory refactor):
 
 - `timezone` must be one of the form's fixed IANA list (America/Chicago default … UTC); `preferred_date` must be a real `Y-m-d` within today→+365 days **in that zone**; `period` ∈ `Morning|Afternoon|Evening|Flexible`.
 - Saves a `leads` row (`service='Consultation request'`, detail records the request and states "Appointment is not confirmed until the studio replies").
