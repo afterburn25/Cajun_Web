@@ -71,3 +71,5 @@ Append an entry to [SESSION_LOG.md](SESSION_LOG.md), update [CHANGELOG.md](../CH
 ## Official references
 
 Reviewed 2026-10-12: [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax), [managing releases](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository), and [source-code archives](https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives).
+
+The [estimator workflow](../.github/workflows/estimator.yml) verifies only standalone decisions on PHP 8.2/8.4. It does not test the current estimator form, quantity pricing, database or notification delivery; the component remains excluded from deployment.

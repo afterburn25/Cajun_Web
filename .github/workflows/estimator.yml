@@ -1,0 +1,39 @@
+name: Estimator checks
+
+on:
+  pull_request:
+  push:
+    branches: [main, devin/lead-estimator]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: estimator-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  estimator:
+    name: Estimator PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - name: Check out the revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Syntax and estimate decisions using the official PHP image
+        run: |
+          docker run --rm --network none -v "$PWD:/workspace:ro" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            for source in foundation/estimator/*.php tests/estimator/*.php; do php -l "$source"; done
+            php tests/estimator/run.php
+          '
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Estimator contract/evaluation unit checks only. Forms, persistence, lead capture, notifications, database, installer and 1.1.0 integration remain untested by this job.' >> "$GITHUB_STEP_SUMMARY"
