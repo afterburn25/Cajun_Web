@@ -24,10 +24,7 @@ try:
         # Exact readable, root-owned unused scaffold fixture; PHP must select external storage.
         subprocess.run(['sudo','chown','root:root',str(web/'storage')],check=True)
         before=(web/'storage').stat().st_uid
-<<<<<<< HEAD
         # mod_autoindex matches real shared hosts: with Options -Indexes it produces the 403 a bare directory must get.
-=======
->>>>>>> origin/main
         modules=['mpm_prefork','authz_core','authz_host','dir','mime','alias','env','headers','autoindex']+(['rewrite'] if rewrite else [])
         conf=f'''ServerRoot "{work}"
 ServerName localhost
