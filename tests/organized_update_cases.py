@@ -58,3 +58,14 @@ def run(web,base,check,qa,php,label,prefix,version):
     check(label+' recovery invalidates cached version and preserves session',('STUDIO RELEASE '+version) in session.get(url+'/admin/index.php').text)
     check(label+' recovery does not reset business records',records()==before)
     r=action('apply');check(label+' recovered organized release can be updated again','<h2>Complete</h2>' in r.text and ('STUDIO RELEASE '+VERSION) in session.get(url+'/admin/index.php').text)
+    if version=='1.11.2':
+        library=url+'/admin/index.php?view=mail-templates'
+        r=session.post(library,data={'csrf':token(session.get(library)),'action':'mail_templates_setup','current_password':password})
+        check(label+' actual 1.11.2 owner enables additive template storage','Template library enabled' in r.text)
+        new=url+'/admin/index.php?view=mail-template'
+        r=session.post(new,data={'csrf':token(session.get(new)),'action':'mail_templates_create','name':'Retained template','subject':'Hello {{client_name}}','body':'Preserve template after file recovery','visibility':'personal'})
+        saved=records('templates')
+        check(label+' actual upgraded site saves versioned template',len(saved['templates'])==1 and len(saved['history'])==1 and 'Retained template' in r.text)
+        after=records();check(label+' template setup preserves original business records',all(after[n]==v for n,v in before.items() if n!='settings'))
+        r=action('recover');check(label+' file recovery leaves new template records intact','<h2>Rolled-back</h2>' in r.text and records('templates')==saved)
+        r=action('apply');check(label+' reapplied update recognizes retained templates','<h2>Complete</h2>' in r.text and 'Retained template' in session.get(library).text and records('templates')==saved)
