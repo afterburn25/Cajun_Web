@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — scheduling adapter contract (L-03 dependency)
+
+- Add `docs/SCHEDULING_ADAPTER.md`: contract for adopting the scheduling foundation (PR #32) in the live `consultation` route — preferred date/period/zone becomes a `TimeWindow` request, staff narrow to an exact slot via `isBookable` + confirm, additive `consultations` table feeds conflict checks, and all form/spam/lead behavior stays live-side. No shipping code or schema changes.
+
 ## 1.11.0 — portfolio integration candidate, not yet released
 
 - Stabilize modified-click acceptance by observing the application decision before suppressing synthetic navigation; add an actual Ctrl-click/new-tab check. Shipping bytes are unchanged by this test-only correction.

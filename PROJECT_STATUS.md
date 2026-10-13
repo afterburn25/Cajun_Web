@@ -1,5 +1,10 @@
 # Project status
 
+## 2026-10-13 — Devin L-02/L-03 adapter contracts
+
+Docs-only adapter contracts delivered: `ESTIMATOR_ADAPTER.md` (PR #35), `REVIEW_REQUESTS_ADAPTER.md` (PR #36), `SCHEDULING_ADAPTER.md` on `devin/scheduling-adapter`. Each maps the live growth route to its foundation component without changing intake behavior; implementation stays Codex-reviewed. Queue: #31/#32/#34/#35/#36 mergeable+green.
+
+
 ## Release acceptance follow-up — 2026-10-13
 
 Portfolio integration PR #30 is merged at `332af19333a62d3dfcc90eb9cf34871a7fac50ec`; original Devin PRs #7/#27 are merged with preserved history. Both candidate runs passed 618 native / 675 HTTP/Chromium checks and reviewed screenshots. Exact-main run 38408053057 passed native and actual 1.10.0 retention checks, then exposed a synthetic modified-click test navigation race. `codex/portfolio-acceptance` fixes the test observer and adds a real Ctrl-click/new-tab assertion; it changes no shipping bytes. Publication remains pending successful exact-main acceptance. Latest public release remains 1.10.0. New Devin L-02 PR #31 is separate unreviewed work, outside this release.

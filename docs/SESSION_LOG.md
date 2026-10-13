@@ -1,5 +1,18 @@
 # Session log
 
+## 2026-10-13 — Devin scheduling adapter contract (L-03 dependency)
+
+**Request:** Continue the roadmap — same docs-only contract pattern as estimator (#35) and review requests (#36), for the live `consultation` route + L-03 foundation.
+
+**Starting commit:** `b975915`. New branch `devin/scheduling-adapter`. Owned: `docs/SCHEDULING_ADAPTER.md` + continuity docs. Documentation only.
+
+**Work:** Mapped `growth_submit`'s consultation branch to the foundation: `preferred_date`+`period`+`timezone` → preferred-range `TimeWindow` (period bands in the requester's zone, UTC storage), `Consultation` lifecycle keeps request→confirm honest, staff pick a concrete slot through `ConsultationCalendar::slots()`/`isBookable`/`transition`, additive `consultations` table (UTC epoch, computed conflicts), `SchedulePolicy`/`WeeklyRule` from admin settings. Also landed PR #36 (L-02 adapter contract) this session and corrected PR #34 to `60fd276` (dead-CSS removal, metrics artifact, all checks green).
+
+**Verification:** `tools/check_docs.py` passes. No code executed or changed.
+
+**Next:** Codex review of the three contract docs (#35, #36, this PR) sets adapter implementation order. Queued: #31, #32, #34, #35, #36.
+
+
 ## 2026-10-13 — Sandbox trial release published and verified
 
 Continued roadmap from main `dd29436fa40c2a0f800bc02569b5fd5d1fb75c09` / 1.5.0 on `codex/sandbox-attempts`. Added owner-only tokenized sandbox UI, fixed sandbox reporting/charge adapter, additive attempt/events, exact amount/reference/account checks, idempotency and concurrency safeguards, unknown-result recovery, shared manual/catalog/request locks, strict audit and immutable 1.5.0 upgrade acceptance. PR #18 merged as `e5d4c17456faff0522429ab3f58093a06a523bd5`; exact-main run https://github.com/afterburn25/Cajun_Web/actions/runs/38380935411 passes 296 native / 421 HTTP/Chromium checks. Independent policy/invitation/documentation checks pass. Reviewed desktop/320px screenshots.
