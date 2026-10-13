@@ -1,5 +1,7 @@
 # Installation, packaging and updates
 
+v1.1.0 complete/update deployment assets are published and downloaded-back verified. Use the release register for exact URLs, hashes and tested source. See [release register](RELEASES.md) and [test report](TEST_REPORT_1.1.0.md).
+
 ## 1.1.0 installation and supported upgrade
 
 Runtime: PHP 8.2+ source target, PDO MySQL, OpenSSL, Fileinfo and GD, with an InnoDB database. Full application acceptance runs on **PHP 8.3 / MariaDB 10.11**. Independent PHP 8.2/8.4 component checks do not certify the application on those runtimes. Apache 2.4/LiteSpeed protection files are included; target-host HTTPS, PHP mapping and permissions need checking. Customers need no Node service, root access, SSH, Composer or command-line installation.

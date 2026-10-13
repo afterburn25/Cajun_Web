@@ -1,8 +1,10 @@
 # 1.1.0 website and client-workspace acceptance
 
+**Final evidence:** [v1.1.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.1.0), tested source `3703783e979abab38e8d72e9092c51dc835833b3`, [exact-main CI](https://github.com/afterburn25/Cajun_Web/actions/runs/38357271480). All 50 native and 157 HTTP/browser checks passed. [Test report](TEST_REPORT_1.1.0.md) and [published-download verification](RELEASE_VERIFICATION_1.1.0.json) supersede candidate history below. The matrix describes shipped functionality; broader roadmap limits remain unchanged.
+
 Competitor references rechecked 13 October 2026 against official [Wix hosting](https://support.wix.com/en/article/exporting-or-embedding-your-wix-site-elsewhere), [Wix Studio](https://www.wix.com/studio), [Squarespace custom code](https://support.squarespace.com/hc/en-us/articles/205815928-Add-custom-code-to-your-site) and [Squarespace export](https://support.squarespace.com/hc/en-us/articles/206566687-Export-your-site-content). Public copy distinguishes service delivery from platform capability, acknowledges plan-dependent code features and partial exports, and makes no ranking/sales guarantees. These references do not certify provider integration.
 
-Candidate in [PR #8](https://github.com/afterburn25/Cajun_Web/pull/8), based on recovered application `90ba4f5` and main `b28a67c`. This matrix maps actual implementation to acceptance, not to the entire hosting/billing roadmap. Final exact-commit CI and publication evidence must be recorded before calling the release complete.
+Merged in [PR #8](https://github.com/afterburn25/Cajun_Web/pull/8), based on recovered application `90ba4f5` and main `b28a67c`. This matrix maps actual implementation to acceptance, not to the entire hosting/billing roadmap. Final exact-commit CI and publication evidence are recorded above.
 
 | Delivered scope under acceptance | Routes / controls / handlers | Persistence | Named acceptance |
 |---|---|---|---|

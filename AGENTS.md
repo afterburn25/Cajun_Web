@@ -1,5 +1,7 @@
 # Working agreement for CajunWebPro
 
+**Release gate satisfied, 2026-10-13:** [v1.1.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.1.0) is published at `3703783e979abab38e8d72e9092c51dc835833b3` and all downloaded assets verified. Read the current exact-release handoff at [docs/DEVIN_HANDOFF_1.1.0.md](docs/DEVIN_HANDOFF_1.1.0.md). Earlier waiting/recovery assignments below are historical. Codex finishes publication records, the authorized issue #2 handoff and issue #4 closure, then stops. Devin's existing work is preserved; notification/receipt/running status must not be inferred from a GitHub comment.
+
 **Owner priority override, 2026-10-13:** finish and verify the existing 1.1.0 website/client workspace, merge actual source, publish and download-verify its GitHub Release, then hand off issue #2 and stop. Completion branch `codex/release-1.1.0` preserves application `90ba4f5`, main `b28a67c` and Devin PR #7 at `55d6067`. Codex owns release fixes/tests/integration/publication; original branches remain intact. Later roadmap work is paused. The user authorized repository changes, isolated tests, PRs, checked merges, publication and the GitHub handoff, not live hosting/customer/provider operations. This overrides earlier parallel-work timing below.
 
 These are the owner's project requirements and the repository continuity procedure. Follow them for work in `afterburn25/Cajun_Web`. Do not treat older chat summaries, screenshots, or ZIP filenames as proof of the current implementation.
@@ -36,7 +38,7 @@ Investigations with no runtime changes still need a short session record. Record
 
 ## Verification and release discipline
 
-The owner authorizes GitHub testing, incremental application releases with retained download copies, and continuously updated documentation for other agents. Follow `docs/RELEASE_WORKFLOW.md` and maintain `docs/RELEASES.md`. Use GitHub Actions for isolated tests, keep ready verified work on `main`, and publish tested complete packages as versioned GitHub Release assets. Preserve previous versions and never move published version tags. No application release is possible until current 1.1.0 source is recovered and verified; documentation CI is not application acceptance. This standing direction does not authorize live deployment, charges or customer mail by itself.
+The owner authorizes GitHub testing, incremental application releases with retained download copies, and continuously updated documentation for other agents. Follow `docs/RELEASE_WORKFLOW.md` and maintain `docs/RELEASES.md`. Use GitHub Actions for isolated tests, keep ready verified work on `main`, and publish tested complete packages as versioned GitHub Release assets. Preserve previous versions and never move published version tags. The current 1.1.0 release has recovered, verified source; subsequent releases still require application acceptance, not documentation CI alone. This standing direction does not authorize live deployment, charges or customer mail by itself.
 
 Test the exact artifact delivered. Application source, embedded installer dependencies, version labels, direct installer, and packaged installer must agree. Regenerate dependency hashes whenever shipping files change. Do not reintroduce the old key-based or multi-step installer through a stale copy.
 

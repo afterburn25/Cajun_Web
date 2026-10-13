@@ -15,11 +15,15 @@ Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
 
 Every working session must update the status, handoff, and [session log](docs/SESSION_LOG.md). Record implementation changes in [CHANGELOG.md](CHANGELOG.md), and important choices in [Decisions](docs/DECISIONS.md). Documentation belongs in Git with the work, not only in chat.
 
-## Current checkpoint — 2026-10-13
+## Current release — 1.1.0
 
-Actual **1.1.0 website/client-workspace source** is in `site/`, with native/browser tests and `tools/build.py`. [Completion PR #8](https://github.com/afterburn25/Cajun_Web/pull/8) reconciles recovered source with main. Read the [feature/test matrix](docs/RELEASE_1.1.0.md), [installation instructions](docs/INSTALLATION_AND_UPDATES.md) and [release register](docs/RELEASES.md) for exact evidence and publication status. Historical missing-source incidents no longer mean the source is absent.
+**Published and downloaded back: [CajunWebPro v1.1.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.1.0).** Immutable release source/tag: `3703783e979abab38e8d72e9092c51dc835833b3`; application merged in [PR #8](https://github.com/afterburn25/Cajun_Web/pull/8). [COMPLETE deployment ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.1.0/CajunWebPro-1.1.0-COMPLETE-UPLOAD.zip) · [1.0.8 UPDATE ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.1.0/CajunWebPro-1.1.0-UPDATE.zip). The publication record/handoff is a later **documentation-only commit**; it does not change the tested release source, tag or packages.
 
-Deploy only `site/` contents in the flat release package. Independent staff components in `foundation/` remain outside deployment; Devin's portfolio component is preserved in PR #7. The historical 1.0.8 ZIP in `tests/fixtures/` exists only for upgrade acceptance. Later roadmap work is paused until 1.1.0 publication and handoff.
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38357271480) passed **50 native database and 157 real HTTP/Chromium checks**, plus package consistency. Full app: PHP 8.3.6 / MariaDB 10.11.19; non-root filesystem and actual extracted package tests. Access: 146 checks on each PHP 8.2.34/8.4.26. Invitations: 46 native checks on each with MariaDB 11.4.13. Documentation passed. [Test report](docs/TEST_REPORT_1.1.0.md) and [download verification](docs/RELEASE_VERIFICATION_1.1.0.json) record precise scope; all seven release assets were freshly downloaded and verified, including extracted hashes and the tag target.
+
+Delivered: public growth/comparison content, server-priced estimator and saved requests; content/pricing/pipeline/history and portfolio controls; client invitations, projects, milestones, messages, private documents, version-specific decisions, manual invoices and an additive database upgrade. Original branding and one-page keyless setup remain intact.
+
+Read [Devin's exact-release handoff](docs/DEVIN_HANDOFF_1.1.0.md). His PR #7/component branch remains intact. Issue #2 is the authorized GitHub handoff channel; a comment does not establish receipt or a running Devin session. No live hosting, customer data/mail, charges or provider operations occurred. Full payments/20i/webmail/staff UI/support SSH/ZIP delivery/backup and updater remain later roadmap work. **This release task stops after publication, handoff and tracker closure; do not automatically resume later milestones.**
 
 ## Non-negotiable direction
 

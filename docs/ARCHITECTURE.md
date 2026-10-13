@@ -1,5 +1,7 @@
 # Architecture notes
 
+The described application is now shipped in v1.1.0; independent foundations remain outside deployment. See [release register](RELEASES.md) and [test report](TEST_REPORT_1.1.0.md).
+
 Updated 2026-10-13: recovered 1.1.0 source is in `site/`. Public growth modules, `workspace.php`, `studio-admin.php` and `portal.php` extend the existing application. The seven additive workspace tables and actual routes/controls are mapped in [release acceptance](RELEASE_1.1.0.md). The older source inventory below remains useful baseline history.
 
 ## Deployment model

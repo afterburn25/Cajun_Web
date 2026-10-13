@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.0 — 2026-10-13
+
+Published [v1.1.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.1.0) at `3703783e979abab38e8d72e9092c51dc835833b3` after PR #8. Delivered website/client-workspace scope and release fixes are listed in [the matrix](docs/RELEASE_1.1.0.md). Exact-main tests passed: 50 native, 157 HTTP/browser, all independent component/documentation checks. Seven retained assets were downloaded back and verified. Complete/update ZIPs support fresh setup and the tested populated 1.0.8 upgrade; no live deployment. This later documentation-only checkpoint records publication, remaining roadmap and the exact-release Devin handoff. Older pending statements below are historical.
+
 ## 2026-10-13 — Native regression fixes
 
 First MariaDB acceptance found a real schema-idempotency failure: digit-bearing `sha256` was omitted by the column parser. Fixed both column-name patterns without weakening type/engine/unique-key checks. Local native tests then passed, and real unprivileged PHP HTTP tests completed fresh one-page installation and physical cleanup. Also fixed the existing lead editor's seven-status/six-label mismatch and corrected the test's portfolio route to the actual `work` endpoint. Tests now run extracted package bytes and cover incompatible schema preservation, cross-client/CSRF rejection and disguised executable uploads. Public service copy was polished and official comparison sources rechecked on 13 October. Complete browser acceptance and release publication remain pending. No customer host or database was changed.
