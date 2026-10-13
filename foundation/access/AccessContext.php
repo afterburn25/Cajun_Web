@@ -19,8 +19,8 @@ final readonly class AccessContext
         public string $principalType,
         public string $role,
         public bool $active,
-        public int $authorizationVersion,
-        public int $sessionAuthorizationVersion,
+        #[\SensitiveParameter] public string $authorizationVersion,
+        #[\SensitiveParameter] public string $sessionAuthorizationVersion,
         public array $permissions = [],
         public array $mailboxes = [],
     ) {

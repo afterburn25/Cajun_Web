@@ -5,6 +5,7 @@ use CajunWebPro\Foundation\Access\AccessContext;
 use CajunWebPro\Foundation\Access\MailboxGrant;
 use CajunWebPro\Foundation\Access\PermissionPolicy;
 
+require __DIR__ . '/../../foundation/access/AuthorizationVersion.php';
 require __DIR__ . '/../../foundation/access/MailboxGrant.php';
 require __DIR__ . '/../../foundation/access/AccessContext.php';
 require __DIR__ . '/../../foundation/access/PermissionPolicy.php';
@@ -20,8 +21,8 @@ function context(array $changes = []): AccessContext
         'principalType' => 'staff',
         'role' => 'administrator',
         'active' => true,
-        'authorizationVersion' => 1,
-        'sessionAuthorizationVersion' => 1,
+        'authorizationVersion' => str_repeat('a', 32),
+        'sessionAuthorizationVersion' => str_repeat('a', 32),
         'permissions' => [],
         'mailboxes' => [],
     ], $changes));
@@ -75,10 +76,10 @@ $invalidActors = [
     'inactive owner' => ['active' => false],
     'unknown role' => ['role' => 'superuser'],
     'wrong-case role' => ['role' => 'Owner'],
-    'revoked session' => ['authorizationVersion' => 2],
-    'future session revision' => ['sessionAuthorizationVersion' => 2],
-    'missing revisions' => ['authorizationVersion' => 0, 'sessionAuthorizationVersion' => 0],
-    'negative revisions' => ['authorizationVersion' => -1, 'sessionAuthorizationVersion' => -1],
+    'revoked session' => ['authorizationVersion' => str_repeat('b', 32)],
+    'future session revision' => ['sessionAuthorizationVersion' => str_repeat('b', 32)],
+    'missing revisions' => ['authorizationVersion' => '', 'sessionAuthorizationVersion' => ''],
+    'malformed revisions' => ['authorizationVersion' => 'not-a-token', 'sessionAuthorizationVersion' => 'not-a-token'],
 ];
 foreach ($invalidActors as $label => $changes) {
     $actor = context(array_replace([
@@ -142,7 +143,7 @@ expect('removed capability revokes access', false, $policy->allows(context([
     'permissions' => [], 'mailboxes' => [new MailboxGrant('mailbox-a', true, true, true)],
 ]), 'mail.read', 'mailbox-a'));
 expect('new session can use current permissions', true, $policy->allows(context([
-    'authorizationVersion' => 2, 'sessionAuthorizationVersion' => 2, 'permissions' => ['staff.manage'],
+    'authorizationVersion' => str_repeat('b', 32), 'sessionAuthorizationVersion' => str_repeat('b', 32), 'permissions' => ['staff.manage'],
 ]), 'staff.manage'));
 expect('opaque numeric-looking mailbox IDs are not coerced', false, $policy->allows(context([
     'role' => 'owner', 'mailboxes' => [new MailboxGrant('01', true, true, true)],
@@ -154,6 +155,22 @@ rejects('malformed mailbox grant list', fn() => context(['mailboxes' => [['mailb
 rejects('duplicate contradictory mailbox grants', fn() => context([
     'mailboxes' => [new MailboxGrant('mailbox-a', true, true, true), new MailboxGrant('mailbox-a', false, false, true)],
 ]));
+
+expect('numeric-looking opaque tokens must not compare loosely', false, $policy->allows(context([
+    'role' => 'owner', 'authorizationVersion' => '0e' . str_repeat('1', 30),
+    'sessionAuthorizationVersion' => '0e' . str_repeat('2', 30),
+]), 'staff.manage'));
+expect('actual 32-character source token matches', true, $policy->allows(context([
+    'role' => 'owner', 'authorizationVersion' => 'af192d64082946f2aefee1e3176a614c',
+    'sessionAuthorizationVersion' => 'af192d64082946f2aefee1e3176a614c',
+]), 'staff.manage'));
+expect('64-character token remains opaque', true, $policy->allows(context([
+    'role' => 'owner', 'authorizationVersion' => str_repeat('c', 64),
+    'sessionAuthorizationVersion' => str_repeat('c', 64),
+]), 'staff.manage'));
+expect('token with appended whitespace is denied', false, $policy->allows(context([
+    'role' => 'owner', 'sessionAuthorizationVersion' => str_repeat('a', 32) . ' ',
+]), 'staff.manage'));
 
 if ($failures !== []) {
     fwrite(STDERR, implode(PHP_EOL, $failures) . PHP_EOL);

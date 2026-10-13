@@ -9,7 +9,7 @@ Owner clarification on 2026-10-13: another worker is finishing **1.1.0** and wil
 | Owner | Branch | Initial deliverable | Boundary |
 |---|---|---|---|
 | Existing 1.1.0 worker | `codex/finish-1.1.0` | Finish and verify current application source, native acceptance and release preparation | Do not overwrite or duplicate this worker's source/installer work |
-| Codex in this stream | `codex/platform-foundation` | Independent A-05/A-06 permission component and tests; adapt after 1.1.0 publication | Own `foundation/access/`, `tests/access/`, `access-policy.yml`, permission contracts and later shared identity/migration integration |
+| Codex in this stream | `codex/platform-foundation` | A-05/A-06 permissions and staff-invitation components; adapt to final 1.1.0 | Own `foundation/access/`, `foundation/invitations/`, their test folders/workflows, permission contracts and later shared identity/migration integration |
 | Devin | `devin/public-experience` | Independent W-01 portfolio data/filtering contract and tests first; existing-site presentation after source inspection | Own `foundation/portfolio/`, `tests/portfolio/`, portfolio documentation and a scoped portfolio CI job; request shared backend changes through an agreed contract |
 
 Both branches were created on GitHub from merged-main checkpoint `633f5a1e5c27f0ad626276f2bae75cbc2b88ea66`. Refresh them after verified source import. A branch does not mean its worker is running. The owner selected [GitHub assignment #2](https://github.com/afterburn25/Cajun_Web/issues/2) to paste into Devin; Codex has not dispatched Devin directly. Record the actual Devin session/PR when available.

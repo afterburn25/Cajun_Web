@@ -34,8 +34,7 @@ final class PermissionPolicy
             || $actor->principalType !== 'staff'
             || !in_array($actor->role, ['owner', 'administrator', 'staff'], true)
             || !$actor->active
-            || $actor->authorizationVersion < 1
-            || $actor->sessionAuthorizationVersion !== $actor->authorizationVersion
+            || !AuthorizationVersion::matches($actor->authorizationVersion, $actor->sessionAuthorizationVersion)
         ) {
             return false;
         }

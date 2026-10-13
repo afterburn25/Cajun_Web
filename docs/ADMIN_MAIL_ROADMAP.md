@@ -10,6 +10,8 @@ Add an Email section inside CajunWebPro admin for sending and receiving mail fro
 
 ## A-05 — Additional admin accounts and access (foundation)
 
+Component progress: [staff invitation persistence](STAFF_INVITATIONS.md) implements hashed expiring setup links, resend/revoke and transactional consumption with an activation callback. The application still needs issuance authorization, final-schema migration, account lifecycle/last-owner controls, setup UI, delivery and native/browser integration acceptance. No actual administrator is created by this component work.
+
 - Admin -> Administrators: list accounts, add/invite an administrator, edit display name/login email, assign role and mailbox access, reset access, and deactivate/reactivate an account.
 - Preserve the existing owner account. Distinguish Owner, Administrator and optionally restricted staff roles; permissions cover administrator management, mailbox configuration, mailbox read/send, template management, financial settings and other existing admin functions. Adding an admin must not silently grant access to every mailbox or payment credential.
 - Only the owner or an expressly authorized role can create accounts or grant permissions. Prevent privilege escalation and removal/deactivation/demotion of the last active owner. Deactivation invalidates active sessions and pending invitation/reset tokens immediately.

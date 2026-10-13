@@ -10,7 +10,9 @@ The standalone PHP 8.2+ classes in [foundation/access](../foundation/access) nee
 - [MailboxGrant](../foundation/access/MailboxGrant.php) carries exact mailbox identity, separate read/send rights and explicit enabled state. Duplicate grants for the same identifier are rejected rather than resolved by array order.
 - [PermissionPolicy](../foundation/access/PermissionPolicy.php) returns a boolean for a named permission and, for mail, an exact mailbox identifier. Unknown permissions and invalid contexts deny access.
 
-An administrator or restricted staff member starts with no implicit privileges. An owner has the known global management permissions, but still needs an explicit mailbox grant to read/send that mailbox. Customer identities cannot gain staff privileges by supplying an owner role or permission list. Blank identities, unrecognized roles, inactive accounts and mismatched/nonpositive authorization revisions are denied.
+An administrator or restricted staff member starts with no implicit privileges. An owner has the known global management permissions, but still needs an explicit mailbox grant to read/send that mailbox. Customer identities cannot gain staff privileges by supplying an owner role or permission list. Blank identities, unrecognized roles, inactive accounts and malformed/mismatched authorization tokens are denied.
+
+Current-source correction on 2026-10-13: inspected the recovered 1.1.0 draft's `users.auth_version` and login/reset paths. The foundation now uses opaque strings, matching the existing random hex tokens, instead of the original speculative integer revision contract. [AuthorizationVersion](../foundation/access/AuthorizationVersion.php) accepts 32/64-character lowercase hex tokens and compares exact bytes with `hash_equals`; never cast them to numbers. [Staff invitation persistence](STAFF_INVITATIONS.md) binds setup tokens to that same identity version.
 
 ## Logical permissions
 
@@ -39,12 +41,12 @@ Never construct an access context from browser fields, query parameters, headers
 | `principalType` | Authoritative identity kind; only `staff` is accepted here |
 | `role` | Current server-loaded role: `owner`, `administrator` or `staff` |
 | `active` | Current server-loaded account status |
-| `authorizationVersion` | Positive current server-side revision, advanced when authorization must be revoked |
-| `sessionAuthorizationVersion` | Revision captured in the authenticated server session |
+| `authorizationVersion` | Current server-loaded random hex authorization string, rotated when access must be revoked |
+| `sessionAuthorizationVersion` | Exact opaque string captured in the authenticated server session |
 | `permissions` | Current server-loaded explicit capability list |
 | `mailboxes` | Current server-loaded memberships and mailbox enablement; no stale session-only grant cache |
 
-The snapshot's values must be fresh enough to enforce revocation. The component can reject a mismatched revision, but it does not increment revisions, revoke real sessions or supply concurrency guarantees. Build a fresh context for each request; do not keep it across a role/deactivation/grant change. Mailbox enablement combines both the actual connection's enabled state and current membership status.
+The snapshot's values must be fresh enough to enforce revocation. The component can reject a mismatched token, but it does not rotate stored tokens, revoke real sessions or supply concurrency guarantees. Build a fresh context for each request; do not keep it across a role/deactivation/grant change. Mailbox enablement combines both the actual connection's enabled state and current membership status.
 
 `allows()` is one authorization condition. Callers must additionally validate CSRF, request data, the actual target record and any operation-specific constraints. A global management permission is not authorization to expose raw credentials, assign any desired role, perform live provider writes or execute arbitrary account mutations.
 
@@ -52,13 +54,15 @@ The snapshot's values must be fresh enough to enforce revocation. The component 
 
 1. Inspect the real owner/admin/customer authentication and schema; map this contract to existing identities without duplicating login systems or guessing migration column names. Preserve the existing verified owner explicitly.
 2. Implement additive schema/migration support only where needed. Test a populated installation and preserve customer data, config, media and locks.
-3. Connect current permission/session revisions to every protected page/API and operation. Atomically advance the revision and revoke invitations/reset tokens on deactivation or relevant account changes. Verify rejection on the very next request.
+3. Connect current permission/session tokens to every protected page/API and operation. Atomically rotate the authorization string and revoke invitations/reset tokens on deactivation or relevant account changes. Verify rejection on the very next request.
 4. Implement grants and staff lifecycle in a dedicated service: cannot grant beyond the actor's authority; owner assignment needs explicit owner authority; serialize last-owner changes in a native database transaction so concurrent deactivations/demotions cannot remove every owner. The pure policy alone does not provide these controls.
 5. Add one-time expiring hashed invitation/setup/reset tokens, existing login/password protections and the administrators UI. Keep mail delivery distinct from link generation; never send reusable passwords. Integrate owner-only link copying when SMTP is unavailable.
 6. Apply mailbox decisions to list/detail/attachments/search/send/templates/notifications and verify resource ownership using authoritative records. Filter notification counts before returning them. Keep staff mail out of public caching and customer sessions.
 7. Run native database, browser and upgrade acceptance from A-05/A-06. Add source files to the canonical installer/build inventory and regenerate hashes only after integration. Do not claim the complete feature from isolated unit tests.
 
 ## Verification
+
+Continuation: local PHP 8.4.25 passes 146 access decisions, including opaque-token compatibility and numeric-coercion rejection. The prior 142-case run below is historical evidence for the initial implementation; current CI runs must test the changed string-token contract. Invitation persistence/native tests have separate scope in [Staff invitations](STAFF_INVITATIONS.md).
 
 Run `php tests/access/run.php`. The dependency-free [test runner](../tests/access/run.php) checks the role/capability matrix, invalid identities, inactive/stale sessions, scope separation, mailbox membership, read/send independence, wildcard/unknown denial and malformed grants. It uses synthetic identifiers only and exits nonzero on failures without relying on PHP's configurable assertions.
 

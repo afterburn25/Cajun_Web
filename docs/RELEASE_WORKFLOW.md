@@ -12,6 +12,8 @@ Owner direction recorded 2026-10-12: use GitHub for testing, deliver incremental
 
 ## Work in reviewable increments
 
+The [staff-invitation job](../.github/workflows/staff-invitations.yml) adds native MariaDB component tests with synthetic fixtures and concurrent PHP processes. A successful run establishes only that component's persistence/locking behavior, not the current application's migration, invitation UI, email delivery or release readiness. Retain that distinction alongside the access-policy and documentation jobs.
+
 1. Fetch GitHub and read the current status, handoff, rules and relevant roadmap before editing. Inspect open PRs and claimed tasks to avoid conflicting work.
 2. Start from current `main` or an explicitly documented active branch. Give each feature or fix a bounded acceptance target, identify its roadmap IDs, and preserve existing behavior and customer data.
 3. Commit implementation, relevant tests and continuity documentation together. Use a PR with the exact checks run, limitations, migrations and intended release scope. Fix failed checks before merging; never bypass required repository protections.

@@ -92,3 +92,9 @@ Official public 20i API, client service grants, StackCP, webmail, backup and SSH
 | D-036 | Owner clarified | Another worker is finishing 1.1.0 and will publish source; begin independent parallel work now | Supersedes the blanket implementation wait for isolated components/contracts/synthetic tests only. Codex starts access decisions, Devin starts portfolio filtering; neither replaces the application or changes its routes/schema/installer until current-source inspection. No need to ask for the same build again. |
 
 The access component's logical capability/context identifiers are integration contracts, not assertions about existing database fields. Source-specific migrations, real authorization lifecycle and UI remain pending inspection.
+
+## 2026-10-13 — Align to recovered authentication source
+
+| ID | Status | Decision | Consequence |
+|---|---|---|---|
+| D-037 | Source-driven correction | The inspected 1.1.0 draft uses random hex strings for staff auth_version | Replace the preliminary integer foundation contract with opaque string comparison; preserve existing tokens and do not invent an integer migration. Staff invitations bind to the exact version and require transactional activation against a freshly loaded account. |

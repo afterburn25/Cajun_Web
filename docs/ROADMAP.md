@@ -6,6 +6,8 @@ The owner explicitly wants to build our own WHMCS from scratch: a custom CajunWe
 
 ## Foundation and release recovery
 
+A-05 continuation: [staff invitation persistence](STAFF_INVITATIONS.md) and opaque session-token compatibility are implemented independently; native component tests are provided for expiry, revocation, rollback and concurrent one-use activation. Account lifecycle, permissions UI and application integration remain pending; this does not complete A-05 or publish a version.
+
 2026-10-13 owner clarification: independent modules/contracts/tests may proceed while the existing worker finishes 1.1.0. The [access foundation](ACCESS_FOUNDATION.md) is the first A-05/A-06 component, with isolated local tests; it is not application-integrated or deployed. Current-source inspection remains required for routes, login, schema, installer and package integration. See [agent ownership](AGENT_COORDINATION.md).
 
 ### F-01 — Import the exact application baseline
