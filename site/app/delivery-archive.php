@@ -7,7 +7,7 @@ function delivery_archive_path(string $name): string {
     if($name===''||strlen($name)>240||!preg_match('/^[a-zA-Z0-9_.\/ @()+,-]+$/D',$name)||str_contains($name,'\\')||str_starts_with($name,'/')||str_ends_with($name,' ')||str_ends_with($name,'.'))throw new InvalidArgumentException('ZIP has an unsafe or unsupported entry path. Use simple relative file names.');
     $path=rtrim($name,'/');foreach(explode('/',$path) as $part){
         if($part===''||$part==='.'||$part==='..'||str_ends_with($part,'.')||str_ends_with($part,' ')||preg_match('/^(con|prn|aux|nul|com[0-9]|lpt[0-9])(?:\.|$)/iD',$part))throw new InvalidArgumentException('ZIP contains an ambiguous or unsafe path.');
-        if(preg_match('/^(?:\.git|\.svn|\.hg|\.env(?:\..*)?|\.ssh|\.aws|\.installed\.php|config\.php|wp-config\.php|configuration\.php|proxy-config\.php|payment-master\.key|id_rsa|id_ed25519)$/iD',$part))throw new InvalidArgumentException('ZIP contains a private configuration or repository path. Prepare a sanitized delivery package.');
+        if(preg_match('/^(?:\.git|\.svn|\.hg|\.env(?:\..*)?|\.ssh|\.aws|\.htpasswd|\.npmrc|\.netrc|\.pypirc|\.git-credentials|\.installed\.php|config\.php|wp-config\.php|configuration\.php|proxy-config\.php|payment-master\.key|id_rsa|id_ed25519)$/iD',$part))throw new InvalidArgumentException('ZIP contains a private configuration or repository path. Prepare a sanitized delivery package.');
     }
     if(preg_match('/\.(?:zip|gz|tgz|tar|bz2|xz|7z|rar|sql|sqlite[0-9]*|db|bak|log|key|pem|p12|pfx)$/iD',$path))throw new InvalidArgumentException('Nested archives, database exports, logs and key files are not accepted in this files-only delivery feature.');
     return $path;

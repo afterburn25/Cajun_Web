@@ -46,7 +46,7 @@ def run_browser(env,browser):
     r=submit(admin,url,'delivery_setup',{'owner_password':OWNER,'confirm':'1','csrf':'invalid'});check('Delivery setup rejects CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='delivery_schema_version'"))
     r=submit(admin,url,'delivery_setup',{'owner_password':'wrong','confirm':'1'});check('Delivery setup reauthenticates owner','current password' in r.text.lower())
     r=submit(admin,url,'delivery_setup',{'owner_password':OWNER,'confirm':'1'});check('HTTP owner enables deliveries','Website deliveries enabled' in r.text)
-    check('Project links to website deliveries',url+'&job_id=1' in admin.get(root+'?view=studio-job&id=1').text)
+    check('Project links to website deliveries',url+'&job_id=1' in [a.get('href') for a in soup(admin.get(root+'?view=studio-job&id=1')).select('a')])
     check('Anonymous admin delivery view requires sign-in','Prepare a private draft' not in requests.get(url).text)
     r=upload(admin,url,changes={'csrf':'bad'});check('Multipart ZIP upload rejects CSRF',not db('SELECT id FROM ci_website_releases') and 'session expired' in r.text.lower())
     r=upload(admin,url,payload=archive({'../escape.php':'unsafe'}));check('HTTP unsafe archive is rejected without draft',not db('SELECT id FROM ci_website_releases') and 'unsafe' in r.text.lower())

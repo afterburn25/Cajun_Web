@@ -292,7 +292,7 @@ function setup_expected_files(): array { return [
         'app/catalog.php' => '668a01e504143cf20b9e1d3fee00be2684c1e65a0674e0d643cd5ba345e59203',
         'app/core.php' => 'f956665091aef3d167ba496cfad42e75b1313398484ea70a989b9c9096a01537',
         'app/deliveries.php' => '73f5c39c93e60b22dc0f6a7eef3e4e6c5da17bed3f63654ab3913276cecafc38',
-        'app/delivery-archive.php' => 'e10343970171787523f1227c0f63efed6662d84e7d5c26d4b28d25a5d81ce4b2',
+        'app/delivery-archive.php' => 'db3b9379fa18b0299ee3f6644bea7eb57e71ca135e967b79130255cedb30ba76',
         'app/delivery-view.php' => '041e72e71360f4b73620f809f7ce078d2460d08f4e27fa70c7d6dfb0041ef1ca',
         'app/foundation/access/AccessContext.php' => '1ff80e17334bffedc443810220cb18aff79ee476132081142d483a7437a6ebfd',
         'app/foundation/access/AuthorizationVersion.php' => 'ec1ed3d2f9473518e97164dab76dca0293d3ea28919c0234e145bc802be7caf1',
