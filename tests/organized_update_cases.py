@@ -26,12 +26,13 @@ def run(web,base,check,qa,php,label,prefix,version):
         assert p.returncode==0,p.stderr
         return json.loads(p.stdout)
     before=records('seed')
-    prior_templates=records('templates') if version in ['1.12.0','1.13.0','1.14.0'] else None
-    prior_accounts=records('mail-accounts') if version in ['1.13.0','1.14.0'] else None
-    prior_key=(private/'mail-master.key').read_bytes() if version in ['1.13.0','1.14.0'] else None
-    prior_review=records('review-intake') if version in ['1.13.0','1.14.0'] else None
-    prior_reports=records('reviews') if version=='1.14.0' else None
-    prior_appointment=records('appointment-intake') if version=='1.14.0' else None
+    prior_templates=records('templates') if version in ['1.12.0','1.13.0','1.14.0','1.15.0'] else None
+    prior_accounts=records('mail-accounts') if version in ['1.13.0','1.14.0','1.15.0'] else None
+    prior_key=(private/'mail-master.key').read_bytes() if version in ['1.13.0','1.14.0','1.15.0'] else None
+    prior_review=records('review-intake') if version in ['1.13.0','1.14.0','1.15.0'] else None
+    prior_reports=records('reviews') if version in ['1.14.0','1.15.0'] else None
+    prior_appointment=records('appointment-intake') if version in ['1.14.0','1.15.0'] else None
+    prior_schedule=records('appointments') if version=='1.15.0' else None
     check(label+' retained schema contains meaningful client project and invoice records',all(before[n]['count']>0 for n in before))
     session.get(url+'/admin/index.php?view=login')
     probe=root/'cache-probe.php';probe.write_text("<?php echo json_encode(['enabled'=>opcache_get_status(false)['opcache_enabled']??false,'timestamps'=>ini_get('opcache.validate_timestamps'),'cached'=>opcache_is_script_cached(__DIR__.'/config/defaults.php')]);")
@@ -126,3 +127,18 @@ def run(web,base,check,qa,php,label,prefix,version):
         account=prior_accounts['accounts'][0];mail=url+'/admin/index.php?view=mail-account&account_id='+account['id']
         r=session.post(mail,data={'csrf':token(session.get(mail)),'action':'mail_accounts_save','account_id':account['id'],'revision':account['revision'],'current_password':password,**{k:account[k] for k in ['label','address','imap_host','imap_port','imap_encryption','imap_username','smtp_host','smtp_port','smtp_encryption','smtp_username','enabled']},'imap_password':'','smtp_password':''})
         check(label+' earlier email key still decrypts after scheduling recovery','Email settings saved' in r.text and records('mail-accounts')['accounts'][0]['revision']==account['revision']+1 and (private/'mail-master.key').read_bytes()==prior_key)
+
+    if version=='1.15.0':
+        check(label+' update retains calendar history and earlier private account records',records('appointments')==prior_schedule and len(prior_schedule['history'])==2 and records('reviews')==prior_reports and records('mail-accounts')==prior_accounts and records('templates')==prior_templates and (private/'mail-master.key').read_bytes()==prior_key)
+        account=prior_accounts['accounts'][0];mail=url+'/admin/index.php?view=mail-account&account_id='+account['id']
+        r=session.post(mail,data={'csrf':token(session.get(mail)),'action':'mail_accounts_connections_setup','account_id':account['id'],'current_password':password})
+        check(label+' older owner prepares empty check history','Connection-check history is ready' in r.text and records('mail-checks')=={'checks':[],'results':[]})
+        r=session.post(mail,data={'csrf':token(session.get(mail)),'action':'mail_accounts_check','account_id':account['id'],'revision':account['revision'],'target':'imap','current_password':password})
+        check(label+' upgraded check refuses fixture-only host before network','public server hostname' in r.text and records('mail-checks')=={'checks':[],'results':[]})
+        records('mail-checks-seed');saved_checks=records('mail-checks')
+        check(label+' synthetic failure history is displayed without claiming success',len(saved_checks['checks'])==1 and saved_checks['results'][0]['outcome']=='failed' and 'Check failed' in session.get(mail).text)
+        check(label+' check setup preserves scheduling reviews accounts and templates',records('appointments')==prior_schedule and records('reviews')==prior_reports and records('mail-accounts')==prior_accounts and records('templates')==prior_templates)
+        r=action('recover');check(label+' file recovery preserves check schema and earlier private records','<h2>Rolled-back</h2>' in r.text and records('mail-checks')==saved_checks and records('appointments')==prior_schedule and records('mail-accounts')==prior_accounts and (private/'mail-master.key').read_bytes()==prior_key)
+        r=action('apply');check(label+' reapplication recognizes prepared connection checks','<h2>Complete</h2>' in r.text and 'Test incoming connection' in session.get(mail).text and records('mail-checks')==saved_checks and records('appointments')==prior_schedule and records('reviews')==prior_reports)
+        r=session.post(mail,data={'csrf':token(session.get(mail)),'action':'mail_accounts_save','account_id':account['id'],'revision':account['revision'],'current_password':password,**{k:account[k] for k in ['label','address','imap_host','imap_port','imap_encryption','imap_username','smtp_host','smtp_port','smtp_encryption','smtp_username','enabled']},'imap_password':'','smtp_password':''})
+        check(label+' original key decrypts after connection-check recovery','Email settings saved' in r.text and records('mail-accounts')['accounts'][0]['revision']==account['revision']+1 and (private/'mail-master.key').read_bytes()==prior_key)
