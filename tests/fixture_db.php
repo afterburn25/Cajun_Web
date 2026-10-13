@@ -6,18 +6,20 @@ define('CWP_BOOT', true);
 $request = json_decode(stream_get_contents(STDIN), true, 32, JSON_THROW_ON_ERROR);
 // A populated catalog fixture calls the old authorization adapter. Its core must
 // resolve CWP_ROOT to that same retained release, never include two staff adapters.
-$oldCore=match($request['operation']??''){'seed-delivery-upgrade'=>'test-runtime/released-1.8.0','seed-ledger-upgrade'=>'test-runtime/released-1.7.0','seed-notification-upgrade'=>'test-runtime/released-1.6.0','seed-trial-upgrade'=>'test-runtime/released-1.5.0','seed-payment-upgrade'=>'test-runtime/released-1.4.0',default=>'site'};
+$oldCore=match($request['operation']??''){'seed-activity-upgrade'=>'test-runtime/released-1.9.0','seed-delivery-upgrade'=>'test-runtime/released-1.8.0','seed-ledger-upgrade'=>'test-runtime/released-1.7.0','seed-notification-upgrade'=>'test-runtime/released-1.6.0','seed-trial-upgrade'=>'test-runtime/released-1.5.0','seed-payment-upgrade'=>'test-runtime/released-1.4.0',default=>'site'};
 require __DIR__.'/../'.$oldCore.'/app/core.php';
 $GLOBALS['cwp_config'] = require __DIR__.'/../test-runtime/config-fixture.php';
-if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','seed-support-upgrade','seed-catalog-upgrade','seed-payment-upgrade','seed-trial-upgrade','seed-notification-upgrade','seed-ledger-upgrade','seed-delivery-upgrade'],true)) {
-    $deliveryUpgrade=$request['operation']==='seed-delivery-upgrade';
+if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','seed-support-upgrade','seed-catalog-upgrade','seed-payment-upgrade','seed-trial-upgrade','seed-notification-upgrade','seed-ledger-upgrade','seed-delivery-upgrade','seed-activity-upgrade'],true)) {
+    $activityUpgrade=$request['operation']==='seed-activity-upgrade';
+    $deliveryUpgrade=$activityUpgrade||$request['operation']==='seed-delivery-upgrade';
     $ledgerUpgrade=$deliveryUpgrade||$request['operation']==='seed-ledger-upgrade';
     $notificationUpgrade=$ledgerUpgrade||$request['operation']==='seed-notification-upgrade';
     $trialUpgrade=$notificationUpgrade||$request['operation']==='seed-trial-upgrade';$paymentUpgrade=$trialUpgrade||$request['operation']==='seed-payment-upgrade';$catalogUpgrade=$paymentUpgrade||$request['operation']==='seed-catalog-upgrade';$supportUpgrade=$catalogUpgrade||$request['operation']==='seed-support-upgrade';$staffUpgrade=$supportUpgrade||$request['operation']==='seed-staff-upgrade';$folder=$trialUpgrade?'trial-upgrade':($paymentUpgrade?'payment-upgrade':($catalogUpgrade?'catalog-upgrade':($supportUpgrade?'support-upgrade':($staffUpgrade?'staff-upgrade':'upgrade'))));$prefix=$trialUpgrade?'trialup_':($paymentUpgrade?'paymentup_':($catalogUpgrade?'catalogup_':($supportUpgrade?'supportup_':($staffUpgrade?'staffup_':'upgrade_'))));
     if($notificationUpgrade){$folder='notification-upgrade';$prefix='notifyup_';}
     if($ledgerUpgrade){$folder='ledger-upgrade';$prefix='ledgerup_';}
     if($deliveryUpgrade){$folder='delivery-upgrade';$prefix='deliveryup_';}
-    require __DIR__.'/../test-runtime/'.($deliveryUpgrade?'released-1.8.0':($ledgerUpgrade?'released-1.7.0':($notificationUpgrade?'released-1.6.0':($trialUpgrade?'released-1.5.0':($paymentUpgrade?'released-1.4.0':($catalogUpgrade?'released-1.3.0':($supportUpgrade?'released-1.2.0':($staffUpgrade?'released-1.1.0':'legacy')))))))).'/app/schema.php';
+    if($activityUpgrade){$folder='activity-upgrade';$prefix='activityup_';require __DIR__.'/../test-runtime/released-1.9.0/app/schema.php';}
+    else require __DIR__.'/../test-runtime/'.($deliveryUpgrade?'released-1.8.0':($ledgerUpgrade?'released-1.7.0':($notificationUpgrade?'released-1.6.0':($trialUpgrade?'released-1.5.0':($paymentUpgrade?'released-1.4.0':($catalogUpgrade?'released-1.3.0':($supportUpgrade?'released-1.2.0':($staffUpgrade?'released-1.1.0':'legacy')))))))).'/app/schema.php';
     $GLOBALS['cwp_config']['db']['prefix'] = $prefix;
     $GLOBALS['cwp_config']['site_url'] = 'http://127.0.0.1:8091/'.$folder;
     $private = __DIR__.'/../test-runtime/'.$folder.'-private';
@@ -77,6 +79,15 @@ if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','se
         ledger_migrate('Synthetic upgrade passphrase 2026');
         query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,instructions,created_at) VALUES (1,?,?,?,?,?)',['OLD-LEDGER','Retained external-payment invoice',50000,'Retain external instructions',$now]);
         ledger_receive(3,12500,'bank','Retained bank reference',gmdate('Y-m-d'),str_repeat('6',64),ledger_review_hash(ledger_invoice(3)));
+    }
+    if($activityUpgrade){
+        require __DIR__.'/delivery_fixture.php';delivery_migrate('Synthetic upgrade passphrase 2026');
+        $zip=__DIR__.'/../test-runtime/activity-upgrade.zip';d_zip($zip);
+        $data=['version'=>'retained-1','title'=>'Retained delivered website','scope'=>'static','notes'=>'Retained static package. Read handover before opening.','source_revision'=>'abcdef123'];
+        $rid=delivery_upload(1,$data,$zip,str_repeat('a',64));delivery_publish($rid,delivery_review_hash(delivery_record($rid)),'Synthetic upgrade passphrase 2026');
+        delivery_upload(1,array_replace($data,['version'=>'retained-draft']),$zip,str_repeat('b',64));
+        query('INSERT INTO '.table('studio_messages')." (job_id,author_type,author_id,body,created_at) VALUES (1,'admin',1,'Retained studio message',?)",[$now]);
+        studio_publish(1,'design','Retained review','Retained immutable design details','');
     }
     file_put_contents(__DIR__.'/../test-runtime/'.$folder.'-config.php','<?php return '.var_export(config(),true).';');
     echo json_encode(['ok'=>true]);

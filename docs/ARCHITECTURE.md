@@ -1,5 +1,9 @@
 # Architecture notes
 
+## 2026-10-13 — Verified 1.10.0 workspace activity increment
+
+Separate client/staff activity centers and private workspace bells are delivered in [v1.10.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0) / `4649a913d40166b9874f9550e57b4186edfc43ab`. Additive per-person read state projects retained sources without changing business writes. Exact links, bounded mark-visible actions, history, current authorization and passive idle expiry pass 603 native / 630 HTTP/Chromium checks including actual 1.9.0 UPDATE. Full P-07 remains partial; SMTP dispatch/preferences/stage/hosting/ticket/renewal events and A-06–A-08 multi-account webmail/templates/email bells remain pending. [Guide](WORKSPACE_ACTIVITY.md) · [report](TEST_REPORT_1.10.0.md).
+
 ## 2026-10-13 — Verified 1.9.0 client ZIP delivery increment
 
 Prepared, reviewed and versioned client ZIP handover is delivered in [v1.9.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.9.0) / `080f14aea8fe5c35e04e4eba62976609aef7cd67`. Guarded private storage, immutable manifests, owner publication, client history and authenticated resumable downloads preserve previous records through actual 1.8.0 UPDATE acceptance. 539 native / 569 HTTP/Chromium checks pass. Full P-06 remains partial: generated builds, database handover, larger jobs, dynamic restore and notifications remain pending. Actual merchant acceptance/card checkout and broader 20i/mail/SSH remain pending. [Guide](CLIENT_DELIVERIES.md) · [report](TEST_REPORT_1.9.0.md).
