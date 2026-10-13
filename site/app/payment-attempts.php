@@ -121,7 +121,7 @@ function payments_manual_paid(int $job,int $invoice,string $note): void {
     if(strlen(trim($note))<5||strlen($note)>500)throw new InvalidArgumentException('Record a verified payment reference (5–500 characters).');
     staff_locked(fn()=>staff_transaction(function() use($job,$invoice,$note): void {
         if(support_current())throw new RuntimeException('Payment changes are unavailable during a support session.');
-        $actor=staff_require('clients.manage');$r=one('SELECT * FROM '.table('studio_invoices').' WHERE id=? AND job_id=? FOR UPDATE',[$invoice,$job]);
+        $actor=staff_require('clients.manage');if(ledger_ready())throw new RuntimeException('Use Invoice payments to review the remaining balance and record a receipt.');$r=one('SELECT * FROM '.table('studio_invoices').' WHERE id=? AND job_id=? FOR UPDATE',[$invoice,$job]);
         if(!$r||$r['status']!=='issued')throw new RuntimeException('Invoice not found or already recorded as paid.');
         if(catalog_snapshot($invoice))throw new RuntimeException('Use the catalog invoice payment action.');
         attempts_assert_clear($invoice);

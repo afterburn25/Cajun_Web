@@ -8,4 +8,17 @@ Enabling the ledger imports previously paid invoices as clearly labeled legacy p
 
 Client-owned statements show invoice total, recorded payments and remaining balance, with receipt history and printable views. Private administrator references/reversal reasons and other clients' records are never exposed. Support may view client-safe statements with its existing attribution but may not download receipts or perform financial actions. Statement totals describe issued invoices, not an agreed overall project quote or completed delivery.
 
-This increment records external/manual receipts; it does not send money, connect to a production gateway, create tax advice, run subscriptions or enable client card checkout. Actual merchant acceptance and the later real card-processing adapter remain separate gates. Implementation, native/HTTP acceptance and release publication are pending.
+This increment records external/manual receipts; it does not send money, connect to a production gateway, create tax advice, run subscriptions or enable client card checkout. Actual merchant acceptance and the later real card-processing adapter remain separate gates. Implementation is present on the candidate branch; native/HTTP acceptance and release publication are pending.
+
+## Owner setup and daily use
+
+1. Back up the database, website files, configuration, private media and external payment master key. Merge the versioned UPDATE package. Never rerun fresh installation over a configured site.
+2. Sign in as an owner, enable Payment preparation if needed, then open Invoice payments. Confirm the backup and enter your current password to add history and import previously paid balances. A repeated setup does not duplicate records.
+3. Open an issued invoice. Independently verify the external payment, review the remaining amount, choose the method and UTC receipt date, and enter a private reference without card or bank credentials. Confirm and record. Clients can then open statements and printable receipts from their project.
+4. If a record was a mistake, an owner opens Correct this recording, supplies a reason and current password, and confirms. This reverses that entire record; enter a corrected receipt separately if appropriate. The original remains visible and its receipt is marked reversed. This is not a refund workflow.
+
+Amounts cover invoices already issued, not a project's total quoted price. Supported receipts are USD, from one cent through the remaining invoice balance, capped at 999999.99 per invoice. Use decimal amounts without commas or currency symbols. A verified external reference cannot be recorded twice on the same invoice while the original is unreversed. Record partial receipts individually using distinct verified references.
+
+History lists are paginated. Clients see payment amounts, methods/dates and corrections, not private references, staff identity or correction reasons. Only clients can open their printable receipt view; support staff can inspect an attributed client-safe statement but receipt access is denied. Browser printing is user-initiated; no automatic PDF file, email or external link is generated. Legacy balances cannot generate new receipts.
+
+If an invoice differs from retained history, or a trial is unresolved, recording fails closed. Resolve the underlying facts rather than editing history. No supported downgrade is claimed after enabling the ledger; recovery means restoring a consistent backed-up database and files together.
