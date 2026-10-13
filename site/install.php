@@ -304,7 +304,7 @@ function setup_expected_files(): array { return [
         'app/mail.php' => 'b841a8f23acc147748a829dea230e5e0053489623688c6cbf3f8b18af71fe3d8',
         'app/payment-attempts.php' => 'a99aaafa411b80af996e99ff689d01e1fcaae077ccbdae7e412eda3c130b09fc',
         'app/payment-trial-view.php' => '17ce2185949a0d879bccdef1014b15b99747ea23e80d5303de19f3e9850dcf40',
-        'app/payments-admin.php' => 'bd2e390871e1875b7a0dd6d4087e38e1a7f71bce1442a6354c885c515ffd2c1e',
+        'app/payments-admin.php' => '491bbf6e1945c00df94babd1880dfe0365fa150c232bda66e9f4b5c1dfe17a12',
         'app/payments.php' => '7106a84f63140bd0ace0173391d75874c24fc0a61ff5a67a374a2ebe8afedff6',
         'app/schema.php' => '17ea4469683de405362cfb6ccb23c47fb800e02c171ff0cd2f6f53edf2251ebe',
         'app/staff-admin.php' => 'cbfb94bcfc9cbf66beefb3bf86cfb0f2c440814a529c1d8b714020b5dcbdb61e',

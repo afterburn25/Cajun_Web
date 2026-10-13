@@ -7,7 +7,7 @@ function payments_admin_action(string $action): never {
     if(str_starts_with($action,'payments_trial_'))attempts_admin_action($action);
     if($action==='payments_migrate'){
         if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you have a current backup.');
-        payments_migrate(posted('owner_password',1000));flash('Payment preparation enabled. Card collection remains disabled.');redirect(admin_url('payments'));
+        payments_migrate(posted('owner_password',1000));flash('Payment preparation enabled. Client checkout remains disabled.');redirect(admin_url('payments'));
     }
     if(in_array($action,['payments_save','payments_clear','payments_verify'],true)){
         $env=posted('environment',10);$rev=gint($_POST,'revision',0,2147483647);$password=posted('owner_password',1000);
@@ -16,7 +16,7 @@ function payments_admin_action(string $action): never {
         }else{
             if($action==='payments_clear'&&posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm removal of credentials for this environment.');
             $input=[];foreach(payments_fields() as $key=>$label)$input[$key]=posted($key,128);
-            payments_save($env,$rev,$input,$password,$action==='payments_clear');flash($action==='payments_clear'?'Credentials removed for this environment.':'Credentials protected and saved. Connection status reset; card collection remains disabled.');
+            payments_save($env,$rev,$input,$password,$action==='payments_clear');flash($action==='payments_clear'?'Credentials removed for this environment.':'Credentials protected and saved. Connection status reset; client checkout remains disabled.');
         }
         redirect(admin_url('payment-settings',['environment'=>$env]));
     }
@@ -36,7 +36,7 @@ function payments_admin_render(string $view,array $user,string $error): never {
     if($view==='payments'&&!staff_can('clients.manage',$user)){http_response_code(403);admin_head('Payment requests',$view,$user);echo '<p>Payment-request and client-workspace permissions are both required.</p>';admin_foot();exit;}
     admin_head($view==='payment-settings'?'Authorize.net settings':'Payment requests',$view,$user);
     if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';
-    echo '<p class="notice">Preparation only · Card collection and production processing are disabled. Existing invoices remain payable through the studio’s manual instructions.</p>';
+    echo '<p class="notice">Preparation only · Client checkout and production processing are disabled. Existing invoices remain payable through the studio’s manual instructions.</p>';
     if(!payments_ready()){
         if(staff_ready()&&studio_ready()&&staff_can('staff.manage',$user)){?><section class="workspace-card"><h2>Enable payment preparation</h2><p>Create protected gateway settings and invoice request records. Existing client, catalog and invoice records are retained.</p><form method="post"><?php admin_action('payments_migrate');admin_input('owner_password','Your current owner password','','password','required autocomplete="current-password"');admin_check('confirm','I have a current file and database backup.',false);?><button class="btn gold">Enable payment preparation</button></form></section><?php }
         else echo '<p>Ask an owner to enable the client workspace, administrator accounts and payment preparation.</p>';
