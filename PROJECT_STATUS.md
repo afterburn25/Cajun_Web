@@ -1,5 +1,9 @@
 # Project status
 
+## 2026-10-13 — Devin P-02 versioned proposals foundation (unreviewed, unintegrated)
+
+Devin implemented the safe-work portion of P-02 as an isolated canonical component on `devin/proposals-foundation`: `foundation/proposals/` (`ProposalVersion` immutable content-hashed snapshots, `ApprovalDecision` pinned to the current version id, `Proposal` guarded lifecycle — draft→sent⇄changes-requested→approved, terminal approved, no stale approvals/re-sends, actor-attributed history), `tests/proposals/run.php` (35 checks), `proposals.yml` workflow, and [PROPOSALS_FOUNDATION](docs/PROPOSALS_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer (persistence/UI/notifications are integration work). No `site/` changes, deployment or release.
+
 ## Current directory and package contract — released 1.11.0
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](docs/DIRECTORY_STRUCTURE.md), [migration and recovery](docs/STRUCTURE_MIGRATION.md), and [START-HERE](START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.

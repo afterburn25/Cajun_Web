@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — P-02 versioned proposals foundation (Devin, isolated component)
+
+- Added canonical `foundation/proposals/` classes (immutable `ProposalVersion` snapshots with content-hash coverage, version-pinned `ApprovalDecision`, and a guarded `Proposal` lifecycle rejecting stale-version approvals, post-approval mutation and silent re-sends) plus `docs/PROPOSALS_FOUNDATION.md`.
+- Added `tests/proposals/run.php` (35 synthetic checks; fixture proposals only) and the `proposals.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes, persistence, mail, document rendering or payment linkage; no e-signature claim. Not yet integrated or released.
+
 ## 1.11.0 — organized application and verified three-package release
 
 Published from `de70c5da2e8f7bd35fbb92b9b829d0ab3e880372` after exact-main acceptance; all 16 assets downloaded and verified. Original history and all earlier releases retained. No live deployment.
