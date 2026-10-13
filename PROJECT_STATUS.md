@@ -1,5 +1,9 @@
 # Project status
 
+## 2026-10-13 — Devin HC-09 domain lifecycle foundation (unreviewed, unintegrated)
+
+Devin implemented the safe-work portion of HC-09 as an isolated canonical component on `devin/domain-foundation`: `foundation/domains/` (DomainName, TldOffering, RegistrantContact, DomainPricing→DomainQuote, DomainOrder state machine), `tests/domains/run.php` (81 checks), `domains.yml` workflow, and [DOMAINS_FOUNDATION](docs/DOMAINS_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Development pending — API verification** (fixture TLDs/prices only; no registrar calls). No `site/` changes, cart UI, schema, persistence, deployment or release.
+
 ## 2026-10-13 — Owner clarification: dependency gates ≠ stop-development (docs-only)
 
 Owner requested that Codex/Devin keep working on independent tasks while vendor access/testing is outstanding. The four earlier generic "Blocked" spreadsheet entries are now characterized in [dependency-gate policy](docs/DEPENDENCY_GATES.md): HC-07 **Awaiting API verification**; HC-09/HC-10 **Development pending — API verification**; A-10 **Architecture/security validation pending**. These are *external/technical gates*, not implementation-completion statuses. Continue safe mocked/UI/adapter/schema work and other ready roadmap work; no real payments, domains, provider provisioning or SSH until separately verified/approved.

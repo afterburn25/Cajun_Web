@@ -1,5 +1,11 @@
 # Session log
 
+## 2026-10-13 — HC-09 domain lifecycle foundation component
+
+Request: continue without stopping. Started from `main` `5d810b1` on `devin/domain-foundation`. Implemented the safe-work portion of HC-09 per DEPENDENCY_GATES.md: canonical `foundation/domains/` — `DomainName` (LDH validation, non-ASCII rejected for adapter punycode), `TldOffering` (admin-configured register/renew/transfer minor-unit prices, null = not offered, year bounds, privacy support flag), `RegistrantContact` (validated + privacy preference), `DomainPricing`/`DomainQuote` (null on anything not honestly priced), `DomainOrder` (guarded lifecycle: pending→submitted→active, consent required before submit, fail/retry clears ref+consent, renew extends expiry, expire, transfer-out with abort, terminal cancelled/transferred, append-only history) — plus `tests/domains/run.php` (81 checks, fixture TLDs/prices), `domains.yml` workflow, `DOMAINS_FOUNDATION.md`, and continuity docs.
+
+Verified locally on PHP 8.4.25: 81/81 checks, all files `php -l` clean. Scope: no `site/` changes, cart UI, schema, persistence or registrar calls. Gate: Development pending — API verification. Next: Codex review/merge; adapter contract after refactor.
+
 ## 2026-10-13 — Sandbox trial release published and verified
 
 Continued roadmap from main `dd29436fa40c2a0f800bc02569b5fd5d1fb75c09` / 1.5.0 on `codex/sandbox-attempts`. Added owner-only tokenized sandbox UI, fixed sandbox reporting/charge adapter, additive attempt/events, exact amount/reference/account checks, idempotency and concurrency safeguards, unknown-result recovery, shared manual/catalog/request locks, strict audit and immutable 1.5.0 upgrade acceptance. PR #18 merged as `e5d4c17456faff0522429ab3f58093a06a523bd5`; exact-main run https://github.com/afterburn25/Cajun_Web/actions/runs/38380935411 passes 296 native / 421 HTTP/Chromium checks. Independent policy/invitation/documentation checks pass. Reviewed desktop/320px screenshots.

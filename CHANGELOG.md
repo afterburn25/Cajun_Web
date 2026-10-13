@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — HC-09 domain lifecycle foundation (Devin, isolated component)
+
+- Added canonical `foundation/domains/` classes (LDH-validated domain names, admin-configured TLD offerings, registrant contact with privacy preference, honest-availability pricing, and a guarded order lifecycle state machine) plus `docs/DOMAINS_FOUNDATION.md`.
+- Added `tests/domains/run.php` (81 synthetic checks; fixture TLDs/prices only) and the `domains.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes, cart UI, schema, persistence or registrar calls; HC-09 gate remains `Development pending — API verification`. Not yet integrated or released.
+
 ## 2026-10-13 — Dependency-aware roadmap and agent instructions (docs only)
 
 - Added a mandatory owner-approved policy for Codex/Devin: unavailable third-party API/merchant/SSH verification blocks only the specific real integration or production operation, **not** safe independent development or unrelated features.
