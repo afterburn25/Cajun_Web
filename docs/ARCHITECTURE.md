@@ -4,6 +4,10 @@ Checkpoint: 2026-10-12. This is an inventory of the supplied 1.0.8 distribution 
 
 ## Deployment model
 
+Follow-on A-05 component: [Staff invitations](STAFF_INVITATIONS.md) uses PDO MySQL/MariaDB and an explicitly migrated InnoDB table, with transactional one-use redemption and an application-supplied account activation callback. It is still outside the deployable tree. Read-only inspection of recovered draft source on `codex/finish-1.1.0` revealed opaque string `auth_version` values; the foundation now matches those without changing the draft's schema/login code.
+
+Independent implementation added 2026-10-13: [access foundation](ACCESS_FOUNDATION.md) under `foundation/access/`, with synthetic unit tests under `tests/access/`. It is a pure PHP permission-decision module with no framework, database, request handler or installer dependency. It is excluded from deployment until mapped into the verified current source; no current schema or authentication structure is assumed. Historical source inventory below remains historical.
+
 Existing application: PHP with PDO MySQL/MariaDB, normal browser requests, local CSS/JavaScript/images, and persistent private file storage. PHP source targets 8.2 or newer. Required extensions are checked by the installer. Shared-host deployment must not require a Node service, command-line build, root access, or a long-running worker.
 
 The repo's documentation tree is not the website document root. Decide and document the source directory at import. Build the deployment ZIP from the deployable files only, without a source-directory/version wrapper. Preserve the existing app/assets grouping and root entry-point behavior.

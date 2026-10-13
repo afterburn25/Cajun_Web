@@ -1,5 +1,15 @@
 # Project status
 
+## 2026-10-13 — Release completion is the priority
+
+The owner paused later roadmap work and authorized finishing, testing, merging and publishing the existing **1.1.0 website/client workspace** before further features. Completion branch: `codex/release-1.1.0`, started from `90ba4f5e0c824e422de8cb2232f5d3ee92b7bec6` on `codex/finish-1.1.0`, reconciled with main `b28a67cdbf20c81842cf73735ee4e6024030262f`. Actual application source is in `site/`; do not follow historical source-recovery blockers below. The original worker branch remains untouched.
+
+Staff/access and invitation components from PRs #5/#6 are preserved outside the deployment package. Devin's PR #7 at `55d60670497d987286e64630e037e1ba2ec3a318` remains on his branch; the tentative local integration was aborted cleanly when priority changed. No portfolio changes were lost. Review follow-up after release: numeric category strings must remain strings, and duplicate published slugs need unambiguous detail behavior. Do not develop later roadmap work during this release task.
+
+Next: run native MariaDB and real HTTP/Chromium acceptance on the reconciled candidate, extend missing release coverage, fix failures, publish only the exact tested main/package, verify the downloaded release, then post the authorized issue #2 handoff and stop. Issue #4 tracks completion. No release is declared at this checkpoint. No live hosting, customer data/mail, charges or provider operations are authorized.
+
+## Historical checkpoints — superseded where noted
+
 ## 2026-10-13 — Native regression fixes
 
 First MariaDB acceptance found a real schema-idempotency failure: digit-bearing `sha256` was omitted by the column parser. Fixed both column-name patterns without weakening type/engine/unique-key checks. Local native tests then passed, and real unprivileged PHP HTTP tests completed fresh one-page installation and physical cleanup. Also fixed the existing lead editor's seven-status/six-label mismatch and corrected the test's portfolio route to the actual `work` endpoint. Tests now run extracted package bytes and cover incompatible schema preservation, cross-client/CSRF rejection and disguised executable uploads. Public service copy was polished and official comparison sources rechecked on 13 October. Complete browser acceptance and release publication remain pending. No customer host or database was changed.
@@ -11,9 +21,17 @@ Recovered 41 actual website files plus native/HTTP tests and a build tool from t
 
 
 Updated: 2026-10-12 — GitHub testing/release workflow and Codex/Devin split added; current 1.1.0 artifact location pending.
+
+Updated: 2026-10-13 — independent staff/mailbox permission component started while the separate 1.1.0 worker finishes the application.
 Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
 
 ## Current repository delivery and coordination checkpoint
+
+**Next A-05 increment, 2026-10-13:** inspected recovered `site/` source on `codex/finish-1.1.0` at `4a8b4c4`, without modifying that worker's branch. The draft is now available for inspection; it is not yet an accepted release. Corrected the independent access context to use the actual opaque string session tokens. Added [staff invitation persistence](docs/STAFF_INVITATIONS.md) with expiry, replacement/revocation and transactional one-use activation, plus synthetic native MariaDB concurrency/rollback tests. Source `718dbc4` in [PR #6](https://github.com/afterburn25/Cajun_Web/pull/6) passes 146 access and 46 native invitation checks on PHP 8.2.34/8.4.26 with MariaDB 11.4.13; [branch](https://github.com/afterburn25/Cajun_Web/actions/runs/38351494316) and [PR merge-ref](https://github.com/afterburn25/Cajun_Web/actions/runs/38351532791) workflows passed. Staff UI, complete account lifecycle and final 1.1.0 integration remain pending.
+
+The owner confirms another worker is finishing 1.1.0 and will update GitHub, and authorizes independent parallel implementation now. Refreshed main is `9e30564ee83d8e859c0d420ae42d6bbd805a6a57`; its [1.1.0 progress report](docs/PROGRESS_1.1.0_INTEGRATION.md) describes that worker's local integration, not source imported here. The `codex/finish-1.1.0` branch currently carries recovery/test-toolchain preparation. Preserve its ownership; no need to ask the owner for the same build again.
+
+On `codex/platform-foundation`, implemented a standalone PHP 8.2+ [permission component](docs/ACCESS_FOUNDATION.md) for staff capabilities and explicit mailbox read/send grants in commit `5cf3f01975dec7365d57415eecd061dda43a4823`, [PR #5](https://github.com/afterburn25/Cajun_Web/pull/5). Local PHP 8.4.25 passes 142 isolated checks and syntax checks for four files; [GitHub PHP 8.2.34/8.4.26 checks](https://github.com/afterburn25/Cajun_Web/actions/runs/38349906968) and [PR integration checks](https://github.com/afterburn25/Cajun_Web/actions/runs/38349921814) also passed. This component has no login, database, installer or UI connection yet, and does not complete A-05/A-06. Devin's [assignment #2](https://github.com/afterburn25/Cajun_Web/issues/2) is updated to allow independent portfolio contract/filtering work before 1.1.0 integration. Inspect the PR's current state before resuming.
 
 The owner authorizes GitHub testing, incremental version releases with retained copies, ongoing agent documentation, and separate Codex/Devin work branches integrated as they finish. Added [release workflow](docs/RELEASE_WORKFLOW.md), [release register](docs/RELEASES.md), [agent coordination and Devin handoff](docs/AGENT_COORDINATION.md), and read-only GitHub Actions documentation checks. This workflow does not yet test application code or build packages.
 
@@ -21,7 +39,7 @@ The owner authorizes GitHub testing, incremental version releases with retained 
 
 Created separate GitHub branches from that merged checkpoint: `codex/platform-foundation` and `devin/public-experience`. Refresh both from the verified current-source baseline before implementation. Codex owns foundation/integration; Devin's first bounded assignment is [issue #2: W-01 portfolio](https://github.com/afterburn25/Cajun_Web/issues/2). The owner chose to paste that assignment into Devin. Devin has not been dispatched from this chat and is not claimed to be running.
 
-**Blocking next step:** locate/import the owner's 1.1.0 source and reconcile existing features. No application version bump, public release ZIP, payment/provider operation, mail send or host deployment has occurred. Historical 1.0.8 remains reference only. GitHub documentation checks are not runtime acceptance.
+**Integration dependency:** the 1.1.0 worker publishes verified current source; then inspect existing features and adapt independent modules to it. No version bump, release ZIP, payment/provider operation, mail send or deployment occurred here. Historical 1.0.8 remains reference only. Documentation and isolated component tests are not application acceptance.
 
 ## Latest requirements — complete client portal and support access
 

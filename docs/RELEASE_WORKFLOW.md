@@ -7,9 +7,12 @@ Owner direction recorded 2026-10-12: use GitHub for testing, deliver incremental
 - [Repository checks](../.github/workflows/repository-checks.yml) runs on pull requests, pushes to `main` and manual dispatch. It uses read-only repository permissions and no production credentials.
 - [Documentation checker](../tools/check_docs.py) verifies required continuity files and inline relative Markdown links, including heading targets. Use `python tools/check_docs.py` locally. External URLs, reference-style links, HTML links and application behavior are outside this check's scope.
 - Application CI, builds and release publishing are **pending verified 1.1.0 source import**. A green documentation job does not mean the website, installer, payments or hosting integration works.
+- The independent [access-policy workflow](../.github/workflows/access-policy.yml) now tests isolated PHP permission decisions on 8.2/8.4. This is component verification only; application CI/build/release gates still await 1.1.0 integration. Independent foundation code is excluded from deployment packages until adapted and accepted.
 - [Release register](RELEASES.md) distinguishes owner-reported versions, verified source and published deployment packages. No placeholder application release or version bump is justified by this documentation change.
 
 ## Work in reviewable increments
+
+The [staff-invitation job](../.github/workflows/staff-invitations.yml) adds native MariaDB component tests with synthetic fixtures and concurrent PHP processes. A successful run establishes only that component's persistence/locking behavior, not the current application's migration, invitation UI, email delivery or release readiness. Retain that distinction alongside the access-policy and documentation jobs.
 
 1. Fetch GitHub and read the current status, handoff, rules and relevant roadmap before editing. Inspect open PRs and claimed tasks to avoid conflicting work.
 2. Start from current `main` or an explicitly documented active branch. Give each feature or fix a bounded acceptance target, identify its roadmap IDs, and preserve existing behavior and customer data.
