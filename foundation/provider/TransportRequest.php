@@ -40,8 +40,8 @@ final readonly class TransportRequest
         if (isset($parts['user']) || isset($parts['pass'])) {
             throw new InvalidArgumentException('Provider request URLs must not embed credentials.');
         }
-        if ($timeoutSeconds <= 0 || $timeoutSeconds > 120) {
-            throw new InvalidArgumentException('Provider request timeout must be between 0 and 120 seconds.');
+        if (!is_finite($timeoutSeconds) || $timeoutSeconds <= 0 || $timeoutSeconds > 120) {
+            throw new InvalidArgumentException('Provider request timeout must be a finite number between 0 and 120 seconds.');
         }
     }
 }

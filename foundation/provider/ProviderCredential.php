@@ -50,14 +50,18 @@ final class ProviderCredential
 
     /**
      * Display-safe form of the secret for settings screens. Never
-     * returns more than the last four characters, and never the whole
-     * secret.
+     * returns more than the last four characters, never reveals the
+     * majority of the value, and never the whole secret — secrets of
+     * eight characters or fewer are fully masked.
      */
     public function masked(): string
     {
         $secret = $this->secret();
         if ($secret === '') {
             return 'not configured';
+        }
+        if (strlen($secret) <= 8) {
+            return str_repeat('*', 8);
         }
         return str_repeat('*', 8) . substr($secret, -4);
     }

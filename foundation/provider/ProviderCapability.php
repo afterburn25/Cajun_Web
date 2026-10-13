@@ -21,10 +21,19 @@ final readonly class ProviderCapability
 
     private const STATES = [self::SUPPORTED, self::UNSUPPORTED, self::UNVERIFIED];
 
+    /**
+     * @param bool $idempotent True only when re-executing the operation
+     *        provably cannot apply a second remote side effect (read-only
+     *        queries, or writes the provider documents as idempotent).
+     *        Defaults false — non-idempotent operations are never
+     *        automatically retried, since a timed-out write may already
+     *        have landed.
+     */
     public function __construct(
         public string $operation,
         public string $state,
         public string $note = '',
+        public bool $idempotent = false,
     ) {
         if (trim($operation) === '') {
             throw new InvalidArgumentException('A capability needs an operation name.');
@@ -34,9 +43,9 @@ final readonly class ProviderCapability
         }
     }
 
-    public static function supported(string $operation, string $note = ''): self
+    public static function supported(string $operation, string $note = '', bool $idempotent = false): self
     {
-        return new self($operation, self::SUPPORTED, $note);
+        return new self($operation, self::SUPPORTED, $note, $idempotent);
     }
 
     public static function unsupported(string $operation, string $note = ''): self

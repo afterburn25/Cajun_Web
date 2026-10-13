@@ -36,4 +36,4 @@ jobs:
       - name: Record verification scope
         if: always()
         run: |
-          echo 'Provider contract unit checks only (fixture transport, in-memory ledger). Admin settings UI, encrypted credential persistence, real 20i API calls, and database integration remain untested by this job.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Provider contract checks only (fixture transport, in-memory + flock file ledger, real cross-process claim race). Admin settings UI, encrypted credential persistence, real 20i API calls, and MySQL-ledger integration remain untested by this job.' >> "$GITHUB_STEP_SUMMARY"

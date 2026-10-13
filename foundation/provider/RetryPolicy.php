@@ -22,11 +22,11 @@ final readonly class RetryPolicy
         if ($maxAttempts < 1 || $maxAttempts > 5) {
             throw new InvalidArgumentException('Retry attempts must be between 1 and 5.');
         }
-        if ($backoffSeconds < 0 || $backoffSeconds > 10) {
-            throw new InvalidArgumentException('Retry backoff must be between 0 and 10 seconds.');
+        if (!is_finite($backoffSeconds) || $backoffSeconds < 0 || $backoffSeconds > 10) {
+            throw new InvalidArgumentException('Retry backoff must be a finite number between 0 and 10 seconds.');
         }
-        if ($timeoutSeconds <= 0 || $timeoutSeconds > 120) {
-            throw new InvalidArgumentException('Provider timeout must be between 0 and 120 seconds.');
+        if (!is_finite($timeoutSeconds) || $timeoutSeconds <= 0 || $timeoutSeconds > 120) {
+            throw new InvalidArgumentException('Provider timeout must be a finite number between 0 and 120 seconds.');
         }
     }
 }

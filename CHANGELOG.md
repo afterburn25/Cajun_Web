@@ -3,8 +3,9 @@
 ## Unreleased — HC-07 provider foundation (Devin, isolated component)
 
 - Added canonical `foundation/provider/` contract classes (adapter interface + capability matrix, lazy secret-resolving credentials, HTTPS-only transport boundary, operation/idempotency-key model, durable ledger interface, enforcing gateway, and external-resource reconciliation) plus `docs/PROVIDER_FOUNDATION.md`.
-- Added `tests/provider/run.php` (69 synthetic checks over a conspicuously-marked fixture adapter/transport) and the `provider.yml` GitHub workflow (PHP 8.2/8.4, no network).
-- No `site/` changes, schema, persistence, admin UI or real provider calls; HC-07 external gate remains `Awaiting API verification`. Not yet integrated or released.
+- Corrected the ledger/execution contract per the HC-07 correction pass: `OperationLedger::claim()` atomically reserves an idempotency key bound to a canonical provider/account/operation/params fingerprint before any remote call (new `LedgerClaim` states `claimed`/`replay`/`in_progress`/`uncertain`/`conflict`); `record()` finalizes under the claim. Non-idempotent operations never auto-retry — ambiguous outcomes (transport fault or 429/5xx after the request may have been sent) record `uncertain` for reconciliation. `TransportException` carries only a finite failure kind; `OperationResult` enforces bounded printable messages; `masked()` fully masks secrets of 8 characters or fewer; timeouts/backoff reject `NAN`/`±INF`.
+- Added `tests/provider/run.php` (124 synthetic checks) plus `FileLedger.php`/`file_ledger_worker.php` (a real four-process `flock` claim race — beyond scripted interleaving) and the `provider.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes, schema, persistence, admin UI or real provider calls; HC-07 external gate remains `Awaiting API verification`. Not yet integrated or released. Exactly-once remote execution is not claimed — crash-after-write resolves to `uncertain`, not silent re-execution.
 
 ## 1.11.1 — candidate, motion preferences and organized updates
 
