@@ -8,7 +8,9 @@ from staff_cases import OWNER,STAFF
 
 def upgrade():
     dest=WEB/'payment-upgrade';shutil.copytree(ROOT/'test-runtime/released-1.4.0',dest)
-    subprocess.run([php,str(ROOT/'tests/fixture_db.php')],input=json.dumps({'operation':'seed-payment-upgrade'}),text=True,capture_output=True,check=True)
+    seed=subprocess.run([php,str(ROOT/'tests/fixture_db.php')],input=json.dumps({'operation':'seed-payment-upgrade'}),text=True,capture_output=True)
+    (QA/'payment-upgrade-seed.log').write_text(seed.stdout+seed.stderr)
+    seed.check_returncode()
     shutil.copyfile(ROOT/'test-runtime/payment-upgrade-config.php',dest/'config.php');(dest/'.installed.php').write_text('<?php exit; ?>original guard');(dest/'unrelated.txt').write_text('Retain unrelated file')
     preserved={p:p.read_bytes() for p in [dest/'config.php',dest/'.installed.php',dest/'unrelated.txt',ROOT/'test-runtime/payment-upgrade-private/media/retained.php']}
     tables=['staff_profiles','staff_invitations','support_clients','support_events','studio_clients','studio_jobs','studio_invoices','catalog_products','catalog_revisions','catalog_invoice_snapshots','leads','projects']

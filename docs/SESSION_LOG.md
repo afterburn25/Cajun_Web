@@ -284,3 +284,5 @@ Implemented on `codex/payment-foundation`, parent `e0f8968` after main `f659adf`
 ## 2026-10-13 — Payment candidate installer mismatch
 
 Candidate `92d2dee` run 38374489193 passed native tests but actual Chromium fresh setup caught old 1.4.0 browser response guards/labels paired with the 1.5.0 backend. Correct all installer labels/handshake versions and add a build-time guard. Also reject a missing document-root value when checking external credential storage. Full acceptance is rerun; the failed candidate was not merged or released.
+
+Candidate `11fa6b6` run 38375014845 passed native and prior browser flows, then stopped preparing the retained 1.4.0 catalog upgrade fixture. The seed mixed old schema/adapter files with current core, whose CWP_ROOT would load a second staff adapter when the old catalog authenticated its owner. Use the retained release core for this fixture and retain seed stdout/stderr for diagnosis. This changes test setup only; rerun the complete acceptance suite before integration.

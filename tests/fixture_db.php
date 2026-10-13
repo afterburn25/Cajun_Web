@@ -3,9 +3,11 @@
 declare(strict_types=1);
 if (PHP_SAPI !== 'cli' || getenv('CWP_TEST_DATABASE') !== 'cwp_test') exit(2);
 define('CWP_BOOT', true);
-require __DIR__.'/../site/app/core.php';
-$GLOBALS['cwp_config'] = require __DIR__.'/../test-runtime/config-fixture.php';
 $request = json_decode(stream_get_contents(STDIN), true, 32, JSON_THROW_ON_ERROR);
+// A populated catalog fixture calls the old authorization adapter. Its core must
+// resolve CWP_ROOT to that same retained release, never include two staff adapters.
+require ($request['operation']??'')==='seed-payment-upgrade' ? __DIR__.'/../test-runtime/released-1.4.0/app/core.php' : __DIR__.'/../site/app/core.php';
+$GLOBALS['cwp_config'] = require __DIR__.'/../test-runtime/config-fixture.php';
 if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','seed-support-upgrade','seed-catalog-upgrade','seed-payment-upgrade'],true)) {
     $paymentUpgrade=$request['operation']==='seed-payment-upgrade';$catalogUpgrade=$paymentUpgrade||$request['operation']==='seed-catalog-upgrade';$supportUpgrade=$catalogUpgrade||$request['operation']==='seed-support-upgrade';$staffUpgrade=$supportUpgrade||$request['operation']==='seed-staff-upgrade';$folder=$paymentUpgrade?'payment-upgrade':($catalogUpgrade?'catalog-upgrade':($supportUpgrade?'support-upgrade':($staffUpgrade?'staff-upgrade':'upgrade')));$prefix=$paymentUpgrade?'paymentup_':($catalogUpgrade?'catalogup_':($supportUpgrade?'supportup_':($staffUpgrade?'staffup_':'upgrade_')));
     require __DIR__.'/../test-runtime/'.($paymentUpgrade?'released-1.4.0':($catalogUpgrade?'released-1.3.0':($supportUpgrade?'released-1.2.0':($staffUpgrade?'released-1.1.0':'legacy')))).'/app/schema.php';
