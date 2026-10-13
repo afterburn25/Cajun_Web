@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — scheduling integration foundation
+
+- Preserve corrected Devin #32 scheduling ancestry and 71 isolated checks. Record the application contract for a configured studio calendar, pending requests, explicit staff decisions and database conflict protection. No deployed scheduling behavior or version bump yet.
+
 ## 1.14.0 — verified human website review workflow
 
 - Preserve corrected Devin #31/#36 and adapt the canonical review lifecycle into the existing inquiry system. Accept bare website hosts deliberately; retain the 500-byte bound and reject fragments, userinfo and control characters. Capture new review identity atomically with accepted leads; older inquiry adoption is explicit.
