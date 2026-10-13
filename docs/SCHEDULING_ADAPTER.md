@@ -23,7 +23,7 @@ Written 2026-10-13 on `devin/scheduling-adapter` from main `b975915`. Counterpar
 
 ### Period → `TimeWindow` bands (studio timezone interpreted per requester's zone)
 
-`Morning` = 09:00–12:00, `Afternoon` = 12:00–17:00, `Evening` = 17:00–19:00, `Flexible` = 09:00–19:00 — all in the requester's declared `timezone`, stored as UTC instants. These bands are presentation defaults in settings, not hard-coded truth; `SchedulePolicy::slotMinutes` (default 45), `bufferSeconds` (900) and `minNoticeSeconds` (86400) are admin-editable.
+`Morning` = 09:00–12:00, `Afternoon` = 12:00–17:00, `Evening` = 17:00–19:00, `Flexible` = 09:00–19:00 — all in the requester's declared `timezone`, stored as UTC instants. These bands are presentation defaults in settings, not hard-coded truth. `SchedulePolicy` carries no built-in defaults — `slotMinutes` is a required constructor argument and `bufferSeconds`/`minNoticeSeconds` default to `0`; suggested seed values for the adapter's admin settings are `slotMinutes` 45, `bufferSeconds` 900, `minNoticeSeconds` 86400, all admin-editable thereafter.
 
 ### Confirmation flow
 
