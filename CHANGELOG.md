@@ -1,10 +1,10 @@
 # Changelog
 
-## 1.14.0 — candidate, human website review workflow
+## 1.14.0 — verified human website review workflow
 
 - Preserve corrected Devin #31/#36 and adapt the canonical review lifecycle into the existing inquiry system. Accept bare website hosts deliberately; retain the 500-byte bound and reject fragments, userinfo and control characters. Capture new review identity atomically with accepted leads; older inquiry adoption is explicit.
 - Add current website-staff authorization, owner-only additive setup, evidence-labeled findings, saved report revisions, stale/concurrent protection and strict audit. External delivery requires the exact saved draft, current consent, real entered time/reference and staff password; this records delivery outside the app and sends nothing.
-- Add escaped desktop/mobile forms, draft finding add/remove controls, history and explicit inquiry deletion of dependent personal review content. Recognize actual 1.13.0 upgrade/recovery with earlier email key/assignment/template retention. Native/HTTP/Chromium/Apache/build acceptance is pending; no release or deployment claim.
+- Add escaped desktop/mobile forms, draft finding add/remove controls, history and explicit inquiry deletion of dependent personal review content. Recognize actual 1.13.0 upgrade/recovery with earlier email key/assignment/template retention. Published/download-verified from `f55879339e38769b4ec5fa81780a3d650b63da25` after exact-main run 38453775600; all 16 assets/tag pass. Native/HTTP/Chromium/Apache/build acceptance passes; no live deployment occurred.
 
 ## 1.13.0 — verified email account preparation
 
