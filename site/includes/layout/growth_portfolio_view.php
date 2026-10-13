@@ -1,0 +1,9 @@
+<?php
+declare(strict_types=1);
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+function growth_portfolio_view(int $id,string $title): void {
+ $v=gjson('growth_portfolio_'.$id);$desktop=growth_preview_url(is_string($v['desktop']??null)?$v['desktop']:'');$mobile=growth_preview_url(is_string($v['mobile']??null)?$v['mobile']:'');$before=growth_preview_url(is_string($v['before']??null)?$v['before']:'');
+ if($desktop||$mobile){?><section class="portfolio-tools" aria-label="Project device previews"><h2>Explore the experience.</h2><div class="button-row"><?php foreach(['Desktop'=>$desktop,'Mobile'=>$mobile] as $device=>$url)if($url):?><button type="button" class="btn outline" data-device data-src="<?=esc($url)?>" data-alt="<?=esc($title.' — '.$device.' capture')?>" aria-pressed="<?=($url===($desktop?:$mobile))?'true':'false'?>"><?=esc($device)?></button><?php endif;?></div><img data-device-image src="<?=esc($desktop?:$mobile)?>" alt="<?=esc($title.' capture')?>"><p><?=esc(is_string($v['caption']??null)?$v['caption']:'')?></p></section><?php }
+ if($desktop&&$before&&$desktop!==$before){?><section class="portfolio-tools"><h2>Before and after.</h2><div class="portfolio-compare"><div class="compare-frame"><img src="<?=esc($desktop)?>" alt="After redesign"><img class="compare-before" src="<?=esc($before)?>" alt="Before redesign"></div><label>Reveal the previous design<input type="range" data-compare-slider min="0" max="100" value="50" aria-label="Amount of before image shown"></label></div><noscript><p><a href="<?=esc($before)?>">View before</a> · <a href="<?=esc($desktop)?>">View after</a></p></noscript></section><?php }
+ $url=is_string($v['walkthrough']??null)?$v['walkthrough']:'';try{safe_url($url,true);}catch(Throwable){$url='';}if($url)echo '<p><a class="btn outline" rel="noopener noreferrer" target="_blank" href="'.esc($url).'">Watch the project walkthrough ↗</a></p>';
+}

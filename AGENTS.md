@@ -1,6 +1,27 @@
 # Working agreement for CajunWebPro
 
-**Active integration — 2026-10-13:** Codex owns `codex/portfolio-browsing`, integrating Devin portfolio PR #7 at `016a405` for candidate 1.11.0 after reviewed estimator PR #29 merged at `39de8ff`. Latest published release remains 1.10.0. Respect [the committed integration contract](docs/PUBLIC_COMPONENT_INTEGRATION.md); current status/handoff override older pending-PR and 1.1.0 wait instructions. Original branches/history preserved. Candidate acceptance/publication pending; estimator remains outside deployment.
+## Current directory and package contract — 1.11.0 candidate
+
+The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](docs/DIRECTORY_STRUCTURE.md), [migration and recovery](docs/STRUCTURE_MIGRATION.md), and [START-HERE](START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.
+
+Candidate `9e8dedf` in [PR #38](https://github.com/afterburn25/Cajun_Web/pull/38) passes 618 native, 782 HTTP/Chromium, 41 filesystem/recovery, 203 Apache and 16 package-builder checks. [Acceptance record](docs/TEST_REPORT_1.11.0.md); [Devin handoff](docs/DEVIN_HANDOFF_1.11.0.md). Final cleanup/docs acceptance, merge, exact-main tests and immutable publication remain mandatory. Latest published release remains 1.10.0. No live deployment.
+
+## Owner priority override — directory structure and packaging, 2026-10-13
+
+The owner requires an actual structural refactor and three separately verified downloads before any unrelated roadmap work resumes. This supersedes earlier constraints that kept substantial root PHP files or interpreted a no-wrapper ZIP as a flat application. Work on `codex/priority-directory-refactor` from main `b975915` preserves integrated portfolio/estimator work and the tested browser correction. Latest published version is **1.10.0**; the 1.11.0 portfolio-only release was stopped before draft/tag creation. The unused 1.11.0 candidate will be corrected before release. Do not publish the old-layout candidate.
+
+Required meaningful areas: admin, portal, pages, includes, business app modules, API/webhooks/media, install, database, config, assets/css and assets/js, categorized images, protected storage/upload scaffolds. Root entry points must be thin. FULL-PROJECT includes docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD extracts organized site contents directly; UPDATE includes tested compatibility/migration support. Keep private configured data locations, exact brand bytes, one-page keyless setup, all existing behavior and no-rewrite/root/subfolder support. [Refactor contract](docs/DIRECTORY_REFACTOR_CONTRACT.md). No live deployment is authorized.
+
+Devin PRs #31/#32 are separate independent components, preserved and paused for integration while paths change. Supply the exact mapping and corrected baseline before further application adapters. Next action is structure implementation, migration/recovery and Apache/native/browser/package acceptance—not another roadmap feature.
+
+**Historical portfolio integration — superseded by directory correction:** Codex owns `codex/portfolio-browsing`, integrating Devin portfolio PR #7 at `016a405` for candidate 1.11.0 after reviewed estimator PR #29 merged at `39de8ff`. Latest published release remains 1.10.0. Respect [the committed integration contract](docs/PUBLIC_COMPONENT_INTEGRATION.md); current status/handoff override older pending-PR and 1.1.0 wait instructions. Original branches/history preserved. Candidate acceptance/publication pending; estimator remains outside deployment.
+
+## Owner instruction — keep development moving across external gates (2026-10-13)
+
+**Mandatory for Codex, Devin and all agents:** read [dependency and verification gates](docs/DEPENDENCY_GATES.md) before prioritizing or labeling 20i/domain/VPS/SSH or payment work. Missing external API access, merchant credentials or production verification is a **specific validation gate, not a blanket prohibition on development**. Continue feasible UI, PHP modules, schemas/migrations, adapters, mocked contract tests, billing state machines, queue/retry/error paths, access controls and documentation on authorized branches; if a task truly cannot advance, document precisely why and take the next feasible roadmap item rather than stopping the roadmap.
+
+Record independently: implementation status; external-gate status; published release; target-host deployment. The four former "Blocked" labels mean: HC-07 *Awaiting API verification*; HC-09/HC-10 *Development pending — API verification*; A-10 *Architecture/security validation pending*. None implies implementation. Keep real charges, registrations, provider writes, SSH or irreversible actions **disabled until their own required acceptance and owner authorization**; do not fake successful external tests. Report the safe next task in every handoff. This instruction is prospective and does not supersede existing security, review or release gates.
+
 
 **Current release — 2026-10-13:** [v1.10.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0) is published and downloaded-back verified at `4649a913d40166b9874f9550e57b4186edfc43ab` through [PR #26](https://github.com/afterburn25/Cajun_Web/pull/26). Bounded P-07: separate client/staff activity centers, explicit per-person read state, exact-source links, paginated history and private unread bells, including authenticated staff on public pages. Passive polls preserve idle expiry; activity failures do not affect business writes. 603 native / 630 HTTP/Chromium checks pass; all eight assets/tag verified. [Activity guide](docs/WORKSPACE_ACTIVITY.md). Full P-07 and A-06–A-08 webmail/templates/email bells remain incomplete, along with actual merchant/card checkout, broader 20i and VPS SSH. No live deployment/customer/provider operation. Devin PR #7 preserved; [handoff](docs/DEVIN_HANDOFF_1.10.0.md). Next: claim a bounded independent roadmap increment or perform actual merchant acceptance before production checkout.
 
@@ -58,7 +79,7 @@ Investigations with no runtime changes still need a short session record. Record
 - The installer must show all setup fields on one page with one Install submission. No Next/Back wizard, tabs hiding mandatory sections, activation key, or separate repair-installer route.
 - Check failures must stay inline and preserve entered values. They may block installation but must not hide the form.
 - Never delete installed configuration, permanent locks, customer media, or existing data to make setup run again. Never promise PHP can grant itself ownership privileges.
-- Preserve `app/` and `assets/` organization. A deployment ZIP must extract the required entry points directly into the intended website directory, with no wrapper folder and no chain of patches.
+- Follow the current organized directory contract. Deployment contents extract directly without an enclosing wrapper; this never requires substantial root PHP modules. The historical app/assets-only convention is superseded.
 
 ## Verification and release discipline
 

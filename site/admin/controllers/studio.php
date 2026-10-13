@@ -1,0 +1,59 @@
+<?php
+/** Authenticated administration for the public growth and private client workflows. */
+declare(strict_types=1);
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+function studio_admin_views(): array {return ['studio-clients'=>'Client workspace','studio-job'=>'Client project','studio-pipeline'=>'Sales pipeline','studio-content'=>'Sales content','studio-prices'=>'Estimator prices','studio-portfolio'=>'Portfolio previews','studio-history'=>'Content history','studio-upgrade'=>'Version & database'];}
+require_once CWP_CODE_ROOT.'/app/settings/revisions.php';
+function studio_admin_action(string $action,array $user): never {
+    require_admin();check_csrf();$target='studio-clients';
+    if($action==='studio_migrate'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you have a backup before updating.');studio_migrate();flash('Database update completed. Existing content was preserved.');redirect(admin_url('studio-upgrade'));}
+    if(!studio_ready())throw new RuntimeException('Enable the workspace tables under Version & database first.');
+    if($action==='studio_client'){
+        $id=gint($_POST,'id',0,2147483647);$name=posted('name',120);$email=strtolower(posted('email',190));
+        if($name===''||!filter_var($email,FILTER_VALIDATE_EMAIL))throw new InvalidArgumentException('Enter the client name and a valid email.');
+        if($id){if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=?',[$id]))throw new InvalidArgumentException('Client not found.');query('UPDATE '.table('studio_clients').' SET name=?,email=?,active=?,auth_version=?,invite_hash=NULL,invite_expires=NULL WHERE id=?',[$name,$email,isset($_POST['active'])?1:0,bin2hex(random_bytes(16)),$id]);}
+        else{query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',[$name,$email,bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);}
+    }elseif($action==='studio_invite'){
+        $id=gint($_POST,'id',1,2147483647);$c=one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$id]);if(!$c)throw new InvalidArgumentException('Active client not found.');
+        $_SESSION['studio_invite_link']=studio_new_invite($id);flash('New private invitation created. Share it directly with this client; it expires after 24 hours. No email was sent.');redirect(admin_url('studio-clients'));
+    }elseif($action==='studio_job'){
+        $id=gint($_POST,'id',0,2147483647);$client=gint($_POST,'client_id',1,2147483647);$title=posted('title',160);$stage=posted('stage',30);
+        if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=?',[$client])||$title===''||!isset(studio_stages()[$stage]))throw new InvalidArgumentException('Choose a client, title and valid stage.');
+        $summary=posted('summary',10000);$milestones=posted('milestones',15000);$now=gmdate('Y-m-d H:i:s');
+        if($id){$old=studio_job($id);if((int)$old['client_id']!==$client)throw new InvalidArgumentException('Project ownership cannot be transferred through this form. Create a separate project.');query('UPDATE '.table('studio_jobs').' SET title=?,summary=?,stage=?,milestones=?,updated_at=? WHERE id=?',[$title,$summary,$stage,$milestones,$now,$id]);}
+        else{query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,stage,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?,?)',[$client,$title,$summary,$stage,$milestones,$now,$now]);$id=(int)db()->lastInsertId();}
+        log_event($action,'Project '.$id);flash('Project saved.');redirect(admin_url('studio-job',['id'=>$id]));
+    }elseif(in_array($action,['studio_message','studio_publish','studio_upload','studio_invoice','studio_paid'],true)){
+        $id=gint($_POST,'job_id',1,2147483647);studio_job($id);
+        if($action==='studio_message'){$body=posted('body',5000);if(strlen($body)<2)throw new InvalidArgumentException('Write a message.');query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,\'admin\',?,?,?)',[$id,$user['id'],$body,gmdate('Y-m-d H:i:s')]);}
+        if($action==='studio_publish')studio_publish($id,posted('kind',20),posted('title',160),posted('body',30000),posted('preview_url',500));
+        if($action==='studio_upload')studio_upload($id,'admin');
+        if($action==='studio_invoice'){$amount=gcents(posted('amount',20));$title=posted('title',160);if($amount===null||$amount<=0||$title==='')throw new InvalidArgumentException('Enter an invoice title and positive amount.');query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,instructions,created_at) VALUES (?,?,?,?,?,?)',[$id,'INV-'.strtoupper(bin2hex(random_bytes(6))),$title,$amount,posted('instructions',6000),gmdate('Y-m-d H:i:s')]);}
+        if($action==='studio_paid'){$invoice=gint($_POST,'invoice_id',1,2147483647);if(ledger_ready()){ledger_require();redirect(admin_url('invoice-payments',['invoice_id'=>$invoice]));}$note=posted('paid_note',500);if(strlen($note)<5||posted('confirm',1)!=='1')throw new InvalidArgumentException('Record a payment reference and confirm you independently verified receipt.');if(catalog_snapshot($invoice)){catalog_transition($id,$invoice,'paid',$note);}else{payments_manual_paid($id,$invoice,$note);}}
+        log_event($action,'Project '.$id);flash('Project updated.');redirect(admin_url('studio-job',['id'=>$id]));
+    }elseif($action==='studio_pipeline'){
+        $id=gint($_POST,'id',1,2147483647);$stage=posted('status',20);if(!isset(studio_pipeline_stages()[$stage])||!one('SELECT id FROM '.table('leads').' WHERE id=?',[$id]))throw new InvalidArgumentException('Choose a valid inquiry and stage.');
+        $follow=posted('follow_up',10);if($follow!==''&&(!preg_match('/^\d{4}-\d{2}-\d{2}$/D',$follow)||date('Y-m-d',strtotime($follow))!==$follow))throw new InvalidArgumentException('Use a valid follow-up date.');
+        db()->beginTransaction();try{query('UPDATE '.table('leads').' SET status=?,notes=? WHERE id=?',[$stage,posted('notes',10000),$id]);save_setting('growth_follow_'.$id,$follow);db()->commit();}catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}$target='studio-pipeline';
+    }elseif($action==='studio_prices'){
+        $r=['enabled'=>isset($_POST['enabled'])];foreach(growth_types()+['page'=>'Additional page','product'=>'Product']+growth_options() as $key=>$unused)$r[$key]=grange([gcents(posted($key.'_min',20)),gcents(posted($key.'_max',20))]);
+        studio_revision_save('growth_prices',json_encode($r,JSON_THROW_ON_ERROR),posted('expected',64));$target='studio-prices';
+    }elseif($action==='studio_content'){
+        $name=posted('setting_name',100);$value=posted('value',24000);
+        if(!in_array($name,['growth_intro','growth_faq','growth_packages'],true))throw new InvalidArgumentException('Unknown content section.');
+        if($name==='growth_faq'||$name==='growth_packages'){$rows=json_decode($value,true,32,JSON_THROW_ON_ERROR);$width=$name==='growth_faq'?2:3;if(!is_array($rows)||!array_is_list($rows)||count($rows)<1||count($rows)>12)throw new InvalidArgumentException('Enter a JSON list containing between 1 and 12 items.');foreach($rows as $row){if(!is_array($row)||!array_is_list($row)||count($row)!==$width)throw new InvalidArgumentException('Each content item has '.$width.' text fields.');foreach($row as $text)if(!is_string($text)||strlen($text)>6000)throw new InvalidArgumentException('Use bounded text values.');}}
+        studio_revision_save($name,$value,posted('expected',64));$target='studio-content';
+    }elseif($action==='studio_restore_content'){
+        $id=gint($_POST,'id',1,2147483647);$rev=one('SELECT * FROM '.table('studio_revisions').' WHERE id=?',[$id]);if(!$rev)throw new InvalidArgumentException('Revision not found.');if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm this deliberate restore.');studio_revision_save($rev['setting_name'],$rev['old_value'],posted('expected',64));$target='studio-history';
+    }elseif($action==='studio_media'){
+        $mediaId=upload_image('image');if(!$mediaId)throw new InvalidArgumentException('Choose a portfolio image.');$target='studio-portfolio';
+    }elseif($action==='studio_portfolio'){
+        $id=gint($_POST,'id',1,2147483647);if(!one('SELECT id FROM '.table('projects').' WHERE id=?',[$id]))throw new InvalidArgumentException('Portfolio project not found.');
+        $v=['caption'=>posted('caption',500),'walkthrough'=>safe_url(posted('walkthrough',500),true)];foreach(['desktop','mobile','before'] as $key){$value=posted($key,32);if($value!==''&&(!preg_match('/^[a-f0-9]{32}$/D',$value)||!one('SELECT id FROM '.table('media').' WHERE id=?',[$value])))throw new InvalidArgumentException('Choose an uploaded image from the media library.');$v[$key]=$value;}
+        save_setting('growth_portfolio_'.$id,json_encode($v,JSON_THROW_ON_ERROR));$target='studio-portfolio';
+    }else throw new InvalidArgumentException('Unknown studio action.');
+    log_event($action);flash('Saved.');redirect(admin_url($target));
+}
+function studio_pipeline_stages(): array {return ['new'=>'New inquiry','contacted'=>'Consultation','qualified'=>'Qualified','proposal'=>'Proposal sent','won'=>'Won','closed'=>'Not proceeding','spam'=>'Spam'];}
+function studio_hidden(string $name,mixed $value): void {echo '<input type="hidden" name="'.esc($name).'" value="'.esc($value).'">';}
+require_once CWP_CODE_ROOT.'/admin/views/studio.php';

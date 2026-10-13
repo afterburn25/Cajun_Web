@@ -1,0 +1,33 @@
+CajunWebPro — choose ONE download for your purpose
+
+FULL-PROJECT is the development/project archive. It includes site/, docs/, tests/,
+tools/, brand/, foundation/ and CI. Do not extract it wholesale into a public
+website directory. Read docs/DIRECTORY_STRUCTURE.md and the working agreement.
+
+COMPLETE-UPLOAD is for a fresh website. Extract its CONTENTS directly into the
+intended website directory. There is no site/, version/ or upload/ wrapper.
+Keep its organized subdirectories. Open install.php over HTTPS, fill the one-page
+form and select Install. Setup is keyless. Do not use setup on an installed site.
+
+UPDATE is for a recognized installed 1.0.8 through 1.10.0 website. Back up the
+website files, database, and configured private storage before starting. Extract
+the update into the existing website directory; it creates only the new staging
+directory cwp-update-1.11.0/. Do not copy its site/ payload over the live site.
+Do not overwrite an existing different staging directory. Open
+cwp-update-1.11.0/owner-update.php over HTTPS and authenticate as the owner.
+Confirm your recoverable backup, inspect, then apply. Keep the page and staging
+files available to retry or recover if interrupted. Customized conflicting files
+stop the update before activation; reconcile those using your backup. Unknown
+files are preserved. The temporary maintenance policy protects the site while
+changes are incomplete. Recovery copies/journal stay under your configured
+private storage in structure-1.11.0/. Configuration, keys, database and private
+files are never replaced or reset by this structure update.
+
+After verifying the website, administration, portal, callbacks and private files,
+remove the exact cwp-update-1.11.0 staging directory using your hosting panel.
+Keep recovery copies with your backup. Recovery after application changes may
+require manual review; never restore a database independently of its backup set.
+
+These are alternatives, not sequential patches. No customer CLI/Composer/Node
+service is required. No automatic hosting deployment is performed.
+See the release manifests, SHA256SUMS.txt and migration instructions.

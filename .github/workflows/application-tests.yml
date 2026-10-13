@@ -1,8 +1,8 @@
 name: Application acceptance
 on:
   push:
-    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing]
-    paths: ['site/**', 'foundation/**', 'tests/**', 'tools/build.py', '.github/workflows/application-tests.yml']
+    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor]
+    paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -40,7 +40,7 @@ jobs:
       - name: Native runtime and browser dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl apache2-bin libapache2-mod-php8.3
           php8.3 -v
           php8.3 -m
           python3 -m venv .ci-venv
@@ -51,6 +51,7 @@ jobs:
           set -o pipefail
           mkdir -p qa
           python3 tools/build.py --commit "$GITHUB_SHA" | tee qa/build-results.txt
+          python3 tests/build_guards.py
       - name: Native database, upgrade and authorization integration
         run: |
           python3 tests/prepare_legacy.py
@@ -67,6 +68,12 @@ jobs:
           php8.3 tests/activity_native.php
       - name: Real HTTP and Chromium application workflows
         run: .ci-venv/bin/python tests/browser_acceptance.py
+      - name: Unprivileged structure update interruption and recovery
+        if: success() || failure()
+        run: .ci-venv/bin/python tests/structure_acceptance.py
+      - name: Apache protection with and without rewriting
+        if: success() || failure()
+        run: .ci-venv/bin/python tests/apache_acceptance.py
       - name: Verify tests did not mutate shipping source
         run: git diff --exit-code -- site/
       - name: Preserve named test evidence
@@ -76,8 +83,6 @@ jobs:
           name: application-acceptance-${{ github.sha }}
           path: |
             qa/
-            dist/manifest.json
-            dist/SHA256SUMS.txt
-            dist/*.zip
+            dist/
           retention-days: 14
           if-no-files-found: error

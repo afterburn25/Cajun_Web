@@ -15,7 +15,7 @@ The PHP 8.2+ classes in [foundation/portfolio](../foundation/portfolio) need no 
 
 ## Record contract
 
-These are adapter input fields. The live adapter in [site/app/portfolio.php](../site/app/portfolio.php) maps each `projects` row as follows: `id` → `id`, `slug` → `slug`, `title`/`summary` → verbatim, `is_demo` → `kind` (`1` = `concept`, otherwise `client-work`), `status` → `status` (`published`/`archived` mapped; anything else is `draft`), `category` → single-entry `categories`, `sort_order` → `position`, `website_url` → `liveUrl`, `cover`/`media_id` (via `image_url`) → `cover`, and `challenge`/`solution`/line-split `deliverables` → `caseStudy`. No schema columns were added; before/after pairs are not synthesized from these fields.
+These are adapter input fields. The live adapter in [site/app/portfolio.php](../site/app/portfolio/browse.php) maps each `projects` row as follows: `id` → `id`, `slug` → `slug`, `title`/`summary` → verbatim, `is_demo` → `kind` (`1` = `concept`, otherwise `client-work`), `status` → `status` (`published`/`archived` mapped; anything else is `draft`), `category` → single-entry `categories`, `sort_order` → `position`, `website_url` → `liveUrl`, `cover`/`media_id` (via `image_url`) → `cover`, and `challenge`/`solution`/line-split `deliverables` → `caseStudy`. No schema columns were added; before/after pairs are not synthesized from these fields.
 
 | Field | Required source / meaning |
 |---|---|
