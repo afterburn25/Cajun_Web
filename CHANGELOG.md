@@ -1,5 +1,6 @@
 # Changelog
 
+<<<<<<< HEAD
 ## Unreleased — HC-12 service-desk foundation (Devin, isolated component)
 
 - Added canonical `foundation/desk/` classes (`TraceLink` typed `kind:id` record links over an allowlisted kind set; `FulfillmentJob` recoverable queue model with bounded exponential backoff, lease-expiry stall recovery, required idempotency keys and irreversible kinds verified against a live same-kind `ApprovalRequest` whose subject is traced; `ApprovalRequest` expiring role-gated two-party approvals; `TicketMessage`/`SupportTicket` internal tickets with staff-only notes structurally invisible to clients) plus `docs/DESK_FOUNDATION.md`.
@@ -10,6 +11,14 @@
 ## 1.13.0 — candidate, email account preparation
 ## 1.14.0 — candidate, human website review workflow
 ## 1.15.0 — candidate, consultation scheduling
+=======
+## Unreleased — 1.16.0 candidate: explicit email connection checks
+
+- Add separate owner-only checks of saved incoming/outgoing settings, current password and matching mailbox assignment. Verify public DNS destinations, pin the numeric connection, validate TLS and authenticate without reading or sending messages.
+- Add auditable started/terminal history, saved-version labels, bounded response handling and per-account/owner repeat limits. Interrupted or unaudited final outcomes remain incomplete.
+- Add additive upgrade setup, fresh empty schema, isolated TLS/DNS/database/HTTP acceptance and actual 1.15.0 update/recovery coverage. Candidate acceptance and publication are pending; latest published version remains 1.15.0.
+
+>>>>>>> origin/main
 ## 1.15.0 — verified consultation scheduling
 
 - Preserve corrected Devin #32 scheduling ancestry and 71 isolated checks. Add one explicitly configured studio calendar, disabled by default, with timezone-aware offered slots, buffers, notice and a 30-day horizon.
