@@ -1,0 +1,68 @@
+# GitHub testing, incremental releases and agent continuity
+
+Owner direction recorded 2026-10-12: use GitHub for testing, deliver incremental versions, retain copies of released versions on GitHub, and document the project so other agents can resume without reconstructing chat history. This is standing authorization for ordinary repository updates, isolated CI tests and publishing verified project release packages. It does not itself activate production deployments, live charges, customer mail or paid provider operations.
+
+## Current implementation
+
+- [Repository checks](../.github/workflows/repository-checks.yml) runs on pull requests, pushes to `main` and manual dispatch. It uses read-only repository permissions and no production credentials.
+- [Documentation checker](../tools/check_docs.py) verifies required continuity files and inline relative Markdown links, including heading targets. Use `python tools/check_docs.py` locally. External URLs, reference-style links, HTML links and application behavior are outside this check's scope.
+- Application CI, builds and release publishing are **pending verified 1.1.0 source import**. A green documentation job does not mean the website, installer, payments or hosting integration works.
+- [Release register](RELEASES.md) distinguishes owner-reported versions, verified source and published deployment packages. No placeholder application release or version bump is justified by this documentation change.
+
+## Work in reviewable increments
+
+1. Fetch GitHub and read the current status, handoff, rules and relevant roadmap before editing. Inspect open PRs and claimed tasks to avoid conflicting work.
+2. Start from current `main` or an explicitly documented active branch. Give each feature or fix a bounded acceptance target, identify its roadmap IDs, and preserve existing behavior and customer data.
+3. Commit implementation, relevant tests and continuity documentation together. Use a PR with the exact checks run, limitations, migrations and intended release scope. Fix failed checks before merging; never bypass required repository protections.
+4. Merge ready, verified increments into `main` so new agents see the current state. Record unfinished work and branch/PR links at the top of the handoff. Documentation-only updates use commits without inventing an application version.
+5. Publish an incremental application release when its acceptance and package gates pass. A release can deliver a small useful subset of the roadmap; it must list deferred capabilities clearly.
+
+## Version policy
+
+- The owner identifies **1.1.0** as current. Locate and inspect it before selecting the next version. Do not relabel the older 1.0.8 package or publish an assumed 1.1.0 build.
+- Use `MAJOR.MINOR.PATCH`: compatible fixes increment patch; compatible features increment minor; incompatible changes increment major and include migration guidance. Illustrative next versions could be `1.1.1` for a fix or `1.2.0` for features; these are not reserved or promised builds.
+- Use explicit prerelease tags such as `v1.2.0-rc.1` for builds intended for testing. Mark them as prereleases and do not advertise them as the latest stable version.
+- Version labels in application code, installer, manifest, package filename, changelog and Git tag must agree. A tag names an exact source commit; test that source and the exact attached package.
+- Never move a published release tag or silently replace its ZIP. Correct it with a new version, explain the issue, and retain prior versions with appropriate known-issue notes. Do not retain leaked secrets or customer data as historical release material.
+
+## GitHub testing after source recovery
+
+Add runnable checks based on the inspected application, not invented paths or guessed behavior. Development/CI tooling can use GitHub runners without adding command-line requirements to the customer installation.
+
+| Gate | Evidence required |
+|---|---|
+| Source checks | PHP and JavaScript syntax; relevant behavior tests; dependency and secret checks suited to actual source |
+| Database and installation | Isolated MySQL/MariaDB; fresh install and supported upgrades; failure/retry paths; retained config/media/data; one-page keyless installer and installed-site guards |
+| Permissions and browser flows | Actual PHP pages; client/staff separation, support-session attribution, CSRF/session handling, public/admin mail isolation; representative desktop/mobile acceptance |
+| Provider integrations | Explicitly identified mocks for failure cases plus separate sandbox results for payments, mail and 20i where available; no invented passing result for a skipped or unavailable integration |
+| Distribution | Flat complete ZIP, manifest and SHA-256; exact version alignment, regenerated installer dependency hashes, ZIP integrity, clean extraction and installation from that ZIP |
+| Upgrade and release | Supported starting versions, migration/data compatibility, backup and recovery evidence, known issues and target-host acceptance when claimed |
+
+Use synthetic data and restricted test accounts. Keep secrets in approved GitHub secret/environment storage when needed, never in source, logs, reports or public assets. A mock result, skipped job and real sandbox test must remain distinguishable. GitHub CI does not replace actual shared-host checks or prove production is deployed.
+
+## Permanent version copies on GitHub
+
+For each verified application version, create a GitHub Release attached to its exact `vX.Y.Z` tag. Prepare a draft, attach and verify all intended files, then publish. Keep prior releases accessible.
+
+Required public assets:
+
+- `CajunWebPro-X.Y.Z-COMPLETE-UPLOAD.zip`: complete, flat deployable website package meeting [the package contract](INSTALLATION_AND_UPDATES.md#package-contract).
+- `SHA256SUMS.txt`: hashes of the attached ZIP and other delivered files.
+- `manifest.json`: version, source commit, package layout and shipping-file hashes, without private build paths or credentials.
+- `TEST_REPORT.md`: exact tested revision/artifact, environment, checks/results, known failures, untested areas and supported installation/upgrade paths.
+
+Release notes explain delivered features/fixes, prerequisites, upgrade instructions, data compatibility and known limitations, with links to relevant PRs and CI runs. Also update [the release register](RELEASES.md), changelog, status and handoff. An update-only ZIP is optional and must be independently tested for explicit supported versions; it never replaces the full package.
+
+GitHub's automatic source-code ZIP is a source snapshot, not our complete upload package. Actions logs and temporary build artifacts are useful evidence, but release assets are the retained download copies. Do not place ZIP copies of every release in ordinary Git history. Client-specific website deliveries, databases and credentials stay in authorized private client storage, outside this public repository's releases.
+
+Verify publication by reading the release back from GitHub, downloading the attached deployment ZIP and comparing its hash and archive integrity with the tested package. Confirm the tag still resolves to the recorded source commit. Only then report a working release download link. Publishing a package does not establish host deployment or a tested downgrade path.
+
+## Handoff contract for every agent
+
+Keep [PROJECT_STATUS.md](../PROJECT_STATUS.md) and [SESSION_HANDOFF.md](../SESSION_HANDOFF.md) concise at the top: current source version/commit, latest published version and URL, what works, what is planned, current branch/PR, test evidence, blockers and the next concrete action. Date older findings and make superseding instructions explicit.
+
+Append an entry to [SESSION_LOG.md](SESSION_LOG.md), update [CHANGELOG.md](../CHANGELOG.md), and synchronize affected roadmap/architecture/decision documents. State whether any source, package or target host changed. Never convert planning text into a completion claim. Do not rely on another agent having access to this chat, local temporary files or credentials.
+
+## Official references
+
+Reviewed 2026-10-12: [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax), [managing releases](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository), and [source-code archives](https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives).

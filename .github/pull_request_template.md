@@ -25,3 +25,5 @@ Explain compatibility, migrations, protected config/storage/media, package layou
 - [ ] No unsupported competitor, client, results or deployment claims.
 - [ ] Approved logo/favicon and one-page/no-key installer requirements preserved.
 - [ ] For release changes: canonical installer/dependency hashes, flat complete package, version labels and final artifact tested; otherwise explicitly not applicable.
+- [ ] GitHub checks linked with their actual scope; missing/skipped application checks are explicit.
+- [ ] For application releases: version/tag, retained complete ZIP, manifest, checksums, test report and `docs/RELEASES.md` updated; published tags/assets not overwritten.

@@ -11,6 +11,8 @@ These are the owner's project requirements and the repository continuity procedu
 
 ## Document every session
 
+The owner authorizes splitting work between Codex and Devin on separate branches. Read `docs/AGENT_COORDINATION.md` before claiming work. Keep bounded task/file ownership, agree shared contracts, and integrate completed PRs sequentially with combined checks. Codex coordinates integration/releases; a documented assignment is not proof Devin is running.
+
 Update `PROJECT_STATUS.md` and `SESSION_HANDOFF.md`, append a dated entry to `docs/SESSION_LOG.md`, and update `CHANGELOG.md` when tracked files or behavior change. Update `docs/DECISIONS.md` when direction changes and `docs/ROADMAP.md` when scope or feature status changes. Keep architecture, branding, installation, and test documentation synchronized with relevant code.
 
 Each entry must state: the request, starting commit, files/actions changed, actual tests and their scope, results, known failures, remaining blockers, and the next concrete action. Include commit/PR/artifact identifiers where available. For a commit that contains its own log, record its parent and descriptive commit message; the enclosing Git history identifies the resulting commit without a self-referential SHA.
@@ -29,6 +31,8 @@ Investigations with no runtime changes still need a short session record. Record
 - Preserve `app/` and `assets/` organization. A deployment ZIP must extract the required entry points directly into the intended website directory, with no wrapper folder and no chain of patches.
 
 ## Verification and release discipline
+
+The owner authorizes GitHub testing, incremental application releases with retained download copies, and continuously updated documentation for other agents. Follow `docs/RELEASE_WORKFLOW.md` and maintain `docs/RELEASES.md`. Use GitHub Actions for isolated tests, keep ready verified work on `main`, and publish tested complete packages as versioned GitHub Release assets. Preserve previous versions and never move published version tags. No application release is possible until current 1.1.0 source is recovered and verified; documentation CI is not application acceptance. This standing direction does not authorize live deployment, charges or customer mail by itself.
 
 Test the exact artifact delivered. Application source, embedded installer dependencies, version labels, direct installer, and packaged installer must agree. Regenerate dependency hashes whenever shipping files change. Do not reintroduce the old key-based or multi-step installer through a stale copy.
 

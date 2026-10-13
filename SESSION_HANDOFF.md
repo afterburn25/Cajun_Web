@@ -1,7 +1,15 @@
 # Session handoff — read before continuing
 
-Checkpoint: 2026-10-12 — unified client delivery/hosting controls and one-click portal/VPS support specified; recover current 1.1.0 source next.
+Checkpoint: 2026-10-12 — GitHub release/testing discipline and Codex/Devin coordination established; recover current 1.1.0 source next.
 Repository: afterburn25/Cajun_Web · Authoritative branch: main.
+
+## Resume here — GitHub workflow and two-agent split
+
+Read `docs/RELEASE_WORKFLOW.md`, `docs/RELEASES.md` and `docs/AGENT_COORDINATION.md`. The owner wants incremental versions archived as complete GitHub Release ZIPs, automated GitHub tests, current documentation for other agents, and Codex/Devin work on separate branches integrated when ready. Documentation CI now exists; application tests/build/release automation await the actual 1.1.0 source. Do not publish a placeholder version or relabel 1.0.8.
+
+This work is on `docs/web-design-payment-forms` in [PR #1](https://github.com/afterburn25/Cajun_Web/pull/1), intended for `main` after checks. Inspect its actual merged/head/check status before proceeding. Earlier sections below describe historical branch/PR states. Codex coordinates shared identity/data contracts, tests and integration; Devin's first task is bounded W-01 portfolio work. Use `codex/platform-foundation` and `devin/public-experience`, refreshed from the same verified source baseline. Do not infer Devin is active: no direct Devin connection is available in this chat and the owner has been offered a GitHub handoff or existing-session link.
+
+The owner selected a GitHub assignment to paste into Devin. Prepare that assignment and record its URL; do not claim Devin was dispatched. Next actions: recover/verify/import 1.1.0, establish exact file ownership and shared contracts, then begin separate implementation PRs. Keep ready work on `main`, preserve published versions, and report CI, package and deployment evidence separately. No provider or production operation is authorized by a documentation/release update alone.
 
 ## Latest client and support requirements
 

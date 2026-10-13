@@ -77,3 +77,10 @@ Admin identity/permissions precede mail access. Implement the mail/template/bell
 | D-033 | Scope clarified | Full customer hosting controls include that customer's mailbox management where 20i permits | This adds provider-side customer mailbox operations beyond A-06's existing-mailbox connections for staff webmail; does not grant customer access to staff email |
 
 Official public 20i API, client service grants, StackCP, webmail, backup and SSH documentation was reviewed on 2026-10-12; citations and verification limits are in [Client portal roadmap](CLIENT_PORTAL_ROADMAP.md). No account-specific entitlement, API, delegated browser terminal, live SSH or restore test has been performed.
+
+## 2026-10-12 — GitHub delivery and multi-agent ownership
+
+| ID | Status | Decision | Consequence |
+|---|---|---|---|
+| D-034 | Accepted | Use GitHub testing and incremental releases; retain versions and agent documentation | Add scoped CI now; publish exact tested full deployment ZIPs with tags/manifests/checksums/reports after source recovery; maintain release register, main, status and handoff; no application version for docs-only changes |
+| D-035 | Accepted | Split implementation between Codex and Devin using separate branches and integrate completed work | Codex coordinates shared contracts, platform foundations, review/integration and releases; Devin starts with bounded public portfolio work; explicit file ownership and combined checks prevent competing schema or interface changes |

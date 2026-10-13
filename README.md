@@ -43,6 +43,9 @@ The owner confirms **1.1.0 is the latest version**. Its source/package must be l
 | [Client portal roadmap](docs/CLIENT_PORTAL_ROADMAP.md) | Native hosting controls, web-design progress, updates and verified website ZIP downloads |
 | [Architecture](docs/ARCHITECTURE.md) | Inspected PHP baseline and planned extension boundaries |
 | [Installation and updates](docs/INSTALLATION_AND_UPDATES.md) | Single-page installer, ownership, packaging, and release checks |
+| [GitHub testing and release workflow](docs/RELEASE_WORKFLOW.md) | Automated checks, incremental versions, retained release ZIPs and agent handoff requirements |
+| [Release register](docs/RELEASES.md) | Version provenance, published package links and verification limits |
+| [Codex and Devin coordination](docs/AGENT_COORDINATION.md) | Separate work branches, task ownership, Devin handoff and integration checks |
 | [Brand assets](docs/BRAND_ASSETS.md) | Exact logo, favicon source, and visual-reference provenance |
 | [Baseline inventory](docs/BASELINE_INVENTORY.md) | Artifact identity, file inventory, and inspection limits |
 | [Decisions](docs/DECISIONS.md) | Accepted constraints and why earlier approaches were rejected |

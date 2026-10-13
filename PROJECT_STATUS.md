@@ -1,7 +1,15 @@
 # Project status
 
-Updated: 2026-10-12 — full client portal, project updates/ZIP downloads and one-click support/SSH specified; current 1.1.0 artifact location pending.
+Updated: 2026-10-12 — GitHub testing/release workflow and Codex/Devin split added; current 1.1.0 artifact location pending.
 Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
+
+## Current repository delivery and coordination checkpoint
+
+The owner authorizes GitHub testing, incremental version releases with retained copies, ongoing agent documentation, and separate Codex/Devin work branches integrated as they finish. Added [release workflow](docs/RELEASE_WORKFLOW.md), [release register](docs/RELEASES.md), [agent coordination and Devin handoff](docs/AGENT_COORDINATION.md), and read-only GitHub Actions documentation checks. This workflow does not yet test application code or build packages.
+
+Current work continues on `docs/web-design-payment-forms` in [PR #1](https://github.com/afterburn25/Cajun_Web/pull/1), with integration into `main` planned after checks. Read the actual PR/check state before resuming; the sections below record earlier checkpoints and do not override this one. Codex owns the platform foundation/integration stream; Devin's first bounded assignment is W-01 portfolio work. Devin has not been dispatched from this chat. Separate branches are specified in the coordination document and must be updated to verified current source before implementation.
+
+**Blocking next step:** locate/import the owner's 1.1.0 source and reconcile existing features. No application version bump, public release ZIP, payment/provider operation, mail send or host deployment has occurred. Historical 1.0.8 remains reference only. GitHub documentation checks are not runtime acceptance.
 
 ## Latest requirements — complete client portal and support access
 

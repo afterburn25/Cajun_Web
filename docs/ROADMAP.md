@@ -18,6 +18,10 @@ Reconcile the user's reported 1.0.5 running screen and root-owned storage agains
 
 Use `icon(1).png`, not a generated replacement. Produce appropriate square transparent icon variants and ICO/PNG references without stretching/cropping the fleur-de-lis. Keep the original horizontal wordmark unchanged. Verify public/admin/installer icon references, browser rendering, subfolder paths, and updated installer integrity hashes. Record sizes and source fingerprint. App-icon/PWA installation is not implied merely by shipping icon files.
 
+### F-04 — GitHub testing, incremental releases and agent coordination
+
+Owner-approved: automated GitHub tests, small versioned releases, retained complete ZIP copies, continuously updated agent documentation, and separate Codex/Devin branches integrated as work finishes. [Release workflow](RELEASE_WORKFLOW.md) defines CI/version/package gates; [release register](RELEASES.md) tracks actual artifacts; [agent coordination](AGENT_COORDINATION.md) assigns ownership and integration rules. Documentation CI is implemented in this change. Application CI, versioned deployment packages and parallel application work require verified 1.1.0 source first. Do not treat a green documentation check as application acceptance.
+
 ## Public experience and lead generation
 
 ### W-01 — Interactive portfolio and case studies

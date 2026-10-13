@@ -2,6 +2,13 @@
 
 This log distinguishes repository work from application releases and deployment. Documentation-only work does not advance the application version.
 
+## 2026-10-12 — GitHub checks, release retention and Codex/Devin coordination
+
+- Added a read-only GitHub Actions workflow and standard-library documentation checker for continuity files and local Markdown links/headings. Application CI remains pending current-source recovery.
+- Defined incremental versioning, retained complete GitHub Release ZIPs, manifests/checksums/test reports, exact-artifact verification and a truthful release register.
+- Added separate Codex/Devin work assignments, branch ownership, a ready-to-use Devin handoff and sequential PR integration with combined checks.
+- Updated agent rules, PR checklist, roadmap F-04, status/handoff and release documentation. No application version bump, deployment or public application release is included.
+
 ## 2026-10-12 — Full client portal, website delivery and support access (requirements only)
 
 - Added client-portal capability coverage for verified 20i services and native controls, explicit existing-service grants, project monitoring/updates/approvals and a separate client notification center.

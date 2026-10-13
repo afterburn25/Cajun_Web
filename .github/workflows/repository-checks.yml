@@ -1,0 +1,36 @@
+name: Repository checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repository-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  documentation:
+    name: Documentation continuity and links
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out the exact revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Check continuity documents and local Markdown links
+        run: python3 tools/check_docs.py
+      - name: Explain verification scope
+        if: always()
+        run: |
+          {
+            echo '### Verification scope'
+            echo 'This job checks required continuity documents and inline relative Markdown links, including heading targets.'
+            echo 'It does not test PHP, MySQL, browser flows, payments, mail, 20i, SSH, release packages, or deployment.'
+            echo 'Application checks and packaging remain pending recovery of the verified 1.1.0 source.'
+          } >> "$GITHUB_STEP_SUMMARY"
