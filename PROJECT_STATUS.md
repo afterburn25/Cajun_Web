@@ -3,6 +3,7 @@
 ## 2026-10-13 — Devin HC-07 provider foundation (unreviewed, unintegrated)
 
 Devin implemented the safe-work portion of HC-07 as an isolated canonical component on `devin/provider-foundation`: `foundation/provider/` contract classes, `tests/provider/run.php` (69 checks), `provider.yml` workflow, and [PROVIDER_FOUNDATION](docs/PROVIDER_FOUNDATION.md). Implementation status: **Implemented (local/source)** — component + synthetic tests only. External gate: **Awaiting API verification** (no real 20i calls, endpoints or fabricated responses). No `site/` changes, schema, persistence, admin UI, deployment or release. Codex's `codex/priority-directory-refactor` remains the shared-path gate; this component merges alongside it cleanly.
+
 ## Active roadmap increment — 1.11.1 candidate
 
 Codex owns `codex/motion-update-1.11.1` from main `02fc784`, preserving Devin PR #34 history at `e2b2a23` in merge `69ed304`. Scope: W-02 homepage pause/root scrolling and restrained brand sheen; honest browser motion evidence; safe staged updates from published organized 1.11.0 while retaining all older supported paths. Recovery journals are per target version; the permanent 1.11.0 lock is shared across retained updater versions. Existing private/configuration/scaffold bytes and prior recovery records stay intact; fresh organized sites gain no legacy root routes.
