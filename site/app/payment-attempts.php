@@ -89,6 +89,8 @@ function attempts_record(array $expected,array $facts,int $actor,string $source)
         if((int)query('SELECT COUNT(*) FROM '.table('payment_attempt_events').' WHERE attempt_id=?',[$r['id']])->fetchColumn()!==(int)($expected['event_count']??1))return;
         $state=$facts['state'];$transaction=$facts['transaction_id']??$r['transaction_id'];
         if(!in_array($state,['unknown','held','captured','settled','declined','voided','expired'],true))throw new LogicException('Invalid sandbox observation.');
+        if(in_array($r['state'],['settled','declined','voided','expired'],true)&&$state!==$r['state'])throw new RuntimeException('Conflicting terminal observation. Retained result unchanged; investigate in the sandbox portal.');
+        if($r['state']==='captured'&&!in_array($state,['captured','settled','voided'],true))throw new RuntimeException('Conflicting capture observation. Retained result unchanged.');
         if($transaction!==null&&one('SELECT id FROM '.table('payment_attempts').' WHERE environment=? AND account_hash=? AND transaction_id=? AND id<>?',[$r['environment'],$r['account_hash'],$transaction,$r['id']])){$state='unknown';$transaction=$r['transaction_id'];}
         query('UPDATE '.table('payment_attempts').' SET state=?,transaction_id=?,updated_at=? WHERE id=?',[$state,$transaction,gmdate('Y-m-d H:i:s'),$r['id']]);
         attempts_event((int)$r['id'],$actor,$source.'.'.$state);

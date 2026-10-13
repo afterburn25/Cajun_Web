@@ -39,7 +39,7 @@ def main():
         if not actual or actual.group()!=body:raise RuntimeError('Installer hashes are stale; run build.py --refresh after changes')
     version=re.search(r"const CWP_VERSION\s*=\s*'([^']+)'",(SITE/'app/core.php').read_text(encoding='utf-8')).group(1)
     if f"const CWP_INSTALLER_BUILD = '{version}'" not in s or "const CWP_INSTALLER_LAYOUT = 'one-page'" not in s:raise RuntimeError('Version/layout mismatch')
-    for match in re.findall(r"(?:one-page-|ONE-PAGE INSTALLER · |BUILD |installer_build!==')[0-9]+\.[0-9]+\.[0-9]+",s):
+    for match in re.findall(r"(?:one-page-|ONE-PAGE INSTALLER Â· |BUILD |installer_build!==')[0-9]+\.[0-9]+\.[0-9]+",s):
         if not match.endswith(version):raise RuntimeError('Stale installer label or browser response guard: '+match)
     if 'Unlock your installation.' in s or 'data-back=' in s:raise RuntimeError('Legacy installer gate or wizard returned')
     if s.count('id="install-form"')!=1:raise RuntimeError('Expected one visible installation form')
@@ -61,7 +61,7 @@ def main():
         try:subprocess.run(['node','--check',str(check)],check=True,capture_output=True)
         finally:check.unlink()
     out=ROOT/'dist';out.mkdir(exist_ok=True)
-    manifest={'version':version,'source_commit':args.commit,'layout':'flat','files':inv,'fresh_install':'install.php','existing_install':'Back up first. Merge UPDATE files; sign into admin.php. From 1.0.8 use Version & database first. If needed, open Administrators to select the initial owner and enable account access. Owners enable Client support explicitly and allow each client under their support agreement. Owners enable Service catalog explicitly for approved prices and existing-project invoice snapshots. Owners enable Payment preparation explicitly. Credential storage requires a private path outside the web document root; charging remains disabled. Never rerun fresh setup.'}
+    manifest={'version':version,'source_commit':args.commit,'layout':'flat','files':inv,'fresh_install':'install.php','existing_install':'Back up first. Merge UPDATE files; sign into admin.php. From 1.0.8 use Version & database first. If needed, open Administrators to select the initial owner and enable account access. Owners enable Client support explicitly and allow each client under their support agreement. Owners enable Service catalog explicitly for approved prices and existing-project invoice snapshots. Owners enable Payment preparation explicitly. Credential storage requires a private path outside the web document root; production charging remains disabled. Owners may enable Sandbox trials separately for test-card attempts and verification; sandbox results never pay real invoices. Never rerun fresh setup.'}
     (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8',newline='\n')
     for kind in ['COMPLETE-UPLOAD','UPDATE']:
         target=out/f'CajunWebPro-{version}-{kind}.zip'
