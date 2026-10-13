@@ -1,17 +1,21 @@
 # GitHub testing, incremental releases and agent continuity
 
+The first v1.1.0 publication completed this workflow: exact-main tests, deterministic packages, draft verification, publication, clean download verification and retained evidence. See [release register](RELEASES.md) and [test report](TEST_REPORT_1.1.0.md).
+
 Owner direction recorded 2026-10-12: use GitHub for testing, deliver incremental versions, retain copies of released versions on GitHub, and document the project so other agents can resume without reconstructing chat history. This is standing authorization for ordinary repository updates, isolated CI tests and publishing verified project release packages. It does not itself activate production deployments, live charges, customer mail or paid provider operations.
 
 ## Current implementation
 
 - [Repository checks](../.github/workflows/repository-checks.yml) runs on pull requests, pushes to `main` and manual dispatch. It uses read-only repository permissions and no production credentials.
 - [Documentation checker](../tools/check_docs.py) verifies required continuity files and inline relative Markdown links, including heading targets. Use `python tools/check_docs.py` locally. External URLs, reference-style links, HTML links and application behavior are outside this check's scope.
-- Application CI, builds and release publishing are **pending verified 1.1.0 source import**. A green documentation job does not mean the website, installer, payments or hosting integration works.
+- [Application acceptance](../.github/workflows/application-tests.yml) verifies exact source/package bytes, native MariaDB and actual HTTP/Chromium workflows, plus fresh/update package behavior. It retains reports and screenshots. Final combined-main acceptance and downloaded release verification are required; documentation checks alone are insufficient.
 - The independent [access-policy workflow](../.github/workflows/access-policy.yml) now tests isolated PHP permission decisions on 8.2/8.4. This is component verification only; application CI/build/release gates still await 1.1.0 integration. Independent foundation code is excluded from deployment packages until adapted and accepted.
 - The independent [estimator workflow](../.github/workflows/estimator.yml) tests the isolated Devin estimator component on 8.2/8.4 under the same read-only, network-free constraints. It does not exercise forms, persistence, routes, UI, database or the installer.
 - [Release register](RELEASES.md) distinguishes owner-reported versions, verified source and published deployment packages. No placeholder application release or version bump is justified by this documentation change.
 
 ## Work in reviewable increments
+
+The [staff-invitation job](../.github/workflows/staff-invitations.yml) adds native MariaDB component tests with synthetic fixtures and concurrent PHP processes. A successful run establishes only that component's persistence/locking behavior, not the current application's migration, invitation UI, email delivery or release readiness. Retain that distinction alongside the access-policy and documentation jobs.
 
 1. Fetch GitHub and read the current status, handoff, rules and relevant roadmap before editing. Inspect open PRs and claimed tasks to avoid conflicting work.
 2. Start from current `main` or an explicitly documented active branch. Give each feature or fix a bounded acceptance target, identify its roadmap IDs, and preserve existing behavior and customer data.
@@ -21,7 +25,7 @@ Owner direction recorded 2026-10-12: use GitHub for testing, deliver incremental
 
 ## Version policy
 
-- The owner identifies **1.1.0** as current. Locate and inspect it before selecting the next version. Do not relabel the older 1.0.8 package or publish an assumed 1.1.0 build.
+- The owner originally identified **1.1.0** as current. It was recovered and released, and the verified **1.2.0** administrator increment now follows it. Inspect current main and the release register before selecting another version. Preserve older published versions; never relabel historical packages.
 - Use `MAJOR.MINOR.PATCH`: compatible fixes increment patch; compatible features increment minor; incompatible changes increment major and include migration guidance. Illustrative next versions could be `1.1.1` for a fix or `1.2.0` for features; these are not reserved or promised builds.
 - Use explicit prerelease tags such as `v1.2.0-rc.1` for builds intended for testing. Mark them as prereleases and do not advertise them as the latest stable version.
 - Version labels in application code, installer, manifest, package filename, changelog and Git tag must agree. A tag names an exact source commit; test that source and the exact attached package.

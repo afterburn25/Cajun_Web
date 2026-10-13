@@ -1,5 +1,8 @@
 # CajunWebPro — project source of truth
 
+
+
+
 Custom web design and development services, portfolio, and business-management website. **This is a service business website, not a do-it-yourself website builder.**
 
 Approved expansion: our own custom hosting/billing/client-management platform covering the agreed functions otherwise handled by WHMCS, with 20i infrastructure, Authorize.net payments, web-design services, staff accounts and admin webmail. See the [custom platform blueprint](docs/CUSTOM_PLATFORM_BLUEPRINT.md); this is planned scope, not a completed platform.
@@ -15,13 +18,23 @@ Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
 
 Every working session must update the status, handoff, and [session log](docs/SESSION_LOG.md). Record implementation changes in [CHANGELOG.md](CHANGELOG.md), and important choices in [Decisions](docs/DECISIONS.md). Documentation belongs in Git with the work, not only in chat.
 
-## Current checkpoint — 2026-10-12
+## Current release — 1.10.0
 
-Parallel work started 2026-10-13 while a separate worker finishes 1.1.0: an isolated [staff/mailbox permission foundation](docs/ACCESS_FOUNDATION.md) and tests are on `codex/platform-foundation`, and Devin's independent [estimator evaluation foundation](docs/ESTIMATOR_FOUNDATION.md) is on `devin/lead-estimator`. [Agent coordination](docs/AGENT_COORDINATION.md) defines the stream split. These components are not yet integrated into a deployable website; the current-source gate below applies to integration, not independent preparation.
+**Published and downloaded-back verified: [CajunWebPro v1.10.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0).** Source/tag `4649a913d40166b9874f9550e57b4186edfc43ab`, [PR #26](https://github.com/afterburn25/Cajun_Web/pull/26). [Complete upload ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/CajunWebPro-1.10.0-COMPLETE-UPLOAD.zip) · [UPDATE ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/CajunWebPro-1.10.0-UPDATE.zip). Prior releases remain immutable; publication documentation does not alter release bytes.
+Parallel work on `devin` branches, refreshed onto current main: Devin's portfolio contract/filtering foundation is adapted to the real portfolio routes on `devin/public-experience` ([PR #7](https://github.com/afterburn25/Cajun_Web/pull/7), in review) and the independent [estimator evaluation foundation](docs/ESTIMATOR_FOUNDATION.md) is on `devin/lead-estimator` ([PR #27](https://github.com/afterburn25/Cajun_Web/pull/27)). [Agent coordination](docs/AGENT_COORDINATION.md) defines the stream split.
 
-The repository was empty when inspected. This bootstrap records the project requirements, inspected distribution baseline, approved backlog, and continuity process. **Application source and original image assets have not yet been imported into Git. This is not a deployable website release.**
 
-The owner confirms **1.1.0 is the latest version**. Its source/package must be located and verified before implementation. The older `CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip` was inspected locally; see [Baseline inventory](docs/BASELINE_INVENTORY.md). Keep that archive as historical reference, not the default starting point or proof of the running host version. The last reported live installer/version and storage issues have no confirmed target-host resolution.
+Delivered bounded P-07: clients receive activity for studio messages, reviews, files, invoices, payment recordings/corrections and published website releases. Staff with client-workspace access receive client replies, uploads and review decisions in their own centers. Explicit read/unread status is personal; Mark visible changes only the reviewed page. Exact-source links, older-history pagination and unread bells recheck current identity/grants/ownership. Staff also get a workspace bell on public pages after a private check. Count responses contain no message bodies or source metadata. Support cannot access client activity.
+
+Retained source records provide history; `activity_reads` stores only per-person status. There are no business-write notification hooks or copied bodies. Activity failures cannot undo messages/invoices/payments/releases. Visible active pages check at most once per minute without extending idle logins; failed established checks show unavailable status and later recover. Historical updates start unread. This is workspace activity, not webmail or email delivery. [Guide](docs/WORKSPACE_ACTIVITY.md).
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38402918742): **603 native checks (64 activity), 630 HTTP/Chromium checks**, PHP 8.3/MariaDB 10.11. Actual retained 1.9.0 UPDATE preserves business records, identities, encrypted credentials/master key, original settings/configuration/guards/media and published/draft website ZIPs/manifests. A retained client downloads the same original ZIP; prior balances and credentials remain usable. All older update/fresh paths pass. Desktop/320px screens and polling/failure/revocation behavior verified. Independent policy 251/invitation 46 checks pass on PHP 8.2/8.4. [Report](docs/TEST_REPORT_1.10.0.md), [scope](docs/RELEASE_1.10.0.md), [download verification](docs/RELEASE_VERIFICATION_1.10.0.json). All eight draft/public assets and immutable tag match exact-main CI/local rebuild.
+
+Existing sites back up files/database/private storage, merge UPDATE and have an owner enable **Workspace activity** with the current password. Fresh installation includes an enabled empty table. COMPLETE contains 73 files / 48 PHP files; UPDATE contains 72, omitting only install.php. Never rerun fresh installation. No SMTP, background daemon or host CLI is needed.
+
+**Full P-07 remains partial:** outbound email, preferences, stage timeline and hosting/renewal/ticket events remain pending. **A-06–A-08 multi-account webmail, mail templates and email bells are not implemented by this increment.** Real card checkout/actual merchant acceptance, broader billing/20i and VPS SSH remain pending. No live deployment, customer mail/payment or provider operation occurred. Synthetic gateway evidence is not actual merchant acceptance.
+
+**Next:** preserve Devin portfolio [PR #7](https://github.com/afterburn25/Cajun_Web/pull/7) at `55d60670497d987286e64630e037e1ba2ec3a318`; [handoff](docs/DEVIN_HANDOFF_1.10.0.md). Refresh main/open work and claim the next bounded independent roadmap feature, or complete actual merchant acceptance before production card checkout. No background continuation is scheduled.
 
 ## Non-negotiable direction
 
@@ -50,6 +63,7 @@ The owner confirms **1.1.0 is the latest version**. Its source/package must be l
 | [Codex and Devin coordination](docs/AGENT_COORDINATION.md) | Separate work branches, task ownership, Devin handoff and integration checks |
 | [Access foundation](docs/ACCESS_FOUNDATION.md) | Implemented permission component, test scope and pending 1.1.0 adapter requirements |
 | [Estimator foundation](docs/ESTIMATOR_FOUNDATION.md) | Implemented estimate contract/evaluation component, test scope and pending 1.1.0 adapter requirements |
+| [Staff invitations](docs/STAFF_INVITATIONS.md) | Expiring one-use setup tokens, native transaction tests and account-adapter requirements |
 | [Brand assets](docs/BRAND_ASSETS.md) | Exact logo, favicon source, and visual-reference provenance |
 | [Baseline inventory](docs/BASELINE_INVENTORY.md) | Artifact identity, file inventory, and inspection limits |
 | [Decisions](docs/DECISIONS.md) | Accepted constraints and why earlier approaches were rejected |

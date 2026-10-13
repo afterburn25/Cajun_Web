@@ -1,0 +1,61 @@
+name: Inspect preserved application source
+on:
+  push:
+    branches: [codex/finish-1.1.0]
+    paths: [.github/workflows/recover-source-fragments.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Reassemble known source fragments and inspect format
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: python
+        run: |
+          import os, urllib.request, json, base64, lzma, hashlib, io, tarfile, zipfile, pathlib
+          ids = ['444e2c7d010d2525e35e79a495587141f52c67b8','6af033ce509088fca34a0fdb833aa26c5835b979','b286b3b6600b9db82b16f8a7a94f3244250bceb2','fc2880098a1bcf3d223ef039fcf70c1480c99fa8','dafc8a5b87d2172bd067c19e83bbe10d4e2b3645','9e1f181b0bfb029d5de7442c233932096ea14bc6','cd3f54b46c687cd89c52d0372c690e2ba337727c','796c1a0433a9507039c936951ea4e818003bbb66','cc4b9f306b44e3456b003065445ecdeae2780bba']
+          parts=[]
+          for sha in ids:
+              req=urllib.request.Request('https://api.github.com/repos/'+os.environ['GITHUB_REPOSITORY']+'/git/blobs/'+sha, headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
+              with urllib.request.urlopen(req,timeout=25) as res: obj=json.load(res)
+              b=base64.b64decode(obj['content'],validate=False)
+              assert hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()==sha
+              parts.append(b)
+          raw=b''.join(parts)
+          decoder=lzma.LZMADecompressor(memlimit=134217728)
+          data=decoder.decompress(raw,max_length=16000000)
+          assert decoder.eof and not decoder.unused_data, 'Incomplete or excessive compressed input'
+          print('COMPRESSED_BYTES',len(raw),'DECOMPRESSED_BYTES',len(data),'SHA256',hashlib.sha256(data).hexdigest())
+          print('HEADER',repr(data[:160]))
+          root=pathlib.Path('recovery-inspection');root.mkdir()
+          (root/'payload.bin').write_bytes(data)
+          summary={'fragments':ids,'compressed_sha256':hashlib.sha256(raw).hexdigest(),'payload_sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data)}
+          try:
+              obj=json.loads(data)
+              summary['format']='json';summary['type']=type(obj).__name__
+              if isinstance(obj,dict):
+                  summary['keys']=list(obj.keys());print('TOP_KEYS',list(obj.keys()))
+                  for key,val in obj.items():
+                      print('ENTRY',key,type(val).__name__,len(val) if hasattr(val,'__len__') else '')
+                      if isinstance(val,dict): print('SUBKEYS',key,list(val.keys())[:100])
+              elif isinstance(obj,list):
+                  print('RECORD_COUNT',len(obj))
+                  for val in obj[:70]:
+                      print('RECORD', {k:(v if k in ['path','name','sha256','encoding','size'] else type(v).__name__) for k,v in val.items()} if isinstance(val,dict) else str(val)[:200])
+          except (ValueError,UnicodeDecodeError):
+              try:
+                  with tarfile.open(fileobj=io.BytesIO(data),mode='r:') as archive:
+                      summary['format']='tar';summary['entries']=[{'path':m.name,'size':m.size,'type':m.type.decode(errors='replace')} for m in archive.getmembers()]
+              except tarfile.ReadError:
+                  with zipfile.ZipFile(io.BytesIO(data)) as archive:
+                      summary['format']='zip';summary['entries']=[{'path':m.filename,'size':m.file_size} for m in archive.infolist()]
+              print(json.dumps(summary.get('entries',[]),indent=2))
+          (root/'summary.json').write_text(json.dumps(summary,indent=2))
+      - uses: actions/upload-artifact@v4
+        with:
+          name: recovered-source-inspection
+          path: recovery-inspection/
+          retention-days: 7

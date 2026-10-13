@@ -1,0 +1,9 @@
+# Devin handoff — verified 1.8.0
+
+[v1.8.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.8.0) is published and downloaded-back verified at `c36a36e80c40485c9e3e7e6cdd4884ced25db961` through [PR #22](https://github.com/afterburn25/Cajun_Web/pull/22). Later publication records do not change application bytes. [Exact-main CI](https://github.com/afterburn25/Cajun_Web/actions/runs/38390645499): 427 native / 503 HTTP/Chromium checks. [Report](TEST_REPORT_1.8.0.md).
+
+Continue W-01 on existing `devin/public-experience` / [PR #7](https://github.com/afterburn25/Cajun_Web/pull/7), preserved at `55d60670497d987286e64630e037e1ba2ec3a318`. Fetch and inspect current main, AGENTS/status/handoff/coordination before adapting. Merge or rebase carefully; never force-push shared history or overwrite Codex payment/identity/schema/installer work. Your isolated portfolio contract/filtering component remains unintegrated. Scope actual public-page adaptation; agree shared storage/admin dependencies first. Preserve branding, PHP/shared hosting, one-page keyless installation and existing client data. Submit a small checked PR with actual screenshots/tests/continuity notes; Codex handles integration/releases.
+
+Codex now owns external payment receipts/balances/corrections and client statements/printable receipts, separate from sandbox data. Card checkout, actual merchant acceptance, refunds/credits/tax/subscriptions and full mail/20i/ZIP/SSH remain pending. No competing financial, identity or project schemas. [Ledger guide](INVOICE_LEDGER.md). No live customer/provider operation or deployment is authorized by this handoff.
+
+The owner requested this GitHub assignment for pasting into Devin. Publishing this handoff is not proof of receipt, execution or completion. Report your branch/commit/PR and actual readiness when finished.

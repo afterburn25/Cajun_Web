@@ -1,5 +1,34 @@
 # Decision record
 
+## 2026-10-13 — project activity from retained business records
+
+Advance bounded P-07 independently of Devin W-01 and unconfigured merchant/mail integrations. Project existing durable sources and retain only per-person read status; business creation must not depend on notification delivery. Explicit audiences prevent a dual login from substituting staff for clients. Every action revalidates ownership/grants, support cannot mutate client activity, and passive polls preserve idle clocks. Read state changes only for explicit reviewed keys. Outbound mail, full webmail and event types without retained source history need separate contracts.
+
+## 2026-10-13 — prepared and reviewed client handover before automatic builds
+
+Advance independent P-06 while actual payment merchant acceptance remains pending. Accept bounded prepared client ZIPs with explicit scope and root handover/license documents. Never blindly package the agency installation, execute uploaded code or claim a files-only package includes a database. Automated checks supplement mandatory owner content/rights review. Retain immutable originals and do not impose a paid-in-full gate. Use existing staff/client/support identities, the shared mutation lock, strict event writes and fresh download authorization. Large builds, database handover, deletion/retention automation and full restore orchestration require separate designs.
+
+## 2026-10-13 — Verified 1.8.0 invoice payment increment
+
+External USD receipts, partial/full balances, retained owner corrections, legacy balance import and client-owned statements/printable receipts are delivered in [v1.8.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.8.0) / `c36a36e80c40485c9e3e7e6cdd4884ced25db961`. Existing 1.7.0 invoices, attempts/notifications, credentials/keys and earlier data survive UPDATE. New requests/trials use remaining balances; sandbox evidence never becomes revenue. 427 native / 503 HTTP/Chromium checks pass. Actual merchant acceptance, production/client checkout, refunds/tax/credits/subscriptions remain pending. [Guide](INVOICE_LEDGER.md) · [report](TEST_REPORT_1.8.0.md).
+
+## 2026-10-13 — separate external-money records from sandbox evidence
+
+Real bookkeeping records independently verified external receipts; sandbox trial states never become revenue. Remaining balances derive from immutable signed-cent history under the shared financial lock. Corrections append whole-entry reversals with owner reauthentication and do not process refunds. Existing paid invoices import as legacy balance facts, not new receipts. Private references stay in admin; clients receive owned statement and receipt projections. Live card processing remains a later adapter with actual merchant acceptance.
+
+## 2026-10-13 — Verified 1.7.0 sandbox notification increment
+
+Signed sandbox receipt, durable minimal inbox and explicit owner-triggered current reporting are delivered in [v1.7.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.7.0) / `1fe0670142755f86aee235fabe1847e5d118ee52`. Receiver defaults off; schema is additive, invoice settlement remains disabled and no runtime daemon is needed. Original 1.6.0 UPDATE preserves attempts/events and all earlier records/keys. 358 native / 451 HTTP/Chromium checks pass; signatures/reporting remain synthetic. Actual merchant acceptance, production/client checkout and automatic processing are pending. [Guide](SANDBOX_NOTIFICATIONS.md) · [report](TEST_REPORT_1.7.0.md).
+
+## 2026-10-13 — signed sandbox receipt before explicit reporting verification
+
+A callback commits minimal notification identifiers and strict audit before acknowledging receipt; it never calls the provider or trusts notification amounts/statuses. Owners explicitly invoke current sandbox reporting. Existing attempt observation, inbox processing and audit share a transaction, retaining stale/conflicting results for investigation. This keeps shared-host deployment independent of cron/daemons while scheduled processing is pending. Hexadecimal Signature Keys are decoded to binary per official credential guidance. Actual merchant delivery remains an acceptance gate, not inferred from synthetic signatures.
+
+## 2026-10-13 — Verified 1.6.0 sandbox increment
+
+Owner-only tokenized sandbox trials, durable intent/events, transaction-detail reconciliation and shared manual/catalog/request locking are delivered in [v1.6.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.6.0) / `e5d4c17456faff0522429ab3f58093a06a523bd5`. Sandbox never pays real invoices. Production/client checkout, webhooks, receipts/refunds and recurring billing remain pending. Original 1.5.0 UPDATE preserves credentials/key, requests and existing records. 296 native / 421 HTTP/Chromium checks pass; gateway and browser tokenization fixtures remain synthetic. Back up and enable Sandbox trials after UPDATE. [Guide](SANDBOX_PAYMENTS.md) · [report](TEST_REPORT_1.6.0.md).
+
+
 Recorded on 2026-10-12 from the owner's project instructions. This is a consolidated record, not an invented timestamp-by-timestamp history of earlier work. Supersede decisions explicitly; do not silently reverse them.
 
 | ID | Accepted decision | Reason / practical consequence |
@@ -92,3 +121,23 @@ Official public 20i API, client service grants, StackCP, webmail, backup and SSH
 | D-036 | Owner clarified | Another worker is finishing 1.1.0 and will publish source; begin independent parallel work now | Supersedes the blanket implementation wait for isolated components/contracts/synthetic tests only. Codex starts access decisions, Devin starts portfolio filtering; neither replaces the application or changes its routes/schema/installer until current-source inspection. No need to ask for the same build again. |
 
 The access component's logical capability/context identifiers are integration contracts, not assertions about existing database fields. Source-specific migrations, real authorization lifecycle and UI remain pending inspection.
+
+## 2026-10-13 — Align to recovered authentication source
+
+| ID | Status | Decision | Consequence |
+|---|---|---|---|
+| D-037 | Source-driven correction | The inspected 1.1.0 draft uses random hex strings for staff auth_version | Replace the preliminary integer foundation contract with opaque string comparison; preserve existing tokens and do not invent an integer migration. Staff invitations bind to the exact version and require transactional activation against a freshly loaded account. |
+
+## 2026-10-13 — Administrator integration after roadmap resume
+
+| ID | Status | Decision | Consequence |
+|---|---|---|---|
+| D-038 | Owner resumed | Continue the roadmap after verified v1.1.0 | Supersedes the earlier completed release-task stop. Codex takes bounded A-05 integration on its own branch; Devin's portfolio branch is preserved. |
+| D-039 | Source-driven implementation | Reuse users and opaque auth_version; add explicit profiles/invitations | No replacement identity store. Migration requires existing-admin reauthentication and initial owner selection; other legacy administrators receive website/client access. |
+| D-040 | Scope choice | Ship website/client staff grants and manual private setup links first | Delivers useful additional administrator accounts without pretending mailbox access, MFA or automatic delivery exists. Owner-assisted setup recovery retires previous password/sessions. |
+| D-041 | Invariant | Serialize every administrator credential/owner transition per installation | Activation, reset, account edits and owner changes use one advisory lock plus transactions, preventing concurrent last-owner removal. Full code/data backup is required for downgrade. |
+| D-042 | Packaging | Keep canonical foundations and bundle verified copies; derive embedded core | Prevents deployed copies drifting from tested components or installer bootstrap. Customer installation still requires no build tools. |
+
+## 2026-10-13 — Bounded payment preparation before charging
+
+Reuse current project invoices and staff/client identities. Owner-only credentials use a separate external master key; public storage fallback cannot hold it. Authorize.net authentication checks are sandbox-only and do not certify other keys or transactions. Prepared invoice requests have no charge action or guest capability. This keeps current manual invoice semantics while the next increment implements transaction concurrency/reconciliation. M2 is partial; no provider success or live activation is inferred from fixtures.

@@ -16,6 +16,13 @@ final class PermissionPolicy
     public const HOSTING_SETTINGS_MANAGE = 'hosting.settings.manage';
 
     private const GLOBAL_PERMISSIONS = [
+        'website.manage',
+        'clients.manage',
+        'catalog.manage',
+        'payments.manage',
+        'support.login',
+        'support.write',
+        'support.download',
         self::STAFF_MANAGE,
         self::STAFF_GRANT,
         self::MAIL_ACCOUNTS_MANAGE,
@@ -34,8 +41,7 @@ final class PermissionPolicy
             || $actor->principalType !== 'staff'
             || !in_array($actor->role, ['owner', 'administrator', 'staff'], true)
             || !$actor->active
-            || $actor->authorizationVersion < 1
-            || $actor->sessionAuthorizationVersion !== $actor->authorizationVersion
+            || !AuthorizationVersion::matches($actor->authorizationVersion, $actor->sessionAuthorizationVersion)
         ) {
             return false;
         }

@@ -1,0 +1,23 @@
+# Apache 2.4 / LiteSpeed. No rewrite support is required for website navigation.
+DirectoryIndex index.php
+<IfModule mod_authz_core.c>
+  <FilesMatch "^(config\.php|config-pending-.*\.php|\.installed\.php|\.installation-mutex\.php|install-key\.php|proxy-config\.php)$">
+    Require all denied
+  </FilesMatch>
+</IfModule>
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^(?:app|storage)(?:/|$) - [F,L]
+  RewriteRule ^robots\.txt$ robots.php [L]
+  RewriteRule ^sitemap\.xml$ sitemap.php [L]
+</IfModule>
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+</IfModule>
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/webp "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType text/css "access plus 1 day"
+  ExpiresByType application/javascript "access plus 1 day"
+</IfModule>

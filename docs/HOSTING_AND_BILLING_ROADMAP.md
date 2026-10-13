@@ -1,5 +1,28 @@
 # CajunWebPro custom hosting commerce, billing and client platform
 
+## 2026-10-13 — Verified 1.9.0 client ZIP delivery increment
+
+Prepared, reviewed and versioned client ZIP handover is delivered in [v1.9.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.9.0) / `080f14aea8fe5c35e04e4eba62976609aef7cd67`. Guarded private storage, immutable manifests, owner publication, client history and authenticated resumable downloads preserve previous records through actual 1.8.0 UPDATE acceptance. 539 native / 569 HTTP/Chromium checks pass. Full P-06 remains partial: generated builds, database handover, larger jobs, dynamic restore and notifications remain pending. Actual merchant acceptance/card checkout and broader 20i/mail/SSH remain pending. [Guide](CLIENT_DELIVERIES.md) · [report](TEST_REPORT_1.9.0.md).
+
+## 2026-10-13 — Verified 1.8.0 invoice payment increment
+
+External USD receipts, partial/full balances, retained owner corrections, legacy balance import and client-owned statements/printable receipts are delivered in [v1.8.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.8.0) / `c36a36e80c40485c9e3e7e6cdd4884ced25db961`. Existing 1.7.0 invoices, attempts/notifications, credentials/keys and earlier data survive UPDATE. New requests/trials use remaining balances; sandbox evidence never becomes revenue. 427 native / 503 HTTP/Chromium checks pass. Actual merchant acceptance, production/client checkout, refunds/tax/credits/subscriptions remain pending. [Guide](INVOICE_LEDGER.md) · [report](TEST_REPORT_1.8.0.md).
+
+## 2026-10-13 — Verified 1.7.0 sandbox notification increment
+
+Signed sandbox receipt, durable minimal inbox and explicit owner-triggered current reporting are delivered in [v1.7.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.7.0) / `1fe0670142755f86aee235fabe1847e5d118ee52`. Receiver defaults off; schema is additive, invoice settlement remains disabled and no runtime daemon is needed. Original 1.6.0 UPDATE preserves attempts/events and all earlier records/keys. 358 native / 451 HTTP/Chromium checks pass; signatures/reporting remain synthetic. Actual merchant acceptance, production/client checkout and automatic processing are pending. [Guide](SANDBOX_NOTIFICATIONS.md) · [report](TEST_REPORT_1.7.0.md).
+
+## 2026-10-13 — Verified 1.6.0 sandbox increment
+
+Owner-only tokenized sandbox trials, durable intent/events, transaction-detail reconciliation and shared manual/catalog/request locking are delivered in [v1.6.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.6.0) / `e5d4c17456faff0522429ab3f58093a06a523bd5`. Sandbox never pays real invoices. Production/client checkout, webhooks, receipts/refunds and recurring billing remain pending. Original 1.5.0 UPDATE preserves credentials/key, requests and existing records. 296 native / 421 HTTP/Chromium checks pass; gateway and browser tokenization fixtures remain synthetic. Back up and enable Sandbox trials after UPDATE. [Guide](SANDBOX_PAYMENTS.md) · [report](TEST_REPORT_1.6.0.md).
+
+
+**2026-10-13 payment checkpoint:** [1.5.0](RELEASE_1.5.0.md) delivers partial M2 / HC-04 / HC-11 settings and prepared invoice requests. [Guide](PAYMENT_PREPARATION.md). Requests require explicit payment and client-workspace grants; credentials remain owner-only. Card collection/production processing remain disabled. Real merchant/provider acceptance and broader roadmap capabilities remain pending.
+
+**2026-10-13 catalog checkpoint:** [v1.4.0](RELEASE_1.4.0.md) releases partial HC-01/HC-06: managed service prices and reviewed immutable snapshots on current project invoices. [Guide](SERVICE_CATALOG.md). It does not complete checkout, taxes, recurring billing or provider services. Current source and prior account/support capabilities remain verified; older pending-source statements below are historical.
+
+**2026-10-13 released checkpoint:** [1.3.0](RELEASE_1.3.0.md) delivers A-09 for the existing project portal, following core staff lifecycle in 1.2.0. [Support scope and limits](CLIENT_SUPPORT.md). Provider SSO/A-10 SSH, full billing/catalog, native 20i management, mail and website ZIP delivery remain incomplete. Older pending-source statements below are historical; current PHP source is verified on main.
+
 Approved scope: 2026-10-12. Planning only — NOT implemented, integrated, paid for, verified, or deployed.
 
 ## Business and delivery decision

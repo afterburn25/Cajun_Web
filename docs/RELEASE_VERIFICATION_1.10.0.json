@@ -1,0 +1,153 @@
+{
+  "phase": "published",
+  "passed": true,
+  "source_commit": "4649a913d40166b9874f9550e57b4186edfc43ab",
+  "tag_commit": "4649a913d40166b9874f9550e57b4186edfc43ab",
+  "release": {
+    "assets": [
+      {
+        "apiUrl": "https://api.github.com/repos/afterburn25/Cajun_Web/releases/assets/637089096",
+        "contentType": "application/zip",
+        "createdAt": "2026-10-13T13:15:44Z",
+        "digest": "sha256:a9003b041552c6759ade64a471fbfb940e192dcb5ad6d8bcb4d610902f154885",
+        "downloadCount": 0,
+        "id": "RA_kwDOVGcuT84l-TVI",
+        "label": "",
+        "name": "CajunWebPro-1.10.0-COMPLETE-UPLOAD.zip",
+        "size": 1608483,
+        "state": "uploaded",
+        "updatedAt": "2026-10-13T13:15:45Z",
+        "url": "https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/CajunWebPro-1.10.0-COMPLETE-UPLOAD.zip"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/afterburn25/Cajun_Web/releases/assets/637089104",
+        "contentType": "application/zip",
+        "createdAt": "2026-10-13T13:15:44Z",
+        "digest": "sha256:f295674dd75420d5a5ca9ad479946ae427afb89307a81cf56168c4d7378fa058",
+        "downloadCount": 0,
+        "id": "RA_kwDOVGcuT84l-TVQ",
+        "label": "",
+        "name": "CajunWebPro-1.10.0-TEST-EVIDENCE.zip",
+        "size": 32836426,
+        "state": "uploaded",
+        "updatedAt": "2026-10-13T13:15:47Z",
+        "url": "https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/CajunWebPro-1.10.0-TEST-EVIDENCE.zip"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/afterburn25/Cajun_Web/releases/assets/637089099",
+        "contentType": "application/zip",
+        "createdAt": "2026-10-13T13:15:44Z",
+        "digest": "sha256:5095fea4de7240c1d1d47b4c04e18e3197c56863b0f1e138b8be566cf2cbfb2c",
+        "downloadCount": 0,
+        "id": "RA_kwDOVGcuT84l-TVL",
+        "label": "",
+        "name": "CajunWebPro-1.10.0-UPDATE.zip",
+        "size": 1513299,
+        "state": "uploaded",
+        "updatedAt": "2026-10-13T13:15:45Z",
+        "url": "https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/CajunWebPro-1.10.0-UPDATE.zip"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/afterburn25/Cajun_Web/releases/assets/637089100",
+        "contentType": "application/octet-stream",
+        "createdAt": "2026-10-13T13:15:44Z",
+        "digest": "sha256:cb3484583bde6b41b99d60a7e037c1bc8636e72c4e329eacad21552e151c57f4",
+        "downloadCount": 0,
+        "id": "RA_kwDOVGcuT84l-TVM",
+        "label": "",
+        "name": "INSTALLATION_AND_UPDATES.md",
+        "size": 2085,
+        "state": "uploaded",
+        "updatedAt": "2026-10-13T13:15:45Z",
+        "url": "https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/INSTALLATION_AND_UPDATES.md"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/afterburn25/Cajun_Web/releases/assets/637089102",
+        "contentType": "application/json",
+        "createdAt": "2026-10-13T13:15:44Z",
+        "digest": "sha256:2850897bc513c976957b4e84431c8bf91039d83c8e74c2c98070b1c4e4f3f31b",
+        "downloadCount": 0,
+        "id": "RA_kwDOVGcuT84l-TVO",
+        "label": "",
+        "name": "manifest.json",
+        "size": 8392,
+        "state": "uploaded",
+        "updatedAt": "2026-10-13T13:15:45Z",
+        "url": "https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/manifest.json"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/afterburn25/Cajun_Web/releases/assets/637089127",
+        "contentType": "text/plain; charset=utf-8",
+        "createdAt": "2026-10-13T13:15:45Z",
+        "digest": "sha256:4cc89e2aec41a959a855ea293e42de0b08bf57dcc445d5dfe3dc22ff3d106831",
+        "downloadCount": 0,
+        "id": "RA_kwDOVGcuT84l-TVn",
+        "label": "",
+        "name": "SHA256SUMS.txt",
+        "size": 647,
+        "state": "uploaded",
+        "updatedAt": "2026-10-13T13:15:45Z",
+        "url": "https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/SHA256SUMS.txt"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/afterburn25/Cajun_Web/releases/assets/637089130",
+        "contentType": "application/octet-stream",
+        "createdAt": "2026-10-13T13:15:45Z",
+        "digest": "sha256:6e97a7f4ddcb79815ab535eb518f292942460b1f78465dffe694dda341669107",
+        "downloadCount": 0,
+        "id": "RA_kwDOVGcuT84l-TVq",
+        "label": "",
+        "name": "TEST_REPORT.md",
+        "size": 4573,
+        "state": "uploaded",
+        "updatedAt": "2026-10-13T13:15:46Z",
+        "url": "https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/TEST_REPORT.md"
+      },
+      {
+        "apiUrl": "https://api.github.com/repos/afterburn25/Cajun_Web/releases/assets/637089150",
+        "contentType": "application/octet-stream",
+        "createdAt": "2026-10-13T13:15:45Z",
+        "digest": "sha256:ab9a55bdd37668ed482267ab7050e5f4e96618c8b90d7e091dae60cd3916df89",
+        "downloadCount": 0,
+        "id": "RA_kwDOVGcuT84l-TV-",
+        "label": "",
+        "name": "WORKSPACE_ACTIVITY.md",
+        "size": 6303,
+        "state": "uploaded",
+        "updatedAt": "2026-10-13T13:15:46Z",
+        "url": "https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/WORKSPACE_ACTIVITY.md"
+      }
+    ],
+    "isDraft": false,
+    "isPrerelease": false,
+    "publishedAt": "2026-10-13T13:16:03Z",
+    "tagName": "v1.10.0",
+    "targetCommitish": "4649a913d40166b9874f9550e57b4186edfc43ab",
+    "url": "https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0"
+  },
+  "sha256": {
+    "CajunWebPro-1.10.0-COMPLETE-UPLOAD.zip": "a9003b041552c6759ade64a471fbfb940e192dcb5ad6d8bcb4d610902f154885",
+    "CajunWebPro-1.10.0-TEST-EVIDENCE.zip": "f295674dd75420d5a5ca9ad479946ae427afb89307a81cf56168c4d7378fa058",
+    "CajunWebPro-1.10.0-UPDATE.zip": "5095fea4de7240c1d1d47b4c04e18e3197c56863b0f1e138b8be566cf2cbfb2c",
+    "INSTALLATION_AND_UPDATES.md": "cb3484583bde6b41b99d60a7e037c1bc8636e72c4e329eacad21552e151c57f4",
+    "manifest.json": "2850897bc513c976957b4e84431c8bf91039d83c8e74c2c98070b1c4e4f3f31b",
+    "TEST_REPORT.md": "6e97a7f4ddcb79815ab535eb518f292942460b1f78465dffe694dda341669107",
+    "WORKSPACE_ACTIVITY.md": "ab9a55bdd37668ed482267ab7050e5f4e96618c8b90d7e091dae60cd3916df89"
+  },
+  "verification": "Fresh authenticated GitHub download; every asset byte-equal to prepared release; checksums, ZIP CRC, flat exact members, safely extracted hashes, application/installer versions; published tag resolves to tested source commit.",
+  "draft_verification": {
+    "passed": true,
+    "source_commit": "4649a913d40166b9874f9550e57b4186edfc43ab",
+    "assets_verified": 8,
+    "sha256": {
+      "CajunWebPro-1.10.0-COMPLETE-UPLOAD.zip": "a9003b041552c6759ade64a471fbfb940e192dcb5ad6d8bcb4d610902f154885",
+      "CajunWebPro-1.10.0-TEST-EVIDENCE.zip": "f295674dd75420d5a5ca9ad479946ae427afb89307a81cf56168c4d7378fa058",
+      "CajunWebPro-1.10.0-UPDATE.zip": "5095fea4de7240c1d1d47b4c04e18e3197c56863b0f1e138b8be566cf2cbfb2c",
+      "INSTALLATION_AND_UPDATES.md": "cb3484583bde6b41b99d60a7e037c1bc8636e72c4e329eacad21552e151c57f4",
+      "manifest.json": "2850897bc513c976957b4e84431c8bf91039d83c8e74c2c98070b1c4e4f3f31b",
+      "TEST_REPORT.md": "6e97a7f4ddcb79815ab535eb518f292942460b1f78465dffe694dda341669107",
+      "WORKSPACE_ACTIVITY.md": "ab9a55bdd37668ed482267ab7050e5f4e96618c8b90d7e091dae60cd3916df89"
+    },
+    "verification": "Fresh authenticated GitHub download; every asset byte-equal to prepared release; checksums, ZIP CRC, flat exact members, safely extracted hashes, application/installer versions; published tag resolves to tested source commit."
+  }
+}

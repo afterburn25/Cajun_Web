@@ -1,0 +1,14 @@
+<?php
+declare(strict_types=1);
+defined('CWP_BOOT') || exit;
+function catalog_cards(array $products): void { ?><div class="growth-grid catalog-products"><?php foreach($products as $p):?><article class="growth-card"><span class="eyebrow"><?=esc(catalog_families()[$p['family']])?></span><h2><?=esc($p['title'])?></h2><p><?=nl2br(esc($p['summary']))?></p><ul><?php foreach(preg_split('/\r?\n/',$p['features']) as $feature)if(trim($feature)!=='')echo '<li>'.esc($feature).'</li>';?></ul><strong>$<?=gmoney((int)$p['amount_cents'])?> USD · <?=esc(catalog_terms()[$p['term']])?></strong><?php if((int)$p['setup_cents']>0):?><p>One-time setup: $<?=gmoney((int)$p['setup_cents'])?> USD</p><?php endif;?><details><summary>Service details</summary><p><?=nl2br(esc($p['terms']))?></p></details><a class="btn gold" href="<?=esc(page_url('consultation'))?>">Discuss this service →</a></article><?php endforeach;?></div><p class="hint">Confirm scope and pricing with the studio before work begins. An inquiry does not create an order or recurring subscription.</p><?php }
+function catalog_snapshot_view(array $p): void { ?><div class="catalog-snapshot"><p><strong><?=esc($p['sku'].' · '.$p['title'])?></strong> · Price revision <?=(int)$p['revision']?></p><p><?=esc(catalog_terms()[$p['term']]??$p['term'])?> · <?=(int)$p['quantity']?> × $<?=gmoney((int)$p['amount_cents'])?> USD<br>One-time setup: $<?=gmoney((int)$p['setup_cents'])?> USD</p><p><strong>Invoice total: $<?=gmoney((int)$p['total_cents'])?> USD</strong></p><details><summary>Agreed service details</summary><p><?=nl2br(esc($p['summary']))?></p><p><?=nl2br(esc($p['features']))?></p><p><?=nl2br(esc($p['terms']))?></p></details><p class="hint">This covers the stated service period only. No automatic renewal or subscription is created.</p></div><?php }
+function catalog_invoice_view(array $invoice): void {if($p=catalog_snapshot((int)$invoice['id']))catalog_snapshot_view($p);}
+function catalog_project_entry(int $jobId): void {
+    if(!catalog_ready()||!staff_can('catalog.manage')||!staff_can('clients.manage'))return;
+    echo '<p><a class="btn outline" href="'.esc(admin_url('catalog-invoice',['job_id'=>$jobId])).'">Create invoice from catalog</a></p>';
+}
+function catalog_void_form(array $invoice): void {
+    if($invoice['status']!=='issued'||!catalog_ready()||!staff_can('catalog.manage')||!staff_can('clients.manage')||!catalog_snapshot((int)$invoice['id']))return;
+    ?><form method="post"><?php admin_action('catalog_void');studio_hidden('job_id',$invoice['job_id']);studio_hidden('invoice_id',$invoice['id']);admin_input('reason','Cancellation reason','','text','required minlength="5" maxlength="500"');admin_check('confirm','Void this unpaid invoice. Keep its original price record.',false);?><button class="btn outline">Void invoice</button></form><?php
+}

@@ -1,0 +1,26 @@
+name: Verify original brand asset origin
+on:
+  push:
+    branches: [codex/finish-1.1.0]
+    paths: [.github/workflows/verify-brand-origin.yml]
+permissions:
+  contents: read
+jobs:
+  public-origin:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Verify approved logo bytes from the public website
+        run: |
+          mkdir -p origin-check
+          if curl --fail --location --proto '=https' --proto-redir '=https' --max-time 30 'https://cajunwebpro.com/assets/logo.png' -o origin-check/logo.png 2>origin-check/request.log; then
+            echo '9c44559bb716076c51ec40daff0f394956a32d24039efa6e3fe33039fc10fe29  origin-check/logo.png' | sha256sum -c - > origin-check/verification.txt
+          else
+            echo 'Public asset could not be recovered. No source imported.' > origin-check/verification.txt
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: original-brand-origin-check
+          path: origin-check/
+          retention-days: 3

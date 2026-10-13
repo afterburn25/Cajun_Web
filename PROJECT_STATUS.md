@@ -1,9 +1,43 @@
 # Project status
 
-Updated: 2026-10-13 — independent staff/mailbox permission and estimator components started while the separate 1.1.0 worker finishes the application.
+## 2026-10-13 — Verified workspace activity release
+
+**Published and downloaded-back verified: [CajunWebPro v1.10.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0).** Source/tag `4649a913d40166b9874f9550e57b4186edfc43ab`, [PR #26](https://github.com/afterburn25/Cajun_Web/pull/26). [Complete upload ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/CajunWebPro-1.10.0-COMPLETE-UPLOAD.zip) · [UPDATE ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.10.0/CajunWebPro-1.10.0-UPDATE.zip). Prior releases remain immutable; publication documentation does not alter release bytes.
+
+Delivered bounded P-07: clients receive activity for studio messages, reviews, files, invoices, payment recordings/corrections and published website releases. Staff with client-workspace access receive client replies, uploads and review decisions in their own centers. Explicit read/unread status is personal; Mark visible changes only the reviewed page. Exact-source links, older-history pagination and unread bells recheck current identity/grants/ownership. Staff also get a workspace bell on public pages after a private check. Count responses contain no message bodies or source metadata. Support cannot access client activity.
+
+Retained source records provide history; `activity_reads` stores only per-person status. There are no business-write notification hooks or copied bodies. Activity failures cannot undo messages/invoices/payments/releases. Visible active pages check at most once per minute without extending idle logins; failed established checks show unavailable status and later recover. Historical updates start unread. This is workspace activity, not webmail or email delivery. [Guide](docs/WORKSPACE_ACTIVITY.md).
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38402918742): **603 native checks (64 activity), 630 HTTP/Chromium checks**, PHP 8.3/MariaDB 10.11. Actual retained 1.9.0 UPDATE preserves business records, identities, encrypted credentials/master key, original settings/configuration/guards/media and published/draft website ZIPs/manifests. A retained client downloads the same original ZIP; prior balances and credentials remain usable. All older update/fresh paths pass. Desktop/320px screens and polling/failure/revocation behavior verified. Independent policy 251/invitation 46 checks pass on PHP 8.2/8.4. [Report](docs/TEST_REPORT_1.10.0.md), [scope](docs/RELEASE_1.10.0.md), [download verification](docs/RELEASE_VERIFICATION_1.10.0.json). All eight draft/public assets and immutable tag match exact-main CI/local rebuild.
+
+Existing sites back up files/database/private storage, merge UPDATE and have an owner enable **Workspace activity** with the current password. Fresh installation includes an enabled empty table. COMPLETE contains 73 files / 48 PHP files; UPDATE contains 72, omitting only install.php. Never rerun fresh installation. No SMTP, background daemon or host CLI is needed.
+
+**Full P-07 remains partial:** outbound email, preferences, stage timeline and hosting/renewal/ticket events remain pending. **A-06–A-08 multi-account webmail, mail templates and email bells are not implemented by this increment.** Real card checkout/actual merchant acceptance, broader billing/20i and VPS SSH remain pending. No live deployment, customer mail/payment or provider operation occurred. Synthetic gateway evidence is not actual merchant acceptance.
+
+A new independent L-01 estimator component arrived during release: [PR #27](https://github.com/afterburn25/Cajun_Web/pull/27), `devin/lead-estimator` at `b69da9626448a2ddfdf30b425dc7c2d5e16d1582`. Its 40 isolated PHP checks pass on 8.2/8.4; it starts from old pre-1.1 main `e9549d4d0ea9bd4ff4c68dc6d4dd242d864af812` and does not implement the application form/storage. Preserve it alongside PR #7. Next integration task: inspect both components against current main, reconcile stale baseline/docs and agree actual application adapters before shipping; component tests are not integrated acceptance.
+
+**Next:** preserve Devin portfolio [PR #7](https://github.com/afterburn25/Cajun_Web/pull/7) at `55d60670497d987286e64630e037e1ba2ec3a318`; [handoff](docs/DEVIN_HANDOFF_1.10.0.md). Refresh main/open work and claim the next bounded independent roadmap feature, or complete actual merchant acceptance before production card checkout. No background continuation is scheduled.
+
+## Historical checkpoints — superseded where noted
+
+## 2026-10-13 — Native regression fixes
+
+First MariaDB acceptance found a real schema-idempotency failure: digit-bearing `sha256` was omitted by the column parser. Fixed both column-name patterns without weakening type/engine/unique-key checks. Local native tests then passed, and real unprivileged PHP HTTP tests completed fresh one-page installation and physical cleanup. Also fixed the existing lead editor's seven-status/six-label mismatch and corrected the test's portfolio route to the actual `work` endpoint. Tests now run extracted package bytes and cover incompatible schema preservation, cross-client/CSRF rejection and disguised executable uploads. Public service copy was polished and official comparison sources rechecked on 13 October. Complete browser acceptance and release publication remain pending. No customer host or database was changed.
+
+
+## 2026-10-13 — Source recovery checkpoint
+
+Recovered 41 actual website files plus native/HTTP tests and a build tool from the nine preserved source fragments. Original external assets were fetched only at the recorded public paths and checked against recorded SHA-256 values. Executable source is now under `site/` on `codex/finish-1.1.0`. This supersedes the older no-source-in-Git blocker on this branch, NOT the unverified runtime or release claims. No production files, database, mail or payments were changed. Review `docs/SOURCE_RECOVERY_2026-10-13.json`; run native integration and authorization tests next. No 1.1.0 release is declared by source recovery.
+
+
+Updated: 2026-10-12 — GitHub testing/release workflow and Codex/Devin split added; current 1.1.0 artifact location pending.
+
+Updated: 2026-10-13 — verified application source is in `site/` (latest release 1.10.0). Devin's portfolio component is adapted to it on `devin/public-experience` (PR #7, in review); the independent estimator component on `devin/lead-estimator` (PR #27) is refreshed onto current main and remains unintegrated.
 Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
 
 ## Current repository delivery and coordination checkpoint
+
+**Next A-05 increment, 2026-10-13:** inspected recovered `site/` source on `codex/finish-1.1.0` at `4a8b4c4`, without modifying that worker's branch. The draft is now available for inspection; it is not yet an accepted release. Corrected the independent access context to use the actual opaque string session tokens. Added [staff invitation persistence](docs/STAFF_INVITATIONS.md) with expiry, replacement/revocation and transactional one-use activation, plus synthetic native MariaDB concurrency/rollback tests. Source `718dbc4` in [PR #6](https://github.com/afterburn25/Cajun_Web/pull/6) passes 146 access and 46 native invitation checks on PHP 8.2.34/8.4.26 with MariaDB 11.4.13; [branch](https://github.com/afterburn25/Cajun_Web/actions/runs/38351494316) and [PR merge-ref](https://github.com/afterburn25/Cajun_Web/actions/runs/38351532791) workflows passed. Staff UI, complete account lifecycle and final 1.1.0 integration remain pending.
 
 The owner confirms another worker is finishing 1.1.0 and will update GitHub, and authorizes independent parallel implementation now. Refreshed main is `9e30564ee83d8e859c0d420ae42d6bbd805a6a57`; its [1.1.0 progress report](docs/PROGRESS_1.1.0_INTEGRATION.md) describes that worker's local integration, not source imported here. The `codex/finish-1.1.0` branch currently carries recovery/test-toolchain preparation. Preserve its ownership; no need to ask the owner for the same build again.
 
@@ -106,3 +140,7 @@ Keep the rich navy/gold design and original horizontal logo without .com, use th
 The owner approved a much larger CajunWebPro scope: **web design and white-label hosting/domain/VPS sales**, all with a custom PHP/MySQL product catalog, checkout, billing engine, and unified client portal; direct 20i API provisioning; Authorize.net payment integration with the four credential fields in admin and branded tokenized payment forms. The detailed acceptance criteria, dependencies and phases are in docs/HOSTING_AND_BILLING_ROADMAP.md; docs/ROADMAP.md now links these HC-01..HC-14 items.
 
 **Status: approved/not implemented.** No source import, web pages, transactions, customer accounts, provisioning credentials or deployment occurred as part of this planning change. B-001 to B-006 and the earlier installer/storage/download blockers remain open. 20i domain/VPS endpoint support and Authorize.net compliance/live settings require account-specific verification. Begin with exact baseline source import and feasibility checks, not payment activation.
+
+Release acceptance follow-up (parent `f007803`): HTTP/browser checks reached account revocation; console classification stopped on the intentionally invalid estimator response. The next commit scopes that expected resource message to the precise estimator URL, retains diagnostic JSON, adds original-contact and real-browser fresh-install coverage, scans PHP runtime diagnostics, and improves mobile consent wrapping. Full rerun required before publication.
+
+Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid versioned favicon URLs because it compared the query suffix as part of the path. Parse the URL path and fetch the actual referenced icon for byte equality. Application source is unchanged; rerun the full suite.

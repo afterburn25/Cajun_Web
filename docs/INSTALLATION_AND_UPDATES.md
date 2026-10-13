@@ -1,6 +1,66 @@
 # Installation, packaging and updates
 
-These are release requirements, not a declaration that the target host is fixed. The repository currently contains documentation, not a deployable source import.
+## 2026-10-13 — Verified 1.10.0 workspace activity increment
+
+Separate client/staff activity centers and private workspace bells are delivered in [v1.10.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0) / `4649a913d40166b9874f9550e57b4186edfc43ab`. Additive per-person read state projects retained sources without changing business writes. Exact links, bounded mark-visible actions, history, current authorization and passive idle expiry pass 603 native / 630 HTTP/Chromium checks including actual 1.9.0 UPDATE. Full P-07 remains partial; SMTP dispatch/preferences/stage/hosting/ticket/renewal events and A-06–A-08 multi-account webmail/templates/email bells remain pending. [Guide](WORKSPACE_ACTIVITY.md) · [report](TEST_REPORT_1.10.0.md).
+
+## 2026-10-13 — Verified 1.9.0 client ZIP delivery increment
+
+Prepared, reviewed and versioned client ZIP handover is delivered in [v1.9.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.9.0) / `080f14aea8fe5c35e04e4eba62976609aef7cd67`. Guarded private storage, immutable manifests, owner publication, client history and authenticated resumable downloads preserve previous records through actual 1.8.0 UPDATE acceptance. 539 native / 569 HTTP/Chromium checks pass. Full P-06 remains partial: generated builds, database handover, larger jobs, dynamic restore and notifications remain pending. Actual merchant acceptance/card checkout and broader 20i/mail/SSH remain pending. [Guide](CLIENT_DELIVERIES.md) · [report](TEST_REPORT_1.9.0.md).
+
+## 2026-10-13 — Verified 1.8.0 invoice payment increment
+
+External USD receipts, partial/full balances, retained owner corrections, legacy balance import and client-owned statements/printable receipts are delivered in [v1.8.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.8.0) / `c36a36e80c40485c9e3e7e6cdd4884ced25db961`. Existing 1.7.0 invoices, attempts/notifications, credentials/keys and earlier data survive UPDATE. New requests/trials use remaining balances; sandbox evidence never becomes revenue. 427 native / 503 HTTP/Chromium checks pass. Actual merchant acceptance, production/client checkout, refunds/tax/credits/subscriptions remain pending. [Guide](INVOICE_LEDGER.md) · [report](TEST_REPORT_1.8.0.md).
+
+## 2026-10-13 — Verified 1.7.0 sandbox notification increment
+
+Signed sandbox receipt, durable minimal inbox and explicit owner-triggered current reporting are delivered in [v1.7.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.7.0) / `1fe0670142755f86aee235fabe1847e5d118ee52`. Receiver defaults off; schema is additive, invoice settlement remains disabled and no runtime daemon is needed. Original 1.6.0 UPDATE preserves attempts/events and all earlier records/keys. 358 native / 451 HTTP/Chromium checks pass; signatures/reporting remain synthetic. Actual merchant acceptance, production/client checkout and automatic processing are pending. [Guide](SANDBOX_NOTIFICATIONS.md) · [report](TEST_REPORT_1.7.0.md).
+
+## 2026-10-13 — Verified 1.6.0 sandbox increment
+
+Owner-only tokenized sandbox trials, durable intent/events, transaction-detail reconciliation and shared manual/catalog/request locking are delivered in [v1.6.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.6.0) / `e5d4c17456faff0522429ab3f58093a06a523bd5`. Sandbox never pays real invoices. Production/client checkout, webhooks, receipts/refunds and recurring billing remain pending. Original 1.5.0 UPDATE preserves credentials/key, requests and existing records. 296 native / 421 HTTP/Chromium checks pass; gateway and browser tokenization fixtures remain synthetic. Back up and enable Sandbox trials after UPDATE. [Guide](SANDBOX_PAYMENTS.md) · [report](TEST_REPORT_1.6.0.md).
+
+
+Released 1.5.0 adds [payment preparation](PAYMENT_PREPARATION.md): two additive tables, owner-only external-key credential protection and reviewed existing-invoice requests. Charges and production connections stay disabled. 227 native / 401 HTTP-browser checks passed; [report](TEST_REPORT_1.5.0.md). Complete/update: 58/57 files. After backup and UPDATE merge, owners enable Payment preparation; private gateway storage must be outside the document root. Existing manual billing remains unchanged.
+
+
+Released 1.4.0: after a full backup and UPDATE merge, owners enable **Service catalog** with their current password. Three additive catalog tables preserve clients, support policy, staff access and existing invoices. Fresh installation initializes an empty catalog. No sample prices publish. Read [Service catalog](SERVICE_CATALOG.md); publication evidence remains in the release register. Complete/update inventory: 55/54 files.
+
+
+Current verified release: [v1.10.0](RELEASES.md#v1100--published-13-october-2026). [1.10.0 test report](TEST_REPORT_1.10.0.md). Earlier version instructions below are retained for their supported upgrade steps.
+
+Released 1.3.0 adds [client support sessions](CLIENT_SUPPORT.md). From 1.2.0, merge the verified UPDATE package after backup, then explicitly enable Client support with the owner password and allow individual clients under the support agreement. Existing roles and customer credentials are retained. From earlier versions, complete the existing workspace/administrator setup first. Fresh setup remains one-page; support policy still requires explicit confirmation. Package inventory: 52 complete / 51 update files. Publication and evidence are tracked in the release register.
+
+
+v1.2.0 complete/update deployment assets are published and downloaded-back verified; v1.1.0 remains unchanged. Use the [release register](RELEASES.md) for exact URLs, hashes and tested source; read the [1.2.0 test report](TEST_REPORT_1.2.0.md).
+
+## 1.2.0 administrator-account upgrade
+
+Use only a published, verified version from the release register. Candidate source or GitHub automatic source archives are not deployment releases. 1.2.0 extends the 1.1.0 website with [administrator accounts](ADMIN_ACCOUNTS.md).
+
+**From 1.1.0:** make a complete host backup, then merge the version's UPDATE ZIP into the existing directory, preserving `config.php`, installed guards, private storage and unrelated files. Sign in with the existing administrator. Open **Administrators**, select the initial owner, confirm the backup and enter your current password. This adds two account tables and preserves existing identities/passwords. Other existing administrators retain website and client-workspace permissions; owner-only settings become restricted. Verify the owner sign-in and assigned staff access before creating more accounts. Never rerun `install.php` on an installed site.
+
+**From 1.0.8:** use the same complete UPDATE ZIP; run **Version & database** first for the client-workspace migration, then enable **Administrators** as above. Both steps are additive. The release suite checks the retained populated 1.0.8 fixture and a checksum-pinned copy of the actual published 1.1.0 package. Earlier versions or custom schemas need separate review.
+
+**Fresh 1.2.0:** use COMPLETE-UPLOAD and the one-page keyless installer as described below. It creates the owner and account tables during installation; no separate role upgrade is needed. The full package contains 50 files, including the six canonical access/invitation classes under `app/foundation/`; UPDATE has 49, omitting only `install.php`. Do not omit hidden protection files or upload a mixed set of versions.
+
+Finish any interrupted file merge before database actions. A marker/table mismatch or unknown staff records causes an explicit error rather than replacement. Restore the complete validated host backup if recovery is needed; a code-only downgrade to 1.1.0 is unsupported because the older code does not enforce roles. Existing live hosting/HTTPS/SMTP configuration still needs host verification.
+
+## 1.1.0 installation and supported upgrade
+
+Runtime: PHP 8.2+ source target, PDO MySQL, OpenSSL, Fileinfo and GD, with an InnoDB database. Full application acceptance runs on **PHP 8.3 / MariaDB 10.11**. Independent PHP 8.2/8.4 component checks do not certify the application on those runtimes. Apache 2.4/LiteSpeed protection files are included; target-host HTTPS, PHP mapping and permissions need checking. Customers need no Node service, root access, SSH, Composer or command-line installation.
+
+**Fresh website:** download the verified COMPLETE-UPLOAD ZIP and compare its SHA-256. Extract directly into the intended domain/subfolder, including hidden `.htaccess` files. Open `install.php` over HTTPS. Fill database, owner, website URL, optional permanent private-storage parent and confirmation in the single visible form, then Install. Pricing starts unpublished and email disabled; concept portfolio examples are optional. Check the reported permanent guards and actual installer removal. Follow any cleanup warning precisely; preserve config/media/locks.
+
+**Existing 1.0.8:** first back up the database, website, configuration and private storage through the host. Test a copy before the live site. Merge the UPDATE ZIP into the existing folder, overwriting matching application files only. It excludes fresh setup, config, storage and locks. Sign in using the existing administrator and open **Version & database**; confirm the backup and apply the additive update. Verify public pages, saved inquiries, media and client access. Repeat database verification is safe; incompatible workspace tables are rejected. Do not rerun fresh setup or delete installed markers.
+
+The update path is tested against the fingerprinted populated 1.0.8 fixture. Earlier versions and custom schemas require separate review. Finish an interrupted file merge before applying the database update. Ask the host to invalidate stale opcode caches if required. On failure, preserve the report and restore the complete host backup; a code-only downgrade is not a verified recovery procedure. This is not an automatic application-file updater or a full backup/restore service.
+
+**Developer build:** from a clean checkout with canonical LF bytes, Python 3, PHP CLI and Node syntax checking, run `python tools/build.py --commit <full-sha>`. After shipping edits run `python tools/build.py --refresh`, commit source plus installer hashes, then verify again against that commit. Only `site/` enters flat deterministic archives. Tests, original brand sources and development tools are excluded. Access/invitation foundation sources are bundled verbatim into `site/app/foundation` by `--refresh`; verification rejects divergence. The builder also verifies embedded installer/core equality.
+
+## Continuing installation requirements
+
+These are release requirements, not a declaration that the target host is fixed. Actual application source is now in `site/`; see the release register for publication status.
 
 Use [the GitHub release workflow](RELEASE_WORKFLOW.md) for incremental versioning, CI evidence and retained complete deployment ZIPs. Track real source/package versions in [the release register](RELEASES.md). GitHub's automatic source ZIP and temporary CI artifacts are not substitutes for the tested complete upload release.
 

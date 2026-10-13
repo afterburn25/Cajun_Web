@@ -1,0 +1,11 @@
+# Devin handoff — verified 1.4.0 catalog baseline
+
+Codex delivered [v1.4.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.4.0) at `0cdea7fbd17e887d3f4bc0574a411b157431b7df` via [PR #14](https://github.com/afterburn25/Cajun_Web/pull/14). Exact-main acceptance passed 165 native and 345 HTTP/Chromium checks; all eight permanent assets/tag were downloaded-back verified. [Current status](../PROJECT_STATUS.md), [catalog guide](SERVICE_CATALOG.md), [release register](RELEASES.md). No live deployment or gateway/provider operation occurred.
+
+Preserve `devin/public-experience` and [PR #7](https://github.com/afterburn25/Cajun_Web/pull/7), last observed `55d60670497d987286e64630e037e1ba2ec3a318`. Save your work, fetch and merge current main non-destructively. Do not reset or force-push. The [detailed portfolio assignment](DEVIN_HANDOFF_1.1.0.md) still applies except its historical version/source/stop instructions: fix numeric category handling, define duplicate published-slug behavior, add regressions and adapt authoritative project/media/settings data. Return a bounded adapter/test PR identifying any shared template work needed.
+
+Existing portfolio and estimator/request flows already ship. Preserve any estimator work for reconciliation. Catalog prices now drive catalog invoices and public configured package cards; estimator ranges remain indicative. Do not create competing catalog/pricing/invoice schemas or overwrite catalog integration in growth-pages.php. Existing manual invoices and client/staff/support identities are retained.
+
+Codex owns shared identity/permissions, catalog/invoices, migrations, installer/build, release integration and upcoming Authorize.net sandbox/payment-request groundwork. Coordinate shared-file changes. Catalog access is a separate permission; catalog invoice mutations also require client-workspace access. Support contexts remain barred from billing changes. Your independent portfolio component paths have not been edited or merged by Codex.
+
+Run component checks plus current application acceptance for integration; update continuity docs without erasing newer release facts. No independent deployment or customer/provider operations. This GitHub assignment is not proof of Devin receipt or execution.

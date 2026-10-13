@@ -1,5 +1,32 @@
 # Unified client portal: hosting, design projects, updates and website downloads
 
+## 2026-10-13 — Verified 1.10.0 workspace activity increment
+
+Separate client/staff activity centers and private workspace bells are delivered in [v1.10.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0) / `4649a913d40166b9874f9550e57b4186edfc43ab`. Additive per-person read state projects retained sources without changing business writes. Exact links, bounded mark-visible actions, history, current authorization and passive idle expiry pass 603 native / 630 HTTP/Chromium checks including actual 1.9.0 UPDATE. Full P-07 remains partial; SMTP dispatch/preferences/stage/hosting/ticket/renewal events and A-06–A-08 multi-account webmail/templates/email bells remain pending. [Guide](WORKSPACE_ACTIVITY.md) · [report](TEST_REPORT_1.10.0.md).
+
+## 2026-10-13 — Verified 1.9.0 client ZIP delivery increment
+
+Prepared, reviewed and versioned client ZIP handover is delivered in [v1.9.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.9.0) / `080f14aea8fe5c35e04e4eba62976609aef7cd67`. Guarded private storage, immutable manifests, owner publication, client history and authenticated resumable downloads preserve previous records through actual 1.8.0 UPDATE acceptance. 539 native / 569 HTTP/Chromium checks pass. Full P-06 remains partial: generated builds, database handover, larger jobs, dynamic restore and notifications remain pending. Actual merchant acceptance/card checkout and broader 20i/mail/SSH remain pending. [Guide](CLIENT_DELIVERIES.md) · [report](TEST_REPORT_1.9.0.md).
+
+## 2026-10-13 — Verified 1.8.0 invoice payment increment
+
+External USD receipts, partial/full balances, retained owner corrections, legacy balance import and client-owned statements/printable receipts are delivered in [v1.8.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.8.0) / `c36a36e80c40485c9e3e7e6cdd4884ced25db961`. Existing 1.7.0 invoices, attempts/notifications, credentials/keys and earlier data survive UPDATE. New requests/trials use remaining balances; sandbox evidence never becomes revenue. 427 native / 503 HTTP/Chromium checks pass. Actual merchant acceptance, production/client checkout, refunds/tax/credits/subscriptions remain pending. [Guide](INVOICE_LEDGER.md) · [report](TEST_REPORT_1.8.0.md).
+
+## 2026-10-13 — Verified 1.7.0 sandbox notification increment
+
+Signed sandbox receipt, durable minimal inbox and explicit owner-triggered current reporting are delivered in [v1.7.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.7.0) / `1fe0670142755f86aee235fabe1847e5d118ee52`. Receiver defaults off; schema is additive, invoice settlement remains disabled and no runtime daemon is needed. Original 1.6.0 UPDATE preserves attempts/events and all earlier records/keys. 358 native / 451 HTTP/Chromium checks pass; signatures/reporting remain synthetic. Actual merchant acceptance, production/client checkout and automatic processing are pending. [Guide](SANDBOX_NOTIFICATIONS.md) · [report](TEST_REPORT_1.7.0.md).
+
+## 2026-10-13 — Verified 1.6.0 sandbox increment
+
+Owner-only tokenized sandbox trials, durable intent/events, transaction-detail reconciliation and shared manual/catalog/request locking are delivered in [v1.6.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.6.0) / `e5d4c17456faff0522429ab3f58093a06a523bd5`. Sandbox never pays real invoices. Production/client checkout, webhooks, receipts/refunds and recurring billing remain pending. Original 1.5.0 UPDATE preserves credentials/key, requests and existing records. 296 native / 421 HTTP/Chromium checks pass; gateway and browser tokenization fixtures remain synthetic. Back up and enable Sandbox trials after UPDATE. [Guide](SANDBOX_PAYMENTS.md) · [report](TEST_REPORT_1.6.0.md).
+
+
+**2026-10-13 payment checkpoint:** [1.5.0](RELEASE_1.5.0.md) delivers partial M2 / HC-04 / HC-11 settings and prepared invoice requests. [Guide](PAYMENT_PREPARATION.md). Requests require explicit payment and client-workspace grants; credentials remain owner-only. Card collection/production processing remain disabled. Real merchant/provider acceptance and broader roadmap capabilities remain pending.
+
+**2026-10-13 catalog checkpoint:** [v1.4.0](RELEASE_1.4.0.md) releases partial HC-01/HC-06: managed service prices and reviewed immutable snapshots on current project invoices. [Guide](SERVICE_CATALOG.md). It does not complete checkout, taxes, recurring billing or provider services. Current source and prior account/support capabilities remain verified; older pending-source statements below are historical.
+
+**2026-10-13 released checkpoint:** [1.3.0](RELEASE_1.3.0.md) delivers A-09 for the existing project portal, following core staff lifecycle in 1.2.0. [Support scope and limits](CLIENT_SUPPORT.md). Provider SSO/A-10 SSH, full billing/catalog, native 20i management, mail and website ZIP delivery remain incomplete. Older pending-source statements below are historical; current PHP source is verified on main.
+
 Owner requirement, 2026-10-12: everything a client needs should be accessible through the CajunWebPro client portal, including 20i-backed services and web-design work. Clients must be able to monitor progress, receive updates and download their website as ZIP files. Requirements only; current 1.1.0 source and account-specific integrations remain unverified.
 
 ## Product experience and scope gaps closed
@@ -49,6 +76,8 @@ Admin can publish an update, request feedback/content, attach an authorized file
 
 ## P-06 — Versioned website ZIP delivery and client downloads
 
+**Partial delivery in 1.9.0:** prepared ZIP upload/review/publication, immutable versions/manifests, private client history and resumable downloads are verified. Representative static-site extraction/opening is tested. Automatic builds, databases/dynamic restore, larger jobs and retention/notification workflows below remain pending. [Implemented scope and limits](CLIENT_DELIVERIES.md).
+
 Provide Files & Downloads inside each project and a portal-wide authorized list. Clients can download the latest published website ZIP and retained earlier releases with a clear version, release date, notes, archive size, checksum and contents/scope description. Admin uploads an approved archive or generates one from that client's verified source/build, links its source revision where available, previews its manifest and explicitly publishes it. Record who published/downloaded it and keep artifact versions immutable.
 
 Create a purpose-built website handover package containing the client's deployable code, local assets and relevant media, dependency/license information and installation/handover instructions. Use the established flat deployment layout for CajunWebPro releases. For a dynamic website, include or separately provide its authorized database/content export and configuration instructions when required for a usable transfer. Clearly label files-only packages; do not call a file archive a complete working copy if a required database/content component is missing.
@@ -62,6 +91,8 @@ Keep **website delivery releases** and **hosting backup snapshots** as different
 **Acceptance:** Build/upload and publish two real test-project releases; client can download the authorized latest and prior ZIP with matching checksum and notes. Extract and run/restore a representative dynamic site in isolated staging using the documented files/database/configuration path. Deny another client's download, expired/revoked access and unsafe paths; verify exclusion of secrets/other tenants. Exercise large-file packaging, failed job, repeat/resumed download, retention and missing-database labeling. A ready badge appears only after the artifact actually exists and passes release checks.
 
 ## P-07 — Client updates, notifications and service monitoring
+
+**Partial delivery in 1.10.0:** client/staff workspace centers, retained project/message/review/file/invoice/payment/published-ZIP updates, personal read/unread state, exact links, history and private bells are verified. Business-write independence, current ownership, support denial and passive idle expiry are tested. Outbound email, preferences, stage history, ticket/hosting/renewal events and monitoring below remain pending. [Implemented scope](WORKSPACE_ACTIVITY.md).
 
 Add a client-portal bell and notification center for project updates, comments, approval/content requests, published ZIPs, support replies, invoice/payment events and domain/service renewals. Notifications link to the exact authorized project, deliverable, invoice or ticket. Maintain read/unread state, preferences and a delivery outbox with retries/deduplication. Support in-portal and configured email delivery; distinguish sent/failed from delivery confirmation. The client's notification stream never includes internal admin mailbox subjects/counts or staff notes.
 
