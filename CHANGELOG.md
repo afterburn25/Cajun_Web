@@ -12,10 +12,11 @@
 
 ## 1.12.0 — candidate, administrator email-template library
 ## 1.13.0 — candidate, email account preparation
+## 1.13.0 — verified email account preparation
 
-- Preserve Devin #59 canonical profile/assignment/message models and isolated CI. Re-reviewed 64 no-extension component checks; future-issued grants, UIDVALIDITY, duplicate identities and tuple encoding are corrected. Application acceptance remains pending.
+- Preserve Devin #59 canonical profile/assignment/message models and isolated CI. Re-reviewed 64 no-extension component checks; future-issued grants, UIDVALIDITY, duplicate identities and tuple encoding are corrected. Combined application acceptance passes.
 - Add owner-managed incoming/outgoing profiles, encrypted private credentials, immutable metadata/assignment history, strict audit and stale-write protection. Add separate staff read/send permissions and current per-mailbox assignments, including for owners.
-- Add administrative settings and scoped assigned-account lists, additive owner setup, fresh schema preparation and actual 1.12.0 upgrade/key/data recovery fixtures. Combined application acceptance is pending. No transport, mailbox contents, connection success, sending, release or deployment is implied.
+- Add administrative settings and scoped assigned-account lists, additive owner setup, fresh schema preparation and actual 1.12.0 upgrade/key/data recovery fixtures. Published/download-verified from `b83cb9fb6856bca4f333fe953bee2e68f5074d51` after exact-main run 38446948573; all 16 assets/tag pass. No transport, mailbox contents, connection success, sending or deployment is implied.
 
 ## 1.12.0 — verified administrator email-template library
 
