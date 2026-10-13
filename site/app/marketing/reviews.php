@@ -111,9 +111,10 @@ function reviews_deliver(int $leadId,int $revision,mixed $when,mixed $channel,mi
 }
 /** Existing explicit inquiry deletion also removes dependent review data by verified FKs. */
 function reviews_delete_lead(int $leadId): void {
+    require_once CWP_CODE_ROOT.'/app/marketing/appointments.php';
     staff_locked(fn()=>staff_transaction(function() use ($leadId): void {
-        $actor=reviews_actor(false);$lead=one('SELECT id FROM '.table('leads').' WHERE id=? FOR UPDATE',[$leadId]);
+        $actor=reviews_actor(false);if(appointments_ready())appointments_settings(true);$lead=one('SELECT id FROM '.table('leads').' WHERE id=? FOR UPDATE',[$leadId]);
         if (!$lead) throw new InvalidArgumentException('Inquiry unavailable.');
-        query('DELETE FROM '.table('leads').' WHERE id=?',[$leadId]);reviews_audit((int)$actor['id'],'inquiry_delete','Inquiry '.$leadId.' and its dependent review records deleted');
+        query('DELETE FROM '.table('leads').' WHERE id=?',[$leadId]);reviews_audit((int)$actor['id'],'inquiry_delete','Inquiry '.$leadId.' and its dependent review/appointment records deleted');
     }));
 }
