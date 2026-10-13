@@ -1,5 +1,9 @@
 # Project status
 
+## 2026-10-13 — Devin A-06 webmail foundation (unreviewed, unintegrated)
+
+Devin implemented the contract-layer portion of A-06 as an isolated canonical component on `devin/webmail-foundation`: `foundation/webmail/` (`MailboxProfile`, `MailboxGrant`, `ConnectionResult`, `MailMessage`, `UnifiedInbox`), `tests/webmail/run.php` (46 checks), `webmail.yml` workflow, and [WEBMAIL_FOUNDATION](docs/WEBMAIL_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer; transport, credential storage, sync, compose UI and sending remain Codex integration work. No `site/` changes, deployment or release.
+
 ## Latest verified publication — 1.11.2
 
 [v1.11.2](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.2) is published and freshly downloaded/verified at source/tag `4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36` through [PR #55](https://github.com/afterburn25/Cajun_Web/pull/55), preserving Devin PR #35 ancestry through `efc967a`. The live public estimator now uses canonical exact arithmetic while preserving existing form, validation, prices, results and saved-lead behavior. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38433670555): 3,084 estimator comparisons/boundaries, 618 native, 802 HTTP/Chromium, 73 filesystem/recovery, 279 Apache and 17 builder checks. All 16 published assets, archive members/directories/checksums and immutable tag verified; Windows/Linux package bytes agree. [Test report](docs/TEST_REPORT_1.11.2.md); [handoff](docs/DEVIN_HANDOFF_1.11.2.md).

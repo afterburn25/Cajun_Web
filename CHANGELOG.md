@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — A-06 webmail foundation (Devin, isolated component)
+
+- Added canonical `foundation/webmail/` classes (`MailboxProfile` with ssl/starttls-only transports and opaque credential references — never stored secrets; `MailboxGrant` staff↔mailbox authorization with issuer/expiry/revocation; `ConnectionResult` honest success/failed/untested probe records; `MailMessage` listing-level flag model with no body; `UnifiedInbox` combined view that structurally rejects mailboxes lacking an active grant) plus `docs/WEBMAIL_FOUNDATION.md`.
+- Added `tests/webmail/run.php` (46 synthetic checks; fixture records only, `php -n` clean) and the `webmail.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes, IMAP/SMTP transport, credentials or UI. Not yet integrated or released.
+
 ## 1.11.2 — verified canonical live estimator integration
 
 - Preserve Devin's reviewed adapter contract and route existing calculator arithmetic through the canonical estimator, folding quantities with exact integer guards. Existing field validation, missing-price early returns, invalid-range errors, consultation exclusions/cap and displayed results remain compatible.

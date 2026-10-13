@@ -478,3 +478,17 @@ Integration refresh: preserved latest Devin #35 head efc967a (publication-record
 ## 2026-10-13 — 1.11.2 published and independently verified; next mail-template increment
 
 PR #55 merged at 4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36; exact-main acceptance 38433670555 passes 4873 named checks (3084 estimator / 618 native / 802 HTTP-browser / 73 filesystem / 279 Apache / 17 builder). Preserved #35 through efc967a. All three clean-source artifacts match Windows/Linux; all 16 draft and public assets, hashes, members, directories and immutable tag verified. Prior 1.11.1 fingerprints unchanged. Homepage desktop/mobile pixels identical; inspected real screenshots. No live deployment/external activation. Reviewed #56: 36 checks pass, but reproduced second-order substitutions and malformed placeholders falsely resolving; requested precise corrections. #31 still needs no-mbstring portability and #36 accurate APIs/semantics; #32 corrected 71 checks pass locally. Next actual work is A-07 template persistence/admin preview after component correction, with existing staff isolation and no real mail sending. Publication records are documentation only.
+
+### 2026-10-13 — Devin A-06 webmail foundation
+
+**Request:** "Continue Without Stopping" — next feasible roadmap item (A-06 multi-account webmail contract layer, no external gate). Codex is mid-integration on `codex/admin-email-templates`; flagged that it carries the pre-correction #56 head (`ef5d4f9`, corrected head `f3522f6`).
+
+**Starting commit:** `main` `a1581d4` (published 1.11.2). New branch `devin/webmail-foundation`.
+
+**Changed:** added `foundation/webmail/` (MailboxProfile, MailboxGrant, ConnectionResult, MailMessage, UnifiedInbox), `tests/webmail/run.php`, `docs/WEBMAIL_FOUNDATION.md`, `.github/workflows/webmail.yml`, and additive continuity entries. No `site/` or shared-path changes.
+
+**Tests:** 46 synthetic checks pass on PHP 8.4.25 under both `php` and `php -n`; all files lint clean. Covers: host/port/encryption validation (plaintext refused), opaque credential refs, grant lifecycle/expiry/revocation, honest probe outcomes, flag semantics, combined-inbox structural privacy.
+
+**Failures:** none. **Blockers:** none for the contract layer; transport, credential storage, sync and UI remain Codex integration work.
+
+**Next:** PR `devin/webmail-foundation`; queue now 18 open Devin PRs awaiting Codex sequencing.
