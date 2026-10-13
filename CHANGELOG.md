@@ -5,6 +5,7 @@
 - Added canonical `foundation/vps/` classes (validated specs, admin-priced offerings with null=not-orderable, entitlement/usage quota display, and a guarded server lifecycle with two-actor teardown and in-flight failure rollback) plus `docs/VPS_FOUNDATION.md`.
 - Added `tests/vps/run.php` (58 synthetic checks; fixture specs/prices only) and the `vps.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, catalog UI, schema, persistence or provider calls; HC-10 gate remains `Development pending — API verification`. Not yet integrated or released.
+
 ## 1.11.1 — candidate, motion preferences and organized updates
 
 - Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.

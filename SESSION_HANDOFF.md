@@ -5,6 +5,7 @@
 `devin/vps-foundation` (branched from `main` `5d810b1`) carries the isolated HC-10 VPS contract: `foundation/vps/` (`VpsSpec`, `VpsOffering` with null=not-orderable pricing, `QuotaUsage` display pairs, `VpsServer` guarded lifecycle — two-actor decommission where approver ≠ requester, in-flight failure rollback to stable state, terminal terminated/cancelled, actor-attributed history), `tests/vps/run.php` (58 synthetic checks), `docs/VPS_FOUNDATION.md`, `.github/workflows/vps.yml`. Local PHP 8.4.25: all checks pass, all files lint clean.
 
 **Gate:** Development pending — API verification; no provider calls or fabricated data. **Not integrated:** additive-only outside `site/`.
+
 ## Active roadmap increment — 1.11.1 candidate
 
 Codex owns `codex/motion-update-1.11.1` from main `02fc784`, preserving Devin PR #34 history at `e2b2a23` in merge `69ed304`. Scope: W-02 homepage pause/root scrolling and restrained brand sheen; honest browser motion evidence; safe staged updates from published organized 1.11.0 while retaining all older supported paths. Recovery journals are per target version; the permanent 1.11.0 lock is shared across retained updater versions. Existing private/configuration/scaffold bytes and prior recovery records stay intact; fresh organized sites gain no legacy root routes.
