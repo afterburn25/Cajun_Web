@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Real HTTP tests against a PHP server and native MySQL fixtures. Not shipping code."""
-import os,json,shutil,subprocess,time,hashlib
+import os,json,shutil,subprocess,time,hashlib,zipfile
 from pathlib import Path
 from urllib.parse import urlparse,parse_qs,urljoin
 import requests
@@ -43,7 +43,9 @@ WEB.mkdir(parents=True,exist_ok=True)
 for name in ['existing','fresh']:
     dest=WEB/name
     if dest.exists():shutil.rmtree(dest)
-    shutil.copytree(ROOT/'site',dest)
+    dest.mkdir(parents=True)
+    packages=list((ROOT/'dist').glob('CajunWebPro-*-COMPLETE-UPLOAD.zip'));assert len(packages)==1,'Build exactly one package'
+    with zipfile.ZipFile(packages[0]) as package:package.extractall(dest)
 shutil.copyfile(ROOT/'test-runtime/config-fixture.php',WEB/'existing/config.php')
 php=shutil.which('php8.3') or shutil.which('php');log=open(QA/'http-server.log','w');proc=subprocess.Popen([php,'-S','127.0.0.1:8091','-t',str(WEB)],stdout=log,stderr=log)
 error=None
@@ -52,7 +54,7 @@ try:
         try:
             if requests.get(BASE+'/existing/',timeout=1).status_code:break
         except requests.RequestException:time.sleep(.2)
-    routes=['','index.php?page=services','index.php?page=portfolio','index.php?page=about','index.php?page=process','index.php?page=contact','index.php?page=why-custom','index.php?page=compare-wix','index.php?page=compare-squarespace','index.php?page=switch','index.php?page=packages','index.php?page=faq','index.php?page=industries','index.php?page=estimate','index.php?page=website-review','index.php?page=consultation']
+    routes=['','index.php?page=services','index.php?page=work','index.php?page=about','index.php?page=process','index.php?page=contact','index.php?page=why-custom','index.php?page=compare-wix','index.php?page=compare-squarespace','index.php?page=switch','index.php?page=packages','index.php?page=faq','index.php?page=industries','index.php?page=estimate','index.php?page=website-review','index.php?page=consultation']
     for path in routes:
         r=requests.get(BASE+'/existing/'+path,timeout=15);check('Public route '+(path or 'home'),r.status_code==200 and 'CajunWebPro' in r.text and 'We could not complete this request' not in r.text)
     for path in ['assets/favicon.png','favicon.ico','assets/growth.css','assets/growth.js','assets/logo.png']:
@@ -65,7 +67,7 @@ try:
     again=s.post(BASE+'/existing/index.php?page=estimate',data=data,headers={'Accept':'application/json'});check('HTTP duplicate has same saved reference',again.status_code==200 and again.json()['result']['reference']==ref)
     data['csrf']='wrong';r=s.post(BASE+'/existing/index.php?page=estimate',data=data,headers={'Accept':'application/json'});check('HTTP bad CSRF is rejected',r.status_code==422 and not r.json()['ok'])
     admin=login('owner@example.invalid','Synthetic owner passphrase 2026')
-    for view in ['studio-clients','studio-job&id=1','studio-pipeline','studio-content','studio-prices','studio-history','studio-portfolio','studio-upgrade']:
+    for view in ['studio-clients','studio-job&id=1','studio-pipeline','studio-content','studio-prices','studio-history','studio-portfolio','studio-upgrade','lead&id=1']:
         r=admin.get(BASE+'/existing/admin.php?view='+view);check('Admin route '+view,r.status_code==200 and 'We could not complete this request' not in r.text and 'This request could not complete' not in r.text)
     r=submit(admin,BASE+'/existing/admin.php?view=studio-clients','studio_client',{'name':'HTTP client','email':'newclient@example.invalid'});check('Admin client create persists',r.status_code==200 and 'newclient@example.invalid' in r.text)
     r=submit(admin,BASE+'/existing/admin.php?view=studio-job&id=1','studio_message',{'body':'A message recorded through HTTP.'});check('Staff message persists',r.status_code==200 and 'A message recorded through HTTP.' in r.text)
@@ -85,6 +87,16 @@ try:
     r=bob.get(BASE+'/existing/portal.php?job=2');check('Other client does not see invoice','HTTP manual invoice' not in r.text)
     with open(ROOT/'site/assets/favicon.png','rb') as f:r=submit(admin,BASE+'/existing/admin.php?view=studio-portfolio','studio_media',files={'image':('public-capture.png',f,'image/png')})
     check('Real GD image upload returns successfully',r.status_code==200 and 'Saved.' in r.text and 'could not' not in r.text.lower())
+    # Negative real HTTP cases: authorization must prevent writes and disclosures.
+    r=bob.get(BASE+'/existing/portal.php?job=2');bad={'csrf':token(r),'action':'message','body':'Cross-client write must fail.'}
+    r=bob.post(BASE+'/existing/portal.php?job=1',data=bad);check('Cross-client message POST denied',r.status_code==404)
+    r=alice.get(BASE+'/existing/portal.php?job=1');check('Cross-client message not saved','Cross-client write must fail.' not in r.text)
+    r=alice.post(BASE+'/existing/portal.php?job=1',data={'csrf':'invalid','action':'message','body':'CSRF write must fail.'});check('Portal CSRF rejected','session expired' in r.text.lower())
+    r=alice.get(BASE+'/existing/portal.php?job=1');check('CSRF message not saved','CSRF write must fail.' not in r.text)
+    f=form_for(r,'upload');bad=form_data(f)
+    r=alice.post(BASE+'/existing/portal.php?job=1',data=bad,files={'document':('blocked.php',b'<?php echo 123; ?>','image/png')});check('Disguised executable upload rejected','Only PDF, PNG and JPEG' in r.text)
+    r=requests.get(BASE+'/existing/admin.php?view=studio-clients',allow_redirects=False);check('Anonymous admin workspace redirected to login',r.status_code==303 and 'login' in r.headers.get('Location',''))
+    r=bob.get(BASE+'/existing/admin.php?view=studio-clients',allow_redirects=False);check('Client session does not grant admin access',r.status_code==303 and 'login' in r.headers.get('Location',''))
     # Fresh installation is a real combined POST using native PDO MySQL and GD.
     fresh=requests.Session();r=fresh.get(BASE+'/fresh/install.php');check('Fresh setup shows one form',len(soup(r).select('#install-form'))==1 and 'Unlock your installation' not in r.text and 'data-back=' not in r.text)
     data=form_data(soup(r).select_one('#install-form'));data.update({'db_host':os.getenv('CWP_TEST_HOST','127.0.0.1'),'db_port':os.getenv('CWP_TEST_PORT','3306'),'db_name':'cwp_test','db_user':os.getenv('CWP_TEST_USER','cwp_test'),'db_password':os.getenv('CWP_TEST_PASSWORD','local-ci-only'),'db_prefix':'fresh_','owner_name':'Fresh owner','owner_email':'fresh@example.invalid','owner_password':'Fresh synthetic passphrase 2026','owner_confirm':'Fresh synthetic passphrase 2026','site_url':BASE+'/fresh','business_email':'','private_parent':'','confirm_install':'1','preview':'1'})

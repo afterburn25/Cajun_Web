@@ -15,7 +15,7 @@ $_SERVER += ['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NA
 start_session();
 $results=[];
 function ok(string $name, bool $condition): void { global $results; $results[]=['name'=>$name,'passed'=>$condition]; if(!$condition) throw new RuntimeException('FAILED: '.$name); }
-function rejected(string $name, callable $f): void { try { $f(); } catch (InvalidArgumentException|RuntimeException $e) { ok($name,true);return; } ok($name,false); }
+function rejected(string $name, callable $f): void { try { $f(); } catch (InvalidArgumentException|RuntimeException $e) { if($e instanceof PDOException)throw $e;ok($name,true);return; } ok($name,false); }
 function rowcount(string $table): int { return (int)query('SELECT COUNT(*) FROM '.table($table))->fetchColumn(); }
 function admin_session(): void { $u=one('SELECT * FROM '.table('users').' WHERE id=1'); $_SESSION['uid']=1;$_SESSION['auth_version']=$u['auth_version'];$_SESSION['last_activity']=$_SESSION['login_at']=time(); }
 function client_session(int $id): void { $c=one('SELECT * FROM '.table('studio_clients').' WHERE id=?',[$id]);$_SESSION['client_id']=$id;$_SESSION['client_auth']=$c['auth_version'];$_SESSION['client_last']=$_SESSION['client_login']=time(); }
@@ -44,6 +44,12 @@ try {
     ok('Upgrade retains original settings',setting('sentinel_original')==='Preserve original settings');
     ok('Upgrade saves schema marker',studio_ready());
     studio_migrate();ok('Repeated migration is idempotent',rowcount('leads')===1&&rowcount('users')===1);
+    // Digit-bearing fields must be recognized; incompatible schemas still fail.
+    db()->exec('ALTER TABLE '.table('studio_files').' MODIFY sha256 VARCHAR(64) NOT NULL');
+    rejected('Migration rejects mismatched digest column type',fn()=>studio_migrate());
+    ok('Failed migration leaves foreign column untouched',one('SHOW COLUMNS FROM '.table('studio_files')." LIKE 'sha256'")['Type']==='varchar(64)');
+    db()->exec('ALTER TABLE '.table('studio_files').' MODIFY sha256 CHAR(64) NOT NULL');
+    studio_migrate();ok('Matching digit-bearing digest column is accepted',studio_ready());
     $r=['enabled'=>true,'business'=>[100000,150000],'redesign'=>[120000,170000],'store'=>[200000,250000],'page'=>[5000,10000],'product'=>[100,200],'copy'=>[10000,15000]];
     save_setting('growth_prices',json_encode($r,JSON_THROW_ON_ERROR));
     $spec=['project_type'=>'business','pages'=>'7','options'=>['copy'],'low'=>'1','high'=>'2'];

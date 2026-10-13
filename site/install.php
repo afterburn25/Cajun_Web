@@ -279,12 +279,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['cwp_check'])) {
 /** Only immutable public application files: never config, locks or customer data. */
 function setup_expected_files(): array { return [
         '.htaccess' => '2cbbbf4de31257d939c6ddaabb570e1f309a2c418be31fdcc7b269f19b3078fb',
-        'admin.php' => 'd9ff2b94749be581913e291db3fba760ea55f196165e8ff6a96de277cd5292ab',
+        'admin.php' => 'd1d0e64dd0ee5091768f53d4b16d535d84ae4f629ccca15b2003fdcc8d56bbd6',
         'api.php' => '500e1a3b1d33ed693bf91f6fa9fa723451dea38c49f83b061fa9de8eabd688b2',
         'app/.htaccess' => 'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
         'app/admin-view.php' => 'e1f86ed283eb86e5b39c0186c7b9de4de71a3b18e069d69407b93929f0f0dd5c',
         'app/core.php' => '209b05158ac5c09e523114c1725986a8a09e1d34c6329814f152bf040eda8514',
-        'app/growth-pages.php' => 'dec268de56c11ba4faa393596365083bf7f6ea8a86821b1735b49e19a7951c3d',
+        'app/growth-pages.php' => '10faeff6cccb93c7e7fd6a1d7fce01c54673fab1dba14fd6e94f1aee17c509a2',
         'app/growth.php' => '9d83c5e45ef6a9eb53e0448eacf830a188c02093da252fd5f07f977e6fbfef35',
         'app/home.php' => '884af04ad7d0b584af6db50a87df30af9327c6cabbae5fd752da28e3da53d243',
         'app/index.php' => '696138b31bbb2a20c4bb53eb98b68dbe25557947dd6a7513c81e1c8b9446ce0d',
@@ -292,7 +292,7 @@ function setup_expected_files(): array { return [
         'app/schema.php' => '02eb78c3aa85b69467905dce3efeff81eddd2c0fe3ab517c5a520f868e793a66',
         'app/studio-admin.php' => 'cca648c03d851c63bfd47a36b0a06e8c583ab51b91daba8c311396507dc3a682',
         'app/view.php' => 'ebf2a24ebf86ff7fba26abdb6c475ffc48be3b90a25dcc6c7a59745a9173f1a4',
-        'app/workspace.php' => 'b24ce5f685768e056e6d9b59643c3b0c1abee09a1fa711fa515f0993b839eef7',
+        'app/workspace.php' => '6e8a417e98b176d9f48d15287e89835813a19ef324593d9e3d420a1c607d7bca',
         'assets/admin.css' => 'd502889e32bedc3e7ca7cae57f39606330e5632069c79066d821d3016b3d49a0',
         'assets/admin.js' => '6f01319f40402e806cb29b32629b38edc5a3960a568fef150bed89fb8d95ae83',
         'assets/bayou-detail.webp' => '8c1752557b818bc8a35a32ffc4017cef94ee1d6cd247eaa484e2949ee6da2723',
