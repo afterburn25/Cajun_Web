@@ -3,19 +3,23 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 $page=max(1,min((int)($_GET['p']??1),100000));
 ?>
-<p class="notice">Email account setup and explicit connection checks. Inbox access and sending are not available in this release.</p>
+<p class="notice">Manage email settings, check saved connections and load recent inbox headers. Message bodies, attachments and sending are not available yet.</p>
 <?php if ($view==='mailboxes'):
     $rows=mail_accounts_assigned($page);
 ?>
-<p>Your owner assigns each email account separately. These permissions prepare webmail access; inbox and sending controls are still unavailable.</p>
+<p>Your owner assigns each email account separately. Read access lets you request recent inbox headers. Sending is not available yet.</p>
 <div class="workspace-grid"><?php foreach (array_slice($rows,0,20) as $row): ?>
-<article class="workspace-card"><h2><?=esc($row['label'])?></h2><p><?=esc($row['address'])?></p><p>Assigned: <?=esc(implode(' and ',array_keys(array_filter(['Read'=>$row['can_read'],'Send'=>$row['can_send']]))))?></p><p>Webmail is not yet available. Owners can check saved connections from account settings.</p><p>Expires: <?=$row['expires_at']===null?'No expiry':esc(gmdate('Y-m-d H:i:s',(int)$row['expires_at']).' UTC')?></p></article>
+<article class="workspace-card"><h2><?=esc($row['label'])?></h2><p><?=esc($row['address'])?></p><p>Assigned: <?=esc(implode(' and ',array_keys(array_filter(['Read'=>$row['can_read'],'Send'=>$row['can_send']]))))?></p><?php if($row['can_read']): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-inbox',['account_id'=>$row['id']]))?>">Open inbox</a></p><?php endif; ?><p>Expires: <?=$row['expires_at']===null?'No expiry':esc(gmdate('Y-m-d H:i:s',(int)$row['expires_at']).' UTC')?></p></article>
 <?php endforeach; ?></div>
 <?php if (!$rows): ?><p>No currently available email accounts are assigned to you.</p><?php endif; ?>
 <?php elseif ($view==='mail-accounts'):
     $rows=mail_accounts_list($page);
 ?>
 <a class="btn gold" href="<?=esc(admin_url('mail-account'))?>">Add email account</a>
+<?php if(!mail_inbox_ready()): ?>
+<section class="workspace-card" data-inbox-setup><h2>Prepare inbox reading</h2><p>Prepare request history before assigned staff load recent inbox headers. This step connects to no email server.</p>
+<form method="post"><?php admin_action('mail_inbox_setup'); ?><?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Prepare inbox reading</button></form></section>
+<?php else: ?><p>Inbox reading is ready. Assign yourself Read access, then open an account from My email accounts.</p><?php endif; ?>
 <p class="hint">Only owners manage account settings and assignments. Owning a profile does not grant mailbox access.</p>
 <div class="workspace-grid"><?php foreach (array_slice($rows,0,20) as $row): ?>
 <article class="workspace-card"><h2><a href="<?=esc(admin_url('mail-account',['account_id'=>$row['id']]))?>"><?=esc($row['label'])?></a></h2><p><?=esc($row['address'])?></p><p><?=badge((int)$row['enabled']===1?'saved':'disabled')?> · Open settings for connection checks · Version <?=(int)$row['revision']?></p></article>
