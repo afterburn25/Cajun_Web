@@ -1,0 +1,144 @@
+name: 20i read-only connection check
+
+# Initial owner-authorized check runs only for the exact diagnostic push below.
+# No PR, schedule, release, generic main push or arbitrary endpoint input.
+on:
+  push:
+    branches: [ops/twentyi-read-only-check-20261013]
+    paths: [.github/workflows/twentyi-read-only.yml]
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type READ_ONLY to authorize one GET /package; no writes'
+        required: true
+        type: string
+permissions: {}
+concurrency:
+  group: twentyi-explicit-read-only
+  cancel-in-progress: false
+jobs:
+  connection:
+    if: >-
+      github.repository == 'afterburn25/Cajun_Web' &&
+      github.actor == 'afterburn25' && github.triggering_actor == 'afterburn25' &&
+      ((github.event_name == 'push' && github.ref == 'refs/heads/ops/twentyi-read-only-check-20261013' &&
+        github.event.head_commit.message == 'ci: authorize one read-only 20i package check') ||
+       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.confirm == 'READ_ONLY'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: One fixed authenticated GET; sanitized output only
+        env:
+          TWENTYI_API_KEY: ${{ secrets.TWENTYI_API_KEY }}
+        shell: bash
+        run: |
+          python3 -I -B - <<'PY'
+          """One fixed, read-only 20i request. Never emit credential or response content."""
+          import base64
+          import json
+          import os
+          import signal
+          import ssl
+          import sys
+          import urllib.error
+          import urllib.request
+
+          URL = 'https://api.20i.com/package'
+          MAX_BYTES = 2 * 1024 * 1024
+
+          class CheckError(Exception):
+              pass
+
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+
+          def reject_constant(value):
+              raise CheckError('invalid_json')
+
+          def check(key):
+              if not key:
+                  raise CheckError('missing_secret')
+              if len(key) > 16384 or any(ord(c) < 33 or ord(c) > 126 for c in key):
+                  raise CheckError('invalid_secret_format')
+              # 20i requires base64(raw General API key), not an OAuth/Combined key.
+              token = base64.b64encode(key.encode('ascii')).decode('ascii')
+              request = urllib.request.Request(URL, method='GET', headers={
+                  'Authorization': 'Bearer ' + token,
+                  'Accept': 'application/json',
+                  'User-Agent': 'CajunWebPro-read-only-check/1.0',
+              })
+              # No ambient proxy, cookies, redirects, plugins or application bootstrap.
+              opener = urllib.request.build_opener(
+                  urllib.request.ProxyHandler({}), NoRedirect(),
+                  urllib.request.HTTPSHandler(context=ssl.create_default_context()))
+              try:
+                  with opener.open(request, timeout=10) as response:
+                      if response.status != 200:
+                          raise CheckError('unexpected_http_status')
+                      if response.headers.get_content_type() != 'application/json':
+                          raise CheckError('unexpected_content_type')
+                      raw = response.read(MAX_BYTES + 1)
+              except urllib.error.HTTPError as error:
+                  status = error.code
+                  error.close()
+                  # No error body/header/URL is printed, even on authentication failure.
+                  if status in (401, 403, 404, 429):
+                      raise CheckError('http_' + str(status)) from None
+                  if 300 <= status < 400:
+                      raise CheckError('redirect_refused') from None
+                  raise CheckError('provider_http_failure') from None
+              except (urllib.error.URLError, OSError):
+                  raise CheckError('network_or_tls_failure') from None
+              if len(raw) > MAX_BYTES:
+                  raise CheckError('response_limit')
+              try:
+                  parsed = json.loads(raw.decode('utf-8'), parse_constant=reject_constant)
+              except (ValueError, UnicodeError, RecursionError):
+                  raise CheckError('invalid_json') from None
+              if not isinstance(parsed, list) or any(not isinstance(item, dict) for item in parsed):
+                  raise CheckError('unexpected_response_shape')
+              return 'authenticated_package_read_succeeded'
+
+          MESSAGES = {
+              'authenticated_package_read_succeeded': 'PASS: 20i accepted GET /package (HTTP 200 and a valid package list).',
+              'missing_secret': 'FAIL: TWENTYI_API_KEY is not available to this job. No API request was made.',
+              'invalid_secret_format': 'FAIL: Check the saved raw General API key for whitespace or unsupported characters. No API request was made.',
+              'http_401': 'FAIL: 20i returned HTTP 401. Authentication was not accepted.',
+              'http_403': 'FAIL: 20i returned HTTP 403. Access was denied; key scope/account entitlement still needs verification.',
+              'http_404': 'FAIL: 20i returned HTTP 404. The documented endpoint was not available for this request.',
+              'http_429': 'FAIL: 20i returned HTTP 429. No retry was attempted.',
+              'redirect_refused': 'FAIL: A redirect was refused. The credential was not forwarded.',
+              'provider_http_failure': 'FAIL: 20i returned another HTTP error. No response content was logged.',
+              'unexpected_http_status': 'FAIL: The provider returned an unexpected HTTP status.',
+              'network_or_tls_failure': 'FAIL: The network or verified TLS connection failed.',
+              'response_limit': 'FAIL: The response exceeded the bounded diagnostic size.',
+              'unexpected_content_type': 'FAIL: The provider did not return application/json.',
+              'invalid_json': 'FAIL: The provider response was not valid bounded JSON.',
+              'unexpected_response_shape': 'FAIL: JSON did not match the documented package-list shape.',
+              'deadline': 'FAIL: The 30-second total deadline expired. No retry was attempted.',
+              'internal_failure': 'FAIL: The diagnostic could not complete. No sensitive details were logged.',
+          }
+
+          def deadline(signum, frame):
+              raise CheckError('deadline')
+
+          def main():
+              signal.signal(signal.SIGALRM, deadline)
+              signal.alarm(30)
+              try:
+                  outcome = check(os.environ.pop('TWENTYI_API_KEY', ''))
+              except CheckError as error:
+                  outcome = error.args[0] if error.args and error.args[0] in MESSAGES else 'internal_failure'
+              except Exception:
+                  outcome = 'internal_failure'
+              finally:
+                  signal.alarm(0)
+              print(MESSAGES[outcome])
+              print('Read-only diagnostic: no provisioning, DNS/domain changes, deletions, SSO or payments.')
+              # Deliberately no output files, full responses, IDs, names, counts or headers.
+              return 0 if outcome == 'authenticated_package_read_succeeded' else 1
+
+          if __name__ == '__main__':
+              sys.exit(main())
+          PY
