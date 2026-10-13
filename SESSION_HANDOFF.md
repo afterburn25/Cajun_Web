@@ -3,6 +3,11 @@
 ## 2026-10-13 — Devin estimator adapter contract (L-01)
 
 `devin/estimator-adapter` (off `b975915`) carries `docs/ESTIMATOR_ADAPTER.md`: exact `growth_estimate` → `foundation/estimator` mapping. Key decisions: live low/high ranges fit the component natively; `page`/`product` quantities fold into adapter-built `PriceRule`s (pre-multiply with overflow guard → unpriced on overflow); live's 99999999-cent cap applies as an adapter post-check on top of the component's integer-overflow guard; `custom`/`integration`/disabled consult via adapter short-circuit. Acceptance = byte-for-byte fixture equivalence matrix vs `growth_estimate`. Implementation is Codex-reviewed; nothing ships from this doc.
+## Active roadmap increment — 1.11.1 candidate
+
+Codex owns `codex/motion-update-1.11.1` from main `02fc784`, preserving Devin PR #34 history at `e2b2a23` in merge `69ed304`. Scope: W-02 homepage pause/root scrolling and restrained brand sheen; honest browser motion evidence; safe staged updates from published organized 1.11.0 while retaining all older supported paths. Recovery journals are per target version; the permanent 1.11.0 lock is shared across retained updater versions. Existing private/configuration/scaffold bytes and prior recovery records stay intact; fresh organized sites gain no legacy root routes.
+
+Implementation and expanded acceptance are in progress; 1.11.0 remains the latest verified publication. No 1.11.1 release or target-host deployment is claimed. Codex owns shared shipping code/build/version/acceptance; Devin's isolated foundations/contracts remain on their own branches. Review findings for #31/#32 are tracked in [issue #2](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6149391893); resolve those before application adapters. Next: run combined native/browser/Apache/filesystem/package acceptance, resolve failures, merge and test exact main, then publish/download-verify three 1.11.1 packages. Continue the next feasible roadmap increment afterward; external activation gates remain unchanged.
 
 ## Current directory and package contract — released 1.11.0
 
@@ -29,6 +34,10 @@ The owner approved [dependency gates policy](docs/DEPENDENCY_GATES.md) for all C
 ## Historical portfolio acceptance follow-up — superseded by 1.11.0 publication
 
 Portfolio integration PR #30 is merged at `332af19333a62d3dfcc90eb9cf34871a7fac50ec`; original Devin PRs #7/#27 are merged with preserved history. Both candidate runs passed 618 native / 675 HTTP/Chromium checks and reviewed screenshots. Exact-main run 38408053057 passed native and actual 1.10.0 retention checks, then exposed a synthetic modified-click test navigation race. `codex/portfolio-acceptance` fixes the test observer and adds a real Ctrl-click/new-tab assertion; it changes no shipping bytes. Publication remains pending successful exact-main acceptance. Latest public release remains 1.10.0. New Devin L-02 PR #31 is separate unreviewed work, outside this release.
+
+## 2026-10-13 — Devin W-02 motion slice + queued components
+
+On `devin/homepage-motion` (from `332af19`): the motion pause toggle now works — `motion-off` moved to `documentElement` with real CSS coverage (animations/transitions off, smooth-scroll off, pending `.reveal` sections force-shown so a mid-session pause can't leave content invisible), plus a restrained brand-logo sheen honoring both pause paths. Seven Chromium checks added in `tests/browser_acceptance.py` (positive sheen probe, `aria-pressed`, force-reveal, scroll-behavior, transition and sheen suppression); installer hashes refreshed. Findings/fixes: `.scroll-cue`/`float-cue` and the legacy `.hero-scene` block are dead code (no markup or JS emits them) — removed; the `--scene-*` parallax variables ARE live via `premium.css` `.hero-visual`, and the pause reset covers the `[data-parallax]` hook plus var zeroing. Queued Devin PRs awaiting Codex order: [#31](https://github.com/afterburn25/Cajun_Web/pull/31) L-02 review-request contract and [#32](https://github.com/afterburn25/Cajun_Web/pull/32) L-03 scheduling contract, both isolated foundations only (no `site/` changes). This W-02 slice touches `site.js`/`site.css` — merge after the v1.11.0 release lands to avoid churn.
 
 ## Historical portfolio integration candidate — included in released 1.11.0
 

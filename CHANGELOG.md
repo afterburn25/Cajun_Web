@@ -3,6 +3,15 @@
 ## Unreleased — estimator adapter contract (L-01 dependency)
 
 - Add `docs/ESTIMATOR_ADAPTER.md`: the explicit contract for adopting the reviewed estimator foundation in the live `growth_estimate` path. Quantities fold into adapter-built `PriceRule` ranges; consultation conditions (disabled pricing, `custom` type, `integration` option, unpriced keys, the 99999999-cent cap) are preserved verbatim; a fixture-equivalence test plan is required before implementation. No shipping code changes.
+## 1.11.1 — candidate, motion preferences and organized updates
+
+- Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.
+- Measure homepage lab layout shifts with a real buffered PerformanceObserver and session-window calculation; test saved pause/resume, device reduced motion and no-JavaScript readability. This is synthetic browser evidence, not a production performance guarantee.
+- Recognize the verified 1.11.0 package for owner updates; retain known upgrade-only routes without adding them to fresh organized sites. Preserve private scaffolds, previous recovery records and all configuration/business data. Separate target-version journals share the original permanent update lock.
+- Extend real Apache update/recovery acceptance with the actual retained 1.11.0 installer, database records, session continuity and opcode caching enabled without timestamp validation. Retain old-layout historical acceptance.
+- Derive installer page/JavaScript/diagnostic build labels from its canonical build constant; restore organized installer logo/emblem paths. Browser setup now explicitly checks version and loaded brand images; the builder rejects stale literal image paths.
+- Make package checksum ordering identical on Windows and Linux; use committed history and guide bytes in exact-source artifacts.
+- Acceptance/publication pending. Prior releases remain immutable; no live deployment or new external payment/provider operations.
 
 ## 1.11.0 — organized application and verified three-package release
 

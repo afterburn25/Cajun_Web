@@ -6,6 +6,7 @@ if (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); ex
 const form=document.getElementById('install-form');
 const errorBox=document.getElementById('setup-error');
 const secure=<?=json_encode($secure)?>;
+const installerBuild=<?=json_encode(CWP_INSTALLER_BUILD)?>;
 const csrfToken=document.querySelector('meta[name="csrf-token"]').content;
 let busy=false;
 function showError(message){errorBox.textContent=message;errorBox.hidden=false;errorBox.scrollIntoView({block:'nearest'});}
@@ -22,12 +23,12 @@ async function send(action,data){
  const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),action==='install'?180000:30000);
  let res,result;
  try{
-  const endpoint=window.location.pathname+'?build=1.11.0';
+  const endpoint=window.location.pathname+'?build='+encodeURIComponent(installerBuild);
   res=await fetch(endpoint,{method:'POST',body:data,cache:'no-store',credentials:'same-origin',signal:controller.signal,headers:{Accept:'application/json'}});
   try{result=await res.json();}catch(e){if(e.name==='AbortError')throw e;throw new Error('The server returned an unexpected response. Check admin/index.php before retrying an interrupted installation.');}
  }catch(e){if(e.name==='AbortError')throw new Error(action==='install'?'The request timed out; installation may still be running on the server. Open admin/index.php to check before trying again.':'The server check timed out. All your fields remain available. Recheck after reviewing the hosting error log.');throw e;}
  finally{clearTimeout(timer);}
- if(result.installer_build!=='1.11.0')throw new Error('This response came from another installer build. Replace install.php in this website folder and reload. The page must say ONE-PAGE INSTALLER 1.11.0.');
+ if(result.installer_build!==installerBuild)throw new Error('This response came from another installer build. Replace install.php in this website folder and reload. The page must say ONE-PAGE INSTALLER '+installerBuild+'.');
  if(!res.ok&&!result.message)result.message='This request could not complete. Check the host error log.';
  return result;
 }
