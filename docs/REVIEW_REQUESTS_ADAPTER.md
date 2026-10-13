@@ -4,7 +4,7 @@ Written 2026-10-13 on `devin/review-adapter` from main `b975915`. This is the L-
 
 ## Live semantics that must be preserved
 
-`growth_submit`'s `website-review` branch (`site/app/growth.php`) today:
+`growth_submit`'s `website-review` branch (currently `site/app/growth.php`; moves to `site/app/marketing/growth.php` under Codex's directory refactor) today:
 
 - Requires `current_url` non-empty and passes it through `safe_url()` — an absolute `http`/`https` URL with no userinfo and no CR/LF. Bare hosts like `example.com` are currently **rejected**.
 - Requires name, valid email, ≥20-char message, `consent=1`; honeypot + session token + 5/hour + 12/day rate limits apply before the lead is saved.
