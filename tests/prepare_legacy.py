@@ -1,6 +1,6 @@
 """Verify and extract the retained historical fixture, never a deployment source."""
 from pathlib import Path, PurePosixPath
-import hashlib, zipfile, subprocess, shutil
+import hashlib, zipfile, subprocess, shutil, re, json, base64
 from urllib.request import urlopen
 root=Path(__file__).resolve().parents[1]
 archive=root/'tests/fixtures/CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip'
@@ -148,3 +148,25 @@ with zipfile.ZipFile(portfolio_baseline) as z:
         assert (item.external_attr>>16)&0o170000 != 0o120000
     z.extractall(root/'test-runtime/released-1.10.0')
 print('PASS: immutable released 1.10.0 package checksum, archive paths and extraction')
+
+organized_baseline=root/'test-runtime/CajunWebPro-1.11.0-COMPLETE-UPLOAD.zip'
+with urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.11.0/CajunWebPro-1.11.0-COMPLETE-UPLOAD.zip',timeout=60) as response:
+    organized_baseline.write_bytes(response.read())
+assert hashlib.sha256(organized_baseline.read_bytes()).hexdigest()=='5bf60867bc47d14ac112bebcb30d02899a2ff13167d39bd01ca9e8dfb5c79f2c'
+with zipfile.ZipFile(organized_baseline) as z:
+    assert z.testzip() is None
+    for item in z.infolist():
+        path=PurePosixPath(item.filename)
+        assert not path.is_absolute() and '..' not in path.parts and '\\' not in item.filename
+        assert (item.external_attr>>16)&0o170000 != 0o120000
+    z.extractall(root/'test-runtime/released-1.11.0')
+print('PASS: immutable released 1.11.0 package checksum, archive paths and extraction')
+organized_update=root/'test-runtime/CajunWebPro-1.11.0-UPDATE.zip'
+with urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.11.0/CajunWebPro-1.11.0-UPDATE.zip',timeout=60) as response:
+    organized_update.write_bytes(response.read())
+assert hashlib.sha256(organized_update.read_bytes()).hexdigest()=='927bb9f121076a0d627807a7809e099c551372a7d57acc71954980720462568d'
+with zipfile.ZipFile(organized_update) as z:
+    text=z.read('cwp-update-1.11.0/manifest.php').decode()
+    manifest=json.loads(base64.b64decode(re.search(r"base64_decode\('([^']+)'\)",text).group(1)))
+    (root/'test-runtime/organized-shims.json').write_text(json.dumps({n:base64.b64encode(b.encode()).decode() for n,b in manifest['shims'].items()}))
+print('PASS: original 1.11.0 UPDATE checksum and compatibility bytes')
