@@ -2,7 +2,7 @@
 
 ## 2026-10-13 — Devin HC-08 hosting lifecycle foundation (unreviewed, unintegrated)
 
-Devin implemented the contract-layer portion of HC-08 as an isolated canonical component on `devin/shared-hosting`: `foundation/hosting/` (`HostingPackage`, `OperationResult`, `StackCpGrant`, `PlanChange`, `HostingAccount`), `tests/hosting/run.php` (59 checks), `hosting.yml` workflow, and [HOSTING_FOUNDATION](docs/HOSTING_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer; provider calls, reconciliation, billing and UI remain Codex integration work. No `site/` changes, deployment or release.
+Devin implemented the contract-layer portion of HC-08 as an isolated canonical component on `devin/shared-hosting`: `foundation/hosting/` (`HostingPackage`, `OperationResult`, `StackCpGrant`, `PlanChange`, `HostingAccount`), `tests/hosting/run.php` (61 checks), `hosting.yml` workflow, and [HOSTING_FOUNDATION](docs/HOSTING_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer; provider calls, reconciliation, billing and UI remain Codex integration work. No `site/` changes, deployment or release.
 
 ## Latest verified publication — 1.11.2
 

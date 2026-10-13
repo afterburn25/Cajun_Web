@@ -39,7 +39,9 @@ Protections built into the state machine:
   `retentionConfirmed` flag. A single account cannot destroy hosting.
 - **Honest results** — timeouts and failures are stored verbatim in
   `operations()`; a timed-out provision leaves the account `failed`
-  pending reconciliation, never silently retried.
+  pending reconciliation, and `retry()` refuses without an explicit
+  reconciliation confirmation — a duplicate package can never be
+  created by re-running an unknown-outcome call.
 - **Suspension reasons** — a recorded non-empty reason is required.
 - **Domain linking** — `linkDomain` validates host syntax and requires
   `active`.
@@ -63,7 +65,7 @@ Protections built into the state machine:
 
 ## Tests
 
-`tests/hosting/run.php` — 59 synthetic checks covering package
+`tests/hosting/run.php` — 61 synthetic checks covering package
 validation, honest operation results, grant lifecycle, queued plan
 changes (including over-limit downgrade refusal), the full account
 lifecycle, grace/dispute protections, two-actor decommission, and

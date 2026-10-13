@@ -2,7 +2,7 @@
 
 ## Devin active branch — `devin/shared-hosting` (HC-08 lifecycle model)
 
-Branched from `main` `a1581d4` (published 1.11.2). Isolated HC-08 contract layer: `foundation/hosting/` (5 files), `tests/hosting/run.php` (59 synthetic checks, all pass on PHP 8.4.25 incl. `php -n`), `docs/HOSTING_FOUNDATION.md`, `.github/workflows/hosting.yml`.
+Branched from `main` `a1581d4` (published 1.11.2). Isolated HC-08 contract layer: `foundation/hosting/` (5 files), `tests/hosting/run.php` (61 synthetic checks, all pass on PHP 8.4.25 incl. `php -n`), `docs/HOSTING_FOUNDATION.md`, `.github/workflows/hosting.yml`.
 
 **Gate:** none for the contract layer; provider calls, reconciliation, billing and UI remain Codex integration work. **Not integrated:** additive-only outside `site/`.
 

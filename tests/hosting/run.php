@@ -140,8 +140,15 @@ $a2 = new HostingAccount('acct-10', pkg(), 'client-42', 0);
 $a2->beginProvisioning('s', 1);
 $a2->provisionResult(OperationResult::timeout('provision', 5), 's', 5);
 check('timeout yields honest failed', $a2->status() === 'failed');
-$a2->retry('staff-amy', 10);
-check('failed retries to pending', $a2->status() === 'pending');
+throws('timeout retry needs reconciliation', fn () => $a2->retry('staff-amy', 10));
+$a2->retry('staff-amy', 10, true);
+check('reconciled timeout retries to pending', $a2->status() === 'pending');
+
+$a5 = new HostingAccount('acct-11', pkg(), 'client-42', 0);
+$a5->beginProvisioning('s', 1);
+$a5->provisionResult(OperationResult::failed('provision', 'capacity', true, 5), 's', 5);
+$a5->retry('staff-amy', 10); // plain failure needs no reconciliation flag
+check('plain failure retries directly', $a5->status() === 'pending');
 $a2->cancelOrder('client-42', 15);
 check('pre-provision cancel terminal', $a2->status() === 'cancelled' && $a2->terminal());
 throws('terminal rejects transitions', fn () => $a2->beginProvisioning('s', 20));

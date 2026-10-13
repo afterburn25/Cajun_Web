@@ -3,7 +3,7 @@
 ## Unreleased — HC-08 hosting lifecycle foundation (Devin, isolated component)
 
 - Added canonical `foundation/hosting/` classes (`HostingPackage` concrete SKU→provider-type mapping with non-negative integer quotas — `unlimited`/`unmetered` naming refused; `OperationResult` honest applied/failed/timeout records where timeout is a distinct non-retryable unknown; `StackCpGrant` explicit panel-access grants; `PlanChange` queued upgrade/downgrade/renewal with over-limit downgrade refusal; `HostingAccount` guarded lifecycle with grace windows, billing-dispute suspension protection and two-actor retention-gated deprovisioning) plus `docs/HOSTING_FOUNDATION.md`.
-- Added `tests/hosting/run.php` (59 synthetic checks; fixtures only, `php -n` clean) and the `hosting.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- Added `tests/hosting/run.php` (61 synthetic checks; fixtures only, `php -n` clean) and the `hosting.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, provider calls, credentials, schema or UI. Not yet integrated or released.
 
 ## 1.11.2 — verified canonical live estimator integration

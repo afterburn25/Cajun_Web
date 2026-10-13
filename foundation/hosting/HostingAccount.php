@@ -130,10 +130,19 @@ final class HostingAccount
         }
     }
 
-    /** A failed provisioning attempt returns to pending for an explicit retry. */
-    public function retry(string $actor, int $at): void
+    /**
+     * A failed provisioning attempt returns to pending for an explicit
+     * retry. If the failure came from a provider *timeout*, the caller
+     * must confirm it reconciled the remote state first — retrying a
+     * timed-out create is how duplicate packages happen.
+     */
+    public function retry(string $actor, int $at, bool $timeoutReconciled = false): void
     {
         $this->requireStatus(self::FAILED);
+        $last = $this->operations[count($this->operations) - 1] ?? null;
+        if ($last !== null && $last->outcome === OperationResult::TIMEOUT && !$timeoutReconciled) {
+            throw new LogicException('The last attempt timed out — reconcile the provider state before retrying.');
+        }
         $this->move(self::PENDING, $actor, $at, 'queued for retry after failure');
     }
 
