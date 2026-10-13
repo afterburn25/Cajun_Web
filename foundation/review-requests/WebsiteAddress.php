@@ -35,7 +35,9 @@ final readonly class WebsiteAddress
         if ($address === '') {
             throw new InvalidArgumentException('A review request needs the existing website address.');
         }
-        if (mb_strlen($address) > 2048) {
+        // Byte-length limit via strlen() — the installer does not require
+        // mbstring, and a byte cap is consistent with HTTP input limits.
+        if (strlen($address) > 2048) {
             throw new InvalidArgumentException('The website address is too long.');
         }
         if (!preg_match('/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//', $address)) {

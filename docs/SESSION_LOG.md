@@ -388,7 +388,7 @@ Request: continue the roadmap without stopping. Codex is integrating portfolio P
 
 Added `foundation/review-requests/` — the isolated L-02 website-review contract: `WebsiteAddress` (bare-host normalization to https, credentials/fragment/non-http rejection, private/reserved literal and internal-name `isFetchCandidate()` flags), `ReviewContact` (validated email, explicit consent flag), `ReviewStage` (received→in-review→report-drafted→delivered→closed, closed terminal), `ReviewRequest` (immutable, adapter-supplied timestamp), `ReviewFinding` (human/lab/field/absent evidence — non-human evidence requires observation timestamp plus source label), `ReviewReport` (named reviewer, at least one finding, delivery cannot predate the report), `ReviewInbox` (duplicate-id rejection, submittedAt→id ordering independent of input order, transitions requiring the saved report and contact consent before `delivered`).
 
-Added `tests/review-requests/run.php` (80 synthetic `fx-*` checks — all pass on PHP 8.4.25), `.github/workflows/review-requests.yml`, and `docs/REVIEW_REQUESTS_FOUNDATION.md` including the future adapter contract and explicit SSRF/DNS-rebinding caveat for any later URL fetching. No application files, schema, mail, admin UI, or network access; the component is deliberately not in the deployment tree. PR checks pending.
+Added `tests/review-requests/run.php` (86 synthetic `fx-*` checks — all pass on PHP 8.4.25), `.github/workflows/review-requests.yml`, and `docs/REVIEW_REQUESTS_FOUNDATION.md` including the future adapter contract and explicit SSRF/DNS-rebinding caveat for any later URL fetching. No application files, schema, mail, admin UI, or network access; the component is deliberately not in the deployment tree. PR checks pending.
 
 ## 2026-10-13 — Exact-main portfolio acceptance race correction
 
@@ -492,3 +492,11 @@ Integration refresh: preserved latest Devin #35 head efc967a (publication-record
 
 PR #55 merged at 4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36; exact-main acceptance 38433670555 passes 4873 named checks (3084 estimator / 618 native / 802 HTTP-browser / 73 filesystem / 279 Apache / 17 builder). Preserved #35 through efc967a. All three clean-source artifacts match Windows/Linux; all 16 draft and public assets, hashes, members, directories and immutable tag verified. Prior 1.11.1 fingerprints unchanged. Homepage desktop/mobile pixels identical; inspected real screenshots. No live deployment/external activation. Reviewed #56: 36 checks pass, but reproduced second-order substitutions and malformed placeholders falsely resolving; requested precise corrections. #31 still needs no-mbstring portability and #36 accurate APIs/semantics; #32 corrected 71 checks pass locally. Next actual work is A-07 template persistence/admin preview after component correction, with existing staff isolation and no real mail sending. Publication records are documentation only.
 
+
+### 2026-10-13 — Devin L-02 portability correction (Codex review)
+
+**Request:** Codex review on #31 confirmed the multicast/delivery fixes but found `WebsiteAddress` called `mb_strlen()` — an incidental extension dependency, since the installer does not require mbstring (`php -n` run failed immediately).
+
+**Changed:** byte-length check now uses `strlen()` — a byte cap is consistent with HTTP input limits. Workflow now reruns the suite under `php -n` as a no-optional-extension regression. Guide/handoff check counts updated to the actual 86.
+
+**Tests:** 86 checks pass on PHP 8.4.25 under both `php` and `php -n`.

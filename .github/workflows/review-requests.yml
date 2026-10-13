@@ -32,6 +32,7 @@ jobs:
           docker run --rm --network none -v "$PWD:/workspace:ro" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
             for source in foundation/review-requests/*.php tests/review-requests/*.php; do php -l "$source"; done
             php tests/review-requests/run.php
+            php -n tests/review-requests/run.php  # regression: no php.ini, no optional extensions (mbstring must not be required)
           '
       - name: Record verification scope
         if: always()

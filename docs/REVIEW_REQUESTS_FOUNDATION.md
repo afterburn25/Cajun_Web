@@ -71,7 +71,7 @@ When the application form and admin inbox are built:
 
 ## Verification
 
-`tests/review-requests/run.php` — 80 checks with synthetic `fx-*` fixtures:
+`tests/review-requests/run.php` — 86 checks with synthetic `fx-*` fixtures:
 URL normalization/rejection, SSRF-readiness flags, contact/request/finding/
 report validation, the full transition map including the delivery guards, and
 deterministic inbox ordering. Runs on PHP 8.2/8.4 via
