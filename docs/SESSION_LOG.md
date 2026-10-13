@@ -18,15 +18,11 @@ Verified locally on PHP 8.4.25: 58/58 checks, all files `php -l` clean. Scope: n
 
 **Next:** Codex review; implementation PR follows only after the contract is accepted. PRs #31/#32/#34 remain queued and mergeable; PR #34 received an installer-hash fix at `ac91f0e` (CRLF-hashed site.css → LF).
 
-
-
 ## 2026-10-13 — Sandbox trial release published and verified
 
 Continued roadmap from main `dd29436fa40c2a0f800bc02569b5fd5d1fb75c09` / 1.5.0 on `codex/sandbox-attempts`. Added owner-only tokenized sandbox UI, fixed sandbox reporting/charge adapter, additive attempt/events, exact amount/reference/account checks, idempotency and concurrency safeguards, unknown-result recovery, shared manual/catalog/request locks, strict audit and immutable 1.5.0 upgrade acceptance. PR #18 merged as `e5d4c17456faff0522429ab3f58093a06a523bd5`; exact-main run https://github.com/afterburn25/Cajun_Web/actions/runs/38380935411 passes 296 native / 421 HTTP/Chromium checks. Independent policy/invitation/documentation checks pass. Reviewed desktop/320px screenshots.
 
 First candidate 4158d37 failed installer inventory due to Windows line endings; normalized LF and regenerated. f36e44a passed native tests but HTTP expected the established duplicate-payment message; restored the message without removing safeguards. 3ebc8a8 passed complete acceptance; final wording clarifies owner sandbox versus disabled client checkout. Final merged source and packages were checked independently. All eight draft and published release assets, extracted hashes, version labels and tag were downloaded-back verified. [Report](TEST_REPORT_1.6.0.md), [verification](RELEASE_VERIFICATION_1.6.0.json). Earlier releases untouched. No live deployment, provider operation or customer mail/data. Real merchant acceptance remains unverified; tests use synthetic gateway/Accept.js boundaries. Next: signed events, actual sandbox acceptance, distinct client/real-money checkout. Preserve Devin PR #7. Publication records are docs-only.
-
-
 
 ## 2026-10-13 — Administrator application integration candidate
 
@@ -67,7 +63,6 @@ Append dated entries. Keep this chronological. Use `SESSION_TEMPLATE.md`; link d
 **Limits / no external implementation:** No website source import or feature build in this recovery session, no staging acceptance, no hosting modification, and no customer-data changes. No complete v1.1.0 package or supporting test evidence was recovered. A favicon asset archive does not establish its live integration.
 
 **Next action:** Commit the recoverable complete baseline and originals into the source tree before rebuilding requested additions in tested, committed increments. Verify real artifacts and attach only existing files before declaring another downloadable release. Keep the current website intact rather than downgrade/reinstall it to address a chat download failure.
-
 
 ## 2026-10-12 — Add custom hosting commerce and Authorize.net roadmap
 
@@ -217,13 +212,11 @@ Staff/access and invitation components from PRs #5/#6 are preserved outside the 
 
 Next: run native MariaDB and real HTTP/Chromium acceptance on the reconciled candidate, extend missing release coverage, fix failures, publish only the exact tested main/package, verify the downloaded release, then post the authorized issue #2 handoff and stop. Issue #4 tracks completion. No release is declared at this checkpoint. No live hosting, customer data/mail, charges or provider operations are authorized.
 
-
 **Work/evidence at this checkpoint:** fetched branches, tags, PRs, issues #2/#4 and releases; read both source/main records and the build/acceptance tools. No tag or release exists. Earlier full application run failed on an older SHA; corrected application head has no complete run. Reconciled documentation histories without replacing either stream; no shipping changes in this merge. Commit: `merge: preserve main foundations in 1.1.0 release completion`; parents are the exact source/main commits above. Validation and later release evidence will follow.
 
 **Acceptance correction:** PR #8 combined run 38352334014 passed build and native database steps, then failed importing requests because tests/http.py shadowed the standard library. Renamed it, aligned candidate labels, fixed build UTF-8/line-ending and recorded-commit verification, revoked invites on client changes, rechecked activation expiry and tightened uploads/reduced-motion behavior. Local syntax/build and documentation checks pass; expanded native/browser acceptance remains required. Parent df57b40; commit message: fix: prepare release candidate and repair browser acceptance entrypoint. No publication or deployment.
 
 **Expanded acceptance and browser defect:** `01e7706` added the exact 1.0.8 historical test fixture, actual update ZIP/admin migration, captured synthetic mail, saved admin/client workflows, installer failures and narrow/mobile/root browser cases. Run 38353670112 passed the native and expanded HTTP portions, then exposed a real browser bug: named action controls shadowed form.action, producing POST /existing/[object RadioNodeList]. Both growth and original inquiry scripts now use the explicit action attribute. Added real Chromium review/consultation submission and account-revocation coverage. Parent `01e7706`; commit `fix: submit public browser forms to their configured endpoints`. No CSP weakening, live mail, deployment or publication occurred; rerun the entire suite after refreshed installer hashes.
-
 
 **Release documentation and browser continuation:** parent 7f8a6af. Actual browser forms now submit and persist; remaining run stopped on a test locator expecting Sign in without the displayed arrow. Corrected the locator and added browser protected-download/logout verification. Updated source layout, installation versus 1.0.8 upgrade, current roadmap/ownership/release status and official competitor reference review. No published release yet; run final combined acceptance before merging. Commit: docs: reconcile release instructions and browser acceptance.
 
@@ -303,11 +296,9 @@ Documentation-only publication commit parent `0cdea7fbd17e887d3f4bc0574a411b1574
 
 Owner requested continued roadmap implementation. Starting main `f659adfc58d3176b233d629e157fd685599bc824`; latest verified release remains 1.4.0 at `0cdea7fbd17e887d3f4bc0574a411b157431b7df`. Codex owns `codex/payment-foundation`: protected separate Authorize.net credentials, sandbox authentication diagnostics, and invoice-bound prepared payment requests with expiry/revocation and explicit no-charge status. Shared permissions, schema, installer, tests and documentation belong to this increment. Devin PR #7 remains untouched at `55d60670497d987286e64630e037e1ba2ec3a318`. Card collection, transaction processing, verified webhooks, refunds and production activation remain disabled and pending separate acceptance. No merchant credentials or live operations are needed for isolated implementation tests; provider success will not be claimed from fixtures. Next: implement and test against native MariaDB and actual browser flows, then release only after complete exact-artifact acceptance.
 
-
 ## 2026-10-13 — Candidate 1.5.0 payment foundation
 
 Implemented on `codex/payment-foundation`, parent `e0f8968` after main `f659adf`: owner-only protected separate Authorize.net settings, sandbox-authentication-only adapter and reviewed invoice-bound prepared requests. Existing invoices, catalog snapshots, permissions and client identities are retained. Card collection/production processing remain disabled. [Guide](PAYMENT_PREPARATION.md). Local PHP syntax, deterministic 58/57-file build and 251 permission checks pass. Native MariaDB/actual HTTP/browser and retained 1.4.0 upgrade tests are added; CI is pending and no provider success is claimed. No real credentials, live host, customer mail or provider operation. Next: run/fix full application acceptance, review screenshots, merge only when green and verify an exact-main release. Devin PR #7 is unchanged.
-
 
 ## 2026-10-13 — Payment candidate installer mismatch
 
@@ -434,7 +425,6 @@ Run `38417310703` retains passing native, expanded HTTP/Chromium and filesystem 
 ### 2026-10-13 — initialize Apache cache before requests
 
 Candidate 49eae7f passes the builder negative, native, HTTP/Chromium and filesystem suites. Apache run 38418701581 exposed a harness configuration error: OPcache was enabled per request after startup, which PHP forbids and the installed module crashed on. Configure the isolated Apache PHP scan directory at process startup instead. Preserve all distribution guides and per-artifact manifests in CI artifacts. The interrupted Apache update diagnostic remains to be reached and checked; publication remains pending.
-
 
 The Apache legacy fixture also needs CWP_BOOT when reading the intentionally guarded synthetic installed configuration. Without that constant the fixture helper exits safely before copying config; it cannot exercise migration. Added the normal guard constant to that fixture-only CLI command. No production configuration changed.
 
