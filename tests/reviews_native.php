@@ -18,6 +18,26 @@ function r_audit_failure(callable $fn): bool {
     try {$fn();$failed=false;}catch (PDOException) {$failed=true;}finally {db()->exec('DROP TRIGGER revci_fail');}return $failed;
 }
 function r_capture_form(): array {$token=growth_token();$_SESSION['growth_tokens'][$token]=time()-3;$_POST['csrf']=csrf();return ['submission_token'=>$token,'kind'=>'website-review','name'=>'Synthetic public prospect','email'=>'public@example.invalid','company'=>'','phone'=>'','timeline'=>'','message'=>'Please review this synthetic business website.','consent'=>'1','website_address'=>'','current_url'=>'Example.org/public'];}
+function r_parallel(array $commands): array {
+    $running=[];
+    foreach ($commands as $command) {$pipes=[];$process=proc_open([PHP_BINARY,__FILE__,...$command],[1=>['pipe','w'],2=>['pipe','w']],$pipes);if (!is_resource($process)) throw new RuntimeException('Cannot start race fixture worker.');$running[]=[$process,$pipes];}
+    $results=[];foreach ($running as [$process,$pipes]) {$out=stream_get_contents($pipes[1]);$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);r_ok('Delivery or deletion race worker exits cleanly',proc_close($process)===0&&$err==='');$results[]=$out;}
+    sort($results);return $results;
+}
+if (in_array($argv[1]??'',['delivery-worker','delete-worker','delete-edit-worker'],true)) {
+    r_actor(2);
+    try {
+        if ($argv[1]==='delivery-worker') {reviews_deliver((int)$argv[2],(int)$argv[3],gmdate('Y-m-d\TH:i:s'),'email','Synthetic concurrent delivery',$password);echo 'delivered';}
+        elseif ($argv[1]==='delete-worker') {reviews_delete_lead((int)$argv[2]);echo 'deleted';}
+        else {reviews_save_report((int)$argv[2],(int)$argv[3],'Concurrent edit before deletion',r_finding());echo 'saved';}
+    } catch (InvalidArgumentException|RuntimeException $e) {
+        if ($e instanceof PDOException) throw $e;
+        if (str_contains($e->getMessage(),'changed')) echo 'stale';
+        elseif (str_contains($e->getMessage(),'unavailable')) echo 'removed';
+        else throw $e;
+    }
+    exit;
+}
 if (($argv[1]??'')==='worker') {
     r_actor(2);
     try {reviews_save_report((int)$argv[2],(int)$argv[3],$argv[4],r_finding());echo 'saved';}
@@ -88,6 +108,12 @@ try {
     $before=reviews_get($lead);r_ok('Delete audit failure restores inquiry and dependent reports',r_audit_failure(fn()=>reviews_delete_lead($lead))&&reviews_get($lead)===$before);
     reviews_delete_lead($lead);r_ok('Explicit permanent inquiry deletion removes all linked personal review data',one('SELECT id FROM '.table('leads').' WHERE id=?',[$lead])===null&&reviews_row($lead)===null&&reviews_report($rid)===null&&!all('SELECT id FROM '.table('website_review_revisions').' WHERE review_id=?',[$rid]));
     r_ok('Unrelated public review survives targeted delete',reviews_row((int)$public['id'])!==null);
+    $deliveryLead=r_lead();reviews_adopt($deliveryLead,'example.org/concurrent-delivery');reviews_stage($deliveryLead,1,'in-review');reviews_save_report($deliveryLead,2,'Concurrent delivery fixture',r_finding());reviews_stage($deliveryLead,3,'report-drafted');
+    $results=r_parallel([['delivery-worker',(string)$deliveryLead,'4'],['delivery-worker',(string)$deliveryLead,'4']]);
+    $delivered=reviews_get($deliveryLead);r_ok('Simultaneous deliveries record one event and reject stale peer',$results===['delivered','stale']&&$delivered['row']['revision']===5&&$delivered['row']['stage']==='delivered'&&count($delivered['history'])===5);
+    $deleteLead=r_lead();reviews_adopt($deleteLead,'example.org/concurrent-delete');reviews_stage($deleteLead,1,'in-review');reviews_save_report($deleteLead,2,'Concurrent deletion fixture',r_finding());$deleteReview=(int)reviews_row($deleteLead)['id'];
+    $results=r_parallel([['delete-edit-worker',(string)$deleteLead,'3'],['delete-worker',(string)$deleteLead]]);
+    r_ok('Concurrent deletion cannot resurrect personal review data',in_array($results,[['deleted','saved'],['deleted','removed']],true)&&reviews_row($deleteLead)===null&&reviews_report($deleteReview)===null&&!all('SELECT id FROM '.table('website_review_revisions').' WHERE review_id=?',[$deleteReview]));
     $pageLead=r_lead();reviews_adopt($pageLead,'example.org');reviews_stage($pageLead,1,'in-review');for($rev=2;$rev<=23;$rev++)reviews_save_report($pageLead,$rev,'History '.$rev,r_finding());
     r_ok('Review history pagination has a sentinel and older page',count(reviews_get($pageLead)['history'])===21&&count(reviews_get($pageLead,2)['history'])===4);
     r_ok('Review routes reuse website permission and owner-only setup',staff_view_permission('website-review')==='website.manage'&&staff_action_permission('reviews_report')==='website.manage'&&staff_action_permission('reviews_setup')==='staff.manage');
