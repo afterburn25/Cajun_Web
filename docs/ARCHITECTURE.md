@@ -1,5 +1,9 @@
 # Architecture notes
 
+## Portfolio adapter — 1.11.0 candidate
+
+`site/app/portfolio.php` maps current published `projects` rows to the immutable portfolio component; `tools/build.py` bundles canonical `foundation/portfolio` classes verbatim. Existing project rows remain the rendering source; normalized category values match filters and card data. Public routes use the catalog's exact category/slug rules; draft/archived rows never enter public markup. No new schema or alternative CMS. Browser enhancement preserves real navigation links and announces result counts. [Guide](PORTFOLIO_BROWSING.md).
+
 ## 2026-10-13 — Verified 1.10.0 workspace activity increment
 
 Separate client/staff activity centers and private workspace bells are delivered in [v1.10.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.10.0) / `4649a913d40166b9874f9550e57b4186edfc43ab`. Additive per-person read state projects retained sources without changing business writes. Exact links, bounded mark-visible actions, history, current authorization and passive idle expiry pass 603 native / 630 HTTP/Chromium checks including actual 1.9.0 UPDATE. Full P-07 remains partial; SMTP dispatch/preferences/stage/hosting/ticket/renewal events and A-06–A-08 multi-account webmail/templates/email bells remain pending. [Guide](WORKSPACE_ACTIVITY.md) · [report](TEST_REPORT_1.10.0.md).
