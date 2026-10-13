@@ -3,6 +3,7 @@
 ## Unreleased — A-08 mail-bell adapter contract (Devin, docs only)
 
 - Added `docs/MAIL_BELLS_ADAPTER.md`: the contract for wiring bounded A-06 inbox reads to P-07 staff notifications with protected deep links. Records required canonical extensions — a `mail-message` notification kind and a grammar-safe deterministic sync-id link bound to the saved account generation — plus the corrected rules: current-grant filtering before feed metadata/counts, full-tuple verification behind truncated digests, honest newest-window (never all-unread) semantics, and application-side read state since the transport never writes server flags. Realigned to the shipped `foundation/mail-receiving` producer (the unaccepted PR #68 `InboundSync` model is not the source). No shipping code changes.
+
 ## 1.12.0 — candidate, administrator email-template library
 ## 1.13.0 — candidate, email account preparation
 ## 1.14.0 — candidate, human website review workflow
