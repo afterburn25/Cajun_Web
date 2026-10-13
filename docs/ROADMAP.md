@@ -1,6 +1,16 @@
 # Approved roadmap and acceptance criteria
 
-## Latest verified publication — 1.11.2
+## Latest verified publication — 1.12.0
+
+[v1.12.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.12.0) is published and freshly downloaded/verified at source/tag `c526e960db13246c217f2b9d6f421c17b8d48261` through [PR #58](https://github.com/afterburn25/Cajun_Web/pull/58), preserving corrected Devin #56 through `f3522f6`. Bounded A-07 now provides an administrator template library: personal/shared drafts, explicit permission, create/edit/duplicate/activate/archive, escaped sample previews, immutable history and stale-write protection. Additive owner setup preserves existing records; fresh setup prepares an empty library. [User/technical guide](ADMIN_EMAIL_TEMPLATES.md).
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38441087438): 677 native checks (including 59 template checks), 3,084 estimator comparisons, 834 HTTP/Chromium, 87 filesystem/recovery, 327 Apache and 17 builder checks. All 16 public assets, archive members/directories/checksums and immutable tag verified; Windows/Linux bytes agree. Homepage desktop/mobile pixels match 1.11.2; actual template screens inspected. [Test report](TEST_REPORT_1.12.0.md); [handoff](DEVIN_HANDOFF_1.12.0.md).
+
+The organized directory and three-package contract remain permanent. Updates recognize 1.0.8 and 1.1.0 through 1.11.2; staging is cwp-update-1.12.0, recovery is target-specific and the original structure-1.11.0/mutex.php lock is shared. File recovery preserves added template database records. Prior releases remain immutable. No live deployment or external payment/provider/mail/SSH activation. Templates do not send mail or read client data.
+
+Next executable work: apply/review the identified Devin #59 corrections (grant start times, UIDVALIDITY identities, duplicate messages and trust/evidence documentation), then implement the bounded A-06 account/configuration/grant adapter. Codex has claimed application/schema/UI/build ownership; Devin retains canonical corrections. Real transport, mailbox acceptance, compose/send and A-08 email bells remain incomplete. #31 portability corrections pass 86 no-extension checks; #36 URL-input contract needs accurate final caveats before L-02 integration. Corrected #32 scheduling passes 71 local component checks but its adapter/concurrency acceptance is still pending. Keep other foundations isolated until reviewed; the full roadmap is not complete.
+
+## Previous verified publication — 1.11.2 (superseded checkpoint)
 
 [v1.11.2](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.2) is published and freshly downloaded/verified at source/tag `4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36` through [PR #55](https://github.com/afterburn25/Cajun_Web/pull/55), preserving Devin PR #35 ancestry through `efc967a`. The live public estimator now uses canonical exact arithmetic while preserving existing form, validation, prices, results and saved-lead behavior. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38433670555): 3,084 estimator comparisons/boundaries, 618 native, 802 HTTP/Chromium, 73 filesystem/recovery, 279 Apache and 17 builder checks. All 16 published assets, archive members/directories/checksums and immutable tag verified; Windows/Linux package bytes agree. [Test report](TEST_REPORT_1.11.2.md); [handoff](DEVIN_HANDOFF_1.11.2.md).
 
@@ -177,7 +187,7 @@ Add Email with incoming/outgoing account configuration, separate connection test
 
 ### A-07 — Reusable email templates
 
-Current integration: candidate 1.12.0 implements a private administrator library, retained revisions, explicit grants and escaped sample preview. [Scope and required acceptance](ADMIN_EMAIL_TEMPLATES.md). Full application acceptance/publication is pending; mailbox compose insertion and sending remain separate work.
+Current integration: verified 1.12.0 provides the private administrator library, retained revisions, explicit grants and escaped sample preview. [Scope and acceptance](ADMIN_EMAIL_TEMPLATES.md). Mailbox compose insertion and sending remain separate work; full A-07 is not complete.
 
 Create/edit/duplicate/preview/archive templates with subject/body, safe allowlisted placeholders, shared/personal visibility and compose insertion. Preview resolved values and edit the draft before explicit sending. Keep signatures/account selection clear and transactional templates controlled. Acceptance: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-07--reusable-sending-templates).
 
