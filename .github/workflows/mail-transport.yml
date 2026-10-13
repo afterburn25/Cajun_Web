@@ -29,6 +29,7 @@ jobs:
         run: |
           mkdir -p qa
           php -n tests/mail-transport/policy_test.php > qa/mail-transport-policy-results.json
+          php -n tests/mail-transport/resolver_test.php > qa/mail-transport-resolver-results.json
           python3 -m venv .ci-venv
           .ci-venv/bin/pip install --disable-pip-version-check cryptography==50.0.1
           .ci-venv/bin/python tests/mail-transport/tls_test.py

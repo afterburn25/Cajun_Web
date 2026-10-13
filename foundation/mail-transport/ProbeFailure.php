@@ -8,6 +8,6 @@ final class ProbeFailure extends \RuntimeException
 {
     public function __construct(string $reason)
     {
-        parent::__construct(in_array($reason,['connection','tls','protocol','limit','timeout','authentication','mechanism','credential','upgrade'],true)?$reason:'connection');
+        parent::__construct(in_array($reason,['connection','tls','protocol','limit','timeout','authentication','mechanism','credential','upgrade','access_changed'],true)?$reason:'connection');
     }
 }

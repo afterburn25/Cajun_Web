@@ -1,9 +1,10 @@
 # Changelog
 
-## Unreleased — A-06 connection diagnostics in progress
+## Unreleased — 1.16.0 candidate: explicit email connection checks
 
-- Add a bounded connection-check contract and non-shipping transport prototype: conservative public destination policy, pinned numeric sockets with verified original TLS hostname, bounded response handling and IMAP/SMTP authentication-only exchanges.
-- Add actual isolated TLS fixtures and current-authorization callback before credential payloads; no real mailbox, message fetch/send, application controls or new release is enabled by this checkpoint.
+- Add separate owner-only checks of saved incoming/outgoing settings, current password and matching mailbox assignment. Verify public DNS destinations, pin the numeric connection, validate TLS and authenticate without reading or sending messages.
+- Add auditable started/terminal history, saved-version labels, bounded response handling and per-account/owner repeat limits. Interrupted or unaudited final outcomes remain incomplete.
+- Add additive upgrade setup, fresh empty schema, isolated TLS/DNS/database/HTTP acceptance and actual 1.15.0 update/recovery coverage. Candidate acceptance and publication are pending; latest published version remains 1.15.0.
 
 ## 1.15.0 — verified consultation scheduling
 

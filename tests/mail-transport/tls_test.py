@@ -86,6 +86,7 @@ with tempfile.TemporaryDirectory(prefix='cwp-tls-',dir=RUNTIME) as temp:
         p=subprocess.run(['php',str(HERE/'tls_driver.php')],input=json.dumps(data),capture_output=True,text=True,timeout=7)
         elapsed=time.monotonic()-start;thread.join(timeout=6);check(f'{protocol}/{encryption}/{case} finite sanitized output',p.returncode==0 and not p.stderr and not errors and not thread.is_alive())
         result=json.loads(p.stdout);check(f'{protocol}/{encryption}/{case} actual TLS outcome',result['ok']==(case=='ok'))
+        check(f'{protocol}/{encryption}/{case} production IP pinning and verified TLS options',result['pinned'])
         check(f'{protocol}/{encryption}/{case} no message operations',all(not c.startswith(('MAIL','RCPT','DATA','SELECT','FETCH','APPEND','STORE','EXPUNGE')) for c in commands))
         if case in ['hostname','untrusted','expired','missing_upgrade','preauth','mixed_codes','no_auth','slow','oversized','revoked']:check(f'{protocol}/{encryption}/{case} no credentials before valid negotiation','CREDENTIAL' not in commands)
         if case=='slow':check(f'{protocol}/{encryption}/{case} operation budget',elapsed<1)
