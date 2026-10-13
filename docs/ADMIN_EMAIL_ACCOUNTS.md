@@ -1,6 +1,6 @@
 # Email account preparation — bounded A-06
 
-Candidate 1.13.0 on `codex/admin-mail-accounts`, from verified 1.12.0. Application source is implemented; native/browser/upgrade acceptance and publication are pending. This increment prepares multiple email profiles and staff assignments. It has no IMAP/SMTP connection, inbox, message synchronization or sending. Existing website email delivery settings remain separate and unchanged.
+Published and download-verified [1.13.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.13.0) at `b83cb9fb6856bca4f333fe953bee2e68f5074d51`, from verified 1.12.0. [Actual combined acceptance](TEST_REPORT_1.13.0.md). This increment prepares multiple email profiles and staff assignments. It has no IMAP/SMTP connection, inbox, message synchronization or sending. Existing website email delivery settings remain separate and unchanged.
 
 ## Owner setup
 
@@ -30,6 +30,6 @@ Four additive InnoDB tables hold current profiles, profile metadata revisions, c
 
 ## Acceptance gates
 
-Required evidence: native schema/role/credential/authentication boundaries, key loss/tampering/permissions, strict audit rollback, concurrency and revocation; HTTP and Chromium setup/save/error preservation/private listing/clear/mobile checks; actual published 1.12.0 upgrade and recovery preserving earlier templates, new account records, assignments and the original private key. Retain all earlier application, archive, private-file and Apache checks. Named results and screenshots must be reported before release. Syntax and model tests alone are insufficient.
+Required evidence: native schema/role/credential/authentication boundaries, key loss/tampering/permissions, strict audit rollback, concurrency and revocation; HTTP and Chromium setup/save/error preservation/private listing/clear/mobile checks; actual published 1.12.0 upgrade and recovery preserving earlier templates, new account records, assignments and the original private key. Retain all earlier application, archive, private-file and Apache checks. Named passing results and inspected desktop/mobile screenshots are recorded in the linked release report. Syntax and model tests alone are insufficient.
 
-Real mail login/TLS/provider compatibility, fetching/rendering messages, attachments, synchronization, compose/template insertion, sending and email notifications remain later increments with their own acceptance. No live customer mail, provider operation or host deployment is authorized by this candidate.
+Real mail login/TLS/provider compatibility, fetching/rendering messages, attachments, synchronization, compose/template insertion, sending and email notifications remain later increments with their own acceptance. No live customer mail, provider operation or host deployment is authorized by this release.
