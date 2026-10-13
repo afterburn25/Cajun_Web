@@ -1,0 +1,11 @@
+# Sandbox payment notifications
+
+Implementation claim, 2026-10-13: Codex owns bounded M2 sandbox notification receipt and owner-triggered reconciliation on `codex/sandbox-webhooks`, starting at `3dd6d5e82e22ad4a2ab27dbf54d08bde45c50a9a` (published application 1.6.0). Owned files: payment adapters/views, additive schema, callback entry point, installer inventory, acceptance tests, workflow and continuity documentation. Devin retains PR #7 and portfolio component ownership.
+
+Contract: disabled by default, sandbox only, explicit owner setup with current password, expected webhook ID and current sandbox credential revision. Verify HMAC-SHA512 over unmodified request bytes with the binary-decoded Signature Key. Bind receipt to the configured sandbox merchant and webhook. Save minimal identifiers and a body digest, never the raw body, signature, customer data or card data. A repeated notification is accepted only with the same digest. Durable receipt and audit must commit before HTTP 200. Receipt makes no network request and changes no invoice or attempt.
+
+Owners explicitly verify queued notifications through the existing sandbox reporting adapter. Match transaction/reference/account, then require current independent merchant and transaction details. Apply an observation, notification processing state and strict audit together. Unknown, stale, mismatched or conflicting results leave the notification available for investigation/retry. Real invoice settlement, client checkout, production callbacks, external registration and scheduled processing are outside this increment.
+
+Primary references checked 2026-10-13: [Authorize.net webhooks](https://developer.authorize.net/api/reference/features/webhooks.html) for signature header, raw-body HMAC, notification IDs, event types, merchantReferenceId/refId and prompt HTTP 200; [Authorize.net credential guidance](https://support.authorize.net/knowledgebase/article/000001271/en-us) for binary conversion of the 128-character hexadecimal Signature Key. Actual merchant delivery and key compatibility require sandbox acceptance; local signatures and reporting fixtures are synthetic evidence only.
+
+Implementation/testing/publication: pending. No live deployment or provider operation has been performed.
