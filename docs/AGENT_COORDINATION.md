@@ -11,7 +11,7 @@ Both implementation streams require recovery and inspection of the owner's **1.1
 | Codex | `codex/platform-foundation` | Audit/import current source, then a bounded A-05 staff-account/permission increment supporting M1 | Own shared identity/session/permission contracts, migrations and security foundations; A-09 support sessions follow in a separately tested increment |
 | Devin | `devin/public-experience` | W-01 portfolio improvements using the existing public site and verified content | Own portfolio presentation and scoped assets; request shared backend changes through an agreed contract |
 
-Branch names are assignments until their existence is verified on GitHub. A branch does not mean its worker is running. The owner selected a GitHub assignment to paste into Devin; Codex is preparing that handoff and has not dispatched Devin directly. Record the assignment issue and actual Devin session/PR when available.
+Both branches were created on GitHub from merged-main checkpoint `633f5a1e5c27f0ad626276f2bae75cbc2b88ea66`. Refresh them after verified source import. A branch does not mean its worker is running. The owner selected [GitHub assignment #2](https://github.com/afterburn25/Cajun_Web/issues/2) to paste into Devin; Codex has not dispatched Devin directly. Record the actual Devin session/PR when available.
 
 After the first portfolio increment, Devin can take W-02 accessible motion and scoped public lead/estimator work, with persisted-data/API contracts agreed first. Codex proceeds through identity, payments and 20i foundations in the accepted milestone order. Assign webmail and client-project interfaces after shared permission/data contracts exist. Do not independently design competing account, invoice, mail or project schemas.
 
