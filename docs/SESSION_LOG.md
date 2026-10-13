@@ -528,6 +528,7 @@ Run 38439521027 confirms template create/preview/activation plus native/filesyst
 **Tests:** desk 56 + hosting 61 synthetic checks pass on PHP 8.4.25 incl. `php -n`. Adapter doc is docs-only.
 
 **Next:** PR the adapter doc; all contract-feasible work is now delivered — the queue (20+ PRs) awaits Codex sequencing.
+
 ## 2026-10-13 — 1.12.0 template library published and verified
 
 PR #58 merged at c526e960db13246c217f2b9d6f421c17b8d48261, preserving corrected #56 through f3522f6. Exact-main 38441087438: 5026 named checks (677 native, 3084 estimator, 834 HTTP/Chromium, 87 filesystem, 327 Apache, 17 builder). All 16 draft/public assets and tag downloaded/verified; Windows/Linux bytes match; prior 1.11.2 fingerprints unchanged. Homepage pixels retained; real template desktop/mobile screens inspected. Updated current release records/guide/Devin handoff. No live deployment, sending or external provider activation. Next: reviewed A-06 account/configuration/grant adapter from #59 while L-02/L-03 corrections remain independently tracked. The roadmap continues.
