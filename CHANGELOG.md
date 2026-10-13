@@ -1,9 +1,11 @@
 # Changelog
 
-## Next increment — exact-message reading (unreleased)
+## 1.18.0 candidate — exact-message reading (unreleased)
 
-- Correct full-document HTML handling on PHP 8.2 by stripping html/body wrappers while retaining sanitized children; wrapper attributes and head/unknown subtrees stay excluded. Add three cross-runtime malicious-document fixtures. Corrected CI remains pending.
-- Integrate fixed exact-message identity/size-preflight/BODY.PEEK and bounded MIME/HTML components with an exact protected runtime mirror. Preserve the released header limits and all original package pins; add four maintained rendering dependencies. Local component checks pass; PHP matrix/reproduction/no-DOM CI and application integration remain pending. No message-body UI or new release is enabled.
+- Add explicit assigned-staff message opening with current account/actor/revision and exact INBOX/UIDVALIDITY/UID checks, bounded MIME content and unchanged server read flags. Separate strict audit/results, request limits, owner-prepared upgrade storage and empty fresh-install storage retain no message contents.
+- Decode raw MIME through private maintained parser state, preserve escaped plaintext and show minimal sanitized formatting in an opaque sandbox with restrictive CSP. No automatic remote resources, attachment content or sending. Missing DOM has an honest plaintext/unavailable-format fallback.
+- Preserve all 36 existing dependency pins and add four maintained formatting dependencies. Correct PHP 8.2 full-document handling by stripping html/body wrappers while preserving sanitized children; all 1,227 components pass on PHP 8.2/8.4 at 740b4e2 with fresh byte reproduction.
+- Add actual 1.17.0 update/recovery and original key/history preservation fixtures, alongside native/concurrency, packaged TLS/HTTP/Chromium and Apache checks. Application acceptance, independent review and release remain pending; latest published release remains 1.17.0.
 
 ## 1.17.0 — verified recent inbox headers
 
