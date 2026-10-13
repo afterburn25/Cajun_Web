@@ -3,6 +3,7 @@
 ## Unreleased — review-request adapter contract (L-02 dependency)
 
 - Add `docs/REVIEW_REQUESTS_ADAPTER.md`: the contract for adopting the review-request foundation (PR #31) in the live `website-review` lead path — `WebsiteAddress` intake normalization, consent-aware `ReviewContact`, stage persistence via an additive `review_stages` table, `review_reports` as the delivery gate, and staff transition controls through `ReviewInbox`. No shipping code or schema changes; records two decisions for integration review.
+
 ## 1.11.0 — organized application and verified three-package release
 
 Published from `de70c5da2e8f7bd35fbb92b9b829d0ab3e880372` after exact-main acceptance; all 16 assets downloaded and verified. Original history and all earlier releases retained. No live deployment.
@@ -140,6 +141,7 @@ This log distinguishes repository work from application releases and deployment.
 - Verified the source and PR checks on GitHub: 142 decisions and four syntax checks pass on PHP 8.2.34/8.4.26. Evidence is linked from the access foundation and status/handoff; the isolated component is not current-application acceptance.
 - Documented the trusted adapter boundary and pending lifecycle/database/browser integration; updated ownership and Devin's independent portfolio scope while another worker finishes 1.1.0.
 - No version bump, current-source replacement, admin UI, real account/mail operation, release ZIP or deployment. This component remains outside application packaging.
+
 ## 2026-10-12 — GitHub checks, release retention and Codex/Devin coordination
 
 - Integrated roadmap/workflow PR #1 into main, verified passing PR and merged-main documentation jobs, created both work branches and published Devin assignment issue #2. Current status/handoff links the evidence and states that Devin has not been dispatched.
