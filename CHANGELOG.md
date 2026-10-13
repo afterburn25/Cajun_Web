@@ -2,7 +2,7 @@
 
 ## Next increment — exact-message reading (unreleased)
 
-- Claim the bounded A-06 message identity, read-only transport, MIME/HTML and application acceptance contract after verified 1.17.0. Local prototypes remain outside deployment pending canonical integration and complete acceptance.
+- Integrate fixed exact-message identity/size-preflight/BODY.PEEK and bounded MIME/HTML components with an exact protected runtime mirror. Preserve the released header limits and all original package pins; add four maintained rendering dependencies. Local component checks pass; PHP matrix/reproduction/no-DOM CI and application integration remain pending. No message-body UI or new release is enabled.
 
 ## 1.17.0 — verified recent inbox headers
 
