@@ -4,7 +4,7 @@ if (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); ex
 // GENERATED from canonical bootstrap modules by tools/build.py.
 
 // config/defaults.php
-const CWP_VERSION = '1.16.0';
+const CWP_VERSION = '1.17.0';
 const CWP_GUARD = "<?php http_response_code(404); exit; ?>\n";
 
 // includes/security/input.php
