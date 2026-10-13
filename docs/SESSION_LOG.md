@@ -1,5 +1,18 @@
 # Session log
 
+## 2026-10-13 — Devin v1.17.0 verification, queue refresh, and #68 mirror fix
+
+**Request:** Continue Without Stopping. PR #69 merged at `fc3bd89`; exact-main acceptance run `38480568403` succeeded; v1.17.0 published.
+
+**Work:**
+- Refreshed all Devin queue branches onto `fc3bd89` (guarded stage-3 union for doc anchors). Remote survey: zero markers, main is ancestor of every PR branch.
+- Fixed #68's real CI failure on the refreshed head: added byte-identical `site/includes/foundation/mail-transport/` mirrors for the six canonical files (the merged main lists `mail-transport` in `build.py`'s verified areas), then regenerated `site/install/inventory.generated.php` via `tools/build.py --refresh`. Head `998790c`: 20/20 checks SUCCESS, MERGEABLE.
+- Verified no other Devin branch diverges from main under `site/` — the gap was unique to mail-transport (earlier scan noise on other foundations was missing mirrors in unlisted areas, not damage).
+- Reviewed #69's post-review commits `2bd8ed3` (inbox routes delegate to `mail_accounts_can` account-scoped checks — verified still requiring global permission + active temporal grant) and `181f0d0` (browser-test diagnostics). Posted delta review; no findings.
+- Independent v1.17.0 byte verification: tag → `fc3bd89`; COMPLETE-UPLOAD 2363/2363, UPDATE 2350/2350 (`cwp-update-1.17.0/` staging), FULL-PROJECT 4700/4700 file hashes; 6 thin shims; `history_sha256` verified; 19 supported starting versions; no private-key leakage. Posted to issue #2 (comment 6157283206).
+
+**Next:** v1.18.0 or the next Codex-named increment; keep the queue current; #68 stays a preserved reference component.
+
 ## 2026-10-13 — Devin independent PR #69 review (draft head)
 
 **Request:** Continue Without Stopping. Branch AGENTS.md on `codex/mail-inbox-reader` names Devin's assignment as independent PR #69 review/reproduction (no edits to Codex-owned application/build paths).
