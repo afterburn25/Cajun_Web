@@ -1,5 +1,8 @@
 # CajunWebPro — project source of truth
 
+**1.2.0 administrator-account candidate — 2026-10-13:** [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10), `codex/admin-accounts`. Core A-05 now integrates owner-controlled accounts, selected website/client access, private setup/recovery links, revocation and concurrent last-owner protection. [Administrator guide](docs/ADMIN_ACCOUNTS.md). Starting main `ffdcef3`; latest published release remains immutable v1.1.0. Candidate `53cf246` passed [application acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38361215151): 50 original + 31 staff native checks and 212 real HTTP/Chromium checks. Desktop/320px captures were reviewed. Final explicit pending-password login guard, extra assigned-access tests and documentation require the next exact-head run before merge/publication. No live deployment/provider actions. Devin PR #7 remains unchanged at `55d6067`; no work has been pushed to its branch.
+
+
 Custom web design and development services, portfolio, and business-management website. **This is a service business website, not a do-it-yourself website builder.**
 
 Approved expansion: our own custom hosting/billing/client-management platform covering the agreed functions otherwise handled by WHMCS, with 20i infrastructure, Authorize.net payments, web-design services, staff accounts and admin webmail. See the [custom platform blueprint](docs/CUSTOM_PLATFORM_BLUEPRINT.md); this is planned scope, not a completed platform.
@@ -23,7 +26,7 @@ Every working session must update the status, handoff, and [session log](docs/SE
 
 Delivered: public growth/comparison content, server-priced estimator and saved requests; content/pricing/pipeline/history and portfolio controls; client invitations, projects, milestones, messages, private documents, version-specific decisions, manual invoices and an additive database upgrade. Original branding and one-page keyless setup remain intact.
 
-Read [Devin's exact-release handoff](docs/DEVIN_HANDOFF_1.1.0.md). His PR #7/component branch remains intact. Issue #2 is the authorized GitHub handoff channel; a comment does not establish receipt or a running Devin session. No live hosting, customer data/mail, charges or provider operations occurred. Full payments/20i/webmail/staff UI/support SSH/ZIP delivery/backup and updater remain later roadmap work. **This release task stops after publication, handoff and tracker closure; do not automatically resume later milestones.**
+Read [Devin's exact-release handoff](docs/DEVIN_HANDOFF_1.1.0.md). His PR #7/component branch remains intact. Issue #2 is the authorized GitHub handoff channel; a comment does not establish receipt or a running Devin session. No live hosting, customer data/mail, charges or provider operations occurred. At the 1.1.0 checkpoint those capabilities were deferred; current administrator progress is recorded above. Payments/20i/webmail/support SSH/ZIP delivery/backup and full updater remain later work. This historical 1.1.0 task stop was superseded by the owner's new "Continue With Roadmap" request.
 
 ## Non-negotiable direction
 

@@ -3,7 +3,7 @@ declare(strict_types=1);
 defined('CWP_BOOT') || exit;
 ini_set('display_errors','0');
 ini_set('log_errors','1');
-const CWP_VERSION = '1.1.0';
+const CWP_VERSION = '1.2.0';
 const CWP_GUARD = "<?php http_response_code(404); exit; ?>\n";
 const CWP_ROOT = __DIR__ . '/..';
 
@@ -83,6 +83,9 @@ function admin_user(): ?array {
     if(time()-(int)($_SESSION['last_activity'] ?? 0)>1800 || time()-(int)($_SESSION['login_at'] ?? 0)>28800) { unset($_SESSION['uid'],$_SESSION['auth_version']); return null; }
     $u=one('SELECT * FROM '.table('users').' WHERE id=?',[(int)$_SESSION['uid']]);
     if(!$u || !hash_equals((string)$u['auth_version'],(string)($_SESSION['auth_version'] ?? ''))) { unset($_SESSION['uid']); return null; }
+    require_once CWP_ROOT.'/app/staff.php';
+    $u=staff_profile($u);
+    if(!$u){unset($_SESSION['uid'],$_SESSION['auth_version']);return null;}
     $_SESSION['last_activity']=time(); return $u;
 }
 function require_admin(): array { $u=admin_user(); if(!$u) redirect(admin_url('login')); return $u; }

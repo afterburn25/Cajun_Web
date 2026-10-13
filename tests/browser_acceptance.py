@@ -134,6 +134,8 @@ try:
         check('Browser authorized download matches stored file',Path(download.value.path()).read_bytes()==(ROOT/'site/assets/favicon.png').read_bytes())
         page.get_by_role('button',name='Sign out').click();expect(page.locator('[name=email]')).to_be_visible();check('Browser client logout clears access',True)
         run_browser(globals(),browser,release_fixture)
+        from staff_cases import run_browser as staff_browser
+        staff_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)

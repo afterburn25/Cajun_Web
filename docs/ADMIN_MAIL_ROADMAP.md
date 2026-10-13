@@ -1,8 +1,8 @@
 # Admin webmail, staff access, templates and email notifications
 
-Approved scope: 2026-10-12. Requirements only; no implementation or account connection is established. Inspect the owner's current 1.1.0 source first and extend existing capabilities without replacing functioning work.
+Approved scope: 2026-10-12. The core A-05 account lifecycle is now integrated in candidate 1.2.0; [administrator guide and acceptance](ADMIN_ACCOUNTS.md). A-06/A-07/A-08 and mailbox grants remain requirements; no external mailbox is connected.
 
-2026-10-13 progress: the isolated [access foundation](ACCESS_FOUNDATION.md) implements staff/mailbox permission decisions and local unit tests while the separate worker completes 1.1.0. It does not implement administrator creation, sessions, invitations, mailbox connections, mail UI or sending; A-05/A-06 remain incomplete until application integration and acceptance.
+Historical component checkpoint: the isolated [access foundation](ACCESS_FOUNDATION.md) implements staff/mailbox permission decisions and local unit tests while the separate worker completes 1.1.0. It does not implement administrator creation, sessions, invitations, mailbox connections, mail UI or sending; A-05/A-06 remain incomplete until application integration and acceptance.
 
 ## Owner request and intended experience
 
@@ -10,7 +10,9 @@ Add an Email section inside CajunWebPro admin for sending and receiving mail fro
 
 ## A-05 — Additional admin accounts and access (foundation)
 
-Component progress: [staff invitation persistence](STAFF_INVITATIONS.md) implements hashed expiring setup links, resend/revoke and transactional consumption with an activation callback. The application still needs issuance authorization, final-schema migration, account lifecycle/last-owner controls, setup UI, delivery and native/browser integration acceptance. No actual administrator is created by this component work.
+**Current A-05 status:** account creation, explicit website/client grants, setup/recovery, role edits, deactivation, existing-session revocation and concurrent last-owner protection are implemented and have candidate native/browser evidence in PR #10. MFA and mailbox assignments are deferred; mailbox access awaits A-06. Release/deployment status is in the release register.
+
+Historical component progress: [staff invitation persistence](STAFF_INVITATIONS.md) implements hashed expiring setup links, resend/revoke and transactional consumption with an activation callback. The application still needs issuance authorization, final-schema migration, account lifecycle/last-owner controls, setup UI, delivery and native/browser integration acceptance. No actual administrator is created by this component work.
 
 - Admin -> Administrators: list accounts, add/invite an administrator, edit display name/login email, assign role and mailbox access, reset access, and deactivate/reactivate an account.
 - Preserve the existing owner account. Distinguish Owner, Administrator and optionally restricted staff roles; permissions cover administrator management, mailbox configuration, mailbox read/send, template management, financial settings and other existing admin functions. Adding an admin must not silently grant access to every mailbox or payment credential.

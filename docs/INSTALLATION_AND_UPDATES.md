@@ -2,6 +2,18 @@
 
 v1.1.0 complete/update deployment assets are published and downloaded-back verified. Use the release register for exact URLs, hashes and tested source. See [release register](RELEASES.md) and [test report](TEST_REPORT_1.1.0.md).
 
+## 1.2.0 administrator-account upgrade
+
+Use only a published, verified version from the release register. Candidate source or GitHub automatic source archives are not deployment releases. 1.2.0 extends the 1.1.0 website with [administrator accounts](ADMIN_ACCOUNTS.md).
+
+**From 1.1.0:** make a complete host backup, then merge the version's UPDATE ZIP into the existing directory, preserving `config.php`, installed guards, private storage and unrelated files. Sign in with the existing administrator. Open **Administrators**, select the initial owner, confirm the backup and enter your current password. This adds two account tables and preserves existing identities/passwords. Other existing administrators retain website and client-workspace permissions; owner-only settings become restricted. Verify the owner sign-in and assigned staff access before creating more accounts. Never rerun `install.php` on an installed site.
+
+**From 1.0.8:** use the same complete UPDATE ZIP; run **Version & database** first for the client-workspace migration, then enable **Administrators** as above. Both steps are additive. The release suite checks the retained populated 1.0.8 fixture and a checksum-pinned copy of the actual published 1.1.0 package. Earlier versions or custom schemas need separate review.
+
+**Fresh 1.2.0:** use COMPLETE-UPLOAD and the one-page keyless installer as described below. It creates the owner and account tables during installation; no separate role upgrade is needed. The full package contains 50 files, including the six canonical access/invitation classes under `app/foundation/`; UPDATE has 49, omitting only `install.php`. Do not omit hidden protection files or upload a mixed set of versions.
+
+Finish any interrupted file merge before database actions. A marker/table mismatch or unknown staff records causes an explicit error rather than replacement. Restore the complete validated host backup if recovery is needed; a code-only downgrade to 1.1.0 is unsupported because the older code does not enforce roles. Existing live hosting/HTTPS/SMTP configuration still needs host verification.
+
 ## 1.1.0 installation and supported upgrade
 
 Runtime: PHP 8.2+ source target, PDO MySQL, OpenSSL, Fileinfo and GD, with an InnoDB database. Full application acceptance runs on **PHP 8.3 / MariaDB 10.11**. Independent PHP 8.2/8.4 component checks do not certify the application on those runtimes. Apache 2.4/LiteSpeed protection files are included; target-host HTTPS, PHP mapping and permissions need checking. Customers need no Node service, root access, SSH, Composer or command-line installation.
@@ -12,7 +24,7 @@ Runtime: PHP 8.2+ source target, PDO MySQL, OpenSSL, Fileinfo and GD, with an In
 
 The update path is tested against the fingerprinted populated 1.0.8 fixture. Earlier versions and custom schemas require separate review. Finish an interrupted file merge before applying the database update. Ask the host to invalidate stale opcode caches if required. On failure, preserve the report and restore the complete host backup; a code-only downgrade is not a verified recovery procedure. This is not an automatic application-file updater or a full backup/restore service.
 
-**Developer build:** from a clean checkout with canonical LF bytes, Python 3, PHP CLI and Node syntax checking, run `python tools/build.py --commit <full-sha>`. After shipping edits run `python tools/build.py --refresh`, commit source plus installer hashes, then verify again against that commit. Only `site/` enters flat deterministic archives. Tests, original brand sources, independent foundations and development tools are excluded.
+**Developer build:** from a clean checkout with canonical LF bytes, Python 3, PHP CLI and Node syntax checking, run `python tools/build.py --commit <full-sha>`. After shipping edits run `python tools/build.py --refresh`, commit source plus installer hashes, then verify again against that commit. Only `site/` enters flat deterministic archives. Tests, original brand sources and development tools are excluded. Access/invitation foundation sources are bundled verbatim into `site/app/foundation` by `--refresh`; verification rejects divergence. The builder also verifies embedded installer/core equality.
 
 ## Continuing installation requirements
 

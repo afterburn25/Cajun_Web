@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0 candidate — administrator accounts
+
+Owner-controlled creation, selected website/client-workspace permissions, enable/disable and private 24-hour setup/recovery links are integrated with existing users. Current-password confirmation, per-request authorization, reset/setup/session revocation and concurrent last-owner protection are enforced. Fresh installs initialize the owner; existing installations explicitly select an owner and add two tables without changing legacy credentials. Original and actual released-1.1.0 package upgrades are tested. Canonical foundation components and the embedded installer core are verified by the builder. [User/developer guide](docs/ADMIN_ACCOUNTS.md), [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10). No new publication or target-host deployment claimed until the release register records verified assets.
+
 ## v1.1.0 — 2026-10-13
 
 Published [v1.1.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.1.0) at `3703783e979abab38e8d72e9092c51dc835833b3` after PR #8. Delivered website/client-workspace scope and release fixes are listed in [the matrix](docs/RELEASE_1.1.0.md). Exact-main tests passed: 50 native, 157 HTTP/browser, all independent component/documentation checks. Seven retained assets were downloaded back and verified. Complete/update ZIPs support fresh setup and the tested populated 1.0.8 upgrade; no live deployment. This later documentation-only checkpoint records publication, remaining roadmap and the exact-release Devin handoff. Older pending statements below are historical.

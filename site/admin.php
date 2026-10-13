@@ -2,10 +2,12 @@
 declare(strict_types=1);
 define('CWP_BOOT',true);require __DIR__.'/app/core.php';boot();require __DIR__.'/app/view.php';require __DIR__.'/app/admin-view.php';require __DIR__.'/app/mail.php';
 require_once __DIR__.'/app/growth.php';require_once __DIR__.'/app/workspace.php';require_once __DIR__.'/app/studio-admin.php';
+require_once __DIR__.'/app/staff.php';require_once __DIR__.'/app/staff-admin.php';
 header('X-Robots-Tag: noindex, nofollow');
+if(in_array($_GET['view']??'', ['staff-setup','reset'],true))header('Referrer-Policy: no-referrer');
 $view=is_string($_GET['view']??null)?$_GET['view']:'dashboard';
 $validViews=['login','forgot','reset','dashboard','projects','project','services','service','leads','lead','testimonials','testimonial','settings','email','security','health'];
-$validViews=array_merge($validViews,array_keys(studio_admin_views()));
+$validViews=array_merge($validViews,['staff','staff-setup'],array_keys(studio_admin_views()));
 if(!in_array($view,$validViews,true)){$view='dashboard';}
 $error='';$id=(int)($_GET['id']??0);
 if($_SERVER['REQUEST_METHOD']==='POST'){
@@ -16,18 +18,18 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         $ipAllowed=consume_rate(ip_key('login'),15,900);$accountAllowed=consume_rate(hash_hmac('sha256','login-account|'.$email,config()['key']),8,900);
         if(!$ipAllowed||!$accountAllowed){usleep(200000);throw new InvalidArgumentException('Too many sign-in attempts. Wait 15 minutes before trying again.');}
         $u=one('SELECT * FROM '.table('users').' WHERE email=?',[$email]);
-        $hash=$u['password_hash']??'$2y$12$k41gRE1TEYzHWgNYkc/yDuDTWYfPr6HvCaDvQfmUTDpAWPSgwOI6u';
+        $hash=($u['password_hash']??'')?:'$2y$12$k41gRE1TEYzHWgNYkc/yDuDTWYfPr6HvCaDvQfmUTDpAWPSgwOI6u';
         $verified=password_verify($password,$hash);
-        if(!$u||!$verified){log_event('auth.failed','Sign-in rejected');throw new InvalidArgumentException('The email or password is not correct.');}
-        if(password_needs_rehash($hash,PASSWORD_DEFAULT)){query('UPDATE '.table('users').' SET password_hash=? WHERE id=?',[password_hash($password,PASSWORD_DEFAULT),$u['id']]);}
-        login_user($u);query('DELETE FROM '.table('rate_limits').' WHERE expires<?',[time()]);query('DELETE FROM '.table('resets').' WHERE expires<?',[time()]);log_event('auth.login');redirect(admin_url());
+        if(!$u||$u['password_hash']===''||!$verified||!staff_profile($u)){log_event('auth.failed','Sign-in rejected');throw new InvalidArgumentException('The email or password is not correct.');}
+        if(password_needs_rehash($hash,PASSWORD_DEFAULT)){query('UPDATE '.table('users').' SET password_hash=? WHERE id=? AND auth_version=?',[password_hash($password,PASSWORD_DEFAULT),$u['id'],$u['auth_version']]);}
+        login_user($u);query('DELETE FROM '.table('rate_limits').' WHERE expires<?',[time()]);query('DELETE FROM '.table('resets').' WHERE expires<?',[time()]);log_event('auth.login');redirect(admin_url(staff_home($u)));
     }
     if($action==='forgot'){
         $email=strtolower(posted('email',190));
         if(consume_rate(ip_key('forgot'),4,900)&&consume_rate(hash_hmac('sha256','reset|'.$email,config()['key']),3,3600)){
-            $u=one('SELECT id FROM '.table('users').' WHERE email=?',[$email]);
-            if($u&&setting('email_mode')!=='disabled'){
-                $token=bin2hex(random_bytes(32));$hash=hash('sha256',$token);query('INSERT INTO '.table('resets').' (token_hash,user_id,expires) VALUES (?,?,?)',[$hash,$u['id'],time()+3600]);
+            $reset=setting('email_mode')!=='disabled'?staff_reset_token($email):null;
+            if($reset){
+                $token=$reset['token'];$hash=hash('sha256',$token);
                 try{send_message($email,'Reset your CajunWebPro Studio password',"A password reset was requested for your account.\n\nOpen this link within one hour:\n".admin_url('reset',['token'=>$token])."\n\nIf you did not request this, you can ignore this message. Your password has not changed.");}catch(Throwable $e){report_error($e);query('DELETE FROM '.table('resets').' WHERE token_hash=?',[$hash]);}
             }
         }
@@ -37,10 +39,17 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         if(!consume_rate(ip_key('reset-submit'),10,900))throw new InvalidArgumentException('Please wait before trying another reset.');
         $token=posted('token',64);$password=posted('password',72);validate_password($password);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('The passwords do not match.');
         if(!preg_match('/^[a-f0-9]{64}$/D',$token))throw new InvalidArgumentException('This reset link is not valid.');
-        db()->beginTransaction();try{$r=one('SELECT * FROM '.table('resets').' WHERE token_hash=? AND expires>? FOR UPDATE',[hash('sha256',$token),time()]);if(!$r)throw new InvalidArgumentException('This link expired or has already been used. Request a new one.');query('UPDATE '.table('users').' SET password_hash=?,auth_version=? WHERE id=?',[password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),$r['user_id']]);query('DELETE FROM '.table('resets').' WHERE user_id=?',[$r['user_id']]);db()->commit();}catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
+        staff_reset($token,$password);
         unset($_SESSION['uid']);session_regenerate_id(true);flash('Your password has been changed. Sign in with your new password.');redirect(admin_url('login'));
     }
+    if($action==='staff_activate'){
+        if(!consume_rate(ip_key('staff-setup'),10,900))throw new InvalidArgumentException('Please wait before trying another setup code.');
+        $password=posted('password',72);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('The passwords do not match.');
+        staff_activate(posted('token',64),$password);unset($_SESSION['uid'],$_SESSION['auth_version']);session_regenerate_id(true);flash('Account setup is complete. Sign in with your email and new password.');redirect(admin_url('login'));
+    }
     $user=require_admin();
+    $permission=staff_action_permission($action);if($permission!==null)staff_require($permission);
+    if(in_array($action,['staff_migrate','staff_save','staff_invite'],true))staff_admin_action($action);
     if(str_starts_with($action,'studio_')){studio_admin_action($action,$user);}
     if($action==='logout'){log_event('auth.logout');$_SESSION=[];if(ini_get('session.use_cookies')){$p=session_get_cookie_params();setcookie(session_name(),'', ['expires'=>time()-42000,'path'=>$p['path'],'secure'=>$p['secure'],'httponly'=>true,'samesite'=>'Lax']);}session_destroy();redirect(admin_url('login'));}
     if($action==='project_save'){
@@ -97,7 +106,9 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     }
     if($action==='email_test'){if(!consume_rate('admin-mail-test-'.$user['id'],5,3600))throw new InvalidArgumentException('The hourly mail-test limit has been reached.');$status=send_message($user['email'],'CajunWebPro Studio · Email delivery test',"Your CajunWebPro website sent this test using the configured email transport.\n\nWebsite: ".site_url()."\nSent: ".gmdate('c')."\n\nReceiving this message confirms delivery to this inbox.");if($status!=='accepted')throw new InvalidArgumentException('Select and save an email delivery method first.');log_event('email.test');flash('The mail service accepted the test for '.$user['email'].'. Check the inbox and spam folder to confirm delivery.');redirect(admin_url('email'));}
     if($action==='account_save'){
-        if(!consume_rate('account-change-'.$user['id'],10,900))throw new InvalidArgumentException('Please wait before trying another account change.');if(!password_verify(posted('current_password',1000),$user['password_hash']))throw new InvalidArgumentException('Your current password is not correct.');$name=posted('name',120);$email=strtolower(posted('email',190));$pass=posted('new_password',72);if($name===''||!filter_var($email,FILTER_VALIDATE_EMAIL))throw new InvalidArgumentException('A name and valid email are required.');$hash=$user['password_hash'];if($pass!==''){validate_password($pass);if($pass!==posted('confirm_password',72))throw new InvalidArgumentException('The new passwords do not match.');$hash=password_hash($pass,PASSWORD_DEFAULT);}$version=bin2hex(random_bytes(16));query('UPDATE '.table('users').' SET name=?,email=?,password_hash=?,auth_version=? WHERE id=?',[$name,$email,$hash,$version,$user['id']]);query('DELETE FROM '.table('resets').' WHERE user_id=?',[$user['id']]);$_SESSION['auth_version']=$version;session_regenerate_id(true);log_event('account.update');flash('Account saved. Other sessions are invalidated.');redirect(admin_url('security'));
+        if(!consume_rate('account-change-'.$user['id'],10,900))throw new InvalidArgumentException('Please wait before trying another account change.');
+        $pass=posted('new_password',72);if($pass!==''&&$pass!==posted('confirm_password',72))throw new InvalidArgumentException('The new passwords do not match.');
+        $version=staff_account_save((int)$user['id'],posted('name',120),posted('email',190),posted('current_password',1000),$pass);$_SESSION['auth_version']=$version;session_regenerate_id(true);flash('Account saved. Other sessions and setup/reset links are invalidated.');redirect(admin_url('security'));
     }
     if($action==='installer_cleanup'){$deleted=cleanup_installer_files();$remaining=array_keys(array_filter($deleted,fn($gone)=>!$gone));log_event('installer.cleanup',$remaining?'Physical removal needs host assistance':'Installer absent');flash($remaining?'Still on disk: '.implode(', ',$remaining).'. The installer is blocked. Remove these files in File Manager or ask your host to align ownership.':'Installer PHP, private key, and installer-only CSS/JavaScript are absent from the server.',$remaining?'warning':'success');redirect(admin_url('health'));}
     if($action==='storage_repair'){$results=[];foreach([config()['storage'],config()['storage'].'/media'] as $dir)$results[]=writable_probe($dir,true,0700);$ok=!in_array(false,array_column($results,'ok'),true);log_event('storage.permissions',$ok?'Passed':'Needs host attention');flash($ok?'Private-storage checks passed using owner-only directory permissions.':'One or more storage checks failed. Review the owner and path details below.',$ok?'success':'warning');redirect(admin_url('health'));}
@@ -106,14 +117,21 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     throw new InvalidArgumentException('Unknown administration action.');
  }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();$error=$e instanceof PDOException?'The change could not be saved. Check for duplicate values or database issues. Reference: '.report_error($e):$e->getMessage();}
 }
+if($view==='staff-setup')staff_setup_render($error);
 if(in_array($view,['login','forgot','reset'],true)){
- if($view==='login'&&admin_user())redirect(admin_url());
+ if($view==='login'&&($signed=admin_user()))redirect(admin_url(staff_home($signed)));
  $titles=['login'=>'Welcome back.','forgot'=>'Reset your password.','reset'=>'A fresh start.'];login_head($titles[$view]);if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';
  if($view==='login'):?><p>Sign in to manage your website, projects and inquiries.</p><form method="post" action="<?=esc(admin_url('login'))?>"><?php admin_action('login');admin_input('email','Email address','','email','required autocomplete="username" maxlength="190"');admin_input('password','Password','','password','required autocomplete="current-password"');?><button class="btn gold">Enter the Studio →</button></form><a class="forgot-link" href="<?=esc(admin_url('forgot'))?>">Forgot your password?</a><?php
  elseif($view==='forgot'):?><p>Enter your administrator email to request a time-limited reset link.</p><form method="post" action="<?=esc(admin_url('forgot'))?>"><?php admin_action('forgot');admin_input('email','Administrator email','','email','required autocomplete="email" maxlength="190"');?><button class="btn gold">Request Reset Link →</button></form><p class="hint">Password resets require configured email delivery. Without it, contact your hosting administrator using the recovery instructions supplied with the website.</p><a class="forgot-link" href="<?=esc(admin_url('login'))?>">Return to sign in</a><?php
  else:$token=is_string($_GET['token']??null)?$_GET['token']:'';if($_SERVER['REQUEST_METHOD']==='POST'&&is_string($_POST['token']??null))$token=$_POST['token'];?><p>Choose a new, unique passphrase. All other sign-in sessions will be invalidated.</p><form method="post" action="<?=esc(admin_url('reset'))?>"><?php admin_action('reset');?><input type="hidden" name="token" value="<?=esc($token)?>"><?php admin_input('password','New password','','password','required minlength="14" maxlength="72" autocomplete="new-password"');admin_input('confirm_password','Confirm password','','password','required minlength="14" maxlength="72" autocomplete="new-password"');?><button class="btn gold">Set New Password →</button></form><?php endif;login_foot();exit;
 }
 $user=require_admin();
+$permission=staff_view_permission($view);
+if($permission!==null&&!staff_can($permission,$user)){
+    if($view==='dashboard')redirect(admin_url(staff_home($user)));
+    http_response_code(403);admin_head('Access unavailable','security',$user);echo '<div class="notice error">Your account does not have access to this section.</div>';admin_foot();exit;
+}
+if($view==='staff'){staff_admin_render($user,$error);exit;}
 if(array_key_exists($view,studio_admin_views())){studio_admin_render($view,$user,$error);exit;}
 $titles=['dashboard'=>'Your studio, at a glance.','projects'=>'Portfolio','project'=>$id?'Edit project':'New project','services'=>'Services','service'=>$id?'Edit service':'New service','leads'=>'Project inquiries','lead'=>'Inquiry details','testimonials'=>'Client testimonials','testimonial'=>$id?'Edit testimonial':'New testimonial','settings'=>'Website settings','email'=>'Email delivery','security'=>'Your account','health'=>'System health'];admin_head($titles[$view],$view,$user);if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';
 if($view==='dashboard'){

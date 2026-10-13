@@ -6,17 +6,18 @@ define('CWP_BOOT', true);
 require __DIR__.'/../site/app/core.php';
 $GLOBALS['cwp_config'] = require __DIR__.'/../test-runtime/config-fixture.php';
 $request = json_decode(stream_get_contents(STDIN), true, 32, JSON_THROW_ON_ERROR);
-if (($request['operation'] ?? '') === 'seed-upgrade') {
-    require __DIR__.'/../test-runtime/legacy/app/schema.php';
-    $GLOBALS['cwp_config']['db']['prefix'] = 'upgrade_';
-    $GLOBALS['cwp_config']['site_url'] = 'http://127.0.0.1:8091/upgrade';
-    $private = __DIR__.'/../test-runtime/upgrade-private';
+if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade'],true)) {
+    $staffUpgrade=$request['operation']==='seed-staff-upgrade';$folder=$staffUpgrade?'staff-upgrade':'upgrade';$prefix=$staffUpgrade?'staffup_':'upgrade_';
+    require __DIR__.'/../test-runtime/'.($staffUpgrade?'released-1.1.0':'legacy').'/app/schema.php';
+    $GLOBALS['cwp_config']['db']['prefix'] = $prefix;
+    $GLOBALS['cwp_config']['site_url'] = 'http://127.0.0.1:8091/'.$folder;
+    $private = __DIR__.'/../test-runtime/'.$folder.'-private';
     if (!is_dir($private)) mkdir($private, 0700, true);
     if (!is_dir($private.'/media')) mkdir($private.'/media', 0700);
     $GLOBALS['cwp_config']['storage'] = realpath($private);
-    foreach (schema_statements('upgrade_') as $sql) db()->exec($sql);
+    foreach (schema_statements($prefix) as $sql) db()->exec($sql);
     foreach (default_settings() as $key=>$value) save_setting($key,$value);
-    save_setting('sentinel_original','Keep original 1.0.8 settings');
+    save_setting('sentinel_original','Keep original '.($staffUpgrade?'1.1.0':'1.0.8').' settings');
     $now=gmdate('Y-m-d H:i:s');
     query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',
         ['Upgrade owner','upgrade@example.invalid',password_hash('Synthetic upgrade passphrase 2026',PASSWORD_DEFAULT),str_repeat('c',32),$now]);
@@ -24,7 +25,12 @@ if (($request['operation'] ?? '') === 'seed-upgrade') {
         ['UPGRADE-LEAD',str_repeat('3',64),'Old inquiry','old@example.invalid','Design','Discuss','Flexible','Preserve the original inquiry.',str_repeat('4',64),'Keep this note',$now]);
     foreach(default_projects() as $i=>$v) query('INSERT INTO '.table('projects')." (slug,title,category,summary,description,challenge,solution,deliverables,cover,status,is_demo,featured,sort_order,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,'published',1,1,?,?,?)",[...$v,$i,$now,$now]);
     file_put_contents($private.'/media/retained.php', CWP_GUARD.'Original private media');
-    file_put_contents(__DIR__.'/../test-runtime/upgrade-config.php','<?php return '.var_export(config(),true).';');
+    if($staffUpgrade){
+        query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Retained client','retained@example.invalid',str_repeat('e',32),$now]);
+        query('INSERT INTO '.table('studio_jobs').' (client_id,title,stage,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?,?)',[1,'Retained website project','design','Preserve project summary','Preserve project progress',$now,$now]);
+        query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Other legacy administrator','other-legacy@example.invalid',password_hash('Synthetic other legacy passphrase',PASSWORD_DEFAULT),str_repeat('f',32),$now]);
+    }
+    file_put_contents(__DIR__.'/../test-runtime/'.$folder.'-config.php','<?php return '.var_export(config(),true).';');
     echo json_encode(['ok'=>true]);
 } else {
     $stmt=query($request['sql'],$request['params']??[]);

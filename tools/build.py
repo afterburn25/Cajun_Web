@@ -14,7 +14,19 @@ def inventory():
     return {p.relative_to(SITE).as_posix():sha(p.read_bytes()) for p in paths}
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--refresh',action='store_true');ap.add_argument('--commit',default='local-uncommitted');args=ap.parse_args()
+    # Canonical independent components are bundled verbatim; verification rejects divergent copies.
+    for area in ['access','invitations']:
+        for source in (ROOT/'foundation'/area).glob('*.php'):
+            bundled=SITE/'app/foundation'/area/source.name
+            if args.refresh:
+                bundled.parent.mkdir(parents=True,exist_ok=True);bundled.write_bytes(source.read_bytes())
+            elif not bundled.is_file() or bundled.read_bytes()!=source.read_bytes():
+                raise RuntimeError('Stale bundled foundation: '+str(source))
     inv=inventory();install=SITE/'install.php';s=install.read_text(encoding='utf-8')
+    core=(SITE/'app/core.php').read_text(encoding='utf-8').removeprefix('<?php\ndeclare(strict_types=1);\n').replace("const CWP_ROOT = __DIR__ . '/..';","const CWP_ROOT = __DIR__;")
+    begin=s.index("defined('CWP_BOOT') || exit;");end=s.index('\nsecurity_headers();',begin)
+    if args.refresh:s=s[:begin]+core+s[end:]
+    elif s[begin:end]!=core:raise RuntimeError('Embedded installer bootstrap differs from application core')
     expected={k:v for k,v in inv.items() if k!='install.php'}
     body='function setup_expected_files(): array { return [\n'+''.join(f"        '{k}' => '{v}',\n" for k,v in expected.items())+'    ]; }'
     pattern=r'function setup_expected_files\(\): array \{ return \[.*?\n    \]; \}'
@@ -47,7 +59,7 @@ def main():
         try:subprocess.run(['node','--check',str(check)],check=True,capture_output=True)
         finally:check.unlink()
     out=ROOT/'dist';out.mkdir(exist_ok=True)
-    manifest={'version':version,'source_commit':args.commit,'layout':'flat','files':inv,'fresh_install':'install.php','existing_install':'Merge update files; sign into admin.php and use Version & database. Never rerun fresh setup.'}
+    manifest={'version':version,'source_commit':args.commit,'layout':'flat','files':inv,'fresh_install':'install.php','existing_install':'Back up first. Merge UPDATE files; sign into admin.php. From 1.0.8 use Version & database first. Open Administrators to select the initial owner and enable account access. Never rerun fresh setup.'}
     (out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8',newline='\n')
     for kind in ['COMPLETE-UPLOAD','UPDATE']:
         target=out/f'CajunWebPro-{version}-{kind}.zip'

@@ -1,18 +1,18 @@
 # Architecture notes
 
-The described application is now shipped in v1.1.0; independent foundations remain outside deployment. See [release register](RELEASES.md) and [test report](TEST_REPORT_1.1.0.md).
+The website/client application shipped in v1.1.0. Candidate 1.2.0 integrates administrator access using canonical foundation components bundled verbatim into `site/app/foundation`; see [administrator architecture](ADMIN_ACCOUNTS.md). See [release register](RELEASES.md) and [test report](TEST_REPORT_1.1.0.md).
 
 Updated 2026-10-13: recovered 1.1.0 source is in `site/`. Public growth modules, `workspace.php`, `studio-admin.php` and `portal.php` extend the existing application. The seven additive workspace tables and actual routes/controls are mapped in [release acceptance](RELEASE_1.1.0.md). The older source inventory below remains useful baseline history.
 
 ## Deployment model
 
-Follow-on A-05 component: [Staff invitations](STAFF_INVITATIONS.md) uses PDO MySQL/MariaDB and an explicitly migrated InnoDB table, with transactional one-use redemption and an application-supplied account activation callback. It is still outside the deployable tree. Read-only inspection of recovered draft source on `codex/finish-1.1.0` revealed opaque string `auth_version` values; the foundation now matches those without changing the draft's schema/login code.
+Follow-on A-05 component: [Staff invitations](STAFF_INVITATIONS.md) uses PDO MySQL/MariaDB and an explicitly migrated InnoDB table, with transactional one-use redemption and an application-supplied account activation callback. The 1.2.0 staff adapter now supplies that callback, lifecycle serialization and explicit migration; the canonical component is bundled into the deployable tree. Read-only inspection of recovered draft source on `codex/finish-1.1.0` revealed opaque string `auth_version` values; the foundation now matches those without changing the draft's schema/login code.
 
-Independent implementation added 2026-10-13: [access foundation](ACCESS_FOUNDATION.md) under `foundation/access/`, with synthetic unit tests under `tests/access/`. It is a pure PHP permission-decision module with no framework, database, request handler or installer dependency. It is excluded from deployment until mapped into the verified current source; no current schema or authentication structure is assumed. Historical source inventory below remains historical.
+Independent implementation added 2026-10-13: [access foundation](ACCESS_FOUNDATION.md) under `foundation/access/`, with synthetic unit tests under `tests/access/`. It is a pure PHP permission-decision module with no framework, database, request handler or installer dependency. The 1.2.0 adapter maps it to existing `users` and additive `staff_profiles`; the original standalone design remains testable. Historical source inventory below remains historical.
 
 Existing application: PHP with PDO MySQL/MariaDB, normal browser requests, local CSS/JavaScript/images, and persistent private file storage. PHP source targets 8.2 or newer. Required extensions are checked by the installer. Shared-host deployment must not require a Node service, command-line build, root access, or a long-running worker.
 
-The repo's documentation tree is not the website document root. `site/` is the source directory; `brand/`, `tests/`, `tools/` and `foundation/` are not deployed. Build the deployment ZIP from the deployable files only, without a source-directory/version wrapper. Preserve the existing app/assets grouping and root entry-point behavior.
+The repo's documentation tree is not the website document root. `site/` is the source directory; `brand/`, `tests/`, `tools/` and the canonical `foundation/` directory are not deployed directly; verified copies of the access/invitation classes are shipping dependencies under `site/app/foundation/`. Build the deployment ZIP from the deployable files only, without a source-directory/version wrapper. Preserve the existing app/assets grouping and root entry-point behavior.
 
 ## Inspected source map
 
@@ -25,6 +25,8 @@ The repo's documentation tree is not the website document root. `site/` is the s
 | `app/core.php` | Common configuration/session/database/security/filesystem helpers; version constant |
 | `app/schema.php` | Initial table definitions and seed/default content |
 | `app/mail.php` | Mail delivery helpers |
+| `app/staff.php`, `app/staff-admin.php` | Account lifecycle/authorization, explicit upgrade and administrator/setup forms |
+| `app/foundation/` | Verbatim bundled access/invitation components; canonical sources stay in root foundation |
 | `media.php` | Media-serving entry point |
 | `robots.php`, `sitemap.php` | Search-crawler endpoints |
 | `install.php` | Embedded-bootstrap, one-page setup and package inventory |
