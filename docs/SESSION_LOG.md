@@ -385,3 +385,54 @@ Starting main `332af19333a62d3dfcc90eb9cf34871a7fac50ec` after checked PR #30 me
 Request: continue the roadmap without stopping. Starting commit: `332af19` (main after PR #30 merged the portfolio integration). Branch: `devin/homepage-motion`. Owned paths recorded on issue #2.
 
 Found a real defect: `site.js` toggled `motion-off` on `body`, but no CSS referenced the class — a manual pause left `float-cue` animating, `scroll-behavior:smooth` active, and `.reveal:not(.shown)` items already hidden by the observer stuck invisible. Moved the class to `documentElement`, appended matching `html.motion-off` rules (scroll-behavior auto, animation/transition kill, force-reveal pending sections, hero-transform reset) and added a restrained 1.5s metallic sheen on `.brand` hover/focus — suppressed by both pause paths via the universal kill rules. Added five Chromium acceptance checks in `tests/browser_acceptance.py` covering the toggle, `aria-pressed`, force-reveal and cue stop under a normal-motion context. `node --check` passes; `tools/build.py --refresh` regenerated installer hashes and verify passes (80 shipping files / 55 PHP). Native/HTTP/Chromium acceptance runs on PR CI. No schema, pricing, identity or shared-module changes.
+
+## 2026-10-13 — Owner priority directory/packaging override
+
+Owner supplied the explicit directory-refactor and three-package requirements while portfolio publication was pending. Stopped that publication; no 1.11.0 tag/draft/assets created. Merged already-tested test-only PR #33 to preserve accepted current baseline (`b975915`), then branched `codex/priority-directory-refactor`. Latest published COMPLETE is 1.10.0, independently inspected and checksum-verified; historical 1.0.8 also inspected. Both use root PHP entry files plus app/assets. Current integrated source has 80 shipping files; largest are installer 95,932 bytes, admin 55,118, studio-admin 23,453, core 19,493. Recorded complete starting inventory/hashes in STRUCTURE_BASELINE_1.11-CANDIDATE.json. PRs #31/#32 remain separate; no worker branch reset. Required scope/contract and priority instructions committed before moves. Refactor/migration/Apache/package acceptance pending; no live host inspection or deployment.
+
+## 2026-10-13 — implement organized source and staged update candidate
+
+From `d7c88d8` on `codex/priority-directory-refactor`: actual git moves/splits for routes, assets, shared security/filesystem/database code, admin actions/views, portal, public templates, one-page installer, canonical foundation bundles, safe storage/upload scaffolds. Staged UPDATE avoids blindly overwriting legacy/customized files; owner password/CSRF/backup confirmation, immutable inventory, retained lock, guarded backups and journal, bounded known-hash replacement/retirement, retry and recovery. Full-project/download builder rewritten for clean commits and three purposes. Existing HTTP upgrade suites now call the actual owner page. Syntax/generation pass locally; database/browser/Apache acceptance not yet complete. No main merge, tag, release or live deployment. Continue acceptance and implementation until owner priority is delivered.
+
+### Directory acceptance expansion
+
+Candidate `77e06fb` passed GitHub application run `38413364962`: 618 native assertions and 753 HTTP/Chromium assertions, including all eleven retained old-layout upgrade paths through the owner update UI. Added unprivileged filesystem fault/recovery/lock/customization acceptance and real Apache 2.4 mod_php with rewrite on/off, root/subfolder one-page setup and internal/private denial. Strengthened procedural direct-access 404 guards and preservation of edited server policy during retry/recovery. These new suites await their first CI run; prior passing results do not establish them.
+
+### Expanded structure acceptance findings
+
+Run `38414568043` retained passing application/component suites but exposed two new-harness gaps: deleting a staged bootstrap dependency failed before the migration verifier, and Apache foreground shutdown shared the CI shell process group. The owner entry now verifies the complete staged payload/history before application loading and returns a useful 503 restore message. Apache runs in its own session. Filesystem tests separately cover missing non-bootstrap payload and the HTTP harness covers missing bootstrap support. Further split studio and marketing screens into specific views, added stale dependency/CSS URL/secret/symlink build guards, explicit unknown-file reporting and repeat application after a recovered attempt with retained journals. Homepage desktop 1440×3161 and mobile 390×6080 PNG pixels from candidate `77e06fb` are identical to retained published 1.10.0 screenshots; admin/client screenshots retain dimensions with small content differences. New tests/review still pending; no release/merge/deployment.
+
+### Server and compatibility acceptance follow-up
+
+Candidate `57e28bf` passes all native/HTTP/Chromium suites plus 41 real filesystem/package/recovery checks. Apache run `38416307606` exercised the real installer, root cookie scope, exact assets and internal-file denials, then found the minimal server harness omitted mod_autoindex; it therefore did not produce the expected directory-listing denial response. Load autoindex to test the production Options -Indexes rule explicitly. Added Apache maintenance/resume checks, legacy authenticated POST and exact-body signed callback checks, standalone PHP guards and nested transport redirect assertions. Expanded assertions remain pending their next combined run.
+
+### Final guard coverage expansion
+
+Run `38417310703` retains passing native, expanded HTTP/Chromium and filesystem recovery suites. Apache now passes fresh root/subfolder setup, asset/session checks, internal denial, no listings and runtime-file protection, but the added interrupted-upgrade fixture needs its worker diagnostic captured before claiming that case. Added exact diagnostics, real builder negative tests (runtime data, missing/moved modules, root logic, weakened guards, symlinks and archive paths), and opcode-cache invalidation checks before activating changed PHP. Apache acceptance will use timestamp validation disabled to exercise stale-code prevention. These additions are not yet accepted.
+
+### 2026-10-13 — initialize Apache cache before requests
+
+Candidate 49eae7f passes the builder negative, native, HTTP/Chromium and filesystem suites. Apache run 38418701581 exposed a harness configuration error: OPcache was enabled per request after startup, which PHP forbids and the installed module crashed on. Configure the isolated Apache PHP scan directory at process startup instead. Preserve all distribution guides and per-artifact manifests in CI artifacts. The interrupted Apache update diagnostic remains to be reached and checked; publication remains pending.
+
+
+The Apache legacy fixture also needs CWP_BOOT when reading the intentionally guarded synthetic installed configuration. Without that constant the fixture helper exits safely before copying config; it cannot exercise migration. Added the normal guard constant to that fixture-only CLI command. No production configuration changed.
+
+## 2026-10-13 — Dependency status clarification and agent instructions
+
+**Request:** Owner approved replacing ambiguous roadmap "Blocked" classifications for HC-07, HC-09, HC-10 and A-10 and explicitly instructed Codex/Devin not to stop independent development when an external provider/merchant/SSH prerequisite is unavailable.
+
+**Starting main:** `b975915b091d72944dca068399cfd2df1db74e88` (repository tree `3222081021545afa6f9af952bf6bc31a7b21768f`). Read and preserved current AGENTS, roadmap, hosting/client roadmaps, coordination, status/handoff, decisions, changelog and historical log.
+
+**Docs changes:** Added `docs/DEPENDENCY_GATES.md`; inserted mandatory policy links/brief instructions into `AGENTS.md`, `docs/ROADMAP.md`, `docs/HOSTING_AND_BILLING_ROADMAP.md`, `docs/CLIENT_PORTAL_ROADMAP.md`, `docs/AGENT_COORDINATION.md`; updated `PROJECT_STATUS.md`, `SESSION_HANDOFF.md`, `docs/DECISIONS.md`, `CHANGELOG.md` and this log. The four listed labels now describe external validation gaps independently from actual implementation and release status.
+
+**Verification and limitations:** Verified current GitHub main and read the target documentation before composing changes; GitHub write and readback of committed docs will be checked. No application source, release packages, CI tests, provider API, Authorize.net merchant, payments, customer service or live host were changed, exercised or represented as working.
+
+**Next:** Agents should begin with the next safe bounded implementation on current main, track precise external gates for real provider actions, avoid duplicate work/branches, and update evidence/status per reviewed implementation. No owner secrets should be placed in Git.
+
+### 2026-10-13 — preserve concurrent main policy and Devin build work
+
+Merged main 5d810b1 dependency-gate documentation without weakening the active structure priority. Reviewed and integrated Devin PR #42 (19afbfc, original history preserved): explicit UTF-8 reads/Node stdin make Windows builds work without environment overrides. Resolved overlapping diagnostics by retaining return code/stdout/stderr and retained the stricter CSS containment check. Added a synthetic Apache assertion proving old PHP is actually cached with timestamp validation disabled. Combined acceptance remains required before merge/publication.
+
+### 2026-10-13 — complete candidate structure acceptance
+
+Candidate 9e8dedf passes run 38420905892: 618 native, 782 HTTP/Chromium, 41 filesystem/recovery, 203 Apache and 16 builder negative checks (1660 total). Both rewrite modes include cached legacy PHP activation, maintenance owner resume, root/subfolder setup and protected uploads; actual eleven historical upgrade packages remain covered. Windows clean build succeeds with Devin PR #42 integrated. Added final path/branch handoff and acceptance record; cleaned only trailing source whitespace and regenerated installer inventory. Final commit checks, merge, exact-main verification and release download verification remain next; no deployment/publication yet.

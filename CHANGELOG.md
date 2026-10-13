@@ -1,9 +1,27 @@
 # Changelog
 
-## Unreleased — homepage motion fixes (W-02 slice)
+## Unreleased — homepage motion fixes (W-02 slice, reapplied post-refactor)
 
-- Move the `motion-off` marker to `documentElement` and give it real CSS coverage: paused motion now stops CSS animations/transitions, disables smooth-scroll, resets the hero transform and force-reveals pending `.reveal` sections that a mid-session pause previously left invisible.
-- Add a restrained hover/focus metallic sheen on the brand logo; both pause paths suppress it. The parallax reset now targets the real `[data-parallax]` hook (`.hero-scene` markup was never emitted; `--scene-*` variables are live via `premium.css`). Ten provably-dead rules for the legacy `.hero-scene`/`.scroll-cue`/`float-cue` selectors were removed — no markup emits them and no JS adds them. Acceptance now also records a `qa/motion-metrics.json` evidence artifact (navigation timing, resource bytes, paint entries, layout-shift total) so load/layout claims have measured data.
+- Reapplied at the refactored `site/assets/css/` / `site/assets/js/` paths, retaining the refactor's `body.cwp-site.motion-off` convention. Added `html:has(.cwp-site.motion-off)` so the pause toggle also disables root smooth-scroll (the `motion-off *` rule cannot reach `html` itself).
+- Re-add the restrained hover/focus metallic sheen on the brand logo; the paused-motion rules suppress it. Removed the dead legacy `.hero-scene` rules — markup emits `.hero-visual` and parallax uses `[data-parallax]`/`premium.css`. Acceptance records `qa/motion-metrics.json` (navigation timing, resource bytes, paint entries, layout-shift total) and exercises the toggle on the reorganized routes.
+## 1.11.0 — directory correction candidate (not published)
+
+- Organized administration, portal, public templates, shared bootstrap/security, business services, database migrations, API/webhooks/media and setup source; retained existing visuals and exact image bytes.
+- Canonical root/subfolder URLs, shared session identity, guarded internal paths and private upload staging within the configured store.
+- Staged owner update with recognized-source verification, backup confirmation, serialized journaled replacement, known-hash retirement, direct legacy callbacks and recovery.
+- Three clean-commit artifacts: sanitized FULL-PROJECT, organized COMPLETE-UPLOAD and independently exercised UPDATE; per-artifact inventories/checksums and START-HERE.
+- Expanded application, historical upgrade, Apache and filesystem recovery acceptance. Publication depends on completed checks and exact-main verification.
+
+## Unreleased priority correction — organized directory layout and complete project packages
+
+Owner override stops the portfolio-only 1.11.0 publication. Preserve integrated source and implement organized modules/assets, protected storage/upload scaffolding, bounded owner migration/recovery, and FULL-PROJECT/COMPLETE-UPLOAD/UPDATE artifacts. Latest published version remains 1.10.0; no corrected release claimed yet.
+
+## 2026-10-13 — Dependency-aware roadmap and agent instructions (docs only)
+
+- Added a mandatory owner-approved policy for Codex/Devin: unavailable third-party API/merchant/SSH verification blocks only the specific real integration or production operation, **not** safe independent development or unrelated features.
+- Clarified HC-07 (Awaiting API verification), HC-09/HC-10 (Development pending — API verification), and A-10 (Architecture/security validation pending), tracking those gates separately from implementation/release/deployment status.
+- Linked the rules from agent instructions, roadmap, provider/client roadmaps, coordination, status, handoff and decisions. Explicit production restrictions remain.
+- No PHP/runtime feature, integration, live transaction, deployment or app version bump; previously released v1.10.0 stays unchanged.
 
 ## 1.11.0 — portfolio integration candidate, not yet released
 

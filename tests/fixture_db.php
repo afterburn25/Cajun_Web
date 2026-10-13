@@ -7,7 +7,7 @@ $request = json_decode(stream_get_contents(STDIN), true, 32, JSON_THROW_ON_ERROR
 // A populated catalog fixture calls the old authorization adapter. Its core must
 // resolve CWP_ROOT to that same retained release, never include two staff adapters.
 $oldCore=match($request['operation']??''){'seed-portfolio-upgrade'=>'test-runtime/released-1.10.0','seed-activity-upgrade'=>'test-runtime/released-1.9.0','seed-delivery-upgrade'=>'test-runtime/released-1.8.0','seed-ledger-upgrade'=>'test-runtime/released-1.7.0','seed-notification-upgrade'=>'test-runtime/released-1.6.0','seed-trial-upgrade'=>'test-runtime/released-1.5.0','seed-payment-upgrade'=>'test-runtime/released-1.4.0',default=>'site'};
-require __DIR__.'/../'.$oldCore.'/app/core.php';
+require __DIR__.'/../'.$oldCore.($oldCore==='site'?'/includes/bootstrap.php':'/app/core.php');
 $GLOBALS['cwp_config'] = require __DIR__.'/../test-runtime/config-fixture.php';
 if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','seed-support-upgrade','seed-catalog-upgrade','seed-payment-upgrade','seed-trial-upgrade','seed-notification-upgrade','seed-ledger-upgrade','seed-delivery-upgrade','seed-activity-upgrade','seed-portfolio-upgrade'],true)) {
     $portfolioUpgrade=$request['operation']==='seed-portfolio-upgrade';
