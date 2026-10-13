@@ -5,6 +5,7 @@
 - Added canonical `foundation/comparisons/` classes (`ComparisonFact` requiring https source/observation date/plan scope/evidence kind and rejecting absolutist phrasing, `ComparisonRegistry`, `ComparisonSection` with fail-closed publishable/staleCitations) plus `docs/COMPARISONS_FOUNDATION.md`.
 - Added `tests/comparisons/run.php` (30 synthetic checks; fixture `.invalid` sources only) and the `comparisons.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes and no actual competitor facts — real claims require primary-source review. Not yet integrated or released.
+
 ## 1.11.1 — candidate, motion preferences and organized updates
 
 - Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.

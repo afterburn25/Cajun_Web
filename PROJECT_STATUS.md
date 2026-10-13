@@ -3,6 +3,7 @@
 ## 2026-10-13 — Devin C-01 comparison-facts foundation (unreviewed, unintegrated)
 
 Devin implemented the safe-work portion of C-01 as an isolated canonical component on `devin/comparisons-foundation`: `foundation/comparisons/` (`ComparisonFact`, `ComparisonRegistry`, `ComparisonSection`), `tests/comparisons/run.php` (30 checks), `comparisons.yml` workflow, and [COMPARISONS_FOUNDATION](docs/COMPARISONS_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer — populating real competitor facts still requires primary-source review. No `site/` changes, deployment or release.
+
 ## Active roadmap increment — 1.11.1 candidate
 
 Codex owns `codex/motion-update-1.11.1` from main `02fc784`, preserving Devin PR #34 history at `e2b2a23` in merge `69ed304`. Scope: W-02 homepage pause/root scrolling and restrained brand sheen; honest browser motion evidence; safe staged updates from published organized 1.11.0 while retaining all older supported paths. Recovery journals are per target version; the permanent 1.11.0 lock is shared across retained updater versions. Existing private/configuration/scaffold bytes and prior recovery records stay intact; fresh organized sites gain no legacy root routes.
