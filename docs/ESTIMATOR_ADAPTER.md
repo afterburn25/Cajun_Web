@@ -4,7 +4,7 @@ Written 2026-10-13 on `devin/estimator-adapter` from main `b975915`. This docume
 
 ## Live semantics that must be preserved
 
-`growth_estimate(array $a, array $r)` in `site/app/growth.php` is authoritative. Its exact behavior:
+`growth_estimate(array $a, array $r)` — currently `site/app/growth.php`, moving to `site/app/marketing/growth.php` under Codex's directory refactor — is authoritative. Its exact behavior:
 
 - Inputs: `project_type` ∈ `growth_types()` (`business`, `redesign`, `store`, `custom`); `pages` integer 1–100 (default 5); `products` integer 0–10000, forced to 0 unless the type is `store`; `options` a list of at most 6 keys from `growth_options()` (`copy`, `brand`, `migration`, `booking`, `accounts`, `integration`), deduplicated.
 - Rules: `growth_rules()` decodes the `growth_prices` setting. Each priced key maps to `[low, high]` integer cents with `0 ≤ low ≤ high ≤ 99999999` (validated by `grange`); a missing key or `null` pair means *unpriced*. Pricing is active only when `$r['enabled'] === true`.
