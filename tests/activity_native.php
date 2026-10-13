@@ -1,0 +1,81 @@
+<?php
+/** Isolated native authorization/projection/read-state tests, synthetic records only. */
+declare(strict_types=1);
+if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
+define('CWP_BOOT',true);require __DIR__.'/../site/app/core.php';require __DIR__.'/../site/app/schema.php';require __DIR__.'/delivery_fixture.php';
+$GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='activityci_';
+$private=__DIR__.'/../test-runtime/activity-native-private';if(!is_dir($private))mkdir($private,0700);$GLOBALS['cwp_config']['storage']=realpath($private);
+$_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=realpath(__DIR__.'/../site');start_session();
+$password='Synthetic activity owner passphrase';$checks=[];
+function a_ok(string $name,bool $ok): void {global $checks;$checks[]=['name'=>$name,'passed'=>$ok];if(!$ok)throw new RuntimeException($name);}
+function a_deny(string $name,callable $fn): void {try{$fn();}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;a_ok($name,true);return;}a_ok($name,false);}
+function a_admin(int $id=1): void {$u=one('SELECT * FROM '.table('users').' WHERE id=?',[$id]);$_SESSION=['uid'=>$id,'auth_version'=>$u['auth_version'],'login_at'=>time(),'last_activity'=>time()];}
+function a_client(int $id=1): void {$c=one('SELECT * FROM '.table('studio_clients').' WHERE id=?',[$id]);$_SESSION=['client_id'=>$id,'client_auth'=>$c['auth_version'],'client_last'=>time(),'client_login'=>time()];}
+function a_message(string $actor='admin',int $job=1): string {query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,?,?,?,?)',[$job,$actor,1,'Synthetic private message body',gmdate('Y-m-d H:i:s')]);return 'message:'.db()->lastInsertId();}
+function a_keys(string $audience): array {return array_column(activity_feed($audience)['rows'],'event_key');}
+function a_audit_failure(callable $fn): bool {db()->exec('CREATE TRIGGER activityci_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic audit failure'");try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER activityci_fail');}return $failed;}
+if(($argv[1]??'')==='read-worker'){a_client();activity_mark('client',[$argv[2]],true);echo 'OK';exit;}
+try{
+    foreach(schema_statements('activityci_') as $name=>$sql)if($name!=='activity_reads')db()->exec($sql);
+    foreach(default_settings() as $k=>$v)save_setting($k,$v);save_setting('staff_schema_version','1');
+    $now=gmdate('Y-m-d H:i:s');for($id=1;$id<=3;$id++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Activity staff '.$id,'activity'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),$now]);staff_seed_owner(1);
+    foreach([2=>['clients.manage'],3=>['website.manage']] as $id=>$grants)query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[$id,json_encode($grants)]);
+    for($id=1;$id<=2;$id++){
+        query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Activity client '.$id,'activity-client'.$id.'@example.invalid',str_repeat((string)$id,32),$now]);
+        query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?)',[$id,'Private project '.$id,'Preserve summary','Preserve milestones',$now,$now]);
+    }
+    $original=all('SELECT * FROM '.table('studio_jobs'));a_admin();a_deny('Setup reauthenticates owner',fn()=>activity_migrate('wrong'));
+    a_admin(2);a_deny('Client staff cannot enable activity',fn()=>activity_migrate($password));a_admin();
+    foreach(activity_schema('activityci_') as $sql)db()->exec($sql);
+    db()->exec('ALTER TABLE '.table('activity_reads').' DROP INDEX read_event');a_deny('Migration rejects missing recipient-key uniqueness',fn()=>activity_migrate($password));db()->exec('ALTER TABLE '.table('activity_reads').' ADD UNIQUE read_event(actor_type,actor_id,event_key)');
+    db()->exec('ALTER TABLE '.table('activity_reads').' MODIFY event_key VARCHAR(80) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL');a_deny('Migration rejects folded source keys',fn()=>activity_migrate($password));db()->exec('ALTER TABLE '.table('activity_reads').' MODIFY event_key VARCHAR(80) CHARACTER SET ascii COLLATE ascii_bin NOT NULL');
+    query('INSERT INTO '.table('activity_reads')." (actor_type,actor_id,event_key,read_at) VALUES ('client',1,'message:1',?)",[$now]);a_deny('Migration refuses unrecognized populated state',fn()=>activity_migrate($password));query('DELETE FROM '.table('activity_reads'));
+    a_ok('Setup audit failure rolls back readiness',a_audit_failure(fn()=>activity_migrate($password))&&!activity_ready());activity_migrate($password);activity_migrate($password);a_ok('Repeated additive setup preserves source data',activity_ready()&&all('SELECT * FROM '.table('studio_jobs'))===$original);
+    a_ok('New empty workspace has no unread events',activity_count('admin')===0);a_client();a_ok('New client workspace is empty',activity_count('client')===0);
+    a_admin();$message=a_message();$clientMessage=a_message('client');$foreign=a_message('admin',2);
+    studio_publish(1,'design','Review <script>unsafe</script>','Private design body','');
+    query('UPDATE '.table('studio_versions')." SET decision='approved',decided_by=1,decided_at=? WHERE id=1",[$now]);
+    foreach(['admin'=>'a','client'=>'b'] as $type=>$letter)query('INSERT INTO '.table('studio_files').' (id,job_id,author_type,original_name,stored_name,mime,bytes,sha256,created_at) VALUES (?,1,?,?,?,?,1,?,?)',[str_repeat($letter,32),$type,'Private file.pdf','synthetic.php','application/pdf',str_repeat('c',64),$now]);
+    query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,instructions,created_at) VALUES (1,?,?,?,?,?)',['ACT-1','Design invoice',50000,'Private instructions',$now]);
+    // Payment projection includes actual recorded entries, never legacy or sandbox observations.
+    save_setting('invoice_ledger_schema_version','1');
+    foreach(['manual','reversal','legacy'] as $kind)query('INSERT INTO '.table('invoice_payments').' (invoice_id,job_id,client_id,actor_id,kind,amount_cents,currency,method,private_note,received_on,invoice_hash,invoice_reference,invoice_title,invoice_total_cents,client_name,created_at) VALUES (1,1,1,1,?,100,\'USD\',\'bank\',?,?,?,\'ACT-1\',\'Design\',50000,\'Client\',?)',[$kind,'Private payment reference','2026-10-13',str_repeat('d',64),$now]);
+    delivery_migrate($password);$zip=__DIR__.'/../test-runtime/activity.zip';d_zip($zip);
+    $data=['version'=>'1.0.0','title'=>'Delivered site','scope'=>'static','notes'=>'Open index.html after extracting this static site.','source_revision'=>'abcdef1'];
+    $published=delivery_upload(1,$data,$zip,bin2hex(random_bytes(32)));delivery_publish($published,delivery_review_hash(delivery_record($published)),$password);
+    $draft=delivery_upload(1,array_replace($data,['version'=>'2.0.0']),$zip,bin2hex(random_bytes(32)));
+    a_client();$keys=a_keys('client');$expected=[$message,'file:'.str_repeat('a',32),'review:1','invoice:1','payment:1','payment:2','release:'.$published];sort($keys);sort($expected);a_ok('Client projection includes seven authorized durable kinds and excludes self foreign legacy and draft', $keys===$expected);
+    $feed=activity_feed('client');a_ok('Projection excludes private bodies and payment references',!str_contains(json_encode($feed),'Private payment reference')&&!str_contains(json_encode($feed),'Synthetic private message body'));
+    a_ok('Repeated list and count reads never mutate read state',activity_count('client')===7&&activity_feed('client')===$feed&&all('SELECT * FROM '.table('activity_reads'))===[]);
+    a_ok('Message destination selects exact source including old history',str_ends_with(activity_destination('client',$message),'#message-1')&&str_contains(activity_destination('client',$message),'focus_message=1'));
+    a_ok('Payment destination includes exact paginated recording',str_contains(activity_destination('client','payment:1'),'before_entry=2#payment-1'));
+    a_ok('Published delivery destination opens owned release',str_contains(activity_destination('client','release:'.$published),'release='.$published));
+    activity_mark('client',[$message],true);$first=all('SELECT * FROM '.table('activity_reads'));activity_mark('client',[$message],true);a_ok('Repeated mark read is idempotent and preserves first timestamp',all('SELECT * FROM '.table('activity_reads'))===$first&&activity_count('client')===6);
+    a_ok('Unread filter omits marked source',!in_array($message,array_column(activity_feed('client',true)['rows'],'event_key'),true));activity_mark('client',[$message],false);a_ok('Explicit unread restores only that event',activity_count('client')===7);
+    a_deny('Mixed owned and foreign mark is all-or-nothing',fn()=>activity_mark('client',[$message,$foreign],true));a_ok('Rejected batch leaves owned item unread',activity_count('client')===7);
+    a_deny('Invalid key rejected',fn()=>activity_source('client','message:1 OR 1=1'));a_deny('Unknown source denied',fn()=>activity_source('client','message:99999'));a_deny('Foreign cursor denied',fn()=>activity_feed('client',false,$foreign));
+    a_deny('Duplicate keys rejected',fn()=>activity_mark('client',[$message,$message],true));a_deny('Empty batch rejected',fn()=>activity_mark('client',[],true));a_deny('Oversized batch rejected',fn()=>activity_mark('client',array_map(fn($n)=>'message:'.$n,range(1,31)),true));
+    a_ok('Read-state audit failure preserves status and business facts',a_audit_failure(fn()=>activity_mark('client',[$message],true))&&activity_count('client')===7&&all('SELECT * FROM '.table('studio_jobs'))===$original);
+    $reviewed=array_column(activity_feed('client')['rows'],'event_key');$arrival=a_message();activity_mark('client',$reviewed,true);a_ok('Mark visible cannot mark a new unseen arrival',activity_count('client')===1&&a_keys('client')!==[]&&array_column(activity_feed('client',true)['rows'],'event_key')===[$arrival]);
+    a_client(2);a_ok('Another client sees only its own project event',a_keys('client')===[$foreign]);a_deny('Known foreign source navigation denied',fn()=>activity_destination('client',$message));
+    a_admin();a_ok('Staff receive only client replies uploads and decisions',count(a_keys('admin'))===3&&!in_array($message,a_keys('admin'),true));activity_mark('admin',[$clientMessage],true);a_admin(2);a_ok('Staff read states are independent',activity_count('admin')===3);activity_mark('admin',[$clientMessage],true);a_admin();a_ok('Owner read state remains independent',activity_count('admin')===2);
+    a_admin(3);a_deny('Website-only administrator cannot list',fn()=>activity_feed('admin'));a_deny('Website-only administrator cannot count',fn()=>activity_count('admin'));a_deny('Website-only administrator cannot navigate',fn()=>activity_destination('admin',$clientMessage));
+    a_admin(2);query('UPDATE '.table('staff_profiles')." SET permissions='[]' WHERE user_id=2");a_deny('Grant revocation applies to mark immediately',fn()=>activity_mark('admin',[$clientMessage],false));query('UPDATE '.table('staff_profiles')." SET permissions='[\"clients.manage\"]' WHERE user_id=2");
+    a_admin();$adminSession=$_SESSION;a_client();$_SESSION=array_merge($_SESSION,$adminSession);a_ok('Dual login uses explicit client and admin contexts',activity_count('client')===1&&activity_count('admin')===2);
+    $_SESSION['last_activity']=time()-500;$_SESSION['client_last']=time()-600;$before=$_SESSION;activity_passive_count('client');activity_passive_count('admin');a_ok('Passive bell checks preserve both idle clocks',$_SESSION===$before);
+    $_SESSION['client_last']=time()-1801;a_deny('Passive client poll cannot revive expired idle identity',fn()=>activity_passive_count('client'));a_ok('Expired client identity is removed',!isset($_SESSION['client_id']));
+    $_SESSION['last_activity']=time()-1801;a_deny('Passive admin poll cannot revive expired idle identity',fn()=>activity_passive_count('admin'));a_ok('Expired admin identity is removed',!isset($_SESSION['uid']));
+    a_client();$GLOBALS['cwp_support']=['client'=>one('SELECT * FROM '.table('studio_clients').' WHERE id=1')];a_deny('Support cannot count client notifications',fn()=>activity_count('client'));a_deny('Support cannot mutate client read state',fn()=>activity_mark('client',[$message],false));unset($GLOBALS['cwp_support']);
+    $_GET['support']='forged';a_deny('Explicit support parameter cannot bypass endpoint',fn()=>activity_count('client'));unset($_GET['support']);
+    query('UPDATE '.table('studio_clients').' SET active=0 WHERE id=1');a_deny('Client deactivation immediately blocks feed',fn()=>activity_feed('client'));query('UPDATE '.table('studio_clients').' SET active=1 WHERE id=1');a_client();query('UPDATE '.table('studio_clients').' SET auth_version=? WHERE id=1',[str_repeat('e',32)]);a_deny('Client auth version revokes notification access',fn()=>activity_source('client',$message));a_client();
+    query('UPDATE '.table('studio_jobs').' SET client_id=2 WHERE id=1');a_deny('Project reassignment removes former client source access',fn()=>activity_source('client',$message));a_client(2);a_deny('Immutable old client delivery cannot follow reassigned job',fn()=>activity_source('client','release:'.$published));a_deny('Immutable old payment cannot follow reassigned job',fn()=>activity_source('client','payment:1'));query('UPDATE '.table('studio_jobs').' SET client_id=1 WHERE id=1');a_client();
+    query('DELETE FROM '.table('studio_messages').' WHERE id=?',[substr($arrival,8)]);a_deny('Deleted source cannot navigate stale notification',fn()=>activity_destination('client',$arrival));a_ok('Deleted unread source disappears from count',activity_count('client')===0);
+    for($n=0;$n<103;$n++)$last=a_message();a_ok('Unread counts are capped at 100 for 99+ display',activity_count('client')===100);
+    $all=[];$cursor='';do{$page=activity_feed('client',false,$cursor);a_ok('History page is bounded',count($page['rows'])<=30);array_push($all,...array_column($page['rows'],'event_key'));$cursor=$page['next'];}while($cursor!=='');a_ok('Stable tie-time pagination visits every retained event once',count($all)===110&&count(array_unique($all))===110);
+    $workers=[];foreach([1,2] as $n){$pipes=[];$proc=proc_open([PHP_BINARY,__FILE__,'read-worker',$last],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);fclose($pipes[0]);$workers[]=[$proc,$pipes];}foreach($workers as [$proc,$pipes]){$out=stream_get_contents($pipes[1]);$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);a_ok('Concurrent read worker succeeds',proc_close($proc)===0&&$out==='OK'&&$err==='');}a_ok('Concurrent marks retain one per-person record',(int)query('SELECT COUNT(*) FROM '.table('activity_reads')." WHERE actor_type='client' AND actor_id=1 AND event_key=?",[$last])->fetchColumn()===1);
+    a_ok('Client read audit never impersonates a staff user',(int)query('SELECT COUNT(*) FROM '.table('audit')." WHERE action='activity.read' AND user_id=0 AND detail LIKE 'client 1;%'")->fetchColumn()>0);
+    a_ok('Notification audit contains no message bodies or payment references',!str_contains(json_encode(all('SELECT * FROM '.table('audit')." WHERE action LIKE 'activity.%'")),'Private payment reference'));
+}catch(Throwable $e){$failure=get_class($e).': '.$e->getMessage();}
+file_put_contents(__DIR__.'/../qa/activity-native-results.json',json_encode(['scope'=>'Isolated MariaDB projections, source ownership, per-person read state, parallel workers and synthetic identities; no provider calls','checks'=>$checks,'passed'=>!isset($failure),'failure'=>$failure??null],JSON_PRETTY_PRINT));
+foreach($checks as $c)echo ($c['passed']?'PASS ':'FAIL ').$c['name'].PHP_EOL;
+if(isset($failure)){fwrite(STDERR,$failure.PHP_EOL);exit(1);}echo 'Native activity checks: '.count($checks).' passed'.PHP_EOL;

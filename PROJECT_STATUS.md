@@ -1,5 +1,7 @@
 # Project status
 
+**1.10.0 candidate — 2026-10-13:** bounded P-07 workspace activity on `codex/workspace-activity`, starting main `552ccb7d8c73194e7304af4f903074b0032e53b2` / published v1.9.0; contract `a8c28d2`. Authorized client/staff activity centers, per-person read status, exact-item links, private unread bells in portal/admin and for authenticated staff on public pages. Durable source projections keep business writes independent; passive checks preserve idle expiry. Additive owner setup, no email sending or webmail claim. Local shipping syntax/package checks pass (73 files, 48 PHP); native MariaDB/HTTP/Chromium/actual 1.9 upgrade acceptance and publication pending. No live deployment or customer/provider operation. Devin PR #7 unchanged. Next: acceptance/fixes, checked merge, exact-main CI and retained release verification.
+
 ## 2026-10-13 — Verified client ZIP delivery release
 
 **Published and downloaded-back verified: [CajunWebPro v1.9.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.9.0).** Source/tag `080f14aea8fe5c35e04e4eba62976609aef7cd67`, [PR #24](https://github.com/afterburn25/Cajun_Web/pull/24). [Complete upload ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.9.0/CajunWebPro-1.9.0-COMPLETE-UPLOAD.zip) · [UPDATE ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.9.0/CajunWebPro-1.9.0-UPDATE.zip). Earlier releases remain immutable; later publication records are documentation only.

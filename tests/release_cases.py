@@ -156,7 +156,7 @@ def run_browser(env,browser,fixture):
     page=context.new_page();errors=[];failed=[]
     page.on('pageerror',lambda e:errors.append({'text':str(e),'url':'pageerror'}))
     page.on('console',lambda m:errors.append({'text':m.text,'url':m.location.get('url','')}) if m.type=='error' else None)
-    page.on('requestfailed',lambda r:failed.append(r.url))
+    page.on('requestfailed',lambda r:failed.append({'url':r.url,'failure':r.failure,'status':r.response().status if r.response() else None}))
     for route in ['','index.php?page=compare-squarespace','index.php?page=work','index.php?page=faq','index.php?page=consultation']:
         page.goto(BASE+'/existing/'+route,wait_until='networkidle')
         check('Narrow mobile layout '+(route or 'home'),page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
@@ -194,8 +194,11 @@ def run_browser(env,browser,fixture):
     check('Client update revokes outstanding setup token',db('SELECT invite_hash FROM ci_studio_clients WHERE id=?',[fixture['client_id']])[0]['invite_hash'] is None)
     # A deliberate 422 validation response may generate a Chromium resource-error line.
     unexpected=[e for e in errors if not (e['text'].startswith('Failed to load resource: the server responded with a status of 422') and e['url']==BASE+'/existing/index.php?page=estimate')]
-    (QA/'browser-diagnostics.json').write_text(json.dumps({'console_and_page_errors':errors,'unexpected':unexpected,'failed_requests':failed},indent=2))
-    check('Extended browser has no unexpected console or page errors',not unexpected);check('Extended browser has no failed network requests',not failed)
+    # Chromium reports the completed bodyless 204 poll as ERR_ABORTED.
+    # Keep full diagnostics; tolerate only this exact confirmed response outcome.
+    unexpected_failed=[r for r in failed if not (r['url'].startswith(BASE+'/existing/activity.php?audience=') and r['failure']=='net::ERR_ABORTED' and r['status']==204)]
+    (QA/'browser-diagnostics.json').write_text(json.dumps({'console_and_page_errors':errors,'unexpected':unexpected,'failed_requests':failed,'unexpected_failed_requests':unexpected_failed},indent=2))
+    check('Extended browser has no unexpected console or page errors',not unexpected);check('Extended browser has no unexpected failed network requests',not unexpected_failed)
     context.close()
     # Regression for the original inquiry form, whose named action input also shadows form.action.
     contact=browser.new_context();p=contact.new_page();p.goto(BASE+'/existing/index.php?page=contact')
@@ -215,7 +218,7 @@ def run_browser(env,browser,fixture):
     p.screenshot(path=str(QA/'Installer-Complete.png'),full_page=True);install.close()
     # Owner controls also run in Chromium, with saved database evidence.
     owner=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce');p=owner.new_page();owner_errors=[];owner_failed=[]
-    p.on('pageerror',lambda e:owner_errors.append(str(e)));p.on('console',lambda m:owner_errors.append(m.text) if m.type=='error' else None);p.on('requestfailed',lambda r:owner_failed.append(r.url))
+    p.on('pageerror',lambda e:owner_errors.append(str(e)));p.on('console',lambda m:owner_errors.append(m.text) if m.type=='error' else None);p.on('requestfailed',lambda r:owner_failed.append({'url':r.url,'failure':r.failure,'status':r.response().status if r.response() else None}))
     p.goto(BASE+'/existing/admin.php?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill('Synthetic owner passphrase 2026');p.locator('form button').first.click();p.goto(BASE+'/existing/admin.php?view=studio-job&id=1');form=p.locator('form').filter(has=p.locator('[name=action][value=studio_job]'));form.locator('[name=milestones]').fill('Browser-verified milestone update.');form.get_by_role('button',name='Save project').click();expect(form.locator('[name=milestones]')).to_have_value('Browser-verified milestone update.');check('Browser admin change persisted',db('SELECT milestones FROM ci_studio_jobs WHERE id=1')[0]['milestones']=='Browser-verified milestone update.');p.screenshot(path=str(QA/'Admin-Workspace-Desktop.png'),full_page=True);p.set_viewport_size({'width':390,'height':844});check('Admin mobile workspace fits',p.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'));p.screenshot(path=str(QA/'Admin-Workspace-Mobile.png'),full_page=True)
     p.get_by_role('button',name='Toggle administration navigation').click();expect(p.locator('.sidebar-toggle')).to_have_attribute('aria-expanded','true');p.keyboard.press('Escape');expect(p.locator('.sidebar-toggle')).to_have_attribute('aria-expanded','false');check('Admin mobile navigation toggles and closes by keyboard',True)
     p.set_viewport_size({'width':1440,'height':1000});p.goto(BASE+'/existing/admin.php?view=studio-content');form=p.locator('form').filter(has=p.locator('[name=setting_name][value=growth_intro]'));form.locator('[name=value]').fill('Browser-saved studio introduction.');form.locator('button').click();expect(form.locator('[name=value]')).to_have_value('Browser-saved studio introduction.');check('Browser content edit persisted',db("SELECT value FROM ci_settings WHERE name='growth_intro'")[0]['value']=='Browser-saved studio introduction.')
@@ -224,7 +227,9 @@ def run_browser(env,browser,fixture):
     p.goto(BASE+'/existing/admin.php?view=studio-pipeline');form=p.locator('form').filter(has=p.locator('[name=action][value=studio_pipeline]')).filter(has=p.locator('[name=id][value="1"]'));form.locator('[name=status]').select_option('proposal');form.locator('[name=notes]').fill('Browser saved pipeline note.');form.locator('button').click();expect(form.locator('[name=notes]')).to_have_value('Browser saved pipeline note.');check('Browser pipeline edit persisted',db('SELECT status,notes FROM ci_leads WHERE id=1')[0]=={'status':'proposal','notes':'Browser saved pipeline note.'})
     p.goto(BASE+'/existing/admin.php?view=studio-clients');form=p.locator('form').filter(has=p.locator('[name=action][value=studio_client]')).filter(has=p.locator('[name=id][value="0"]'));form.locator('[name=name]').fill('Browser-created synthetic client');form.locator('[name=email]').fill('admin-browser-client@example.invalid');form.locator('button').click();expect(p.locator('[name=email][value="admin-browser-client@example.invalid"]')).to_be_visible();check('Browser admin client create persisted',bool(db('SELECT id FROM ci_studio_clients WHERE email=?',['admin-browser-client@example.invalid'])))
     p.goto(BASE+'/existing/admin.php?view=studio-portfolio');before=db('SELECT COUNT(*) AS n FROM ci_media')[0]['n'];p.locator('[name=image]').set_input_files(str(ROOT/'site/assets/favicon.png'));p.get_by_role('button',name='Upload capture').click();expect(p.locator('.notice.success')).to_be_visible();check('Browser admin GD media upload persisted',db('SELECT COUNT(*) AS n FROM ci_media')[0]['n']==before+1)
-    check('Admin browser has no console errors or failed requests',not owner_errors and not owner_failed);owner.close()
+    owner_unexpected=[r for r in owner_failed if not (r['url'].startswith(BASE+'/existing/activity.php?audience=') and r['failure']=='net::ERR_ABORTED' and r['status']==204)]
+    (QA/'owner-browser-network.json').write_text(json.dumps({'failed_requests':owner_failed,'unexpected_failed_requests':owner_unexpected},indent=2))
+    check('Admin browser has no console errors or unexpected failed requests',not owner_errors and not owner_unexpected);owner.close()
     # Public forms remain functional with JavaScript disabled.
     plain=browser.new_context(java_script_enabled=False);p=plain.new_page();p.goto(BASE+'/existing/index.php?page=estimate');p.locator('[name=pages]').fill('7');p.locator('[data-estimate]').click();expect(p.locator('[data-estimate-label]')).to_contain_text('$1,100.00');check('No-JavaScript estimator computes on server',True);plain.close()
     # Reuse the freshly installed fixture at the document root on another loopback port.
