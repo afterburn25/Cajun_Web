@@ -54,12 +54,20 @@ try:
         try:
             if requests.get(BASE+'/existing/',timeout=1).status_code:break
         except requests.RequestException:time.sleep(.2)
-    routes=['','index.php?page=services','index.php?page=work','index.php?page=about','index.php?page=process','index.php?page=contact','index.php?page=why-custom','index.php?page=compare-wix','index.php?page=compare-squarespace','index.php?page=switch','index.php?page=packages','index.php?page=faq','index.php?page=industries','index.php?page=estimate','index.php?page=website-review','index.php?page=consultation']
+    routes=['','index.php?page=services','index.php?page=work','index.php?page=work&cat=Construction','index.php?page=about','index.php?page=process','index.php?page=contact','index.php?page=why-custom','index.php?page=compare-wix','index.php?page=compare-squarespace','index.php?page=switch','index.php?page=packages','index.php?page=faq','index.php?page=industries','index.php?page=estimate','index.php?page=website-review','index.php?page=consultation']
     for path in routes:
         r=requests.get(BASE+'/existing/'+path,timeout=15);check('Public route '+(path or 'home'),r.status_code==200 and 'CajunWebPro' in r.text and 'We could not complete this request' not in r.text)
     for path in ['assets/favicon.png','favicon.ico','assets/growth.css','assets/growth.js','assets/logo.png']:
         r=requests.get(BASE+'/existing/'+path,timeout=15);check('Asset bytes '+path,r.status_code==200 and hashlib.sha256(r.content).digest()==hashlib.sha256((ROOT/'site'/path).read_bytes()).digest())
     r=requests.get(BASE+'/existing/install.php');check('Installed-site guard blocks setup',r.status_code==403)
+    doc=soup(requests.get(BASE+'/existing/index.php?page=work&cat=Construction',timeout=15))
+    cards={c['data-category']:c.has_attr('hidden') for c in doc.select('.portfolio-grid .project-card')}
+    check('Server filter marks non-matching cards hidden',cards.get('Construction') is False and cards.get('Hospitality') and cards.get('Wellness'))
+    active=doc.select_one('.filters a[data-filter="Construction"]');check('Filter link marks active category',active is not None and active.get('aria-current')=='true')
+    doc=soup(requests.get(BASE+'/existing/index.php?page=work&cat=Unknown-Category',timeout=15));empty=doc.select_one('[data-portfolio-empty]')
+    check('Unknown category shows honest empty state',empty is not None and not empty.has_attr('hidden'))
+    r=requests.get(BASE+'/existing/index.php?page=project&slug=magnolia-built',timeout=15);check('Published case study resolves',r.status_code==200 and 'Magnolia Built' in r.text)
+    r=requests.get(BASE+'/existing/index.php?page=project&slug=no-such-project',timeout=15);check('Unknown case study returns 404',r.status_code==404)
     s=requests.Session();r=s.get(BASE+'/existing/index.php?page=estimate');data=form_data(soup(r).select_one('[data-growth-form]'));data.update({'action':'calculate','project_type':'business','pages':'7','low':'1','high':'2'})
     r=s.post(BASE+'/existing/index.php?page=estimate',data=data,headers={'Accept':'application/json'});check('HTTP estimator ignores browser total',r.status_code==200 and r.json()['estimate']['low']==110000)
     data.update({'action':'growth_submit','name':'HTTP prospect','email':'http@example.invalid','message':'We would like a website with clear organized services.','consent':'1'})
@@ -121,13 +129,17 @@ try:
         browser=pw.chromium.launch(headless=True)
         context=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce')
         page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
-        for name,path in [('Homepage',''),('Wix-Comparison','index.php?page=compare-wix'),('Planner','index.php?page=estimate')]:
+        for name,path in [('Homepage',''),('Wix-Comparison','index.php?page=compare-wix'),('Planner','index.php?page=estimate'),('Portfolio','index.php?page=work')]:
             page.goto(BASE+'/existing/'+path,wait_until='networkidle');page.screenshot(path=str(QA/(name+'-Desktop.png')),full_page=True)
             check('Desktop no horizontal overflow '+name,page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
             page.set_viewport_size({'width':390,'height':844});page.screenshot(path=str(QA/(name+'-Mobile.png')),full_page=True)
             check('Mobile no horizontal overflow '+name,page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'));page.set_viewport_size({'width':1440,'height':1000})
         page.goto(BASE+'/existing/index.php?page=estimate');page.locator('[name=project_type]').select_option('business');page.locator('[name=pages]').fill('7');page.locator('[data-estimate]').click();expect(page.locator('[data-estimate-label]')).to_contain_text('$1,100.00')
         check('Browser estimator uses actual server response','$1,100.00' in page.locator('[data-estimate-label]').inner_text())
+        page.goto(BASE+'/existing/index.php?page=work',wait_until='networkidle')
+        page.locator('.filters a[data-filter="Construction"]').click()
+        check('Browser filter link updates URL and grid','cat=Construction' in page.url and page.locator('.project-card:not([hidden])').count()==1)
+        page.go_back();expect(page.locator('.project-card:not([hidden])')).to_have_count(3);check('Browser back restores full portfolio',page.locator('.project-card:not([hidden])').count()==3)
         page.goto(BASE+'/existing/portal.php');page.locator('[name=email]').fill('alice@example.invalid');page.locator('[name=password]').fill('Synthetic client passphrase 2026');page.locator('button[type=submit],form button').first.click();page.wait_for_url('**/portal.php');page.goto(BASE+'/existing/portal.php?job=1');page.screenshot(path=str(QA/'Client-Workspace-Desktop.png'),full_page=True)
         check('Browser private project renders','HTTP manual invoice' in page.content());check('No uncaught browser errors',not errors)
         with page.expect_download() as download:page.locator('a[href*="portal.php?file="]').first.click()
@@ -152,6 +164,8 @@ try:
         delivery_browser(globals(),browser)
         from activity_cases import run_browser as activity_browser
         activity_browser(globals(),browser)
+        from portfolio_cases import run_browser as portfolio_browser
+        portfolio_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)

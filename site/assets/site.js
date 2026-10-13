@@ -102,14 +102,31 @@
         }
     }
 
-    document.querySelectorAll('[data-filter]').forEach(button => button.addEventListener('click', () => {
-        document.querySelectorAll('[data-filter]').forEach(item => { item.classList.remove('active'); item.setAttribute('aria-pressed','false'); });
-        button.classList.add('active'); button.setAttribute('aria-pressed','true');
-        document.querySelectorAll('.portfolio-grid .project-card').forEach(card => {
-            card.hidden = button.dataset.filter !== 'all' && card.dataset.category !== button.dataset.filter;
-            if (!card.hidden) card.classList.add('shown');
+    const portfolioLinks = document.querySelectorAll('.filters a[data-filter]');
+    const portfolioCards = document.querySelectorAll('.portfolio-grid .project-card');
+    const applyPortfolioFilter = category => {
+        portfolioLinks.forEach(link => {
+            const selected = link.dataset.filter === category;
+            link.classList.toggle('active', selected);
+            if (selected) link.setAttribute('aria-current', 'true'); else link.removeAttribute('aria-current');
         });
+        let matched = 0;
+        portfolioCards.forEach(card => {
+            card.hidden = category !== '' && card.dataset.category !== category;
+            if (!card.hidden) { card.classList.add('shown'); matched++; }
+        });
+        const empty = document.querySelector('[data-portfolio-empty]');
+        if (empty) empty.hidden = matched > 0;
+        const status = document.querySelector('[data-portfolio-status]');
+        if (status) status.textContent = `Showing ${matched} of ${portfolioCards.length} projects.`;
+    };
+    portfolioLinks.forEach(link => link.addEventListener('click', event => {
+        if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || link.target === '_blank') return;
+        event.preventDefault();
+        history.pushState(null, '', link.getAttribute('href'));
+        applyPortfolioFilter(link.dataset.filter);
     }));
+    window.addEventListener('popstate', () => applyPortfolioFilter((new URLSearchParams(location.search).get('cat') || '').trim()));
     const serviceSlug = new URLSearchParams(location.search).get('service');
     if (serviceSlug && /^[a-z0-9-]+$/.test(serviceSlug)) {
         document.getElementById(serviceSlug)?.scrollIntoView({behavior:paused() ? 'auto' : 'smooth', block:'start'});

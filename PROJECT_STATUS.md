@@ -1,5 +1,14 @@
 # Project status
 
+## 2026-10-13 — Portfolio integration candidate 1.11.0
+
+Codex is integrating Devin portfolio [PR #7](https://github.com/afterburn25/Cajun_Web/pull/7) at `016a4057a3a17b62b2edcf583252f52cb9ff06a2` on `codex/portfolio-browsing`, starting after estimator integration main `39de8ff50ea245928a1f6528f10057afcf55e5b7`. Original branch/history remain intact. **Candidate source 1.11.0; latest published release remains v1.10.0.** [Contract](docs/PUBLIC_COMPONENT_INTEGRATION.md) and [browsing guide](docs/PORTFOLIO_BROWSING.md).
+
+Devin's existing-project adapter now drives exact published-only portfolio/category/detail lookups. Real category links work without JavaScript, enhanced filtering retains back/forward and ordinary modified clicks, and a live result count announces changes. Review fixes preserve numeric-string categories, distinguish the category `all` from All work, normalize card/filter values consistently, reject ambiguous published slugs and suppress identical-media before/after comparisons. Existing v1.10.0 activity, client/private delivery and billing features remain.
+
+Local PHP 8.4.25 passes 55 portfolio and 65 estimator checks; complete builder verifies 80 flat shipping files / 55 PHP files, 79 UPDATE files, exact bundled components and installer inventory. Combined GitHub acceptance, screenshots, actual retained 1.10.0 update and release download verification are pending. No full W-01/L-01 completion or deployment claim.
+
+Estimator [PR #29](https://github.com/afterburn25/Cajun_Web/pull/29) passed [combined application acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38405668799) and PHP 8.2/8.4 component checks before merge at `39de8ff`. Its core stays outside deployment; existing quantity pricing/custom exclusions need an adapter. Later Devin estimator refresh `65c2084` is preserved in this integration. Next: fix any combined failures, review desktop/mobile evidence, merge the exact checked candidate, run exact main and publish/verify immutable 1.11.0 assets. Mail, actual merchant acceptance/card checkout, broader 20i and VPS SSH remain pending.
 ## 2026-10-13 — Devin L-02/L-03 independent components
 
 Codex is integrating portfolio PR #7 at `016a405` on `codex/portfolio-browsing` (PR #30) toward a bounded v1.11.0; estimator PR #27 landed through PR #29 at `39de8ff`. Devin heads stay stable during integration. Devin delivered two more isolated contracts: L-02 review requests on `devin/review-requests` (`a0959d6`, [PR #31](https://github.com/afterburn25/Cajun_Web/pull/31), all checks green) and L-03 consultation scheduling on this branch `devin/consultation-scheduling` — `foundation/scheduling/` (UTC windows, DST-correct weekly rules, slot/buffer/notice policy, request→confirm lifecycle with conflict protection) with 64 passing synthetic checks and `docs/SCHEDULING_FOUNDATION.md`. No schema, form, mail, provider or shipping files on either — adaptation is a later agreed step.

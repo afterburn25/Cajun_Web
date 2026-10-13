@@ -15,7 +15,7 @@ def inventory():
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--refresh',action='store_true');ap.add_argument('--commit',default='local-uncommitted');args=ap.parse_args()
     # Canonical independent components are bundled verbatim; verification rejects divergent copies.
-    for area in ['access','invitations']:
+    for area in ['access','invitations','portfolio']:
         for source in (ROOT/'foundation'/area).glob('*.php'):
             bundled=SITE/'app/foundation'/area/source.name
             if args.refresh:
