@@ -5,6 +5,15 @@
 - Added canonical `foundation/ssh-access/` classes (`ServiceTarget`, `TargetRegistry`, client-authorized `AccessGrant`, hash-bound single-use `LaunchToken`, `TerminalSession` with enforced idle/absolute timeouts, `AuditEvent`, the `TerminalTransport` boundary interface with no implementation, and `SessionBroker` — the single launch gate that never touches transport on a denial) plus `docs/SSH_ACCESS_FOUNDATION.md`.
 - Added `tests/ssh-access/run.php` (65 synthetic checks; fixture identities/targets only) and the `ssh-access.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, terminal UI, gateway, schema or SSH transport; A-10 gate remains `Architecture/security validation pending`. Not yet integrated or released.
+## 1.11.1 — candidate, motion preferences and organized updates
+
+- Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.
+- Measure homepage lab layout shifts with a real buffered PerformanceObserver and session-window calculation; test saved pause/resume, device reduced motion and no-JavaScript readability. This is synthetic browser evidence, not a production performance guarantee.
+- Recognize the verified 1.11.0 package for owner updates; retain known upgrade-only routes without adding them to fresh organized sites. Preserve private scaffolds, previous recovery records and all configuration/business data. Separate target-version journals share the original permanent update lock.
+- Extend real Apache update/recovery acceptance with the actual retained 1.11.0 installer, database records, session continuity and opcode caching enabled without timestamp validation. Retain old-layout historical acceptance.
+- Derive installer page/JavaScript/diagnostic build labels from its canonical build constant; restore organized installer logo/emblem paths. Browser setup now explicitly checks version and loaded brand images; the builder rejects stale literal image paths.
+- Make package checksum ordering identical on Windows and Linux; use committed history and guide bytes in exact-source artifacts.
+- Acceptance/publication pending. Prior releases remain immutable; no live deployment or new external payment/provider operations.
 
 ## 1.11.0 — organized application and verified three-package release
 

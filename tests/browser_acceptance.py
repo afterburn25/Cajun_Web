@@ -146,6 +146,8 @@ try:
         page.locator('.filters a[data-filter="Construction"]').click()
         check('Browser filter link updates URL and grid','cat=Construction' in page.url and page.locator('.project-card:not([hidden])').count()==1)
         page.go_back();expect(page.locator('.project-card:not([hidden])')).to_have_count(3);check('Browser back restores full portfolio',page.locator('.project-card:not([hidden])').count()==3)
+        from motion_cases import run as motion_checks
+        motion_checks(globals(),browser)
         page.goto(BASE+'/existing/portal/index.php');page.locator('[name=email]').fill('alice@example.invalid');page.locator('[name=password]').fill('Synthetic client passphrase 2026');page.locator('button[type=submit],form button').first.click();page.wait_for_url('**/portal/index.php');page.goto(BASE+'/existing/portal/index.php?job=1');page.screenshot(path=str(QA/'Client-Workspace-Desktop.png'),full_page=True)
         check('Browser private project renders','HTTP manual invoice' in page.content());check('No uncaught browser errors',not errors)
         with page.expect_download() as download:page.locator('a[href*="portal/index.php?file="]').first.click()
