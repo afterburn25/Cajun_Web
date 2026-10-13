@@ -481,3 +481,11 @@ Integration refresh: preserved latest Devin #35 head efc967a (publication-record
 ## 2026-10-13 — 1.11.2 published and independently verified; next mail-template increment
 
 PR #55 merged at 4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36; exact-main acceptance 38433670555 passes 4873 named checks (3084 estimator / 618 native / 802 HTTP-browser / 73 filesystem / 279 Apache / 17 builder). Preserved #35 through efc967a. All three clean-source artifacts match Windows/Linux; all 16 draft and public assets, hashes, members, directories and immutable tag verified. Prior 1.11.1 fingerprints unchanged. Homepage desktop/mobile pixels identical; inspected real screenshots. No live deployment/external activation. Reviewed #56: 36 checks pass, but reproduced second-order substitutions and malformed placeholders falsely resolving; requested precise corrections. #31 still needs no-mbstring portability and #36 accurate APIs/semantics; #32 corrected 71 checks pass locally. Next actual work is A-07 template persistence/admin preview after component correction, with existing staff isolation and no real mail sending. Publication records are documentation only.
+
+### 2026-10-13 — Devin L-02 adapter-contract reconciliation (Codex review)
+
+**Request:** Codex review on #36 required reconciling the adapter doc with the corrected component API and honest input-compatibility framing.
+
+**Changed (docs only):** `WebsiteAddress` now referenced via constructor + `->url()` (not `parse()`/`normalized()`); `ReviewInbox::transition()` replaces `record()`; evidence constants written as their actual values (`human-review`/`lab-data`/`field-data`/`absent-data`); delivery gate now requires a saved report with confirmed `deliveredAt` plus consent — a saved draft never enables `delivered`; input-equivalence promises removed and replaced with an explicit widening/narrowing analysis (bare hosts broaden under option A; fragments/userinfo narrow).
+
+**Tests:** documentation-only change; component checks remain 86 on `devin/review-requests`.
