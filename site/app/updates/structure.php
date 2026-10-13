@@ -4,7 +4,8 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 
 /** Bounded file migration only. No database migrations, recursive deletion or configuration changes. */
 function structure_path(string $root, string $name): string {
-    if (!preg_match('~^[a-zA-Z0-9_.-]+(?:/[a-zA-Z0-9_.-]+)*$~D',$name) || in_array('..',explode('/',$name),true)) throw new RuntimeException('Unsafe update path.');
+    // Maintained locale files use @ modifiers; both dot-segment forms remain forbidden.
+    if (!preg_match('~^[a-zA-Z0-9_@.-]+(?:/[a-zA-Z0-9_@.-]+)*$~D',$name) || array_intersect(['.','..'],explode('/',$name))) throw new RuntimeException('Unsafe update path.');
     $path=rtrim($root,'/');
     foreach(explode('/',$name) as $part) {
         $path.='/'.$part;
