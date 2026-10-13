@@ -24,7 +24,7 @@ The [staff-invitation job](../.github/workflows/staff-invitations.yml) adds nati
 
 ## Version policy
 
-- The owner identifies **1.1.0** as current. Locate and inspect it before selecting the next version. Do not relabel the older 1.0.8 package or publish an assumed 1.1.0 build.
+- The owner originally identified **1.1.0** as current. It was recovered and released, and the verified **1.2.0** administrator increment now follows it. Inspect current main and the release register before selecting another version. Preserve older published versions; never relabel historical packages.
 - Use `MAJOR.MINOR.PATCH`: compatible fixes increment patch; compatible features increment minor; incompatible changes increment major and include migration guidance. Illustrative next versions could be `1.1.1` for a fix or `1.2.0` for features; these are not reserved or promised builds.
 - Use explicit prerelease tags such as `v1.2.0-rc.1` for builds intended for testing. Mark them as prereleases and do not advertise them as the latest stable version.
 - Version labels in application code, installer, manifest, package filename, changelog and Git tag must agree. A tag names an exact source commit; test that source and the exact attached package.
