@@ -170,3 +170,16 @@ with zipfile.ZipFile(organized_update) as z:
     manifest=json.loads(base64.b64decode(re.search(r"base64_decode\('([^']+)'\)",text).group(1)))
     (root/'test-runtime/organized-shims.json').write_text(json.dumps({n:base64.b64encode(b.encode()).decode() for n,b in manifest['shims'].items()}))
 print('PASS: original 1.11.0 UPDATE checksum and compatibility bytes')
+
+organized_baseline=root/'test-runtime/CajunWebPro-1.11.1-COMPLETE-UPLOAD.zip'
+with urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.11.1/CajunWebPro-1.11.1-COMPLETE-UPLOAD.zip',timeout=60) as response:
+    organized_baseline.write_bytes(response.read())
+assert hashlib.sha256(organized_baseline.read_bytes()).hexdigest()=='259c6960b84a64d1b51b0e400bd90943f84f84001844a9735133358f8d51625e'
+with zipfile.ZipFile(organized_baseline) as z:
+    assert z.testzip() is None
+    for item in z.infolist():
+        path=PurePosixPath(item.filename)
+        assert not path.is_absolute() and '..' not in path.parts and '\\' not in item.filename
+        assert (item.external_attr>>16)&0o170000 != 0o120000
+    z.extractall(root/'test-runtime/released-1.11.1')
+print('PASS: immutable released 1.11.1 package checksum, archive paths and extraction')

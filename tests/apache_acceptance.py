@@ -114,7 +114,8 @@ PHPIniDir /etc/php/8.3/apache2
             check(label+' Apache legacy POST invokes canonical action with body and session',r.status_code==200 and 'current password' in r.text.lower() and 'Location' not in r.headers and ('STUDIO RELEASE '+VERSION) in r.text)
             check(label+' Apache upgraded canonical portal still serves',session.get(base+'/legacy/portal/index.php').status_code==200)
             from organized_update_cases import run as organized_update
-            organized_update(web,base,check,QA,php,label,'aor_' if rewrite else 'aon_')
+            for number,version in enumerate(['1.11.0','1.11.1']):
+                organized_update(web,base,check,QA,php,label,('aor' if rewrite else 'aon')+str(number)+'_',version)
         finally:
             proc.terminate()
             try:proc.wait(timeout=10)
