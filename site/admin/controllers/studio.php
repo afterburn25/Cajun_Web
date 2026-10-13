@@ -1,7 +1,7 @@
 <?php
 /** Authenticated administration for the public growth and private client workflows. */
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function studio_admin_views(): array {return ['studio-clients'=>'Client workspace','studio-job'=>'Client project','studio-pipeline'=>'Sales pipeline','studio-content'=>'Sales content','studio-prices'=>'Estimator prices','studio-portfolio'=>'Portfolio previews','studio-history'=>'Content history','studio-upgrade'=>'Version & database'];}
 require_once CWP_CODE_ROOT.'/app/settings/revisions.php';
 function studio_admin_action(string $action,array $user): never {

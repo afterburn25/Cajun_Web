@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function catalog_selection(): array {
     $value=posted('product',40);if(!preg_match('/^([1-9][0-9]{0,8}):([1-9][0-9]{0,8})$/D',$value,$m))throw new InvalidArgumentException('Choose a current published service.');return [(int)$m[1],(int)$m[2]];
 }

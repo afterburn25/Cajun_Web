@@ -1,7 +1,7 @@
 <?php
 /** Inspect prepared client archives without extraction or execution. */
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function delivery_limits(): array {return ['archive'=>50*1024*1024,'expanded'=>200*1024*1024,'file'=>32*1024*1024,'entries'=>1000,'project'=>250*1024*1024,'site'=>1024*1024*1024];}
 function delivery_archive_path(string $name): string {
     if($name===''||strlen($name)>240||!preg_match('/^[a-zA-Z0-9_.\/ @()+,-]+$/D',$name)||str_contains($name,'\\')||str_starts_with($name,'/')||str_ends_with($name,' ')||str_ends_with($name,'.'))throw new InvalidArgumentException('ZIP has an unsafe or unsupported entry path. Use simple relative file names.');

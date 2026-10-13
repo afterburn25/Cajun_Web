@@ -40,7 +40,7 @@ jobs:
       - name: Native runtime and browser dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl apache2-bin libapache2-mod-php8.3
           php8.3 -v
           php8.3 -m
           python3 -m venv .ci-venv
@@ -67,6 +67,12 @@ jobs:
           php8.3 tests/activity_native.php
       - name: Real HTTP and Chromium application workflows
         run: .ci-venv/bin/python tests/browser_acceptance.py
+      - name: Unprivileged structure update interruption and recovery
+        if: success() || failure()
+        run: .ci-venv/bin/python tests/structure_acceptance.py
+      - name: Apache protection with and without rewriting
+        if: success() || failure()
+        run: .ci-venv/bin/python tests/apache_acceptance.py
       - name: Verify tests did not mutate shipping source
         run: git diff --exit-code -- site/
       - name: Preserve named test evidence

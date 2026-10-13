@@ -1,7 +1,7 @@
 <?php
 /** Public portfolio adapter: projects-table rows become foundation contract records. */
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 
 use CajunWebPro\Foundation\Portfolio\CaseStudy;
 use CajunWebPro\Foundation\Portfolio\PortfolioCatalog;

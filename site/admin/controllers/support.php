@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function support_admin_action(string $action): never {
     check_csrf();$actor=require_admin();
     if(!consume_rate('support-management-'.$actor['id'],30,900))throw new RuntimeException('Please wait before opening or changing more support sessions.');

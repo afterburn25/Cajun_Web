@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function delivery_admin_action(string $action): never {
     if($action==='delivery_setup'){
         if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you saved a current database and private-storage backup.');

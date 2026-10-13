@@ -1,7 +1,7 @@
 <?php
 /** Real external-payment records. Never consumes sandbox observations or calls a gateway. */
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/database/schema/ledger_schema.php';
 function ledger_ready(): bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['invoice_ledger_schema_version'])['value']??'')==='1';}
 function ledger_require(): array {if(!ledger_ready())throw new RuntimeException('Enable invoice payments first.');return payments_require();}

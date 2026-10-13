@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function notifications_admin_action(string $action): never {
     check_csrf();$password=posted('owner_password',1000);
     if($action==='payments_notification_setup'){

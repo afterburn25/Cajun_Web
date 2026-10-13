@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/admin/views/payment-trials.php';
 require_once CWP_CODE_ROOT.'/admin/views/payment-notifications.php';
 require_once CWP_CODE_ROOT.'/includes/layout/ledger.php';

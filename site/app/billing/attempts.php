@@ -1,7 +1,7 @@
 <?php
 /** Owner-only sandbox trials. Sandbox results never settle an actual invoice. */
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 
 require_once CWP_CODE_ROOT.'/database/schema/attempts_schema.php';
 function attempts_ready(): bool {return payments_ready()&&setting('payment_attempts_schema_version')==='1';}

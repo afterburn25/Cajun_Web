@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/projects/archive.php';
 require_once CWP_CODE_ROOT.'/database/schema/delivery_schema.php';
 function delivery_ready(): bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['delivery_schema_version'])['value']??'')==='1';}

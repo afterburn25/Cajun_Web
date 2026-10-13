@@ -1,7 +1,7 @@
 <?php
 /** Read-only projections of durable workspace facts; independent per-person read state. */
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/database/schema/activity_schema.php';
 function activity_ready(): bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['activity_schema_version'])['value']??'')==='1';}
 function activity_audit(array $actor,string $action,string $detail): void {query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[$actor['type']==='admin'?$actor['id']:0,'activity.'.$action,$actor['type'].' '.$actor['id'].'; '.$detail,gmdate('Y-m-d H:i:s')]);}

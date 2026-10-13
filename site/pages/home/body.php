@@ -1,7 +1,7 @@
 <?php
 /** Approved Concept 01: server-rendered homepage. Data is supplied by index.php. */
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 ?>
 <section class="hero" aria-labelledby="hero-title">
     <div class="hero-atmosphere" aria-hidden="true"></div>

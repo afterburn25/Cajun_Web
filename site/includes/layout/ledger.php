@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function ledger_admin_action(string $action): never {
     check_csrf();
     if($action==='payments_ledger_setup'){

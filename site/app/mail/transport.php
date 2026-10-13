@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 /* Small, bounded SMTP client. TLS is mandatory for SMTP; certificates and peer names are verified. */
 function smtp_remaining($stream): void {
     $remaining=($GLOBALS['cwp_smtp_deadline']??(microtime(true)+8))-microtime(true);

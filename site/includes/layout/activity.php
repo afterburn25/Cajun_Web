@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function activity_post(string $audience): never {
     check_csrf();$action=posted('action',40);
     if($action==='activity_setup'&&$audience==='admin')activity_migrate(posted('password',1000));

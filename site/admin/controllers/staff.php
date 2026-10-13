@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function staff_admin_action(string $action): never {
     check_csrf();$actor=require_admin();
     if(!consume_rate('staff-management-'.$actor['id'],20,900))throw new InvalidArgumentException('Please wait before making more account changes.');

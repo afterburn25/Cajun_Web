@@ -1,7 +1,7 @@
 <?php
 /** 1.1.0 public growth workflows. Existing settings/leads schema is retained. */
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function growth_routes(): array { return ['why-custom','compare-wix','compare-squarespace','switch','packages','faq','industries','estimate','website-review','consultation']; }
 function growth_types(): array { return ['business'=>'Business website','redesign'=>'Website redesign','store'=>'Online store','custom'=>'Custom application']; }
 function growth_options(): array { return ['copy'=>'Copywriting','brand'=>'Brand identity','migration'=>'Content migration','booking'=>'Booking integration','accounts'=>'Member accounts','integration'=>'Custom integration']; }

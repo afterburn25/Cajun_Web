@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);defined('CWP_BOOT') || exit;
+declare(strict_types=1);if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 $title=['why-custom'=>'Why Custom','compare-wix'=>'CajunWebPro vs Wix','compare-squarespace'=>'CajunWebPro vs Squarespace','switch'=>'Plan Your Website Move','packages'=>'Website Packages','faq'=>'Your Questions, Answered','industries'=>'Websites Built Around Your Business','estimate'=>'Plan Your Project','website-review'=>'Request a Website Review','consultation'=>'Request a Consultation'][$page];
 $error='';$success=null;$estimate=null;$a=$_SERVER['REQUEST_METHOD']==='POST'?$_POST:[];
 if($_SERVER['REQUEST_METHOD']==='POST'){

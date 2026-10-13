@@ -1,7 +1,7 @@
 <?php
 /** Protected gateway settings and invoice request preparation. Trials are a separate sandbox module. */
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/billing/catalog.php';
 require_once CWP_CODE_ROOT.'/app/billing/authorize.php';
 require_once CWP_CODE_ROOT.'/app/billing/attempts.php';

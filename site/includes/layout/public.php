@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function icon(string $name, string $class=''): string {
     $paths=[
         'monitor'=>'<rect x="3" y="4" width="26" height="18" rx="2"/><path d="M10 28h12M16 22v6"/>',

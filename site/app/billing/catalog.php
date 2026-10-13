@@ -1,7 +1,7 @@
 <?php
 /** Managed service prices and immutable snapshots on the existing project invoices. */
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
 require_once CWP_CODE_ROOT.'/app/marketing/growth.php';
 

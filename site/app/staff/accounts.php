@@ -1,7 +1,7 @@
 <?php
 /** Administrator lifecycle adapter. Existing users remain the authentication identity. */
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 
 use CajunWebPro\Foundation\Access\AccessContext;
 use CajunWebPro\Foundation\Access\PermissionPolicy;

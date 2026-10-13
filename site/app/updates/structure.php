@@ -93,10 +93,10 @@ function structure_plan(string $payload,array $manifest,array $history): array {
     }
     // Back up the old server policy even if it was already identical to the replacement.
     $ops['.htaccess']=['old'=>structure_hash(CWP_ROOT.'/.htaccess'),'new'=>$manifest['files']['.htaccess'],'source'=>'.htaccess'];
-    return ['root'=>realpath(CWP_ROOT)?:CWP_ROOT,'version'=>$version,'target'=>CWP_VERSION,'commit'=>$manifest['source_commit'],'state'=>'planned','operations'=>$ops,'preserved'=>$preserved,'created_at'=>gmdate('c')];
+    return ['root'=>realpath(CWP_ROOT)?:CWP_ROOT,'version'=>$version,'target'=>CWP_VERSION,'commit'=>$manifest['source_commit'],'backup_id'=>bin2hex(random_bytes(12)),'state'=>'planned','operations'=>$ops,'preserved'=>$preserved,'created_at'=>gmdate('c')];
 }
-function structure_backup(string $dir,string $name,string $hash): void {
-    $backup=structure_path($dir,hash('sha256',$name).'.php');
+function structure_backup(string $dir,string $name,string $hash,string $id): void {
+    $backup=structure_path($dir,$id.'-'.hash('sha256',$name).'.php');
     if(file_exists($backup)){
         $data=file_get_contents($backup);
         if(!str_starts_with($data,CWP_GUARD)||!hash_equals($hash,hash('sha256',substr($data,strlen(CWP_GUARD)))))throw new RuntimeException('Recovery copy mismatch for '.$name);
@@ -118,19 +118,28 @@ function structure_replace(string $name,string $bytes): void {
 function structure_maintenance(): string {
     return "# Temporary owner-authenticated structure update. Retry or recover using the staged owner page.\nOptions -Indexes\nRequire all denied\n<Files \"owner-update.php\">\nRequire all granted\n</Files>\n";
 }
+function structure_enter_maintenance(array $j): void {
+    $actual=structure_hash(CWP_ROOT.'/.htaccess');$op=$j['operations']['.htaccess'];
+    if(!in_array($actual,[$op['old'],$op['new'],hash('sha256',structure_maintenance())],true))throw new RuntimeException('Server policy changed after planning; preserved. Review .htaccess before retrying or recovering.');
+    structure_replace('.htaccess',structure_maintenance());
+}
 /** Caller owns the persistent lock. A CLI-only hook supports real interruption/lock acceptance. */
 function structure_apply(string $payload,array $manifest,array $history,string $dir,?callable $checkpoint=null): array {
     structure_verified_payload($payload,$manifest);
     $j=structure_journal($dir);
     if($j && ($j['commit']!==$manifest['source_commit'] || $j['target']!==CWP_VERSION))throw new RuntimeException('Recovery belongs to a different build. Use that exact UPDATE package.');
     if($j && $j['state']==='complete')return $j;
-    if($j && $j['state']==='rolled-back')throw new RuntimeException('This attempt was recovered. Keep its backup; start again with a fresh copy after the owner reviews it.');
+    if($j && $j['state']==='rolled-back'){
+        $next=structure_plan($payload,$manifest,$history);
+        write_private_file($dir.'/recovered-'.$j['backup_id'].'.php',CWP_GUARD.json_encode($j,JSON_THROW_ON_ERROR));
+        $j=$next;structure_save($dir,$j);
+    }
     if(!$j){$j=structure_plan($payload,$manifest,$history);structure_save($dir,$j);}
     if($j['state']==='planned'){
-        foreach($j['operations'] as $name=>$op)if($op['old']!==null)structure_backup($dir,$name,$op['old']);
+        foreach($j['operations'] as $name=>$op)if($op['old']!==null)structure_backup($dir,$name,$op['old'],$j['backup_id']);
         $j['state']='backed-up';structure_save($dir,$j);
     }
-    structure_replace('.htaccess',structure_maintenance());
+    structure_enter_maintenance($j);
     $j['state']='applying';structure_save($dir,$j);
     foreach($j['operations'] as $name=>$op){
         if($name==='.htaccess')continue;
@@ -150,7 +159,7 @@ function structure_recover(string $dir): array {
     $j=structure_journal($dir);if(!$j)throw new RuntimeException('No saved update attempt exists.');
     if($j['state']==='rolled-back')return $j;
     if($j['state']==='planned')throw new RuntimeException('Backup preparation is incomplete. Retry preparation before recovery; application files have not changed.');
-    structure_replace('.htaccess',structure_maintenance());
+    structure_enter_maintenance($j);
     foreach(array_reverse($j['operations'],true) as $name=>$op){
         if($name==='.htaccess')continue;
         $path=structure_path(CWP_ROOT,$name);$actual=structure_hash($path);
@@ -158,14 +167,14 @@ function structure_recover(string $dir): array {
         if($actual!==$op['new'])throw new RuntimeException('Recovery preserved a subsequently edited file: '.$name.'. Review before retrying recovery.');
         if($op['old']===null){if($actual!==null && !@unlink($path))throw new RuntimeException('Recovery cannot remove its unchanged new file: '.$name);}
         else{
-            $backup=structure_path($dir,hash('sha256',$name).'.php');$bytes=file_get_contents($backup);
+            $backup=structure_path($dir,$j['backup_id'].'-'.hash('sha256',$name).'.php');$bytes=file_get_contents($backup);
             if(!str_starts_with($bytes,CWP_GUARD) || !hash_equals($op['old'],hash('sha256',substr($bytes,strlen(CWP_GUARD)))))throw new RuntimeException('Recovery copy invalid: '.$name);
             structure_replace($name,substr($bytes,strlen(CWP_GUARD)));
         }
         $j['last_restored']=$name;structure_save($dir,$j);
     }
     $old=$j['operations']['.htaccess']['old'];
-    if($old!==null){$bytes=file_get_contents($dir.'/'.hash('sha256','.htaccess').'.php');if(!str_starts_with($bytes,CWP_GUARD)||!hash_equals($old,hash('sha256',substr($bytes,strlen(CWP_GUARD)))))throw new RuntimeException('Server policy recovery copy invalid.');structure_replace('.htaccess',substr($bytes,strlen(CWP_GUARD)));}
+    if($old!==null){$bytes=file_get_contents($dir.'/'.$j['backup_id'].'-'.hash('sha256','.htaccess').'.php');if(!str_starts_with($bytes,CWP_GUARD)||!hash_equals($old,hash('sha256',substr($bytes,strlen(CWP_GUARD)))))throw new RuntimeException('Server policy recovery copy invalid.');structure_replace('.htaccess',substr($bytes,strlen(CWP_GUARD)));}
     else if(!@unlink(CWP_ROOT.'/.htaccess'))throw new RuntimeException('Cannot restore absent server policy.');
     $j['state']='rolled-back';structure_save($dir,$j);return $j;
 }

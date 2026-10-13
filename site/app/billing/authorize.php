@@ -1,7 +1,7 @@
 <?php
 /** Fixed sandbox adapter. No production endpoint, retries, raw card storage or provider logging. */
 declare(strict_types=1);
-defined('CWP_BOOT') || exit;
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function authorize_result(int $http,string $body): string {
     if($http!==200||strlen($body)>65536)return 'unavailable';
     try{$r=json_decode(preg_replace('/^\xEF\xBB\xBF/','',$body),true,16,JSON_THROW_ON_ERROR);}catch(JsonException){return 'unavailable';}
