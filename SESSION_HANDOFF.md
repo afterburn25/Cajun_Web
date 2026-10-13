@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Owner instruction — keep development moving despite provider gates (2026-10-13)
+
+The owner approved [dependency gates policy](docs/DEPENDENCY_GATES.md) for all Codex and Devin sessions. Replace the four vague "Blocked" items in roadmap/tracker interpretation with: **HC-07 Awaiting API verification; HC-09/HC-10 Development pending — API verification; A-10 Architecture/security validation pending**. Do not mark those features implemented as a result of relabeling. Build and test all independently feasible designs, admin inputs, PHP logic, data models, fixtures/adapters, idempotent jobs, permissions and UI; then continue another authorized roadmap item if an external test cannot yet pass.
+
+**Next safe action:** review current main/open work and choose a bounded independently verifiable feature; record exact remaining account/endpoint/auth/transport acceptance for live operation and keep those actions disabled. Preserve other workers' branches, 1.10.0 immutable release, and 1.11.0 candidate acceptance gates. Don't ask owner to paste secrets or block unrelated work. **Docs-only policy update; no software deployed or provider call made.**
+
 ## Release acceptance follow-up — 2026-10-13
 
 Portfolio integration PR #30 is merged at `332af19333a62d3dfcc90eb9cf34871a7fac50ec`; original Devin PRs #7/#27 are merged with preserved history. Both candidate runs passed 618 native / 675 HTTP/Chromium checks and reviewed screenshots. Exact-main run 38408053057 passed native and actual 1.10.0 retention checks, then exposed a synthetic modified-click test navigation race. `codex/portfolio-acceptance` fixes the test observer and adds a real Ctrl-click/new-tab assertion; it changes no shipping bytes. Publication remains pending successful exact-main acceptance. Latest public release remains 1.10.0. New Devin L-02 PR #31 is separate unreviewed work, outside this release.

@@ -380,3 +380,15 @@ On `codex/portfolio-browsing`, preserve actual adapter/source and reconcile curr
 ## 2026-10-13 — Exact-main portfolio acceptance race correction
 
 Starting main `332af19333a62d3dfcc90eb9cf34871a7fac50ec` after checked PR #30 merge. Branch and merge-ref runs 38407152040/38407159542 passed 618 native / 675 HTTP/Chromium checks and screenshots were reviewed. Exact-main 38408053057 passed native/full earlier suites and actual retained 1.10.0 update, then failed because a synthetic Alt-modified click correctly performed browser navigation asynchronously, interrupting the next test goto. No application assertion failed. On `codex/portfolio-acceptance`, observe whether the app canceled each synthetic modified click, then prevent the test event's browser default. Also exercise actual Ctrl-click and a new filtered browser tab. Python syntax/docs pass locally; combined rerun pending. No shipping-file change, release or live operation. Next: checked test-fix merge and exact-main acceptance before publication.
+
+## 2026-10-13 — Dependency status clarification and agent instructions
+
+**Request:** Owner approved replacing ambiguous roadmap "Blocked" classifications for HC-07, HC-09, HC-10 and A-10 and explicitly instructed Codex/Devin not to stop independent development when an external provider/merchant/SSH prerequisite is unavailable.
+
+**Starting main:** `b975915b091d72944dca068399cfd2df1db74e88` (repository tree `3222081021545afa6f9af952bf6bc31a7b21768f`). Read and preserved current AGENTS, roadmap, hosting/client roadmaps, coordination, status/handoff, decisions, changelog and historical log.
+
+**Docs changes:** Added `docs/DEPENDENCY_GATES.md`; inserted mandatory policy links/brief instructions into `AGENTS.md`, `docs/ROADMAP.md`, `docs/HOSTING_AND_BILLING_ROADMAP.md`, `docs/CLIENT_PORTAL_ROADMAP.md`, `docs/AGENT_COORDINATION.md`; updated `PROJECT_STATUS.md`, `SESSION_HANDOFF.md`, `docs/DECISIONS.md`, `CHANGELOG.md` and this log. The four listed labels now describe external validation gaps independently from actual implementation and release status.
+
+**Verification and limitations:** Verified current GitHub main and read the target documentation before composing changes; GitHub write and readback of committed docs will be checked. No application source, release packages, CI tests, provider API, Authorize.net merchant, payments, customer service or live host were changed, exercised or represented as working.
+
+**Next:** Agents should begin with the next safe bounded implementation on current main, track precise external gates for real provider actions, avoid duplicate work/branches, and update evidence/status per reviewed implementation. No owner secrets should be placed in Git.
