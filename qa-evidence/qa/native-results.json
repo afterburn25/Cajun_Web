@@ -1,0 +1,232 @@
+{
+    "driver": "pdo_mysql",
+    "server": "10.11.19-MariaDB-ubu2204",
+    "checks": [
+        {
+            "name": "Native mysql PDO is loaded",
+            "passed": true
+        },
+        {
+            "name": "Adapter orders published portfolio deterministically",
+            "passed": true
+        },
+        {
+            "name": "Published categories feed the filter list",
+            "passed": true
+        },
+        {
+            "name": "Exact category selects its projects",
+            "passed": true
+        },
+        {
+            "name": "Unknown category matches nothing",
+            "passed": true
+        },
+        {
+            "name": "Blank category stays unfiltered",
+            "passed": true
+        },
+        {
+            "name": "Draft project never appears publicly",
+            "passed": true
+        },
+        {
+            "name": "Additive upgrade creates seven workspace tables",
+            "passed": true
+        },
+        {
+            "name": "Upgrade retains populated lead",
+            "passed": true
+        },
+        {
+            "name": "Upgrade retains owner account",
+            "passed": true
+        },
+        {
+            "name": "Upgrade retains original settings",
+            "passed": true
+        },
+        {
+            "name": "Upgrade saves schema marker",
+            "passed": true
+        },
+        {
+            "name": "Repeated migration is idempotent",
+            "passed": true
+        },
+        {
+            "name": "Migration rejects mismatched digest column type",
+            "passed": true
+        },
+        {
+            "name": "Failed migration leaves foreign column untouched",
+            "passed": true
+        },
+        {
+            "name": "Matching digit-bearing digest column is accepted",
+            "passed": true
+        },
+        {
+            "name": "Estimator uses trusted rules and ignores submitted amounts",
+            "passed": true
+        },
+        {
+            "name": "Disabled price rules return consultation",
+            "passed": true
+        },
+        {
+            "name": "Custom integration returns consultation",
+            "passed": true
+        },
+        {
+            "name": "Estimator rejects array-valued project type",
+            "passed": true
+        },
+        {
+            "name": "Estimator rejects unknown options",
+            "passed": true
+        },
+        {
+            "name": "Estimator rejects negative page counts",
+            "passed": true
+        },
+        {
+            "name": "Price parser rejects scientific notation",
+            "passed": true
+        },
+        {
+            "name": "Price parser rejects reversed ranges",
+            "passed": true
+        },
+        {
+            "name": "Lead submission is idempotent",
+            "passed": true
+        },
+        {
+            "name": "Lead stores server-estimated amount",
+            "passed": true
+        },
+        {
+            "name": "Lead persists with email disabled",
+            "passed": true
+        },
+        {
+            "name": "Website review stores the requested URL",
+            "passed": true
+        },
+        {
+            "name": "Consultation remains an unconfirmed request",
+            "passed": true
+        },
+        {
+            "name": "Privacy acknowledgement required",
+            "passed": true
+        },
+        {
+            "name": "Honeypot blocks automated submissions",
+            "passed": true
+        },
+        {
+            "name": "Too-fast submission is blocked",
+            "passed": true
+        },
+        {
+            "name": "Expired public form token rejected",
+            "passed": true
+        },
+        {
+            "name": "Public hourly limit blocks further saved leads",
+            "passed": true
+        },
+        {
+            "name": "Rate rejection does not create another lead",
+            "passed": true
+        },
+        {
+            "name": "CSRF rejected before saving",
+            "passed": true
+        },
+        {
+            "name": "Invitation stored as hash, not raw token",
+            "passed": true
+        },
+        {
+            "name": "Activation hashes password and consumes invite",
+            "passed": true
+        },
+        {
+            "name": "Invitation replay rejected",
+            "passed": true
+        },
+        {
+            "name": "Expired client invitation cannot activate",
+            "passed": true
+        },
+        {
+            "name": "Expired activation preserves unset password",
+            "passed": true
+        },
+        {
+            "name": "Client authentication succeeds",
+            "passed": true
+        },
+        {
+            "name": "Client cannot read another client project",
+            "passed": true
+        },
+        {
+            "name": "Superseded approval rejected",
+            "passed": true
+        },
+        {
+            "name": "Another client cannot approve a project",
+            "passed": true
+        },
+        {
+            "name": "Approval records exact version and client",
+            "passed": true
+        },
+        {
+            "name": "Duplicate approval rejected",
+            "passed": true
+        },
+        {
+            "name": "Prior version content immutable",
+            "passed": true
+        },
+        {
+            "name": "Change request requires feedback",
+            "passed": true
+        },
+        {
+            "name": "Change request records feedback",
+            "passed": true
+        },
+        {
+            "name": "New invitation revokes older client session",
+            "passed": true
+        },
+        {
+            "name": "Content edit conflict rejected",
+            "passed": true
+        },
+        {
+            "name": "Conflicting edit does not replace newer content",
+            "passed": true
+        },
+        {
+            "name": "Restore creates a new revision without deleting history",
+            "passed": true
+        },
+        {
+            "name": "History rejects arbitrary configuration keys",
+            "passed": true
+        },
+        {
+            "name": "All planned tables use InnoDB",
+            "passed": true
+        }
+    ],
+    "passed": true,
+    "failure": null
+}

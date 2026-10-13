@@ -1,0 +1,1 @@
+Open index.html locally or upload these static files. No database is required.

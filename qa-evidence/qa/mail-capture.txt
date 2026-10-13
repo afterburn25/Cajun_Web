@@ -1,0 +1,42 @@
+To: owner@example.invalid
+Subject: =?UTF-8?B?TmV3IHByb2plY3QgaW5xdWlyeSDCtyBDV1AtQjY5MjVBMDZBRg==?=
+Date: Tue, 13 Oct 2026 13:29:45 +0000
+From: CajunWebPro <studio@example.invalid>
+Message-ID: <7a60344b04e4cf891036d18c66e8e029@example.invalid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+Reply-To: prospect@example.invalid
+
+TmV3IENhanVuV2ViUHJvIHByb2plY3QgaW5xdWlyeQoKUmVmZXJlbmNlOiBDV1AtQjY5MjVBMDZB
+RgpOYW1lOiBSZWxlYXNlIGZpeHR1cmUgcHJvc3BlY3QKRW1haWw6IHByb3NwZWN0QGV4YW1wbGUu
+aW52YWxpZApCdXNpbmVzczogClBob25lOiAKU2VydmljZTogV2Vic2l0ZSByZXZpZXcKQnVkZ2V0
+OiBUYWlsb3JlZCBxdW90ZQpUaW1lbGluZTogCgpXZWJzaXRlOiBodHRwczovL2V4YW1wbGUuaW52
+YWxpZC9maXh0dXJlCkh1bWFuLXJldmlld2VkIHJlcXVlc3Q7IG5vIGF1dG9tYXRlZCBhdWRpdCBw
+ZXJmb3JtZWQuCgpCVVNJTkVTUyBHT0FMUwpTeW50aGV0aWMgd29ya2Zsb3cgcmVxdWVzdCBmb3Ig
+dGhlIHJlbGVhc2UgYWNjZXB0YW5jZS4KCk1hbmFnZSB0aGlzIGlucXVpcnk6IGh0dHA6Ly8xMjcu
+MC4wLjE6ODA5MS9leGlzdGluZy9hZG1pbi5waHA/dmlldz1sZWFkcw==
+
+
+---END---
+To: owner@example.invalid
+Subject: =?UTF-8?B?TmV3IHByb2plY3QgaW5xdWlyeSDCtyBDV1AtMTlCQzQ4OTJFRQ==?=
+Date: Tue, 13 Oct 2026 13:29:47 +0000
+From: CajunWebPro <studio@example.invalid>
+Message-ID: <ea288fc1c2efa6c1ca7f64a8db3dc229@example.invalid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+Reply-To: prospect@example.invalid
+
+TmV3IENhanVuV2ViUHJvIHByb2plY3QgaW5xdWlyeQoKUmVmZXJlbmNlOiBDV1AtMTlCQzQ4OTJF
+RQpOYW1lOiBSZWxlYXNlIGZpeHR1cmUgcHJvc3BlY3QKRW1haWw6IHByb3NwZWN0QGV4YW1wbGUu
+aW52YWxpZApCdXNpbmVzczogClBob25lOiAKU2VydmljZTogQ29uc3VsdGF0aW9uIHJlcXVlc3QK
+QnVkZ2V0OiBUYWlsb3JlZCBxdW90ZQpUaW1lbGluZTogCgpSZXF1ZXN0ZWQ6IDIwMjYtMTItMDEg
+QWZ0ZXJub29uIChBbWVyaWNhL0NoaWNhZ28pLgpBcHBvaW50bWVudCBpcyBub3QgY29uZmlybWVk
+IHVudGlsIHRoZSBzdHVkaW8gcmVwbGllcy4KCkJVU0lORVNTIEdPQUxTClN5bnRoZXRpYyB3b3Jr
+ZmxvdyByZXF1ZXN0IGZvciB0aGUgcmVsZWFzZSBhY2NlcHRhbmNlLgoKTWFuYWdlIHRoaXMgaW5x
+dWlyeTogaHR0cDovLzEyNy4wLjAuMTo4MDkxL2V4aXN0aW5nL2FkbWluLnBocD92aWV3PWxlYWRz
+
+
+---END---

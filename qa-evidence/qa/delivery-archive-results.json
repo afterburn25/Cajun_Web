@@ -1,0 +1,227 @@
+{
+    "scope": "Native PHP ZIP adversarial synthetic archives; no extraction or execution",
+    "checks": [
+        {
+            "name": "Valid static manifest matches whole ZIP and each file",
+            "passed": true
+        },
+        {
+            "name": "Reject path ..\/escape",
+            "passed": true
+        },
+        {
+            "name": "Reject path \/absolute",
+            "passed": true
+        },
+        {
+            "name": "Reject path C:\/drive",
+            "passed": true
+        },
+        {
+            "name": "Reject path a\\back",
+            "passed": true
+        },
+        {
+            "name": "Reject path a\/\/b",
+            "passed": true
+        },
+        {
+            "name": "Reject path a\/..\/b",
+            "passed": true
+        },
+        {
+            "name": "Reject path a.\/b",
+            "passed": true
+        },
+        {
+            "name": "Reject path CON.txt",
+            "passed": true
+        },
+        {
+            "name": "Reject path NUL",
+            "passed": true
+        },
+        {
+            "name": "Reject path LPT9.php",
+            "passed": true
+        },
+        {
+            "name": "Reject path same.",
+            "passed": true
+        },
+        {
+            "name": "Reject path white ",
+            "passed": true
+        },
+        {
+            "name": "Reject path dir\/\/",
+            "passed": true
+        },
+        {
+            "name": "Reject path .env",
+            "passed": true
+        },
+        {
+            "name": "Reject path .env.production",
+            "passed": true
+        },
+        {
+            "name": "Reject path .git\/config",
+            "passed": true
+        },
+        {
+            "name": "Reject path .htpasswd",
+            "passed": true
+        },
+        {
+            "name": "Reject path .npmrc",
+            "passed": true
+        },
+        {
+            "name": "Reject path .netrc",
+            "passed": true
+        },
+        {
+            "name": "Reject path .pypirc",
+            "passed": true
+        },
+        {
+            "name": "Reject path .git-credentials",
+            "passed": true
+        },
+        {
+            "name": "Reject path config.php",
+            "passed": true
+        },
+        {
+            "name": "Reject path wp-config.php",
+            "passed": true
+        },
+        {
+            "name": "Reject path id_rsa",
+            "passed": true
+        },
+        {
+            "name": "Reject path db.sql",
+            "passed": true
+        },
+        {
+            "name": "Reject path db.sqlite",
+            "passed": true
+        },
+        {
+            "name": "Reject path backup.zip",
+            "passed": true
+        },
+        {
+            "name": "Reject path logs.log",
+            "passed": true
+        },
+        {
+            "name": "Reject path secret.pem",
+            "passed": true
+        },
+        {
+            "name": "Reject colliding or overlapping paths 0",
+            "passed": true
+        },
+        {
+            "name": "Reject colliding or overlapping paths 1",
+            "passed": true
+        },
+        {
+            "name": "Reject colliding or overlapping paths 2",
+            "passed": true
+        },
+        {
+            "name": "Reject Unix symbolic link",
+            "passed": true
+        },
+        {
+            "name": "Reject special file",
+            "passed": true
+        },
+        {
+            "name": "Reject encrypted archive",
+            "passed": true
+        },
+        {
+            "name": "Reject recognizable embedded credential 0",
+            "passed": true
+        },
+        {
+            "name": "Reject recognizable embedded credential 1",
+            "passed": true
+        },
+        {
+            "name": "Reject recognizable embedded credential 2",
+            "passed": true
+        },
+        {
+            "name": "Reject recognizable embedded credential 3",
+            "passed": true
+        },
+        {
+            "name": "Reject recognizable embedded credential 4",
+            "passed": true
+        },
+        {
+            "name": "Reject recognizable embedded credential 5",
+            "passed": true
+        },
+        {
+            "name": "Static scope rejects server programs",
+            "passed": true
+        },
+        {
+            "name": "Files-only scans code without executing",
+            "passed": true
+        },
+        {
+            "name": "Clearly marked credential placeholder accepted",
+            "passed": true
+        },
+        {
+            "name": "Requires handover and licensing documents",
+            "passed": true
+        },
+        {
+            "name": "Empty handover documents rejected",
+            "passed": true
+        },
+        {
+            "name": "Stored content CRC mismatch rejected",
+            "passed": true
+        },
+        {
+            "name": "Executable prefix rejected",
+            "passed": true
+        },
+        {
+            "name": "Invalid signature rejected",
+            "passed": true
+        },
+        {
+            "name": "Invalid scope rejected",
+            "passed": true
+        },
+        {
+            "name": "More than 1000 entries rejected",
+            "passed": true
+        },
+        {
+            "name": "File larger than 32 MiB rejected",
+            "passed": true
+        },
+        {
+            "name": "Extreme compression expansion rejected",
+            "passed": true
+        },
+        {
+            "name": "Compressed limit enforced before parsing",
+            "passed": true
+        }
+    ],
+    "passed": true,
+    "failure": null
+}

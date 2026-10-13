@@ -1,0 +1,146 @@
+{
+    "passed": true,
+    "checks": [
+        {
+            "name": "Support unavailable until explicit migration",
+            "passed": true
+        },
+        {
+            "name": "Support migration requires owner current password",
+            "passed": true
+        },
+        {
+            "name": "Incompatible support schema rejected without replacement",
+            "passed": true
+        },
+        {
+            "name": "Incompatible support data shape retained",
+            "passed": true
+        },
+        {
+            "name": "Interrupted and repeated migration preserves client credentials",
+            "passed": true
+        },
+        {
+            "name": "Unconfigured client policy denies access",
+            "passed": true
+        },
+        {
+            "name": "Support resolves immutable staff and selected-client identities",
+            "passed": true
+        },
+        {
+            "name": "Support never overwrites actual customer login",
+            "passed": true
+        },
+        {
+            "name": "Stored binding is a digest rather than browser secret",
+            "passed": true
+        },
+        {
+            "name": "Support has 15 minute fixed maximum",
+            "passed": true
+        },
+        {
+            "name": "Portal URLs retain immutable support context",
+            "passed": true
+        },
+        {
+            "name": "Support form token is separate from actual client token",
+            "passed": true
+        },
+        {
+            "name": "Nested client switching is blocked",
+            "passed": true
+        },
+        {
+            "name": "Client decisions are forbidden in support context",
+            "passed": true
+        },
+        {
+            "name": "Client activation is forbidden in support context",
+            "passed": true
+        },
+        {
+            "name": "Support message retains staff attribution",
+            "passed": true
+        },
+        {
+            "name": "Cross-client support write denied",
+            "passed": true
+        },
+        {
+            "name": "Denied support write cannot mutate another client",
+            "passed": true
+        },
+        {
+            "name": "Copied support identifier fails in a different browser",
+            "passed": true
+        },
+        {
+            "name": "Ended context cannot be replayed",
+            "passed": true
+        },
+        {
+            "name": "Return keeps original customer identity",
+            "passed": true
+        },
+        {
+            "name": "Expired context denied and durably ended",
+            "passed": true
+        },
+        {
+            "name": "Idle context denied",
+            "passed": true
+        },
+        {
+            "name": "Client policy revocation ends live context",
+            "passed": true
+        },
+        {
+            "name": "Client credential change revokes support",
+            "passed": true
+        },
+        {
+            "name": "Disabled client revokes support",
+            "passed": true
+        },
+        {
+            "name": "Non-owner cannot change client support authorization",
+            "passed": true
+        },
+        {
+            "name": "View permission does not grant troubleshooting writes",
+            "passed": true
+        },
+        {
+            "name": "View permission does not grant file download",
+            "passed": true
+        },
+        {
+            "name": "Staff permission change revokes old support session",
+            "passed": true
+        },
+        {
+            "name": "Staff without explicit support permission cannot start",
+            "passed": true
+        },
+        {
+            "name": "Staff logout ends bound support context",
+            "passed": true
+        },
+        {
+            "name": "Audit failure rolls back the actual support write",
+            "passed": true
+        },
+        {
+            "name": "Support audit contains starts ends and attributed actions",
+            "passed": true
+        },
+        {
+            "name": "Support audit excludes message body browser binding and password",
+            "passed": true
+        }
+    ],
+    "failure": null
+}

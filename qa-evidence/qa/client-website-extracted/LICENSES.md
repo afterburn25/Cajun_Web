@@ -1,0 +1,1 @@
+Synthetic site and assets authored for this test. All included files may be transferred.

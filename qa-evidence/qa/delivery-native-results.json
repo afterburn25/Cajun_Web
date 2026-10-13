@@ -1,0 +1,235 @@
+{
+    "scope": "Isolated MariaDB, guarded private files, concurrent PHP uploads and synthetic client identities",
+    "checks": [
+        {
+            "name": "Setup requires owner reauthentication",
+            "passed": true
+        },
+        {
+            "name": "Setup rejects missing version uniqueness",
+            "passed": true
+        },
+        {
+            "name": "Setup rejects folded hash identifiers",
+            "passed": true
+        },
+        {
+            "name": "Setup refuses unknown populated delivery tables",
+            "passed": true
+        },
+        {
+            "name": "Setup audit failure rolls back readiness",
+            "passed": true
+        },
+        {
+            "name": "Setup is additive and preserves prior projects",
+            "passed": true
+        },
+        {
+            "name": "Repeated setup is safe",
+            "passed": true
+        },
+        {
+            "name": "Delivery storage cannot be inside web root",
+            "passed": true
+        },
+        {
+            "name": "Website-only staff cannot upload",
+            "passed": true
+        },
+        {
+            "name": "Client staff cannot run owner setup",
+            "passed": true
+        },
+        {
+            "name": "Client staff upload creates private immutable manifest",
+            "passed": true
+        },
+        {
+            "name": "Same request returns same record and bytes",
+            "passed": true
+        },
+        {
+            "name": "Reusing upload key with changed version rejected",
+            "passed": true
+        },
+        {
+            "name": "Duplicate version cannot replace archive",
+            "passed": true
+        },
+        {
+            "name": "Non-owner cannot publish",
+            "passed": true
+        },
+        {
+            "name": "Another actor cannot reuse upload request",
+            "passed": true
+        },
+        {
+            "name": "Publish requires current password",
+            "passed": true
+        },
+        {
+            "name": "Publish requires current manifest fingerprint",
+            "passed": true
+        },
+        {
+            "name": "Private file is guarded and uses restrictive permissions",
+            "passed": true
+        },
+        {
+            "name": "Verified download descriptor contains exact ZIP",
+            "passed": true
+        },
+        {
+            "name": "Upload audit failure rolls back row and uncommitted file",
+            "passed": true
+        },
+        {
+            "name": "Publish audit failure retains draft",
+            "passed": true
+        },
+        {
+            "name": "Client cannot see draft",
+            "passed": true
+        },
+        {
+            "name": "Inactive client cannot receive publication",
+            "passed": true
+        },
+        {
+            "name": "Inactive client project cannot accept upload",
+            "passed": true
+        },
+        {
+            "name": "Publication retry retains exact first publication",
+            "passed": true
+        },
+        {
+            "name": "Versions retain original manifest and sequential project number",
+            "passed": true
+        },
+        {
+            "name": "Owned client can retrieve original and later version",
+            "passed": true
+        },
+        {
+            "name": "Other client cannot view known release ID",
+            "passed": true
+        },
+        {
+            "name": "Revoked client identity cannot view release",
+            "passed": true
+        },
+        {
+            "name": "Changed project ownership cannot leak immutable client release",
+            "passed": true
+        },
+        {
+            "name": "Support context cannot create releases",
+            "passed": true
+        },
+        {
+            "name": "Support context cannot publish",
+            "passed": true
+        },
+        {
+            "name": "Appended data fails integrity",
+            "passed": true
+        },
+        {
+            "name": "Truncated archive fails integrity",
+            "passed": true
+        },
+        {
+            "name": "Same-size changed bytes fail integrity",
+            "passed": true
+        },
+        {
+            "name": "Missing PHP guard fails integrity",
+            "passed": true
+        },
+        {
+            "name": "Missing release fails closed",
+            "passed": true
+        },
+        {
+            "name": "Symlink replacement fails closed",
+            "passed": true
+        },
+        {
+            "name": "Project quota enforced under mutation lock",
+            "passed": true
+        },
+        {
+            "name": "Concurrent upload process exits cleanly",
+            "passed": true
+        },
+        {
+            "name": "Concurrent upload process exits cleanly",
+            "passed": true
+        },
+        {
+            "name": "Concurrent same version creates one immutable release",
+            "passed": true
+        },
+        {
+            "name": "Range handling ",
+            "passed": true
+        },
+        {
+            "name": "Range handling bytes=0-9",
+            "passed": true
+        },
+        {
+            "name": "Range handling bytes=90-",
+            "passed": true
+        },
+        {
+            "name": "Range handling bytes=-10",
+            "passed": true
+        },
+        {
+            "name": "Range handling bytes=90-500",
+            "passed": true
+        },
+        {
+            "name": "Range handling bytes=-500",
+            "passed": true
+        },
+        {
+            "name": "Invalid range rejected bytes=100-",
+            "passed": true
+        },
+        {
+            "name": "Invalid range rejected bytes=9-0",
+            "passed": true
+        },
+        {
+            "name": "Invalid range rejected bytes=-0",
+            "passed": true
+        },
+        {
+            "name": "Invalid range rejected bytes=-",
+            "passed": true
+        },
+        {
+            "name": "Invalid range rejected items=0-1",
+            "passed": true
+        },
+        {
+            "name": "Invalid range rejected bytes=0-1,4-5",
+            "passed": true
+        },
+        {
+            "name": "Invalid range rejected bytes=999999999999999-",
+            "passed": true
+        },
+        {
+            "name": "Delivery audit attributes uploader and excludes package content",
+            "passed": true
+        }
+    ],
+    "passed": true,
+    "failure": null
+}

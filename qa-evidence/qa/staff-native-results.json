@@ -1,0 +1,130 @@
+{
+    "passed": true,
+    "checks": [
+        {
+            "name": "Upgrade requires current password",
+            "passed": true
+        },
+        {
+            "name": "Incompatible staff schema is rejected without replacement",
+            "passed": true
+        },
+        {
+            "name": "Rejected migration preserves foreign column",
+            "passed": true
+        },
+        {
+            "name": "Interrupted upgrade completes and preserves original owner bytes",
+            "passed": true
+        },
+        {
+            "name": "Repeated upgrade preserves single explicit owner",
+            "passed": true
+        },
+        {
+            "name": "Owner receives management permission",
+            "passed": true
+        },
+        {
+            "name": "Last owner cannot be disabled",
+            "passed": true
+        },
+        {
+            "name": "Last owner cannot be demoted",
+            "passed": true
+        },
+        {
+            "name": "Unknown permissions cannot be assigned",
+            "passed": true
+        },
+        {
+            "name": "Duplicate email rolls back without orphan profile",
+            "passed": true
+        },
+        {
+            "name": "New staff has no reusable password",
+            "passed": true
+        },
+        {
+            "name": "Invitation stores only purpose-separated token digest",
+            "passed": true
+        },
+        {
+            "name": "Replaced invitation is rejected",
+            "passed": true
+        },
+        {
+            "name": "Expired application invitation is rejected",
+            "passed": true
+        },
+        {
+            "name": "Activation sets strong password and consumes invitation",
+            "passed": true
+        },
+        {
+            "name": "Application setup link is single use",
+            "passed": true
+        },
+        {
+            "name": "Assigned website access is allowed",
+            "passed": true
+        },
+        {
+            "name": "Unassigned client access is denied",
+            "passed": true
+        },
+        {
+            "name": "Administrator has no implicit account or mailbox permission",
+            "passed": true
+        },
+        {
+            "name": "Administrator cannot elevate another account",
+            "passed": true
+        },
+        {
+            "name": "Deactivation atomically revokes reset and invitation records",
+            "passed": true
+        },
+        {
+            "name": "Deactivated existing session denied on next check",
+            "passed": true
+        },
+        {
+            "name": "Disabled staff cannot activate pending link",
+            "passed": true
+        },
+        {
+            "name": "Enabled staff can request a reset token",
+            "passed": true
+        },
+        {
+            "name": "Reset rotates current session version",
+            "passed": true
+        },
+        {
+            "name": "Password reset is single use",
+            "passed": true
+        },
+        {
+            "name": "Self-account edit revokes prior session",
+            "passed": true
+        },
+        {
+            "name": "Account name and email saved without changing grants",
+            "passed": true
+        },
+        {
+            "name": "Pending owner cannot replace last activated owner",
+            "passed": true
+        },
+        {
+            "name": "Concurrent owner mutations serialize and retain one usable owner",
+            "passed": true
+        },
+        {
+            "name": "Audit records account actions without raw setup tokens",
+            "passed": true
+        }
+    ],
+    "failure": null
+}

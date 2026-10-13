@@ -1,0 +1,202 @@
+{
+    "passed": true,
+    "checks": [
+        {
+            "name": "Catalog public fallback before migration",
+            "passed": true
+        },
+        {
+            "name": "Catalog setup requires correct owner password",
+            "passed": true
+        },
+        {
+            "name": "Incompatible catalog schema rejected without replacement",
+            "passed": true
+        },
+        {
+            "name": "Incompatible existing column retained",
+            "passed": true
+        },
+        {
+            "name": "Repeated additive setup preserves customer credentials",
+            "passed": true
+        },
+        {
+            "name": "New products stay draft and absent publicly",
+            "passed": true
+        },
+        {
+            "name": "Reject malformed money 1e2",
+            "passed": true
+        },
+        {
+            "name": "Reject malformed money -1.00",
+            "passed": true
+        },
+        {
+            "name": "Reject malformed money 1,000",
+            "passed": true
+        },
+        {
+            "name": "Reject malformed money 1.234",
+            "passed": true
+        },
+        {
+            "name": "Reject malformed money NaN",
+            "passed": true
+        },
+        {
+            "name": "Reject malformed money 1000000.00",
+            "passed": true
+        },
+        {
+            "name": "Duplicate SKU denied",
+            "passed": true
+        },
+        {
+            "name": "Unsupported currency denied",
+            "passed": true
+        },
+        {
+            "name": "Unconfigured publication denied",
+            "passed": true
+        },
+        {
+            "name": "Unverified hosting publication denied",
+            "passed": true
+        },
+        {
+            "name": "Configured price appears in public projection",
+            "passed": true
+        },
+        {
+            "name": "Public projection excludes internal cost and provider reference",
+            "passed": true
+        },
+        {
+            "name": "Stale product edit rejected",
+            "passed": true
+        },
+        {
+            "name": "Stale price cannot be silently invoiced",
+            "passed": true
+        },
+        {
+            "name": "Integer invoice total includes setup exactly once",
+            "passed": true
+        },
+        {
+            "name": "Quantity boundary 0",
+            "passed": true
+        },
+        {
+            "name": "Quantity boundary 101",
+            "passed": true
+        },
+        {
+            "name": "Quantity boundary -1",
+            "passed": true
+        },
+        {
+            "name": "Invoice reuses current project and client identities",
+            "passed": true
+        },
+        {
+            "name": "Snapshot excludes private costs and provider IDs",
+            "passed": true
+        },
+        {
+            "name": "Duplicate identical issue returns same invoice",
+            "passed": true
+        },
+        {
+            "name": "Duplicate key cannot change invoice details",
+            "passed": true
+        },
+        {
+            "name": "Catalog changes cannot rewrite issued price or text",
+            "passed": true
+        },
+        {
+            "name": "Overflowing invoice rejected",
+            "passed": true
+        },
+        {
+            "name": "Retired products disappear publicly",
+            "passed": true
+        },
+        {
+            "name": "Retired product cannot produce new invoice",
+            "passed": true
+        },
+        {
+            "name": "Identical request replay survives retirement",
+            "passed": true
+        },
+        {
+            "name": "Concurrent invoice worker succeeds",
+            "passed": true
+        },
+        {
+            "name": "Concurrent invoice worker succeeds",
+            "passed": true
+        },
+        {
+            "name": "Concurrent duplicate submits issue once",
+            "passed": true
+        },
+        {
+            "name": "Catalog-only staff cannot issue client invoices",
+            "passed": true
+        },
+        {
+            "name": "Catalog administrator cannot run owner migration",
+            "passed": true
+        },
+        {
+            "name": "Client-only staff cannot manage prices",
+            "passed": true
+        },
+        {
+            "name": "Client-only staff cannot transition catalog invoices",
+            "passed": true
+        },
+        {
+            "name": "Support context cannot issue invoices",
+            "passed": true
+        },
+        {
+            "name": "Audit failure rolls back invoice and snapshot",
+            "passed": true
+        },
+        {
+            "name": "Audit failure rolls back product revision",
+            "passed": true
+        },
+        {
+            "name": "Audit failure rolls back paid transition",
+            "passed": true
+        },
+        {
+            "name": "Verified manual payment retains immutable price",
+            "passed": true
+        },
+        {
+            "name": "Paid invoice cannot be voided",
+            "passed": true
+        },
+        {
+            "name": "Unpaid void preserves snapshot",
+            "passed": true
+        },
+        {
+            "name": "Void invoice cannot be marked paid",
+            "passed": true
+        },
+        {
+            "name": "Catalog revisions are retained",
+            "passed": true
+        }
+    ],
+    "failure": null
+}

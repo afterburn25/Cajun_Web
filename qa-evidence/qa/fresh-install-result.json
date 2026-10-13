@@ -1,0 +1,104 @@
+{
+  "installer_build": "1.10.0",
+  "key_required": false,
+  "ok": true,
+  "events": [
+    "Created 34 isolated application tables.",
+    "Saved the administrator account and website content.",
+    "Saved the permanent storage path in owner-only config.php.",
+    "Locked the website against accidental reinstallation.",
+    "Removed install.php.",
+    "Private files and media use: /home/runner/work/Cajun_Web/Cajun_Web/test-runtime/cajunwebpro-private-ac8fb48f95b7"
+  ],
+  "warnings": [],
+  "deleted": {
+    "install-key.php": true,
+    "install.php": true,
+    "assets/install.js": true,
+    "assets/install.css": true
+  },
+  "storage": "/home/runner/work/Cajun_Web/Cajun_Web/test-runtime/cajunwebpro-private-ac8fb48f95b7",
+  "admin": "http://127.0.0.1:8091/fresh/admin.php",
+  "site": "http://127.0.0.1:8091/fresh/",
+  "checks": [
+    {
+      "label": "Complete website files",
+      "ok": true,
+      "message": "79 / 79 required files verified."
+    },
+    {
+      "label": "PHP runtime",
+      "ok": true,
+      "message": "PHP 8.3.6"
+    },
+    {
+      "label": "Secure connection",
+      "ok": true,
+      "message": "Local development connection."
+    },
+    {
+      "label": "MySQL connector",
+      "ok": true,
+      "message": "pdo_mysql available"
+    },
+    {
+      "label": "Encryption",
+      "ok": true,
+      "message": "openssl available"
+    },
+    {
+      "label": "File validation",
+      "ok": true,
+      "message": "fileinfo available"
+    },
+    {
+      "label": "Image processing",
+      "ok": true,
+      "message": "gd available"
+    },
+    {
+      "label": "Website directory",
+      "ok": true,
+      "message": "Create, read, append, rename and delete passed.",
+      "details": {
+        "path": "/home/runner/work/Cajun_Web/Cajun_Web/test-runtime/web/fresh",
+        "ok": true,
+        "owner": 1001,
+        "group": 1001,
+        "mode": "0755",
+        "message": "Create, read, append, rename and delete passed.",
+        "permissions_ok": true
+      }
+    },
+    {
+      "label": "Private storage",
+      "ok": true,
+      "message": "Ready: outside the public document root. PHP-owned, persistent, 0700; file create/read/append/rename/delete verified.",
+      "details": {
+        "path": "/home/runner/work/Cajun_Web/Cajun_Web/test-runtime/cajunwebpro-private-ac8fb48f95b7",
+        "ok": true,
+        "owner": 1001,
+        "group": 1001,
+        "mode": "0700",
+        "message": "Ready: outside the public document root. PHP-owned, persistent, 0700; file create/read/append/rename/delete verified.",
+        "permissions_ok": true
+      }
+    },
+    {
+      "label": "Protected media",
+      "ok": true,
+      "message": "Ready. Protected media folder created and verified under the selected private storage.",
+      "details": {
+        "path": "/home/runner/work/Cajun_Web/Cajun_Web/test-runtime/cajunwebpro-private-ac8fb48f95b7/media",
+        "ok": true,
+        "owner": 1001,
+        "group": 1001,
+        "mode": "0700",
+        "message": "Ready. Protected media folder created and verified under the selected private storage.",
+        "permissions_ok": true
+      }
+    }
+  ],
+  "storage_note": "The selected storage path will be saved in config.php.",
+  "php_uid": 1001
+}

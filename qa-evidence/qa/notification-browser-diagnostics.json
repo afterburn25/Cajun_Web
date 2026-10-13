@@ -1,0 +1,6 @@
+{
+  "page_errors": [],
+  "provider_requests": [],
+  "signatures": "Synthetic Python HMAC over exact HTTP request bytes",
+  "tls": "Trusted loopback proxy fixture only; not actual TLS or merchant delivery"
+}

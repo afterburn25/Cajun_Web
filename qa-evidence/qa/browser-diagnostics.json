@@ -1,0 +1,77 @@
+{
+  "console_and_page_errors": [
+    {
+      "text": "Failed to load resource: the server responded with a status of 422 (Unknown Status Code)",
+      "url": "http://127.0.0.1:8091/existing/index.php?page=estimate"
+    }
+  ],
+  "unexpected": [],
+  "failed_requests": [
+    {
+      "url": "http://127.0.0.1:8091/existing/activity.php?audience=admin",
+      "failure": "net::ERR_ABORTED",
+      "status": 204
+    },
+    {
+      "url": "http://127.0.0.1:8091/existing/activity.php?audience=admin",
+      "failure": "net::ERR_ABORTED",
+      "status": 204
+    },
+    {
+      "url": "http://127.0.0.1:8091/existing/activity.php?audience=admin",
+      "failure": "net::ERR_ABORTED",
+      "status": 204
+    },
+    {
+      "url": "http://127.0.0.1:8091/existing/activity.php?audience=admin",
+      "failure": "net::ERR_ABORTED",
+      "status": 204
+    },
+    {
+      "url": "http://127.0.0.1:8091/existing/activity.php?audience=admin",
+      "failure": "net::ERR_ABORTED",
+      "status": 204
+    },
+    {
+      "url": "http://127.0.0.1:8091/existing/activity.php?audience=admin",
+      "failure": "net::ERR_ABORTED",
+      "status": 204
+    },
+    {
+      "url": "http://127.0.0.1:8091/existing/activity.php?audience=admin",
+      "failure": "net::ERR_ABORTED",
+      "status": 204
+    },
+    {
+      "url": "http://127.0.0.1:8091/existing/activity.php?audience=admin",
+      "failure": "net::ERR_ABORTED",
+      "status": 204
+    },
+    {
+      "url": "http://127.0.0.1:8091/existing/activity.php?audience=admin",
+      "failure": "net::ERR_ABORTED",
+      "status": 204
+    },
+    {
+      "url": "http://127.0.0.1:8091/existing/activity.php?audience=client",
+      "failure": "net::ERR_ABORTED",
+      "status": 204
+    },
+    {
+      "url": "http://127.0.0.1:8091/existing/activity.php?audience=client",
+      "failure": "net::ERR_ABORTED",
+      "status": 204
+    },
+    {
+      "url": "http://127.0.0.1:8091/existing/activity.php?audience=client",
+      "failure": "net::ERR_ABORTED",
+      "status": 204
+    },
+    {
+      "url": "http://127.0.0.1:8091/existing/activity.php?audience=client",
+      "failure": "net::ERR_ABORTED",
+      "status": 204
+    }
+  ],
+  "unexpected_failed_requests": []
+}
