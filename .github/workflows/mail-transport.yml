@@ -1,45 +1,3 @@
-<<<<<<< HEAD
-name: Mail transport contract checks
-
-on:
-  pull_request:
-  push:
-    branches: [main]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
-concurrency:
-  group: mail-transport-${{ github.ref }}
-  cancel-in-progress: true
-
-jobs:
-  policy:
-    name: Mail transport checks PHP ${{ matrix.php }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        php: ['8.2', '8.4']
-    steps:
-      - name: Check out the revision
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          persist-credentials: false
-      - name: Syntax and mail transport checks using the official PHP image
-        run: |
-          docker run --rm --network none -v "$PWD:/workspace:ro" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
-            for source in foundation/mail-transport/*.php foundation/webmail/*.php tests/mail-transport/*.php; do php -l "$source"; done
-            php tests/mail-transport/run.php
-            php -n tests/mail-transport/run.php  # regression: no php.ini, no optional extensions
-          '
-      - name: Record verification scope
-        if: always()
-        run: |
-          echo 'Isolated mail transport contract checks only. Scripted sockets only; no live IMAP/SMTP connection, credentials, persistence or UI is tested by this job.' >> "$GITHUB_STEP_SUMMARY"
-=======
 name: Mail transport checks
 on:
   push:
@@ -75,10 +33,16 @@ jobs:
           python3 -m venv .ci-venv
           .ci-venv/bin/pip install --disable-pip-version-check cryptography==50.0.1
           .ci-venv/bin/python tests/mail-transport/tls_test.py
+      - name: Scripted-socket inbound transport checks
+        run: |
+          for source in foundation/mail-transport/*.php foundation/webmail/*.php tests/mail-transport/run.php; do php -l "$source"; done
+          php tests/mail-transport/run.php > qa/mail-transport-inbound-results.txt
+          php -n tests/mail-transport/run.php
+        env:
+          CI: true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: mail-transport-${{ matrix.php }}-${{ github.sha }}
-          path: qa/mail-transport-*-results.json
+          path: qa/mail-transport-*-results.*
           if-no-files-found: error
->>>>>>> origin/main
