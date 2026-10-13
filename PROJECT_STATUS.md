@@ -1,5 +1,9 @@
 # Project status
 
+## 2026-10-13 — Devin A-10 SSH access-model foundation (unreviewed, unintegrated)
+
+Devin implemented the safe-work portion of A-10 as an isolated canonical component on `devin/ssh-access`: `foundation/ssh-access/` (`ServiceTarget`/`TargetRegistry` approved-target model, client-authorized `AccessGrant`, hash-bound single-use `LaunchToken`, `TerminalSession` lifecycle with enforced timeouts, `AuditEvent`, `TerminalTransport` boundary with no implementation, and `SessionBroker` denial-first launch gate), `tests/ssh-access/run.php` (65 checks), `ssh-access.yml` workflow, and [SSH_ACCESS_FOUNDATION](docs/SSH_ACCESS_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Architecture/security validation pending** (no transport/gateway; fixture identities only). No `site/` changes, terminal UI, schema, deployment or release.
+
 ## Current directory and package contract — 1.11.0 candidate
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](docs/DIRECTORY_STRUCTURE.md), [migration and recovery](docs/STRUCTURE_MIGRATION.md), and [START-HERE](START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — A-10 SSH access-model foundation (Devin, isolated component)
+
+- Added canonical `foundation/ssh-access/` classes (`ServiceTarget`, `TargetRegistry`, client-authorized `AccessGrant`, hash-bound single-use `LaunchToken`, `TerminalSession` with enforced idle/absolute timeouts, `AuditEvent`, the `TerminalTransport` boundary interface with no implementation, and `SessionBroker` — the single launch gate that never touches transport on a denial) plus `docs/SSH_ACCESS_FOUNDATION.md`.
+- Added `tests/ssh-access/run.php` (65 synthetic checks; fixture identities/targets only) and the `ssh-access.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes, terminal UI, gateway, schema or SSH transport; A-10 gate remains `Architecture/security validation pending`. Not yet integrated or released.
+
 ## 1.11.0 — directory correction candidate (not published)
 
 - Organized administration, portal, public templates, shared bootstrap/security, business services, database migrations, API/webhooks/media and setup source; retained existing visuals and exact image bytes.

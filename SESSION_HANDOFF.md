@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Devin active branch — `devin/ssh-access` (A-10 access model)
+
+Branched from `main` `de70c5d` (post-refactor merge). Isolated A-10 contract layer: `foundation/ssh-access/` (8 files — approved-target registry, client-authorized grants, hash-bound one-time launch tokens, timeout-enforced session lifecycle, audit events, transport boundary interface, denial-first broker), `tests/ssh-access/run.php` (65 synthetic checks, all pass on PHP 8.4.25 locally), `docs/SSH_ACCESS_FOUNDATION.md`, `.github/workflows/ssh-access.yml`.
+
+**Gate:** Architecture/security validation pending; no SSH transport exists — `TerminalTransport` ships unimplemented and the broker denies `transport-unavailable` honestly. **Not integrated:** additive-only outside `site/`.
+
 ## Current directory and package contract — 1.11.0 candidate
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](docs/DIRECTORY_STRUCTURE.md), [migration and recovery](docs/STRUCTURE_MIGRATION.md), and [START-HERE](START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.

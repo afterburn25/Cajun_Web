@@ -431,3 +431,19 @@ Merged main 5d810b1 dependency-gate documentation without weakening the active s
 ### 2026-10-13 — complete candidate structure acceptance
 
 Candidate 9e8dedf passes run 38420905892: 618 native, 782 HTTP/Chromium, 41 filesystem/recovery, 203 Apache and 16 builder negative checks (1660 total). Both rewrite modes include cached legacy PHP activation, maintenance owner resume, root/subfolder setup and protected uploads; actual eleven historical upgrade packages remain covered. Windows clean build succeeds with Devin PR #42 integrated. Added final path/branch handoff and acceptance record; cleaned only trailing source whitespace and regenerated installer inventory. Final commit checks, merge, exact-main verification and release download verification remain next; no deployment/publication yet.
+
+### 2026-10-13 — Devin A-10 SSH access-model foundation
+
+**Request:** "Continue Without Stopping" — under the dependency-gate policy, implement A-10's safe-work list (access/grant policies, staff audit model, one-time launch token design, session lifecycle) as an isolated component.
+
+**Starting commit:** `main` `de70c5d` (post PR #38 directory-refactor merge). New branch `devin/ssh-access`.
+
+**Changed:** added `foundation/ssh-access/` (ServiceTarget, TargetRegistry, AccessGrant, LaunchToken, TerminalSession, AuditEvent, TerminalTransport+TransportException, LaunchDecision+SessionBroker), `tests/ssh-access/run.php`, `docs/SSH_ACCESS_FOUNDATION.md`, `.github/workflows/ssh-access.yml`, and additive continuity entries in CHANGELOG/PROJECT_STATUS/SESSION_HANDOFF. No `site/` or shared-path changes.
+
+**Tests:** `php tests/ssh-access/run.php` — 65 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: target validation, grant expiry/revocation/consent/scope, token mint/hash/single-use/replay/expiry/TTL/entropy, session idle+absolute timeouts and terminal-state guards, broker denials (unapproved target, unusable grant, missing scope, binding mismatch, replay, expiry, wrong secret, concurrent cap), concurrency slots freed by idle expiry, transport failure rollback, and staff-attributed audit events.
+
+**Failures:** none.
+
+**Blockers:** A-10 gate `Architecture/security validation pending` — no SSH transport/gateway exists or was simulated; `TerminalTransport` is a boundary interface only.
+
+**Next:** PR `devin/ssh-access` for Codex review in the foundation queue; Codex owns integration sequencing after #31/#32/#34.
