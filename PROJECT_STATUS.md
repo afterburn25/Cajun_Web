@@ -1,5 +1,9 @@
 # Project status
 
+## Active integration — A-06 bounded inbox reading
+
+Codex owns codex/mail-inbox-reader from verified 1.16.0 publication-record main 532dfe4. [Contract](docs/MAIL_INBOX_READER.md): pinned maintained ImapEngine 1.25.6 and MIME parser 4.0.6, reproducible production dependencies/licenses, bounded TLS/parser/header reads, current mailbox grants and exact UID identities. Initial study only: 36 stable packages, no advisory/abandoned result at resolution, four synthetic API and 13 bounded-tokenizer checks on PHP 8.4. Production stream, application UI/rate/audit/concurrency, PHP 8.2/8.4 and release acceptance remain pending. Preserve Devin #68 at 5235b1f separately; its custom parser is not accepted for shipment. Codex owns foundation/mail-receiving, tests, dedicated CI and later adapter/build integration. Do not broaden the released diagnostic ProbeChannel or enable a live mailbox by inference. Latest published version remains 1.16.0; the roadmap continues.
+
 ## Latest verified publication — 1.16.0
 
 [v1.16.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.16.0) is published and freshly downloaded/verified at immutable source/tag `372ea28bf0d3081180c836e2c90aa14b7a90bdd3` through [PR #67](https://github.com/afterburn25/Cajun_Web/pull/67). Bounded A-06 adds explicit owner checks of saved incoming/outgoing credentials with current password/revision/matching mailbox assignment, public destination validation, pinned verified TLS and authentication-only commands. Started intent and separate terminal result each commit with strict audit; interrupted results remain incomplete and older saved versions historical. DNS is outside the staff lock, current authority is checked before credentials, and network work holds no InnoDB transaction. [Owner guide](docs/MAIL_CONNECTION_CHECKS.md). No message is read or sent; website system-email settings remain unchanged.

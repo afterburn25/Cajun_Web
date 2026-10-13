@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — bounded inbox receiving in progress
+
+- Define a maintained IMAP/MIME dependency and bounded header-reading contract. Preserve explicit current mailbox authority and the released authentication diagnostics.
+- Initial source/dependency work is excluded from deployment; inbox UI, real mailbox acceptance, message bodies and sending are not enabled by this checkpoint.
+
 ## 1.16.0 — verified explicit email connection checks
 
 - Add separate owner-only checks of saved incoming/outgoing settings, current password and matching mailbox assignment. Verify public DNS destinations, pin the numeric connection, validate TLS and authenticate without reading or sending messages.
