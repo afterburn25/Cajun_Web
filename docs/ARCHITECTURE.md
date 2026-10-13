@@ -1,8 +1,9 @@
 # Architecture notes
 
-## 2026-10-13 — Candidate 1.6.0 sandbox trials
+## 2026-10-13 — Verified 1.6.0 sandbox increment
 
-Bounded M2 / partial HC-04 and HC-11 adds owner-only tokenized sandbox trials, durable attempt/event records, transaction-details matching, explicit reconciliation and shared invoice/request financial locking. Sandbox outcomes never settle real invoices. Existing 1.5 credentials/requests remain intact through additive setup. Client/production checkout, webhooks, receipts, refunds and recurring billing remain pending. Native gateway fixtures and intercepted browser tokenization are not real provider acceptance; credentials were not supplied. See [sandbox guide](SANDBOX_PAYMENTS.md). Candidate acceptance and publication remain pending.
+Owner-only tokenized sandbox trials, durable intent/events, transaction-detail reconciliation and shared manual/catalog/request locking are delivered in [v1.6.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.6.0) / `e5d4c17456faff0522429ab3f58093a06a523bd5`. Sandbox never pays real invoices. Production/client checkout, webhooks, receipts/refunds and recurring billing remain pending. Original 1.5.0 UPDATE preserves credentials/key, requests and existing records. 296 native / 421 HTTP/Chromium checks pass; gateway and browser tokenization fixtures remain synthetic. Back up and enable Sandbox trials after UPDATE. [Guide](SANDBOX_PAYMENTS.md) · [report](TEST_REPORT_1.6.0.md).
+
 
 Released 1.5.0 adds [payment preparation](PAYMENT_PREPARATION.md): two additive tables, owner-only external-key credential protection and reviewed existing-invoice requests. Charges and production connections stay disabled. 227 native / 401 HTTP-browser checks passed; [report](TEST_REPORT_1.5.0.md). Complete/update: 58/57 files. After backup and UPDATE merge, owners enable Payment preparation; private gateway storage must be outside the document root. Existing manual billing remains unchanged.
 

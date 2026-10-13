@@ -1,8 +1,11 @@
 # Session log
 
-## 2026-10-13 — Sandbox trial increment in progress
+## 2026-10-13 — Sandbox trial release published and verified
 
-Starting from verified main `dd29436fa40c2a0f800bc02569b5fd5d1fb75c09` / published 1.5.0. Codex owns `codex/sandbox-attempts`: bounded M2 owner-only Accept.js sandbox trials, durable one-attempt request ledger, safe transaction-detail observations/reconciliation and shared manual/catalog/request locking. Sandbox results never pay real invoices. Production/client checkout, webhooks, receipts and recurring billing remain disabled or pending. Source candidate 1.6.0 is not a release until exact-source/upgrade/artifact gates pass. Real merchant credentials are unavailable; synthetic gateway/browser fixtures must remain labeled. Preserve Devin PR #7 / `55d6067` and its portfolio ownership. Next: finish implementation and native/HTTP/browser/retained-1.5 upgrade acceptance, then checked integration/publication if passing. No live deployment, real charge, customer mail or provider operation authorized here.
+Continued roadmap from main `dd29436fa40c2a0f800bc02569b5fd5d1fb75c09` / 1.5.0 on `codex/sandbox-attempts`. Added owner-only tokenized sandbox UI, fixed sandbox reporting/charge adapter, additive attempt/events, exact amount/reference/account checks, idempotency and concurrency safeguards, unknown-result recovery, shared manual/catalog/request locks, strict audit and immutable 1.5.0 upgrade acceptance. PR #18 merged as `e5d4c17456faff0522429ab3f58093a06a523bd5`; exact-main run https://github.com/afterburn25/Cajun_Web/actions/runs/38380935411 passes 296 native / 421 HTTP/Chromium checks. Independent policy/invitation/documentation checks pass. Reviewed desktop/320px screenshots.
+
+First candidate 4158d37 failed installer inventory due to Windows line endings; normalized LF and regenerated. f36e44a passed native tests but HTTP expected the established duplicate-payment message; restored the message without removing safeguards. 3ebc8a8 passed complete acceptance; final wording clarifies owner sandbox versus disabled client checkout. Final merged source and packages were checked independently. All eight draft and published release assets, extracted hashes, version labels and tag were downloaded-back verified. [Report](TEST_REPORT_1.6.0.md), [verification](RELEASE_VERIFICATION_1.6.0.json). Earlier releases untouched. No live deployment, provider operation or customer mail/data. Real merchant acceptance remains unverified; tests use synthetic gateway/Accept.js boundaries. Next: signed events, actual sandbox acceptance, distinct client/real-money checkout. Preserve Devin PR #7. Publication records are docs-only.
+
 
 
 ## 2026-10-13 — Administrator application integration candidate
