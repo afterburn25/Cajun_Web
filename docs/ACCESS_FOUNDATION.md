@@ -1,6 +1,6 @@
 # Staff and mailbox permission foundation
 
-**Application integration — 1.2.0 candidate:** [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10) supplies the [staff adapter and UI](ADMIN_ACCOUNTS.md), explicit migration, account/reset/session lifecycle and last-owner serialization. These canonical classes are bundled verbatim by the release builder. Original independent-component history below is retained; statements about absent application integration describe that earlier checkpoint. Mailbox connections and grants remain deferred.
+**Application integration — 1.2.0:** [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10) supplies the [staff adapter and UI](ADMIN_ACCOUNTS.md), explicit migration, account/reset/session lifecycle and last-owner serialization. These canonical classes are bundled verbatim by the release builder. Original independent-component history below is retained; statements about absent application integration describe that earlier checkpoint. Mailbox connections and grants remain deferred.
 
 Started 2026-10-13 under the owner's instruction to start independent work while another worker finishes 1.1.0 and publishes its source to GitHub. Branch: `codex/platform-foundation`. Scope: the decision component for A-05/A-06, not a completed admin-account or webmail feature.
 

@@ -1,6 +1,6 @@
 # Installation, packaging and updates
 
-v1.1.0 complete/update deployment assets are published and downloaded-back verified. Use the release register for exact URLs, hashes and tested source. See [release register](RELEASES.md) and [test report](TEST_REPORT_1.1.0.md).
+v1.2.0 complete/update deployment assets are published and downloaded-back verified; v1.1.0 remains unchanged. Use the [release register](RELEASES.md) for exact URLs, hashes and tested source; read the [1.2.0 test report](TEST_REPORT_1.2.0.md).
 
 ## 1.2.0 administrator-account upgrade
 

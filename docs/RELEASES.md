@@ -1,5 +1,21 @@
 # Release register
 
+## v1.2.0 — published 13 October 2026
+
+Release: [v1.2.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.2.0), published at `2026-10-13T07:28:07Z`. Immutable source/tag: `f85627e05b171e4ee8508231e2ed6ee7b9374274`; application merge [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10). Later publication records are documentation-only; the tag, shipping source and prior releases remain unchanged.
+
+| Deployment asset | Bytes | SHA-256 |
+|---|---:|---|
+| [COMPLETE-UPLOAD](https://github.com/afterburn25/Cajun_Web/releases/download/v1.2.0/CajunWebPro-1.2.0-COMPLETE-UPLOAD.zip) | 1377207 | `f3da85146c316da6f94cef5b2f0e7aba8b2526f0a683218da85d5215c6d1d32e` |
+| [UPDATE from 1.1.0 / 1.0.8](https://github.com/afterburn25/Cajun_Web/releases/download/v1.2.0/CajunWebPro-1.2.0-UPDATE.zip) | 1284797 | `24ed8ae972c75b62a50d6145a3a8cb1bd5dfa91b29a03a96d4fad533e8cf2147` |
+
+Eight permanent assets: complete/update ZIPs, manifest, SHA256SUMS, test report, installation instructions, administrator guide and retained TEST-EVIDENCE ZIP. Complete has 50 flat members; UPDATE has 49, excluding fresh setup. Core A-05 account lifecycle is delivered as described in the [administrator guide](ADMIN_ACCOUNTS.md) and [feature matrix](RELEASE_1.2.0.md); mailbox grants/MFA and later platform capabilities remain deferred.
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38362411560) passed 50 original native, 31 staff native and 216 HTTP/Chromium checks, including the actual published 1.1.0 package update, populated 1.0.8 upgrade, fresh setup, assigned/forged requests and concurrent owner changes. Independent access (176 each PHP 8.2/8.4), invitations (46 each) and documentation checks passed. [TEST_REPORT](TEST_REPORT_1.2.0.md) and the permanent evidence archive retain named cases, logs and screenshots.
+
+Every asset was downloaded into a new directory before and after publication, matched byte-for-byte to the prepared release, and checked against SHA256SUMS. Both archives passed CRC, flat membership, safe extraction, every manifest hash and version checks; v1.2.0 resolves to the tested SHA. [Verification JSON](RELEASE_VERIFICATION_1.2.0.json). No live deployment, host HTTPS/SMTP, charges, customer mail/data or provider operations. Full application environment is PHP 8.3.6/MariaDB 10.11.19. Downgrade requires a complete validated host backup; old code does not enforce the new roles.
+
+
 ## v1.1.0 — published 13 October 2026
 
 Release: [https://github.com/afterburn25/Cajun_Web/releases/tag/v1.1.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.1.0). Published at `2026-10-13T06:39:50Z`.

@@ -1,6 +1,6 @@
 # Staff invitation persistence and current-source alignment
 
-**Application integration — 1.2.0 candidate:** [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10) supplies the [staff adapter and UI](ADMIN_ACCOUNTS.md), explicit migration, account/reset/session lifecycle and last-owner serialization. These canonical classes are bundled verbatim by the release builder. Original independent-component history below is retained; statements about absent application integration describe that earlier checkpoint. Mailbox connections and grants remain deferred.
+**Application integration — 1.2.0:** [PR #10](https://github.com/afterburn25/Cajun_Web/pull/10) supplies the [staff adapter and UI](ADMIN_ACCOUNTS.md), explicit migration, account/reset/session lifecycle and last-owner serialization. These canonical classes are bundled verbatim by the release builder. Original independent-component history below is retained; statements about absent application integration describe that earlier checkpoint. Mailbox connections and grants remain deferred.
 
 2026-10-13, A-05 increment on `codex/platform-foundation`. This is an independent, database-backed component. It is not yet connected to the administrators UI, current application account mutations, invitation delivery or a release package.
 
