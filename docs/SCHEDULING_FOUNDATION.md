@@ -73,7 +73,7 @@ provider dependencies, and it performs no network access.
 
 ## Verification
 
-`tests/scheduling/run.php` — 64 checks with synthetic `fx-*` fixtures: window
+`tests/scheduling/run.php` — 71 checks after corrected gap-endpoint and stale-instance regressions with synthetic `fx-*` fixtures: window
 math, weekly-rule expansion including a real DST spring-forward (local time
 constant, UTC shifted, gap occurrences skipped), policy validation, contact/
 consultation validation, the full transition map including terminal states,
@@ -82,3 +82,7 @@ cancelled-slot release, and the request→confirm→reschedule→cancel lifecycl
 Runs on PHP 8.2/8.4 via `.github/workflows/scheduling.yml`. Component checks
 only — form, persistence, admin workflow, confirmations, mail and provider
 integration remain untested here.
+
+## Current integration
+
+Codex preserves this corrected component through 3617ad5 for the [bounded application contract](CONSULTATION_SCHEDULING.md). The 1.14.0 publication remains current; application scheduling is not released by this component merge.
