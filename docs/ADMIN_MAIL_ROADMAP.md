@@ -1,10 +1,10 @@
 # Admin webmail, staff access, templates and email notifications
 
-## Active candidate — 1.16.0 connection checks
+## Current released increment — 1.16.0
 
-[PR #67](https://github.com/afterburn25/Cajun_Web/pull/67) implements explicit owner/password/current-assignment diagnostics for saved incoming and outgoing settings, verified public-destination TLS authentication, and versioned sanitized check history. [Contract and owner workflow](MAIL_CONNECTION_CHECKS.md). Candidate application/release acceptance remains pending. Receiving, compose/send, OAuth and email notification bells remain separate work; no external mailbox is used in testing. Preserve Devin receiving PR #68 for review against the maintained-stack requirement before integration.
+[Verified 1.16.0](TEST_REPORT_1.16.0.md) adds explicit owner/password/current-assignment checks of saved incoming and outgoing credentials, verified public-destination TLS authentication and versioned sanitized history. [Owner guide](MAIL_CONNECTION_CHECKS.md). This checks authentication only: no inbox synchronization, message reading/rendering, compose/send, OAuth or email notification bell. No real mailbox was used in acceptance. Existing activity bells remain workspace events. Preserve Devin receiving PR #68 for maintained-stack/adapter review before integration.
 
-## Current released scope — 1.15.0 baseline
+## Previous released scope — 1.15.0 baseline
 
 Administrator accounts and client-support access remain released. [1.12.0](TEST_REPORT_1.12.0.md) adds the bounded personal/shared template library with previews and history. [1.13.0](TEST_REPORT_1.13.0.md) adds multiple owner-managed email profiles, encrypted private passwords, separate read/send permissions and explicit current per-mailbox assignments, including for owners. [Accounts guide](ADMIN_EMAIL_ACCOUNTS.md) and [template guide](ADMIN_EMAIL_TEMPLATES.md) define those accepted subsets. These remain preserved in 1.15.0.
 
