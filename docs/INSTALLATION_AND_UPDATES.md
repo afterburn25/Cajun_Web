@@ -1,6 +1,20 @@
 # Installation, packaging and updates
 
-These are release requirements, not a declaration that the target host is fixed. The repository currently contains documentation, not a deployable source import.
+## 1.1.0 installation and supported upgrade
+
+Runtime: PHP 8.2+ source target, PDO MySQL, OpenSSL, Fileinfo and GD, with an InnoDB database. Full application acceptance runs on **PHP 8.3 / MariaDB 10.11**. Independent PHP 8.2/8.4 component checks do not certify the application on those runtimes. Apache 2.4/LiteSpeed protection files are included; target-host HTTPS, PHP mapping and permissions need checking. Customers need no Node service, root access, SSH, Composer or command-line installation.
+
+**Fresh website:** download the verified COMPLETE-UPLOAD ZIP and compare its SHA-256. Extract directly into the intended domain/subfolder, including hidden `.htaccess` files. Open `install.php` over HTTPS. Fill database, owner, website URL, optional permanent private-storage parent and confirmation in the single visible form, then Install. Pricing starts unpublished and email disabled; concept portfolio examples are optional. Check the reported permanent guards and actual installer removal. Follow any cleanup warning precisely; preserve config/media/locks.
+
+**Existing 1.0.8:** first back up the database, website, configuration and private storage through the host. Test a copy before the live site. Merge the UPDATE ZIP into the existing folder, overwriting matching application files only. It excludes fresh setup, config, storage and locks. Sign in using the existing administrator and open **Version & database**; confirm the backup and apply the additive update. Verify public pages, saved inquiries, media and client access. Repeat database verification is safe; incompatible workspace tables are rejected. Do not rerun fresh setup or delete installed markers.
+
+The update path is tested against the fingerprinted populated 1.0.8 fixture. Earlier versions and custom schemas require separate review. Finish an interrupted file merge before applying the database update. Ask the host to invalidate stale opcode caches if required. On failure, preserve the report and restore the complete host backup; a code-only downgrade is not a verified recovery procedure. This is not an automatic application-file updater or a full backup/restore service.
+
+**Developer build:** from a clean checkout with canonical LF bytes, Python 3, PHP CLI and Node syntax checking, run `python tools/build.py --commit <full-sha>`. After shipping edits run `python tools/build.py --refresh`, commit source plus installer hashes, then verify again against that commit. Only `site/` enters flat deterministic archives. Tests, original brand sources, independent foundations and development tools are excluded.
+
+## Continuing installation requirements
+
+These are release requirements, not a declaration that the target host is fixed. Actual application source is now in `site/`; see the release register for publication status.
 
 Use [the GitHub release workflow](RELEASE_WORKFLOW.md) for incremental versioning, CI evidence and retained complete deployment ZIPs. Track real source/package versions in [the release register](RELEASES.md). GitHub's automatic source ZIP and temporary CI artifacts are not substitutes for the tested complete upload release.
 

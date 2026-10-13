@@ -1,0 +1,10 @@
+/dist/
+/qa/
+/test-runtime/
+/.ci-venv/
+__pycache__/
+/site/config.php
+/site/proxy-config.php
+/site/.installed.php
+/site/storage/
+/.installer-script-*.js

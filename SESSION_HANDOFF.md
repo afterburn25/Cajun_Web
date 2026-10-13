@@ -1,5 +1,29 @@
 # Session handoff — read before continuing
 
+## 2026-10-13 — Candidate passed; exact main release gate next
+
+Candidate `91ef30d7cb218a132b514b02f60d4e9e6c3fdbe9` passed [application acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38355321670): **50 native MariaDB checks and 143 real HTTP/Chromium checks**, package validation, non-root filesystem cases and source consistency. Repository and independent access/invitation checks also passed. Reviewed implementation screenshots for public pages, portfolio, installer and client/admin workspaces. Corrected a mobile capture taken mid-transition by using reduced motion; added final explicit browser admin controls, favicon-reference and sitemap acceptance. These test additions require a complete rerun.
+
+[PR #8](https://github.com/afterburn25/Cajun_Web/pull/8) combines recovered application `90ba4f5e0c824e422de8cb2232f5d3ee92b7bec6` with main `b28a67cdbf20c81842cf73735ee4e6024030262f`. Original branches and independent foundations are preserved. Source is in `site/`; older source-recovery blockers below are historical. Version 1.1.0 remains a candidate until its real release is published and downloaded back.
+
+Next: finish candidate checks, merge PR #8, run combined acceptance on exact resulting main, tag/build only that tested commit, publish complete/update packages and permanent evidence, verify downloaded bytes, update the exact-release Devin handoff and issue #2, close #4, then stop. Later roadmap work remains paused. No live hosting/customer/mail/payment/provider operation is authorized or performed.
+
+Devin PR #7 remains intact at `55d6067`; issue #2 also records a separate estimator component intent on `devin/lead-estimator`. Inspect both before handoff and avoid duplicating already delivered estimator functionality. Review numeric-category and ambiguous-slug edge cases in the standalone portfolio component during its next bounded increment.
+
+## Historical checkpoints — superseded where noted
+
+## 2026-10-13 — Native regression fixes
+
+First MariaDB acceptance found a real schema-idempotency failure: digit-bearing `sha256` was omitted by the column parser. Fixed both column-name patterns without weakening type/engine/unique-key checks. Local native tests then passed, and real unprivileged PHP HTTP tests completed fresh one-page installation and physical cleanup. Also fixed the existing lead editor's seven-status/six-label mismatch and corrected the test's portfolio route to the actual `work` endpoint. Tests now run extracted package bytes and cover incompatible schema preservation, cross-client/CSRF rejection and disguised executable uploads. Public service copy was polished and official comparison sources rechecked on 13 October. Complete browser acceptance and release publication remain pending. No customer host or database was changed.
+
+
+## 2026-10-13 — Source recovery checkpoint
+
+Recovered 41 actual website files plus native/HTTP tests and a build tool from the nine preserved source fragments. Original external assets were fetched only at the recorded public paths and checked against recorded SHA-256 values. Executable source is now under `site/` on `codex/finish-1.1.0`. This supersedes the older no-source-in-Git blocker on this branch, NOT the unverified runtime or release claims. No production files, database, mail or payments were changed. Review `docs/SOURCE_RECOVERY_2026-10-13.json`; run native integration and authorization tests next. No 1.1.0 release is declared by source recovery.
+
+
+Checkpoint: 2026-10-12 — GitHub release/testing discipline and Codex/Devin coordination established; recover current 1.1.0 source next.
+
 Checkpoint: 2026-10-13 — parallel permission-component implementation on codex/platform-foundation; 1.1.0 completion remains with its existing worker.
 Repository: afterburn25/Cajun_Web · Authoritative branch: main.
 
@@ -87,3 +111,7 @@ Create an actionable GitHub roadmap expanding CajunWebPro into a **web design AN
 The verified baseline ZIP is CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip (33 files, SHA-256 13bcf66cf069896017a6168556eba5211ec5bf3b1bee2aa23d354b4e9be5b6cf). Favicon source hash, installer incident and missing v1.1.0 details remain in PROJECT_STATUS.md, docs/BASELINE_INVENTORY.md and docs/DELIVERY_INCIDENT_2026-10-12.md. Do not downgrade the hosted site to repair a missing chat download.
 
 The latest session verified existing documentation and the local distribution only. Next implementation session should record source-import and runtime-test evidence and update every continuity file.
+
+Release acceptance follow-up (parent `f007803`): HTTP/browser checks reached account revocation; console classification stopped on the intentionally invalid estimator response. The next commit scopes that expected resource message to the precise estimator URL, retains diagnostic JSON, adds original-contact and real-browser fresh-install coverage, scans PHP runtime diagnostics, and improves mobile consent wrapping. Full rerun required before publication.
+
+Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid versioned favicon URLs because it compared the query suffix as part of the path. Parse the URL path and fetch the actual referenced icon for byte equality. Application source is unchanged; rerun the full suite.

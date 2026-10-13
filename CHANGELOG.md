@@ -1,6 +1,26 @@
 # Changelog
 
+## 2026-10-13 — Native regression fixes
+
+First MariaDB acceptance found a real schema-idempotency failure: digit-bearing `sha256` was omitted by the column parser. Fixed both column-name patterns without weakening type/engine/unique-key checks. Local native tests then passed, and real unprivileged PHP HTTP tests completed fresh one-page installation and physical cleanup. Also fixed the existing lead editor's seven-status/six-label mismatch and corrected the test's portfolio route to the actual `work` endpoint. Tests now run extracted package bytes and cover incompatible schema preservation, cross-client/CSRF rejection and disguised executable uploads. Public service copy was polished and official comparison sources rechecked on 13 October. Complete browser acceptance and release publication remain pending. No customer host or database was changed.
+
+
+## 2026-10-13 — Source recovery checkpoint
+
+Recovered 41 actual website files plus native/HTTP tests and a build tool from the nine preserved source fragments. Original external assets were fetched only at the recorded public paths and checked against recorded SHA-256 values. Executable source is now under `site/` on `codex/finish-1.1.0`. This supersedes the older no-source-in-Git blocker on this branch, NOT the unverified runtime or release claims. No production files, database, mail or payments were changed. Review `docs/SOURCE_RECOVERY_2026-10-13.json`; run native integration and authorization tests next. No 1.1.0 release is declared by source recovery.
+
+
 This log distinguishes repository work from application releases and deployment. Documentation-only work does not advance the application version.
+
+## 2026-10-13 — 1.1.0 release acceptance in progress
+
+- Reconciled recovered application source with main while preserving foundation components and Devin's separate work.
+- Renamed the browser runner to avoid shadowing Python's standard HTTP library; the first combined run passed native database tests but failed on that import.
+- Aligned candidate labels at 1.1.0, enforced canonical line endings, and made the build compare shipping bytes with its recorded commit.
+- Client changes revoke outstanding invitations and sessions; activation rechecks expiry after locking/password hashing. Uploads reject executable extensions/code; form feedback respects reduced motion.
+- Expanded release acceptance and publication remain in progress.
+- Fixed real JavaScript submissions where a named action field hid the form endpoint; both growth requests and the original inquiry form now use their explicit destination attribute.
+- Added the exact historical 1.0.8 test fixture and actual UPDATE-package/admin-upgrade checks, broader saved-state/browser/installer tests, local synthetic mail capture and the feature-to-test matrix. Preserved the original favicon source with its verified hash.
 
 ## 2026-10-13 — Staff invitations and source-compatible session tokens
 
@@ -111,3 +131,9 @@ No application source/asset import, feature implementation, host repair, databas
 ## Pre-repository baseline — supplied 1.0.8 distribution
 
 `CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip` is the latest recoverable complete artifact identified in the conversation. It contains the PHP application and one-page installer source. It is not a Git release/tag created by the bootstrap, and its live deployment is unverified. See `docs/BASELINE_INVENTORY.md` and `PROJECT_STATUS.md`.
+
+- 1.1.0 acceptance follow-up: mobile consent text wraps as one paragraph; expanded browser installer/contact checks and retained runtime diagnostics.
+
+- Candidate 91ef30d: 50 native and 143 HTTP/browser checks passed; final browser-admin, sitemap and favicon-reference assertions added before merge.
+
+Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid versioned favicon URLs because it compared the query suffix as part of the path. Parse the URL path and fetch the actual referenced icon for byte equality. Application source is unchanged; rerun the full suite.

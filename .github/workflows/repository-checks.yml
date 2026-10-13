@@ -32,5 +32,5 @@ jobs:
             echo '### Verification scope'
             echo 'This job checks required continuity documents and inline relative Markdown links, including heading targets.'
             echo 'It does not test PHP, MySQL, browser flows, payments, mail, 20i, SSH, release packages, or deployment.'
-            echo 'Application checks and packaging remain pending recovery of the verified 1.1.0 source.'
+            echo 'Application acceptance and packaging run separately in application-tests.yml against site/.'
           } >> "$GITHUB_STEP_SUMMARY"

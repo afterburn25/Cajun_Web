@@ -1,0 +1,72 @@
+name: Application acceptance
+on:
+  push:
+    branches: [main, codex/finish-1.1.0, codex/release-1.1.0]
+    paths: ['site/**', 'tests/**', 'tools/build.py', '.github/workflows/application-tests.yml']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: application-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-and-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: isolated-ci-root-only
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Native runtime and browser dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip
+          php8.3 -v
+          php8.3 -m
+          python3 -m venv .ci-venv
+          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 playwright
+          .ci-venv/bin/python -m playwright install --with-deps chromium
+      - name: Exact source, installer inventory and package checks
+        run: |
+          mkdir -p qa
+          python3 tools/build.py --commit "$GITHUB_SHA" | tee qa/build-results.txt
+      - name: Native database, upgrade and authorization integration
+        run: |
+          python3 tests/prepare_legacy.py
+          php8.3 tests/native.php
+      - name: Real HTTP and Chromium application workflows
+        run: .ci-venv/bin/python tests/browser_acceptance.py
+      - name: Verify tests did not mutate shipping source
+        run: git diff --exit-code -- site/
+      - name: Preserve named test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-acceptance-${{ github.sha }}
+          path: |
+            qa/
+            dist/manifest.json
+            dist/SHA256SUMS.txt
+            dist/*.zip
+          retention-days: 14
+          if-no-files-found: error
