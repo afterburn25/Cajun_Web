@@ -1,18 +1,14 @@
 # Project status
 
-## 2026-10-13 — Release completion is the priority
+## 2026-10-13 — Candidate passed; exact main release gate next
 
-[Completion PR #8](https://github.com/afterburn25/Cajun_Web/pull/8) is open as a draft. Combined native database tests passed at `df57b40`, but browser execution failed because `tests/http.py` shadowed Python's standard HTTP library. The runner is now `tests/browser_acceptance.py`; release acceptance is being extended before publication. Candidate version labels are 1.1.0; this is not yet a published release.
+Candidate `91ef30d7cb218a132b514b02f60d4e9e6c3fdbe9` passed [application acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38355321670): **50 native MariaDB checks and 143 real HTTP/Chromium checks**, package validation, non-root filesystem cases and source consistency. Repository and independent access/invitation checks also passed. Reviewed implementation screenshots for public pages, portfolio, installer and client/admin workspaces. Corrected a mobile capture taken mid-transition by using reduced motion; added final explicit browser admin controls, favicon-reference and sitemap acceptance. These test additions require a complete rerun.
 
-Read the [feature-to-test matrix](docs/RELEASE_1.1.0.md). `a654a43` then passed native and HTTP/fresh-install checks but the browser wait attempted eval under the site's CSP; the assertion is corrected without weakening CSP. Expanded real-package upgrade, saved-state, native and browser tests are now in the completion branch, pending CI. Original favicon source is retained with its verified fingerprint.
+[PR #8](https://github.com/afterburn25/Cajun_Web/pull/8) combines recovered application `90ba4f5e0c824e422de8cb2232f5d3ee92b7bec6` with main `b28a67cdbf20c81842cf73735ee4e6024030262f`. Original branches and independent foundations are preserved. Source is in `site/`; older source-recovery blockers below are historical. Version 1.1.0 remains a candidate until its real release is published and downloaded back.
 
-`01e7706` passed expanded native/HTTP upgrade and saved-state checks, then exposed a real browser submission defect: the named action controls hid the form destination. Both public scripts are corrected and installer hashes refreshed. Final whole-suite verification is pending.
+Next: finish candidate checks, merge PR #8, run combined acceptance on exact resulting main, tag/build only that tested commit, publish complete/update packages and permanent evidence, verify downloaded bytes, update the exact-release Devin handoff and issue #2, close #4, then stop. Later roadmap work remains paused. No live hosting/customer/mail/payment/provider operation is authorized or performed.
 
-The owner paused later roadmap work and authorized finishing, testing, merging and publishing the existing **1.1.0 website/client workspace** before further features. Completion branch: `codex/release-1.1.0`, started from `90ba4f5e0c824e422de8cb2232f5d3ee92b7bec6` on `codex/finish-1.1.0`, reconciled with main `b28a67cdbf20c81842cf73735ee4e6024030262f`. Actual application source is in `site/`; do not follow historical source-recovery blockers below. The original worker branch remains untouched.
-
-Staff/access and invitation components from PRs #5/#6 are preserved outside the deployment package. Devin's PR #7 at `55d60670497d987286e64630e037e1ba2ec3a318` remains on his branch; the tentative local integration was aborted cleanly when priority changed. No portfolio changes were lost. Review follow-up after release: numeric category strings must remain strings, and duplicate published slugs need unambiguous detail behavior. Do not develop later roadmap work during this release task.
-
-Next: run native MariaDB and real HTTP/Chromium acceptance on the reconciled candidate, extend missing release coverage, fix failures, publish only the exact tested main/package, verify the downloaded release, then post the authorized issue #2 handoff and stop. Issue #4 tracks completion. No release is declared at this checkpoint. No live hosting, customer data/mail, charges or provider operations are authorized.
+Devin PR #7 remains intact at `55d6067`; issue #2 also records a separate estimator component intent on `devin/lead-estimator`. Inspect both before handoff and avoid duplicating already delivered estimator functionality. Review numeric-category and ambiguous-slug edge cases in the standalone portfolio component during its next bounded increment.
 
 ## Historical checkpoints — superseded where noted
 

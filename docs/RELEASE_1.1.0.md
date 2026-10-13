@@ -33,4 +33,4 @@ Local mail capture tests PHP mail acceptance independently of lead persistence. 
 
 - `df57b40`: combined native checks passed; HTTP runner failed due to its filename shadowing Python's standard HTTP module. Renamed to `browser_acceptance.py`.
 - `a654a43`: native, HTTP workflows and fresh installation/physical cleanup executed; the browser test hit CSP's deliberate `unsafe-eval` restriction. Changed the test to locator assertions; did not weaken application CSP.
-- Expanded candidate acceptance remains pending a new complete run. This section must be updated with final results before publication.
+- `91ef30d`: [full candidate run](https://github.com/afterburn25/Cajun_Web/actions/runs/38355321670) passed 50 native and 143 HTTP/browser checks, including real browser installation, self-deletion and contact submission. Final browser admin/sitemap/favicon assertions added afterward; rerun before merge. Exact-main release evidence will supersede candidate evidence.

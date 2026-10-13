@@ -196,3 +196,7 @@ Next: run native MariaDB and real HTTP/Chromium acceptance on the reconciled can
 ### 2026-10-13 — Final browser acceptance coverage
 
 Parent `f007803`; request remains finish and publish 1.1.0. Native and package-upgrade tests passed; run 38354497138 stopped at browser console classification after account revocation. Added scoped expected-422 handling with retained diagnostics, original inquiry regression, actual browser installer with saved-state and cleanup checks, and PHP log scanning. Wrapped consent prose for mobile layout and refreshed package hashes. Corrected obsolete documentation-job summary. No external mail or live operations; next action is complete candidate CI and visual review.
+
+### 2026-10-13 — Complete candidate evidence and final browser matrix
+
+Parent `91ef30d`; [branch run](https://github.com/afterburn25/Cajun_Web/actions/runs/38355321670) passed 50 native and 143 HTTP/browser checks, no PHP warnings, no unexpected browser errors or failed requests. The only console error was the asserted estimator 422 with exact URL and retained diagnostics. Visually reviewed implementation captures. Added explicit browser content/pricing/pipeline/client/media controls, mobile navigation, favicon heads and sitemap behavior; reduced-motion admin capture prevents mid-transition screenshots. No further shipping-source changes. Next: full rerun, merge and exact-main release acceptance.
