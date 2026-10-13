@@ -65,7 +65,7 @@ def run_browser(env,browser):
     viewed=alice.get(center);data=form_data(form_for(viewed,'activity_mark'));saved_keys=json.loads(data['keys'])
     submit(admin,root+'?view=studio-job&id=1','studio_message',{'body':'Arrival after reviewed activity page'});newid=db("SELECT id FROM ci_studio_messages WHERE body='Arrival after reviewed activity page'")[0]['id'];newkey='message:'+str(newid)
     alice.post(center,data=data);check('Mark visible affects only captured keys and leaves new arrival unread',newkey not in [v['event_key'] for v in db('SELECT * FROM ci_activity_reads')] and newkey in alice.get(center+'&filter=unread').text)
-    check('Other client cannot mark a known event',bob.post(center,data={'csrf':token(bob.get(center)),'action':'activity_mark','keys':json.dumps([key]),'state':'read'}).status_code==200 and not db("SELECT * FROM ci_activity_reads WHERE actor_type='client' AND actor_id=2"))
+    check('Other client cannot mark a known event',bob.post(center,data={'csrf':token(bob.get(portal)),'action':'activity_mark','keys':json.dumps([key]),'state':'read'}).status_code==200 and not db("SELECT * FROM ci_activity_reads WHERE actor_type='client' AND actor_id=2"))
     submit(alice,portal+'?job=1','message',{'body':'Client activity reply'});cmid=db("SELECT id FROM ci_studio_messages WHERE body='Client activity reply'")[0]['id'];ckey='message:'+str(cmid)
     check('Staff center includes client replies',ckey in admin.get(url).text and ckey in member.get(url).text)
     mark(admin,url,[ckey]);check('One staff read does not mark another staff inbox',ckey not in admin.get(url+'&filter=unread').text and ckey in member.get(url+'&filter=unread').text)
