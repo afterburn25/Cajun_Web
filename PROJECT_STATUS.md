@@ -1,5 +1,9 @@
 # Project status
 
+## 2026-10-13 — Devin HC-12 service-desk foundation (unreviewed, unintegrated)
+
+Devin implemented the contract-layer portion of HC-12 as an isolated canonical component on `devin/service-desk`: `foundation/desk/` (`TraceLink`, `FulfillmentJob`, `ApprovalRequest`, `TicketMessage`, `SupportTicket`), `tests/desk/run.php` (52 checks), `desk.yml` workflow, and [DESK_FOUNDATION](docs/DESK_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer; job runners, persistence, mail and admin UI remain Codex integration work. No `site/` changes, deployment or release.
+
 ## Latest verified publication — 1.11.2
 
 [v1.11.2](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.2) is published and freshly downloaded/verified at source/tag `4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36` through [PR #55](https://github.com/afterburn25/Cajun_Web/pull/55), preserving Devin PR #35 ancestry through `efc967a`. The live public estimator now uses canonical exact arithmetic while preserving existing form, validation, prices, results and saved-lead behavior. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38433670555): 3,084 estimator comparisons/boundaries, 618 native, 802 HTTP/Chromium, 73 filesystem/recovery, 279 Apache and 17 builder checks. All 16 published assets, archive members/directories/checksums and immutable tag verified; Windows/Linux package bytes agree. [Test report](docs/TEST_REPORT_1.11.2.md); [handoff](docs/DEVIN_HANDOFF_1.11.2.md).
