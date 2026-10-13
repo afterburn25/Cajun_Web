@@ -48,6 +48,7 @@ jobs:
           .ci-venv/bin/python -m playwright install --with-deps chromium
       - name: Exact source, installer inventory and package checks
         run: |
+          set -o pipefail
           mkdir -p qa
           python3 tools/build.py --commit "$GITHUB_SHA" | tee qa/build-results.txt
       - name: Native database, upgrade and authorization integration

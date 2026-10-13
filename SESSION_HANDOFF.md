@@ -1,5 +1,8 @@
 # Session handoff — read before continuing
 
+**A-09 implementation checkpoint — 2026-10-13:** [PR #12](https://github.com/afterburn25/Cajun_Web/pull/12), branch `codex/client-support`, candidate v1.3.0. Implementation `0ea3e5b` adds explicit support permissions/client policy, separate bound sessions (15-minute maximum, five-minute idle), banner/return, scoped forms, real-actor writes/download audit and sensitive-action denials. The first GitHub run passed 50 original + 31 staff + 35 support native checks; packaging exposed an LF/CRLF installer hash mismatch, now corrected, with pipeline failure propagation tightened. Actual 1.2.0 upgrade and HTTP/Chromium support tests are added and pending execution. Published v1.2.0 and Devin PR #7 remain unchanged. Next: pass complete candidate acceptance, review screenshots, then checked merge/exact-main acceptance and verified release. No deployment.
+
+
 **Active A-09 increment — 2026-10-13:** owner requested "Continue With Roadmap" again. Starting main `c09a15c010449e8401aaadce81e9ac34c0f6c04c`, published v1.2.0 unchanged. Codex claims `codex/client-support`: explicit support permissions and client restrictions, separate bound/expiring support sessions, portal banner/return, attributed message/upload/download audit and sensitive-action denials, with additive schema/setup and actual native/browser/package acceptance. Own support adapter/UI and necessary existing staff/portal/workspace/installer/test integration. Devin PR #7 remains `55d6067`; its portfolio paths are untouched. No live hosting/customer/provider operations. Candidate implementation and tests are next; no new release yet.
 
 ## 2026-10-13 — Verified administrator-account release

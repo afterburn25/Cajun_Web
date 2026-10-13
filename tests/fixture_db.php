@@ -6,9 +6,9 @@ define('CWP_BOOT', true);
 require __DIR__.'/../site/app/core.php';
 $GLOBALS['cwp_config'] = require __DIR__.'/../test-runtime/config-fixture.php';
 $request = json_decode(stream_get_contents(STDIN), true, 32, JSON_THROW_ON_ERROR);
-if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade'],true)) {
-    $staffUpgrade=$request['operation']==='seed-staff-upgrade';$folder=$staffUpgrade?'staff-upgrade':'upgrade';$prefix=$staffUpgrade?'staffup_':'upgrade_';
-    require __DIR__.'/../test-runtime/'.($staffUpgrade?'released-1.1.0':'legacy').'/app/schema.php';
+if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','seed-support-upgrade'],true)) {
+    $supportUpgrade=$request['operation']==='seed-support-upgrade';$staffUpgrade=$supportUpgrade||$request['operation']==='seed-staff-upgrade';$folder=$supportUpgrade?'support-upgrade':($staffUpgrade?'staff-upgrade':'upgrade');$prefix=$supportUpgrade?'supportup_':($staffUpgrade?'staffup_':'upgrade_');
+    require __DIR__.'/../test-runtime/'.($supportUpgrade?'released-1.2.0':($staffUpgrade?'released-1.1.0':'legacy')).'/app/schema.php';
     $GLOBALS['cwp_config']['db']['prefix'] = $prefix;
     $GLOBALS['cwp_config']['site_url'] = 'http://127.0.0.1:8091/'.$folder;
     $private = __DIR__.'/../test-runtime/'.$folder.'-private';
@@ -29,6 +29,12 @@ if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade'],tr
         query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Retained client','retained@example.invalid',str_repeat('e',32),$now]);
         query('INSERT INTO '.table('studio_jobs').' (client_id,title,stage,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?,?)',[1,'Retained website project','design','Preserve project summary','Preserve project progress',$now,$now]);
         query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Other legacy administrator','other-legacy@example.invalid',password_hash('Synthetic other legacy passphrase',PASSWORD_DEFAULT),str_repeat('f',32),$now]);
+    }
+    if($supportUpgrade){
+        staff_seed_owner(1);
+        query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (2,'administrator',1,?)",[json_encode(['website.manage','clients.manage'])]);
+        query('UPDATE '.table('studio_clients').' SET password_hash=? WHERE id=1',[password_hash('Synthetic retained client passphrase',PASSWORD_DEFAULT)]);
+        staff_store()->issue('2',str_repeat('f',32));
     }
     file_put_contents(__DIR__.'/../test-runtime/'.$folder.'-config.php','<?php return '.var_export(config(),true).';');
     echo json_encode(['ok'=>true]);

@@ -312,7 +312,7 @@ function setup_expected_files(): array { return [
         'assets/bayou.webp' => '9a50abd55f4ea8d6a86e3557e2f0c463cb124279cdc193cc0fc1413887f3d82a',
         'assets/emblem.png' => 'eef8a21455d89155e742548ac37faa98a686264cde46fe1e3e0da8818fa6697f',
         'assets/favicon.png' => '4b55c0ef2c0117b427e568218c7209637ad4cd8d6e2a5772ca5b9860c4a270a1',
-        'assets/growth.css' => '8288771b68af5a696739d170767acd656af303483f4123640a1fc96f8472d222',
+        'assets/growth.css' => '74088fdeed49d8b8f4436925993ccdeed051c9d82760a78966b235468f7efca3',
         'assets/growth.js' => '9cf5fcb8185c778fd836137990a59910e680148a4ecf903423d9df41f8d73243',
         'assets/hero-detail.webp' => 'b7844d0006499521be68cda07f62f09115e40b49a01469f0b42fff60ff07ff9d',
         'assets/hero.webp' => '5a00c10a6514db0760dc8d3c915975c22aa3a8745b85dbe74c48954ffd1c41d5',

@@ -33,3 +33,15 @@ with zipfile.ZipFile(current_baseline) as z:
         assert (item.external_attr>>16)&0o170000 != 0o120000
     z.extractall(root/'test-runtime/released-1.1.0')
 print('PASS: immutable released 1.1.0 package checksum, archive paths and extraction')
+support_baseline=root/'test-runtime/CajunWebPro-1.2.0-COMPLETE-UPLOAD.zip'
+with urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.2.0/CajunWebPro-1.2.0-COMPLETE-UPLOAD.zip',timeout=60) as response:
+    support_baseline.write_bytes(response.read())
+assert hashlib.sha256(support_baseline.read_bytes()).hexdigest()=='f3da85146c316da6f94cef5b2f0e7aba8b2526f0a683218da85d5215c6d1d32e'
+with zipfile.ZipFile(support_baseline) as z:
+    assert z.testzip() is None
+    for item in z.infolist():
+        path=PurePosixPath(item.filename)
+        assert not path.is_absolute() and '..' not in path.parts and '\\' not in item.filename
+        assert (item.external_attr>>16)&0o170000 != 0o120000
+    z.extractall(root/'test-runtime/released-1.2.0')
+print('PASS: immutable released 1.2.0 package checksum, archive paths and extraction')

@@ -1,5 +1,8 @@
 # Architecture notes
 
+A-09 candidate 1.3.0: `app/support.php` holds additive support policy/session/audit adapters; `app/support-admin.php` provides owner setup and client entry. The existing portal receives an explicit browser-bound context without customer-login impersonation. Every request revalidates staff/client versions and client policy; writes revalidate under the shared staff mutex and InnoDB transaction. Per-context CSRF prevents URL stripping or retargeting. Strict action audit precedes commit/download bytes. [Operational guide](CLIENT_SUPPORT.md).
+
+
 The website/client application shipped in v1.1.0. Released 1.2.0 integrates administrator access using canonical foundation components bundled verbatim into `site/app/foundation`; see [administrator architecture](ADMIN_ACCOUNTS.md). See [release register](RELEASES.md) and [test report](TEST_REPORT_1.1.0.md).
 
 Updated 2026-10-13: recovered 1.1.0 source is in `site/`. Public growth modules, `workspace.php`, `studio-admin.php` and `portal.php` extend the existing application. The seven additive workspace tables and actual routes/controls are mapped in [release acceptance](RELEASE_1.1.0.md). The older source inventory below remains useful baseline history.

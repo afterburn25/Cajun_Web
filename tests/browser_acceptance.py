@@ -136,6 +136,8 @@ try:
         run_browser(globals(),browser,release_fixture)
         from staff_cases import run_browser as staff_browser
         staff_browser(globals(),browser)
+        from support_cases import run_browser as support_browser
+        support_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)

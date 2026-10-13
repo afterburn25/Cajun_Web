@@ -1,5 +1,8 @@
 # CajunWebPro — project source of truth
 
+Candidate v1.3.0 is under acceptance in [PR #12](https://github.com/afterburn25/Cajun_Web/pull/12): audited one-click client portal support. [Setup and limits](docs/CLIENT_SUPPORT.md). v1.2.0 remains the published release until the checked publication gate is completed.
+
+
 
 
 Custom web design and development services, portfolio, and business-management website. **This is a service business website, not a do-it-yourself website builder.**
