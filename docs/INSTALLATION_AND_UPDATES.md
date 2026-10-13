@@ -4,7 +4,7 @@
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](DIRECTORY_STRUCTURE.md), [migration and recovery](STRUCTURE_MIGRATION.md), and [START-HERE](../START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.
 
-Implementation and expanded acceptance are in [PR #38](https://github.com/afterburn25/Cajun_Web/pull/38); not yet merged or published. The first candidate passed 618 native and 753 HTTP/Chromium assertions. Apache and interruption/recovery acceptance are being completed. Latest published release remains 1.10.0. No live deployment.
+Candidate `9e8dedf` in [PR #38](https://github.com/afterburn25/Cajun_Web/pull/38) passes 618 native, 782 HTTP/Chromium, 41 filesystem/recovery, 203 Apache and 16 package-builder checks. [Acceptance record](TEST_REPORT_1.11.0.md); [Devin handoff](DEVIN_HANDOFF_1.11.0.md). Final cleanup/docs acceptance, merge, exact-main tests and immutable publication remain mandatory. Latest published release remains 1.10.0. No live deployment.
 
 ## Owner priority override — directory structure and packaging, 2026-10-13
 

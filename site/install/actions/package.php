@@ -30,4 +30,3 @@ function setup_refresh_verified_php(): void {
         if(str_ends_with($path,'.php'))@opcache_invalidate(CWP_ROOT.'/'.$path,true);
     }
 }
-

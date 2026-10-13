@@ -428,3 +428,6 @@ The Apache legacy fixture also needs CWP_BOOT when reading the intentionally gua
 
 Merged main 5d810b1 dependency-gate documentation without weakening the active structure priority. Reviewed and integrated Devin PR #42 (19afbfc, original history preserved): explicit UTF-8 reads/Node stdin make Windows builds work without environment overrides. Resolved overlapping diagnostics by retaining return code/stdout/stderr and retained the stricter CSS containment check. Added a synthetic Apache assertion proving old PHP is actually cached with timestamp validation disabled. Combined acceptance remains required before merge/publication.
 
+### 2026-10-13 — complete candidate structure acceptance
+
+Candidate 9e8dedf passes run 38420905892: 618 native, 782 HTTP/Chromium, 41 filesystem/recovery, 203 Apache and 16 builder negative checks (1660 total). Both rewrite modes include cached legacy PHP activation, maintenance owner resume, root/subfolder setup and protected uploads; actual eleven historical upgrade packages remain covered. Windows clean build succeeds with Devin PR #42 integrated. Added final path/branch handoff and acceptance record; cleaned only trailing source whitespace and regenerated installer inventory. Final commit checks, merge, exact-main verification and release download verification remain next; no deployment/publication yet.

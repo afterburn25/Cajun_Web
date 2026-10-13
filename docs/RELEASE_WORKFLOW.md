@@ -4,7 +4,7 @@
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](DIRECTORY_STRUCTURE.md), [migration and recovery](STRUCTURE_MIGRATION.md), and [START-HERE](../START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.
 
-Implementation and expanded acceptance are in [PR #38](https://github.com/afterburn25/Cajun_Web/pull/38); not yet merged or published. The first candidate passed 618 native and 753 HTTP/Chromium assertions. Apache and interruption/recovery acceptance are being completed. Latest published release remains 1.10.0. No live deployment.
+Candidate `9e8dedf` in [PR #38](https://github.com/afterburn25/Cajun_Web/pull/38) passes 618 native, 782 HTTP/Chromium, 41 filesystem/recovery, 203 Apache and 16 package-builder checks. [Acceptance record](TEST_REPORT_1.11.0.md); [Devin handoff](DEVIN_HANDOFF_1.11.0.md). Final cleanup/docs acceptance, merge, exact-main tests and immutable publication remain mandatory. Latest published release remains 1.10.0. No live deployment.
 
 ## Owner priority override — directory structure and packaging, 2026-10-13
 
@@ -54,7 +54,7 @@ Add runnable checks based on the inspected application, not invented paths or gu
 | Database and installation | Isolated MySQL/MariaDB; fresh install and supported upgrades; failure/retry paths; retained config/media/data; one-page keyless installer and installed-site guards |
 | Permissions and browser flows | Actual PHP pages; client/staff separation, support-session attribution, CSRF/session handling, public/admin mail isolation; representative desktop/mobile acceptance |
 | Provider integrations | Explicitly identified mocks for failure cases plus separate sandbox results for payments, mail and 20i where available; no invented passing result for a skipped or unavailable integration |
-| Distribution | Flat complete ZIP, manifest and SHA-256; exact version alignment, regenerated installer dependency hashes, ZIP integrity, clean extraction and installation from that ZIP |
+| Distribution | Organized FULL-PROJECT, COMPLETE-UPLOAD and staged UPDATE, per-artifact manifests and SHA-256; exact version alignment, regenerated installer dependency hashes, ZIP integrity, clean extraction and installation from that ZIP |
 | Upgrade and release | Supported starting versions, migration/data compatibility, backup and recovery evidence, known issues and target-host acceptance when claimed |
 
 Use synthetic data and restricted test accounts. Keep secrets in approved GitHub secret/environment storage when needed, never in source, logs, reports or public assets. A mock result, skipped job and real sandbox test must remain distinguishable. GitHub CI does not replace actual shared-host checks or prove production is deployed.
@@ -65,7 +65,10 @@ For each verified application version, create a GitHub Release attached to its e
 
 Required public assets:
 
-- `CajunWebPro-X.Y.Z-COMPLETE-UPLOAD.zip`: complete, flat deployable website package meeting [the package contract](INSTALLATION_AND_UPDATES.md#package-contract).
+- `CajunWebPro-X.Y.Z-FULL-PROJECT.zip`: sanitized source, docs/tests/tools/brand/foundation/CI for development.
+- `CajunWebPro-X.Y.Z-UPDATE.zip`: independently tested owner-authenticated staged migration for existing sites.
+- Per-artifact `.manifest.json` and `.directories.txt`, START-HERE, test evidence/report and migration instructions.
+- `CajunWebPro-X.Y.Z-COMPLETE-UPLOAD.zip`: organized deployable website contents without an enclosing wrapper, meeting [the package contract](INSTALLATION_AND_UPDATES.md#package-contract).
 - `SHA256SUMS.txt`: hashes of the attached ZIP and other delivered files.
 - `manifest.json`: version, source commit, package layout and shipping-file hashes, without private build paths or credentials.
 - `TEST_REPORT.md`: exact tested revision/artifact, environment, checks/results, known failures, untested areas and supported installation/upgrade paths.
