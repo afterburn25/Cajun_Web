@@ -53,6 +53,7 @@ Devin's existing-project adapter now drives exact published-only portfolio/categ
 Local PHP 8.4.25 passes 55 portfolio and 65 estimator checks; complete builder verifies 80 flat shipping files / 55 PHP files, 79 UPDATE files, exact bundled components and installer inventory. Combined GitHub acceptance, screenshots, actual retained 1.10.0 update and release download verification are pending. No full W-01/L-01 completion or deployment claim.
 
 Estimator [PR #29](https://github.com/afterburn25/Cajun_Web/pull/29) passed [combined application acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38405668799) and PHP 8.2/8.4 component checks before merge at `39de8ff`. Its core stays outside deployment; existing quantity pricing/custom exclusions need an adapter. Later Devin estimator refresh `65c2084` is preserved in this integration. Next: fix any combined failures, review desktop/mobile evidence, merge the exact checked candidate, run exact main and publish/verify immutable 1.11.0 assets. Mail, actual merchant acceptance/card checkout, broader 20i and VPS SSH remain pending.
+
 ## 2026-10-13 — Devin L-02 review-request component
 
 Codex is integrating portfolio PR #7 at `016a405` on `codex/portfolio-browsing` toward a bounded v1.11.0; estimator PR #27 already landed through PR #29 at `39de8ff` with review fixes. Devin heads stay stable during integration. On `devin/review-requests` (from `39de8ff`), Devin added the independent L-02 website-review contract: `foundation/review-requests/` (seven classes — normalized website addresses with private-address/internal-name fetch flags, consent-aware contacts, a legal stage pipeline, human-reviewed findings with labeled lab/field/absent evidence, and delivery gated on a saved report plus consent) with 80 passing synthetic checks, `docs/REVIEW_REQUESTS_FOUNDATION.md`, and a dedicated workflow. No schema, form, mail, URL fetching, or shipping files — application adaptation is a later agreed step.
@@ -85,11 +86,9 @@ A new independent L-01 estimator component arrived during release: [PR #27](http
 
 First MariaDB acceptance found a real schema-idempotency failure: digit-bearing `sha256` was omitted by the column parser. Fixed both column-name patterns without weakening type/engine/unique-key checks. Local native tests then passed, and real unprivileged PHP HTTP tests completed fresh one-page installation and physical cleanup. Also fixed the existing lead editor's seven-status/six-label mismatch and corrected the test's portfolio route to the actual `work` endpoint. Tests now run extracted package bytes and cover incompatible schema preservation, cross-client/CSRF rejection and disguised executable uploads. Public service copy was polished and official comparison sources rechecked on 13 October. Complete browser acceptance and release publication remain pending. No customer host or database was changed.
 
-
 ## 2026-10-13 — Source recovery checkpoint
 
 Recovered 41 actual website files plus native/HTTP tests and a build tool from the nine preserved source fragments. Original external assets were fetched only at the recorded public paths and checked against recorded SHA-256 values. Executable source is now under `site/` on `codex/finish-1.1.0`. This supersedes the older no-source-in-Git blocker on this branch, NOT the unverified runtime or release claims. No production files, database, mail or payments were changed. Review `docs/SOURCE_RECOVERY_2026-10-13.json`; run native integration and authorization tests next. No 1.1.0 release is declared by source recovery.
-
 
 Updated: 2026-10-12 — GitHub testing/release workflow and Codex/Devin split added; current 1.1.0 artifact location pending.
 
@@ -192,7 +191,6 @@ The baseline includes public PHP routes, admin/API/media/mail code, robots/sitem
 ## Owner direction remains unchanged
 
 Keep the rich navy/gold design and original horizontal logo without .com, use the exact fleur-de-lis favicon, retain PHP shared hosting and one-page/no-key installation, add the full agreed feature suite and accurate Wix/Squarespace comparison content. Prices, payment/calendar accounts and contractual commitments must not be invented. Keep existing hosting files and data intact during recovery.
-
 
 ## 2026-10-12 — Approved custom hosting and billing expansion (documentation only)
 

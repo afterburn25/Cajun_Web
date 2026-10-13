@@ -53,6 +53,7 @@ Devin's existing-project adapter now drives exact published-only portfolio/categ
 Local PHP 8.4.25 passes 55 portfolio and 65 estimator checks; complete builder verifies 80 flat shipping files / 55 PHP files, 79 UPDATE files, exact bundled components and installer inventory. Combined GitHub acceptance, screenshots, actual retained 1.10.0 update and release download verification are pending. No full W-01/L-01 completion or deployment claim.
 
 Estimator [PR #29](https://github.com/afterburn25/Cajun_Web/pull/29) passed [combined application acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38405668799) and PHP 8.2/8.4 component checks before merge at `39de8ff`. Its core stays outside deployment; existing quantity pricing/custom exclusions need an adapter. Later Devin estimator refresh `65c2084` is preserved in this integration. Next: fix any combined failures, review desktop/mobile evidence, merge the exact checked candidate, run exact main and publish/verify immutable 1.11.0 assets. Mail, actual merchant acceptance/card checkout, broader 20i and VPS SSH remain pending.
+
 ## 2026-10-13 — Devin L-02 review-request component
 
 Devin `devin/review-requests` (from main `39de8ff`) adds the isolated L-02 website-review contract: `foundation/review-requests/`, `tests/review-requests/run.php` (80 checks, all pass on PHP 8.4.25), `.github/workflows/review-requests.yml`, and `docs/REVIEW_REQUESTS_FOUNDATION.md`. Requests carry a normalized website address (http/https only, credentials/fragments rejected, private literals and internal names flagged non-fetchable), validated contact with explicit consent, required goals and an adapter-supplied timestamp. The pipeline is `received → in-review → report-drafted → delivered → closed`; `delivered` requires the saved report and recorded consent. Findings label human/lab/field/absent evidence — non-human evidence always carries a source and observation time. No schema, form, mail, admin UI, or URL fetching; any later fetcher must re-check resolved DNS per request. PR pending; Codex decides integration order after the portfolio v1.11.0 increment. Keep `devin/public-experience` `016a405` and `devin/lead-estimator` `65c2084` stable while Codex integrates.
@@ -85,11 +86,9 @@ A new independent L-01 estimator component arrived during release: [PR #27](http
 
 First MariaDB acceptance found a real schema-idempotency failure: digit-bearing `sha256` was omitted by the column parser. Fixed both column-name patterns without weakening type/engine/unique-key checks. Local native tests then passed, and real unprivileged PHP HTTP tests completed fresh one-page installation and physical cleanup. Also fixed the existing lead editor's seven-status/six-label mismatch and corrected the test's portfolio route to the actual `work` endpoint. Tests now run extracted package bytes and cover incompatible schema preservation, cross-client/CSRF rejection and disguised executable uploads. Public service copy was polished and official comparison sources rechecked on 13 October. Complete browser acceptance and release publication remain pending. No customer host or database was changed.
 
-
 ## 2026-10-13 — Source recovery checkpoint
 
 Recovered 41 actual website files plus native/HTTP tests and a build tool from the nine preserved source fragments. Original external assets were fetched only at the recorded public paths and checked against recorded SHA-256 values. Executable source is now under `site/` on `codex/finish-1.1.0`. This supersedes the older no-source-in-Git blocker on this branch, NOT the unverified runtime or release claims. No production files, database, mail or payments were changed. Review `docs/SOURCE_RECOVERY_2026-10-13.json`; run native integration and authorization tests next. No 1.1.0 release is declared by source recovery.
-
 
 Checkpoint: 2026-10-12 — GitHub release/testing discipline and Codex/Devin coordination established; recover current 1.1.0 source next.
 
