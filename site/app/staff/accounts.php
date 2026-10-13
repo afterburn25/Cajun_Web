@@ -143,6 +143,7 @@ function staff_view_permission(string $view): ?string {
 function staff_action_permission(string $action): ?string {
     if(in_array($action,['logout','account_save'],true))return null;
     if(str_starts_with($action,'mail_accounts_'))return 'staff.manage';
+    if($action==='reviews_setup')return 'staff.manage';
     if($action==='mail_templates_setup')return 'staff.manage';
     if(str_starts_with($action,'mail_templates_'))return 'mail.templates.manage';
     if($action==='support_start')return 'support.login';
