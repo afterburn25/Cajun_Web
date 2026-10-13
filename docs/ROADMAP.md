@@ -88,7 +88,7 @@ Preserve approved navy/gold composition while adding restrained metallic logo hi
 
 ### L-01 — Single-page project estimator
 
-One form for service/project type, approximate pages/products, functionality, content/branding/migration/maintenance options, timing, and contact information. Optional fields can appear in place; no wizard. Admin-editable price rules and ranges, an explanation of assumptions, and a consultation result for uncertain/custom scopes. Acceptance: server-side recomputation, validation, spam controls, saved lead/brief before notification, input preservation on failure, no invented starting prices, and 'estimate, not final quote' labeling.
+One form for service/project type, approximate pages/products, functionality, content/branding/migration/maintenance options, timing, and contact information. Optional fields can appear in place; no wizard. Admin-editable price rules and ranges, an explanation of assumptions, and a consultation result for uncertain/custom scopes. Acceptance: server-side recomputation, validation, spam controls, saved lead/brief before notification, input preservation on failure, no invented starting prices, and 'estimate, not final quote' labeling. Adapter contract drafted in [docs/ESTIMATOR_ADAPTER.md](ESTIMATOR_ADAPTER.md) on `devin/estimator-adapter`; implementation remains a reviewed step.
 
 ### L-02 — Website-review requests
 
