@@ -1,10 +1,10 @@
 # Release register
 
-## Current directory and package contract — 1.11.0 candidate
+## Current directory and package contract — released 1.11.0
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](DIRECTORY_STRUCTURE.md), [migration and recovery](STRUCTURE_MIGRATION.md), and [START-HERE](../START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.
 
-Candidate `9e8dedf` in [PR #38](https://github.com/afterburn25/Cajun_Web/pull/38) passes 618 native, 782 HTTP/Chromium, 41 filesystem/recovery, 203 Apache and 16 package-builder checks. [Acceptance record](TEST_REPORT_1.11.0.md); [Devin handoff](DEVIN_HANDOFF_1.11.0.md). Final cleanup/docs acceptance, merge, exact-main tests and immutable publication remain mandatory. Latest published release remains 1.10.0. No live deployment.
+**Published and downloaded-back verified:** [v1.11.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.0), exact source/tag `de70c5da2e8f7bd35fbb92b9b829d0ab3e880372`, [PR #38](https://github.com/afterburn25/Cajun_Web/pull/38). [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38422422077) passes 618 native, 782 HTTP/Chromium, 41 filesystem/recovery, 203 Apache and 16 package-builder checks. All 16 published assets match the prepared bytes; all three package manifests, paths, contents, checksums and immutable tag target pass. [Test report](TEST_REPORT_1.11.0.md); [Devin handoff](DEVIN_HANDOFF_1.11.0.md). No live deployment. The priority directory correction is complete; the earlier pending/candidate instructions below are historical.
 
 ## v1.10.0 — published 13 October 2026
 
