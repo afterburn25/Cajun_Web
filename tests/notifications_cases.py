@@ -37,8 +37,9 @@ def run_browser(env,browser):
     check('Callback refuses plain HTTP without redirect',requests.post(endpoint,json={},allow_redirects=False).status_code==403)
     headers={'X-Forwarded-Proto':'https','Content-Type':'application/json'}
     r=requests.post(endpoint,headers=headers,data='{}');check('Disabled callback reports retryable unavailable without cookies',r.status_code==503 and r.json()=={'received':False} and 'Set-Cookie' not in r.headers)
-    webhook='01234567-89ab-cdef-0123-456789abcdef';payload={'owner_password':OWNER,'revision':0,'gateway_revision':1,'webhook_id':webhook,'enabled':'1'}
-    r=admin.post(url,data=dict(payload,action='payments_notification_configure',csrf='invalid'),headers=headers);check('Receiver configuration requires CSRF','Your session expired' in r.text)
+    revision=db("SELECT revision FROM ci_payment_gateways WHERE environment='sandbox'")[0]['revision']
+    webhook='01234567-89ab-cdef-0123-456789abcdef';payload={'owner_password':OWNER,'revision':0,'gateway_revision':revision,'webhook_id':webhook,'enabled':'1'}
+    r=admin.post(url,data=dict(payload,action='payments_notification_configure',csrf='invalid'),headers={'X-Forwarded-Proto':'https'});check('Receiver configuration requires CSRF','Your session expired' in r.text)
     r=submit(admin,url,'payments_notification_configure',payload);check('Receiver configuration refuses HTTP','requires HTTPS' in r.text)
     admin.headers.update({'X-Forwarded-Proto':'https'});r=submit(admin,url,'payments_notification_configure',payload);check('Owner configures sandbox receiver over trusted HTTPS gate','Sandbox receiver settings saved' in r.text and 'Configured for receipt' in r.text)
     body=json.dumps({'notificationId':str(uuid.uuid4()),'webhookId':webhook,'eventType':'net.authorize.payment.authcapture.created','eventDate':'2026-10-13T01:02:03Z','payload':{'id':'920001','entityName':'transaction','merchantReferenceId':'CW'+'c'*18,'authAmount':0.01,'customer':{'email':'NeverStoreHttpPayload@example.invalid'}}}).encode()
@@ -51,7 +52,7 @@ def run_browser(env,browser):
     rows=db('SELECT * FROM ci_payment_notifications');check('HTTP receipt has minimal queued record and does not pay invoices',len(rows)==1 and rows[0]['status']=='queued' and db('SELECT * FROM ci_studio_invoices')==before and db('SELECT * FROM ci_payment_attempts')==[] and 'NeverStoreHttpPayload' not in json.dumps(rows))
     r=requests.post(endpoint,headers=signed,data=body);check('Actual callback duplicate acknowledged exactly once',r.status_code==200 and db('SELECT * FROM ci_payment_notifications')==rows)
     changed=body+b' ';changed_headers=dict(signed,**{'X-ANET-Signature':'sha512='+hmac.new(bytes.fromhex('b'*128),changed,hashlib.sha512).hexdigest()});r=requests.post(endpoint,headers=changed_headers,data=changed);check('Actual callback refuses changed-body replay of same notification ID',r.status_code==409)
-    r=submit(admin,url,'payments_notification_verify',{'notification_id':rows[0]['id'],'gateway_revision':1,'owner_password':OWNER});check('Unmatched HTTP notification stays queued for investigation','No unique sandbox attempt matches' in r.text and db('SELECT * FROM ci_payment_notifications')==rows)
+    r=submit(admin,url,'payments_notification_verify',{'notification_id':rows[0]['id'],'gateway_revision':revision,'owner_password':OWNER});check('Unmatched HTTP notification stays queued for investigation','No unique sandbox attempt matches' in r.text and db('SELECT * FROM ci_payment_notifications')==rows)
     ctx=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce');p=ctx.new_page();errors=[];p.on('pageerror',lambda e:errors.append(str(e)));external=[]
     p.on('request',lambda req:external.append(req.url) if 'authorize.net' in req.url else None)
     p.goto(BASE+'/existing/admin.php?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill(OWNER);p.locator('form button').click();p.wait_for_url('**/admin.php?view=dashboard');ctx.set_extra_http_headers({'X-Forwarded-Proto':'https'});p.goto(url);expect(p.get_by_role('heading',name='Notification inbox')).to_be_visible()
