@@ -380,6 +380,11 @@ On `codex/portfolio-browsing`, preserve actual adapter/source and reconcile curr
 ## 2026-10-13 — Exact-main portfolio acceptance race correction
 
 Starting main `332af19333a62d3dfcc90eb9cf34871a7fac50ec` after checked PR #30 merge. Branch and merge-ref runs 38407152040/38407159542 passed 618 native / 675 HTTP/Chromium checks and screenshots were reviewed. Exact-main 38408053057 passed native/full earlier suites and actual retained 1.10.0 update, then failed because a synthetic Alt-modified click correctly performed browser navigation asynchronously, interrupting the next test goto. No application assertion failed. On `codex/portfolio-acceptance`, observe whether the app canceled each synthetic modified click, then prevent the test event's browser default. Also exercise actual Ctrl-click and a new filtered browser tab. Python syntax/docs pass locally; combined rerun pending. No shipping-file change, release or live operation. Next: checked test-fix merge and exact-main acceptance before publication.
+## 2026-10-13 — Devin W-02 slice: working motion pause + logo sheen
+
+Request: continue the roadmap without stopping. Starting commit: `332af19` (main after PR #30 merged the portfolio integration). Branch: `devin/homepage-motion`. Owned paths recorded on issue #2.
+
+Found a real defect: `site.js` toggled `motion-off` on `body`, but no CSS referenced the class — a manual pause left `float-cue` animating, `scroll-behavior:smooth` active, and `.reveal:not(.shown)` items already hidden by the observer stuck invisible. Moved the class to `documentElement`, appended matching `html.motion-off` rules (scroll-behavior auto, animation/transition kill, force-reveal pending sections, hero-transform reset) and added a restrained 1.5s metallic sheen on `.brand` hover/focus — suppressed by both pause paths via the universal kill rules. Added five Chromium acceptance checks in `tests/browser_acceptance.py` covering the toggle, `aria-pressed`, force-reveal and cue stop under a normal-motion context. `node --check` passes; `tools/build.py --refresh` regenerated installer hashes and verify passes (80 shipping files / 55 PHP). Native/HTTP/Chromium acceptance runs on PR CI. No schema, pricing, identity or shared-module changes.
 
 ## 2026-10-13 — Owner priority directory/packaging override
 

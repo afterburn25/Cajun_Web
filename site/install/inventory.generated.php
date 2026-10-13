@@ -83,7 +83,7 @@ function setup_expected_files(): array { return [
     'assets/css/admin.css'=>'4c9cab82464ba180d7cc99e0627f646a4a647239380fd10b6f106f5f668a3150',
     'assets/css/growth.css'=>'cf637fb9fdb3e1a59a68b78881b1c81cd61147f15bd74dadcc73771f8c4e4332',
     'assets/css/premium.css'=>'b5a4003eb305cdb3402a4026d995db0f574c6974b464b68b97d052d2099170f0',
-    'assets/css/site.css'=>'102691c9a0a0bcbfff591f798945c045540611d8413ababa903c12a9f721967c',
+    'assets/css/site.css'=>'689e37932d2b51b8c71007964d50ca617d999607f6f7ac0860adb0a70b180861',
     'assets/js/activity.js'=>'5431861226ca77e95e0eff5752890dedae583882a241024dbfd54e9af42d9628',
     'assets/js/admin.js'=>'6f01319f40402e806cb29b32629b38edc5a3960a568fef150bed89fb8d95ae83',
     'assets/js/growth.js'=>'9cf5fcb8185c778fd836137990a59910e680148a4ecf903423d9df41f8d73243',

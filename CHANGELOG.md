@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — homepage motion fixes (W-02 slice, reapplied post-refactor)
+
+- Reapplied at the refactored `site/assets/css/` / `site/assets/js/` paths, retaining the refactor's `body.cwp-site.motion-off` convention. Added `html:has(.cwp-site.motion-off)` so the pause toggle also disables root smooth-scroll (the `motion-off *` rule cannot reach `html` itself).
+- Re-add the restrained hover/focus metallic sheen on the brand logo; the paused-motion rules suppress it. Removed the dead legacy `.hero-scene` rules — markup emits `.hero-visual` and parallax uses `[data-parallax]`/`premium.css`. Acceptance records `qa/motion-metrics.json` (navigation timing, resource bytes, paint entries, layout-shift total) and exercises the toggle on the reorganized routes.
+
 ## 1.11.0 — organized application and verified three-package release
 
 Published from `de70c5da2e8f7bd35fbb92b9b829d0ab3e880372` after exact-main acceptance; all 16 assets downloaded and verified. Original history and all earlier releases retained. No live deployment.
