@@ -1,0 +1,237 @@
+{
+  "payload_sha256": "aa4aa18e36c785b32c9948f1f8c3fe08fd577054d3620c8ba1c728a7248c701d",
+  "fragments": [
+    "444e2c7d010d2525e35e79a495587141f52c67b8",
+    "6af033ce509088fca34a0fdb833aa26c5835b979",
+    "b286b3b6600b9db82b16f8a7a94f3244250bceb2",
+    "fc2880098a1bcf3d223ef039fcf70c1480c99fa8",
+    "dafc8a5b87d2172bd067c19e83bbe10d4e2b3645",
+    "9e1f181b0bfb029d5de7442c233932096ea14bc6",
+    "cd3f54b46c687cd89c52d0372c690e2ba337727c",
+    "796c1a0433a9507039c936951ea4e818003bbb66",
+    "cc4b9f306b44e3456b003065445ecdeae2780bba"
+  ],
+  "files": {
+    "site/.htaccess": {
+      "bytes": 856,
+      "sha256": "2cbbbf4de31257d939c6ddaabb570e1f309a2c418be31fdcc7b269f19b3078fb",
+      "source": "preserved-fragment"
+    },
+    "site/admin.php": {
+      "bytes": 53481,
+      "sha256": "d9ff2b94749be581913e291db3fba760ea55f196165e8ff6a96de277cd5292ab",
+      "source": "preserved-fragment"
+    },
+    "site/api.php": {
+      "bytes": 4024,
+      "sha256": "500e1a3b1d33ed693bf91f6fa9fa723451dea38c49f83b061fa9de8eabd688b2",
+      "source": "preserved-fragment"
+    },
+    "site/app/.htaccess": {
+      "bytes": 19,
+      "sha256": "fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934",
+      "source": "preserved-fragment"
+    },
+    "site/app/admin-view.php": {
+      "bytes": 6950,
+      "sha256": "e1f86ed283eb86e5b39c0186c7b9de4de71a3b18e069d69407b93929f0f0dd5c",
+      "source": "preserved-fragment"
+    },
+    "site/app/core.php": {
+      "bytes": 19351,
+      "sha256": "209b05158ac5c09e523114c1725986a8a09e1d34c6329814f152bf040eda8514",
+      "source": "preserved-fragment"
+    },
+    "site/app/growth-pages.php": {
+      "bytes": 17551,
+      "sha256": "dec268de56c11ba4faa393596365083bf7f6ea8a86821b1735b49e19a7951c3d",
+      "source": "preserved-fragment"
+    },
+    "site/app/growth.php": {
+      "bytes": 16285,
+      "sha256": "9d83c5e45ef6a9eb53e0448eacf830a188c02093da252fd5f07f977e6fbfef35",
+      "source": "preserved-fragment"
+    },
+    "site/app/home.php": {
+      "bytes": 7326,
+      "sha256": "884af04ad7d0b584af6db50a87df30af9327c6cabbae5fd752da28e3da53d243",
+      "source": "preserved-fragment"
+    },
+    "site/app/index.php": {
+      "bytes": 37,
+      "sha256": "696138b31bbb2a20c4bb53eb98b68dbe25557947dd6a7513c81e1c8b9446ce0d",
+      "source": "preserved-fragment"
+    },
+    "site/app/mail.php": {
+      "bytes": 5547,
+      "sha256": "b841a8f23acc147748a829dea230e5e0053489623688c6cbf3f8b18af71fe3d8",
+      "source": "preserved-fragment"
+    },
+    "site/app/schema.php": {
+      "bytes": 10059,
+      "sha256": "02eb78c3aa85b69467905dce3efeff81eddd2c0fe3ab517c5a520f868e793a66",
+      "source": "preserved-fragment"
+    },
+    "site/app/studio-admin.php": {
+      "bytes": 22672,
+      "sha256": "cca648c03d851c63bfd47a36b0a06e8c583ab51b91daba8c311396507dc3a682",
+      "source": "preserved-fragment"
+    },
+    "site/app/view.php": {
+      "bytes": 12741,
+      "sha256": "ebf2a24ebf86ff7fba26abdb6c475ffc48be3b90a25dcc6c7a59745a9173f1a4",
+      "source": "preserved-fragment"
+    },
+    "site/app/workspace.php": {
+      "bytes": 15257,
+      "sha256": "b24ce5f685768e056e6d9b59643c3b0c1abee09a1fa711fa515f0993b839eef7",
+      "source": "preserved-fragment"
+    },
+    "site/assets/favicon.png": {
+      "bytes": 2141,
+      "sha256": "4b55c0ef2c0117b427e568218c7209637ad4cd8d6e2a5772ca5b9860c4a270a1",
+      "source": "preserved-fragment"
+    },
+    "site/assets/growth.css": {
+      "bytes": 7852,
+      "sha256": "6c0475619fc575bf6d1262e1c5fd2b79179c0705560f06f6c2e3d8a4bee32b55",
+      "source": "preserved-fragment"
+    },
+    "site/assets/growth.js": {
+      "bytes": 2010,
+      "sha256": "37364b1a92697785a2146ef54bc747c0017571b119d34a5ac659e1627934d22a",
+      "source": "preserved-fragment"
+    },
+    "site/favicon.ico": {
+      "bytes": 13384,
+      "sha256": "c4e4fe3038ef2cf63978f940d9c43402d9474b1c93e4e0334bbd73a0c8a9ec13",
+      "source": "preserved-fragment"
+    },
+    "site/index.php": {
+      "bytes": 11584,
+      "sha256": "4b1ea57157dc87fc7b7af5d5ffb12dd67127fd8130f62f432d9a9e76e9115cd1",
+      "source": "preserved-fragment"
+    },
+    "site/install.php": {
+      "bytes": 91139,
+      "sha256": "df5f85480613fb24bb6303d0dee442c7241eb38813da161fea82003380bbb703",
+      "source": "preserved-fragment"
+    },
+    "site/media.php": {
+      "bytes": 1202,
+      "sha256": "233adcefeb5f0e4a7abad8ec90fa5162a3e274506f5e56d764c2aafec9282a83",
+      "source": "preserved-fragment"
+    },
+    "site/portal.php": {
+      "bytes": 10029,
+      "sha256": "49d1148ac1149755910fca1f23cf05c9dea111ce1d7c7729284028cf308bf5af",
+      "source": "preserved-fragment"
+    },
+    "site/robots.php": {
+      "bytes": 438,
+      "sha256": "954fce8a35cbc1832f58d386ffd611bf9f45c54456de5f6f7be532c3a3fd7c90",
+      "source": "preserved-fragment"
+    },
+    "site/sitemap.php": {
+      "bytes": 935,
+      "sha256": "508fcb6f6c3d5511a6c41944a1b11aff6140e410641f1735d67f12d3b61d834b",
+      "source": "preserved-fragment"
+    },
+    "tests/native.php": {
+      "bytes": 13727,
+      "sha256": "17d1eda19119c3796caa3d57af7a675feb9421c5bbdedd102f46aba42e2b85d4",
+      "source": "preserved-fragment"
+    },
+    "tests/http.py": {
+      "bytes": 12957,
+      "sha256": "1f508488f0ac7371476c76f5b112618f2d7f8977d5a5ea28b58a0bd64d6cb961",
+      "source": "preserved-fragment"
+    },
+    "tools/build.py": {
+      "bytes": 4509,
+      "sha256": "fd995c67a4a4bc4af7c45343e1285a5a6a0c335779e436a7d89b99ec08b97af0",
+      "source": "preserved-fragment"
+    },
+    "site/assets/admin.css": {
+      "bytes": 22697,
+      "sha256": "d502889e32bedc3e7ca7cae57f39606330e5632069c79066d821d3016b3d49a0",
+      "source": "fingerprinted-public-asset"
+    },
+    "site/assets/admin.js": {
+      "bytes": 552,
+      "sha256": "6f01319f40402e806cb29b32629b38edc5a3960a568fef150bed89fb8d95ae83",
+      "source": "fingerprinted-public-asset"
+    },
+    "site/assets/bayou-detail.webp": {
+      "bytes": 36926,
+      "sha256": "8c1752557b818bc8a35a32ffc4017cef94ee1d6cd247eaa484e2949ee6da2723",
+      "source": "fingerprinted-public-asset"
+    },
+    "site/assets/bayou.webp": {
+      "bytes": 33216,
+      "sha256": "9a50abd55f4ea8d6a86e3557e2f0c463cb124279cdc193cc0fc1413887f3d82a",
+      "source": "fingerprinted-public-asset"
+    },
+    "site/assets/emblem.png": {
+      "bytes": 100493,
+      "sha256": "eef8a21455d89155e742548ac37faa98a686264cde46fe1e3e0da8818fa6697f",
+      "source": "fingerprinted-public-asset"
+    },
+    "site/assets/hero-detail.webp": {
+      "bytes": 158166,
+      "sha256": "b7844d0006499521be68cda07f62f09115e40b49a01469f0b42fff60ff07ff9d",
+      "source": "fingerprinted-public-asset"
+    },
+    "site/assets/hero.webp": {
+      "bytes": 141910,
+      "sha256": "5a00c10a6514db0760dc8d3c915975c22aa3a8745b85dbe74c48954ffd1c41d5",
+      "source": "fingerprinted-public-asset"
+    },
+    "site/assets/logo.png": {
+      "bytes": 353632,
+      "sha256": "9c44559bb716076c51ec40daff0f394956a32d24039efa6e3fe33039fc10fe29",
+      "source": "fingerprinted-public-asset"
+    },
+    "site/assets/micrograin.png": {
+      "bytes": 11794,
+      "sha256": "bcb31a9b59c9330ba24da53a2dea6eae06ea242326212fd941af255b51b7303a",
+      "source": "fingerprinted-public-asset"
+    },
+    "site/assets/premium.css": {
+      "bytes": 35225,
+      "sha256": "46dc5170e9e4d393af18cd60f513f1141700c957b5d0afc7bfa25242667aa0cf",
+      "source": "fingerprinted-public-asset"
+    },
+    "site/assets/project-construction.webp": {
+      "bytes": 20536,
+      "sha256": "222847f2b35bc0e665fb51902c396cb73b3f24d0e02088a56ee8c62cbdfcbd61",
+      "source": "fingerprinted-public-asset"
+    },
+    "site/assets/project-placeholder.svg": {
+      "bytes": 532,
+      "sha256": "690a4304eb273f3ec01765350883dcde4a4787852f27de7f501edb442c49fa11",
+      "source": "fingerprinted-public-asset"
+    },
+    "site/assets/project-restaurant.webp": {
+      "bytes": 21968,
+      "sha256": "efdb940754d22aef36985860e289e313c8d1d3b8f909658fe97ed97125581e3a",
+      "source": "fingerprinted-public-asset"
+    },
+    "site/assets/project-wellness.webp": {
+      "bytes": 19952,
+      "sha256": "6166fbc5728bb77fc86352c7e36cabe3adc9117a4a183311bacf6896541085f1",
+      "source": "fingerprinted-public-asset"
+    },
+    "site/assets/site.css": {
+      "bytes": 33233,
+      "sha256": "bc0437271aa5582fd3cbfc4d0b19ddfa33eff4562e02366cd6f443f2d6196304",
+      "source": "fingerprinted-public-asset"
+    },
+    "site/assets/site.js": {
+      "bytes": 8376,
+      "sha256": "b5a1b911565bc507472d6ccd6c3527af92767c12766dd539e13265454e2cc341",
+      "source": "fingerprinted-public-asset"
+    }
+  },
+  "status": "Recovered source only; application acceptance pending."
+}

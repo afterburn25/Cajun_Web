@@ -136,3 +136,9 @@ Append dated entries. Keep this chronological. Use `SESSION_TEMPLATE.md`; link d
 **Tests and limitations:** GitHub's documentation job ran successfully on Ubuntu; local checker passed 12 required files, 23 Markdown documents, 77 local links/10 headings, plus five isolated success/failure cases and whitespace checks. These are documentation checks only. No application build, version release, source recovery, runtime/provider operation or deployment occurred. Devin has not been dispatched or confirmed running. Existing application source/package availability remains unchanged.
 
 **Next action:** Owner gives issue #2 to Devin; recover and verify 1.1.0, refresh both branches to its imported source, agree precise file ownership/contracts and begin separately tested implementation PRs. No additional product-scope decision beyond D-034/035.
+
+## 2026-10-13 — Source recovery checkpoint
+
+Recovered 41 actual website files plus native/HTTP tests and a build tool from the nine preserved source fragments. Original external assets were fetched only at the recorded public paths and checked against recorded SHA-256 values. Executable source is now under `site/` on `codex/finish-1.1.0`. This supersedes the older no-source-in-Git blocker on this branch, NOT the unverified runtime or release claims. No production files, database, mail or payments were changed. Review `docs/SOURCE_RECOVERY_2026-10-13.json`; run native integration and authorization tests next. No 1.1.0 release is declared by source recovery.
+
+Starting commit: 367fab9747eb2d525fb9756cb7ae75052361375c. Recovery verified payload hashes, individual file hashes, safe paths and absence of common secret formats. The first import attempt rejected the origins record format before writing files; corrected to its actual path-to-fingerprint map. No application code was executed by the recovery job.
