@@ -2,6 +2,8 @@
 
 Updated: 2026-10-12. **All items below are pending implementation/verification in Git unless their status is changed with commit and test evidence.** The initial repository work is documentation only. A rendered concept is not a finished feature.
 
+The owner explicitly wants to build our own WHMCS from scratch: a custom CajunWebPro hosting/billing/client-management platform. The [platform blueprint](CUSTOM_PLATFORM_BLUEPRINT.md) maps that direction to this roadmap, including web-design payments, additional admins, webmail/templates and private mail notifications. Preserve current 1.1.0 source and branding when implementing these modules; no WHMCS installation is required.
+
 ## Foundation and release recovery
 
 ### F-01 — Import the exact application baseline
@@ -86,9 +88,27 @@ Protected export of required database/media/configuration with clear scope, inte
 
 Identify installed and available versions, verify trusted package integrity/compatibility, preserve private data/configuration, back up affected material, apply ordered migrations, report failures, and offer a tested recovery path. Acceptance: path-traversal/symlink/partial-write protections, concurrent-run prevention, migration tracking, exact artifact manifest, and no reintroduction of install keys or multi-step setup. Signing/trust provisioning must be designed before automatic updates are enabled.
 
+### A-05 — Additional admin accounts and permissions
+
+Owner-controlled creation/invitation, role and mailbox grants, reset and deactivation for additional administrators. Preserve the owner account, deny privilege escalation, revoke disabled sessions and protect the last active owner. Keep staff identities separate from client accounts. Acceptance and permission tests: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-05--additional-admin-accounts-and-access-foundation).
+
+### A-06 — Multi-account admin webmail and setup
+
+Add Email with incoming/outgoing account configuration, separate connection tests, mailbox access grants, account switching/combined inbox, folders, read/unread, search, compose/reply/forward, drafts and attachments. Preserve server-side mailbox permissions, encrypted credentials, safe message rendering and correct send/sync failure handling. Full workflows and native two-account tests: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-06--multiple-email-accounts-and-webmail).
+
+### A-07 — Reusable email templates
+
+Create/edit/duplicate/preview/archive templates with subject/body, safe allowlisted placeholders, shared/personal visibility and compose insertion. Preview resolved values and edit the draft before explicit sending. Keep signatures/account selection clear and transactional templates controlled. Acceptance: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-07--reusable-sending-templates).
+
+### A-08 — Admin-only unread-mail notifications
+
+Show an unread-mail bell in admin and the public-site header for authenticated admins only. List unread messages from authorized accounts; clicking a notification opens the exact message in admin webmail. Synchronize counts/read state, show stale/error status, and exclude all private notification data from anonymous/client responses and public caches. Acceptance: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-08--unread-mail-bell-in-admin-and-on-the-public-site).
+
 ## Implementation order and completion rule
 
 Import and validate the baseline first. Land exact branding/favicon and public experience/content plus lead workflows next, then client operations and resilience in tested increments. Access control and backup/recovery checks must precede storing real client documents or enabling payments/automatic updates.
+
+Add A-05 staff access in M1. A-06/A-07/A-08 form the M5/HC-12 admin-mail milestone after identity and mail-host/private-storage prerequisites; they do not depend on VPS availability. [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md) provides setup, workflows and acceptance tests.
 
 Move an item through `approved` → `in progress` → `implemented` → `verified` → `deployed` only with evidence for each transition. Record branch/commit, routes, schema/config changes, tests, limitations, and deployment status. Update this roadmap and the session handoff with every meaningful change.
 

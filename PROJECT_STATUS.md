@@ -1,7 +1,17 @@
 # Project status
 
-Updated: 2026-10-12 — dedicated web-design payment forms specified; current 1.1.0 artifact location pending.
+Updated: 2026-10-12 — own hosting-management platform, admin webmail, additional admins, templates and private notification bells specified; current 1.1.0 artifact location pending.
 Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
+
+## Explicit platform direction — our own WHMCS
+
+The owner clarified that the business needs its own platform built from scratch for the agreed WHMCS-style functions. `docs/CUSTOM_PLATFORM_BLUEPRINT.md` maps first-party catalog, customer/staff accounts, orders, invoices, recurring billing, 20i service automation, support and admin/portal modules, including Authorize.net design payments and admin email. This confirms the custom-software direction and ties the existing roadmap together; it does not establish any new runtime implementation. Recover/inspect 1.1.0 and preserve current work before foundation development.
+
+## Latest requirement — admin email, team accounts and notifications
+
+Added A-05 through A-08 and `docs/ADMIN_MAIL_ROADMAP.md`: owner-managed additional administrators, mailbox permissions, multiple email accounts with setup and webmail send/receive, reusable compose templates, and unread-email bells in admin and the public header for authenticated admins only. Notifications open the exact authorized webmail message. Defined setup errors, message/attachment safety, template previews, read-state sync and anonymous/cache isolation tests.
+
+**Status:** approved requirements only, added to the existing documentation review [PR #1](https://github.com/afterburn25/Cajun_Web/pull/1). No additional administrator, mailbox connection, outgoing email, deployed notification bell or source implementation is established. Current 1.1.0 source and eventual secure mailbox setup remain prerequisites; existing design-payment requirements are retained.
 
 ## Latest requirement — payment forms for web-design services
 

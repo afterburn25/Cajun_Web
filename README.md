@@ -2,6 +2,8 @@
 
 Custom web design and development services, portfolio, and business-management website. **This is a service business website, not a do-it-yourself website builder.**
 
+Approved expansion: our own custom hosting/billing/client-management platform covering the agreed functions otherwise handled by WHMCS, with 20i infrastructure, Authorize.net payments, web-design services, staff accounts and admin webmail. See the [custom platform blueprint](docs/CUSTOM_PLATFORM_BLUEPRINT.md); this is planned scope, not a completed platform.
+
 Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
 
 ## Start here in every session
@@ -36,6 +38,8 @@ The owner confirms **1.1.0 is the latest version**. Its source/package must be l
 |---|---|
 | [Project direction](docs/PROJECT_DIRECTION.md) | Positioning, design, audience, and scope |
 | [Roadmap](docs/ROADMAP.md) | All approved additions and acceptance criteria |
+| [Admin mail roadmap](docs/ADMIN_MAIL_ROADMAP.md) | Multiple mailboxes, additional administrators, templates and admin-only notification bells |
+| [Custom platform blueprint](docs/CUSTOM_PLATFORM_BLUEPRINT.md) | First-party replacement for the agreed WHMCS-style business functions, module boundaries and delivery phases |
 | [Architecture](docs/ARCHITECTURE.md) | Inspected PHP baseline and planned extension boundaries |
 | [Installation and updates](docs/INSTALLATION_AND_UPDATES.md) | Single-page installer, ownership, packaging, and release checks |
 | [Brand assets](docs/BRAND_ASSETS.md) | Exact logo, favicon source, and visual-reference provenance |

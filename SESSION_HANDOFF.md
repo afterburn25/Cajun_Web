@@ -1,7 +1,17 @@
 # Session handoff — read before continuing
 
-Checkpoint: 2026-10-12 — standalone web-design payment forms added to the approved scope; recover current 1.1.0 source next.
+Checkpoint: 2026-10-12 — custom platform blueprint plus admin webmail/staff/templates/bells added; recover current 1.1.0 source next.
 Repository: afterburn25/Cajun_Web · Authoritative branch: main.
+
+## Explicit owner direction — build our own WHMCS
+
+Read `docs/CUSTOM_PLATFORM_BLUEPRINT.md`: own the platform's customer/staff identity, catalog, checkout, invoicing, subscriptions, service lifecycle, support, admin and portal, with direct 20i and Authorize.net adapters. Include standalone web-design payments and the admin mail suite. Existing HC/A/P requirements remain applicable; no WHMCS/HostShop application dependency or invented feature-completion claim. M0 current-source/staging work precedes M1 identity/catalog foundation. This is a scope/architecture update in the existing documentation PR, not a runtime build.
+
+## Latest requirement — admin mail and additional staff accounts
+
+The owner wants an Email section for multiple accounts with setup, send/receive and templates; additional administrator accounts; and an unread-email bell in admin plus public pages visible only to signed-in admins. Each notification opens the matching protected webmail message. Read `docs/ADMIN_MAIL_ROADMAP.md` and A-05 through A-08 for complete workflows and acceptance. Staff accounts/permissions are M1; webmail/templates/bells are the M5/HC-12 mail group, which can proceed independently of VPS after its own prerequisites.
+
+Continuing `docs/web-design-payment-forms` and [draft PR #1](https://github.com/afterburn25/Cajun_Web/pull/1), with the existing design-payment and owner-confirmed 1.1.0 requirements retained. New work is documentation only. Recover and inspect 1.1.0, reconcile existing auth/mail capabilities, then implement secure admin/mailbox authorization before exposing mail or notifications. Do not ask for credentials in chat or send real mail as part of roadmap capture. Provider setup belongs in the eventual secured admin interface.
 
 ## Latest requirement — web-design payment forms
 

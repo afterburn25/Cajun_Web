@@ -50,3 +50,18 @@ Unresolved verification items: actual 20i API credentials/capabilities (especial
 | D-023 | Delivery sequence | Standalone design-payment forms belong in M2 with payments, independent of 20i provisioning | Supersedes the earlier implication that all HC-11 work waits for M4; project/bundle integration remains M4, with no hosting purchase required to pay for design |
 
 The concrete form/admin flows and acceptance cases are specified in P-03 and HC-11. No current 1.1.0 source inspection, form implementation or payment integration test occurred in this documentation change.
+
+## 2026-10-12 — Admin email, additional administrators and notifications
+
+| ID | Status | Decision | Consequence |
+|---|---|---|---|
+| D-024 | Accepted requirement | Add multiple connected email accounts and send/receive webmail within admin | Account setup, incoming/outgoing connection checks, mailbox grants, inbox/compose/folders/drafts/attachments and failure recovery belong in A-06/HC-12 |
+| D-025 | Accepted requirement | Allow owner-managed additional admin accounts | A-05 adds administrator lifecycle and scoped roles/mailbox permissions; protect existing owner access and revoke disabled sessions |
+| D-026 | Accepted requirement | Create reusable templates for sending mail | A-07 includes subject/body editing, safe variables, preview and explicit sending from the selected authorized mailbox |
+| D-027 | Accepted requirement | Show unread-email bells in admin and the public site for signed-in admins only | A-08 provides per-mailbox permission-filtered counts, unread items and exact-message links; private responses and public-cache isolation are mandatory |
+
+Admin identity/permissions precede mail access. Implement the mail/template/bell group within M5/HC-12 independently of VPS readiness once its own prerequisites pass. Account setup initially connects existing mailboxes; provider-side mailbox creation remains an optional separate scope choice. No mailbox connection, additional account creation, message send or UI implementation occurred in this documentation session.
+
+## 2026-10-12 — Build our own WHMCS-style platform
+
+**D-028 — Accepted owner direction:** Build the agreed hosting-management platform from scratch as first-party CajunWebPro software: customer/staff identity, catalog, orders, invoices, recurring billing, service provisioning/lifecycle, support, admin and portal. This explicitly confirms D-016/D-017, with direct 20i/Authorize.net adapters and no required WHMCS or HostShop application. Web-design payments and admin webmail/templates/bells are integrated modules. Maintained bundled protocol/security libraries remain compatible with custom ownership. Preserve current 1.1.0 source when recovered; the [platform blueprint](CUSTOM_PLATFORM_BLUEPRINT.md) maps milestones and acceptance without claiming implementation.

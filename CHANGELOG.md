@@ -2,6 +2,15 @@
 
 This log distinguishes repository work from application releases and deployment. Documentation-only work does not advance the application version.
 
+## 2026-10-12 — Custom platform, admin webmail, staff access and notifications (requirements only)
+
+- Added `docs/CUSTOM_PLATFORM_BLUEPRINT.md` for the owner's explicit instruction to build our own WHMCS-style platform, mapping owned business modules, shared identity/ledger, provider adapters and phased delivery to the existing roadmap.
+
+- Added A-05 to A-08 and `docs/ADMIN_MAIL_ROADMAP.md` for additional admin accounts, scoped mailbox access, multiple email account setup and webmail, reusable sending templates, and unread-mail bells in admin and the admin-only public header.
+- Specified account connection checks, inbox/compose/drafts/attachments, safe email rendering, template preview/variables, provider read-state sync, exact-message links and private endpoint/cache isolation.
+- Integrated staff identity in M1 and the independent mail milestone within M5/HC-12, synchronized direction/architecture/decisions/status/handoff, and retained the design-payment roadmap and 1.1.0 source prerequisite.
+- No admin or mailbox account created, no provider connection, no email sent, and no runtime feature or deployment performed.
+
 ## 2026-10-12 — Dedicated web-design payment forms (requirements only)
 
 - Expanded P-03/HC-11 to define themed Authorize.net forms for full service payments, quote deposits, milestones, final balances and optional maintenance, plus admin-created payment links and portal invoices.
