@@ -1,6 +1,6 @@
 # Architecture notes
 
-Candidate 1.4.0 adds `catalog.php`, `catalog-admin.php` and shared `catalog-view.php`. Products append revision history and use explicit catalog permission; public reads select only safe fields. Existing studio invoices receive immutable catalog snapshots with unique request keys and serialized issuance. Product saves and issue/paid/void transitions use strict transactional audit. [Catalog guide](SERVICE_CATALOG.md).
+Released 1.4.0 adds `catalog.php`, `catalog-admin.php` and shared `catalog-view.php`. Products append revision history and use explicit catalog permission; public reads select only safe fields. Existing studio invoices receive immutable catalog snapshots with unique request keys and serialized issuance. Product saves and issue/paid/void transitions use strict transactional audit. [Catalog guide](SERVICE_CATALOG.md).
 
 
 A-09 released 1.3.0: `app/support.php` holds additive support policy/session/audit adapters; `app/support-admin.php` provides owner setup and client entry. The existing portal receives an explicit browser-bound context without customer-login impersonation. Every request revalidates staff/client versions and client policy; writes revalidate under the shared staff mutex and InnoDB transaction. Per-context CSRF prevents URL stripping or retargeting. Strict action audit precedes commit/download bytes. [Operational guide](CLIENT_SUPPORT.md).

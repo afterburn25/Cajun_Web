@@ -1,6 +1,6 @@
 # Administrator accounts — 1.2.0
 
-Candidate 1.4.0 adds explicit catalog permission, including internal costs. Catalog invoices additionally require client-workspace permission. Existing staff receive no automatic catalog grant. [Catalog guide](SERVICE_CATALOG.md).
+Released 1.4.0 adds explicit catalog permission, including internal costs. Catalog invoices additionally require client-workspace permission. Existing staff receive no automatic catalog grant. [Catalog guide](SERVICE_CATALOG.md).
 
 
 Released 1.3.0 adds three separately selectable [client support permissions](CLIENT_SUPPORT.md): portal view, message/upload, and file download. Existing administrators are not automatically granted them; owners still must enable support and allow each client.

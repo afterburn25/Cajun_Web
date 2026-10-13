@@ -1,8 +1,8 @@
 # Changelog
 
-## Unreleased — service catalog and invoice snapshots
+## v1.4.0 — 2026-10-13
 
-M1 / partial HC-01 and HC-06: managed service prices, public configured cards, preserved invoice snapshots and audited manual payment/void workflow. Implementation and acceptance pending on codex/service-catalog.
+M1 / partial HC-01 and HC-06: managed service prices, public configured cards, preserved invoice snapshots and audited manual payment/void workflow. Published at `0cdea7fbd17e887d3f4bc0574a411b157431b7df` via PR #14 after 165 native and 345 HTTP/Chromium checks. Eight retained assets/tag downloaded-back verified. No live deployment or gateway operation; [scope](docs/RELEASE_1.4.0.md).
 
 ## v1.3.0 — 2026-10-13
 
