@@ -1,5 +1,18 @@
 # Session log
 
+## 2026-10-13 — Devin review-request adapter contract (L-02 dependency)
+
+**Request:** Continue the roadmap while queued PRs await Codex integration. Following the estimator adapter contract (PR #35), document how the live `website-review` route adopts the L-02 foundation.
+
+**Starting commit:** `b975915` (main). New branch `devin/review-adapter`. Owned: `docs/REVIEW_REQUESTS_ADAPTER.md` + continuity docs. Documentation only.
+
+**Work:** Mapped `growth_submit`'s website-review branch to the foundation: `current_url` → `WebsiteAddress` (bare-host normalization flagged as a deliberate acceptance-widening decision A/B), name/email/consent → `ReviewContact`, additive `review_stages` and `review_reports` tables driving `ReviewInbox` transitions and the saved-report+consent delivery gate, staff stage controls scoped to website-review leads. All form/spam/lead-write behavior stays live-side; no fetching, mail, or delivery mechanism is added.
+
+**Verification:** `tools/check_docs.py` passes (444 links). No code executed or changed.
+
+**Next:** Codex review; L-03 consultation adapter contract is the natural next doc. Queued: #31, #32, #34, #35.
+
+
 ## 2026-10-13 — Sandbox trial release published and verified
 
 Continued roadmap from main `dd29436fa40c2a0f800bc02569b5fd5d1fb75c09` / 1.5.0 on `codex/sandbox-attempts`. Added owner-only tokenized sandbox UI, fixed sandbox reporting/charge adapter, additive attempt/events, exact amount/reference/account checks, idempotency and concurrency safeguards, unknown-result recovery, shared manual/catalog/request locks, strict audit and immutable 1.5.0 upgrade acceptance. PR #18 merged as `e5d4c17456faff0522429ab3f58093a06a523bd5`; exact-main run https://github.com/afterburn25/Cajun_Web/actions/runs/38380935411 passes 296 native / 421 HTTP/Chromium checks. Independent policy/invitation/documentation checks pass. Reviewed desktop/320px screenshots.

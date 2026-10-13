@@ -1,5 +1,10 @@
 # Session handoff — read before continuing
 
+## 2026-10-13 — Devin L-02 adapter contract
+
+`devin/review-adapter` (off `b975915`) documents the `growth_submit` website-review → foundation mapping: `WebsiteAddress` intake (bare-host normalization is decision A — widens accepted input; B keeps `safe_url` strict), `review_stages`/`review_reports` additive tables, `ReviewInbox` stage controls, delivery gated on saved report + consent. No code/schema changes. Same pattern as estimator contract PR #35. Next: L-03 adapter contract if Codex wants the same treatment.
+
+
 ## Release acceptance follow-up — 2026-10-13
 
 Portfolio integration PR #30 is merged at `332af19333a62d3dfcc90eb9cf34871a7fac50ec`; original Devin PRs #7/#27 are merged with preserved history. Both candidate runs passed 618 native / 675 HTTP/Chromium checks and reviewed screenshots. Exact-main run 38408053057 passed native and actual 1.10.0 retention checks, then exposed a synthetic modified-click test navigation race. `codex/portfolio-acceptance` fixes the test observer and adds a real Ctrl-click/new-tab assertion; it changes no shipping bytes. Publication remains pending successful exact-main acceptance. Latest public release remains 1.10.0. New Devin L-02 PR #31 is separate unreviewed work, outside this release.
