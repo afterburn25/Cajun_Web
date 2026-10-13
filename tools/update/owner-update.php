@@ -12,7 +12,7 @@ try {
     if(!is_array($manifest['files']??null) || count($manifest['files'])<100)throw new RuntimeException('manifest.php');
     if(!is_file(__DIR__.'/legacy-release-files.json') || is_link(__DIR__.'/legacy-release-files.json') || !hash_equals($manifest['history_sha256']??'',(string)hash_file('sha256',__DIR__.'/legacy-release-files.json')))throw new RuntimeException('legacy-release-files.json');
     foreach($manifest['files'] as $name=>$hash){
-        if(!preg_match('~^[a-zA-Z0-9_.-]+(?:/[a-zA-Z0-9_.-]+)*$~D',$name) || in_array('..',explode('/',$name),true))throw new RuntimeException('manifest.php');
+        if(!preg_match('~^[a-zA-Z0-9_@.-]+(?:/[a-zA-Z0-9_@.-]+)*$~D',$name) || array_intersect(['.','..'],explode('/',$name)))throw new RuntimeException('manifest.php');
         $path=CWP_CODE_ROOT;
         foreach(explode('/',$name) as $part){$path.='/'.$part;if(is_link($path))throw new RuntimeException($name);}
         if(!is_file($path) || !hash_equals($hash,(string)hash_file('sha256',$path)))throw new RuntimeException($name);
