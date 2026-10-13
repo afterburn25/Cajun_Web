@@ -11,6 +11,12 @@
 ## 1.11.2 — candidate, canonical live estimator integration
 
 ## 1.12.0 — candidate, administrator email-template library
+## 1.13.0 — candidate, email account preparation
+
+- Preserve Devin #59 canonical profile/assignment/message models and isolated CI. Re-reviewed 64 no-extension component checks; future-issued grants, UIDVALIDITY, duplicate identities and tuple encoding are corrected. Application acceptance remains pending.
+- Add owner-managed incoming/outgoing profiles, encrypted private credentials, immutable metadata/assignment history, strict audit and stale-write protection. Add separate staff read/send permissions and current per-mailbox assignments, including for owners.
+- Add administrative settings and scoped assigned-account lists, additive owner setup, fresh schema preparation and actual 1.12.0 upgrade/key/data recovery fixtures. Combined application acceptance is pending. No transport, mailbox contents, connection success, sending, release or deployment is implied.
+
 ## 1.12.0 — verified administrator email-template library
 
 - Add explicit template permissions, personal/shared drafts, create/edit/duplicate/activate/archive and escaped sample previews. Reuse the corrected Devin #56 model with literal single-pass substitutions and strict field grammar.
