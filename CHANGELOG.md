@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.8.0 candidate — invoice payments and client receipts
+
+- Record verified external USD payments in full or in parts; show total paid and remaining invoice balances. Replay, stale review, duplicate reference and overpayment guards share the existing financial lock.
+- Owners correct mistakes with an audited full reversal while retaining original entries. No money is sent or refunded.
+- Clients view owned statements and printable receipts; staff-only references remain private, and support receipt access is blocked and audited.
+- Additive migration imports legacy paid balances without fabricating receipts. Partial payments/corrections retire earlier requests; new requests use the remaining amount.
+- Acceptance and release gates pending. Card checkout, actual merchant acceptance and recurring/refund processing remain pending.
+
 ## 1.7.0 — sandbox notification inbox
 
 - Owner-configured sandbox callback with raw-body HMAC verification, account/webhook binding, bounded payloads and replay protection. Durable minimal receipt and strict audit precede HTTP 200.

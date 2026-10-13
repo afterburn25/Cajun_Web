@@ -6,6 +6,7 @@ require_once __DIR__.'/catalog.php';
 require_once __DIR__.'/authorize.php';
 require_once __DIR__.'/payment-attempts.php';
 require_once __DIR__.'/payment-notifications.php';
+require_once __DIR__.'/invoice-ledger.php';
 
 function payments_schema(string $prefix): array {
     if(!preg_match('/^[a-zA-Z][a-zA-Z0-9_]{1,19}$/D',$prefix))throw new InvalidArgumentException('Invalid prefix.');
@@ -125,7 +126,7 @@ function payments_invoice(int $id): array {
     $i=one('SELECT i.*,j.client_id,c.active FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id JOIN '.table('studio_clients').' c ON c.id=j.client_id WHERE i.id=?',[$id]);
     if(!$i||(int)$i['active']!==1||$i['status']!=='issued'||$i['currency']!=='USD'||(int)$i['amount_cents']<1||(int)$i['amount_cents']>99999999)throw new RuntimeException('Choose an unpaid USD invoice for an active client.');return $i;
 }
-function payments_invoice_hash(array $i): string {return hash('sha256',json_encode([(int)$i['id'],(int)$i['job_id'],(int)$i['client_id'],(int)$i['amount_cents'],$i['currency'],$i['title'],$i['reference'],$i['instructions'],catalog_snapshot((int)$i['id'])],JSON_THROW_ON_ERROR));}
+function payments_invoice_hash(array $i): string {$base=hash('sha256',json_encode([(int)$i['id'],(int)$i['job_id'],(int)$i['client_id'],(int)$i['amount_cents'],$i['currency'],$i['title'],$i['reference'],$i['instructions'],catalog_snapshot((int)$i['id'])],JSON_THROW_ON_ERROR));if(!ledger_ready())return $base;$revision=ledger_balance($i)['revision'];return $revision?hash('sha256',$base.'|ledger|'.$revision):$base;}
 function payments_prepare(int $invoice,string $purpose,int $days,string $fingerprint,string $key): int {
     if(!isset(payments_purposes()[$purpose])||$days<1||$days>30||!preg_match('/^[a-f0-9]{64}$/D',$key)||!preg_match('/^[a-f0-9]{64}$/D',$fingerprint))throw new InvalidArgumentException('Review a current invoice, purpose and expiry of 1–30 days.');
     return staff_locked(fn()=>staff_transaction(function() use($invoice,$purpose,$days,$fingerprint,$key): int {
@@ -135,7 +136,7 @@ function payments_prepare(int $invoice,string $purpose,int $days,string $fingerp
         $i=payments_invoice($invoice);if(!hash_equals(payments_invoice_hash($i),$fingerprint))throw new RuntimeException('The invoice changed. Reload and review its current amount.');
         attempts_assert_clear($invoice);
         query('UPDATE '.table('payment_requests')." SET status='superseded' WHERE invoice_id=? AND status='prepared'",[$invoice]);
-        query('INSERT INTO '.table('payment_requests').' (invoice_id,job_id,client_id,actor_id,request_key,request_hash,invoice_hash,purpose,status,amount_cents,currency,expires_at,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',[$invoice,$i['job_id'],$i['client_id'],$actor['id'],$key,$hash,$fingerprint,$purpose,'prepared',$i['amount_cents'],$i['currency'],time()+$days*86400,gmdate('Y-m-d H:i:s')]);
+        query('INSERT INTO '.table('payment_requests').' (invoice_id,job_id,client_id,actor_id,request_key,request_hash,invoice_hash,purpose,status,amount_cents,currency,expires_at,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',[$invoice,$i['job_id'],$i['client_id'],$actor['id'],$key,$hash,$fingerprint,$purpose,'prepared',ledger_balance($i)['due_cents'],$i['currency'],time()+$days*86400,gmdate('Y-m-d H:i:s')]);
         $id=(int)db()->lastInsertId();payments_audit((int)$actor['id'],'request.prepare','Request '.$id.' invoice '.$invoice.'; charging disabled');return $id;
     }));
 }
@@ -149,8 +150,7 @@ function payments_revoke(int $id): void {
 }
 function payments_request_state(array $r): string {
     if($r['status']!=='prepared')return $r['status'];if((int)$r['expires_at']<=time())return 'expired';
-    try{$i=payments_invoice((int)$r['invoice_id']);}catch(RuntimeException){return 'unavailable';}
-    return hash_equals($r['invoice_hash'],payments_invoice_hash($i))?'prepared':'invoice changed';
+    try{$i=payments_invoice((int)$r['invoice_id']);return hash_equals($r['invoice_hash'],payments_invoice_hash($i))?'prepared':'invoice changed';}catch(RuntimeException){return 'unavailable';}
 }
 /** Called only inside the authenticated invoice view; ownership is also rechecked here. */
 function payments_client_view(array $invoice): void {

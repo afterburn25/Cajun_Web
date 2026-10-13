@@ -7,7 +7,7 @@ header('X-Robots-Tag: noindex, nofollow');
 if(in_array($_GET['view']??'', ['staff-setup','reset'],true))header('Referrer-Policy: no-referrer');
 $view=is_string($_GET['view']??null)?$_GET['view']:'dashboard';
 $validViews=['login','forgot','reset','dashboard','projects','project','services','service','leads','lead','testimonials','testimonial','settings','email','security','health'];
-$validViews=array_merge($validViews,['staff','staff-setup','support','catalog','catalog-invoice','payments','payment-settings','payment-trials','payment-notifications'],array_keys(studio_admin_views()));
+$validViews=array_merge($validViews,['staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],array_keys(studio_admin_views()));
 if(!in_array($view,$validViews,true)){$view='dashboard';}
 $error='';$id=(int)($_GET['id']??0);
 if($_SERVER['REQUEST_METHOD']==='POST'){
@@ -137,7 +137,7 @@ if($permission!==null&&!staff_can($permission,$user)){
 if($view==='staff'){staff_admin_render($user,$error);exit;}
 if($view==='support')support_admin_render($user,$error);
 if(in_array($view,['catalog','catalog-invoice'],true))catalog_admin_render($view,$user,$error);
-if(in_array($view,['payments','payment-settings','payment-trials','payment-notifications'],true))payments_admin_render($view,$user,$error);
+if(in_array($view,['payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],true))payments_admin_render($view,$user,$error);
 if(array_key_exists($view,studio_admin_views())){studio_admin_render($view,$user,$error);exit;}
 $titles=['dashboard'=>'Your studio, at a glance.','projects'=>'Portfolio','project'=>$id?'Edit project':'New project','services'=>'Services','service'=>$id?'Edit service':'New service','leads'=>'Project inquiries','lead'=>'Inquiry details','testimonials'=>'Client testimonials','testimonial'=>$id?'Edit testimonial':'New testimonial','settings'=>'Website settings','email'=>'Email delivery','security'=>'Your account','health'=>'System health'];admin_head($titles[$view],$view,$user);if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';
 if($view==='dashboard'){

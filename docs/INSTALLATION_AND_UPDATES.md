@@ -1,5 +1,7 @@
 # Installation, packaging and updates
 
+**1.8.0 candidate:** one additive `invoice_payments` table holds external receipts, legacy balances and append-only recording reversals, separate from sandbox tables. After a current file/database/private-key backup and UPDATE upload, owners enable Invoice payments after Payment preparation. Fresh setup includes empty enabled history. Original invoice amounts and retained credentials/trials/notifications remain intact. Client receipts are private HTML views suitable for browser Print/Save as PDF. [Ledger guide](INVOICE_LEDGER.md). No runtime CLI/daemon or provider connection added; publication pending.
+
 ## 2026-10-13 — Verified 1.7.0 sandbox notification increment
 
 Signed sandbox receipt, durable minimal inbox and explicit owner-triggered current reporting are delivered in [v1.7.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.7.0) / `1fe0670142755f86aee235fabe1847e5d118ee52`. Receiver defaults off; schema is additive, invoice settlement remains disabled and no runtime daemon is needed. Original 1.6.0 UPDATE preserves attempts/events and all earlier records/keys. 358 native / 451 HTTP/Chromium checks pass; signatures/reporting remain synthetic. Actual merchant acceptance, production/client checkout and automatic processing are pending. [Guide](SANDBOX_NOTIFICATIONS.md) · [report](TEST_REPORT_1.7.0.md).

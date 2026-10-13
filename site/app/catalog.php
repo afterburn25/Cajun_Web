@@ -100,6 +100,7 @@ function catalog_transition(int $jobId,int $invoiceId,string $status,string $not
         $actor=catalog_require(true);$r=one('SELECT i.* FROM '.table('studio_invoices').' i JOIN '.table('catalog_invoice_snapshots').' s ON s.invoice_id=i.id WHERE i.id=? AND i.job_id=? FOR UPDATE',[$invoiceId,$jobId]);
         if(!$r||$r['status']!=='issued')throw new RuntimeException('Only an unpaid issued catalog invoice can be changed.');
         attempts_assert_clear($invoiceId);
+        if(ledger_ready()){if($status==='paid')throw new RuntimeException('Use Invoice payments to review the remaining balance and record a receipt.');if(ledger_balance(ledger_invoice($invoiceId))['paid_cents']!==0)throw new RuntimeException('An invoice with recorded payments cannot be voided.');}
         query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=? WHERE id=?',[$status,$note,$status==='paid'?gmdate('Y-m-d H:i:s'):null,$invoiceId]);
         catalog_audit((int)$actor['id'],'invoice.'.$status,'Invoice '.$invoiceId.' project '.$jobId);
     }));

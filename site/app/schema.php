@@ -17,7 +17,7 @@ function schema_statements(string $prefix): array {
         'rate_limits'=>'CREATE TABLE '.$t('rate_limits').' (bucket CHAR(64) PRIMARY KEY,attempts INT UNSIGNED NOT NULL,expires BIGINT NOT NULL,INDEX expiry(expires))'.$engine,
         'resets'=>'CREATE TABLE '.$t('resets').' (token_hash CHAR(64) PRIMARY KEY,user_id INT UNSIGNED NOT NULL,expires BIGINT NOT NULL,INDEX reset_expiry(expires))'.$engine,
         'audit'=>'CREATE TABLE '.$t('audit').' (id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,user_id INT NOT NULL DEFAULT 0,action VARCHAR(80) NOT NULL,detail VARCHAR(400) NOT NULL,created_at DATETIME NOT NULL,INDEX audit_date(created_at))'.$engine,
-    ] + studio_schema($prefix) + staff_schema($prefix) + support_schema($prefix) + catalog_schema($prefix) + payments_schema($prefix) + attempts_schema($prefix) + notifications_schema($prefix);
+    ] + studio_schema($prefix) + staff_schema($prefix) + support_schema($prefix) + catalog_schema($prefix) + payments_schema($prefix) + attempts_schema($prefix) + notifications_schema($prefix) + ledger_schema($prefix);
 }
 function default_settings(): array { return [
     'brand_name'=>'CajunWebPro','hero_line1'=>'Websites Built','hero_line2'=>'to Dominate',
