@@ -60,11 +60,12 @@ Two additive changes the integration must make before bridging:
 - **No message content in the notification.** Title is the subject
   line and `from` — never body text. Bodies stay behind the webmail
   permission check (and `MailMessage` carries no body anyway).
-- **Public-page bells are authenticated-admins only.** The public bell
-  partial renders only when `support_current()`/`admin_user()` resolves
-  to a staff member with `mail.templates.manage`-equivalent mailbox
-  grants; anonymous and client sessions get nothing, and the response
-  must not be publicly cacheable when a bell is rendered.
+- **Public-page bells are authenticated staff only.** The public bell
+  partial renders only when the session resolves to a staff member
+  passing `Access\PermissionPolicy` with the `mail.read` capability for
+  at least one mailbox (produced by an active `MailboxAssignment`);
+  anonymous and client sessions get nothing, and the response must not
+  be publicly cacheable when a bell is rendered.
 - **Honest empty state.** Zero unread = no badge; a mailbox that was
   never synced contributes nothing (the A-06 `ConnectionResult`
   `untested` state is not a count of zero-with-confidence claims).
