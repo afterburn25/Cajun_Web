@@ -24,7 +24,7 @@ Admin -> Email -> Accounts provides Add account, Edit, Test incoming connection,
 
 Assign each mailbox to specific admins with read and send permissions and a default sending identity/signature. Verify allowable From identities; do not allow arbitrary address impersonation. Mask stored credentials, preserve an existing secret when an edit is blank, encrypt secrets/tokens with a key protected outside the public root, and keep them out of logs, exports and screenshots. Validate permitted remote endpoints, certificate verification, ports, timeouts and network boundaries before connections.
 
-Account setup connects existing mailboxes. Creating mailboxes at a provider is a separate capability requiring verified provider support and an explicit future scope decision; saving an IMAP/SMTP connection must not pretend to provision a mailbox or change DNS. Keep application notification SMTP separate from each mailbox's sending identity.
+Staff webmail account setup connects existing mailboxes; saving an IMAP/SMTP connection must not pretend to provision a mailbox or change DNS. The owner's later full client-portal requirement adds customer-owned mailbox management/provisioning through verified 20i capabilities; see [Client portal roadmap](CLIENT_PORTAL_ROADMAP.md). Keep those customer controls, admin webmail and application notification SMTP separate, with their respective permissions.
 
 ### Inbox and compose
 

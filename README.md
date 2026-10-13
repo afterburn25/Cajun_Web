@@ -40,6 +40,7 @@ The owner confirms **1.1.0 is the latest version**. Its source/package must be l
 | [Roadmap](docs/ROADMAP.md) | All approved additions and acceptance criteria |
 | [Admin mail roadmap](docs/ADMIN_MAIL_ROADMAP.md) | Multiple mailboxes, additional administrators, templates and admin-only notification bells |
 | [Custom platform blueprint](docs/CUSTOM_PLATFORM_BLUEPRINT.md) | First-party replacement for the agreed WHMCS-style business functions, module boundaries and delivery phases |
+| [Client portal roadmap](docs/CLIENT_PORTAL_ROADMAP.md) | Native hosting controls, web-design progress, updates and verified website ZIP downloads |
 | [Architecture](docs/ARCHITECTURE.md) | Inspected PHP baseline and planned extension boundaries |
 | [Installation and updates](docs/INSTALLATION_AND_UPDATES.md) | Single-page installer, ownership, packaging, and release checks |
 | [Brand assets](docs/BRAND_ASSETS.md) | Exact logo, favicon source, and visual-reference provenance |

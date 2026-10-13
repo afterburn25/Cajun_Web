@@ -1,7 +1,13 @@
 # Project status
 
-Updated: 2026-10-12 — own hosting-management platform, admin webmail, additional admins, templates and private notification bells specified; current 1.1.0 artifact location pending.
+Updated: 2026-10-12 — full client portal, project updates/ZIP downloads and one-click support/SSH specified; current 1.1.0 artifact location pending.
 Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
+
+## Latest requirements — complete client portal and support access
+
+Added `docs/CLIENT_PORTAL_ROADMAP.md`, P-05/06/07 and A-09/10: native verified 20i service controls, explicit existing-service mapping, design progress/updates/approvals, client notifications, versioned website ZIP/data handover, one-click client portal support sessions and separately authorized VPS SSH. Public official 20i documentation supports the broad integration direction; exact account API/entitlement and terminal transport remain unverified.
+
+**Status:** documentation only in [draft PR #1](https://github.com/afterburn25/Cajun_Web/pull/1). No client login, SSH connection, download build, account/provider write or deployment occurred. Recover/inspect current 1.1.0 and verify account capabilities before implementation. All earlier payment/admin-mail requirements remain in scope.
 
 ## Explicit platform direction — our own WHMCS
 

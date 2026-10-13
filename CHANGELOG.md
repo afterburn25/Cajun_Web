@@ -2,6 +2,14 @@
 
 This log distinguishes repository work from application releases and deployment. Documentation-only work does not advance the application version.
 
+## 2026-10-12 — Full client portal, website delivery and support access (requirements only)
+
+- Added client-portal capability coverage for verified 20i services and native controls, explicit existing-service grants, project monitoring/updates/approvals and a separate client notification center.
+- Added P-05/06/07: design workspace, authorized versioned website ZIP/data downloads with integrity/restore/retention criteria, and measured service observations without fabricated metrics.
+- Added A-09/10: one-click staff support sessions into client portals and separately authorized VPS SSH with real verified transport, secure session scope and staff audit identity.
+- Reviewed official public 20i documentation and recorded sources/account-specific limitations. Synchronized roadmaps, blueprint, direction, architecture, decisions, status and handoff.
+- No current-source implementation, archive release, client login, SSH connection, provider/account change or deployment performed.
+
 ## 2026-10-12 — Custom platform, admin webmail, staff access and notifications (requirements only)
 
 - Added `docs/CUSTOM_PLATFORM_BLUEPRINT.md` for the owner's explicit instruction to build our own WHMCS-style platform, mapping owned business modules, shared identity/ledger, provider adapters and phased delivery to the existing roadmap.

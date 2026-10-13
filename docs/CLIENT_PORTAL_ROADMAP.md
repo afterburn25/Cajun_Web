@@ -1,0 +1,107 @@
+# Unified client portal: hosting, design projects, updates and website downloads
+
+Owner requirement, 2026-10-12: everything a client needs should be accessible through the CajunWebPro client portal, including 20i-backed services and web-design work. Clients must be able to monitor progress, receive updates and download their website as ZIP files. Requirements only; current 1.1.0 source and account-specific integrations remain unverified.
+
+## Product experience and scope gaps closed
+
+One customer login and dashboard covers Hosting, Domains, VPS, Web Design, Files & Downloads, Billing, Support, Notifications and Account/Team. A client with only design work needs no hosting purchase; a customer with multiple websites can select the right service/project. Shared identity and permissions connect invoices, projects, sites and support without exposing another client's records.
+
+The earlier roadmap included a general client portal but did not fully specify the provider-management surface, existing-service mapping, client project activity/notifications, or versioned downloadable site delivery. HC-02/HC-07/HC-08/HC-11 are expanded here; P-05, P-06 and P-07 below make the new acceptance requirements explicit. They do not imply these features are already built.
+
+Native CajunWebPro screens are the target for every verified API-supported client operation. A branded StackCP entry point may bridge a specific capability during phased delivery, but it must be identified as a provider-panel handoff and does not count as the completed native feature. Do not require clients to operate the reseller's My20i account or silently replace the portal requirement with a list of external links. Prefer the full native integration wherever the account API supports it.
+
+## 20i integration evidence and verification boundary
+
+20i documents its API as a way to build a custom control panel and directs resellers to the logged-in documentation under My20i's API settings. This supports the intended architecture; it is not evidence that this project has tested every endpoint. Record actual methods, authentication, limits, errors and native tests for the account before exposing controls. [20i API guide](https://docs.20i.com/api/20i-api-documentation).
+
+StackCP access is assigned to specific services. Managed Cloud/Managed VPS package access also requires the relevant server access. Build explicit client-to-StackCP-user/service mappings and review existing grants during import; do not infer ownership solely from matching email/domain strings. [Client access](https://docs.20i.com/reseller-hosting/allow-clients-access-stackcp), [API user/grant listing](https://docs.20i.com/api/stackusers-api).
+
+20i's published StackCP feature set spans site files, databases, runtime settings, backups, security, email and domain controls, with available features governed by package permissions and relevant add-ons. The following is our target coverage checklist, not proof of endpoint availability or inclusion in this reseller plan. [StackCP feature/access guide](https://docs.20i.com/reseller-guide/reseller-hosting-stackcp).
+
+## Client hosting-control coverage
+
+| Area | Portal functionality to map and verify |
+|---|---|
+| Service overview | Owned services, provisioning/active/error state, plan/resources, renewal date, usage, last sync and permitted upgrade/cancel requests |
+| Domains and DNS | Availability/orders, renewals, registrant/contact details, nameservers, DNS records, transfer status/lock and authorized transfer-away actions |
+| Website files and database | Authorized file/FTP/SFTP access and credential resets, database creation/access/export, phpMyAdmin entry where supported, logs and subdomain/redirect tools |
+| Hosting settings | Supported PHP settings, scheduled tasks, SSL/certificate status, cache/CDN tools, application/WordPress management and staging where entitled |
+| Customer email | Mailbox creation/configuration, quotas, password reset, forwarders/autoresponders, spam settings and access to that customer's webmail; distinct from staff/admin mailboxes |
+| Backup and recovery | Available backup sets, scope/age, create/download jobs, retention/expiry, and deliberate restore with the affected site/database and impact shown |
+| VPS and security | Verified VPS state/resources and allowed controls; appropriate website security findings, access controls and recovery actions per plan |
+| Status and support | Actionable errors, service notices, measured health observations, maintenance, support tickets and change history |
+
+For each operation maintain a capability record: customer-visible feature; exact provider endpoint or supported delegated access; plan/add-on requirements; service ownership and staff/customer roles; read/write/destructive classification; job/retry policy; last verification date; and status of native implementation. Never display a control as working merely because StackCP has an icon for it. Rate limits, stale data and disabled features need clear states.
+
+Import existing 20i customers/services through a reviewed mapping workflow that preserves the owner's current billing dates, service state and access. Reconcile IDs before creating anything to prevent duplicate users/packages or granting the wrong service. Keep CajunWebPro billing authoritative for its own customers; do not activate parallel HostShop billing contracts. Test service reassignment and permission removal.
+
+20i documents provider webmail sign-in options, including single sign-on from its hosting panel. Confirm the API/delegated flow before claiming seamless sign-in from our own portal. Any handoff must be short-lived, bound to the authorized service/user, and never expose a reseller master credential or access to another mailbox. [Stackmail access](https://docs.20i.com/email-hosting-webmail/how-to-access-stackmail).
+
+## P-05 — Web-design project workspace and progress
+
+Each project has a client-visible dashboard: agreed scope, proposal/version, assigned contact, current stage, target dates, milestone list, action required from the client, open questions/blockers, and a dated activity timeline. Suggested configurable stages are Discovery, Content, Design, Development, Review, Ready for launch, Launched and Maintenance. Stage changes and dates come from actual staff updates; never invent progress percentages, completion or guaranteed delivery dates.
+
+Provide protected preview/staging links, design versions, feedback threads, revision requests, client content uploads, version-specific approvals, deliverables and payment milestones. Distinguish staff-only notes from published client updates. A design approval references the exact reviewed version; changing it creates a new revision rather than rewriting history. Financial progress and production progress remain separate.
+
+Admin can publish an update, request feedback/content, attach an authorized file, change milestone state and publish a delivery ZIP from the project screen. Customers can monitor the timeline, respond, upload their material, approve/request changes and pay an outstanding project invoice. Company contacts can have separate project-review, billing and download permissions. Design-only customers get the full workspace even without 20i services.
+
+**Acceptance:** Follow one design-only client and one combined design/hosting client through scope approval, content upload, design review/revision, milestone updates/payment and final delivery. Verify chronological history, correct version approvals, notification links, staff-note privacy and cross-client/file isolation. Failure to send a notice must not lose the saved project update.
+
+## P-06 — Versioned website ZIP delivery and client downloads
+
+Provide Files & Downloads inside each project and a portal-wide authorized list. Clients can download the latest published website ZIP and retained earlier releases with a clear version, release date, notes, archive size, checksum and contents/scope description. Admin uploads an approved archive or generates one from that client's verified source/build, links its source revision where available, previews its manifest and explicitly publishes it. Record who published/downloaded it and keep artifact versions immutable.
+
+Create a purpose-built website handover package containing the client's deployable code, local assets and relevant media, dependency/license information and installation/handover instructions. Use the established flat deployment layout for CajunWebPro releases. For a dynamic website, include or separately provide its authorized database/content export and configuration instructions when required for a usable transfer. Clearly label files-only packages; do not call a file archive a complete working copy if a required database/content component is missing.
+
+Never generate the ZIP by blindly archiving the entire agency platform or reseller account. Exclude credentials, `.env`/live configuration, API/SMTP/payment secrets, private keys, agency billing/mail records, unrelated client files, operational logs and non-transferable assets. Provide sanitized configuration examples and arrange necessary customer-specific credentials through an approved protected workflow, not a public archive. Database exports must contain only data the client is entitled to receive; do not include a multi-client application database. Review transfer/license ownership and any agreed release conditions before publication; do not invent a paid-in-full restriction or silently remove an agreed deliverable during a dispute.
+
+Store unpublished/published artifacts outside the public root. Every list/download requires client/project/contact authorization; use a controlled authenticated stream or short-lived scoped download token with revalidation/revocation. Never expose a permanent public ZIP URL, filesystem path or another client's filename/manifest. Apply size/storage limits, safe archive-path validation, integrity/secret checks, concurrent-job protection and bounded background packaging for large sites. Preserve download retries/resume where supported, display preparing/failed/ready truthfully, and avoid re-generating archives on every click. Show retention/expiry and notify before an agreed delivery becomes unavailable.
+
+Keep **website delivery releases** and **hosting backup snapshots** as different records with accurate scope, generation time and retention. Provider backup jobs may expire and may not be ready-to-migrate website releases. 20i documents downloadable database ZIPs and a multisite backup tool whose generated downloads are removed after 12 hours; a durable client deliverable needs its own controlled retention. [Database backup guide](https://docs.20i.com/databases/how-download-backup-mysql-database), [Multisite backup guide](https://docs.20i.com/web-hosting-site-management/how-to-use-multisite-backup-tool).
+
+**Acceptance:** Build/upload and publish two real test-project releases; client can download the authorized latest and prior ZIP with matching checksum and notes. Extract and run/restore a representative dynamic site in isolated staging using the documented files/database/configuration path. Deny another client's download, expired/revoked access and unsafe paths; verify exclusion of secrets/other tenants. Exercise large-file packaging, failed job, repeat/resumed download, retention and missing-database labeling. A ready badge appears only after the artifact actually exists and passes release checks.
+
+## P-07 — Client updates, notifications and service monitoring
+
+Add a client-portal bell and notification center for project updates, comments, approval/content requests, published ZIPs, support replies, invoice/payment events and domain/service renewals. Notifications link to the exact authorized project, deliverable, invoice or ticket. Maintain read/unread state, preferences and a delivery outbox with retries/deduplication. Support in-portal and configured email delivery; distinguish sent/failed from delivery confirmation. The client's notification stream never includes internal admin mailbox subjects/counts or staff notes.
+
+Project monitoring means the real P-05 timeline/stages. Hosting monitoring displays verified service/resource state with a timestamp and source. If offering uptime/response-time, SSL/domain expiry, backup age or security alerts, implement or integrate actual checks and show coverage, last check, outages and stale/unavailable data. A provider's broad incident feed is not an individual site's measured uptime. Define check cadence and notifications without inventing an SLA or promising real-time updates before testing them. Validate and restrict any monitored target to the client's authorized site to avoid unsafe arbitrary URL fetching.
+
+Admins can issue scoped maintenance/service announcements. Customers control optional update emails while necessary security/billing/service notices follow agreed terms. Other authorized contacts only see categories and links permitted by their role. Public-site admin mail bells from A-08 remain a separate feature; ordinary customers see their own activity in the client portal.
+
+**Acceptance:** Publish a project update, request an approval, release a ZIP and reply to a ticket; verify only the correct contacts receive one durable portal notification and the correct configured email. Test delivery retry, missing permissions, read/unread, safe deep links and staff/private mail isolation. Use controlled service checks to show measured outage/recovery and stale state; no fabricated metrics. Notification failures cannot roll back or duplicate the underlying payment/project event.
+
+## A-09 — One-click client portal access for support
+
+From Admin -> Customers, a customer's detail page or their support ticket, provide **Open client portal** for the owner and staff explicitly granted support-login permission. One click enters the selected customer's portal in a separate support session after normal admin authentication; it never requires, reveals or resets the client's password. No repeated customer approval prompt is required for routine access covered by the configured support authorization. Establish customer notice/authorization policy in the service terms/onboarding and retain any client-specific access restrictions.
+
+Maintain both identities: the real staff actor and the customer whose portal is being viewed. Display a persistent Support session / client-name banner and Return to admin action. Do not overwrite the actual customer login or impersonate their audit identity. Scope each support session to one client; revalidate on every request and disallow nested client switching. Expiring sessions, logout or revoked staff/client permissions must end access. Multiple open tabs must never silently switch an action to another client.
+
+Support access allows the portal view and permitted troubleshooting actions; each write still requires the staff's separate action permission. It must not sign a proposal/accept legal terms, submit a payment, enroll recurring billing, read hidden payment secrets or change client authentication factors as though the client did it. Use explicit privileged admin workflows with appropriate confirmation for sensitive changes. Record support-session start/end, staff actor, customer, ticket/context when available and material actions/downloads in a protected audit log without credentials or message content. Starting a support session must not falsely mark all client notifications read or fire customer-login automations.
+
+**Acceptance:** Authorized owner opens each of two test clients from one click and returns to admin without client passwords; all visible data and writes remain in the selected client scope. Test staff without support permission, token replay/expiry, changed IDs, multiple tabs, revoked permissions, blocked sensitive actions and audit attribution. A customer session cannot initiate support impersonation or inherit staff privileges.
+
+## A-10 — VPS SSH access from the support workspace
+
+Add **Open SSH** beside each eligible VPS in Admin -> Customer -> Services and the support-session service workspace. This is a separate support capability from opening the client's web portal: require an authorized, mapped VPS, an enabled SSH access method and staff granted VPS-terminal permission. Once those prerequisites and a current admin session are satisfied, one click launches a terminal for that server without asking for or exposing a reusable customer password. Present client, hostname/service, OS account and session state prominently; provide Disconnect and Return to client controls.
+
+20i documents SSH access for Unmanaged VPS through a client's SSH connection, and key-based access for the managed-cloud/Managed-VPS connection scenario. Do not infer identical users, root privileges, authentication or browser-console APIs across products. Inspect the actual service type and its account documentation before provisioning a support key or promising one-click access. [Unmanaged VPS SSH](https://docs.20i.com/ssh/connect-vps-ssh), [Managed-service SSH/SFTP prerequisites](https://docs.20i.com/ftp/how-to-connect-using-SFTP).
+
+**Connection design gate:** A portal login/SSO link does not itself create an SSH session. Verify either a provider-supported secure terminal handoff or an isolated, authenticated browser-to-SSH gateway that connects to approved VPS targets. A custom browser terminal needs a real transport/SSH implementation, not a simulated terminal or an SSH password embedded in a URL. Keep the PHP storefront on shared hosting; if a persistent gateway is necessary, deploy it separately on an explicitly provisioned suitable host. Do not add a hidden daemon/Node/root requirement to normal website installation. No provider browser-console/delegation endpoint or gateway availability has been verified here. A displayed IP/copyable command is useful fallback information but does not satisfy the requested one-click terminal acceptance.
+
+Prefer individually attributable support accounts/keys or short-lived credentials where supported, protected outside the public root and never sent to browser JavaScript. Bind single-use short-lived launch tokens to staff, client, server and current session; revalidate at connection time. Verify host identity, restrict targets to the service registry, reject arbitrary host/port inputs and prevent cross-client or internal-network connections. Enforce idle/absolute timeouts, concurrent-session limits and revocation/disconnect. Grant OS/root capabilities only where permitted by the service and staff role; portal-login permission alone must never grant root access.
+
+Audit connection identity, target, opening/closing times and result. Any detailed terminal recording needs a disclosed access/retention policy and secret handling; do not dump terminal output/credentials into ordinary application logs. Actual shell access is powerful and cannot be made safe merely by blocking a list of command strings. Provider rebuild/delete/reinstall or other irreversible controls remain distinct confirmed actions, not side effects of opening a support session.
+
+**Acceptance:** On an isolated supported VPS, an authorized admin opens a real interactive SSH session with one click, confirms the intended non-destructive test target and disconnects. Verify unauthorized/revoked staff, changed service IDs, stolen/replayed/expired launch token, unavailable server, changed host key, managed/unmanaged capability differences, timeout and termination. Audit must retain the real staff identity. No private key/password reaches browser markup, URLs, logs or another client. If transport/host support is absent, display an honest unavailable state and keep this requirement incomplete.
+
+## Remaining account and release prerequisites
+
+- Recover/inspect 1.1.0; inventory existing portal/project/upload/export capabilities before changing the application.
+- Inspect the actual logged-in 20i API reference and the reseller's enabled products, limits, grants, backup entitlements and delegated-access flows. No new paid add-on, account, domain or infrastructure action is authorized by this requirements review.
+- Confirm integration credentials securely in admin and use isolated test customers/services. Preserve production data and existing access during linking/migration.
+- Implement P-05/P-06 with project work in M4; establish notification records and permissions in M1, then connect billing/hosting/design events across M2–M5. Hosting controls follow verified service support in M3–M5. Include security/restore/download/caching tests in M6.
+- Build A-09 support-session permissions with M1 identity, expose the action when client routes are ready, and complete A-10 with the verified VPS/transport integration in M5. No live support login, SSH connection or gateway deployment occurred in this review.
+- Treat portal coverage as a capability-by-capability release checklist; an external handoff or partial integration must remain visibly incomplete against the requested native portal goal.
+
+Research date: 2026-10-12. Sources above are public official 20i documentation, with feature/product scopes kept explicit. No logged-in API, account entitlement, endpoint, source-code, payment, mailbox or target-host test was performed in this review.

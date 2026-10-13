@@ -1,7 +1,13 @@
 # Session handoff — read before continuing
 
-Checkpoint: 2026-10-12 — custom platform blueprint plus admin webmail/staff/templates/bells added; recover current 1.1.0 source next.
+Checkpoint: 2026-10-12 — unified client delivery/hosting controls and one-click portal/VPS support specified; recover current 1.1.0 source next.
 Repository: afterburn25/Cajun_Web · Authoritative branch: main.
+
+## Latest client and support requirements
+
+Read `docs/CLIENT_PORTAL_ROADMAP.md`. The owner wants every client-facing service in the portal, including native 20i controls, web-design progress/updates/approvals and downloadable website ZIPs. P-05/06/07 define design workspace, immutable private release downloads with needed client data/instructions, and client updates/monitoring separate from staff mail. A-09/10 define one-click owner/authorized-staff client portal support access and separately authorized real VPS SSH. Preserve actor attribution, safe client scope and a visible support-session exit; do not ask for client passwords.
+
+Public official 20i documentation was checked; account-specific endpoints/entitlements and delegated-terminal/SSH transport are still discovery gates. Browser SSH may require a separately hosted secure gateway; do not quietly add a daemon/root requirement to the shared-host website. Existing source prerequisite remains current 1.1.0. No live provider/customer login, mail send, SSH session, archive generation or deployment occurred. Continue existing draft PR #1 and test each capability against its documented acceptance before marking implemented.
 
 ## Explicit owner direction — build our own WHMCS
 

@@ -27,8 +27,12 @@ Use maintained PHP libraries where appropriate for protocols and security, bundl
 | Staff administrators | Owner-managed accounts, permission changes, secure resets/deactivation and mailbox grants | A-05 |
 | Admin email | Multiple mailbox connections, webmail, templates and private unread-mail notification bells | A-06/07/08 |
 | Platform operations | Migrations, installation, scheduled jobs, secret protection, backups, restore and controlled updates | HC-13/14, A-03/04 |
+| Complete client workspace | Native verified hosting controls, design timeline/approvals, updates and authorized versioned website ZIP delivery | HC-02/08/11, P-05/06/07 |
+| Support access | One-click customer portal sessions and separately authorized real VPS SSH | A-09/10, HC-12 |
 
 See [Hosting and billing roadmap](HOSTING_AND_BILLING_ROADMAP.md) for HC acceptance criteria, [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md) for staff/email detail, and [Roadmap](ROADMAP.md) for public website and project workflows. These modules describe the agreed product, not an unsupported promise of every feature of any commercial platform.
+
+The [client portal roadmap](CLIENT_PORTAL_ROADMAP.md) closes the detailed hosting-control, project progress/update, website download and staff support-access requirements. Aim for native CajunWebPro controls across verified 20i capabilities; identified provider handoffs do not count as completed native features. Keep internal mail/staff records separate from customer activity and preserve staff attribution during support access.
 
 ## Unified data and workflow rules
 
@@ -46,8 +50,8 @@ See [Hosting and billing roadmap](HOSTING_AND_BILLING_ROADMAP.md) for HC accepta
 2. **M1 — Platform foundation:** customer and staff identity, owner-controlled additional admins, authorization, catalog and prices, unified portal/admin navigation and migration foundation.
 3. **M2 — Payments and billing:** Authorize.net sandbox settings/forms/events; orders/invoices/receipts; standalone design full/deposit/milestone/final-balance forms and links; subscriptions/renewals/refunds/reconciliation. Design-only payments work with 20i disabled.
 4. **M3 — Shared-hosting automation:** verified 20i package mapping, payment-to-provisioning, provider reconciliation and renewal/cancellation recovery.
-5. **M4 — Domains and richer project work:** verified domain lifecycle, design proposals/approvals/files/handover, maintenance and optional service bundles.
-6. **M5 — Operations modules:** support, reports/admin recovery, multiple mailboxes/templates/notification bells, and separately verified VPS lifecycle. Mail/support work need not wait for VPS if their own prerequisites pass.
+5. **M4 — Domains and full project delivery:** verified domain lifecycle, design progress/updates/previews/approvals, latest/prior website ZIPs and authorized database/content handover, maintenance and optional service bundles.
+6. **M5 — Operations modules:** support, reports/admin recovery, multiple mailboxes/templates/bells, separately verified VPS lifecycle and one-click SSH transport. Build portal support-session authorization with M1 and expose it with the client workspace. Mail/support work need not wait for VPS if their own prerequisites pass.
 7. **M6 — Release and rollout:** integrated native/provider/HTTPS/security tests, migration and restore drills, exact artifact verification, current documentation and authorized live rollout.
 
 Deliver tested increments into Git with status and evidence. Do not label a roadmap, UI mockup or unverified package as a working replacement platform. Initial functionality must satisfy its own gates even when later modules are still pending.

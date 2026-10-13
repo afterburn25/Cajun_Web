@@ -65,3 +65,15 @@ Admin identity/permissions precede mail access. Implement the mail/template/bell
 ## 2026-10-12 — Build our own WHMCS-style platform
 
 **D-028 — Accepted owner direction:** Build the agreed hosting-management platform from scratch as first-party CajunWebPro software: customer/staff identity, catalog, orders, invoices, recurring billing, service provisioning/lifecycle, support, admin and portal. This explicitly confirms D-016/D-017, with direct 20i/Authorize.net adapters and no required WHMCS or HostShop application. Web-design payments and admin webmail/templates/bells are integrated modules. Maintained bundled protocol/security libraries remain compatible with custom ownership. Preserve current 1.1.0 source when recovered; the [platform blueprint](CUSTOM_PLATFORM_BLUEPRINT.md) maps milestones and acceptance without claiming implementation.
+
+## 2026-10-12 — Full client workspace, ZIP handover and one-click support
+
+| ID | Status | Decision | Consequence |
+|---|---|---|---|
+| D-029 | Accepted | Everything customer-facing belongs in one portal, including design and verified 20i service controls | Native controls are the target; maintain endpoint/entitlement/permission evidence and identify StackCP handoffs as incomplete native coverage |
+| D-030 | Accepted | Clients monitor project progress, receive updates and download website ZIPs | P-05/06/07 add real timeline/approval events, private notifications, immutable releases and authorized data/instructions; delivery archives are distinct from provider backups |
+| D-031 | Accepted | Owner/authorized staff can open any permitted client's portal in one click for support | A-09 adds separately identified, audited support sessions with a banner/exit and role checks, using configured customer-support authorization rather than client passwords; supersedes HC-12's tentative treatment of this feature |
+| D-032 | Accepted with technical discovery | One-click SSH access to eligible client VPS for authorized support staff | A-10 requires verified product authentication and real transport, protected keys/scoped launch and audit; a separate gateway may be necessary without changing shared-host installation requirements |
+| D-033 | Scope clarified | Full customer hosting controls include that customer's mailbox management where 20i permits | This adds provider-side customer mailbox operations beyond A-06's existing-mailbox connections for staff webmail; does not grant customer access to staff email |
+
+Official public 20i API, client service grants, StackCP, webmail, backup and SSH documentation was reviewed on 2026-10-12; citations and verification limits are in [Client portal roadmap](CLIENT_PORTAL_ROADMAP.md). No account-specific entitlement, API, delegated browser terminal, live SSH or restore test has been performed.

@@ -54,6 +54,8 @@ Start with an honest appointment-request workflow or integrate the selected cale
 
 Admin-controlled invitation/access, client-isolated projects, milestone status, design previews, comments, revision requests, files, messages, and handover materials. Acceptance: authorization on every project/file/action; one client cannot access another client's records; protected uploads; audit events; session/reset controls; actual milestone updates rather than fabricated progress percentages.
 
+The portal is the single customer workspace for design and all supported 20i-backed services. [Client portal roadmap](CLIENT_PORTAL_ROADMAP.md) specifies native hosting controls, explicit service ownership, project monitoring, update notifications and versioned website ZIP delivery. Secure StackCP access is a labeled bridge for unimplemented controls, not completion of the requested native integration.
+
 ### P-02 — Versioned approvals and proposals
 
 Freeze the exact design/proposal version under review; capture authorized approval or change requests against that version. Proposals contain approved deliverables, exclusions, revisions, schedule assumptions and payment milestones. Acceptance: immutable approved snapshots/audit history, clear superseded versions, ownership checks, deliberate confirmation, and no implied legal e-signature compliance without separate review.
@@ -69,6 +71,18 @@ Use the same tokenized Authorize.net payment service, transaction records, verif
 ### P-04 — Maintenance/service plans
 
 Owner-defined inclusions, exclusions, limits, support expectations and request workflow. Acceptance: agreed prices and terms, explicit recurring-payment consent where applicable, genuine service status, and no invented 'unlimited support' promise.
+
+### P-05 — Web-design project progress and delivery workspace
+
+Client-visible stages, milestones, dates, blockers, required customer actions and a dated update timeline; protected previews, content uploads, versioned design approvals/revisions and project invoices. Staff controls what is published, and design-only clients need no hosting subscription. No invented progress percentages. Workflow and acceptance: [Project workspace](CLIENT_PORTAL_ROADMAP.md#p-05--web-design-project-workspace-and-progress).
+
+### P-06 — Downloadable website ZIPs and handover
+
+Latest and retained prior website releases with version, notes, date, size, checksum and scope. Admin publishes a verified client-specific ZIP plus necessary authorized database/content exports and instructions; omit secrets, agency records and other clients. Private permission-checked downloads, safe packaging jobs, retention, integrity and isolated restore tests are required. Keep deliverable releases distinct from expiring provider backups. Full requirements: [Website downloads](CLIENT_PORTAL_ROADMAP.md#p-06--versioned-website-zip-delivery-and-client-downloads).
+
+### P-07 — Client notification center and real monitoring
+
+Portal bell/timeline and configured email updates for project work, approval requests, new downloads, support, billing and service events. Link to the correct authorized object; record read/unread, preferences and delivery retries. Show actual project progress and verified hosting health/usage/check timestamps; mark stale/absent metrics honestly. Client notifications never include internal admin email or staff-only notes. Full acceptance: [Updates and monitoring](CLIENT_PORTAL_ROADMAP.md#p-07--client-updates-notifications-and-service-monitoring).
 
 ## Administration and resilience
 
@@ -104,11 +118,23 @@ Create/edit/duplicate/preview/archive templates with subject/body, safe allowlis
 
 Show an unread-mail bell in admin and the public-site header for authenticated admins only. List unread messages from authorized accounts; clicking a notification opens the exact message in admin webmail. Synchronize counts/read state, show stale/error status, and exclude all private notification data from anonymous/client responses and public caches. Acceptance: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-08--unread-mail-bell-in-admin-and-on-the-public-site).
 
+### A-09 — One-click client portal support access
+
+Owner/authorized staff can open any permitted client's portal from the customer record or support ticket without the client password. Maintain separate staff/customer identities, a visible support-session banner, Return to admin, expiry/revocation and action-attributed audit. Respect client data scope and independent permissions for sensitive actions; ordinary customer sessions cannot impersonate. Full acceptance: [Portal support access](CLIENT_PORTAL_ROADMAP.md#a-09--one-click-client-portal-access-for-support).
+
+### A-10 — One-click VPS SSH for support
+
+An Open SSH action launches a real interactive session for the selected authorized VPS once its support connection is configured. Verify product-specific authentication/privileges, staff terminal permissions, protected keys, verified host identity, short-lived scoped launch, audit and disconnect. Provider terminal handoff or a separate secure gateway must be proven; shared-host installation must not acquire a hidden daemon/root dependency. Full acceptance: [VPS support SSH](CLIENT_PORTAL_ROADMAP.md#a-10--vps-ssh-access-from-the-support-workspace).
+
 ## Implementation order and completion rule
 
 Import and validate the baseline first. Land exact branding/favicon and public experience/content plus lead workflows next, then client operations and resilience in tested increments. Access control and backup/recovery checks must precede storing real client documents or enabling payments/automatic updates.
 
 Add A-05 staff access in M1. A-06/A-07/A-08 form the M5/HC-12 admin-mail milestone after identity and mail-host/private-storage prerequisites; they do not depend on VPS availability. [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md) provides setup, workflows and acceptance tests.
+
+Establish client-notification permissions/data in M1, then connect billing/hosting/design/support events during M2–M5. P-05/P-06 complete design progress and ZIP handover in M4. Client hosting controls must be tracked against actual 20i capabilities during M3–M5; M6 includes cross-client/download/restore and cache-isolation gates.
+
+Establish A-09 support-session identity/permissions alongside M1 and connect it to the client portal; deliver A-10 when real VPS authentication and terminal transport are verified in M5. One-click convenience does not substitute for initial server access setup.
 
 Move an item through `approved` → `in progress` → `implemented` → `verified` → `deployed` only with evidence for each transition. Record branch/commit, routes, schema/config changes, tests, limitations, and deployment status. Update this roadmap and the session handoff with every meaningful change.
 
