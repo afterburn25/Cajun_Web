@@ -39,6 +39,10 @@ try {
     db()->exec('ALTER TABLE '.table('mail_templates').' MODIFY id CHAR(32) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL');
     t_deny('Setup rejects case-folded template identifiers',fn()=>mail_templates_migrate($password));
     db()->exec('ALTER TABLE '.table('mail_templates').' MODIFY id CHAR(32) CHARACTER SET ascii COLLATE ascii_bin');
+    query('INSERT INTO '.table('mail_templates')." (id,revision,name,subject,body,status,visibility,owner_id,updated_by,updated_at) VALUES (?,1,'Unrecognized','Subject','Retain','draft','personal',1,1,?)",[str_repeat('0',32),$now]);
+    t_deny('Setup refuses populated unrecognized template records',fn()=>mail_templates_migrate($password));
+    t_ok('Rejected setup retains unrecognized bytes',one('SELECT body FROM '.table('mail_templates').' WHERE id=?',[str_repeat('0',32)])['body']==='Retain');
+    query('DELETE FROM '.table('mail_templates').' WHERE id=?',[str_repeat('0',32)]);
     t_ok('Setup audit failure rolls back readiness',t_fail_audit(fn()=>mail_templates_migrate($password))&&!mail_templates_ready());
     mail_templates_migrate($password);mail_templates_migrate($password);
     t_ok('Repeated additive setup preserves staff records',mail_templates_ready()&&all('SELECT * FROM '.table('users').' ORDER BY id')===$users);
@@ -98,6 +102,9 @@ try {
     }
     $out=[];foreach ($workers as [$process,$pipes]) {$out[]=stream_get_contents($pipes[1]);$stderr=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);$exit=proc_close($process);t_ok('Concurrent worker completes safely '.count($out),$exit===0&&$stderr==='');}
     sort($out);t_ok('Concurrent writes yield exactly one saved and one stale result',$out===['saved','stale']&&count(t_history($race))===2);
+    for ($revision=2;$revision<25;$revision++) mail_templates_change($race,$revision,'edit',['name'=>'History pagination','subject'=>'Version '.($revision+1),'body'=>'Retained']);
+    $historyFirst=mail_templates_history($race,1);$historySecond=mail_templates_history($race,2);
+    t_ok('History pagination preserves all versions without overlap',count($historyFirst)===21&&count($historySecond)===5&&!array_intersect(array_column(array_slice($historyFirst,0,20),'revision'),array_column($historySecond,'revision'))&&$historySecond[4]['revision']===1);
     for ($i=0;$i<24;$i++) mail_templates_create('Page item '.str_pad((string)$i,2,'0',STR_PAD_LEFT),'Subject','Body','personal');
     $first=mail_templates_list('all','Page item',1);$second=mail_templates_list('all','Page item',2);
     t_ok('Library pagination has bounded rows and no repeated page members',count($first)===21&&count($second)===4&&!array_intersect(array_column(array_slice($first,0,20),'id'),array_column($second,'id')));

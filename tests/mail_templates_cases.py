@@ -60,7 +60,7 @@ def run_browser(env,browser):
     for path in ['app/mail/templates.php','database/schema/mail_templates_schema.php','database/migrations/mail_templates_migrate.php','admin/controllers/mail_templates.php','admin/views/mail_templates.php','includes/foundation/email-templates/EmailTemplate.php']:
         check('Direct HTTP denial for template internal '+path,requests.get(BASE+'/existing/'+path).status_code==404)
     context=browser.new_context(viewport={'width':1440,'height':1050});page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
-    page.goto(root+'?view=login');page.locator('[name=email]').fill('owner@example.invalid');page.locator('[name=password]').fill(OWNER);page.locator('form button').first.click();page.wait_for_url(root)
+    page.goto(root+'?view=login');page.locator('[name=email]').fill('owner@example.invalid');page.locator('[name=password]').fill(OWNER);page.locator('form button').first.click();page.wait_for_url(root+'?view=dashboard')
     page.goto(new);page.locator('[name=name]').fill('Browser welcome');page.locator('[name=subject]').fill('Welcome {{client_name}}');page.locator('[name=body]').fill('We are ready to discuss {{project_name}}. Sign in: {{portal_url}}');page.get_by_role('button',name='Save draft',exact=True).click();page.wait_for_url('**template_id=*')
     check('Chromium creates template draft','Browser welcome' in page.content())
     page.locator('[name=sample_client_name]').fill('Sample client');page.locator('[name=sample_project_name]').fill('New website');page.get_by_role('button',name='Preview message',exact=True).click();expect(page.locator('[data-template-preview]')).to_be_visible()
