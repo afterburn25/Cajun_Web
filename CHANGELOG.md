@@ -5,6 +5,7 @@
 - Added canonical `foundation/pipeline/` classes (`PipelineStage`/`PipelineBoard` validated ordered stages with explicit transition lists and won/lost markers, `LeadRecord` with board-checked moves, typed record links, follow-up dates and append-only actor-attributed history) plus `docs/PIPELINE_FOUNDATION.md`.
 - Added `tests/pipeline/run.php` (31 synthetic checks; fixture boards/leads only) and the `pipeline.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, persistence, permissions or board UI. Not yet integrated or released.
+
 ## 1.11.1 — candidate, motion preferences and organized updates
 
 - Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.
