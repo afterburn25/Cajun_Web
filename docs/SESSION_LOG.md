@@ -472,11 +472,33 @@ PR #50 merged at cefcc41bcd5297715f2a49d6526900ebe8ad4eb4; exact-main acceptance
 
 Next-increment preparation while exact-main acceptance ran: an isolated local estimator adapter draft matched the current shipping calculator across 1,512 priced/missing/malformed/quantity cases on PHP 8.4, without database access or shipping changes. This is prototype parity evidence only; component guards, actual application integration and native/browser/upgrade acceptance remain required. Devin correction priority reiterated in issue #2 comment 6150049591; no acknowledgment or completed fixes inferred.
 
+### 2026-10-13 — Devin A-07 email-template foundation
+
+**Request:** "Continue Without Stopping" — next feasible roadmap item (A-07 template/placeholder contract layer, no external gate). Codex review corrections on #31/#32 were delivered and pushed first this session.
+
+**Starting commit:** `main` `855981b` (published 1.11.1). New branch `devin/email-templates`.
+
+**Changed:** added `foundation/email-templates/` (PlaceholderRegistry, EmailTemplate), `tests/email-templates/run.php`, `docs/EMAIL_TEMPLATES_FOUNDATION.md`, `.github/workflows/email-templates.yml`, and additive continuity entries. No `site/` or shared-path changes.
+
+**Tests:** `php tests/email-templates/run.php` — 50 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: allowlist construction/validation, unknown-placeholder rejection at draft and edit, draft→active→archived lifecycle, non-mutating edits, duplicate-as-personal, shared/personal/transactional insertion gating, honest preview with named unresolved fields.
+
+**Failures:** none. **Blockers:** none for the contract layer; compose UI, persistence and sending remain Codex integration work.
+
+**Next:** PR `devin/email-templates`; queue now 17 open Devin PRs awaiting Codex sequencing.
+
 ## 2026-10-13 — L-01 live estimator integration, 1.11.2 candidate
 
 Continue without stopping from verified 1.11.1 and publication-record main 855981b. Branch codex/estimator-live-adapter preserves reviewed Devin #35/91a12cc in merge9070609. Added app/marketing/estimator.php, protected canonical foundation mirroring and delegation from existing growth_estimate; retained all live input/result/policy semantics, including early unpriced and malformed-rule handling. Added actual-release CLI parity worker/matrix, independent boundary expectations and direct-HTTP denial coverage. Local PHP 8.4: 3,084 parity/boundary cases plus 65 component checks pass; no database/network operation in this comparison. Added published 1.11.1 archive/file/shim inventory and download fixture; expanded Apache/filesystem acceptance across both organized baselines. Candidate version1.11.2 with regenerated installer; combined acceptance/publication pending. No schema changes, live host deployment, provider/merchant/mail/SSH activation. Next: combined PR acceptance, exact-main verification and three-package release; Devin #31/#32 findings remain assigned for correction.
 
 Integration refresh: preserved latest Devin #35 head efc967a (publication-record merge only), retaining the 1.11.2 active scope and verified 1.11.1 records when resolving headings. Observed new #31 head23014c5 and #32 headdf0fdfe containing requested review corrections; review/testing of those corrected components is next, not yet application acceptance.
+
+### 2026-10-13 — Devin A-07 corrections (Codex review)
+
+**Request:** Codex 1.11.2 review found two preview defects on `devin/email-templates`: sequential `str_replace` re-scanned substituted values (a merge value containing `{{project_name}}` leaked that field's content), and malformed double-brace tokens were silently accepted so `preview([])` reported nothing unresolved.
+
+**Changed:** `EmailTemplate::preview()` now substitutes in a single `preg_replace_callback` pass over the original subject/body — merge values are literal data, never re-scanned. New `BRACE_TOKEN` grammar check rejects any `{{`/`}}` that is not a complete `{{lower_snake}}` token (uppercase, spaces, dots, unmatched, stray, triple) at draft and edit. Preview values must be strings. Docblock and guide now record that rendered output is plain text requiring UI escaping, and that a mail adapter must reject header line breaks.
+
+**Tests:** 50 synthetic checks (14 new regressions) pass on PHP 8.4.25 including `php -n` no-extension run.
 
 ## 2026-10-13 — 1.11.2 published and independently verified; next mail-template increment
 
@@ -489,3 +511,27 @@ PR #55 merged at 4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36; exact-main acceptance
 **Changed (docs only):** confirmation flow now uses `ConsultationCalendar::reschedule()` + `transition()` on the calendar-tracked instance; documented the tracked-instance discipline (stale copies refused, returned instance is what must be persisted); recorded the corrected `WeeklyRule::expand()` dual-endpoint DST validation and first-occurrence fall-back semantics; acceptance list updated for stale-instance and end-in-gap cases.
 
 **Tests:** documentation-only change; component checks remain 71 on `devin/consultation-scheduling`.
+
+## 2026-10-13 — A-07 application integration claimed
+
+Started from publication-record main a1581d4 on codex/admin-email-templates; preserve #56 through ef5d4f9. Shared-doc conflicts retain actual published 1.11.2 and historical component records. Original 36 component checks pass, but sequential substitution and malformed-token acceptance are reproduced and assigned to Devin before release. Next: implement additive staff template storage/revisions/permissions/UI and native/browser acceptance while corrections proceed. No production send or account connection. Issue #2 claim and verified 1.11.2 handoff are posted.
+
+## 2026-10-13 — A-07 application implementation ready for combined acceptance
+
+From merge 395e9b9 preserving corrected Devin #56 through f3522f6, added organized mail-template service/controllers/view/schema/migration, explicit staff grant/home/navigation, canonical mirroring and fresh-install setup. New candidate 1.12.0 tracks exact published 1.11.2 hashes and extends organized recovery fixtures. Added native permission/privacy/audit/concurrency checks, real admin/browser drafts/preview/archive/escaping checks and actual latest-package additive setup/file recovery. Fifty component checks under PHP 8.4 without optional extensions, syntax, documentation links and source whitespace pass; full native/browser/Apache acceptance is pending. No messages sent, provider changes or live deployment. Next: run combined CI, resolve findings, inspect screenshots and only then merge/test exact main and publish verified packages.
+
+## 2026-10-13 — A-07 first combined acceptance and browser-test correction
+
+PR #58 head 327c8b5 / run 38437059703 passes 56 new template-native checks, existing native suites, all 826 recorded HTTP checks, 87 filesystem/recovery and 327 Apache checks. The browser suite stops at its new template sign-in navigation wait: test expected admin/index.php without the existing ?view=dashboard query. Corrected that expectation; no shipping-source fix was needed. Retained failed-run evidence locally. Added meaningful native checks for refusing/adopting no populated unknown template state and for paginated immutable history. Next: rerun complete acceptance and inspect the actual template screens. Candidate remains unpublished.
+
+## 2026-10-13 — Template activation assertion corrected from observed rendering
+
+Run 38437939855 at f642f8b passes all 59 template-native checks, 87 filesystem and 327 Apache checks. Browser create/preview and direct HTTP lifecycle pass; the Chromium activation assertion compared lowercase against innerText rendered through the existing capitalize CSS. Server evidence shows successful 303 activation and follow-up GET. Use a retried DOM-text assertion and explicit saved database state. Inspected the actual desktop template preview; mobile capture follows activation in the next run. Updated the administrator grant guide and its organized source paths. No shipping-source change. Candidate release remains gated on the complete passing run and final screenshots.
+
+## 2026-10-13 — Passing template application run and mobile evidence adjustment
+
+PR #58 at 8905ed1 / run 38438750445 passes all named suites: 677 native (59 templates), 3,084 estimator, 832 HTTP/browser, 87 filesystem, 327 Apache and 17 builder checks. Inspected template desktop/mobile screenshots. The mobile image was taken mid-transition immediately after resizing the desktop viewport, leaving the moving sidebar over the form. Added a state-based wait for the closed drawer plus actual open/Escape/focus checks before capturing the final mobile view. No application CSS or behavior change; this improves visual/navigation evidence. Next: passing revised PR checks, exact-main acceptance and independent release verification.
+
+## 2026-10-13 — Keep CSP intact while waiting for mobile drawer state
+
+Run 38439521027 confirms template create/preview/activation plus native/filesystem/Apache passes, but the custom Playwright wait_for_function evaluates a string in the page and is rejected by the site's existing unsafe-eval prohibition. Replaced that test-only wait with built-in viewport assertions, verified against Playwright's documented locator API. The security policy remains unchanged. Also focus the template navigation link before Escape so the check actually exercises focus return to the menu button. Next: complete the revised browser evidence and release gates.

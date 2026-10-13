@@ -8,6 +8,20 @@
 
 ## 1.11.2 — candidate, canonical live estimator integration
 
+## 1.12.0 — candidate, administrator email-template library
+
+- Add explicit template permissions, personal/shared drafts, create/edit/duplicate/activate/archive and escaped sample previews. Reuse the corrected Devin #56 model with literal single-pass substitutions and strict field grammar.
+- Retain immutable versions and strict actor audit with transaction rollback, row locking and stale-edit rejection. Add owner-authenticated, idempotent schema setup; fresh installs prepare an empty library automatically.
+- Keep personal templates private even from other owners; shared modification requires creator/owner access. Exclude support/client identities. Preview never reads client records or sends mail.
+- Recognize verified 1.11.2 update inventory, exercise actual latest upgrade/schema/file recovery and all prior supported baselines. Local 50 component checks and syntax pass; native/application/browser/Apache/release acceptance remain pending.
+- Full webmail, compose insertion, real sending and transactional messages remain outside this bounded increment.
+
+## Unreleased — A-07 email-template foundation (Devin, isolated component)
+
+- Added canonical `foundation/email-templates/` classes (`PlaceholderRegistry` allowlist with descriptions, `EmailTemplate` with structural placeholder allowlisting, draft→active→archived lifecycle, non-mutating edits, personal-duplicate, shared/personal visibility, transactional compose exclusion, and honest `preview()` that names unresolved placeholders) plus `docs/EMAIL_TEMPLATES_FOUNDATION.md`.
+- Added `tests/email-templates/run.php` (50 synthetic checks; fixture templates only) and the `email-templates.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes, compose UI, sending or persistence. Not yet integrated or released.
+
 ## 1.11.2 — verified canonical live estimator integration
 
 - Preserve Devin's reviewed adapter contract and route existing calculator arithmetic through the canonical estimator, folding quantities with exact integer guards. Existing field validation, missing-price early returns, invalid-range errors, consultation exclusions/cap and displayed results remain compatible.
