@@ -3,6 +3,7 @@
 ## 2026-10-13 — Devin HC-07 provider foundation (unreviewed, unintegrated)
 
 Devin implemented the safe-work portion of HC-07 as an isolated canonical component on `devin/provider-foundation`: `foundation/provider/` contract classes, `tests/provider/run.php` (69 checks), `provider.yml` workflow, and [PROVIDER_FOUNDATION](docs/PROVIDER_FOUNDATION.md). Implementation status: **Implemented (local/source)** — component + synthetic tests only. External gate: **Awaiting API verification** (no real 20i calls, endpoints or fabricated responses). No `site/` changes, schema, persistence, admin UI, deployment or release. Codex's `codex/priority-directory-refactor` remains the shared-path gate; this component merges alongside it cleanly.
+
 ## Current directory and package contract — released 1.11.0
 
 The owner directory correction supersedes all earlier flat-root/overwrite-update instructions below. See [Directory structure](docs/DIRECTORY_STRUCTURE.md), [migration and recovery](docs/STRUCTURE_MIGRATION.md), and [START-HERE](START-HERE.txt). Maintain thin root entries, organized controllers/views/business/database modules, categorized images and protected storage/upload scaffolds. FULL-PROJECT contains docs/tests/tools/brand/foundation/CI; COMPLETE-UPLOAD contains organized production files without a wrapper; UPDATE stages a verified owner-authenticated migration instead of blindly overwriting live files. Existing config/keys/private data and other agents' branches remain preserved.
