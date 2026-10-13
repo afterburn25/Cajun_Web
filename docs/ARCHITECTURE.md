@@ -34,11 +34,11 @@ Updated 2026-10-13: recovered 1.1.0 source is in `site/`. Public growth modules,
 
 Follow-on A-05 component: [Staff invitations](STAFF_INVITATIONS.md) uses PDO MySQL/MariaDB and an explicitly migrated InnoDB table, with transactional one-use redemption and an application-supplied account activation callback. The 1.2.0 staff adapter now supplies that callback, lifecycle serialization and explicit migration; the canonical component is bundled into the deployable tree. Read-only inspection of recovered draft source on `codex/finish-1.1.0` revealed opaque string `auth_version` values; the foundation now matches those without changing the draft's schema/login code.
 
-Independent implementation added 2026-10-13: [access foundation](ACCESS_FOUNDATION.md) under `foundation/access/`, with synthetic unit tests under `tests/access/`; and [portfolio foundation](PORTFOLIO_FOUNDATION.md) under `foundation/portfolio/`, with synthetic unit tests under `tests/portfolio/`. They are pure PHP decision modules with no framework, database, request handler or installer dependency. The 1.2.0 adapter maps access to existing `users` and additive `staff_profiles`; the portfolio component is being adapted to the verified `site/` source. Historical source inventory below remains historical.
+Independent implementation added 2026-10-13: [access foundation](ACCESS_FOUNDATION.md) under `foundation/access/`, with synthetic unit tests under `tests/access/`; and [portfolio foundation](PORTFOLIO_FOUNDATION.md) under `foundation/portfolio/`, with synthetic unit tests under `tests/portfolio/`. They are pure PHP decision modules with no framework, database, request handler or installer dependency. The 1.2.0 adapter maps access to existing `users` and additive `staff_profiles`; on `devin/public-experience` the portfolio component is adapted by `site/app/portfolio.php`, which maps `projects` rows and drives the `work`/`project` public routes (server-side `cat` filtering, published-only slug lookup). Historical source inventory below remains historical.
 
 Existing application: PHP with PDO MySQL/MariaDB, normal browser requests, local CSS/JavaScript/images, and persistent private file storage. PHP source targets 8.2 or newer. Required extensions are checked by the installer. Shared-host deployment must not require a Node service, command-line build, root access, or a long-running worker.
 
-The repo's documentation tree is not the website document root. `site/` is the source directory; `brand/`, `tests/`, `tools/` and the canonical `foundation/` directory are not deployed directly; verified copies of the access/invitation classes are shipping dependencies under `site/app/foundation/`. Build the deployment ZIP from the deployable files only, without a source-directory/version wrapper. Preserve the existing app/assets grouping and root entry-point behavior.
+The repo's documentation tree is not the website document root. `site/` is the source directory; `brand/`, `tests/`, `tools/` and the canonical `foundation/` directory are not deployed directly; verified copies of the access/invitation/portfolio classes are shipping dependencies under `site/app/foundation/`. Build the deployment ZIP from the deployable files only, without a source-directory/version wrapper. Preserve the existing app/assets grouping and root entry-point behavior.
 
 ## Inspected source map
 
@@ -52,7 +52,7 @@ The repo's documentation tree is not the website document root. `site/` is the s
 | `app/schema.php` | Initial table definitions and seed/default content |
 | `app/mail.php` | Mail delivery helpers |
 | `app/staff.php`, `app/staff-admin.php` | Account lifecycle/authorization, explicit upgrade and administrator/setup forms |
-| `app/foundation/` | Verbatim bundled access/invitation components; canonical sources stay in root foundation |
+| `app/foundation/` | Verbatim bundled access/invitation/portfolio components; canonical sources stay in root foundation |
 | `media.php` | Media-serving entry point |
 | `robots.php`, `sitemap.php` | Search-crawler endpoints |
 | `install.php` | Embedded-bootstrap, one-page setup and package inventory |

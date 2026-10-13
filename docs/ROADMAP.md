@@ -55,7 +55,7 @@ Owner-approved: automated GitHub tests, small versioned releases, retained compl
 
 Real desktop/mobile captures, accessible before/after slider for actual redesigns, optional short user-initiated walkthroughs, filterable project categories, expanded challenge/solution/deliverables/results, and live links where approved. Admin controls for capture/media placement and clear concept/client labels. Acceptance: keyboard/touch usability, no false performance/result claims, no broken media, genuine responsive captures rather than a shrunken desktop screenshot.
 
-Status 2026-10-13: **in progress (independent component only).** The standalone contract/filtering/ordering component and synthetic tests exist on `devin/public-experience` ([portfolio foundation](PORTFOLIO_FOUNDATION.md)); no application route, UI or content integration exists yet, and none is claimed until verified 1.1.0 source is inspected.
+Status 2026-10-13: **in progress (application integration in review).** The contract/filtering/ordering component plus synthetic tests are now adapted to the verified `site/` source on `devin/public-experience` ([portfolio foundation](PORTFOLIO_FOUNDATION.md)): `site/app/portfolio.php` maps real `projects` rows, `?page=work&cat=` filters server-side through the catalog, and `?page=project` resolves published slugs through the component. Existing device-preview/before-after media behavior is retained (genuine paired captures only); no schema, admin or release changes were needed. MariaDB/HTTP/Chromium acceptance evidence and Codex integration remain pending on [PR #7](https://github.com/afterburn25/Cajun_Web/pull/7).
 
 ### W-02 — Signature homepage motion
 

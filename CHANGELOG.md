@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — devin/public-experience (PR #7, in review)
+
+- Public portfolio filtering is now server-side: `?page=work&cat=<category>` renders real links with `aria-current`, marks non-matching cards `hidden`, and shows an honest empty state for unmatched categories. JavaScript progressively enhances the links into instant filtering with history support; keyboard/touch and reduced-motion behavior are unchanged.
+- `?page=project` resolves published case studies through the foundation `PortfolioCatalog` slug lookup; draft/archived/unknown slugs keep the existing 404 path.
+- `site/app/portfolio.php` adapts `projects` rows to the `foundation/portfolio` contract (truthful `concept`/`client-work` labels, published-only output, position→slug→id ordering); the component is bundled into `site/app/foundation/portfolio/` and pinned in the installer inventory.
+- No schema, admin, installer-layout or release changes; this is a reviewed integration increment, not a published version.
+
 ## 1.9.0 — client website downloads
 
 - Private staff uploads, immutable manifests and owner-reviewed publication of versioned client ZIPs.

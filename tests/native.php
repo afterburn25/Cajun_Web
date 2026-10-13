@@ -8,6 +8,7 @@ require __DIR__.'/../site/app/growth.php';
 require __DIR__.'/../site/app/workspace.php';
 require __DIR__.'/../site/app/schema.php';
 require __DIR__.'/../site/app/studio-admin.php';
+require __DIR__.'/../site/app/portfolio.php';
 $private = __DIR__.'/../test-runtime/private';
 @mkdir($private.'/media',0700,true);
 $GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/existing','storage'=>realpath($private),'key'=>str_repeat('synthetic-test-key-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:3306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'ci_']];
@@ -36,6 +37,14 @@ try {
     foreach(default_projects() as $i=>$v)query('INSERT INTO '.table('projects').' (slug,title,category,summary,description,challenge,solution,deliverables,cover,status,is_demo,featured,sort_order,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,\'published\',1,1,?,?,?)',[...$v,$i,$now,$now]);
     foreach(default_services() as $i=>$v)query('INSERT INTO '.table('services').' (slug,title,summary,body,icon,sort_order,active) VALUES (?,?,?,?,?,?,1)',[...$v,$i]);
     save_setting('sentinel_original','Preserve original settings');
+    query('INSERT INTO '.table('projects')." (slug,title,category,summary,description,challenge,solution,deliverables,cover,status,is_demo,featured,sort_order,created_at,updated_at) VALUES ('draft-fixture','Draft fixture','Internal','s','d','c','s','d','','draft',0,0,9,?,?)",[$now,$now]);
+    $publicView=portfolio_view(null);
+    ok('Adapter orders published portfolio deterministically',array_column($publicView['rows'],'slug')===['river-and-oak','magnolia-built','the-wellness-haus']);
+    ok('Published categories feed the filter list',$publicView['categories']===['Construction','Hospitality','Wellness']);
+    ok('Exact category selects its projects',portfolio_view('Construction')['visible']===[2]);
+    ok('Unknown category matches nothing',portfolio_view('Retail')['visible']===[]);
+    ok('Blank category stays unfiltered',portfolio_view(' ')['visible']===null);
+    ok('Draft project never appears publicly',portfolio_row_by_slug('draft-fixture')===null&&count($publicView['rows'])===3);
     $oldLead=one('SELECT * FROM '.table('leads').' WHERE id=1');
     $owner=one('SELECT * FROM '.table('users').' WHERE id=1');
     // Simulate an interrupted additive update that created only its first table.

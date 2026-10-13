@@ -370,3 +370,19 @@ Publication-record PR #25 run 38397111942 passed native checks but failed the or
 
 **Same-session remote verification:** Pushed on `devin/public-experience` (head `b119b81`) and opened [PR #7](https://github.com/afterburn25/Cajun_Web/pull/7) targeting `main`. GitHub checks passed: portfolio-catalog on PHP 8.2.34/8.4.x ([branch run 38351581276](https://github.com/afterburn25/Cajun_Web/actions/runs/38351581276), [merge-ref run 38351602715](https://github.com/afterburn25/Cajun_Web/actions/runs/38351602715)), documentation continuity ([run 38351602718](https://github.com/afterburn25/Cajun_Web/actions/runs/38351602718)) and the existing access-policy job on the merge ref ([run 38351602723](https://github.com/afterburn25/Cajun_Web/actions/runs/38351602723)). Merge, combined integration, releases and deployment remain with Codex; W-01 is not complete from component tests alone.
 
+## 2026-10-13 — Devin: W-01 portfolio application integration
+
+**Request:** continue W-01 on `devin/public-experience` per `docs/DEVIN_HANDOFF_1.9.0.md`: adapt the isolated portfolio component to the verified `site/` source and submit a bounded checked increment on PR #7.
+
+**Starting commit:** merge `00b95ea` (current main `552ccb7` merged into `devin/public-experience`; documentation conflicts resolved keeping both records).
+
+**Files/actions:** added `site/app/portfolio.php` adapter mapping real `projects` rows onto the foundation contract (`is_demo`→kind, `status`→status, `category`→categories, `sort_order`→position, `website_url`→liveUrl, `cover`/`media_id`→cover media, case-study fields→CaseStudy); rewired `?page=work` to server-side `cat` filtering rendered as real links with `aria-current`, all published cards rendered with non-matches `hidden`, and an honest empty state for unmatched categories; `?page=project` resolves via `publishedBySlug`; `project_card()` gained an optional visibility flag; `site.js` progressively enhances filter links (instant filtering + history/popstate); `.filters` CSS selectors updated for links; `tools/build.py` now bundles `foundation/portfolio` into `site/app/foundation/portfolio/`; `install.php` hashes regenerated via `build.py --refresh`. Added adapter checks to `tests/native.php` and filtered-route/hidden/aria/404/Chromium-click checks plus portfolio screenshots to `tests/browser_acceptance.py`.
+
+**Tests actually executed locally (PHP 8.4.25, Node 22):** `php tests/portfolio/run.php` — 46 isolated checks pass; `php -l` on all changed/new PHP files passes; `node --check site/assets/site.js` passes; `python tools/build.py` verification passes (76 shipping files, inventory hashes consistent); adapter smoke-verified against stubbed helpers (published-only output, deterministic ordering, exact/unknown/blank category filtering, draft slug exclusion). MariaDB native and real HTTP/Chromium suites are not runnable locally (no MySQL/Chromium); they run in PR CI.
+
+**Results:** W-01 server-side filtering and case-study lookup now flow through the contract on the real routes without schema, admin or shared-template rewrites. Before/after remains gated to genuine paired `growth_portfolio_*` captures. No release, deployment, version bump or merge performed.
+
+**Known failures/blockers:** none known; rendered-screenshot and database evidence pending the PR CI run.
+
+**Next:** watch PR #7 application CI, attach the generated Portfolio screenshots, then Codex integrates sequentially.
+

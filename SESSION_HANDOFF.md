@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## 2026-10-13 — Devin W-01 application integration in review (PR #7)
+
+**v1.9.0 remains the latest published release; nothing below it was re-tagged or redeployed.** On `devin/public-experience` (refreshed through merge `00b95ea` onto main `552ccb7`), the isolated portfolio component is now adapted to the real application: `site/app/portfolio.php` maps `projects` rows onto `foundation/portfolio` objects and `?page=work` gains server-side `cat` filtering through `PortfolioCatalog` (real links, `aria-current`, hidden non-matches, honest empty state), while `?page=project` resolves via `publishedBySlug`. `foundation/portfolio` is bundled into `site/app/foundation/portfolio/` by `tools/build.py` and the `install.php` inventory hashes were regenerated. Local: 46 isolated checks, PHP lint, `node --check`, and `build.py` verification pass; the adapter was smoke-run against stubbed helpers. MariaDB/HTTP/Chromium acceptance runs on PR #7 CI — attach the generated `Portfolio-Desktop.png`/`Portfolio-Mobile.png` artifacts to the PR when it completes. No merge, release or deployment.
+
+**Next:** confirm PR #7 CI (application acceptance + portfolio-catalog) is green, attach screenshots, report on issue #2, then Codex integrates sequentially. `devin/lead-estimator` (PR #27) still needs a refresh onto current main.
+
 ## 2026-10-13 — Verified client ZIP delivery release
 
 **Published and downloaded-back verified: [CajunWebPro v1.9.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.9.0).** Source/tag `080f14aea8fe5c35e04e4eba62976609aef7cd67`, [PR #24](https://github.com/afterburn25/Cajun_Web/pull/24). [Complete upload ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.9.0/CajunWebPro-1.9.0-COMPLETE-UPLOAD.zip) · [UPDATE ZIP](https://github.com/afterburn25/Cajun_Web/releases/download/v1.9.0/CajunWebPro-1.9.0-UPDATE.zip). Earlier releases remain immutable; later publication records are documentation only.

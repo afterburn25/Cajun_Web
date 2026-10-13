@@ -28,7 +28,7 @@ Recovered 41 actual website files plus native/HTTP tests and a build tool from t
 
 Updated: 2026-10-12 — GitHub testing/release workflow and Codex/Devin split added; current 1.1.0 artifact location pending.
 
-Updated: 2026-10-13 — verified application source is in `site/` (latest release 1.9.0); Devin's portfolio component on `devin/public-experience` is being adapted to it.
+Updated: 2026-10-13 — verified application source is in `site/` (latest release 1.9.0). Devin's portfolio component is adapted to it on `devin/public-experience`: `site/app/portfolio.php` maps `projects` rows into the foundation contract, `?page=work&cat=` filters server-side through the catalog, and `?page=project` resolves published slugs through `publishedBySlug`. In review on [PR #7](https://github.com/afterburn25/Cajun_Web/pull/7); application CI evidence pending.
 Repository: `afterburn25/Cajun_Web` · Authoritative branch: `main`.
 
 ## Current repository delivery and coordination checkpoint
