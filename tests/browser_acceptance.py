@@ -47,7 +47,9 @@ for name in ['existing','fresh']:
     packages=list((ROOT/'dist').glob('CajunWebPro-*-COMPLETE-UPLOAD.zip'));assert len(packages)==1,'Build exactly one package'
     with zipfile.ZipFile(packages[0]) as package:package.extractall(dest)
 shutil.copyfile(ROOT/'test-runtime/config-fixture.php',WEB/'existing/config.php')
-php=shutil.which('php8.3') or shutil.which('php');log=open(QA/'http-server.log','w');proc=subprocess.Popen([php,'-d','sendmail_path=python3 '+str(ROOT/'tests/mail_capture.py'),'-S','127.0.0.1:8091','-t',str(WEB)],stdout=log,stderr=log)
+from mail_inbox_http_server import InboxServer
+inbox_server=InboxServer(ROOT)
+php=shutil.which('php8.3') or shutil.which('php');log=open(QA/'http-server.log','w');proc=subprocess.Popen([php,'-d','auto_prepend_file='+str(ROOT/'tests/mail_inbox_http_connector.php'),'-d','sendmail_path=python3 '+str(ROOT/'tests/mail_capture.py'),'-S','127.0.0.1:8091','-t',str(WEB)],stdout=log,stderr=log)
 error=None
 try:
     for _ in range(60):
@@ -184,6 +186,8 @@ try:
         appointments_browser(globals(),browser)
         from mail_connections_cases import run_browser as connections_browser
         connections_browser(globals(),browser)
+        from mail_inbox_cases import run_browser as inbox_browser
+        inbox_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)
@@ -192,7 +196,7 @@ try:
 except Exception as exc:
     error=repr(exc)
 finally:
-    proc.terminate();proc.wait(timeout=10);log.close()
+    proc.terminate();proc.wait(timeout=10);log.close();inbox_server.close()
     (QA/'http-results.json').write_text(json.dumps({'transport':'real loopback HTTP; PHP built-in server; native database; actual browser fetch','checks':checks,'passed':error is None,'failure':error},indent=2))
 for item in checks:print(('PASS ' if item['passed'] else 'FAIL ')+item['name'])
 if error:raise SystemExit(error)
