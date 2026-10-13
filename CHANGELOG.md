@@ -5,6 +5,7 @@
 - Added canonical `foundation/proposals/` classes (immutable `ProposalVersion` snapshots with content-hash coverage, version-pinned `ApprovalDecision`, and a guarded `Proposal` lifecycle rejecting stale-version approvals, post-approval mutation and silent re-sends) plus `docs/PROPOSALS_FOUNDATION.md`.
 - Added `tests/proposals/run.php` (35 synthetic checks; fixture proposals only) and the `proposals.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, persistence, mail, document rendering or payment linkage; no e-signature claim. Not yet integrated or released.
+
 ## 1.11.1 — candidate, motion preferences and organized updates
 
 - Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.

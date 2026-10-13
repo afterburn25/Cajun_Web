@@ -3,6 +3,7 @@
 ## 2026-10-13 — Devin P-02 versioned proposals foundation (unreviewed, unintegrated)
 
 Devin implemented the safe-work portion of P-02 as an isolated canonical component on `devin/proposals-foundation`: `foundation/proposals/` (`ProposalVersion` immutable content-hashed snapshots, `ApprovalDecision` pinned to the current version id, `Proposal` guarded lifecycle — draft→sent⇄changes-requested→approved, terminal approved, no stale approvals/re-sends, actor-attributed history), `tests/proposals/run.php` (35 checks), `proposals.yml` workflow, and [PROPOSALS_FOUNDATION](docs/PROPOSALS_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer (persistence/UI/notifications are integration work). No `site/` changes, deployment or release.
+
 ## Active roadmap increment — 1.11.1 candidate
 
 Codex owns `codex/motion-update-1.11.1` from main `02fc784`, preserving Devin PR #34 history at `e2b2a23` in merge `69ed304`. Scope: W-02 homepage pause/root scrolling and restrained brand sheen; honest browser motion evidence; safe staged updates from published organized 1.11.0 while retaining all older supported paths. Recovery journals are per target version; the permanent 1.11.0 lock is shared across retained updater versions. Existing private/configuration/scaffold bytes and prior recovery records stay intact; fresh organized sites gain no legacy root routes.
