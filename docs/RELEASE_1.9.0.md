@@ -1,9 +1,7 @@
 # CajunWebPro 1.9.0 release scope
 
-Candidate: bounded P-06 prepared client website ZIP delivery. Source starts at main `cb7556a2837a0b374392541180e2ed2d670a1edd`; implementation branch `codex/client-deliveries`, contract `16dcaaf`. Exact accepted source/CI/download hashes will be recorded after release gates pass.
+Published and downloaded-back verified at `080f14aea8fe5c35e04e4eba62976609aef7cd67` through [PR #24](https://github.com/afterburn25/Cajun_Web/pull/24). [Exact-main run](https://github.com/afterburn25/Cajun_Web/actions/runs/38396372080): 539 native / 569 HTTP/Chromium checks. [Retained report](TEST_REPORT_1.9.0.md) and [download verification](RELEASE_VERIFICATION_1.9.0.json) hold evidence.
 
-Scope: sanitized bounded ZIP uploads, immutable manifests and versions, owner-reviewed publication, owned client history and authenticated resumable downloads. Static and files-only scopes are explicit; no database export, automatic builds, live deployment, customer email or paid-in-full restriction. Full P-06 remains partial. Card checkout and actual merchant acceptance remain pending.
+Delivers bounded prepared client ZIP uploads, owner-reviewed publication, retained versions/manifests/checksums, scoped client history and authenticated resumable downloads with strict audit and support permissions. Static/files-only scope is explicit. No automatic builds, database transfers, larger background jobs, full dynamic restore, notifications or deletion/retention automation. Full P-06 remains partial; no paid-in-full gate.
 
-Acceptance requires PHP archive/native MariaDB/concurrent tests, real HTTP/Chromium downloads and local static-site opening, fresh installation and the checksum-pinned actual 1.8.0 UPDATE path. All eight assets require draft/public download verification against exact-main CI. No target-host or live-provider claim.
-
-See [setup, limits and limitations](CLIENT_DELIVERIES.md). Devin PR #7 remains preserved and independent.
+Actual retained 1.8.0 update and all earlier update/fresh paths pass. All eight release assets match tested source/packages. No live customer deployment, target-host or actual merchant acceptance is claimed. [Setup and limits](CLIENT_DELIVERIES.md). Devin PR #7 remains independent. Card checkout, broader 20i/mail/SSH remain pending.
