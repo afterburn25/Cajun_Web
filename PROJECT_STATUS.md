@@ -1,5 +1,9 @@
 # Project status
 
+## 2026-10-13 — Devin P-07 notification foundation (unreviewed, unintegrated)
+
+Devin implemented the contract-layer portion of P-07 as an isolated canonical component on `devin/notifications`: `foundation/notifications/` (`Notification`, `NotificationFeed`, `NotificationPreferences`, `DeliveryAttempt`, `MetricSample`), `tests/notifications/run.php` (65 checks), `notifications.yml` workflow, and [NOTIFICATIONS_FOUNDATION](docs/NOTIFICATIONS_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer; persistence, bell/timeline UI, polling and real delivery remain Codex integration work. No `site/` changes, deployment or release.
+
 ## Latest verified publication — 1.11.1
 
 [v1.11.1](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.1) is published and freshly downloaded/verified at source/tag `cefcc41bcd5297715f2a49d6526900ebe8ad4eb4` through [PR #50](https://github.com/afterburn25/Cajun_Web/pull/50), preserving Devin PR #34 ancestry. Delivers the bounded W-02 motion/preferences fix, canonical installer build/brand-path corrections and tested organized 1.11.0 owner-update/recovery path. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38429347222): 618 native, 800 HTTP/Chromium, 59 filesystem/recovery, 241 Apache and 17 package-builder checks; all 16 published assets, ZIP members/directories/checksums and immutable tag verified. Windows/Linux package bytes agree. [Test report](docs/TEST_REPORT_1.11.1.md); [handoff](docs/DEVIN_HANDOFF_1.11.1.md).

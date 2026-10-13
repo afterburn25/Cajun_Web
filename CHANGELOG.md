@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — P-07 notification foundation (Devin, isolated component)
+
+- Added canonical `foundation/notifications/` classes (`Notification` with structural client/staff audience split and typed `kind:id` links; `NotificationFeed` per-recipient read state with recipient-only marking and newest-first paging; `NotificationPreferences` per-kind email opt-out with unconditional portal delivery; `DeliveryAttempt` bounded backoff retries with terminal honest `failed`; `MetricSample` fresh/stale/absent freshness so stale metrics never display as current) plus `docs/NOTIFICATIONS_FOUNDATION.md`.
+- Added `tests/notifications/run.php` (65 synthetic checks; fixture notifications only) and the `notifications.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes, persistence, mail transport or UI. Not yet integrated or released.
+
 ## 1.11.1 — motion preferences and verified organized updates
 
 - Preserve and integrate Devin PR #34: manual pause also disables root smooth scrolling; restrained logo hover/focus sheen respects pause and reduced motion; remove unused hero-scene CSS without changing the layout or image bytes.

@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Devin active branch — `devin/notifications` (P-07 notification model)
+
+Branched from `main` `855981b` (published 1.11.1). Isolated P-07 contract layer: `foundation/notifications/` (5 files), `tests/notifications/run.php` (65 synthetic checks, all pass on PHP 8.4.25 locally), `docs/NOTIFICATIONS_FOUNDATION.md`, `.github/workflows/notifications.yml`.
+
+**Gate:** none for the contract layer; persistence, bell/timeline UI, polling and real delivery remain Codex integration work. **Not integrated:** additive-only outside `site/`.
+
 ## Latest verified publication — 1.11.1
 
 [v1.11.1](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.11.1) is published and freshly downloaded/verified at source/tag `cefcc41bcd5297715f2a49d6526900ebe8ad4eb4` through [PR #50](https://github.com/afterburn25/Cajun_Web/pull/50), preserving Devin PR #34 ancestry. Delivers the bounded W-02 motion/preferences fix, canonical installer build/brand-path corrections and tested organized 1.11.0 owner-update/recovery path. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38429347222): 618 native, 800 HTTP/Chromium, 59 filesystem/recovery, 241 Apache and 17 package-builder checks; all 16 published assets, ZIP members/directories/checksums and immutable tag verified. Windows/Linux package bytes agree. [Test report](docs/TEST_REPORT_1.11.1.md); [handoff](docs/DEVIN_HANDOFF_1.11.1.md).

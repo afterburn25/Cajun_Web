@@ -455,3 +455,17 @@ Second acceptance run 38427420414 reached actual browser setup and found stale 1
 PR #50 merged at cefcc41bcd5297715f2a49d6526900ebe8ad4eb4; exact-main acceptance 38429347222 passes 618 native / 800 HTTP-browser / 59 filesystem / 241 Apache / 17 builder checks. Preserved Devin #34 history; completed motion preferences plus owner update/recovery from actual published organized 1.11.0. Prepared all three artifacts from the same clean source on Windows and compared Linux CI bytes. Draft and public downloads verify all 16 assets, hashes, members, directories and tag. Prior 1.11.0 fingerprints unchanged. Screenshot dimensions/layout retained; subtle logo-edge changes measured and inspected. No live deployment or external activation. Updated exact evidence/current docs/Devin handoff; next actual work is L-01 application adapter while Devin corrects #31/#32 and other foundations await review. This record is documentation only and leaves release bytes immutable.
 
 Next-increment preparation while exact-main acceptance ran: an isolated local estimator adapter draft matched the current shipping calculator across 1,512 priced/missing/malformed/quantity cases on PHP 8.4, without database access or shipping changes. This is prototype parity evidence only; component guards, actual application integration and native/browser/upgrade acceptance remain required. Devin correction priority reiterated in issue #2 comment 6150049591; no acknowledgment or completed fixes inferred.
+
+### 2026-10-13 — Devin P-07 notification foundation
+
+**Request:** "Continue Without Stopping" — next feasible roadmap item (P-07 notification contract layer, no external gate). Codex's #55 estimator integration is reviewed and fully green; merge is Codex's sequencing call.
+
+**Starting commit:** `main` `855981b` (published 1.11.1). New branch `devin/notifications`.
+
+**Changed:** added `foundation/notifications/` (Notification, NotificationFeed, NotificationPreferences, DeliveryAttempt, MetricSample), `tests/notifications/run.php`, `docs/NOTIFICATIONS_FOUNDATION.md`, `.github/workflows/notifications.yml`, and additive continuity entries. No `site/` or shared-path changes.
+
+**Tests:** `php tests/notifications/run.php` — 65 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: construction validation, client/staff audience separation, feed privacy (foreign recipients/actors rejected), read/unread state, preference opt-outs, bounded retry/backoff/terminal-failure delivery states, and fresh/stale/absent metric honesty.
+
+**Failures:** none. **Blockers:** none for the contract layer; persistence, UI, polling and real delivery remain Codex integration work.
+
+**Next:** PR `devin/notifications`; queue now 18 open PRs awaiting Codex sequencing.
