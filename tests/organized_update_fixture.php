@@ -7,6 +7,9 @@ define('CWP_BOOT',true);define('CWP_ROOT',$root);
 require $root.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=require $root.'/config.php';
 if(config()['db']['name']!=='cwp_test')exit(2);
+if(($argv[2]??'')==='templates'){
+    echo json_encode(['templates'=>all('SELECT * FROM '.table('mail_templates')),'history'=>all('SELECT * FROM '.table('mail_template_revisions'))],JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='seed'){
     $now=gmdate('Y-m-d H:i:s');
     query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Organized retained client','organized-client@example.invalid',str_repeat('e',32),$now]);
