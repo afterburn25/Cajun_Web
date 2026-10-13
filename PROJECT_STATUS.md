@@ -2,7 +2,7 @@
 
 ## 2026-10-13 — Devin HC-12 service-desk foundation (unreviewed, unintegrated)
 
-Devin implemented the contract-layer portion of HC-12 as an isolated canonical component on `devin/service-desk`: `foundation/desk/` (`TraceLink`, `FulfillmentJob`, `ApprovalRequest`, `TicketMessage`, `SupportTicket`), `tests/desk/run.php` (52 checks), `desk.yml` workflow, and [DESK_FOUNDATION](docs/DESK_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer; job runners, persistence, mail and admin UI remain Codex integration work. No `site/` changes, deployment or release.
+Devin implemented the contract-layer portion of HC-12 as an isolated canonical component on `devin/service-desk`: `foundation/desk/` (`TraceLink`, `FulfillmentJob`, `ApprovalRequest`, `TicketMessage`, `SupportTicket`), `tests/desk/run.php` (56 checks), `desk.yml` workflow, and [DESK_FOUNDATION](docs/DESK_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer; job runners, persistence, mail and admin UI remain Codex integration work. No `site/` changes, deployment or release.
 
 ## Latest verified publication — 1.11.2
 

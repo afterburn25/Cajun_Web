@@ -12,11 +12,11 @@ use CajunWebPro\Foundation\Desk\SupportTicket;
 use CajunWebPro\Foundation\Desk\TicketMessage;
 use CajunWebPro\Foundation\Desk\TraceLink;
 
-require __DIR__ . '/../../foundation/desk/TraceLink.php';
-require __DIR__ . '/../../foundation/desk/FulfillmentJob.php';
-require __DIR__ . '/../../foundation/desk/ApprovalRequest.php';
-require __DIR__ . '/../../foundation/desk/TicketMessage.php';
-require __DIR__ . '/../../foundation/desk/SupportTicket.php';
+require_once __DIR__ . '/../../foundation/desk/TraceLink.php';
+require_once __DIR__ . '/../../foundation/desk/FulfillmentJob.php';
+require_once __DIR__ . '/../../foundation/desk/ApprovalRequest.php';
+require_once __DIR__ . '/../../foundation/desk/TicketMessage.php';
+require_once __DIR__ . '/../../foundation/desk/SupportTicket.php';
 
 $checks = 0;
 $failures = [];
@@ -85,12 +85,23 @@ check('running lease held', !$j3->expireLease(20));
 check('lease expiry stalls', $j3->expireLease(40) && $j3->status() === 'stalled');
 $j3->requeue('staff-amy', 50);
 check('stalled requeues', $j3->status() === 'queued');
+check('requeue clears stale backoff', $j3->nextAttemptAt() === null);
 throws('non-stalled requeue refused', fn () => job()->requeue('s', 0));
 
 $j4 = job('deprovision');
 throws('irreversible needs approval', fn () => $j4->run('s', 0, 60));
-$j4->run('s', 0, 60, 'apr-1');
-check('approved irreversible runs', $j4->status() === 'running');
+$ord9 = new TraceLink('order', 'ord-9');
+$pend = new ApprovalRequest('apr-p', 'deprovision', $ord9, 'staff-amy', 0, 3600);
+throws('unapproved request cannot release job', fn () => $j4->run('s', 0, 60, $pend));
+$pend->approve('staff-ben', 'owner', 5);
+$wrong = new ApprovalRequest('apr-w', 'refund', $ord9, 'staff-amy', 0, 3600);
+$wrong->approve('staff-ben', 'owner', 5);
+throws('wrong-kind approval refused', fn () => $j4->run('s', 0, 60, $wrong));
+$other = new ApprovalRequest('apr-o', 'deprovision', new TraceLink('order', 'ord-1'), 'staff-amy', 0, 3600);
+$other->approve('staff-ben', 'owner', 5);
+throws('untraced subject refused', fn () => $j4->run('s', 0, 60, $other));
+$j4->run('s', 0, 60, $pend);
+check('approved matching request runs', $j4->status() === 'running');
 
 throws('job needs trace links', fn () => new FulfillmentJob('x', 'provision', 'k', [], 3, 60));
 throws('empty idempotency key rejected', fn () => new FulfillmentJob('x', 'provision', ' ', [new TraceLink('order', 'o')], 3, 60));

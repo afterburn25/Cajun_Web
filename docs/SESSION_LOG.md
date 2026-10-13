@@ -487,7 +487,7 @@ PR #55 merged at 4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36; exact-main acceptance
 
 **Changed:** added `foundation/desk/` (TraceLink, FulfillmentJob, ApprovalRequest, TicketMessage, SupportTicket), `tests/desk/run.php`, `docs/DESK_FOUNDATION.md`, `.github/workflows/desk.yml`, and additive continuity entries. No `site/` or shared-path changes.
 
-**Tests:** 52 synthetic checks pass on PHP 8.4.25 under both `php` and `php -n`; all files lint clean. Covers: link grammar, retry/backoff/dead-letter, lease-expiry stall recovery, approval gates (role/self-approval/expiry/denial), ticket lifecycle, internal-note isolation, unread counting.
+**Tests:** 56 synthetic checks pass on PHP 8.4.25 under both `php` and `php -n`; all files lint clean. Covers: link grammar, retry/backoff/dead-letter, lease-expiry stall recovery, approval gates (role/self-approval/expiry/denial), ticket lifecycle, internal-note isolation, unread counting.
 
 **Failures:** none. **Blockers:** none for the contract layer; job runners, persistence, mail and UI remain Codex integration work.
 

@@ -2,8 +2,8 @@
 
 ## Unreleased — HC-12 service-desk foundation (Devin, isolated component)
 
-- Added canonical `foundation/desk/` classes (`TraceLink` typed `kind:id` record links over an allowlisted kind set; `FulfillmentJob` recoverable queue model with bounded exponential backoff, lease-expiry stall recovery, required idempotency keys and approval-gated irreversible kinds; `ApprovalRequest` expiring role-gated two-party approvals; `TicketMessage`/`SupportTicket` internal tickets with staff-only notes structurally invisible to clients) plus `docs/DESK_FOUNDATION.md`.
-- Added `tests/desk/run.php` (52 synthetic checks; fixtures only, `php -n` clean) and the `desk.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- Added canonical `foundation/desk/` classes (`TraceLink` typed `kind:id` record links over an allowlisted kind set; `FulfillmentJob` recoverable queue model with bounded exponential backoff, lease-expiry stall recovery, required idempotency keys and irreversible kinds verified against a live same-kind `ApprovalRequest` whose subject is traced; `ApprovalRequest` expiring role-gated two-party approvals; `TicketMessage`/`SupportTicket` internal tickets with staff-only notes structurally invisible to clients) plus `docs/DESK_FOUNDATION.md`.
+- Added `tests/desk/run.php` (56 synthetic checks; fixtures only, `php -n` clean) and the `desk.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, queues, persistence, mail or UI. Not yet integrated or released.
 
 ## 1.11.2 — verified canonical live estimator integration

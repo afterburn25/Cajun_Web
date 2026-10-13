@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use LogicException;
 
 require_once __DIR__ . '/TraceLink.php';
+require_once __DIR__ . '/ApprovalRequest.php';
 
 /**
  * HC-12 — one unit of provisioning work with honest, recoverable
@@ -105,12 +106,31 @@ final class FulfillmentJob
         return $this->history;
     }
 
-    /** Claim for execution. Irreversible jobs require an approval id. */
-    public function run(string $actor, int $at, int $leaseSeconds, ?string $approvalId = null): void
+    /**
+     * Claim for execution. Irreversible jobs require a live approved
+     * `ApprovalRequest` for the same operation kind — the gate verifies
+     * the approval's state and subject, so a bare id or a stale/denied
+     * request cannot release it.
+     */
+    public function run(string $actor, int $at, int $leaseSeconds, ?ApprovalRequest $approval = null): void
     {
         $this->requireStatus(self::QUEUED);
-        if ($this->needsApproval() && ($approvalId === null || trim($approvalId) === '')) {
-            throw new LogicException("Job kind '{$this->kind}' is irreversible and needs an approved request first.");
+        if ($this->needsApproval()) {
+            if ($approval === null || !$approval->approved($at)) {
+                throw new LogicException("Job kind '{$this->kind}' is irreversible and needs a live approved request first.");
+            }
+            if ($approval->operationKind !== $this->kind) {
+                throw new LogicException("Approval is for '{$approval->operationKind}', not '{$this->kind}'.");
+            }
+            $traced = false;
+            foreach ($this->trace as $l) {
+                if ($l->key() === $approval->subject->key()) {
+                    $traced = true;
+                }
+            }
+            if (!$traced) {
+                throw new LogicException('Approval subject is not one of this job\'s trace links.');
+            }
         }
         if ($this->nextAttemptAt !== null && $at < $this->nextAttemptAt) {
             throw new LogicException('Retry is not due yet — backoff is still cooling.');
@@ -155,7 +175,11 @@ final class FulfillmentJob
         return true;
     }
 
-    /** Recover a stalled job for another try. */
+    /**
+     * Recover a stalled job for another try. Manual recovery clears the
+     * leftover backoff — an operator's requeue is deliberate, so a stale
+     * `nextAttemptAt` from an earlier failure must not block it.
+     */
     public function requeue(string $actor, int $at): void
     {
         $this->requireStatus(self::STALLED);
@@ -163,6 +187,7 @@ final class FulfillmentJob
             $this->move(self::DEAD_LETTER, $actor, $at, 'stalled beyond max attempts');
             return;
         }
+        $this->nextAttemptAt = null;
         $this->move(self::QUEUED, $actor, $at, 'stalled job requeued for recovery');
     }
 

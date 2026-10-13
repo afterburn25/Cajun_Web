@@ -2,7 +2,7 @@
 
 ## Devin active branch — `devin/service-desk` (HC-12 admin-ops model)
 
-Branched from `main` `a1581d4` (published 1.11.2). Isolated HC-12 contract layer: `foundation/desk/` (5 files), `tests/desk/run.php` (52 synthetic checks, all pass on PHP 8.4.25 incl. `php -n`), `docs/DESK_FOUNDATION.md`, `.github/workflows/desk.yml`.
+Branched from `main` `a1581d4` (published 1.11.2). Isolated HC-12 contract layer: `foundation/desk/` (5 files), `tests/desk/run.php` (56 synthetic checks, all pass on PHP 8.4.25 incl. `php -n`), `docs/DESK_FOUNDATION.md`, `.github/workflows/desk.yml`.
 
 **Gate:** none for the contract layer; runners, persistence, mail and UI remain Codex integration work. **Not integrated:** additive-only outside `site/`.
 
