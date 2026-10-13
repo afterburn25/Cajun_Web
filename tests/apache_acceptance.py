@@ -91,6 +91,10 @@ PHPIniDir /etc/php/8.3/apache2
             shutil.copyfile(web/'.installed.php',legacy/'.installed.php')
             warm=requests.get(base+'/legacy/admin.php?view=login')
             check(label+' old privileged entry was served before migration',warm.status_code==200 and 'Sign in to manage' in warm.text)
+            # Synthetic test-only diagnostic, never part of a distribution.
+            probe=web/'cache-probe.php';probe.write_text("<?php echo json_encode(['enabled'=>opcache_get_status(false)['opcache_enabled']??false,'timestamps'=>ini_get('opcache.validate_timestamps'),'cached'=>opcache_is_script_cached(__DIR__.'/legacy/admin.php')]);")
+            cache=requests.get(base+'/cache-probe.php').json();probe.unlink()
+            check(label+' old entry is actually cached with timestamp validation disabled',cache['enabled'] and cache['timestamps']=='0' and cache['cached'])
             with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(legacy)
             failed=subprocess.run([php,str(ROOT/'tests/structure_worker.php'),str(legacy),'apply','5'],capture_output=True,text=True)
             (QA/('apache-'+label+'-interruption.log')).write_text('rc='+str(failed.returncode)+'\n'+failed.stdout+failed.stderr)

@@ -423,3 +423,8 @@ The Apache legacy fixture also needs CWP_BOOT when reading the intentionally gua
 **Verification and limitations:** Verified current GitHub main and read the target documentation before composing changes; GitHub write and readback of committed docs will be checked. No application source, release packages, CI tests, provider API, Authorize.net merchant, payments, customer service or live host were changed, exercised or represented as working.
 
 **Next:** Agents should begin with the next safe bounded implementation on current main, track precise external gates for real provider actions, avoid duplicate work/branches, and update evidence/status per reviewed implementation. No owner secrets should be placed in Git.
+
+### 2026-10-13 — preserve concurrent main policy and Devin build work
+
+Merged main 5d810b1 dependency-gate documentation without weakening the active structure priority. Reviewed and integrated Devin PR #42 (19afbfc, original history preserved): explicit UTF-8 reads/Node stdin make Windows builds work without environment overrides. Resolved overlapping diagnostics by retaining return code/stdout/stderr and retained the stricter CSS containment check. Added a synthetic Apache assertion proving old PHP is actually cached with timestamp validation disabled. Combined acceptance remains required before merge/publication.
+
