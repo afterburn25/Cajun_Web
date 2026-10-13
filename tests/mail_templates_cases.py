@@ -66,7 +66,9 @@ def run_browser(env,browser):
     page.locator('[name=sample_client_name]').fill('Sample client');page.locator('[name=sample_project_name]').fill('New website');page.get_by_role('button',name='Preview message',exact=True).click();expect(page.locator('[data-template-preview]')).to_be_visible()
     check('Chromium preview resolves sample fields','Welcome Sample client' in page.locator('[data-template-preview]').inner_text())
     page.screenshot(path=str(QA/'Email-Templates-Desktop.png'),full_page=True)
-    page.get_by_role('button',name='Activate saved draft',exact=True).click();check('Chromium activates saved draft','active' in page.locator('.status-badge').first.inner_text())
+    page.get_by_role('button',name='Activate saved draft',exact=True).click();expect(page.locator('.status-badge').first).to_have_text('active')
+    browser_id=parse_qs(urlparse(page.url).query)['template_id'][0]
+    check('Chromium activates saved draft',db('SELECT status FROM ci_mail_templates WHERE id=?',[browser_id])==[{'status':'active'}])
     page.set_viewport_size({'width':390,'height':844});page.screenshot(path=str(QA/'Email-Templates-Mobile.png'),full_page=True)
     check('Template page fits mobile width',page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
     check('Template page has no browser errors',not errors);context.close()
