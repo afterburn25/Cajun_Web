@@ -13,14 +13,14 @@ def safe(name):
     if p.is_absolute() or '..' in p.parts or '\\' in name or ':' in name or str(p)!=name:raise RuntimeError('Unsafe path: '+name)
 def inventory():
     result={}
-    for p in sorted(SITE.rglob('*')):
+    for p in sorted(SITE.rglob('*'),key=lambda path:path.relative_to(SITE).as_posix()):
         if p.is_symlink():raise RuntimeError('Symlink in shipping source')
         if not p.is_file():continue
         n=p.relative_to(SITE).as_posix();safe(n)
         if n.split('/')[0] in {'storage','upload'} and n not in SCAFFOLDS:raise RuntimeError('Runtime storage in package: '+n)
         if n in SCAFFOLDS and p.read_text(encoding="utf-8")!=('Require all denied\n' if p.name=='.htaccess' else '<?php http_response_code(404); exit;\n'):raise RuntimeError('Unexpected runtime scaffold metadata: '+n)
         if n.startswith('assets/') and not (n.startswith('assets/css/') and p.suffix=='.css' or n.startswith('assets/js/') and p.suffix=='.js'):raise RuntimeError('Mixed public assets: '+n)
-        if p.name in {'config.php','.installed.php','proxy-config.php','payment-master.key','.installation-mutex.php'} or p.name.startswith('config-pending-'):raise RuntimeError('Private configuration in package: '+n)
+        if p.name in {'config.php','.installed.php','proxy-config.php','payment-master.key','mail-master.key','.installation-mutex.php'} or p.name.startswith('config-pending-'):raise RuntimeError('Private configuration in package: '+n)
         result[n]=sha(p.read_bytes())
     if {n for n in result if '/' not in n}!=ROOT_FILES:raise RuntimeError('Unexpected production root files')
     for directory in ['admin','portal','pages','includes','images','storage','upload','app','api','webhooks','media','install','database','config','assets/css','assets/js']:
@@ -46,7 +46,7 @@ def inventory():
     return result
 
 def generated(refresh):
-    for area in ['access','invitations','portfolio','estimator','email-templates']:
+    for area in ['access','invitations','portfolio','estimator','email-templates','webmail']:
         for source in (ROOT/'foundation'/area).glob('*.php'):
             target=SITE/'includes/foundation'/area/source.name
             if refresh:
