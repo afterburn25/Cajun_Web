@@ -1291,3 +1291,7 @@ Scope: the register catalogs exactly the four documented package-lifecycle write
 Tests: **81 named synthetic checks pass** on local PHP (default and `php -n` modes); the suite asserts the adapter still refuses every operation — register membership is not execution authority. No HTTP transport, credential, database or provider call. Docker-based CI lanes added for PHP 8.2/8.4 with named JSON artifacts.
 
 Known limits: no execution wiring (ProviderGateway ledger/grant flow), no response schemas beyond documented id fields, no live verification of any documented example. Next: Codex review of this boundary; application grant/ledger wiring and operation-specific acceptance gates before any transport execution.
+
+## 2026-10-16 — Devin: hostname-list children join the shared node budget
+
+Codex follow-up review on `d7006c5` verified both original corrections but found `hostname_list` children bypassed the 256-node bound (counted 4 containers + 64 uncounted hostnames + 189 map values = 257 values accepted). `TwentyIRequestBuilder::bounded` now increments the shared node budget per hostname-list child. Added Codex's exact mixed fixtures: 64 `extra_domain_names` + 188 `documentRoots` = 256 builds; +189 = 257 refuses. 92/92 synthetic checks on default and no-ini modes.
