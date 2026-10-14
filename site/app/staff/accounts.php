@@ -130,6 +130,8 @@ function staff_reset_token(string $email): ?array {
     }));
 }
 function staff_view_permission(string $view): ?string {
+    if($view==='activity')return null; // Current project/ticket actors independently authorize the activity controller.
+    if(in_array($view,['tickets','ticket','ticket-new'],true))return 'support.tickets';
     if(in_array($view,['service-plans','service-plan','service-agreements','service-agreement'],true))return 'staff.manage';
     if(in_array($view,['mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft'],true))return null; // Draft controller enforces current Send plus exact mailbox/author.
     if($view==='mail-notices')return null; // The mail-specific actor and exact grants protect this projection.
@@ -148,6 +150,8 @@ function staff_view_permission(string $view): ?string {
     return 'website.manage';
 }
 function staff_action_permission(string $action): ?string {
+    if($action==='tickets_setup')return 'staff.manage';
+    if(str_starts_with($action,'tickets_'))return 'support.tickets';
     if(str_starts_with($action,'service_plans_'))return 'staff.manage';
     if($action==='mail_submissions_setup')return 'staff.manage';
     if(str_starts_with($action,'mail_submissions_'))return null; // Current author/Send/mailbox/review checks in submission controller.
@@ -183,5 +187,6 @@ function staff_action_permission(string $action): ?string {
     return 'website.manage';
 }
 function staff_home(array $user): string {
+    if(staff_can('support.tickets',$user)&&!staff_can('website.manage',$user)&&!staff_can('clients.manage',$user))return 'tickets';
     return staff_can('website.manage',$user)?'dashboard':(staff_can('clients.manage',$user)?'studio-clients':(staff_can('catalog.manage',$user)?'catalog':(staff_can('mail.templates.manage',$user)?'mail-templates':(staff_can('support.login',$user)?'support':((function_exists('mail_accounts_access')&&mail_accounts_access($user))?'mailboxes':'security')))));
 }

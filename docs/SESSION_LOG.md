@@ -1,5 +1,13 @@
 # Session log
 
+## 2026-10-14 — Ticket screens, local activity and browser acceptance
+
+Preserved native storage PR103/`6ba93c3` and started `codex/support-ticket-screens`. Added routes, forms, scoped choices, paged history, activity/bell integration and the permitted support entry. The original desk foundation and Devin's provider branches remain unchanged. Local native checks grew from131 to170; pure forms verify66 per default/no-ini mode. Actual local Edge/HTTP verifies38 checks, and the portable packaged-suite module verifies65 local checks. Six original desktop/mobile captures were inspected, including stale drafts and 320px layout.
+
+Retained failed evidence: native notification ordering initially put same-second events in random-ID order; the ordering/cursor now includes visible sequence. Initial form rendering used `opening` instead of canonical `opened`. Initial actual UI failed due to missing `tickets.css` asset registration; registration is fixed. Staff mobile then overflowed4px at the long read button; scoped wrapping fixes it. Portable expectations were corrected for the existing empty204 count refusal and auth-version revocation's login redirect; fresh-login denial after revoked permission is also asserted. No failure is counted as acceptance and no production security control was weakened.
+
+Added latest-1.23 populated ticket recovery/reapplication, read-state preservation and exact-request replay cases to both Apache modes. These are syntax-checked, not yet packaged acceptance. A local build invocation without `--commit` completed source syntax checks then correctly refused archive creation; no archive from that invocation is accepted. Next: commit the isolated UI source and docs, run focused matrices/full application checks and obtain independent review. Frozen candidate101 remains review-pending after9,213 verified assertions. Published1.23 is unchanged; Devin retains complete20i implementation.
+
 ## 2026-10-14 — preserve full mail acceptance after runtime limit
 
 Started3e7138e. Downloaded38539811045/tested merge368b7b5:2183 native/form/combined,3084 estimator,1236 HTTP/Chromium,247 filesystem/recovery and21 builder checks pass. GitHub annotation confirms45m limit; Apache had reached no-rewrite1.13, no final Apache report, final source-diff step skipped. This is partial evidence, not application acceptance. Increased limit75m and added atomic incomplete Apache progress every25 checks/failure with flushed messages. No assertions, baselines or shipping bytes changed. Python compilation/docs checks precede replacement full acceptance; independent review remains required.

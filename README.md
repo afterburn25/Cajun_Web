@@ -1,5 +1,9 @@
 # CajunWebPro — project source of truth
 
+## Unreleased support conversations
+
+The separate `codex/support-ticket-screens` branch connects client/staff support conversations, private notes, explicit read state and exact-message workspace notifications. [Usage and current evidence](docs/SUPPORT_TICKETS.md). Local browser/database checks pass; committed CI, packaged recovery and independent review remain pending. Published 1.23 is unchanged; complete 20i implementation remains with Devin.
+
 ## Owner allocation override — 2026-10-14
 
 The owner instructed: **“let devin do the complete 20i integration.”** Devin owns the entire implementation: provider adapters, native persistence/migrations and client ownership, admin and client portal screens, hosting lifecycle/controls, domains, VPS/cloud, support handoffs and VPS SSH, with their tests and documentation. This supersedes earlier component-only assignments and statements reserving all 20i application/UI work to Codex. Codex retains non-20i development and final independent review, combined acceptance, merge/release coordination. [Full handoff and acceptance](docs/DEVIN_COMPLETE_20I_HANDOFF.md); [authoritative GitHub assignment](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171468180).

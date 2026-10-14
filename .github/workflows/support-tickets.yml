@@ -1,8 +1,8 @@
 name: Native support-ticket storage checks
 on:
   push:
-    branches: [main, codex/support-ticket-storage]
-    paths: ['site/app/support/**', 'site/database/**', 'site/app/staff/**', 'site/app/clients/**', 'site/includes/auth/**', 'foundation/access/**', 'site/includes/foundation/access/**', 'foundation/desk/**', 'site/includes/foundation/desk/**', 'tests/support_tickets_native.php', '.github/workflows/support-tickets.yml']
+    branches: [main, codex/support-ticket-storage, codex/support-ticket-screens]
+    paths: ['site/app/support/**', 'site/database/**', 'site/app/staff/**', 'site/app/clients/**', 'site/includes/auth/**', 'foundation/access/**', 'site/includes/foundation/access/**', 'foundation/desk/**', 'site/includes/foundation/desk/**', 'tests/support_tickets_native.php', 'tests/support_ticket_screen_native_cases.php', 'site/includes/layout/ticket*.php', 'site/admin/controllers/tickets.php', 'site/admin/views/tickets.php', 'site/portal/controllers/tickets.php', 'site/portal/views/tickets.php', '.github/workflows/support-tickets.yml']
   pull_request:
   workflow_dispatch:
 permissions:

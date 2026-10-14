@@ -88,13 +88,13 @@ function support_tickets_related(int $client,array $links,bool $strict=false):ar
     foreach($links as $link){
         $row=match($link['kind']){
             'project'=>one('SELECT id,title FROM '.table('studio_jobs').' WHERE id=? AND client_id=?',[$link['id'],$client]),
-            'invoice'=>one('SELECT i.id,i.title FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id WHERE i.id=? AND j.client_id=?',[$link['id'],$client]),
+            'invoice'=>one('SELECT i.id,i.title,j.id AS job_id FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id WHERE i.id=? AND j.client_id=?',[$link['id'],$client]),
             'subscription'=>service_plans_ready()?one('SELECT * FROM '.table('service_subscriptions').' WHERE id=? AND client_id=?',[$link['id'],$client]):null,
             default=>null,
         };
         if($row&&$link['kind']==='subscription'){service_plans_validate($row,true);$row=['id'=>$row['id'],'title'=>'Service agreement'];}
         if(!$row){if($strict)throw new RuntimeException('Related client work is unavailable.');continue;}
-        $resolved[]=$link+['title'=>$row['title']];
+        $resolved[]=$link+['title'=>$row['title']]+($link['kind']==='invoice'?['job_id'=>(int)$row['job_id']]:[]);
     }
     return $resolved;
 }
