@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — support-ticket native storage
+
+- Add explicit owner preparation, current ticket permissions, atomic retained conversation/events, strict schema checks and audit rollback.
+- Keep private notes and assignments out of client revisions, lists and read state; support replies retain the real staff/session identity.
+- Add bounded authorized views, current related-work resolution and explicit separate staff/client read cursors. No ticket routes/screens/notifications are active yet.
+- Verify131 local native database assertions and262 per committed PHP8.2/8.4 matrix (runs38608757862/38608752913 ataa57798); independent review and full feature acceptance remain pending.
+
 ## Unreleased — support-ticket conversation preparation
 
 Preserve reviewed desk models in private application includes; add immutable ticket documents with separate public event sequencing, staff-only notes and closure reserves. Add canonical/deployed/document validation and future Apache private-path coverage. No ticket route, database storage or UI is activated; no new version or release is published.

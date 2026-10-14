@@ -98,6 +98,7 @@ jobs:
           php8.3 tests/provider_settings_native.php
           php8.3 tests/provider_checks_native.php
           php8.3 tests/service_plans_native.php
+          php8.3 tests/support_tickets_native.php
           php8.3 tests/hosting_records_native.php
           php8.3 tests/hosting_operations_native.php
           php8.3 tests/hosting_retry_native.php

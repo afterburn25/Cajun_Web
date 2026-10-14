@@ -1,5 +1,9 @@
 # Approved roadmap and acceptance criteria
 
+## HC-12 native support conversation increment
+
+Ticket storage, current permissions, public/private revisions, bounded queues and viewer-specific read state are implemented on `codex/support-ticket-storage`, parent `f1f6a4e`, with131 local native assertions. Native PHP8.2/8.4 matrices now pass262 assertions each ataa57798 (runs38608757862/38608752913). Independent review, real client/admin screens, CSRF/HTTP/browser, activity/bells, packaged upgrade/recovery and final acceptance remain pending. Devin retains all20i work. [Scope](SUPPORT_TICKETS_CONTRACT.md).
+
 ## Owner allocation override — 2026-10-14
 
 The owner instructed: **“let devin do the complete 20i integration.”** Devin owns the entire implementation: provider adapters, native persistence/migrations and client ownership, admin and client portal screens, hosting lifecycle/controls, domains, VPS/cloud, support handoffs and VPS SSH, with their tests and documentation. This supersedes earlier component-only assignments and statements reserving all 20i application/UI work to Codex. Codex retains non-20i development and final independent review, combined acceptance, merge/release coordination. [Full handoff and acceptance](DEVIN_COMPLETE_20I_HANDOFF.md); [authoritative GitHub assignment](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171468180).
