@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
-require_once CWP_CODE_ROOT.'/app/mail/inbox.php';
+require_once CWP_CODE_ROOT.'/app/mail/messages.php';
 function mail_inbox_admin_action(string $action): array {
     if($action==='mail_inbox_setup') {
         mail_inbox_migrate(posted('current_password',200));flash('Inbox request history is ready. No server was contacted.');redirect(admin_url('mail-accounts'));
