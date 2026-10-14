@@ -1348,3 +1348,11 @@ Sweep after the #43/#45/#54/#60 fix found six more conflicting Devin PRs plus #6
 All conflicts were the shared continuity/docs files (CHANGELOG/PROJECT_STATUS/SESSION_HANDOFF ± SESSION_LOG/AGENTS/README/START-HERE). No component or test byte changed on any branch; empty stub headers stripped; each branch's component section preserved. Every open Devin PR now reports MERGEABLE (or computing) — `pull_request` CI can schedule on all of them again.
 
 No provider calls, deployments, releases or live operations.
+
+## 2026-10-14 — PR #61 stall-resolution follow-up: unknown non-final + replay idempotence
+
+**Re-review findings on `588ea0e`** (30 independent controls, all prior fixes verified): two bounded defects in the new `resolveStalled` path — (P2) an `unknown` observation permanently blocked later conclusive resolution of the same stalled token, and (P2) identical `completed` replay threw because `requireStatus(STALLED)` ran before the replay check.
+
+**Fixed at `df0a1d2`:** `unknown` is now an append-only per-token `observations` entry (never final, never releases retry, evidence retained); conclusive resolutions (`completed`/`not_executed`) remain immutable per token and are checked **before** the stalled-status gate so identical replays return quietly post-transition (completed-after-success and not_executed-after-reclaim both verified byte-identical state/history). Conflicting conclusive and changed-evidence replays still refuse. Suite 103 → **114 checks**, green `php`/`php -n`; reviewer reproductions confirmed. Posted 6167182005, re-review requested.
+
+No provider calls, deployments, releases or live operations.
