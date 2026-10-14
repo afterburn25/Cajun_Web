@@ -5,9 +5,10 @@ if (PHP_SAPI !== 'cli' && !defined('CWP_BOOT')) { http_response_code(404); exit;
 use DirectoryTree\ImapEngine\Connection\ImapTokenizer;
 use DirectoryTree\ImapEngine\Connection\Tokens\{Token,Literal,ListOpen,ListClose,ResponseCodeOpen,ResponseCodeClose};
 
-/** Maintained tokenizer with strict header-only literal/token/nesting boundaries. */
+/** Maintained tokenizer with fixed operation literal/token/nesting boundaries. */
 final class BoundedTokenizer extends ImapTokenizer
 {
+    public function __construct(\DirectoryTree\ImapEngine\Connection\Streams\StreamInterface $stream, private ReadProfile $profile=ReadProfile::Headers) {parent::__construct($stream);}
     private int $tokens=0;
     private array $groups=[];
     public function nextToken(): ?Token
@@ -27,7 +28,7 @@ final class BoundedTokenizer extends ImapTokenizer
         // The bounded line stream must supply one physical line at a time, through CRLF.
         $marker=substr($this->buffer,$this->position);
         if(!preg_match('/\A\{(0|[1-9][0-9]{0,5})\}\r\n\z/D',$marker,$m))throw new ReceivingFailure('protocol');
-        if((int)$m[1]>16384)throw new ReceivingFailure('limit');
+        if((int)$m[1]>$this->profile->literalBytes())throw new ReceivingFailure('limit');
         return parent::readLiteral();
     }
 
