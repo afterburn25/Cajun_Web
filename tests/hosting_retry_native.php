@@ -8,7 +8,7 @@ require __DIR__.'/../site/database/schema/base.php';
 require_once __DIR__.'/../site/app/hosting/operations.php';
 use CajunWebPro\Foundation\Hosting\{HostingJournal,HostingPackage,OperationResult};
 $private=__DIR__.'/../test-runtime/hosting-retry-private';@mkdir($private,0700,true);@mkdir(__DIR__.'/../qa',0700,true);
-$GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/existing','storage'=>realpath($private),'key'=>str_repeat('synthetic-hosting-key-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'hrci_']];
+$GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/existing','storage'=>realpath($private),'key'=>str_repeat('synthetic-hosting-key-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'htry_']];
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=realpath(__DIR__.'/../site');start_session();
 $checks=[];$password='Synthetic hosting owner passphrase';
 $package=new HostingPackage('HOST-1','Synthetic café hosting','synthetic-type','synthetic-region',['disk_gb'=>10,'sites'=>null]);
@@ -37,12 +37,12 @@ function hr_active(int $account,int $request):array {
     $id=hr_id($account);hosting_records_create($id,1,$package,$password);$claim=hr_claim($id,$request);hr_record($claim,hr_result($claim,'applied','synthetic-resource-'.$account));return $claim;
 }
 function hr_final_audit_failure(string $action,callable $fn):bool {
-    db()->exec('CREATE TRIGGER hrci_final_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='hosting_records.".$action."' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic final audit failure'; END IF; END");
-    try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER hrci_final_fail');}return $failed;
+    db()->exec('CREATE TRIGGER htry_final_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='hosting_records.".$action."' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic final audit failure'; END IF; END");
+    try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER htry_final_fail');}return $failed;
 }
 function hr_audit_failure(callable $fn):bool {
-    db()->exec('CREATE TRIGGER hrci_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic hosting audit failure'");
-    try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER hrci_fail');}return $failed;
+    db()->exec('CREATE TRIGGER htry_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic hosting audit failure'");
+    try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER htry_fail');}return $failed;
 }
 function hr_worker(string $mode,array $args=[]):array {
     $p=proc_open([PHP_BINARY,__FILE__,$mode,...$args],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);
@@ -84,7 +84,7 @@ function hr_retry(string $id,int $event):HostingJournal {
     return hosting_operations_retry_provision($id,1,hr_load($id)->revision(),hr_id($event),$password);
 }
 try {
-    foreach(schema_statements('hrci_') as $sql)db()->exec($sql);
+    foreach(schema_statements('htry_') as $sql)db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
     save_setting('studio_schema_version','2');
     for($i=1;$i<=3;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Retry operator '.$i,'retry-operator'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);

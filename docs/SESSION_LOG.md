@@ -1080,3 +1080,7 @@ Mail PR77 remains separate at7fdd242, with last shipping codec5646bf and default
 ## 2026-10-14 — explicit local provisioning retry from PR82
 
 Started separate `codex/hosting-provision-retry` from1f59074. Added exact current-owner/client/revision local retry preparation after retained definite retryable failure, canonical validation, strict audit and no dispatch claim. Native process/replay/rollback fixtures plus original94+79 cases prepared. Local Windows fixture stopped at existing provider-key0600 permission validation before retry assertions; Linux matrix acceptance is pending. Full installer refresh and documentation verification underway; no live action/schema/version/release. Client83 has466 verified executions per push/PR matrix and active application38549059961; mail38545953062 remains active.
+
+### Retry fixture isolation correction
+
+Run38550491194 at9e599ef passed retained94+79 per PHP8.2/8.4 but the new suite collided with existing `hrci_` fixture tables before retry assertions. Use unique `htry_`; no production or assertion change, no acceptance claim for the failed run. Replacement matrix required.
