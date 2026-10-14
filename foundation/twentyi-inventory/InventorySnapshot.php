@@ -45,6 +45,11 @@ final readonly class InventorySnapshot
         'transport_protocol', 'transport_unavailable', 'transport_unknown',
     ];
 
+    /** @var InventoryPackage[] Validated, detached record list. */
+    public array $packages;
+    /** @var string[] Validated, detached skip reasons. */
+    public array $skipReasons;
+
     /**
      * @param InventoryPackage[] $packages   Projected records for the read.
      * @param string[]           $skipReasons First few reasons items were skipped (bounded).
@@ -54,10 +59,10 @@ final readonly class InventorySnapshot
      */
     public function __construct(
         public string $state,
-        public array $packages,
+        array $packages,
         public int $observedAt,
         public int $skipped = 0,
-        public array $skipReasons = [],
+        array $skipReasons = [],
         public string $reason = '',
         public string $scope = '',
         public string $coverage = self::COVERAGE_UNKNOWN,
@@ -71,23 +76,27 @@ final readonly class InventorySnapshot
         if (count($packages) > self::MAX_ITEMS || count($skipReasons) > self::MAX_SKIP_REASONS) {
             throw new InvalidArgumentException('Snapshot contents exceed the supported bounds.');
         }
+        $detachedPackages = [];
         foreach ($packages as $package) {
             if (!$package instanceof InventoryPackage) {
                 throw new InvalidArgumentException('Snapshots carry projected package records only.');
             }
+            $detachedPackages[] = $package;
         }
+        $detachedReasons = [];
         foreach ($skipReasons as $skipReason) {
             if (!is_string($skipReason) || strlen($skipReason) > 200
                 || preg_match('//u', $skipReason) !== 1
                 || preg_match('/[\x00-\x1f\x7f]/', $skipReason)) {
                 throw new InvalidArgumentException('Skip reasons are bounded printable classifications.');
             }
+            $detachedReasons[] = $skipReason;
         }
-        if (!in_array($coverage, [self::COVERAGE_UNKNOWN, self::COVERAGE_COMPLETE], true)) {
-            throw new InvalidArgumentException('Unknown coverage claim.');
-        }
-        if ($coverage === self::COVERAGE_COMPLETE && $state !== self::COMPLETE) {
-            throw new InvalidArgumentException('Complete coverage requires a complete observation.');
+        // Account-wide completeness is never claimable: no documented
+        // pagination/terminal contract exists, so even a fully projected
+        // response stays COVERAGE_UNKNOWN.
+        if ($coverage !== self::COVERAGE_UNKNOWN) {
+            throw new InvalidArgumentException('Complete account coverage is not a supported claim.');
         }
         if ($scope !== '' && (strlen($scope) > self::MAX_SCOPE_BYTES
             || preg_match('//u', $scope) !== 1
@@ -115,6 +124,10 @@ final readonly class InventorySnapshot
         if ($state === self::PARTIAL && $skipped === 0) {
             throw new InvalidArgumentException('A partial snapshot must record skipped items.');
         }
+        // Store rebuilt lists so caller-held PHP references can never
+        // mutate the accepted observation after validation.
+        $this->packages = $detachedPackages;
+        $this->skipReasons = $detachedReasons;
     }
 
     public static function unavailable(string $reason, int $observedAt, string $scope = ''): self

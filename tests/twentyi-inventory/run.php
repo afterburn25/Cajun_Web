@@ -167,6 +167,22 @@ deny('Snapshot rejects complete coverage on a partial observation', fn() => new 
 deny('Snapshot rejects partial without skipped items', fn() => new InventorySnapshot(InventorySnapshot::PARTIAL, [], 0));
 deny('fromItem refuses a plain array (object identity required)', fn() => InventoryPackage::fromItem(doc_item()));
 
+// --- Review regressions: numeric keys, construction boundary, references ----
+
+ok('Numeric unknown key in raw JSON stays a serializable observation', ($s = project(response(200, '[{"id":1,"created":"2020-01-15T16:30:30+00:00","enabled":true,"name":"a.test","names":["a.test"],"typeRef":1,"123":"synthetic"}]')))->state === InventorySnapshot::COMPLETE && $s->packages[0]->unmappedKeys === ['123'] && $s->packages[0]->unmappedCount === 1 && strpos(json_encode($s), 'synthetic') === false);
+ok('Package records are only built by the validated factory', !(new ReflectionClass(InventoryPackage::class))->getConstructor()->isPublic());
+deny('Snapshot rejects a complete-coverage claim', fn() => new InventorySnapshot(InventorySnapshot::COMPLETE, [], 0, 0, [], '', '', InventorySnapshot::COVERAGE_COMPLETE));
+deny('Snapshot rejects an arbitrary package-shaped array', fn() => new InventorySnapshot(InventorySnapshot::COMPLETE, [['id' => 1, 'private' => 'synthetic']], 0));
+$pkg = InventoryPackage::fromItem(obj(doc_item()));
+$mutablePkg = $pkg;
+$snap = new InventorySnapshot(InventorySnapshot::COMPLETE, [&$mutablePkg], 1729000000);
+$mutablePkg = ['attacker' => 'data'];
+ok('Caller-held references cannot mutate snapshot packages', $snap->packages === [$pkg]);
+$mutableReason = 'skipped once';
+$snap2 = new InventorySnapshot(InventorySnapshot::PARTIAL, [], 1729000000, 1, [&$mutableReason]);
+$mutableReason = 42;
+ok('Caller-held references cannot mutate skip reasons', $snap2->skipReasons === ['skipped once']);
+
 // ---------------------------------------------------------------------------
 
 $failed = count(array_filter($checks, fn($c) => !$c['passed']));
