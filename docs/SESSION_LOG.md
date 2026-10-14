@@ -1286,3 +1286,17 @@ Starting e6a6a547888e808a2441015eca796d9dab198ef1, merge21ebe6928ecd4c4dcbda2c8b
 ## 2026-10-14 — separate observed reconciliation from another dispatch
 
 Starting bd0e46e803901a51f2859d03767d637f2153c397, add the distinct canonical method/journal command and95 named controls, retain all360 original controls and legacy semantics, extend focused default/no-ini PHP8.2/8.4 workflow and mirror/inventory. Local clean modes pass after fixing a fixture notice; current CI/independent review pending. Durable observations, exact evidence binding and application retry integration remain next work, with no activation. Parent1.23 acceptance continues unchanged.
+
+## 2026-10-14 — durable reconciliation increment on a preserved branch
+
+Owner requested continued roadmap work. Start b597559 on codex/hosting-reconciliation-storage, retain parent88 unchanged. Implement closed observation schema, strict additive migration, internal transactional finalizer, original-prefix validation and current-authorized retry adaptation. Add native synthetic race/audit/tamper/history cases and retain old suites/private-path coverage. Canonical1,820 and parentbd568 verified; current1.23 browser6,840 and Windows packages verified, fullApache/reviews pending. Windows native stopped at the existing0600 key guard before new assertions; no permission change. Linux native execution and additive review are next.
+
+## 2026-10-14 — verify native reconciliation and bound unknown history
+
+At48b9d85, download all10 reports from38566812922:131 new plus284 retained per PHP8.2/8.4,830 total, clean diagnostics. Current1.23/21 full8,360/all21 and package/image/recovery checks also verified; review remains pending. Add32-unknown bound with reserved conclusive resolution and eight boundary/local-bypass cases. Existing assertions remain. Next verify current matrix and additive independent review, then full application acceptance.
+
+## 2026-10-14 — preserve full matrix after confirmed75-minute timeout
+
+Application38567952137 at0f7bbb0 is terminal cancelled: GitHub reports that its75-minute job allowance expired during Apache. Final shipping-source verification was skipped. Downloaded partial artifacts/logs are preserved; no complete application acceptance is claimed. This correction raises only the job allowance to105 minutes, retaining every test, supported baseline and fail-fast assertion. No site, foundation, test or packaging bytes change.
+
+Start0f7bbb0 on `codex/hosting-reconciliation-storage`/PR89. Its verified846 focused native executions per matrix and7046 browser checkpoint remain scoped to that source. Replacement full acceptance and independent review remain required. Published1.22.0 and candidate85 remain unchanged. Codex separately continues service-agreement screens92/06aafaa; Devin has the20i assignment in issue2/comment6170260528. Next run the corrected exact branch once and inspect its final artifact, packages and actual images. No production activation or new release.

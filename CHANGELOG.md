@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — retain full acceptance after confirmed job timeout
+
+Raise the application job allowance from75 to105 minutes after run38567952137 expired during Apache. No test or baseline is removed and no shipping source changes. Replacement acceptance remains pending.
+
+## Unreleased — durable hosting observation storage
+
+Add internal immutable unknown/conclusive evidence, exact dispatch/prefix validation, atomic reconciliation/resource/audit and separately authorized retries after validated absence. Preserve original observations, legacy semantics and missing-result refusal. Native Linux acceptance/review pending; Windows stopped at retained private-key permission protection. No route, activation or new release. [Contract](docs/HOSTING_RECONCILIATION.md).
+
 ## Unreleased — state-only hosting reconciliation
 
 Add a distinct non-dispatching reconciliation method/journal command; preserve legacy command semantics, retain original observations and require explicit later deletion retry. Local95 new plus360 retained controls pass per default/no-ini mode; native persistence/provider verification/CI/review remain separate pending work. No route or release. [Contract](docs/HOSTING_RECONCILIATION.md).
@@ -558,3 +566,7 @@ Added separate private draft controller/view sources and 38 named raw form-input
 ### Local email draft application integration (unreleased)
 
 Connect fresh/additive setup, current-authorized admin compose/list/preview/template/discard/history and mailbox navigation. Add packaged HTTP/Chromium and Apache cases plus1.19 recovery/reapplication retaining active/discarded drafts and original keys. These integration scenarios await CI; no SMTP or release publication. Application job budget45minutes preserves all assertions while accommodating the additional recovery cases.
+
+## Unreleased — bound unresolved hosting observation history
+
+Cap unknown observations at32 per dispatch, retain exact replay and reserve conclusive resolution. Prior storage48b9d85 native830 verified; eight additional boundary controls pending. No release or activation.
