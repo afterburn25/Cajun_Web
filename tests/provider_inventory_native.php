@@ -58,8 +58,12 @@ try {
     // Version-1 storage upgrades in place; the new columns are appended.
     db()->exec('ALTER TABLE '.table('provider_refresh_results').' DROP COLUMN key_fingerprint');
     db()->exec('ALTER TABLE '.table('provider_package_links').' DROP COLUMN key_fingerprint, DROP COLUMN profile_revision');
+    query('INSERT INTO '.table('provider_package_links').' (id,profile_id,package_id,client_id,linked_by,linked_at) VALUES (?,?,?,?,?,?)',[bin2hex(random_bytes(16)),$id,777,1,1,gmdate('Y-m-d H:i:s')]);
     save_setting('provider_inventory_schema_version','1');
-    provider_inventory_migrate($password);pi_ok('Version-1 storage upgrades in place','2'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'')&&provider_inventory_links($id)===[]);
+    provider_inventory_migrate($password);pi_ok('Version-1 storage upgrades in place','2'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??''));
+    $services=provider_inventory_client_services(1);
+    pi_ok('Pre-upgrade mappings load unverified and stay suppressed',count($services)===1&&$services[0]['context_changed']===true&&!$services[0]['present']);
+    query('DELETE FROM '.table('provider_package_links').' WHERE package_id=777');
     save_setting('provider_inventory_schema_version','99');pi_deny('Unsupported inventory storage version refused',fn()=>provider_inventory_migrate($password));save_setting('provider_inventory_schema_version','2');
     pi_deny('Wrong current password prevents DNS and refresh intent',fn()=>provider_inventory_refresh($id,1,'wrong','pi_resolve','pi_read'));
     pi_deny('Stale revision prevents DNS and refresh intent',fn()=>pi_refresh($id,null,null,2));
