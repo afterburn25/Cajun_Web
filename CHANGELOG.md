@@ -5,6 +5,56 @@
 - Added canonical `foundation/pipeline/` classes (`PipelineStage`/`PipelineBoard` validated ordered stages with explicit transition lists and won/lost markers, `LeadRecord` with board-checked moves, typed record links, follow-up dates and append-only actor-attributed history) plus `docs/PIPELINE_FOUNDATION.md`.
 - Added `tests/pipeline/run.php` (31 synthetic checks; fixture boards/leads only) and the `pipeline.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, persistence, permissions or board UI. Not yet integrated or released.
+## 1.20.0 — candidate, not published
+
+Protected owner20i settings, explicit fixed read-only connection checks and retained finite outcomes. Add current-password/CSRF/revision protection, private encrypted credentials and additive setup. Candidate acceptance includes published1.19 update/recovery with original private key preservation; results pending. General hosting/domain/VPS/SSH operations remain unverified.
+
+## Unreleased — exact-byte installer inventory correction
+
+Regenerate owner UI dependency hashes from the committed LF source bytes after CI rejected Windows-normalized development hashes. No application behavior change.
+
+## Unreleased — owner 20i connection screen
+
+Wire protected owner settings, explicit fixed connection checks, finite/history displays and fresh/additive setup. Add actual packaged HTTP/Chromium against isolated HTTPS. Combined application acceptance and release remain pending.
+
+## Unreleased — audited explicit provider-check preparation
+
+Add unwired current-owner fixed-check orchestration, finite retained outcomes, request limits and interrupted-result handling; reuse canonical provider mirrors and add native process fixtures. Application integration remains pending.
+
+## Unreleased — owner provider storage preparation
+
+Add unwired owner-only encrypted 20i profile and retained metadata history, exact additive migration, native fixtures/workflow and provider-key package exclusion. Native acceptance and application integration remain pending.
+
+## Unreleased — isolated transport runner repair
+
+Create writable output mountpoints before mounting the source read-only. This fixes a pre-test Docker startup failure; no application or transport behavior changes.
+
+## Unreleased — isolated 20i HTTPS transport
+
+- Fixed destination/pinning/TLS and proxy/redirect refusal, finite errors, bounded streamed headers/body and transfer deadlines, with 333 local actual synthetic HTTPS checks and request/DNS policy evidence. No admin application integration or real API operation; matrix/review pending.
+
+## Unreleased — isolated fixed 20i connection probe
+
+- Added a fixed read-only package-list authentication adapter, finite classifications and explicit refusal of all general provider operations, with 120 synthetic checks. No real transport or application integration; no release version reserved.
+
+## Unreleased provider contract review
+
+- Recorded the 163-check canonical review and reproduced JSON shape defect; narrowed first integration to protected settings and explicit read-only checks. Inventory needs separately verified response fields and ownership acceptance. Documentation only; no feature or release claimed.
+
+## Unreleased — provider settings contract preparation
+
+Claim an isolated owner20i settings/read-only check contract after the1.19 email increment. Documentation only; no API call, application feature, release or deployment.
+
+## Unreleased — HC-07 provider foundation (Devin, isolated component)
+
+- Finite probe classification per the [owner 20i settings contract](https://github.com/afterburn25/Cajun_Web/blob/codex/provider-settings/docs/PROVIDER_SETTINGS_CONTRACT.md): `ConnectionCheck` gains an `unknown` state for post-send ambiguity (timeout/protocol/lost result/unaccepted 2xx shape) — never reported as a pass or a clean failure; `unreachable` is reserved for faults demonstrably before send. Check details are bounded printable classifications (≤200 bytes, no control characters), and `probe()`/`HttpTransport` docblocks now state the pinned-endpoint, strict-shape, no-redirect/proxy, DNS-validation and byte-cap invariants adapters and transports must honor. Codex review follow-up: the fixture probe decodes with JSON object/list identity preserved — objects (incl. `{}`/`{"0":…}`), scalars, null, malformed/trailing and over-depth bodies classify `unknown`, never `verified`; validation wording says bytes, not chars. All 171 checks pass locally on PHP 8.4 with/without php.ini. No shipping integration.
+
+- Codex contribution from reviewed provider head 1e42402: reject failed JSON map-key encoding before operation claim, with nested malformed UTF-8, zero side-effect and valid Unicode/replay regressions. All 150 checks pass locally on PHP 8.4 with/without php.ini; matrix and review pending. No shipping integration.
+
+- Added canonical `foundation/provider/` contract classes (adapter interface + capability matrix, lazy secret-resolving credentials, HTTPS-only transport boundary, operation/idempotency-key model, durable ledger interface, enforcing gateway, and external-resource reconciliation) plus `docs/PROVIDER_FOUNDATION.md`.
+- Corrected the ledger/execution contract per the HC-07 correction pass: `OperationLedger::claim()` atomically reserves an idempotency key bound to a canonical provider/account/operation/params fingerprint before any remote call (new `LedgerClaim` states `claimed`/`replay`/`in_progress`/`uncertain`/`conflict`); `record()` finalizes under the claim. Non-idempotent operations never auto-retry — ambiguous outcomes (transport fault or 429/5xx after the request may have been sent) record `uncertain` for reconciliation. `TransportException` carries only a finite failure kind; `OperationResult` enforces bounded printable messages; `masked()` fully masks secrets of 8 characters or fewer; timeouts/backoff reject `NAN`/`±INF`.
+- Added `tests/provider/run.php` (124 synthetic checks) plus `FileLedger.php`/`file_ledger_worker.php` (a real four-process `flock` claim race — beyond scripted interleaving) and the `provider.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes, schema, persistence, admin UI or real provider calls; HC-07 external gate remains `Awaiting API verification`. Not yet integrated or released. Exactly-once remote execution is not claimed — crash-after-write resolves to `uncertain`, not silent re-execution.
 
 ## 1.11.1 — candidate, motion preferences and organized updates
 
