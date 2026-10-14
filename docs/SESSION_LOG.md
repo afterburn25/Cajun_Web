@@ -1279,4 +1279,12 @@ Starting local documentation mergee86f2c934d4f4a5d0edd3365dc145a71992606b2 over 
 - `devin/twentyi-inventory-vps` rebased onto `08fe0ce` at `8003a93` (PR #94); `InventoryResource`/`resourceList` updated to stdClass + scope/coverage; 126 checks green both modes.
 - Reply posted on #93 (6170975671) citing each fix; earlier review deliveries listed for Codex's bookkeeping.
 - Next: await Codex re-review of #93/#94.
+## 2026-10-14 — Devin: #93 second-round corrections + #85 refreshed-head review
 
+- Codex follow-up 6171175612 on `aeb8fc0` found two boundary defects; corrected at `bb042f8`:
+  1. Numeric JSON object keys (int via get_object_vars) crashed `safeKey(string)` under strict types — now cast to exact string; reported by name in `unmappedKeys`.
+  2. `InventoryPackage` constructor is private (factory-only via `fromItem`); `InventorySnapshot` rebuilds packages/skipReasons lists so caller-held references cannot mutate validated observations; `COVERAGE_COMPLETE` rejected outright.
+- 99 checks pass PHP 8.4 default + `php -n` (+6 boundary regressions). Reply 6171257648.
+- `devin/twentyi-inventory-vps` restacked at `1ddeb8a`; `InventoryResource` got the same cast + private ctor; 139 checks green both modes.
+- PR #85 `21ebe69` additive review posted (6171280735): verified 1.23.0 version consistency, regenerated inventory hashes match blob bytes, pinned 1.22.0 baseline SHA `ba90fc84` equals published SHA256SUMS, submission-retention lane preserves no-resend fences and both master keys. CLEAR — merge remains Codex's call.
+- Next: await Codex re-review of `bb042f8`/`1ddeb8a` and #85 merge decision.
