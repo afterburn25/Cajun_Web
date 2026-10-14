@@ -1,6 +1,8 @@
 # A-06/A-07 — local email drafts and template insertion
 
-## Current acceptance boundary — storage and UI remain unwired
+Current branch integration connects fresh/additive setup, admin routes/actions and account-hub links. Native/HTTP/browser/recovery acceptance of this integration is pending; earlier unwired checkpoints below are historical. See [user workflow](LOCAL_EMAIL_DRAFTS.md). No sending or later release is implied.
+
+## Earlier acceptance boundary — before route integration
 
 Provider1.20.0 merged through PR74 at6f0b0ce and is now reconciled into this development branch; exact-main acceptance/publication remain pending. On codex/mail-drafts, the content component atcbd4fd4 passed all71 named checks in each default/no-ini PHP8.2/8.4 cell; downloaded run38513488603 is verified. [PR75](https://github.com/afterburn25/Cajun_Web/pull/75) retains its contract review request6161185221.
 

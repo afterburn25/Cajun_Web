@@ -7,6 +7,9 @@ define('CWP_BOOT',true);define('CWP_ROOT',$root);
 require $root.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=require $root.'/config.php';
 if(config()['db']['name']!=='cwp_test')exit(2);
+if(($argv[2]??'')==='drafts'){
+    echo json_encode(['drafts'=>all('SELECT * FROM '.table('mail_drafts').' ORDER BY id'),'history'=>all('SELECT * FROM '.table('mail_draft_revisions').' ORDER BY draft_id,revision')],JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='provider-seed'){
     require_once $root.'/app/providers/checks.php';
     $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=$root;

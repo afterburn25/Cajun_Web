@@ -418,3 +418,7 @@ Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid 
 ### Draft compose UI preparation (unwired)
 
 Added separate private draft controller/view sources and 38 named raw form-input checks. Prepared account/template selection, save/preview/discard/history, stale revision preservation and explicit template replacement. No route, navigation or setup activates the screens; native/HTTP acceptance and release remain pending. Provider PR74 is merged with exact-main acceptance queued; existing published version remains1.19.0.
+
+### Local email draft application integration (unreleased)
+
+Connect fresh/additive setup, current-authorized admin compose/list/preview/template/discard/history and mailbox navigation. Add packaged HTTP/Chromium and Apache cases plus1.19 recovery/reapplication retaining active/discarded drafts and original keys. These integration scenarios await CI; no SMTP or release publication. Application job budget45minutes preserves all assertions while accommodating the additional recovery cases.

@@ -227,3 +227,32 @@ def run(web,base,check,qa,php,label,prefix,version):
         r=session.post(settings,data={'csrf':token(session.get(settings)),'action':'provider_settings_save','profile_id':profile['id'],'revision':profile['revision'],'current_password':password,'label':'Retained provider connection','general_key':'','enabled':'1'})
         restored=records('provider')
         check(label+' original provider key decrypts after recovery and reapplication','20i settings saved' in r.text and restored['profiles'][0]['revision']==profile['revision']+1 and len(restored['history'])==2 and restored['checks']==saved['checks'] and restored['results']==saved['results'] and (private/'provider-master.key').read_bytes()==provider_key and prior_retained())
+
+        # Local draft recovery baseline; extend to actual1.20 before a later draft release.
+        library=url+'/admin/index.php?view=mail-drafts'
+        r=session.get(library);check(label+' draft upgrade requires explicit owner preparation','Prepare local drafts' in r.text)
+        r=session.post(library,data={'csrf':token(r),'action':'mail_drafts_setup','current_password':password})
+        check(label+' draft setup is additive and preserves provider and prior private data','Local email drafts are ready' in r.text and records('drafts')=={'drafts':[],'history':[]} and records('provider')==restored and prior_retained())
+        account=prior_accounts['accounts'][0];mail=url+'/admin/index.php?view=mail-account&account_id='+account['id'];grant=prior_accounts['grants'][0]
+        session.post(mail,data={'csrf':token(session.get(mail)),'action':'mail_accounts_grant','account_id':account['id'],'revision':grant['revision'],'user_id':1,'can_read':'1','can_send':'1','enabled':'1','days':'0','current_password':password})
+        draft_accounts=records('mail-accounts')
+        check(label+' owner explicitly grants Send while retaining original profile and key',draft_accounts['accounts']==prior_accounts['accounts'] and draft_accounts['grants'][0]['can_send']==1 and (private/'mail-master.key').read_bytes()==prior_key)
+        new=url+'/admin/index.php?view=mail-draft&account_id='+account['id']
+        def draft_form(target):
+            form=BeautifulSoup(session.get(target).text,'html.parser').select_one('[data-mail-draft-editor]')
+            assert form is not None,target
+            return {n['name']:n.get('value','') for n in form.select('input[type=hidden][name]')}
+        from urllib.parse import parse_qs,urlparse
+        fields=draft_form(new);fields.update({'action':'mail_drafts_save','sender':account['id']+':'+str(account['revision']),'to':'retained@example.invalid','cc':'','bcc':'private@example.invalid','subject':'Retained draft subject','body':'Retained draft first'})
+        r=session.post(new,data=fields);draft_id=parse_qs(urlparse(r.url).query)['draft_id'][0];detail=url+'/admin/index.php?view=mail-draft&draft_id='+draft_id
+        fields=draft_form(detail);fields.update({'action':'mail_drafts_save','sender':account['id']+':'+str(account['revision']),'to':'retained@example.invalid','cc':'','bcc':'private@example.invalid','subject':'Retained draft subject','body':'Retained draft second'})
+        session.post(detail,data=fields)
+        fields=draft_form(new);fields.update({'action':'mail_drafts_save','sender':account['id']+':'+str(account['revision']),'to':'','cc':'','bcc':'','subject':'Retained discarded draft','body':'Retained discarded text'})
+        r=session.post(new,data=fields);discard_id=parse_qs(urlparse(r.url).query)['draft_id'][0]
+        session.post(library,data={'csrf':token(session.get(library)),'action':'mail_drafts_discard','draft_id':discard_id,'revision':'1'})
+        saved_drafts=records('drafts')
+        check(label+' upgraded draft forms create edited and discarded local records',len(saved_drafts['drafts'])==2 and len(saved_drafts['history'])==4 and sorted(x['status'] for x in saved_drafts['drafts'])==['discarded','draft'])
+        def draft_retained():
+            return records('drafts')==saved_drafts and records('provider')==restored and records('mail-accounts')==draft_accounts and records('notices')==prior_notices and records('templates')==prior_templates and records('messages')==prior_messages and records('inbox')==prior_inbox and (private/'mail-master.key').read_bytes()==prior_key and (private/'provider-master.key').read_bytes()==provider_key
+        r=action('recover');check(label+' recovery retains draft text history original keys and earlier records','<h2>Rolled-back</h2>' in r.text and draft_retained())
+        r=action('apply');check(label+' reapplication reopens retained private draft without rewriting history','<h2>Complete</h2>' in r.text and draft_retained() and 'Retained draft second' in session.get(detail).text)

@@ -30,7 +30,7 @@ function mail_drafts_form_values(array $input):array {
 }
 function mail_drafts_form_revision(array $input,string $key):int {
     $value=mail_drafts_form_text($input,$key,10);
-    if(!ctype_digit($value)||(int)$value>=2147483647)throw new InvalidArgumentException('Reload the current draft form.');
+    if(preg_match('/^[0-9]+$/D',$value)!==1||(int)$value>=2147483647)throw new InvalidArgumentException('Reload the current draft form.');
     return (int)$value;
 }
 function mail_drafts_form_reference(string $value):array {

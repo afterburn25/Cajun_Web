@@ -1,6 +1,16 @@
 # Approved roadmap and acceptance criteria
 
-## Current checkpoint — reviewed storage and unwired compose screens
+## Current integration — draft routes connected; application acceptance pending
+
+From ed539ed, private draft controllers/views are now connected to admin routes and the existing My email accounts hub. Fresh setup creates empty draft tables/readiness; upgraded owners explicitly prepare storage with their password. Actions use existing CSRF and current Send/account/author checks. Native mail-account fixtures exclude the new dependent draft tables until their parent exists. No SMTP, server Drafts synchronization or arbitrary sender identity is introduced.
+
+Added real packaged HTTP/Chromium cases for owner setup, author isolation, duplicate create, stale text/revision preservation, header controls, Unicode length errors, sender changes, current grant/account/permission loss, canonical template insertion, escaped preview, keyboard/mobile behavior and no mail/provider/system delivery. Added Apache denial for each draft internal and actual1.19 update/recovery/reapplication retaining edited/discarded drafts and both original private keys. These new scenarios are prepared, not yet passed. Before a later draft release, extend the baseline to the actual published1.20 package. The application job budget rises from35 to45 minutes because the verified provider candidate already took34m22s and the new recovery/browser scenarios add work; assertions remain unchanged.
+
+Verified prior storage:78 named MariaDB checks per PHP8.2/8.4 at2748030 in downloaded38515162950; independent review6161455602. Current local raw form handling:41 checks default/no-ini PHP8.4.25, including extension-independent revision parsing. Combined prior-source matrix38517091260 remains pending. No new draft release version is reserved; provider main6f0b0ce acceptance38515419302 continues independently. Latest published release remains1.19.0.
+
+Next: regenerate/check combined installer inventory, push this bounded integration, inspect native/HTTP/browser/recovery/Apache evidence and fix actual failures. Inspect rendered desktop/mobile screenshots. Complete provider1.20 publication and the actual1.20 recovery baseline before any draft release. [Draft workflow](LOCAL_EMAIL_DRAFTS.md).
+
+## Earlier storage and screen preparation — superseded by current integration
 
 Current source reconciliation: merged main 6f0b0ce into the draft branch after aeb51a4. Both feature histories and documentation are retained; the builder mirrors provider/twentyi and mail-compose together. This resolves PR merge conflicts so combined CI can run. Main's exact acceptance is running, not yet verified or published. Draft routes/setup remain unwired; no draft version is reserved.
 
