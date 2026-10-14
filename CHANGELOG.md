@@ -7,12 +7,18 @@
 - Corrected the component per [PR #53 review](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6161469018): `recordConsent` now requires the consenting actor to be the subscribing client and the presented `termsHash` to equal the subscription's pinned snapshot (no self-generated hash, no arbitrary-actor consent); all customer-facing terms are strictly typed bounded valid-UTF-8 plain strings (non-strings, Stringable objects, whitespace-only, oversized and malformed limit names refused — a `termsHash()` can never silently change or throw), and the currency check anchors absolutely (`"USD\n"` no longer passes); every event requires a non-empty actor and an explicit UTC instant (`YYYY-MM-DDTHH:MM:SSZ`, relative/date-only forms refused) with monotonic history — out-of-order events leave state and history unchanged. Suite 46 → **68** checks.
 - Corrected again per [PR #53 re-review](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6162609466): retained `limits` are copied into a fresh reference-free array so caller-held PHP references can never mutate a stored cap or drift `termsHash()` after activation/subscription start; `LIMIT_NAME` and `INSTANT` now end-anchor with `\z` — a trailing-newline meter name (`"updates\n"`) or instant (`"2026-10-14T12:00:00Z\n"`) is refused without mutating state or history. Suite 68 → **76** checks.
 - No `site/` changes, billing capture or persistence. Not yet integrated or released.
+## 1.22.0 — verified explicit saved-email sending
+
+- Explicit saved-message review, unchecked confirmation and Send; private author history, separate To/Cc/Bcc, current mailbox/Send grants and exact revisions.
+- Deterministic maintained MIME and bounded verified SMTP/TLS, durable one-time dispatch records, truthful accepted/rejected/not-submitted/unknown results. No automatic resend after accepted, unknown or unresolved outcomes; result-storage failure preserves uncertainty.
+- Additive owner setup and fresh installation; all24 starting packages through1.21.0 accepted. Actual1.21 update/recovery retains drafts, submission records, prior encrypted history and original keys without resend.
+- Published/download-verified `e3b434ffb2244e454ea9f24fa1de9173b7479ccc` after7,854 exact-main assertions and all21 workflows. All16 assets, archive members/checksums/tag and Windows/Linux bytes verified. Actual desktop/mobile views inspected; homepage pixels equal1.21.0. No live customer mail or deployment.
 
 ## Unreleased — complete retained application acceptance
 
 Allow75 minutes for the existing full mail/upgrade/Apache suite after verified45m cancellation. Preserve incomplete Apache progress checkpoints without weakening assertions. Runtime/version/installer unchanged; replacement acceptance pending.
 
-## 1.22.0 candidate — not released
+## Historical1.22.0 candidate preparation
 
 Explicit saved-message review/Send and private results; latest1.21 package/recovery baseline prepared. [Sending guide](docs/SENDING_EMAIL.md). Full acceptance and independent review remain pending.
 
@@ -83,7 +89,6 @@ Record the next explicit-send boundary on a separate branch: maintained protocol
 - Current Send/grant/account/author gates, optimistic revisions, stable create replay and strict metadata audit. Sender changes require confirmation; concurrent discard preserves a separate escaped copy of unsaved text.
 - Additive owner setup and fresh installation; actual1.20.0 update/recovery/reapplication retains existing records, prior provider history, added drafts and both original private keys.23 starting versions supported.
 - Published/download-verified `7805e56aa9e53cb081600589e92991255475474c` after 6912 named exact-main application checks and PHP8.2/8.4 matrices. All16 assets, ZIP members, checksums/tag and Windows/Linux bytes verified. Actual desktop/mobile views inspected; homepage pixels equal1.20.0.
-
 
 ## 1.20.0 — verified owner 20i connection
 
@@ -167,7 +172,6 @@ Claim an isolated owner20i settings/read-only check contract after the1.19 email
 
 ## 1.19.0 — verified recent email notices
 
-
 - Explicit successful inbox reads populate a newest-20 observation window with exact mailbox generation/UID identity; strict result/audit failures roll back notice changes. Failed reads retain the prior window.
 - Current-authorized notice page, per-staff opened/dismissed state, independent handle/full-tuple POST opening, and private admin/public bells. Passive polling never fetches mail or renews idle login; client-support pages suppress staff email notices. Server read flags remain unchanged.
 - Additive owner preparation and empty fresh storage; accurate last-check/failed/incomplete status without retaining sender, subject, body or credentials in notices. Existing read transport and message limits remain unchanged.
@@ -182,8 +186,6 @@ Claim an isolated owner20i settings/read-only check contract after the1.19 email
 - Added bounded current-window metadata, separate per-person opened/dismissed markers, exact current mailbox permission filtering, collision refusal and independent full-tuple resolution.
 - Added explicit owner migration with column/key/relationship compatibility checks and strict audit; observation helpers require the successful terminal-result transaction. No schema/reader/HTTP integration or bell UI is wired yet.
 - Local PHP syntax passes. Native database fixtures and PHP 8.2/8.4 workflow are added; database and full application acceptance remain pending. Published/download-verified 1.18.0 remains immutable; its publication documentation is merged into this preparation branch.
-
-
 
 ## 1.18.0 — verified individual email reading
 
@@ -495,7 +497,6 @@ No application source/asset import, feature implementation, host repair, databas
 - Candidate 91ef30d: 50 native and 143 HTTP/browser checks passed; final browser-admin, sitemap and favicon-reference assertions added before merge.
 
 Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid versioned favicon URLs because it compared the query suffix as part of the path. Parse the URL path and fetch the actual referenced icon for byte equality. Application source is unchanged; rerun the full suite.
-
 
 ## Historical component contract — review-request adapter contract (L-02 dependency)
 
