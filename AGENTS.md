@@ -1,6 +1,16 @@
 # Working agreement for CajunWebPro
 
-## Current draft storage preparation — native acceptance pending
+## Current checkpoint — reviewed storage and unwired compose screens
+
+Provider PR #74 merged at 6f0b0ce5a9cba68b6859334818383fcc09e2ba3e after independent review and all 6,593 candidate application checks. Exact-main run 38515419302 and mail regressions 38515462046/38515464139 are queued; the clean Windows build passes. Version 1.20.0 is not published; 1.19.0 remains the latest verified release.
+
+PR #75 storage at 2748030 received independent no-blocker review in comment 6161455602. Its PHP 8.2/8.4 MariaDB workflows remain queued behind existing Actions work. Do not infer native acceptance. The 71 canonical content checks have downloaded default/no-ini matrix proof from 38513488603.
+
+This increment prepares separate guarded compose/list/preview controller and view files, with exact mailbox choices, current author checks, preserved stale form revisions, template replacement confirmation, retained discard/history and escaped plaintext. They have no router/action/navigation/base-schema/setup call site yet. The raw form parser preserves whitespace and rejects header controls before trimming could hide them. All 41 named form-input checks pass locally under PHP 8.4.25 default and no-ini; this proves input handling only, not rendered HTTP/browser behavior. Dedicated native CI now includes those form checks.
+
+Next: finish exact-main provider acceptance and download-verified publication; inspect/fix the queued draft native matrix, reconcile the verified provider baseline, then wire fresh/additive setup, authorization, navigation and actions with packaged HTTP/Chromium/latest-release recovery tests. No new draft release version is reserved. No SMTP, real provider operation or target-host deployment. Service-plan #53 review at 35fc1b1 reproduced ten negative cases and is recorded in comment 6161469018; its corrections follow the existing #60 hosting assignment.
+
+## Earlier storage preparation — superseded by current checkpoint
 
 Provider1.20.0 remains a separate PR74 release candidate. On codex/mail-drafts, the content component atcbd4fd4 passed all71 named checks in each default/no-ini PHP8.2/8.4 cell; downloaded run38513488603 is verified. [PR75](https://github.com/afterburn25/Cajun_Web/pull/75) retains its contract review request6161185221.
 
@@ -9,7 +19,7 @@ This increment adds unwired local draft storage and metadata history, exact addi
 No base-schema, controller, navigation or HTTP call site activates this module yet; no new version is reserved. Builder mirroring and installer inventory include the guarded source. Next: inspect native evidence and contract review, then expose owner setup/private compose UI with current CSRF/revision checks and actual packaged browser/latest-release recovery acceptance after reconciling verified1.20main. Keep all real sending/provider/deployment gates intact.
 
 
-## Active independent work — local email draft content
+## Earlier component preparation — superseded by current checkpoint
 
 Codex owns `codex/mail-drafts`, starting from main ceedcfd (published application1.19.0). Provider candidate1.20.0 remains in separate [PR #74](https://github.com/afterburn25/Cajun_Web/pull/74), awaiting full candidate acceptance and independent owner storage/check/UI review. The shared-hosting foundation #60 remains outside deployment after [ten negative reproductions](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6161071101); Devin retains those corrections after the provider review priority.
 

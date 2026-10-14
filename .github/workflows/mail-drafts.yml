@@ -1,8 +1,8 @@
 name: Mail draft storage checks
 on:
   push:
-    branches: [main, codex/mail-drafts]
-    paths: ['site/app/mail/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_drafts*.php', '.github/workflows/mail-drafts.yml']
+    branches: [main]
+    paths: ['site/app/mail/**', 'site/admin/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_drafts*.php', '.github/workflows/mail-drafts.yml']
   pull_request:
   workflow_dispatch:
 permissions:
@@ -53,6 +53,11 @@ jobs:
               php -l site/database/schema/mail_drafts_schema.php
               php -l site/database/migrations/mail_drafts_migrate.php
               php -l tests/mail_drafts_native.php
+              php -l site/admin/controllers/mail_drafts.php
+              php -l site/admin/views/mail_drafts.php
+              php tests/mail_drafts_form.php
+              cp qa/mail-drafts-form-results.json qa/mail-drafts-form-default-results.json
+              php -n tests/mail_drafts_form.php
               php tests/mail_drafts_native.php
             '
       - name: Preserve named storage evidence
@@ -60,6 +65,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mail-drafts-${{ matrix.php }}-${{ github.sha }}
-          path: qa/mail-drafts-native-results.json
+          path: qa/mail-drafts*-results.json
           if-no-files-found: warn
           retention-days: 14

@@ -341,3 +341,7 @@ Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid 
 ## Historical component contract — review-request adapter contract (L-02 dependency)
 
 - Add `docs/REVIEW_REQUESTS_ADAPTER.md`: the contract for adopting the review-request foundation (PR #31) in the live `website-review` lead path — `WebsiteAddress` intake normalization, consent-aware `ReviewContact`, stage persistence via an additive `review_stages` table, `review_reports` as the delivery gate, and staff transition controls through `ReviewInbox`. No shipping code or schema changes; records two decisions for integration review.
+
+### Draft compose UI preparation (unwired)
+
+Added separate private draft controller/view sources and 38 named raw form-input checks. Prepared account/template selection, save/preview/discard/history, stale revision preservation and explicit template replacement. No route, navigation or setup activates the screens; native/HTTP acceptance and release remain pending. Provider PR74 is merged with exact-main acceptance queued; existing published version remains1.19.0.
