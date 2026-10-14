@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.23.0 — published and verified
+
+Client account edits reject stale versions and retain safely escaped unsaved details; client/invitation writes recheck current authority and audit atomically. Invitations are single-use and unexpired, and client administration is refused during support sessions. Reviewed internal hosting records, dispatch fences and local provisioning retry remain inactive groundwork. Exact-main 8,360 assertions and 25 workflow gates pass; all 16 draft/public assets are downloaded and verified, with prior 1.22 unchanged. [Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0); [report](docs/TEST_REPORT_1.23.0.md). Complete 20i implementation remains assigned to Devin; service agreements and later hosting reconciliation remain separate increments.
+
+
+## Development coordination — acknowledged full 20i ownership
+
+Reconcile the ownership handoff with merged client/hosting groundwork main `4fdb562`, preserving both histories. Record Devin's explicit acceptance and first reader PR #99. No runtime or release asset changes relative to main.
+
+## Development coordination — complete 20i ownership
+
+Transfer the complete 20i implementation to Devin, including application persistence and admin/client portal screens. Record the full requirements, bounded workstreams and shared-file ownership; Codex retains non-20i work and final review/release coordination. Documentation only; no application, version, installer or published-package change.
+
 ## 1.23.0 candidate — current client authority and hosting groundwork
 
 Unreleased. Preserve reviewed client conflict/invitation/support safeguards and internal hosting journal/storage/dispatch/local-retry groundwork. Align application/installer/update labels; add actual published1.22 baseline and retained-submission update/recovery/replay cases. Prior combineda9 acceptance passes8,234 checks/all21workflows; this newer candidate still needs its own full acceptance and exact-main release gates. [Candidate guide](docs/CLIENT_ACCOUNT_SAFEGUARDS.md).
