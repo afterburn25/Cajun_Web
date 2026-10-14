@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — isolated immutable submission preparation
+
+Add a canonical reference-free private submission snapshot, selected sender/recipient validation, stable Message-ID and full content/revision fingerprint.52 local preparation checks pass default/no-ini; matrix pending. No maintained MIME/SMTP, credentials, persistence, site/runtime integration or sending yet.
+
 ## Unreleased — submission contract preparation
 
 Record the next explicit-send boundary on a separate branch: maintained protocol/MIME, immutable reviewed snapshots, all-recipient pre-DATA acceptance, durable intent and attempt-bound unknown outcomes. Documentation only; no new application version, transport, UI or message sent.

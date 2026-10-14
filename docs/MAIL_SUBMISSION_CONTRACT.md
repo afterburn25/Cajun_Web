@@ -1,5 +1,7 @@
 # A-06 — explicit SMTP submission from private local drafts
 
+Current preparation from contract22e1b93: canonical immutable `SubmissionSnapshot` is implemented outside deployment with52 locally passing default/no-ini checks. It supplies deterministic content/revision binding and envelope inputs only; no MIME/SMTP, authentication, persistence or UI is implemented. PHP8.2/8.4 matrix and independent review are pending. Earlier contract-only descriptions below are historical.
+
 Proposed next bounded increment, 2026-10-14. Codex owns `codex/mail-submission`, branched from draft candidate231d1f7 while PR75 acceptance38523831728 runs. This is a stacked development branch; reconcile the eventual accepted PR75/main before application integration. Published1.20.0 stays immutable. No new release version is reserved, no submission code is implemented by this contract, and no Send control or external operation is enabled.
 
 ## Ownership and boundaries

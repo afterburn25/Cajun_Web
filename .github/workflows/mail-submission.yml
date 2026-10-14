@@ -1,0 +1,42 @@
+name: Mail submission preparation checks
+on:
+  push:
+    branches: [main, codex/mail-submission]
+    paths: ['foundation/mail-submission/**', 'foundation/mail-compose/**', 'foundation/email-templates/**', 'tests/mail-submission/**', '.github/workflows/mail-submission.yml']
+  pull_request:
+    paths: ['foundation/mail-submission/**', 'foundation/mail-compose/**', 'foundation/email-templates/**', 'tests/mail-submission/**', '.github/workflows/mail-submission.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mail-submission-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  preparation:
+    name: Submission preparation PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Offline immutable submission preparation
+        run: |
+          mkdir -p "$RUNNER_TEMP/submission-results"
+          docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/submission-results:/workspace/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            for source in foundation/mail-submission/*.php tests/mail-submission/*.php; do php -l "$source"; done
+            php tests/mail-submission/run.php qa/submission-default-results.json
+            php -n tests/mail-submission/run.php qa/submission-no-ini-results.json
+          '
+      - name: Preserve named preparation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mail-submission-${{ matrix.php }}-${{ github.sha }}
+          path: ${{ runner.temp }}/submission-results/
+          if-no-files-found: error
+          retention-days: 14

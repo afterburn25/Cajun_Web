@@ -1,5 +1,15 @@
 # Working agreement for CajunWebPro
 
+## Current isolated implementation — immutable submission preparation
+
+From contract22e1b93, `foundation/mail-submission/SubmissionSnapshot.php` now prepares a bounded immutable private snapshot from canonical `DraftContent`. It binds server-supplied submission/author/draft/account identities, exact revisions, selected sender, timestamp and content into a deterministic fingerprint and Message-ID. To/Cc/Bcc remain separate, every intended envelope recipient is retained, and no-recipient drafts are refused. Referenced input/returned-array mutation cannot retarget the snapshot. This fingerprint grants no authority and is not an SMTP receipt.
+
+All52 named preparation checks pass locally under PHP8.4.25 default and no-ini, including control injection, malformed identity endings, reference detachment, revision/content binding, Bcc-only mail and literal Unicode text. The dedicated PHP8.2/8.4 network-disabled matrix is prepared but not yet accepted. No MIME library, transport, persistence, site mirror, schema, route, Send button or new application version is added. Draft PR75 acceptance38523831728 continues separately.
+
+Next: inspect matrix evidence and independent contract/preparation review; import and verify maintained MIME encoding, then bounded TLS SMTP and durable single-attempt application storage. Reconcile the accepted draft main before deployment integration. Keep latest verified1.20 and the full roadmap active.
+
+## Earlier contract-only checkpoint — superseded for implementation by the current section
+
 ## Current work — SMTP submission contract on a separate branch
 
 Codex owns `codex/mail-submission`, starting from draft candidate231d1f7. [Submission contract](docs/MAIL_SUBMISSION_CONTRACT.md) defines the next A-06 boundary: immutable reviewed content, maintained MIME/SMTP, all-recipient acceptance before DATA, durable single-attempt dispatch and explicit unknown outcomes. This initial commit is documentation only: no dependency import, application source/schema/version change, Send control or external operation. Reconcile accepted PR75/main before later application integration; no new version is reserved.

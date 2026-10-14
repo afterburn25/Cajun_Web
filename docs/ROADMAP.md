@@ -1,5 +1,7 @@
 # Approved roadmap and acceptance criteria
 
+Current preparation from contract22e1b93: canonical immutable `SubmissionSnapshot` is implemented outside deployment with52 locally passing default/no-ini checks. It supplies deterministic content/revision binding and envelope inputs only; no MIME/SMTP, authentication, persistence or UI is implemented. PHP8.2/8.4 matrix and independent review are pending. Earlier contract-only descriptions below are historical.
+
 ## Active preparation — SMTP submission
 
 The separate `codex/mail-submission` branch records the [bounded submission contract](MAIL_SUBMISSION_CONTRACT.md), based on draft candidate231d1f7. Documentation only at this checkpoint; no sending is implemented or enabled. Draft PR75 acceptance38523831728 and1.20.0 publication remain separate. Follow current status/handoff for exact evidence and continued ownership.
