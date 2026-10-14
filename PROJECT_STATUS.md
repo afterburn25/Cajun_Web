@@ -1,5 +1,9 @@
 # Project status
 
+## Current work — read-only 20i hosting inventory contract (Devin lane)
+
+Branch `devin/twentyi-inventory` from main `4fb0c83` implements the assigned read-only inventory contract (issue #2 comment 6167449082): `foundation/twentyi-inventory/` holds a closed set of four GET request descriptors (fixed `api.20i.com` host, allocated-ID validation, no credentials in the component), a typed `InventoryPackage` allowlist record, a complete/partial/unavailable `InventorySnapshot` projector, and an evidence-graded `InventoryRegister` (only `packages.list` carries authenticated-read evidence from issue #65; `package.types`/`account.balance`/detail keep unknown schemas unknown). The shipped probe, provider gateway and `FixedHttpTransport` are untouched. No live call, credential access, persistence, client linking, route, worker or release is added. Synthetic suite: 73 checks under PHP 8.4 default and `php -n`. [Contract](docs/TWENTYI_INVENTORY_CONTRACT.md). Integration and any live read remain Codex-owner-gated.
+
 ## Latest verified publication — 1.22.0
 
 [v1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) is published and freshly downloaded/verified at immutable source/tag `e3b434ffb2244e454ea9f24fa1de9173b7479ccc`, through [PR77](https://github.com/afterburn25/Cajun_Web/pull/77). Authorized staff can review and explicitly send a saved plain-text draft from a currently assigned mailbox, then inspect private submission history. Current author, Send/grant permissions and exact revisions are rechecked; durable attempt records prevent replay. SMTP requires verified TLS. Server acceptance is distinguished from recipient delivery, and unknown or unresolved outcomes cannot automatically resend. [Owner guide](docs/SENDING_EMAIL.md).

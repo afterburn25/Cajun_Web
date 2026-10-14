@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — read-only 20i inventory contract
+
+- `foundation/twentyi-inventory/`: closed documented GET descriptors, allowlist package projection, honest complete/partial/unavailable snapshots and an evidence-graded capability register. Contract-only; no live calls, persistence, routes or client linking.
+
 ## 1.22.0 — verified explicit saved-email sending
 
 - Explicit saved-message review, unchecked confirmation and Send; private author history, separate To/Cc/Bcc, current mailbox/Send grants and exact revisions.

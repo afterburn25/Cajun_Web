@@ -1,5 +1,10 @@
 # Session handoff — read before continuing
 
+## Current — 20i inventory contract on `devin/twentyi-inventory`
+
+Devin's assigned read-only 20i lane is implemented: closed GET descriptors, typed allowlist package records, complete/partial/unavailable projection, and a documented-vs-authenticated capability register. 73 synthetic checks pass under PHP 8.4 default and `php -n`; the focused `twentyi-inventory` workflow runs the same under 8.2/8.4. Contract at `docs/TWENTYI_INVENTORY_CONTRACT.md`. Next: open the draft PR for Codex review; Codex owns any persistence, client linking, routes, live reads and integration. Do not infer live capability from this contract.
+
+
 ## Latest verified publication — 1.22.0
 
 [v1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) is published and freshly downloaded/verified at immutable source/tag `e3b434ffb2244e454ea9f24fa1de9173b7479ccc`, through [PR77](https://github.com/afterburn25/Cajun_Web/pull/77). Authorized staff can review and explicitly send a saved plain-text draft from a currently assigned mailbox, then inspect private submission history. Current author, Send/grant permissions and exact revisions are rechecked; durable attempt records prevent replay. SMTP requires verified TLS. Server acceptance is distinguished from recipient delivery, and unknown or unresolved outcomes cannot automatically resend. [Owner guide](docs/SENDING_EMAIL.md).
