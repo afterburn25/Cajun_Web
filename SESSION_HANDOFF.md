@@ -1,5 +1,12 @@
 # Session handoff — read before continuing
 
+## Independent PR109 review in progress
+
+The owner assigned complete 20i implementation to Devin. This separate `codex/review-twentyi-ledger` branch preserves exact PR109 source `318471ef3d2cc1fb28994efc94dfe8e0dec7b895` and adds review-only synthetic tests/workflow. No shipping or foundation implementation is changed. The new probes test approval binding across profile disable/credential replacement, invalid UTF-8 scope-key refusal, and exact grants after 64 unrelated newer scopes. A failed behavior check is a review finding, not feature acceptance.
+
+The supplied native suite could not run under Windows because the existing provider vault correctly requires POSIX0600 file permissions; that failed local attempt is retained and is not a provider defect or acceptance claim. The dedicated Linux PHP8.2/8.4/MariaDB workflow runs the unmodified supplied tests followed by these independent controls, uploads both reports even on findings, and uses no real credentials or provider calls. Pending: download exact results/logs, report only reproduced findings to Devin on PR109, and leave corrections on his branch. Current published1.23 remains unchanged; Codex's project-history acceptance and planning work remain separate.
+
+
 ## Owner allocation override — 2026-10-14
 
 The owner instructed: **“let devin do the complete 20i integration.”** Devin owns the entire implementation: provider adapters, native persistence/migrations and client ownership, admin and client portal screens, hosting lifecycle/controls, domains, VPS/cloud, support handoffs and VPS SSH, with their tests and documentation. This supersedes earlier component-only assignments and statements reserving all 20i application/UI work to Codex. Codex retains non-20i development and final independent review, combined acceptance, merge/release coordination. [Full handoff and acceptance](docs/DEVIN_COMPLETE_20I_HANDOFF.md); [authoritative GitHub assignment](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171468180).
