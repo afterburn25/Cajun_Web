@@ -1,5 +1,13 @@
 # Changelog
 
+## Reconciliation review delivered — 2026-10-14
+
+Devin retains complete20i. [Review6180038918](https://github.com/afterburn25/Cajun_Web/pull/115#issuecomment-6180038918) reports three new issues on exact115 source `51a143bc3cb0ad095dd33bc059ce68b303735a7d`: unknown/partial collection coverage falsely confirms deletion; an actual configured-account replacement can reconcile the previous account's uncertain write; and an audit failure leaves an updated observation committed. The five prior executor/view/migration failures also reproduce. One committed installer hash remains stale: database/schema/base.php among2586 dependencies. Runtime corrections remain on Devin branches.
+
+Review-only test source `72dfd24c36f776c365593625f1091c15decf1bac` leaves all shipping/foundation bytes identical. Downloaded [run38648374036](https://github.com/afterburn25/Cajun_Web/actions/runs/38648374036) verifies per PHP8.2/8.4:47 supplied ledger+51 execution/reconciliation checks pass; independent11 reconciliation checks have4 failed expectations and7 positive controls; independent16 execution checks have5 failures and11 positive controls. No unexpected fixture errors or PHP diagnostics. Both named report sets and full logs were inspected. Failed expectations are review findings, not green acceptance. The prior8-check run38648118391 is preserved separately. All reads/DNS/transports are scripted; no real provider/account/customer action occurred.
+
+Codex separately verified financial invoice114 at a2d64a8 (2388 focused checks/all26 workflows), and its actual financial forms contract is next. Earlier consent full38645906931 still runs at26e1008. Published1.23 and frozen non20i review candidates remain unchanged; ready101 has no independent review yet. Next: review Devin's actual corrections and complete admin/client integration when supplied; continue non20i actual financial forms, then exact combined acceptance and release gates. This commit records findings only and does not alter tested runtime.
+
 ## Reconciliation source under independent review — 2026-10-14
 
 Additional review coverage now tests absence in complete/partial responses whose account-wide coverage is explicitly unknown, with a still-present target as the positive control. The first eight-check run38648118391 is retained; these additional controls await their own committed native results.
