@@ -1,5 +1,13 @@
 # Working agreement for CajunWebPro
 
+## Current work — recurring billing calendar implemented
+
+Following contract `31fe0dd`, `codex/billing-calendar` adds an immutable pure calendar for monthly, quarterly and annual maintenance billing. It preserves the original anchor and explicit original-day/month-end alignment, calculates exact half-open periods, performs direct date lookup and bounds requested windows. Local PHP 8.4 default and no-ini modes each pass **203 named checks** (406 executions), including independent Gregorian oracle comparisons, century/leap boundaries, original-day recovery after a short month, strict malformed inputs, range limits, immutable results and timezone independence. [Contract and evidence](docs/BILLING_CALENDAR_CONTRACT.md).
+
+Focused committed PHP 8.2/8.4 CI and independent review are next. This module is outside deployment; no application, schema, invoice, scheduler or recurring payment is activated. Native immutable schedules, explicit terms/consent and timezone, pause/change rules, unique period invoices and actual staff/client screens remain required for HC-06/P-03/P-04. Shipping source remains byte-identical to frozen notification PR 116/`f053dac`.
+
+Notification PR 116 has 3,364 verified focused executions and exact Windows packages. Full run 38654568775 passed browser execution and has produced its checkpoint; report/screenshot inspection and remaining recovery/Apache/Linux acceptance continue on that unchanged source. Parent PR 114/`a9a5f40` has [11,326 verified full assertions/all 28 workflows](https://github.com/afterburn25/Cajun_Web/pull/114#issuecomment-6180919026) and identical Windows/Linux packages. Independent parent/combined reviews and exact-main release gates remain pending. Published 1.23/main `68e4d41` is unchanged. Devin retains complete 20i implementation and corrections. Earlier sections are dated checkpoints.
+
 ## Current work — financial notifications locally verified
 
 After contract `98d0115`, `codex/design-financial-activity` connects retained financial offers, withdrawals and authorized client decisions to the existing workspace center and personal bell. Each entry opens its exact original history event. Current staff permissions, client ownership, bounded validated history and independent read state are enforced. [Usage and evidence](docs/DESIGN_FINANCIAL_ACTIVITY.md); [contract](docs/DESIGN_FINANCIAL_ACTIVITY_CONTRACT.md).

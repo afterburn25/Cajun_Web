@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — recurring billing calendar
+
+Add a pure immutable calendar for monthly, quarterly and annual periods, explicit original-day/month-end rules, direct date lookup and bounded windows. Local 203 checks pass in each default/no-ini PHP mode; committed CI and independent review remain next. No deployed billing or invoice behavior changes.
+
 ## Unreleased — financial agreement notifications
 
 - Add authorized personal offer, withdrawal and client-decision notifications with exact historical destinations, explicit per-person read state and current financial permission checks. Preserve existing invoice/payment notices. Local254 native and76 HTTP/Edge checks pass; committed CI/full recovery and independent review remain pending.
