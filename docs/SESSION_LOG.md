@@ -972,3 +972,7 @@ Starting db66aa0570f9450f88de933a314985754cb2439d, continuing the owner roadmap.
 Starting b49f821d411a19a76eb6ff9949421db6c0d78fe6, after preserving reviewed API documentation PR73, prepare unwired profile/vault/schema migration and native MariaDB fixtures. Syntax-only local validation; Linux key modes and concurrent database acceptance await the new matrix. Build refresh and key-package guard verification recorded separately when complete. Profile key/ciphertext remain outside history. No live call or activation. Next: exact native evidence and audited check orchestration/UI.
 
 Local evidence before this commit: four application modules and native fixture pass PHP syntax; all21 builder guard checks pass, including provider key exclusion. Full canonical build refresh has generated the inventory and is still completing repository-wide PHP lint; no package/release generated.
+
+## 2026-10-14 — current-authority provider check preparation
+
+Starting af09dfbbe68e5fcd16d57a278f18837387782038. Downloaded transport run38509333705 and storage38509785171; all named cells pass (transport1003 per PHP, owner storage69 per PHP). Add unwired check orchestrator, canonical mirrors/build ownership and native current-authority/interruption/serialization fixtures. Syntax-only new fixture evidence; matrix pending. No live call or activation. Next: inspect exact native matrix, review, owner UI and packaged acceptance.

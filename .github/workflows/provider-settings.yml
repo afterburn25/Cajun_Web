@@ -2,7 +2,7 @@ name: Provider settings storage checks
 on:
   push:
     branches: [main, codex/provider-settings]
-    paths: ['site/app/providers/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/provider_settings*.php', '.github/workflows/provider-settings.yml']
+    paths: ['site/app/providers/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/provider_settings*.php', 'tests/provider_checks*.php', '.github/workflows/provider-settings.yml']
   pull_request:
   workflow_dispatch:
 permissions:
@@ -49,14 +49,17 @@ jobs:
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
             -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-provider-test sh -ec '
-              for source in site/app/providers/*.php site/database/schema/provider_settings_schema.php site/database/migrations/provider_settings_migrate.php tests/provider_settings*.php; do php -l "$source"; done
+              for source in site/app/providers/*.php site/database/schema/provider_settings_schema.php site/database/migrations/provider_settings_migrate.php tests/provider_settings*.php tests/provider_checks*.php; do php -l "$source"; done
               php tests/provider_settings_native.php
+              php tests/provider_checks_native.php
             '
       - name: Preserve named storage evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: provider-settings-${{ matrix.php }}-${{ github.sha }}
-          path: qa/provider-settings-native-results.json
+          path: |
+            qa/provider-settings-native-results.json
+            qa/provider-checks-native-results.json
           if-no-files-found: warn
           retention-days: 14

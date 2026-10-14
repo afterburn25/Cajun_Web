@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — audited explicit provider-check preparation
+
+Add unwired current-owner fixed-check orchestration, finite retained outcomes, request limits and interrupted-result handling; reuse canonical provider mirrors and add native process fixtures. Application integration remains pending.
+
 ## Unreleased — owner provider storage preparation
 
 Add unwired owner-only encrypted 20i profile and retained metadata history, exact additive migration, native fixtures/workflow and provider-key package exclusion. Native acceptance and application integration remain pending.

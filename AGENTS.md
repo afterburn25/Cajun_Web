@@ -1,5 +1,13 @@
 # Working agreement for CajunWebPro
 
+## Current provider check orchestration — native matrix pending
+
+Protected owner persistence at af09dfb passed69 named MariaDB/key/current-authority/concurrency checks on each PHP8.2/8.4 cell; push38509785171 artifacts were downloaded and inspected. Repaired transport push38509333705 at fbecf69 passed and its14 JSON artifacts were downloaded: per PHP version120 adapter default +120 no-ini,32 policy default +32 no-ini +33 forced-unavailable,333 actual HTTPS default +333 no-ini, all passed. Devin's independent transport review has no blockers. The full prior build refresh and21 builder guards passed locally. These are isolated component/storage results, not deployed account or application acceptance.
+
+This next preparation reuses canonical provider/twentyi mirrors for the site and adds explicit fixed-check orchestration: committed intent before DNS; current owner/password/revision and shared cooldown/hour limits; DNS outside the staff mutex; authority before decryption and after network; no InnoDB transaction during network; finite independently validated outcome/history; strict terminal audit; lost results stay incomplete. Native orchestration fixtures include process interruption, DNS-time revocation/profile changes and edits serialized behind an active check. The new fixtures have syntax validation only until their matrix completes.
+
+The modules remain unwired: no admin/controller/base-schema/check route or installer activation yet. No new release version, actual20i call, secret extraction or deployment. Next: inspect orchestration matrix and independent owner-storage review, then owner UI/CSRF integration and full packaged acceptance.
+
 ## Current provider persistence preparation — native checks pending
 
 The protected owner profile is now prepared in `site/app/providers` with additive schema/migration modules and a dedicated native PHP8.2/8.4 MariaDB workflow. It supports one 20i live profile, private AES-GCM credential storage bound to installation/profile/environment, password-confirmed current-owner writes, staff-mutex serialization, revision checks and strict atomic audit/history. No installer/base-schema/controller/check/UI call sites expose these modules yet. The generated inventory includes them; the builder explicitly refuses provider-master.key in shipping code. This changes the development site tree, but does not publish a release or change v1.19.0.
