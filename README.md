@@ -1,5 +1,11 @@
 # CajunWebPro — project source of truth
 
+## Current work — recurring billing calendar contract
+
+Codex starts `codex/billing-calendar` from frozen notification PR 116/`f053dac`. [The contract](docs/BILLING_CALENDAR_CONTRACT.md) defines exact monthly, quarterly and annual periods with explicit original-day/month-end alignment, leap-year handling, bounded windows and direct date lookup. This is the first calendar increment for HC-06/P-03/P-04; implementation and focused acceptance come next. No invoice, scheduler, recurring payment or service operation is enabled. Native schedules, exact agreed terms and customer/staff interfaces remain required.
+
+PR 116 stays frozen with 3,364 verified focused executions and exact Windows packages; full run 38654568775 remains in browser acceptance. Parent PR 114/`a9a5f40` now has [11,326 verified full assertions and all 28 successful workflows](https://github.com/afterburn25/Cajun_Web/pull/114#issuecomment-6180919026), all three Windows/Linux packages identical. Independent parent/combined reviews and exact-main release gates remain pending. Published 1.23/main `68e4d41` is unchanged. Devin retains complete 20i implementation and corrections. Earlier sections are dated checkpoints.
+
 ## Current work — financial notifications locally verified
 
 After contract `98d0115`, `codex/design-financial-activity` connects retained financial offers, withdrawals and authorized client decisions to the existing workspace center and personal bell. Each entry opens its exact original history event. Current staff permissions, client ownership, bounded validated history and independent read state are enforced. [Usage and evidence](docs/DESIGN_FINANCIAL_ACTIVITY.md); [contract](docs/DESIGN_FINANCIAL_ACTIVITY_CONTRACT.md).

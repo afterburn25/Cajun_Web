@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — recurring billing calendar contract
+
+Record the next non-20i billing calendar contract; no implementation or deployed behavior is introduced by this documentation commit.
+
 ## Unreleased — financial agreement notifications
 
 - Add authorized personal offer, withdrawal and client-decision notifications with exact historical destinations, explicit per-person read state and current financial permission checks. Preserve existing invoice/payment notices. Local254 native and76 HTTP/Edge checks pass; committed CI/full recovery and independent review remain pending.
