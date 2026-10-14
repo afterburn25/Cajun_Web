@@ -1,6 +1,6 @@
 # Unified client portal: hosting, design projects, updates and website downloads
 
-The unreleased `codex/project-progress-storage` branch adds inactive native project history with current authorization, immutable changes, honest legacy adoption, atomic replay/audit and an independently saved history head. Local native PHP/MariaDB checks pass 109 assertions; canonical/deployed pure modes pass 620 more, **729 total**. Actual project forms, timeline/activity and full packaged acceptance remain pending; P-05/P-07 is partial. [Contract and evidence](PROJECT_PROGRESS_CONTRACT.md). Devin retains complete 20i implementation; published 1.23 remains unchanged.
+The unreleased `codex/project-progress-storage` branch adds inactive native project history with current authorization, immutable changes, honest legacy adoption, atomic replay/audit and an independently saved history head. Local native PHP/MariaDB checks pass 109 assertions; canonical/deployed pure modes pass 620 more, **729 total**. Focused PHP8.2/8.4 native CI is verified at838 executions per push/PR matrix. Actual project forms, timeline/activity, independent review and full packaged acceptance remain pending; P-05/P-07 is partial. [Contract and evidence](PROJECT_PROGRESS_CONTRACT.md). Devin retains complete 20i implementation; published 1.23 remains unchanged.
 
 ## Current ticket screens and activity — unreleased
 

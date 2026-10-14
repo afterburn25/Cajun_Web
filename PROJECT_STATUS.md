@@ -1,6 +1,6 @@
 # Project status
 
-## Native project history — implemented, focused acceptance pending
+## Native project history — focused CI verified, integration pending
 
 On `codex/project-progress-storage`, preserved base `3677ccf`, contracts `0876738` and `86e5cb7` precede implementation. The inactive native adapter adds exact owner-prepared schema, current staff/client/support access, atomic project/event/request/head/audit writes, honest legacy baselines, original-request replay and bounded validated history. The existing project editor and portal are unchanged; actual forms, timeline/activity integration and packaged acceptance remain next. Complete 20i implementation remains with Devin under [his accepted assignment](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171594708).
 
@@ -8,9 +8,11 @@ Real local PHP 8.4 / MariaDB 10.11.16 passes **109 named native checks**. Four c
 
 An additional A → B → A negative control exposed missing-tail acceptance in the unreleased first implementation. The correction adds an independent latest-event reference/hash/revision, restrictive relationship and regression cases. The earlier 99 checks did not cover this gap. One earlier fixture failed because MariaDB rejected replacing a constraint with the same name in one ALTER; separate DROP/ADD fixed that fixture without relaxing production validation. Failed evidence is retained locally.
 
-Parent PR105 `3677ccf` now has independently downloaded/verified [push 38620887912](https://github.com/afterburn25/Cajun_Web/actions/runs/38620887912) and [PR 38620894161](https://github.com/afterburn25/Cajun_Web/actions/runs/38620894161): 155 named pure assertions per PHP 8.2/8.4 default/no-ini mode, **620 per matrix**, all 22 workflows successful. Tested merge `9b2bd725` is tree-identical. That evidence covers pure legacy-text handling, not this native adapter. Native committed-source CI, independent review and actual screen/activity acceptance remain pending. Preserve frozen PR104 `02f41e6` and PR101 `588f332`; published 1.23 stays unchanged. Older sections below are historical checkpoints.
+Parent PR105 `3677ccf` now has independently downloaded/verified [push 38620887912](https://github.com/afterburn25/Cajun_Web/actions/runs/38620887912) and [PR 38620894161](https://github.com/afterburn25/Cajun_Web/actions/runs/38620894161): 155 named pure assertions per PHP 8.2/8.4 default/no-ini mode, **620 per matrix**, all 22 workflows successful. Tested merge `9b2bd725` is tree-identical. That evidence covers pure legacy-text handling, not this native adapter. Native independent review and actual screen/activity acceptance remain pending; focused committed CI is verified below. Preserve frozen PR104 `02f41e6` and PR101 `588f332`; published 1.23 stays unchanged. Older sections below are historical checkpoints.
 
-Next: publish the native draft stacked on PR105, independently verify both PHP native matrices, obtain bounded review, then wire the existing project form and timeline/activity on a separate branch. Full P-05/P-07 remains partial. See [the contract](docs/PROJECT_PROGRESS_CONTRACT.md).
+Native implementation `e8c463dfbee1c5ff10800387f375cbfef1c94d78` in [draft PR106](https://github.com/afterburn25/Cajun_Web/pull/106) now has independently verified [push38624277313](https://github.com/afterburn25/Cajun_Web/actions/runs/38624277313) and [PR38624391182](https://github.com/afterburn25/Cajun_Web/actions/runs/38624391182): **109 native plus 155 deployed pure checks in each default/no-ini mode per PHP8.2/8.4 runtime, 838 executions per matrix**. All12 JSON reports/full logs were downloaded, names match retained local evidence, and PHP diagnostics are empty. Tested merge `f2fba7e7312e37381bafeee21912502195696bee` is tree-identical; all24 triggered workflows passed. This is native storage and pure-record evidence, not actual UI/HTTP/Apache/package or full-feature acceptance. Independent review and actual project forms/timeline/activity remain pending.
+
+Next: obtain the bounded native review and connect the existing project form, timeline and activity on a separate preserved branch. Full P-05/P-07 remains partial. See [the contract](docs/PROJECT_PROGRESS_CONTRACT.md).
 
 ## Current next increment — dated project progress
 

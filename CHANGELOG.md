@@ -3,7 +3,7 @@
 ## Unreleased — native project history
 
 - Add protected owner preparation and current-authorized project history, exact legacy baselines, atomic writes and original request replay. Independently anchor the latest event to detect truncated history even after a project reverts to earlier fields.
-- Verify 109 native and 620 pure local assertions, capacity, concurrency and corruption refusal. Native committed CI/review and actual editor/timeline/activity integration remain pending. Existing screens remain unchanged.
+- Verify 109 native and 620 pure local assertions, capacity, concurrency and corruption refusal. Native PHP8.2/8.4 push/PR CI verifies838 executions per matrix; independent review and actual editor/timeline/activity integration remain pending. Existing screens remain unchanged.
 
 ## Unreleased — native project history preparation
 
