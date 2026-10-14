@@ -37,7 +37,8 @@ if(($argv[1]??'')==='read-worker') {mi_actor();echo "ready\n";fflush(STDOUT);try
 if(($argv[1]??'')==='pause-transport') {mi_actor();$r=mail_inbox_read($argv[2],1,'mi_resolve',function($row,$secrets,$address,$authorize){echo "transport\n";fflush(STDOUT);if(trim(fgets(STDIN))!=='continue')throw new RuntimeException('Fixture sync');return mi_transport($row,$secrets,$address,$authorize);});echo $r['code'];exit;}
 if(($argv[1]??'')==='disable-worker') {mi_actor();echo "ready\n";fflush(STDOUT);mail_accounts_state($argv[2],1,'disable',$password);echo 'disabled';exit;}
 try {
-    foreach(schema_statements('mici_') as $name=>$sql)if(!str_starts_with($name,'mail_inbox_'))db()->exec($sql);
+    // Notice windows reference inbox requests; both are absent in this pre-inbox setup fixture.
+    foreach(schema_statements('mici_') as $name=>$sql)if(!str_starts_with($name,'mail_inbox_')&&!str_starts_with($name,'mail_notice_'))db()->exec($sql);
     foreach(default_settings() as $k=>$v)save_setting($k,$v);
     for($i=1;$i<=4;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Inbox staff '.$i,'inbox'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);
