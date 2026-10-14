@@ -173,6 +173,9 @@ final class ProviderGateway
             ksort($value, SORT_STRING);
             foreach ($value as $key => $item) {
                 $encodedKey = json_encode((string) $key);
+                if ($encodedKey === false) {
+                    throw new InvalidArgumentException('Operation parameters must be JSON-representable.');
+                }
                 $parts[] = $encodedKey . ':' . self::canonicalValue($item, $depth + 1, $nodes);
             }
             return '{' . implode(',', $parts) . '}';

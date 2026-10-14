@@ -1,5 +1,11 @@
 # Codex and Devin work allocation
 
+## Codex contribution — reject malformed provider request keys
+
+`codex/provider-key-validation` preserves Devin provider head `1e424024a0a1b84f4d964ea92e8019813fb4a0ad` and supplies the focused correction from [review 6157958803](https://github.com/afterburn25/Cajun_Web/pull/43#issuecomment-6157958803). A failed JSON encoding of a map key now throws the same finite validation error as an invalid scalar, before any claim. Regression cases cover distinct invalid UTF-8 keys, nested malformed keys, no ledger binding/reservation/result or adapter/transport/secret use, and successful reordered valid Unicode keys reusing a rejected operation key. Local PHP 8.4 and actual `php -n` each pass all 150 provider checks; syntax passes. PHP 8.2/8.4 CI and Devin review remain pending.
+
+This contribution targets `devin/provider-foundation`, preserving its branch and prior fixes. No `site/`, release version, schema, real provider call or credential change. The independent [1.18.0 message-reader candidate #70](https://github.com/afterburn25/Cajun_Web/pull/70) remains Codex's release lane; latest published is 1.17.0. After provider correction acceptance, MySQL persistence, current authorization, an actual adapter, owner configuration and operation-specific API verification remain separate integration work. Continue the roadmap; this validation contribution is not completion or deployment of HC-07.
+
 ## Latest verified publication — 1.17.0
 
 [v1.17.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.17.0) is published and freshly downloaded/verified at immutable source/tag `fc3bd89c5e1c286f9dc4df12d50dd566a4d4ab86` through [PR #69](https://github.com/afterburn25/Cajun_Web/pull/69). Assigned staff can explicitly load the newest 20 INBOX headers over pinned verified TLS using maintained bundled IMAP/MIME dependencies. Current session, global permission, account assignment and saved revision protect credential use and display. Strict started/terminal audit, refresh limits and personal request history retain outcomes/counts; header contents exist only in the current escaped response. [Owner workflow](MAIL_INBOX_READER.md). Bodies, attachments, sending, OAuth and exact-message bells remain incomplete.

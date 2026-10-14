@@ -140,6 +140,8 @@ final class MemoryLedger implements OperationLedger
  */
 final class FixtureTwentyIAdapter implements ProviderAdapter
 {
+    public int $executions = 0;
+
     public function id(): string
     {
         return 'fx-provider';
@@ -182,6 +184,7 @@ final class FixtureTwentyIAdapter implements ProviderAdapter
 
     public function execute(HttpTransport $transport, ProviderCredential $credential, ProviderOperation $operation): OperationResult
     {
+        $this->executions++;
         $response = $transport->send(new TransportRequest('POST', 'https://fixture.invalid/api/' . str_replace('.', '/', $operation->name), ['Authorization' => 'Bearer ' . $credential->secret()], json_encode($operation->params)));
         if ($response->ok()) {
             $data = json_decode($response->body, true);
@@ -388,6 +391,28 @@ expectThrows(fn () => $gateway->perform(credential(), new ProviderOperation('hos
 $wide = []; for ($i = 0; $i < 2100; $i++) { $wide['k' . $i] = $i; }
 expectThrows(fn () => $gateway->perform(credential(), new ProviderOperation('hosting.create', 'shape-wide', ['w' => $wide])), 'oversized param graph rejected');
 check(!isset($ledger->results['shape-obj']) && !isset($ledger->results['shape-deep']) && !isset($ledger->results['shape-nan']) && !isset($ledger->results['shape-wide']), 'rejected param graphs left no ledger state');
+
+// Malformed map keys must fail before a reservation, even nested inside
+// lists. A false key encoding must never become a canonical map fragment.
+$keyAdapter = new FixtureTwentyIAdapter();
+$keyTransport = new FixtureTransport();
+$keyLedger = new MemoryLedger();
+$keySecretReads = 0;
+$keyCredential = new ProviderCredential('fx-provider', 'fixture-key-validation', function () use (&$keySecretReads): string { $keySecretReads++; return 'synthetic-key'; });
+$keyGateway = new ProviderGateway($keyAdapter, $keyTransport, $keyLedger, new RetryPolicy(1, 0));
+foreach ([['\xFF', "\xFF"], ['\xFE', "\xFE"], ['truncated UTF-8', "\xC3"], ['nested UTF-8', "\xE2\x28\xA1"]] as [$label, $badKey]) {
+    $params = $label === 'nested UTF-8' ? ['outer' => [['inner' => [$badKey => 'same']]]] : [$badKey => 'same'];
+    expectThrows(fn () => $keyGateway->perform($keyCredential, new ProviderOperation('hosting.create', 'same-invalid-key', $params)), 'malformed map key rejected: ' . $label);
+}
+check($keyLedger->bound === [] && $keyLedger->reservations === [] && $keyLedger->results === [], 'malformed map keys leave no binding reservation or result');
+check($keyAdapter->executions === 0 && $keyTransport->requests === [] && $keySecretReads === 0, 'malformed map keys never enter adapter execute transport or credentials');
+$keyTransport->script = [new TransportResponse(200, [], '{"id":"valid_unicode"}')];
+$validKeys = ['outer' => [['é' => 'café', '日本語' => '日本']]];
+$reorderedKeys = ['outer' => [['日本語' => '日本', 'é' => 'café']]];
+$validResult = $keyGateway->perform($keyCredential, new ProviderOperation('hosting.create', 'same-invalid-key', $validKeys));
+$validReplay = $keyGateway->perform($keyCredential, new ProviderOperation('hosting.create', 'same-invalid-key', $reorderedKeys));
+check($validResult->status === OperationResult::SUCCEEDED && $validReplay->replayed && $validReplay->externalId === 'valid_unicode', 'valid Unicode nested map keys execute and reordered keys replay');
+check($keyAdapter->executions === 1 && count($keyTransport->requests) === 1 && $keySecretReads === 1, 'valid request can reuse rejected key and replay without additional execution');
 
 // --- Gateway: retry classification -------------------------------------------
 // Idempotent (read-only) operations retry within the bounded policy.
