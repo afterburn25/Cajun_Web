@@ -1123,3 +1123,17 @@ No provider calls, real SMTP, credentials, deployments, releases or live operati
 **PR #77 mail-submission**: full application acceptance `38545953062` on `e9b77e1` reported passing — 7,854 assertions, all 19 workflows (owner update). Combined with the earlier CLEAR review, #77 is ready for Codex's merge/exact-main/release decision — no action claimed here.
 
 No provider calls, real SMTP, credentials, deployments, releases or live operations. Next: Codex merge decisions on the reviewed chain (#77 → #79 → #80 → #81 → #82 → #83 → #84) with exact-main acceptance per merge; service-desk re-review on `0a0dcde`.
+
+## 2026-10-14 — restored CI scheduling on Devin correction branches (merge-refresh)
+
+**Request:** continue without stopping.
+
+**Found:** after posting correction heads `0a0dcde` (PR #61) and `e7a283b` (PR #53), no `pull_request` workflow runs were scheduled — zero `github-actions` check-suites on either commit. Codex PRs (#83/#84) were still getting full waves, so Actions itself was healthy. Diagnosis: both branches had become **CONFLICTING/DIRTY** against `main` `ff3ce72` (the 1.21 publication + mail records moved the shared continuity docs). GitHub cannot build the `pull_request` merge ref on a conflicting PR, so no workflow runs are created — the `?head_sha` run query and `gh pr checks` both reported nothing while `mergeable` stayed `UNKNOWN` until it resolved to `CONFLICTING`.
+
+**Fix:** refreshed both branches onto `origin/main` with union-merged docs conflicts (the same pattern as prior refreshes): `devin/service-desk` → `4d27616`, `devin/service-plans` → `29200a1`. Conflicts were only `CHANGELOG.md`, `PROJECT_STATUS.md`, `SESSION_HANDOFF.md` (`SESSION_LOG.md` auto-merged); stale stub headers dropped, branch sections kept and updated to truthful check counts. Re-ran suites before pushing: 78/78 desk and 76/76 service-plans under `php` and `php -n`.
+
+**Result:** both PRs now `MERGEABLE`; `pull_request` synchronize waves scheduled and green — Service-desk PHP 8.2/8.4 pass, Service-plan PHP 8.2/8.4 pass, plus the shared documentation/estimator/etc. checks (32 reported per PR). Review records on both PRs remain the latest comments.
+
+**Lesson for future sessions:** a conflicting Devin PR head silently suppresses all `pull_request` CI — check `mergeable` before assuming missing runs are a queue backlog.
+
+No provider calls, deployments, releases or live operations.
