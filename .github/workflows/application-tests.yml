@@ -57,6 +57,7 @@ jobs:
       - name: Native database, upgrade and authorization integration
         run: |
           python3 tests/prepare_legacy.py
+          php8.3 tests/service-plans/documents.php > qa/service-plans-documents-results.json
           php8.3 tests/service-plans/run.php > qa/service-plans-supplied-default.txt
           php8.3 tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-results.json
           php8.3 tests/estimator_adapter.php
@@ -91,6 +92,7 @@ jobs:
           .ci-venv/bin/python tests/mail_submission_combined.py
           php8.3 tests/provider_settings_native.php
           php8.3 tests/provider_checks_native.php
+          php8.3 tests/service_plans_native.php
           php8.3 tests/hosting_records_native.php
           php8.3 tests/hosting_operations_native.php
           php8.3 tests/hosting_retry_native.php
