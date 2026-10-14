@@ -1,6 +1,6 @@
 # Private local email drafts
 
-Development branch implementation in PR #75; not yet published or accepted through packaged browser/upgrade tests.
+Released in [1.21.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.21.0) after exact-main packaged browser, Apache and actual1.20 upgrade/recovery acceptance. [Named test report](TEST_REPORT_1.21.0.md). Real mailbox and target-host compatibility remain separate.
 
 Open **My email accounts**, then **My email drafts** or **New draft** for a sending account. On an upgraded site, an owner first chooses **Prepare local drafts** and confirms their current password. Fresh installation prepares an empty draft library. Setup preserves existing account settings and messages.
 

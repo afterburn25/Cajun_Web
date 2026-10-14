@@ -1,21 +1,12 @@
 # Changelog
 
-## 1.21.0 — candidate, not published
+## 1.21.0 — verified private local email drafts
 
-- Acceptance fixture correction from c43cca5: explicitly authenticate the original1.20 owner before provider seeding; wait for the responsive drawer and reset scroll before mobile draft capture. Prior run38520608916 passed native/browser/filesystem checks but Apache was incomplete and mobile visual approval was withheld. Shipping source is unchanged; replacement acceptance pending.
+- Private author/mailbox drafts with bounded To/Cc/Bcc and plaintext, canonical active-template insertion, escaped preview and retained discard/history. No SMTP sending or server Drafts synchronization.
+- Current Send/grant/account/author gates, optimistic revisions, stable create replay and strict metadata audit. Sender changes require confirmation; concurrent discard preserves a separate escaped copy of unsaved text.
+- Additive owner setup and fresh installation; actual1.20.0 update/recovery/reapplication retains existing records, prior provider history, added drafts and both original private keys.23 starting versions supported.
+- Published/download-verified `7805e56aa9e53cb081600589e92991255475474c` after 6912 named exact-main application checks and PHP8.2/8.4 matrices. All16 assets, ZIP members, checksums/tag and Windows/Linux bytes verified. Actual desktop/mobile views inspected; homepage pixels equal1.20.0.
 
-- Private local drafts for current authorized authors/mailboxes, canonical template insertion and escaped preview; no sending.
-- Preserve unsaved form text separately when a concurrent discard rejects an edit; keep retained saved content unchanged.
-- Pin the actual verified1.20.0 package and upgrade shims; extend filesystem/Apache/recovery through23 starting packages. New tests preserve nonempty prior provider history, both original keys and added drafts through update/recovery/reapplication. These new cases require combined acceptance.
-- 1.20.0 publication is independently verified; this candidate has no tag/release. Review03e98cd is clear, but new changes require review and native/browser/package acceptance.
-
-## Unreleased — private local draft storage preparation
-
-Add unwired author/mailbox draft storage, replay and revision protection, explicit sender review, strict audit and retained metadata history. Native PHP8.2/8.4 fixtures are prepared; syntax-only acceptance so far. No UI, migration activation or sending.
-
-## Unreleased — isolated local draft content
-
-Add bounded plaintext draft content and canonical template insertion outside deployment. No persistence, compose UI or sending yet.71 local default/no-ini checks pass; PHP8.2/8.4 matrix pending. Provider1.20release remains a separate branch.
 
 ## 1.20.0 — verified owner 20i connection
 
