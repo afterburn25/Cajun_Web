@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased — service-agreement workspace polish
+
+Use the existing client workspace footer for agreement pages. Wait for the mobile admin menu to close fully before acceptance screenshots, exercising open/Escape-close behavior. Record Devin’s delivered 20i components and the remaining independently reproduced review findings; no provider or release activation.
+
+## Unreleased — owner and client service-agreement screens
+
+Connect reviewed-plan authoring, exact-client offers and explicit client agreements to the existing admin and portal. Preserve unsaved stale drafts, require current authority and CSRF, keep service agreement separate from payment authorization, and exclude support impersonation. Bounded validated lists and inactive-client controls are tested locally; packaged browser acceptance and independent review remain pending.
+
+## Unreleased — prepared service-agreement form components
+
+Add strict exact-price/intent/confirmation parsing and escaped shared terms/history/form rendering. Passwords are excluded from redisplay, confirmation remains unchecked and service agreement is distinguished from payment authorization. Routes and actions remain unconnected.
+
 ## Unreleased — service-plan records and client agreement
 
 Add owner-authored immutable service terms, exact client offers/consent, local enrollment transitions and atomic audited storage. Bound history while retaining room for cancellation/retirement. No plan UI, recurring charge, scheduler or release activation. [Contract](docs/SERVICE_PLAN_RECORDS.md).

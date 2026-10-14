@@ -1,5 +1,29 @@
 # Working agreement for CajunWebPro
 
+## Current checkpoint — 20i delivery and service-agreement screen follow-up
+
+The owner's Devin 20i assignment is active: [issue #2](https://github.com/afterburn25/Cajun_Web/issues/2) now records actual delivery in hosting-inventory [PR #93](https://github.com/afterburn25/Cajun_Web/pull/93) and dependent VPS/domain-read [PR #94](https://github.com/afterburn25/Cajun_Web/pull/94). At `aeb8fc0`, all 93 supplied checks and six independent corrected-regression checks pass in each local PHP 8.4 default/no-ini mode. Two remaining blockers were independently reproduced: a numeric unknown JSON key crashes projection, and public constructors/reference aliases bypass record validation and immutability. [Review 6171175612](https://github.com/afterburn25/Cajun_Web/pull/93#issuecomment-6171175612) requests fixes on Devin's branch. No component is yet integrated or verified against a live account. Codex retains application storage, permissions, screens, testing and releases.
+
+Screen PR #92 remains at `06aafaa` while full application run `38579641962` finishes. Its focused matrices verify 1,380 executions per push/PR pair; Windows packages and all 2,579 source files verify. Downloaded browser checkpoint verifies 1,322 HTTP checks with no PHP diagnostics. Independent review [6170607547](https://github.com/afterburn25/Cajun_Web/pull/92#issuecomment-6170607547) clears the bounded runtime delta. The mobile owner screenshot captured a moving sidebar and the client page displayed the public sales call to action; visual acceptance therefore requires the follow-up below, regardless of the original run's eventual result.
+
+Separate branch `codex/service-plan-screen-polish` starts at `06aafaa90f230f896e9d305ed69f73eb47dfa455`. It uses the existing workspace footer on client agreements, refreshes the installer inventory, and makes the packaged browser fixture open/close the mobile menu and wait for it to leave the viewport before capture. An isolated local PHP/MariaDB/Edge workflow passed 13 named checks, and all 2,579 shipping files matched this working source. The four actual desktop/mobile images were inspected: terms and controls are readable, mobile owner content is unobstructed, and client pages omit the sales call to action. This evidence is local synthetic browser testing, not final committed Linux/package/recovery acceptance. The test services were stopped.
+
+Parent PR #91 full acceptance is independently verified: 8,635 checks, all 20 workflows and all three Linux packages matching Windows. Its storage review at `71d7efe` is clear; PRs #87–#90 also have bounded reviews at their named source commits. PR #85 still needs the additive `a9beb6e..21ebe69` version/latest-1.22 baseline review; the old clearance does not cover that delta. Hosting #89 at `1c92e6b` preserves reviewed runtime `0f7bbb0` and extends only the full-test timeout plus documentation; replacement run `38580190394` remains the acceptance handle. The old 75-minute timeout is not a passing run.
+
+Next: retain both running sources, verify their final reports, then advance #92 normally to this polish and rerun its required exact-source acceptance/review. Re-review Devin's corrections independently before application integration. Published 1.22.0 at `e3b434f` remains unchanged; 1.23.0 and the full roadmap remain unfinished. No live provider operation, customer mail, charge, SSH or deployment occurred.
+
+## Earlier checkpoints — historical evidence
+
+## Current preparation — service-agreement form and rendering helpers
+
+Separate `codex/service-plan-screens` preserves storage PR91/71d7efe through committed screen contractb98fdf1. New strict form parsers reuse the exact existing cents parser, retain original request identities/revisions after errors and exclude passwords/confirmation from redisplay. Shared escaped term/history/form helpers show exact service prices, unchecked agreement boxes and explicit separation from automatic payment authorization. No route, controller action, list or navigation is activated yet.
+
+Local PHP8.4 default/no-ini each pass77 named parsing/rendering checks. This is pure template evidence, not HTTP, current-authority or CSRF-enforcement acceptance. Existing storage/models remain unchanged. Parent91 push38573820896/38573821070 and PR38573827729/38573827714 are downloaded/verified:740 model/document plus174 native executions per pair; PR checkout2091482. Full parent application38574289104 and exact Windows build remain running; independent storage review is pending. Current screen-source matrices and combined acceptance remain pending.
+
+Next: implement bounded current-authorized lists, owner/client controllers and routes against the committed contract, then actual packaged HTTP/Chromium, screenshots and complete update/Apache acceptance. No new release or deployment. [Screen contract](docs/SERVICE_PLAN_SCREENS.md).
+
+## Earlier checkpoints — historical evidence
+
 ## Current work — saved service terms and exact client agreement
 
 Codex owns `codex/service-plan-records`, based on preserved import PR90/148606f and its candidate85/21ebe69 ancestry. This bounded HC-06/HC-11 increment adds private plan/subscription documents, additive storage and current owner/client operations. Published1.22/e3b434f, candidate85 and original Devin53 remain unchanged. Hosting deletion/reconciliation87–89 are separate.

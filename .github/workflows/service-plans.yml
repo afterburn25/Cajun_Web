@@ -3,7 +3,7 @@ name: Service-plan contract checks
 on:
   pull_request:
   push:
-    branches: [main, codex/service-plan-integration, codex/service-plan-records]
+    branches: [main, codex/service-plan-integration, codex/service-plan-records, codex/service-plan-screens]
   workflow_dispatch:
 
 permissions:
@@ -34,6 +34,8 @@ jobs:
             for source in foundation/service-plans/*.php tests/service-plans/*.php; do php -l "$source"; done
             php tests/service-plans/run.php > qa/service-plans-supplied-default.txt
             php -n tests/service-plans/run.php > qa/service-plans-supplied-no-ini.txt
+            php tests/service-plans/forms.php > qa/service-plans-forms-default.json
+            php -n tests/service-plans/forms.php > qa/service-plans-forms-no-ini.json
             php tests/service-plans/documents.php > qa/service-plans-documents-default.json
             php -n tests/service-plans/documents.php > qa/service-plans-documents-no-ini.json
             php tests/service-plans/review_controls.php > qa/service-plans-review-default.json

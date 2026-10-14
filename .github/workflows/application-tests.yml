@@ -16,7 +16,8 @@ jobs:
     runs-on: ubuntu-24.04
     # Browser/SMTP plus 25 retained upgrade baselines and both Apache modes.
     # The 1.22 candidate exhausted 45m during no-rewrite 1.13; keep every case.
-    timeout-minutes: 75
+    # Hosting storage38567952137 exhausted75m during Apache; preserve all cases.
+    timeout-minutes: 105
     services:
       mariadb:
         image: mariadb:10.11
@@ -57,6 +58,7 @@ jobs:
       - name: Native database, upgrade and authorization integration
         run: |
           python3 tests/prepare_legacy.py
+          php8.3 tests/service-plans/forms.php > qa/service-plans-forms-results.json
           php8.3 tests/service-plans/documents.php > qa/service-plans-documents-results.json
           php8.3 tests/service-plans/run.php > qa/service-plans-supplied-default.txt
           php8.3 tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-results.json

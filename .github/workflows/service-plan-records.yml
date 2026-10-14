@@ -1,8 +1,8 @@
 name: Service-plan storage and client agreement checks
 on:
   push:
-    branches: [main, codex/service-plan-records]
-    paths: ['site/app/plans/**', 'site/database/**', 'site/app/staff/**', 'site/app/clients/**', 'site/includes/auth/**', 'foundation/service-plans/**', 'site/includes/foundation/service-plans/**', 'tests/service_plans_native.php', '.github/workflows/service-plan-records.yml']
+    branches: [main, codex/service-plan-records, codex/service-plan-screens]
+    paths: ['site/admin/controllers/plans.php', 'site/admin/views/plans.php', 'site/portal/controllers/**', 'site/portal/views/plans.php', 'site/includes/layout/plans.php', 'site/app/plans/**', 'site/database/**', 'site/app/staff/**', 'site/app/clients/**', 'site/includes/auth/**', 'foundation/service-plans/**', 'site/includes/foundation/service-plans/**', 'tests/service_plans_native.php', '.github/workflows/service-plan-records.yml']
   pull_request:
   workflow_dispatch:
 permissions:
@@ -49,7 +49,7 @@ jobs:
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
             -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-service-plan-test sh -ec '
-              for source in site/app/plans/*.php site/database/schema/service_plans_schema.php site/database/migrations/service_plans_migrate.php tests/service_plans_native.php; do php -l "$source"; done
+              for source in site/app/plans/*.php site/admin/controllers/plans.php site/admin/views/plans.php site/portal/controllers/plans.php site/portal/views/plans.php site/includes/layout/plans.php site/database/schema/service_plans_schema.php site/database/migrations/service_plans_migrate.php tests/service_plans_native.php; do php -l "$source"; done
               php tests/service_plans_native.php
             '
       - name: Preserve named storage evidence

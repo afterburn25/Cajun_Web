@@ -204,6 +204,8 @@ try:
         submissions_browser(globals(),browser)
         from client_authority_cases import run_browser as client_authority_browser
         client_authority_browser(globals(),browser)
+        from service_plan_cases import run_browser as service_plan_browser
+        service_plan_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)
