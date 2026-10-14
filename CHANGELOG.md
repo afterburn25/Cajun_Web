@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased — structured project planning records
+
+- Add immutable public plans with calendar dates, client action requests, blockers and bounded milestone dependency graphs; reject cycles, missing prerequisites and inconsistent completed states.
+- Retain dated exact plan revisions, original milestone identities and client-safe projections. Caller aliases cannot rewrite accepted data.
+- Verify211 named pure assertions in every PHP8.2/8.4 default/no-ini mode,844 per push/PR matrix; all22 triggered workflows pass. Shipping code is unchanged; native persistence, screens and independent acceptance remain pending.
+
+## Unreleased — structured project planning contract
+
+- Record the scope/contact/date/client-action/blocker and structured milestone boundary before implementation. No runtime change in this contract commit.
+
 ## Unreleased — project history screens and activity
 
 - Connect explicit owner preparation and existing project create/edit forms to atomic dated history, original retries and retained escaped stale drafts.

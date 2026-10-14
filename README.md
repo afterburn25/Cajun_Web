@@ -1,5 +1,9 @@
 # CajunWebPro — project source of truth
 
+## Structured project planning — unreleased pure records
+
+The separate `codex/project-planning` branch defines scope/contact/target dates, client actions/blockers and structured milestone ownership/status/dependencies, with immutable dated history. Implementation84f84f0 now passes211 named checks in every PHP8.2/8.4 default/no-ini mode:844 per push/PR matrix, with downloaded reports/logs verified and all22 workflows successful. [Contract and actual evidence](docs/PROJECT_PLANNING_CONTRACT.md). Native storage, current authorization, dashboard/forms/activity and full acceptance remain next; this branch does not activate planning. Full P-05/P-07 stays partial. PR108 acceptance remains separate, and Devin retains complete20i.
+
 ## Unreleased project history screens
 
 The existing editor and client portal now show dated project changes, protected stale drafts and exact personal activity links on `codex/project-progress-screens`. [Usage and current evidence](docs/PROJECT_HISTORY.md). Local native/browser checks pass; committed CI, packaged recovery and independent review remain pending. Published1.23 is unchanged; Devin retains complete20i. Older entries below describe preserved checkpoints.

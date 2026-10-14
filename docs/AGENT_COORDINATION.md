@@ -1,5 +1,17 @@
 # Codex and Devin work allocation
 
+## Current work — structured planning CI verified
+
+`codex/project-planning` preserves PR108/`7e1665f`; contract `e042c43` precedes immutable public plans and dated revisions. Scope/contact/target dates, client actions/blockers and structured milestones retain responsible party, explicit status and validated dependencies. [Contract and remaining integration](PROJECT_PLANNING_CONTRACT.md). Shipping and existing provider/project components remain unchanged.
+
+[Draft PR110](https://github.com/afterburn25/Cajun_Web/pull/110) implementation `84f84f0c0c694deb0026353cbbb03240eb227c07` now has independently downloaded [push38630397028](https://github.com/afterburn25/Cajun_Web/actions/runs/38630397028) and [PR38630454901](https://github.com/afterburn25/Cajun_Web/actions/runs/38630454901) evidence: 211 identical named pure checks in each PHP8.2/8.4 default/no-ini mode, **844 executions per matrix / 1,688 across both**. All eight JSON reports and full logs verify with no PHP diagnostics. Tested merge `2c103445516ea735ced7b3cd88d042419eb2b097` is tree-identical and all22 triggered workflows pass. [Independent review requested](https://github.com/afterburn25/Cajun_Web/pull/110#issuecomment-6177586520).
+
+This is pure data evidence only. Native schema/current authorization/atomic writes, actual dashboard/forms/activity, full package acceptance and independent review remain next. Commit the exact native schema/API contract before its implementation on a separate preserved branch. Full P-05/P-07 remains partial.
+
+Parent PR108 remains frozen at `7e1665f`. Its downloaded browser checkpoint verifies8,299 named checks including1,431 HTTP/browser and all43 new history cases. All six current desktop/320px images were fully inspected; both homepages match published1.23 pixel for pixel. Exact Windows COMPLETE2,611/UPDATE2,598/FULL5,273 packages verify. [Checkpoint6177586141](https://github.com/afterburn25/Cajun_Web/pull/108#issuecomment-6177586141). Full38628432378 passed its recovery step and continues Apache; final reports, Linux/Windows comparison and independent combined/parent reviews remain required.
+
+Devin owns complete20i and PR107 corrections. PR109 native ledger head318471e is under separate Codex review; review-only branch075e745 adds synthetic probes without changing shipping/provider implementation. No live provider call or release is claimed. Published1.23 and frozen earlier candidates remain preserved. Older sections below are historical checkpoints.
+
 ## Project history screens — local acceptance verified, unreleased
 
 `codex/project-progress-screens` preserves PR106/`c41cc6d`; contract `19191b4` precedes implementation. The existing project editor and client portal now show dated history with honest initial snapshots, retained stale drafts, original-request replay and exact personal activity links. Owner setup remains explicit. [Usage and detailed evidence](PROJECT_HISTORY.md); [contract](PROJECT_PROGRESS_CONTRACT.md#existing-editor-timeline-and-activity-integration-contract).
