@@ -87,6 +87,12 @@ $over=$edge;$over['labels'][3][]=1;
 check(refused(static fn()=>$builder->build(new ProviderOperation('packages.update','k',$over))),'one leaf over the 256-node bound refuses');
 check(refused(static fn()=>$builder->build(new ProviderOperation('packages.update','k',['resellerId'=>'*','id'=>42,'labels'=>array_fill(0,6,array_fill(0,64,1))]))),'flat scalar leaves count toward the bound (392 nodes)');
 check(refused(static fn()=>$builder->build(new ProviderOperation('packages.update','k',['resellerId'=>'*','id'=>42,'labels'=>array_fill(0,65,1)]))),'flat list still refuses at the 64-item array bound');
+// hostname_list children count in the same shared budget: create with 64 extra domains + 188 map entries = 256 nodes.
+$mixed=['resellerId'=>'*','type'=>'synthetic','domain_name'=>'a.example','extra_domain_names'=>array_fill(0,64,'b.example'),'documentRoots'=>[]];
+for($i=0;$i<188;$i++)$mixed['documentRoots']['d'.$i]='public_html';
+check(!refused(static fn()=>$builder->build(new ProviderOperation('packages.create','k',$mixed))),'hostname-list children inside the shared bound build (256 nodes)');
+$mixed['documentRoots']['d188']='public_html';
+check(refused(static fn()=>$builder->build(new ProviderOperation('packages.create','k',$mixed))),'one node over with hostname-list children refuses (257 nodes)');
 
 // ---- outcome classification ----
 check(TwentyIResultClassifier::fromResponse('packages.create',new TransportResponse(200,[],'{"id":123}'))->status===OperationResult::SUCCEEDED,'2xx classifies succeeded');

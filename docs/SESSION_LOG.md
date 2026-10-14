@@ -1439,3 +1439,8 @@ Merge resolutions: schema_statements union (inventory + operations), deploy vers
 Tests: **native MariaDB suites green on PHP 8.2/8.4** — 47 ledger/grant + 51 execution/reconcile + 77 inventory assertions (run 38643151558 and siblings) at `58bec11`. PR #115 opened.
 
 Known limits: reconcile uses only `packages.list` — the single verified read; other read endpoints remain documented-unverified. Live provider sends still require operation-specific acceptance. Next: Codex review, then remaining milestones (domains, VPS/cloud, support/SSH).
+
+
+## 2026-10-16 — Devin: hostname-list children join the shared node budget
+
+Codex follow-up review on `d7006c5` verified both original corrections but found `hostname_list` children bypassed the 256-node bound (counted 4 containers + 64 uncounted hostnames + 189 map values = 257 values accepted). `TwentyIRequestBuilder::bounded` now increments the shared node budget per hostname-list child. Added Codex's exact mixed fixtures: 64 `extra_domain_names` + 188 `documentRoots` = 256 builds; +189 = 257 refuses. 92/92 synthetic checks on default and no-ini modes.
