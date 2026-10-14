@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — 1.24 recovery acceptance fixture
+
+Preserve the updater authentication limit while isolating its synthetic recovery-test windows. Add an HTTP rejection assertion proving an exhausted limit leaves the update journal and business/private records unchanged. The previous candidate run failed at its eleventh authentication; fresh combined acceptance and independent review remain required. No shipping behavior or published archive changes.
+
 ## 1.24.0 candidate — service agreements
 
 Unreleased. Combine owner service-plan authoring/offers, exact client consent and local agreement lifecycle screens with preserved internal hosting deletion-retry/reconciliation groundwork. Add actual published 1.23 as a retained upgrade baseline, preserving all older cases and adding agreement consent/history recovery. Version labels and installer inventory follow this candidate; full combined acceptance, review and exact-main delivery remain pending. [Guide](docs/SERVICE_AGREEMENTS.md).

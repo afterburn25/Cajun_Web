@@ -7,6 +7,21 @@ define('CWP_BOOT',true);define('CWP_ROOT',$root);
 require $root.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=require $root.'/config.php';
 if(config()['db']['name']!=='cwp_test')exit(2);
+if(in_array($argv[2]??'',['owner-rate-exhaust','owner-rate-reset'],true)){
+    // Synthetic CLI fixture only: isolate this localhost updater's time window.
+    // Keep every other limiter and all business/private data unchanged.
+    $_SERVER['REMOTE_ADDR']='127.0.0.1';
+    $window=(int)floor(time()/900);$key=ip_key('structure-owner');
+    foreach([-1,0,1] as $offset){
+        $bucket=hash('sha256',$key.'|'.($window+$offset));
+        query('DELETE FROM '.table('rate_limits').' WHERE bucket=?',[$bucket]);
+        // Include the next window so crossing a clock boundary cannot evade the check.
+        if($argv[2]==='owner-rate-exhaust' && $offset>=0){
+            query('INSERT INTO '.table('rate_limits').' (bucket,attempts,expires) VALUES (?,10,?)',[$bucket,($window+$offset+1)*900]);
+        }
+    }
+    echo json_encode(['isolated_owner_window'=>true],JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='plans'){
     $saved=[];
     foreach(['service_plans','service_plan_events','service_subscriptions','service_subscription_events'] as $name){
