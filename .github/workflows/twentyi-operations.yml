@@ -34,6 +34,7 @@ jobs:
       - name: Synthetic write-boundary checks without external network access
         run: |
           mkdir -p "$RUNNER_TEMP/twentyi-ops-results"
+          mkdir -p qa
           docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/twentyi-ops-results:/workspace/qa" -w /workspace cwp-twentyi-ops:${{ matrix.php }} sh -ec '
             for source in foundation/provider/*.php foundation/twentyi-operations/*.php tests/twentyi-operations/*.php; do php -l "$source"; done
             php tests/twentyi-operations/run.php qa/operations-default-results.json
