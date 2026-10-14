@@ -2,6 +2,7 @@
 
 ## Unreleased — recent email notice storage preparation
 
+- Corrected the native CI container UID/GID after both database stages passed but artifact upload failed on a root-owned private QA directory. Corrected saved-evidence acceptance is pending; application/test behavior is unchanged.
 - Added a native migration fixture that removes full-tuple uniqueness while preserving the supporting foreign-key index; this tests application refusal rather than InnoDB index protection. Database acceptance remains pending.
 - Added bounded current-window metadata, separate per-person opened/dismissed markers, exact current mailbox permission filtering, collision refusal and independent full-tuple resolution.
 - Added explicit owner migration with column/key/relationship compatibility checks and strict audit; observation helpers require the successful terminal-result transaction. No schema/reader/HTTP integration or bell UI is wired yet.

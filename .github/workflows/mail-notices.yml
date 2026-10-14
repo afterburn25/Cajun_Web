@@ -45,7 +45,7 @@ jobs:
         run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-notice-test -f tests/invitations/Dockerfile tests/invitations
       - name: Native current-permission and observation persistence tests
         run: |
-          docker run --rm --network host -v "$PWD:/workspace" \
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
             -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-notice-test sh -ec '
