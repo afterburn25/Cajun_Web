@@ -1137,3 +1137,13 @@ No provider calls, real SMTP, credentials, deployments, releases or live operati
 **Lesson for future sessions:** a conflicting Devin PR head silently suppresses all `pull_request` CI — check `mergeable` before assuming missing runs are a queue backlog.
 
 No provider calls, deployments, releases or live operations.
+
+## 2026-10-14 — PR #61 stall-recovery completion + PR #77 merged to main
+
+**Request:** continue without stopping.
+
+**PR #77 merged.** Codex merged `codex/mail-submission` at `e3b434f` (10:57 UTC) after acceptance `38545953062` (7,854 assertions) and Devin CLEAR at `e9b77e1`. Exact-main acceptance `38553149886` is running on the merge; no v1.22.0 tag exists — v1.21.0 remains latest published. Devin performed no merge.
+
+**PR #61 remaining P1 corrected at `588ea0e`.** Codex re-review of `0a0dcde` verified findings 1/3 and token binding, but flagged that `requeue()` unconditionally released any STALLED job — a second attempt could dispatch a duplicate external operation with no verification attempt 1 did not execute (reproduction: provision and approval-gated refund, run@100/lease10, expire@110, bare requeue@111 + claim@112 both succeeded under the old contract). Fix: `resolveStalled(token, outcome, evidence, actor, at)` — explicit verified resolution bound to the exact stalled token (retained at `expireLease`), non-empty evidence, immutable per-token records. `completed` → terminal `succeeded` (no resend); `not_executed` → only outcome `requeue()` accepts (clears backoff, fresh token minted at next claim, approval liveness rechecked); `unknown` → stays blocked. Missing/wrong-token/empty/conflicting evidence refuse; identical replay returns quietly; each new stall needs its own evidence. Suite 78 → **103 checks**, green `php`/`php -n` 8.4.25; both reviewer reproductions now refuse. Posted record 6166923136, re-review requested.
+
+**Board:** PRs #53/#61 refreshed heads (`29200a1`/`4d27616`) are MERGEABLE with green CI after the docs-union fix; #83 acceptance `38551118797` still running past the native+HTTP/Chromium stages (Codex inspected real screenshots). All Devin lanes remain review/correction only — no merge, release, provider, mail, payment or customer operation.
