@@ -1,5 +1,17 @@
 # Approved roadmap and acceptance criteria
 
+## Current integration — reviewed service-plan terms preserved
+
+Local PHP8.4 default/no-ini passes all76 supplied checks plus21 independent controls against each canonical/deployed copy,236 executions. Both shipped classes exactly match Devin388b80d and reviewed e7a283b. Documentation137Markdown/1216links and clean diff pass. The focused PHP8.2/8.4 matrix and bounded import review remain pending.
+
+`codex/service-plan-integration` starts from candidate85/21ebe69 and ordinarily merges Devin53/388b80d, preserving the independently reviewed e7a283b service-plan classes and all76 supplied tests byte-for-byte. Three Markdown conflicts retain both histories. The original Devin branch remains unchanged. Published1.22/e3b434f and candidate85 acceptance remain separate; this branch is not a release or part of PR85.
+
+The canonical plan/subscription models are mirrored under private application includes with exact installer hashes and build drift checks. The existing21 independent consent/terms/reference/time controls are retained and can run against either canonical or deployed copies. Focused PHP8.2/8.4 now records supplied default/no-ini plus both copies' controls. Full acceptance retains original checks and adds deployed controls and Apache denial of both private files. This initial import has no plan authoring/storage/consent screen, recurring invoice, scheduler, billing capture or route activation; those application increments remain Codex-owned next work.
+
+Source model review6166883523 is CLEAR; current Devin388 native38557965214 is verified152 supplied executions and differs from reviewed source only in documentation. Combined branch acceptance/import review and application integration are pending. Parent85/21 full38562463459 is verified8,360 checks/all21workflows with actual1.22 recovery/replay; additive review remains pending. Separate hosting storage89/0f7bbb0 nativepush38567550797 andPR38567559967 each verify846, with full38567952137 currently running. These hosting branches are not merged here. Full roadmap active; no customer mail, charge, provider call, SSH or deployment.
+
+## Earlier checkpoints — historical evidence
+
 ## Current candidate — 1.23.0 client safeguards and hosting groundwork
 
 Published [1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) remains the latest verified download at immutable sourcee3b434f. Candidate1.23.0 is prepared on `codex/hosting-integration`/PR85 after the verifieda9 combined baseline and documentation-only main mergee86f2c9. No1.23 tag, release or live deployment exists. [Candidate guide](CLIENT_ACCOUNT_SAFEGUARDS.md).
