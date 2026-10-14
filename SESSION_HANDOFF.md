@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Current work — financial agreement notifications contract
+
+Codex starts `codex/design-financial-activity` from frozen financial forms PR114/a9a5f40. The [activity contract](docs/DESIGN_FINANCIAL_ACTIVITY_CONTRACT.md) defines client offer/withdrawal notices, authorized staff decision notices, exact original-history links and independent personal read state through the existing workspace center/bell. No implementation or passing behavior is claimed by this contract. Devin retains complete20i.
+
+Parent114 focused push/PR CI is independently verified at 3,184 named PHP8.2/8.4 executions; [proof6180534169](https://github.com/afterburn25/Cajun_Web/pull/114#issuecomment-6180534169). Its full38651962280 and Windows build remain confirmed live and must not be restarted or mutated. Ready101 still awaits its requested independent review. Published1.23/main68e4d41 remain unchanged. Devin115/f102e1e corrects only the installer inventory; eight prior runtime findings remain. Next: implement/test the bounded notification projection while preserving original full acceptance, then current native/browser/recovery/package and independent review gates. Earlier sections below are historical checkpoints.
+
 ## Current work — actual financial forms, locally verified
 
 Draft#114 continues from contract head `b7a2d0c`: the existing staff and client project pages now contain structured quotes/payment stages, explicit client consent, exact history, unique stage-invoice actions and current ledger balances/receipt links. Owner setup remains deliberate; current permissions and client ownership are checked. Original stale drafts remain bound to their reviewed terms, including read-only retention after concurrent issuance. Row controls work without JavaScript. [Usage and evidence](docs/DESIGN_FINANCIAL_AGREEMENTS.md).
