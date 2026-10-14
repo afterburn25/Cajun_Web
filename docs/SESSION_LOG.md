@@ -1305,3 +1305,21 @@ Supplied push38631145645 and PR38631154380 each pass38 named native checks on PH
 Next: await Devin's exact correction source, inspect schema/installer changes and rerun these controls against it; do not merge this review harness as product implementation. No real provider credentials, transport, customer operation, deployment or release occurred. Published1.23 is unchanged, and Codex's non-20i planning/project-history work remains separate. Full roadmap remains active.
 
 This documentation-only evidence commit starts at075e745. Documentation continuity passes140 Markdown/1,260 local links; all site/foundation/tests/workflow bytes remain unchanged from the tested review source.
+
+## 2026-10-16 — Devin: grant binding corrections from independent review
+
+Codex review 6177728792 reproduced three approval-boundary gaps at `318471e`. Fixes on this branch:
+
+1. **Revision/account binding** — `provider_operation_grants.profile_revision` (schema v2, ALTER upgrade for v1) records the approved profile revision; `provider_operation_grant_active` now requires an enabled profile at that exact revision. Key replacement or any settings save changes the revision and suspends the grant; disable/enable cycles never revive it. Granting also requires an enabled profile.
+2. **UTF-8 scope keys** — `provider_operations_canonical` refuses map keys whose `json_encode` fails, matching gateway canonicalization.
+3. **Newest-same-scope** — `grant_active` queries the indexed exact scope for its newest row instead of scanning the latest 64 grants.
+
+Tests: native suite extended to cover the v1→v2 ALTER upgrade, revision invalidation on settings save and disable/enable, invalid UTF-8 scope keys, and same-scope lookup beyond 64 other grants. CI pending.
+
+## Corrected provider grant review in progress — 2026-10-14
+
+The owner assigned complete20i implementation to Devin. This review-only branch now normally merges his corrected PR109 source `6ca730f7b7c855c02760d3706ce7308cf05a51bf` into preserved review `265f956`; both histories remain. All shipping and foundation bytes match Devin's exact source. The original eight independent controls are unchanged except for their source label and run after his unmodified native suite on PHP8.2/8.4/MariaDB. They recheck disabled/replaced account approvals, both invalid UTF-8 scope keys and an older exact scope beneath64 newer scopes of the same operation. Current results await downloaded artifacts; no correction clearance is inferred from source inspection.
+
+This is a ledger/grant review only. The separate execution #111 review6178847337 has outstanding actual-view, account-result replay, revocation, request-validation and prior-v2-migration findings plus stale installer hashes. No provider transport or real credentials occur here; product corrections stay on Devin branches. Codex has marked fully tested non-20i #101 ready for review and sent the ordered cross-review request6178905966 on issue2. Published1.23 and current acceptance heads are unchanged. Next: verify the corrected ledger's exact named results, report scoped findings/clearance, and continue the independent release queue.
+
+Review merge parents: `265f956` and `6ca730f`; no production source edits by Codex.

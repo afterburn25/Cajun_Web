@@ -37,14 +37,17 @@ Authorization material, or raw transport text can reach this table.
 An execution path must verify an active grant before claiming:
 
 - `provider_operation_grant(profile, operation, scopeParams, password,
-  ttl)` — owner-password action under the staff lock; records a grant
-  bound to the canonical scope fingerprint (installation-keyed HMAC of
-  operation + recursively-sorted params) with an expiry of 60 s–24 h
-  and an audit event.
+  ttl)` — owner-password action under the staff lock; requires the
+  profile be enabled; records a grant bound to the canonical scope
+  fingerprint (installation-keyed HMAC of operation + recursively-
+  sorted params, invalid UTF-8 map keys refused) AND the approved
+  profile revision, with an expiry of 60 s–24 h and an audit event.
 - `provider_operation_grant_active(profile, operation, scopeFp)` —
-  true only when the newest grant matching that exact scope is
-  unrevoked and unexpired; `hash_equals` comparison. Changed params,
-  another operation or another profile do not match.
+  finds the newest grant for that exact scope directly (indexed query,
+  not a bounded scan); true only when it is unrevoked, unexpired, and
+  the profile is still enabled at the SAME revision approved at grant
+  time — any settings save, credential replacement or disable/enable
+  cycle changes the revision and suspends the grant until re-approved.
 - `provider_operation_revoke(grantId, password)` — durable revocation;
   unknown or already-revoked grants refuse.
 

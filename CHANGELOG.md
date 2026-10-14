@@ -1,5 +1,11 @@
 # Changelog
 
+## Corrected provider grant review in progress — 2026-10-14
+
+The owner assigned complete20i implementation to Devin. This review-only branch now normally merges his corrected PR109 source `6ca730f7b7c855c02760d3706ce7308cf05a51bf` into preserved review `265f956`; both histories remain. All shipping and foundation bytes match Devin's exact source. The original eight independent controls are unchanged except for their source label and run after his unmodified native suite on PHP8.2/8.4/MariaDB. They recheck disabled/replaced account approvals, both invalid UTF-8 scope keys and an older exact scope beneath64 newer scopes of the same operation. Current results await downloaded artifacts; no correction clearance is inferred from source inspection.
+
+This is a ledger/grant review only. The separate execution #111 review6178847337 has outstanding actual-view, account-result replay, revocation, request-validation and prior-v2-migration findings plus stale installer hashes. No provider transport or real credentials occur here; product corrections stay on Devin branches. Codex has marked fully tested non-20i #101 ready for review and sent the ordered cross-review request6178905966 on issue2. Published1.23 and current acceptance heads are unchanged. Next: verify the corrected ledger's exact named results, report scoped findings/clearance, and continue the independent release queue.
+
 ## Review only — provider operation approvals
 
 - Add isolated current-account/scope/history negative controls for Devin PR109, preserving exact shipping source318471e. Linux PHP8.2/8.4 reproduces three grouped approval findings after38 supplied tests pass per runtime; review6177728792 requests Devin corrections. No implementation, release or deployment change.

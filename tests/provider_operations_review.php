@@ -55,6 +55,6 @@ try{
     pr109_check('Unrelated later scope approvals do not hide an unexpired exact grant',$active);
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected fixture failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
 $passed=!array_filter($checks,fn($c)=>!$c['passed']);
-file_put_contents(__DIR__.'/../qa/provider-operations-review-results.json',json_encode(['passed'=>$passed,'source'=>'318471ef3d2cc1fb28994efc94dfe8e0dec7b895','scope'=>'Independent synthetic MariaDB approval probes. A failed behavioral check is a review finding, not successful feature acceptance. No provider API or real credentials.','php'=>PHP_VERSION,'checks'=>$checks,'observations'=>$observations],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
+file_put_contents(__DIR__.'/../qa/provider-operations-review-results.json',json_encode(['passed'=>$passed,'source'=>'6ca730f7b7c855c02760d3706ce7308cf05a51bf','scope'=>'Independent synthetic MariaDB approval probes. A failed behavioral check is a review finding, not successful feature acceptance. No provider API or real credentials.','php'=>PHP_VERSION,'checks'=>$checks,'observations'=>$observations],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
 echo ($passed?'PASS':'FINDINGS').': '.count($checks).' independent approval checks'.PHP_EOL;
 exit($passed?0:1);
