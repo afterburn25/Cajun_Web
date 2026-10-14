@@ -18,6 +18,28 @@ Starting53b6ea3; downloaded8 native/form reports38538343622 pass562 checks. Full
 
 Owner requested continuous roadmap work. Starting7fdd242, wire existing guarded submission modules into admin/setup and prepare packaged synthetic SMTP/HTTP/browser acceptance. Local58 form checks pass per default/no-ini; full application/native/browser acceptance remains pending. No real external mail. See current PROJECT_STATUS and PR77.
 
+## 2026-10-14 — verified hosting operation matrix
+
+Atb7e9f03, downloaded push38545626740 passes79 operation +94 retained local-record checks per PHP8.2/8.4,346 executions. All named results and no-PHP-warning log verify. All2542 installer dependencies match committed bytes, with6 exact canonical mirrors. This follow-up changes documentation only. Mail38539811045 was cancelled for45m limit; retained6771 pre-Apache checks and verified Windows/Linux packages are partial evidence. Replacemente9b77e1/38545953062 has75m and incomplete progress checkpoints, without changing runtime or dropping tests. Next: independent review, current PR matrix, deliberate hosting reconciliation/retry and final mail acceptance.
+
+## 2026-10-14 — durable hosting attempts
+
+Request: continue full roadmap without stopping. Started5d9b719 on codex/hosting-operations, preserving stacked81/80/79 and Devin branches. Added guarded operation/fence/result/resource storage, additive migration, shared atomic event writer, native process/result fixtures and focused CI. Syntax, full generated refresh and126 Markdown/1073 links passed; current-client locking reads are added after inspecting legacy client writers outside the mutex. A competing-process snapshot regression is included. New native checks remain pending. Existing storage94 per runtime verified, mail38539811045 still in Apache. No provider transport or production action. Next: verify new native results and independent review, then deliberate reconciliation/retry and verified provider coordination.
+
+
+## 2026-10-14 — verified hosting record evidence
+
+Startingf8001e9/PR81, downloaded push38543267301 and PR38543364218/tested merge690949d. Each PHP8.2/8.4 run passes94 named native checks,188 total per run. All14 applicable workflows succeed; no PHP warnings in push log. Verified2539 exact committed installer dependencies and6 canonical mirrors. This documentation-only checkpoint records the evidence and pending independent review; it changes no site/foundation/tests/tools/workflow source. Mail38539811045 remains in Apache acceptance. Authorized issue2 handoff6165365613 records current ownership without inferring Devin receipt. Next: separate durable dispatch/result layer and candidate final acceptance.
+
+## 2026-10-14 — native hosting record adapter
+
+Request: continue roadmap without stopping. Started8bbd209 on new codex/hosting-storage; preserve stacked80/79 and Devin histories. Added guarded app/hosting storage, schema/migration, canonical mirrors/builder, native process fixtures and focused workflow. Documented exact local-only scope and future dispatch gate. Local syntax passes; native/runtime acceptance pending. Parent journal1440 executions downloaded/verified; mail1236 browser checks and screenshots verified, recovery/Apache still active. No live operation or release. Next: inspect native reports, fix failures and obtain independent review.
+
+
+## 2026-10-14 — hosting reconstruction prerequisite
+
+Owner requested continued roadmap work. Startingb6d4d24, prepare canonical HostingJournal,148 named local controls per default/no-ini mode, matrix workflow and durable adapter contract on separate codex/hosting-journal. Site tree unchanged. Parent79 verified6,912 full application and848 focused checks; independent input-delta review remains pending. Mail77 stays separate. Next: inspect matrix/review and implement native current-authorized persistence, never dispatching from a replay.
+
 ## 2026-10-13 — HC-07 provider foundation component
 
 Request: continue without stopping under the dependency-gate policy; PR #38 refactor remains Codex's open merge gate (current head `49eae7f`; install POST segfaults mod_php under the new OPcache fixture flags — diagnosed and reported on the PR; Devin #41 closed as superseded, #42 UTF-8 build fix still open).
@@ -1174,3 +1196,28 @@ Previous goal turn made concrete progress: coordinator and private screen prepar
 ## 2026-10-14 — verify combined default SMTP path
 
 Starting48060cf722b9899450c4b0ca76c8aa2059b4b563, downloaded and inspected both combined reports from38535733829:471 named checks pass per PHP8.2/8.4 runtime. Default resolver/coordinator/credential decryption/maintained SMTP/pinned TLS use actual local connections and native MariaDB. Exact saved message bytes and identifiers, strict audit boundaries, current grant loss, final rejection, uncertainty, interrupted result persistence and no-retry behavior pass. PR38535741503 also succeeded. Original keys and private audit boundaries retained; no external mail was delivered. Source c5646bf remains the last shipping-code change, with564 earlier native/form executions verified. HTTP/browser/Apache/latest1.21 update/recovery and independent review remain pending. Hosting60c53dc4a retains reviewed isolated source and green checks but conflicts with current main documentation; next feasible parallel branch is canonical hosting integration, preserving Devin source/history. Full roadmap remains active.
+
+## 2026-10-14 — preserve and integrate corrected hosting component
+
+Codex integrates Devin PR60 atc53dc4ae69f964fc53a42ee40aed61ba2ab24bdf into current mainff3ce729e49f553cb3354ed09cf12cdeeda30fca on `codex/hosting-foundation-integration`. This merge preserves both histories and all five hosting classes, supplied tests, component guide and workflow. Four shared-document conflicts retain current release continuity plus this explicit integration record. Published1.21.0 stays immutable. Hosting remains outside the deployment tree with no provider/persistence/billing/UI activation.
+
+The earlier independent correction review6163105649 remains scoped to168 supplied and21 independent controls. Integration rechecks reproduced seven further input failures: final-LF SKU/domain values, empty domain labels, edge hyphens and excessive label/total lengths. Codex tightens exact SKU matching and bounded complete domain labels before mutation, retaining the existing ASCII/alphabetic-TLD policy. New23 regression/positive controls cover those inputs and unchanged history on refusal. The corrected component now passes168 supplied +21 retained review +23 input controls locally on PHP8.4 default/no-ini; the combined PHP8.2/8.4 matrix is pending. CI retains original supplied output plus named independent JSON evidence. No domain registration, DNS lookup or actual provider operation occurs.
+
+Mail PR77 remains separate at7fdd242, with last shipping codec5646bf and default-coordinator evidence48060cf:471 actual loopback SMTP/MariaDB checks per PHP8.2/8.4, plus564 earlier native/form executions. Its private Send screens remain unregistered pending independent review and packaged HTTP/browser/latest1.21 recovery acceptance. Devin retains service-plan53 corrections at166c4b3 and mail review; preserve both branches. Next: verify hosting integration CI and review the small input delta before sequential main integration; then define its durable current-authorized provider/account adapter. [Hosting component](HOSTING_FOUNDATION.md).
+
+## 2026-10-14 — client authority integration from PR82
+
+Started `codex/client-authority` from1f59074, preserving hosting/Devin histories. Implemented shared-lock client create/edit/invite/activation, exact stale-form rejection, strict transaction/audit and escaped unsaved details. Current local native PHP8.4/MariaDB passes60 checks. Prepared actual HTTP/Chromium conflict/invitation/session fixtures and current PHP8.2/8.4 matrix retaining hosting94+79. Current full application, screenshots, matrix artifacts and independent review remain pending. No schema/version/publication or live external operation. Mail38545953062 continues separately; e9 Windows archives and current browser checkpoint/visual/homepage evidence verified. See CLIENT_AUTHORITY.
+
+### 2026-10-14 — packaged client support refusal correction
+
+Downloaded first browser checkpoint from38549059961:1,200 HTTP assertions pass, then support-selector expected403 fails. Add explicit client admin403 rendering for GET/POST support selection while retaining the existing write guard; assert no mutation and no forms separately. Native push/PR matrices466 each and olddae2f82 Windows archives verify. No complete application acceptance claimed. Replace with corrected full run after refresh. Independent service-desk61 review6166378842 reproduces approved-expiry, stale-worker and refused-denial mutation findings; original branch preserved.
+
+
+## 2026-10-14 — combine reviewed hosting parents and client controls with mail main
+
+Request: continue the roadmap and integrate separate branches without interrupting release acceptance. Start exact main e3b434ffb2244e454ea9f24fa1de9173b7479ccc; merge preserved client83 eefe29e8ee4019ea7506e0b70179f85d68dbe41a, including hosting79-82 ancestry, on codex/hosting-integration. Main remains held for mail1.22 acceptance38553149886; no publication is claimed.
+
+Resolve inspected conflicts by retaining both documentation histories, all submission and client browser calls, all existing private-file checks plus the four client paths, the75-minute ceiling/progress instrumentation, the submission dependency checker and hosting mirror generation. Automatic router merge retains mail routes and explicit support-client refusal. Regenerate the complete installer inventory from combined source. No reviewed client/hosting model or adapter behavior is changed in this merge.
+
+Verification: documentation132 Markdown/1152 links passes, Python build/browser/Apache/client fixture compilation passes, PHP router/client-account syntax passes, canonical receiving/submission mirrors pass; combined application/native tests have not yet run. Independent hosting79/80/81/82 reviews are CLEAR; client83 review/full application remain pending. Next merge preserved local retry84, verify byte preservation, then run combined native/application acceptance and request integration review. No schema activation, provider call, credential use, mail, payment, SSH, release or deployment is added.

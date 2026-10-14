@@ -73,7 +73,7 @@ def generated(refresh):
             target=SITE/'includes/foundation/mail-submission'/source.relative_to(submission)
             target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(source.read_bytes())
     check_submission_mirror(required=True)
-    for area in ['access','invitations','portfolio','estimator','email-templates','webmail','review-requests','scheduling','mail-transport','provider','twentyi','mail-compose']:
+    for area in ['hosting','access','invitations','portfolio','estimator','email-templates','webmail','review-requests','scheduling','mail-transport','provider','twentyi','mail-compose']:
         for source in (ROOT/'foundation'/area).glob('*.php'):
             target=SITE/'includes/foundation'/area/source.name
             if refresh:

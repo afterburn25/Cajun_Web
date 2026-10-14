@@ -111,12 +111,12 @@ try {
 if(!isset($error))try {
     foreach([['Alice','alice@example.invalid'],['Bob','bob@example.invalid']] as [$name,$email])query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',[$name,$email,bin2hex(random_bytes(16)),$now]);
     foreach([1,2] as $cid)query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?)',[$cid,'Project '.$cid,'Private project '.$cid,'Discovery → Design → Launch',$now,$now]);
-    $url=studio_new_invite(1);parse_str((string)parse_url($url,PHP_URL_QUERY),$parts);$token=$parts['invite'];
+    $url=studio_new_invite(1,one('SELECT auth_version FROM '.table('studio_clients').' WHERE id=1')['auth_version']);parse_str((string)parse_url($url,PHP_URL_QUERY),$parts);$token=$parts['invite'];
     $c=one('SELECT * FROM '.table('studio_clients').' WHERE id=1');ok('Invitation stored as hash, not raw token',$c['invite_hash']===hash('sha256',$token)&&!str_contains(json_encode($c),$token));
     studio_activate($token,'Synthetic client passphrase 2026');
     ok('Activation hashes password and consumes invite',password_verify('Synthetic client passphrase 2026',one('SELECT password_hash FROM '.table('studio_clients').' WHERE id=1')['password_hash'])&&one('SELECT invite_hash FROM '.table('studio_clients').' WHERE id=1')['invite_hash']===null);
     rejected('Invitation replay rejected',fn()=>studio_activate($token,'Another synthetic passphrase 2026'));
-    $expired=studio_new_invite(2);parse_str((string)parse_url($expired,PHP_URL_QUERY),$parts);
+    $expired=studio_new_invite(2,one('SELECT auth_version FROM '.table('studio_clients').' WHERE id=2')['auth_version']);parse_str((string)parse_url($expired,PHP_URL_QUERY),$parts);
     query('UPDATE '.table('studio_clients').' SET invite_expires=? WHERE id=2',[time()-1]);
     rejected('Expired client invitation cannot activate',fn()=>studio_activate($parts['invite'],'Synthetic client passphrase 2026'));
     ok('Expired activation preserves unset password',one('SELECT password_hash FROM '.table('studio_clients').' WHERE id=2')['password_hash']==='');
@@ -134,7 +134,7 @@ if(!isset($error))try {
     rejected('Change request requires feedback',fn()=>studio_decide(1,$proposal,'changes',''));
     studio_decide(1,$proposal,'changes','Please clarify the content scope.');
     ok('Change request records feedback',one('SELECT decision FROM '.table('studio_versions').' WHERE id=?',[$proposal])['decision']==='changes');
-    client_session(1);$oldAuth=$_SESSION['client_auth'];studio_new_invite(1);ok('New invitation revokes older client session',studio_client()===null);
+    client_session(1);$oldAuth=$_SESSION['client_auth'];studio_new_invite(1,one('SELECT auth_version FROM '.table('studio_clients').' WHERE id=1')['auth_version']);ok('New invitation revokes older client session',studio_client()===null);
     studio_revision_save('growth_intro','First saved copy',hash('sha256',setting('growth_intro')));
     $expect=hash('sha256',setting('growth_intro'));studio_revision_save('growth_intro','Second saved copy',$expect);
     rejected('Content edit conflict rejected',fn()=>studio_revision_save('growth_intro','Stale edit',$expect));

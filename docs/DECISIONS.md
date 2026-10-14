@@ -4,6 +4,24 @@
 
 The owner has authorized continued implementation and isolated tests on separate branches. Earlier assistant-authored checkpoints postponed even testable route integration until independent review. Prepare the concrete admin/router/setup integration and packaged synthetic acceptance on unreleased PR77 now, so review can assess the complete behavior. Retain independent review and exact-source acceptance before merge/publication. This does not authorize customer mail, live deployment, provider writes, payment or SSH, and does not claim review received.
 
+## 2026-10-14 — every client identity writer shares authority serialization
+
+The future hosting coordinator cannot rely on the shared staff guard while legacy client edits or public invitation activation bypass it. Move those existing writers behind the same guard, recheck current authority after waiting, and bind administrative forms to the exact client authorization version. Public activation retains its invitation capability, with active-client/expiry checks and atomic audit; it does not require staff access. Preserve the existing delegated client-management permission. [Contract](CLIENT_AUTHORITY.md).
+
+## 2026-10-14 — preserve committed attempts and remote observations
+
+Commit an immutable exact account/client/profile/attempt boundary before returning a new provider claim. A replay or pending-state read never authorizes another call. Final observations must survive later access loss but require the exact committed binding; audit/storage failure leaves the prior fence unresolved. Keep provider-resource associations unique and immutable across clients. The internal result path is not exposed as a generic HTTP callback. [Contract](HOSTING_OPERATIONS.md).
+
+
+## 2026-10-14 — separate local hosting persistence from remote dispatch
+
+Add a current-owner native adapter for immutable local records and canonical local commands first. Do not expose arbitrary journal imports, provider observations, dispatch intents or reconciliation through that API. Preserve original terms and per-event audit atomically; loading a record never grants a remote action. The subsequent provider adapter must own its immutable committed dispatch fence and exact bound result path. See [storage contract](HOSTING_RECORDS.md).
+
+
+## 2026-10-14 — reconstruct hosting through validated commands
+
+Use versioned strict JSON commands replayed through the existing canonical HostingAccount rather than PHP object deserialization or assigning private state fields. Journal instances retain immutable bytes; state readers get independent models. Identity checks and hashes are not authorization or proof of a provider operation. Durable transaction/audit/dispatch fencing remains a separate adapter requirement. See HOSTING_JOURNAL.
+
 ## 2026-10-13 — Owner-approved dependency-aware development
 
 **D-034 — Accepted:** Missing 20i account entitlements/API credentials, domain/VPS endpoint access, merchant production acceptance or SSH transport does not constitute a blanket development halt. Separate independent source work from external acceptance and label implementation progress separately from external gate/release/deployment state. Reclassify HC-07 as "Awaiting API verification", HC-09/HC-10 as "Development pending — API verification", and A-10 as "Architecture/security validation pending". Continue mocked and isolated safe feature work, then move to next feasible priority if an integration cannot be completed. No real financial/provider/SSH action until its specific security, customer-authorization and owner-approved launch gate passes. See [dependency gates](DEPENDENCY_GATES.md). This is a planning/agent instruction, not evidence those items are implemented.

@@ -69,6 +69,33 @@ Add a canonical reference-free private submission snapshot, selected sender/reci
 
 Record the next explicit-send boundary on a separate branch: maintained protocol/MIME, immutable reviewed snapshots, all-recipient pre-DATA acceptance, durable intent and attempt-bound unknown outcomes. Documentation only; no new application version, transport, UI or message sent.
 
+## Unreleased correction — client support context
+
+Return an explicit403 client-administration page without edit or invitation forms when support is selected. Retain mutation denial and add separate actual HTTP checks for GET/POST rendering and unchanged records. First packaged run was incomplete; corrected acceptance is pending.
+
+## Unreleased — client authority integration
+
+Serialize existing client account edits, invitation creation and public activation with staff/hosting authorization changes. Refuse stale client forms; preserve escaped unsaved details. Retain delegated access, rotate revoked sessions, consume invitations once and make audit failure atomic. Add native concurrent-process and actual packaged form/browser checks. No release or provider activation claimed; [contract](docs/CLIENT_AUTHORITY.md).
+
+## Unreleased — durable hosting attempt/result storage
+
+Add current-owner exact attempt/profile fences, bound internal results, immutable unique provider-resource associations and strict atomic audit. Stable replay grants no repeat dispatch. Atb7e9f03, downloaded38545626740 passes79 operation +94 retained local-record checks per PHP8.2/8.4. Independent review and application acceptance remain pending. No transport, route, worker or release activation. [Contract](docs/HOSTING_OPERATIONS.md).
+
+
+## Unreleased — local hosting records
+
+Add owner-authorized additive MariaDB journal/event storage, exact client/terms/revision checks, stable replay and strict atomic audit. Native PHP8.2/8.4 each pass94 checks, including competing processes and damaged history, atf8001e9 in38543267301/38543364218. No remote operation, route or fresh-install activation; independent review and application acceptance remain pending. [Contract](docs/HOSTING_RECORDS.md).
+
+
+## Unreleased — hosting lifecycle journal
+
+Add bounded immutable canonical JSON command reconstruction outside deployment. Preserve lifecycle/attempt invariants across process restoration.148 local controls pass per default/no-ini PHP8.4 mode; matrix/review and durable application adapter pending.
+
+## Unreleased — canonical hosting model integration
+
+- Preserve Devin PR60 hosting model/history on current main: packages, account lifecycle, exact-attempt observations, plan changes and explicit panel grants. No deployment/provider/persistence/UI activation.
+- Correct final-LF SKU acceptance and malformed primary-domain labels before state/history mutation. Local168 supplied +21 retained review +23 input checks pass per default/no-ini mode; expanded PHP8.2/8.4 CI pending.
+
 ## 1.21.0 — verified private local email drafts
 
 - Private author/mailbox drafts with bounded To/Cc/Bcc and plaintext, canonical active-template insertion, escaped preview and retained discard/history. No SMTP sending or server Drafts synchronization.
