@@ -1256,3 +1256,12 @@ Codex retains hosting persistence/reconciliation/coordinator/UI and release inte
 
 
 Source and focused/full workflow fixtures change with installer inventory refresh; canonical foundation bytes, schema, routes and shipped version remain unchanged. Starting parenta9beb6e, commit message `Fence explicit deletion retries under retained current approval`; enclosing Git history identifies the resulting source. Local syntax only at this entry, native/database and independent review pending.
+
+## 2026-10-14 — correct deletion-retry native fixture
+
+Starting ec5f7e9931cee4928c9da8bf02dd1a6fa8419dab, change only the invalid second-provider setup and continuity documentation.
+
+At ec5f7e9, push38559629380 PHP8.2 passed all94 record,79 operation and44 provisioning-retry checks plus51 named deletion-retry checks, then the new fixture failed when it attempted to create a second20i profile. The production settings API intentionally permits only one. Preserve that refusal: replace the impossible setup with an unknown-profile request and explicitly verify unchanged journal/fence/result/audit state. Runtime operations and installer bytes are unchanged. The failed report and complete job115837210320 log are retained; no full deletion-retry pass is claimed. Replacement PHP8.2/8.4 acceptance remains required.
+
+Local syntax, full installer refresh,134Markdown/1171links and all2565 exact committed dependency hashes passed for ec5; review6167717491 remains pending. Published1.22.0 and live combined85 acceptance38554890744 are unchanged. Next: verify replacement focused matrix and review before integration.
+

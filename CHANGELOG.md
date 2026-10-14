@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — deletion fixture correction
+
+Preserve the single20i profile policy in native deletion-retry tests; an unknown profile must refuse without changing state. Runtime/installer unchanged; initial ec5 PHP8.2 run failed in fixture setup after51 new checks. Replacement matrix pending.
+
 ## Unreleased — fenced deletion retry
 
 Add a separate current-owner/original-approver retry after a retained definite retryable deletion failure, atomically saving the new attempt and dispatch fence. Retain exact result/replay/resource binding and current authority checks. Native fixtures are prepared; CI/review pending. No provider activation or release. [Contract](docs/HOSTING_DEPROVISION_RETRY.md).
