@@ -1,5 +1,11 @@
 # Codex and Devin work allocation
 
+## Active development — bounded recent email notices
+
+Codex owns `codex/mail-notices`, a separate checkout from merged 1.18.0 source `91550d956c404585545dbd766c96f36f58ae0623`. Exact-main release acceptance/publication continues separately; the fixed release source is unchanged. The initial additive three-table store, current-authority projection, exact full-tuple/opaque-handle resolution, per-person opened/dismissed state and strict result-transaction helpers are written. These modules are not yet wired to installation, inbox/message recording or HTTP UI. Native MariaDB/PHP 8.2/8.4 fixtures and a dedicated workflow are added; only local PHP syntax has passed so far. Do not claim a working bell, database acceptance or published increment.
+
+The [bounded contract](MAIL_NOTICES_CONTRACT.md) and [Devin review request](https://github.com/afterburn25/Cajun_Web/pull/62#issuecomment-6158466543) separate recent observed notices from full provider unread synchronization. Codex owns application/schema/UI/tests/build/release; Devin #62 remains contract input and #71 provider correction review remains separate. Preserve all branches. Next: run/fix native storage checks, resolve contract findings, then connect strict inbox/message transactions, private count/page/POST handling and accessible admin/public-header bells. Add actual packaged browser and immutable 1.18.0 upgrade/recovery acceptance before the next release. No real mailbox, provider operation, charge, SSH or deployment.
+
 ## Active candidate — 1.18.0 exact-message reading
 
 Codex owns `codex/mail-message-reader` / [PR #70](https://github.com/afterburn25/Cajun_Web/pull/70), continuing A-06 after published/download-verified 1.17.0. The candidate now connects the fixed exact-UID/UIDVALIDITY receiving operation to an assigned-staff message page. Open message is an explicit CSRF-protected POST from recent headers. Current global/read assignment, account revision and actor protect intent, credentials, decoding and display. Strict started/terminal audit and personal request history retain identifiers, outcomes and sizes only; no headers, body or raw MIME are stored. Separate message limits allow one request per account per two seconds and 240 per account and staff hour. DNS runs outside the staff lock; bounded credential use holds no InnoDB transaction.
