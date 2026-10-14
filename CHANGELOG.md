@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — client authority integration
+
+Serialize existing client account edits, invitation creation and public activation with staff/hosting authorization changes. Refuse stale client forms; preserve escaped unsaved details. Retain delegated access, rotate revoked sessions, consume invitations once and make audit failure atomic. Add native concurrent-process and actual packaged form/browser checks. No release or provider activation claimed; [contract](docs/CLIENT_AUTHORITY.md).
+
 ## Unreleased — durable hosting attempt/result storage
 
 Add current-owner exact attempt/profile fences, bound internal results, immutable unique provider-resource associations and strict atomic audit. Stable replay grants no repeat dispatch. Atb7e9f03, downloaded38545626740 passes79 operation +94 retained local-record checks per PHP8.2/8.4. Independent review and application acceptance remain pending. No transport, route, worker or release activation. [Contract](docs/HOSTING_OPERATIONS.md).

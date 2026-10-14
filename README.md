@@ -1,5 +1,13 @@
 # CajunWebPro — project source of truth
 
+## Current work — serialize client identity changes
+
+Codex owns `codex/client-authority` from PR82/1f59074. Existing client edits, invitation creation and public activation now share the staff/hosting guard and strict atomic audit. Exact current account versions reject stale edit/invitation forms; failed edits retain escaped unsaved details for review. Delegated `clients.manage` access is preserved, support is denied, and public activation remains invitation-based. No schema or release version changes. [Client authority contract](docs/CLIENT_AUTHORITY.md).
+
+Local PHP8.4/native MariaDB10.11.16 passes60 concurrent/rollback/authority checks. Added packaged HTTP/Chromium fixtures and retained hosting matrices await current CI acceptance; full application and independent review are still required. Parent82 has verified346 executions in push38545626740 and PR38546272833, tested merge4fcec07. Mail77/e9b77e1 remains separate with current browser1,236 checks, inspected actual screenshots, identical1.21 homepage pixels and verified clean Windows archives; full38545953062 continues. Published1.21 remains immutable. Next: verify this branch's native matrix and real browser/recovery, request focused review and continue hosting reconciliation/coordinator boundaries. Preserve Devin53 and all parent branches.
+
+## Earlier checkpoints
+
 ## Latest verified publication — 1.21.0
 
 [v1.21.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.21.0) is published and freshly downloaded/verified at immutable source/tag `7805e56aa9e53cb081600589e92991255475474c`, through [PR #75](https://github.com/afterburn25/Cajun_Web/pull/75). Staff can save, edit, preview and retain private local email drafts for currently assigned sending accounts, with canonical active-template insertion. Current author/account/Send access, exact revisions, stable initial-save replay and strict audit protect the workflow. [Owner guide](docs/LOCAL_EMAIL_DRAFTS.md).

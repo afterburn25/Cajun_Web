@@ -1,5 +1,13 @@
 # Project status
 
+## Current work — serialize client identity changes
+
+Codex owns `codex/client-authority` from PR82/1f59074. Existing client edits, invitation creation and public activation now share the staff/hosting guard and strict atomic audit. Exact current account versions reject stale edit/invitation forms; failed edits retain escaped unsaved details for review. Delegated `clients.manage` access is preserved, support is denied, and public activation remains invitation-based. No schema or release version changes. [Client authority contract](docs/CLIENT_AUTHORITY.md).
+
+Local PHP8.4/native MariaDB10.11.16 passes60 concurrent/rollback/authority checks. Added packaged HTTP/Chromium fixtures and retained hosting matrices await current CI acceptance; full application and independent review are still required. Parent82 has verified346 executions in push38545626740 and PR38546272833, tested merge4fcec07. Mail77/e9b77e1 remains separate with current browser1,236 checks, inspected actual screenshots, identical1.21 homepage pixels and verified clean Windows archives; full38545953062 continues. Published1.21 remains immutable. Next: verify this branch's native matrix and real browser/recovery, request focused review and continue hosting reconciliation/coordinator boundaries. Preserve Devin53 and all parent branches.
+
+## Earlier checkpoints
+
 ## Current work — durable hosting attempt and result records
 
 Codex owns `codex/hosting-operations` from5d9b719/PR81. New guarded native storage commits canonical lifecycle events, immutable exact account/client/profile/attempt fences and strict audit before returning a new one-time claim. Replay grants no second call. Internal result persistence binds observations to that committed attempt, preserves uncertainty/access-loss outcomes and retains unique provider-resource ownership across accounts. There is no route, worker, credential decryption, provider request or new release. [Operation contract](docs/HOSTING_OPERATIONS.md).

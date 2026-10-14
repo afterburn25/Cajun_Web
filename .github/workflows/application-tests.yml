@@ -14,7 +14,7 @@ concurrency:
 jobs:
   native-and-browser:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 75
     services:
       mariadb:
         image: mariadb:10.11
@@ -81,6 +81,7 @@ jobs:
           php8.3 -n tests/mail_drafts_form.php
           php8.3 tests/provider_settings_native.php
           php8.3 tests/provider_checks_native.php
+          php8.3 tests/client_authority_native.php
       - name: Real HTTP and Chromium application workflows
         run: .ci-venv/bin/python tests/browser_acceptance.py
       - name: Preserve browser checkpoint before the extended recovery matrix

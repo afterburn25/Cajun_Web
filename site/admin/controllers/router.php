@@ -21,6 +21,7 @@ $view=is_string($_GET['view']??null)?$_GET['view']:'dashboard';
 $validViews=['login','forgot','reset','dashboard','projects','project','services','service','leads','lead','website-review','consultations','consultation','consultation-settings','testimonials','testimonial','settings','email','security','health'];
 $validViews=array_merge($validViews,['mail-drafts','mail-draft','provider-settings','mail-notices','mail-message','mail-inbox','mail-accounts','mail-account','mailboxes','mail-templates','mail-template','activity','deliveries','staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],array_keys(studio_admin_views()));
 if(!in_array($view,$validViews,true)){$view='dashboard';}
+if($view==='studio-clients'){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 $error='';$id=(int)($_GET['id']??0);$inboxResult=null;$messageResult=null;$draftResult=null;
 require CWP_CODE_ROOT.'/admin/controllers/actions.php';
 if($view==='staff-setup')staff_setup_render($error);
