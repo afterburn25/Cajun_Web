@@ -157,3 +157,7 @@ Reuse current project invoices and staff/client identities. Owner-only credentia
 ## 2026-10-13 — ship bounded maintained inbox headers in 1.17.0
 
 Source fc3bd89c5e1c286f9dc4df12d50dd566a4d4ab86 bundles the exact maintained IMAP/MIME dependency graph and licenses, with byte verification and private runtime mirroring. Preserve upstream locale filenames and charset-table bytes instead of editing libraries; update path grammar safely and decode only verified vendor source losslessly for scanning. Keep mailbox authority account-scoped and reuse existing identity/grants; generic permission checks without a mailbox cannot authorize reading. Headers remain request-scoped escaped text with strict access audit, not a shared message cache or complete sync cursor. Real mailbox rollout, bodies/attachments/send and exact-message bells are separate acceptance scopes.
+
+## 2026-10-13 — ship bounded individual email reading in 1.18.0
+
+Source 91550d956c404585545dbd766c96f36f58ae0623 preserves exact mailbox generation/UID identity, current authority and strict audit before display. Entire MIME including attachments is bounded; maintained parser/sanitizer work is private and bounded. Formatted mail requires both sanitization and an opaque sandbox with restrictive CSP; escaped plaintext remains available without DOM. Browser tests distinguish CSP-blocked attempts from actual network interception and include a negative control. Per-staff notification state and automatic synchronization are separate future scopes.
