@@ -41,13 +41,43 @@ final class InventoryRegister
                 InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, false,
                 'Account balance read; currency and response fields are not specified by the supplied sources.'
             ),
+            InventoryRead::VPS_LIST => new InventoryCapability(
+                InventoryRead::VPS_LIST, 'GET', '/vps',
+                InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, false,
+                'VPS list (owner-upload L2818-2824). Schema undocumented; identity-only projection retains ids.'
+            ),
+            InventoryRead::MANAGED_VPS_LIST => new InventoryCapability(
+                InventoryRead::MANAGED_VPS_LIST, 'GET', '/managed_vps',
+                InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, false,
+                'Managed-server summaries (owner-upload L2603-2623). Schema undocumented; identity-only projection retains ids.'
+            ),
+            InventoryRead::DOMAINS_LIST => new InventoryCapability(
+                InventoryRead::DOMAINS_LIST, 'GET', '/domain',
+                InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, false,
+                'Owner-upload L1259-1265: heading says list but prose describes a summary record — shape unresolved; identity-only projection may legitimately return zero ids.'
+            ),
+            InventoryRead::SERVICE_CHANGES => new InventoryCapability(
+                InventoryRead::SERVICE_CHANGES, 'GET', '/reseller/{resellerId}/serviceChangeData',
+                InventoryCapability::RISK_SENSITIVE_READ, InventoryCapability::EVIDENCE_DOCUMENTED, false,
+                'Service-change requests, IDs and statuses for reconciliation (owner-upload L50-56). Schema undocumented; identity-only projection retains ids.'
+            ),
         ];
     }
 
-    /** The only operation whose response shape has evidence enough to project. */
+    /** The only operation whose response shape has evidence enough to project fully. */
     public static function projectable(string $operation): bool
     {
         return $operation === InventoryRead::PACKAGES_LIST;
+    }
+
+    /** Operations whose list responses support the identity-only projection. */
+    public static function identityProjectable(string $operation): bool
+    {
+        return in_array($operation, [
+            InventoryRead::PACKAGES_LIST, // falls back if the documented fields change
+            InventoryRead::VPS_LIST, InventoryRead::MANAGED_VPS_LIST,
+            InventoryRead::DOMAINS_LIST, InventoryRead::SERVICE_CHANGES,
+        ], true);
     }
 
     public static function get(string $operation): InventoryCapability

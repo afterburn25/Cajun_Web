@@ -17,6 +17,7 @@ require __DIR__.'/../../foundation/provider/TransportException.php';
 require __DIR__.'/../../foundation/twentyi-inventory/InventoryCapability.php';
 require __DIR__.'/../../foundation/twentyi-inventory/InventoryRead.php';
 require __DIR__.'/../../foundation/twentyi-inventory/InventoryPackage.php';
+require __DIR__.'/../../foundation/twentyi-inventory/InventoryResource.php';
 require __DIR__.'/../../foundation/twentyi-inventory/InventorySnapshot.php';
 require __DIR__.'/../../foundation/twentyi-inventory/InventoryProjector.php';
 require __DIR__.'/../../foundation/twentyi-inventory/InventoryRegister.php';
@@ -182,6 +183,52 @@ $mutableReason = 'skipped once';
 $snap2 = new InventorySnapshot(InventorySnapshot::PARTIAL, [], 1729000000, 1, [&$mutableReason]);
 $mutableReason = 42;
 ok('Caller-held references cannot mutate skip reasons', $snap2->skipReasons === ['skipped once']);
+
+// --- Extended read set: VPS, managed VPS, domains, service changes -----------
+
+ok('VPS list descriptor is a fixed GET', InventoryRead::request(InventoryRead::VPS_LIST)->url === 'https://api.20i.com/vps');
+ok('Managed VPS list descriptor is a fixed GET', InventoryRead::request(InventoryRead::MANAGED_VPS_LIST)->url === 'https://api.20i.com/managed_vps');
+ok('Domain list descriptor is a fixed GET', InventoryRead::request(InventoryRead::DOMAINS_LIST)->url === 'https://api.20i.com/domain');
+ok('Service-change descriptor accepts the reseller self alias', InventoryRead::request(InventoryRead::SERVICE_CHANGES, '*')->url === 'https://api.20i.com/reseller/*/serviceChangeData');
+ok('Service-change descriptor accepts a numeric reseller id', InventoryRead::request(InventoryRead::SERVICE_CHANGES, 42)->url === 'https://api.20i.com/reseller/42/serviceChangeData');
+deny('Service changes refuse a bogus reseller alias', fn() => InventoryRead::request(InventoryRead::SERVICE_CHANGES, 'self'));
+ok('Register and descriptor sets still agree', array_keys(InventoryRegister::all()) === InventoryRead::operations());
+ok('New reads are documented evidence only', InventoryRegister::get(InventoryRead::VPS_LIST)->evidence === InventoryCapability::EVIDENCE_DOCUMENTED && InventoryRegister::get(InventoryRead::SERVICE_CHANGES)->evidence === InventoryCapability::EVIDENCE_DOCUMENTED);
+ok('New read schemas are honestly unknown', !InventoryRegister::get(InventoryRead::VPS_LIST)->schemaKnown && !InventoryRegister::get(InventoryRead::DOMAINS_LIST)->schemaKnown && !InventoryRegister::get(InventoryRead::SERVICE_CHANGES)->schemaKnown);
+ok('Service-change read is flagged sensitive', InventoryRegister::get(InventoryRead::SERVICE_CHANGES)->risk === InventoryCapability::RISK_SENSITIVE_READ);
+ok('Full projection stays packages.list only', !InventoryRegister::projectable(InventoryRead::VPS_LIST) && InventoryRegister::identityProjectable(InventoryRead::VPS_LIST) && InventoryRegister::identityProjectable(InventoryRead::MANAGED_VPS_LIST) && InventoryRegister::identityProjectable(InventoryRead::DOMAINS_LIST) && InventoryRegister::identityProjectable(InventoryRead::SERVICE_CHANGES));
+ok('Detail/types/balance are not identity-projectable', !InventoryRegister::identityProjectable(InventoryRead::PACKAGE_DETAIL) && !InventoryRegister::identityProjectable(InventoryRead::PACKAGE_TYPES) && !InventoryRegister::identityProjectable(InventoryRead::ACCOUNT_BALANCE));
+
+// --- Identity-only projection ------------------------------------------------
+
+function idlist(mixed $r, string $op = InventoryRead::VPS_LIST, int $at = 1729000000, string $scope = ''): InventorySnapshot
+{
+    return $r instanceof TransportResponse ? InventoryProjector::resourceList($r, $at, $op, $scope) : InventoryProjector::unavailableFromTransport($r, $at, $scope);
+}
+
+ok('Identity list projects ids only', ($s = idlist(response(200, [['id' => 10, 'name' => 'srv-a', 'vncPassword' => 'SECRET'], ['id' => 11]])))->state === InventorySnapshot::COMPLETE && count($s->packages) === 2 && $s->packages[0]->id === 10);
+ok('Identity records carry the producing operation', $s->packages[0]->operation === InventoryRead::VPS_LIST && $s->packages[0] instanceof \CajunWebPro\Foundation\TwentyIInventory\InventoryResource);
+ok('Identity records never retain other values', $s->packages[0]->unmappedKeys === ['name', 'vncPassword'] && strpos(json_encode($s), 'SECRET') === false);
+ok('Items without an id are skipped partial', ($s = idlist(response(200, [['id' => 7], ['vpsId' => 8]])))->state === InventorySnapshot::PARTIAL && count($s->packages) === 1 && $s->skipped === 1);
+ok('Digit-string ids normalize', idlist(response(200, [['id' => '55']]))->packages[0]->id === 55);
+ok('Zero/negative ids are skipped', ($s = idlist(response(200, [['id' => 0], ['id' => -3], ['id' => 4]])))->state === InventorySnapshot::PARTIAL && count($s->packages) === 1);
+ok('Duplicate resource id keeps first, marks partial', ($s = idlist(response(200, [['id' => 5], ['id' => 5]])))->state === InventorySnapshot::PARTIAL && $s->skipped === 1 && $s->skipReasons === ['Duplicate resource id in response.']);
+ok('Scalar items are skipped', idlist(response(200, [['id' => 1], 'junk', 42]))->skipped === 2);
+ok('List items that are JSON arrays are skipped', idlist(response(200, [['id' => 1], [1, 2]]))->skipped === 1);
+ok('JSON object body is unexpected shape for identity reads', idlist(response(200, '{"id":1}'))->reason === 'unexpected_shape');
+ok('JSON object with numeric keys is not a resource list', idlist(response(200, '{"0":{"id":7}}'))->reason === 'unexpected_shape');
+ok('Identity records record scope', idlist(response(200, []), InventoryRead::VPS_LIST, 1729000000, 'twenty-i:acct-9:vps.list')->scope === 'twenty-i:acct-9:vps.list');
+ok('Identity coverage is never claimed complete', idlist(response(200, [['id' => 1]]))->coverage === InventorySnapshot::COVERAGE_UNKNOWN);
+ok('Auth failure maps to unavailable for identity reads', idlist(response(401, '{}'))->reason === 'authentication');
+ok('Rate limit maps for identity reads', idlist(response(429, '{}'))->reason === 'rate_limited');
+ok('Oversized identity body is unavailable', idlist(response(200, str_repeat(' ', InventoryProjector::MAX_BODY_BYTES + 1)))->reason === 'response_limit');
+ok('Empty identity list is a complete observation', ($s = idlist(response(200, [])))->state === InventorySnapshot::COMPLETE && $s->packages === []);
+ok('Hostile unmapped key names stay serializable', ($s = idlist(response(200, [json_decode('{"id":9,"'.str_repeat('k',63).'\u00e9":1}')])))->state === InventorySnapshot::COMPLETE && json_encode($s) !== false);
+ok('Numeric unknown key on a resource is reported, not fatal', ($s = idlist(response(200, '[{"id":9,"123":"synthetic"}]')))->state === InventorySnapshot::COMPLETE && $s->packages[0]->unmappedKeys === ['123'] && strpos(json_encode($s), 'synthetic') === false);
+ok('Resource records are only built by the validated factory', !(new ReflectionClass(\CajunWebPro\Foundation\TwentyIInventory\InventoryResource::class))->getConstructor()->isPublic());
+deny('Resource record refuses a missing operation', fn() => \CajunWebPro\Foundation\TwentyIInventory\InventoryResource::fromItem((object)['id' => 1], ''));
+deny('Resource record refuses a list item', fn() => \CajunWebPro\Foundation\TwentyIInventory\InventoryResource::fromItem([1, 2], InventoryRead::VPS_LIST));
+deny('Resource record refuses a plain array item', fn() => \CajunWebPro\Foundation\TwentyIInventory\InventoryResource::fromItem(['id' => 1], InventoryRead::VPS_LIST));
 
 // ---------------------------------------------------------------------------
 

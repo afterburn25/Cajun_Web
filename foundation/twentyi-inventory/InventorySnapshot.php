@@ -51,7 +51,7 @@ final readonly class InventorySnapshot
     public array $skipReasons;
 
     /**
-     * @param InventoryPackage[] $packages   Projected records for the read.
+     * @param InventoryPackage[]|InventoryResource[] $packages Projected records for the read.
      * @param string[]           $skipReasons First few reasons items were skipped (bounded).
      * @param string             $reason      Unavailable kind; empty when packages were observed.
      * @param string             $scope       Caller-supplied provider account/operation identity.
@@ -78,8 +78,8 @@ final readonly class InventorySnapshot
         }
         $detachedPackages = [];
         foreach ($packages as $package) {
-            if (!$package instanceof InventoryPackage) {
-                throw new InvalidArgumentException('Snapshots carry projected package records only.');
+            if (!$package instanceof InventoryPackage && !$package instanceof InventoryResource) {
+                throw new InvalidArgumentException('Snapshots carry projected inventory records only.');
             }
             $detachedPackages[] = $package;
         }
