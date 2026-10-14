@@ -1060,3 +1060,7 @@ Codex staged draft release v1.20.0 (05:57Z). Verified all 16 assets before publi
 ## 2026-10-14 — v1.20.0 published and verified
 
 v1.20.0 published 05:58:30Z. Annotated tag `v1.20.0` (`c2cc3f24`) → commit `6f0b0ce` — the exact acceptance-tested commit. All 16 published assets carry the pre-verified digests. Main remains `6f0b0ce`. Publication record posted (6161979983 follow-up). The release boundary is complete end-to-end: merge → exact-main → published bytes verified.
+
+## 2026-10-14 — PR #75 reviewed through f147417 (1.21 prep + discard-race fix)
+
+The `03e98cd` acceptance run was cancelled mid-package-checks by Codex's new push — no signal lost. `f147417` adds: read-only `data-mail-draft-unsaved` preservation for stale-tab edits hitting an already-discarded draft (hash_equals id bind, strict revision, display-only bounded values, no write — browser case proves zero DB change + escaped payload), and 1.21 release prep (23 baselines, 1.20.0 pinned at verified `9bf4504a…`, version labels agree). Verified: lint clean, 41/41 form checks both runtimes, inventory 2530/2530 hash-match LF blobs. Review posted; no blocking findings. Fresh acceptance wave queued on `f147417`.
