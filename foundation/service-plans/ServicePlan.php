@@ -25,6 +25,10 @@ final class ServicePlan
     private const CADENCES = ['one-time', 'monthly', 'quarterly', 'annually'];
     /** Phrasing that would promise unbounded service or guaranteed outcomes. */
     private const BANNED = '#\b(unlimited|infinite|unmetered|forever|24/7 guaranteed|never goes down|guaranteed uptime)\b#i';
+    /** Customer-facing term strings are bounded so terms stay reviewable. */
+    private const TERM_MAX_BYTES = 1000;
+    /** Canonical meter names: lowercase snake_case, bounded. */
+    private const LIMIT_NAME = '/^[a-z][a-z0-9_]{0,63}$/';
 
     private string $status = self::DRAFT;
 
@@ -60,10 +64,11 @@ final class ServicePlan
         string $supportExpectation,
         string $createdBy,
     ): self {
-        foreach (['id', 'name', 'createdBy'] as $field) {
-            if (trim($$field) === '') {
+        foreach (['id' => $id, 'name' => $name, 'createdBy' => $createdBy] as $field => $value) {
+            if (!is_string($value) || trim($value) === '') {
                 throw new InvalidArgumentException('A plan needs ' . $field . '.');
             }
+            self::checkText($value, $field);
         }
         if (!in_array($cadence, self::CADENCES, true)) {
             throw new InvalidArgumentException('Unknown cadence: ' . $cadence);
@@ -72,27 +77,30 @@ final class ServicePlan
             throw new InvalidArgumentException('Price cannot be negative.');
         }
         $currency = strtoupper($currency);
-        if (!preg_match('/^[A-Z]{3}$/', $currency)) {
+        if (!preg_match('/^[A-Z]{3}\z/', $currency)) {
             throw new InvalidArgumentException('Currency must be an ISO-style code (e.g. USD).');
         }
+        $inclusions = self::checkTermList($inclusions, 'inclusion');
+        $exclusions = self::checkTermList($exclusions, 'exclusion');
         if ($inclusions === []) {
             throw new InvalidArgumentException('A plan needs at least one concrete inclusion.');
         }
-        if ($supportExpectation === '') {
-            throw new InvalidArgumentException('A plan needs a concrete support expectation.');
-        }
+        self::checkText($supportExpectation, 'support expectation');
         // No unbounded promises anywhere in the customer-facing terms.
         foreach (array_merge($inclusions, $exclusions, [$supportExpectation]) as $text) {
-            if (preg_match(self::BANNED, (string) $text)) {
+            if (preg_match(self::BANNED, $text)) {
                 throw new InvalidArgumentException('Terms cannot promise unbounded or guaranteed service: ' . $text);
             }
         }
         foreach ($limits as $limit => $cap) {
+            if (!is_string($limit) || !preg_match(self::LIMIT_NAME, $limit)) {
+                throw new InvalidArgumentException('Limit names must be canonical lowercase identifiers: ' . $limit);
+            }
             if (!is_int($cap) || $cap < 0) {
                 throw new InvalidArgumentException('Limits must be non-negative integer caps: ' . $limit);
             }
         }
-        return new self($id, $name, $cadence, $priceAmount, strtoupper($currency), $inclusions, $exclusions, $limits, $supportExpectation, $createdBy);
+        return new self($id, $name, $cadence, $priceAmount, $currency, $inclusions, $exclusions, $limits, $supportExpectation, $createdBy);
     }
 
     /** Publish the plan — it becomes subscribable and immutable. */
@@ -128,10 +136,13 @@ final class ServicePlan
     /**
      * sha256 over the canonical customer-facing terms. Consent records
      * pin this so a client always consents to the exact terms offered.
+     * Every term field was validated as bounded UTF-8 at construction,
+     * so serialization can only fail on an impossible state — which is
+     * thrown explicitly rather than hashing a false coerced payload.
      */
     public function termsHash(): string
     {
-        return hash('sha256', json_encode([
+        $encoded = json_encode([
             'name' => $this->name,
             'cadence' => $this->cadence,
             'price' => $this->priceAmount,
@@ -140,7 +151,42 @@ final class ServicePlan
             'exclusions' => $this->exclusions,
             'limits' => $this->limits,
             'support' => $this->supportExpectation,
-        ], JSON_UNESCAPED_SLASHES));
+        ], JSON_UNESCAPED_SLASHES);
+        if ($encoded === false) {
+            throw new LogicException('Plan terms could not be serialized canonically.');
+        }
+        return hash('sha256', $encoded);
+    }
+
+    /** Dense list of bounded, non-blank, valid-UTF-8 plain strings. */
+    private static function checkTermList(array $terms, string $what): array
+    {
+        if (!array_is_list($terms)) {
+            throw new InvalidArgumentException("Plan {$what}s must be a dense list.");
+        }
+        $clean = [];
+        foreach ($terms as $text) {
+            if (!is_string($text)) {
+                throw new InvalidArgumentException("Plan {$what}s must be plain strings.");
+            }
+            self::checkText($text, $what);
+            $clean[] = $text;
+        }
+        return $clean;
+    }
+
+    /** Non-blank, bounded, valid-UTF-8 term text — objects never coerce. */
+    private static function checkText(string $text, string $what): void
+    {
+        if (trim($text) === '') {
+            throw new InvalidArgumentException("A plan {$what} must not be blank.");
+        }
+        if (strlen($text) > self::TERM_MAX_BYTES) {
+            throw new InvalidArgumentException("A plan {$what} exceeds " . self::TERM_MAX_BYTES . ' bytes.');
+        }
+        if (!preg_match('//u', $text)) {
+            throw new InvalidArgumentException("A plan {$what} must be valid UTF-8.");
+        }
     }
 
     public function status(): string

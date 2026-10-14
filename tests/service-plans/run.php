@@ -72,6 +72,17 @@ rejects('guaranteed uptime rejected', fn () => plan(['inclusions' => ['Updates']
 rejects('non-integer limit rejected', fn () => plan(['limits' => ['edits' => 'many']]));
 rejects('negative limit rejected', fn () => plan(['limits' => ['edits' => -5]]));
 rejects('empty support expectation rejected', fn () => plan(['supportExpectation' => '']));
+rejects('whitespace-only support expectation rejected', fn () => plan(['supportExpectation' => "  \n "]));
+rejects('currency with trailing newline rejected', fn () => plan(['currency' => "USD\n"]));
+rejects('non-string inclusion rejected', fn () => plan(['inclusions' => [true, 25, null]]));
+rejects('stringable inclusion rejected', fn () => plan(['inclusions' => [new class { public string $s = 'x'; public function __toString(): string { return $this->s; } }]]));
+rejects('whitespace-only inclusion rejected', fn () => plan(['inclusions' => ['Updates', '   ']]));
+rejects('invalid UTF-8 inclusion rejected', fn () => plan(['inclusions' => ["bad\xC3\x28"]]));
+rejects('oversized inclusion rejected', fn () => plan(['inclusions' => [str_repeat('a', 1001)]]));
+rejects('non-list inclusions rejected', fn () => plan(['inclusions' => ['one' => 'Updates']]));
+rejects('malformed limit name rejected', fn () => plan(['limits' => ['Edits Per Month' => 4]]));
+rejects('empty limit name rejected', fn () => plan(['limits' => ['' => 4]]));
+rejects('list-style limits rejected', fn () => plan(['limits' => [4]]));
 
 // --- Lifecycle: draft → active → retired -----------------------------------
 
@@ -90,59 +101,74 @@ rejects('double retire rejected', fn () => $plan->retire());
 $active = plan();
 $active->activate();
 
-check('subscription starts pending-consent', PlanSubscription::start('sub-1', $active, 'client-7', 'owner-1', '2026-10-13')->state() === PlanSubscription::PENDING_CONSENT);
-check('price pinned at start', PlanSubscription::start('sub-1', $active, 'client-7', 'owner-1', '2026-10-13')->agreedPrice === 9900);
-check('start recorded in history', count(PlanSubscription::start('sub-1', $active, 'client-7', 'owner-1', '2026-10-13')->history()) === 1);
+check('subscription starts pending-consent', PlanSubscription::start('sub-1', $active, 'client-7', 'owner-1', '2026-10-13T00:00:00Z')->state() === PlanSubscription::PENDING_CONSENT);
+check('price pinned at start', PlanSubscription::start('sub-1', $active, 'client-7', 'owner-1', '2026-10-13T00:00:00Z')->agreedPrice === 9900);
+check('start recorded in history', count(PlanSubscription::start('sub-1', $active, 'client-7', 'owner-1', '2026-10-13T00:00:00Z')->history()) === 1);
 
-rejects('start on draft plan rejected', fn () => PlanSubscription::start('sub-x', plan(), 'client-7', 'owner-1', '2026-10-13'));
+rejects('start on draft plan rejected', fn () => PlanSubscription::start('sub-x', plan(), 'client-7', 'owner-1', '2026-10-13T00:00:00Z'));
 rejects('start on retired plan rejected', function () {
     $retired = plan(['id' => 'plan-old']);
     $retired->activate();
     $retired->retire();
-    PlanSubscription::start('sub-x', $retired, 'client-7', 'owner-1', '2026-10-13');
+    PlanSubscription::start('sub-x', $retired, 'client-7', 'owner-1', '2026-10-13T00:00:00Z');
 });
-rejects('empty client rejected', fn () => PlanSubscription::start('sub-x', $active, '', 'owner-1', '2026-10-13'));
+rejects('empty client rejected', fn () => PlanSubscription::start('sub-x', $active, '', 'owner-1', '2026-10-13T00:00:00Z'));
+rejects('whitespace actor at start rejected', fn () => PlanSubscription::start('sub-x', $active, 'client-7', '  ', '2026-10-13T00:00:00Z'));
+rejects('relative start time rejected', fn () => PlanSubscription::start('sub-x', $active, 'client-7', 'owner-1', 'tomorrow'));
+rejects('impossible date rejected', fn () => PlanSubscription::start('sub-x', $active, 'client-7', 'owner-1', '2026-02-30T00:00:00Z'));
 
 // Recurring requires consent
-$sub = PlanSubscription::start('sub-1', $active, 'client-7', 'owner-1', '2026-10-13');
-rejects('recurring activate without consent rejected', fn () => $sub->activate('owner-1', '2026-10-13'));
+$sub = PlanSubscription::start('sub-1', $active, 'client-7', 'owner-1', '2026-10-13T00:00:00Z');
+rejects('recurring activate without consent rejected', fn () => $sub->activate('owner-1', '2026-10-13T00:00:00Z'));
+rejects('consent from another client rejected', fn () => $sub->recordConsent('client-8', $active->termsHash(), '2026-10-14T00:00:00Z'));
+rejects('consent with foreign terms rejected', fn () => $sub->recordConsent('client-7', hash('sha256', 'other-terms'), '2026-10-14T00:00:00Z'));
+check('refused consent left state and history unchanged', $sub->consent() === null && count($sub->history()) === 1);
+rejects('consent before start instant rejected', fn () => $sub->recordConsent('client-7', $active->termsHash(), '2020-01-01T00:00:00Z'));
+rejects('relative consent time rejected', fn () => $sub->recordConsent('client-7', $active->termsHash(), 'tomorrow'));
+rejects('date-only consent time rejected', fn () => $sub->recordConsent('client-7', $active->termsHash(), '2026-10-14'));
 
-$sub->recordConsent('client-7', '2026-10-14');
+$sub->recordConsent('client-7', $active->termsHash(), '2026-10-14T00:00:00Z');
 check('consent pins terms hash', $sub->consent()['termsHash'] === $active->termsHash());
-rejects('double consent rejected', fn () => $sub->recordConsent('client-7', '2026-10-14'));
+rejects('double consent rejected', fn () => $sub->recordConsent('client-7', $active->termsHash(), '2026-10-14T00:00:00Z'));
 
-$sub->activate('owner-1', '2026-10-14');
+$sub->activate('owner-1', '2026-10-14T00:00:00Z');
 check('activated after consent', $sub->state() === PlanSubscription::ACTIVE);
-rejects('double activate rejected', fn () => $sub->activate('owner-1', '2026-10-14'));
+rejects('double activate rejected', fn () => $sub->activate('owner-1', '2026-10-14T00:00:00Z'));
 
-$sub->pause('owner-1', '2026-10-20');
+// an activation cannot be dated before the consent it depends on
+$late = PlanSubscription::start('sub-late', $active, 'client-7', 'owner-1', '2026-10-13T00:00:00Z');
+$late->recordConsent('client-7', $active->termsHash(), '2026-10-14T00:00:00Z');
+rejects('out-of-order activation rejected', fn () => $late->activate('owner-1', '2020-01-01T00:00:00Z'));
+check('out-of-order refusal left state unchanged', $late->state() === PlanSubscription::PENDING_CONSENT && count($late->history()) === 2);
+
+$sub->pause('owner-1', '2026-10-20T00:00:00Z');
 check('paused', $sub->state() === PlanSubscription::PAUSED);
-rejects('pause from paused rejected', fn () => $sub->pause('owner-1', '2026-10-21'));
-$sub->resume('owner-1', '2026-10-22');
+rejects('pause from paused rejected', fn () => $sub->pause('owner-1', '2026-10-21T00:00:00Z'));
+$sub->resume('owner-1', '2026-10-22T00:00:00Z');
 check('resumed', $sub->state() === PlanSubscription::ACTIVE);
 
-$sub->cancel('client-7', '2026-11-01', 'ending service');
+$sub->cancel('client-7', '2026-11-01T00:00:00Z', 'ending service');
 check('cancelled is terminal', $sub->state() === PlanSubscription::CANCELLED);
-rejects('resume after cancel rejected', fn () => $sub->resume('owner-1', '2026-11-02'));
-rejects('consent after cancel rejected', fn () => $sub->recordConsent('client-7', '2026-11-02'));
+rejects('resume after cancel rejected', fn () => $sub->resume('owner-1', '2026-11-02T00:00:00Z'));
+rejects('consent after cancel rejected', fn () => $sub->recordConsent('client-7', $active->termsHash(), '2026-11-02T00:00:00Z'));
 check('history fully attributed', count($sub->history()) === 6 && $sub->history()[5]['actor'] === 'client-7' && str_contains($sub->history()[5]['action'], 'ending service'));
 
 // One-time plan activates without consent
 $oneTime = plan(['id' => 'plan-fix', 'cadence' => 'one-time']);
 $oneTime->activate();
-$otSub = PlanSubscription::start('sub-ot', $oneTime, 'client-9', 'owner-1', '2026-10-13');
-$otSub->activate('owner-1', '2026-10-13');
+$otSub = PlanSubscription::start('sub-ot', $oneTime, 'client-9', 'owner-1', '2026-10-13T00:00:00Z');
+$otSub->activate('owner-1', '2026-10-13T00:00:00Z');
 check('one-time activates without consent', $otSub->state() === PlanSubscription::ACTIVE);
 
 // Abandon pending
-$pending = PlanSubscription::start('sub-p', $active, 'client-8', 'owner-1', '2026-10-13');
-rejects('cancel pending rejected', fn () => $pending->cancel('owner-1', '2026-10-13'));
-$pending->abandon('owner-1', '2026-10-13');
+$pending = PlanSubscription::start('sub-p', $active, 'client-8', 'owner-1', '2026-10-13T00:00:00Z');
+rejects('cancel pending rejected', fn () => $pending->cancel('owner-1', '2026-10-13T00:00:00Z'));
+$pending->abandon('owner-1', '2026-10-13T00:00:00Z');
 check('abandoned is terminal', $pending->state() === PlanSubscription::ABANDONED);
-rejects('activate abandoned rejected', fn () => $pending->activate('owner-1', '2026-10-14'));
+rejects('activate abandoned rejected', fn () => $pending->activate('owner-1', '2026-10-14T00:00:00Z'));
 
 rejects('empty actor transition rejected', function () use ($active) {
-    PlanSubscription::start('s', $active, 'c', 'a', '2026-10-13')->activate('', '2026-10-13');
+    PlanSubscription::start('s', $active, 'c', 'a', '2026-10-13T00:00:00Z')->activate('', '2026-10-13T00:00:00Z');
 });
 
 // --- Result ---------------------------------------------------------------

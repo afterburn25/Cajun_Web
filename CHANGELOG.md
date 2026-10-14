@@ -4,6 +4,7 @@
 
 - Added canonical `foundation/service-plans/` classes (`ServicePlan` with typed cadence/price/limits, concrete inclusions and banned "unbounded service" phrasing, immutable once active; `PlanSubscription` with pinned agreed price, consent-gated recurring activation bound to `termsHash`, and actor-attributed lifecycle) plus `docs/SERVICE_PLANS_FOUNDATION.md`.
 - Added `tests/service-plans/run.php` (46 synthetic checks; fixture plans only) and the `service-plans.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- Corrected the component per [PR #53 review](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6161469018): `recordConsent` now requires the consenting actor to be the subscribing client and the presented `termsHash` to equal the subscription's pinned snapshot (no self-generated hash, no arbitrary-actor consent); all customer-facing terms are strictly typed bounded valid-UTF-8 plain strings (non-strings, Stringable objects, whitespace-only, oversized and malformed limit names refused — a `termsHash()` can never silently change or throw), and the currency check anchors absolutely (`"USD\n"` no longer passes); every event requires a non-empty actor and an explicit UTC instant (`YYYY-MM-DDTHH:MM:SSZ`, relative/date-only forms refused) with monotonic history — out-of-order events leave state and history unchanged. Suite 46 → **68** checks.
 - No `site/` changes, billing capture or persistence. Not yet integrated or released.
 ## 1.20.0 — candidate, not published
 ## 1.20.0 — verified owner 20i connection
