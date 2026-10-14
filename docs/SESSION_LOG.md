@@ -1444,3 +1444,7 @@ Known limits: reconcile uses only `packages.list` — the single verified read; 
 ## 2026-10-16 — Devin: hostname-list children join the shared node budget
 
 Codex follow-up review on `d7006c5` verified both original corrections but found `hostname_list` children bypassed the 256-node bound (counted 4 containers + 64 uncounted hostnames + 189 map values = 257 values accepted). `TwentyIRequestBuilder::bounded` now increments the shared node budget per hostname-list child. Added Codex's exact mixed fixtures: 64 `extra_domain_names` + 188 `documentRoots` = 256 builds; +189 = 257 refuses. 92/92 synthetic checks on default and no-ini modes.
+
+## 2026-10-16 — Devin: CRLF/stale-hash corrections on the stack
+
+CI on #115 caught `site/database/schema/base.php` committed with CRLF working-copy bytes — the locally-refreshed installer inventory hashed CRLF while the merged blob is LF, so CI legitimately reported stale hashes. Normalized to LF and regenerated (`f102e1e5`). The same staleness existed on `devin/twentyi-execution` after the node-budget merge (auto-merged generated file, not regenerated) — refreshed at `603b8f0c`; Codex had already flagged the same class of issue on #109, fixed at `d57b0cf9`.
