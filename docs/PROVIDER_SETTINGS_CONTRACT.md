@@ -1,10 +1,12 @@
 # HC-07 application contract — owner 20i connection settings
 
-Proposed contract for independent review, not an implemented feature. Codex claims `codex/provider-settings` from main44926230a2359cf82793eb3cdd55fe940bbb786f (verified1.18.0 publication record). Email-notice PR72 remains the current release priority. This branch initially changes documentation only; reconcile the completed1.19.0 baseline before application integration. Devin retains canonical provider-foundation corrections in PR43. No new release version is reserved by this contract.
+Reviewed integration contract; no application feature is implemented yet. Codex claims `codex/provider-settings` from main44926230a2359cf82793eb3cdd55fe940bbb786f (verified1.18.0 publication record). Email-notice PR72 remains the current release priority. This branch began with documentation, then preserved the reviewed isolated provider foundation at 46b2826; reconcile the completed1.19.0 baseline before application integration. Devin retains canonical provider-foundation corrections in PR43. No new release version is reserved by this contract.
 
 ## Existing evidence
 
 Evidence: owner-requested diagnostic run38458492995 / job115510304263 authenticated one fixed GET https://api.20i.com/package. This establishes that endpoint's read access only. The key remains in GitHub secret storage; do not extract it into this workspace. Independent review of PR #43 at `7f1af0c0d73282d98b552860cbf3a3eee91c061f` reproduces all 163 checks under default PHP and PHP without extensions. UNKNOWN now preserves post-send ambiguity. A strict JSON shape fixture correction is requested before final acceptance: associative decoding falsely accepts empty and numeric-key objects as lists. [Reproduction and requested correction](https://github.com/afterburn25/Cajun_Web/pull/43#issuecomment-6160027189). Do not merge stale shared application files from its old baseline.
+
+The JSON object/list fixture finding above is resolved at `46b282636ad83b22efe149310755d2d316d909bc`: independent default/no-extension runs each pass 171 checks. No raw provider response is accepted as durable detail. The imported canonical files remain outside deployment.
 
 ## Scope and ownership
 

@@ -8,6 +8,63 @@
 
 Claim an isolated owner20i settings/read-only check contract after the1.19 email increment. Documentation only; no API call, application feature, release or deployment.
 
+## Unreleased — HC-07 provider foundation (Devin, isolated component)
+
+- Finite probe classification per the [owner 20i settings contract](https://github.com/afterburn25/Cajun_Web/blob/codex/provider-settings/docs/PROVIDER_SETTINGS_CONTRACT.md): `ConnectionCheck` gains an `unknown` state for post-send ambiguity (timeout/protocol/lost result/unaccepted 2xx shape) — never reported as a pass or a clean failure; `unreachable` is reserved for faults demonstrably before send. Check details are bounded printable classifications (≤200 bytes, no control characters), and `probe()`/`HttpTransport` docblocks now state the pinned-endpoint, strict-shape, no-redirect/proxy, DNS-validation and byte-cap invariants adapters and transports must honor. Codex review follow-up: the fixture probe decodes with JSON object/list identity preserved — objects (incl. `{}`/`{"0":…}`), scalars, null, malformed/trailing and over-depth bodies classify `unknown`, never `verified`; validation wording says bytes, not chars. All 171 checks pass locally on PHP 8.4 with/without php.ini. No shipping integration.
+
+- Codex contribution from reviewed provider head 1e42402: reject failed JSON map-key encoding before operation claim, with nested malformed UTF-8, zero side-effect and valid Unicode/replay regressions. All 150 checks pass locally on PHP 8.4 with/without php.ini; matrix and review pending. No shipping integration.
+
+- Added canonical `foundation/provider/` contract classes (adapter interface + capability matrix, lazy secret-resolving credentials, HTTPS-only transport boundary, operation/idempotency-key model, durable ledger interface, enforcing gateway, and external-resource reconciliation) plus `docs/PROVIDER_FOUNDATION.md`.
+- Corrected the ledger/execution contract per the HC-07 correction pass: `OperationLedger::claim()` atomically reserves an idempotency key bound to a canonical provider/account/operation/params fingerprint before any remote call (new `LedgerClaim` states `claimed`/`replay`/`in_progress`/`uncertain`/`conflict`); `record()` finalizes under the claim. Non-idempotent operations never auto-retry — ambiguous outcomes (transport fault or 429/5xx after the request may have been sent) record `uncertain` for reconciliation. `TransportException` carries only a finite failure kind; `OperationResult` enforces bounded printable messages; `masked()` fully masks secrets of 8 characters or fewer; timeouts/backoff reject `NAN`/`±INF`.
+- Added `tests/provider/run.php` (124 synthetic checks) plus `FileLedger.php`/`file_ledger_worker.php` (a real four-process `flock` claim race — beyond scripted interleaving) and the `provider.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- No `site/` changes, schema, persistence, admin UI or real provider calls; HC-07 external gate remains `Awaiting API verification`. Not yet integrated or released. Exactly-once remote execution is not claimed — crash-after-write resolves to `uncertain`, not silent re-execution.
+
+## 1.11.1 — candidate, motion preferences and organized updates
+
+## 1.11.2 — candidate, canonical live estimator integration
+
+## 1.12.0 — candidate, administrator email-template library
+## 1.13.0 — candidate, email account preparation
+## 1.14.0 — candidate, human website review workflow
+## 1.15.0 — candidate, consultation scheduling
+## Unreleased — 1.16.0 candidate: explicit email connection checks
+## 1.17.0 candidate — bounded recent inbox headers (unreleased)
+## 1.18.0 candidate — exact-message reading (unreleased)
+
+- Acceptance correction: actual Chromium diagnostics prove injected image attempts are blocked by CSP before network handling; the assertion now distinguishes blocked events from network requests and still requires both explicit CSP failures. Stable mobile viewport captures include plaintext and formatted views. Shipping behavior is unchanged; complete release acceptance remains pending.
+
+- Align the actual TLS wrong-UID browser fixture with the established unavailable-message classification; malformed MIME remains a protocol failure and neither exposes partial content.
+- Update the existing browser availability assertion for the new message-reading feature while preserving connection, attachment and sending limitations; all 69 new native message tests pass, corrected browser acceptance pending.
+- Independent review of 21e00c0 reproduced the components and reviewed application access/rendering boundaries with no blocking finding. Candidate native database checks pass; complete browser/update/recovery/Apache evidence remains pending. Correct staged owner/recovery instructions to candidate 1.18.0.
+- Add explicit assigned-staff message opening with current account/actor/revision and exact INBOX/UIDVALIDITY/UID checks, bounded MIME content and unchanged server read flags. Separate strict audit/results, request limits, owner-prepared upgrade storage and empty fresh-install storage retain no message contents.
+- Decode raw MIME through private maintained parser state, preserve escaped plaintext and show minimal sanitized formatting in an opaque sandbox with restrictive CSP. No automatic remote resources, attachment content or sending. Missing DOM has an honest plaintext/unavailable-format fallback.
+- Preserve all 36 existing dependency pins and add four maintained formatting dependencies. Correct PHP 8.2 full-document handling by stripping html/body wrappers while preserving sanitized children; all 1,227 components pass on PHP 8.2/8.4 at 740b4e2 with fresh byte reproduction.
+- Add actual 1.17.0 update/recovery and original key/history preservation fixtures, alongside native/concurrency, packaged TLS/HTTP/Chromium and Apache checks. Application acceptance, independent review and release remain pending; latest published release remains 1.17.0.
+
+## 1.19.0 candidate — recent email notices (unreleased)
+
+Correct the browser fixture clock ordering, verify actual outage/recovery/denial responses, and wait for the mobile drawer transition before screenshots. Candidate179e35b passes1070 HTTP/browser assertions before that fixture failure,1153 native and both79-check notice matrices. No release acceptance is claimed.
+
+Keep the initial count request alive on ordinary page display while retaining BFCache/lifecycle invalidation. Suppress email notices during client support, including actual shared portal headers. Add actual-support and delayed-count browser regressions; preserve strict null-status network-failure assertions. Full native1153 and estimator3084 checks pass at8a955cc; browser/visual and new-source acceptance remain pending.
+
+Both supported PHP versions pass 79 notice integration checks at the 92b3863 tree. Correct pre-account/pre-inbox test schemas to omit dependent notice tables; read immutable Git blobs without Windows pathname ambiguity; add a long-path builder guard and explicit owner two-bell narrow-screen coverage. Twenty local builder checks pass. Full current application/visual/recovery/package acceptance remains pending.
+
+Correct the native fixture to load its notice module once after fresh schema integration; this fixes a test bootstrap fatal without changing application behavior. Integrated runtime acceptance is still pending.
+
+Connected strict successful read transactions to the local notice window and per-staff opened state; added owner setup, fresh empty schema, recent-notice page, exact message POST/dismiss actions and private count endpoint. Neutral public/admin header bells refresh local metadata only and preserve idle expiry. Added native reader-hook/rollback/concurrency cases. Storage-only baseline 257a2fc passes 57 checks on each PHP 8.2/8.4 runner; new integrated/native/browser/package acceptance is pending. This does not activate automatic inbox synchronization or sending.
+
+Added actual packaged HTTP/Chromium cases, private endpoint/current-grant and mobile/keyboard/lifecycle checks, and immutable 1.18.0 update/recovery cases with nonempty new state retained. Independent storage/contract review is complete; new integrated review and exact-source acceptance remain pending. Candidate version and generated installer/inventory agree at 1.19.0.
+
+## Unreleased — recent email notice storage preparation
+
+- Corrected the native CI container UID/GID after both database stages passed but artifact upload failed on a root-owned private QA directory. Corrected saved-evidence acceptance is pending; application/test behavior is unchanged.
+- Added a native migration fixture that removes full-tuple uniqueness while preserving the supporting foreign-key index; this tests application refusal rather than InnoDB index protection. Database acceptance remains pending.
+- Added bounded current-window metadata, separate per-person opened/dismissed markers, exact current mailbox permission filtering, collision refusal and independent full-tuple resolution.
+- Added explicit owner migration with column/key/relationship compatibility checks and strict audit; observation helpers require the successful terminal-result transaction. No schema/reader/HTTP integration or bell UI is wired yet.
+- Local PHP syntax passes. Native database fixtures and PHP 8.2/8.4 workflow are added; database and full application acceptance remain pending. Published/download-verified 1.18.0 remains immutable; its publication documentation is merged into this preparation branch.
+
+
+
 ## 1.18.0 — verified individual email reading
 
 - Assigned staff explicitly open an exact INBOX message under current account/actor/global and mailbox permissions, saved revision, UIDVALIDITY/UID and size checks. Verified TLS and BODY.PEEK preserve server read flags.

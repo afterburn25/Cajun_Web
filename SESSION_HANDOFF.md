@@ -1,16 +1,60 @@
 # Session handoff — read before continuing
 
-## Provider review checkpoint — 2026-10-13
+## Current integration preparation — protected owner 20i settings
+
+`codex/provider-settings` now preserves merged mail-notice main `22a2969692ab5bcc7f35158dcaa5355c623dc821` and Devin provider foundation `46b282636ad83b22efe149310755d2d316d909bc` through an ordinary merge. Shared documentation conflicts retain both histories; the entire `site/` tree still equals that main commit. No provider application route, database table or deployment mirror is added by this merge.
+
+Independent exact-commit default PHP and PHP without extensions each pass **171 canonical provider checks**, including the corrected empty/numeric-key JSON object rejection. The earlier 163-check shape finding is resolved. Bounded details are not redaction; the application will persist only fixed local classifications. Codex owns the protected settings/explicit fixed package-list probe; Devin retains canonical review. The owner-supplied API reference is available in PR #73 and informs later inventory/lifecycle work; response fields and operation-specific entitlements remain separate acceptance.
+
+Latest published/download-verified release remains **1.18.0** at this checkpoint. Main 1.19.0 has passed native/browser/structure tests and its Windows build; final Apache protection and release/download verification are still running. Keep its exact source unchanged until publication completes, then merge the publication documentation here before application integration. The provider lane remains unreleased and outside deployment. No real API call, credential extraction, payment or host change.
+
+## Earlier provider review — 2026-10-13 (corrected below in history)
 
 Starting branch `codex/provider-settings` at `8863802d21370d975c39dac0c824aeac926bc34f`. Reviewed Devin PR #43 at `7f1af0c0d73282d98b552860cbf3a3eee91c061f`: all 163 synthetic component checks pass in default PHP and without extensions. An additional reproduction finds JSON objects incorrectly accepted as lists in the fixture; [correction requested](https://github.com/afterburn25/Cajun_Web/pull/43#issuecomment-6160027189). Contract now excludes unverified inventory fields from the first increment, preserves JSON type identity, requires independently allowlisted persisted results, and cites checked official API references. No application/provider operation occurred.
 
 Mail-notice PR #72 is merged at `22a2969692ab5bcc7f35158dcaa5355c623dc821`. Exact-main browser acceptance passes 1,087 checks; four actual desktop/mobile screenshots were inspected and anonymous homepage pixels match 1.18.0. Windows packaging completed. Extended recovery/Apache checks and publication remain pending; latest published release is still 1.18.0. Finish and verify that release, reconcile this branch with its publication baseline, then accept corrected provider components and implement the protected owner workflow.
 
-## Next bounded preparation — owner 20i settings
+## Earlier provider preparation checkpoint (superseded)
 
 Codex claims `codex/provider-settings` from main44926230a2359cf82793eb3cdd55fe940bbb786f, verified1.18.0 publication documentation. This branch contains a proposed [HC-07 application contract](docs/PROVIDER_SETTINGS_CONTRACT.md) only: protected owner configuration, explicit read-only package-list connection check and sanitized history. No new code, network request, capability, release or deployment is claimed. The prior owner-requested GET/package succeeded (issue65 comment6154083380); other operations remain unverified.
 
 Current release priority remains mail-notices [PR72](https://github.com/afterburn25/Cajun_Web/pull/72), whose468bbd6 candidate passes1153 native,3084 estimator,1087 HTTP/Chromium and20 builder checks with actual screenshots inspected; full recovery/exact-main/release acceptance is pending. Finish that increment, then reconcile this branch with its verified main baseline before integrating provider application code. Devin retains canonical PR43; inspect its current head before import and preserve ancestry without overwriting newer shared files. Contract review is requested separately; posting an assignment does not establish receipt or execution. No production action.
+
+## Codex contribution — reject malformed provider request keys
+
+Devin provider correction for the `codex/provider-settings` contract: `ConnectionCheck::unknown` added for post-send ambiguity (timeout/protocol/lost result/unaccepted response shape); pre-send faults stay `unreachable`; check details bounded ≤200 printable chars; `probe()`/`HttpTransport` docblocks state pinned-endpoint/strict-shape/no-redirect/DNS-validation invariants. 171 checks green under `php`/`php -n`. Next: Codex re-review of the corrected module and its owner-20i-settings integration after 1.19.0 lands; Devin updated PR #43's description to the 171-check scope.
+
+Earlier: `codex/provider-key-validation` preserves Devin provider head `1e424024a0a1b84f4d964ea92e8019813fb4a0ad` and supplies the focused correction from [review 6157958803](https://github.com/afterburn25/Cajun_Web/pull/43#issuecomment-6157958803). A failed JSON encoding of a map key now throws the same finite validation error as an invalid scalar, before any claim. Regression cases cover distinct invalid UTF-8 keys, nested malformed keys, no ledger binding/reservation/result or adapter/transport/secret use, and successful reordered valid Unicode keys reusing a rejected operation key. Local PHP 8.4 and actual `php -n` each pass all 150 provider checks; syntax passes. PHP 8.2/8.4 CI and Devin review remain pending.
+
+This contribution targets `devin/provider-foundation`, preserving its branch and prior fixes. No `site/`, release version, schema, real provider call or credential change. The independent [1.18.0 message-reader candidate #70](https://github.com/afterburn25/Cajun_Web/pull/70) remains Codex's release lane; latest published is 1.17.0. After provider correction acceptance, MySQL persistence, current authorization, an actual adapter, owner configuration and operation-specific API verification remain separate integration work. Continue the roadmap; this validation contribution is not completion or deployment of HC-07.
+
+## Devin HC-07 provider foundation in review — 2026-10-13
+
+`devin/provider-foundation` (branched from `main` `5d810b1`) carries the isolated HC-07 provider contract: `foundation/provider/` (14 classes — adapter interface, capability matrix with explicit `unverified` state, lazy secret-resolving `ProviderCredential`, HTTPS-only `HttpTransport` boundary, `ProviderOperation` + `OperationResult` + `OperationLedger`, `ProviderGateway` enforcement, `ExternalResource` reconciliation), `tests/provider/run.php` (69 synthetic checks, fixture transport — no real 20i data), `docs/PROVIDER_FOUNDATION.md`, `.github/workflows/provider.yml`. Local PHP 8.4.25: all checks pass, all files lint clean.
+
+**Gate:** Awaiting API verification — nothing here calls 20i. **Not integrated:** no `site/` changes; bundling (`build.py` area list + inventory) is adapter-phase work after the refactor. Next for this lane: Codex review/merge alongside the other Devin foundations; adapter contract doc is the natural follow-up once the refactor lands.
+
+## Active roadmap increment — 1.11.1 candidate
+
+## Active integration — 1.11.2 estimator candidate
+
+## Active integration — A-07 administrator template library
+## Active integration — A-06 email account preparation
+## Active integration — L-02 website review workflow
+## Active integration — L-03 consultation scheduling
+## Active integration — A-06 email connection checks
+## Active candidate — 1.17.0 recent inbox headers
+## Active candidate — 1.18.0 exact-message reading
+
+
+## Earlier email candidate checkpoint (now merged; release verification pending)
+
+Codex owns `codex/mail-notices` / [draft PR #72](https://github.com/afterburn25/Cajun_Web/pull/72); latest published/download-verified release is 1.18.0. Recent notices, exact-message actions, per-staff state, private counts, owner preparation and admin/public bells are implemented. [Guide](docs/RECENT_EMAIL_NOTICES.md); [contract](docs/MAIL_NOTICES_CONTRACT.md). This is newest20/last-explicit-check metadata, not automatic synchronization or server flag writes.
+
+At179e35b35172ff2ace13e750640cbe08e2ae779b, [native matrix38500685343](https://github.com/afterburn25/Cajun_Web/actions/runs/38500685343) passes79 named checks on each PHP8.2/8.4, downloaded and inspected. Its PR merge98b9f5d731d6329720d0273aea0401de99fc4286 has identical tree38842cfdc504f9d8941e1bbb65de48877ef3d131. [Application run38500685398](https://github.com/afterburn25/Cajun_Web/actions/runs/38500685398) passes1153 native,3084 estimator,20 builder guards and1070 HTTP/browser assertions before a simulated-outage wait fails. Prior ordinary-pageshow cancellations are fixed; actual support isolation, exact TLS message opening, separate staff state, revoked/future/expired grants and320px layout checks pass. The outage fixture installed Playwright's clock after existing page timers, contrary to its documented ordering. Current test-only correction installs the clock before navigation and waits for actual503/200/204 responses. No application behavior or assertion is weakened; full new-source browser/Apache/recovery acceptance remains pending.
+
+Windows clean-source179e35b build succeeds:2500 COMPLETE,4978 FULL,2487 UPDATE members; all three ZIP integrity checks pass and copies are retained. Desktop notice and public mobile screenshots were inspected. Anonymous homepage desktop/mobile pixels equal verified1.18.0. The admin mobile screenshot caught its sidebar transition; current fixture waits until the drawer leaves the viewport and captures the full page. Owner two-bell screenshots remain pending. Reviews through8a955cc have no blockers; lifecycle/support review is requested in #72 comment6159513046. Immutable1.18 inventories support21 starting packages; nonempty notice recovery/reapplication and exact-main/downloaded release gates still must pass. Preserve Devin provider #43 separately (latest inspected688ff55 is documentation-only since reviewedb58366a; canonical component150 checks remains unchanged). No live mailbox, provider write, charge, SSH or deployment.
+
 
 
 ## Latest verified publication — 1.18.0
