@@ -15,3 +15,4 @@ foundation/mail-receiving/vendor/** -text
 foundation/mail-receiving/licenses/** -text
 site/includes/foundation/mail-receiving/vendor/** -text
 site/includes/foundation/mail-receiving/licenses/** -text
+foundation/mail-submission/vendor/** -text

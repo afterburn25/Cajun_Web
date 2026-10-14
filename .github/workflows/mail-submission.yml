@@ -2,9 +2,9 @@ name: Mail submission preparation checks
 on:
   push:
     branches: [main, codex/mail-submission]
-    paths: ['foundation/mail-submission/**', 'foundation/mail-compose/**', 'foundation/email-templates/**', 'tests/mail-submission/**', '.github/workflows/mail-submission.yml']
+    paths: ['foundation/mail-submission/**', 'foundation/mail-compose/**', 'foundation/email-templates/**', 'tests/mail-submission/**', 'tools/check_mail_submission_vendor.py', '.github/workflows/mail-submission.yml']
   pull_request:
-    paths: ['foundation/mail-submission/**', 'foundation/mail-compose/**', 'foundation/email-templates/**', 'tests/mail-submission/**', '.github/workflows/mail-submission.yml']
+    paths: ['foundation/mail-submission/**', 'foundation/mail-compose/**', 'foundation/email-templates/**', 'tests/mail-submission/**', 'tools/check_mail_submission_vendor.py', '.github/workflows/mail-submission.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -26,12 +26,18 @@ jobs:
           persist-credentials: false
       - name: Offline immutable submission preparation
         run: |
+          python3 tools/check_mail_submission_vendor.py --reproduce
           mkdir -p qa "$RUNNER_TEMP/submission-results"
           docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/submission-results:/workspace/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
             for source in foundation/mail-submission/*.php tests/mail-submission/*.php; do php -l "$source"; done
             php tests/mail-submission/run.php qa/submission-default-results.json
             php -n tests/mail-submission/run.php qa/submission-no-ini-results.json
+            php tests/mail-submission/mime.php qa/submission-mime-default-results.json
+            php -n tests/mail-submission/mime.php qa/submission-mime-no-ini-results.json
+            php -n -d disable_functions=ctype_alnum tests/mail-submission/mime_unavailable.php qa/submission-mime-unavailable-results.json
           '
+          python3 tests/mail-submission/verify_mime.py "$RUNNER_TEMP/submission-results/submission-mime-default-results.json" "$RUNNER_TEMP/submission-results/submission-mime-parser-default-results.json"
+          python3 tests/mail-submission/verify_mime.py "$RUNNER_TEMP/submission-results/submission-mime-no-ini-results.json" "$RUNNER_TEMP/submission-results/submission-mime-parser-no-ini-results.json"
       - name: Preserve named preparation evidence
         if: always()
         uses: actions/upload-artifact@v4

@@ -59,7 +59,9 @@ def main():
     # export rules. Exclude only this exact, hash-verified dependency subtree.
     from check_mail_vendor import check as check_mail_vendor
     check_mail_vendor()
-    vendors = [ROOT / "foundation/mail-receiving/vendor", ROOT / "site/includes/foundation/mail-receiving/vendor"]
+    from check_mail_submission_vendor import check as check_submission_vendor
+    check_submission_vendor()
+    vendors = [ROOT / "foundation/mail-receiving/vendor", ROOT / "site/includes/foundation/mail-receiving/vendor", ROOT / "foundation/mail-submission/vendor"]
     for name in REQUIRED:
         path = ROOT / name
         if not path.is_file() or not path.read_text(encoding="utf-8").strip():

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — maintained offline MIME preparation
+
+Pin/reproduce original PHPMailer7.1.1 source/license; generate bounded immutable plaintext MIME with Bcc privacy, literal Unicode/space-sensitive subjects, fixed UTC dates and exact message identity.25 local MIME plus144 independent parser checks per default/no-ini mode pass; missing-function refusal passes. Expanded matrix/review pending. No SMTP, persistence, application integration or sending.
+
 ## Unreleased — isolated immutable submission preparation
 
 Downloaded replacement38525211291 at59bb4bf verifies52 named preparation checks in all four PHP8.2/8.4 default/no-ini cells. No MIME, SMTP or application acceptance is implied.
