@@ -75,6 +75,8 @@ jobs:
           php8.3 tests/mail_inbox_native.php
           php8.3 tests/mail_message_native.php
           php8.3 tests/mail_notices_native.php
+          php8.3 tests/provider_settings_native.php
+          php8.3 tests/provider_checks_native.php
       - name: Real HTTP and Chromium application workflows
         run: .ci-venv/bin/python tests/browser_acceptance.py
       - name: Preserve browser checkpoint before the extended recovery matrix

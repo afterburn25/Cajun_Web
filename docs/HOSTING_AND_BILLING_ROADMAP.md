@@ -121,6 +121,8 @@ References: https://developer.authorize.net/api/reference/features/customer-prof
 
 ## HC-07 — 20i reseller integration and credentials (P0)
 
+**Progress 2026-10-13:** the adapter contract layer is implemented as an isolated component on `devin/provider-foundation` — capability matrix (with explicit `unverified`), lazy secret-resolving credentials, HTTPS-only transport boundary, idempotent operations + ledger, enforcing gateway and external-ID reconciliation; 69 synthetic checks. See [PROVIDER_FOUNDATION](PROVIDER_FOUNDATION.md). Admin UI, encrypted persistence, the concrete 20i adapter and real endpoint verification remain pending (gate: Awaiting API verification).
+
 Admin → Settings → Providers → 20i: API key (secret), reseller/account identity, selected default hosting region, connection check, capabilities catalog, hosting package types, allowed product mappings, quota/usage visibility, wholesale credit balance if API provides it, error health and webhook/poll status. Support credential rotation, mask secrets, least privilege, throttling, timeout and retry policy. No hardcoded account-specific key or sandbox token.
 
 Create provider-adapter interface with explicit support matrix, contract/fixture tests, operation idempotency and external ID reconciliation. 20i documents GET /package and POST /reseller/{id}/addWeb for package listing/provisioning. Do not assume every domain/VPS/StackCP endpoint is publicly supported: inspect the logged-in My20i API documentation and test account before implementing each action.
