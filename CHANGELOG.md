@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — durable hosting attempt/result storage
+
+Add current-owner exact attempt/profile fences, bound internal results, immutable unique provider-resource associations and strict atomic audit. Stable replay grants no repeat dispatch. Atb7e9f03, downloaded38545626740 passes79 operation +94 retained local-record checks per PHP8.2/8.4. Independent review and application acceptance remain pending. No transport, route, worker or release activation. [Contract](docs/HOSTING_OPERATIONS.md).
+
+
 ## Unreleased — local hosting records
 
 Add owner-authorized additive MariaDB journal/event storage, exact client/terms/revision checks, stable replay and strict atomic audit. Native PHP8.2/8.4 each pass94 checks, including competing processes and damaged history, atf8001e9 in38543267301/38543364218. No remote operation, route or fresh-install activation; independent review and application acceptance remain pending. [Contract](docs/HOSTING_RECORDS.md).

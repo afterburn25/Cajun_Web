@@ -1,5 +1,15 @@
 # Project status
 
+## Current work — durable hosting attempt and result records
+
+Codex owns `codex/hosting-operations` from5d9b719/PR81. New guarded native storage commits canonical lifecycle events, immutable exact account/client/profile/attempt fences and strict audit before returning a new one-time claim. Replay grants no second call. Internal result persistence binds observations to that committed attempt, preserves uncertainty/access-loss outcomes and retains unique provider-resource ownership across accounts. There is no route, worker, credential decryption, provider request or new release. [Operation contract](docs/HOSTING_OPERATIONS.md).
+
+The shared internal event writer is refactored; the existing94 local-record checks are retained alongside new native operation fixtures for current authority, profile revisions, competing/replayed claims, lost result persistence, restart, unknown outcomes, resource conflicts and two-owner deletion. Downloaded push38545626740 atb7e9f03 passes79 operation +94 retained record checks per PHP8.2/8.4,346 executions with no PHP warnings. Syntax, full generated refresh,126 Markdown/1073 links and2542 exact committed installer dependencies pass; independent review remains pending. Existing storagef8001e9 has188 verified PHP8.2/8.4 checks in push38543267301 and PR38543364218/tested merge690949d; documentation5d9b719 keeps runtime unchanged. Next: verify the new matrix, review the exact durable boundary, then implement deliberate reconciliation/retry and a separately verified provider coordinator.
+
+Mail77/1.22 runtime3e7138e remains unchanged in test/docs heade9b77e1. Run38539811045 explicitly exceeded45m during no-rewrite1.13, retaining6771 passing pre-Apache checks and verified package bytes, but no final Apache or clean-source acceptance. Replacement38545953062 runs with75m and incomplete Apache checkpoints; inspect that same handle. Published1.21 remains immutable at7805e56. Preserve parent81/80/79 and original Devin branches, with independent review before merge/publication. Full roadmap active; no real customer mail,20i operation, payment, SSH or deployment.
+
+## Earlier checkpoints
+
 ## Current work — native local hosting records
 
 Codex owns `codex/hosting-storage` from8bbd209/PR80. Guarded owner-only application storage now retains approved local package snapshots and canonical journal events in additive MariaDB tables. Current password/owner/client checks, staff mutex, revision comparison, stable event replay and strict atomic audit protect writes; every load verifies original terms and the event chain. Domain/grace/dispute/cancellation commands stay local. Remote dispatch, result injection and reconciliation are unavailable through this API. No route, fresh-install setup, provider call or release is activated. [Storage contract](docs/HOSTING_RECORDS.md).

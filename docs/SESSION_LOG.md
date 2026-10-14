@@ -1,5 +1,14 @@
 # Session log
 
+## 2026-10-14 — verified hosting operation matrix
+
+Atb7e9f03, downloaded push38545626740 passes79 operation +94 retained local-record checks per PHP8.2/8.4,346 executions. All named results and no-PHP-warning log verify. All2542 installer dependencies match committed bytes, with6 exact canonical mirrors. This follow-up changes documentation only. Mail38539811045 was cancelled for45m limit; retained6771 pre-Apache checks and verified Windows/Linux packages are partial evidence. Replacemente9b77e1/38545953062 has75m and incomplete progress checkpoints, without changing runtime or dropping tests. Next: independent review, current PR matrix, deliberate hosting reconciliation/retry and final mail acceptance.
+
+## 2026-10-14 — durable hosting attempts
+
+Request: continue full roadmap without stopping. Started5d9b719 on codex/hosting-operations, preserving stacked81/80/79 and Devin branches. Added guarded operation/fence/result/resource storage, additive migration, shared atomic event writer, native process/result fixtures and focused CI. Syntax, full generated refresh and126 Markdown/1073 links passed; current-client locking reads are added after inspecting legacy client writers outside the mutex. A competing-process snapshot regression is included. New native checks remain pending. Existing storage94 per runtime verified, mail38539811045 still in Apache. No provider transport or production action. Next: verify new native results and independent review, then deliberate reconciliation/retry and verified provider coordination.
+
+
 ## 2026-10-14 — verified hosting record evidence
 
 Startingf8001e9/PR81, downloaded push38543267301 and PR38543364218/tested merge690949d. Each PHP8.2/8.4 run passes94 named native checks,188 total per run. All14 applicable workflows succeed; no PHP warnings in push log. Verified2539 exact committed installer dependencies and6 canonical mirrors. This documentation-only checkpoint records the evidence and pending independent review; it changes no site/foundation/tests/tools/workflow source. Mail38539811045 remains in Apache acceptance. Authorized issue2 handoff6165365613 records current ownership without inferring Devin receipt. Next: separate durable dispatch/result layer and candidate final acceptance.
