@@ -1,5 +1,9 @@
 # Approved roadmap and acceptance criteria
 
+## Current transport progress
+
+The fixed 20i cURL transport now has 333 local actual isolated HTTPS checks and32 default/33 unavailable-cURL request/DNS checks. Its expanded PHP8.2/8.4 container matrix and independent review remain pending. The prior120-check probe matrix was downloaded and verified. No provider site/schema/UI changes or real API call. Continue with matrix/review and protected owner persistence under the agreed contract; see PROJECT_STATUS and the probe guide for exact evidence.
+
 ## Current provider work — draft PR #74
 
 This branch preserves the published **1.19.0** application source `22a2969692ab5bcc7f35158dcaa5355c623dc821` and its verified publication documentation `b472ed292f1b3e72788f681f4b00d6c9169e162a`. All 16 release downloads and 6,328 exact-main application checks passed; the release boundary is complete. Current provider work continues in [draft PR #74](https://github.com/afterburn25/Cajun_Web/pull/74) with no version reserved or application feature exposed yet.

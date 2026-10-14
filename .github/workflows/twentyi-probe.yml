@@ -2,10 +2,10 @@ name: 20i probe checks
 
 on:
   pull_request:
-    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'tests/twentyi/**', '.github/workflows/twentyi-probe.yml']
+    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/mail-transport/**', 'tests/twentyi/**', '.github/workflows/twentyi-probe.yml']
   push:
     branches: [main, codex/provider-settings]
-    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'tests/twentyi/**', '.github/workflows/twentyi-probe.yml']
+    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/mail-transport/**', 'tests/twentyi/**', '.github/workflows/twentyi-probe.yml']
   workflow_dispatch:
 
 permissions:
@@ -19,7 +19,7 @@ jobs:
   probe:
     name: 20i probe PHP ${{ matrix.php }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -29,13 +29,21 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - name: Synthetic probe checks without network access
+      - name: Build the isolated test runtime
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -f tests/twentyi/Dockerfile -t cwp-twentyi-fixture:${{ matrix.php }} tests/twentyi
+      - name: Synthetic probe and actual HTTPS checks without external network access
         run: |
           mkdir -p "$RUNNER_TEMP/twentyi-results"
-          docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/twentyi-results:/results" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+          mkdir -p "$RUNNER_TEMP/twentyi-runtime"
+          docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/twentyi-results:/workspace/qa" -v "$RUNNER_TEMP/twentyi-runtime:/workspace/test-runtime" -w /workspace cwp-twentyi-fixture:${{ matrix.php }} sh -ec '
             for source in foundation/provider/*.php foundation/twentyi/*.php tests/twentyi/*.php; do php -l "$source"; done
-            php tests/twentyi/run.php /results/adapter-default-results.json
-            php -n tests/twentyi/run.php /results/adapter-no-extensions-results.json
+            php tests/twentyi/run.php qa/adapter-default-results.json
+            php -n tests/twentyi/run.php qa/adapter-no-extensions-results.json
+            php tests/twentyi/transport_policy.php > qa/transport-policy-results.json
+            php -n tests/twentyi/transport_policy.php > qa/transport-no-ini-results.json
+            php -n -d disable_functions=curl_init tests/twentyi/transport_policy.php > qa/transport-curl-unavailable-results.json
+            python tests/twentyi/tls_test.py
+            python tests/twentyi/tls_test.py --no-ini
           '
       - name: Preserve named results
         if: always()
@@ -47,4 +55,4 @@ jobs:
       - name: Record verification scope
         if: always()
         run: |
-          echo 'Synthetic fixed-probe classification and capability refusal only. No HTTP transport, provider call, application, database, UI or deployment acceptance.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Synthetic probe/policy and actual loopback PHP/cURL HTTPS, with test-only destination/CA remapping after production-option validation. Docker --network none prevents external calls. No real 20i API, application, database, UI or deployment acceptance. PHP -n disables configuration, not compiled extensions; both modes run HTTPS. A separate disabled-curl_init run proves finite unavailable refusal.' >> "$GITHUB_STEP_SUMMARY"

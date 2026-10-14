@@ -165,3 +165,7 @@ The first owner 20i increment validates only a fixed explicit package-list conne
 ## 2026-10-13 — ship bounded recent email notices in1.19.0
 
 Source22a2969692ab5bcc7f35158dcaa5355c623dc821 retains exact current-window identities and local per-staff state separately from shared observed server flags. Private header polling reads only local metadata and preserves idle expiry. Client-support views exclude staff email mounts. Full unread synchronization, previews and provider read-flag writes remain separate work. Continue the protected owner20i adapter contract without treating authentication as mutation entitlement.
+
+## 2026-10-13 — reuse cURL framing and canonical public destination policy
+
+Use cURL for fixed HTTPS rather than implementing an HTTP parser. Reject entire mixed DNS answer sets and pin one accepted address. Local resolver latency is governed by the host; transfer deadlines do not pretend to bound blocking DNS. Keep test-only address/CA remapping outside production, verify original options first, and execute CI fixtures with networking disabled. PHP -n disables configuration; compiled extensions remain, so explicitly test unavailable cURL initialization instead of assuming it disappears.

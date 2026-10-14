@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — isolated 20i HTTPS transport
+
+- Fixed destination/pinning/TLS and proxy/redirect refusal, finite errors, bounded streamed headers/body and transfer deadlines, with 333 local actual synthetic HTTPS checks and request/DNS policy evidence. No admin application integration or real API operation; matrix/review pending.
+
 ## Unreleased — isolated fixed 20i connection probe
 
 - Added a fixed read-only package-list authentication adapter, finite classifications and explicit refusal of all general provider operations, with 120 synthetic checks. No real transport or application integration; no release version reserved.

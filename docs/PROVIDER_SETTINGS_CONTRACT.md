@@ -24,7 +24,9 @@ Reuse reviewed ProviderCredential and ProviderGateway::checkConnection()/Provide
 
 ## Isolated probe component
 
-[Probe guide](TWENTYI_CONNECTION_PROBE.md) records the current `foundation/twentyi` adapter, refusal ledger and synthetic checks. These components are outside deployment and do not implement real HTTP transport or application persistence.
+[Probe guide](TWENTYI_CONNECTION_PROBE.md) records the current `foundation/twentyi` adapter, refusal ledger and synthetic checks. These components remain outside deployment; application persistence is not implemented. Concrete transport progress is recorded below.
+
+The subsequent fixed cURL transport now has 333 local actual isolated HTTP/TLS checks and destination/request policy evidence; see the guide for exact scope. Its matrix/review and application acceptance remain pending. Reject the whole mixed public/private DNS answer set, following the existing canonical policy. The host resolver owns blocking DNS timeout; transfer connect/total/low-speed deadlines apply after resolution. No invented hard DNS wall-clock guarantee, response inventory schema or external entitlement is claimed.
 
 ## Acceptance before integration
 

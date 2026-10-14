@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Current transport checkpoint — awaiting matrix and review
+
+Starting from provider-settings43d339d, Codex added the fixed cURL transport and actual isolated HTTPS fixtures outside deployment. Local PHP8.4.25 passes 333 named HTTP/TLS checks plus 32 default and33 unavailable-cURL destination/request checks. Finite certificate-error mapping was corrected for PHP constant availability. The prior adapter matrix38506770388 was downloaded: all four PHP8.2/8.4 default/-n cells pass120; tested merge97a614d contains the unchanged reviewed component. Devin reviewed that adapter/workflow in PR74 comments6160315530/6160320605/6160370960 with no blockers.
+
+The transport pins validated public DNS, verifies TLS/hostname, refuses proxies/redirects/general requests, bounds headers/body/transfer deadlines, rechecks caller authority and rejects literal credential echoes. Mixed public/private answers are rejected entirely. Host resolver DNS timeout is a documented separate limit. The new matrix runs actual HTTPS inside Docker --network none; it is not yet current evidence until completed and downloaded. No site/schema/UI/version changes or real provider call. Next: finish matrix/review, then protected owner profile/key, audited explicit check/history, current-authority concurrency and packaged application acceptance.
+
 ## Current provider work — draft PR #74
 
 This branch preserves the published **1.19.0** application source `22a2969692ab5bcc7f35158dcaa5355c623dc821` and its verified publication documentation `b472ed292f1b3e72788f681f4b00d6c9169e162a`. All 16 release downloads and 6,328 exact-main application checks passed; the release boundary is complete. Current provider work continues in [draft PR #74](https://github.com/afterburn25/Cajun_Web/pull/74) with no version reserved or application feature exposed yet.
