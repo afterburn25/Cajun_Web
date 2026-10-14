@@ -44,7 +44,7 @@ final readonly class OperationResult
             || preg_match('//u', $message) !== 1
             || preg_match('/[\x00-\x1f\x7f]/', $message)
         ) {
-            throw new InvalidArgumentException('Result messages are bounded printable classifications (<=200 chars, no control characters).');
+            throw new InvalidArgumentException('Result messages are bounded printable classifications (<=200 bytes, no control characters).');
         }
         if ($providerCode !== null && (strlen($providerCode) > 64 || preg_match('/[\x00-\x1f\x7f]/', $providerCode))) {
             throw new InvalidArgumentException('Provider codes are short printable machine labels.');

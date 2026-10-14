@@ -175,8 +175,11 @@ final class FixtureTwentyIAdapter implements ProviderAdapter
     public function probe(HttpTransport $transport, ProviderCredential $credential): ConnectionCheck
     {
         $response = $transport->send(new TransportRequest('GET', 'https://fixture.invalid/api/package', ['Authorization' => 'Bearer ' . $credential->secret()]));
-        $decoded = json_decode($response->body, true);
-        $accepted = $response->ok() && is_array($decoded) && array_is_list($decoded);
+        // Decode preserving JSON object/list identity: an associative
+        // decode collapses {} and {"0":"x"} into lists. Scalars, null,
+        // malformed or trailing data and over-depth bodies also fail.
+        $decoded = json_decode($response->body, false, 32);
+        $accepted = $response->ok() && is_array($decoded);
         return match (true) {
             $accepted => ConnectionCheck::verified('fixture credentials accepted'),
             $response->ok() => ConnectionCheck::unknown('fixture returned an unexpected 2xx body'),
@@ -522,7 +525,7 @@ $guardLedger->record('guard-1', 'fp-a', OperationResult::failed('x.y', 'second')
 check($guardLedger->results['guard-1']->status === OperationResult::SUCCEEDED, 'first terminal record wins');
 
 // --- Gateway: connection check -----------------------------------------------
-$transport->script = [new TransportResponse(200, [], '{}')];
+$transport->script = [new TransportResponse(200, [], '["synthetic"]')];
 check($gateway->checkConnection(credential())->ok(), 'probe verifies good credentials');
 check(str_starts_with($transport->requests[count($transport->requests) - 1]->headers['Authorization'], 'Bearer '), 'probe sends credential to provider only');
 
@@ -556,10 +559,25 @@ foreach ([TransportException::KIND_TIMEOUT, TransportException::KIND_PROTOCOL] a
 
 // A successful status with an unaccepted body shape is UNKNOWN, not
 // VERIFIED — probes only pass on the strictly accepted list shape.
+// JSON object/list identity is preserved: associative decoding would
+// wrongly accept empty and numeric-key objects as lists.
 $transport->script = [new TransportResponse(200, [], '{"packages":{"a":1}}')];
 check($gateway->checkConnection(credential())->state === ConnectionCheck::UNKNOWN, 'non-list 2xx body is unknown, not verified');
 $transport->script = [new TransportResponse(200, [], 'not json at all')];
 check($gateway->checkConnection(credential())->state === ConnectionCheck::UNKNOWN, 'unparseable 2xx body is unknown, not verified');
+foreach ([
+    'empty object' => '{}',
+    'numeric-key object' => '{"0":"synthetic"}',
+    'named-key object' => '{"packages":[]}',
+    'scalar body' => '5',
+    'string body' => '"ok"',
+    'null body' => 'null',
+    'trailing data' => '[] trailing-garbage',
+    'over-depth body' => str_repeat('[', 40) . str_repeat(']', 40),
+] as $label => $body) {
+    $transport->script = [new TransportResponse(200, [], $body)];
+    check($gateway->checkConnection(credential())->state === ConnectionCheck::UNKNOWN, 'rejected 2xx body is unknown: ' . $label);
+}
 $transport->script = [new TransportResponse(200, [], '[]')];
 check($gateway->checkConnection(credential())->state === ConnectionCheck::VERIFIED, 'empty accepted list body still verifies');
 

@@ -20,9 +20,11 @@ use InvalidArgumentException;
  * clean failure.
  *
  * Details are a bounded classification channel — short printable UTF-8
- * only, like OperationResult messages. Provider response bodies,
- * headers, URLs and credential material must never be placed here;
- * they would persist into durable attempt history.
+ * only, like OperationResult messages. The bound is not a redaction
+ * filter: adapters must emit a fixed allowlist of local classifications
+ * and never copy provider response bodies, headers, URLs, exception
+ * text or credential material here — they would persist into durable
+ * attempt history.
  */
 final readonly class ConnectionCheck
 {
@@ -43,7 +45,7 @@ final readonly class ConnectionCheck
             || preg_match('//u', $detail) !== 1
             || preg_match('/[\x00-\x1f\x7f]/', $detail)
         ) {
-            throw new InvalidArgumentException('Check details are bounded printable classifications (<=200 chars, no control characters).');
+            throw new InvalidArgumentException('Check details are bounded printable classifications (<=200 bytes, no control characters).');
         }
     }
 

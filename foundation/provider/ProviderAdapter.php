@@ -41,9 +41,12 @@ interface ProviderAdapter
      * method and path; callers cannot redirect it elsewhere. VERIFIED
      * is allowed only when the response is the endpoint's strictly
      * accepted success shape (an otherwise-unparseable or differently
-     * shaped 2xx is UNKNOWN, never a pass). Transport failures thrown
-     * by send() are classified by the gateway — probe must not convert
-     * them into authentication verdicts.
+     * shaped 2xx is UNKNOWN, never a pass). Shape checks must preserve
+     * JSON object/list identity — associative decoding that would
+     * accept an object like {} or {"0":"x"} as a list must not be
+     * used. Transport failures thrown by send() are classified by the
+     * gateway — probe must not convert them into authentication
+     * verdicts.
      */
     public function probe(HttpTransport $transport, ProviderCredential $credential): ConnectionCheck;
 
