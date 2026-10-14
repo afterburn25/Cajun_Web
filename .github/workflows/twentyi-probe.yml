@@ -35,6 +35,7 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/twentyi-results"
           mkdir -p "$RUNNER_TEMP/twentyi-runtime"
+          mkdir -p qa test-runtime
           docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/twentyi-results:/workspace/qa" -v "$RUNNER_TEMP/twentyi-runtime:/workspace/test-runtime" -w /workspace cwp-twentyi-fixture:${{ matrix.php }} sh -ec '
             for source in foundation/provider/*.php foundation/twentyi/*.php tests/twentyi/*.php; do php -l "$source"; done
             php tests/twentyi/run.php qa/adapter-default-results.json

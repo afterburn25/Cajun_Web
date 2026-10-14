@@ -1,5 +1,9 @@
 # Working agreement for CajunWebPro
 
+## Current transport CI repair and independent review
+
+Devin independently reproduced 120 adapter, 32 policy and 333 isolated HTTPS checks at db66aa0 and reported no blockers ([review](https://github.com/afterburn25/Cajun_Web/pull/74#issuecomment-6160503554)). GitHub push run38508413037 failed before executing PHP: Docker could not create nested qa/test-runtime mountpoints beneath the read-only source mount. This change creates those empty mountpoints before starting the container, preserving read-only source and network isolation. The replacement matrix remains pending. Four uncommitted provider persistence modules have syntax-only validation; they remain unwired and are not part of this CI repair commit. Next: inspect repaired matrix, then native owner/storage/concurrency acceptance.
+
 ## Current transport progress
 
 The fixed 20i cURL transport now has 333 local actual isolated HTTPS checks and32 default/33 unavailable-cURL request/DNS checks. Its expanded PHP8.2/8.4 container matrix and independent review remain pending. The prior120-check probe matrix was downloaded and verified. No provider site/schema/UI changes or real API call. Continue with matrix/review and protected owner persistence under the agreed contract; see PROJECT_STATUS and the probe guide for exact evidence.

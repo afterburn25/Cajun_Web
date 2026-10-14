@@ -1,5 +1,9 @@
 # Session handoff — read before continuing
 
+## Current transport CI repair and independent review
+
+Devin independently reproduced 120 adapter, 32 policy and 333 isolated HTTPS checks at db66aa0 and reported no blockers ([review](https://github.com/afterburn25/Cajun_Web/pull/74#issuecomment-6160503554)). GitHub push run38508413037 failed before executing PHP: Docker could not create nested qa/test-runtime mountpoints beneath the read-only source mount. This change creates those empty mountpoints before starting the container, preserving read-only source and network isolation. The replacement matrix remains pending. Four uncommitted provider persistence modules have syntax-only validation; they remain unwired and are not part of this CI repair commit. Next: inspect repaired matrix, then native owner/storage/concurrency acceptance.
+
 ## Current transport checkpoint — awaiting matrix and review
 
 Starting from provider-settings43d339d, Codex added the fixed cURL transport and actual isolated HTTPS fixtures outside deployment. Local PHP8.4.25 passes 333 named HTTP/TLS checks plus 32 default and33 unavailable-cURL destination/request checks. Finite certificate-error mapping was corrected for PHP constant availability. The prior adapter matrix38506770388 was downloaded: all four PHP8.2/8.4 default/-n cells pass120; tested merge97a614d contains the unchanged reviewed component. Devin reviewed that adapter/workflow in PR74 comments6160315530/6160320605/6160370960 with no blockers.

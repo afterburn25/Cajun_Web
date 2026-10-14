@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — isolated transport runner repair
+
+Create writable output mountpoints before mounting the source read-only. This fixes a pre-test Docker startup failure; no application or transport behavior changes.
+
 ## Unreleased — isolated 20i HTTPS transport
 
 - Fixed destination/pinning/TLS and proxy/redirect refusal, finite errors, bounded streamed headers/body and transfer deadlines, with 333 local actual synthetic HTTPS checks and request/DNS policy evidence. No admin application integration or real API operation; matrix/review pending.
