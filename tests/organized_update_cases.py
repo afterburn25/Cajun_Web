@@ -26,22 +26,34 @@ def run(web,base,check,qa,php,label,prefix,version):
         assert p.returncode==0,p.stderr
         return json.loads(p.stdout)
     before=records('seed')
-    prior_templates=records('templates') if version in ['1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0'] else None
-    prior_accounts=records('mail-accounts') if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0'] else None
-    prior_key=(private/'mail-master.key').read_bytes() if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0'] else None
-    prior_review=records('review-intake') if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0'] else None
-    prior_reports=records('reviews') if version in ['1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0'] else None
-    prior_appointment=records('appointment-intake') if version in ['1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0'] else None
-    prior_schedule=records('appointments') if version in ['1.15.0','1.16.0','1.17.0','1.18.0','1.19.0'] else None
-    if version in ['1.16.0','1.17.0','1.18.0','1.19.0']:records('mail-checks-seed')
-    prior_checks=records('mail-checks') if version in ['1.16.0','1.17.0','1.18.0','1.19.0'] else None
-    if version in ['1.17.0','1.18.0','1.19.0']:records('inbox-seed')
-    prior_inbox=records('inbox') if version in ['1.17.0','1.18.0','1.19.0'] else None
-    if version in ['1.18.0','1.19.0']:records('messages-seed')
-    prior_messages=records('messages') if version in ['1.18.0','1.19.0'] else None
-    if version=='1.19.0':
+    prior_templates=records('templates') if version in ['1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0'] else None
+    prior_accounts=records('mail-accounts') if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0'] else None
+    prior_key=(private/'mail-master.key').read_bytes() if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0'] else None
+    prior_review=records('review-intake') if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0'] else None
+    prior_reports=records('reviews') if version in ['1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0'] else None
+    prior_appointment=records('appointment-intake') if version in ['1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0'] else None
+    prior_schedule=records('appointments') if version in ['1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0'] else None
+    if version in ['1.16.0','1.17.0','1.18.0','1.19.0','1.20.0']:records('mail-checks-seed')
+    prior_checks=records('mail-checks') if version in ['1.16.0','1.17.0','1.18.0','1.19.0','1.20.0'] else None
+    if version in ['1.17.0','1.18.0','1.19.0','1.20.0']:records('inbox-seed')
+    prior_inbox=records('inbox') if version in ['1.17.0','1.18.0','1.19.0','1.20.0'] else None
+    if version in ['1.18.0','1.19.0','1.20.0']:records('messages-seed')
+    prior_messages=records('messages') if version in ['1.18.0','1.19.0','1.20.0'] else None
+    if version in ['1.19.0','1.20.0']:
         records('notices-seed');prior_inbox=records('inbox')
-    prior_notices=records('notices') if version=='1.19.0' else None
+    prior_notices=records('notices') if version in ['1.19.0','1.20.0'] else None
+    prior_provider=None;prior_provider_key=None
+    if version=='1.20.0':
+        # Fresh installation creates the owner, but does not authenticate this browser.
+        login=url+'/admin/index.php?view=login'
+        session.post(login,data={'csrf':token(session.get(login)),'action':'login','email':'organized@example.invalid','password':password})
+        settings=url+'/admin/index.php?view=provider-settings';secret='SYNTHETIC_ORIGINAL_120_GENERAL_KEY'
+        r=session.get(settings)
+        check(label+' owner signs in before saving original provider settings',r.status_code==200 and BeautifulSoup(r.text,'html.parser').select_one('input[name=action][value=provider_settings_save]') is not None)
+        r=session.post(settings,data={'csrf':token(r),'action':'provider_settings_save','profile_id':'','revision':'0','current_password':password,'label':'Earlier 1.20 provider connection','general_key':secret,'enabled':'1'})
+        check(label+' authenticated original provider save succeeds before history seeding','20i settings saved' in r.text and len(records('provider')['profiles'])==1)
+        records('provider-seed');prior_provider=records('provider');prior_provider_key=(private/'provider-master.key').read_bytes()
+        check(label+' original 1.20 installation holds encrypted provider profile and nonempty check history','20i settings saved' in r.text and len(prior_provider['profiles'])==1 and len(prior_provider['history'])==1 and len(prior_provider['checks'])==2 and len(prior_provider['results'])==1 and secret not in prior_provider['profiles'][0]['credentials'] and secret not in r.text and len(prior_provider_key)==32 and prior_provider_key!=prior_key and (private/'provider-master.key').stat().st_mode&0o777==0o600)
     check(label+' retained schema contains meaningful client project and invoice records',all(before[n]['count']>0 for n in before))
     session.get(url+'/admin/index.php?view=login')
     probe=root/'cache-probe.php';probe.write_text("<?php echo json_encode(['enabled'=>opcache_get_status(false)['opcache_enabled']??false,'timestamps'=>ini_get('opcache.validate_timestamps'),'cached'=>opcache_is_script_cached(__DIR__.'/config/defaults.php')]);")
@@ -73,6 +85,7 @@ def run(web,base,check,qa,php,label,prefix,version):
     r=action('recover');check(label+' owner can recover original organized files','<h2>Rolled-back</h2>' in r.text and all((root/n).read_bytes()==b for n,b in original.items()))
     check(label+' recovery invalidates cached version and preserves session',('STUDIO RELEASE '+version) in session.get(url+'/admin/index.php').text)
     check(label+' recovery does not reset business records',records()==before)
+    if prior_provider is not None:check(label+' original provider records and both keys survive recovered 1.20 files',records('provider')==prior_provider and (private/'provider-master.key').read_bytes()==prior_provider_key and (private/'mail-master.key').read_bytes()==prior_key)
     r=action('apply');check(label+' recovered organized release can be updated again','<h2>Complete</h2>' in r.text and ('STUDIO RELEASE '+VERSION) in session.get(url+'/admin/index.php').text)
     if version=='1.11.2':
         library=url+'/admin/index.php?view=mail-templates'
@@ -206,9 +219,10 @@ def run(web,base,check,qa,php,label,prefix,version):
         r=session.post(mail,data={'csrf':token(session.get(mail)),'action':'mail_accounts_save','account_id':account['id'],'revision':account['revision'],'current_password':password,**{k:account[k] for k in ['label','address','imap_host','imap_port','imap_encryption','imap_username','smtp_host','smtp_port','smtp_encryption','smtp_username','enabled']},'imap_password':'','smtp_password':''})
         check(label+' recovered private key decrypts and changed generation hides old notices','Email settings saved' in r.text and records('mail-accounts')['accounts'][0]['revision']==account['revision']+1 and (private/'mail-master.key').read_bytes()==prior_key and session.get(endpoint).json()['count']==0 and records('notices')==saved_notices)
 
-    if version=='1.19.0':
+    if version in ['1.19.0','1.20.0']:
         def prior_retained():
             return records('notices')==prior_notices and records('messages')==prior_messages and records('inbox')==prior_inbox and records('mail-checks')==prior_checks and records('appointments')==prior_schedule and records('reviews')==prior_reports and records('mail-accounts')==prior_accounts and records('templates')==prior_templates and (private/'mail-master.key').read_bytes()==prior_key
+    if version=='1.19.0':
         check(label+' update preserves nonempty notices and every earlier private record',len(prior_notices['items'])==2 and len(prior_notices['states'])==1 and prior_retained())
         settings=url+'/admin/index.php?view=provider-settings'
         r=session.get(settings);check(label+' owner explicitly prepares provider storage after file update','Prepare 20i settings' in r.text and not (private/'provider-master.key').exists())
@@ -227,3 +241,40 @@ def run(web,base,check,qa,php,label,prefix,version):
         r=session.post(settings,data={'csrf':token(session.get(settings)),'action':'provider_settings_save','profile_id':profile['id'],'revision':profile['revision'],'current_password':password,'label':'Retained provider connection','general_key':'','enabled':'1'})
         restored=records('provider')
         check(label+' original provider key decrypts after recovery and reapplication','20i settings saved' in r.text and restored['profiles'][0]['revision']==profile['revision']+1 and len(restored['history'])==2 and restored['checks']==saved['checks'] and restored['results']==saved['results'] and (private/'provider-master.key').read_bytes()==provider_key and prior_retained())
+
+    if version=='1.20.0':
+        provider_key=prior_provider_key;restored=records('provider')
+        check(label+' update and recovery preserve original provider profile check history and both keys',restored==prior_provider and prior_retained() and (private/'provider-master.key').read_bytes()==provider_key)
+        settings=url+'/admin/index.php?view=provider-settings';profile=restored['profiles'][0]
+        r=session.post(settings,data={'csrf':token(session.get(settings)),'action':'provider_settings_save','profile_id':profile['id'],'revision':profile['revision'],'current_password':password,'label':'Earlier 1.20 provider connection','general_key':'','enabled':'1'})
+        restored=records('provider')
+        check(label+' original 1.20 provider key still decrypts after update and recovery','20i settings saved' in r.text and restored['profiles'][0]['revision']==profile['revision']+1 and len(restored['history'])==2 and restored['checks']==prior_provider['checks'] and restored['results']==prior_provider['results'] and (private/'provider-master.key').read_bytes()==provider_key and prior_retained())
+    if version in ['1.19.0','1.20.0']:
+        # Actual retained-release upgrade, local draft preparation and file recovery.
+        library=url+'/admin/index.php?view=mail-drafts'
+        r=session.get(library);check(label+' draft upgrade requires explicit owner preparation','Prepare local drafts' in r.text)
+        r=session.post(library,data={'csrf':token(r),'action':'mail_drafts_setup','current_password':password})
+        check(label+' draft setup is additive and preserves provider and prior private data','Local email drafts are ready' in r.text and records('drafts')=={'drafts':[],'history':[]} and records('provider')==restored and prior_retained())
+        account=prior_accounts['accounts'][0];mail=url+'/admin/index.php?view=mail-account&account_id='+account['id'];grant=prior_accounts['grants'][0]
+        session.post(mail,data={'csrf':token(session.get(mail)),'action':'mail_accounts_grant','account_id':account['id'],'revision':grant['revision'],'user_id':1,'can_read':'1','can_send':'1','enabled':'1','days':'0','current_password':password})
+        draft_accounts=records('mail-accounts')
+        check(label+' owner explicitly grants Send while retaining original profile and key',draft_accounts['accounts']==prior_accounts['accounts'] and draft_accounts['grants'][0]['can_send']==1 and (private/'mail-master.key').read_bytes()==prior_key)
+        new=url+'/admin/index.php?view=mail-draft&account_id='+account['id']
+        def draft_form(target):
+            form=BeautifulSoup(session.get(target).text,'html.parser').select_one('[data-mail-draft-editor]')
+            assert form is not None,target
+            return {n['name']:n.get('value','') for n in form.select('input[type=hidden][name]')}
+        from urllib.parse import parse_qs,urlparse
+        fields=draft_form(new);fields.update({'action':'mail_drafts_save','sender':account['id']+':'+str(account['revision']),'to':'retained@example.invalid','cc':'','bcc':'private@example.invalid','subject':'Retained draft subject','body':'Retained draft first'})
+        r=session.post(new,data=fields);draft_id=parse_qs(urlparse(r.url).query)['draft_id'][0];detail=url+'/admin/index.php?view=mail-draft&draft_id='+draft_id
+        fields=draft_form(detail);fields.update({'action':'mail_drafts_save','sender':account['id']+':'+str(account['revision']),'to':'retained@example.invalid','cc':'','bcc':'private@example.invalid','subject':'Retained draft subject','body':'Retained draft second'})
+        session.post(detail,data=fields)
+        fields=draft_form(new);fields.update({'action':'mail_drafts_save','sender':account['id']+':'+str(account['revision']),'to':'','cc':'','bcc':'','subject':'Retained discarded draft','body':'Retained discarded text'})
+        r=session.post(new,data=fields);discard_id=parse_qs(urlparse(r.url).query)['draft_id'][0]
+        session.post(library,data={'csrf':token(session.get(library)),'action':'mail_drafts_discard','draft_id':discard_id,'revision':'1'})
+        saved_drafts=records('drafts')
+        check(label+' upgraded draft forms create edited and discarded local records',len(saved_drafts['drafts'])==2 and len(saved_drafts['history'])==4 and sorted(x['status'] for x in saved_drafts['drafts'])==['discarded','draft'])
+        def draft_retained():
+            return records('drafts')==saved_drafts and records('provider')==restored and records('mail-accounts')==draft_accounts and records('notices')==prior_notices and records('templates')==prior_templates and records('messages')==prior_messages and records('inbox')==prior_inbox and (private/'mail-master.key').read_bytes()==prior_key and (private/'provider-master.key').read_bytes()==provider_key
+        r=action('recover');check(label+' recovery retains draft text history original keys and earlier records','<h2>Rolled-back</h2>' in r.text and draft_retained())
+        r=action('apply');check(label+' reapplication reopens retained private draft without rewriting history','<h2>Complete</h2>' in r.text and draft_retained() and 'Retained draft second' in session.get(detail).text)

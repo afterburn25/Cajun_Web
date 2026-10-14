@@ -1,5 +1,68 @@
 # Project status
 
+## Current 1.21.0 candidate — acceptance fixture corrections
+
+Latest published/download-verified version remains [1.20.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.20.0), source 6f0b0ce; publication docs are on main a20e45e. PR #75 remains a candidate with no tag or release. Starting head c43cca5 has independent integration review at03e98cd and additive conflict/recovery review atf147417 ([6162116293](https://github.com/afterburn25/Cajun_Web/pull/75#issuecomment-6162116293)); its main merge changed documentation only.
+
+Downloaded application run [38520608916](https://github.com/afterburn25/Cajun_Web/actions/runs/38520608916), tested merge c91dd4b, passed 1,431 native/form checks, 3,084 estimator comparisons, 1,173 HTTP/Chromium checks, 233 unprivileged filesystem/recovery checks and 21 builder checks. Apache stopped after 455 successful assertions: the new actual1.20 baseline tried saving provider settings before browser sign-in, then dereferenced its absent profile. This is a failed/incomplete run, not full Apache or application acceptance; no final clean-source step ran. Actual1.20 provider/draft preservation in Apache and no-rewrite remain pending.
+
+This correction explicitly signs the owner in, checks the provider form and successful save before seeding history, and gives an explicit missing-profile fixture error. The mobile draft capture also waits for the existing drawer transition and scrolls to the top. Prior desktop preview is inspected and homepage desktop/mobile pixels equal1.20; the mid-transition mobile screenshot is not accepted. No shipping PHP/CSS, schema, installer inventory or package behavior changes in these test corrections.
+
+Current isolated PHP8.2/8.4 artifacts are verified: run38520609061 passes78 draft-native +41 default-form +41 no-ini-form checks per runtime; run38520609024 passes71 content checks per default/no-ini cell. Clean Windows c43cca5 build passes (COMPLETE2531, UPDATE2518, FULL5062 files). These results remain scoped to c43cca5/tested merge c91dd4b. Python/PHP syntax for the corrected fixtures passes locally; corrected runtime acceptance is pending.
+
+Next: push the fixture corrections, inspect all replacement candidate checks and the new actual mobile image, then merge only accepted work and repeat acceptance on exact main before release preparation. Devin has submitted hosting5ab13fd and service-plan166c4b3 corrections; independently re-review them on their separate branches while candidate CI runs. Codex owns application/release integration. The full roadmap continues; no customer mail, real provider operation, payment, SSH or deployment is activated.
+
+## Historical draft preparation — superseded by the checkpoint above
+
+## Candidate 1.21.0 — local email drafts; acceptance pending
+
+Version 1.20.0 is published/download-verified at6f0b0ce with6,593 named exact-main checks and all16 public assets verified. Its publication record is merged through [PR76](https://github.com/afterburn25/Cajun_Web/pull/76) at a20e45e and reconciled here with both histories preserved. This branch prepares the next unused candidate1.21.0, not a published release.
+
+From03e98cd, retain the connected private draft workflow and add an actual immutable1.20.0 baseline: original provider profile/check history and both private keys are created on the old package, then retained across update/recovery/reapplication. Explicit draft preparation creates empty additive storage; edited and discarded drafts survive recovery. All earlier supported packages remain, now23 starting versions including1.0.8 and1.1.0 through1.20.0 with1.11.1/1.11.2. UPDATE stages cwp-update-1.21.0; the permanent structure-1.11.0 lock remains shared.
+
+If another tab discards a draft before an edit is saved, current-authorized staff now get a separate escaped copy of their unsaved text. The retained discarded record stays read-only and unchanged. A real HTTP regression is prepared for this conflict. No SMTP or server-side Drafts synchronization is added.
+
+Independent integration review at03e98cd is clear in [6161813270](https://github.com/afterburn25/Cajun_Web/pull/75#issuecomment-6161813270). Its queued native38518155394/application38518155341 results do not cover this newer candidate. Earlier native78 and content71 per-runtime evidence remain scoped to their commits. Current local form41/default/no-ini, full source lint/generated installer refresh, canonical dependency checks and118 Markdown/964 links pass; these do not establish application acceptance. Next: verify the committed installer inventory, inspect candidate native/HTTP/Chromium/Apache/recovery results and actual screenshots, obtain review of these additions, then merge and test exact main before any release. Keep the full roadmap active and all external operation gates intact.
+
+## Current integration — draft routes connected; application acceptance pending
+
+From ed539ed, private draft controllers/views are now connected to admin routes and the existing My email accounts hub. Fresh setup creates empty draft tables/readiness; upgraded owners explicitly prepare storage with their password. Actions use existing CSRF and current Send/account/author checks. Native mail-account fixtures exclude the new dependent draft tables until their parent exists. No SMTP, server Drafts synchronization or arbitrary sender identity is introduced.
+
+Added real packaged HTTP/Chromium cases for owner setup, author isolation, duplicate create, stale text/revision preservation, header controls, Unicode length errors, sender changes, current grant/account/permission loss, canonical template insertion, escaped preview, keyboard/mobile behavior and no mail/provider/system delivery. Added Apache denial for each draft internal and actual1.19 update/recovery/reapplication retaining edited/discarded drafts and both original private keys. These new scenarios are prepared, not yet passed. Before a later draft release, extend the baseline to the actual published1.20 package. The application job budget rises from35 to45 minutes because the verified provider candidate already took34m22s and the new recovery/browser scenarios add work; assertions remain unchanged.
+
+Verified prior storage:78 named MariaDB checks per PHP8.2/8.4 at2748030 in downloaded38515162950; independent review6161455602. Current local raw form handling:41 checks default/no-ini PHP8.4.25, including extension-independent revision parsing. Combined prior-source matrix38517091260 remains pending. No new draft release version is reserved; provider main6f0b0ce acceptance38515419302 continues independently. Latest published release remains1.19.0.
+
+Next: regenerate/check combined installer inventory, push this bounded integration, inspect native/HTTP/browser/recovery/Apache evidence and fix actual failures. Inspect rendered desktop/mobile screenshots. Complete provider1.20 publication and the actual1.20 recovery baseline before any draft release. [Draft workflow](docs/LOCAL_EMAIL_DRAFTS.md).
+
+## Earlier storage and screen preparation — superseded by current integration
+
+Current source reconciliation: merged main 6f0b0ce into the draft branch after aeb51a4. Both feature histories and documentation are retained; the builder mirrors provider/twentyi and mail-compose together. This resolves PR merge conflicts so combined CI can run. Main's exact acceptance is running, not yet verified or published. Draft routes/setup remain unwired; no draft version is reserved.
+
+Provider PR #74 merged at 6f0b0ce5a9cba68b6859334818383fcc09e2ba3e after independent review and all 6,593 candidate application checks. Exact-main run 38515419302 is running; mail regressions are tracked by 38515462046/38515464139 and the clean Windows build passes. Version 1.20.0 is not published; 1.19.0 remains the latest verified release.
+
+PR #75 storage at 2748030 received independent no-blocker review in comment 6161455602. Downloaded run 38515162950 (tested merge 6121ddb2e6c801931235553c730ec1ac5de94fbe) passes all 78 named native MariaDB checks on both PHP 8.2 and 8.4. This validates storage, strict audit and authorization races; the newer combined source and prepared screens still need their own acceptance. The 71 canonical content checks have downloaded default/no-ini matrix proof from 38513488603.
+
+This increment prepares separate guarded compose/list/preview controller and view files, with exact mailbox choices, current author checks, preserved stale form revisions, template replacement confirmation, retained discard/history and escaped plaintext. They have no router/action/navigation/base-schema/setup call site yet. The raw form parser preserves whitespace and rejects header controls before trimming could hide them. All 41 named form-input checks pass locally under PHP 8.4.25 default and no-ini; this proves input handling only, not rendered HTTP/browser behavior. Dedicated native CI now includes those form checks.
+
+Next: finish exact-main provider acceptance and download-verified publication; inspect/fix the queued draft native matrix, reconcile the verified provider baseline, then wire fresh/additive setup, authorization, navigation and actions with packaged HTTP/Chromium/latest-release recovery tests. No new draft release version is reserved. No SMTP, real provider operation or target-host deployment. Service-plan #53 review at 35fc1b1 reproduced ten negative cases and is recorded in comment 6161469018; its corrections follow the existing #60 hosting assignment.
+
+## Earlier storage preparation — superseded by current checkpoint
+
+Provider1.20.0 remains a separate PR74 release candidate. On codex/mail-drafts, the content component atcbd4fd4 passed all71 named checks in each default/no-ini PHP8.2/8.4 cell; downloaded run38513488603 is verified. [PR75](https://github.com/afterburn25/Cajun_Web/pull/75) retains its contract review request6161185221.
+
+This increment adds unwired local draft storage and metadata history, exact additive schema validation, current per-author and mailbox Send checks, stable create replay, stale-edit protection, explicit sender-change acknowledgement, retained local discard and canonical template snapshots. Every read/write uses the existing staff mutex; audit and mutations commit together. No credential is decrypted or message sent. Native fixtures cover strict audit rollback, author/owner isolation, grant changes, concurrent creates/edits, revocation while waiting, key preservation and template boundaries. New storage has syntax validation only until its dedicated PHP8.2/8.4 MariaDB workflow completes.
+
+No base-schema, controller, navigation or HTTP call site activates this module yet; no new version is reserved. Builder mirroring and installer inventory include the guarded source. Next: inspect native evidence and contract review, then expose owner setup/private compose UI with current CSRF/revision checks and actual packaged browser/latest-release recovery acceptance after reconciling verified1.20main. Keep all real sending/provider/deployment gates intact.
+
+
+## Earlier component preparation — superseded by current checkpoint
+
+Codex owns `codex/mail-drafts`, starting from main ceedcfd (published application1.19.0). Provider candidate1.20.0 remains in separate [PR #74](https://github.com/afterburn25/Cajun_Web/pull/74), awaiting full candidate acceptance and independent owner storage/check/UI review. The shared-hosting foundation #60 remains outside deployment after [ten negative reproductions](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6161071101); Devin retains those corrections after the provider review priority.
+
+The [draft contract](docs/MAIL_DRAFTS_CONTRACT.md) was committed first at90d0c14. The new foundation/mail-compose content component validates bounded To/Cc/Bcc, plain UTF-8 subject/body, header/control injection, unfinished drafts and canonical active-template insertion. It preserves literal text and source snapshots without adding a second template engine. All71 named checks pass locally under PHP8.4.25 default and no-ini. Its isolated PHP8.2/8.4 matrix is prepared, not yet accepted. No site, schema, installer, version, deployed mirror, SMTP or remote account change.
+
+Next: inspect isolated matrix and obtain contract review before application exposure; implement current-authorized per-author/mailbox draft storage, strict audit and revision/idempotency rules, followed by private HTTP/Chromium UI and latest-release recovery. Reconcile verified1.20main before choosing a later version. Keep provider release work moving independently; no real mail or live deployment.
+
 ## Latest verified publication — 1.20.0
 
 [v1.20.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.20.0) is published and freshly downloaded/verified at immutable source/tag `6f0b0ce5a9cba68b6859334818383fcc09e2ba3e`, through [PR #74](https://github.com/afterburn25/Cajun_Web/pull/74). Owners can save a protected 20i General API key, explicitly check the package-list read and inspect settings/check history. Saving or viewing makes no request. Current owner/password/CSRF/revision checks, strict intent/result audit and a separate private encryption key protect the workflow. [Owner guide](docs/PROVIDER_CONNECTION_SETTINGS.md).

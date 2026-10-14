@@ -130,6 +130,7 @@ function staff_reset_token(string $email): ?array {
     }));
 }
 function staff_view_permission(string $view): ?string {
+    if(in_array($view,['mail-drafts','mail-draft'],true))return null; // Draft controller enforces current Send plus exact mailbox/author.
     if($view==='mail-notices')return null; // The mail-specific actor and exact grants protect this projection.
     // The inbox controller checks mail.read with its exact current mailbox grant.
     if(in_array($view,['mail-inbox','mail-message'],true))return null; // Mandatory current account authority in both controllers.
@@ -146,6 +147,8 @@ function staff_view_permission(string $view): ?string {
     return 'website.manage';
 }
 function staff_action_permission(string $action): ?string {
+    if($action==='mail_drafts_setup')return 'staff.manage';
+    if(str_starts_with($action,'mail_drafts_'))return null; // Strict actor/account/author checks in every draft action.
     if($action==='mail_notices_setup')return 'staff.manage';
     if($action==='mail_notices_dismiss')return null; // Current mail actor plus exact tuple/grant rechecked by the action.
     if($action==='mail_message_setup')return 'staff.manage';

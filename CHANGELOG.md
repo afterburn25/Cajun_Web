@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.21.0 — candidate, not published
+
+- Acceptance fixture correction from c43cca5: explicitly authenticate the original1.20 owner before provider seeding; wait for the responsive drawer and reset scroll before mobile draft capture. Prior run38520608916 passed native/browser/filesystem checks but Apache was incomplete and mobile visual approval was withheld. Shipping source is unchanged; replacement acceptance pending.
+
+- Private local drafts for current authorized authors/mailboxes, canonical template insertion and escaped preview; no sending.
+- Preserve unsaved form text separately when a concurrent discard rejects an edit; keep retained saved content unchanged.
+- Pin the actual verified1.20.0 package and upgrade shims; extend filesystem/Apache/recovery through23 starting packages. New tests preserve nonempty prior provider history, both original keys and added drafts through update/recovery/reapplication. These new cases require combined acceptance.
+- 1.20.0 publication is independently verified; this candidate has no tag/release. Review03e98cd is clear, but new changes require review and native/browser/package acceptance.
+
+## Unreleased — private local draft storage preparation
+
+Add unwired author/mailbox draft storage, replay and revision protection, explicit sender review, strict audit and retained metadata history. Native PHP8.2/8.4 fixtures are prepared; syntax-only acceptance so far. No UI, migration activation or sending.
+
+## Unreleased — isolated local draft content
+
+Add bounded plaintext draft content and canonical template insertion outside deployment. No persistence, compose UI or sending yet.71 local default/no-ini checks pass; PHP8.2/8.4 matrix pending. Provider1.20release remains a separate branch.
+
 ## 1.20.0 — verified owner 20i connection
 
 - Protected owner profile with private AES-GCM credentials, password/CSRF/revision safeguards and retained settings history. Fresh setup creates empty ready storage; upgraded owners explicitly prepare it.
@@ -411,3 +428,11 @@ Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid 
 ## Historical component contract — review-request adapter contract (L-02 dependency)
 
 - Add `docs/REVIEW_REQUESTS_ADAPTER.md`: the contract for adopting the review-request foundation (PR #31) in the live `website-review` lead path — `WebsiteAddress` intake normalization, consent-aware `ReviewContact`, stage persistence via an additive `review_stages` table, `review_reports` as the delivery gate, and staff transition controls through `ReviewInbox`. No shipping code or schema changes; records two decisions for integration review.
+
+### Draft compose UI preparation (unwired)
+
+Added separate private draft controller/view sources and 38 named raw form-input checks. Prepared account/template selection, save/preview/discard/history, stale revision preservation and explicit template replacement. No route, navigation or setup activates the screens; native/HTTP acceptance and release remain pending. Provider PR74 is merged with exact-main acceptance queued; existing published version remains1.19.0.
+
+### Local email draft application integration (unreleased)
+
+Connect fresh/additive setup, current-authorized admin compose/list/preview/template/discard/history and mailbox navigation. Add packaged HTTP/Chromium and Apache cases plus1.19 recovery/reapplication retaining active/discarded drafts and original keys. These integration scenarios await CI; no SMTP or release publication. Application job budget45minutes preserves all assertions while accommodating the additional recovery cases.
