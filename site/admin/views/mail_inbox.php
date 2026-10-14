@@ -5,7 +5,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <section class="workspace-card" data-mail-inbox>
 <a href="<?=esc(admin_url('mailboxes'))?>">← My email accounts</a>
 <h2><?=esc($record['label'])?></h2><p><?=esc($record['address'])?> · INBOX · Saved version <?=(int)$record['revision']?></p>
-<p>Load the newest 20 inbox headers. This view shows sender, subject and reported date. Select Open message to read one message. Attachments and sending remain unavailable. Loading headers leaves read flags unchanged.</p>
+<p>Load the newest 20 inbox headers. This view shows sender, subject and reported date. Select Open message to read one message. Attachments and sending remain unavailable in this inbox view. Use My email drafts to prepare a separate message. Loading headers leaves read flags unchanged.</p>
 <?php if(!mail_inbox_ready()): ?>
 <p class="notice">An owner must prepare inbox reading in Email accounts first.</p>
 <?php else: ?>

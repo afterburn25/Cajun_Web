@@ -51,6 +51,8 @@ from mail_inbox_http_server import InboxServer
 inbox_server=InboxServer(ROOT)
 from provider_http_server import ProviderServer
 provider_server=ProviderServer(ROOT)
+from mail_submission_server import SubmissionServer
+submission_server=SubmissionServer(ROOT)
 php=shutil.which('php8.3') or shutil.which('php');log=open(QA/'http-server.log','w');proc=subprocess.Popen([php,'-d','auto_prepend_file='+str(ROOT/'tests/mail_inbox_http_connector.php'),'-d','sendmail_path=python3 '+str(ROOT/'tests/mail_capture.py'),'-S','127.0.0.1:8091','-t',str(WEB)],stdout=log,stderr=log)
 error=None
 try:
@@ -196,6 +198,10 @@ try:
         notices_browser(globals(),browser)
         from provider_settings_cases import run_browser as provider_browser
         provider_browser(globals(),browser)
+        from mail_drafts_cases import run_browser as drafts_browser
+        drafts_browser(globals(),browser)
+        from mail_submissions_cases import run_browser as submissions_browser
+        submissions_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)
@@ -204,7 +210,7 @@ try:
 except Exception as exc:
     error=repr(exc)
 finally:
-    proc.terminate();proc.wait(timeout=10);log.close();inbox_server.close();provider_server.close()
+    proc.terminate();proc.wait(timeout=10);log.close();inbox_server.close();provider_server.close();submission_server.close()
     (QA/'http-results.json').write_text(json.dumps({'transport':'real loopback HTTP; PHP built-in server; native database; actual browser fetch','checks':checks,'passed':error is None,'failure':error},indent=2))
 for item in checks:print(('PASS ' if item['passed'] else 'FAIL ')+item['name'])
 if error:raise SystemExit(error)
