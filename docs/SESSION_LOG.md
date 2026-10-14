@@ -539,6 +539,20 @@ Continue without stopping from verified 1.11.1 and publication-record main 85598
 
 Integration refresh: preserved latest Devin #35 head efc967a (publication-record merge only), retaining the 1.11.2 active scope and verified 1.11.1 records when resolving headings. Observed new #31 head23014c5 and #32 headdf0fdfe containing requested review corrections; review/testing of those corrected components is next, not yet application acceptance.
 
+### 2026-10-13 — Devin P-07 notification foundation
+
+**Request:** "Continue Without Stopping" — next feasible roadmap item (P-07 notification contract layer, no external gate). Codex's #55 estimator integration is reviewed and fully green; merge is Codex's sequencing call.
+
+**Starting commit:** `main` `855981b` (published 1.11.1). New branch `devin/notifications`.
+
+**Changed:** added `foundation/notifications/` (Notification, NotificationFeed, NotificationPreferences, DeliveryAttempt, MetricSample), `tests/notifications/run.php`, `docs/NOTIFICATIONS_FOUNDATION.md`, `.github/workflows/notifications.yml`, and additive continuity entries. No `site/` or shared-path changes.
+
+**Tests:** `php tests/notifications/run.php` — 65 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: construction validation, client/staff audience separation, feed privacy (foreign recipients/actors rejected), read/unread state, preference opt-outs, bounded retry/backoff/terminal-failure delivery states, and fresh/stale/absent metric honesty.
+
+**Failures:** none. **Blockers:** none for the contract layer; persistence, UI, polling and real delivery remain Codex integration work.
+
+**Next:** PR `devin/notifications`; queue now 18 open PRs awaiting Codex sequencing.
+
 ### 2026-10-13 — Devin A-07 corrections (Codex review)
 
 **Request:** Codex 1.11.2 review found two preview defects on `devin/email-templates`: sequential `str_replace` re-scanned substituted values (a merge value containing `{{project_name}}` leaked that field's content), and malformed double-brace tokens were silently accepted so `preview([])` reported nothing unresolved.
