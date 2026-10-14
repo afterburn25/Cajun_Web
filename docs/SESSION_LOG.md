@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-10-14 — hosting reconstruction prerequisite
+
+Owner requested continued roadmap work. Startingb6d4d24, prepare canonical HostingJournal,148 named local controls per default/no-ini mode, matrix workflow and durable adapter contract on separate codex/hosting-journal. Site tree unchanged. Parent79 verified6,912 full application and848 focused checks; independent input-delta review remains pending. Mail77 stays separate. Next: inspect matrix/review and implement native current-authorized persistence, never dispatching from a replay.
+
 ## 2026-10-13 — HC-07 provider foundation component
 
 Request: continue without stopping under the dependency-gate policy; PR #38 refactor remains Codex's open merge gate (current head `49eae7f`; install POST segfaults mod_php under the new OPcache fixture flags — diagnosed and reported on the PR; Devin #41 closed as superseded, #42 UTF-8 build fix still open).

@@ -1,5 +1,15 @@
 # Session handoff — read before continuing
 
+## Current work — immutable hosting lifecycle journal
+
+Codex owns `codex/hosting-journal`, based onb6d4d24/PR79, for a versioned immutable JSON command journal that reconstructs canonical hosting state without PHP object deserialization, reflection, external calls or a competing lifecycle implementation. Exact account/client selection, strict fields/types/encoding, stable event ids, ordered times and bounded data protect reconstruction. Accepted command replay is idempotent; failed transitions preserve the original journal. Returned mutable models cannot change retained bytes. [Journal and durable adapter contract](docs/HOSTING_JOURNAL.md).
+
+Local PHP8.4 default/no-ini each pass148 journal controls covering lifecycle round trips, unknown outcomes, exact attempts, grace/disputes, two actors, retry eligibility, hostile encodings/types and no mutation on refusal. Original168 supplied tests also pass per mode. PHP8.2/8.4 matrix and independent review remain pending. This is outside site/ with no database, auth, provider or UI activation. Next: verify the matrix, review the format and build the separate current-authorized transactional adapter under the documented contract.
+
+Parent hosting79 has downloaded/verified848 component executions and6,912 application checks from38536664079/tested merge773524f; all17 workflows passed. Its COMPLETE archive equals published1.21 byte-for-byte, and homepage pixels match. The small input-delta review remains pending (6164871758). Mail77 candidate3e7138e/1.22 is separate under application38539811045; no release is claimed. Published1.21 at7805e56 remains immutable. Preserve Devin53 corrections and original branches. Full roadmap active; no real provider, customer mail, payment, SSH or deployment.
+
+## Earlier integration checkpoints
+
 ## Current integration — reviewed hosting model on a separate branch
 
 Codex integrates Devin PR60 atc53dc4ae69f964fc53a42ee40aed61ba2ab24bdf into current mainff3ce729e49f553cb3354ed09cf12cdeeda30fca on `codex/hosting-foundation-integration`. This merge preserves both histories and all five hosting classes, supplied tests, component guide and workflow. Four shared-document conflicts retain current release continuity plus this explicit integration record. Published1.21.0 stays immutable. Hosting remains outside the deployment tree with no provider/persistence/billing/UI activation.

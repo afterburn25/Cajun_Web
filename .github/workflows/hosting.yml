@@ -4,7 +4,7 @@ on:
   pull_request:
     paths: ['foundation/hosting/**', 'tests/hosting/**', '.github/workflows/hosting.yml']
   push:
-    branches: [main, codex/hosting-foundation-integration]
+    branches: [main, codex/hosting-foundation-integration, codex/hosting-journal]
     paths: ['foundation/hosting/**', 'tests/hosting/**', '.github/workflows/hosting.yml']
   workflow_dispatch:
 
@@ -40,6 +40,8 @@ jobs:
             php -n tests/hosting/review_controls.php > qa/hosting-review-no-ini.json
             php tests/hosting/input_controls.php > qa/hosting-input-default.json
             php -n tests/hosting/input_controls.php > qa/hosting-input-no-ini.json
+            php tests/hosting/journal_controls.php > qa/hosting-journal-default.json
+            php -n tests/hosting/journal_controls.php > qa/hosting-journal-no-ini.json
           '
       - name: Record verification scope
         if: always()

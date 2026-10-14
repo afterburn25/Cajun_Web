@@ -1,5 +1,9 @@
 # Hosting foundation (HC-08 contract layer)
 
+## Unreleased journal preparation
+
+HostingJournal adds bounded immutable command encoding/reconstruction outside deployment, with148 local round-trip/refusal checks per PHP default/no-ini mode. [Format and persistence boundary](HOSTING_JOURNAL.md). Parent b6d4d24 integration has downloaded848 focused and6,912 application checks; independent delta review remains pending. No provider or application activation.
+
 ## Canonical integration scope
 
 Preserved from Devin PR60 sourcec53dc4a on current mainff3ce72. Codex adds exact SKU end matching and bounded complete ASCII domain-label validation before state/history mutation. The existing alphabetic-TLD policy remains; Unicode/punycode TLD expansion is separate. This does not establish ownership, registration or provider capability. Local168 supplied +21 independent review +23 new input controls pass default/no-ini PHP8.4; integration matrix pending. Classes remain outside `site/`; durable state, concurrency, actual authorization, provider adapters and UI remain required.
