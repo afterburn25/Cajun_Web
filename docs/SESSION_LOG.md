@@ -1056,3 +1056,7 @@ Codex wired drafts into the app at `03e98cd` (router/dispatch/permission-map/sch
 ## 2026-10-14 — v1.20.0 draft release fully byte-verified
 
 Codex staged draft release v1.20.0 (05:57Z). Verified all 16 assets before publication: core zips/manifests/directories/START-HERE byte-identical to the CI-tested build at `6f0b0ce` (GitHub digests match downloaded artifact bytes); TEST-EVIDENCE (252 members, 12,307/12,307 checks pass) + doc assets verified via digest/SHA256SUMS consistency (15/15). Per-file: 2525+5045+2512, zero drift vs committed blobs, no private files. UPDATE: 22 baselines, 1.19.0 pinned `bbd0d67f`. Verification record posted on issue #2 (6161979983). Remaining: publication flip + tag→`6f0b0ce` confirmation.
+
+## 2026-10-14 — v1.20.0 published and verified
+
+v1.20.0 published 05:58:30Z. Annotated tag `v1.20.0` (`c2cc3f24`) → commit `6f0b0ce` — the exact acceptance-tested commit. All 16 published assets carry the pre-verified digests. Main remains `6f0b0ce`. Publication record posted (6161979983 follow-up). The release boundary is complete end-to-end: merge → exact-main → published bytes verified.
