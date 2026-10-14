@@ -21,3 +21,7 @@ Draft content is stored as private business data in the configured database, lik
 This increment does not synchronize a server Drafts folder, send SMTP mail, upload attachments, produce HTML messages, reply/forward, manage signatures or authorize recurring mail. Outgoing delivery and uncertain-send handling require their own transport and application acceptance. Existing system-email configuration is separate.
 
 Implementation: [contract](MAIL_DRAFTS_CONTRACT.md), [account access](ADMIN_EMAIL_ACCOUNTS.md), [template library](ADMIN_EMAIL_TEMPLATES.md), [update/recovery](STRUCTURE_MIGRATION.md).
+
+## Discard while another edit is open
+
+If another tab discards the draft before your save, the saved record stays discarded. Your submitted text is shown separately for copying into a new draft while you retain current access. It is not written over the retained discarded copy.

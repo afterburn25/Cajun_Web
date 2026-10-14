@@ -1,5 +1,7 @@
 # A-06/A-07 — local email drafts and template insertion
 
+Candidate1.21.0 now pins actual published1.20.0 upgrade/recovery inputs. Concurrent discard retains an escaped unsaved copy separately from the saved discarded record. Combined acceptance and additive review remain pending; prior unwired/queued descriptions below are historical.
+
 Current branch integration connects fresh/additive setup, admin routes/actions and account-hub links. Native/HTTP/browser/recovery acceptance of this integration is pending; earlier unwired checkpoints below are historical. See [user workflow](LOCAL_EMAIL_DRAFTS.md). No sending or later release is implied.
 
 ## Earlier acceptance boundary — before route integration

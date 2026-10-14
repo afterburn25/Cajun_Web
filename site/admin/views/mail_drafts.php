@@ -32,6 +32,13 @@ $accounts=$data['accounts'];
 <p><a class="text-link" href="<?=esc(admin_url('mail-drafts',['account_id'=>$data['account']]))?>">Back to my drafts</a></p>
 <?php if($row): ?><p><?=badge($row['status'])?> · Saved version <?=(int)$row['revision']?> · Updated <?=esc($row['updated_at'])?> UTC</p><?php endif; ?>
 <?php if($row&&(int)$row['revision']!==$data['revision']): ?><p class="notice warning">Your entered text is preserved with its earlier version. Open the saved draft in a separate tab to compare before making a new edit.</p><p><a class="btn outline" target="_blank" rel="noopener" href="<?=esc(admin_url('mail-draft',['draft_id'=>$data['id']]))?>">Open current saved version</a></p><?php endif; ?>
+<?php if($data['unsaved']!==null): ?>
+<section class="workspace-card" data-mail-draft-unsaved><h2>Your unsaved text</h2>
+<p class="notice warning">This draft was discarded before your edit could be saved. Copy any text you want to keep into a new draft. The discarded draft below still contains its last saved text.</p>
+<?php foreach(['to'=>'To','cc'=>'Cc','bcc'=>'Bcc','subject'=>'Subject'] as $key=>$label)admin_input($key,$label,$data['unsaved'][$key],'text','readonly'); ?>
+<label>Unsaved message<textarea rows="12" readonly><?=esc($data['unsaved']['body'])?></textarea></label>
+</section>
+<?php endif; ?>
 <?php if(!$accounts): ?><p class="notice">An owner must assign you a sending account before you can prepare a draft.</p>
 <?php elseif($data['editable']): ?>
 <section class="workspace-card"><h2><?=$row?'Edit your draft':'New private draft'?></h2>

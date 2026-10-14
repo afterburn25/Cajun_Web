@@ -100,7 +100,14 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
             $revision=(int)$row['revision'];
         }
         $sender=$account!==''?$account.':'.($row['account_revision']??$accounts[$account]['revision']):'';
-        $editable=!$row||$row['status']==='draft';
+        $editable=!$row||$row['status']==='draft';$unsaved=null;
+        // A concurrent discard must not erase text submitted from an earlier edit tab.
+        // Keep the retained saved record separate, under the same current author/account gate.
+        if($post&&$row&&!$editable&&in_array($_POST['action']??null,['mail_drafts_save','mail_drafts_preview','mail_drafts_insert','mail_drafts_accounts','mail_drafts_templates'],true)) {
+            $postedId=mail_drafts_form_text($_POST,'draft_id',32);mail_drafts_id($postedId);
+            if(!hash_equals($id,$postedId))throw new InvalidArgumentException('Draft unavailable.');
+            $revision=mail_drafts_form_revision($_POST,'revision');$unsaved=mail_drafts_form_values($_POST);
+        }
         if($post&&$editable&&str_starts_with(is_string($_POST['action']??null)?$_POST['action']:'','mail_drafts_')) {
             $postedId=mail_drafts_form_text($_POST,'draft_id',32);mail_drafts_id($postedId);
             if($id!==''&&!hash_equals($id,$postedId))throw new InvalidArgumentException('Draft unavailable.');
@@ -119,7 +126,7 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
         $templates=[];$templatePage=max(1,min((int)($_POST['template_page']??1),100000));$templateSearch=mail_drafts_form_text($_POST,'template_search',120);
         if(staff_can('mail.templates.manage',$actor)&&mail_templates_ready())$templates=mail_templates_list('active',$templateSearch,$templatePage);
         $historyPage=max(1,min((int)($_GET['history_page']??1),100000));$history=$row?mail_drafts_history($id,$historyPage):[];
-        return compact('actor','row','accounts','account','accountPage','moreAccounts','id','values','revision','sender','editable','preview','templates','templatePage','templateSearch','historyPage','history');
+        return compact('actor','row','accounts','account','accountPage','moreAccounts','id','values','revision','sender','editable','preview','templates','templatePage','templateSearch','historyPage','history','unsaved');
     });
 }
 function mail_drafts_admin_render(string $view,string $error,?DraftContent $preview):void {

@@ -112,9 +112,13 @@ def run_browser(env,browser):
     form.get_by_role('button',name='Save draft',exact=True).click();expect(page.locator('.notice.success')).to_contain_text('Draft saved locally')
     check('Actual browser saves current entered content',db('SELECT body FROM ci_mail_drafts WHERE id=?',[did])[0]['body']==payload['body'])
     check('Draft UI has no browser errors',not errors);context.close()
+    stale_target,discard_race=fields(member,detail);discard_race.update({'action':'mail_drafts_save','subject':'Unsaved after another tab discarded','body':'Preserve my unsaved text </textarea><script>discardRace=true</script>'})
     r=submit(member,detail,'mail_drafts_discard')
     check('HTTP discard retains content and metadata but removes active listing','Draft discarded locally' in r.text and db('SELECT status,body FROM ci_mail_drafts WHERE id=?',[did])==[{'status':'discarded','body':payload['body']}] and soup(member.get(detail)).select_one('[data-mail-draft-editor]') is None)
     check('Discarded draft is readable only through retained author view','Discarded draft' in member.get(detail).text and 'Hello A client' not in owner.get(detail).text)
+    discarded_before=db('SELECT * FROM ci_mail_drafts WHERE id=?',[did]);discard_history=db('SELECT * FROM ci_mail_draft_revisions')
+    r=member.post(stale_target,data=discard_race);unsaved=soup(r).select_one('[data-mail-draft-unsaved]')
+    check('Concurrent discard preserves escaped unsaved text without restoring or changing the saved record',unsaved is not None and unsaved.select_one('[name=subject]')['value']==discard_race['subject'] and unsaved.select_one('textarea').text==discard_race['body'] and not unsaved.find('script') and soup(r).select_one('[data-mail-draft-editor]') is None and db('SELECT * FROM ci_mail_drafts WHERE id=?',[did])==discarded_before and db('SELECT * FROM ci_mail_draft_revisions')==discard_history)
     metadata=json.dumps(db('SELECT * FROM ci_mail_draft_revisions')+db("SELECT * FROM ci_audit WHERE action LIKE 'mail_drafts.%'"))
     check('Draft audit/history excludes private message and Bcc text',all(x not in metadata for x in [payload['subject'],'SYNTHETIC_PRIVATE_DRAFT_BODY','private-draft@example.invalid']))
     for path in ['app/mail/drafts.php','admin/controllers/mail_drafts.php','admin/views/mail_drafts.php','database/schema/mail_drafts_schema.php','database/migrations/mail_drafts_migrate.php','includes/foundation/mail-compose/DraftContent.php']:

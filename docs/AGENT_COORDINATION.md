@@ -1,5 +1,15 @@
 # Codex and Devin work allocation
 
+## Candidate 1.21.0 — local email drafts; acceptance pending
+
+Version 1.20.0 is published/download-verified at6f0b0ce with6,593 named exact-main checks and all16 public assets verified. Its publication record is docs-only [PR76](https://github.com/afterburn25/Cajun_Web/pull/76); reconcile that record without replacing this application branch. This branch prepares the next unused candidate1.21.0, not a published release.
+
+From03e98cd, retain the connected private draft workflow and add an actual immutable1.20.0 baseline: original provider profile/check history and both private keys are created on the old package, then retained across update/recovery/reapplication. Explicit draft preparation creates empty additive storage; edited and discarded drafts survive recovery. All earlier supported packages remain, now23 starting versions including1.0.8 and1.1.0 through1.20.0 with1.11.1/1.11.2. UPDATE stages cwp-update-1.21.0; the permanent structure-1.11.0 lock remains shared.
+
+If another tab discards a draft before an edit is saved, current-authorized staff now get a separate escaped copy of their unsaved text. The retained discarded record stays read-only and unchanged. A real HTTP regression is prepared for this conflict. No SMTP or server-side Drafts synchronization is added.
+
+Independent integration review at03e98cd is clear in [6161813270](https://github.com/afterburn25/Cajun_Web/pull/75#issuecomment-6161813270). Its queued native38518155394/application38518155341 results do not cover this newer candidate. Earlier native78 and content71 per-runtime evidence remain scoped to their commits. Current local form41/default/no-ini, full source lint/generated installer refresh, canonical dependency checks and118 Markdown/964 links pass; these do not establish application acceptance. Next: verify the committed installer inventory, inspect candidate native/HTTP/Chromium/Apache/recovery results and actual screenshots, obtain review of these additions, then merge and test exact main before any release. Keep the full roadmap active and all external operation gates intact.
+
 ## Current integration — draft routes connected; application acceptance pending
 
 From ed539ed, private draft controllers/views are now connected to admin routes and the existing My email accounts hub. Fresh setup creates empty draft tables/readiness; upgraded owners explicitly prepare storage with their password. Actions use existing CSRF and current Send/account/author checks. Native mail-account fixtures exclude the new dependent draft tables until their parent exists. No SMTP, server Drafts synchronization or arbitrary sender identity is introduced.

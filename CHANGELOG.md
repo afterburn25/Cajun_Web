@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.21.0 — candidate, not published
+
+- Private local drafts for current authorized authors/mailboxes, canonical template insertion and escaped preview; no sending.
+- Preserve unsaved form text separately when a concurrent discard rejects an edit; keep retained saved content unchanged.
+- Pin the actual verified1.20.0 package and upgrade shims; extend filesystem/Apache/recovery through23 starting packages. New tests preserve nonempty prior provider history, both original keys and added drafts through update/recovery/reapplication. These new cases require combined acceptance.
+- 1.20.0 publication is independently verified; this candidate has no tag/release. Review03e98cd is clear, but new changes require review and native/browser/package acceptance.
+
 ## Unreleased — private local draft storage preparation
 
 Add unwired author/mailbox draft storage, replay and revision protection, explicit sender review, strict audit and retained metadata history. Native PHP8.2/8.4 fixtures are prepared; syntax-only acceptance so far. No UI, migration activation or sending.

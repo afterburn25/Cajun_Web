@@ -276,3 +276,7 @@ Next: inspect application/native/transport matrices; resolve independent owner-s
 ## Private local draft adapter (development)
 
 Canonical foundation/mail-compose/DraftContent validates plain text and exact recipient groups. app/mail/drafts.php applies current sessions, author ownership and exact Send grants inside the staff mutex, with strict transactional metadata audit, stable initial-save replay and optimistic edits. Separate mail_drafts/mail_draft_revisions tables retain private content/current state and metadata history. Guarded admin/controllers/mail_drafts.php and admin/views/mail_drafts.php use raw bounded fields, preserve stale input and escape preview; fresh schema and explicit owner migration share the same definitions. Existing account hub exposes entry points. No mail credential decryption or delivery call is part of composing. [Workflow](LOCAL_EMAIL_DRAFTS.md). Integration acceptance is pending.
+
+## Local draft recovery and concurrent discard
+
+Candidate1.21.0 uses the verified1.20.0 baseline with existing encrypted provider state and private keys before file update. Draft storage stays additive and file recovery retains its rows. A rejected stale edit of a now-discarded draft renders a separate bounded escaped unsaved projection only after current author/mailbox checks; it never reactivates or overwrites the saved record.
