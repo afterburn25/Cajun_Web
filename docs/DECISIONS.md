@@ -1,5 +1,10 @@
 # Decision record
 
+## 2026-10-14 — separate local hosting persistence from remote dispatch
+
+Add a current-owner native adapter for immutable local records and canonical local commands first. Do not expose arbitrary journal imports, provider observations, dispatch intents or reconciliation through that API. Preserve original terms and per-event audit atomically; loading a record never grants a remote action. The subsequent provider adapter must own its immutable committed dispatch fence and exact bound result path. See [storage contract](HOSTING_RECORDS.md).
+
+
 ## 2026-10-14 — reconstruct hosting through validated commands
 
 Use versioned strict JSON commands replayed through the existing canonical HostingAccount rather than PHP object deserialization or assigning private state fields. Journal instances retain immutable bytes; state readers get independent models. Identity checks and hashes are not authorization or proof of a provider operation. Durable transaction/audit/dispatch fencing remains a separate adapter requirement. See HOSTING_JOURNAL.

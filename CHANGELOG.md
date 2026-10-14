@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — local hosting records
+
+Add owner-authorized additive MariaDB journal/event storage, exact client/terms/revision checks, stable replay and strict atomic audit. Prepare competing-process and damaged-history native acceptance. No remote operation, route or fresh-install activation; matrix/review pending. [Contract](docs/HOSTING_RECORDS.md).
+
+
 ## Unreleased — hosting lifecycle journal
 
 Add bounded immutable canonical JSON command reconstruction outside deployment. Preserve lifecycle/attempt invariants across process restoration.148 local controls pass per default/no-ini PHP8.4 mode; matrix/review and durable application adapter pending.

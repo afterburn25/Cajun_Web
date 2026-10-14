@@ -1,5 +1,10 @@
 # Session log
 
+## 2026-10-14 — native hosting record adapter
+
+Request: continue roadmap without stopping. Started8bbd209 on new codex/hosting-storage; preserve stacked80/79 and Devin histories. Added guarded app/hosting storage, schema/migration, canonical mirrors/builder, native process fixtures and focused workflow. Documented exact local-only scope and future dispatch gate. Local syntax passes; native/runtime acceptance pending. Parent journal1440 executions downloaded/verified; mail1236 browser checks and screenshots verified, recovery/Apache still active. No live operation or release. Next: inspect native reports, fix failures and obtain independent review.
+
+
 ## 2026-10-14 — hosting reconstruction prerequisite
 
 Owner requested continued roadmap work. Startingb6d4d24, prepare canonical HostingJournal,148 named local controls per default/no-ini mode, matrix workflow and durable adapter contract on separate codex/hosting-journal. Site tree unchanged. Parent79 verified6,912 full application and848 focused checks; independent input-delta review remains pending. Mail77 stays separate. Next: inspect matrix/review and implement native current-authorized persistence, never dispatching from a replay.

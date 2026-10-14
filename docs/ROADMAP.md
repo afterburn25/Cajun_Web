@@ -1,5 +1,15 @@
 # Approved roadmap and acceptance criteria
 
+## Current work — native local hosting records
+
+Codex owns `codex/hosting-storage` from8bbd209/PR80. Guarded owner-only application storage now retains approved local package snapshots and canonical journal events in additive MariaDB tables. Current password/owner/client checks, staff mutex, revision comparison, stable event replay and strict atomic audit protect writes; every load verifies original terms and the event chain. Domain/grace/dispute/cancellation commands stay local. Remote dispatch, result injection and reconciliation are unavailable through this API. No route, fresh-install setup, provider call or release is activated. [Storage contract](HOSTING_RECORDS.md).
+
+Prepared native PHP8.2/8.4 tests cover process restarts, competing distinct/identical requests, authority loss while waiting, audit rollback, malformed schema/history and synthetic uncertain outcomes. Local syntax passes; native matrix and independent review are pending. Canonical hosting mirrors and generated installer dependencies are refreshed. Next: verify actual native reports, review this adapter and implement a separate immutable dispatch/result fence before provider integration.
+
+Parent journal80 at8bbd209 has downloaded/verified1,440 executions from38541667198/tested merge124a6e9:168 supplied +21 review +23 input +148 journal controls in each PHP8.2/8.4 default/no-ini cell. Parent79 retains6,912 application checks and unchanged published1.21 deployment bytes. Mail77 at3e7138e has verified1,236 HTTP/Chromium checks, inspected desktop/mobile screens, current562 native/form and942 combined executions, and a verified clean Windows build. Its application38539811045 still awaits final recovery/Apache acceptance; independent77/79/80 review remains pending. Latest published1.21 stays immutable; preserve Devin53 and original branches.
+
+## Earlier checkpoints
+
 ## Current work — immutable hosting lifecycle journal
 
 Codex owns `codex/hosting-journal`, based onb6d4d24/PR79, for a versioned immutable JSON command journal that reconstructs canonical hosting state without PHP object deserialization, reflection, external calls or a competing lifecycle implementation. Exact account/client selection, strict fields/types/encoding, stable event ids, ordered times and bounded data protect reconstruction. Accepted command replay is idempotent; failed transitions preserve the original journal. Returned mutable models cannot change retained bytes. [Journal and durable adapter contract](HOSTING_JOURNAL.md).
