@@ -25,6 +25,14 @@
 - Decode raw MIME through private maintained parser state, preserve escaped plaintext and show minimal sanitized formatting in an opaque sandbox with restrictive CSP. No automatic remote resources, attachment content or sending. Missing DOM has an honest plaintext/unavailable-format fallback.
 - Preserve all 36 existing dependency pins and add four maintained formatting dependencies. Correct PHP 8.2 full-document handling by stripping html/body wrappers while preserving sanitized children; all 1,227 components pass on PHP 8.2/8.4 at 740b4e2 with fresh byte reproduction.
 - Add actual 1.17.0 update/recovery and original key/history preservation fixtures, alongside native/concurrency, packaged TLS/HTTP/Chromium and Apache checks. Application acceptance, independent review and release remain pending; latest published release remains 1.17.0.
+## 1.18.0 — verified individual email reading
+
+- Assigned staff explicitly open an exact INBOX message under current account/actor/global and mailbox permissions, saved revision, UIDVALIDITY/UID and size checks. Verified TLS and BODY.PEEK preserve server read flags.
+- Private maintained MIME parsing, escaped plaintext and minimal maintained sanitized formatting in an opaque CSP-restricted frame. Whole messages over 256 KiB (including encoded attachments) are refused; no partial display or content retention. Missing DOM preserves plaintext with an honest format limitation.
+- Additive owner-prepared request storage, strict started/terminal audit and outcome history, independent account/staff limits and current authorization through transport/rendering. Fresh installs create empty storage.
+- Fixed PHP 8.2 document-wrapper sanitization and acceptance assertions without editing upstream libraries or weakening application protections. Actual browser evidence distinguishes CSP-blocked request events from network work. Desktop/mobile plaintext/formatted views were inspected; independent review found no blocking application issue.
+- Published/download-verified `91550d956c404585545dbd766c96f36f58ae0623` after exact-main 38492678532: 1074 native, 3084 estimator, 1032 HTTP/Chromium, 191 recovery, 701 Apache and 19 builder checks. Each PHP 8.2/8.4 receiving runner passes 1,227 checks and fresh dependency reproduction; all 16 assets/tag and Windows/Linux bytes verified.
+- Twenty starting packages supported; actual 1.17.0 upgrade/recovery preserves prior records/private key and new message history. Prior assets unchanged. Attachments, sending, full sync, other folders/OAuth and email bells remain future work. No live mailbox, deployment, provider write, charge or SSH activation.
 
 ## 1.17.0 — verified recent inbox headers
 
