@@ -1255,3 +1255,7 @@ Service-plan53 corrections e7a283b are independently clear (76 supplied plus21 i
 ## 2026-10-14 — preserve published1.22 records in combined hosting
 
 Merge main4fb0c83 into combined85/a9beb6e, resolving nine Markdown conflicts by retaining both histories and adding current scoped status. No site/foundation/tests/tools/workflows/version change relative to a9. The full a9 acceptance38554890744 remains live; do not push this reconciliation until its artifact is retained, because a push would cancel that run. Local documentation/link and runtime-equality checks follow. Reviewed deletion retry87 stays separate. Next: verify the same full run, publish this docs reconciliation, then actual1.22 baseline/new-version candidate.
+
+## 2026-10-14 — prepare1.23 after verified combined hosting/client acceptance
+
+Starting local documentation mergee86f2c934d4f4a5d0edd3365dc145a71992606b2 over verifieda9/main4fb, reserve unused candidate1.23.0 with no tag/release. Downloaded application38554890744 passes8,234 named executions across21workflows with exact packages and actual screenshots verified. Runtime reviews6166706518/6167231488 are clear. Add actual immutable1.22 archive/shim catalog,25retained baselines and latest1.22 submission preservation/replay after update/recovery. Existing tests remain. Correctly retain UTF-8 guide text and update its recovery path tostructure-1.23.0. New fixtures compile; installer refresh/current candidate CI/additive review and exactmain acceptance follow. Separate87 deletion retry/currentDevin components remain excluded.

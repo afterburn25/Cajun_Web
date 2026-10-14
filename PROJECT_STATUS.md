@@ -1,5 +1,19 @@
 # Project status
 
+## Current candidate — 1.23.0 client safeguards and hosting groundwork
+
+Published [1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) remains the latest verified download at immutable sourcee3b434f. Candidate1.23.0 is prepared on `codex/hosting-integration`/PR85 after the verifieda9 combined baseline and documentation-only main mergee86f2c9. No1.23 tag, release or live deployment exists. [Candidate guide](docs/CLIENT_ACCOUNT_SAFEGUARDS.md).
+
+Combineda9/tested mergea4278b8 completed application38554890744 with all8,234 named assertion executions:2,460 native/form/combined,3,084 estimator,1,275 HTTP/Chromium,247 unprivileged recovery,1,147 Apache and21 builder. All21 applicable workflows succeeded. Final reports/ZIP members/CRCs/hashes were downloaded and verified; COMPLETE/FULL are byte-identical to Windows, and UPDATE differs only by its recorded source commit. The actual reviewed desktop/mobile screenshots match the final artifact; homepage pixels equal published1.21 and1.22. Independent client and combined reviews6166706518/6167231488 are clear for that preserved source.
+
+This candidate aligns application/installer/update labels at1.23, adds the actual published1.22 COMPLETE package (2553files, SHA256ba90fc84b4eb3b06e1e89ae46124cab1d759f1df10a0b9a9b1a53394796cf5fb) and its exact UPDATE shims to the retained catalog, and extends all25 supported upgrade baselines. New latest1.22 cases seed accepted, unknown, unresolved and abandoned submission records before updating; they check retained drafts/keys/history and idempotent explicit request replay after update, recovery and reapplication. These new cases are prepared and syntaxchecked only. Current candidate application/latest1.22 recovery, additive review and exact-main release acceptance remain required.
+
+User-facing changes retain current client edit/invitation versions, preserve escaped unsaved changes after conflicts, serialize account changes, enforce one-use unexpired invitations and exclude client administration during support sessions. Existing delegated client-management access and mail Send remain. Hosting lifecycle/journal/storage/dispatch/local provisioning retry are internal groundwork; no hosting UI, worker, fresh storage activation or provider write is enabled. Separate deletion-retry87 is not included. Devin's read-only20i inventory assignment6167449082 and reviewed serviceplan53/service-desk61 stay separate.
+
+Next: refresh/verify the exact candidate installer, run current full acceptance with actual1.22 retention/replay and inspect screenshots, review the new baseline/version delta, then integrate and perform exact-main package/publication gates. Keep1.22 immutable and continue the full roadmap. No customer send, payment, SSH or production provider operation is performed by these tests.
+
+## Earlier checkpoints — historical evidence
+
 ## Current integration — published mail baseline preserved
 
 Published [1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) is verified at immutable sourcee3b434f: all16 public assets downloaded and all7,854 exact-main assertion executions checked. Publication documentation PR86 is merged at4fb0c83. This merge preserves that documentation and all existing hosting/client histories; it changes no runtime, tests, workflows, installer bytes or version relative to combined85/a9beb6e. It is not another1.22 release.

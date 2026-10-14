@@ -1,5 +1,9 @@
 # Client account authority
 
+## Current1.23 candidate
+
+Combined85/a9 has clear independent reviews6166706518/6167231488 and complete downloaded8,234-check application38554890744 across21successful workflows, actual current screenshots and Windows/Linux package agreement. Candidate1.23 adds actual1.22 upgrade/recovery coverage; that newer acceptance is pending. The runtime below is preserved. [Owner-facing guide](CLIENT_ACCOUNT_SAFEGUARDS.md). Earlier pending-source notes are historical.
+
 ## Unreleased integration
 
 `codex/client-authority` starts from hosting operation PR82 at `1f590740290a3cb4716de3345dbc50b408350896`. It closes the remaining production writers to client identities before a future provider coordinator can rely on the shared authorization guard. It changes existing client administration and public invitation activation, without a new schema or release version. Published1.21 remains immutable; this branch is not a replacement download.
