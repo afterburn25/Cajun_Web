@@ -35,7 +35,11 @@ final class TwentyIResultClassifier
      */
     public static function fromResponse(string $operation, TransportResponse $response, ?string $idField = null): OperationResult
     {
-        if ($response->ok()) {
+        // 200/201/204 are the only terminal success statuses the reference
+        // semantics support. 202 means the write is merely queued — it may
+        // never be carried out — and any other 2xx has undocumented meaning
+        // for a write, so both stay uncertain until verified.
+        if (in_array($response->status, [200, 201, 204], true)) {
             return OperationResult::succeeded($operation, 'Provider accepted the request.', self::externalId($response->body, $idField));
         }
         if ($response->status === 401 || $response->status === 403) {
