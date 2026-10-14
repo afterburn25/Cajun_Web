@@ -1,6 +1,22 @@
 # CajunWebPro — project source of truth
 
-## Latest verified publication — 1.20.0
+## Unreleased1.22 development
+
+[PR77](https://github.com/afterburn25/Cajun_Web/pull/77) connects explicit review/Send and private submission history; [candidate guide](docs/SENDING_EMAIL.md). PHP8.2/8.4 native/form matrix38538343622 is verified, but full packaged browser/latest1.21 recovery and independent review remain pending. The published download remains1.21.0; this is not a new release.
+
+## Latest verified publication — 1.21.0
+
+[v1.21.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.21.0) is published and freshly downloaded/verified at immutable source/tag `7805e56aa9e53cb081600589e92991255475474c`, through [PR #75](https://github.com/afterburn25/Cajun_Web/pull/75). Staff can save, edit, preview and retain private local email drafts for currently assigned sending accounts, with canonical active-template insertion. Current author/account/Send access, exact revisions, stable initial-save replay and strict audit protect the workflow. [Owner guide](docs/LOCAL_EMAIL_DRAFTS.md).
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38527733738) passes 6,912 named checks: 1431 native/form, 3084 estimator, 1174 HTTP/Chromium, 233 recovery, 969 Apache and 21 builder. PHP8.2/8.4 matrices pass; actual desktop/mobile drafts inspected, homepage pixels match1.20.0, and Windows/Linux packages agree. All16 public assets, members/checksums and immutable tag verified; prior1.20.0 assets unchanged. [Report](docs/TEST_REPORT_1.21.0.md); [handoff](docs/DEVIN_HANDOFF_1.21.0.md).
+
+Twenty-three supported starting packages through1.20.0, including1.0.8 and1.11.1/1.11.2. UPDATE stages `cwp-update-1.21.0`; actual1.20 recovery/reapplication retains earlier records, provider history, edited/discarded drafts and both original private keys. Fresh setup creates empty ready drafts; upgraded owners explicitly prepare them with their password. Drafts do not send or synchronize a server Drafts folder. No live deployment, real provider request, payment, customer mail or SSH occurred.
+
+Continue [SMTP preparation PR #77](https://github.com/afterburn25/Cajun_Web/pull/77), observed `180e23fc2005104e95f0001aea7411a97a2d4b8a`. Codex owns its maintained MIME/session/channel, durable application adapter and release integration. Downloaded source2edeec1 run38529526469 passes26 isolated JSON reports: each PHP8.2/8.4 default/no-ini mode passes52 snapshot,29 MIME,168 independent parser,80 SMTP session,27 destination-policy and398 loopback TLS checks, plus1 unavailable-runtime check per runtime. These are component tests outside deployment; current-authorized persistent dispatch, explicit Send UI and application/update acceptance remain pending. Independent review request is [6163395444](https://github.com/afterburn25/Cajun_Web/pull/77#issuecomment-6163395444).
+
+Devin retains service-plan53 reference-detachment/newline corrections ([6162609466](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6162609466)) and independent submission review. Hosting60 c53dc4a passes168 supplied and21 independent local controls per mode, with clear isolated review [6163105649](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6163105649). Neither component is activated in the application. Preserve separate branches and integrate reviewed work sequentially. Full billing, broader20i/client hosting and VPS SSH remain incomplete; the full roadmap stays active.
+
+## Previous verified publication — 1.20.0 (superseded checkpoint)
 
 [v1.20.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.20.0) is published and freshly downloaded/verified at immutable source/tag `6f0b0ce5a9cba68b6859334818383fcc09e2ba3e`, through [PR #74](https://github.com/afterburn25/Cajun_Web/pull/74). Owners can save a protected 20i General API key, explicitly check the package-list read and inspect settings/check history. Saving or viewing makes no request. Current owner/password/CSRF/revision checks, strict intent/result audit and a separate private encryption key protect the workflow. [Owner guide](docs/PROVIDER_CONNECTION_SETTINGS.md).
 
