@@ -1,10 +1,17 @@
 # Changelog
 
+## 1.22.0 — verified explicit saved-email sending
+
+- Explicit saved-message review, unchecked confirmation and Send; private author history, separate To/Cc/Bcc, current mailbox/Send grants and exact revisions.
+- Deterministic maintained MIME and bounded verified SMTP/TLS, durable one-time dispatch records, truthful accepted/rejected/not-submitted/unknown results. No automatic resend after accepted, unknown or unresolved outcomes; result-storage failure preserves uncertainty.
+- Additive owner setup and fresh installation; all24 starting packages through1.21.0 accepted. Actual1.21 update/recovery retains drafts, submission records, prior encrypted history and original keys without resend.
+- Published/download-verified `e3b434ffb2244e454ea9f24fa1de9173b7479ccc` after7,854 exact-main assertions and all21 workflows. All16 assets, archive members/checksums/tag and Windows/Linux bytes verified. Actual desktop/mobile views inspected; homepage pixels equal1.21.0. No live customer mail or deployment.
+
 ## Unreleased — complete retained application acceptance
 
 Allow75 minutes for the existing full mail/upgrade/Apache suite after verified45m cancellation. Preserve incomplete Apache progress checkpoints without weakening assertions. Runtime/version/installer unchanged; replacement acceptance pending.
 
-## 1.22.0 candidate — not released
+## Historical1.22.0 candidate preparation
 
 Explicit saved-message review/Send and private results; latest1.21 package/recovery baseline prepared. [Sending guide](docs/SENDING_EMAIL.md). Full acceptance and independent review remain pending.
 
