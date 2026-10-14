@@ -1297,3 +1297,15 @@ Request: continue the complete 20i integration. Starting main `68e4d41` on new b
 Semantics: atomic INSERT claims an idempotency key; resolved rows replay recorded results; foreign fingerprints conflict; stale claims classify uncertain. Grants are owner-password, expiry-bound, revocable approvals bound to an exact canonical scope; the newest matching grant decides. No credential, request, transport or provider call exists in this layer.
 
 Tests: native MariaDB suite covering schema refusals, claim/replay/conflict/uncertain/record races, gateway at-most-once through a synthetic adapter, a real cross-process claim race, and grant lifecycle including audit. CI lane on PHP 8.2/8.4 + MariaDB 10.11 with named JSON results. Next: Codex review; execution-path wiring (grant check + gateway + adapter execute) remains gated on the write-boundary contract and operation acceptance.
+
+## 2026-10-16 — Devin: 20i execution path (grant → gateway → adapter)
+
+Request: continue the complete 20i assignment — wire the documented write surface through owner-grant authority, the durable ledger and the closed request builder.
+
+Starting commit: `588ef07` (merge of `devin/twentyi-operations` + `devin/twentyi-ledger` into `devin/twentyi-execution`).
+
+Files/actions: `foundation/twentyi-operations/TwentyIOperationAdapter.php` (new ProviderAdapter: supports() only for shape-complete ops, builds via TwentyIRequestBuilder, attaches Authorization at send boundary only, classifies via TwentyIResultClassifier; packages.update reported idempotent, create one-attempt); `site/app/providers/operations.php` (`provider_operations_execute` — owner password + current revision + active exact-scope grant before any credential/address work, endpoint resolve outside lock, perform over real gateway+ledger+FixedHttpTransport with send-time and post-call reauthorization, access-change → uncertain); `tests/provider_operations_execute_native.php` (native MariaDB suite, scripted transport only); `provider-operations.yml` runs both native suites on PHP 8.2/8.4; docs updated; mirror + installer inventory refreshed via build.py.
+
+Tests: `php -l` clean on all touched files; contract suite 81/81 still green on the merged tree; native execution suite written — CI pending at commit time.
+
+Known failures/blockers: live provider sends remain unexecuted and gated on operation-specific acceptance; only packages.create/packages.update are shape-complete. Next: CI green, Codex review, then admin grant/manage UI and reconciliation surface for uncertain results.

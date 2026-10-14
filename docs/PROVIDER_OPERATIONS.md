@@ -69,3 +69,43 @@ behavior through a synthetic adapter (replay does not re-execute;
 unsupported operations never reach the ledger), a real cross-process
 claim race via a worker fixture, grant issue/verify/expiry/revoke/audit,
 and a durable-storage secret scan. No provider call is made.
+
+## Execution (`provider_operations_execute`)
+
+One owner-approved provider write, wired end-to-end on
+`devin/twentyi-execution`:
+
+1. Under the staff lock: owner password + current profile revision via
+   `provider_checks_authority`, storage ready, then an active grant for
+   the exact `provider_operations_scope` fingerprint — all before any
+   credential is opened or an address is resolved.
+2. Shape-incomplete or unregistered operations refuse `unsupported`
+   before any claim; a missing grant refuses `failed/no_grant` and both
+   refusals are audited. No ledger row is written for a refusal.
+3. The endpoint address resolves once through `EndpointPolicy` outside
+   the lock; a resolution failure returns `failed/unreachable`.
+4. `provider_operations_perform` builds the credential with a resolver
+   that re-checks owner authority at attach time, then runs
+   `ProviderGateway` over the durable ledger and
+   `EndpointPolicy`-bounded `FixedHttpTransport`. The gateway claims
+   the idempotency key before any send; replay/conflict/in-progress/
+   stale-uncertain semantics are the ledger's, and a failed durable
+   record yields `uncertain`.
+5. `TwentyIOperationAdapter` builds the closed bounded request and
+   attaches `Authorization` only at send; `TwentyIResultClassifier`
+   maps outcomes conservatively (2xx succeeded, ordinary 4xx failed,
+   3xx/429/5xx uncertain, provably pre-send transport failures failed,
+   anything else uncertain).
+6. Owner access is re-verified before and after the call. Access that
+   changed around a possibly-landed write returns `uncertain` for
+   reconciliation — never a false clean verdict.
+
+Callers supply the idempotency key; there is no client-facing route.
+Live sends additionally require operation-specific acceptance —
+execution capability is not business authorization.
+
+`tests/provider_operations_execute_native.php` exercises the full path
+on real MariaDB with a scripted transport: authority gates, grant
+scope/expiry/revocation, exactly-once send, replay and conflict without
+re-sending, uncertain propagation, mid-call access change, and a
+durable-storage secret scan.

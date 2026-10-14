@@ -65,15 +65,36 @@ provider is never classified as a clean failure:
 the current descriptors document none, so it stays `null` rather than
 guessing a response schema.
 
-## Execution gate (not implemented here)
+## Execution gate
 
-Constructing a request is not authorization to send it. A future live
-path additionally requires: `ProviderGateway` + a durable
-`OperationLedger` claim (at-most-once, replay/uncertain semantics),
-owner-granted approval records per operation instance, reauthorization
-at execution, idempotency keys from the caller, and operation-specific
-acceptance for billing/destructive/email effects. None of that exists
-yet; the descriptor set is what review can approve or reject.
+`TwentyIOperationAdapter` (`foundation/twentyi-operations/`) implements
+`ProviderAdapter` over this catalog: `supports()` is true only for
+shape-complete operations; `execute()` builds the bounded request,
+resolves the credential and attaches `Authorization` at this boundary
+only, sends once through the injected transport, and classifies with
+`TwentyIResultClassifier` — ambiguous post-send outcomes are
+`uncertain`, never silently retried. `packages.update` is the only
+operation reported idempotent (re-sending the same body is
+state-setting); `packages.create` gets exactly one attempt.
+
+Constructing and sending a request is still not authorization to run
+it. `provider_operations_execute()` in `site/app/providers/operations.php`
+requires, in order: owner password + current profile revision under the
+staff lock, a shape-complete registered operation, and an active
+unexpired grant for that exact operation+scope — all before any
+credential is opened or address resolved. Execution then runs through
+`ProviderGateway` over the durable `ProviderOperationLedger`
+(at-most-once claim, replay/conflict/uncertain semantics) and the
+`EndpointPolicy`-bounded `FixedHttpTransport`. Owner access is
+re-verified at credential attach time and after the call; access that
+changed around a possibly-landed write reports `uncertain` for
+reconciliation rather than a false clean verdict.
+
+Idempotency keys come from the caller; no client route can reach the
+executor — it is an application-layer function that itself demands
+staff-owner authority. Live provider operation remains gated on
+operation-specific acceptance; this component changes what is
+*buildable and authorized*, not what the business has approved sending.
 
 ## Verification
 
@@ -81,6 +102,17 @@ yet; the descriptor set is what review can approve or reject.
 catalog closure and flags, refusal of unregistered and shape-incomplete
 operations, slot injection/traversal refusal, field allowlist and
 required-field enforcement, bounded values, header/body shape of a
-valid build, the full status classification table, and a text guard
-that the adapter still refuses every operation. No HTTP transport,
-credential, database, or provider call.
+valid build, and the full status classification table. No HTTP
+transport, credential, database, or provider call.
+
+`tests/provider_operations_execute_native.php` — native MariaDB suite
+over the real gateway + durable ledger + adapter with a scripted
+transport only: owner/administrator/stale-revision refusal, grant
+missing/changed-scope/revoked refusal, unsupported and shape-incomplete
+refusal before any claim, a granted create executing exactly once with
+the documented path, allowlisted body and send-time `Authorization`,
+key replay and foreign-fingerprint conflict without re-sending,
+5xx/timeout → `uncertain` persisted and replayed, pre-send connect →
+`failed`, mid-send access change → `uncertain` while the durable row
+keeps the provider-truthful result, and a durable-storage secret scan.
+No provider call is made.

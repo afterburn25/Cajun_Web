@@ -1,8 +1,8 @@
 name: Provider operation ledger checks
 on:
   push:
-    branches: [main, devin/twentyi-ledger]
-    paths: ['site/app/providers/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/provider/**', 'tests/provider_operations*.php', '.github/workflows/provider-operations.yml']
+    branches: [main, devin/twentyi-ledger, devin/twentyi-execution]
+    paths: ['site/app/providers/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/provider/**', 'foundation/twentyi-operations/**', 'tests/provider_operations*.php', '.github/workflows/provider-operations.yml']
   pull_request:
   workflow_dispatch:
 permissions:
@@ -49,14 +49,17 @@ jobs:
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
             -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-provider-ops sh -ec '
-              for source in site/app/providers/*.php site/database/schema/provider_operations_schema.php site/database/migrations/provider_operations_migrate.php foundation/provider/*.php tests/provider_operations*.php; do php -l "$source"; done
+              for source in site/app/providers/*.php site/database/schema/provider_operations_schema.php site/database/migrations/provider_operations_migrate.php foundation/provider/*.php foundation/twentyi-operations/*.php tests/provider_operations*.php; do php -l "$source"; done
               php tests/provider_operations_native.php
+              php tests/provider_operations_execute_native.php
             '
       - name: Preserve named storage evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: provider-operations-${{ matrix.php }}-${{ github.sha }}
-          path: qa/provider-operations-native-results.json
+          path: |
+            qa/provider-operations-native-results.json
+            qa/provider-execution-native-results.json
           if-no-files-found: warn
           retention-days: 14

@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — 20i write execution path (devin/twentyi-execution)
+
+- `provider_operations_execute` performs one owner-approved provider write: owner password + current profile revision + active exact-scope grant required before any credential is opened or an endpoint address resolved; undocumented or shape-incomplete operations refuse before any ledger claim; missing grants refuse `no_grant` and are audited.
+- `TwentyIOperationAdapter` (foundation + site mirror) implements `ProviderAdapter` over the closed documented catalog — supports only shape-complete operations, builds the allowlisted bounded request, attaches `Authorization` at send time only, classifies outcomes conservatively (`uncertain` for 3xx/429/5xx and post-send transport faults; `failed` for provably pre-send failures).
+- Execution runs through `ProviderGateway` over the durable `ProviderOperationLedger` — atomic idempotency claim before send, replay/conflict/in-progress/stale-uncertain semantics, durable record required. Owner access is re-verified at send and after; access changes around a possibly-landed write surface `uncertain` for reconciliation.
+- Native MariaDB suite `tests/provider_operations_execute_native.php` covers authority gates, grant scope/expiry/revocation, exactly-once send, replay/conflict without re-sending, uncertain propagation and a durable secret scan — scripted transport only, no provider call. Live sends remain gated on operation-specific acceptance.
+
+
 ## 1.23.0 — published and verified
 
 Client account edits reject stale versions and retain safely escaped unsaved details; client/invitation writes recheck current authority and audit atomically. Invitations are single-use and unexpired, and client administration is refused during support sessions. Reviewed internal hosting records, dispatch fences and local provisioning retry remain inactive groundwork. Exact-main 8,360 assertions and 25 workflow gates pass; all 16 draft/public assets are downloaded and verified, with prior 1.22 unchanged. [Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0); [report](docs/TEST_REPORT_1.23.0.md). Complete 20i implementation remains assigned to Devin; service agreements and later hosting reconciliation remain separate increments.

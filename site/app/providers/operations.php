@@ -2,12 +2,17 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/providers/settings.php';
+require_once CWP_CODE_ROOT.'/app/providers/checks.php';
 require_once CWP_CODE_ROOT.'/database/migrations/provider_operations_migrate.php';
-require_once CWP_CODE_ROOT.'/includes/foundation/provider/LedgerClaim.php';
-require_once CWP_CODE_ROOT.'/includes/foundation/provider/OperationResult.php';
-require_once CWP_CODE_ROOT.'/includes/foundation/provider/OperationLedger.php';
+foreach(['ProviderCapability','ProviderCredential','TransportRequest','TransportResponse','TransportException','HttpTransport','ProviderOperation','OperationResult','ConnectionCheck','RetryPolicy','LedgerClaim','OperationLedger','ProviderAdapter','ProviderGateway'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/provider/'.$class.'.php';
+foreach(['EndpointPolicy','ProbeFailure','EndpointResolver'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/mail-transport/'.$class.'.php';
+foreach(['TwentyIAdapter','ProbeOnlyLedger','FixedHttpTransport'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi/'.$class.'.php';
+foreach(['TwentyIOperation','TwentyIOperationRegister','TwentyIRequestBuilder','TwentyIResultClassifier','TwentyIOperationAdapter'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-operations/'.$class.'.php';
 
-use CajunWebPro\Foundation\Provider\{LedgerClaim,OperationLedger,OperationResult};
+use CajunWebPro\Foundation\Provider\{LedgerClaim,OperationLedger,OperationResult,ProviderCredential,ProviderGateway,ProviderOperation};
+use CajunWebPro\Foundation\TwentyI\FixedHttpTransport;
+use CajunWebPro\Foundation\TwentyI\Operations\{TwentyIOperationAdapter,TwentyIOperationRegister};
+use CajunWebPro\Foundation\MailTransport\EndpointPolicy;
 
 /**
  * Durable provider operation layer.
@@ -142,5 +147,72 @@ function provider_operation_revoke(string $grantId,#[\SensitiveParameter] string
             if ($statement->rowCount()!==1) throw new InvalidArgumentException('Grant unavailable.');
             provider_settings_audit((int)$actor['id'],'operation_revoke','Revoked operation grant '.$grantId);
         });
+    });
+}
+
+final class ProviderOperationAccessChanged extends RuntimeException {}
+
+/**
+ * Internal only. Builds the access-gated credential and performs one
+ * ledger-claimed operation over the injected transport. The adapter
+ * attaches the Authorization material at send time only.
+ */
+function provider_operations_perform(array $row,#[\SensitiveParameter] string $secret,string $address,callable $authorize,ProviderOperation $operation): OperationResult {
+    $credential=new ProviderCredential('twenty-i',$row['id'],static function()use($secret,$authorize):string{$authorize();return $secret;});
+    return (new ProviderGateway(new TwentyIOperationAdapter(),new FixedHttpTransport($address,$authorize),new ProviderOperationLedger()))->perform($credential,$operation);
+}
+
+/**
+ * One owner-approved provider write. Requires: owner password + current
+ * profile revision, a shape-complete registered operation, and an
+ * active grant for this exact operation+scope — all before any
+ * credential is opened or address resolved. The gateway's durable
+ * ledger claim guarantees at-most-once execution; ambiguous outcomes
+ * classify uncertain, never silently retried.
+ *
+ * Returns a bounded OperationResult — never throws for provider-side
+ * outcomes. Resolver/perform are internal test seams, never HTTP input.
+ */
+function provider_operations_execute(string $profileId,int $revision,ProviderOperation $operation,#[\SensitiveParameter] string $password,?callable $resolver=null,?callable $perform=null): OperationResult {
+    if(db()->inTransaction())throw new LogicException('Provider operations cannot run inside a transaction.');
+    $register=new TwentyIOperationRegister();$spec=$register->get($operation->name);
+    $started=staff_locked(fn()=>staff_transaction(function()use($profileId,$revision,$password,$operation,$spec,$register):array {
+        [$actor,$row]=provider_checks_authority($profileId,$revision,$password);
+        if(!provider_operations_ready())throw new RuntimeException('Prepare provider operation storage first.');
+        return ['actor'=>(int)$actor['id'],'revision'=>$revision,'granted'=>$spec!==null&&$spec->shapeComplete&&provider_operation_grant_active($profileId,$operation->name,provider_operations_scope($operation->name,$operation->params))];
+    }));
+    if($spec===null||!$spec->shapeComplete) {
+        provider_settings_audit($started['actor'],'operation_refused','Refused undocumented or incomplete operation '.$operation->name);
+        return OperationResult::unsupported($operation->name);
+    }
+    if(!$started['granted']) {
+        provider_settings_audit($started['actor'],'operation_refused','No active grant for '.$operation->name.' on profile '.$profileId);
+        return OperationResult::failed($operation->name,'No active owner grant covers this exact request.','no_grant');
+    }
+    $address='';
+    try{$address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];}
+    catch(Throwable $e){if($e instanceof PDOException)throw $e;return OperationResult::failed($operation->name,'Provider endpoint unavailable before send.','unreachable');}
+    return staff_locked(function()use($profileId,$revision,$password,$operation,$address,$perform,$started,$register):OperationResult {
+        $authorize=static function()use($profileId,$revision,$started):void {
+            try{[$actor]=provider_checks_authority($profileId,$revision);if((int)$actor['id']!==$started['actor'])throw new RuntimeException('Changed actor.');}
+            catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;throw new ProviderOperationAccessChanged('Current provider access changed.');}
+        };
+        try{[$actor,$row]=provider_checks_authority($profileId,$revision,$password);if((int)$actor['id']!==$started['actor'])throw new RuntimeException('Changed actor.');}
+        catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;return OperationResult::uncertain($operation->name,'access_changed');}
+        $result=null;
+        try{
+            $authorize();$secret=provider_settings_key_value(provider_settings_unseal($row['id'],$row['environment'],$row['credentials']));
+            try{$result=($perform??'provider_operations_perform')($row,$secret,$address,$authorize,$operation);}
+            finally{unset($secret);}
+        }catch(ProviderOperationAccessChanged){$result=null;}
+        catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;$result=OperationResult::failed($operation->name,'The credential could not be opened.','credential');}
+        catch(Throwable $e){if($e instanceof PDOException)throw $e;$result=OperationResult::uncertain($operation->name);}
+        // Access changed before or during execution: a write may have
+        // landed whose ownership cannot now be proved — uncertain, not a
+        // clean failure.
+        if($result===null){$result=OperationResult::uncertain($operation->name,'access_changed');}
+        try{$authorize();}catch(ProviderOperationAccessChanged){if($result->status!==OperationResult::UNCERTAIN)$result=OperationResult::uncertain($operation->name,'access_changed');}
+        provider_settings_audit($started['actor'],'operation_result','Operation '.$operation->name.' '.$result->status);
+        return $result;
     });
 }
