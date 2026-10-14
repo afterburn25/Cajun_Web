@@ -194,6 +194,14 @@ Merge resolutions preserve both documentation histories, mail and client browser
 Isolated P-04 contract layer: `foundation/service-plans/` (2 files), `tests/service-plans/run.php` (76 synthetic checks, all pass on PHP 8.4.25 incl. `php -n`), `docs/SERVICE_PLANS_FOUNDATION.md`, `.github/workflows/service-plans.yml`. Correction rounds at `166c4b3`/`e7a283b` are posted; review comments remain open on PR #53.
 
 **Gate:** none for the contract layer; plan UI, billing capture and request workflow remain Codex integration work. **Not integrated:** additive-only outside `site/`.
+
+## Preserved earlier service-desk checkpoint
+
+## Devin active branch — `devin/service-desk` (HC-12 admin-ops model)
+
+Isolated HC-12 contract layer: `foundation/desk/` (5 files), `tests/desk/run.php` (114 synthetic checks, all pass on PHP 8.4.25 incl. `php -n`), `docs/DESK_FOUNDATION.md`, `.github/workflows/desk.yml`. Correction commit `0a0dcde` fixes the three independently reproduced findings (approved-request expiry, attempt-token binding on completions, refusal-before-mutation on decisions); the follow-up correction completes the remaining stall-recovery finding — `resolveStalled(token, outcome, evidence)` must verify a stalled attempt before `requeue()` can release it (`completed` terminal / `not_executed` fenced retry / `unknown` is an append-only non-final observation — a later conclusive resolution completes the stall with evidence retained; conclusive resolutions immutable per token, identical replay returns quietly even post-transition). Re-review requested.
+
+**Gate:** none for the contract layer; runners, persistence, mail and UI remain Codex integration work. **Not integrated:** additive-only outside `site/`.
 ## Latest verified publication — 1.22.0
 
 [v1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) is published and freshly downloaded/verified at immutable source/tag `e3b434ffb2244e454ea9f24fa1de9173b7479ccc`, through [PR77](https://github.com/afterburn25/Cajun_Web/pull/77). Authorized staff can review and explicitly send a saved plain-text draft from a currently assigned mailbox, then inspect private submission history. Current author, Send/grant permissions and exact revisions are rechecked; durable attempt records prevent replay. SMTP requires verified TLS. Server acceptance is distinguished from recipient delivery, and unknown or unresolved outcomes cannot automatically resend. [Owner guide](docs/SENDING_EMAIL.md).
