@@ -86,5 +86,6 @@ try{
     $audit=design_payments_json(all('SELECT * FROM '.table('audit')));dp_ok('General audit excludes financial text and passwords',!str_contains($audit,'Client financial terms')&&!str_contains($audit,$password));
     require __DIR__.'/design_payments_invoice_native.php';
     require __DIR__.'/design_payments_forms_native.php';
+    require __DIR__.'/design_payments_activity_native.php';
 }catch(Throwable $error){$checks[]=['name'=>'Unexpected failure: '.$error->getMessage(),'passed'=>false];fwrite(STDERR,(string)$error.PHP_EOL);}
 $passed=!in_array(false,array_column($checks,'passed'),true);file_put_contents(__DIR__.'/../qa/design-payments-native-results.json',json_encode(['passed'=>$passed,'scope'=>'Synthetic MariaDB financial offers, consent and unique obligation invoices; existing ledger, authority, immutable history, concurrency, replay and rollback. No HTTP/browser or gateway acceptance.','php'=>PHP_VERSION,'checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));echo ($passed?'PASS':'FAIL').': '.count($checks).' native financial checks'.PHP_EOL;exit($passed?0:1);

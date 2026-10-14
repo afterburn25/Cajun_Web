@@ -1,5 +1,5 @@
 """Latest-published 1.23 populated financial terms, invoices and receipts survive recovery."""
-import datetime
+import datetime,json
 from release_version import RECOVERY
 
 
@@ -23,6 +23,13 @@ def run(env):
     snapshot=records('financial');issued=snapshot['design_payment_invoices'][0]['invoice_id'];invoice=admin+'?view=invoice-payments&invoice_id='+str(issued)
     receipt=dict(fields(owner,invoice,'payments_ledger_receive'),amount='25.00',method='bank',reference='Synthetic retained financial receipt',received_on=datetime.datetime.now(datetime.timezone.utc).date().isoformat(),confirm='1')
     owner.post(invoice,data=receipt)
+    activity=portal+'?activity=1';staff_activity=admin+'?view=activity'
+    if 'Enable workspace activity' in owner.get(staff_activity).text:
+        submit(owner,staff_activity,'activity_setup',{'password':password})
+    client_read=dict(fields(client,activity,'activity_mark'),keys=json.dumps(['financial:'+offer['request_id']]),state='read')
+    staff_read=dict(fields(owner,staff_activity,'activity_mark'),keys=json.dumps(['financial:'+decision['request_id']]),state='read')
+    client.post(activity,data=client_read);owner.post(staff_activity,data=staff_read)
+    check(label+' financial notifications retain separate client and staff reads',len(records('financial')['financial_activity_reads'])==2 and {r['actor_type'] for r in records('financial')['financial_activity_reads']}=={'client','admin'})
     saved=records('financial');stable=records();earlier={name:records(name) for name in ['planning','progress','tickets','plans','submissions','drafts','provider','mail-accounts','templates']}
     check(label+' upgraded accepted offer issues one bound invoice with real ledger balance',len(saved['design_payment_events'])==3 and len(saved['design_payment_invoices'])==1 and 'Recorded payments: $25.00 USD' in client.get(target).text and 'Invoice balance: $55.01 USD' in client.get(target).text)
     def retained(expected):
@@ -39,6 +46,10 @@ def run(env):
     check(label+' original issuance replay after recovery opens original unique invoice',retained(saved) and 'invoice_id='+str(issued) in r.url)
     owner.post(invoice,data=receipt)
     check(label+' original receipt replay after recovery cannot duplicate payment',retained(saved))
+    client.post(activity,data=client_read);owner.post(staff_activity,data=staff_read)
+    check(label+' original financial read actions replay after recovery without duplication',retained(saved))
+    opened=client.get(activity+'&open=financial:'+offer['request_id'])
+    check(label+' recovered financial notice opens its original frozen offer',retained(saved) and '#financial-event-'+offer['request_id'] in opened.url)
     submit(owner,invoice,'payments_ledger_receive',{'amount':'1.00','method':'bank','reference':'Synthetic additional recovered receipt','received_on':datetime.datetime.now(datetime.timezone.utc).date().isoformat(),'confirm':'1'})
     active=records('financial')
     check(label+' recovered financial invoice accepts one authorized additional receipt',len(active['invoice_payments'])==len(saved['invoice_payments'])+1 and active['design_payment_events']==saved['design_payment_events'] and retained(active) and 'Invoice balance: $54.01 USD' in client.get(target).text)

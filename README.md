@@ -1,10 +1,12 @@
 # CajunWebPro — project source of truth
 
-## Current work — financial agreement notifications contract
+## Current work — financial notifications locally verified
 
-Codex starts `codex/design-financial-activity` from frozen financial forms PR114/a9a5f40. The [activity contract](docs/DESIGN_FINANCIAL_ACTIVITY_CONTRACT.md) defines client offer/withdrawal notices, authorized staff decision notices, exact original-history links and independent personal read state through the existing workspace center/bell. No implementation or passing behavior is claimed by this contract. Devin retains complete20i.
+After contract `98d0115`, `codex/design-financial-activity` connects retained financial offers, withdrawals and authorized client decisions to the existing workspace center and personal bell. Each entry opens its exact original history event. Current staff permissions, client ownership, bounded validated history and independent read state are enforced. [Usage and evidence](docs/DESIGN_FINANCIAL_ACTIVITY.md); [contract](docs/DESIGN_FINANCIAL_ACTIVITY_CONTRACT.md).
 
-Parent114 focused push/PR CI is independently verified at 3,184 named PHP8.2/8.4 executions; [proof6180534169](https://github.com/afterburn25/Cajun_Web/pull/114#issuecomment-6180534169). Its full38651962280 and Windows build remain confirmed live and must not be restarted or mutated. Ready101 still awaits its requested independent review. Published1.23/main68e4d41 remain unchanged. Devin115/f102e1e corrects only the installer inventory; eight prior runtime findings remain. Next: implement/test the bounded notification projection while preserving original full acceptance, then current native/browser/recovery/package and independent review gates. Earlier sections below are historical checkpoints.
+Local PHP 8.4/MariaDB passes **254 native checks under 128 MiB** (the previous 209 unchanged plus 45 notification cases). Actual HTTP/Edge passes **75 feature checks plus one empty-runtime-diagnostics assertion**. Four complete desktop/320px activity views are inspected. The installer refresh completed successfully; all 2,633 dependency hashes match 2,634 shipping files. The first native snapshot fixture exceeded memory and the local browser seed duplicated an include; both test helpers were corrected, fresh acceptance passed, and the original fixtures remain retained.
+
+Next: commit this implementation, verify focused PHP 8.2/8.4 CI and current full application/package/Apache/latest-1.23 read-state recovery, then obtain independent review. Parent PR 114 stays frozen at `a9a5f40`: its 9,302 checkpoint checks, six inspected screens and exact Windows archives verify; full run 38651962280 remains in Apache acceptance. Published 1.23/main `68e4d41` is unchanged. Devin owns **complete 20i implementation**, including all provider admin/client screens and corrections; Codex owns independent review, non-20i work and integration/releases. Earlier sections are historical checkpoints.
 
 ## Current work — actual financial forms, locally verified
 

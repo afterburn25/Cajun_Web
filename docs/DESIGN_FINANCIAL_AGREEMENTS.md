@@ -1,5 +1,7 @@
 # Financial agreements on design projects
 
+Current follow-on: [financial agreement notifications](DESIGN_FINANCIAL_ACTIVITY.md) now connect offers, withdrawals and client decisions to personal workspace activity. Local acceptance passes; committed/full/recovery and independent review remain next. Older boundaries below are historical.
+
 Unreleased implementation in [draft PR114](https://github.com/afterburn25/Cajun_Web/pull/114), continuing from contract/documentation head `b7a2d0ca4e3dff1747029053c54e933f04162317`. The [interface contract](DESIGN_PAYMENT_FORMS_CONTRACT.md), [native consent](DESIGN_PAYMENT_STORAGE_CONTRACT.md) and [invoice obligations](DESIGN_PAYMENT_INVOICES_CONTRACT.md) remain authoritative. Published1.23 is unchanged. Complete20i implementation belongs to Devin.
 
 ## Prepare and publish

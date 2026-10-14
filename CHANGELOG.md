@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — financial agreement notifications
+
+- Add authorized personal offer, withdrawal and client-decision notifications with exact historical destinations, explicit per-person read state and current financial permission checks. Preserve existing invoice/payment notices. Local254 native and76 HTTP/Edge checks pass; committed CI/full recovery and independent review remain pending.
+
 ## Current work — actual financial forms, locally verified
 
 Draft#114 continues from contract head `b7a2d0c`: the existing staff and client project pages now contain structured quotes/payment stages, explicit client consent, exact history, unique stage-invoice actions and current ledger balances/receipt links. Owner setup remains deliberate; current permissions and client ownership are checked. Original stale drafts remain bound to their reviewed terms, including read-only retention after concurrent issuance. Row controls work without JavaScript. [Usage and evidence](docs/DESIGN_FINANCIAL_AGREEMENTS.md).

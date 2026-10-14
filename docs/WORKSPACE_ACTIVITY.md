@@ -1,5 +1,7 @@
 # Workspace activity notifications
 
+Current follow-on: [financial agreement notifications](DESIGN_FINANCIAL_ACTIVITY.md) now connect offers, withdrawals and client decisions to personal workspace activity. Local acceptance passes; committed/full/recovery and independent review remain next. Older boundaries below are historical.
+
 Claim, 2026-10-13: Codex implements bounded P-07 on `codex/workspace-activity` from main `552ccb7d8c73194e7304af4f903074b0032e53b2` / published v1.9.0. Own additive per-person read state, authorized source projections, activity center/bell, exact-item navigation, installer, tests and continuity. Devin retains W-01 / PR #7. This is workspace activity; A-06/A-07/A-08 webmail, templates and unread-email bells remain separate and incomplete.
 
 Clients receive an in-portal activity center for existing studio messages, published design/proposal reviews, private files, invoices, recorded payments/corrections and published website ZIP releases. Staff with client-workspace access have a separate center for client replies, file uploads and review decisions. A bell links to the center, with links from each entry to the exact currently authorized source. Staff also see their workspace bell on public pages after a private authorization check; anonymous visitors and ordinary clients never receive staff data.
