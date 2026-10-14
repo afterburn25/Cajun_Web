@@ -1,0 +1,42 @@
+name: Mail draft content checks
+on:
+  push:
+    branches: [main, codex/mail-drafts]
+    paths: ['foundation/mail-compose/**', 'foundation/email-templates/**', 'tests/mail-compose/**', '.github/workflows/mail-compose.yml']
+  pull_request:
+    paths: ['foundation/mail-compose/**', 'foundation/email-templates/**', 'tests/mail-compose/**', '.github/workflows/mail-compose.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mail-compose-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  content:
+    name: Mail drafts PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Isolated content and canonical template insertion
+        run: |
+          mkdir -p qa "$RUNNER_TEMP/draft-results"
+          docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/draft-results:/workspace/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            for source in foundation/mail-compose/*.php tests/mail-compose/*.php; do php -l "$source"; done
+            php tests/mail-compose/run.php qa/mail-drafts-default-results.json
+            php -n tests/mail-compose/run.php qa/mail-drafts-no-ini-results.json
+          '
+      - name: Preserve named content results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mail-drafts-${{ matrix.php }}-${{ github.sha }}
+          path: ${{ runner.temp }}/draft-results/
+          if-no-files-found: error
+          retention-days: 14
