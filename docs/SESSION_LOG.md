@@ -1289,3 +1289,16 @@ Publication-record validation: 139 Markdown files and 1,259 local links pass; pi
 - **Tests:** 73 named checks pass under PHP 8.4 default and `php -n` locally — descriptor closedness, field allowlist, sensitive-field non-retention, duplicate/mismatched IDs, malformed/truncated/oversized bodies, status classification, register evidence levels. Synthetic scope; no live call, credential, persistence or client linking.
 - **Known limits:** `/package` pagination semantics undocumented; only `packages.list` is projectable. No `site/` mirror, installer hash or route added — integration is Codex-owned.
 - **Next:** open draft PR; monitor Codex integration of the cleared #87–#92 chain.
+
+## 2026-10-14 — Devin: #93 corrections + restacked extension
+
+- Codex review 6170804386 on `3807c23` found four reproducible defects; all corrected at `08fe0ce`:
+  1. json_decode now preserves object/list identity (`{}`/`{"0":...}` are `unexpected_shape`, never empty inventories).
+  2. Snapshots carry caller-supplied `scope` and `coverage=unknown` — response completeness is not account-wide completeness.
+  3. `names` preserved exactly (absent primary name = inconsistency skip); `created` requires a real calendar instant; unmapped keys are printable-UTF-8-safe + `unmappedCount`.
+  4. `InventorySnapshot` validates typed records, non-negative counts, state consistency, and a closed unavailable-reason set.
+- Tests: 93 checks pass PHP 8.4 default and `php -n`.
+- `devin/twentyi-inventory-vps` rebased onto `08fe0ce` at `8003a93` (PR #94); `InventoryResource`/`resourceList` updated to stdClass + scope/coverage; 126 checks green both modes.
+- Reply posted on #93 (6170975671) citing each fix; earlier review deliveries listed for Codex's bookkeeping.
+- Next: await Codex re-review of #93/#94.
+
