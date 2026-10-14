@@ -1,6 +1,6 @@
 # Owner 20i connection settings
 
-Candidate1.20.0 in PR74; not yet a published release or target-host verification. The latest published release remains1.19.0.
+Released in [1.20.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.20.0) after exact-main acceptance and verified public downloads. This establishes the bounded workflow below; target-host and real-account adapter acceptance remain separate.
 
 ## Configure
 
@@ -22,4 +22,4 @@ The profile key is encrypted using a separate private32-byte provider-master.key
 
 ## Verification scope
 
-PHP8.2/8.4 isolated matrices verify transport and native persistence/check orchestration. Packaged HTTP/Chromium and update/recovery acceptance for this UI are still pending. The old separately owner-authorized GET diagnostic proves only that read; this development work does not perform another live call or deployment.
+PHP 8.2/8.4 matrices, packaged HTTP/Chromium, Apache and actual 1.19.0 update/recovery/reapplication pass at `6f0b0ce5a9cba68b6859334818383fcc09e2ba3e`. Both original private keys and nonempty provider history are retained. Tests use synthetic credentials and loopback HTTPS; they do not establish real-account or target-host compatibility. [Named report](TEST_REPORT_1.20.0.md). No new live call or deployment occurred.
