@@ -18,6 +18,7 @@ require_once CWP_CODE_ROOT.'/admin/controllers/reviews.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/appointments.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/plans.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/tickets.php';
+require_once CWP_CODE_ROOT.'/includes/layout/design_financial.php';
 header('X-Robots-Tag: noindex, nofollow');
 if(in_array($_GET['view']??'', ['staff-setup','reset'],true))header('Referrer-Policy: no-referrer');
 $view=is_string($_GET['view']??null)?$_GET['view']:'dashboard';

@@ -133,21 +133,24 @@ function design_payments_withdraw(int $job,int $client,string $request,string $e
     });
 }
 function design_payments_view(array $job,array $state,bool $staff):array{
+    // The entire issued-event/map/invoice binding was validated under this same lock.
+    // Reuse its integrity result rather than replaying up to32MiB of history per invoice.
+    $invoices=[];foreach($state['issued'] as $stage=>$event){$i=ledger_invoice($event['payload']['invoice']['id']);$b=ledger_balance_record($i);$invoices[$stage]=['id'=>(int)$i['id'],'reference'=>$i['reference'],'status'=>$i['status'],'amount_cents'=>(int)$i['amount_cents'],'paid_cents'=>$b['paid_cents'],'due_cents'=>$b['due_cents'],'currency'=>$i['currency']];}
     $history=[];foreach($state['items'] as $event){$payload=$event['payload'];if(!$staff&&$event['kind']==='issued')unset($payload['request_sha256']);$entry=['id'=>$event['id'],'kind'=>$event['kind'],'occurred_at'=>$event['occurred_at'],'actor'=>$event['actor_type']==='staff'?'studio':'client','payload'=>$payload];if($staff)$entry['actor_id']=$event['actor_id'];$history[]=$entry;}
-    $schedule=$state['schedule'];return ['project'=>['id'=>(int)$job['id'],'title'=>$job['title']],'status'=>$state['status'],'schedule'=>$schedule?->data(),'fingerprint'=>$schedule?->fingerprint(),'quote'=>$schedule?->quote(),'stages'=>$schedule?->stages(),'expected'=>$state['expected'],'count'=>$state['count'],'items'=>$history,'page'=>$state['page'],'pages'=>$state['pages']];
+    $schedule=$state['schedule'];return ['project'=>['id'=>(int)$job['id'],'title'=>$job['title']],'status'=>$state['status'],'schedule'=>$schedule?->data(),'fingerprint'=>$schedule?->fingerprint(),'quote'=>$schedule?->quote(),'stages'=>$schedule?->stages(),'expected'=>$state['expected'],'count'=>$state['count'],'items'=>$history,'page'=>$state['page'],'pages'=>$state['pages'],'invoices'=>$invoices,'frozen'=>$invoices!==[]];
 }
 function design_payments_staff_get(int $job,int $page=0,bool $touch=true):array{
     return project_progress_touch(fn()=>project_progress_locked(function()use($job,$page):array{design_payments_staff();$row=project_progress_job($job);project_progress_client_row((int)$row['client_id'],false);return design_payments_view($row,design_payments_validate($row,$page),true);}),$touch);
 }
-function design_payments_client_get(int $job,int $client,int $page=0,?string $support=null,bool $touch=true):array{
-    return project_progress_touch(fn()=>project_progress_locked(function()use($job,$client,$page,$support,$touch):array{
+function design_payments_client_get(int $job,int $client,int $page=0,?string $support=null,bool $touch=true,bool $audit=false):array{
+    return project_progress_touch(fn()=>project_progress_locked(function()use($job,$client,$page,$support,$touch,$audit):array{
         design_payments_require_ready();$ctx=null;
         if($support!==null||support_current()||array_key_exists('support',$_GET)){
             if($support===null||$support==='')throw new RuntimeException('A current scoped support session is required.');$ctx=support_check($support,$touch);
             if(!$ctx||(int)$ctx['client']['id']!==$client)throw new RuntimeException('Current support access to this client is required.');
         }else design_payments_client($client,$touch);
         $row=project_progress_job($job,$client);$view=design_payments_view($row,design_payments_validate($row,$page),false);
-        if($ctx&&$touch){design_payments_audit(['type'=>'staff','id'=>(int)$ctx['actor']['id']],'support_read','Project '.$job.'; support '.$ctx['session']['id']);support_audit($ctx['session'],'financial.read','project',(string)$job);}
+        if($ctx&&($touch||$audit)){design_payments_audit(['type'=>'staff','id'=>(int)$ctx['actor']['id']],'support_read','Project '.$job.'; support '.$ctx['session']['id']);support_audit($ctx['session'],'financial.read','project',(string)$job);}
         return $view;
     }),$touch);
 }

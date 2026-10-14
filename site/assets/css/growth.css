@@ -41,3 +41,24 @@
 .project-planning :focus-visible{outline:2px solid #f1d69b;outline-offset:3px}
 .project-planning [hidden]{display:none!important}
 @media(max-width:600px){.planning-editor-grid,.planning-facts{grid-template-columns:minmax(0,1fr)}.planning-facts dd{margin-bottom:.6rem}.project-planning fieldset{padding:.65rem}.planning-actions .btn{width:100%}}
+
+/* Financial agreements on existing project pages. */
+.financial-agreement{min-width:0;overflow-wrap:anywhere}
+.financial-agreement h3,.financial-agreement h4{margin-top:1.4rem}
+.financial-agreement summary{cursor:pointer;font-weight:700;padding:.8rem 0}
+.financial-text{white-space:pre-wrap;overflow-wrap:anywhere}
+.financial-items,.financial-stages{padding-left:1.4rem}
+.financial-items>li,.financial-stages>li{padding:.8rem 0;border-bottom:1px solid var(--line,rgba(255,255,255,.16))}
+.financial-facts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.4rem 1rem}
+.financial-facts dt{font-weight:600}.financial-facts dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.financial-total{font-weight:700;padding:1rem 0}
+.financial-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem 1rem}
+.financial-grid>div,.financial-row{min-width:0}
+.financial-row{border:1px solid var(--line,rgba(255,255,255,.16));padding:1rem;margin:1rem 0;border-radius:10px}
+.financial-row legend{max-width:100%;font-weight:700;padding:0 .35rem}
+.financial-agreement input,.financial-agreement select,.financial-agreement textarea{box-sizing:border-box;max-width:100%;min-width:0}
+.financial-row-actions,.financial-command,.financial-preview{margin-top:1rem}
+.financial-agreement .btn{white-space:normal;text-align:center;overflow-wrap:anywhere}
+.financial-agreement button:disabled{opacity:.55;cursor:not-allowed}
+.financial-agreement :focus-visible{outline:3px solid #e2bd63;outline-offset:3px}
+@media(max-width:520px){.financial-grid{grid-template-columns:1fr}.financial-row{padding:.65rem}.financial-facts{gap:.4rem}.financial-row-actions{display:flex;flex-wrap:wrap}.financial-agreement .button-row{flex-wrap:wrap}.financial-agreement .btn{max-width:100%}}

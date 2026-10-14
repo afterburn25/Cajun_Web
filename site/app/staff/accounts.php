@@ -150,6 +150,8 @@ function staff_view_permission(string $view): ?string {
     return 'website.manage';
 }
 function staff_action_permission(string $action): ?string {
+    if($action==='design_financial_setup')return 'staff.manage';
+    if(str_starts_with($action,'design_financial_'))return 'payments.manage';
     if($action==='tickets_setup')return 'staff.manage';
     if(str_starts_with($action,'tickets_'))return 'support.tickets';
     if(str_starts_with($action,'service_plans_'))return 'staff.manage';

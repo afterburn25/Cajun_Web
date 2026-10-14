@@ -2,9 +2,9 @@ name: Native design-payment consent checks
 on:
   push:
     branches: [main, codex/design-payment-schedules]
-    paths: ['site/app/billing/**', 'site/app/projects/**', 'site/app/clients/**', 'site/app/staff/**', 'site/app/support/sessions.php', 'site/includes/auth/**', 'site/database/**', 'foundation/design-payments/**', 'site/includes/foundation/design-payments/**', 'tests/design_payments_*.php', 'tests/design-payments/**', '.github/workflows/design-payments-native.yml']
+    paths: ['site/includes/layout/design_financial*.php', 'site/admin/controllers/**', 'site/portal/controllers/**', 'site/admin/views/studio/job.php', 'site/portal/views/workspace.php', 'site/assets/css/growth.css', 'site/app/billing/**', 'site/app/projects/**', 'site/app/clients/**', 'site/app/staff/**', 'site/app/support/sessions.php', 'site/includes/auth/**', 'site/database/**', 'foundation/design-payments/**', 'site/includes/foundation/design-payments/**', 'tests/design_payments_*.php', 'tests/design-payments/**', '.github/workflows/design-payments-native.yml']
   pull_request:
-    paths: ['site/app/billing/**', 'site/app/projects/**', 'site/app/clients/**', 'site/app/staff/**', 'site/app/support/sessions.php', 'site/includes/auth/**', 'site/database/**', 'foundation/design-payments/**', 'site/includes/foundation/design-payments/**', 'tests/design_payments_*.php', 'tests/design-payments/**', '.github/workflows/design-payments-native.yml']
+    paths: ['site/includes/layout/design_financial*.php', 'site/admin/controllers/**', 'site/portal/controllers/**', 'site/admin/views/studio/job.php', 'site/portal/views/workspace.php', 'site/assets/css/growth.css', 'site/app/billing/**', 'site/app/projects/**', 'site/app/clients/**', 'site/app/staff/**', 'site/app/support/sessions.php', 'site/includes/auth/**', 'site/database/**', 'foundation/design-payments/**', 'site/includes/foundation/design-payments/**', 'tests/design_payments_*.php', 'tests/design-payments/**', '.github/workflows/design-payments-native.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -48,12 +48,14 @@ jobs:
           docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-design-payments-test sh -ec '
-              for source in site/app/billing/design_payment*.php site/database/schema/design_payment*.php site/database/migrations/design_payment*.php site/includes/foundation/design-payments/*.php tests/design_payments_*.php tests/design-payments/*.php; do php -l "$source"; done
+              for source in site/app/billing/design_payment*.php site/includes/layout/design_financial*.php site/database/schema/design_payment*.php site/database/migrations/design_payment*.php site/includes/foundation/design-payments/*.php tests/design_payments_*.php tests/design-payments/*.php; do php -l "$source"; done
               cmp foundation/design-payments/DesignPaymentSchedule.php site/includes/foundation/design-payments/DesignPaymentSchedule.php
               php -d memory_limit=128M tests/design_payments_native.php
               php tests/design_payments_legacy_ledger.php
               php tests/design-payments/records.php --deployment > qa/design-payment-schedules-deployed-default.json
               php -n tests/design-payments/records.php --deployment > qa/design-payment-schedules-deployed-no-ini.json
+              php tests/design-payments/forms.php > qa/design-financial-forms-default.json
+              php -n tests/design-payments/forms.php > qa/design-financial-forms-no-ini.json
             '
       - name: Preserve named evidence
         if: always()
@@ -64,6 +66,7 @@ jobs:
             qa/design-payments-native-results.json
             qa/ledger-native-results.json
             qa/design-payment-schedules-deployed-*.json
+            qa/design-financial-forms-*.json
           if-no-files-found: error
           retention-days: 14
       - name: Record scope
