@@ -3,10 +3,13 @@
 ## Unreleased — 20i write execution path (devin/twentyi-execution)
 
 - `provider_operations_execute` performs one owner-approved provider write: owner password + current profile revision + active exact-scope grant required before any credential is opened or an endpoint address resolved; undocumented or shape-incomplete operations refuse before any ledger claim; missing grants refuse `no_grant` and are audited.
-- `TwentyIOperationAdapter` (foundation + site mirror) implements `ProviderAdapter` over the closed documented catalog — supports only shape-complete operations, builds the allowlisted bounded request, attaches `Authorization` at send time only, classifies outcomes conservatively (`uncertain` for 3xx/429/5xx and post-send transport faults; `failed` for provably pre-send failures).
+- `TwentyIOperationAdapter` (foundation + site mirror) implements `ProviderAdapter` over the closed documented catalog — supports only shape-complete operations, builds the allowlisted bounded request, attaches `Authorization` at send time only, classifies outcomes conservatively (`uncertain` for 3xx/429/5xx, other non-terminal 2xx and post-send transport faults; `failed` for provably pre-send failures).
 - Execution runs through `ProviderGateway` over the durable `ProviderOperationLedger` — atomic idempotency claim before send, replay/conflict/in-progress/stale-uncertain semantics, durable record required. Owner access is re-verified at send and after; access changes around a possibly-landed write surface `uncertain` for reconciliation.
 - Native MariaDB suite `tests/provider_operations_execute_native.php` covers authority gates, grant scope/expiry/revocation, exactly-once send, replay/conflict without re-sending, uncertain propagation and a durable secret scan — scripted transport only, no provider call. Live sends remain gated on operation-specific acceptance.
 
+## Unreleased — 20i inventory slice binding corrections (devin/twentyi-refresh)
+
+Links to observed 20i packages are now bound to the exact profile revision and the credential context approved at link time. Client service views suppress data when the provider settings change until the owner explicitly re-approves the mapping under a current observation; an identical package id under a replaced key can never flow through an old link. Observations carry an installation-bound credential fingerprint (never key material); schema version 2 upgrades existing tables in place. Native MariaDB suite: 77 assertions on PHP 8.2/8.4.
 
 ## 1.23.0 — published and verified
 
@@ -35,6 +38,16 @@ Unreleased. Preserve reviewed client conflict/invitation/support safeguards and 
 ## Unreleased combined hosting/client integration
 
 Preserve mail main1.22 while combining guarded client administration and reviewed hosting journal/storage/dispatch/local-retry foundations. No new hosting UI or remote execution is activated. Add all three hosting native suites and12 internal-path checks to combined full acceptance; preserve every existing test and upgrade baseline. This branch is not a published release.
+## Unreleased — read-only 20i inventory contract
+
+- `foundation/twentyi-inventory/`: closed documented GET descriptors, allowlist package projection, honest complete/partial/unavailable snapshots and an evidence-graded capability register. Contract-only; no live calls, persistence, routes or client linking.
+
+## Unreleased — 20i inventory application slice (`devin/twentyi-refresh`)
+
+- Owner-triggered provider inventory: durable refresh intent + bounded result rows, verbatim validated `provider_observation_packages`, explicit owner→client `provider_package_links` against `studio_clients`, and ordered `provider_package_link_events` (auto-increment id for insertion-stable ordering).
+- Refresh orchestration mirrors the connection-check protocol: staff-locked intent, private-DNS refusal, mid-flight authority rechecks downgrading to `access_changed`, lazy secret resolution at the transport boundary, cooldown, and last-good preservation on unavailable refreshes.
+- Admin provider-settings section (prepare/refresh/link/unlink/history) and portal `?services` view showing only explicitly linked services. `staff_action_permission` maps `provider_inventory_*` to `staff.manage`.
+- `tests/provider_inventory_native.php` + `provider-inventory.yml`: 56 native MariaDB assertions on PHP 8.2/8.4 — authorization refusals, revision checks, cooldown, resolver/transport classification, complete/partial/unavailable persistence, link restrictions, duplicate rejection, client isolation, unlink events. Synthetic fixtures only; no live call, real credential or mutation.
 
 ## 1.22.0 — verified explicit saved-email sending
 

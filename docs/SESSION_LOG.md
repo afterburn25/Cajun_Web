@@ -1333,3 +1333,97 @@ Tests: native suite extended to cover the v1→v2 ALTER upgrade, revision invali
 Codex review 6177258236 on #107 (`5f624a2`) reproduced two write-boundary gaps, fixed on `devin/twentyi-operations` (`d7006c5`): HTTP 202 and other non-terminal 2xx classify `uncertain` (accepted ≠ completed, RFC9110 §15.3.3); the 256-node request bound now counts every visited value including scalar leaves (a 384-leaf body under 8KiB previously built). Suite now 90 named checks incl. exact-boundary/over-boundary/nested fixtures and the 202-vs-201/204 distinction.
 
 Merged `origin/devin/twentyi-operations` (`d7006c5`) and `origin/devin/twentyi-ledger` (`6ca730f`) into `devin/twentyi-execution` with normal merges. Schema reconciled to v3: v2 adds `profile_revision` (approved-revision binding), v3 adds `scope_params`/`consumed_key`/`consumed_at` (single-use executed grants). `provider_operations_execute` also refuses grants whose approved revision is stale. Union-resolved schema/migration/test/log conflicts; `php -l` clean. Native suites re-run pending CI.
+## 2026-10-14 — Read-only 20i inventory contract (`devin/twentyi-inventory`)
+
+- **Request:** Codex-assigned lane (issue #2 comment 6167449082): a read-only 20i hosting inventory contract/projection on a new branch from main `4fb0c83`, owning `foundation/twentyi-inventory/`, `tests/twentyi-inventory/`, its workflow and contract docs only.
+- **Evidence gathered:** 20i Support Database article "retrieve packages via the API" (docs.20i.com/api/retrieve-packages-api, published 2020-02-18) documents the `GET /package` list-item shape used by the projector; full schemas for detail/types/balance remain behind the My20i Apiary console and are registered as documented-only with unknown shapes.
+- **Changed:** new `foundation/twentyi-inventory/` (`InventoryRead` closed GET descriptors — fixed host, allocated-ID validation, no credential handling; `InventoryPackage` allowlist record with unmapped-key name reporting; `InventorySnapshot` complete/partial/unavailable; `InventoryProjector` status/body classification; `InventoryRegister` evidence-graded capabilities); `tests/twentyi-inventory/run.php`; `.github/workflows/twentyi-inventory.yml`; `docs/TWENTYI_INVENTORY_CONTRACT.md`; continuity docs.
+- **Tests:** 73 named checks pass under PHP 8.4 default and `php -n` locally — descriptor closedness, field allowlist, sensitive-field non-retention, duplicate/mismatched IDs, malformed/truncated/oversized bodies, status classification, register evidence levels. Synthetic scope; no live call, credential, persistence or client linking.
+- **Known limits:** `/package` pagination semantics undocumented; only `packages.list` is projectable. No `site/` mirror, installer hash or route added — integration is Codex-owned.
+- **Next:** open draft PR; monitor Codex integration of the cleared #87–#92 chain.
+
+## 2026-10-14 — Devin: #93 corrections + restacked extension
+
+- Codex review 6170804386 on `3807c23` found four reproducible defects; all corrected at `08fe0ce`:
+  1. json_decode now preserves object/list identity (`{}`/`{"0":...}` are `unexpected_shape`, never empty inventories).
+  2. Snapshots carry caller-supplied `scope` and `coverage=unknown` — response completeness is not account-wide completeness.
+  3. `names` preserved exactly (absent primary name = inconsistency skip); `created` requires a real calendar instant; unmapped keys are printable-UTF-8-safe + `unmappedCount`.
+  4. `InventorySnapshot` validates typed records, non-negative counts, state consistency, and a closed unavailable-reason set.
+- Tests: 93 checks pass PHP 8.4 default and `php -n`.
+- `devin/twentyi-inventory-vps` rebased onto `08fe0ce` at `8003a93` (PR #94); `InventoryResource`/`resourceList` updated to stdClass + scope/coverage; 126 checks green both modes.
+- Reply posted on #93 (6170975671) citing each fix; earlier review deliveries listed for Codex's bookkeeping.
+- Next: await Codex re-review of #93/#94.
+## 2026-10-14 — Devin: #93 second-round corrections + #85 refreshed-head review
+
+- Codex follow-up 6171175612 on `aeb8fc0` found two boundary defects; corrected at `bb042f8`:
+  1. Numeric JSON object keys (int via get_object_vars) crashed `safeKey(string)` under strict types — now cast to exact string; reported by name in `unmappedKeys`.
+  2. `InventoryPackage` constructor is private (factory-only via `fromItem`); `InventorySnapshot` rebuilds packages/skipReasons lists so caller-held references cannot mutate validated observations; `COVERAGE_COMPLETE` rejected outright.
+- 99 checks pass PHP 8.4 default + `php -n` (+6 boundary regressions). Reply 6171257648.
+- `devin/twentyi-inventory-vps` restacked at `1ddeb8a`; `InventoryResource` got the same cast + private ctor; 139 checks green both modes.
+- PR #85 `21ebe69` additive review posted (6171280735): verified 1.23.0 version consistency, regenerated inventory hashes match blob bytes, pinned 1.22.0 baseline SHA `ba90fc84` equals published SHA256SUMS, submission-retention lane preserves no-resend fences and both master keys. CLEAR — merge remains Codex's call.
+- Next: await Codex re-review of `bb042f8`/`1ddeb8a` and #85 merge decision.
+
+## 2026-10-14 — Devin: inventory read extension restacked (hardened base)
+
+- `devin/twentyi-inventory-vps` restacked onto `bb042f8`/`f893a15` at current head (PR #94).
+- `InventoryResource` inherits the second-review hardening: numeric unknown keys cast to string (no TypeError), private constructor (factory-only), snapshot detaches record/reason lists, `COVERAGE_COMPLETE` refused.
+- Four identity-only GET descriptors + enumerable exclusions unchanged; 139 checks green under PHP 8.4 default and `php -n`.
+
+## 2026-10-14 — Devin: explicit read exclusions
+
+- `InventoryRegister::exclusions()` enumerates the documented endpoints refused from the inventory surface: `vps.vnc` (credentials), `vps.stop`/`vps.start` (GET-labelled mutations), `stackusers.grants`/`packages.stackUserList` (access-control identity), `domains.pendingTransferStatus` (unverified transfer detail).
+- Operation keys align with `TwentyICatalog` names; checks assert exclusions never appear in the read set. Contract doc updated; exclusions only tighten the boundary.
+## 2026-10-14 — Devin: complete 20i ownership; authenticated inventory reader (#95 first slice)
+
+- Owner scope override on issue #2 (6171468180): complete end-to-end 20i integration assigned to Devin; Codex retains final review/merge/release coordination. Acknowledged at 6171594708.
+- `devin/twentyi-complete` integration branch created at main `4fb0c83`; pushed.
+- `devin/twentyi-inventory-reader` branched at `f893a15` (devin/twentyi-inventory head); implements `foundation/twentyi-inventory-reader/InventoryReader`:
+  - One bounded request per read; secret resolved once via lazy resolver, attached as `Bearer base64(key)`, never retained.
+  - Refusal before contact for wrong provider, non-evidenced operations (only `packages.list` executes — documented schema + issue #65 evidence), unusable account identity, unresolvable/invalid secret.
+  - Internally derived scope `twenty-i|<account>|<op>`; TransportException → finite kinds; other throws → `transport_unknown`.
+  - New `tests/twentyi-inventory-reader/run.php`: 28 named checks, PHP 8.4 default + `php -n` green; inventory suite unaffected (99/99).
+  - New workflow `twentyi-inventory-reader.yml` (PHP 8.2/8.4 matrix, no-network image); `docs/TWENTYI_INVENTORY_READER.md` contract.
+- Stacked draft PR #99 → `devin/twentyi-inventory` at `76fed7c`.
+- No persistence, routes, UI or live call — those remain in #96/#97 and require operation-specific authorization.
+- Next: #96 persistence/migrations/explicit client linking on `devin/twentyi-complete` after reader review feedback.
+## 2026-10-14 — Devin: refresh orchestration, durable observations, owner linking (#96/#97 slice)
+
+- `devin/twentyi-refresh` branched at `565aa3d` (devin/twentyi-inventory-reader head). Implements the first runnable milestone slice on real application storage.
+- `site/database/schema/provider_inventory_schema.php` + `provider_inventory_migrate.php`: provider_refreshes intents, bounded refresh results, verbatim validated observation_packages rows, unique provider_package_links to studio_clients, link events; owner-password migrate with strict existing-table validation.
+- `site/app/providers/inventory.php`: provider_inventory_refresh mirrors the connection-check protocol (locked intent → DNS → locked re-authority → gated secret resolution → one InventoryReader read → re-authority → bounded durable result). Mid-flight changes record access_changed with no package rows; last good observation never replaced.
+- Explicit `provider_inventory_link`/`unlink` (owner password + exact revision + observed-package + active-client checks, unique target, event trail). No inference from provider fields.
+- Admin `provider-settings` view: prepare/refresh/inventory/link/unlink + link history. Portal `?services` shows the signed-in client's explicitly linked services only. `staff_action_permission` maps `provider_inventory_*` to staff.manage; router dispatches prefix.
+- `site/includes/foundation/twentyi-inventory{,-reader}/` mirrors added; build.py area list extended; installer inventory regenerated clean.
+- `tests/provider_inventory_native.php`: ~30 MariaDB orchestration checks incl. DNS/read races, revocation, audit failure, isolation, secret scan. New `provider-inventory.yml` (PHP 8.2/8.4 + MariaDB 10.11). Not yet CI-verified.
+- Draft PR #100 → devin/twentyi-inventory-reader at ac8f1a6.
+- Next: CI results; HTTP/browser wiring and packaged acceptance; further #97 lifecycle work.
+## 2026-10-14 — Devin: refresh-slice CI corrections complete, 56/56 green (PR #100)
+
+- Parent commit `ac8f1a6`; fixes: `78e9170` (drop duplicate `studio_schema` require), `c5ae70d` (skip duplicate studio table creation — `schema_statements` already creates them), `f8b3ea1` (explicit indexes on FK columns InnoDB auto-indexes: `linked_by`, `actor_id`), `0bcdfc5`+`7019866` (`provider_package_link_events.id` → `BIGINT AUTO_INCREMENT` for insertion-stable ordering; validator collation exception for the numeric id; event inserts drop manual hex ids).
+- Failure sequence on `provider-inventory.yml`: function redeclare → table-exists → auto-index mismatch → link-event ordering nondeterminism (same-second `recorded_at` + random hex id) → numeric-id collation mismatch. Each fixed and re-verified.
+- Final: runs 38591754189 (push) and 38591761386 (pull_request) both report **PASS: 56 native provider inventory assertions** on PHP 8.2 and PHP 8.4 — migration, authorization refusals, revision checks, cooldown, resolver/transport classification, complete/partial/unavailable persistence, last-good preservation, link restrictions, duplicate rejection, client isolation, and ordered unlink events.
+- Continuity docs synced (PROJECT_STATUS, SESSION_HANDOFF, CHANGELOG). No live call/credential/mutation; synthetic fixtures only.
+- Next: report on issues #96/#97 and PR #100; await Codex review; then continue lifecycle reads → hosting operations → domains/VPS behind explicit gates.
+## 2026-10-14 — Devin: stack restacked onto merged main + named-JSON evidence
+
+- Main advanced twice: `4fdb562` (PR #85 hosting/client merge) then `68e4d41` (PR #98 — 1.23 release record + 20i ownership handoff docs). Whole stack rebased: `devin/twentyi-inventory` → `9c1db5a`, `-vps` → `11b1fde`, `-reader` → `11661b5`, `-refresh` → `dcd0ad8`. Docs conflicts resolved by union; no code conflicts.
+- Corrected a topology mistake mid-restack: reader was briefly rebased onto `-vps`; moved back onto `-inv` (its PR #99 base) and `-refresh` followed; the stray `InventoryResource` site mirror was removed and installer inventory regenerated clean.
+- Codex's #99 clearance (6172038729) asked for named JSON results retained as CI artifacts: `tests/twentyi-inventory-reader/run.php` now emits the same named-check JSON shape as the inventory suite, and the workflow mounts a writable `qa/` dir capturing all four reports (reader+inventory × default+no-ini) as run artifacts. Reader head `e53ff2d`; workflow green both cells.
+- Fresh-install wiring added earlier on `-refresh` (`cb93528`): `schema_statements` includes `provider_inventory_schema`, `deploy.php` records `provider_inventory_schema_version`; native suite still 56/56 on both runtimes.
+- `devin/twentyi-complete` advanced to `68e4d41`.
+- Next: Codex review of the restacked PRs; continue lifecycle reads once the slice lands.
+## 2026-10-14 — Devin: stale links, refresh history, deterministic refresh ordering
+
+- Admin providers view: linked packages absent from the latest observation are now listed with an honest absence note and an unlink control (previously vanished, stranding mappings). Added `provider_inventory_history` — bounded per-profile result list rendered under the package table.
+- Fixed nondeterministic last-good/latest selection: `provider_refreshes` gains `seq BIGINT UNSIGNED AUTO_INCREMENT UNIQUE`; all `ORDER BY started_epoch DESC` queries add `,seq DESC`. Same-second refreshes (possible when tests bypass the real 30s cooldown) now order by insertion. Validator allows `auto_increment` on `seq` and `link_events.id` and expects the `seq` unique index.
+- `pi_cool` test helper now shifts epochs uniformly instead of collapsing to one value.
+- New assertions: omitting refresh keeps the mapping; client view reports the linked package absent (`present=false`, `package=null`). **58/58 native assertions** green on PHP 8.2/8.4, push+PR runs 38597806217/38597818733 at `735b79f`.
+- Next: Codex review; continue remaining milestones after this slice lands.
+## 2026-10-14 — Devin: binding corrections for PR #100 review
+
+- Codex requested changes on #100 (comment 6172775622): (P1) a replacement credential context silently reused existing client links — a new account's package data flowed through an old mapping; (P2) `provider_inventory_link` accepted packages from an observation recorded under an older profile revision.
+- Fix at `d830e91`: `provider_refresh_results.key_fingerprint` (installation-bound `hash_hmac` of the key at unseal) binds observations to their credential context; `provider_package_links` persists the approved fingerprint + `profile_revision`. Linking requires the last good observation's revision to equal the submitted current revision. Client reads suppress package data whenever the approved revision/context no longer matches; `provider_inventory_relink` is the explicit owner re-approval path (exact revision + current-revision observation still containing the package; `relink` event). Rotation and account change take the same honest path — key bytes cannot prove account continuity.
+- Schema version 2; appended-column upgrade for version-1 tables (pre-existing links load unverified). Admin view marks stale-context links and offers re-approval only when a current observation supports it; portal shows a pending-review marker.
+- Native suite now 77/77 on PHP 8.2/8.4 (latest push run 38602172014), including 19 new assertions: binding regressions plus the version-1 in-place upgrade path — dropped-column fixture re-migrates, unsupported versions refuse, and a simulated pre-upgrade mapping loads unverified and stays suppressed in the client view (`e3224be`, `07a77c3`).
+- Also per Codex's #94 clearance requests: contract docs on `devin/twentyi-inventory`/`devin/twentyi-inventory-vps` no longer assign linking to Codex (`25f3bee`/`a2e6ded`), and PR #94's body was refreshed to current heads/counts.
+- Next: Codex recheck of #100 at `d830e91`+; continue remaining milestones after review.

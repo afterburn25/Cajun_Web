@@ -1,0 +1,42 @@
+name: 20i inventory contract checks
+
+on:
+  pull_request:
+    paths: ['foundation/twentyi-inventory/**', 'tests/twentyi-inventory/**', '.github/workflows/twentyi-inventory.yml']
+  push:
+    branches: [main, devin/twentyi-inventory]
+    paths: ['foundation/twentyi-inventory/**', 'tests/twentyi-inventory/**', '.github/workflows/twentyi-inventory.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: twentyi-inventory-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  inventory:
+    name: 20i inventory PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - name: Check out the revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Syntax and inventory contract checks using the official PHP image
+        run: |
+          docker run --rm --network none -v "$PWD:/workspace:ro" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            for source in foundation/twentyi-inventory/*.php tests/twentyi-inventory/*.php; do php -l "$source"; done
+            php tests/twentyi-inventory/run.php
+            php -n tests/twentyi-inventory/run.php
+          '
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Synthetic inventory contract checks only: descriptors, allowlist projection and snapshot classification against fixtures derived from public documentation. No live 20i API call, credential, persistence, client linking, route or deployment is exercised.' >> "$GITHUB_STEP_SUMMARY"
