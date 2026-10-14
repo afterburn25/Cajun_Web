@@ -1,5 +1,11 @@
 # Changelog
 
+## Independent execution review in progress — 2026-10-14
+
+Devin retains complete 20i implementation. Review-only branch `codex/review-twentyi-execution` starts at PR #111 source `eaf44442a467ad90a210fc88a0da999cdb48ba6f`; all shipping and canonical foundation bytes remain unchanged. Added a separate synthetic native review harness and PHP 8.2/8.4 MariaDB workflow after the unmodified supplied ledger/execution suites. It probes the actual operations PHP view, required-field approval validation, configured-account replacement and cross-account replay, revocation during the unlocked resolver gap, and HTTP 202 pending result persistence/replay. Positive controls verify ordinary approved dispatch, fresh replacement-account approval and durable credential exclusion. No DNS or provider calls occur.
+
+These are prepared review checks, not yet reproduced findings or passing acceptance. The workflow preserves named results even when behavioral expectations fail. Next: download/inspect exact artifacts, send only reproduced findings to Devin on #111, and keep runtime corrections on his branch. Published 1.23.0 and the separate Codex non-20i acceptance heads remain untouched; the full roadmap is active.
+
 ## Unreleased — 20i write execution path (devin/twentyi-execution)
 
 - `provider_operations_execute` performs one owner-approved provider write: owner password + current profile revision + active exact-scope grant required before any credential is opened or an endpoint address resolved; undocumented or shape-incomplete operations refuse before any ledger claim; missing grants refuse `no_grant` and are audited.

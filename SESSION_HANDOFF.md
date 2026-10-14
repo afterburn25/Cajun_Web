@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Independent execution review in progress — 2026-10-14
+
+Devin retains complete 20i implementation. Review-only branch `codex/review-twentyi-execution` starts at PR #111 source `eaf44442a467ad90a210fc88a0da999cdb48ba6f`; all shipping and canonical foundation bytes remain unchanged. Added a separate synthetic native review harness and PHP 8.2/8.4 MariaDB workflow after the unmodified supplied ledger/execution suites. It probes the actual operations PHP view, required-field approval validation, configured-account replacement and cross-account replay, revocation during the unlocked resolver gap, and HTTP 202 pending result persistence/replay. Positive controls verify ordinary approved dispatch, fresh replacement-account approval and durable credential exclusion. No DNS or provider calls occur.
+
+These are prepared review checks, not yet reproduced findings or passing acceptance. The workflow preserves named results even when behavioral expectations fail. Next: download/inspect exact artifacts, send only reproduced findings to Devin on #111, and keep runtime corrections on his branch. Published 1.23.0 and the separate Codex non-20i acceptance heads remain untouched; the full roadmap is active.
+
 ## Owner allocation override — 2026-10-14
 
 The owner instructed: **“let devin do the complete 20i integration.”** Devin owns the entire implementation: provider adapters, native persistence/migrations and client ownership, admin and client portal screens, hosting lifecycle/controls, domains, VPS/cloud, support handoffs and VPS SSH, with their tests and documentation. This supersedes earlier component-only assignments and statements reserving all 20i application/UI work to Codex. Codex retains non-20i development and final independent review, combined acceptance, merge/release coordination. [Full handoff and acceptance](docs/DEVIN_COMPLETE_20I_HANDOFF.md); [authoritative GitHub assignment](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171468180).

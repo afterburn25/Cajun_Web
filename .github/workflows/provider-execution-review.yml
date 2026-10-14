@@ -1,0 +1,66 @@
+name: Independent provider execution review
+on:
+  push:
+    branches: [codex/review-twentyi-execution]
+    paths: ['tests/provider_execution_review.php', '.github/workflows/provider-execution-review.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: independent-provider-execution-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-operations:
+    name: Provider operations PHP ${{ matrix.php }} and MariaDB
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    services:
+      database:
+        image: mariadb:10.11
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Prepare official PHP with PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-provider-ops -f tests/invitations/Dockerfile tests/invitations
+      - name: Native operation ledger and owner grant tests
+        run: |
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-provider-ops sh -ec '
+              for source in site/app/providers/*.php site/database/schema/provider_operations_schema.php site/database/migrations/provider_operations_migrate.php foundation/provider/*.php foundation/twentyi-operations/*.php tests/provider_operations*.php tests/provider_execution_review.php; do php -l "$source"; done
+              php tests/provider_operations_native.php
+              php tests/provider_operations_execute_native.php
+              php tests/provider_execution_review.php
+            '
+      - name: Preserve named storage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-execution-review-${{ matrix.php }}-${{ github.sha }}
+          path: |
+            qa/provider-operations-native-results.json
+            qa/provider-execution-native-results.json
+            qa/provider-execution-review-results.json
+          if-no-files-found: warn
+          retention-days: 14
