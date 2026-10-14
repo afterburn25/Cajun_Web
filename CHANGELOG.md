@@ -11,6 +11,13 @@ Preserve mail main1.22 while combining guarded client administration and reviewe
 
 - `foundation/twentyi-inventory/`: closed documented GET descriptors (packages list/detail/types, balance, VPS/managed-VPS/domain lists, service-change data), allowlist package projection, identity-only resource records for schema-less lists, honest complete/partial/unavailable snapshots with caller-bound scope and unknown coverage, an evidence-graded capability register and an enumerable exclusion list (credential-bearing and GET-mutating endpoints refused). Contract-only; no live calls, persistence, routes or client linking.
 
+## Unreleased — 20i inventory application slice (`devin/twentyi-refresh`)
+
+- Owner-triggered provider inventory: durable refresh intent + bounded result rows, verbatim validated `provider_observation_packages`, explicit owner→client `provider_package_links` against `studio_clients`, and ordered `provider_package_link_events` (auto-increment id for insertion-stable ordering).
+- Refresh orchestration mirrors the connection-check protocol: staff-locked intent, private-DNS refusal, mid-flight authority rechecks downgrading to `access_changed`, lazy secret resolution at the transport boundary, cooldown, and last-good preservation on unavailable refreshes.
+- Admin provider-settings section (prepare/refresh/link/unlink/history) and portal `?services` view showing only explicitly linked services. `staff_action_permission` maps `provider_inventory_*` to `staff.manage`.
+- `tests/provider_inventory_native.php` + `provider-inventory.yml`: 56 native MariaDB assertions on PHP 8.2/8.4 — authorization refusals, revision checks, cooldown, resolver/transport classification, complete/partial/unavailable persistence, link restrictions, duplicate rejection, client isolation, unlink events. Synthetic fixtures only; no live call, real credential or mutation.
+
 ## 1.22.0 — verified explicit saved-email sending
 
 - Explicit saved-message review, unchecked confirmation and Send; private author history, separate To/Cc/Bcc, current mailbox/Send grants and exact revisions.
