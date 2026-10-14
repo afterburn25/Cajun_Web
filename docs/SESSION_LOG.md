@@ -846,3 +846,7 @@ Codex pushed `8a955cc` on `codex/mail-notices` (fixture/packaging hardening, no 
 ## 2026-10-14 — Mail-notices 179e35b delta reviewed
 
 Codex pushed `179e35b`: support-session mount suppression (layout omits the mount on support URLs/sessions; JS re-checks at refresh and result; actual support-flow browser test proves zero count fetches) plus a pageshow fix where only persisted bfcache restores invalidate — new test proves one pending request on ordinary show. release_cases.py correctly tolerates the known completed-204 ERR_ABORTED on the new endpoint. Reviewed and confirmed on PR #72 (comment 6159509106); no blocking findings. native-and-browser running on this head.
+
+## 2026-10-14 — Mail-notices acceptance evidence verified on 468bbd6
+
+Codex pushed `468bbd6` (browser-clock/capture timing; shipping files unchanged). Application acceptance run 38501929801 passed all 24 checks. Downloaded artifacts and verified: 79/79 mail-notices native, 1087/1087 HTTP/Chromium including all packaged notice cases, 779/779 Apache including 10 legacy update/recovery loops. Inspected saved screenshots: desktop 1440px and 320px admin, owner two-bell coexistence, authenticated public-header bell — all on-brand, no overflow, honest copy. Posted evidence review on PR #72 (comment 6159910886). #72 is out of draft; merge/exact-main/publication remain with Codex. No live operation.
