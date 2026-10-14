@@ -1,5 +1,9 @@
 # Session handoff — read before continuing
 
+## Current work — design payment schedule contract
+
+Codex starts codex/design-payment-schedules from preserved planning113/7612db4. [The contract](docs/DESIGN_PAYMENT_SCHEDULES_CONTRACT.md) defines immutable proposal-bound item prices, fixed/percentage deposits, milestone installments and exact final balances, followed by native consent, invoice issuance and actual checkout. This first increment has no implementation or new test result yet. Published1.23 and active planning acceptance38637818341 are unchanged; Devin owns complete20i. Next: implement and test exact financial records, then native storage and real staff/client workflow.
+
 ## Current work — planning forms, dashboard and personal updates
 
 `codex/project-planning-screens` preserves native PR112/`5e44a6b`; contract `77f92db` precedes implementation. The existing project page now edits scope/contact/date/actions/blockers and structured milestones, while clients see the saved plan and dated snapshots. Personal planning activity opens the exact authorized revision; stale drafts keep their original request/version. Owner setup remains explicit. [Usage and evidence](docs/PROJECT_PLANNING.md); [interface contract](docs/PROJECT_PLANNING_SCREENS_CONTRACT.md).
