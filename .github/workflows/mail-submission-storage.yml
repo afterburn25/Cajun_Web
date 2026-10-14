@@ -2,9 +2,9 @@ name: Mail submission storage checks
 on:
   push:
     branches: [main, codex/mail-submission]
-    paths: ['site/app/mail/**', 'site/database/**', 'site/includes/foundation/mail-submission/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_submissions_native.php', '.github/workflows/mail-submission-storage.yml']
+    paths: ['site/app/mail/**', 'site/database/**', 'site/includes/foundation/mail-submission/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_submissions_native.php', 'tests/mail_submission_dispatch_native.php', '.github/workflows/mail-submission-storage.yml']
   pull_request:
-    paths: ['site/app/mail/**', 'site/database/**', 'site/includes/foundation/mail-submission/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_submissions_native.php', '.github/workflows/mail-submission-storage.yml']
+    paths: ['site/app/mail/**', 'site/database/**', 'site/includes/foundation/mail-submission/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_submissions_native.php', 'tests/mail_submission_dispatch_native.php', '.github/workflows/mail-submission-storage.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -51,16 +51,21 @@ jobs:
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-submission-storage sh -ec '
               php -l site/app/mail/submissions.php
+              php -l site/app/mail/submission_dispatch.php
               php -l site/database/schema/mail_submissions_schema.php
               php -l site/database/migrations/mail_submissions_migrate.php
               php -l tests/mail_submissions_native.php
               php tests/mail_submissions_native.php
+              php -l tests/mail_submission_dispatch_native.php
+              php tests/mail_submission_dispatch_native.php
             '
       - name: Preserve named native evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: mail-submission-storage-${{ matrix.php }}-${{ github.sha }}
-          path: qa/mail-submissions-native-results.json
+          path: |
+            qa/mail-submissions-native-results.json
+            qa/mail-submission-dispatch-native-results.json
           if-no-files-found: error
           retention-days: 14

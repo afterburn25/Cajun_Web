@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — server-only email submission orchestration
+
+- Connect immutable preparation, full DNS validation, current authority, audited dispatch fences and bounded SMTP through an internal coordinator. Stable replay performs no further work; uncertain delivery cannot retry automatically. No route or Send UI is activated.
+- Storage85 checks verified per PHP8.2/8.4 at4d68e6e. Add separate native orchestration/audit/permission/concurrency fixtures; execution pending.
+
 ## Unreleased — unwired submission persistence
 
 - Add guarded additive immutable intent/dispatch/result storage with current author/Send/revision gates, stable replay, strict audit and exact private-content/attempt binding. Prepare MariaDB concurrency/native evidence; not yet verified.
