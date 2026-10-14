@@ -505,6 +505,21 @@ PR #50 merged at cefcc41bcd5297715f2a49d6526900ebe8ad4eb4; exact-main acceptance
 
 Next-increment preparation while exact-main acceptance ran: an isolated local estimator adapter draft matched the current shipping calculator across 1,512 priced/missing/malformed/quantity cases on PHP 8.4, without database access or shipping changes. This is prototype parity evidence only; component guards, actual application integration and native/browser/upgrade acceptance remain required. Devin correction priority reiterated in issue #2 comment 6150049591; no acknowledgment or completed fixes inferred.
 
+### 2026-10-13 — Devin A-01 lead-pipeline foundation
+
+**Request:** "Continue Without Stopping" — next feasible roadmap item (A-01 board/lead contract layer, no external gate).
+
+**Starting commit:** `main` `02fc784` (published 1.11.0 baseline). New branch `devin/pipeline-foundation`.
+
+**Changed:** added `foundation/pipeline/` (PipelineStage, PipelineBoard, LeadRecord), `tests/pipeline/run.php`, `docs/PIPELINE_FOUNDATION.md`, `.github/workflows/pipeline.yml`, and additive continuity entries. No `site/` or shared-path changes.
+
+**Tests:** `php tests/pipeline/run.php` — 31 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: board validation (duplicates, dangling refs, missing initial), transition rules, terminal won state, re-open path, link typing/dedup, follow-up validation, actor-attributed history.
+
+**Failures:** none.
+
+**Blockers:** none for the contract layer; persistence/permissions/UI remain Codex integration work.
+
+**Next:** PR `devin/pipeline-foundation`; queue now 14 open Devin PRs awaiting Codex sequencing.
 ### 2026-10-13 — Devin L-02 review corrections (PR #31)
 
 **Request:** Codex review findings on #31 (issuecomment-6149702908), prioritized per `DEVIN_HANDOFF_1.11.1.md` before new isolated components.
