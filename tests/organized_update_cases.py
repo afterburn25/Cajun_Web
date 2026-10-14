@@ -26,17 +26,19 @@ def run(web,base,check,qa,php,label,prefix,version):
         assert p.returncode==0,p.stderr
         return json.loads(p.stdout)
     before=records('seed')
-    prior_templates=records('templates') if version in ['1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0'] else None
-    prior_accounts=records('mail-accounts') if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0'] else None
-    prior_key=(private/'mail-master.key').read_bytes() if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0'] else None
-    prior_review=records('review-intake') if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0'] else None
-    prior_reports=records('reviews') if version in ['1.14.0','1.15.0','1.16.0','1.17.0'] else None
-    prior_appointment=records('appointment-intake') if version in ['1.14.0','1.15.0','1.16.0','1.17.0'] else None
-    prior_schedule=records('appointments') if version in ['1.15.0','1.16.0','1.17.0'] else None
-    if version in ['1.16.0','1.17.0']:records('mail-checks-seed')
-    prior_checks=records('mail-checks') if version in ['1.16.0','1.17.0'] else None
-    if version=='1.17.0':records('inbox-seed')
-    prior_inbox=records('inbox') if version=='1.17.0' else None
+    prior_templates=records('templates') if version in ['1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0'] else None
+    prior_accounts=records('mail-accounts') if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0'] else None
+    prior_key=(private/'mail-master.key').read_bytes() if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0'] else None
+    prior_review=records('review-intake') if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0'] else None
+    prior_reports=records('reviews') if version in ['1.14.0','1.15.0','1.16.0','1.17.0','1.18.0'] else None
+    prior_appointment=records('appointment-intake') if version in ['1.14.0','1.15.0','1.16.0','1.17.0','1.18.0'] else None
+    prior_schedule=records('appointments') if version in ['1.15.0','1.16.0','1.17.0','1.18.0'] else None
+    if version in ['1.16.0','1.17.0','1.18.0']:records('mail-checks-seed')
+    prior_checks=records('mail-checks') if version in ['1.16.0','1.17.0','1.18.0'] else None
+    if version in ['1.17.0','1.18.0']:records('inbox-seed')
+    prior_inbox=records('inbox') if version in ['1.17.0','1.18.0'] else None
+    if version=='1.18.0':records('messages-seed')
+    prior_messages=records('messages') if version=='1.18.0' else None
     check(label+' retained schema contains meaningful client project and invoice records',all(before[n]['count']>0 for n in before))
     session.get(url+'/admin/index.php?view=login')
     probe=root/'cache-probe.php';probe.write_text("<?php echo json_encode(['enabled'=>opcache_get_status(false)['opcache_enabled']??false,'timestamps'=>ini_get('opcache.validate_timestamps'),'cached'=>opcache_is_script_cached(__DIR__.'/config/defaults.php')]);")
@@ -183,3 +185,20 @@ def run(web,base,check,qa,php,label,prefix,version):
         mail=url+'/admin/index.php?view=mail-account&account_id='+account['id']
         r=session.post(mail,data={'csrf':token(session.get(mail)),'action':'mail_accounts_save','account_id':account['id'],'revision':account['revision'],'current_password':password,**{k:account[k] for k in ['label','address','imap_host','imap_port','imap_encryption','imap_username','smtp_host','smtp_port','smtp_encryption','smtp_username','enabled']},'imap_password':'','smtp_password':''})
         check(label+' original private key decrypts after message update recovery','Email settings saved' in r.text and records('mail-accounts')['accounts'][0]['revision']==account['revision']+1 and (private/'mail-master.key').read_bytes()==prior_key)
+
+    if version=='1.18.0':
+        def prior_retained():
+            return records('messages')==prior_messages and records('mail-checks')==prior_checks and records('appointments')==prior_schedule and records('reviews')==prior_reports and records('mail-accounts')==prior_accounts and records('templates')==prior_templates and (private/'mail-master.key').read_bytes()==prior_key
+        check(label+' update preserves nonempty message and prior history',len(prior_messages['requests'])==1 and records('inbox')==prior_inbox and prior_retained())
+        library=url+'/admin/index.php?view=mail-accounts';center=url+'/admin/index.php?view=mail-notices';endpoint=url+'/api/mail-notices.php'
+        check(label+' updated notices wait for owner preparation','must prepare' in session.get(center).text and session.get(endpoint).status_code==204)
+        r=session.post(library,data={'csrf':token(session.get(library)),'action':'mail_notices_setup','current_password':password})
+        check(label+' owner enables empty additive notice storage','Email notice storage is ready' in r.text and records('notices')=={'windows':[],'items':[],'states':[]})
+        records('notices-seed');saved_notices=records('notices');saved_inbox=records('inbox')
+        check(label+' synthetic committed observation and local dismissal survive projection',len(saved_notices['windows'])==1 and len(saved_notices['items'])==2 and len(saved_notices['states'])==1 and session.get(endpoint).json()['count']==1 and 'Last successful inbox check' in session.get(center).text)
+        check(label+' notice setup preserves original account key and all earlier history',prior_retained() and all(q in saved_inbox['requests'] for q in prior_inbox['requests']) and all(q in saved_inbox['results'] for q in prior_inbox['results']))
+        r=action('recover');check(label+' file recovery retains nonempty notice state and original key','<h2>Rolled-back</h2>' in r.text and records('notices')==saved_notices and records('inbox')==saved_inbox and prior_retained())
+        r=action('apply');check(label+' reapplication recognizes retained notices without resetting local state','<h2>Complete</h2>' in r.text and records('notices')==saved_notices and session.get(endpoint).json()['count']==1 and records('inbox')==saved_inbox and prior_retained())
+        account=prior_accounts['accounts'][0];mail=url+'/admin/index.php?view=mail-account&account_id='+account['id']
+        r=session.post(mail,data={'csrf':token(session.get(mail)),'action':'mail_accounts_save','account_id':account['id'],'revision':account['revision'],'current_password':password,**{k:account[k] for k in ['label','address','imap_host','imap_port','imap_encryption','imap_username','smtp_host','smtp_port','smtp_encryption','smtp_username','enabled']},'imap_password':'','smtp_password':''})
+        check(label+' recovered private key decrypts and changed generation hides old notices','Email settings saved' in r.text and records('mail-accounts')['accounts'][0]['revision']==account['revision']+1 and (private/'mail-master.key').read_bytes()==prior_key and session.get(endpoint).json()['count']==0 and records('notices')==saved_notices)

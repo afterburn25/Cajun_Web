@@ -1,6 +1,6 @@
 # Bounded A-08 application contract — recent email notices
 
-Prepared against merged message-reader source `91550d956c404585545dbd766c96f36f58ae0623` while exact-main 1.18.0 release acceptance runs. Design only; nothing below is implemented yet. Full A-08 still includes synchronized provider unread state, previews and provider flag changes; this increment must be labeled **recent email notices** and must not claim that complete capability.
+Implemented as the unreleased 1.19.0 candidate in draft PR #72, based on published/download-verified 1.18.0 source `91550d956c404585545dbd766c96f36f58ae0623`. Storage baseline 257a2fc passes 57 named native checks on PHP 8.2/8.4; current reader/UI/recovery acceptance is pending. Devin independently reviewed the design/storage baseline with no blocking findings in #62 comment 6158976121; the newer integration needs its own review. Full A-08 still includes synchronized provider unread state, previews and provider flag changes; this increment must be labeled **recent email notices** and must not claim that complete capability.
 
 ## Ownership and baseline
 

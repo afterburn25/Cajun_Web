@@ -1,8 +1,10 @@
 # Changelog
 
-## Unreleased — recent email notice reader/UI integration
+## 1.19.0 candidate — recent email notices (unreleased)
 
 Connected strict successful read transactions to the local notice window and per-staff opened state; added owner setup, fresh empty schema, recent-notice page, exact message POST/dismiss actions and private count endpoint. Neutral public/admin header bells refresh local metadata only and preserve idle expiry. Added native reader-hook/rollback/concurrency cases. Storage-only baseline 257a2fc passes 57 checks on each PHP 8.2/8.4 runner; new integrated/native/browser/package acceptance is pending. This does not activate automatic inbox synchronization or sending.
+
+Added actual packaged HTTP/Chromium cases, private endpoint/current-grant and mobile/keyboard/lifecycle checks, and immutable 1.18.0 update/recovery cases with nonempty new state retained. Independent storage/contract review is complete; new integrated review and exact-source acceptance remain pending. Candidate version and generated installer/inventory agree at 1.19.0.
 
 ## Unreleased — recent email notice storage preparation
 

@@ -1,5 +1,16 @@
 # Architecture notes
 
+## Active candidate — 1.19.0 recent email notices
+
+Codex owns `codex/mail-notices` / [draft PR #72](https://github.com/afterburn25/Cajun_Web/pull/72). Reader hooks, exact-message notice POSTs, per-staff dismissal, private count/page routes, admin/public header bells and fresh/additive storage are implemented. The bounded list describes only the newest 20 messages from each inbox's last explicit successful check. Passive polling uses local metadata, preserves idle expiry and clears its display on lifecycle/authority changes. [Owner guide](RECENT_EMAIL_NOTICES.md); [contract](MAIL_NOTICES_CONTRACT.md).
+
+Accepted evidence so far: storage-only baseline `257a2fc` has 57 named passing native checks on each PHP 8.2/8.4 runner in downloaded [run 38495481132](https://github.com/afterburn25/Cajun_Web/actions/runs/38495481132). Devin's [independent baseline review](https://github.com/afterburn25/Cajun_Web/pull/62#issuecomment-6158976121) resolves the contract findings with no blocking issue. Reader/UI commit `10b0627` has local syntax/generated checks; its native and application runs were still queued when this record was written. Do not substitute the baseline's 57 checks for integrated acceptance.
+
+Current source adds production-hook rollback/concurrent-process cases, actual packaged synthetic-TLS HTTP/Chromium cases and immutable 1.18.0 update/recovery fixtures with nonempty notice state and original-key retention. Version labels are 1.19.0 candidate; 21 starting packages are declared (1.0.8 and 1.1.0–1.18.0 including 1.11.1/1.11.2), pending exact acceptance. Locally verified the 1.18.0 COMPLETE/UPDATE archive hashes and source/member/shim inventories before adding the baseline. Published 1.18.0 tags/assets stay unchanged.
+
+Next: run and fix current native/application/browser/Apache/recovery checks, inspect actual desktop/mobile images and anonymous homepage parity, get independent review of the new reader/UI code, then test combined main and verify all release downloads before publishing claims. Preserve separate provider work #43/#71. No automatic mailbox synchronization, mail sending, real mailbox/provider write, charge, SSH or deployment is authorized by these fixtures. The full roadmap continues.
+
+
 ## Latest verified publication — 1.18.0
 
 [v1.18.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.18.0) is published and freshly downloaded/verified at immutable source/tag `91550d956c404585545dbd766c96f36f58ae0623` through [PR #70](https://github.com/afterburn25/Cajun_Web/pull/70). Assigned staff can explicitly open exact INBOX messages with current actor, global/read assignment and saved revision, verified TLS and exact UIDVALIDITY/UID/size checks. Escaped plaintext and maintained sanitized formatting appear in an opaque sandbox with restrictive CSP; server read flags stay unchanged. Whole MIME is limited to 256 KiB including encoded attachments. Strict intent/result audit, request limits and personal outcome history retain no message content. [Owner guide](MAIL_MESSAGE_READER.md).
