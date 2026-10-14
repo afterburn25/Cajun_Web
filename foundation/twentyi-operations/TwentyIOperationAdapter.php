@@ -95,6 +95,10 @@ final class TwentyIOperationAdapter implements ProviderAdapter
 
         try {
             $response = $transport->send($request);
+        } catch (InvalidArgumentException) {
+            // A transport-side request refusal happens provably before
+            // any send — failed, never uncertain.
+            return OperationResult::failed($operation->name, 'The request was refused before send.', 'refused');
         } catch (TransportException $e) {
             return TwentyIResultClassifier::fromTransportFailure($operation->name, $e);
         }

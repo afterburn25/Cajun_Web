@@ -108,6 +108,10 @@ try {
     $scripted=[new TransportException('connect')];
     $r=pe_exec($profile,1,$grant5,'idem-create-5',$password);
     pe_ok('Pre-send failure is a clean failed','failed'===$r->status);
+    $grant5b=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d2c.example'],$password);
+    $scripted=[new InvalidArgumentException('Unsupported provider write request.')];
+    $r=pe_exec($profile,1,$grant5b,'idem-create-5b',$password);
+    pe_ok('A transport-side refusal is provable pre-send failed, not uncertain','failed'===$r->status&&$r->providerCode==='refused');
     $scripted=[];
 
     // ---- access change mid-send ----

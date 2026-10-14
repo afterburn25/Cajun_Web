@@ -1338,3 +1338,8 @@ Merged `origin/devin/twentyi-operations` (`d7006c5`) and `origin/devin/twentyi-l
 ## 2026-10-16 — Devin: hostname-list children join the shared node budget
 
 Codex follow-up review on `d7006c5` verified both original corrections but found `hostname_list` children bypassed the 256-node bound (counted 4 containers + 64 uncounted hostnames + 189 map values = 257 values accepted). `TwentyIRequestBuilder::bounded` now increments the shared node budget per hostname-list child. Added Codex's exact mixed fixtures: 64 `extra_domain_names` + 188 `documentRoots` = 256 builds; +189 = 257 refuses. 92/92 synthetic checks on default and no-ini modes.
+
+
+## 2026-10-16 — Devin: write transport branch closes a false-uncertain defect
+
+Inspection found `FixedHttpTransport::validate` refused every non-GET request as "Unsupported provider probe request"; the exception escaped the adapter's `TransportException` catch and surfaced through the generic handler as `uncertain` — a request that provably never sent would sit in the reconcile queue forever. `send()` now supports a strict write branch: POST only, URL must be `https://api.20i.com/` + bounded path charset, JSON body ≤8KiB, Authorization+Accept+Content-Type headers only — identical TLS/resolve/no-redirect/proxy-refusal socket discipline and credential-echo refusal as the probe. The adapter catches `InvalidArgumentException` from send as provable pre-send `failed` (code `refused`). Credential resolution, authorize callbacks and header attachment remain at the send boundary. Synthetic ops suite 92/92; native execution suite gains a transport-refusal assertion (pending MariaDB lane).
