@@ -1,5 +1,7 @@
 # Email account preparation — bounded A-06
 
+Current [1.19.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.19.0) adds recent notices and admin/public email bells from explicit newest-20 inbox checks. Upgraded owners prepare notice storage in Email accounts. [Owner workflow](RECENT_EMAIL_NOTICES.md). The count is last-checked metadata, not full unread synchronization; opening/dismissal stays local and server flags remain unchanged. Earlier checkpoints below retain their historical scope.
+
 Current [1.18.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.18.0) adds explicit individual-message opening to assigned recent inbox headers. Upgraded owners prepare message reading in Email accounts; readers use My email accounts → Open inbox → Load recent headers → Open message. See [individual email reading](MAIL_MESSAGE_READER.md). Whole messages above 256 KiB (including attachments) use a regular mail app. Sending, attachment downloads and automatic synchronization remain incomplete. Older release notes below retain their historical scope.
 
 Current [1.17.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.17.0) includes explicit recent-header reading from assigned accounts. After an upgrade, prepare inbox reading in Email accounts, assign each reader Read access, then open My email accounts → Open inbox. See the [inbox guide](MAIL_INBOX_READER.md). Existing website email remains separate; bodies, attachments and sending are not yet available. Older preparation-only notes below describe their earlier release.
