@@ -1,5 +1,15 @@
 # Working agreement for CajunWebPro
 
+## Current preparation — service-agreement form and rendering helpers
+
+Separate `codex/service-plan-screens` preserves storage PR91/71d7efe through committed screen contractb98fdf1. New strict form parsers reuse the exact existing cents parser, retain original request identities/revisions after errors and exclude passwords/confirmation from redisplay. Shared escaped term/history/form helpers show exact service prices, unchecked agreement boxes and explicit separation from automatic payment authorization. No route, controller action, list or navigation is activated yet.
+
+Local PHP8.4 default/no-ini each pass77 named parsing/rendering checks. This is pure template evidence, not HTTP, current-authority or CSRF-enforcement acceptance. Existing storage/models remain unchanged. Parent91 push38573820896/38573821070 and PR38573827729/38573827714 are downloaded/verified:740 model/document plus174 native executions per pair; PR checkout2091482. Full parent application38574289104 and exact Windows build remain running; independent storage review is pending. Current screen-source matrices and combined acceptance remain pending.
+
+Next: implement bounded current-authorized lists, owner/client controllers and routes against the committed contract, then actual packaged HTTP/Chromium, screenshots and complete update/Apache acceptance. No new release or deployment. [Screen contract](docs/SERVICE_PLAN_SCREENS.md).
+
+## Earlier checkpoints — historical evidence
+
 ## Current work — saved service terms and exact client agreement
 
 Codex owns `codex/service-plan-records`, based on preserved import PR90/148606f and its candidate85/21ebe69 ancestry. This bounded HC-06/HC-11 increment adds private plan/subscription documents, additive storage and current owner/client operations. Published1.22/e3b434f, candidate85 and original Devin53 remain unchanged. Hosting deletion/reconciliation87–89 are separate.

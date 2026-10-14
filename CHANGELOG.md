@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — prepared service-agreement form components
+
+Add strict exact-price/intent/confirmation parsing and escaped shared terms/history/form rendering. Passwords are excluded from redisplay, confirmation remains unchecked and service agreement is distinguished from payment authorization. Routes and actions remain unconnected.
+
 ## Unreleased — service-plan records and client agreement
 
 Add owner-authored immutable service terms, exact client offers/consent, local enrollment transitions and atomic audited storage. Bound history while retaining room for cancellation/retirement. No plan UI, recurring charge, scheduler or release activation. [Contract](docs/SERVICE_PLAN_RECORDS.md).

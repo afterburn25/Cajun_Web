@@ -1288,3 +1288,7 @@ Owner requested continued roadmap implementation. Start preserved service-plan i
 ## 2026-10-14 — agree owner/client service-plan screen boundary
 
 Start storage71d7efe on separate codex/service-plan-screens. Commit SERVICE_PLAN_SCREENS contract before dependent route/UI work; source, schema, installer and release remain unchanged. Parent native/model matrices are downloaded and verified. Next implement bounded current-authorized lists, strict forms, escaped owner/client views and real browser acceptance. No screen or production activation is claimed.
+
+## 2026-10-14 — prepare exact service-agreement form and rendering components
+
+Start committed screen contractb98fdf1 over storage71d7efe. Add bounded scalar/price/terms/intent/confirmation parsing and shared escaped form/terms/history helpers with77 checks per PHP8.4 default/no-ini mode. Preserve password exclusion, old failed request versions and unchecked confirmations. Prepare focused CI, full-suite invocation and private Apache denial paths. Parent storage stays unchanged with914 verified model/native executions per push/PR pair, full application38574289104 still running. No current-authorized list/controller/route/nav activation or browser acceptance yet. Next implement that layer and verify actual packaged flows before review/integration; no release or deployment.

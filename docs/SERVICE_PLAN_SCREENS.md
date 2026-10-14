@@ -1,5 +1,9 @@
 # Owner and client service-agreement screens
 
+## Prepared components
+
+The form parser and shared escaped rendering functions are implemented, with77 named PHP8.4 checks in each default/no-ini mode. They are not called by a route yet. Current-authorized lists, controller actions, router/navigation integration and HTTP/Chromium acceptance remain pending. Screens are not released or usable merely because these pure functions pass.
+
 Prepared Codex contract from storage PR91/71d7efecb09f0eb3f78b8b147363077badf2bdd0 on `codex/service-plan-screens`. This contract does not activate a route. Storage and its independent review remain separate; [saved terms contract](SERVICE_PLAN_RECORDS.md) governs every mutation.
 
 ## Owned scope
