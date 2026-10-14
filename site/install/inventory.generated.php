@@ -175,7 +175,7 @@ function setup_expected_files(): array { return [
     'database/schema/activity_schema.php'=>'9f49b4015b2586ea9b3d85524457339c6d68cbbb11a300959711343c080fe39e',
     'database/schema/appointments_schema.php'=>'425af919f50e6b519547915715995b8d25771244cc4857f236debfd3f836dfac',
     'database/schema/attempts_schema.php'=>'829320b6b6e8f692586406ce844b31a70185d7352a4fdab7fa41d0d2fd3b5d63',
-    'database/schema/base.php'=>'1e57e602cdf788ed46474124eedcba7de2a7805c55faccd896eafd733bb4f200',
+    'database/schema/base.php'=>'f4b70ef8a077205c6f2087370bdda609f3f2d1f9ca41e29712a9ceb432e0971d',
     'database/schema/catalog_schema.php'=>'fb26ad24cca1686b8aae78083532e1d1eeba70b700551c3774feb0697acb0f53',
     'database/schema/catalog_validate_schema.php'=>'bf373562404042bc23437bc3a213900d39b9b6ce52bd6df1b88f267c84ef661b',
     'database/schema/delivery_schema.php'=>'03bd6c1ece50aa89a0cd2f811df3e71daa3222b8875e22ecdd2fc7e82c10dfb3',
