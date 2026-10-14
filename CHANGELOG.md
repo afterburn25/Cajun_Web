@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — provider settings contract preparation
+
+Claim an isolated owner20i settings/read-only check contract after the1.19 email increment. Documentation only; no API call, application feature, release or deployment.
+
 ## 1.18.0 — verified individual email reading
 
 - Assigned staff explicitly open an exact INBOX message under current account/actor/global and mailbox permissions, saved revision, UIDVALIDITY/UID and size checks. Verified TLS and BODY.PEEK preserve server read flags.

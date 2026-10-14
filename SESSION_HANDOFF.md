@@ -1,5 +1,12 @@
 # Session handoff — read before continuing
 
+## Next bounded preparation — owner 20i settings
+
+Codex claims `codex/provider-settings` from main44926230a2359cf82793eb3cdd55fe940bbb786f, verified1.18.0 publication documentation. This branch contains a proposed [HC-07 application contract](docs/PROVIDER_SETTINGS_CONTRACT.md) only: protected owner configuration, explicit read-only package-list connection check and sanitized history. No new code, network request, capability, release or deployment is claimed. The prior owner-requested GET/package succeeded (issue65 comment6154083380); other operations remain unverified.
+
+Current release priority remains mail-notices [PR72](https://github.com/afterburn25/Cajun_Web/pull/72), whose468bbd6 candidate passes1153 native,3084 estimator,1087 HTTP/Chromium and20 builder checks with actual screenshots inspected; full recovery/exact-main/release acceptance is pending. Finish that increment, then reconcile this branch with its verified main baseline before integrating provider application code. Devin retains canonical PR43; inspect its current head before import and preserve ancestry without overwriting newer shared files. Contract review is requested separately; posting an assignment does not establish receipt or execution. No production action.
+
+
 ## Latest verified publication — 1.18.0
 
 [v1.18.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.18.0) is published and freshly downloaded/verified at immutable source/tag `91550d956c404585545dbd766c96f36f58ae0623` through [PR #70](https://github.com/afterburn25/Cajun_Web/pull/70). Assigned staff can explicitly open exact INBOX messages with current actor, global/read assignment and saved revision, verified TLS and exact UIDVALIDITY/UID/size checks. Escaped plaintext and maintained sanitized formatting appear in an opaque sandbox with restrictive CSP; server read flags stay unchanged. Whole MIME is limited to 256 KiB including encoded attachments. Strict intent/result audit, request limits and personal outcome history retain no message content. [Owner guide](docs/MAIL_MESSAGE_READER.md).
