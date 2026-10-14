@@ -205,3 +205,21 @@ Owner instruction: “let devin do the complete 20i integration.” Devin's prio
 ## 2026-10-14 — retain consent model before persistence
 
 Preserve Devin service-plan source and history by ordinary merge; mirror canonical code rather than reimplementing consent semantics. Durable owner-authored terms/revisions and authenticated exact-client consent must precede client activation, invoices or renewals. Importing a model is not a subscription or billing feature.
+
+## Preserved hosting branch checkpoint
+
+## 2026-10-14 — deletion retry retains the original current approver
+
+A canonical deletion retry arms an attempt immediately, so it must commit its dispatch fence in the same guarded transaction. Require the original second approver to remain a current owner and retain the original retention confirmation, rather than letting any owner inherit a destructive approval. Ordinary dispatch input bytes remain unchanged; a retry discriminator prevents action identity reuse. Approval transfer and unknown-outcome reconciliation remain separate reviewed workflows. See [contract](HOSTING_DEPROVISION_RETRY.md).
+
+## 2026-10-14 — distinct state-only reconciliation command
+
+A new command records observed outcomes without scheduling a second action. Preserve the historical rearming command rather than silently rewriting serialized journal semantics, and keep the application refusing both until durable evidence storage exists. Negative deletion confirmation holds failed without a pending attempt; a separate current-original-approver retry must fence its own new attempt. Unknown or partial inventory never proves absence. [Contract and next persistence requirements](HOSTING_RECONCILIATION.md).
+
+## 2026-10-14 — evidence identity is not provider verification
+
+Retain opaque evidence references/digests and exact dispatch/prefix bindings, without accepting a raw operator assertion or mapping partial inventory to absence. Current adapter requires the original unresolved result; missing results remain blocked until a separate verified crash recovery path exists. Conclusive evidence commits state without a new dispatch; authorization for retries stays separate. Isolate this storage increment on a child branch while parent88 acceptance runs.
+
+## 2026-10-14 — reserve resolution beyond unknown-history bound
+
+Keep at most32 immutable inconclusive observations per committed dispatch and bound validation reads. This prevents endless repeated unknown checks from growing the replay cost; it must never prevent a later conclusive verified observation. Exact old observation replay remains idempotent. No automatic resend or deletion of old history.

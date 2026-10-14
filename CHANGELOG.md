@@ -31,6 +31,32 @@ Add strict exact-price/intent/confirmation parsing and escaped shared terms/hist
 
 Add owner-authored immutable service terms, exact client offers/consent, local enrollment transitions and atomic audited storage. Bound history while retaining room for cancellation/retirement. No plan UI, recurring charge, scheduler or release activation. [Contract](docs/SERVICE_PLAN_RECORDS.md).
 
+## Preserved hosting branch checkpoint
+
+## Unreleased — retain full acceptance after confirmed job timeout
+
+Raise the application job allowance from75 to105 minutes after run38567952137 expired during Apache. No test or baseline is removed and no shipping source changes. Replacement acceptance remains pending.
+
+## Unreleased — durable hosting observation storage
+
+Add internal immutable unknown/conclusive evidence, exact dispatch/prefix validation, atomic reconciliation/resource/audit and separately authorized retries after validated absence. Preserve original observations, legacy semantics and missing-result refusal. Native Linux acceptance/review pending; Windows stopped at retained private-key permission protection. No route, activation or new release. [Contract](docs/HOSTING_RECONCILIATION.md).
+
+## Unreleased — state-only hosting reconciliation
+
+Add a distinct non-dispatching reconciliation method/journal command; preserve legacy command semantics, retain original observations and require explicit later deletion retry. Local95 new plus360 retained controls pass per default/no-ini mode; native persistence/provider verification/CI/review remain separate pending work. No route or release. [Contract](docs/HOSTING_RECONCILIATION.md).
+
+## Unreleased — deletion retry parent reconciliation
+
+Preserve verified e6 deletion retry67/retained217 per PHP runtime while merging parent1.23 candidate21. Both histories and all tests remain; regenerate combined inventory. Current merged native acceptance/review pending; no release or provider activation.
+
+## Unreleased — deletion fixture correction
+
+Preserve the single20i profile policy in native deletion-retry tests; an unknown profile must refuse without changing state. Runtime/installer unchanged; initial ec5 PHP8.2 run failed in fixture setup after51 new checks. Replacement matrix pending.
+
+## Unreleased — fenced deletion retry
+
+Add a separate current-owner/original-approver retry after a retained definite retryable deletion failure, atomically saving the new attempt and dispatch fence. Retain exact result/replay/resource binding and current authority checks. Native fixtures are prepared; CI/review pending. No provider activation or release. [Contract](docs/HOSTING_DEPROVISION_RETRY.md).
+
 ## 1.23.0 candidate — current client authority and hosting groundwork
 
 Unreleased. Preserve reviewed client conflict/invitation/support safeguards and internal hosting journal/storage/dispatch/local-retry groundwork. Align application/installer/update labels; add actual published1.22 baseline and retained-submission update/recovery/replay cases. Prior combineda9 acceptance passes8,234 checks/all21workflows; this newer candidate still needs its own full acceptance and exact-main release gates. [Candidate guide](docs/CLIENT_ACCOUNT_SAFEGUARDS.md).
@@ -583,3 +609,9 @@ Connect fresh/additive setup, current-authorized admin compose/list/preview/temp
 ## Unreleased — preserve reviewed service-plan component
 
 Merge Devin53/388b80d without rewriting source/history, mirror reviewed classes and retain supplied76 plus independent21 controls across canonical/deployed copies. No plan UI/storage/billing activation or release. Combined acceptance pending.
+
+## Preserved hosting branch checkpoint
+
+## Unreleased — bound unresolved hosting observation history
+
+Cap unknown observations at32 per dispatch, retain exact replay and reserve conclusive resolution. Prior storage48b9d85 native830 verified; eight additional boundary controls pending. No release or activation.
