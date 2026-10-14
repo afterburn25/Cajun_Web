@@ -73,7 +73,8 @@ try {
     pe_ok('Write posts to the documented path','POST'===$request->method&&str_contains($request->url,'/reseller/*/addWeb'));
     pe_ok('Authorization attaches only at send time','Bearer '.base64_encode($secret)===$request->headers['Authorization']);
     $body=json_decode((string)$request->body,true);
-    pe_ok('Body carries only allowlisted fields',$body===['type'=>'synthetic','domain_name'=>'client.example']);
+    ksort($body);
+    pe_ok('Body carries only allowlisted fields',$body===['domain_name'=>'client.example','type'=>'synthetic']);
     pe_ok('The grant is single-use and records its key',1===(int)query("SELECT COUNT(*) FROM ".table('provider_operation_grants')." WHERE id=? AND consumed_key='idem-create-1' AND consumed_at IS NOT NULL",[$grant1])->fetchColumn());
     $r=pe_exec($profile,1,$grant1,'idem-create-1b',$password);
     pe_ok('A consumed grant cannot execute again','no_grant'===$r->providerCode&&count($sentRequests)===1);
