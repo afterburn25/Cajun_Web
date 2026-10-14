@@ -10,7 +10,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   flash('Saved as Studio support.');redirect(studio_url(['job'=>$jobId]));
  }
  elseif($action==='activity_mark')activity_post('client');
- elseif($action==='activate'){$password=posted('password',72);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('Passwords do not match.');if(!consume_rate(ip_key('client-activate'),10,900))throw new RuntimeException('Please wait before trying again.');studio_activate(posted('invite',64),$password);flash('Your password is saved. Sign in below.');redirect(studio_url());}
+ elseif($action==='activate'){$password=posted('password',72);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('Passwords do not match.');if(!consume_rate(ip_key('client-activate'),10,900))throw new RuntimeException('Please wait before trying again.');studio_activate(is_string($_POST['invite']??null)?$_POST['invite']:'',$password);flash('Your password is saved. Sign in below.');redirect(studio_url());}
  elseif($action==='login'){studio_login(strtolower(posted('email',190)),posted('password',1000));redirect(studio_url());}
  elseif($action==='logout'){unset($_SESSION['client_id'],$_SESSION['client_auth'],$_SESSION['client_last'],$_SESSION['client_login']);session_regenerate_id(true);redirect(studio_url());}
  else{if(!$client)throw new RuntimeException('Sign in to continue.');$job=studio_job($jobId,(int)$client['id']);

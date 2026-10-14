@@ -10,12 +10,12 @@ function studio_admin_action(string $action,array $user): never {
     if(!studio_ready())throw new RuntimeException('Enable the workspace tables under Version & database first.');
     if($action==='studio_client'){
         $id=gint($_POST,'id',0,2147483647);$name=posted('name',120);$email=strtolower(posted('email',190));
-        if($name===''||!filter_var($email,FILTER_VALIDATE_EMAIL))throw new InvalidArgumentException('Enter the client name and a valid email.');
-        if($id){if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=?',[$id]))throw new InvalidArgumentException('Client not found.');query('UPDATE '.table('studio_clients').' SET name=?,email=?,active=?,auth_version=?,invite_hash=NULL,invite_expires=NULL WHERE id=?',[$name,$email,isset($_POST['active'])?1:0,bin2hex(random_bytes(16)),$id]);}
-        else{query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',[$name,$email,bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);}
+        $GLOBALS['cwp_client_attempt']=['name'=>$name,'email'=>$email,'active'=>$id===0 || isset($_POST['active'])];
+        studio_client_save($id,is_string($_POST['expected']??null)?$_POST['expected']:'',$name,$email,$GLOBALS['cwp_client_attempt']['active']);
+        flash('Client saved. Older sessions and outstanding invitations were revoked.');redirect(admin_url('studio-clients'));
     }elseif($action==='studio_invite'){
-        $id=gint($_POST,'id',1,2147483647);$c=one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$id]);if(!$c)throw new InvalidArgumentException('Active client not found.');
-        $_SESSION['studio_invite_link']=studio_new_invite($id);flash('New private invitation created. Share it directly with this client; it expires after 24 hours. No email was sent.');redirect(admin_url('studio-clients'));
+        $id=gint($_POST,'id',1,2147483647);
+        $_SESSION['studio_invite_link']=studio_new_invite($id,is_string($_POST['expected']??null)?$_POST['expected']:'');flash('New private invitation created. Share it directly with this client; it expires after 24 hours. No email was sent.');redirect(admin_url('studio-clients'));
     }elseif($action==='studio_job'){
         $id=gint($_POST,'id',0,2147483647);$client=gint($_POST,'client_id',1,2147483647);$title=posted('title',160);$stage=posted('stage',30);
         if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=?',[$client])||$title===''||!isset(studio_stages()[$stage]))throw new InvalidArgumentException('Choose a client, title and valid stage.');
