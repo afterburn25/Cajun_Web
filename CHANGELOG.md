@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — support-ticket conversation preparation
+
+Preserve reviewed desk models in private application includes; add immutable ticket documents with separate public event sequencing, staff-only notes and closure reserves. Add canonical/deployed/document validation and future Apache private-path coverage. No ticket route, database storage or UI is activated; no new version or release is published.
+
 ## Unreleased — 1.24 recovery acceptance fixture
 
 Preserve the updater authentication limit while isolating its synthetic recovery-test windows. Add an HTTP rejection assertion proving an exhausted limit leaves the update journal and business/private records unchanged. The previous candidate run failed at its eleventh authentication; fresh combined acceptance and independent review remain required. No shipping behavior or published archive changes.
@@ -80,6 +84,16 @@ Preserve mail main1.22 while combining guarded client administration and reviewe
 - Corrected the component per [PR #53 review](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6161469018): `recordConsent` now requires the consenting actor to be the subscribing client and the presented `termsHash` to equal the subscription's pinned snapshot (no self-generated hash, no arbitrary-actor consent); all customer-facing terms are strictly typed bounded valid-UTF-8 plain strings (non-strings, Stringable objects, whitespace-only, oversized and malformed limit names refused — a `termsHash()` can never silently change or throw), and the currency check anchors absolutely (`"USD\n"` no longer passes); every event requires a non-empty actor and an explicit UTC instant (`YYYY-MM-DDTHH:MM:SSZ`, relative/date-only forms refused) with monotonic history — out-of-order events leave state and history unchanged. Suite 46 → **68** checks.
 - Corrected again per [PR #53 re-review](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6162609466): retained `limits` are copied into a fresh reference-free array so caller-held PHP references can never mutate a stored cap or drift `termsHash()` after activation/subscription start; `LIMIT_NAME` and `INSTANT` now end-anchor with `\z` — a trailing-newline meter name (`"updates\n"`) or instant (`"2026-10-14T12:00:00Z\n"`) is refused without mutating state or history. Suite 68 → **76** checks.
 - No `site/` changes, billing capture or persistence. Not yet integrated or released.
+
+## Preserved earlier service-desk checkpoint
+
+## Unreleased — HC-12 service-desk foundation (Devin, isolated component)
+
+- Added canonical `foundation/desk/` classes (`TraceLink` typed `kind:id` record links over an allowlisted kind set; `FulfillmentJob` recoverable queue model with bounded exponential backoff, lease-expiry stall recovery, required idempotency keys and irreversible kinds verified against a live same-kind `ApprovalRequest` whose subject is traced; `ApprovalRequest` expiring role-gated two-party approvals; `TicketMessage`/`SupportTicket` internal tickets with staff-only notes structurally invisible to clients) plus `docs/DESK_FOUNDATION.md`.
+- Added `tests/desk/run.php` (114 synthetic checks; fixtures only, `php -n` clean) and the `desk.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- Corrected three review findings: `ApprovalRequest` expiry now bounds approved decisions too (authority exists only between the recorded decision instant and `expiresAt`, with pre-request decisions refused); `FulfillmentJob::run()` mints an immutable attempt token that `succeed()`/`fail()` must echo exactly so a stale worker cannot settle a replacement attempt; `ApprovalRequest::deny()` validates everything before mutating, so a refused decision can no longer rewrite the retained reason.
+- Completed the remaining stall-recovery finding: a `stalled` job is uncertain — the expired worker may already have executed — so `requeue()` no longer releases retry on its own. `FulfillmentJob::resolveStalled(token, outcome, evidence)` requires an explicit verified resolution bound to the exact stalled attempt token with non-empty evidence: `completed` settles terminally (no resend), `not_executed` is the only outcome that releases a fenced retry, and `unknown` keeps the job blocked. Resolutions are immutable and retained per token; absent, mismatched or conflicting evidence never releases retry, and approval expiry is rechecked at every replacement claim. `unknown` is an append-only observation rather than a final verdict — a later conclusive attempt-bound resolution can still complete the stall with the unknown evidence retained — and an identical recorded resolution replays quietly even after the job has left `stalled`.
+- No `site/` changes, queues, persistence, mail or UI. Not yet integrated or released.
 ## 1.22.0 — verified explicit saved-email sending
 
 - Explicit saved-message review, unchecked confirmation and Send; private author history, separate To/Cc/Bcc, current mailbox/Send grants and exact revisions.

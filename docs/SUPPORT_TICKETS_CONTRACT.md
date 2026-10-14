@@ -1,0 +1,53 @@
+# Client support tickets and private staff notes
+
+## Scope and ownership
+
+Codex owns the local support conversation under HC-12 and the unified client portal roadmap. Devin owns all 20i implementation, including provider support handoffs and VPS SSH. A ticket is a local conversation about an existing client relationship; it is not webmail and cannot dispatch a provider operation, run a job, send mail or authorize a charge. Preserve Devin's reviewed desk models from PR #61 (`df0a1d2`, documentation head `3f14902`) without rewriting their implementation. Fulfillment and approval models remain inactive until their separate adapters are implemented and accepted.
+
+Current branch `codex/service-desk-integration` normally preserves the reviewed desk foundation through merge `fb9be6e`, then the current agreement candidate through merge `f55122e`. The new document module and tests below are implementation preparation. No ticket table, permission, route, client screen or notification is active yet. The full ticket feature remains incomplete. Service agreements PR #101 and immutable release 1.23 remain separate; this branch does not reserve or publish another version.
+
+## Immutable conversation record — implemented here
+
+`SupportTicketDocument` in `site/app/support/ticket_documents.php` retains canonical JSON bytes and reconstructs a fresh reviewed `SupportTicket` model for each use. Returned models, arrays and nested caller references cannot mutate the accepted document. The opening message has the actual creation time; the foundation model's synthetic time-zero history entry never enters the client projection.
+
+Document format 1 contains a random 32-hex ticket identity, positive client identity, subject, real creator, creation time, opening message identity/body, ordered unique local references and an append-only event list. Authors are `client:N` for the bound client or `staff:N`; system authors and arbitrary client identities are refused. An actor string is descriptive data, not authentication. Native adapters must select it from current trusted authority.
+
+Actions are public reply, private staff note, staff assignment and status change. Only staff can note or assign. Staff use the reviewed open/pending/resolved/closed transitions; clients can close a ticket or explicitly reopen resolved work. A client reply reopens pending work, and any public reply reopens resolved work. Private notes preserve the public status. Closed tickets are terminal; a new conversation is needed for subsequent work. An exact replay of a recorded request is harmless, while changed content under the same identity is refused.
+
+Subjects are at most 180 UTF-8 bytes on one line. Bodies are at most 16,384 UTF-8 bytes, preserve plain text, and allow line feeds and tabs; forms will normalize line endings before submission. No HTML is trusted. Current related-record kinds are local invoice, project and subscription, at most 8 unique sorted references. A typed reference never grants access. Provider resource links remain in Devin's integration scope.
+
+The document is bounded to 512 later events and 1 MiB. Normal events reserve the last event slot and 1,024 bytes for closing. A ticket at either limit can still close with its original prefix intact; a forged final document cannot hide an invalid oversized preceding prefix.
+
+## Private notes and client projection — implemented here
+
+`forClient(clientId)` checks the bound client and emits only public opening/reply/status events. It omits private notes, assignments, related-record references, internal event counts, global revision, internal timestamps and document hashes. Private-only updates leave the complete projection unchanged. Every visible event has a consecutive public sequence, including multiple replies in the same second. Client activity and unread/read cursors must use this public sequence rather than timestamp comparisons.
+
+Native readers must independently authenticate the current client and enforce active-account/session rules before calling the projection. They may resolve related-record references only after current resource ownership checks; the pure document never supplies navigation authority. Every rendered field must be escaped. Staff views use current staff permissions before obtaining full document data or models.
+
+## Native storage and authority — next implementation
+
+Add dedicated ticket/document/event/read-state tables through an owner-password-confirmed additive preparation step with exact schema validation. Preserve existing client/project/invoice data and private storage. Store the original document fingerprint and append-only event identities/prefix hashes; verify the entire recorded chain before using a stored document. Write a changed document, its event and a content-free audit entry in one transaction under the existing shared staff/client lock. Audit failure rolls back all changes. Do not store bodies in general audit logs.
+
+Introduce an explicit `support.tickets` permission for the staff desk. Owners receive it through the existing owner policy; other accounts need an explicit grant. Check current grants, enabled staff, authorization versions, current active client ownership, current assignee eligibility and related-record ownership inside the lock. A stale staff form uses the global revision. A real client form uses only the public revision, so an intervening private note cannot reveal its existence through a stale-form conflict. Both form types retain their original request identity and escaped unsaved text after errors. Replaying a request still requires current authority.
+
+Actual portal support sessions retain the staff identity. The client-facing ticket projection remains public-only even for staff. A support-session reply requires the existing support-session authorization and `support.write`, plus ticket access, and records the real staff author. Private notes, assignment and broader staff actions belong in the staff desk. Link the existing one-click client support entry from the ticket only after verifying its client and current support-login permission; never impersonate a client's consent or payment.
+
+Use bounded listing/message pages and read cursors specific to the real viewer. Client counts/activity contain public events only. Staff notes may affect the authorized staff queue but must never affect client unread counts, public update times, response metadata or activity links. A GET must not mark messages read or trigger a provider/mail request. Explicit read-state writes must preserve passive session-expiry behavior.
+
+## Screens, notifications and acceptance — still required
+
+Clients need a ticket list, creation form, conversation/status view, public reply and close/reopen controls. Staff need a queue with client/status/assignment filters, conversation history, a clearly marked private-note composer, assignment/status controls and the existing permitted support-session link. Forms must work at narrow mobile widths and preserve literal text safely. Reuse the existing visual system and footer; no changes to the public sales pages are required.
+
+Extend existing local activity/bells with exact ticket links and public-sequence read state. Publishing an activity item must not duplicate or roll back a conversation event. Configured outgoing email notifications, attachments, preferences and broader queue/workflow features remain explicit follow-on roadmap work; this document module does not claim them complete.
+
+Before application acceptance: run PHP 8.2/8.4 native schema/migration, revoked-writer/concurrent-edit, request replay, audit rollback, two-client isolation, staff-note filtering and current-assignee tests. Exercise actual HTTP actions with CSRF, wrong/stale authority and support-session identities. Inspect desktop/mobile client and staff screens. Prove note exclusion from views, counts, activity, read state and exports, and same-second public updates. Verify root/subfolder and Apache rewrite/no-rewrite private-path protection, fresh setup, actual prior-release upgrade/recovery/reapplication and exact package bytes. Obtain independent review of the application delta before a versioned release.
+
+Current evidence is pure document/model validation only; no database, browser, live provider or deployment acceptance is implied.
+
+## Reproducible pure checks
+
+Run `php tests/desk/run.php` for the preserved 114 model assertions, `php tests/desk/review_controls.php` for the 44 independent controls, and repeat the latter with `--deployment` against the private mirror. `php tests/desk/ticket_documents.php` runs the 80 new document/privacy/replay/capacity assertions. Repeat each with `php -n` to prove no optional extension dependency. The desk workflow runs this set on PHP 8.2 and 8.4 and retains JSON/text evidence. Current local PHP 8.4 validation is 564 assertion executions plus 30 preservation/inventory checks, with no diagnostics. These commands do not exercise native persistence or ticket screens.
+
+## Verified focused CI checkpoint
+
+Focused [run 38604626362](https://github.com/afterburn25/Cajun_Web/actions/runs/38604626362) now independently verifies **1,128** assertion executions across PHP8.2/8.4 default/no-ini at `bafe09a`, tested merge `52c2c87` verified tree-identical. All original114, review44, deployed44 and document80 assertions pass in every mode; artifact JSON/text and full logs were downloaded and checked with no PHP diagnostics. All19 triggered workflows pass. [Draft PR102](https://github.com/afterburn25/Cajun_Web/pull/102) remains stacked on the agreement candidate; [independent review6174019144](https://github.com/afterburn25/Cajun_Web/pull/102#issuecomment-6174019144) is pending. This is pure record/model acceptance only; native authority/storage, actual HTTP/UI and full feature acceptance remain pending.

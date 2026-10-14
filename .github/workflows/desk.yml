@@ -1,0 +1,55 @@
+name: Service-desk contract checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    name: Service-desk checks PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - name: Check out the revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Syntax and service-desk checks using the official PHP image
+        run: |
+          mkdir -p qa
+          docker run --rm --network none --user "$(id -u):$(id -g)" -v "$PWD:/workspace:ro" -v "$PWD/qa:/workspace/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            for source in foundation/desk/*.php site/includes/foundation/desk/*.php site/app/support/ticket_documents.php tests/desk/*.php; do php -l "$source"; done
+            php tests/desk/run.php > qa/desk-supplied-default.txt
+            php -n tests/desk/run.php > qa/desk-supplied-no-ini.txt
+            php tests/desk/review_controls.php > qa/desk-review-default.json
+            php -n tests/desk/review_controls.php > qa/desk-review-no-ini.json
+            php tests/desk/review_controls.php --deployment > qa/desk-deployed-default.json
+            php -n tests/desk/review_controls.php --deployment > qa/desk-deployed-no-ini.json
+            php tests/desk/ticket_documents.php > qa/desk-documents-default.json
+            php -n tests/desk/ticket_documents.php > qa/desk-documents-no-ini.json
+          '
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Pure canonical/deployed desk models and immutable ticket document/privacy controls only. No queues, current grants, persistence, mail or UI are tested by this job.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve named model and document evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desk-${{ matrix.php }}-${{ github.sha }}
+          path: qa/desk-*
+          if-no-files-found: error
+          retention-days: 14

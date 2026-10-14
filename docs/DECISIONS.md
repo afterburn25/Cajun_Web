@@ -223,3 +223,7 @@ Retain opaque evidence references/digests and exact dispatch/prefix bindings, wi
 ## 2026-10-14 — reserve resolution beyond unknown-history bound
 
 Keep at most32 immutable inconclusive observations per committed dispatch and bound validation reads. This prevents endless repeated unknown checks from growing the replay cost; it must never prevent a later conclusive verified observation. Exact old observation replay remains idempotent. No automatic resend or deletion of old history.
+
+## 2026-10-14 — ticket client revisions track public events only
+
+Immutable ticket history has a global revision for authorized staff and a consecutive public sequence for clients. Private notes/assignment do not change client projections, update times or read cursors. Native client writes will compare the public revision inside the shared lock, preserving privacy when staff-only history changes. Related-record typing never grants access; current database ownership remains mandatory. The current pure document module prepares this contract; storage and UI remain pending. [Contract](SUPPORT_TICKETS_CONTRACT.md).
