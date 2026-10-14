@@ -96,7 +96,12 @@ final class TwentyIRequestBuilder
 
     private static function bounded(string $type, string $field, mixed $value, int $depth, int &$nodes): mixed
     {
-        if (++$nodes > self::MAX_NODES || $depth > self::MAX_DEPTH) {
+        // 'json' nodes are counted uniformly inside jsonValue (root and
+        // every nested value); every other field counts once here.
+        if ($type !== 'json' && ++$nodes > self::MAX_NODES) {
+            throw new InvalidArgumentException('Field ' . $field . ' exceeds structural bounds.');
+        }
+        if ($depth > self::MAX_DEPTH) {
             throw new InvalidArgumentException('Field ' . $field . ' exceeds structural bounds.');
         }
         switch ($type) {
@@ -138,8 +143,11 @@ final class TwentyIRequestBuilder
 
     private static function jsonValue(string $field, mixed $value, int $depth, int &$nodes): mixed
     {
+        if (++$nodes > self::MAX_NODES) {
+            throw new InvalidArgumentException('Field ' . $field . ' exceeds structural bounds.');
+        }
         if (is_array($value)) {
-            if (++$nodes > self::MAX_NODES || $depth >= self::MAX_DEPTH || count($value) > self::MAX_LIST) {
+            if ($depth >= self::MAX_DEPTH || count($value) > self::MAX_LIST) {
                 throw new InvalidArgumentException('Field ' . $field . ' exceeds structural bounds.');
             }
             $list = array_values($value) === $value;

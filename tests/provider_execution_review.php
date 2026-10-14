@@ -121,11 +121,24 @@ try {
     er_check('Replay preserves the pending reconciliation requirement without resending', $result->needsReconciliation() && $result->replayed && count($sent)===$before);
     $durable = json_encode([all('SELECT * FROM '.table('provider_operations')),all('SELECT * FROM '.table('provider_operation_grants')),all('SELECT * FROM '.table('audit'))],JSON_THROW_ON_ERROR);
     er_check('Review operations persist no plaintext credential or Authorization value', !str_contains($durable,'SYNTHETIC_PRIVATE_GENERAL_KEY') && !str_contains($durable,$expectedSecret) && !str_contains($durable,'Bearer '));
+
+    // Reconstruct the preceding execution branch's v2 grant schema from its populated
+    // synthetic table: same columns/order as eaf4444, before profile_revision existed.
+    $rowsBefore = (int)query('SELECT COUNT(*) FROM '.table('provider_operation_grants'))->fetchColumn();
+    db()->exec('ALTER TABLE '.table('provider_operation_grants').' DROP COLUMN profile_revision');
+    save_setting('provider_operations_schema_version','2');
+    $migrationError = null;
+    try { provider_operations_migrate($password); }
+    catch (RuntimeException $e) { if($e instanceof PDOException)throw $e; $migrationError=$e->getMessage(); }
+    $rowsAfter = (int)query('SELECT COUNT(*) FROM '.table('provider_operation_grants'))->fetchColumn();
+    $observations['prior_execution_v2_upgrade'] = ['error'=>$migrationError,'ready'=>provider_operations_ready(),'rows_before'=>$rowsBefore,'rows_after'=>$rowsAfter];
+    er_check('The preceding execution v2 schema upgrades to the current schema', $migrationError===null && provider_operations_ready());
+    er_check('Upgrade attempt preserves the populated synthetic approval records', $rowsBefore>0 && $rowsAfter===$rowsBefore);
 } catch (Throwable $e) {
     $checks[] = ['name'=>'Unexpected fixture failure: '.$e->getMessage(),'passed'=>false];
     fwrite(STDERR,$e->__toString().PHP_EOL);
 }
 $passed = !array_filter($checks,static fn($c)=>!$c['passed']);
-file_put_contents(__DIR__.'/../qa/provider-execution-review-results.json',json_encode(['passed'=>$passed,'source'=>'eaf44442a467ad90a210fc88a0da999cdb48ba6f','php'=>PHP_VERSION,'scope'=>'Independent native MariaDB and actual PHP view review with real gateway/adapter/ledger over scripted transport. No DNS, provider call or real credentials. Failed behavioral checks are review findings, not acceptance.','checks'=>$checks,'observations'=>$observations],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
+file_put_contents(__DIR__.'/../qa/provider-execution-review-results.json',json_encode(['passed'=>$passed,'source'=>'6c1feec8f5815974a8bcfd5c3efbf1f55f263f20','php'=>PHP_VERSION,'scope'=>'Independent native MariaDB and actual PHP view review with real gateway/adapter/ledger over scripted transport. No DNS, provider call or real credentials. Failed behavioral checks are review findings, not acceptance.','checks'=>$checks,'observations'=>$observations],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
 echo ($passed?'PASS':'FINDINGS').': '.count($checks).' independent execution checks'.PHP_EOL;
 exit($passed?0:1);

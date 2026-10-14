@@ -1325,3 +1325,27 @@ Devin retains complete 20i implementation. Review-only branch `codex/review-twen
 These are prepared review checks, not yet reproduced findings or passing acceptance. The workflow preserves named results even when behavioral expectations fail. Next: download/inspect exact artifacts, send only reproduced findings to Devin on #111, and keep runtime corrections on his branch. Published 1.23.0 and the separate Codex non-20i acceptance heads remain untouched; the full roadmap is active.
 
 The review preparation commit begins at `eaf4444`; its enclosing Git history identifies the added tests/workflow/documentation. No product source or installer changes are required for this isolated review.
+
+## 2026-10-16 — Devin: grant binding corrections from independent review
+
+Codex review 6177728792 reproduced three approval-boundary gaps at `318471e`. Fixes on `devin/twentyi-ledger` (`6ca730f`):
+
+1. **Revision/account binding** — `provider_operation_grants.profile_revision` (schema v2, ALTER upgrade for v1) records the approved profile revision; `provider_operation_grant_active` now requires an enabled profile at that exact revision. Key replacement or any settings save changes the revision and suspends the grant; disable/enable cycles never revive it. Granting also requires an enabled profile.
+2. **UTF-8 scope keys** — `provider_operations_canonical` refuses map keys whose `json_encode` fails, matching gateway canonicalization.
+3. **Newest-same-scope** — `grant_active` queries the indexed exact scope for its newest row instead of scanning the latest 64 grants.
+
+Tests: native suite extended to cover the v1→v2 ALTER upgrade, revision invalidation on settings save and disable/enable, invalid UTF-8 scope keys, and same-scope lookup beyond 64 other grants.
+
+## 2026-10-16 — Devin: merge review corrections into execution branch
+
+Codex review 6177258236 on #107 (`5f624a2`) reproduced two write-boundary gaps, fixed on `devin/twentyi-operations` (`d7006c5`): HTTP 202 and other non-terminal 2xx classify `uncertain` (accepted ≠ completed, RFC9110 §15.3.3); the 256-node request bound now counts every visited value including scalar leaves (a 384-leaf body under 8KiB previously built). Suite now 90 named checks incl. exact-boundary/over-boundary/nested fixtures and the 202-vs-201/204 distinction.
+
+Merged `origin/devin/twentyi-operations` (`d7006c5`) and `origin/devin/twentyi-ledger` (`6ca730f`) into `devin/twentyi-execution` with normal merges. Schema reconciled to v3: v2 adds `profile_revision` (approved-revision binding), v3 adds `scope_params`/`consumed_key`/`consumed_at` (single-use executed grants). `provider_operations_execute` also refuses grants whose approved revision is stale. Union-resolved schema/migration/test/log conflicts; `php -l` clean. Native suites re-run pending CI.
+
+## Updated execution source under independent review — 2026-10-14
+
+Devin pushed the prior boundary and grant corrections while review `85e6f67` was running. This normal review-branch merge preserves both histories and imports exact #111 source `6c1feec8f5815974a8bcfd5c3efbf1f55f263f20`; all `site/` and `foundation/` bytes equal that source. The same independent execution checks now target this revision, with an additional populated migration probe for the preceding execution v2 schema (stored scope/consumption columns, no approved profile revision). The supplied current native suites still run unmodified first. Only tests, workflow and review documentation belong to Codex here; all runtime corrections remain Devin-owned.
+
+The original `eaf4444` review run is retained as historical evidence, not a verdict on the replacement head. Current results, current-source findings and correction acceptance await downloaded PHP 8.2/8.4 artifacts. Published 1.23.0 and frozen non-20i candidates remain unchanged. Next: inspect the exact current reports and report remaining reproducible findings on #111.
+
+Review merge parents: `85e6f67` and `6c1feec`. No product source is edited by Codex.

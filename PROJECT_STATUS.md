@@ -1,5 +1,11 @@
 # Project status
 
+## Updated execution source under independent review — 2026-10-14
+
+Devin pushed the prior boundary and grant corrections while review `85e6f67` was running. This normal review-branch merge preserves both histories and imports exact #111 source `6c1feec8f5815974a8bcfd5c3efbf1f55f263f20`; all `site/` and `foundation/` bytes equal that source. The same independent execution checks now target this revision, with an additional populated migration probe for the preceding execution v2 schema (stored scope/consumption columns, no approved profile revision). The supplied current native suites still run unmodified first. Only tests, workflow and review documentation belong to Codex here; all runtime corrections remain Devin-owned.
+
+The original `eaf4444` review run is retained as historical evidence, not a verdict on the replacement head. Current results, current-source findings and correction acceptance await downloaded PHP 8.2/8.4 artifacts. Published 1.23.0 and frozen non-20i candidates remain unchanged. Next: inspect the exact current reports and report remaining reproducible findings on #111.
+
 ## Independent execution review in progress — 2026-10-14
 
 Devin retains complete 20i implementation. Review-only branch `codex/review-twentyi-execution` starts at PR #111 source `eaf44442a467ad90a210fc88a0da999cdb48ba6f`; all shipping and canonical foundation bytes remain unchanged. Added a separate synthetic native review harness and PHP 8.2/8.4 MariaDB workflow after the unmodified supplied ledger/execution suites. It probes the actual operations PHP view, required-field approval validation, configured-account replacement and cross-account replay, revocation during the unlocked resolver gap, and HTTP 202 pending result persistence/replay. Positive controls verify ordinary approved dispatch, fresh replacement-account approval and durable credential exclusion. No DNS or provider calls occur.

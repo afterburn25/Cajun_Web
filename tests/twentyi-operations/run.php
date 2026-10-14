@@ -79,10 +79,24 @@ check($numeric->url==='https://api.20i.com/reseller/7001/addWeb','allocated rese
 $update=$builder->build(new ProviderOperation('packages.update','idem-3',['resellerId'=>'*','id'=>42,'labels'=>['env'=>'prod'],'delete-id'=>7]));
 check(str_contains($update->url,'/reseller/*/updatePackage')&&str_contains((string)$update->body,'"delete-id":7'),'update carries documented mixed fields');
 
+// ---- structural node bound counts every visited value ----
+// labels json: 4 sub-arrays of 64+64+64+58 leaves => root 1 + 4 + 250 leaves = 255 nodes + id field = 256 (exact bound).
+$edge=['resellerId'=>'*','id'=>42,'labels'=>[array_fill(0,64,1),array_fill(0,64,1),array_fill(0,64,1),array_fill(0,58,1)]];
+check(!refused(static fn()=>$builder->build(new ProviderOperation('packages.update','k',$edge))),'exact-boundary nested field builds (256 nodes)');
+$over=$edge;$over['labels'][3][]=1;
+check(refused(static fn()=>$builder->build(new ProviderOperation('packages.update','k',$over))),'one leaf over the 256-node bound refuses');
+check(refused(static fn()=>$builder->build(new ProviderOperation('packages.update','k',['resellerId'=>'*','id'=>42,'labels'=>array_fill(0,6,array_fill(0,64,1))]))),'flat scalar leaves count toward the bound (392 nodes)');
+check(refused(static fn()=>$builder->build(new ProviderOperation('packages.update','k',['resellerId'=>'*','id'=>42,'labels'=>array_fill(0,65,1)]))),'flat list still refuses at the 64-item array bound');
+
 // ---- outcome classification ----
 check(TwentyIResultClassifier::fromResponse('packages.create',new TransportResponse(200,[],'{"id":123}'))->status===OperationResult::SUCCEEDED,'2xx classifies succeeded');
 check(TwentyIResultClassifier::fromResponse('packages.create',new TransportResponse(200,[],'{"id":123}'))->externalId===null,'no fabricated externalId without a documented id field');
 check(TwentyIResultClassifier::fromResponse('packages.create',new TransportResponse(201,[],'not json'))->status===OperationResult::SUCCEEDED,'2xx with unreadable body still succeeded (write landed)');
+check(TwentyIResultClassifier::fromResponse('packages.create',new TransportResponse(204,[],''))->status===OperationResult::SUCCEEDED,'204 classifies succeeded');
+foreach([202,203,205,206] as $s){
+    $r=TwentyIResultClassifier::fromResponse('packages.create',new TransportResponse($s,[],'{"status":"pending"}'));
+    check($r->status===OperationResult::UNCERTAIN&&$r->needsReconciliation(),'non-terminal 2xx is uncertain, not completed success '.$s);
+}
 check(TwentyIResultClassifier::fromResponse('packages.create',new TransportResponse(200,[],'{"id":123}'),'id')->externalId==='123','documented id field populates externalId when supplied');
 foreach([400,404,405,409,422,499] as $s){
     $r=TwentyIResultClassifier::fromResponse('packages.create',new TransportResponse($s,[],'{"error":"x"}'));
