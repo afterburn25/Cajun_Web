@@ -25,6 +25,31 @@
 - Decode raw MIME through private maintained parser state, preserve escaped plaintext and show minimal sanitized formatting in an opaque sandbox with restrictive CSP. No automatic remote resources, attachment content or sending. Missing DOM has an honest plaintext/unavailable-format fallback.
 - Preserve all 36 existing dependency pins and add four maintained formatting dependencies. Correct PHP 8.2 full-document handling by stripping html/body wrappers while preserving sanitized children; all 1,227 components pass on PHP 8.2/8.4 at 740b4e2 with fresh byte reproduction.
 - Add actual 1.17.0 update/recovery and original key/history preservation fixtures, alongside native/concurrency, packaged TLS/HTTP/Chromium and Apache checks. Application acceptance, independent review and release remain pending; latest published release remains 1.17.0.
+
+## 1.19.0 candidate — recent email notices (unreleased)
+
+Correct the browser fixture clock ordering, verify actual outage/recovery/denial responses, and wait for the mobile drawer transition before screenshots. Candidate179e35b passes1070 HTTP/browser assertions before that fixture failure,1153 native and both79-check notice matrices. No release acceptance is claimed.
+
+Keep the initial count request alive on ordinary page display while retaining BFCache/lifecycle invalidation. Suppress email notices during client support, including actual shared portal headers. Add actual-support and delayed-count browser regressions; preserve strict null-status network-failure assertions. Full native1153 and estimator3084 checks pass at8a955cc; browser/visual and new-source acceptance remain pending.
+
+Both supported PHP versions pass 79 notice integration checks at the 92b3863 tree. Correct pre-account/pre-inbox test schemas to omit dependent notice tables; read immutable Git blobs without Windows pathname ambiguity; add a long-path builder guard and explicit owner two-bell narrow-screen coverage. Twenty local builder checks pass. Full current application/visual/recovery/package acceptance remains pending.
+
+Correct the native fixture to load its notice module once after fresh schema integration; this fixes a test bootstrap fatal without changing application behavior. Integrated runtime acceptance is still pending.
+
+Connected strict successful read transactions to the local notice window and per-staff opened state; added owner setup, fresh empty schema, recent-notice page, exact message POST/dismiss actions and private count endpoint. Neutral public/admin header bells refresh local metadata only and preserve idle expiry. Added native reader-hook/rollback/concurrency cases. Storage-only baseline 257a2fc passes 57 checks on each PHP 8.2/8.4 runner; new integrated/native/browser/package acceptance is pending. This does not activate automatic inbox synchronization or sending.
+
+Added actual packaged HTTP/Chromium cases, private endpoint/current-grant and mobile/keyboard/lifecycle checks, and immutable 1.18.0 update/recovery cases with nonempty new state retained. Independent storage/contract review is complete; new integrated review and exact-source acceptance remain pending. Candidate version and generated installer/inventory agree at 1.19.0.
+
+## Unreleased — recent email notice storage preparation
+
+- Corrected the native CI container UID/GID after both database stages passed but artifact upload failed on a root-owned private QA directory. Corrected saved-evidence acceptance is pending; application/test behavior is unchanged.
+- Added a native migration fixture that removes full-tuple uniqueness while preserving the supporting foreign-key index; this tests application refusal rather than InnoDB index protection. Database acceptance remains pending.
+- Added bounded current-window metadata, separate per-person opened/dismissed markers, exact current mailbox permission filtering, collision refusal and independent full-tuple resolution.
+- Added explicit owner migration with column/key/relationship compatibility checks and strict audit; observation helpers require the successful terminal-result transaction. No schema/reader/HTTP integration or bell UI is wired yet.
+- Local PHP syntax passes. Native database fixtures and PHP 8.2/8.4 workflow are added; database and full application acceptance remain pending. Published/download-verified 1.18.0 remains immutable; its publication documentation is merged into this preparation branch.
+
+
+
 ## 1.18.0 — verified individual email reading
 
 - Assigned staff explicitly open an exact INBOX message under current account/actor/global and mailbox permissions, saved revision, UIDVALIDITY/UID and size checks. Verified TLS and BODY.PEEK preserve server read flags.
