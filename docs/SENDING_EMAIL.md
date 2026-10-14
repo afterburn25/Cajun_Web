@@ -1,6 +1,6 @@
 # Review and send saved email
 
-Prepared for the **unreleased 1.22.0 candidate** in [PR77](https://github.com/afterburn25/Cajun_Web/pull/77). Packaged browser, latest-release recovery and independent review are still pending. Published1.21.0 provides local drafts only. Real mailbox and target-host compatibility have not been verified by the synthetic tests.
+Released in [1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) after independent review and exact-main packaged HTTP/Chromium, SMTP/TLS, Apache and actual1.21 upgrade/recovery acceptance. [Named test report](TEST_REPORT_1.22.0.md). Real mailbox and target-host compatibility remain separate.
 
 Open **My email accounts**, choose a sending account and save a draft. Select **Review saved message for sending**. Review the saved From, To, Cc, Bcc, subject and plain-text body, check the confirmation, then select **Send email**. Unsaved edits in another tab are not included. If the saved draft or account changed, reopen the saved draft and review its current version.
 
