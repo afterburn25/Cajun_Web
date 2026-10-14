@@ -131,6 +131,8 @@ Claim an isolated owner20i settings/read-only check contract after the1.19 email
 
 ### Historical — HC-07 provider foundation (Devin, isolated component)
 
+- Added [PROVIDER_TRANSPORT_CONTRACT.md](docs/PROVIDER_TRANSPORT_CONTRACT.md): synthetic acceptance checklist for the concrete cURL `HttpTransport` — validated-then-pinned public DNS, verified TLS on the original hostname, ambient-proxy/env refusal, redirect non-follow, bounded deadlines and a counting body cap, honest pre/post-send exception kinds, and a credential non-disclosure sweep. Documentation only; no runtime changes.
+
 - Finite probe classification per the [owner 20i settings contract](https://github.com/afterburn25/Cajun_Web/blob/codex/provider-settings/docs/PROVIDER_SETTINGS_CONTRACT.md): `ConnectionCheck` gains an `unknown` state for post-send ambiguity (timeout/protocol/lost result/unaccepted 2xx shape) — never reported as a pass or a clean failure; `unreachable` is reserved for faults demonstrably before send. Check details are bounded printable classifications (≤200 bytes, no control characters), and `probe()`/`HttpTransport` docblocks now state the pinned-endpoint, strict-shape, no-redirect/proxy, DNS-validation and byte-cap invariants adapters and transports must honor. Codex review follow-up: the fixture probe decodes with JSON object/list identity preserved — objects (incl. `{}`/`{"0":…}`), scalars, null, malformed/trailing and over-depth bodies classify `unknown`, never `verified`; validation wording says bytes, not chars. All 171 checks pass locally on PHP 8.4 with/without php.ini. No shipping integration.
 
 - Codex contribution from reviewed provider head 1e42402: reject failed JSON map-key encoding before operation claim, with nested malformed UTF-8, zero side-effect and valid Unicode/replay regressions. All 150 checks pass locally on PHP 8.4 with/without php.ini; matrix and review pending. No shipping integration.
@@ -161,6 +163,10 @@ Claim an isolated owner20i settings/read-only check contract after the1.19 email
 - Decode raw MIME through private maintained parser state, preserve escaped plaintext and show minimal sanitized formatting in an opaque sandbox with restrictive CSP. No automatic remote resources, attachment content or sending. Missing DOM has an honest plaintext/unavailable-format fallback.
 - Preserve all 36 existing dependency pins and add four maintained formatting dependencies. Correct PHP 8.2 full-document handling by stripping html/body wrappers while preserving sanitized children; all 1,227 components pass on PHP 8.2/8.4 at 740b4e2 with fresh byte reproduction.
 - Add actual 1.17.0 update/recovery and original key/history preservation fixtures, alongside native/concurrency, packaged TLS/HTTP/Chromium and Apache checks. Application acceptance, independent review and release remain pending; latest published release remains 1.17.0.
+
+## 1.19.0 candidate — recent email notices (unreleased)
+
+## 1.19.0 — verified recent email notices
 
 ## 1.19.0 — verified recent email notices
 

@@ -264,6 +264,10 @@ Devin #43/#71 ancestry through `46b282636ad83b22efe149310755d2d316d909bc` is ret
 
 Next: inspect the current PHP 8.2/8.4 matrix and [Devin review request](https://github.com/afterburn25/Cajun_Web/pull/43#issuecomment-6160186656), then implement the real bounded TLS/DNS/proxy/deadline transport, protected owner-only credential storage and audited explicit check/history. Use existing current-session/password/CSRF/revision checks and staff locks. Add actual native concurrency, isolated HTTPS, packaged browser and upgrade/recovery acceptance before exposing a connection form. [Owner API map #73](https://github.com/afterburn25/Cajun_Web/pull/73) informs later inventory and lifecycle work; its response schemas and operation-specific entitlements remain separate acceptance. No additional real API call, secret extraction, payment, provisioning, SSH or deployment is authorized by this integration.
 
+
+## Latest verified publication — 1.19.0
+
+## Latest verified publication — 1.19.0
 ## Previous verified publication — 1.19.0 (superseded checkpoint)
 
 [v1.19.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.19.0) is published and freshly downloaded/verified at immutable source/tag `22a2969692ab5bcc7f35158dcaa5355c623dc821` through [PR #72](https://github.com/afterburn25/Cajun_Web/pull/72). Assigned staff see recent email notices from explicit successful newest-20 inbox checks, with separate per-person opened/dismissed state and exact-message POST opening. Current permissions, mailbox grants and saved revisions filter counts/labels before exposure. Private admin/public bells preserve idle expiry, clear stale display and stay absent in client-support pages. No automatic IMAP synchronization or server read-flag writes. [Owner guide](docs/RECENT_EMAIL_NOTICES.md).
@@ -275,6 +279,10 @@ Twenty-one supported starting packages:1.0.8 and1.1.0 through1.18.0, including1.
 Next: reconcile `codex/provider-settings` (observed `6ced20dc90fe93c37ab82399836d7ab0a3228290`) with this verified main baseline, resolve the proposed [owner 20i settings contract](https://github.com/afterburn25/Cajun_Web/blob/6ced20dc90fe93c37ab82399836d7ab0a3228290/docs/PROVIDER_SETTINGS_CONTRACT.md), and implement protected owner configuration, an explicit fixed read-only connection check and sanitized history. [Draft PR #74](https://github.com/afterburn25/Cajun_Web/pull/74) now preserves reviewed provider46b2826 and contains an isolated fixed probe at6ced20d: 171 canonical and120 adapter checks pass locally under default/no-extension PHP. Its site tree still equals this release; concrete HTTP transport, protected persistence and application integration remain pending. Inspect its current GitHub matrix/review before proceeding. [Owner API reference PR #73](https://github.com/afterburn25/Cajun_Web/pull/73) supplies a broader attributed endpoint map for later work. Preserve Devin provider #43 (observed `OPEN` at `46b282636ad83b22efe149310755d2d316d909bc`) and reviewed #71 ancestry, adapting canonical components without overwriting newer shared application files. The prior owner-requested GET/package succeeded; it proves that read only. Keep the Actions secret protected and retain operation-specific inventory/ownership/provisioning/domain/VPS/payment/SSH acceptance. Continue feasible roadmap work without a release-boundary stop.
 
 
+
+## Latest verified publication — 1.18.0
+
+## Previous verified publication — 1.18.0 (superseded checkpoint)
 
 ## Previous verified publication — 1.18.0 (superseded checkpoint)
 
