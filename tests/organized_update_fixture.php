@@ -7,6 +7,24 @@ define('CWP_BOOT',true);define('CWP_ROOT',$root);
 require $root.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=require $root.'/config.php';
 if(config()['db']['name']!=='cwp_test')exit(2);
+if(($argv[2]??'')==='provider-seed'){
+    require_once $root.'/app/providers/checks.php';
+    $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=$root;
+    start_session();$actor=one('SELECT auth_version FROM '.table('users').' WHERE id=1');
+    $_SESSION=['uid'=>1,'auth_version'=>$actor['auth_version'],'login_at'=>time(),'last_activity'=>time()];
+    $profile=provider_settings_profile();
+    $code=provider_checks_check($profile['id'],(int)$profile['revision'],'Synthetic organized upgrade passphrase',fn()=>'8.8.8.8',fn()=>\CajunWebPro\Foundation\Provider\ConnectionCheck::unknown('timeout'));
+    if($code!=='timeout')throw new RuntimeException('Unexpected synthetic provider check result');
+    staff_locked(fn()=>staff_transaction(function()use($profile):void {
+        $started=['id'=>bin2hex(random_bytes(16)),'profile_id'=>$profile['id'],'profile_revision'=>(int)$profile['revision'],'actor_id'=>1,'started_at'=>gmdate('Y-m-d H:i:s'),'started_epoch'=>time()];
+        query('INSERT INTO '.table('provider_checks').' (id,profile_id,profile_revision,actor_id,started_at,started_epoch) VALUES (?,?,?,?,?,?)',array_values($started));
+        provider_settings_audit(1,'check_started','Synthetic incomplete check '.$started['id']);
+    }));
+    echo json_encode(['fixture'=>'Synthetic timeout and incomplete intent; no provider request'],JSON_THROW_ON_ERROR);exit;
+}
+if(($argv[2]??'')==='provider'){
+    echo json_encode(['profiles'=>all('SELECT * FROM '.table('provider_profiles').' ORDER BY id'),'history'=>all('SELECT * FROM '.table('provider_revisions').' ORDER BY profile_id,revision'),'checks'=>all('SELECT * FROM '.table('provider_checks').' ORDER BY id'),'results'=>all('SELECT * FROM '.table('provider_check_results').' ORDER BY id')],JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='notices-seed'){
     require_once $root.'/app/mail/notices.php';
     $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];
