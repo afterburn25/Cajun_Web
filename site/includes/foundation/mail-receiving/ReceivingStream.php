@@ -6,7 +6,7 @@ if (PHP_SAPI !== 'cli' && !defined('CWP_BOOT')) { http_response_code(404); exit;
 use CajunWebPro\Foundation\MailTransport\EndpointPolicy;
 use DirectoryTree\ImapEngine\Connection\Streams\StreamInterface;
 
-/** A separate header-reading stream. No proxy, CA override or DNS at connect time. */
+/** A bounded read-only receiving stream with two fixed literal profiles. No proxy, CA override or DNS at connect time. */
 final class ReceivingStream implements StreamInterface
 {
     private $socket = null;
@@ -18,7 +18,7 @@ final class ReceivingStream implements StreamInterface
     private int $lines = 0;
     private int $writes = 0;
 
-    public function __construct(private string $host, private int $port, private string $encryption, private string $address)
+    public function __construct(private string $host, private int $port, private string $encryption, private string $address, private ReadProfile $profile=ReadProfile::Headers)
     {
         $this->host = EndpointPolicy::host($host);
         EndpointPolicy::port('imap', $port, $encryption);
@@ -70,7 +70,7 @@ final class ReceivingStream implements StreamInterface
     /** Literals are exact byte reads, including when TLS fragments the payload. */
     public function read(int $length): string|false
     {
-        if ($length < 0 || $length > 16384) throw new ReceivingFailure('limit');
+        if ($length < 0 || $length > $this->profile->literalBytes()) throw new ReceivingFailure('limit');
         $data = '';
         while (strlen($data) < $length) {
             $this->remaining();
