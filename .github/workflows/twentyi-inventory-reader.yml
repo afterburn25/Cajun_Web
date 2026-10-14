@@ -1,0 +1,44 @@
+name: 20i inventory reader checks
+
+on:
+  pull_request:
+    paths: ['foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'foundation/provider/**', 'tests/twentyi-inventory-reader/**', '.github/workflows/twentyi-inventory-reader.yml']
+  push:
+    branches: [main, devin/twentyi-complete, devin/twentyi-inventory-reader]
+    paths: ['foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'foundation/provider/**', 'tests/twentyi-inventory-reader/**', '.github/workflows/twentyi-inventory-reader.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: twentyi-inventory-reader-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reader:
+    name: 20i inventory reader PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - name: Check out the revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Syntax and reader contract checks using the official PHP image
+        run: |
+          docker run --rm --network none -v "$PWD:/workspace:ro" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            for source in foundation/twentyi-inventory-reader/*.php foundation/provider/*.php tests/twentyi-inventory-reader/*.php; do php -l "$source"; done
+            php tests/twentyi-inventory-reader/run.php
+            php -n tests/twentyi-inventory-reader/run.php
+            php tests/twentyi-inventory/run.php
+            php -n tests/twentyi-inventory/run.php
+          '
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Synthetic reader checks only: scripted transports and fixture bodies derived from public documentation. No live 20i API call, real credential, persistence, client linking, route or deployment is exercised.' >> "$GITHUB_STEP_SUMMARY"
