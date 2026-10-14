@@ -2,7 +2,7 @@
 
 ## HC-12 native support conversation increment
 
-Ticket storage, current permissions, public/private revisions, bounded queues and viewer-specific read state are implemented on `codex/support-ticket-storage`, parent `f1f6a4e`, with131 local native assertions. PHP8.2/8.4 CI/review, real client/admin screens, CSRF/HTTP/browser, activity/bells, packaged upgrade/recovery and final acceptance remain pending. Devin retains all20i work. [Scope](SUPPORT_TICKETS_CONTRACT.md).
+Ticket storage, current permissions, public/private revisions, bounded queues and viewer-specific read state are implemented on `codex/support-ticket-storage`, parent `f1f6a4e`, with131 local native assertions. Native PHP8.2/8.4 matrices now pass262 assertions each ataa57798 (runs38608757862/38608752913). Independent review, real client/admin screens, CSRF/HTTP/browser, activity/bells, packaged upgrade/recovery and final acceptance remain pending. Devin retains all20i work. [Scope](SUPPORT_TICKETS_CONTRACT.md).
 
 ## Owner allocation override — 2026-10-14
 
