@@ -1,5 +1,9 @@
 # Approved roadmap and acceptance criteria
 
+## HC-11 current implementation — payment schedules
+
+Unreleased pure [design payment allocations](DESIGN_PAYMENT_SCHEDULES_CONTRACT.md) now cover exact quoted items, deposit/milestone/final amounts and proposal-bound terms. Local PHP8.4 default/no-ini passes175 checks per mode. Native revisions, explicit financial consent, invoice issuance and actual checkout remain the next implementation steps; this does not complete HC-11. Devin retains full20i ownership, and published1.23 remains unchanged.
+
 ## Current work — planning forms, dashboard and personal updates
 
 `codex/project-planning-screens` preserves native PR112/`5e44a6b`; contract `77f92db` precedes implementation. The existing project page now edits scope/contact/date/actions/blockers and structured milestones, while clients see the saved plan and dated snapshots. Personal planning activity opens the exact authorized revision; stale drafts keep their original request/version. Owner setup remains explicit. [Usage and evidence](PROJECT_PLANNING.md); [interface contract](PROJECT_PLANNING_SCREENS_CONTRACT.md).
