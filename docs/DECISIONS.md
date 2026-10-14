@@ -1,5 +1,9 @@
 # Decision record
 
+## 2026-10-14 — distinguish branch integration from reviewed publication
+
+The owner has authorized continued implementation and isolated tests on separate branches. Earlier assistant-authored checkpoints postponed even testable route integration until independent review. Prepare the concrete admin/router/setup integration and packaged synthetic acceptance on unreleased PR77 now, so review can assess the complete behavior. Retain independent review and exact-source acceptance before merge/publication. This does not authorize customer mail, live deployment, provider writes, payment or SSH, and does not claim review received.
+
 ## 2026-10-13 — Owner-approved dependency-aware development
 
 **D-034 — Accepted:** Missing 20i account entitlements/API credentials, domain/VPS endpoint access, merchant production acceptance or SSH transport does not constitute a blanket development halt. Separate independent source work from external acceptance and label implementation progress separately from external gate/release/deployment state. Reclassify HC-07 as "Awaiting API verification", HC-09/HC-10 as "Development pending — API verification", and A-10 as "Architecture/security validation pending". Continue mocked and isolated safe feature work, then move to next feasible priority if an integration cannot be completed. No real financial/provider/SSH action until its specific security, customer-authorization and owner-approved launch gate passes. See [dependency gates](DEPENDENCY_GATES.md). This is a planning/agent instruction, not evidence those items are implemented.
