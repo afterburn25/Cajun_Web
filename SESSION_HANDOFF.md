@@ -1,5 +1,17 @@
 # Session handoff — read before continuing
 
+## Current integration — published mail baseline preserved
+
+Published [1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) is verified at immutable sourcee3b434f: all16 public assets downloaded and all7,854 exact-main assertion executions checked. Publication documentation PR86 is merged at4fb0c83. This merge preserves that documentation and all existing hosting/client histories; it changes no runtime, tests, workflows, installer bytes or version relative to combined85/a9beb6e. It is not another1.22 release.
+
+Combined PR85 has clear independent review6167231488; client83 has clear review6166706518. Currenta9 browser/native/Windows evidence is verified:2,460 native/form/combined,1,275 HTTP/Chromium,3,084 estimator and21 builder executions, actual desktop/mobile screenshots and identical published homepage pixels. Full application38554890744 passed unprivileged recovery and is still executing Apache at this checkpoint; no full pass or total is claimed yet. Keep that same run alive and inspect its final artifact before integration. All earlier parent evidence stays scoped to its original commit.
+
+The combined source preserves mail Send, current-version/strict-audit client administration, support403 and reviewed internal hosting journal/storage/dispatch/provisioning-retry components. Hosting has no route, worker, provider call or fresh-install activation. Separate PR87/ec5f7e9 adds explicit fenced deletion retry; its native CI and independent review6167717491 are pending and it is not included here. Devin's read-only20i inventory work is assigned in issue2 comment6167449082; no response/execution is inferred. Serviceplan53 and servicedesk61 retain their independently cleared source through newer docs-only main syncs; integrate them separately after current checks.
+
+Next: verify final combined85 recovery/Apache evidence, finish this docs-only reconciliation, and add actual published1.22 upgrade/recovery coverage before reserving a later release. Continue hosting reconciliation/provider coordination/UI with preserved client ownership and explicit operation activation. The full roadmap remains active; no live deployment, customer mail, provider write, charge or SSH.
+
+## Earlier checkpoints — historical evidence
+
 ## Current combined integration — unreleased and awaiting acceptance
 
 The owner requested continued roadmap work. `codex/hosting-integration` starts from mail main `e3b434ffb2244e454ea9f24fa1de9173b7479ccc`, preserves client83 `eefe29e8ee4019ea7506e0b70179f85d68dbe41a` and its hosting79-82 ancestry, then merges retry84 `e73d78aebba1a2c9e64aa76df75a2e87917e83b5`. Main remains unchanged for the separate1.22.0 release acceptance38553149886. This branch's1.22 labels are test artifacts only; no new release or version is claimed.
@@ -11,6 +23,20 @@ Independent reviews are CLEAR for hosting79 b6d4d24,80 8bbd209,81 5d9b719,82 1f5
 Merge resolutions preserve both documentation histories, mail and client browser cases, all old private-path denials, all submission generation/vendor checks and hosting mirrors. The combined full application workflow additionally runs the three retained hosting native suites and denies direct access to all12 new hosting internals in both Apache modes. No supplied assertion or supported upgrade baseline is removed. Installer inventory is regenerated from the combined bytes. Next: inspect combined PHP8.2/8.4/native/HTTP/recovery/Apache evidence and actual screenshots, obtain integration review, and integrate sequentially after verified mail publication. No live mail, provider write, charge, SSH or deployment.
 
 ## Earlier checkpoints — superseded by the integration status above
+
+## Latest verified publication — 1.22.0
+
+[v1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) is published and freshly downloaded/verified at immutable source/tag `e3b434ffb2244e454ea9f24fa1de9173b7479ccc`, through [PR77](https://github.com/afterburn25/Cajun_Web/pull/77). Authorized staff can review and explicitly send a saved plain-text draft from a currently assigned mailbox, then inspect private submission history. Current author, Send/grant permissions and exact revisions are rechecked; durable attempt records prevent replay. SMTP requires verified TLS. Server acceptance is distinguished from recipient delivery, and unknown or unresolved outcomes cannot automatically resend. [Owner guide](docs/SENDING_EMAIL.md).
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38553149886) passes7,854 assertion executions:2,183 native/form/combined,3,084 estimator,1,236 actual HTTP/Chromium,247 unprivileged recovery,1,083 Apache and21 builder. All21 workflow gates pass, including PHP8.2/8.4 submission matrices. Actual Send/history desktop/mobile images inspected; homepage pixels match1.21.0. Clean Windows/Linux packages agree. All16 public assets, members/checksums and immutable tag verified; prior1.21 assets unchanged. [Report](docs/TEST_REPORT_1.22.0.md); [handoff](docs/DEVIN_HANDOFF_1.22.0.md).
+
+All24 supported starting packages through1.21.0 retain upgrade acceptance. UPDATE stages `cwp-update-1.22.0`; actual1.21 recovery/reapplication preserves previous records, encrypted history, both original keys, drafts and accepted/unknown/unresolved/abandoned submission records without resend. Upgraded owners explicitly prepare submission storage with their current password; fresh setup creates empty ready tables. No real mailbox/provider/merchant or target-host acceptance, live deployment, customer mail, charge or SSH is claimed. Sent-folder synchronization, attachments, HTML composition, reply/forward and OAuth remain separate.
+
+Continue [combined hosting/client PR85](https://github.com/afterburn25/Cajun_Web/pull/85), observed `a9beb6e72208cdfdb7a0ec0f8fe09a7e4883325c`. It preserves mail main plus client83 and reviewed hosting79-82/84 on a separate integration branch. Client83 eefe29e has downloaded7,027 complete application assertions,17 successful workflows, exact Windows/Linux packages and inspected screenshots. Hosting79-82/84 have independent clear reviews at their documented heads. Verify the current client/integration review and combined native/application results before merging; parent evidence does not replace combined acceptance. Hosting helpers remain internal with no route, worker, provider transport or fresh-install activation.
+
+Service-plan53 corrections e7a283b are independently clear (76 supplied plus21 independent controls per PHP8.4 default/no-ini); observed current branch `29200a14ceaeefa7dda646d0de4c543a011cd292` may be newer. Service-desk61 df0a1d2 is independently clear after114 supplied plus44 independent controls per default/no-ini mode: approvals expire, rejected decisions preserve state, attempt tokens reject stale results, and verified resolution is required before a stalled external operation can retry. Unknown observations remain recoverable and conclusive replays preserve state. [Review6167233334](https://github.com/afterburn25/Cajun_Web/pull/61#issuecomment-6167233334). Verify current CI and inspect any newer correction at observed `df0a1d23f5900541557b795511332d1e80be5e52` before integration. Preserve Devin ownership and all original branches. Full billing, broader20i/client hosting and VPS SSH remain incomplete; the roadmap goal stays active.
+
+## Earlier checkpoints — superseded by the publication above
 
 ## Current acceptance — retain full Apache coverage after job timeout
 
@@ -126,6 +152,8 @@ Mail PR77 remains separate at7fdd242, with last shipping codec5646bf and default
 
 
 ## Latest verified publication — 1.21.0
+
+## Previous verified publication — 1.21.0 (superseded checkpoint)
 
 [v1.21.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.21.0) is published and freshly downloaded/verified at immutable source/tag `7805e56aa9e53cb081600589e92991255475474c`, through [PR #75](https://github.com/afterburn25/Cajun_Web/pull/75). Staff can save, edit, preview and retain private local email drafts for currently assigned sending accounts, with canonical active-template insertion. Current author/account/Send access, exact revisions, stable initial-save replay and strict audit protect the workflow. [Owner guide](docs/LOCAL_EMAIL_DRAFTS.md).
 
