@@ -1,8 +1,8 @@
 # Changelog
 
-## Unreleased — project-progress contract
+## Unreleased — project-progress records
 
-- Record the inspected P-05/P-07 history gap and separate Codex ownership before implementation. No runtime/schema/UI changes. Parent ticket browser/package evidence is scoped; full acceptance remains pending.
+- Preserve a separate dated project-history contract, then add strict immutable public snapshots/events, stale-head and history validation, public projection and148 named synthetic checks per mode outside deployment. Native schema/authority/UI/activity remain pending. Current shipping bytes are unchanged; parent ticket browser/package evidence remains scoped.
 
 ## Unreleased — support-ticket screens and activity
 

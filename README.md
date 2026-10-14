@@ -1,5 +1,9 @@
 # CajunWebPro — project source of truth
 
+## Project-history preparation
+
+Separate `codex/project-progress` adds pure dated project records outside deployment. [Contract and evidence](docs/PROJECT_PROGRESS_CONTRACT.md). Local148 checks pass in each PHP8.4 mode; current native storage, timeline screens and activity links remain pending. Devin retains complete20i implementation; published1.23 stays unchanged.
+
 ## Unreleased support conversations
 
 The separate `codex/support-ticket-screens` branch connects client/staff support conversations, private notes, explicit read state and exact-message workspace notifications. [Usage and current evidence](docs/SUPPORT_TICKETS.md). Local browser/database checks pass; committed CI, packaged recovery and independent review remain pending. Published 1.23 is unchanged; complete 20i implementation remains with Devin.

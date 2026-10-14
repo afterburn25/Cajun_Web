@@ -1,6 +1,6 @@
 # Unified client portal: hosting, design projects, updates and website downloads
 
-P-05/P-07 dated progress history is assigned to Codex on `codex/project-progress` from `02f41e6`; [contract](PROJECT_PROGRESS_CONTRACT.md) committed before implementation. Existing latest-status fields are not historical progress. Full20i remains with Devin; no feature completion is claimed.
+P-05/P-07 dated progress history is assigned to Codex on `codex/project-progress` from `02f41e6`; [contract](PROJECT_PROGRESS_CONTRACT.md) committed before implementation. Pure records pass148 local checks per default/no-ini mode and remain outside deployment; current-authorized storage and actual history/activity screens remain pending. Existing latest-status fields are not historical progress. Full20i remains with Devin; no feature completion is claimed.
 
 ## Current ticket screens and activity — unreleased
 
