@@ -1,10 +1,13 @@
 # Directory structure — current source contract
 
+Integrated native run at ffe3151 stopped before notice assertions because the fixture loaded notices twice after fresh schema wiring added its normal include. The fixture now uses require_once; application code is unchanged. New exact-head native/browser acceptance remains pending. Independent wiring review (10b0627, #62 comment 6158976121) and candidate acceptance-code review (ffe3151, #72 comment 6159046128) found no blocking issues; these reviews do not substitute for passing runtime tests.
+
+
 ## Active candidate — 1.19.0 recent email notices
 
 Codex owns `codex/mail-notices` / [draft PR #72](https://github.com/afterburn25/Cajun_Web/pull/72). Reader hooks, exact-message notice POSTs, per-staff dismissal, private count/page routes, admin/public header bells and fresh/additive storage are implemented. The bounded list describes only the newest 20 messages from each inbox's last explicit successful check. Passive polling uses local metadata, preserves idle expiry and clears its display on lifecycle/authority changes. [Owner guide](RECENT_EMAIL_NOTICES.md); [contract](MAIL_NOTICES_CONTRACT.md).
 
-Accepted evidence so far: storage-only baseline `257a2fc` has 57 named passing native checks on each PHP 8.2/8.4 runner in downloaded [run 38495481132](https://github.com/afterburn25/Cajun_Web/actions/runs/38495481132). Devin's [independent baseline review](https://github.com/afterburn25/Cajun_Web/pull/62#issuecomment-6158976121) resolves the contract findings with no blocking issue. Reader/UI commit `10b0627` has local syntax/generated checks; its native and application runs were still queued when this record was written. Do not substitute the baseline's 57 checks for integrated acceptance.
+Accepted evidence so far: storage-only baseline `257a2fc` has 57 named passing native checks on each PHP 8.2/8.4 runner in downloaded [run 38495481132](https://github.com/afterburn25/Cajun_Web/actions/runs/38495481132). Devin's [independent baseline review](https://github.com/afterburn25/Cajun_Web/pull/62#issuecomment-6158863561) resolves the contract findings with no blocking issue. Reader/UI commit `10b0627` has local syntax/generated checks; its native and application runs were still queued when this record was written. Do not substitute the baseline's 57 checks for integrated acceptance.
 
 Current source adds production-hook rollback/concurrent-process cases, actual packaged synthetic-TLS HTTP/Chromium cases and immutable 1.18.0 update/recovery fixtures with nonempty notice state and original-key retention. Version labels are 1.19.0 candidate; 21 starting packages are declared (1.0.8 and 1.1.0–1.18.0 including 1.11.1/1.11.2), pending exact acceptance. Locally verified the 1.18.0 COMPLETE/UPDATE archive hashes and source/member/shim inventories before adding the baseline. Published 1.18.0 tags/assets stay unchanged.
 
