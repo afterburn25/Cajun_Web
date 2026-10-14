@@ -1,0 +1,61 @@
+name: Mail submission preparation checks
+on:
+  push:
+    branches: [main, codex/mail-submission]
+    paths: ['foundation/mail-submission/**', 'foundation/mail-compose/**', 'foundation/email-templates/**', 'tests/mail-submission/**', 'tools/check_mail_submission_vendor.py', '.github/workflows/mail-submission.yml']
+  pull_request:
+    paths: ['foundation/mail-submission/**', 'foundation/mail-compose/**', 'foundation/email-templates/**', 'tests/mail-submission/**', 'tools/check_mail_submission_vendor.py', '.github/workflows/mail-submission.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mail-submission-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  preparation:
+    name: Submission preparation PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Offline immutable submission preparation
+        run: |
+          python3 tools/check_mail_submission_vendor.py --reproduce
+          mkdir -p qa "$RUNNER_TEMP/submission-results"
+          docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/submission-results:/workspace/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            for source in foundation/mail-submission/*.php tests/mail-submission/*.php; do php -l "$source"; done
+            php tests/mail-submission/run.php qa/submission-default-results.json
+            php -n tests/mail-submission/run.php qa/submission-no-ini-results.json
+            php tests/mail-submission/mime.php qa/submission-mime-default-results.json
+            php -n tests/mail-submission/mime.php qa/submission-mime-no-ini-results.json
+            php tests/mail-submission/transport.php qa/submission-transport-default-results.json
+            php -n tests/mail-submission/transport.php qa/submission-transport-no-ini-results.json
+            php tests/mail-submission/channel_policy.php qa/submission-channel-policy-results.json
+            php -n tests/mail-submission/channel_policy.php qa/submission-channel-policy-no-ini-results.json
+            php -n -d disable_functions=ctype_alnum tests/mail-submission/mime_unavailable.php qa/submission-mime-unavailable-results.json
+          '
+          python3 tests/mail-submission/verify_mime.py "$RUNNER_TEMP/submission-results/submission-mime-default-results.json" "$RUNNER_TEMP/submission-results/submission-mime-parser-default-results.json"
+          python3 tests/mail-submission/verify_mime.py "$RUNNER_TEMP/submission-results/submission-mime-no-ini-results.json" "$RUNNER_TEMP/submission-results/submission-mime-parser-no-ini-results.json"
+      - name: Build isolated TLS test runtime
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -f tests/mail-submission/Dockerfile -t cwp-submission-fixture:${{ matrix.php }} tests/mail-submission
+      - name: Actual loopback SMTP TLS without external networking
+        run: |
+          mkdir -p test-runtime "$RUNNER_TEMP/submission-runtime"
+          docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/submission-results:/workspace/qa" -v "$RUNNER_TEMP/submission-runtime:/workspace/test-runtime" -w /workspace cwp-submission-fixture:${{ matrix.php }} sh -ec '
+            python tests/mail-submission/tls_test.py
+            python tests/mail-submission/tls_test.py --no-ini
+          '
+      - name: Preserve named preparation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mail-submission-${{ matrix.php }}-${{ github.sha }}
+          path: ${{ runner.temp }}/submission-results/
+          if-no-files-found: error
+          retention-days: 14
