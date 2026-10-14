@@ -143,6 +143,8 @@ The service workspace must also cover authorized website/email/database/DNS/secu
 
 ## HC-09 — Domain catalog, resale and registrar lifecycle (P1)
 
+**Progress 2026-10-13:** the domain lifecycle contract is implemented as an isolated component on `devin/domain-foundation` — TLD offerings with admin-configured prices (null = not offered), honest-availability quoting, registrant contact + privacy preference, and a guarded order state machine (pending→submitted→active→renew/expire/transfer-out, consent-gated submission, terminal states); 81 synthetic checks. See [DOMAINS_FOUNDATION](DOMAINS_FOUNDATION.md). Cart/search UI, persistence, provider adapter wiring and real registrar verification remain pending (gate: Development pending — API verification).
+
 Use 20i domain capabilities after verifying access: live availability and dynamic TLD/wholesale cost lookup; real new registration, transfer, renewal, auto-renew option, contact verification and expiry monitoring; nameservers/DNS and transfer lock/EPP code if exposed. Capture registrant ownership and consents; do not register CajunWebPro as customer owner without explicit authorization. Handle premium domains, reserved/unavailable names, registry restrictions, transfer failures, grace/redemption and different first-year vs renewal prices. Confirm reseller prefunding and sufficient credit **before** submitting domain registration.
 
 **Acceptance:** Complete authorized sandbox/provider-supported register/transfer/renew lifecycle with correct registrant, pricing, invoices, expiries and failure recovery; where no safe test registration exists, mark live operation blocked and require explicitly authorized low-cost end-to-end test.

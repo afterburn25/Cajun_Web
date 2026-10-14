@@ -1,5 +1,10 @@
 # Session log
 
+## 2026-10-13 — HC-09 domain lifecycle foundation component
+
+Request: continue without stopping. Started from `main` `5d810b1` on `devin/domain-foundation`. Implemented the safe-work portion of HC-09 per DEPENDENCY_GATES.md: canonical `foundation/domains/` — `DomainName` (LDH validation, non-ASCII rejected for adapter punycode), `TldOffering` (admin-configured register/renew/transfer minor-unit prices, null = not offered, year bounds, privacy support flag), `RegistrantContact` (validated + privacy preference), `DomainPricing`/`DomainQuote` (null on anything not honestly priced), `DomainOrder` (guarded lifecycle: pending→submitted→active, consent required before submit, fail/retry clears ref+consent, renew extends expiry, expire, transfer-out with abort, terminal cancelled/transferred, append-only history) — plus `tests/domains/run.php` (81 checks, fixture TLDs/prices), `domains.yml` workflow, `DOMAINS_FOUNDATION.md`, and continuity docs.
+
+Verified locally on PHP 8.4.25: 81/81 checks, all files `php -l` clean. Scope: no `site/` changes, cart UI, schema, persistence or registrar calls. Gate: Development pending — API verification. Next: Codex review/merge; adapter contract after refactor.
 ## 2026-10-14 — preserve full mail acceptance after runtime limit
 
 Started3e7138e. Downloaded38539811045/tested merge368b7b5:2183 native/form/combined,3084 estimator,1236 HTTP/Chromium,247 filesystem/recovery and21 builder checks pass. GitHub annotation confirms45m limit; Apache had reached no-rewrite1.13, no final Apache report, final source-diff step skipped. This is partial evidence, not application acceptance. Increased limit75m and added atomic incomplete Apache progress every25 checks/failure with flushed messages. No assertions, baselines or shipping bytes changed. Python compilation/docs checks precede replacement full acceptance; independent review remains required.
