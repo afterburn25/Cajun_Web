@@ -32,9 +32,18 @@ require_once __DIR__ . '/OperationResult.php';
  *  - A `timeout` result leaves the operation unresolved: the account keeps
  *    its pre-call status (provisioning reports `failed`) and records
  *    `awaitingReconciliation`. While unresolved, the order cannot be
- *    cancelled as "never-provisioned" and cannot be retried. Only
- *    `reconcileTimeout()` with evidence decides whether an existing remote
- *    resource is adopted or the call provably never landed.
+ *    cancelled as "never-provisioned", cannot be retried, and no further
+ *    result is accepted — a delayed response for the timed-out attempt
+ *    can never rewrite later or terminal state. Only `reconcileTimeout()`
+ *    with evidence decides whether an existing remote resource is adopted
+ *    or the call provably never landed.
+ *  - Every dispatch mints an immutable attempt identity (`acct#n`),
+ *    exposed through `pendingAttempt()`. A recorded result must carry
+ *    that exact `attemptRef`, so a stale receipt from an earlier attempt
+ *    of the same operation can never satisfy a later dispatch.
+ *  - An applied provisioning result must carry the provider resource id.
+ *    A confirmation without one is not `active` — it is held unresolved
+ *    until reconciliation supplies the identity.
  *  - Suspension for payment lapse is refused before `graceUntil` and
  *    while a billing dispute is open — access and backups are preserved
  *    during disputes per policy.
@@ -74,6 +83,8 @@ final class HostingAccount
     private ?string $primaryDomain = null;
     private ?string $cancellationRequester = null;
     private ?string $unresolvedOperation = null;
+    private int $attempts = 0;
+    private ?string $pendingAttempt = null;
     private bool $disputeOpen = false;
     private ?int $graceUntil = null;
     /** @var list<array{status:string,at:int,actor:string,note:string}> */
@@ -135,28 +146,52 @@ final class HostingAccount
         return $this->unresolvedOperation !== null;
     }
 
+    /**
+     * Immutable identity of the dispatched attempt awaiting a provider
+     * result — `acct#n`, minted at each dispatch transition. The adapter
+     * must echo it as `attemptRef` on the result; null when no provider
+     * call may be in flight.
+     */
+    public function pendingAttempt(): ?string
+    {
+        return $this->pendingAttempt;
+    }
+
     // ── Provisioning ────────────────────────────────────────────
 
     /** Move pending → provisioning once cleared payment and checks exist. */
     public function beginProvisioning(string $actor, int $at): void
     {
         $this->requireStatus(self::PENDING);
+        $this->beginAttempt();
         $this->move(self::PROVISIONING, $actor, $at, 'provisioning started');
     }
 
-    /** Record the provider's result for the in-flight provisioning call. */
+    /**
+     * Record the provider's result for the in-flight provisioning call.
+     * The result must carry this attempt's identity; an applied result
+     * without the provider resource id is held unresolved for identity
+     * reconciliation rather than activating with no resource.
+     */
     public function provisionResult(OperationResult $result, string $actor, int $at): void
     {
         $this->requireStatus(self::PROVISIONING);
         $this->requireBound($result, self::OP_PROVISION);
         $this->operations[] = $result;
         if ($result->ok()) {
+            if ($result->resourceRef === null || trim($result->resourceRef) === '') {
+                $this->unresolvedOperation = self::OP_PROVISION;
+                $this->move(self::FAILED, $actor, $at, 'provider reported success without a resource id — reconcile identity before activating: ' . $result->receipt);
+                return;
+            }
+            $this->pendingAttempt = null;
             $this->providerRef = $result->resourceRef;
             $this->move(self::ACTIVE, $actor, $at, 'provisioned: ' . $result->receipt);
         } elseif ($result->outcome === OperationResult::TIMEOUT) {
             $this->unresolvedOperation = self::OP_PROVISION;
             $this->move(self::FAILED, $actor, $at, 'provider timeout — reconcile before any retry');
         } else {
+            $this->pendingAttempt = null;
             $this->move(self::FAILED, $actor, $at, 'provisioning failed: ' . $result->error);
         }
     }
@@ -207,6 +242,7 @@ final class HostingAccount
         }
         $operation = $this->unresolvedOperation;
         $this->unresolvedOperation = null;
+        $this->pendingAttempt = null;
         $note = 'reconciled ' . $operation . ': ' . $evidence;
         if ($appliedRemotely) {
             match ($operation) {
@@ -217,11 +253,16 @@ final class HostingAccount
                 default => throw new LogicException("Cannot reconcile '{$operation}'."),
             };
         } else {
+            if ($operation === self::OP_DEPROVISION) {
+                // A confirmed "not removed" arms a fresh attempt identity so a
+                // delayed result for the failed attempt can never satisfy it.
+                $this->beginAttempt();
+            }
             match ($operation) {
                 self::OP_PROVISION => $this->move(self::FAILED, $actor, $at, $note . ' — provider confirms no resource; retry is safe'),
                 self::OP_SUSPEND => $this->move(self::ACTIVE, $actor, $at, $note . ' — provider confirms still active'),
                 self::OP_RESUME => $this->move(self::SUSPENDED, $actor, $at, $note . ' — provider confirms still suspended'),
-                self::OP_DEPROVISION => $this->move(self::DEPROVISIONING, $actor, $at, $note . ' — provider confirms not removed; re-attempt allowed'),
+                self::OP_DEPROVISION => $this->move(self::DEPROVISIONING, $actor, $at, $note . ' — provider confirms not removed; re-attempt armed under a fresh attempt id'),
                 default => throw new LogicException("Cannot reconcile '{$operation}'."),
             };
         }
@@ -282,6 +323,7 @@ final class HostingAccount
         if (trim($reason) === '') {
             throw new InvalidArgumentException('Suspension needs a recorded reason.');
         }
+        $this->beginAttempt();
         $this->move(self::SUSPENDING, $actor, $at, 'suspension requested: ' . $reason);
     }
 
@@ -292,11 +334,13 @@ final class HostingAccount
         $this->requireBound($result, self::OP_SUSPEND);
         $this->operations[] = $result;
         if ($result->ok()) {
+            $this->pendingAttempt = null;
             $this->move(self::SUSPENDED, $actor, $at, 'suspended: ' . $result->receipt);
         } elseif ($result->outcome === OperationResult::TIMEOUT) {
             $this->unresolvedOperation = self::OP_SUSPEND;
             $this->move(self::SUSPENDING, $actor, $at, 'suspend timed out — reconcile before assuming either state');
         } else {
+            $this->pendingAttempt = null;
             $this->move(self::ACTIVE, $actor, $at, 'suspend failed; account remains active: ' . $result->error);
         }
     }
@@ -305,6 +349,7 @@ final class HostingAccount
     public function beginResume(string $actor, int $at): void
     {
         $this->requireStatus(self::SUSPENDED);
+        $this->beginAttempt();
         $this->move(self::RESUMING, $actor, $at, 'resumption requested');
     }
 
@@ -315,11 +360,13 @@ final class HostingAccount
         $this->requireBound($result, self::OP_RESUME);
         $this->operations[] = $result;
         if ($result->ok()) {
+            $this->pendingAttempt = null;
             $this->move(self::ACTIVE, $actor, $at, 'resumed: ' . $result->receipt);
         } elseif ($result->outcome === OperationResult::TIMEOUT) {
             $this->unresolvedOperation = self::OP_RESUME;
             $this->move(self::RESUMING, $actor, $at, 'resume timed out — reconcile before assuming either state');
         } else {
+            $this->pendingAttempt = null;
             $this->move(self::SUSPENDED, $actor, $at, 'resume failed; account remains suspended: ' . $result->error);
         }
     }
@@ -371,6 +418,7 @@ final class HostingAccount
         if (!$retentionConfirmed) {
             throw new LogicException('Deprovisioning requires confirmed data retention.');
         }
+        $this->beginAttempt();
         $this->move(self::DEPROVISIONING, $actor, $at, 'deprovisioning approved with retention confirmed');
     }
 
@@ -381,11 +429,15 @@ final class HostingAccount
         $this->requireBound($result, self::OP_DEPROVISION);
         $this->operations[] = $result;
         if ($result->ok()) {
+            $this->pendingAttempt = null;
             $this->move(self::DEPROVISIONED, $actor, $at, 'deprovisioned: ' . $result->receipt);
         } elseif ($result->outcome === OperationResult::TIMEOUT) {
             $this->unresolvedOperation = self::OP_DEPROVISION;
             $this->move(self::DEPROVISIONING, $actor, $at, 'deprovision timed out — reconcile before re-attempting');
         } else {
+            // Re-attempt expected — arm a fresh attempt identity so a stale
+            // result for the failed attempt can never satisfy it.
+            $this->beginAttempt();
             $this->move(self::DEPROVISIONING, $actor, $at, 'deprovision attempt did not confirm — stays deprovisioning');
         }
     }
@@ -399,14 +451,31 @@ final class HostingAccount
         }
     }
 
+    /** Mint the immutable identity of a newly dispatched attempt. */
+    private function beginAttempt(): void
+    {
+        $this->attempts++;
+        $this->pendingAttempt = $this->id . '#' . $this->attempts;
+    }
+
     /**
-     * A result resolves only the operation it names for the account it
-     * names. Anything else is an adapter defect and mutates nothing.
+     * A result resolves only the operation it names, for the account it
+     * names, under the exact attempt identity minted at dispatch — and
+     * never while a timed-out attempt is still unresolved. A delayed
+     * result for the timed-out attempt, a stale receipt from an earlier
+     * attempt, or a result for another operation or account is an
+     * adapter defect and mutates nothing.
      */
     private function requireBound(OperationResult $result, string $operation): void
     {
+        if ($this->unresolvedOperation !== null) {
+            throw new LogicException('A timed-out attempt is awaiting reconciliation — no further result can be recorded.');
+        }
         if ($result->operation !== $operation || $result->subjectRef !== $this->id) {
             throw new InvalidArgumentException('The provider result is not bound to this account operation.');
+        }
+        if ($this->pendingAttempt === null || $result->attemptRef === null || !hash_equals($this->pendingAttempt, $result->attemptRef)) {
+            throw new InvalidArgumentException('The provider result is not bound to the dispatched attempt.');
         }
     }
 
