@@ -1,5 +1,13 @@
 # Session handoff — read before continuing
 
+## Current correction — exclude client administration during support
+
+Client-authority application38549059961 atdae2f82 passed its native stage but failed the new HTTP assertion expecting an explicit support-selector refusal, after1,200 passing HTTP assertions. The underlying client writer already rejects support; the admin renderer lacked a corresponding403 view. Add that refusal for both GET and POST, hiding client edit/invitation forms, and retain separate checks for unchanged records and absent forms. This is a concrete runtime correction; the failed run is not complete acceptance. Replacement full application and actual screenshots are required.
+
+Downloaded push38549022824 and PR38549061993 each verify466 native executions (60 client authority +94 records +79 operations per PHP8.2/8.4). The exactdae2f82 clean Windows build and all3 archive members/CRCs/hashes verify, but its HTTP failure prevents acceptance. Published1.21 remains unchanged; these are unreleased test artifacts. Mail38545953062 is fully verified at7,854 checks across all19 workflows; separate retryPR84 continues; Devin service-desk61 now has three independently reproduced findings in6166378842. No independent review response is inferred.
+
+## Earlier checkpoints
+
 ## Current work — serialize client identity changes
 
 Codex owns `codex/client-authority` from PR82/1f59074. Existing client edits, invitation creation and public activation now share the staff/hosting guard and strict atomic audit. Exact current account versions reject stale edit/invitation forms; failed edits retain escaped unsaved details for review. Delegated `clients.manage` access is preserved, support is denied, and public activation remains invitation-based. No schema or release version changes. [Client authority contract](docs/CLIENT_AUTHORITY.md).

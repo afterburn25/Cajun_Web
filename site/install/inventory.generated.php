@@ -22,7 +22,7 @@ function setup_expected_files(): array { return [
     'admin/controllers/portfolio.php'=>'55dff2395471a1189597f38e00516e66aab4fb21fe1a2a818707f800609a3dd7',
     'admin/controllers/providers.php'=>'efb8dd5f4fe2297909a3dc9c2bcce4480566450404ee17f3212bbdbbbad0ef8c',
     'admin/controllers/reviews.php'=>'f034ab69a0da4543eba72cd2935ff6d802d0293259e88ca699bbe1f4c1316c31',
-    'admin/controllers/router.php'=>'1b90dfcb89eb4adc0516c50a39ae12d54145899f883cbf31ee78c700d0f4c775',
+    'admin/controllers/router.php'=>'1211d42727df786e9b31223bea9b1837f1d821ec8775d710b43236efe04def40',
     'admin/controllers/services.php'=>'b66f7b96ecc50cb5abfa19fd90e8534945cddd8e050cf98de3f1c34d2087c1a8',
     'admin/controllers/settings.php'=>'a47319d99588ac9273c764ec4b8f64059343783b26fb4f809b0e8fb3cb1aa2a9',
     'admin/controllers/staff.php'=>'b996e3b30d339f3ca8b580ae384f150149dcb8f3f76c0474345e1e4c8de70f69',

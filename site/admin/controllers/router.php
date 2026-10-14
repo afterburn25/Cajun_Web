@@ -32,6 +32,9 @@ if($permission!==null&&!staff_can($permission,$user)){
     if($view==='dashboard')redirect(admin_url(staff_home($user)));
     http_response_code(403);admin_head('Access unavailable','security',$user);echo '<div class="notice error">Your account does not have access to this section.</div>';admin_foot();exit;
 }
+if($view==='studio-clients' && (support_current() || array_key_exists('support',$_GET))){
+    http_response_code(403);admin_head('Client administration unavailable','studio-clients',$user);echo '<div class="notice error">Leave client support before using client administration.</div>';admin_foot();exit;
+}
 if(in_array($view,['mail-accounts','mail-account','mailboxes'],true))mail_accounts_admin_render($view,$error);
 if($view==='provider-settings')provider_settings_admin_render($error);
 if($view==='mail-inbox')mail_inbox_admin_render($error,$inboxResult);

@@ -124,7 +124,10 @@ def run_browser(env, browser):
     db('UPDATE ci_staff_profiles SET permissions=? WHERE user_id=?', [original, member_id])
     pending = fields(owner, 'studio_client', cid)
     r = owner.post(url+'&support=fixture', data=dict(pending, name='Support write'))
-    check('Support selector cannot mutate client identities', r.status_code == 403 and current() == retained)
+    check('Support selector cannot mutate client identities', current() == retained)
+    check('Support selector hides client administration with an explicit refusal', r.status_code == 403 and 'Leave client support' in r.text and soup(r).select_one('[name=expected]') is None)
+    r = owner.get(url+'&support=fixture')
+    check('Read-only support selector also excludes client edit and invitation forms', r.status_code == 403 and 'Delegated reviewed client' not in r.text and soup(r).select_one('[name=expected]') is None)
     r = requests.Session().post(url, data=dict(pending, name='Anonymous write'))
     check('Anonymous request cannot use another session client form', current() == retained and 'Delegated reviewed client' not in r.text)
     # Capture the actual stale-form response through Chromium at desktop and mobile widths.

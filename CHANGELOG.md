@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased correction — client support context
+
+Return an explicit403 client-administration page without edit or invitation forms when support is selected. Retain mutation denial and add separate actual HTTP checks for GET/POST rendering and unchanged records. First packaged run was incomplete; corrected acceptance is pending.
+
 ## Unreleased — client authority integration
 
 Serialize existing client account edits, invitation creation and public activation with staff/hosting authorization changes. Refuse stale client forms; preserve escaped unsaved details. Retain delegated access, rotate revoked sessions, consume invitations once and make audit failure atomic. Add native concurrent-process and actual packaged form/browser checks. No release or provider activation claimed; [contract](docs/CLIENT_AUTHORITY.md).

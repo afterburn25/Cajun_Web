@@ -1080,3 +1080,7 @@ Mail PR77 remains separate at7fdd242, with last shipping codec5646bf and default
 ## 2026-10-14 — client authority integration from PR82
 
 Started `codex/client-authority` from1f59074, preserving hosting/Devin histories. Implemented shared-lock client create/edit/invite/activation, exact stale-form rejection, strict transaction/audit and escaped unsaved details. Current local native PHP8.4/MariaDB passes60 checks. Prepared actual HTTP/Chromium conflict/invitation/session fixtures and current PHP8.2/8.4 matrix retaining hosting94+79. Current full application, screenshots, matrix artifacts and independent review remain pending. No schema/version/publication or live external operation. Mail38545953062 continues separately; e9 Windows archives and current browser checkpoint/visual/homepage evidence verified. See CLIENT_AUTHORITY.
+
+### 2026-10-14 — packaged client support refusal correction
+
+Downloaded first browser checkpoint from38549059961:1,200 HTTP assertions pass, then support-selector expected403 fails. Add explicit client admin403 rendering for GET/POST support selection while retaining the existing write guard; assert no mutation and no forms separately. Native push/PR matrices466 each and olddae2f82 Windows archives verify. No complete application acceptance claimed. Replace with corrected full run after refresh. Independent service-desk61 review6166378842 reproduces approved-expiry, stale-worker and refused-denial mutation findings; original branch preserved.
