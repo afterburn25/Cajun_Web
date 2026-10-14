@@ -1,5 +1,10 @@
 # Decision record
 
+## 2026-10-14 — preserve committed attempts and remote observations
+
+Commit an immutable exact account/client/profile/attempt boundary before returning a new provider claim. A replay or pending-state read never authorizes another call. Final observations must survive later access loss but require the exact committed binding; audit/storage failure leaves the prior fence unresolved. Keep provider-resource associations unique and immutable across clients. The internal result path is not exposed as a generic HTTP callback. [Contract](HOSTING_OPERATIONS.md).
+
+
 ## 2026-10-14 — separate local hosting persistence from remote dispatch
 
 Add a current-owner native adapter for immutable local records and canonical local commands first. Do not expose arbitrary journal imports, provider observations, dispatch intents or reconciliation through that API. Preserve original terms and per-event audit atomically; loading a record never grants a remote action. The subsequent provider adapter must own its immutable committed dispatch fence and exact bound result path. See [storage contract](HOSTING_RECORDS.md).

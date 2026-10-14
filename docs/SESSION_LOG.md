@@ -1,5 +1,10 @@
 # Session log
 
+## 2026-10-14 — durable hosting attempts
+
+Request: continue full roadmap without stopping. Started5d9b719 on codex/hosting-operations, preserving stacked81/80/79 and Devin branches. Added guarded operation/fence/result/resource storage, additive migration, shared atomic event writer, native process/result fixtures and focused CI. Syntax, full generated refresh and126 Markdown/1073 links passed; current-client locking reads are added after inspecting legacy client writers outside the mutex. A competing-process snapshot regression is included. New native checks remain pending. Existing storage94 per runtime verified, mail38539811045 still in Apache. No provider transport or production action. Next: verify new native results and independent review, then deliberate reconciliation/retry and verified provider coordination.
+
+
 ## 2026-10-14 — verified hosting record evidence
 
 Startingf8001e9/PR81, downloaded push38543267301 and PR38543364218/tested merge690949d. Each PHP8.2/8.4 run passes94 named native checks,188 total per run. All14 applicable workflows succeed; no PHP warnings in push log. Verified2539 exact committed installer dependencies and6 canonical mirrors. This documentation-only checkpoint records the evidence and pending independent review; it changes no site/foundation/tests/tools/workflow source. Mail38539811045 remains in Apache acceptance. Authorized issue2 handoff6165365613 records current ownership without inferring Devin receipt. Next: separate durable dispatch/result layer and candidate final acceptance.

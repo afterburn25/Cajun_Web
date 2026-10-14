@@ -29,7 +29,9 @@ function hosting_records_id(string $id):void {
 }
 function hosting_records_client(int $id,bool $active):array {
     if ($id<1) throw new InvalidArgumentException('Client unavailable.');
-    $client=one('SELECT id,active FROM '.table('studio_clients').' WHERE id=?',[$id]);
+    // Client administration also has legacy writers outside the staff mutex.
+    // A mutation needs a current locking read, not the transaction's older snapshot.
+    $client=one('SELECT id,active FROM '.table('studio_clients').' WHERE id=?'.($active && db()->inTransaction()?' FOR UPDATE':''),[$id]);
     if (!$client || ($active && (int)$client['active']!==1)) throw new InvalidArgumentException('Client unavailable.');
     return $client;
 }
@@ -100,14 +102,21 @@ function hosting_records_change(string $id,int $client,int $revision,string $eve
             return $journal;
         }
         if ($journal->revision()!==$revision) throw new RuntimeException('This hosting record changed. Reload before saving.');
-        $document=json_decode($journal->json(),true);$events=$document['events'];
-        $at=max(time(),$events?$events[array_key_last($events)]['at']:$document['created_at']);
-        $next=$journal->append($event,$command,'staff:'.$actor['id'],$at,$arguments);
-        query('INSERT INTO '.table('hosting_record_events').' (id,account_id,revision,actor_id,recorded_epoch,input_json,before_sha256,after_sha256) VALUES (?,?,?,?,?,?,?,?)',[$event,$id,$revision+1,$actor['id'],$at,$input,$journal->fingerprint(),$next->fingerprint()]);
-        $updated=query('UPDATE '.table('hosting_records').' SET journal_json=?,journal_sha256=?,revision=? WHERE id=? AND revision=?',[$next->json(),$next->fingerprint(),$revision+1,$id,$revision]);
-        if ($updated->rowCount()!==1) throw new RuntimeException('This hosting record changed. Reload before saving.');
-        hosting_records_audit((int)$actor['id'],'changed','Local account '.$id.' event '.$event.' revision '.($revision+1).' '.$command);return $next;
+        return hosting_records_append_locked($row,$event,$command,$arguments,(int)$actor['id']);
     }));
+}
+/** Internal atomic writer; current authorization or an exact committed result must precede it. */
+function hosting_records_append_locked(array $row,string $event,string $command,array $arguments,int $actor):HostingJournal {
+    if(!db()->inTransaction())throw new LogicException('Hosting event requires its owning transaction.');
+    $journal=hosting_records_journal($row);$revision=$journal->revision();
+    $document=json_decode($journal->json(),true);$events=$document['events'];
+    $at=max(time(),$events?$events[array_key_last($events)]['at']:$document['created_at']);
+    $next=$journal->append($event,$command,'staff:'.$actor,$at,$arguments);
+    $input=hosting_records_json(['revision'=>$revision,'command'=>$command,'arguments'=>$arguments]);
+    query('INSERT INTO '.table('hosting_record_events').' (id,account_id,revision,actor_id,recorded_epoch,input_json,before_sha256,after_sha256) VALUES (?,?,?,?,?,?,?,?)',[$event,$row['id'],$revision+1,$actor,$at,$input,$journal->fingerprint(),$next->fingerprint()]);
+    $updated=query('UPDATE '.table('hosting_records').' SET journal_json=?,journal_sha256=?,revision=? WHERE id=? AND client_id=? AND revision=? AND journal_sha256=?',[$next->json(),$next->fingerprint(),$revision+1,$row['id'],$row['client_id'],$revision,$journal->fingerprint()]);
+    if($updated->rowCount()!==1)throw new RuntimeException('This hosting record changed. Reload before saving.');
+    hosting_records_audit($actor,'changed','Local account '.$row['id'].' event '.$event.' revision '.($revision+1).' '.$command);return $next;
 }
 function hosting_records_get(string $id,int $client):HostingJournal {
     if(db()->inTransaction())throw new LogicException('Hosting reads cannot inherit a transaction.');
