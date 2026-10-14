@@ -188,6 +188,8 @@ try:
         connections_browser(globals(),browser)
         from mail_inbox_cases import run_browser as inbox_browser
         inbox_browser(globals(),browser)
+        from mail_message_cases import run_browser as message_browser
+        message_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)
