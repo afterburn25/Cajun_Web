@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — support-ticket screens and activity
+
+- Add staff/client queues and conversation forms with escaped unsaved text, original request identities and separate public/private history.
+- Extend workspace activity with exact ticket-update links and explicit per-viewer read controls; private staff notes do not affect client notifications.
+- Connect the existing permitted client support entry with real staff attribution and no client read/status impersonation.
+- Verify local native/form/HTTP/browser flows and narrow layouts; prepare latest-1.23 recovery/replay cases. Current committed CI, packaged upgrade and independent acceptance remain pending. [Details](docs/SUPPORT_TICKETS.md).
+
 ## Unreleased — support-ticket native storage
 
 - Add explicit owner preparation, current ticket permissions, atomic retained conversation/events, strict schema checks and audit rollback.

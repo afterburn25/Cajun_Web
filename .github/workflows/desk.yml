@@ -31,7 +31,7 @@ jobs:
         run: |
           mkdir -p qa
           docker run --rm --network none --user "$(id -u):$(id -g)" -v "$PWD:/workspace:ro" -v "$PWD/qa:/workspace/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
-            for source in foundation/desk/*.php site/includes/foundation/desk/*.php site/app/support/ticket_documents.php tests/desk/*.php; do php -l "$source"; done
+            for source in foundation/desk/*.php site/includes/foundation/desk/*.php site/app/support/ticket_documents.php site/app/support/ticket_forms.php site/includes/layout/tickets.php tests/desk/*.php; do php -l "$source"; done
             php tests/desk/run.php > qa/desk-supplied-default.txt
             php -n tests/desk/run.php > qa/desk-supplied-no-ini.txt
             php tests/desk/review_controls.php > qa/desk-review-default.json
@@ -40,6 +40,8 @@ jobs:
             php -n tests/desk/review_controls.php --deployment > qa/desk-deployed-no-ini.json
             php tests/desk/ticket_documents.php > qa/desk-documents-default.json
             php -n tests/desk/ticket_documents.php > qa/desk-documents-no-ini.json
+            php tests/desk/forms.php > qa/desk-forms-default.json
+            php -n tests/desk/forms.php > qa/desk-forms-no-ini.json
           '
       - name: Record verification scope
         if: always()

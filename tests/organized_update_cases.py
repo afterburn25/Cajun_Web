@@ -294,4 +294,6 @@ def run(web,base,check,qa,php,label,prefix,version):
 
     if version=='1.23.0':
         from service_plan_upgrade_cases import run as service_plan_upgrade
-        service_plan_upgrade({**locals(),'token':token})
+        ticket_context=service_plan_upgrade({**locals(),'token':token})
+        from ticket_upgrade_cases import run as ticket_upgrade
+        ticket_upgrade({**locals(),**ticket_context})

@@ -1,5 +1,13 @@
 # Session handoff — read before continuing
 
+## Current ticket screens and activity — unreleased
+
+`codex/support-ticket-screens` starts from preserved PR103/`6ba93c3`. It adds actual staff/client ticket queues, creation/reply/status/private-note forms, exact-update activity links, separate explicit read controls and the existing permitted one-click support entry. Private staff changes leave client versions and notifications unchanged. [Current usage, test evidence and remaining work](docs/SUPPORT_TICKETS.md); [contract](docs/SUPPORT_TICKETS_CONTRACT.md).
+
+Local evidence: 170 native assertions, 66 form/history checks per default/no-ini mode, 38 actual Edge/HTTP checks and 65 portable HTTP/browser checks. Six original desktop/mobile images were inspected; 320px layout passes. Current committed GitHub matrices, packaged latest-1.23 ticket recovery/replay and full combined acceptance/review are still required. No ticket feature release is claimed. Next: preserve the exact UI source on its separate draft PR, verify its focused CI and full application artifacts, then integrate only after independent review.
+
+Devin retains complete 20i implementation; [his acceptance](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171594708) is verified. Codex retains other roadmap work and independent integration/release acceptance. Frozen PR101/`588f332` has 9,213 verified combined assertions but still awaits its combined review. Published 1.23 remains unchanged. Older sections below are historical checkpoints.
+
 ## Current native ticket storage — isolated non-20i work
 
 `codex/support-ticket-storage` starts at preserved PR102 documentation head `f1f6a4ecd3d6f529e022500b6b2b8bc9e5d37488`. It adds owner-confirmed additive ticket/event/viewer-read tables, exact schema validation, current `support.tickets` authority, atomic immutable history and content-free audit, current-related-work resolution, bounded client/staff lists and explicit per-viewer read cursors. Real support sessions keep staff attribution and can only reply through the public portal projection; they cannot mark the client's conversation read. Private notes/assignments leave client detail, stale-form revision, unread state and queue order unchanged. Every protected operation rechecks current authority under the shared account lock. The reviewed desk models and original branches are preserved.

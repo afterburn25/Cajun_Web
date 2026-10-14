@@ -1,5 +1,11 @@
 # Client support tickets and private staff notes
 
+## Current screens and activity implementation
+
+The separate `codex/support-ticket-screens` branch builds on native PR103/`6ba93c3` and implements the routes, forms, choices and local activity described below. [Usage, current validation and remaining gates](SUPPORT_TICKETS.md). Earlier statements that no UI is active refer to preserved document/storage checkpoints, not this branch. This feature remains unreleased until committed CI, packaged upgrade/recovery and independent combined acceptance pass.
+
+Form inputs retain original identities/revisions after errors; the client revision excludes private events. History is bounded to30 events and queues to10 tickets. Existing activity is composed with validated ticket event facts; ordering/cursors use time, visible sequence and event identity so same-second events are stable without disclosing private revisions. Explicit read forms advance only their real viewer through displayed updates. A dedicated ticket-only staff member can view ticket activity but cannot follow a project activity selector. Current related invoice links target the exact invoice anchor in the existing authorized project view.
+
 ## Scope and ownership
 
 Codex owns the local support conversation under HC-12 and the unified client portal roadmap. Devin owns all 20i implementation, including provider support handoffs and VPS SSH. A ticket is a local conversation about an existing client relationship; it is not webmail and cannot dispatch a provider operation, run a job, send mail or authorize a charge. Preserve Devin's reviewed desk models from PR #61 (`df0a1d2`, documentation head `3f14902`) without rewriting their implementation. Fulfillment and approval models remain inactive until their separate adapters are implemented and accepted.

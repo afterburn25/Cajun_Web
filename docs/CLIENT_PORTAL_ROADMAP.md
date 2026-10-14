@@ -1,5 +1,13 @@
 # Unified client portal: hosting, design projects, updates and website downloads
 
+## Current ticket screens and activity — unreleased
+
+`codex/support-ticket-screens` starts from preserved PR103/`6ba93c3`. It adds actual staff/client ticket queues, creation/reply/status/private-note forms, exact-update activity links, separate explicit read controls and the existing permitted one-click support entry. Private staff changes leave client versions and notifications unchanged. [Current usage, test evidence and remaining work](SUPPORT_TICKETS.md); [contract](SUPPORT_TICKETS_CONTRACT.md).
+
+Local evidence: 170 native assertions, 66 form/history checks per default/no-ini mode, 38 actual Edge/HTTP checks and 65 portable HTTP/browser checks. Six original desktop/mobile images were inspected; 320px layout passes. Current committed GitHub matrices, packaged latest-1.23 ticket recovery/replay and full combined acceptance/review are still required. No ticket feature release is claimed. Next: preserve the exact UI source on its separate draft PR, verify its focused CI and full application artifacts, then integrate only after independent review.
+
+Devin retains complete 20i implementation; [his acceptance](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171594708) is verified. Codex retains other roadmap work and independent integration/release acceptance. Frozen PR101/`588f332` has 9,213 verified combined assertions but still awaits its combined review. Published 1.23 remains unchanged. Older sections below are historical checkpoints.
+
 ## VPS support gate interpretation (owner policy 2026-10-13)
 
 A-10 is **Architecture/security validation pending**, not a project-wide blocker. Continue independent staff permissions, customer/service mapping, audit, explicit consent and safe session UX with isolated tests. Do not permit a live terminal until a properly scoped provider handoff or external secure gateway is reviewed and tested; never add an undeclared SSH daemon/root requirement to the shared-host application. Read [dependency-gate policy](DEPENDENCY_GATES.md). This is documentation-only and does not claim SSH support is implemented.
