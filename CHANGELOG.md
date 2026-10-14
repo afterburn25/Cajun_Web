@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — private Send/history screen preparation
+
+- Prepare guarded saved-message review with explicit confirmation and current-authorized private submission history. Preserve stale form identities/revisions and prevent existing attempts from displaying another Send action.
+- Pass58 local form/escaped-template checks in default/no-ini modes; expanded native/UI acceptance pending. No router/action/navigation/fresh-schema activation or new release version.
+
 ## Unreleased — server-only email submission orchestration
 
 - Connect immutable preparation, full DNS validation, current authority, audited dispatch fences and bounded SMTP through an internal coordinator. Stable replay performs no further work; uncertain delivery cannot retry automatically. No route or Send UI is activated.

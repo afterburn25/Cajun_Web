@@ -2,9 +2,9 @@ name: Mail submission storage checks
 on:
   push:
     branches: [main, codex/mail-submission]
-    paths: ['site/app/mail/**', 'site/database/**', 'site/includes/foundation/mail-submission/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_submissions_native.php', 'tests/mail_submission_dispatch_native.php', '.github/workflows/mail-submission-storage.yml']
+    paths: ['site/app/mail/**', 'site/admin/controllers/mail_submissions.php', 'site/admin/views/mail_submissions.php', 'site/database/**', 'site/includes/foundation/mail-submission/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_submissions_native.php', 'tests/mail_submission_dispatch_native.php', 'tests/mail_submission_forms.php', '.github/workflows/mail-submission-storage.yml']
   pull_request:
-    paths: ['site/app/mail/**', 'site/database/**', 'site/includes/foundation/mail-submission/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_submissions_native.php', 'tests/mail_submission_dispatch_native.php', '.github/workflows/mail-submission-storage.yml']
+    paths: ['site/app/mail/**', 'site/admin/controllers/mail_submissions.php', 'site/admin/views/mail_submissions.php', 'site/database/**', 'site/includes/foundation/mail-submission/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_submissions_native.php', 'tests/mail_submission_dispatch_native.php', 'tests/mail_submission_forms.php', '.github/workflows/mail-submission-storage.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -52,12 +52,18 @@ jobs:
             cwp-submission-storage sh -ec '
               php -l site/app/mail/submissions.php
               php -l site/app/mail/submission_dispatch.php
+              php -l site/app/mail/submission_views.php
+              php -l site/admin/controllers/mail_submissions.php
+              php -l site/admin/views/mail_submissions.php
               php -l site/database/schema/mail_submissions_schema.php
               php -l site/database/migrations/mail_submissions_migrate.php
               php -l tests/mail_submissions_native.php
               php tests/mail_submissions_native.php
               php -l tests/mail_submission_dispatch_native.php
               php tests/mail_submission_dispatch_native.php
+              php tests/mail_submission_forms.php
+              cp qa/mail-submission-forms-results.json qa/mail-submission-forms-default-results.json
+              php -n tests/mail_submission_forms.php
             '
       - name: Preserve named native evidence
         if: always()
@@ -67,5 +73,6 @@ jobs:
           path: |
             qa/mail-submissions-native-results.json
             qa/mail-submission-dispatch-native-results.json
+            qa/mail-submission-forms*-results.json
           if-no-files-found: error
           retention-days: 14

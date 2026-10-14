@@ -6,6 +6,7 @@ define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
 require_once __DIR__.'/../site/app/mail/submission_dispatch.php';
+require_once __DIR__.'/../site/app/mail/submission_views.php';
 use CajunWebPro\Foundation\MailCompose\DraftContent;
 use CajunWebPro\Foundation\MailSubmission\{PreparedMime,TransportOutcome};
 use CajunWebPro\Foundation\MailTransport\ProbeFailure;
@@ -140,7 +141,18 @@ try {
     $audit=json_encode(all('SELECT action,detail FROM '.table('audit')),JSON_THROW_ON_ERROR);
     sd_ok('Audit excludes private message credentials and exception text',!str_contains($audit,'SYNTHETIC_DISPATCH_')&&!str_contains($audit,'Synthetic selected outgoing')&&!str_contains($audit,'private@example.invalid')&&!str_contains($audit,'SYNTHETIC_SECRET_EXCEPTION'));
     sd_ok('Original mail and provider keys unchanged',file_get_contents($private.'/mail-master.key')===$keyBytes&&file_get_contents($private.'/provider-master.key')==='SYNTHETIC_PROVIDER_KEY');
-    sd_ok('Server-only module has no router controller or installer activation',!str_contains(file_get_contents(__DIR__.'/../site/includes/bootstrap.php'),'submission_dispatch')&&!str_contains(file_get_contents(__DIR__.'/../site/database/schema/base.php'),'mail_submissions'));
+    sd_ok('Server-only module has no router action or installer activation',!str_contains(file_get_contents(__DIR__.'/../site/includes/bootstrap.php'),'submission_dispatch')&&!str_contains(file_get_contents(__DIR__.'/../site/admin/controllers/router.php'),'mail-submissions')&&!str_contains(file_get_contents(__DIR__.'/../site/admin/controllers/actions.php'),'mail_submissions_')&&!str_contains(file_get_contents(__DIR__.'/../site/database/schema/base.php'),'mail_submissions'));
+    $d=sd_draft($a);$before=all('SELECT * FROM '.table('mail_submissions').' ORDER BY id');$auditBefore=all('SELECT * FROM '.table('audit').' ORDER BY id');$calls=[$dnsCalls,$driverCalls];
+    $review=mail_submissions_review($d);sd_ok('Review returns exact current author saved draft and account',$review['existing']===null&&$review['draft']['id']===$d&&$review['account']['id']===$a);
+    sd_ok('Review performs no persistence audit DNS or transport',all('SELECT * FROM '.table('mail_submissions').' ORDER BY id')===$before&&all('SELECT * FROM '.table('audit').' ORDER BY id')===$auditBefore&&[$dnsCalls,$driverCalls]===$calls);
+    sd_deny('Review refuses earlier saved draft version',fn()=>mail_submissions_review($d,2,1));sd_deny('Review refuses earlier saved account version',fn()=>mail_submissions_review($d,1,2));
+    query('UPDATE '.table('mail_accounts').' SET revision=2 WHERE id=?',[$a]);sd_deny('Review requires acknowledgement of changed sender settings',fn()=>mail_submissions_review($d));query('UPDATE '.table('mail_accounts').' SET revision=1 WHERE id=?',[$a]);
+    $rows=mail_submissions_list($a);sd_ok('Private history uses bounded 21-row lookahead',count($rows)===21);
+    sd_ok('History projection excludes recipients body credential and attempt token',array_keys($rows[0])===['id','draft_id','draft_revision','created_at','subject','status']);
+    sd_ok('History pagination does not repeat prior page ids',!array_intersect(array_column(array_slice($rows,0,20),'id'),array_column(mail_submissions_list($a,2),'id')));
+    $existing=mail_submissions_review($draft);sd_ok('Review of accepted saved version returns existing private history',$existing['existing']['id']===$id&&$existing['existing']['result']['status']==='accepted');
+    sd_actor(3);sd_ok('Other assigned author sees no private submission history',mail_submissions_list($a)===[]);sd_deny('Other assigned author cannot review another draft',fn()=>mail_submissions_review($d));sd_actor();
+    query('UPDATE '.table('mail_account_grants').' SET enabled=0 WHERE account_id=? AND user_id=2',[$a]);sd_deny('Revoked mailbox denies list disclosure',fn()=>mail_submissions_list($a));sd_deny('Revoked mailbox denies review disclosure',fn()=>mail_submissions_review($d));query('UPDATE '.table('mail_account_grants').' SET enabled=1 WHERE account_id=? AND user_id=2',[$a]);
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
 $ok=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/mail-submission-dispatch-native-results.json',json_encode(['passed'=>$ok,'scope'=>'Native MariaDB current-authorized server-only DNS/dispatch orchestration; synthetic credentials, fake transport, no SMTP or application UI','checks'=>$checks],JSON_PRETTY_PRINT)."\n");
 echo ($ok?'PASS':'FAIL').': '.count($checks)." native submission orchestration checks\n";exit($ok?0:1);
