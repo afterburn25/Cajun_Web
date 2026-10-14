@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Codex contribution — reject malformed provider request keys
+
+`codex/provider-key-validation` preserves Devin provider head `1e424024a0a1b84f4d964ea92e8019813fb4a0ad` and supplies the focused correction from [review 6157958803](https://github.com/afterburn25/Cajun_Web/pull/43#issuecomment-6157958803). A failed JSON encoding of a map key now throws the same finite validation error as an invalid scalar, before any claim. Regression cases cover distinct invalid UTF-8 keys, nested malformed keys, no ledger binding/reservation/result or adapter/transport/secret use, and successful reordered valid Unicode keys reusing a rejected operation key. Local PHP 8.4 and actual `php -n` each pass all 150 provider checks; syntax passes. PHP 8.2/8.4 CI and Devin review remain pending.
+
+This contribution targets `devin/provider-foundation`, preserving its branch and prior fixes. No `site/`, release version, schema, real provider call or credential change. The independent [1.18.0 message-reader candidate #70](https://github.com/afterburn25/Cajun_Web/pull/70) remains Codex's release lane; latest published is 1.17.0. After provider correction acceptance, MySQL persistence, current authorization, an actual adapter, owner configuration and operation-specific API verification remain separate integration work. Continue the roadmap; this validation contribution is not completion or deployment of HC-07.
+
 ## Devin HC-07 provider foundation in review — 2026-10-13
 
 `devin/provider-foundation` (branched from `main` `5d810b1`) carries the isolated HC-07 provider contract: `foundation/provider/` (14 classes — adapter interface, capability matrix with explicit `unverified` state, lazy secret-resolving `ProviderCredential`, HTTPS-only `HttpTransport` boundary, `ProviderOperation` + `OperationResult` + `OperationLedger`, `ProviderGateway` enforcement, `ExternalResource` reconciliation), `tests/provider/run.php` (69 synthetic checks, fixture transport — no real 20i data), `docs/PROVIDER_FOUNDATION.md`, `.github/workflows/provider.yml`. Local PHP 8.4.25: all checks pass, all files lint clean.

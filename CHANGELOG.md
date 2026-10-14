@@ -2,6 +2,8 @@
 
 ## Unreleased — HC-07 provider foundation (Devin, isolated component)
 
+- Codex contribution from reviewed provider head 1e42402: reject failed JSON map-key encoding before operation claim, with nested malformed UTF-8, zero side-effect and valid Unicode/replay regressions. All 150 checks pass locally on PHP 8.4 with/without php.ini; matrix and review pending. No shipping integration.
+
 - Added canonical `foundation/provider/` contract classes (adapter interface + capability matrix, lazy secret-resolving credentials, HTTPS-only transport boundary, operation/idempotency-key model, durable ledger interface, enforcing gateway, and external-resource reconciliation) plus `docs/PROVIDER_FOUNDATION.md`.
 - Corrected the ledger/execution contract per the HC-07 correction pass: `OperationLedger::claim()` atomically reserves an idempotency key bound to a canonical provider/account/operation/params fingerprint before any remote call (new `LedgerClaim` states `claimed`/`replay`/`in_progress`/`uncertain`/`conflict`); `record()` finalizes under the claim. Non-idempotent operations never auto-retry — ambiguous outcomes (transport fault or 429/5xx after the request may have been sent) record `uncertain` for reconciliation. `TransportException` carries only a finite failure kind; `OperationResult` enforces bounded printable messages; `masked()` fully masks secrets of 8 characters or fewer; timeouts/backoff reject `NAN`/`±INF`.
 - Added `tests/provider/run.php` (124 synthetic checks) plus `FileLedger.php`/`file_ledger_worker.php` (a real four-process `flock` claim race — beyond scripted interleaving) and the `provider.yml` GitHub workflow (PHP 8.2/8.4, no network).

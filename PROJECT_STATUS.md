@@ -1,5 +1,11 @@
 # Project status
 
+## Codex contribution — reject malformed provider request keys
+
+`codex/provider-key-validation` preserves Devin provider head `1e424024a0a1b84f4d964ea92e8019813fb4a0ad` and supplies the focused correction from [review 6157958803](https://github.com/afterburn25/Cajun_Web/pull/43#issuecomment-6157958803). A failed JSON encoding of a map key now throws the same finite validation error as an invalid scalar, before any claim. Regression cases cover distinct invalid UTF-8 keys, nested malformed keys, no ledger binding/reservation/result or adapter/transport/secret use, and successful reordered valid Unicode keys reusing a rejected operation key. Local PHP 8.4 and actual `php -n` each pass all 150 provider checks; syntax passes. PHP 8.2/8.4 CI and Devin review remain pending.
+
+This contribution targets `devin/provider-foundation`, preserving its branch and prior fixes. No `site/`, release version, schema, real provider call or credential change. The independent [1.18.0 message-reader candidate #70](https://github.com/afterburn25/Cajun_Web/pull/70) remains Codex's release lane; latest published is 1.17.0. After provider correction acceptance, MySQL persistence, current authorization, an actual adapter, owner configuration and operation-specific API verification remain separate integration work. Continue the roadmap; this validation contribution is not completion or deployment of HC-07.
+
 ## 2026-10-13 — Devin HC-07 provider foundation (unreviewed, unintegrated)
 
 Devin implemented the safe-work portion of HC-07 as an isolated canonical component on `devin/provider-foundation`: `foundation/provider/` contract classes, `tests/provider/run.php` (69 checks), `provider.yml` workflow, and [PROVIDER_FOUNDATION](docs/PROVIDER_FOUNDATION.md). Implementation status: **Implemented (local/source)** — component + synthetic tests only. External gate: **Awaiting API verification** (no real 20i calls, endpoints or fabricated responses). No `site/` changes, schema, persistence, admin UI, deployment or release. Codex's `codex/priority-directory-refactor` remains the shared-path gate; this component merges alongside it cleanly.
