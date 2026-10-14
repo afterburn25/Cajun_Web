@@ -1,7 +1,6 @@
 <?php
 /** Temporary one-page setup entry; all business code lives in organized modules. */
 declare(strict_types=1);
-const CWP_INSTALLER_BUILD = '1.18.0';
 const CWP_INSTALLER_BUILD = '1.20.0';
 const CWP_INSTALLER_LAYOUT = 'one-page';
 ini_set('display_errors', '0');

@@ -26,17 +26,6 @@ def run(web,base,check,qa,php,label,prefix,version):
         assert p.returncode==0,p.stderr
         return json.loads(p.stdout)
     before=records('seed')
-    prior_templates=records('templates') if version in ['1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0'] else None
-    prior_accounts=records('mail-accounts') if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0'] else None
-    prior_key=(private/'mail-master.key').read_bytes() if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0'] else None
-    prior_review=records('review-intake') if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0'] else None
-    prior_reports=records('reviews') if version in ['1.14.0','1.15.0','1.16.0','1.17.0'] else None
-    prior_appointment=records('appointment-intake') if version in ['1.14.0','1.15.0','1.16.0','1.17.0'] else None
-    prior_schedule=records('appointments') if version in ['1.15.0','1.16.0','1.17.0'] else None
-    if version in ['1.16.0','1.17.0']:records('mail-checks-seed')
-    prior_checks=records('mail-checks') if version in ['1.16.0','1.17.0'] else None
-    if version=='1.17.0':records('inbox-seed')
-    prior_inbox=records('inbox') if version=='1.17.0' else None
     prior_templates=records('templates') if version in ['1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0'] else None
     prior_accounts=records('mail-accounts') if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0'] else None
     prior_key=(private/'mail-master.key').read_bytes() if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0'] else None
