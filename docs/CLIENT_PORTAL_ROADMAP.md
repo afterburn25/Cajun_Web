@@ -1,6 +1,6 @@
 # Unified client portal: hosting, design projects, updates and website downloads
 
-P-05/P-07 dated progress history is assigned to Codex on `codex/project-progress` from `02f41e6`; [contract](PROJECT_PROGRESS_CONTRACT.md) committed before implementation. Pure records preserve legacy newlines and pass155 local checks per default/no-ini mode and remain outside deployment; current-authorized storage and actual history/activity screens remain pending. Existing latest-status fields are not historical progress. Full20i remains with Devin; no feature completion is claimed.
+The unreleased `codex/project-progress-storage` branch adds inactive native project history with current authorization, immutable changes, honest legacy adoption, atomic replay/audit and an independently saved history head. Local native PHP/MariaDB checks pass 109 assertions; canonical/deployed pure modes pass 620 more, **729 total**. Actual project forms, timeline/activity and full packaged acceptance remain pending; P-05/P-07 is partial. [Contract and evidence](PROJECT_PROGRESS_CONTRACT.md). Devin retains complete 20i implementation; published 1.23 remains unchanged.
 
 ## Current ticket screens and activity — unreleased
 

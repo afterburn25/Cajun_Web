@@ -1,8 +1,16 @@
 # Working agreement for CajunWebPro
 
-## Native project history — isolated work in progress
+## Native project history — implemented, focused acceptance pending
 
-Codex starts `codex/project-progress-storage` at preserved3677ccf. [The native adapter contract](docs/PROJECT_PROGRESS_CONTRACT.md) specifies additive event/request tables, exact legacy adoption, atomic project/history/audit writes, original-request replay, current staff/client/support authority and bounded validated history. Contract only at this checkpoint; native implementation/tests and later actual forms/timeline/activity remain pending. Pure record CI for3677ccf is pending; original2b0b701 evidence is historical. Devin retains complete20i; accepted ticket candidate02f41e6 stays frozen for independent review.
+On `codex/project-progress-storage`, preserved base `3677ccf`, contracts `0876738` and `86e5cb7` precede implementation. The inactive native adapter adds exact owner-prepared schema, current staff/client/support access, atomic project/event/request/head/audit writes, honest legacy baselines, original-request replay and bounded validated history. The existing project editor and portal are unchanged; actual forms, timeline/activity integration and packaged acceptance remain next. Complete 20i implementation remains with Devin under [his accepted assignment](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171594708).
+
+Real local PHP 8.4 / MariaDB 10.11.16 passes **109 named native checks**. Four canonical/deployed pure default/no-ini runs pass 155 each: **729 local executions** total. Tests cover waiting authority revocation, competing editors/retries, two-client separation, support attribution, schema refusal, atomic rollback, original replay, 4,096 retained events, exact page/focus reads and missing-tail refusal. All 2,607 installer dependency hashes match 2,608 shipping files; nine changed PHP files pass syntax checks. Canonical mirrors are exact. No provider, permission, existing route, asset or UI files changed.
+
+An additional A → B → A negative control exposed missing-tail acceptance in the unreleased first implementation. The correction adds an independent latest-event reference/hash/revision, restrictive relationship and regression cases. The earlier 99 checks did not cover this gap. One earlier fixture failed because MariaDB rejected replacing a constraint with the same name in one ALTER; separate DROP/ADD fixed that fixture without relaxing production validation. Failed evidence is retained locally.
+
+Parent PR105 `3677ccf` now has independently downloaded/verified [push 38620887912](https://github.com/afterburn25/Cajun_Web/actions/runs/38620887912) and [PR 38620894161](https://github.com/afterburn25/Cajun_Web/actions/runs/38620894161): 155 named pure assertions per PHP 8.2/8.4 default/no-ini mode, **620 per matrix**, all 22 workflows successful. Tested merge `9b2bd725` is tree-identical. That evidence covers pure legacy-text handling, not this native adapter. Native committed-source CI, independent review and actual screen/activity acceptance remain pending. Preserve frozen PR104 `02f41e6` and PR101 `588f332`; published 1.23 stays unchanged. Older sections below are historical checkpoints.
+
+Next: publish the native draft stacked on PR105, independently verify both PHP native matrices, obtain bounded review, then wire the existing project form and timeline/activity on a separate branch. Full P-05/P-07 remains partial. See [the contract](docs/PROJECT_PROGRESS_CONTRACT.md).
 
 ## Current next increment — dated project progress
 

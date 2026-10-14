@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — native project history
+
+- Add protected owner preparation and current-authorized project history, exact legacy baselines, atomic writes and original request replay. Independently anchor the latest event to detect truncated history even after a project reverts to earlier fields.
+- Verify 109 native and 620 pure local assertions, capacity, concurrency and corruption refusal. Native committed CI/review and actual editor/timeline/activity integration remain pending. Existing screens remain unchanged.
+
 ## Unreleased — native project history preparation
 
 - Record exact additive event/request persistence and current-authority contract before implementation on a separate preserved branch. No runtime change in this contract commit.

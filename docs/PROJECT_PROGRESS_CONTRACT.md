@@ -1,6 +1,6 @@
 # Dated project progress — implementation contract
 
-Status: Pure snapshot/event records implemented outside deployment; local PHP8.4 default/no-ini pass155 named assertions each. Native storage, current authority, routes, screens, activity and full feature acceptance remain pending. Roadmap P-05 and P-07 remain partial. Starting source: `02f41e64db203b8d51b77399d7eb130f7dd6fb13`, preserved PR104. Owner: Codex, branch `codex/project-progress`. Devin retains the complete 20i implementation under [the accepted handoff](DEVIN_COMPLETE_20I_HANDOFF.md).
+The unreleased `codex/project-progress-storage` branch adds inactive native project history with current authorization, immutable changes, honest legacy adoption, atomic replay/audit and an independently saved history head. Local native PHP/MariaDB checks pass 109 assertions; canonical/deployed pure modes pass 620 more, **729 total**. Actual project forms, timeline/activity and full packaged acceptance remain pending; P-05/P-07 is partial. [Contract and evidence](PROJECT_PROGRESS_CONTRACT.md). Devin retains complete 20i implementation; published 1.23 remains unchanged.
 
 ## Existing behavior and scope
 
