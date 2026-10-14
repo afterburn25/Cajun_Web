@@ -5,6 +5,7 @@ if (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); ex
 
 // config/defaults.php
 const CWP_VERSION = '1.18.0';
+const CWP_VERSION = '1.20.0';
 const CWP_GUARD = "<?php http_response_code(404); exit; ?>\n";
 
 // includes/security/input.php

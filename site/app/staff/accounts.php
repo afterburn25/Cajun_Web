@@ -135,7 +135,7 @@ function staff_view_permission(string $view): ?string {
     if($view==='consultation-settings')return 'staff.manage';
     if(in_array($view,['consultations','consultation'],true))return 'website.manage';
     if(in_array($view,['login','forgot','reset','staff-setup','security','mailboxes'],true))return null;
-    if(in_array($view,['staff','mail-accounts','mail-account','payment-settings','payment-trials','payment-notifications'],true))return 'staff.manage';
+    if(in_array($view,['provider-settings','staff','mail-accounts','mail-account','payment-settings','payment-trials','payment-notifications'],true))return 'staff.manage';
     if(in_array($view,['payments','invoice-payments'],true))return 'payments.manage';
     if(in_array($view,['mail-templates','mail-template'],true))return 'mail.templates.manage';
     if($view==='support')return 'support.login';
@@ -153,6 +153,7 @@ function staff_action_permission(string $action): ?string {
     if(in_array($action,['appointments_setup','appointments_configure'],true))return 'staff.manage';
     if(str_starts_with($action,'appointments_'))return 'website.manage';
     if(in_array($action,['logout','account_save'],true))return null;
+    if(str_starts_with($action,'provider_settings_'))return 'staff.manage';
     if(str_starts_with($action,'mail_accounts_'))return 'staff.manage';
     if($action==='reviews_setup')return 'staff.manage';
     if($action==='mail_templates_setup')return 'staff.manage';

@@ -20,7 +20,7 @@ def inventory():
         if n.split('/')[0] in {'storage','upload'} and n not in SCAFFOLDS:raise RuntimeError('Runtime storage in package: '+n)
         if n in SCAFFOLDS and p.read_text(encoding="utf-8")!=('Require all denied\n' if p.name=='.htaccess' else '<?php http_response_code(404); exit;\n'):raise RuntimeError('Unexpected runtime scaffold metadata: '+n)
         if n.startswith('assets/') and not (n.startswith('assets/css/') and p.suffix=='.css' or n.startswith('assets/js/') and p.suffix=='.js'):raise RuntimeError('Mixed public assets: '+n)
-        if p.name in {'config.php','.installed.php','proxy-config.php','payment-master.key','mail-master.key','.installation-mutex.php'} or p.name.startswith('config-pending-'):raise RuntimeError('Private configuration in package: '+n)
+        if p.name in {'config.php','.installed.php','proxy-config.php','payment-master.key','mail-master.key','provider-master.key','.installation-mutex.php'} or p.name.startswith('config-pending-'):raise RuntimeError('Private configuration in package: '+n)
         result[n]=sha(p.read_bytes())
     if {n for n in result if '/' not in n}!=ROOT_FILES:raise RuntimeError('Unexpected production root files')
     for directory in ['admin','portal','pages','includes','images','storage','upload','app','api','webhooks','media','install','database','config','assets/css','assets/js']:
@@ -59,7 +59,7 @@ def generated(refresh):
             if refresh:
                 target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(source.read_bytes())
     check_mirror(required=True)
-    for area in ['access','invitations','portfolio','estimator','email-templates','webmail','review-requests','scheduling','mail-transport']:
+    for area in ['access','invitations','portfolio','estimator','email-templates','webmail','review-requests','scheduling','mail-transport','provider','twentyi']:
         for source in (ROOT/'foundation'/area).glob('*.php'):
             target=SITE/'includes/foundation'/area/source.name
             if refresh:

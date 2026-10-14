@@ -7,6 +7,42 @@ define('CWP_BOOT',true);define('CWP_ROOT',$root);
 require $root.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=require $root.'/config.php';
 if(config()['db']['name']!=='cwp_test')exit(2);
+if(($argv[2]??'')==='provider-seed'){
+    require_once $root.'/app/providers/checks.php';
+    $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=$root;
+    start_session();$actor=one('SELECT auth_version FROM '.table('users').' WHERE id=1');
+    $_SESSION=['uid'=>1,'auth_version'=>$actor['auth_version'],'login_at'=>time(),'last_activity'=>time()];
+    $profile=provider_settings_profile();
+    $code=provider_checks_check($profile['id'],(int)$profile['revision'],'Synthetic organized upgrade passphrase',fn()=>'8.8.8.8',fn()=>\CajunWebPro\Foundation\Provider\ConnectionCheck::unknown('timeout'));
+    if($code!=='timeout')throw new RuntimeException('Unexpected synthetic provider check result');
+    staff_locked(fn()=>staff_transaction(function()use($profile):void {
+        $started=['id'=>bin2hex(random_bytes(16)),'profile_id'=>$profile['id'],'profile_revision'=>(int)$profile['revision'],'actor_id'=>1,'started_at'=>gmdate('Y-m-d H:i:s'),'started_epoch'=>time()];
+        query('INSERT INTO '.table('provider_checks').' (id,profile_id,profile_revision,actor_id,started_at,started_epoch) VALUES (?,?,?,?,?,?)',array_values($started));
+        provider_settings_audit(1,'check_started','Synthetic incomplete check '.$started['id']);
+    }));
+    echo json_encode(['fixture'=>'Synthetic timeout and incomplete intent; no provider request'],JSON_THROW_ON_ERROR);exit;
+}
+if(($argv[2]??'')==='provider'){
+    echo json_encode(['profiles'=>all('SELECT * FROM '.table('provider_profiles').' ORDER BY id'),'history'=>all('SELECT * FROM '.table('provider_revisions').' ORDER BY profile_id,revision'),'checks'=>all('SELECT * FROM '.table('provider_checks').' ORDER BY id'),'results'=>all('SELECT * FROM '.table('provider_check_results').' ORDER BY id')],JSON_THROW_ON_ERROR);exit;
+}
+if(($argv[2]??'')==='notices-seed'){
+    require_once $root.'/app/mail/notices.php';
+    $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];
+    start_session();$actor=one('SELECT auth_version FROM '.table('users').' WHERE id=1');
+    $_SESSION=['uid'=>1,'auth_version'=>$actor['auth_version'],'login_at'=>time(),'last_activity'=>time()];
+    $account=one('SELECT id,revision FROM '.table('mail_accounts').' ORDER BY id LIMIT 1');
+    staff_locked(function()use($account):void {
+        $started=['id'=>str_repeat('b',32),'account_id'=>$account['id'],'account_revision'=>(int)$account['revision'],'actor_id'=>1,'started_at'=>gmdate('Y-m-d H:i:s'),'started_epoch'=>time()];
+        query('INSERT INTO '.table('mail_inbox_reads').' (id,account_id,account_revision,actor_id,started_at,started_epoch) VALUES (?,?,?,?,?,?)',array_values($started));
+        $batch=['folder'=>'INBOX','uidvalidity'=>'1234','total'=>2,'messages'=>array_map(fn($uid)=>['uid'=>$uid,'seen'=>false,'bytes'=>'128','headers_truncated'=>false,'subject'=>'Synthetic recovery header','from'=>'Synthetic recovery sender','date'=>''],['82','81'])];
+        mail_inbox_record($started,'ok',1,$batch);
+    });
+    $item=mail_notices_feed()[0];mail_notices_dismiss($item['handle'],$item);
+    echo json_encode(['fixture'=>'Synthetic committed observation and local dismissal; no network attempted'],JSON_THROW_ON_ERROR);exit;
+}
+if(($argv[2]??'')==='notices'){
+    echo json_encode(['windows'=>all('SELECT * FROM '.table('mail_notice_windows').' ORDER BY account_id'),'items'=>all('SELECT * FROM '.table('mail_notice_items').' ORDER BY handle'),'states'=>all('SELECT * FROM '.table('mail_notice_states').' ORDER BY handle,actor_id')],JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='messages-seed'){
     require_once $root.'/app/mail/messages.php';
     $account=one('SELECT id,revision FROM '.table('mail_accounts').' ORDER BY id LIMIT 1');

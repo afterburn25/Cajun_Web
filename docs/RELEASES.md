@@ -1,5 +1,13 @@
 # Release register
 
+## Candidate 1.20.0 — owner 20i connection and recovery acceptance
+
+The next unused version is prepared as **1.20.0**, not published. Source defaults and installer agree; verified published1.19.0 COMPLETE/UPDATE bytes and shims are retained as the22nd supported starting package (1.0.8 and1.1.0 through1.19.0, including1.11.1/1.11.2). UPDATE stages cwp-update-1.20.0, uses target-specific recovery, and retains the permanent structure-1.11.0 mutex. No existing tag or release asset changed.
+
+The new actual1.19 installation/update/recovery/reapplication fixtures preserve nonempty email notices and every earlier record, then prepare owner provider storage, save an encrypted key, retain synthetic uncertain/incomplete check history, recover original files and reapply the candidate. They verify both original private keys and a blank-key edit that decrypts the provider credential after recovery. Apache direct-internal denial and filesystem recovery matrices now include the new provider paths/1.19 baseline. These new recovery cases have syntax-only validation until candidate CI completes.
+
+Prior exact application run38511333232 at6765af5 passed package and native stages and was running HTTP/Chromium when this candidate was prepared; inspect its final evidence rather than infer success. Native provider118 and isolated transport1003 checks per PHP8.2/8.4 at28e4bf2 are downloaded/verified. Independent transport review is complete; owner storage/orchestration/UI review remains requested. Next: inspect browser checkpoint/screenshots, candidate full matrix and review, then merge/test exact main and publish/download-verify only after all gates pass. No live API call, secret extraction or deployment.
+
 Verified1.19.0 downloads: [FULL-PROJECT](https://github.com/afterburn25/Cajun_Web/releases/download/v1.19.0/CajunWebPro-1.19.0-FULL-PROJECT.zip), [COMPLETE-UPLOAD](https://github.com/afterburn25/Cajun_Web/releases/download/v1.19.0/CajunWebPro-1.19.0-COMPLETE-UPLOAD.zip), [UPDATE](https://github.com/afterburn25/Cajun_Web/releases/download/v1.19.0/CajunWebPro-1.19.0-UPDATE.zip). Manifests, checksums, migration instructions and named evidence are attached.
 
 ## Latest verified publication — 1.19.0

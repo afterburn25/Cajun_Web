@@ -162,6 +162,14 @@ Source fc3bd89c5e1c286f9dc4df12d50dd566a4d4ab86 bundles the exact maintained IMA
 
 Source 91550d956c404585545dbd766c96f36f58ae0623 preserves exact mailbox generation/UID identity, current authority and strict audit before display. Entire MIME including attachments is bounded; maintained parser/sanitizer work is private and bounded. Formatted mail requires both sanitization and an opaque sandbox with restrictive CSP; escaped plaintext remains available without DOM. Browser tests distinguish CSP-blocked attempts from actual network interception and include a negative control. Per-staff notification state and automatic synchronization are separate future scopes.
 
+## 2026-10-13 — separate connection proof from inventory
+
+The first owner 20i increment validates only a fixed explicit package-list connection. Public authentication references and the prior diagnostic do not define account-specific inventory fields or client ownership. Keep inventory out of this increment, preserve JSON list/object identity, and persist only finite local classifications. Canonical result length limits alone do not redact provider output.
+
 ## 2026-10-13 — ship bounded recent email notices in1.19.0
 
 Source22a2969692ab5bcc7f35158dcaa5355c623dc821 retains exact current-window identities and local per-staff state separately from shared observed server flags. Private header polling reads only local metadata and preserves idle expiry. Client-support views exclude staff email mounts. Full unread synchronization, previews and provider read-flag writes remain separate work. Continue the protected owner20i adapter contract without treating authentication as mutation entitlement.
+
+## 2026-10-13 — reuse cURL framing and canonical public destination policy
+
+Use cURL for fixed HTTPS rather than implementing an HTTP parser. Reject entire mixed DNS answer sets and pin one accepted address. Local resolver latency is governed by the host; transfer deadlines do not pretend to bound blocking DNS. Keep test-only address/CA remapping outside production, verify original options first, and execute CI fixtures with networking disabled. PHP -n disables configuration; compiled extensions remain, so explicitly test unavailable cURL initialization instead of assuming it disappears.

@@ -1,6 +1,9 @@
 # CajunWebPro — project source of truth
 
 ## Latest verified publication — 1.18.0
+## Current development — 1.20.0 candidate
+
+[PR #74](https://github.com/afterburn25/Cajun_Web/pull/74) implements protected owner 20i settings, an explicit package-list connection check and finite audited history. Published1.19.0 remains unchanged. Codex owns application integration, package/recovery acceptance and release; Devin retains canonical provider ownership and the requested independent storage/check/UI review. The transport review is complete. See [SESSION_HANDOFF.md](SESSION_HANDOFF.md) for current evidence and next actions; older preparation assignments below are historical. No live deployment or broader provider capability is claimed.
 
 ## Latest verified publication — 1.19.0
 
