@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — exact-byte installer inventory correction
+
+Regenerate owner UI dependency hashes from the committed LF source bytes after CI rejected Windows-normalized development hashes. No application behavior change.
+
 ## Unreleased — owner 20i connection screen
 
 Wire protected owner settings, explicit fixed connection checks, finite/history displays and fresh/additive setup. Add actual packaged HTTP/Chromium against isolated HTTPS. Combined application acceptance and release remain pending.

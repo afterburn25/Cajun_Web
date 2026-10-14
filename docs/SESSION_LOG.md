@@ -980,3 +980,9 @@ Starting af09dfbbe68e5fcd16d57a278f18837387782038. Downloaded transport run38509
 ## 2026-10-14 — owner 20i UI and isolated packaged acceptance
 
 Starting f8668fd9a444174c5be87ed73772e01f70ecf0c1, downloaded exact native storage/check matrix38510249127:69+49 checks per PHP8.2/8.4 cell, all pass. Wire the existing permission/CSRF/controller/navigation and fresh schema paths to protected owner settings and explicit check history. Add actual loopback TLS fixture and packaged HTTP/Chromium tests, preserving production-option assertions before test-only remapping. Syntax/generated inventory validation only for new UI; combined application matrix and independent review pending. Published1.19.0 unchanged; no real API/secret extraction/deployment. Next: application evidence, screenshots, review and1.19 update/recovery preservation.
+
+## 2026-10-14 — exact committed PHP inventory correction
+
+Starting28e4bf2, full app run38510919536 failed at stale installer inventory before application tests. Root cause: Python development writes used Windows CRLF and Git committed LF, while inventory hashed working bytes. Restore only clean changed shipping files from verified equal normalized Git blobs, regenerate inventory, and verify hashes against those blobs. Native/transport push matrices passed; browser and release acceptance remain pending. Use explicitLF for later source writes.
+
+Correction verification: all2,524 committed shipping dependencies were read from a single Git archive and independently matched to the regenerated installer SHA-256 map. Exactly six PHP files required development-line-ending restoration; their committed logic was unchanged. Diff whitespace check passes.

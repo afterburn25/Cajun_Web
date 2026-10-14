@@ -1,5 +1,9 @@
 # Session handoff — read before continuing
 
+## Current application packaging correction
+
+UI candidate28e4bf2 passed its native and isolated transport push matrices38510914032/38510913995. Full application run38510919536 stopped before browser/native application execution because installer dependency hashes reflected CRLF development files while Git normalized their committed PHP bytes to LF. No application acceptance or screenshots are claimed from that run. Restore those clean shipping files to exact committed bytes, regenerate the installer inventory and verify the changed source hashes against Git blobs. This changes package metadata only; application behavior is unchanged. Subsequent source writes must explicitly use LF bytes/newline="\n" before inventory generation. Next: rerun the combined application job and inspect actual results before advancing the release candidate.
+
 ## Current 20i owner UI integration — application acceptance pending
 
 Provider check orchestration at f8668fd passed49 named native checks on each PHP8.2/8.4 runner, alongside69 owner-storage checks. Artifacts from38510249127 were downloaded and inspected. They prove strict intent/result audit, finite outcome mapping, cooldown/hour limits, interrupted processes, DNS-time access/profile races and edits serialized behind current checks. The transport's1003 named checks per runtime were independently downloaded from38509333705; prior fixture/server limitations remain accurately scoped.
