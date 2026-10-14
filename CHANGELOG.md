@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.20.0 — candidate, not published
+
+Protected owner20i settings, explicit fixed read-only connection checks and retained finite outcomes. Add current-password/CSRF/revision protection, private encrypted credentials and additive setup. Candidate acceptance includes published1.19 update/recovery with original private key preservation; results pending. General hosting/domain/VPS/SSH operations remain unverified.
+
 ## Unreleased — exact-byte installer inventory correction
 
 Regenerate owner UI dependency hashes from the committed LF source bytes after CI rejected Windows-normalized development hashes. No application behavior change.

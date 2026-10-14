@@ -1,6 +1,6 @@
 # Owner 20i connection settings
 
-Development increment in PR74; not yet a published release or target-host verification. The latest published release remains1.19.0.
+Candidate1.20.0 in PR74; not yet a published release or target-host verification. The latest published release remains1.19.0.
 
 ## Configure
 

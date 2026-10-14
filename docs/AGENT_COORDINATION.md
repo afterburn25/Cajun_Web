@@ -1,5 +1,9 @@
 # Codex and Devin work allocation
 
+## Current development — 1.20.0 candidate
+
+[PR #74](https://github.com/afterburn25/Cajun_Web/pull/74) implements protected owner 20i settings, an explicit package-list connection check and finite audited history. Published1.19.0 remains unchanged. Codex owns application integration, package/recovery acceptance and release; Devin retains canonical provider ownership and the requested independent storage/check/UI review. The transport review is complete. See [../SESSION_HANDOFF.md](../SESSION_HANDOFF.md) for current evidence and next actions; older preparation assignments below are historical. No live deployment or broader provider capability is claimed.
+
 ## Current transport progress
 
 The fixed 20i cURL transport now has 333 local actual isolated HTTPS checks and32 default/33 unavailable-cURL request/DNS checks. Its expanded PHP8.2/8.4 container matrix and independent review remain pending. The prior120-check probe matrix was downloaded and verified. No provider site/schema/UI changes or real API call. Continue with matrix/review and protected owner persistence under the agreed contract; see PROJECT_STATUS and the probe guide for exact evidence.
