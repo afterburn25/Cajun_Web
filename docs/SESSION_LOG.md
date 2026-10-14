@@ -1324,3 +1324,15 @@ Previous goal turn made concrete progress: coordinator and private screen prepar
 ## 2026-10-14 — verify combined default SMTP path
 
 Starting48060cf722b9899450c4b0ca76c8aa2059b4b563, downloaded and inspected both combined reports from38535733829:471 named checks pass per PHP8.2/8.4 runtime. Default resolver/coordinator/credential decryption/maintained SMTP/pinned TLS use actual local connections and native MariaDB. Exact saved message bytes and identifiers, strict audit boundaries, current grant loss, final rejection, uncertainty, interrupted result persistence and no-retry behavior pass. PR38535741503 also succeeded. Original keys and private audit boundaries retained; no external mail was delivered. Source c5646bf remains the last shipping-code change, with564 earlier native/form executions verified. HTTP/browser/Apache/latest1.21 update/recovery and independent review remain pending. Hosting60c53dc4a retains reviewed isolated source and green checks but conflicts with current main documentation; next feasible parallel branch is canonical hosting integration, preserving Devin source/history. Full roadmap remains active.
+
+## 2026-10-14 — Devin PR merge-refresh wave: #43, #45, #54, #60
+
+**Request:** continue without stopping.
+
+**Found:** four more Devin PRs conflicting with `main` (`e3b434f`): #43 `devin/provider-foundation`, #45 `devin/vps-foundation`, #54 `devin/support-access`, #60 `devin/shared-hosting` — all continuity-docs conflicts, same class as the #53/#61 case that silently suppressed `pull_request` CI.
+
+**Fix:** union-merged `origin/main` on each: `f335c9c` (#43 — merge `118b5f4` + dedupe fixup removing a 253-line duplicated tail block where HEAD already contained entries main also gained), `a0536da` (#45, 58 vps checks green), `64cba39` (#54, 37 support-access checks green), `a133670` (#60, 168 hosting checks green). Empty stub headers stripped; each branch's component section preserved; zero component/test bytes changed.
+
+**Result:** #43/#45/#60 MERGEABLE with CI scheduling; #54 computing mergeability at push time.
+
+No provider calls, deployments, releases or live operations.
