@@ -29,3 +29,7 @@ Then add actual admin/client forms, historical term rendering, current invoice m
 ## Local implementation evidence
 
 Native contract `2e367c4` precedes implementation. `php -d memory_limit=128M tests/design_payments_native.php` passes95 named checks on PHP8.4.25/MariaDB10.11.16 with a fresh synthetic prefix. Deployed default/no-ini pure records each pass175. The earlier redirect interruption and missing support-fixture metadata are retained as incomplete/failed evidence and corrected without bypassing permissions. Dedicated PHP8.2/8.4 native CI, full package/private-path regression and independent review are pending. No actual staff/client form, invoice issuance or external payment is activated.
+
+## Native CI and issuance contract
+
+Native `26e1008` has1780 independently downloaded named executions across PHP8.2/8.4 push/PR matrices; [proof6179711113](https://github.com/afterburn25/Cajun_Web/pull/114#issuecomment-6179711113). Full application38645906931 is still pending. The next [invoice binding contract](DESIGN_PAYMENT_INVOICES_CONTRACT.md) precedes its implementation; original offers/consent remain preserved.

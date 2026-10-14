@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Current work — exact invoice obligation contract
+
+Native financial offers/consent #114 at `26e1008` now have independently verified PHP8.2/8.4 push/PR evidence:95 native and175 deployed pure default/no-ini checks per runtime,890 per matrix /1780 executions across both. All12 JSON reports and logs agree with local checks, with no PHP diagnostics. Tested merge `55186b9` is tree-identical; all2625 installer dependency hashes match committed bytes. [Proof6179711113](https://github.com/afterburn25/Cajun_Web/pull/114#issuecomment-6179711113). Full application/package [38645906931](https://github.com/afterburn25/Cajun_Web/actions/runs/38645906931) remains running; preserve its exact source and handle.
+
+The [invoice issuance contract](docs/DESIGN_PAYMENT_INVOICES_CONTRACT.md) is committed before implementation in this same draft workstream: one immutable invoice per explicitly accepted stage, first issuance freezes the whole accepted schedule, event/map/invoice/head/audit commit together, current authority and retries remain exact, and the existing payment ledger supplies real balances. Current code still has no issuance or financial route; implementation, forms and combined acceptance remain required. No charge, provider operation or deployment is authorized by this contract. Published1.23 and frozen planning113 are unchanged. Devin retains full20i; scoped107/109 corrections are now clear while111's five execution findings remain. Next: implement the contract, test existing ledger compatibility and actual forms, and verify the already-running full regression without restarting it.
+
 ## Current work — saved financial offers and explicit client consent
 
 Draft#114 / `codex/design-payment-schedules` extends pure `be5d947` after native contract `2e367c4`. [Native financial records](docs/DESIGN_PAYMENT_STORAGE_CONTRACT.md) now preserve exact offered, accepted, declined and withdrawn schedules in an anchored immutable history. Current staff need both financial/client permissions; only the actual current client may consent. New offers/decisions verify the real latest approved proposal and current project milestones. Original retries return the original event; changed terms need fresh financial approval. Support reads are scoped and audited; financial decisions refuse support identity.
