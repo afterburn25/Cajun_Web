@@ -92,7 +92,11 @@ function provider_operations_canonical(mixed $value,int $depth,int &$nodes): str
             return '['.implode(',',$parts).']';
         }
         ksort($value,SORT_STRING);
-        foreach($value as $key=>$item)$parts[]=json_encode((string)$key).':'.provider_operations_canonical($item,$depth+1,$nodes);
+        foreach($value as $key=>$item) {
+            $encoded=json_encode((string)$key);
+            if($encoded===false) throw new InvalidArgumentException('Operation scope map keys must be encodable UTF-8.');
+            $parts[]=$encoded.':'.provider_operations_canonical($item,$depth+1,$nodes);
+        }
         return '{'.implode(',',$parts).'}';
     }
     if (is_object($value)||is_resource($value)) throw new InvalidArgumentException('Operation scope accepts JSON scalars, lists and maps.');
@@ -108,28 +112,33 @@ function provider_operation_grant(string $profileId,string $operation,array $sco
     return staff_locked(function()use($profileId,$operation,$scopeParams,$password,$ttlSeconds):string {
         $actor=provider_settings_owner($password);
         $profile=provider_settings_load($profileId,true);
+        if((int)$profile['enabled']!==1) throw new RuntimeException('Enable the saved connection before approving operations.');
         $scope=provider_operations_scope($operation,$scopeParams);
         $id=bin2hex(random_bytes(16));
         return staff_transaction(function()use($profile,$operation,$scope,$actor,$ttlSeconds,$id):string {
-            query('INSERT INTO '.table('provider_operation_grants').' (id,profile_id,operation,scope_fingerprint,granted_by,granted_at,expires_epoch) VALUES (?,?,?,?,?,?,?)',
-                [$id,$profile['id'],$operation,$scope,(int)$actor['id'],gmdate('Y-m-d H:i:s'),time()+$ttlSeconds]);
+            query('INSERT INTO '.table('provider_operation_grants').' (id,profile_id,operation,scope_fingerprint,profile_revision,granted_by,granted_at,expires_epoch) VALUES (?,?,?,?,?,?,?,?)',
+                [$id,$profile['id'],$operation,$scope,(int)$profile['revision'],(int)$actor['id'],gmdate('Y-m-d H:i:s'),time()+$ttlSeconds]);
             provider_settings_audit((int)$actor['id'],'operation_grant','Granted '.$operation.' on '.$profile['id']);
             return $id;
         });
     });
 }
 
-/** Whether an unexpired, unrevoked grant covers this exact scope. */
+/**
+ * Whether an unexpired, unrevoked grant covers this exact scope under
+ * the CURRENT profile configuration. The grant is bound to the
+ * profile revision approved at grant time — any settings save
+ * (including a credential replacement) invalidates it, and a disabled
+ * profile suspends it. The newest grant for this exact scope decides;
+ * older entries are superseded history.
+ */
 function provider_operation_grant_active(string $profileId,string $operation,string $scopeFingerprint): bool {
     if (!provider_operations_ready()) return false;
-    foreach(all('SELECT scope_fingerprint,expires_epoch,revoked_at FROM '.table('provider_operation_grants').' WHERE profile_id=? AND operation=? ORDER BY seq DESC LIMIT 64',[$profileId,$operation]) as $row) {
-        if (hash_equals($row['scope_fingerprint'],$scopeFingerprint)) {
-            // The newest grant matching this exact scope decides; older
-            // entries for the same scope are superseded history.
-            return $row['revoked_at']===null && (int)$row['expires_epoch']>time();
-        }
-    }
-    return false;
+    $row=one('SELECT expires_epoch,revoked_at,profile_revision FROM '.table('provider_operation_grants').' WHERE profile_id=? AND operation=? AND scope_fingerprint=? ORDER BY seq DESC LIMIT 1',[$profileId,$operation,$scopeFingerprint]);
+    if($row===null||$row['revoked_at']!==null||(int)$row['expires_epoch']<=time()) return false;
+    try{$profile=provider_settings_load($profileId);}
+    catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;return false;}
+    return (int)$profile['revision']===(int)$row['profile_revision']&&(int)$profile['enabled']===1;
 }
 
 /** Revoke a grant durably; revoking twice or an unknown grant refuses. */
