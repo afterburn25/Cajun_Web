@@ -21,7 +21,7 @@ stop the update before activation; reconcile those using your backup. Unknown
 files and storage/upload protection are preserved. Fresh organized websites do
 not acquire legacy root compatibility files; existing ones remain supported. The temporary maintenance policy protects the site while
 changes are incomplete. Recovery copies/journal stay under your configured
-private storage in structure-1.18.0/. Configuration, keys, database and private
+private storage in structure-1.22.0/. Configuration, keys, database and private
 files are never replaced or reset by this structure update.
 
 After verifying the website, administration, portal, callbacks and private files,

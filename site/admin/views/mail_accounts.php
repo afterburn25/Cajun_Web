@@ -65,7 +65,7 @@ admin_input($protocol.'_password',($record && $record['has_credentials'])?'New a
 <?php endforeach; ?></div>
 <p class="hint">Passwords are never displayed or refilled after an error. Reenter any changed password before resubmitting. Use your provider's approved account or app password.</p>
 <?php admin_check('enabled','Make this saved account available to assigned staff',$values['enabled']); ?>
-<p class="hint">Availability does not verify a server connection or turn on sending. Keep a recoverable backup of the database and private mail-master.key together.</p>
+<p class="hint">Saving settings does not check a connection or send an email. Keep a recoverable backup of the database and private mail-master.key together.</p>
 <?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?>
 <button class="btn gold">Save email account</button>
 </form>
@@ -78,7 +78,7 @@ admin_input($protocol.'_password',($record && $record['has_credentials'])?'New a
 <?php elseif ($record['has_credentials']): ?><button class="btn outline" name="action" value="mail_accounts_enable">Enable saved account</button><?php endif; ?>
 <?php if ($record['has_credentials']): ?><button class="btn outline" name="action" value="mail_accounts_clear">Clear saved passwords and disable</button><?php endif; ?>
 </form><p class="hint">Disabling removes current staff availability. Clearing removes stored passwords and disables this account; settings and assignment history remain.</p></section>
-<section class="workspace-card"><h2>Staff assignments</h2><p>Each staff member needs a separate assignment, including owners. Administrators also need the matching Read assigned email or Send from assigned email permission under Administrators. The owner also needs the corresponding assignment to check each connection. Reading and sending messages remain unavailable.</p>
+<section class="workspace-card"><h2>Staff assignments</h2><p>Each staff member needs a separate assignment, including owners. Administrators also need the matching Read assigned email or Send from assigned email permission under Administrators. The owner also needs the corresponding assignment to check each connection. Reading and sending also require their respective storage to be prepared.</p>
 <?php $grants=mail_accounts_grants($accountId);$options=[];
 foreach (all('SELECT u.id,u.name,u.email FROM '.table('users').' u JOIN '.table('staff_profiles')." p ON p.user_id=u.id WHERE p.enabled=1 AND u.password_hash<>'' AND p.role IN ('owner','administrator') ORDER BY u.name,u.id") as $staff) $options[(string)$staff['id']]=$staff['name'].' · '.$staff['email'];
 foreach ([null,...$grants] as $grant):

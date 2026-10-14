@@ -1,5 +1,11 @@
 # Session log
 
+## Candidate correction — browser checkpoint requires current capability text
+
+Application38538349627 at53b6ea3/tested merge33c46d2 stopped after859 successful HTTP/browser assertions at the old email-account copy expectation (check860). It expected "Attachments and sending remain unavailable" and did not reach the new Send tests. Preserve that failure as evidence; no new Send UI acceptance is claimed. Update the assertion to require explicit saved-plaintext sending after setup, untested connection status and unavailable attachments. Correct stale staff-assignment text and START-HERE recovery location to structure-1.22.0. Native85/storage80/orchestration/form58 matrices remain separately verified. The Windows build at1aeef7b was deliberately stopped for these corrections before completion; no package acceptance is claimed from it.
+
+Next: regenerate exact installer hashes, commit/push the corrected candidate and run complete application/native/browser/actual1.21 recovery acceptance; inspect actual screenshots and independent review before merge/publication.
+
 ## 2026-10-14 — submission candidate and original1.21 recovery
 
 Starting53b6ea3; downloaded8 native/form reports38538343622 pass562 checks. Full application38538349627 remains active. Prepare1.22 labels, exact published1.21 baseline inventory and actual-package upgrade/recovery fixtures retaining original drafts, synthetic submission states and both keys. New recovery cases have syntax-only validation at this checkpoint; no release or external transmission.

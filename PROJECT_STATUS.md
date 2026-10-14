@@ -1,5 +1,11 @@
 # Project status
 
+## Candidate correction — browser checkpoint requires current capability text
+
+Application38538349627 at53b6ea3/tested merge33c46d2 stopped after859 successful HTTP/browser assertions at the old email-account copy expectation (check860). It expected "Attachments and sending remain unavailable" and did not reach the new Send tests. Preserve that failure as evidence; no new Send UI acceptance is claimed. Update the assertion to require explicit saved-plaintext sending after setup, untested connection status and unavailable attachments. Correct stale staff-assignment text and START-HERE recovery location to structure-1.22.0. Native85/storage80/orchestration/form58 matrices remain separately verified. The Windows build at1aeef7b was deliberately stopped for these corrections before completion; no package acceptance is claimed from it.
+
+Next: regenerate exact installer hashes, commit/push the corrected candidate and run complete application/native/browser/actual1.21 recovery acceptance; inspect actual screenshots and independent review before merge/publication.
+
 ## Current candidate preparation — 1.22.0 remains unreleased
 
 Starting53b6ea3, reserve candidate1.22.0 after verifying no tag/release exists. Add the actual immutable1.21.0 COMPLETE package to the retained baseline catalog (2531 files; SHA256307ed8f26db291efaac2a72d91683bb14e188080e5927507764b339c50a0b6b1), with its exact published UPDATE shim hashes. Extend filesystem/Apache baselines through1.21.0. Original1.21 fixtures now retain edited/discarded drafts before update; new additive submission cases preserve synthetic accepted, uncertain, unresolved and abandoned records through recovery/reapplication, including original keys and no resend controls. These recovery additions are prepared, not yet executed. They make no SMTP/provider call.
