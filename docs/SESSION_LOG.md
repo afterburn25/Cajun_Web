@@ -1100,3 +1100,7 @@ Prior session-only [38528949541](https://github.com/afterburn25/Cajun_Web/action
 ## 2026-10-14 — downloaded SMTP TLS matrix
 
 Starting2edeec1; no runtime change. The isolated Docker run38529526469 at2edeec1 is now downloaded and verified:26 named JSON reports pass. Each PHP8.2/8.4 runtime passes52 snapshot,29 MIME,168 independent parser,80 session,27 policy and398 actual TLS checks in each default/no-ini mode, plus1 unavailable-runtime check. Docker uses `--network none` and requires compiled OpenSSL. This proves the bounded components, not durable application acceptance. Independent review requested in PR77 comment6163395444. Exact-main draft38527733738 remains in Apache acceptance; latest public release1.20.0. Next: finish draft release gates, inspect independent review and implement durable current-authorized attempt storage.
+
+## 2026-10-14 — durable submission persistence boundary
+
+Starting477bb25, recorded [storage contract](MAIL_SUBMISSION_STORAGE_CONTRACT.md) after inspecting existing draft/connection/staff-lock adapters. Defined three proposed additive tables, unique draft-revision intent, committed dispatch fence before credentials/network, full private-content/attempt binding, immutable results and truthful post-acceptance authority-loss handling. Listed native concurrency/audit/replay/permission tests before UI integration. No runtime/schema change or new version; documentation validation passes. Next implement native current-authorized persistence after independent transport review, while draft main release acceptance remains live.

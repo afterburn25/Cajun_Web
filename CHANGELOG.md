@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — durable submission contract
+
+- Specify atomic intent/dispatch/result persistence and exact content/attempt binding before application implementation; accepted server outcomes remain recorded even if later browser access expires. Documentation only.
+
 ## Unreleased — isolated SMTP TLS channel
 
 - Added public-destination pinning, verified original-host TLS and finite I/O for submission.398 actual local loopback TLS checks pass; expanded PHP8.2/8.4 network-isolated matrix pending. No deployable version or application exposure.

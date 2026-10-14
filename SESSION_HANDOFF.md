@@ -1,5 +1,7 @@
 # Session handoff — read before continuing
 
+Next implementation: [durable submission storage contract](docs/MAIL_SUBMISSION_STORAGE_CONTRACT.md). It specifies unique saved-revision intent/dispatch fences, strict audit before credential exposure, exact attempt/content-bound results, conservative interruption handling and current-authorized history. In particular, lost access after a verified250 must not relabel or discard the actual acceptance result. This contract adds no tables, routes or sending activation.
+
 ## Current SMTP increment — bounded socket and loopback TLS
 
 From5375ade, isolated `SubmissionChannel` adds one public numeric destination pinned to the selected SMTP host/port, original-host certificate/SNI verification, TLS1.2/1.3 only, mandatory STARTTLS,5-second I/O/connect and30-second overall budgets, and finite byte/line/write caps. It reuses the established public-address policy without changing existing diagnostic channels. The caller still must validate the full DNS answer set and current authority before opening; no account lookup, credential decryption, database or application route is added.
