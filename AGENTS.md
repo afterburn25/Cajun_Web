@@ -1,5 +1,14 @@
 # Working agreement for CajunWebPro
 
+## Current draft storage preparation — native acceptance pending
+
+Provider1.20.0 remains a separate PR74 release candidate. On codex/mail-drafts, the content component atcbd4fd4 passed all71 named checks in each default/no-ini PHP8.2/8.4 cell; downloaded run38513488603 is verified. [PR75](https://github.com/afterburn25/Cajun_Web/pull/75) retains its contract review request6161185221.
+
+This increment adds unwired local draft storage and metadata history, exact additive schema validation, current per-author and mailbox Send checks, stable create replay, stale-edit protection, explicit sender-change acknowledgement, retained local discard and canonical template snapshots. Every read/write uses the existing staff mutex; audit and mutations commit together. No credential is decrypted or message sent. Native fixtures cover strict audit rollback, author/owner isolation, grant changes, concurrent creates/edits, revocation while waiting, key preservation and template boundaries. New storage has syntax validation only until its dedicated PHP8.2/8.4 MariaDB workflow completes.
+
+No base-schema, controller, navigation or HTTP call site activates this module yet; no new version is reserved. Builder mirroring and installer inventory include the guarded source. Next: inspect native evidence and contract review, then expose owner setup/private compose UI with current CSRF/revision checks and actual packaged browser/latest-release recovery acceptance after reconciling verified1.20main. Keep all real sending/provider/deployment gates intact.
+
+
 ## Active independent work — local email draft content
 
 Codex owns `codex/mail-drafts`, starting from main ceedcfd (published application1.19.0). Provider candidate1.20.0 remains in separate [PR #74](https://github.com/afterburn25/Cajun_Web/pull/74), awaiting full candidate acceptance and independent owner storage/check/UI review. The shared-hosting foundation #60 remains outside deployment after [ten negative reproductions](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6161071101); Devin retains those corrections after the provider review priority.

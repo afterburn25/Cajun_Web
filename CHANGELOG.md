@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — private local draft storage preparation
+
+Add unwired author/mailbox draft storage, replay and revision protection, explicit sender review, strict audit and retained metadata history. Native PHP8.2/8.4 fixtures are prepared; syntax-only acceptance so far. No UI, migration activation or sending.
+
 ## Unreleased — isolated local draft content
 
 Add bounded plaintext draft content and canonical template insertion outside deployment. No persistence, compose UI or sending yet.71 local default/no-ini checks pass; PHP8.2/8.4 matrix pending. Provider1.20release remains a separate branch.

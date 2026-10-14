@@ -1,5 +1,14 @@
 # A-06/A-07 — local email drafts and template insertion
 
+## Current draft storage preparation — native acceptance pending
+
+Provider1.20.0 remains a separate PR74 release candidate. On codex/mail-drafts, the content component atcbd4fd4 passed all71 named checks in each default/no-ini PHP8.2/8.4 cell; downloaded run38513488603 is verified. [PR75](https://github.com/afterburn25/Cajun_Web/pull/75) retains its contract review request6161185221.
+
+This increment adds unwired local draft storage and metadata history, exact additive schema validation, current per-author and mailbox Send checks, stable create replay, stale-edit protection, explicit sender-change acknowledgement, retained local discard and canonical template snapshots. Every read/write uses the existing staff mutex; audit and mutations commit together. No credential is decrypted or message sent. Native fixtures cover strict audit rollback, author/owner isolation, grant changes, concurrent creates/edits, revocation while waiting, key preservation and template boundaries. New storage has syntax validation only until its dedicated PHP8.2/8.4 MariaDB workflow completes.
+
+No base-schema, controller, navigation or HTTP call site activates this module yet; no new version is reserved. Builder mirroring and installer inventory include the guarded source. Next: inspect native evidence and contract review, then expose owner setup/private compose UI with current CSRF/revision checks and actual packaged browser/latest-release recovery acceptance after reconciling verified1.20main. Keep all real sending/provider/deployment gates intact.
+
+
 Proposed bounded next increment, from main `ceedcfdba687fb7c81dd9c8c534c0350aec4e1c1` (published application 1.19.0). Codex owns `codex/mail-drafts`; provider candidate 1.20.0 remains separately under review in [PR #74](https://github.com/afterburn25/Cajun_Web/pull/74). Do not combine release claims. No new version is reserved here.
 
 ## Ownership and delivery boundary
