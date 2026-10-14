@@ -1,5 +1,9 @@
 # Changelog
 
+## Current work — structured planning interface contract
+
+Codex starts `codex/project-planning-screens` from preserved PR112/`5e44a6b`. [The interface contract](docs/PROJECT_PLANNING_SCREENS_CONTRACT.md) is committed before code: actual admin plan/milestone editing, client dashboard, dated snapshots and exact personal activity links, with owner setup, retained stale drafts and current access. Implementation and new acceptance are pending. Existing verified parents stay preserved; published1.23 is unchanged. Devin retains complete20i implementation and accepted ownership. Next: implement and test the actual interface on this separate branch.
+
 ## Unreleased — native structured project planning
 
 - Add explicit owner-prepared structured plans, atomic original-request replay and independent current-plan/history anchors, preserving existing project fields.

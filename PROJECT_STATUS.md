@@ -1,5 +1,9 @@
 # Project status
 
+## Current work — structured planning interface contract
+
+Codex starts `codex/project-planning-screens` from preserved PR112/`5e44a6b`. [The interface contract](docs/PROJECT_PLANNING_SCREENS_CONTRACT.md) is committed before code: actual admin plan/milestone editing, client dashboard, dated snapshots and exact personal activity links, with owner setup, retained stale drafts and current access. Implementation and new acceptance are pending. Existing verified parents stay preserved; published1.23 is unchanged. Devin retains complete20i implementation and accepted ownership. Next: implement and test the actual interface on this separate branch.
+
 ## Current work — native planning CI verified
 
 `codex/project-planning-storage` preserves PR110/6bcf4e7; contract `ed1ab72` precedes native implementation. It adds exact owner-prepared plan/event/request/head storage, atomic saves, complete bounded history, original-request replay and current staff/client/scoped-support projections. Current planning stays separate from existing project stage/free-text milestones. [Native contract and evidence](docs/PROJECT_PLANNING_STORAGE_CONTRACT.md). No dashboard, route, automatic setup or planning activity delivery is active yet. Full P-05/P-07 remains partial.

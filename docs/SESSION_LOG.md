@@ -1538,3 +1538,7 @@ All2,616 installer dependencies match2,617 exact committed shipping files. The f
 Devin execution PR1112fc8add is attached for subsequent review; only its metadata/dependency relationship was inspected. Coordination6178047781 requires carrying107/109 corrections into it and preserves the first usable inventory/admin/client milestone. No full execution review or live acceptance is claimed. Complete20i stays Devin-owned. Parent108 final10191/all26 evidence is posted6177968549; independent parent/combined review and later exact-main release acceptance remain.
 
 Next: define the planning editor/dashboard/activity contract on a separate preserved branch, retain original request tokens and bounded invalid/stale drafts, expose real milestone responsibilities/dates/dependencies, and add actual HTTP/browser and latest-published upgrade/recovery evidence. Existing views/routes remain unchanged in this storage increment. Full roadmap remains active; published1.23 stays immutable.
+
+## 2026-10-14 — planning interface contract
+
+Request: continue the roadmap while Devin owns complete20i. Starting native PR1125e44a6b; separate codex/project-planning-screens. Committed exact forms/dashboard/activity contract before runtime changes; parent108 and published1.23 preserved. Inspection confirms Devin accepted full ownership and107/109/111 heads are unchanged. No new behavior or tests claimed. Next: implementation, focused and actual browser/native acceptance, then independent review.
