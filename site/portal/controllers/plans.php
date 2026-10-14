@@ -21,5 +21,5 @@ function service_plans_portal_render(array $client,string $error):never {
     if($error!=='')echo '<div class="notice error" role="alert">'.esc($error).'</div>';
     try {require CWP_CODE_ROOT.'/portal/views/plans.php';}
     catch(InvalidArgumentException|RuntimeException|LogicException $e){if($e instanceof PDOException)throw $e;echo '<div class="notice error" role="alert">'.esc($e->getMessage()).'</div>';}
-    echo '</div></section>';site_foot();exit;
+    echo '</div></section>';site_foot(false);exit;
 }

@@ -2564,7 +2564,7 @@ function setup_expected_files(): array { return [
     'pages/services/packages.php'=>'973ee673986c1985e0abf8023f80b8da949a250ef4f60ccfb318621c987eb21d',
     'portal/controllers/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
     'portal/controllers/actions.php'=>'974302df9e53d9146621c22cb9e36f70f514ea484574e6ee729dcfd7eae957b7',
-    'portal/controllers/plans.php'=>'832153d063c618cf73821287c3351b6e3cd4fb00d122bb33a89b508f3fc208a0',
+    'portal/controllers/plans.php'=>'af3c5cd826f23db679f04b1d9c54ee7cb4d38e5f1926a14b4e0e226c6d60db65',
     'portal/controllers/router.php'=>'e6b96f9f8eb447b817b29b51808cfd1c9c104f7776b96cb02575251b0e9bab71',
     'portal/index.php'=>'2f2c2bdbb10a089c0853ad3b2102f0f9aeef5c9809fcf22e5e5e3f53586521a4',
     'portal/views/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
