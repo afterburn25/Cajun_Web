@@ -79,4 +79,5 @@ transfer endpoints are deliberately absent — not merely unimplemented.
 
 Persistence, scheduling, workers, routes, client ownership inference,
 live calls, and every write operation. Client/service linking is an
-explicit owner action in the application layer, assigned to Codex.
+explicit owner action in the application layer — delivered separately by
+Devin on `devin/twentyi-refresh` (see `TWENTYI_INVENTORY_APP.md`).
