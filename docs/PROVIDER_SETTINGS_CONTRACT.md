@@ -1,6 +1,6 @@
 # HC-07 application contract — owner 20i connection settings
 
-Reviewed integration contract; no application feature is implemented yet. Codex claims `codex/provider-settings` from main44926230a2359cf82793eb3cdd55fe940bbb786f (verified1.18.0 publication record). Email-notice PR72 remains the current release priority. This branch began with documentation, then preserved the reviewed isolated provider foundation at 46b2826; reconcile the completed1.19.0 baseline before application integration. Devin retains canonical provider-foundation corrections in PR43. No new release version is reserved by this contract.
+Reviewed contract for draft PR #74. Codex owns `codex/provider-settings`; Devin retains canonical provider corrections. This branch now reconciles published 1.19.0 source22a2969 and publication recordsb472ed2, preserving provider46b2826 and isolated probe6ced20d. The release boundary is complete; proceed with bounded transport and protected owner application integration. No new release version is reserved and the probe is not exposed in the application yet.
 
 ## Existing evidence
 

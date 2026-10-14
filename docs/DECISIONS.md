@@ -161,3 +161,7 @@ Source 91550d956c404585545dbd766c96f36f58ae0623 preserves exact mailbox generati
 ## 2026-10-13 — separate connection proof from inventory
 
 The first owner 20i increment validates only a fixed explicit package-list connection. Public authentication references and the prior diagnostic do not define account-specific inventory fields or client ownership. Keep inventory out of this increment, preserve JSON list/object identity, and persist only finite local classifications. Canonical result length limits alone do not redact provider output.
+
+## 2026-10-13 — ship bounded recent email notices in1.19.0
+
+Source22a2969692ab5bcc7f35158dcaa5355c623dc821 retains exact current-window identities and local per-staff state separately from shared observed server flags. Private header polling reads only local metadata and preserves idle expiry. Client-support views exclude staff email mounts. Full unread synchronization, previews and provider read-flag writes remain separate work. Continue the protected owner20i adapter contract without treating authentication as mutation entitlement.
