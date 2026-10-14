@@ -1,5 +1,19 @@
 # Hosting reconciliation without another dispatch
 
+## Durable adapter increment — prepared, native acceptance pending
+
+The separate `codex/hosting-reconciliation-storage` branch preserves canonical PR88/b597559. Two additive tables retain observations and the single conclusive decision per original dispatch. Owner/password setup validates exact columns, collations, unique indexes and foreign keys; it refuses populated unrecognized tables. Existing operation setup and fresh installation do not activate these tables.
+
+`hosting_reconciliation_record()` is trusted internal code, not an HTTP callback or operator outcome form. It requires an exact retained unresolved result, dispatch fingerprint and bounded observation containing `outcome` (`unknown`, `applied`, `not_applied`), `observed_at`, exact `resource_ref`, opaque `evidence_ref` and SHA256 evidence digest. The future operation-specific verifier must establish finality; absence from partial inventory or an action still running cannot become `not_applied`. The digest supplies integrity identity only. No real20i evidence verification is implemented here.
+
+Unknown observations retain the unchanged unresolved journal. A conclusive observation atomically appends the new state-only command, retains its decision/evidence, adopts a unique resource when appropriate and writes strict audit. Validation replays the observation's exact original journal prefix and compares all dispatch/resource bindings. Original timeout or accepted-without-identity results stay unchanged. Exact observation replay is no-op even after later actions; changed identity, new decisions for settled/old attempts and missing/tampered proof fail closed. The internal finalizer can retain reality after access loss, without granting another operation. Audit excludes evidence contents and credentials.
+
+Provisioning retry after validated absence still needs a separate current-owner/password action; it only returns local pending state. Dispatch then separately checks the current active client/provider and revisions. Deletion retry after validated non-removal still needs the original currently authorized second approver and retained retention approval, and commits its own fresh fence. Legacy `reconcile` stays refused. Missing dispatch results are deliberately not fabricated from journal state; a later verified crash-recovery boundary is required before this adapter can settle them.
+
+Canonical parent CI passes1,820 named executions. The new database suite is prepared for actual PHP8.2/8.4 MariaDB, with all94/79/44/67 existing suites retained. A local Windows run stopped before reconciliation assertions because the platform cannot retain the required0600 provider key permissions; no protection was relaxed. Native acceptance and independent additive review are pending. No route, real provider request, worker, fresh-storage activation or release.
+
+## Original canonical checkpoint and design requirements
+
 Unreleased work on `codex/hosting-reconciliation` from deletion-retry87/bd0e46e, preserving parent85/21ebe69. This first increment adds a canonical transition and journal command. Durable observation storage, verification, current-authorized retry adaptation and provider coordination described below are next work, not implemented acceptance. There is no route, provider request, credential access, worker, schema activation or new version.
 
 ## Canonical observation boundary

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — durable hosting observation storage
+
+Add internal immutable unknown/conclusive evidence, exact dispatch/prefix validation, atomic reconciliation/resource/audit and separately authorized retries after validated absence. Preserve original observations, legacy semantics and missing-result refusal. Native Linux acceptance/review pending; Windows stopped at retained private-key permission protection. No route, activation or new release. [Contract](docs/HOSTING_RECONCILIATION.md).
+
 ## Unreleased — state-only hosting reconciliation
 
 Add a distinct non-dispatching reconciliation method/journal command; preserve legacy command semantics, retain original observations and require explicit later deletion retry. Local95 new plus360 retained controls pass per default/no-ini mode; native persistence/provider verification/CI/review remain separate pending work. No route or release. [Contract](docs/HOSTING_RECONCILIATION.md).

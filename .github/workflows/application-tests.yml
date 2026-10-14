@@ -93,6 +93,7 @@ jobs:
           php8.3 tests/hosting_operations_native.php
           php8.3 tests/hosting_retry_native.php
           php8.3 tests/hosting_delete_retry_native.php
+          php8.3 tests/hosting_reconciliation_native.php
           php8.3 tests/client_authority_native.php
       - name: Real HTTP and Chromium application workflows
         run: .ci-venv/bin/python tests/browser_acceptance.py

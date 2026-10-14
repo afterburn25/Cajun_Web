@@ -1286,3 +1286,7 @@ Starting e6a6a547888e808a2441015eca796d9dab198ef1, merge21ebe6928ecd4c4dcbda2c8b
 ## 2026-10-14 — separate observed reconciliation from another dispatch
 
 Starting bd0e46e803901a51f2859d03767d637f2153c397, add the distinct canonical method/journal command and95 named controls, retain all360 original controls and legacy semantics, extend focused default/no-ini PHP8.2/8.4 workflow and mirror/inventory. Local clean modes pass after fixing a fixture notice; current CI/independent review pending. Durable observations, exact evidence binding and application retry integration remain next work, with no activation. Parent1.23 acceptance continues unchanged.
+
+## 2026-10-14 — durable reconciliation increment on a preserved branch
+
+Owner requested continued roadmap work. Start b597559 on codex/hosting-reconciliation-storage, retain parent88 unchanged. Implement closed observation schema, strict additive migration, internal transactional finalizer, original-prefix validation and current-authorized retry adaptation. Add native synthetic race/audit/tamper/history cases and retain old suites/private-path coverage. Canonical1,820 and parentbd568 verified; current1.23 browser6,840 and Windows packages verified, fullApache/reviews pending. Windows native stopped at the existing0600 key guard before new assertions; no permission change. Linux native execution and additive review are next.

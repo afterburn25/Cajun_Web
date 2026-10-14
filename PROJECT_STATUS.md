@@ -1,5 +1,17 @@
 # Project status
 
+## Current work — durable hosting observations
+
+`codex/hosting-reconciliation-storage` starts from canonical PR88/b597559, preserving deletion87/bd0e46e and candidate85/21ebe69. Its checkout currently uses the existing hosting-reconciliation directory. The parent PR88 remains unchanged for its own review/acceptance. Codex owns this persistence lane; Devin retains read-only20i inventory. No route, provider call, worker, fresh-install activation or release is added.
+
+New internal storage binds immutable unknown/conclusive observations to the original dispatch fingerprint, account/client/provider revision/attempt/resource and journal prefix. Conclusive evidence, its non-dispatching event, unique adopted resource and strict audit commit together. Exact replay returns no new claim, including after a later attempt. Current-owner provisioning retry and original-approver deletion retry recognize validated absence separately. Missing original results remain blocked for a later verified recovery boundary. A digest/reference is not provider verification; only a trusted future adapter may call this internal finalizer.
+
+Canonical b597559 PR38565338704 is downloaded/verified:95 new plus360 retained checks in default/no-ini on PHP8.2/8.4,1,820 executions. Parent87/bd native38563512668 is verified568. Current1.23 browser checkpoint38562463459 has2,460 native +3,084 estimator +1,275 HTTP +21 builder,6,840 executions; allfive actual screens inspected and homepage pixels equal published1.22. Full Apache acceptance continues unchanged. Current Windows candidate packages are all verified. Independent reviews88/87 and candidate85 remain pending.
+
+The new storage/native suite has syntax validation only. Local Windows MariaDB execution stopped at the existing protected-provider-key0600 permission requirement before any new reconciliation assertions; this failure is retained, the temporary database process was stopped, and no production permission check was weakened. Focused Linux PHP8.2/8.4 acceptance, strict-audit/concurrency results and additive independent review remain required. Next verify that matrix, correct findings, preserve original branches and continue provider coordination/UI. Published1.22/e3b434f remains immutable; the full roadmap is active.
+
+## Earlier checkpoints — historical evidence
+
 ## Current work — reconciliation without automatic dispatch
 
 Codex owns `codex/hosting-reconciliation` from PR87/bd0e46e, preserving parent85/21ebe69. A new canonical `reconcileWithoutDispatch()` method and distinct journal command settle conclusive observations without arming another provider attempt. Confirmed-not-removed deletion remains failed until a separate currently authorized retry. Old reconciliation command semantics remain compatible; the application still rejects new reconciliation histories until durable verification/storage is implemented. No route, schema activation, provider call, worker or release version is added. See HOSTING_RECONCILIATION under docs.

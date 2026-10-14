@@ -6,6 +6,7 @@ require_once CWP_CODE_ROOT.'/app/hosting/records.php';
 require_once CWP_CODE_ROOT.'/app/providers/settings.php';
 require_once CWP_CODE_ROOT.'/database/schema/hosting_operations_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/hosting_operations_migrate.php';
+require_once CWP_CODE_ROOT.'/app/hosting/reconciliation.php';
 use CajunWebPro\Foundation\Hosting\{HostingJournal,OperationResult};
 
 function hosting_operations_ready():bool {
@@ -27,15 +28,15 @@ function hosting_operations_commands(string $operation):array {
 function hosting_operations_result_data(OperationResult $result):array {
     return ['operation'=>$result->operation,'outcome'=>$result->outcome,'at'=>$result->at,'subject_ref'=>$result->subjectRef,'receipt'=>$result->receipt,'resource_ref'=>$result->resourceRef,'error'=>$result->error,'retryable'=>$result->retryable,'attempt_ref'=>$result->attemptRef];
 }
-/** Local retry eligibility requires a definite, recorded, explicitly retryable failure. */
+/** Caller first validates all durable proof. Retry needs a definite safe failure or verified absence. */
 function hosting_operations_provision_retryable(HostingJournal $journal):void {
     $account=$journal->account();$observations=$account->operations();$last=$observations?end($observations):null;
-    if($account->status()!=='failed' || $account->pendingAttempt()!==null || $account->awaitingReconciliation() || !$last || $last->operation!=='hosting.provision' || $last->outcome!=='failed' || !$last->retryable)throw new RuntimeException('Only a recorded definite provisioning failure marked safe to retry can be prepared again. Unknown outcomes require verified reconciliation.');
+    if($account->status()!=='failed' || $account->pendingAttempt()!==null || $account->awaitingReconciliation() || !$last || $last->operation!=='hosting.provision' || !($last->outcome==='failed' && $last->retryable) && !hosting_reconciliation_absence($journal,'hosting.provision'))throw new RuntimeException('Provisioning retry requires a retained safe failure or verified conclusive absence. Unknown outcomes remain blocked.');
 }
 /** Retry deletion only from retained definite failure, by the original current approver. */
 function hosting_operations_deprovision_retryable(HostingJournal $journal,int $actor):void {
     $account=$journal->account();$observations=$account->operations();$last=$observations?end($observations):null;
-    if($account->status()!=='deprovision_failed' || $account->pendingAttempt()!==null || $account->awaitingReconciliation() || !$last || $last->operation!=='hosting.deprovision' || $last->outcome!=='failed' || !$last->retryable)throw new RuntimeException('Only a recorded definite deletion failure marked safe to retry can be attempted again. Unknown outcomes require verified reconciliation.');
+    if($account->status()!=='deprovision_failed' || $account->pendingAttempt()!==null || $account->awaitingReconciliation() || !$last || $last->operation!=='hosting.deprovision' || !($last->outcome==='failed' && $last->retryable) && !hosting_reconciliation_absence($journal,'hosting.deprovision'))throw new RuntimeException('Deletion retry requires a retained safe failure or verified conclusive non-removal. Unknown outcomes remain blocked.');
     $approval=null;
     foreach(json_decode($journal->json(),true)['events'] as $event)if($event['command']==='approve_deprovision')$approval=$event;
     if(!$approval || $approval['actor']!=='staff:'.$actor || $approval['arguments']!==['retention_confirmed'=>true])throw new RuntimeException('Deletion retry requires the original approver and retained data-retention approval.');
@@ -84,6 +85,13 @@ function hosting_operations_validate(array $row):HostingJournal {
             if(!$event || $event['command']!==hosting_operations_commands($dispatch['operation'])[1] || $event['actor']!=='staff:'.$dispatch['actor_id'] || $event['arguments']!==['result'=>$data] || hosting_records_json($data)!==$result['result_json'] || ($data['operation']??null)!==$dispatch['operation'] || ($data['subject_ref']??null)!==$row['id'] || ($data['attempt_ref']??null)!==$dispatch['attempt_ref'])throw new RuntimeException('Saved hosting result binding is inconsistent.');
             $covered[$result['event_id']]=true;
             if($dispatch['operation']==='hosting.provision' && $data['outcome']==='applied' && $data['resource_ref']!==null)$resourceExpected=['id'=>$dispatch['id'],'account_id'=>$row['id'],'profile_id'=>$dispatch['profile_id'],'resource_ref'=>$data['resource_ref']];
+        }
+        if(hosting_reconciliation_ready()){
+            $decision=hosting_reconciliation_validate_dispatch($row,$journal,$dispatch,$result,$events);
+            if($decision){
+                $covered[$decision['event_id']]=true;
+                if($dispatch['operation']==='hosting.provision' && $decision['data']['outcome']==='applied')$resourceExpected=['id'=>$dispatch['id'],'account_id'=>$row['id'],'profile_id'=>$dispatch['profile_id'],'resource_ref'=>$decision['data']['resource_ref']];
+            }
         }
     }
     $resource=one('SELECT id,account_id,profile_id,resource_ref FROM '.table('hosting_resources').' WHERE account_id=?',[$row['id']]);
