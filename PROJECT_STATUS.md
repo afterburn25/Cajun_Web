@@ -37,6 +37,9 @@ Independent reviews are CLEAR for hosting79 b6d4d24,80 8bbd209,81 5d9b719,82 1f5
 Merge resolutions preserve both documentation histories, mail and client browser cases, all old private-path denials, all submission generation/vendor checks and hosting mirrors. The combined full application workflow additionally runs the three retained hosting native suites and denies direct access to all12 new hosting internals in both Apache modes. No supplied assertion or supported upgrade baseline is removed. Installer inventory is regenerated from the combined bytes. Next: inspect combined PHP8.2/8.4/native/HTTP/recovery/Apache evidence and actual screenshots, obtain integration review, and integrate sequentially after verified mail publication. No live mail, provider write, charge, SSH or deployment.
 
 ## Earlier checkpoints — superseded by the integration status above
+## Current work — read-only 20i hosting inventory contract (Devin lane)
+
+Branch `devin/twentyi-inventory` from main `4fb0c83` implements the assigned read-only inventory contract (issue #2 comment 6167449082): `foundation/twentyi-inventory/` holds a closed set of four GET request descriptors (fixed `api.20i.com` host, allocated-ID validation, no credentials in the component), a typed `InventoryPackage` allowlist record, a complete/partial/unavailable `InventorySnapshot` projector, and an evidence-graded `InventoryRegister` (only `packages.list` carries authenticated-read evidence from issue #65; `package.types`/`account.balance`/detail keep unknown schemas unknown). The shipped probe, provider gateway and `FixedHttpTransport` are untouched. No live call, credential access, persistence, client linking, route, worker or release is added. Synthetic suite: 73 checks under PHP 8.4 default and `php -n`. [Contract](docs/TWENTYI_INVENTORY_CONTRACT.md). Integration and any live read remain Codex-owner-gated.
 
 ## Latest verified publication — 1.22.0
 

@@ -37,6 +37,10 @@ Independent reviews are CLEAR for hosting79 b6d4d24,80 8bbd209,81 5d9b719,82 1f5
 Merge resolutions preserve both documentation histories, mail and client browser cases, all old private-path denials, all submission generation/vendor checks and hosting mirrors. The combined full application workflow additionally runs the three retained hosting native suites and denies direct access to all12 new hosting internals in both Apache modes. No supplied assertion or supported upgrade baseline is removed. Installer inventory is regenerated from the combined bytes. Next: inspect combined PHP8.2/8.4/native/HTTP/recovery/Apache evidence and actual screenshots, obtain integration review, and integrate sequentially after verified mail publication. No live mail, provider write, charge, SSH or deployment.
 
 ## Earlier checkpoints — superseded by the integration status above
+## Current — 20i inventory contract on `devin/twentyi-inventory`
+
+Devin's assigned read-only 20i lane is implemented: closed GET descriptors, typed allowlist package records, complete/partial/unavailable projection, and a documented-vs-authenticated capability register. 73 synthetic checks pass under PHP 8.4 default and `php -n`; the focused `twentyi-inventory` workflow runs the same under 8.2/8.4. Contract at `docs/TWENTYI_INVENTORY_CONTRACT.md`. Next: open the draft PR for Codex review; Codex owns any persistence, client linking, routes, live reads and integration. Do not infer live capability from this contract.
+
 
 ## Latest verified publication — 1.22.0
 

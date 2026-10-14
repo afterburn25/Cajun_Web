@@ -7,6 +7,9 @@ Unreleased. Preserve reviewed client conflict/invitation/support safeguards and 
 ## Unreleased combined hosting/client integration
 
 Preserve mail main1.22 while combining guarded client administration and reviewed hosting journal/storage/dispatch/local-retry foundations. No new hosting UI or remote execution is activated. Add all three hosting native suites and12 internal-path checks to combined full acceptance; preserve every existing test and upgrade baseline. This branch is not a published release.
+## Unreleased — read-only 20i inventory contract
+
+- `foundation/twentyi-inventory/`: closed documented GET descriptors, allowlist package projection, honest complete/partial/unavailable snapshots and an evidence-graded capability register. Contract-only; no live calls, persistence, routes or client linking.
 
 ## 1.22.0 — verified explicit saved-email sending
 
