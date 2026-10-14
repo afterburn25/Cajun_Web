@@ -3,7 +3,7 @@
 ## Unreleased — private Send/history screen preparation
 
 - Prepare guarded saved-message review with explicit confirmation and current-authorized private submission history. Preserve stale form identities/revisions and prevent existing attempts from displaying another Send action.
-- Pass58 local form/escaped-template checks in default/no-ini modes; expanded native/UI acceptance pending. No router/action/navigation/fresh-schema activation or new release version.
+- Downloaded c5646bf matrix passes85 storage,81 orchestration/read-model and58 form/template checks per default/no-ini mode on PHP8.2/8.4 (564 executions). Actual UI acceptance remains pending. No router/action/navigation/fresh-schema activation or new release version.
 
 ## Unreleased — server-only email submission orchestration
 
