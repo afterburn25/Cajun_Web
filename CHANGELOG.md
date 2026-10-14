@@ -2,6 +2,8 @@
 
 ## Verification records — 2026-10-14
 
+Verify notification browser checkpoint (9,370 checks and inspected current views) and separate pure calendar PR 117 (1,624 focused executions/all 22 workflows). Preserve its incomplete native billing scope. Confirm that Devin's supplied application success does not resolve the eight unchanged-source review findings.
+
 Final financial forms PR 114 acceptance now verifies 11,326 assertions/all 28 workflows and identical Windows/Linux packages. Notification PR 116 Windows packages verify; its full browser/recovery run remains live. No released application bytes change.
 
 Record financial notification PR 116 focused CI (3,364 verified executions), parent PR 114 browser/Windows evidence and preserved full acceptance runs. Confirm Devin retains all 20i implementation and that its newest docs-only delta does not resolve outstanding behavior findings. Review checkout shipping and test bytes are unchanged.
