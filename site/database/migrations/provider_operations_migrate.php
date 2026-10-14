@@ -36,7 +36,7 @@ function provider_operations_validate_schema(string $name,string $sql): void {
     }
     foreach($actual as &$index){ksort($index[1]);$index[1]=array_values($index[1]);}unset($index);
     ksort($actual);ksort($expected);
-    if($actual!==$expected)throw new RuntimeException('Incompatible provider operation indexes. Existing data was preserved.');
+    if($actual!==$expected)throw new RuntimeException('Incompatible provider operation indexes ('.$name.'): '.json_encode([$actual,$expected]).' Existing data was preserved.');
     $expected=match($name) {
         'provider_operations'=>[],
         'provider_operation_grants'=>['profile_id'=>['provider_profiles','id'],'granted_by'=>['users','id'],'revoked_by'=>['users','id']],
