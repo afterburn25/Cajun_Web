@@ -2,6 +2,8 @@
 
 ## 1.19.0 candidate — recent email notices (unreleased)
 
+Both supported PHP versions pass 79 notice integration checks at the 92b3863 tree. Correct pre-account/pre-inbox test schemas to omit dependent notice tables; read immutable Git blobs without Windows pathname ambiguity; add a long-path builder guard and explicit owner two-bell narrow-screen coverage. Twenty local builder checks pass. Full current application/visual/recovery/package acceptance remains pending.
+
 Correct the native fixture to load its notice module once after fresh schema integration; this fixes a test bootstrap fatal without changing application behavior. Integrated runtime acceptance is still pending.
 
 Connected strict successful read transactions to the local notice window and per-staff opened state; added owner setup, fresh empty schema, recent-notice page, exact message POST/dismiss actions and private count endpoint. Neutral public/admin header bells refresh local metadata only and preserve idle expiry. Added native reader-hook/rollback/concurrency cases. Storage-only baseline 257a2fc passes 57 checks on each PHP 8.2/8.4 runner; new integrated/native/browser/package acceptance is pending. This does not activate automatic inbox synchronization or sending.
