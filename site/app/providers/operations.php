@@ -36,8 +36,8 @@ final class ProviderOperationLedger implements OperationLedger
     {
         if (!provider_operations_ready()) throw new RuntimeException('Provider operation storage is not ready.');
         try {
-            query('INSERT INTO '.table('provider_operations').' (idempotency_key,fingerprint,status,result_message,attempts,claimed_at,claimed_epoch) VALUES (?,?,?,?,?,?,?)',
-                [$idempotencyKey,$fingerprint,'claimed','',0,gmdate('Y-m-d H:i:s',$now),$now]);
+            query('INSERT INTO '.table('provider_operations').' (id,idempotency_key,fingerprint,status,result_message,attempts,claimed_at,claimed_epoch) VALUES (?,?,?,?,?,?,?,?)',
+                [bin2hex(random_bytes(16)),$idempotencyKey,$fingerprint,'claimed','',0,gmdate('Y-m-d H:i:s',$now),$now]);
             return LedgerClaim::claimed();
         } catch (PDOException $e) {
             if ((int)($e->errorInfo[1] ?? 0) !== 1062) throw $e;

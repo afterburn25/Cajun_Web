@@ -6,7 +6,7 @@ require_once CWP_CODE_ROOT.'/database/schema/provider_operations_schema.php';
 
 function provider_operations_validate_schema(string $name,string $sql): void {
     $unique=match($name) {
-        'provider_operations'=>[],
+        'provider_operations'=>['operation_key'=>['idempotency_key']],
         'provider_operation_grants'=>['seq'=>['seq']],
         default=>throw new LogicException('Unknown provider operation storage.'),
     };
