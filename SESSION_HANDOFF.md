@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Current next increment — dated project progress
+
+Codex owns P-05/P-07 progress history on `codex/project-progress`, starting from preserved PR104/`02f41e6`. The existing editor overwrites the latest title, summary, stage and milestones; the client currently has no dated record of those changes. [The new contract](docs/PROJECT_PROGRESS_CONTRACT.md) specifies honest tracking baselines, immutable public changes, stale-form/replay handling, current authority and exact activity links. Contract only at this checkpoint: pure records, native storage and UI remain to implement. Devin retains complete20i implementation; no provider files or active acceptance heads are changed.
+
+PR104 remains frozen. Its exact Windows archives verify FULL5,251/COMPLETE2,603/UPDATE2,590 members. Focused native CI passes170 checks per PHP8.2/8.4; desk/form matrix passes1,392 executions. Browser checkpoint of [run38615406858](https://github.com/afterburn25/Cajun_Web/actions/runs/38615406858) verifies7,905 assertions including1,388 HTTP/Chromium checks, with six inspected original ticket desktop/mobile captures and homepage pixels equal published1.23. Full Apache/upgrade/recovery and independent reviews remain pending. This is checkpoint evidence, not release acceptance. Published1.23 and agreement candidate101 remain unchanged.
+
 ## Current ticket screens and activity — unreleased
 
 `codex/support-ticket-screens` starts from preserved PR103/`6ba93c3`. It adds actual staff/client ticket queues, creation/reply/status/private-note forms, exact-update activity links, separate explicit read controls and the existing permitted one-click support entry. Private staff changes leave client versions and notifications unchanged. [Current usage, test evidence and remaining work](docs/SUPPORT_TICKETS.md); [contract](docs/SUPPORT_TICKETS_CONTRACT.md).

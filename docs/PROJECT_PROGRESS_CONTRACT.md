@@ -1,0 +1,45 @@
+# Dated project progress — implementation contract
+
+Status: contract only; implementation and acceptance pending. Roadmap P-05 and P-07 remain partial. Starting source: `02f41e64db203b8d51b77399d7eb130f7dd6fb13`, preserved PR104. Owner: Codex, branch `codex/project-progress`. Devin retains the complete 20i implementation under [the accepted handoff](DEVIN_COMPLETE_20I_HANDOFF.md).
+
+## Existing behavior and scope
+
+The actual `studio_job` action in `site/admin/controllers/studio.php` overwrites title, summary, stage and milestones in `studio_jobs`. The client workspace displays only these latest values. Existing messages, review versions, files, invoices and published ZIPs already retain their own records. This increment adds dated history for the existing project fields and then connects that history to the existing activity center. It does not infer percentages, target dates, completion, payments or provider state. Configurable stages, structured milestones, target dates, blockers, contacts and per-contact permissions remain separately pending under [P-05](CLIENT_PORTAL_ROADMAP.md#p-05--web-design-project-workspace-and-progress).
+
+## Ownership and sequence
+
+1. Commit this contract and ownership before dependent work.
+2. Implement pure snapshot/event validation in `foundation/projects/`, synthetic named tests in `tests/project-progress/`, and a scoped PHP8.2/8.4 default/no-ini workflow. These components remain outside deployment and make no database or authorization claim.
+3. Add protected native storage/migration and current-authority checks in `site/app/projects/` and `site/database/{schema,migrations}/`. Preserve the current project identity/schema; do not create a parallel project system. Mirror reviewed pure source only when integrating it.
+4. Connect the existing project action and views, then extend `site/app/activity/events.php` and the existing activity presentation for precise progress links. Codex owns these narrow non-20i changes and their installer/hash/test wiring. Do not alter frozen PR104, PR101 or Devin branches.
+5. Validate real database concurrency, actual HTTP/browser screens, packaged populated upgrade/recovery, current complete application and independent integration review before release.
+
+## Pure record contract
+
+A snapshot is an ordered object: `title`, `summary`, `stage`, `milestones`. All values are exact UTF-8 text. Title is nonblank, single-line, at most160 bytes; summary at most10,000 bytes; milestones at most15,000 bytes. Empty summary/milestones are allowed. Multiline text permits LF/tab but no CR, NUL or other control characters; adapters normalize submitted CRLF/CR before validation. Stage is one existing key: `discovery`, `design`, `development`, `review`, `launched`, `care`, `paused`. Unknown/missing/extra fields, non-text values, invalid UTF-8 and oversized values are rejected. Raw text remains text; views must escape it. These limits match the existing bounded form and do not silently truncate stored values.
+
+An immutable event contains ordered `format`, `id`, `project_id`, `client_id`, `revision`, `kind`, `staff_id`, `occurred_at`, `before_sha256`, `before`, `after`, `changed_fields`. IDs are lowercase32-hex. Local project/client/staff IDs are positive integers up to2,147,483,647. UTC epoch time is an integer from0 through253,402,300,799. Revision is0 for a baseline, otherwise a positive integer up to2,147,483,647. Canonical compact JSON is bounded to262,144 bytes and its SHA256 identifies the exact event. Unknown JSON keys, duplicate keys, noncanonical encodings/order and invalid types are refused.
+
+`tracking_started` is a revision0 snapshot of what was actually present when tracking began; before/hash are null and changed fields are empty. It never claims a historical stage transition. `updated` retains complete before/after public snapshots, the preceding event fingerprint and exactly the changed field names in snapshot order. It requires at least one real difference. Updates preserve project/client identity, increase revision by one and never precede the previous timestamp. Same-second updates retain their revision order. A caller must supply the exact previous fingerprint; stale and duplicate event IDs are rejected. Cross-event linkage must be validated against the previous event, not inferred from a valid standalone JSON object.
+
+The pure client projection validates the stored client ID, omits internal staff/hash metadata and exposes public snapshots and dated changes. It is only a projection: the native adapter must separately enforce current ownership and access. Private notes do not belong in this record. They remain in the private ticket flow.
+
+## Native persistence and authorization contract
+
+Owner-confirmed additive setup must validate exact schema, indexes and restrictive relationships; unknown versions or incompatible/populated unrecognized tables are refused without deleting data. Preparation does not manufacture past history. Existing projects gain an honest baseline when first changed after preparation; the baseline and update are one transaction. New projects start with a baseline at creation. Earlier state that cannot satisfy the inspected contract must be reported, never silently repaired or truncated.
+
+Use append-only `studio_progress_events`, linked to the existing project/client/staff rows, unique `(job_id,revision)` and unique request/event identity. Retain the exact submitted request fingerprint separately from the event-chain fingerprint: the first edit of an untracked project has a snapshot-based form token, whereas later edits have a history-head token. A request binds real staff, current project/client, original expected token and exact normalized public fields. Replaying the original request after later updates returns the existing result without another write; changed payload, actor or ownership is refused. Revalidate current access before accepting any replay.
+
+The protected write requires current `clients.manage`, active current client, staff session validation and no support context. Acquire the existing shared staff/account mutex and project row lock, recheck authority after waiting, validate the retained history and current project projection, check the original form token, then atomically update the existing row, append events and write a content-free audit record. Failure rolls back all three. No direct prepared `studio_job` write may bypass history. Stale forms preserve exact bounded unsaved text, original expected token and request ID; a rejected retry cannot silently overwrite another editor's update. Unprepared legacy behavior remains explicit until owner setup is complete.
+
+Client reads resolve current project ownership, active account and current authentication; another client's identifier never grants access. Support reads require the current scoped support session and preserve real staff attribution. Support cannot change progress or mark the client's activity read. Staff reads require the current project permission. No mailbox or 20i permission is implied. Passive notification checks preserve idle-session expiry.
+
+## UI and activity contract
+
+Keep the existing project screen and form. Clearly label saved project fields as client-visible. The client and authorized staff see a dated, paginated progress timeline, newest page by default, exact original snapshots and changed-field labels. An untracked project says history has not started; absence of past history is not zero progress. Display an honest tracking baseline separately from updates. Escape all text and retain existing responsive navy/gold branding. Existing message/review/file/invoice/delivery sections continue to function.
+
+Use existing per-person activity reads. Client-visible `progress:<32hex>` items represent actual updated events, never inferred changes from `updated_at`. Deep links resolve current ownership and the exact page/event with `focus_progress=<id>#progress-<id>`. A new update has independent unread state. Opening a project or receiving a new private ticket note cannot mark progress read or create a progress event. Saving history must not depend on outbound email, provider access or notification delivery.
+
+## Required evidence
+
+Pure fixtures cover strict schemas/text/limits, honest baseline, exact diffs, unchanged saves, stale tokens, same-second order, broken chain, mutated ownership/actor/type/JSON, duplicate IDs, immutable originals and public projection. Native fixtures must add two clients, inactive/revoked/expired sessions, concurrent editors, revocation while waiting, retry after newer changes, audit failure rollback, history/projection corruption and additive setup refusal. Browser evidence must exercise actual saved progress, escaped stale input, cross-client/support restrictions, exact activity links, pagination and desktop/320px layouts. Full application/Apache and latest published upgrade/recovery must preserve nonempty progress history and original request replay. Isolated fixtures are not target-host acceptance.

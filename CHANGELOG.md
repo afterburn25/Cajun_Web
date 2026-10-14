@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — project-progress contract
+
+- Record the inspected P-05/P-07 history gap and separate Codex ownership before implementation. No runtime/schema/UI changes. Parent ticket browser/package evidence is scoped; full acceptance remains pending.
+
 ## Unreleased — support-ticket screens and activity
 
 - Add staff/client queues and conversation forms with escaped unsaved text, original request identities and separate public/private history.
