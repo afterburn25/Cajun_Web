@@ -54,12 +54,15 @@ def run_browser(env,browser):
     age();inbox_server.mode='message-html-only';r=load(owner);check('HTML-only message has formatting without invented plaintext',soup(r).select_one('[data-message-formatted]') is not None and soup(r).select_one('[data-message-plain]') is None)
     retained=json.dumps(db('SELECT * FROM ci_mail_message_reads')+db('SELECT * FROM ci_mail_message_results')+db("SELECT * FROM ci_audit WHERE action LIKE 'mail_accounts.message_%'"))
     check('Message storage and audit retain no contents or credentials','SYNTHETIC PRIVATE' not in retained and 'SYNTHETIC ATTACHMENT' not in retained and 'receiving HTTP password' not in retained)
-    context=browser.new_context(viewport={'width':1440,'height':1050});page=context.new_page();errors=[];remote=[];external=[];frame_resources=[];dialogs=[]
+    context=browser.new_context(viewport={'width':1440,'height':1050});page=context.new_page();errors=[];remote=[];external=[];frame_resources=[];dialogs=[];failed_requests=[];frame_routes=[];security_console=[]
     page.on('pageerror',lambda e:errors.append(str(e)))
     page.on('request',lambda q:frame_resources.append(q.url) if q.frame.url=='about:srcdoc' else None)
+    page.on('requestfailed',lambda q:failed_requests.append({'url':q.url,'failure':q.failure}))
+    page.on('console',lambda m:security_console.append(m.text) if any(word in m.text.lower() for word in ['content security policy','sandbox','blocked script','blocked form']) else None)
     page.on('dialog',lambda d:(dialogs.append(d.message),d.dismiss()))
     def observe(route):
         url=route.request.url
+        if route.request.frame.url=='about:srcdoc':frame_routes.append(url)
         if url=='https://external.example.invalid/reference':external.append(dict(route.request.headers));route.fulfill(status=200,content_type='text/html',body='<h1>Synthetic destination</h1>')
         elif url.startswith(BASE):route.continue_()
         else:remote.append(url);route.abort()
@@ -81,7 +84,9 @@ def run_browser(env,browser):
         let form=document.createElement('form');form.action='https://untrusted.example.invalid/form';form.innerHTML='<button>Injected form</button>';body.append(form);
     }''',BASE)
     frame.get_by_role('button',name='Injected form').click();page.wait_for_timeout(100)
-    check('Actual frame CSP and sandbox independently block injected scripts resources and forms',not frame_resources and not dialogs and not remote and not frame.locator('body').evaluate('Boolean(window.cspInjected)'))
+    script_ran=frame.locator('body').evaluate('Boolean(window.cspInjected)')
+    (QA/'message-frame-security.json').write_text(json.dumps({'browser':browser.version,'frame_request_events':frame_resources,'frame_routes':frame_routes,'failed_requests':failed_requests,'dialogs':dialogs,'remote_routes':remote,'script_ran':script_ran,'security_console':security_console},indent=2),encoding='utf-8')
+    check('Actual frame CSP and sandbox independently block injected scripts resources and forms',not frame_resources and not dialogs and not remote and not script_ran)
     frame.locator('body').evaluate("(body)=>body.querySelectorAll('img,script,form').forEach(n=>n.remove())")
     saved_url=page.url
     with context.expect_page() as event:frame.get_by_role('link',name='Referenced website').click()

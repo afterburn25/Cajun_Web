@@ -2,6 +2,8 @@
 
 ## 1.18.0 candidate — exact-message reading (unreleased)
 
+- Acceptance investigation: preserve the failing actual-browser defense assertion and capture synthetic request/CSP/sandbox diagnostics before failure. Local replay is not installed-app proof; release remains pending.
+
 - Align the actual TLS wrong-UID browser fixture with the established unavailable-message classification; malformed MIME remains a protocol failure and neither exposes partial content.
 - Update the existing browser availability assertion for the new message-reading feature while preserving connection, attachment and sending limitations; all 69 new native message tests pass, corrected browser acceptance pending.
 - Independent review of 21e00c0 reproduced the components and reviewed application access/rendering boundaries with no blocking finding. Candidate native database checks pass; complete browser/update/recovery/Apache evidence remains pending. Correct staged owner/recovery instructions to candidate 1.18.0.
