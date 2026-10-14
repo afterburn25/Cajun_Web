@@ -1312,3 +1312,14 @@ Starting local documentation mergee86f2c934d4f4a5d0edd3365dc145a71992606b2 over 
 - Stacked draft PR #99 → `devin/twentyi-inventory` at `76fed7c`.
 - No persistence, routes, UI or live call — those remain in #96/#97 and require operation-specific authorization.
 - Next: #96 persistence/migrations/explicit client linking on `devin/twentyi-complete` after reader review feedback.
+## 2026-10-14 — Devin: refresh orchestration, durable observations, owner linking (#96/#97 slice)
+
+- `devin/twentyi-refresh` branched at `565aa3d` (devin/twentyi-inventory-reader head). Implements the first runnable milestone slice on real application storage.
+- `site/database/schema/provider_inventory_schema.php` + `provider_inventory_migrate.php`: provider_refreshes intents, bounded refresh results, verbatim validated observation_packages rows, unique provider_package_links to studio_clients, link events; owner-password migrate with strict existing-table validation.
+- `site/app/providers/inventory.php`: provider_inventory_refresh mirrors the connection-check protocol (locked intent → DNS → locked re-authority → gated secret resolution → one InventoryReader read → re-authority → bounded durable result). Mid-flight changes record access_changed with no package rows; last good observation never replaced.
+- Explicit `provider_inventory_link`/`unlink` (owner password + exact revision + observed-package + active-client checks, unique target, event trail). No inference from provider fields.
+- Admin `provider-settings` view: prepare/refresh/inventory/link/unlink + link history. Portal `?services` shows the signed-in client's explicitly linked services only. `staff_action_permission` maps `provider_inventory_*` to staff.manage; router dispatches prefix.
+- `site/includes/foundation/twentyi-inventory{,-reader}/` mirrors added; build.py area list extended; installer inventory regenerated clean.
+- `tests/provider_inventory_native.php`: ~30 MariaDB orchestration checks incl. DNS/read races, revocation, audit failure, isolation, secret scan. New `provider-inventory.yml` (PHP 8.2/8.4 + MariaDB 10.11). Not yet CI-verified.
+- Draft PR #100 → devin/twentyi-inventory-reader at ac8f1a6.
+- Next: CI results; HTTP/browser wiring and packaged acceptance; further #97 lifecycle work.
