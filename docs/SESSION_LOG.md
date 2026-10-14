@@ -551,7 +551,6 @@ Integration refresh: preserved latest Devin #35 head efc967a (publication-record
 
 PR #55 merged at 4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36; exact-main acceptance 38433670555 passes 4873 named checks (3084 estimator / 618 native / 802 HTTP-browser / 73 filesystem / 279 Apache / 17 builder). Preserved #35 through efc967a. All three clean-source artifacts match Windows/Linux; all 16 draft and public assets, hashes, members, directories and immutable tag verified. Prior 1.11.1 fingerprints unchanged. Homepage desktop/mobile pixels identical; inspected real screenshots. No live deployment/external activation. Reviewed #56: 36 checks pass, but reproduced second-order substitutions and malformed placeholders falsely resolving; requested precise corrections. #31 still needs no-mbstring portability and #36 accurate APIs/semantics; #32 corrected 71 checks pass locally. Next actual work is A-07 template persistence/admin preview after component correction, with existing staff isolation and no real mail sending. Publication records are documentation only.
 
-
 ### 2026-10-13 — Devin L-02 portability correction (Codex review)
 
 **Request:** Codex review on #31 confirmed the multicast/delivery fixes but found `WebsiteAddress` called `mb_strlen()` — an incidental extension dependency, since the installer does not require mbstring (`php -n` run failed immediately).
@@ -823,11 +822,9 @@ Browser checkpoint for 38486193703 (merge c837a1a, candidate 21e00c0) contains 6
 
 Before the corrected application rerun, align the synthetic wrong-UID HTTP fixture with the established receiving contract: ReadSession classifies a different exact UID as mailbox_changed (unavailable), while malformed MIME remains protocol. This corrects only the expected finite outcome; every case must still display no partial message. No application source changed.
 
-
 ## 2026-10-13 — preserve and diagnose actual message-frame acceptance failure
 
 Request: continue the roadmap without stopping. Starting head `89d7aa35102adfe905f7b737dc2c7ffbf9d243ff` on Codex PR #70. Run 38487338758 passes native stages (69 message checks) and reaches browser check 1,019, including actual exact-message loading, formatting and opaque origin. Deliberately injected resource/script/form protection assertion fails; the existing artifact does not identify the failing constituent. Offline local Edge replay of the captured iframe and current parent CSP blocks scripts, images and forms; it is not installed-app proof. Added synthetic browser request-route/failure/CSP/sandbox diagnostics before the unchanged assertion. No shipping behavior changed. Python syntax and documentation checks are run for this diagnostic commit; corrected actual browser, complete recovery/Apache, visual review and release remain pending. Next: inspect the new evidence and fix the demonstrated cause; continue exact-main release gates and feasible roadmap work. Published 1.17.0 remains immutable; no external activation.
-
 
 ## 2026-10-13 — correct CSP event accounting with actual browser evidence
 
@@ -836,7 +833,6 @@ Request: continue roadmap. Starting head `61403a589d6b8b29463e78d912ce099ea63acd
 ## 2026-10-14 — v1.18.0 publication verified; queue refreshed
 
 PR #70 merged at 91550d9 after full native-and-browser acceptance passed on c57de23 (frame-security check now requires actual CSP-failure evidence — strictly stronger). Exact-main acceptance on 91550d9: success. Independent byte verification clean: tag->91550d9, all manifests agree, 2491/2478/4961 file hashes, 6 shims, history_sha256 matches, 20 starting packages, no secrets. All 29 Devin branches merged onto 91550d9 and pushed (build-utf8 held by its worktree; support-access/vps-foundation needed manual union-merge after an untracked-file blockage, resolved cleanly). Recorded on issue #2. Next: Codex re-review of #43 (1e42402) and #62 (e28a766).
-
 
 ## 2026-10-13 — Codex provider map-key validation contribution
 
@@ -853,7 +849,6 @@ Owner requests continuous roadmap progress. Starting source 91550d956c404585545d
 ## 2026-10-13 — preserve FK support in the notice uniqueness rejection fixture
 
 Starting 1de4cd1690709813f25aba412d7bbb4ed98d74ad on codex/mail-notices. Source review found the deliberate DROP of the message-identity index would also remove InnoDB foreign-key support. The fixture now adds a temporary ordinary account index before dropping uniqueness, then restores the exact schema. Application files are unchanged. PHP syntax checked; the initial GitHub matrix is still queued, so no database failure or pass is claimed. Next run the corrected native matrix, then complete observation hooks and private admin/public UI.
-
 
 ## 2026-10-13 — 1.18.0 individual email reading published and verified
 
@@ -939,7 +934,6 @@ Actual desktop/public320px notices inspected; original homepage desktop/mobile p
 `nLocal documentation validation also traversed retained generated test-runtime vendor copies, producing missing upstream export-link errors. Exclude only root generated test-runtime/qa/dist/.git folders from source-document traversal; retain canonical vendor byte checks and all source-document links. Earlier evidence folders remain preserved.
 Local documentation validation also traversed retained generated test-runtime vendor copies, producing missing upstream export-link errors. Exclude only root generated test-runtime/qa/dist/.git folders from source-document traversal; retain canonical vendor byte checks and all source-document links. Earlier evidence folders remain preserved.
 
-
 ## 2026-10-14 — PR #72 merged at 22a2969; queue refreshed onto mail-notices head
 
 Codex merged [PR #72](https://github.com/afterburn25/Cajun_Web/pull/72) at `22a2969` — recent email notices are on main; exact-main acceptance run 38504271899 in progress. Devin refreshed all 29 branches onto the merge (26 clean-merge, 14 guarded-union docs resolutions; `devin/build-utf8` still worktree-held). One hiccup: a Windows unlink failure mid-merge on `devin/mail-transport` left staged adds deleted on disk — restored via `git restore`, union-resolved CHANGELOG, pushed. A second error: provider-foundation's own merge committed conflict markers in three docs files before resolution — caught by post-commit marker scan, resolved properly and amended (`6939f86`); force-push touched only my own seconds-old merge commit. Verified: all branches contain `22a2969`, zero `<<<<<<<`/`>>>>>>>` markers anywhere. Re-runs: PR #57's Composer flake cleared green; fresh acceptance runs queued for #52/#36 on their refreshed heads. Next: watch exact-main acceptance → v1.19.0 publication → independent byte verification.
@@ -978,7 +972,6 @@ Local documentation validation also traversed retained generated test-runtime ve
 ## 2026-10-13 —1.19.0 recent email notices published and verified
 
 PR72 merged at22a2969692ab5bcc7f35158dcaa5355c623dc821. Exact-main38504271899: 6328 named application checks (1153 native,3084 estimator,1087 HTTP/Chromium,205 recovery,779 Apache,20 builder). PHP8.2/8.4 notice/receiving/diagnostic matrices pass. All16 draft/public assets, every archive member/checksum and immutable tag verified; Windows/Linux bytes agree. Four actual notice screens inspected and homepage pixels match1.18.0. Actual1.18.0 recovery preserves nonempty notice state and original email key. Previous assets unchanged. Updated owner guides/status/roadmap/releases and handoff. No live mailbox, deployment, provider write, charge or SSH. Next: reconcile `codex/provider-settings` (observed `6ced20dc90fe93c37ab82399836d7ab0a3228290`) with this verified main baseline, resolve the proposed [owner 20i settings contract](https://github.com/afterburn25/Cajun_Web/blob/6ced20dc90fe93c37ab82399836d7ab0a3228290/docs/PROVIDER_SETTINGS_CONTRACT.md), and implement protected owner configuration, an explicit fixed read-only connection check and sanitized history. [Draft PR #74](https://github.com/afterburn25/Cajun_Web/pull/74) now preserves reviewed provider46b2826 and contains an isolated fixed probe at6ced20d: 171 canonical and120 adapter checks pass locally under default/no-extension PHP. Its site tree still equals this release; concrete HTTP transport, protected persistence and application integration remain pending. Inspect its current GitHub matrix/review before proceeding. [Owner API reference PR #73](https://github.com/afterburn25/Cajun_Web/pull/73) supplies a broader attributed endpoint map for later work. Preserve Devin provider #43 (observed `OPEN` at `46b282636ad83b22efe149310755d2d316d909bc`) and reviewed #71 ancestry, adapting canonical components without overwriting newer shared application files. The prior owner-requested GET/package succeeded; it proves that read only. Keep the Actions secret protected and retain operation-specific inventory/ownership/provisioning/domain/VPS/payment/SSH acceptance. Continue feasible roadmap work without a release-boundary stop.
-
 
 ## 2026-10-14 — queue refreshed onto post-1.19.0 main b472ed2
 
@@ -1380,3 +1373,8 @@ No provider calls, deployments, releases or live operations.
 - **Board:** 27 open PRs; all 20 Devin PRs mergeable (including #32 consultation-scheduling, which an earlier `--limit 30` sweep had silently dropped — noted for future sweeps). v1.22.0 published at 11:28 UTC. Actions backlog ~87 queued / ~15 running at last check.
 - **Next (Codex-owned):** #85 merge after combined acceptance; #61 integration after desk CI; sequential chain merges; then application integration.
 - **No merge, publication, deployment, provider write, mail send, payment, SSH, or customer operation performed.**
+## 2026-10-14 —1.22.0 published and download-verified
+
+Starting exact main e3b434ffb2244e454ea9f24fa1de9173b7479ccc, record reviewed77 publication after full 38553149886/7,854 assertion executions and21 successful workflows. All16 draft/public assets, manifests/checksums/tag and Windows/Linux bytes verified. Actual3Send/history images inspected; homepage pixels match1.21. Prior1.21 assets unchanged; all24 starting versions and actual1.21 record/key/recovery/no-resend acceptance pass. Updated release/status/roadmap/owner guide/report and agent handoff; source/deployment unchanged. No real customer mail, provider write, charge or SSH. Continue [combined hosting/client PR85](https://github.com/afterburn25/Cajun_Web/pull/85), observed `a9beb6e72208cdfdb7a0ec0f8fe09a7e4883325c`. It preserves mail main plus client83 and reviewed hosting79-82/84 on a separate integration branch. Client83 eefe29e has downloaded7,027 complete application assertions,17 successful workflows, exact Windows/Linux packages and inspected screenshots. Hosting79-82/84 have independent clear reviews at their documented heads. Verify the current client/integration review and combined native/application results before merging; parent evidence does not replace combined acceptance. Hosting helpers remain internal with no route, worker, provider transport or fresh-install activation.
+
+Service-plan53 corrections e7a283b are independently clear (76 supplied plus21 independent controls per PHP8.4 default/no-ini); observed current branch `29200a14ceaeefa7dda646d0de4c543a011cd292` may be newer. Service-desk61 df0a1d2 is independently clear after114 supplied plus44 independent controls per default/no-ini mode: approvals expire, rejected decisions preserve state, attempt tokens reject stale results, and verified resolution is required before a stalled external operation can retry. Unknown observations remain recoverable and conclusive replays preserve state. [Review6167233334](https://github.com/afterburn25/Cajun_Web/pull/61#issuecomment-6167233334). Verify current CI and inspect any newer correction at observed `df0a1d23f5900541557b795511332d1e80be5e52` before integration. Preserve Devin ownership and all original branches. Full billing, broader20i/client hosting and VPS SSH remain incomplete; the roadmap goal stays active.
