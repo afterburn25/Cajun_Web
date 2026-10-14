@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require_once __DIR__.'/../../foundation/design-payments/DesignPaymentSchedule.php';
+require_once __DIR__.'/../../'.(in_array('--deployment',$argv,true)?'site/includes/':'').'foundation/design-payments/DesignPaymentSchedule.php';
 use CajunWebPro\Foundation\DesignPayments\DesignPaymentSchedule as Schedule;
 
 $checks=[];

@@ -104,6 +104,8 @@ jobs:
           php8.3 -d memory_limit=128M tests/project_planning_native.php
           php8.3 tests/project-planning/records.php --deployment > qa/project-planning-deployed-results.json
           php8.3 tests/project-planning/forms.php > qa/project-planning-forms-results.json
+          php8.3 -d memory_limit=128M tests/design_payments_native.php
+          php8.3 tests/design-payments/records.php --deployment > qa/design-payment-schedules-deployed-results.json
           php8.3 tests/project-progress/records.php --deployment > qa/project-progress-deployed-results.json
           php8.3 tests/project-progress/forms.php > qa/project-progress-forms-results.json
           php8.3 tests/hosting_records_native.php

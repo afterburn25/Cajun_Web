@@ -155,7 +155,7 @@ Sell unmanaged/managed VPS only if 20i account product access, API endpoints, pr
 
 ## HC-11 — Web-design payment forms and maintenance commerce (P0 payments / P1 project integration)
 
-**Current development:** isolated [payment schedule records](DESIGN_PAYMENT_SCHEDULES_CONTRACT.md) implement proposal-bound item prices and exact deposit/milestone/final allocation. Local175 checks per PHP8.4 default/no-ini mode pass; CI/review remain pending. Native consent/issuance and customer checkout are not implemented by this component.
+**Current development:** [native payment schedule records](DESIGN_PAYMENT_STORAGE_CONTRACT.md) retain proposal-bound prices, immutable offers and explicit current-client consent. Local95 native plus175 deployed record checks per default/no-ini mode pass. Committed native CI/review, actual forms, invoice issuance and checkout remain pending; this does not complete HC-11.
 
 The owner explicitly wants payment forms for web-design services as well as infrastructure checkout. Deliver a standalone design-payment flow in the approved navy/gold theme using the same Authorize.net settings and payment engine. It must work with 20i disabled and no hosting/domain/VPS purchase. Do not delay design payments until domain provisioning is available. This is a planned requirement; inspect current 1.1.0 source before determining the implementation gap.
 

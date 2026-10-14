@@ -2,7 +2,7 @@
 
 ## HC-11 current implementation — payment schedules
 
-Unreleased pure [design payment allocations](DESIGN_PAYMENT_SCHEDULES_CONTRACT.md) now cover exact quoted items, deposit/milestone/final amounts and proposal-bound terms. Local PHP8.4 default/no-ini passes175 checks per mode. Native revisions, explicit financial consent, invoice issuance and actual checkout remain the next implementation steps; this does not complete HC-11. Devin retains full20i ownership, and published1.23 remains unchanged.
+Unreleased [native financial schedules and consent](DESIGN_PAYMENT_STORAGE_CONTRACT.md) now preserve exact proposal-bound quotes and real client acceptance/decline, with scoped history, current access, replay and strict audit. Local95 native and175 deployed pure checks per default/no-ini mode pass. Native CI/full package regression and independent review remain pending. Actual forms, invoice issuance and tokenized checkout remain the next implementation steps; HC-11 is incomplete. Devin retains full20i ownership. Published1.23 remains unchanged.
 
 ## Current work — planning forms, dashboard and personal updates
 
