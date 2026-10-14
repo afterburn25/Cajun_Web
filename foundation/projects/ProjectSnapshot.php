@@ -12,7 +12,8 @@ final readonly class ProjectSnapshot {
         if(array_keys($fields)!==self::FIELDS)throw new \InvalidArgumentException('Invalid project fields or order.');
         foreach(['title'=>160,'summary'=>10000,'stage'=>30,'milestones'=>15000] as $key=>$limit){
             $text=$fields[$key];$multiline=in_array($key,['summary','milestones'],true);
-            $control=$multiline?'/[\x00-\x08\x0B-\x1F\x7F]/u':'/[\x00-\x1F\x7F]/u';
+            // Legacy project forms preserve CRLF and CR. History must retain those exact bytes.
+            $control=$multiline?'/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u':'/[\x00-\x1F\x7F]/u';
             if(!is_string($text)||strlen($text)>$limit||preg_match('//u',$text)!==1||preg_match($control,$text))throw new \InvalidArgumentException('Invalid or oversized project '.$key.'.');
         }
         if(trim($fields['title'])===''||!in_array($fields['stage'],self::STAGES,true))throw new \InvalidArgumentException('Choose a title and an existing project stage.');

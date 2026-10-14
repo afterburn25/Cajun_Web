@@ -2,7 +2,7 @@
 
 ## Project-history preparation
 
-Separate `codex/project-progress` adds pure dated project records outside deployment. [Contract and evidence](docs/PROJECT_PROGRESS_CONTRACT.md). Local148 checks pass in each PHP8.4 mode; current native storage, timeline screens and activity links remain pending. Devin retains complete20i implementation; published1.23 stays unchanged.
+Separate `codex/project-progress` adds pure dated project records outside deployment. [Contract and evidence](docs/PROJECT_PROGRESS_CONTRACT.md). Local155 checks pass in each PHP8.4 mode, including exact legacy multiline preservation; current native storage, timeline screens and activity links remain pending. Devin retains complete20i implementation; published1.23 stays unchanged.
 
 ## Unreleased support conversations
 

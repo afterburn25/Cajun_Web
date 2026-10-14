@@ -2,10 +2,10 @@ name: Project-progress record checks
 
 on:
   pull_request:
-    paths: ['foundation/projects/**', 'tests/project-progress/**', '.github/workflows/project-progress.yml']
+    paths: ['foundation/projects/**', 'tests/project-progress/**', 'site/includes/security/input.php', '.github/workflows/project-progress.yml']
   push:
     branches: [main, 'codex/project-progress']
-    paths: ['foundation/projects/**', 'tests/project-progress/**', '.github/workflows/project-progress.yml']
+    paths: ['foundation/projects/**', 'tests/project-progress/**', 'site/includes/security/input.php', '.github/workflows/project-progress.yml']
   workflow_dispatch:
 
 permissions:

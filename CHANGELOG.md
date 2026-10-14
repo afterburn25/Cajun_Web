@@ -2,7 +2,7 @@
 
 ## Unreleased — project-progress records
 
-- Preserve a separate dated project-history contract, then add strict immutable public snapshots/events, stale-head and history validation, public projection and148 named synthetic checks per mode outside deployment. Native schema/authority/UI/activity remain pending. Current shipping bytes are unchanged; parent ticket browser/package evidence remains scoped.
+- Preserve a separate dated project-history contract, then add strict immutable public snapshots/events, stale-head and history validation, public projection and155 named synthetic checks per mode outside deployment. Preserve exact CRLF/CR descriptions/milestones accepted by the actual existing project form. Native schema/authority/UI/activity remain pending. Current shipping bytes are unchanged; parent ticket browser/package evidence remains scoped.
 
 ## Unreleased — support-ticket screens and activity
 

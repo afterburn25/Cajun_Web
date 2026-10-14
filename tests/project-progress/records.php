@@ -2,6 +2,8 @@
 declare(strict_types=1);
 if(PHP_SAPI!=='cli')exit(2);
 require __DIR__.'/../../foundation/projects/ProjectProgressEvent.php';
+define('CWP_BOOT',true);
+require __DIR__.'/../../site/includes/security/input.php';
 use CajunWebPro\Foundation\Projects\{ProjectSnapshot,ProjectProgressEvent};
 $checks=[];
 function check(string $name,bool $passed):void {global $checks;$checks[]=['name'=>$name,'passed'=>$passed];if(!$passed)throw new RuntimeException($name);}
@@ -45,6 +47,17 @@ try {
     $text=ProjectSnapshot::fromArray(array_replace($fields,['summary'=>$literal]));
     check('Text is retained literally for later escaped display',$text->data()['summary']===$literal);
     check('Empty optional project descriptions are valid',ProjectSnapshot::fromArray(array_replace($fields,['summary'=>'','milestones'=>'']))->data()['milestones']==='');
+    foreach(["First\r\nSecond","First\rSecond","First\r\nSecond\nThird\rFourth"] as $i=>$legacyText){
+        foreach(['summary','milestones'] as $key)check('Legacy newline bytes retained in '.$key.' case '.$i,ProjectSnapshot::fromArray(array_replace($fields,[$key=>$legacyText]))->data()[$key]===$legacyText);
+    }
+    $_POST=array_replace($fields,['summary'=>"Existing summary\r\nSecond paragraph",'milestones'=>"Content agreed\r\nDesign reviewed"]);
+    $legacyFields=['title'=>posted('title',160),'summary'=>posted('summary',10000),'stage'=>posted('stage',30),'milestones'=>posted('milestones',15000)];
+    check('The actual existing input helper retains browser CRLF text',$legacyFields['summary']===$_POST['summary']&&$legacyFields['milestones']===$_POST['milestones']);
+    $legacyBase=ProjectProgressEvent::baseline(eventId(800),21,7,3,100,ProjectSnapshot::fromArray($legacyFields));
+    check('Existing form values can be adopted without silent normalization',$legacyBase->forClient(7)['after']===$legacyFields);
+    $legacyUpdate=$legacyBase->update(eventId(801),3,101,$legacyBase->fingerprint(),ProjectSnapshot::fromArray(array_replace($legacyFields,['stage'=>'development'])));
+    check('A stage change preserves exact legacy milestone and summary history',$legacyUpdate->data()['before']===$legacyFields&&$legacyUpdate->data()['after']['milestones']===$legacyFields['milestones']&&$legacyUpdate->data()['after']['summary']===$legacyFields['summary']&&$legacyUpdate->data()['changed_fields']===['stage']);
+    $_POST=[];
     foreach(ProjectSnapshot::STAGES as $stage){
         $stageSnapshot=ProjectSnapshot::fromArray(array_replace($fields,['stage'=>$stage]));
         check('Existing stage remains valid: '.$stage,$stageSnapshot->data()['stage']===$stage);
@@ -71,7 +84,7 @@ try {
     foreach(['title','summary','stage','milestones'] as $key){
         foreach([null,true,123,[],new stdClass()] as $i=>$value)refused('Snapshot refuses non-text '.$key.' case '.$i,fn()=>ProjectSnapshot::fromArray(array_replace($fields,[$key=>$value])));
     }
-    foreach(["x\0y","x\ry","x\r\ny","x\x01y","x\x7Fy","x\xFFy"] as $i=>$text)refused('Snapshot refuses invalid/control text '.$i,fn()=>ProjectSnapshot::fromArray(array_replace($fields,['summary'=>$text])));
+    foreach(["x\0y","x\x01y","x\x7Fy","x\xFFy"] as $i=>$text)refused('Snapshot refuses invalid/control text '.$i,fn()=>ProjectSnapshot::fromArray(array_replace($fields,['summary'=>$text])));
     $badEvents=[
         'extra private field'=>['private_note'=>'Internal'], 'wrong format'=>['format'=>2], 'coerced format'=>['format'=>'1'],
         'empty identity'=>['id'=>''], 'uppercase identity'=>['id'=>str_repeat('A',32)], 'long identity'=>['id'=>eventId(1).'a'],
