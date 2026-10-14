@@ -28,17 +28,15 @@
 
 ## 1.19.0 candidate — recent email notices (unreleased)
 
-Correct the browser fixture clock ordering, verify actual outage/recovery/denial responses, and wait for the mobile drawer transition before screenshots. Candidate179e35b passes1070 HTTP/browser assertions before that fixture failure,1153 native and both79-check notice matrices. No release acceptance is claimed.
+## 1.19.0 — verified recent email notices
 
-Keep the initial count request alive on ordinary page display while retaining BFCache/lifecycle invalidation. Suppress email notices during client support, including actual shared portal headers. Add actual-support and delayed-count browser regressions; preserve strict null-status network-failure assertions. Full native1153 and estimator3084 checks pass at8a955cc; browser/visual and new-source acceptance remain pending.
 
-Both supported PHP versions pass 79 notice integration checks at the 92b3863 tree. Correct pre-account/pre-inbox test schemas to omit dependent notice tables; read immutable Git blobs without Windows pathname ambiguity; add a long-path builder guard and explicit owner two-bell narrow-screen coverage. Twenty local builder checks pass. Full current application/visual/recovery/package acceptance remains pending.
-
-Correct the native fixture to load its notice module once after fresh schema integration; this fixes a test bootstrap fatal without changing application behavior. Integrated runtime acceptance is still pending.
-
-Connected strict successful read transactions to the local notice window and per-staff opened state; added owner setup, fresh empty schema, recent-notice page, exact message POST/dismiss actions and private count endpoint. Neutral public/admin header bells refresh local metadata only and preserve idle expiry. Added native reader-hook/rollback/concurrency cases. Storage-only baseline 257a2fc passes 57 checks on each PHP 8.2/8.4 runner; new integrated/native/browser/package acceptance is pending. This does not activate automatic inbox synchronization or sending.
-
-Added actual packaged HTTP/Chromium cases, private endpoint/current-grant and mobile/keyboard/lifecycle checks, and immutable 1.18.0 update/recovery cases with nonempty new state retained. Independent storage/contract review is complete; new integrated review and exact-source acceptance remain pending. Candidate version and generated installer/inventory agree at 1.19.0.
+- Explicit successful inbox reads populate a newest-20 observation window with exact mailbox generation/UID identity; strict result/audit failures roll back notice changes. Failed reads retain the prior window.
+- Current-authorized notice page, per-staff opened/dismissed state, independent handle/full-tuple POST opening, and private admin/public bells. Passive polling never fetches mail or renews idle login; client-support pages suppress staff email notices. Server read flags remain unchanged.
+- Additive owner preparation and empty fresh storage; accurate last-check/failed/incomplete status without retaining sender, subject, body or credentials in notices. Existing read transport and message limits remain unchanged.
+- Corrected ordinary-pageshow cancellation, actual support-header isolation, test clock/capture ordering, and Windows exact Git-blob packaging. Source documentation validation excludes generated evidence folders while still verifying all canonical dependencies.
+- Published/download-verified `22a2969692ab5bcc7f35158dcaa5355c623dc821` after exact-main 38504271899: 1153 native, 3084 estimator, 1087 HTTP/Chromium, 205 recovery, 779 Apache and 20 builder checks. All16 assets/tag, archive members and Windows/Linux bytes verified; actual mobile/desktop screens reviewed.
+- Twenty-one starting packages supported, with nonempty1.18.0 update/recovery/reapplication retaining notice state, earlier records and the original private key. Prior releases unchanged. Automatic/full synchronization, previews, other folders, attachments, sending/OAuth and server flag changes remain future work. No production operation.
 
 ## Unreleased — recent email notice storage preparation
 
