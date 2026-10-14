@@ -1436,4 +1436,6 @@ Files/actions: `site/app/providers/reconcile.php` (new — `provider_operations_
 
 Merge resolutions: schema_statements union (inventory + operations), deploy version stamps (`provider_inventory_schema_version`='2', `provider_operations_schema_version`='4' — fresh installs now stamp the created version rather than a stale '1'), controller/actions union, build.py mirror list union, docs union. All contract suites re-green on the merged tree (90+99+28); `php -l` clean.
 
-Known limits: reconcile uses only `packages.list` — the single verified read; other read endpoints remain documented-unverified. Live provider sends still require operation-specific acceptance. Next: CI, Codex review, then remaining milestones (domains, VPS/cloud, support/SSH).
+Tests: **native MariaDB suites green on PHP 8.2/8.4** — 47 ledger/grant + 51 execution/reconcile + 77 inventory assertions (run 38643151558 and siblings) at `58bec11`. PR #115 opened.
+
+Known limits: reconcile uses only `packages.list` — the single verified read; other read endpoints remain documented-unverified. Live provider sends still require operation-specific acceptance. Next: Codex review, then remaining milestones (domains, VPS/cloud, support/SSH).
