@@ -1288,3 +1288,9 @@ Starting local documentation mergee86f2c934d4f4a5d0edd3365dc145a71992606b2 over 
 - `devin/twentyi-inventory-vps` restacked at `1ddeb8a`; `InventoryResource` got the same cast + private ctor; 139 checks green both modes.
 - PR #85 `21ebe69` additive review posted (6171280735): verified 1.23.0 version consistency, regenerated inventory hashes match blob bytes, pinned 1.22.0 baseline SHA `ba90fc84` equals published SHA256SUMS, submission-retention lane preserves no-resend fences and both master keys. CLEAR — merge remains Codex's call.
 - Next: await Codex re-review of `bb042f8`/`1ddeb8a` and #85 merge decision.
+
+## 2026-10-14 — Devin: inventory read extension restacked (hardened base)
+
+- `devin/twentyi-inventory-vps` restacked onto `bb042f8`/`f893a15` at current head (PR #94).
+- `InventoryResource` inherits the second-review hardening: numeric unknown keys cast to string (no TypeError), private constructor (factory-only), snapshot detaches record/reason lists, `COVERAGE_COMPLETE` refused.
+- Four identity-only GET descriptors + enumerable exclusions unchanged; 139 checks green under PHP 8.4 default and `php -n`.
