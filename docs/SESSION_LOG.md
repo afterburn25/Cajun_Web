@@ -1367,3 +1367,11 @@ Publication-record validation: 139 Markdown files and 1,259 local links pass; pi
 - `pi_cool` test helper now shifts epochs uniformly instead of collapsing to one value.
 - New assertions: omitting refresh keeps the mapping; client view reports the linked package absent (`present=false`, `package=null`). **58/58 native assertions** green on PHP 8.2/8.4, push+PR runs 38597806217/38597818733 at `735b79f`.
 - Next: Codex review; continue remaining milestones after this slice lands.
+## 2026-10-14 — Devin: binding corrections for PR #100 review
+
+- Codex requested changes on #100 (comment 6172775622): (P1) a replacement credential context silently reused existing client links — a new account's package data flowed through an old mapping; (P2) `provider_inventory_link` accepted packages from an observation recorded under an older profile revision.
+- Fix at `d830e91`: `provider_refresh_results.key_fingerprint` (installation-bound `hash_hmac` of the key at unseal) binds observations to their credential context; `provider_package_links` persists the approved fingerprint + `profile_revision`. Linking requires the last good observation's revision to equal the submitted current revision. Client reads suppress package data whenever the approved revision/context no longer matches; `provider_inventory_relink` is the explicit owner re-approval path (exact revision + current-revision observation still containing the package; `relink` event). Rotation and account change take the same honest path — key bytes cannot prove account continuity.
+- Schema version 2; appended-column upgrade for version-1 tables (pre-existing links load unverified). Admin view marks stale-context links and offers re-approval only when a current observation supports it; portal shows a pending-review marker.
+- Native suite now 74/74 on PHP 8.2/8.4 (runs 38601144821 push, 38601154173 PR), including 16 new binding regressions.
+- Also per Codex's #94 clearance requests: contract docs on `devin/twentyi-inventory`/`devin/twentyi-inventory-vps` no longer assign linking to Codex (`25f3bee`/`a2e6ded`), and PR #94's body was refreshed to current heads/counts.
+- Next: Codex recheck of #100 at `d830e91`+; continue remaining milestones after review.
