@@ -213,6 +213,15 @@ try {
     hr_ok('Restored original proof validates without a new action',hr_load(hr_id(50))->json()===$saved);
     save_setting('hosting_reconciliation_schema_version','');hr_deny('Cleared readiness cannot adopt populated evidence tables',fn()=>hosting_reconciliation_migrate($password));hr_deny('Old adapter cannot accept uncovered reconciliation events',fn()=>hr_load(hr_id(50)));save_setting('hosting_reconciliation_schema_version','1');
     hr_ok('Original readiness and evidence remain recoverable',hr_load(hr_id(50))->json()===$saved);
+    $bounded=hr_uncertain(60);$unknown=hr_evidence($bounded);$original=hr_load(hr_id(60))->json();
+    for($i=0;$i<32;$i++)hr_observe($bounded,900000+$i,$unknown);
+    hr_ok('Bounded unknown observations retain the original unresolved journal',hr_load(hr_id(60))->json()===$original);
+    $before=hr_full();hr_deny('Thirty-third unknown observation is refused without deleting history',fn()=>hr_observe($bounded,900032,$unknown));hr_ok('Observation bound preserves every row and audit',hr_full()===$before);
+    hr_ok('Exact unknown replay remains idempotent at the observation bound',!hr_observe($bounded,900000,$unknown)&&hr_full()===$before);
+    hr_observe($bounded,900033,hr_evidence($bounded,'not_applied'));hr_ok('Conclusive resolution remains possible after the unknown limit',!hr_load(hr_id(60))->account()->awaitingReconciliation()&&hr_load(hr_id(60))->account()->pendingAttempt()===null);
+    $before=hr_full();hr_ok('Original unknown replay stays idempotent after conclusive resolution',!hr_observe($bounded,900000,$unknown)&&hr_full()===$before);
+    hr_deny('Generic local command cannot forge conclusive reconciliation',fn()=>hosting_records_change(hr_id(60),1,hr_load(hr_id(60))->revision(),hr_id(900034),'reconcile_without_dispatch',[],$password));
+    hr_deny('Legacy automatic rearming reconciliation is never a local action',fn()=>hosting_records_change(hr_id(60),1,hr_load(hr_id(60))->revision(),hr_id(900034),'reconcile',[],$password));
     $audits=json_encode(all('SELECT * FROM '.table('audit')));hr_ok('Reconciliation audit excludes evidence bodies digests and provider credentials',!str_contains($audits,'synthetic-local-only-key')&&!str_contains($audits,'synthetic-final-observation')&&!str_contains($audits,'dispatch_fingerprint'));
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
 $ok=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/hosting-reconciliation-native-results.json',json_encode(['passed'=>$ok,'scope'=>'Native MariaDB trusted synthetic observations and current-authorized retries; no provider verification, route or worker','checks'=>$checks],JSON_PRETTY_PRINT));

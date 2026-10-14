@@ -562,3 +562,7 @@ Added separate private draft controller/view sources and 38 named raw form-input
 ### Local email draft application integration (unreleased)
 
 Connect fresh/additive setup, current-authorized admin compose/list/preview/template/discard/history and mailbox navigation. Add packaged HTTP/Chromium and Apache cases plus1.19 recovery/reapplication retaining active/discarded drafts and original keys. These integration scenarios await CI; no SMTP or release publication. Application job budget45minutes preserves all assertions while accommodating the additional recovery cases.
+
+## Unreleased — bound unresolved hosting observation history
+
+Cap unknown observations at32 per dispatch, retain exact replay and reserve conclusive resolution. Prior storage48b9d85 native830 verified; eight additional boundary controls pending. No release or activation.

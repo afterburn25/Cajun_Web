@@ -1290,3 +1290,7 @@ Starting bd0e46e803901a51f2859d03767d637f2153c397, add the distinct canonical me
 ## 2026-10-14 — durable reconciliation increment on a preserved branch
 
 Owner requested continued roadmap work. Start b597559 on codex/hosting-reconciliation-storage, retain parent88 unchanged. Implement closed observation schema, strict additive migration, internal transactional finalizer, original-prefix validation and current-authorized retry adaptation. Add native synthetic race/audit/tamper/history cases and retain old suites/private-path coverage. Canonical1,820 and parentbd568 verified; current1.23 browser6,840 and Windows packages verified, fullApache/reviews pending. Windows native stopped at the existing0600 key guard before new assertions; no permission change. Linux native execution and additive review are next.
+
+## 2026-10-14 — verify native reconciliation and bound unknown history
+
+At48b9d85, download all10 reports from38566812922:131 new plus284 retained per PHP8.2/8.4,830 total, clean diagnostics. Current1.23/21 full8,360/all21 and package/image/recovery checks also verified; review remains pending. Add32-unknown bound with reserved conclusive resolution and eight boundary/local-bypass cases. Existing assertions remain. Next verify current matrix and additive independent review, then full application acceptance.

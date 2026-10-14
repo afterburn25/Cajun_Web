@@ -94,7 +94,7 @@ function setup_expected_files(): array { return [
     'app/clients/identity.php'=>'42bb888223848260b76a5d49730e8d50d5aaaac29eae7220771b6294cd6034e9',
     'app/clients/workspace.php'=>'347b6e6eedaab3f8798d298a1e3ed403242d26a1b8dca8cc0f219ee794c085a9',
     'app/hosting/operations.php'=>'00e4fb032fb00a0f931fe50774f1b4f531f10a493cfcf010ddfd8862bf5aeb3e',
-    'app/hosting/reconciliation.php'=>'a4b779081168a0f546155faf895847666139489b93ddf0a499816ea681c686fe',
+    'app/hosting/reconciliation.php'=>'46cc262c94c83b2825684bcda71eec4d0f06fda837723bc78d888930e131cf84',
     'app/hosting/records.php'=>'a1712228deecb10c9e9c7d983777011e3dd2c0ca98c8d80ae339643d1cf015fe',
     'app/index.php'=>'696138b31bbb2a20c4bb53eb98b68dbe25557947dd6a7513c81e1c8b9446ce0d',
     'app/mail/accounts.php'=>'b0f687bc5056d43d535d4cf9a065d4c3399e643a502515d5794636ddd2f45297',

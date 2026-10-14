@@ -1,6 +1,10 @@
 # Hosting reconciliation without another dispatch
 
-## Durable adapter increment — prepared, native acceptance pending
+## Durable adapter increment — original131 native cases verified; bound pending
+
+Current verified checkpoint: native push38566812922 at48b9d85 passes131 new reconciliation +94 records +79 operations +44 provisioning-retry +67 deletion-retry checks on each PHP8.2/8.4,830 executions. All10 downloaded reports/every job step passed; no PHP diagnostics. Canonical parent88 remains verified1,820. Candidate85/21 completed full38562463459 at8,360 checks/all21workflows, including actual1.22 recovery/replay; its independent review remains pending. Published1.22 is unchanged.
+
+The current additive change bounds each dispatch to32 immutable unknown observations, reserving conclusive resolution independently. Exact replay remains idempotent at the bound and after resolution; oversized history fails closed. Eight additional native controls are prepared, not yet run. The original131 cases and all284 existing checks remain. Independent storage review and full application/packaging acceptance are pending; no provider or UI activation.
 
 The separate `codex/hosting-reconciliation-storage` branch preserves canonical PR88/b597559. Two additive tables retain observations and the single conclusive decision per original dispatch. Owner/password setup validates exact columns, collations, unique indexes and foreign keys; it refuses populated unrecognized tables. Existing operation setup and fresh installation do not activate these tables.
 

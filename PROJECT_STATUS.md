@@ -2,6 +2,10 @@
 
 ## Current work — durable hosting observations
 
+Current verified checkpoint: native push38566812922 at48b9d85 passes131 new reconciliation +94 records +79 operations +44 provisioning-retry +67 deletion-retry checks on each PHP8.2/8.4,830 executions. All10 downloaded reports/every job step passed; no PHP diagnostics. Canonical parent88 remains verified1,820. Candidate85/21 completed full38562463459 at8,360 checks/all21workflows, including actual1.22 recovery/replay; its independent review remains pending. Published1.22 is unchanged.
+
+The current additive change bounds each dispatch to32 immutable unknown observations, reserving conclusive resolution independently. Exact replay remains idempotent at the bound and after resolution; oversized history fails closed. Eight additional native controls are prepared, not yet run. The original131 cases and all284 existing checks remain. Independent storage review and full application/packaging acceptance are pending; no provider or UI activation.
+
 `codex/hosting-reconciliation-storage` starts from canonical PR88/b597559, preserving deletion87/bd0e46e and candidate85/21ebe69. Its checkout currently uses the existing hosting-reconciliation directory. The parent PR88 remains unchanged for its own review/acceptance. Codex owns this persistence lane; Devin retains read-only20i inventory. No route, provider call, worker, fresh-install activation or release is added.
 
 New internal storage binds immutable unknown/conclusive observations to the original dispatch fingerprint, account/client/provider revision/attempt/resource and journal prefix. Conclusive evidence, its non-dispatching event, unique adopted resource and strict audit commit together. Exact replay returns no new claim, including after a later attempt. Current-owner provisioning retry and original-approver deletion retry recognize validated absence separately. Missing original results remain blocked for a later verified recovery boundary. A digest/reference is not provider verification; only a trusted future adapter may call this internal finalizer.

@@ -207,3 +207,7 @@ A new command records observed outcomes without scheduling a second action. Pres
 ## 2026-10-14 — evidence identity is not provider verification
 
 Retain opaque evidence references/digests and exact dispatch/prefix bindings, without accepting a raw operator assertion or mapping partial inventory to absence. Current adapter requires the original unresolved result; missing results remain blocked until a separate verified crash recovery path exists. Conclusive evidence commits state without a new dispatch; authorization for retries stays separate. Isolate this storage increment on a child branch while parent88 acceptance runs.
+
+## 2026-10-14 — reserve resolution beyond unknown-history bound
+
+Keep at most32 immutable inconclusive observations per committed dispatch and bound validation reads. This prevents endless repeated unknown checks from growing the replay cost; it must never prevent a later conclusive verified observation. Exact old observation replay remains idempotent. No automatic resend or deletion of old history.

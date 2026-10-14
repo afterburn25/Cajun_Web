@@ -5,6 +5,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/database/schema/hosting_reconciliation_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/hosting_reconciliation_migrate.php';
 use CajunWebPro\Foundation\Hosting\HostingJournal;
+const CWP_HOSTING_MAX_UNKNOWN_OBSERVATIONS=32;
 
 function hosting_reconciliation_ready():bool {
     return (one('SELECT value FROM '.table('settings').' WHERE name=?',['hosting_reconciliation_schema_version'])['value']??'')==='1';
@@ -27,8 +28,9 @@ function hosting_reconciliation_arguments(array $data):array {
 /** Validate observation at its retained journal prefix, including after a later retry. */
 function hosting_reconciliation_validate_dispatch(array $row,HostingJournal $journal,array $dispatch,?array $result,array $events):?array {
     $decision=one('SELECT * FROM '.table('hosting_reconciliations').' WHERE id=?',[$dispatch['id']]);
-    $observations=all('SELECT * FROM '.table('hosting_observations').' WHERE dispatch_id=?',[$dispatch['id']]);
-    $found=false;$document=json_decode($journal->json(),true);
+    $observations=all('SELECT * FROM '.table('hosting_observations').' WHERE dispatch_id=? LIMIT '.(CWP_HOSTING_MAX_UNKNOWN_OBSERVATIONS+2),[$dispatch['id']]);
+    if(count($observations)>CWP_HOSTING_MAX_UNKNOWN_OBSERVATIONS+1)throw new RuntimeException('Hosting observation history exceeds its bound. Existing data was preserved.');
+    $found=false;$unknown=0;$document=json_decode($journal->json(),true);
     foreach($observations as $observation){
         $data=json_decode($observation['observation_json'],true,16,JSON_THROW_ON_ERROR);
         $binding=json_decode($dispatch['binding_json'],true,16,JSON_THROW_ON_ERROR);
@@ -40,6 +42,7 @@ function hosting_reconciliation_validate_dispatch(array $row,HostingJournal $jou
         if(!$result || $revision<1 || $revision>$journal->revision() || $observation['observation_json']!==hosting_records_json($expected) || !hash_equals($before->fingerprint(),$observation['journal_sha256']) || !$before->account()->awaitingReconciliation() || $before->account()->pendingAttempt()!==$dispatch['attempt_ref'] || $data['observed_at']>(int)$observation['recorded_epoch'] || (int)$observation['recorded_epoch']<$last['at'])throw new RuntimeException('Saved hosting observation does not match its unresolved dispatch.');
         $original=json_decode($result['result_json'],true,16,JSON_THROW_ON_ERROR);
         if($data['observed_at']<$original['at'])throw new RuntimeException('Hosting evidence predates its original observation.');
+        if($data['outcome']==='unknown' && ++$unknown>CWP_HOSTING_MAX_UNKNOWN_OBSERVATIONS)throw new RuntimeException('Hosting unknown observation history exceeds its bound.');
         if($data['outcome']!=='unknown'){
             $event=$decision?($events[$decision['event_id']]??null):null;
             if(!$decision || $decision['observation_id']!==$observation['id'] || !$event || ($document['events'][$revision]['id']??null)!==$decision['event_id'] || $event['command']!=='reconcile_without_dispatch' || $event['actor']!=='staff:'.$dispatch['actor_id'] || $event['at']<$data['observed_at'] || $event['arguments']!==hosting_reconciliation_arguments($data))throw new RuntimeException('Saved conclusive hosting evidence is inconsistent.');
@@ -81,6 +84,7 @@ function hosting_reconciliation_record(string $dispatchId,string $fingerprint,st
         if($old){if($old['dispatch_id']!==$dispatchId || $old['observation_json']!==$bytes)throw new InvalidArgumentException('This hosting observation identity was already used.');return false;}
         $result=one('SELECT * FROM '.table('hosting_operation_results').' WHERE id=?',[$dispatchId]);
         if(!$result || !$journal->account()->awaitingReconciliation() || $journal->account()->pendingAttempt()!==$dispatch['attempt_ref'])throw new RuntimeException('Only this retained unresolved result can be reconciled. A missing result needs separate verified recovery.');
+        if($data['outcome']==='unknown' && (int)query('SELECT COUNT(*) FROM '.table('hosting_observations').' WHERE dispatch_id=?',[$dispatchId])->fetchColumn()>=CWP_HOSTING_MAX_UNKNOWN_OBSERVATIONS)throw new RuntimeException('This unresolved attempt has reached its observation limit. Verified conclusive resolution remains available.');
         $original=json_decode($result['result_json'],true,16,JSON_THROW_ON_ERROR);
         $document=json_decode($journal->json(),true);$last=end($document['events']);$recorded=max(time(),$last['at']);
         if($data['observed_at']>time() || $data['observed_at']<$original['at'])throw new InvalidArgumentException('Hosting evidence time is outside the observed operation.');
