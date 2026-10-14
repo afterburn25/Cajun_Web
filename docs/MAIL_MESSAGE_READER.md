@@ -1,5 +1,7 @@
 # Individual email reading — released 1.18.0
 
+Current [1.19.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.19.0) adds recent notices and admin/public email bells from explicit newest-20 inbox checks. Upgraded owners prepare notice storage in Email accounts. [Owner workflow](RECENT_EMAIL_NOTICES.md). The count is last-checked metadata, not full unread synchronization; opening/dismissal stays local and server flags remain unchanged. Earlier checkpoints below retain their historical scope.
+
 ## Latest verified publication — 1.18.0
 
 [v1.18.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.18.0) is published and freshly downloaded/verified at immutable source/tag `91550d956c404585545dbd766c96f36f58ae0623` through [PR #70](https://github.com/afterburn25/Cajun_Web/pull/70). Assigned staff can explicitly open exact INBOX messages with current actor, global/read assignment and saved revision, verified TLS and exact UIDVALIDITY/UID/size checks. Escaped plaintext and maintained sanitized formatting appear in an opaque sandbox with restrictive CSP; server read flags stay unchanged. Whole MIME is limited to 256 KiB including encoded attachments. Strict intent/result audit, request limits and personal outcome history retain no message content. [Owner guide](MAIL_MESSAGE_READER.md).
