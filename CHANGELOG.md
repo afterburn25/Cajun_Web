@@ -285,6 +285,9 @@ Owner override stops the portfolio-only 1.11.0 publication. Preserve integrated 
 - Regenerate the 80-file complete / 79-file update package and versioned keyless installer. No schema changes. Retained 1.10.0 and full application acceptance are required before publication.
 - Reviewed estimator integration remains outside deployment, with 65 exact-integer/result checks; existing live estimator is preserved.
 
+## Unreleased — scheduling foundation
+
+- Add independent L-03 consultation-scheduling contract (`foundation/scheduling/`): UTC time windows, weekly availability rules with real IANA/DST expansion, slot/buffer/minimum-notice policy, a `requested → confirmed | declined | cancelled` lifecycle where rescheduling re-requires confirmation, and exact bookability checks. Not integrated; no schema, form, mail, or calendar provider.
 ## Unreleased — review-request foundation
 
 - Add independent L-02 review-request contract (`foundation/review-requests/`): normalized website addresses with SSRF-readiness flags, contact consent, legal stage transitions, human-reviewed findings with labeled lab/field/absent evidence, and delivery guarded by a saved report plus consent. Not integrated; no schema, form, mail, or URL fetching.

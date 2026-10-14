@@ -419,6 +419,13 @@ Request: continue roadmap and integrate Devin work. Started main `6f01209`; cont
 
 On `codex/portfolio-browsing`, preserve actual adapter/source and reconcile current docs. Fix numeric category key coercion, duplicate public slug ambiguity, `all` wildcard collision, whitespace mismatch, intercepted modified clicks, missing announced counts and identical-media comparison. Added 55 isolated checks total, native adapter boundaries and real HTTP/Chromium/no-JS/history/keyboard/320px acceptance plus actual retained 1.10.0 update including read markers. Package builder local syntax/inventory verification passes (80/79 files, 55 PHP); 55 portfolio and 65 estimator checks pass PHP 8.4.25. Combined CI/release pending; no full W-01/L-01 completion, provider operations or live deployment. Next: accept exact candidate, review screenshots, checked merge/exact main and immutable draft/public downloads.
 
+## 2026-10-13 — Devin L-03 consultation-scheduling foundation
+
+Request: continue the roadmap without stopping. Estimator PR #27 landed through PR #29 at `39de8ff`; portfolio PR #7 is being integrated by Codex on `codex/portfolio-browsing` (PR #30) toward v1.11.0; completed Devin heads stay stable during integration. Devin also delivered the isolated L-02 review-request component on `devin/review-requests` as [PR #31](https://github.com/afterburn25/Cajun_Web/pull/31) at `a0959d6` (80 checks, all green). Starting commit here: `39de8ff`. Branch: `devin/consultation-scheduling`. Owned paths recorded on issue #2.
+
+Added `foundation/scheduling/` — the isolated L-03 contract: `TimeWindow` (half-open UTC intervals, overlap/contain/margin), `WeeklyRule` (weekly availability in a validated IANA timezone with real DST expansion — local time constant across spring-forward, gap occurrences skipped), `SchedulePolicy` (slot length, buffer, minimum notice), `Consultation` (validated contact/email/timezone; `requested → confirmed | declined | cancelled`, terminal states, reschedule returns to `requested`), `ConsultationCalendar` (boundary-aligned slot enumeration, bookability requiring inside-availability + notice + no overlap incl. buffer, request stays `requested`, transitions only via legal moves).
+
+Added `tests/scheduling/run.php` (64 synthetic checks — all pass on PHP 8.4.25), `.github/workflows/scheduling.yml`, and `docs/SCHEDULING_FOUNDATION.md` with the adapter contract (transactional booking guard, confirm-after-persist/provider semantics). No schema, form, mail, provider, or shipping files. PR checks pending.
 ## 2026-10-13 — Devin L-02 review-request foundation
 
 Request: continue the roadmap without stopping. Codex is integrating portfolio PR #7 at `016a405` on `codex/portfolio-browsing` for bounded v1.11.0 and asked that completed Devin heads stay stable; estimator PR #27 landed through PR #29 at `39de8ff` with overflow/result-invariant fixes. Starting commit: `39de8ff` (current main). Branch: `devin/review-requests`. Owned paths recorded on issue #2.
@@ -505,6 +512,19 @@ PR #50 merged at cefcc41bcd5297715f2a49d6526900ebe8ad4eb4; exact-main acceptance
 
 Next-increment preparation while exact-main acceptance ran: an isolated local estimator adapter draft matched the current shipping calculator across 1,512 priced/missing/malformed/quantity cases on PHP 8.4, without database access or shipping changes. This is prototype parity evidence only; component guards, actual application integration and native/browser/upgrade acceptance remain required. Devin correction priority reiterated in issue #2 comment 6150049591; no acknowledgment or completed fixes inferred.
 
+### 2026-10-13 — Devin L-03 scheduling corrections (PR #32)
+
+**Request:** Codex review findings on #32 (issuecomment-6149703449), prioritized per `DEVIN_HANDOFF_1.11.1.md`.
+
+**Starting commit:** `devin/consultation-scheduling` merged `origin/main` `855981b` (clean merge).
+
+**Changed:** `foundation/scheduling/WeeklyRule.php` — `expand()` now validates BOTH endpoints against spring-forward gaps (an end inside the gap previously normalized forward and silently stretched offered availability); fall-back policy (first occurrence) documented and now directly tested. `foundation/scheduling/ConsultationCalendar.php` — `transition()` and `reschedule()` now require the calendar's tracked instance, reject stale caller copies and untracked ids, and store their result, so sequential operations on one calendar never keep stale conflicts or leave newly occupied time bookable. `docs/SCHEDULING_FOUNDATION.md` updated.
+
+**Tests:** `php tests/scheduling/run.php` — 71 checks, 0 failures on PHP 8.4.25. New regressions: end-in-gap occurrence skipped (01:30–02:30 on spring-forward Sunday), fall-back first-occurrence asserted in UTC (01:00–01:30 → 05:00–05:30 UTC), cancellation frees the rescheduled slot, stale/untracked instances rejected.
+
+**Failures:** none. **Blockers:** none.
+
+**Next:** push for Codex re-review of #32; refresh the 13 branches conflicting on the 1.11.1 publication docs commit.
 ### 2026-10-13 — Devin L-02 review corrections (PR #31)
 
 **Request:** Codex review findings on #31 (issuecomment-6149702908), prioritized per `DEVIN_HANDOFF_1.11.1.md` before new isolated components.
