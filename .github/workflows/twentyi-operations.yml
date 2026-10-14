@@ -1,0 +1,52 @@
+name: 20i write-boundary checks
+
+on:
+  pull_request:
+    paths: ['foundation/provider/**', 'foundation/twentyi-operations/**', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
+  push:
+    branches: [main, devin/twentyi-operations]
+    paths: ['foundation/provider/**', 'foundation/twentyi-operations/**', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: twentyi-operations-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  operations:
+    name: 20i write boundary PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - name: Check out the revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Build the isolated test runtime
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -f tests/twentyi/Dockerfile -t cwp-twentyi-ops:${{ matrix.php }} tests/twentyi
+      - name: Synthetic write-boundary checks without external network access
+        run: |
+          mkdir -p "$RUNNER_TEMP/twentyi-ops-results"
+          docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/twentyi-ops-results:/workspace/qa" -w /workspace cwp-twentyi-ops:${{ matrix.php }} sh -ec '
+            for source in foundation/provider/*.php foundation/twentyi-operations/*.php tests/twentyi-operations/*.php; do php -l "$source"; done
+            php tests/twentyi-operations/run.php qa/operations-default-results.json
+            php -n tests/twentyi-operations/run.php qa/operations-no-ini-results.json
+          '
+      - name: Preserve named results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: twentyi-operations-${{ matrix.php }}-${{ github.sha }}
+          path: ${{ runner.temp }}/twentyi-ops-results/
+          if-no-files-found: error
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Synthetic descriptor/request-builder/classifier checks only. Docker --network none; no HTTP transport, credential, database, application or provider call. Being in the register is not execution authority: the adapter still refuses every operation.' >> "$GITHUB_STEP_SUMMARY"
