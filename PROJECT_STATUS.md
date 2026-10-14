@@ -1,5 +1,13 @@
 # Project status
 
+## Current work — planning forms, dashboard and personal updates
+
+`codex/project-planning-screens` preserves native PR112/`5e44a6b`; contract `77f92db` precedes implementation. The existing project page now edits scope/contact/date/actions/blockers and structured milestones, while clients see the saved plan and dated snapshots. Personal planning activity opens the exact authorized revision; stale drafts keep their original request/version. Owner setup remains explicit. [Usage and evidence](docs/PROJECT_PLANNING.md); [interface contract](docs/PROJECT_PLANNING_SCREENS_CONTRACT.md).
+
+Local acceptance: **154 native checks under128MiB**, **79 form/render checks per default/no-ini mode**,211 pure planning and155/57 prior progress records/forms per mode;1,158 local PHP executions. **39 actual HTTP/Edge behavior checks plus one no-PHP-diagnostics check pass**. Six complete desktop/320px staff/client/conflict images were inspected. Coverage includes real CSRF/setup/save, original retry/stale draft, Unicode milestone editing/order/dependencies/cancellation, keyboard use, no-JavaScript preservation, exact activity/read state and client/support isolation. Two fixture failures (unprepared support in the new native test, missing UTF-8 in the local DB observation helper) were corrected and rerun with fresh synthetic prefixes; protections were not bypassed.
+
+Current committed CI, latest1.23 populated planning update/recovery, complete package/Apache acceptance and independent review remain pending. Full P-05/P-07 remains partial. Published1.23 and frozen1087e1665f are unchanged. Devin owns complete20i, including all provider admin/client UI;107/109 corrections remain his work and111 still needs independent source review. Next: verify exact CI and combined artifacts, request bounded review, then integrate only when parent/combined review and release gates pass. Earlier sections below are historical checkpoints.
+
 ## Current work — structured planning interface contract
 
 Codex starts `codex/project-planning-screens` from preserved PR112/`5e44a6b`. [The interface contract](docs/PROJECT_PLANNING_SCREENS_CONTRACT.md) is committed before code: actual admin plan/milestone editing, client dashboard, dated snapshots and exact personal activity links, with owner setup, retained stale drafts and current access. Implementation and new acceptance are pending. Existing verified parents stay preserved; published1.23 is unchanged. Devin retains complete20i implementation and accepted ownership. Next: implement and test the actual interface on this separate branch.

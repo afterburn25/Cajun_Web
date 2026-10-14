@@ -1,5 +1,7 @@
 # Architecture notes
 
+Structured project planning has [separate form/render/activity modules](PROJECT_PLANNING.md) on the unreleased planning-screens branch. They consume native plan/event/request/head storage and reuse current project ownership and personal read state; no provider integration is added here.
+
 ## Native support conversation storage
 
 Current-authorized ticket records, append-only hash-linked events and staff/client read cursors use separate additive InnoDB tables. Public projections have independent sequence numbers so private notes never change a client stale-form token, ordering or unread count. All mutation and viewer authority uses the existing shared staff lock and atomic strict audit. See [contract](SUPPORT_TICKETS_CONTRACT.md). No route or provider dispatcher is activated.

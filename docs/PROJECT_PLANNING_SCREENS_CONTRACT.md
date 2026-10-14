@@ -24,4 +24,4 @@ Verify form bounds/canonical data/escaping, stale drafts and original replay; re
 
 ## Current evidence
 
-Contract only at this commit. Parent native implementation63b692f passed 126 native plus211 deployed default/no-ini checks per PHP8.2/8.4 (1096 per matrix); those historical results are not acceptance of the new interface. Next: implement this contract and record actual tests and remaining gates.
+Historical contract checkpoint at77f92db; the interface is now implemented and locally tested. See [current evidence and remaining gates](PROJECT_PLANNING.md). Parent native implementation63b692f passed 126 native plus211 deployed default/no-ini checks per PHP8.2/8.4 (1096 per matrix); those historical results are not acceptance of the new interface. Next: implement this contract and record actual tests and remaining gates.

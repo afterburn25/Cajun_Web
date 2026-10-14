@@ -1,10 +1,10 @@
 name: Project planning record checks
 on:
   push:
-    branches: [main, codex/project-planning]
-    paths: ['foundation/project-planning/**', 'tests/project-planning/**', '.github/workflows/project-planning.yml']
+    branches: [main, codex/project-planning, codex/project-planning-screens]
+    paths: ['foundation/project-planning/**', 'tests/project-planning/**', 'site/app/projects/**', 'site/includes/layout/project_planning*.php', 'site/assets/js/project-planning.js', '.github/workflows/project-planning.yml']
   pull_request:
-    paths: ['foundation/project-planning/**', 'tests/project-planning/**', '.github/workflows/project-planning.yml']
+    paths: ['foundation/project-planning/**', 'tests/project-planning/**', 'site/app/projects/**', 'site/includes/layout/project_planning*.php', 'site/assets/js/project-planning.js', '.github/workflows/project-planning.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -30,6 +30,8 @@ jobs:
             for source in foundation/project-planning/*.php tests/project-planning/*.php; do php -l "$source"; done
             php tests/project-planning/records.php > qa/project-planning-default.json
             php -n tests/project-planning/records.php > qa/project-planning-no-ini.json
+            php tests/project-planning/forms.php > qa/project-planning-forms-default.json
+            php -n tests/project-planning/forms.php > qa/project-planning-forms-no-ini.json
           '
       - name: Preserve named evidence
         if: always()
@@ -41,4 +43,4 @@ jobs:
           retention-days: 14
       - name: Record scope
         if: always()
-        run: echo 'Pure plan fields, calendar dates, milestone dependency graph and immutable events. Native authorization, persistence, screens and provider operations are not tested.' >> "$GITHUB_STEP_SUMMARY"
+        run: echo 'Pure plan fields, dependency graphs, immutable events, bounded forms and actual HTML rendering. No native authority, HTTP/browser or provider acceptance.' >> "$GITHUB_STEP_SUMMARY"

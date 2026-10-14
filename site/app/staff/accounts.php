@@ -176,14 +176,14 @@ function staff_action_permission(string $action): ?string {
     if(in_array($action,['payments_migrate','payments_ledger_setup','payments_ledger_reverse','payments_save','payments_clear','payments_verify','payments_trial_setup','payments_trial_submit','payments_trial_verify','payments_notification_setup','payments_notification_configure','payments_notification_verify'],true))return 'staff.manage';
     if(str_starts_with($action,'payments_'))return 'payments.manage';
     if(in_array($action,['delivery_setup','delivery_publish'],true))return 'staff.manage';
-    if(in_array($action,['activity_setup','project_progress_setup'],true))return 'staff.manage';
+    if(in_array($action,['activity_setup','project_progress_setup','project_planning_setup'],true))return 'staff.manage';
     if($action==='activity_mark')return 'clients.manage';
     if($action==='delivery_upload')return 'clients.manage';
     if($action==='catalog_migrate')return 'staff.manage';
     if(str_starts_with($action,'catalog_'))return 'catalog.manage';
     if(in_array($action,['support_migrate','support_policy'],true))return 'staff.manage';
     if(str_starts_with($action,'staff_')||in_array($action,['email_save','email_test','installer_cleanup','storage_repair','clear_limits','media_cleanup','studio_migrate'],true))return 'staff.manage';
-    if(in_array($action,['studio_client','studio_invite','studio_job','studio_message','studio_publish','studio_upload','studio_invoice','studio_paid'],true))return 'clients.manage';
+    if(in_array($action,['project_planning_save','studio_client','studio_invite','studio_job','studio_message','studio_publish','studio_upload','studio_invoice','studio_paid'],true))return 'clients.manage';
     return 'website.manage';
 }
 function staff_home(array $user): string {

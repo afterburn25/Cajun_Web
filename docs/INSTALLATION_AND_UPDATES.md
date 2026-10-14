@@ -1,5 +1,7 @@
 # Installation, packaging and updates
 
+Unreleased structured planning adds explicit owner/password/backup-confirmed setup under Version & database. Existing plans and history remain private native data. [Usage and pending populated update/recovery acceptance](PROJECT_PLANNING.md). No automatic setup or production deployment is claimed.
+
 ## Prepared 1.24.0 — not published
 
 The candidate uses staging `cwp-update-1.24.0` and recovery `structure-1.24.0`, preserving the permanent shared `structure-1.11.0` lock. Its catalog has 26 retained starting packages through actual published 1.23 (COMPLETE SHA-256 `057a58c42e847fe68454c1a7dac47afad10c8c05f46de4301842654b356f7228`, 2,566 members). Full combined recovery and release acceptance remain pending. Public 1.23 assets are unchanged. [Service-agreement guide](SERVICE_AGREEMENTS.md).

@@ -1542,3 +1542,7 @@ Next: define the planning editor/dashboard/activity contract on a separate prese
 ## 2026-10-14 — planning interface contract
 
 Request: continue the roadmap while Devin owns complete20i. Starting native PR1125e44a6b; separate codex/project-planning-screens. Committed exact forms/dashboard/activity contract before runtime changes; parent108 and published1.23 preserved. Inspection confirms Devin accepted full ownership and107/109/111 heads are unchanged. No new behavior or tests claimed. Next: implementation, focused and actual browser/native acceptance, then independent review.
+
+## 2026-10-14 — actual planning interface and private activity
+
+Starting PR1125e44a6b, contract77f92db. Added bounded forms and milestone JavaScript, actual admin/client planning views/history, owner setup/save actions, exact personal activity validation/links and native/forms/browser tests. Extended latest1.23 update/recovery fixtures and CI, pending execution. Local154 native,79 forms per mode,211 planning and155/57 progress records/forms per mode pass;39 HTTP/Edge behaviors plus one diagnostic check pass, six desktop/320px images inspected in full. Two fixture failures were preserved and corrected (support initialization; local observation charset), then fresh fixtures passed. No provider files, published versions or frozen parent heads changed. Devin remains complete20i owner. Current CI/full package/recovery/review remains next; no release or production operation claimed.
