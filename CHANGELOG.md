@@ -1,8 +1,8 @@
 # Changelog
 
-## Unreleased — recurring billing calendar contract
+## Unreleased — recurring billing calendar
 
-Record the next non-20i billing calendar contract; no implementation or deployed behavior is introduced by this documentation commit.
+Add a pure immutable calendar for monthly, quarterly and annual periods, explicit original-day/month-end rules, direct date lookup and bounded windows. Local 203 checks pass in each default/no-ini PHP mode; committed CI and independent review remain next. No deployed billing or invoice behavior changes.
 
 ## Unreleased — financial agreement notifications
 

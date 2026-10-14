@@ -1,10 +1,12 @@
 # Session handoff — read before continuing
 
-## Current work — recurring billing calendar contract
+## Current work — recurring billing calendar implemented
 
-Codex starts `codex/billing-calendar` from frozen notification PR 116/`f053dac`. [The contract](docs/BILLING_CALENDAR_CONTRACT.md) defines exact monthly, quarterly and annual periods with explicit original-day/month-end alignment, leap-year handling, bounded windows and direct date lookup. This is the first calendar increment for HC-06/P-03/P-04; implementation and focused acceptance come next. No invoice, scheduler, recurring payment or service operation is enabled. Native schedules, exact agreed terms and customer/staff interfaces remain required.
+Following contract `31fe0dd`, `codex/billing-calendar` adds an immutable pure calendar for monthly, quarterly and annual maintenance billing. It preserves the original anchor and explicit original-day/month-end alignment, calculates exact half-open periods, performs direct date lookup and bounds requested windows. Local PHP 8.4 default and no-ini modes each pass **203 named checks** (406 executions), including independent Gregorian oracle comparisons, century/leap boundaries, original-day recovery after a short month, strict malformed inputs, range limits, immutable results and timezone independence. [Contract and evidence](docs/BILLING_CALENDAR_CONTRACT.md).
 
-PR 116 stays frozen with 3,364 verified focused executions and exact Windows packages; full run 38654568775 remains in browser acceptance. Parent PR 114/`a9a5f40` now has [11,326 verified full assertions and all 28 successful workflows](https://github.com/afterburn25/Cajun_Web/pull/114#issuecomment-6180919026), all three Windows/Linux packages identical. Independent parent/combined reviews and exact-main release gates remain pending. Published 1.23/main `68e4d41` is unchanged. Devin retains complete 20i implementation and corrections. Earlier sections are dated checkpoints.
+Focused committed PHP 8.2/8.4 CI and independent review are next. This module is outside deployment; no application, schema, invoice, scheduler or recurring payment is activated. Native immutable schedules, explicit terms/consent and timezone, pause/change rules, unique period invoices and actual staff/client screens remain required for HC-06/P-03/P-04. Shipping source remains byte-identical to frozen notification PR 116/`f053dac`.
+
+Notification PR 116 has 3,364 verified focused executions and exact Windows packages. Full run 38654568775 passed browser execution and has produced its checkpoint; report/screenshot inspection and remaining recovery/Apache/Linux acceptance continue on that unchanged source. Parent PR 114/`a9a5f40` has [11,326 verified full assertions/all 28 workflows](https://github.com/afterburn25/Cajun_Web/pull/114#issuecomment-6180919026) and identical Windows/Linux packages. Independent parent/combined reviews and exact-main release gates remain pending. Published 1.23/main `68e4d41` is unchanged. Devin retains complete 20i implementation and corrections. Earlier sections are dated checkpoints.
 
 ## Current work — financial notifications locally verified
 
