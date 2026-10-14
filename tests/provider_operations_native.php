@@ -52,13 +52,14 @@ try {
     po_deny('Operation storage requires owner password',fn()=>provider_operations_migrate('wrong'));
     po_actor(2);po_deny('Administrator cannot prepare operation storage',fn()=>provider_operations_migrate($password));po_actor();
     provider_operations_migrate($password);
-    po_ok('Operation storage records version','3'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']??''));
+    po_ok('Operation storage records version','4'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']??''));
     provider_operations_migrate($password);po_ok('Migration is idempotent',provider_operations_ready());
-    save_setting('provider_operations_schema_version','99');po_deny('Unsupported version refused',fn()=>provider_operations_migrate($password));save_setting('provider_operations_schema_version','3');
-    // Simulate version-1 storage: drop the revision binding and the approval-request columns, then migrate through both steps.
+    save_setting('provider_operations_schema_version','99');po_deny('Unsupported version refused',fn()=>provider_operations_migrate($password));save_setting('provider_operations_schema_version','4');
+    // Simulate version-1 storage: drop the revision binding, the approval-request columns and the reconciliation fields, then migrate through all steps.
     db()->exec('ALTER TABLE '.table('provider_operation_grants').' DROP COLUMN profile_revision, DROP COLUMN scope_params, DROP COLUMN consumed_key, DROP COLUMN consumed_at');
+    db()->exec('ALTER TABLE '.table('provider_operations').' DROP COLUMN reconciled_outcome, DROP COLUMN reconciled_epoch');
     save_setting('provider_operations_schema_version','1');provider_operations_migrate($password);
-    po_ok('Version-1 storage gains revision binding and approval-request columns',provider_operations_ready()&&(one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operation_grants','profile_revision'])!==null)&&(one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operation_grants','scope_params'])!==null));
+    po_ok('Version-1 storage gains revision binding, approval-request and reconciliation columns',provider_operations_ready()&&(one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operation_grants','profile_revision'])!==null)&&(one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operation_grants','scope_params'])!==null)&&(one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operations','reconciled_outcome'])!==null));
     db()->exec('ALTER TABLE '.table('provider_operations').' ADD INDEX unexpected(status)');po_deny('Extra index refused without change',fn()=>provider_operations_migrate($password));db()->exec('ALTER TABLE '.table('provider_operations').' DROP INDEX unexpected');
 
     // ---- ledger claim/record semantics ----

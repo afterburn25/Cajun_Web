@@ -2,7 +2,7 @@ name: Independent provider execution review
 on:
   push:
     branches: [codex/review-twentyi-execution]
-    paths: ['tests/provider_execution_review.php', '.github/workflows/provider-execution-review.yml']
+    paths: ['tests/provider_reconciliation_review.php', 'tests/provider_execution_review.php', '.github/workflows/provider-execution-review.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -48,10 +48,13 @@ jobs:
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
             -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-provider-ops sh -ec '
-              for source in site/app/providers/*.php site/database/schema/provider_operations_schema.php site/database/migrations/provider_operations_migrate.php foundation/provider/*.php foundation/twentyi-operations/*.php tests/provider_operations*.php tests/provider_execution_review.php; do php -l "$source"; done
+              for source in site/app/providers/*.php site/database/schema/provider_operations_schema.php site/database/migrations/provider_operations_migrate.php foundation/provider/*.php foundation/twentyi-operations/*.php tests/provider_operations*.php tests/provider_execution_review.php tests/provider_reconciliation_review.php; do php -l "$source"; done
               php tests/provider_operations_native.php
               php tests/provider_operations_execute_native.php
-              php tests/provider_execution_review.php
+              review_status=0
+              php tests/provider_reconciliation_review.php || review_status=1
+              php tests/provider_execution_review.php || review_status=1
+              exit "$review_status"
             '
       - name: Preserve named storage evidence
         if: always()
@@ -62,5 +65,6 @@ jobs:
             qa/provider-operations-native-results.json
             qa/provider-execution-native-results.json
             qa/provider-execution-review-results.json
+            qa/provider-reconciliation-review-results.json
           if-no-files-found: warn
           retention-days: 14

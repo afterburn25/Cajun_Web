@@ -164,7 +164,7 @@ function provider_operation_grants(string $profileId,int $limit=40): array {
 /** Recent ledger outcomes for reconciliation review, newest first. */
 function provider_operations_history(int $limit=40): array {
     if (!provider_operations_ready()||$limit<1) return [];
-    return all('SELECT idempotency_key,operation,status,result_message,provider_code,external_id,attempts,claimed_at,resolved_epoch FROM '.table('provider_operations').' ORDER BY claimed_epoch DESC,id DESC LIMIT '.$limit);
+    return all('SELECT idempotency_key,operation,status,result_message,provider_code,external_id,attempts,claimed_at,resolved_epoch,reconciled_outcome,reconciled_epoch FROM '.table('provider_operations').' ORDER BY claimed_epoch DESC,id DESC LIMIT '.$limit);
 }
 
 /** Revoke a grant durably; revoking twice or an unknown grant refuses. */

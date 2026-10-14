@@ -48,5 +48,15 @@ $history=provider_operations_history();
 <article><h3><?=esc((string)($row['operation']??'provider.operation'))?> · <?=badge($row['status'])?></h3>
 <p><code><?=esc($row['idempotency_key'])?></code> · claimed <?=esc($row['claimed_at'])?> UTC · <?=(int)($row['attempts']??0)?> attempt(s)<?=$row['provider_code']!==null?' · '.esc($row['provider_code']):''?><?=$row['external_id']!==null?' · provider ref '.esc($row['external_id']):''?></p>
 <?php if($row['result_message']!==''): ?><p><?=esc($row['result_message'])?></p><?php endif; ?>
-<?php if($row['status']==='uncertain'): ?><p class="hint">This write may have reached 20i. Verify the package list on your 20i dashboard and reconcile before approving another attempt.</p><?php endif; ?></article>
+<?php if($row['status']==='uncertain'): ?>
+<?php if($row['reconciled_outcome']!==null): ?><p>Reconciled <?=esc(gmdate('Y-m-d H:i:s',(int)$row['reconciled_epoch']))?> UTC · <?=badge($row['reconciled_outcome'])?></p><?php endif; ?>
+<p class="hint">This write may have reached 20i. The request is never retried automatically — an owner check performs one fresh, evidence-backed observation of the package list and reports whether the approved effect is visible.</p>
+<?php if($record&&(int)$record['enabled']===1&&$record['has_credentials']): ?>
+<form method="post"><?=csrf_field()?>
+<input type="hidden" name="profile_id" value="<?=esc($profileId)?>"><input type="hidden" name="revision" value="<?=$revision?>"><input type="hidden" name="idempotency_key" value="<?=esc($row['idempotency_key'])?>">
+<?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?>
+<button class="btn outline" name="action" value="provider_operations_reconcile">Check the provider now</button>
+</form>
+<?php endif; ?>
+<?php endif; ?></article>
 <?php endforeach; ?></section>
