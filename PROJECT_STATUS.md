@@ -1,5 +1,11 @@
 # Project status
 
+## Provider review checkpoint — 2026-10-13
+
+Starting branch `codex/provider-settings` at `8863802d21370d975c39dac0c824aeac926bc34f`. Reviewed Devin PR #43 at `7f1af0c0d73282d98b552860cbf3a3eee91c061f`: all 163 synthetic component checks pass in default PHP and without extensions. An additional reproduction finds JSON objects incorrectly accepted as lists in the fixture; [correction requested](https://github.com/afterburn25/Cajun_Web/pull/43#issuecomment-6160027189). Contract now excludes unverified inventory fields from the first increment, preserves JSON type identity, requires independently allowlisted persisted results, and cites checked official API references. No application/provider operation occurred.
+
+Mail-notice PR #72 is merged at `22a2969692ab5bcc7f35158dcaa5355c623dc821`. Exact-main browser acceptance passes 1,087 checks; four actual desktop/mobile screenshots were inspected and anonymous homepage pixels match 1.18.0. Windows packaging completed. Extended recovery/Apache checks and publication remain pending; latest published release is still 1.18.0. Finish and verify that release, reconcile this branch with its publication baseline, then accept corrected provider components and implement the protected owner workflow.
+
 ## Next bounded preparation — owner 20i settings
 
 Codex claims `codex/provider-settings` from main44926230a2359cf82793eb3cdd55fe940bbb786f, verified1.18.0 publication documentation. This branch contains a proposed [HC-07 application contract](docs/PROVIDER_SETTINGS_CONTRACT.md) only: protected owner configuration, explicit read-only package-list connection check and sanitized history. No new code, network request, capability, release or deployment is claimed. The prior owner-requested GET/package succeeded (issue65 comment6154083380); other operations remain unverified.

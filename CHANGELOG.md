@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased provider contract review
+
+- Recorded the 163-check canonical review and reproduced JSON shape defect; narrowed first integration to protected settings and explicit read-only checks. Inventory needs separately verified response fields and ownership acceptance. Documentation only; no feature or release claimed.
+
 ## Unreleased — provider settings contract preparation
 
 Claim an isolated owner20i settings/read-only check contract after the1.19 email increment. Documentation only; no API call, application feature, release or deployment.

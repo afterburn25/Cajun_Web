@@ -157,3 +157,7 @@ Source fc3bd89c5e1c286f9dc4df12d50dd566a4d4ab86 bundles the exact maintained IMA
 ## 2026-10-13 — ship bounded individual email reading in 1.18.0
 
 Source 91550d956c404585545dbd766c96f36f58ae0623 preserves exact mailbox generation/UID identity, current authority and strict audit before display. Entire MIME including attachments is bounded; maintained parser/sanitizer work is private and bounded. Formatted mail requires both sanitization and an opaque sandbox with restrictive CSP; escaped plaintext remains available without DOM. Browser tests distinguish CSP-blocked attempts from actual network interception and include a negative control. Per-staff notification state and automatic synchronization are separate future scopes.
+
+## 2026-10-13 — separate connection proof from inventory
+
+The first owner 20i increment validates only a fixed explicit package-list connection. Public authentication references and the prior diagnostic do not define account-specific inventory fields or client ownership. Keep inventory out of this increment, preserve JSON list/object identity, and persist only finite local classifications. Canonical result length limits alone do not redact provider output.
