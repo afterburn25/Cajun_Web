@@ -1,5 +1,15 @@
 # CajunWebPro — project source of truth
 
+## Current work — explicit local provisioning retry
+
+Codex owns `codex/hosting-provision-retry` from PR82/1f59074. A new current-owner/password action moves only a recorded definite provisioning failure marked safe to retry back to local pending state. It commits a stable canonical event and strict audit atomically, preserves old attempts/results and returns no dispatch claim. A later normal claim must recheck current authority/provider settings and fence a distinct attempt. Unknown outcomes, unsafe failures, missing proof and deletion/reconciliation retry remain refused. [Contract](docs/HOSTING_PROVISION_RETRY.md).
+
+Native concurrency/replay/rollback fixtures retain all existing hosting94+79 cases. Syntax passes; local Windows execution stopped at the existing private provider-key0600 permission check before retry assertions. Linux PHP8.2/8.4 matrix and independent review remain pending. No protection is relaxed and no native pass is claimed from Windows. No schema/version/route or live operation is added.
+
+Separate PR83/dae2f82 passes60 client-authority +94 records +79 operation checks per PHP8.2/8.4,466 executions in both downloaded push38549022824 and PR38549061993. Its application38549059961 is running and remains unaccepted. Mail77/e9b77e1 full38545953062 continues Apache after verified browser/Windows checkpoints. Published1.21 remains immutable. Preserve original Devin work and review gates; full roadmap stays active.
+
+## Earlier checkpoints
+
 ## Latest verified publication — 1.21.0
 
 [v1.21.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.21.0) is published and freshly downloaded/verified at immutable source/tag `7805e56aa9e53cb081600589e92991255475474c`, through [PR #75](https://github.com/afterburn25/Cajun_Web/pull/75). Staff can save, edit, preview and retain private local email drafts for currently assigned sending accounts, with canonical active-template insertion. Current author/account/Send access, exact revisions, stable initial-save replay and strict audit protect the workflow. [Owner guide](docs/LOCAL_EMAIL_DRAFTS.md).

@@ -1,5 +1,9 @@
 # Decision record
 
+## 2026-10-14 — separate retry preparation from dispatch
+
+Enable only deliberate local provisioning retry after an immutable definite failure explicitly marked safe to retry. Returning to pending does not grant a network call or mint an attempt. The later normal claim rechecks current authority and profile state and commits the distinct attempt. Unknown outcomes require verified reconciliation; deletion retries cannot use this path because the canonical model arms a fresh attempt during that transition. [Contract](HOSTING_PROVISION_RETRY.md).
+
 ## 2026-10-14 — preserve committed attempts and remote observations
 
 Commit an immutable exact account/client/profile/attempt boundary before returning a new provider claim. A replay or pending-state read never authorizes another call. Final observations must survive later access loss but require the exact committed binding; audit/storage failure leaves the prior fence unresolved. Keep provider-resource associations unique and immutable across clients. The internal result path is not exposed as a generic HTTP callback. [Contract](HOSTING_OPERATIONS.md).

@@ -1,5 +1,9 @@
 # Durable hosting operation attempts
 
+## Follow-up — local provisioning retry
+
+This branch adds a separate explicit owner/password local retry-preparation path for definite provisioning failures marked retryable. Validation now accepts that canonical local event only with its retained eligible failure. It does not return a claim or alter existing dispatch/result bindings. Deletion retry and reconciliation remain unsupported. The older blanket retry restriction below is superseded only for this bounded path. [Detailed contract](HOSTING_PROVISION_RETRY.md).
+
 Unreleased HC-08 work on `codex/hosting-operations`, starting from storage5d9b719/PR81 (runtimef8001e9), stacked on journal80 and foundation79. These guarded internal functions do not expose a route, start a worker, decrypt credentials, contact20i or authorize real provisioning by themselves. There is no new release version. A separately verified provider adapter and operation-specific owner activation are still required.
 
 `hosting_operations_claim()` checks the current owner/password, active selected client, current hosting revision and exact enabled provider profile revision under the shared staff mutex. The canonical lifecycle decides whether provision, suspend, resume or approved deprovision is permitted. Grace, disputes, two different cancellation/approval actors, retention confirmation and unresolved-attempt rules remain effective. The generic local-record API still cannot select these remote commands.
