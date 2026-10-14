@@ -1356,3 +1356,11 @@ No provider calls, deployments, releases or live operations.
 **Fixed at `df0a1d2`:** `unknown` is now an append-only per-token `observations` entry (never final, never releases retry, evidence retained); conclusive resolutions (`completed`/`not_executed`) remain immutable per token and are checked **before** the stalled-status gate so identical replays return quietly post-transition (completed-after-success and not_executed-after-reclaim both verified byte-identical state/history). Conflicting conclusive and changed-evidence replays still refuse. Suite 103 → **114 checks**, green `php`/`php -n`; reviewer reproductions confirmed. Posted 6167182005, re-review requested.
 
 No provider calls, deployments, releases or live operations.
+
+## 2026-10-14 — PR #85 combined integration review (hosting + client authority on mail main)
+
+- **Request:** continue without stopping; Codex assigned Devin review of PR #85 `codex/hosting-integration` at `a9beb6e` — combined merge of client-authority `eefe29e` (with #79–#82 ancestry) and provisioning-retry `e73d78a` onto mail main `e3b434f`.
+- **Verified:** merge structure matches stated parents; all client-authority runtime/test bytes identical to reviewed `eefe29e` outside the 19 legitimately conflicted paths; retry-side runtime identical to `e73d78a`; all 6 hosting mirrors byte-match; installer inventory regenerated — 2,565/2,565 SHA-256 hashes match committed bytes; `operations.php` unions the fence with `retry_provision` historical-prefix coverage; workflow/doc unions retain both histories with no conflict markers; all 24 deletions vs `e3b434f` are superseded code; all changed PHP lints clean. Scope holds: hosting helpers internal only, no route/schema-activation/worker/provider call added.
+- **Result:** CLEAR posted at comment 6167231488. Combined `native-and-browser` acceptance on the merge ref is the remaining gate — Codex-owned.
+- **Board:** main `e3b434f` exact-main acceptance still in progress (v1.22.0 gate); PR #61 `df0a1d2` correction posted (114 checks), CI wave scheduled, re-review pending; all open Devin PRs mergeable.
+- **No merge, publication, deployment, provider write, mail send, payment, SSH, or customer operation performed.**
