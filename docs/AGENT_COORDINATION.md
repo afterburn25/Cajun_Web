@@ -1,5 +1,17 @@
 # Codex and Devin work allocation
 
+## Current work — saved service terms and exact client agreement
+
+Codex owns `codex/service-plan-records`, based on preserved import PR90/148606f and its candidate85/21ebe69 ancestry. This bounded HC-06/HC-11 increment adds private plan/subscription documents, additive storage and current owner/client operations. Published1.22/e3b434f, candidate85 and original Devin53 remain unchanged. Hosting deletion/reconciliation87–89 are separate.
+
+Owners can save/edit draft terms, publish/retire a plan, offer an exact active revision to an active client and manage local enrollment states. Only the currently authenticated bound client can explicitly agree to the exact terms; support impersonation and owner-created consent are refused. Every mutation retains immutable hash-linked events and strict atomic audit. Terms never silently reprice. History limits reserve both event and byte space for termination. This is service agreement, not an automatic-payment mandate. No routes, UI, invoice generation, scheduler, provider write or fresh-install activation are added.
+
+Local PHP8.4 default/no-ini document checks pass67 each. Native MariaDB10.11.16 passes87 real authority/schema/rollback/replay/concurrency checks. The initial document fixture expected seven model events instead of the actual six and was corrected to check the exact action sequence; that failed run is retained and not counted. New PHP8.2/8.4 matrices, full acceptance and independent review remain pending. Parent90 import matrices38569029563/38569037906 each verify472; its Windows packages verify, while full38569374322 remains running. Candidate85 full38562463459 is verified8,360/all21 workflows and still awaits its bounded review. No new release or target-host deployment is claimed.
+
+Next: verify current native matrices and package/source inventory, obtain bounded storage review, then add owner authoring/offers and client agreement/history screens with CSRF, exact versions, honest payment wording and real HTTP/Chromium acceptance. Continue existing review/release and 20i lanes without changing live acceptance sources. See the service-plan storage contract under docs.
+
+## Earlier checkpoints — historical evidence
+
 ## Current integration — reviewed service-plan terms preserved
 
 Local PHP8.4 default/no-ini passes all76 supplied checks plus21 independent controls against each canonical/deployed copy,236 executions. Both shipped classes exactly match Devin388b80d and reviewed e7a283b. Documentation137Markdown/1216links and clean diff pass. The focused PHP8.2/8.4 matrix and bounded import review remain pending.

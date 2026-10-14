@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — service-plan records and client agreement
+
+Add owner-authored immutable service terms, exact client offers/consent, local enrollment transitions and atomic audited storage. Bound history while retaining room for cancellation/retirement. No plan UI, recurring charge, scheduler or release activation. [Contract](docs/SERVICE_PLAN_RECORDS.md).
+
 ## 1.23.0 candidate — current client authority and hosting groundwork
 
 Unreleased. Preserve reviewed client conflict/invitation/support safeguards and internal hosting journal/storage/dispatch/local-retry groundwork. Align application/installer/update labels; add actual published1.22 baseline and retained-submission update/recovery/replay cases. Prior combineda9 acceptance passes8,234 checks/all21workflows; this newer candidate still needs its own full acceptance and exact-main release gates. [Candidate guide](docs/CLIENT_ACCOUNT_SAFEGUARDS.md).
