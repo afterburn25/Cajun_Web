@@ -21,7 +21,7 @@ registered but **not projectable**.
 
 ## Closed read set
 
-`InventoryRead` emits `TransportRequest` descriptors for exactly four GET
+`InventoryRead` emits `TransportRequest` descriptors for exactly eight GET
 operations on the fixed host `api.20i.com`, 15 s deadline, no body, and
 **no Authorization header** — the caller's credential layer attaches the
 key, so this component never touches a secret. Allocated IDs are positive
@@ -35,9 +35,24 @@ read — every entry's documented purpose is retrieval only.
 | `packages.detail` | `GET /package/{id}` | sensitive-read | documented |
 | `package.types` | `GET /reseller/{id}/packageTypes` | read | documented |
 | `account.balance` | `GET /reseller/{id}/accountBalance` | read | documented |
+| `vps.list` | `GET /vps` | read | documented |
+| `managedvps.list` | `GET /managed_vps` | read | documented |
+| `domains.list` | `GET /domain` | read | documented |
+| `reseller.servicechanges` | `GET /reseller/{id}/serviceChangeData` | sensitive-read | documented |
 
 Mutating, credential-returning, DNS/mail-write, power, restore and
 transfer endpoints are deliberately absent — not merely unimplemented.
+`InventoryRegister::exclusions()` enumerates the boundary in code:
+`vps.vnc` (credential-bearing), `vps.stop`/`vps.start` (GET-labelled
+mutations), `stackusers.grants` and `packages.stackUserList`
+(access-control identity detail) and `domains.pendingTransferStatus`
+(possible transfer-authorization detail, schema unverified). An
+exclusion is a refusal: none may join the read set without fresh
+review and verified schema.
+`GET /domain`'s list-versus-summary shape is unresolved by the owner
+reference; it is registered for identity projection only and a missing
+`id` key there is an honest partial/empty observation, not a schema
+claim.
 
 ## Projection semantics
 
@@ -74,9 +89,21 @@ transfer endpoints are deliberately absent — not merely unimplemented.
   from the closed set.
 - Duplicate package IDs keep the first entry and mark the snapshot
   partial — a duplicated identity means the response is not trusted.
+- `InventoryResource` is the identity-only record for list endpoints
+  with no documented schema: it retains **only** an allocated numeric
+  `id` plus the producing operation, and reports every other field by
+  name in `unmappedKeys` (values dropped — credential-bearing fields
+  like VNC data can never persist). Items without an `id` are skipped;
+  the projector never guesses alternative identity keys. This supplies
+  the reconciliation primitive "provider still lists resource N" while
+  claiming nothing about the fields.
+- `InventoryRegister::projectable()` stays limited to `packages.list`
+  (full documented projection); `identityProjectable()` covers the
+  four extended list reads plus `packages.list` fallback.
 
 ## Deliberately out of scope
 
 Persistence, scheduling, workers, routes, client ownership inference,
 live calls, and every write operation. Client/service linking is an
-explicit owner action in the application layer, assigned to Codex.
+explicit owner action in the application layer — delivered separately by
+Devin on `devin/twentyi-refresh` (see `TWENTYI_INVENTORY_APP.md`).
