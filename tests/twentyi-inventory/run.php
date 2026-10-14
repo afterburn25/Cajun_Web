@@ -120,7 +120,7 @@ ok('A present non-null productSpec is flagged, not parsed', InventoryPackage::fr
 ok('Documented null productSpec is not flagged', InventoryPackage::fromItem(obj(doc_item()))->hasProductSpec === false);
 ok('Null packageTypeName stays null', InventoryPackage::fromItem(obj(array_replace(doc_item(), ['packageTypeName' => null])))->packageTypeName === null);
 ok('Primary name absent from names is an inconsistency skip, not a union', ($s = project(response(200, [array_replace(doc_item(), ['names' => ['alias.test']])])))->state === InventorySnapshot::PARTIAL && $s->skipped === 1 && $s->skipReasons === ['Package name is absent from the reported names list.']);
-ok('Duplicate names dedupe', InventoryPackage::fromItem(obj(array_replace(doc_item(), ['names' => ['example-site.test', 'example-site.test']])))->names === ['example-site.test']);
+ok('Repeated names are preserved verbatim, not deduped', InventoryPackage::fromItem(obj(array_replace(doc_item(), ['names' => ['example-site.test', 'example-site.test']])))->names === ['example-site.test', 'example-site.test']);
 
 // --- Response classification -------------------------------------------------
 

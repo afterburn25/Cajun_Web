@@ -146,7 +146,7 @@ final readonly class InventoryPackage
         }
         $out = [];
         foreach ($value as $entry) $out[] = self::text($entry, $field.'[]', $maxBytes);
-        return self::dedupe($out);
+        return $out;
     }
 
     /** @return string[] Documented stack-user references only — never raw user objects. */
@@ -162,7 +162,7 @@ final readonly class InventoryPackage
             }
             $out[] = $entry;
         }
-        return self::dedupe($out);
+        return $out;
     }
 
     /**
@@ -184,9 +184,4 @@ final readonly class InventoryPackage
         return $key === '' ? null : $key;
     }
 
-    /** @return string[] */
-    private static function dedupe(array $values): array
-    {
-        return array_values(array_unique($values));
-    }
 }
