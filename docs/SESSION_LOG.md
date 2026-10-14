@@ -1352,3 +1352,11 @@ Publication-record validation: 139 Markdown files and 1,259 local links pass; pi
 - Final: runs 38591754189 (push) and 38591761386 (pull_request) both report **PASS: 56 native provider inventory assertions** on PHP 8.2 and PHP 8.4 — migration, authorization refusals, revision checks, cooldown, resolver/transport classification, complete/partial/unavailable persistence, last-good preservation, link restrictions, duplicate rejection, client isolation, and ordered unlink events.
 - Continuity docs synced (PROJECT_STATUS, SESSION_HANDOFF, CHANGELOG). No live call/credential/mutation; synthetic fixtures only.
 - Next: report on issues #96/#97 and PR #100; await Codex review; then continue lifecycle reads → hosting operations → domains/VPS behind explicit gates.
+## 2026-10-14 — Devin: stack restacked onto merged main + named-JSON evidence
+
+- Main advanced twice: `4fdb562` (PR #85 hosting/client merge) then `68e4d41` (PR #98 — 1.23 release record + 20i ownership handoff docs). Whole stack rebased: `devin/twentyi-inventory` → `9c1db5a`, `-vps` → `11b1fde`, `-reader` → `11661b5`, `-refresh` → `dcd0ad8`. Docs conflicts resolved by union; no code conflicts.
+- Corrected a topology mistake mid-restack: reader was briefly rebased onto `-vps`; moved back onto `-inv` (its PR #99 base) and `-refresh` followed; the stray `InventoryResource` site mirror was removed and installer inventory regenerated clean.
+- Codex's #99 clearance (6172038729) asked for named JSON results retained as CI artifacts: `tests/twentyi-inventory-reader/run.php` now emits the same named-check JSON shape as the inventory suite, and the workflow mounts a writable `qa/` dir capturing all four reports (reader+inventory × default+no-ini) as run artifacts. Reader head `e53ff2d`; workflow green both cells.
+- Fresh-install wiring added earlier on `-refresh` (`cb93528`): `schema_statements` includes `provider_inventory_schema`, `deploy.php` records `provider_inventory_schema_version`; native suite still 56/56 on both runtimes.
+- `devin/twentyi-complete` advanced to `68e4d41`.
+- Next: Codex review of the restacked PRs; continue lifecycle reads once the slice lands.
