@@ -83,6 +83,14 @@ throws('negative observation rejected', fn () => $p->fits(['disk_mb' => -5]));
 check('undeclared observed metric cannot prove a fit', !$p->fits(['cpu_seconds' => 1]));
 check('declared-unmetered metric still fits', $p->fits(['bandwidth_gb' => 5]));
 
+// caller-held references in a readonly array must not mutate stored quotas
+$cap = 20;
+$refLimits = ['disk_mb' => &$cap, 'mailboxes' => 2];
+$refPkg = new HostingPackage('SH-REF', 'Referenced package', '20i-shared-standard', 'us-central', $refLimits);
+$cap = 999999;
+check('stored quotas detached from caller references', $refPkg->limit('disk_mb') === 20);
+check('detached quotas still validate usage', !$refPkg->fits(['disk_mb' => 21]) && $refPkg->fits(['disk_mb' => 20]));
+
 // ── OperationResult ──────────────────────────────────────────────
 
 $ok = OperationResult::applied('provision', 'rcpt-1', 500, 'acct-1');
@@ -177,15 +185,33 @@ $unc->dispatch();
 $unc->recordResult(OperationResult::timeout('hosting.downgrade', 2, 'acct-1', 'pc-u#1'), 2);
 check('timeout leaves the change uncertain, not refused', $unc->status() === 'uncertain');
 throws('uncertain change cannot cancel or re-decide', fn () => $unc->cancel('client-42', 3));
-throws('resolve needs evidence', fn () => $unc->resolve(false, '', 3));
-$unc->resolve(false, 'provider log shows no change order accepted', 3);
+throws('resolve needs evidence', fn () => $unc->resolve(false, '', 3, 'pc-u#1'));
+throws('resolve needs the exact dispatched attempt', fn () => $unc->resolve(false, 'evidence', 3, 'pc-u#9'));
+$unc->resolve(false, 'provider log shows no change order accepted', 3, 'pc-u#1');
 check('unapplied reconciliation returns to approved', $unc->status() === 'approved');
 check('unapplied resolution discards the stale attempt', $unc->dispatchedAttempt() === null);
 $unc->dispatch();
 throws('result bound to the discarded attempt refused', fn () => $unc->recordResult(OperationResult::applied('hosting.downgrade', 'r', 4, 'acct-1', null, 'pc-u#1'), 4));
 $unc->recordResult(OperationResult::timeout('hosting.downgrade', 4, 'acct-1', 'pc-u#2'), 4);
-$unc->resolve(true, 'provider confirms downgrade rcpt-x', 5);
+throws('replayed resolve for the earlier attempt refused', fn () => $unc->resolve(false, 'evidence', 5, 'pc-u#1'));
+check('replayed resolve leaves the newer dispatch uncertain', $unc->status() === 'uncertain' && $unc->dispatchedAttempt() === 'pc-u#2');
+$unc->resolve(true, 'provider confirms downgrade rcpt-x', 5, 'pc-u#2');
 check('confirmed reconciliation marks applied', $unc->status() === 'applied');
+throws('duplicate resolve callback refused', fn () => $unc->resolve(true, 'evidence', 6, 'pc-u#2'));
+
+// the same replay guard for an independently dispatched change
+$rs = new PlanChange('pc-rs', 'acct-1', 'downgrade', $small, 'client-42', 0, 0);
+$rs->approve(['disk_mb' => 1], 1);
+$rs->dispatch();
+$rs->recordResult(OperationResult::timeout('hosting.downgrade', 2, 'acct-1', 'pc-rs#1'), 2);
+$rs->resolve(false, 'provider shows no change order', 3, 'pc-rs#1');
+check('bound resolve returns to approved', $rs->status() === 'approved' && $rs->dispatchedAttempt() === null);
+$rs->dispatch();
+$rs->recordResult(OperationResult::timeout('hosting.downgrade', 5, 'acct-1', 'pc-rs#2'), 5);
+throws('stale resolve callback cannot clear the newer dispatch', fn () => $rs->resolve(false, 'Confirmed absent for attempt replay#1', 6, 'pc-rs#1'));
+check('stale resolve leaves dispatch in flight uncertain', $rs->status() === 'uncertain' && $rs->dispatchedAttempt() === 'pc-rs#2');
+$rs->resolve(true, 'provider confirms change rcpt-z', 7, 'pc-rs#2');
+check('attempt-bound resolve applies', $rs->status() === 'applied');
 
 $ren = new PlanChange('pc-4', 'acct-1', 'renewal', $big, 'staff-amy', 100, 200);
 $ren->cancel('staff-amy', 150);
@@ -223,7 +249,7 @@ $a0->provisionResult(OperationResult::applied('hosting.provision', 'rcpt-noident
 check('applied provision without resource id is not activated', $a0->status() === 'failed' && $a0->providerRef() === null);
 check('identity-less provision is held for reconciliation', $a0->awaitingReconciliation());
 throws('identity-less provision cannot retry or cancel', fn () => $a0->retry('s', 6));
-$a0->reconcileTimeout('staff-amy', 6, true, '20i-pkg-99', 'provider reports the resource and its id');
+$a0->reconcileTimeout('staff-amy', 6, true, '20i-pkg-99', 'provider reports the resource and its id', 'acct-14#1');
 check('reconciliation supplies identity and activates', $a0->status() === 'active' && $a0->providerRef() === '20i-pkg-99');
 
 $a2 = new HostingAccount('acct-10', pkg(), 'client-42', 0);
@@ -232,15 +258,16 @@ $a2->provisionResult(OperationResult::timeout('hosting.provision', 5, 'acct-10',
 check('timeout yields honest failed with unresolved operation', $a2->status() === 'failed' && $a2->awaitingReconciliation());
 throws('timeout retry needs reconciliation', fn () => $a2->retry('staff-amy', 10));
 throws('unresolved order cannot cancel as never-provisioned', fn () => $a2->cancelOrder('client-42', 10));
-throws('reconcile needs evidence', fn () => $a2->reconcileTimeout('staff-amy', 10, false, null, ''));
-$a2->reconcileTimeout('staff-amy', 10, false, null, 'provider package list shows no account');
+throws('reconcile needs evidence', fn () => $a2->reconcileTimeout('staff-amy', 10, false, null, '', 'acct-10#1'));
+throws('reconcile needs the exact unresolved attempt', fn () => $a2->reconcileTimeout('staff-amy', 10, false, null, 'evidence', 'acct-10#9'));
+$a2->reconcileTimeout('staff-amy', 10, false, null, 'provider package list shows no account', 'acct-10#1');
 check('reconciled timeout retries to pending', !$a2->awaitingReconciliation() && ($a2->retry('staff-amy', 10) === null) && $a2->status() === 'pending');
 
 $a6 = new HostingAccount('acct-12', pkg(), 'client-42', 0);
 $a6->beginProvisioning('s', 1);
 $a6->provisionResult(OperationResult::timeout('hosting.provision', 5, 'acct-12', 'acct-12#1'), 's', 5);
-throws('adoption needs the provider resource id', fn () => $a6->reconcileTimeout('staff-amy', 6, true, null, 'provider shows the account exists'));
-$a6->reconcileTimeout('staff-amy', 6, true, '20i-pkg-88', 'provider shows the account exists');
+throws('adoption needs the provider resource id', fn () => $a6->reconcileTimeout('staff-amy', 6, true, null, 'provider shows the account exists', 'acct-12#1'));
+$a6->reconcileTimeout('staff-amy', 6, true, '20i-pkg-88', 'provider shows the account exists', 'acct-12#1');
 check('reconciled remote resource is adopted not recreated', $a6->status() === 'active' && $a6->providerRef() === '20i-pkg-88');
 
 $a5 = new HostingAccount('acct-11', pkg(), 'client-42', 0);
@@ -296,7 +323,7 @@ $a->resumeResult(OperationResult::timeout('hosting.resume', 800, 'acct-9', $a->p
 check('resume timeout stays resuming and unresolved', $a->status() === 'resuming' && $a->awaitingReconciliation());
 throws('a delayed result for the timed-out attempt cannot apply', fn () => $a->resumeResult(OperationResult::applied('hosting.resume', 'rcpt-late', 805, 'acct-9', null, $a->pendingAttempt()), 's', 805));
 check('unresolved window mutates nothing', $a->status() === 'resuming' && $a->awaitingReconciliation());
-$a->reconcileTimeout('staff-amy', 810, false, null, 'provider shows account still suspended');
+$a->reconcileTimeout('staff-amy', 810, false, null, 'provider shows account still suspended', 'acct-9#5');
 check('unapplied resume reconciliation restores suspended', $a->status() === 'suspended' && !$a->awaitingReconciliation());
 $a->beginResume('staff-amy', 820);
 throws('a stale receipt of the reconciled attempt cannot satisfy the retry', fn () => $a->resumeResult(OperationResult::applied('hosting.resume', 'rcpt-late', 815, 'acct-9', null, 'acct-9#5'), 's', 820));
@@ -311,11 +338,11 @@ $a->suspend('billing', 900, 'third lapse');
 $a->suspendResult(OperationResult::timeout('hosting.suspend', 900, 'acct-9', $a->pendingAttempt()), 'staff-amy', 900);
 check('suspend timeout stays suspending and unresolved', $a->status() === 'suspending' && $a->awaitingReconciliation());
 throws('a late applied suspend cannot settle while unresolved', fn () => $a->suspendResult(OperationResult::applied('hosting.suspend', 'rcpt-late-s', 905, 'acct-9', null, $a->pendingAttempt()), 's', 905));
-$a->reconcileTimeout('staff-amy', 910, false, null, 'provider shows account still active');
+$a->reconcileTimeout('staff-amy', 910, false, null, 'provider shows account still active', 'acct-9#8');
 check('unapplied suspend reconciliation restores active', $a->status() === 'active');
 $a->suspend('billing', 920, 'fourth lapse');
 $a->suspendResult(OperationResult::timeout('hosting.suspend', 920, 'acct-9', $a->pendingAttempt()), 'staff-amy', 920);
-$a->reconcileTimeout('staff-amy', 930, true, null, 'provider confirms suspended');
+$a->reconcileTimeout('staff-amy', 930, true, null, 'provider confirms suspended', 'acct-9#9');
 check('confirmed suspend reconciliation marks suspended', $a->status() === 'suspended');
 $a->beginResume('staff-amy', 940);
 $a->resumeResult(OperationResult::applied('hosting.resume', 'rcpt-r3', 940, 'acct-9', null, $a->pendingAttempt()), 'staff-amy', 940);
@@ -338,7 +365,7 @@ $a->deprovisionResult(OperationResult::timeout('hosting.deprovision', 918, 'acct
 check('deprovision timeout stays deprovisioning unresolved', $a->status() === 'deprovisioning' && $a->awaitingReconciliation());
 throws('a late applied deprovision cannot reach terminal while unresolved', fn () => $a->deprovisionResult(OperationResult::applied('hosting.deprovision', 'rcpt-late-d', 918, 'acct-9', null, $deprovAttempt), 's', 918));
 check('unresolved deprovision mutates nothing', $a->status() === 'deprovisioning' && $a->awaitingReconciliation());
-$a->reconcileTimeout('staff-ben', 919, false, null, 'provider shows account still present');
+$a->reconcileTimeout('staff-ben', 919, false, null, 'provider shows account still present', $deprovAttempt);
 check('unapplied deprovision arms a fresh attempt', $a->status() === 'deprovisioning' && !$a->awaitingReconciliation() && $a->pendingAttempt() !== null && $a->pendingAttempt() !== $deprovAttempt);
 throws('stale receipt of the failed deprovision attempt refused', fn () => $a->deprovisionResult(OperationResult::applied('hosting.deprovision', 'rcpt-late-d', 918, 'acct-9', null, $deprovAttempt), 's', 919));
 $a->deprovisionResult(OperationResult::applied('hosting.deprovision', 'rcpt-6', 920, 'acct-9', null, $a->pendingAttempt()), 'staff-ben', 920);
@@ -351,8 +378,47 @@ $a8 = acct();
 $a8->requestCancellation('staff-amy', 100);
 $a8->approveDeprovision('staff-ben', true, 110);
 $a8->deprovisionResult(OperationResult::timeout('hosting.deprovision', 120, 'acct-1', $a8->pendingAttempt()), 'staff-ben', 120);
-$a8->reconcileTimeout('staff-ben', 130, true, null, 'provider confirms removal complete');
+$a8->reconcileTimeout('staff-ben', 130, true, null, 'provider confirms removal complete', 'acct-1#2');
 check('confirmed deprovision reconciliation marks deprovisioned', $a8->status() === 'deprovisioned' && $a8->terminal());
+
+// a replayed reconcile for an earlier attempt can never clear a newer dispatch
+$rp = new HostingAccount('acct-30', pkg(), 'client-42', 0);
+$rp->beginProvisioning('staff-amy', 1);
+$rp->provisionResult(OperationResult::timeout('hosting.provision', 5, 'acct-30', 'acct-30#1'), 's', 5);
+$rp->reconcileTimeout('staff-amy', 6, false, null, 'provider confirms nothing created', 'acct-30#1');
+$rp->retry('staff-amy', 7);
+$rp->beginProvisioning('staff-amy', 8);
+$rp->provisionResult(OperationResult::timeout('hosting.provision', 10, 'acct-30', 'acct-30#2'), 's', 10);
+throws('replayed reconcile for the earlier attempt refused', fn () => $rp->reconcileTimeout('staff-amy', 11, false, null, 'Confirmed absent for attempt replay#1', 'acct-30#1'));
+check('replayed reconcile leaves the newer attempt unresolved', $rp->status() === 'failed' && $rp->awaitingReconciliation() && $rp->pendingAttempt() === 'acct-30#2');
+throws('the still-unknown attempt blocks cancellation', fn () => $rp->cancelOrder('client-42', 12));
+throws('reconcile of a foreign attempt refused', fn () => $rp->reconcileTimeout('staff-amy', 12, false, null, 'evidence', 'acct-30#9'));
+$rp->reconcileTimeout('staff-amy', 13, false, null, 'provider confirms nothing created', 'acct-30#2');
+check('bound reconcile resolves the newer attempt', !$rp->awaitingReconciliation() && $rp->pendingAttempt() === null);
+throws('duplicate reconcile callback refused', fn () => $rp->reconcileTimeout('staff-amy', 14, false, null, 'dup', 'acct-30#2'));
+
+// a failed deprovision is a recorded outcome, not an armed request
+$af = acct();
+$af->requestCancellation('staff-amy', 100);
+$af->approveDeprovision('staff-ben', true, 110);
+$failAttempt = $af->pendingAttempt();
+$af->deprovisionResult(OperationResult::failed('hosting.deprovision', 'provider refuses deletion while services are attached', false, 120, 'acct-1', $failAttempt), 'staff-ben', 120);
+check('unsafe deprovision failure is a distinct unarmed state', $af->status() === 'deprovision_failed' && $af->pendingAttempt() === null && !$af->terminal());
+throws('retry refused when the provider marked it unsafe', fn () => $af->retryDeprovision('staff-ben', 121));
+throws('stale result refused against a failed deprovision', fn () => $af->deprovisionResult(OperationResult::applied('hosting.deprovision', 'late', 121, 'acct-1', null, $failAttempt), 's', 121));
+check('refused retry mutates nothing', $af->status() === 'deprovision_failed' && $af->pendingAttempt() === null);
+throws('retryDeprovision only valid from the failed state', fn () => acct()->retryDeprovision('s', 1));
+
+$af2 = acct();
+$af2->requestCancellation('staff-amy', 100);
+$af2->approveDeprovision('staff-ben', true, 110);
+$af2->deprovisionResult(OperationResult::failed('hosting.deprovision', 'provider temporarily busy', true, 120, 'acct-1', $af2->pendingAttempt()), 'staff-ben', 120);
+check('eligible failure is recorded, not armed', $af2->status() === 'deprovision_failed' && $af2->pendingAttempt() === null);
+$af2->retryDeprovision('staff-ben', 121);
+check('guarded retry mints a fresh attempt', $af2->status() === 'deprovisioning' && $af2->pendingAttempt() === 'acct-1#3');
+throws('the failed attempt receipt cannot satisfy the retry', fn () => $af2->deprovisionResult(OperationResult::applied('hosting.deprovision', 'late', 122, 'acct-1', null, 'acct-1#2'), 's', 122));
+$af2->deprovisionResult(OperationResult::applied('hosting.deprovision', 'rcpt-done', 122, 'acct-1', null, 'acct-1#3'), 'staff-ben', 122);
+check('guarded retry completes deprovisioning', $af2->status() === 'deprovisioned' && $af2->terminal());
 
 // active account cannot be order-cancelled
 throws('provisioned account not order-cancellable', fn () => acct()->cancelOrder('c', 1));

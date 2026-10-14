@@ -22,6 +22,15 @@ use InvalidArgumentException;
 final readonly class HostingPackage
 {
     /**
+     * Validated quota map — a copy detached from caller-held references,
+     * so mutating the caller's array after construction can never change
+     * an approved package's quotas.
+     *
+     * @var array<string,?int>
+     */
+    public array $limits;
+
+    /**
      * @param array<string,?int> $limits named quotas; null = not metered,
      *        integer = units. Negative values and empty names rejected.
      */
@@ -30,7 +39,7 @@ final readonly class HostingPackage
         public string $label,
         public string $providerPackageType,
         public string $region,
-        public array $limits,
+        array $limits,
     ) {
         foreach (['sku' => $sku, 'label' => $label, 'providerPackageType' => $providerPackageType, 'region' => $region] as $f => $v) {
             if (trim($v) === '') {
@@ -43,6 +52,7 @@ final readonly class HostingPackage
         if ($limits === []) {
             throw new InvalidArgumentException('A package must declare at least one limit.');
         }
+        $clean = [];
         foreach ($limits as $name => $value) {
             if (trim((string) $name) === '' || preg_match('/unlimited|unmetered/i', (string) $name)) {
                 throw new InvalidArgumentException("Invalid limit name '{$name}'.");
@@ -50,7 +60,9 @@ final readonly class HostingPackage
             if ($value !== null && (!is_int($value) || $value < 0)) {
                 throw new InvalidArgumentException("Limit '{$name}' must be a non-negative integer or null (not metered).");
             }
+            $clean[$name] = $value;
         }
+        $this->limits = $clean;
     }
 
     /** Declared quota for one limit; null = the plan does not meter it. */

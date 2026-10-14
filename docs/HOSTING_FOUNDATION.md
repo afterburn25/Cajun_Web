@@ -13,10 +13,10 @@ sync and client/staff views are the integration gate.
 
 | File | Role |
 | --- | --- |
-| `foundation/hosting/HostingPackage.php` | Our SKU → concrete `providerPackageType` + region + named integer quotas. `null` quota = "not metered by this plan". Names containing `unlimited`/`unmetered` and negative/non-integer quotas are refused — an unbounded promise can never be stored. `fits($usage)` requires every observation to be a non-negative integer and only *declared* `null` means unmetered: an observed metric the package never declared cannot prove a fit, so it is refused rather than silently passed. |
+| `foundation/hosting/HostingPackage.php` | Our SKU → concrete `providerPackageType` + region + named integer quotas. `null` quota = "not metered by this plan". Names containing `unlimited`/`unmetered` and negative/non-integer quotas are refused — an unbounded promise can never be stored. Validated quotas are copied into a fresh reference-free array, so caller-held PHP references can never mutate a stored package. `fits($usage)` requires every observation to be a non-negative integer and only *declared* `null` means unmetered: an observed metric the package never declared cannot prove a fit, so it is refused rather than silently passed. |
 | `foundation/hosting/OperationResult.php` | Recorded outcome of one real provider operation: `applied` (receipt required) / `failed` (named error + retryable flag) / `timeout`. Timeout is a distinct honest "unknown" — retrying a timed-out create is the classic duplicate-package bug, so timeouts are never marked retryable. Every result carries the operation name, the subject it resolves, and optionally the immutable `attemptRef` minted at dispatch — consumers bind on all three, so a stale receipt from an earlier attempt is refused without mutation. `receipt` is the provider's operation reference and `resourceRef` separately carries a verified provider resource id only when actually reported. |
 | `foundation/hosting/StackCpGrant.php` | Control-panel access grant: account, grantee, `manage`/`read` level, issuer, optional bounded expiry, revocation. A grant cannot authorize before its issuance time, at/after expiry, or once revoked. Panel access is always an explicit grant. |
-| `foundation/hosting/PlanChange.php` | Queued `upgrade`/`downgrade`/`renewal` with requester/effective-at. `approve()` is a *pre-dispatch* decision: it enforces the effective time and, for downgrades, requires an observed reading for every metered target limit that provably fits — a partial observation cannot prove the unmeasured quotas fit, so it is rejected outright, and refusal happens before any provider call. `dispatch()` mints an immutable attempt identity and closes cancellation — once a provider call may be in flight the requester can no longer withdraw. `recordResult()` accepts only a result bound to the expected operation, account and dispatched attempt, so a receipt from an earlier change can never satisfy a later one. Timeout → `uncertain`, closed only by `resolve()` with reconciliation evidence; an unapplied resolution returns to `approved` and discards the stale attempt so re-dispatch mints a fresh identity. |
+| `foundation/hosting/PlanChange.php` | Queued `upgrade`/`downgrade`/`renewal` with requester/effective-at. `approve()` is a *pre-dispatch* decision: it enforces the effective time and, for downgrades, requires an observed reading for every metered target limit that provably fits — a partial observation cannot prove the unmeasured quotas fit, so it is rejected outright, and refusal happens before any provider call. `dispatch()` mints an immutable attempt identity and closes cancellation — once a provider call may be in flight the requester can no longer withdraw. `recordResult()` accepts only a result bound to the expected operation, account and dispatched attempt, so a receipt from an earlier change can never satisfy a later one. Timeout → `uncertain`, closed only by `resolve()` with reconciliation evidence that names the exact dispatched attempt — a replayed callback for an earlier attempt is refused before any mutation, so it can never clear a newer in-flight dispatch. An unapplied resolution returns to `approved` and discards the stale attempt so re-dispatch mints a fresh identity. |
 | `foundation/hosting/HostingAccount.php` | The lifecycle state machine (below) with attributed history and bound, recorded operation results. |
 
 ## Lifecycle
@@ -25,6 +25,7 @@ sync and client/staff views are the integration gate.
 pending → provisioning → active ⇄ suspending ⇄ suspended ⇄ resuming
 pending/provisioning → failed → retry() → pending
 active/suspended → cancellation_requested → deprovisioning → deprovisioned
+deprovisioning → deprovision_failed → retryDeprovision() → deprovisioning
 pending/failed → cancelled            (pre-provisioning withdrawal only)
 ```
 
@@ -53,9 +54,17 @@ Protections built into the state machine:
   create may have landed), cannot be retried, and accepts no further
   result — a delayed response for the timed-out attempt can never
   rewrite later or terminal state; only `reconcileTimeout()` with
-  evidence closes it. Reconciliation either adopts a confirmed remote
+  evidence closes it, and the callback must name the exact unresolved
+  `acct#n` attempt — a replayed reconcile for an earlier attempt is
+  refused before any mutation, so it can never clear a newer dispatch
+  still in flight. Reconciliation either adopts a confirmed remote
   resource (`resourceRef` required — adopted, never recreated) or
   confirms nothing landed so retry is safe.
+- **Failed deprovision is not an armed request** — a `failed` deprovision
+  result lands in `deprovision_failed` with **no** attempt in flight.
+  Only the explicit `retryDeprovision()` decision arms a fresh `acct#n`
+  dispatch, and only when the provider marked the failure retryable —
+  a `retryable:false` outcome can never re-dispatch the destructive call.
 - **Grace windows** — `suspend()` is refused before the recorded
   `graceUntil` deadline.
 - **Dispute protection** — `suspend()` is refused while a billing
@@ -91,17 +100,21 @@ Protections built into the state machine:
 
 ## Tests
 
-`tests/hosting/run.php` — 142 synthetic checks covering package
-validation (typed/bounded observations, absent-vs-unmetered), bound
-operation results, grant issuance/expiry/revocation boundaries, queued
-plan changes (pre-dispatch downgrade refusal with complete-usage
-requirement, early-dispatch refusal, dispatch/attempt binding,
-in-flight cancellation refusal, stale-receipt rejection across changes,
-misbound results, uncertainty resolution), the full account lifecycle
-with intent/confirmed split, attempt-bound results, unresolved-timeout
-reconciliation and adoption, identity-required activation, late-result
-refusal while unresolved, grace/dispute protections, non-empty
-two-actor decommission, and attributed history. Fixtures only; runs
-clean under `php -n`. CI:
+`tests/hosting/run.php` — 168 synthetic checks covering package
+validation (typed/bounded observations, absent-vs-unmetered,
+caller-reference detachment), bound operation results, grant
+issuance/expiry/revocation boundaries, queued plan changes
+(pre-dispatch downgrade refusal with complete-usage requirement,
+early-dispatch refusal, dispatch/attempt binding, in-flight
+cancellation refusal, stale-receipt rejection across changes, misbound
+results, attempt-bound uncertainty resolution with replayed-callback
+refusal), the full account lifecycle with intent/confirmed split,
+attempt-bound results and reconciliations (replayed reconcile for an
+earlier attempt refused), unresolved-timeout reconciliation and
+adoption, identity-required activation, late-result refusal while
+unresolved, grace/dispute protections, non-empty two-actor
+decommission, failed-deprovision holding with guarded
+`retryDeprovision()` (retryable and non-retryable cases), and
+attributed history. Fixtures only; runs clean under `php -n`. CI:
 `.github/workflows/hosting.yml` on official PHP 8.2/8.4 with
 `--network none`.

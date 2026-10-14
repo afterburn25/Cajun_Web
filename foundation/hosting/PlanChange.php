@@ -190,23 +190,29 @@ final class PlanChange
     }
 
     /**
-     * Close an uncertain change with reconciliation evidence. When the
-     * provider confirms the change landed it is `applied`; when it
-     * confirms nothing happened the change returns to `approved` and the
-     * stale attempt is discarded, so the caller can `dispatch()` a fresh
-     * attempt or cancel deliberately.
+     * Close an uncertain change with reconciliation evidence. The caller
+     * must name the exact dispatched attempt its evidence covers — a
+     * resolution naming an earlier or foreign attempt is refused before
+     * any mutation, so a replayed callback can never clear a newer
+     * dispatch. When the provider confirms the change landed it is
+     * `applied`; when it confirms nothing happened the change returns to
+     * `approved` and the stale attempt is discarded, so the caller can
+     * `dispatch()` a fresh attempt or cancel deliberately.
      */
-    public function resolve(bool $remoteApplied, string $evidence, int $at): void
+    public function resolve(bool $remoteApplied, string $evidence, int $at, string $attemptRef): void
     {
         if ($this->status !== self::UNCERTAIN) {
             throw new InvalidArgumentException('Only an uncertain change can be resolved.');
+        }
+        if (trim($attemptRef) === '' || !hash_equals($this->dispatchedAttempt ?? '', $attemptRef)) {
+            throw new InvalidArgumentException('Resolution must name the exact dispatched attempt.');
         }
         if (trim($evidence) === '') {
             throw new InvalidArgumentException('Resolving an uncertain change needs reconciliation evidence.');
         }
         $this->dispatchedAttempt = null;
         $this->status = $remoteApplied ? self::APPLIED : self::APPROVED;
-        $this->reason = 'Reconciled: ' . $evidence;
+        $this->reason = 'Reconciled attempt ' . $attemptRef . ': ' . $evidence;
     }
 
     /** The requester may withdraw before a provider call may have begun. */

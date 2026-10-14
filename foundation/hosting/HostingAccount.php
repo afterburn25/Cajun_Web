@@ -16,7 +16,8 @@ require_once __DIR__ . '/OperationResult.php';
  *
  * pending → provisioning → active ⇄ suspending/suspended ⇄ resuming.
  * pending/provisioning → failed → retry() → pending (never auto-retries).
- * active/suspended → cancellation_requested → deprovisioning → deprovisioned.
+ * active/suspended → cancellation_requested → deprovisioning → deprovisioned;
+ * deprovisioning → deprovision_failed → retryDeprovision() → deprovisioning.
  * pending → cancelled (pre-provisioning withdrawal only).
  *
  * Protections:
@@ -36,7 +37,13 @@ require_once __DIR__ . '/OperationResult.php';
  *    result is accepted — a delayed response for the timed-out attempt
  *    can never rewrite later or terminal state. Only `reconcileTimeout()`
  *    with evidence decides whether an existing remote resource is adopted
- *    or the call provably never landed.
+ *    or the call provably never landed — and the callback itself must
+ *    name the exact unresolved attempt, so a replayed reconcile for an
+ *    earlier attempt can never clear a newer dispatch.
+ *  - A failed deprovision is a recorded outcome, not an armed request:
+ *    it lands in `deprovision_failed` with no attempt in flight. Only the
+ *    explicit `retryDeprovision()` decision arms a fresh attempt — and
+ *    only when the provider marked the failure retryable.
  *  - Every dispatch mints an immutable attempt identity (`acct#n`),
  *    exposed through `pendingAttempt()`. A recorded result must carry
  *    that exact `attemptRef`, so a stale receipt from an earlier attempt
@@ -68,6 +75,7 @@ final class HostingAccount
     public const FAILED = 'failed';
     public const CANCELLATION_REQUESTED = 'cancellation_requested';
     public const DEPROVISIONING = 'deprovisioning';
+    public const DEPROVISION_FAILED = 'deprovision_failed';
     public const DEPROVISIONED = 'deprovisioned';
     public const CANCELLED = 'cancelled';
 
@@ -83,6 +91,8 @@ final class HostingAccount
     private ?string $primaryDomain = null;
     private ?string $cancellationRequester = null;
     private ?string $unresolvedOperation = null;
+    private ?string $unresolvedAttempt = null;
+    private ?bool $deprovisionRetryable = null;
     private int $attempts = 0;
     private ?string $pendingAttempt = null;
     private bool $disputeOpen = false;
@@ -181,6 +191,7 @@ final class HostingAccount
         if ($result->ok()) {
             if ($result->resourceRef === null || trim($result->resourceRef) === '') {
                 $this->unresolvedOperation = self::OP_PROVISION;
+                $this->unresolvedAttempt = $this->pendingAttempt;
                 $this->move(self::FAILED, $actor, $at, 'provider reported success without a resource id — reconcile identity before activating: ' . $result->receipt);
                 return;
             }
@@ -189,6 +200,7 @@ final class HostingAccount
             $this->move(self::ACTIVE, $actor, $at, 'provisioned: ' . $result->receipt);
         } elseif ($result->outcome === OperationResult::TIMEOUT) {
             $this->unresolvedOperation = self::OP_PROVISION;
+            $this->unresolvedAttempt = $this->pendingAttempt;
             $this->move(self::FAILED, $actor, $at, 'provider timeout — reconcile before any retry');
         } else {
             $this->pendingAttempt = null;
@@ -228,11 +240,18 @@ final class HostingAccount
      *    provider confirms (suspended/active or active/suspended);
      *  - deprovision timed out → confirmed becomes `deprovisioned`,
      *    unconfirmed stays `deprovisioning` for a fresh attempt.
+     *
+     * The callback must name the exact attempt it reconciles — evidence
+     * for an earlier attempt can never clear a newer dispatch that may
+     * still be in flight.
      */
-    public function reconcileTimeout(string $actor, int $at, bool $appliedRemotely, ?string $resourceRef, string $evidence): void
+    public function reconcileTimeout(string $actor, int $at, bool $appliedRemotely, ?string $resourceRef, string $evidence, string $attemptRef): void
     {
-        if ($this->unresolvedOperation === null) {
+        if ($this->unresolvedOperation === null || $this->unresolvedAttempt === null) {
             throw new LogicException('No timed-out operation is awaiting reconciliation.');
+        }
+        if (trim($attemptRef) === '' || !hash_equals($this->unresolvedAttempt, $attemptRef)) {
+            throw new InvalidArgumentException('Reconciliation must name the exact unresolved attempt.');
         }
         if (trim($evidence) === '') {
             throw new InvalidArgumentException('Reconciliation needs provider evidence.');
@@ -242,8 +261,9 @@ final class HostingAccount
         }
         $operation = $this->unresolvedOperation;
         $this->unresolvedOperation = null;
+        $this->unresolvedAttempt = null;
         $this->pendingAttempt = null;
-        $note = 'reconciled ' . $operation . ': ' . $evidence;
+        $note = 'reconciled ' . $operation . ' attempt ' . $attemptRef . ': ' . $evidence;
         if ($appliedRemotely) {
             match ($operation) {
                 self::OP_PROVISION => $this->adoptRemote($resourceRef, $actor, $at, $note),
@@ -338,6 +358,7 @@ final class HostingAccount
             $this->move(self::SUSPENDED, $actor, $at, 'suspended: ' . $result->receipt);
         } elseif ($result->outcome === OperationResult::TIMEOUT) {
             $this->unresolvedOperation = self::OP_SUSPEND;
+            $this->unresolvedAttempt = $this->pendingAttempt;
             $this->move(self::SUSPENDING, $actor, $at, 'suspend timed out — reconcile before assuming either state');
         } else {
             $this->pendingAttempt = null;
@@ -364,6 +385,7 @@ final class HostingAccount
             $this->move(self::ACTIVE, $actor, $at, 'resumed: ' . $result->receipt);
         } elseif ($result->outcome === OperationResult::TIMEOUT) {
             $this->unresolvedOperation = self::OP_RESUME;
+            $this->unresolvedAttempt = $this->pendingAttempt;
             $this->move(self::RESUMING, $actor, $at, 'resume timed out — reconcile before assuming either state');
         } else {
             $this->pendingAttempt = null;
@@ -433,13 +455,32 @@ final class HostingAccount
             $this->move(self::DEPROVISIONED, $actor, $at, 'deprovisioned: ' . $result->receipt);
         } elseif ($result->outcome === OperationResult::TIMEOUT) {
             $this->unresolvedOperation = self::OP_DEPROVISION;
+            $this->unresolvedAttempt = $this->pendingAttempt;
             $this->move(self::DEPROVISIONING, $actor, $at, 'deprovision timed out — reconcile before re-attempting');
         } else {
-            // Re-attempt expected — arm a fresh attempt identity so a stale
-            // result for the failed attempt can never satisfy it.
-            $this->beginAttempt();
-            $this->move(self::DEPROVISIONING, $actor, $at, 'deprovision attempt did not confirm — stays deprovisioning');
+            // A recorded failure is not an armed request: hold the account in
+            // a distinct failed state with no attempt in flight. Only the
+            // explicit retryDeprovision() decision arms a fresh attempt.
+            $this->pendingAttempt = null;
+            $this->deprovisionRetryable = $result->retryable;
+            $this->move(self::DEPROVISION_FAILED, $actor, $at, 'deprovision attempt failed — ' . ($result->retryable ? 'retry permitted via retryDeprovision()' : 'provider marked it unsafe to retry') . ': ' . $result->error);
         }
+    }
+
+    /**
+     * Deliberately re-arm deprovisioning after a recorded failure. Refused
+     * unless the provider's own result marked the failure retryable — a
+     * known-unsafe destructive call can never be re-dispatched by accident.
+     */
+    public function retryDeprovision(string $actor, int $at): void
+    {
+        $this->requireStatus(self::DEPROVISION_FAILED);
+        if ($this->deprovisionRetryable !== true) {
+            throw new LogicException('The provider marked this deprovision failure not safe to retry.');
+        }
+        $this->deprovisionRetryable = null;
+        $this->beginAttempt();
+        $this->move(self::DEPROVISIONING, $actor, $at, 'deprovision retried after eligible failure');
     }
 
     // ── Internals ───────────────────────────────────────────────
