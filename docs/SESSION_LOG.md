@@ -605,6 +605,19 @@ PR #58 at 8905ed1 / run 38438750445 passes all named suites: 677 native (59 temp
 
 Run 38439521027 confirms template create/preview/activation plus native/filesystem/Apache passes, but the custom Playwright wait_for_function evaluates a string in the page and is rejected by the site's existing unsafe-eval prohibition. Replaced that test-only wait with built-in viewport assertions, verified against Playwright's documented locator API. The security policy remains unchanged. Also focus the template navigation link before Escape so the check actually exercises focus return to the menu button. Next: complete the revised browser evidence and release gates.
 
+### 2026-10-13 — Devin A-08 mail-bell adapter contract + self-review hardening
+
+**Request:** "Continue Without Stopping" — proactive self-review of newest foundations plus the A-08 bridge doc.
+
+**Work:**
+- `devin/service-desk` hardening (PR #61): `FulfillmentJob::run()` now requires a live approved `ApprovalRequest` of the same kind whose subject is one of the job's trace links — a bare id or stale/denied request can no longer release an irreversible job; `requeue()` clears stale `nextAttemptAt`. 56 checks.
+- `devin/shared-hosting` hardening (PR #60): `HostingAccount::retry()` refuses after a timeout failure unless reconciliation is explicitly confirmed — unknown-outcome creates can no longer silently re-run into duplicate packages. 61 checks.
+- `devin/mail-bells-adapter`: `docs/MAIL_BELLS_ADAPTER.md` — A-08 unread-mail bell → notification bridge contract; records required canonical extensions (`mail-message` kind; `webmail-message:` sync-id links).
+
+**Tests:** desk 56 + hosting 61 synthetic checks pass on PHP 8.4.25 incl. `php -n`. Adapter doc is docs-only.
+
+**Next:** PR the adapter doc; all contract-feasible work is now delivered — the queue (20+ PRs) awaits Codex sequencing.
+
 ## 2026-10-13 — 1.12.0 template library published and verified
 
 PR #58 merged at c526e960db13246c217f2b9d6f421c17b8d48261, preserving corrected #56 through f3522f6. Exact-main 38441087438: 5026 named checks (677 native, 3084 estimator, 834 HTTP/Chromium, 87 filesystem, 327 Apache, 17 builder). All 16 draft/public assets and tag downloaded/verified; Windows/Linux bytes match; prior 1.11.2 fingerprints unchanged. Homepage pixels retained; real template desktop/mobile screens inspected. Updated current release records/guide/Devin handoff. No live deployment, sending or external provider activation. Next: reviewed A-06 account/configuration/grant adapter from #59 while L-02/L-03 corrections remain independently tracked. The roadmap continues.
@@ -757,6 +770,11 @@ Parent de19a84. Run 38475466282 at candidate de19a84 (tested PR merge 5fe0511) p
 
 Parent 2bd8ed3. Publish a temporary browser-checkpoint artifact immediately after HTTP/Chromium, before the longer recovery/Apache matrix. This exposes native/browser failures promptly while preserving the complete final acceptance artifact and all gates. Save only the synthetic inbox response and finite fixture observations for diagnosis; the fixture records authentication as a label, never its payload. No shipping-source behavior changed. Python syntax and documentation checks pass locally. Next: inspect the browser checkpoint, then require the full final application result before integration.
 
+## 2026-10-13 — A-08 bell contract corrections (#62 review findings)
+
+Request: continue without stopping; the issue #2 handoff comment 6156483996 queued four required corrections to the mail-bell adapter contract on `devin/mail-bells-adapter`. Parent 7c55755.
+
+Rewrote docs/MAIL_BELLS_ADAPTER.md: (1) current-grant filtering must happen inside the feed query before titles/counts — revocation removes the bell entirely, not just its link; (2) the sync-id digest now binds account_id + saved account_revision + folder + uidvalidity + uid, so a settings change structurally kills old links; (3) the truncated digest is a lookup handle only — resolution requires field-by-field full-tuple comparison; (4) badge/feed semantics are explicitly the newest-20 observed window, never an all-unread count, and untested mailboxes contribute nothing. Realigned the producer to the shipped v1.17.0 receiving path (foundation/mail-receiving + site/app/mail — explicit reads, BODY.PEEK, no sync job, no persistent unread state); the unaccepted #68 InboundSync/MailMessage model is now marked reference-only. Added the application-side read-state honesty rule and a no-content-retention rule for the observed-state store (bell titles carry no subject/sender). Docs-only; no shipping code. Next: merge current main, push, note the corrections on the PR.
 ## 2026-10-13 — provider foundation correction pass (HC-07)
 
 Parent feb0ed8 (devin/provider-foundation merged onto main fc3bd89). Implement the six defects Codex reproduced against 0d3f51c and assigned in issue #2 comment 6156483996, scoped to foundation/provider, tests/provider, provider.yml and PROVIDER_FOUNDATION.md only.
