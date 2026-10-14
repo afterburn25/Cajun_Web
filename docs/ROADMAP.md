@@ -1,5 +1,25 @@
 # Approved roadmap and acceptance criteria
 
+## Candidate 1.20.0 — owner 20i connection and recovery acceptance
+
+The next unused version is prepared as **1.20.0**, not published. Source defaults and installer agree; verified published1.19.0 COMPLETE/UPDATE bytes and shims are retained as the22nd supported starting package (1.0.8 and1.1.0 through1.19.0, including1.11.1/1.11.2). UPDATE stages cwp-update-1.20.0, uses target-specific recovery, and retains the permanent structure-1.11.0 mutex. No existing tag or release asset changed.
+
+The new actual1.19 installation/update/recovery/reapplication fixtures preserve nonempty email notices and every earlier record, then prepare owner provider storage, save an encrypted key, retain synthetic uncertain/incomplete check history, recover original files and reapply the candidate. They verify both original private keys and a blank-key edit that decrypts the provider credential after recovery. Apache direct-internal denial and filesystem recovery matrices now include the new provider paths/1.19 baseline. These new recovery cases have syntax-only validation until candidate CI completes.
+
+Prior exact application run38511333232 at6765af5 passed package and native stages and was running HTTP/Chromium when this candidate was prepared; inspect its final evidence rather than infer success. Native provider118 and isolated transport1003 checks per PHP8.2/8.4 at28e4bf2 are downloaded/verified. Independent transport review is complete; owner storage/orchestration/UI review remains requested. Next: inspect browser checkpoint/screenshots, candidate full matrix and review, then merge/test exact main and publish/download-verify only after all gates pass. No live API call, secret extraction or deployment.
+
+## Current transport progress
+
+The fixed 20i cURL transport now has 333 local actual isolated HTTPS checks and32 default/33 unavailable-cURL request/DNS checks. Its expanded PHP8.2/8.4 container matrix and independent review remain pending. The prior120-check probe matrix was downloaded and verified. No provider site/schema/UI changes or real API call. Continue with matrix/review and protected owner persistence under the agreed contract; see PROJECT_STATUS and the probe guide for exact evidence.
+
+## Current provider work — draft PR #74
+
+This branch preserves the published **1.19.0** application source `22a2969692ab5bcc7f35158dcaa5355c623dc821` and its verified publication documentation `b472ed292f1b3e72788f681f4b00d6c9169e162a`. All 16 release downloads and 6,328 exact-main application checks passed; the release boundary is complete. Current provider work continues in [draft PR #74](https://github.com/afterburn25/Cajun_Web/pull/74) with no version reserved or application feature exposed yet.
+
+Devin #43/#71 ancestry through `46b282636ad83b22efe149310755d2d316d909bc` is retained by an ordinary merge. Its corrected canonical suite passes 171 default/no-extension PHP checks. Codex's isolated `foundation/twentyi` probe at `6ced20dc90fe93c37ab82399836d7ab0a3228290` passes 120 named synthetic checks under each runtime. It accepts only the fixed package-list connection, preserves JSON list/object identity, emits finite codes and refuses all general operations. `ProbeOnlyLedger` always refuses claims/records; it is not a durable ledger. The entire `site/` tree remains identical to 1.19.0.
+
+Next: inspect the current PHP 8.2/8.4 matrix and [Devin review request](https://github.com/afterburn25/Cajun_Web/pull/43#issuecomment-6160186656), then implement the real bounded TLS/DNS/proxy/deadline transport, protected owner-only credential storage and audited explicit check/history. Use existing current-session/password/CSRF/revision checks and staff locks. Add actual native concurrency, isolated HTTPS, packaged browser and upgrade/recovery acceptance before exposing a connection form. [Owner API map #73](https://github.com/afterburn25/Cajun_Web/pull/73) informs later inventory and lifecycle work; its response schemas and operation-specific entitlements remain separate acceptance. No additional real API call, secret extraction, payment, provisioning, SSH or deployment is authorized by this integration.
+
 ## Latest verified publication — 1.19.0
 
 [v1.19.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.19.0) is published and freshly downloaded/verified at immutable source/tag `22a2969692ab5bcc7f35158dcaa5355c623dc821` through [PR #72](https://github.com/afterburn25/Cajun_Web/pull/72). Assigned staff see recent email notices from explicit successful newest-20 inbox checks, with separate per-person opened/dismissed state and exact-message POST opening. Current permissions, mailbox grants and saved revisions filter counts/labels before exposure. Private admin/public bells preserve idle expiry, clear stale display and stay absent in client-support pages. No automatic IMAP synchronization or server read-flag writes. [Owner guide](RECENT_EMAIL_NOTICES.md).
@@ -313,3 +333,21 @@ L-01 standalone estimator PR #27 is being integrated with arithmetic/result vali
 
 L-02 review requests ([PR #31](https://github.com/afterburn25/Cajun_Web/pull/31)) and L-03 scheduling on `devin/consultation-scheduling` ([guide](SCHEDULING_FOUNDATION.md)) have isolated contracts: capture/workflow normalization and availability/conflict/booking lifecycle respectively. No forms, storage, mail, fetching or providers yet — application adaptation is a separate agreed step for each.
 L-02 standalone review-request contract on `devin/review-requests` ([guide](REVIEW_REQUESTS_FOUNDATION.md)): capture normalization, consent-aware contacts, legal stage pipeline and human-reviewed findings with labeled evidence. No form, storage, mail or URL fetching yet — application adaptation is a separate agreed step.
+
+## HC-07 development checkpoint
+
+The protected owner profile is now prepared in `site/app/providers` with additive schema/migration modules and a dedicated native PHP8.2/8.4 MariaDB workflow. It supports one 20i live profile, private AES-GCM credential storage bound to installation/profile/environment, password-confirmed current-owner writes, staff-mutex serialization, revision checks and strict atomic audit/history. No installer/base-schema/controller/check/UI call sites expose these modules yet. The generated inventory includes them; the builder explicitly refuses provider-master.key in shipping code. This changes the development site tree, but does not publish a release or change v1.19.0.
+
+Syntax checks pass; native database/key/concurrency fixtures are authored but not yet executed. Do not count them as accepted. The fixture covers schema drift/adoption refusal, owner/support/client/session boundaries, encrypted key context/loss/modes, strict audit rollback, concurrent edits and a revoked writer waiting on the shared lock. Next: inspect native matrix, implement audited finite connection-check orchestration, then integrate owner UI and run packaged fresh/update/recovery acceptance.
+
+Transport db66aa0 has independent Devin review (120 adapter/32 policy/333 actual isolated HTTPS checks). Its first CI matrix failed before PHP due to missing nested output mountpoints. fbecf69 repairs that runner setup; replacement runs38509333705/38509337967 are pending. Reviewed documentation PR73 merged at ceedcfd and is retained here by ordinary merge. No real provider request, Actions-secret extraction, customer data, payment or deployment.
+
+## Current 20i owner UI integration — application acceptance pending
+
+Provider check orchestration at f8668fd passed49 named native checks on each PHP8.2/8.4 runner, alongside69 owner-storage checks. Artifacts from38510249127 were downloaded and inspected. They prove strict intent/result audit, finite outcome mapping, cooldown/hour limits, interrupted processes, DNS-time access/profile races and edits serialized behind current checks. The transport's1003 named checks per runtime were independently downloaded from38509333705; prior fixture/server limitations remain accurately scoped.
+
+This increment wires the 20i connection owner page into the existing staff permission map, CSRF action dispatcher and navigation; adds empty provider storage on fresh install; retains explicit password-confirmed additive setup for existing sites. Saving keys never sends a request. The explicit check shows saved revision/time, historical settings and incomplete/unknown outcomes; service capabilities remain unverified. Private fields are never refilled. No URL/CA/transport configuration comes from HTTP.
+
+New packaged HTTP/Chromium fixtures use the existing server-only auto-prepend seam plus an actual loopback HTTPS server. The seam asserts production cURL options before changing only the test destination and CA, and refuses unrecognized DNS. It is outside deployment. Syntax and generated inventory checks are local; combined database/browser/installer acceptance is pending and no screenshots have yet been inspected for this UI. No new release version is reserved, published1.19.0 stays immutable, and no real20i request or secret extraction occurs.
+
+Next: inspect application/native/transport matrices; resolve independent owner-storage and orchestration review; inspect actual desktop/320px screenshots; add latest1.19 upgrade/recovery/private-key retention acceptance before preparing a new release. Continue feasible roadmap work without a release-boundary stop.
