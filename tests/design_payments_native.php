@@ -28,9 +28,10 @@ function dp_worker(string $mode,int $actor,int $job,int $client,int $id,string $
 }
 function dp_finish(array $worker):string{[$p,$pipes]=$worker;fclose($pipes[0]);$out=stream_get_contents($pipes[1]);$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);if(proc_close($p)!==0||$err!=='')throw new RuntimeException('Worker failed: '.$err);return $out;}
 if(($argv[1]??'')==='worker'){
-    if($argv[2]==='publish')dp_staff((int)$argv[3]);else dp_client((int)$argv[5]);$data=json_decode(base64_decode($argv[8],true),true,20,JSON_THROW_ON_ERROR);echo "ready\n";fflush(STDOUT);
+    if(in_array($argv[2],['publish','issue'],true))dp_staff((int)$argv[3]);else dp_client((int)$argv[5]);$data=json_decode(base64_decode($argv[8],true),true,20,JSON_THROW_ON_ERROR);echo "ready\n";fflush(STDOUT);
     try{
         if($argv[2]==='publish')$r=design_payments_publish((int)$argv[4],(int)$argv[5],$argv[6],$argv[7],$data);
+        elseif($argv[2]==='issue')$r=design_payments_issue((int)$argv[4],(int)$argv[5],$argv[6],$argv[7],$data['schedule'],$data['fingerprint'],$data['stage']);
         else $r=design_payments_decide((int)$argv[4],(int)$argv[5],$argv[6],$argv[7],$data['schedule'],$data['fingerprint'],$data['choice'],$data['comment']);
         echo $r['replayed']?'replay':'new';
     }catch(InvalidArgumentException|RuntimeException|LogicException|JsonException $error){if($error instanceof PDOException)throw $error;echo 'denied';}exit;
@@ -83,5 +84,6 @@ try{
     dp_ok('Financial module does not change existing project fields',$original===design_payments_json(all('SELECT * FROM '.table('studio_jobs').' ORDER BY id')));
     dp_ok('Consent creates no invoice charge or provider record',(int)query('SELECT COUNT(*) FROM '.table('studio_invoices'))->fetchColumn()===0&&(int)query('SELECT COUNT(*) FROM '.table('payment_attempts'))->fetchColumn()===0&&(int)query('SELECT COUNT(*) FROM '.table('provider_profiles'))->fetchColumn()===0);
     $audit=design_payments_json(all('SELECT * FROM '.table('audit')));dp_ok('General audit excludes financial text and passwords',!str_contains($audit,'Client financial terms')&&!str_contains($audit,$password));
+    require __DIR__.'/design_payments_invoice_native.php';
 }catch(Throwable $error){$checks[]=['name'=>'Unexpected failure: '.$error->getMessage(),'passed'=>false];fwrite(STDERR,(string)$error.PHP_EOL);}
-$passed=!in_array(false,array_column($checks,'passed'),true);file_put_contents(__DIR__.'/../qa/design-payments-native-results.json',json_encode(['passed'=>$passed,'scope'=>'Synthetic MariaDB financial offers and consent; authority, immutable history, concurrency, replay and rollback. No HTTP/browser, invoice issuance or gateway acceptance.','php'=>PHP_VERSION,'checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));echo ($passed?'PASS':'FAIL').': '.count($checks).' native financial checks'.PHP_EOL;exit($passed?0:1);
+$passed=!in_array(false,array_column($checks,'passed'),true);file_put_contents(__DIR__.'/../qa/design-payments-native-results.json',json_encode(['passed'=>$passed,'scope'=>'Synthetic MariaDB financial offers, consent and unique obligation invoices; existing ledger, authority, immutable history, concurrency, replay and rollback. No HTTP/browser or gateway acceptance.','php'=>PHP_VERSION,'checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));echo ($passed?'PASS':'FAIL').': '.count($checks).' native financial checks'.PHP_EOL;exit($passed?0:1);

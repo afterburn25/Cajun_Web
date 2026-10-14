@@ -1,5 +1,5 @@
 <?php
-/** Native immutable offers and explicit financial consent. No invoice or gateway dispatch. */
+/** Native immutable offers, explicit financial consent and retained issuance; no gateway dispatch. */
 declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/billing/payments.php';
@@ -55,11 +55,13 @@ function design_payments_source(array $job,DesignPaymentSchedule $schedule):void
 /** Validate a transition without looking up today's proposal or permissions for historical events. */
 function design_payments_transition(array $state,array $event):array{
     $payload=$event['payload'];$kind=$event['kind'];
+    if($kind==='issued')return design_payment_invoice_transition($state,$event);
+    if(($state['issued']??[])&&in_array($kind,['offered','withdrawn'],true))throw new RuntimeException('Issued financial terms are frozen. A reviewed amendment policy is required.');
     if($kind==='offered'){
         if($event['actor_type']!=='staff')throw new RuntimeException('Invalid financial publisher.');
         $schedule=DesignPaymentSchedule::fromArray($payload);$data=$schedule->data();
         if($data['id']!==$event['id']||$data['project_id']!==$event['project_id']||$data['client_id']!==$event['client_id'])throw new RuntimeException('Financial snapshot binding mismatch.');
-        return ['schedule'=>$schedule,'status'=>'offered'];
+        return ['schedule'=>$schedule,'status'=>'offered','consent_id'=>null,'issued'=>[]];
     }
     if(!in_array($kind,['accepted','declined','withdrawn'],true)||array_keys($payload)!==['schedule_id','schedule_sha256','comment']||!$state['schedule'])throw new RuntimeException('Invalid financial decision.');
     $schedule=$state['schedule'];
@@ -68,7 +70,7 @@ function design_payments_transition(array $state,array $event):array{
     if($kind==='withdrawn'){
         if($event['actor_type']!=='staff'||!in_array($state['status'],['offered','accepted'],true))throw new RuntimeException('This financial offer cannot be withdrawn.');
     }elseif($event['actor_type']!=='client'||$event['actor_id']!==$event['client_id']||$state['status']!=='offered')throw new RuntimeException('Only the current client can decide an undecided financial offer.');
-    return ['schedule'=>$schedule,'status'=>$kind];
+    return ['schedule'=>$schedule,'status'=>$kind,'consent_id'=>$kind==='accepted'?$event['id']:null,'issued'=>[]];
 }
 function design_payments_validate(array $job,int $page=0):array{
     if($page<0||$page>410)throw new InvalidArgumentException('Financial history page unavailable.');
@@ -77,7 +79,7 @@ function design_payments_validate(array $job,int $page=0):array{
     $anchor=one('SELECT * FROM '.table('design_payment_heads').' WHERE id=?',[$job['id']]);
     if(($count===0&&$anchor)||($count>0&&(!$anchor||(int)$anchor['event_count']!==$count||(int)$anchor['retained_bytes']!==$bytes)))throw new RuntimeException('Financial history no longer matches its saved head.');
     $pages=max(1,(int)ceil($count/10));$selected=$page===0?$pages-1:$page-1;if($selected<0||$selected>=$pages)throw new InvalidArgumentException('Financial history page unavailable.');
-    $state=['schedule'=>null,'status'=>'none'];$previous=str_repeat('0',64);$expected=design_payments_initial($job);$lastTime=0;$lastId='';$items=[];$seen=0;
+    $state=['schedule'=>null,'status'=>'none','consent_id'=>null,'issued'=>[]];$previous=str_repeat('0',64);$expected=design_payments_initial($job);$lastTime=0;$lastId='';$items=[];$seen=0;
     for($offset=0;$offset<$count;$offset+=20){
         $rows=all('SELECT id,job_id,client_id,staff_id,client_actor_id,sequence,kind,created_at,event_sha256,input_sha256,CASE WHEN OCTET_LENGTH(event_json)<=? THEN event_json ELSE NULL END AS event_json FROM '.table('design_payment_events').' WHERE job_id=? ORDER BY sequence LIMIT 20 OFFSET '.(int)$offset,[DESIGN_PAYMENTS_EVENT_BYTES,$job['id']]);
         foreach($rows as $row){
@@ -91,15 +93,17 @@ function design_payments_validate(array $job,int $page=0):array{
         }
     }
     if($seen!==$count||($anchor&&($anchor['event_id']!==$lastId||$anchor['event_sha256']!==$previous)))throw new RuntimeException('Financial history anchor is inconsistent.');
+    design_payment_invoices_validate($job,$state);
     return $state+['expected'=>$expected,'previous'=>$previous,'time'=>$lastTime,'count'=>$count,'bytes'=>$bytes,'items'=>$items,'page'=>$selected+1,'pages'=>$pages];
 }
-function design_payments_append(array $job,array $actor,string $request,string $expected,string $kind,array $payload):array{
+require_once CWP_CODE_ROOT.'/app/billing/design_payment_invoices.php';
+function design_payments_append(array $job,array $actor,string $request,string $expected,string $kind,array $payload,?int $occurredAt=null):array{
     project_progress_id($request);if(!preg_match('/\A[a-f0-9]{64}\z/',$expected))throw new InvalidArgumentException('Keep the original financial version.');
     $state=design_payments_validate($job);$input=design_payments_command((int)$job['id'],(int)$job['client_id'],$actor,$kind,$expected,$payload);
     $prior=one('SELECT job_id,input_sha256 FROM '.table('design_payment_events').' WHERE id=?',[$request]);
     if($prior){if((int)$prior['job_id']!==(int)$job['id']||!hash_equals($prior['input_sha256'],$input))throw new RuntimeException('This financial request was already used with different details.');return ['job_id'=>(int)$job['id'],'event_id'=>$request,'replayed'=>true];}
     if(!hash_equals($state['expected'],$expected))throw new RuntimeException('The financial offer changed. Review its current terms before submitting.');
-    $event=['format'=>1,'id'=>$request,'project_id'=>(int)$job['id'],'client_id'=>(int)$job['client_id'],'sequence'=>$state['count'],'kind'=>$kind,'actor_type'=>$actor['type'],'actor_id'=>$actor['id'],'occurred_at'=>time(),'previous'=>$state['previous'],'expected'=>$expected,'payload'=>$payload];
+    $event=['format'=>1,'id'=>$request,'project_id'=>(int)$job['id'],'client_id'=>(int)$job['client_id'],'sequence'=>$state['count'],'kind'=>$kind,'actor_type'=>$actor['type'],'actor_id'=>$actor['id'],'occurred_at'=>$occurredAt??time(),'previous'=>$state['previous'],'expected'=>$expected,'payload'=>$payload];
     if($event['occurred_at']<$state['time'])throw new RuntimeException('The server clock precedes the saved financial history.');
     $next=design_payments_transition($state,$event);
     if($kind!=='withdrawn')design_payments_source($job,$next['schedule']);
@@ -129,7 +133,7 @@ function design_payments_withdraw(int $job,int $client,string $request,string $e
     });
 }
 function design_payments_view(array $job,array $state,bool $staff):array{
-    $history=[];foreach($state['items'] as $event){$entry=['id'=>$event['id'],'kind'=>$event['kind'],'occurred_at'=>$event['occurred_at'],'actor'=>$event['actor_type']==='staff'?'studio':'client','payload'=>$event['payload']];if($staff)$entry['actor_id']=$event['actor_id'];$history[]=$entry;}
+    $history=[];foreach($state['items'] as $event){$payload=$event['payload'];if(!$staff&&$event['kind']==='issued')unset($payload['request_sha256']);$entry=['id'=>$event['id'],'kind'=>$event['kind'],'occurred_at'=>$event['occurred_at'],'actor'=>$event['actor_type']==='staff'?'studio':'client','payload'=>$payload];if($staff)$entry['actor_id']=$event['actor_id'];$history[]=$entry;}
     $schedule=$state['schedule'];return ['project'=>['id'=>(int)$job['id'],'title'=>$job['title']],'status'=>$state['status'],'schedule'=>$schedule?->data(),'fingerprint'=>$schedule?->fingerprint(),'quote'=>$schedule?->quote(),'stages'=>$schedule?->stages(),'expected'=>$state['expected'],'count'=>$state['count'],'items'=>$history,'page'=>$state['page'],'pages'=>$state['pages']];
 }
 function design_payments_staff_get(int $job,int $page=0,bool $touch=true):array{

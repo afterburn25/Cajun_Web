@@ -48,9 +48,10 @@ jobs:
           docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-design-payments-test sh -ec '
-              for source in site/app/billing/design_payments.php site/database/schema/design_payments_schema.php site/database/migrations/design_payments_migrate.php site/includes/foundation/design-payments/*.php tests/design_payments_*.php tests/design-payments/*.php; do php -l "$source"; done
+              for source in site/app/billing/design_payment*.php site/database/schema/design_payment*.php site/database/migrations/design_payment*.php site/includes/foundation/design-payments/*.php tests/design_payments_*.php tests/design-payments/*.php; do php -l "$source"; done
               cmp foundation/design-payments/DesignPaymentSchedule.php site/includes/foundation/design-payments/DesignPaymentSchedule.php
               php -d memory_limit=128M tests/design_payments_native.php
+              php tests/design_payments_legacy_ledger.php
               php tests/design-payments/records.php --deployment > qa/design-payment-schedules-deployed-default.json
               php -n tests/design-payments/records.php --deployment > qa/design-payment-schedules-deployed-no-ini.json
             '
@@ -61,9 +62,10 @@ jobs:
           name: design-payments-native-${{ matrix.php }}-${{ github.sha }}
           path: |
             qa/design-payments-native-results.json
+            qa/ledger-native-results.json
             qa/design-payment-schedules-deployed-*.json
           if-no-files-found: error
           retention-days: 14
       - name: Record scope
         if: always()
-        run: echo 'Synthetic MariaDB financial offers, explicit client consent, authority, replay, concurrency, bounded history and rollback; exact deployed pure allocations. No HTTP/browser, invoice issuance, charge or provider acceptance.' >> "$GITHUB_STEP_SUMMARY"
+        run: echo 'Synthetic MariaDB financial offers, explicit consent, unique obligation invoices, existing ledger, authority, replay, concurrency, bounded history and rollback; exact deployed pure allocations. No HTTP/browser, charge or provider acceptance.' >> "$GITHUB_STEP_SUMMARY"

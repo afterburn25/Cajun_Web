@@ -1,5 +1,7 @@
 # CajunWebPro custom hosting commerce, billing and client platform
 
+**Current HC-11/P-05 financial work:** draft#114 now has exact native consent and one immutable invoice per accepted stage, with local178-check coverage. Current invoice CI, actual financial forms/links and combined application/review acceptance remain pending; HC-11 is not complete. [Invoice contract](DESIGN_PAYMENT_INVOICES_CONTRACT.md). Devin retains complete20i; published1.23 is unchanged.
+
 ## Implementation continuity when external accounts are unavailable (owner policy 2026-10-13)
 
 See [dependency gate policy](DEPENDENCY_GATES.md): `HC-07` **Awaiting API verification**, `HC-09` and `HC-10` **Development pending — API verification**. Continue first-party product, pricing, cart, client portal, invoice/workflow, adapter interface, protected settings, idempotency, jobs and test-fixture work without using fabricated live 20i results. Keep real reseller/domain/VPS operations unorderable or disabled until exact account entitlements, costs, endpoints and staging acceptance are verified. A missing key is not a reason to halt unrelated web-design, payment foundation or portal work. These statuses describe validation gates and **do not change implemented/release state**.

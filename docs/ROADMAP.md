@@ -1,5 +1,7 @@
 # Approved roadmap and acceptance criteria
 
+**Current HC-11/P-05 financial work:** draft#114 now has exact native consent and one immutable invoice per accepted stage, with local178-check coverage. Current invoice CI, actual financial forms/links and combined application/review acceptance remain pending; HC-11 is not complete. [Invoice contract](DESIGN_PAYMENT_INVOICES_CONTRACT.md). Devin retains complete20i; published1.23 is unchanged.
+
 ## HC-11 current implementation — payment schedules
 
 Unreleased [native financial schedules and consent](DESIGN_PAYMENT_STORAGE_CONTRACT.md) now preserve exact proposal-bound quotes and real client acceptance/decline, with scoped history, current access, replay and strict audit. Local95 native and175 deployed pure checks per default/no-ini mode pass. Native CI/full package regression and independent review remain pending. Actual forms, invoice issuance and tokenized checkout remain the next implementation steps; HC-11 is incomplete. Devin retains full20i ownership. Published1.23 remains unchanged.
