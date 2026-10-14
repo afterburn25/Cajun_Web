@@ -52,6 +52,9 @@ final class StackCpGrant
         if ($this->revokedAt !== null) {
             return false;
         }
+        if ($now < $this->issuedAt) {
+            return false;
+        }
         return $this->expiresAt === null || $now < $this->expiresAt;
     }
 

@@ -59,12 +59,27 @@ final readonly class HostingPackage
         return array_key_exists($name, $this->limits) ? $this->limits[$name] : null;
     }
 
-    /** Whether an observed usage level fits inside this package. */
+    /**
+     * Whether observed usage provably fits inside this package.
+     *
+     * Every observation must be a non-negative integer — a mistyped or
+     * negative reading is malformed input, not "within limits". A metric
+     * the package does not declare is *unknown*, not unmetered, and cannot
+     * prove a fit; only a declared `null` limit means the plan does not
+     * meter it. Callers deciding a downgrade must still pass a nonempty
+     * observation — `fits([])` is vacuously true and proves nothing.
+     */
     public function fits(array $usage): bool
     {
         foreach ($usage as $name => $used) {
-            $cap = $this->limits[$name] ?? null;
-            if ($cap !== null && is_int($used) && $used > $cap) {
+            if (!is_int($used) || $used < 0) {
+                throw new InvalidArgumentException("Observed usage '{$name}' must be a non-negative integer.");
+            }
+            if (!array_key_exists($name, $this->limits)) {
+                return false;
+            }
+            $cap = $this->limits[$name];
+            if ($cap !== null && $used > $cap) {
                 return false;
             }
         }
