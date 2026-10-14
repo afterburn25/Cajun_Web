@@ -1,5 +1,15 @@
 # Approved roadmap and acceptance criteria
 
+## Current candidate preparation — 1.22.0 remains unreleased
+
+Starting53b6ea3, reserve candidate1.22.0 after verifying no tag/release exists. Add the actual immutable1.21.0 COMPLETE package to the retained baseline catalog (2531 files; SHA256307ed8f26db291efaac2a72d91683bb14e188080e5927507764b339c50a0b6b1), with its exact published UPDATE shim hashes. Extend filesystem/Apache baselines through1.21.0. Original1.21 fixtures now retain edited/discarded drafts before update; new additive submission cases preserve synthetic accepted, uncertain, unresolved and abandoned records through recovery/reapplication, including original keys and no resend controls. These recovery additions are prepared, not yet executed. They make no SMTP/provider call.
+
+Integrated routes53b6ea3 have downloaded38538343622 proof:85 storage plus80 orchestration/read-model native checks per PHP8.2/8.4, and58 form/template checks in each default/no-ini mode (8 reports;562 executions). The obsolete unwired-route assertion was replaced by actual HTTP authorization cases, not a removed safety condition. Application38538349627 at53b6ea3 is running; it does not test this newer version/baseline increment. Local new fixtures compile/lint. Independent review request6164631071 remains pending; no response is claimed.
+
+Read the candidate [sending guide](SENDING_EMAIL.md). Next: inspect/fix the active packaged SMTP/browser run and actual images, then run complete acceptance on this candidate with latest1.21 recovery and reconcile reviewed hosting79/main before merge. Latest published/download-verified release remains1.21.0 at7805e56. No tag, new publication, deployment, customer mail, provider write, charge or SSH. Full roadmap active.
+
+## Earlier route integration checkpoint
+
 ## Current development — explicit Send connected on unreleased PR77
 
 Starting `7fdd242`, connect saved-message review, explicit POST Send and private submission history to the admin router, permission map, mailbox/draft navigation and fresh/additive setup. Current author, global Send, exact mailbox grants, CSRF and saved account/draft revisions remain required. Fresh setup prepares empty submission tables; existing owners explicitly prepare storage with their current password. No server Sent-folder synchronization or recipient-delivery claim is added.

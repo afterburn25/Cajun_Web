@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.22.0 candidate — not released
+
+Explicit saved-message review/Send and private results; latest1.21 package/recovery baseline prepared. [Sending guide](docs/SENDING_EMAIL.md). Full acceptance and independent review remain pending.
+
 ## Unreleased — explicit saved-draft Send integration
 
 Connect private review/Send/history with exact current authority and additive/fresh setup. Prepare actual HTTP/Chromium/SMTP and Apache acceptance; validation is pending. Published1.21.0 remains immutable.

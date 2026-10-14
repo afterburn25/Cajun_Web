@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-10-14 — submission candidate and original1.21 recovery
+
+Starting53b6ea3; downloaded8 native/form reports38538343622 pass562 checks. Full application38538349627 remains active. Prepare1.22 labels, exact published1.21 baseline inventory and actual-package upgrade/recovery fixtures retaining original drafts, synthetic submission states and both keys. New recovery cases have syntax-only validation at this checkpoint; no release or external transmission.
+
 ## 2026-10-14 — saved-message Send route integration
 
 Owner requested continuous roadmap work. Starting7fdd242, wire existing guarded submission modules into admin/setup and prepare packaged synthetic SMTP/HTTP/browser acceptance. Local58 form checks pass per default/no-ini; full application/native/browser acceptance remains pending. No real external mail. See current PROJECT_STATUS and PR77.
