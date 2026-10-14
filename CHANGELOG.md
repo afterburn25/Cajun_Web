@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — native planning contract
+
+- Specify current-authorized structured plan persistence, exact replay, independent history anchoring and bounded pages before implementation. No native or UI acceptance is claimed by this contract.
+
 ## Unreleased — structured project planning records
 
 - Add immutable public plans with calendar dates, client action requests, blockers and bounded milestone dependency graphs; reject cycles, missing prerequisites and inconsistent completed states.

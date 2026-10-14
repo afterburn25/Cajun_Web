@@ -1,5 +1,12 @@
 # CajunWebPro — project source of truth
 
+## Current work — native structured project planning
+
+`codex/project-planning-storage` starts at preserved PR110/6bcf4e7. The exact schema/API contract is committed before implementation: [native planning contract](docs/PROJECT_PLANNING_STORAGE_CONTRACT.md). It specifies explicit owner preparation, atomic current plan/event/request/head/audit writes, complete bounded history, current staff/client/support authority, original replay and10-item pages. Existing project fields and progress history remain unchanged; structured milestones are explicitly entered. Native implementation and acceptance are next, followed by actual dashboard/activity. Full P-05/P-07 remains partial.
+
+Parent pure84f84f0 verifies211 checks per PHP8.2/8.4 default/no-ini mode,844 per push/PR matrix, all22 workflows; independent review6177586520 remains pending. Parent PR1087e1665f stays frozen for full38628432378 (Apache running). Devin owns complete20i; independently reproduced PR109 approval findings are delivered in6177728792. No provider implementation, published1.23 artifact or production system changes here. Older sections below are historical checkpoints.
+
+
 ## Structured project planning — unreleased pure records
 
 The separate `codex/project-planning` branch defines scope/contact/target dates, client actions/blockers and structured milestone ownership/status/dependencies, with immutable dated history. Implementation84f84f0 now passes211 named checks in every PHP8.2/8.4 default/no-ini mode:844 per push/PR matrix, with downloaded reports/logs verified and all22 workflows successful. [Contract and actual evidence](docs/PROJECT_PLANNING_CONTRACT.md). Native storage, current authorization, dashboard/forms/activity and full acceptance remain next; this branch does not activate planning. Full P-05/P-07 stays partial. PR108 acceptance remains separate, and Devin retains complete20i.
