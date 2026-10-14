@@ -28,7 +28,7 @@ function pi_read(array $row,#[SensitiveParameter] string $key,string $address,ca
     return InventoryReader::read($transport,$credential,InventoryRead::PACKAGES_LIST,0,time());
 }
 function pi_refresh(string $id,?callable $resolver=null,?callable $transport=null,int $revision=1):string {global $password;return provider_inventory_refresh($id,$revision,$password,$resolver??'pi_resolve',$transport??'pi_read');}
-function pi_cool():void {query('UPDATE '.table('provider_refreshes').' SET started_epoch=? WHERE started_epoch>?',[time()-31,time()-30]);}
+function pi_cool():void {query('UPDATE '.table('provider_refreshes').' SET started_epoch=started_epoch-120 WHERE started_epoch>?',[time()-30]);}
 function pi_count(string $name):int {return (int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn();}
 function pi_audit_failure(string $action,callable $fn):bool {
     db()->exec('CREATE TRIGGER pcin_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='provider.".$action."' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic inventory audit failure'; END IF; END");
