@@ -1298,7 +1298,6 @@ Semantics: atomic INSERT claims an idempotency key; resolved rows replay recorde
 
 Tests: native MariaDB suite covering schema refusals, claim/replay/conflict/uncertain/record races, gateway at-most-once through a synthetic adapter, a real cross-process claim race, and grant lifecycle including audit. CI lane on PHP 8.2/8.4 + MariaDB 10.11 with named JSON results. Next: Codex review; execution-path wiring (grant check + gateway + adapter execute) remains gated on the write-boundary contract and operation acceptance.
 
-<<<<<<< HEAD
 ## 2026-10-16 — Devin: 20i execution path (grant → gateway → adapter)
 
 Request: continue the complete 20i assignment — wire the documented write surface through owner-grant authority, the durable ledger and the closed request builder.
