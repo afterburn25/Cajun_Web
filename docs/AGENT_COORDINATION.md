@@ -1,5 +1,11 @@
 # Codex and Devin work allocation
 
+## Current next increment — dated project progress
+
+Codex owns P-05/P-07 progress history on `codex/project-progress`, starting from preserved PR104/`02f41e6`. The existing editor overwrites the latest title, summary, stage and milestones; the client currently has no dated record of those changes. [The new contract](PROJECT_PROGRESS_CONTRACT.md) specifies honest tracking baselines, immutable public changes, stale-form/replay handling, current authority and exact activity links. Pure records now preserve exact legacy CRLF/CR multiline text after inspecting the actual project input helper. Local PHP8.4 default/no-ini pass155 named assertions per mode,310 executions total. Earlier2b0b701 passed148 per PHP8.2/8.4 mode and all22 workflows; the compatibility correction needs new exact CI/review. Native storage/UI remain pending. Records stay outside deployment; shipping bytes are unchanged. Devin retains complete20i implementation; no provider files or active acceptance heads are changed.
+
+PR104 remains frozen at02f41e6. Final [run38615406858](https://github.com/afterburn25/Cajun_Web/actions/runs/38615406858) now independently verifies9,741 named assertions and all23 workflows, including1,388 HTTP/Chromium,1,561 Apache and275 unprivileged recovery checks. All95 final images equal the inspected checkpoint; six ticket images were inspected and homepage pixels equal published1.23. COMPLETE2,603/UPDATE2,590/FULL5,251 archives are byte-identical across Linux/Windows. [Final proof](https://github.com/afterburn25/Cajun_Web/pull/104#issuecomment-6176109320). Independent combined/parent reviews and subsequent exact-main acceptance remain pending. No release is claimed. Published1.23 and candidate101 remain unchanged.
+
 ## Current ticket screens and activity — unreleased
 
 `codex/support-ticket-screens` starts from preserved PR103/`6ba93c3`. It adds actual staff/client ticket queues, creation/reply/status/private-note forms, exact-update activity links, separate explicit read controls and the existing permitted one-click support entry. Private staff changes leave client versions and notifications unchanged. [Current usage, test evidence and remaining work](SUPPORT_TICKETS.md); [contract](SUPPORT_TICKETS_CONTRACT.md).

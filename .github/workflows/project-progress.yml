@@ -1,0 +1,49 @@
+name: Project-progress record checks
+
+on:
+  pull_request:
+    paths: ['foundation/projects/**', 'tests/project-progress/**', 'site/includes/security/input.php', '.github/workflows/project-progress.yml']
+  push:
+    branches: [main, 'codex/project-progress']
+    paths: ['foundation/projects/**', 'tests/project-progress/**', 'site/includes/security/input.php', '.github/workflows/project-progress.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: project-progress-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  records:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - name: Check out the revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Pure records in the official PHP image with networking disabled
+        run: |
+          mkdir -p qa
+          docker run --rm --network none --user "$(id -u):$(id -g)" -v "$PWD:/workspace:ro" -v "$PWD/qa:/workspace/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            for source in foundation/projects/*.php tests/project-progress/*.php; do php -l "$source"; done
+            php tests/project-progress/records.php > qa/project-progress-default.json
+            php -n tests/project-progress/records.php > qa/project-progress-no-ini.json
+          '
+      - name: Preserve named checks
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: project-progress-${{ matrix.php }}-${{ github.sha }}
+          path: qa/project-progress-*.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record actual scope
+        if: always()
+        run: echo 'Pure snapshot, immutable event and history-link validation only. No native database, current authority, routes, UI, activity, email or provider operation is tested.' >> "$GITHUB_STEP_SUMMARY"

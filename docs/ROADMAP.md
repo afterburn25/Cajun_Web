@@ -1,5 +1,7 @@
 # Approved roadmap and acceptance criteria
 
+P-05/P-07 dated progress history is assigned to Codex on `codex/project-progress` from `02f41e6`; [contract](PROJECT_PROGRESS_CONTRACT.md) committed before implementation. Pure records preserve legacy newlines and pass155 local checks per default/no-ini mode and remain outside deployment; current-authorized storage and actual history/activity screens remain pending. Existing latest-status fields are not historical progress. Full20i remains with Devin; no feature completion is claimed.
+
 ## Current ticket screens and activity — unreleased
 
 `codex/support-ticket-screens` starts from preserved PR103/`6ba93c3`. It adds actual staff/client ticket queues, creation/reply/status/private-note forms, exact-update activity links, separate explicit read controls and the existing permitted one-click support entry. Private staff changes leave client versions and notifications unchanged. [Current usage, test evidence and remaining work](SUPPORT_TICKETS.md); [contract](SUPPORT_TICKETS_CONTRACT.md).
