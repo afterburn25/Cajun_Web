@@ -8,6 +8,24 @@
 ## 1.17.0 candidate — bounded recent inbox headers (unreleased)
 ## 1.18.0 candidate — exact-message reading (unreleased)
 
+## 1.19.0 — verified recent email notices
+
+- Explicit successful inbox reads populate a newest-20 observation window with exact mailbox generation/UID identity; strict result/audit failures roll back notice changes. Failed reads retain the prior window.
+- Current-authorized notice page, per-staff opened/dismissed state, independent handle/full-tuple POST opening, and private admin/public bells. Passive polling never fetches mail or renews idle login; client-support pages suppress staff email notices. Server read flags remain unchanged.
+- Additive owner preparation and empty fresh storage; accurate last-check/failed/incomplete status without retaining sender, subject, body or credentials in notices. Existing read transport and message limits remain unchanged.
+- Corrected ordinary-pageshow cancellation, actual support-header isolation, test clock/capture ordering, and Windows exact Git-blob packaging. Source documentation validation excludes generated evidence folders while still verifying all canonical dependencies.
+- Published/download-verified `22a2969692ab5bcc7f35158dcaa5355c623dc821` after exact-main 38504271899: 1153 native, 3084 estimator, 1087 HTTP/Chromium, 205 recovery, 779 Apache and 20 builder checks. All16 assets/tag, archive members and Windows/Linux bytes verified; actual mobile/desktop screens reviewed.
+- Twenty-one starting packages supported, with nonempty1.18.0 update/recovery/reapplication retaining notice state, earlier records and the original private key. Prior releases unchanged. Automatic/full synchronization, previews, other folders, attachments, sending/OAuth and server flag changes remain future work. No production operation.
+
+## Unreleased — recent email notice storage preparation
+
+- Corrected the native CI container UID/GID after both database stages passed but artifact upload failed on a root-owned private QA directory. Corrected saved-evidence acceptance is pending; application/test behavior is unchanged.
+- Added a native migration fixture that removes full-tuple uniqueness while preserving the supporting foreign-key index; this tests application refusal rather than InnoDB index protection. Database acceptance remains pending.
+- Added bounded current-window metadata, separate per-person opened/dismissed markers, exact current mailbox permission filtering, collision refusal and independent full-tuple resolution.
+- Added explicit owner migration with column/key/relationship compatibility checks and strict audit; observation helpers require the successful terminal-result transaction. No schema/reader/HTTP integration or bell UI is wired yet.
+- Local PHP syntax passes. Native database fixtures and PHP 8.2/8.4 workflow are added; database and full application acceptance remain pending. Published/download-verified 1.18.0 remains immutable; its publication documentation is merged into this preparation branch.
+
+
 - Acceptance correction: actual Chromium diagnostics prove injected image attempts are blocked by CSP before network handling; the assertion now distinguishes blocked events from network requests and still requires both explicit CSP failures. Stable mobile viewport captures include plaintext and formatted views. Shipping behavior is unchanged; complete release acceptance remains pending.
 
 - Align the actual TLS wrong-UID browser fixture with the established unavailable-message classification; malformed MIME remains a protocol failure and neither exposes partial content.
