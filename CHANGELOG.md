@@ -3,7 +3,83 @@
 ## Unreleased — scheduling adapter contract (L-03 dependency)
 
 - Add `docs/SCHEDULING_ADAPTER.md`: contract for adopting the scheduling foundation (PR #32) in the live `consultation` route — preferred date/period/zone becomes a `TimeWindow` request, staff narrow to an exact slot via `isBookable` + confirm, additive `consultations` table feeds conflict checks, and all form/spam/lead behavior stays live-side. No shipping code or schema changes.
-## 1.20.0 — candidate, not published
+## Unreleased — complete retained application acceptance
+
+Allow75 minutes for the existing full mail/upgrade/Apache suite after verified45m cancellation. Preserve incomplete Apache progress checkpoints without weakening assertions. Runtime/version/installer unchanged; replacement acceptance pending.
+
+## 1.22.0 candidate — not released
+
+Explicit saved-message review/Send and private results; latest1.21 package/recovery baseline prepared. [Sending guide](docs/SENDING_EMAIL.md). Full acceptance and independent review remain pending.
+
+## Unreleased — explicit saved-draft Send integration
+
+Connect private review/Send/history with exact current authority and additive/fresh setup. Prepare actual HTTP/Chromium/SMTP and Apache acceptance; validation is pending. Published1.21.0 remains immutable.
+
+## Unreleased — combined submission acceptance preparation
+
+- Add reusable isolated SMTP server and a dedicated MariaDB/TLS matrix for the default coordinator, exact saved MIME, conservative outcomes, strict audit failure and no-resend behavior. Downloaded38535733829 at48060cf passes471 combined checks per PHP8.2/8.4 runtime. No shipping runtime or route activation.
+
+## Unreleased — private Send/history screen preparation
+
+- Prepare guarded saved-message review with explicit confirmation and current-authorized private submission history. Preserve stale form identities/revisions and prevent existing attempts from displaying another Send action.
+- Downloaded c5646bf matrix passes85 storage and81 orchestration/read-model native checks per PHP8.2/8.4 runtime, plus58 form/template checks in each default/no-ini mode (564 executions). Actual UI acceptance remains pending. No router/action/navigation/fresh-schema activation or new release version.
+
+## Unreleased — server-only email submission orchestration
+
+- Connect immutable preparation, full DNS validation, current authority, audited dispatch fences and bounded SMTP through an internal coordinator. Stable replay performs no further work; uncertain delivery cannot retry automatically. No route or Send UI is activated.
+- Storage85 checks verified per PHP8.2/8.4 at4d68e6e. All85 storage plus68 orchestration/audit/permission/concurrency checks pass on each PHP8.2/8.4 runtime at e5849ca (downloaded38533629082).
+
+## Unreleased — unwired submission persistence
+
+- Add guarded additive immutable intent/dispatch/result storage with current author/Send/revision gates, stable replay, strict audit and exact private-content/attempt binding. Prepare MariaDB concurrency/native evidence; not yet verified.
+- Preserve canonical submission dependency bytes in the deployment mirror and refresh installer inventory. No route, fresh-schema activation, DNS/credential orchestration, Send UI or new version.
+
+## Unreleased — isolated SMTP submission
+
+Immutable MIME, maintained bounded SMTP and pinned TLS are verified at2edeec1 through26 downloaded PHP8.2/8.4 reports. Durable current-authorized application persistence and Send UI remain to implement; see PR77. The released1.21 draft workflow is separate.
+
+### Historical SMTP preparation — durable submission contract
+
+- Specify atomic intent/dispatch/result persistence and exact content/attempt binding before application implementation; accepted server outcomes remain recorded even if later browser access expires. Documentation only.
+
+### Historical SMTP preparation — isolated SMTP TLS channel
+
+- Added public-destination pinning, verified original-host TLS and finite I/O for submission.398 actual local loopback TLS checks pass; expanded PHP8.2/8.4 network-isolated matrix pending. No deployable version or application exposure.
+
+### Historical SMTP preparation — isolated maintained SMTP session
+
+- Require all envelope recipients before DATA; bind finite results to the exact attempt/private snapshot; preserve unknown final outcomes without retry.80 local synthetic checks pass per PHP mode; real TLS and application integration remain pending. No deployable version change.
+
+### Historical SMTP preparation — preparation evidence
+
+- Verified all14 PHP8.2/8.4 preparation reports at bead26f, including exact long Unicode decoding on the runner. Reconciled accepted draft main7805e56 without deploying submission code. Draft1.21 release gates remain running.
+
+### Historical SMTP preparation — maintained offline MIME preparation
+
+Fix initial expanded-matrix long-subject folding compatibility without weakening parser equality.29 local MIME/168 independent parser checks now cover14 cases including emoji/combining characters on Python3.10/3.12/3.14; replacement matrix pending.
+
+Pin/reproduce original PHPMailer7.1.1 source/license; generate bounded immutable plaintext MIME with Bcc privacy, literal Unicode/space-sensitive subjects, fixed UTC dates and exact message identity.25 local MIME plus144 independent parser checks per default/no-ini mode pass; missing-function refusal passes. Expanded matrix/review pending. No SMTP, persistence, application integration or sending.
+
+### Historical SMTP preparation — isolated immutable submission preparation
+
+Downloaded replacement38525211291 at59bb4bf verifies52 named preparation checks in all four PHP8.2/8.4 default/no-ini cells. No MIME, SMTP or application acceptance is implied.
+
+Correct the isolated CI mountpoint before container startup; initial38524946551 ran no PHP. Replacement matrix pending.
+
+Add a canonical reference-free private submission snapshot, selected sender/recipient validation, stable Message-ID and full content/revision fingerprint.52 local preparation checks pass default/no-ini; matrix pending. No maintained MIME/SMTP, credentials, persistence, site/runtime integration or sending yet.
+
+### Historical SMTP preparation — submission contract preparation
+
+Record the next explicit-send boundary on a separate branch: maintained protocol/MIME, immutable reviewed snapshots, all-recipient pre-DATA acceptance, durable intent and attempt-bound unknown outcomes. Documentation only; no new application version, transport, UI or message sent.
+
+## 1.21.0 — verified private local email drafts
+
+- Private author/mailbox drafts with bounded To/Cc/Bcc and plaintext, canonical active-template insertion, escaped preview and retained discard/history. No SMTP sending or server Drafts synchronization.
+- Current Send/grant/account/author gates, optimistic revisions, stable create replay and strict metadata audit. Sender changes require confirmation; concurrent discard preserves a separate escaped copy of unsaved text.
+- Additive owner setup and fresh installation; actual1.20.0 update/recovery/reapplication retains existing records, prior provider history, added drafts and both original private keys.23 starting versions supported.
+- Published/download-verified `7805e56aa9e53cb081600589e92991255475474c` after 6912 named exact-main application checks and PHP8.2/8.4 matrices. All16 assets, ZIP members, checksums/tag and Windows/Linux bytes verified. Actual desktop/mobile views inspected; homepage pixels equal1.20.0.
+
+
 ## 1.20.0 — verified owner 20i connection
 
 - Protected owner profile with private AES-GCM credentials, password/CSRF/revision safeguards and retained settings history. Fresh setup creates empty ready storage; upgraded owners explicitly prepare it.
@@ -60,16 +136,8 @@ Claim an isolated owner20i settings/read-only check contract after the1.19 email
 - Added `tests/provider/run.php` (124 synthetic checks) plus `FileLedger.php`/`file_ledger_worker.php` (a real four-process `flock` claim race — beyond scripted interleaving) and the `provider.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, schema, persistence, admin UI or real provider calls; HC-07 external gate remains `Awaiting API verification`. Not yet integrated or released. Exactly-once remote execution is not claimed — crash-after-write resolves to `uncertain`, not silent re-execution.
 
-## 1.11.1 — candidate, motion preferences and organized updates
-
-## 1.11.2 — candidate, canonical live estimator integration
-
-## 1.12.0 — candidate, administrator email-template library
-## 1.13.0 — candidate, email account preparation
-## 1.14.0 — candidate, human website review workflow
 ## 1.15.0 — candidate, consultation scheduling
 ### Historical — 1.16.0 candidate: explicit email connection checks
-## 1.17.0 candidate — bounded recent inbox headers (unreleased)
 ## 1.18.0 candidate — exact-message reading (unreleased)
 
 - Acceptance correction: actual Chromium diagnostics prove injected image attempts are blocked by CSP before network handling; the assertion now distinguishes blocked events from network requests and still requires both explicit CSP failures. Stable mobile viewport captures include plaintext and formatted views. Shipping behavior is unchanged; complete release acceptance remains pending.
@@ -81,8 +149,6 @@ Claim an isolated owner20i settings/read-only check contract after the1.19 email
 - Decode raw MIME through private maintained parser state, preserve escaped plaintext and show minimal sanitized formatting in an opaque sandbox with restrictive CSP. No automatic remote resources, attachment content or sending. Missing DOM has an honest plaintext/unavailable-format fallback.
 - Preserve all 36 existing dependency pins and add four maintained formatting dependencies. Correct PHP 8.2 full-document handling by stripping html/body wrappers while preserving sanitized children; all 1,227 components pass on PHP 8.2/8.4 at 740b4e2 with fresh byte reproduction.
 - Add actual 1.17.0 update/recovery and original key/history preservation fixtures, alongside native/concurrency, packaged TLS/HTTP/Chromium and Apache checks. Application acceptance, independent review and release remain pending; latest published release remains 1.17.0.
-
-## 1.19.0 candidate — recent email notices (unreleased)
 
 ## 1.19.0 — verified recent email notices
 
@@ -419,3 +485,11 @@ Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid 
 ## Historical component contract — review-request adapter contract (L-02 dependency)
 
 - Add `docs/REVIEW_REQUESTS_ADAPTER.md`: the contract for adopting the review-request foundation (PR #31) in the live `website-review` lead path — `WebsiteAddress` intake normalization, consent-aware `ReviewContact`, stage persistence via an additive `review_stages` table, `review_reports` as the delivery gate, and staff transition controls through `ReviewInbox`. No shipping code or schema changes; records two decisions for integration review.
+
+### Draft compose UI preparation (unwired)
+
+Added separate private draft controller/view sources and 38 named raw form-input checks. Prepared account/template selection, save/preview/discard/history, stale revision preservation and explicit template replacement. No route, navigation or setup activates the screens; native/HTTP acceptance and release remain pending. Provider PR74 is merged with exact-main acceptance queued; existing published version remains1.19.0.
+
+### Local email draft application integration (unreleased)
+
+Connect fresh/additive setup, current-authorized admin compose/list/preview/template/discard/history and mailbox navigation. Add packaged HTTP/Chromium and Apache cases plus1.19 recovery/reapplication retaining active/discarded drafts and original keys. These integration scenarios await CI; no SMTP or release publication. Application job budget45minutes preserves all assertions while accommodating the additional recovery cases.
