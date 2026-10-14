@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — complete retained application acceptance
+
+Allow75 minutes for the existing full mail/upgrade/Apache suite after verified45m cancellation. Preserve incomplete Apache progress checkpoints without weakening assertions. Runtime/version/installer unchanged; replacement acceptance pending.
+
 ## 1.22.0 candidate — not released
 
 Explicit saved-message review/Send and private results; latest1.21 package/recovery baseline prepared. [Sending guide](docs/SENDING_EMAIL.md). Full acceptance and independent review remain pending.

@@ -7,6 +7,12 @@ from bs4 import BeautifulSoup
 ROOT=Path(__file__).resolve().parents[1];QA=ROOT/'qa';RUNTIME=ROOT/'test-runtime/apache';checks=[]
 def check(name,value):
     checks.append({'name':name,'passed':bool(value)})
+    if len(checks)%25==0 or not value:
+        QA.mkdir(exist_ok=True)
+        checkpoint=QA/'apache-progress.json.tmp'
+        checkpoint.write_text(json.dumps({'complete':False,'scope':'Partial Apache progress; not final acceptance','checks':checks},indent=2)+'\n')
+        checkpoint.replace(QA/'apache-progress.json')
+        print('Apache progress:',len(checks),name,flush=True)
     if not value:raise AssertionError(name)
 def csrf(r):return BeautifulSoup(r.text,'html.parser').select_one('meta[name=csrf-token],input[name=csrf]').get('content') or BeautifulSoup(r.text,'html.parser').select_one('input[name=csrf]')['value']
 def wait(base):
@@ -19,6 +25,7 @@ try:
     package=next((ROOT/'dist').glob('*-COMPLETE-UPLOAD.zip'))
     for rewrite,port in [(True,8094),(False,8095)]:
         label='rewrite' if rewrite else 'no-rewrite';work=RUNTIME/label;web=work/'web';work.mkdir(parents=True,exist_ok=True)
+        print('Apache acceptance starting:',label,flush=True)
         with zipfile.ZipFile(package) as z:
             z.extractall(web);z.extractall(web/'subfolder');expected={n:z.read(n) for n in z.namelist()}
         # Exact readable, root-owned unused scaffold fixture; PHP must select external storage.

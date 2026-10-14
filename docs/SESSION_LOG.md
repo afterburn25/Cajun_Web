@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-10-14 — preserve full mail acceptance after runtime limit
+
+Started3e7138e. Downloaded38539811045/tested merge368b7b5:2183 native/form/combined,3084 estimator,1236 HTTP/Chromium,247 filesystem/recovery and21 builder checks pass. GitHub annotation confirms45m limit; Apache had reached no-rewrite1.13, no final Apache report, final source-diff step skipped. This is partial evidence, not application acceptance. Increased limit75m and added atomic incomplete Apache progress every25 checks/failure with flushed messages. No assertions, baselines or shipping bytes changed. Python compilation/docs checks precede replacement full acceptance; independent review remains required.
+
 ## Candidate correction — browser checkpoint requires current capability text
 
 Application38538349627 at53b6ea3/tested merge33c46d2 stopped after859 successful HTTP/browser assertions at the old email-account copy expectation (check860). It expected "Attachments and sending remain unavailable" and did not reach the new Send tests. Preserve that failure as evidence; no new Send UI acceptance is claimed. Update the assertion to require explicit saved-plaintext sending after setup, untested connection status and unavailable attachments. Correct stale staff-assignment text and START-HERE recovery location to structure-1.22.0. Native85/storage80/orchestration/form58 matrices remain separately verified. The Windows build at1aeef7b was deliberately stopped for these corrections before completion; no package acceptance is claimed from it.

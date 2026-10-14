@@ -1,5 +1,15 @@
 # Project status
 
+## Current acceptance — retain full Apache coverage after job timeout
+
+Mail candidate1.22.0 source3e7138e/tested merge368b7b5c321fdf0c96b85e698cd7606307dcb5fe completed2,183 native/form/combined checks,3,084 estimator comparisons,1,236 HTTP/Chromium checks,247 unprivileged update/recovery checks and21 builder checks in application38539811045. Actual desktop/mobile Send/history screenshots were inspected; homepage pixels match published1.21. Windows packages verify. Current-source focused562 native/form and942 combined SMTP/MariaDB executions are downloaded and verified.
+
+GitHub explicitly cancelled the job for exceeding45 minutes. Apache reached no-rewrite baseline1.13 after the rewrite group, but produced no final named report and the final clean-source check was skipped. This is incomplete application acceptance; no Apache count or full latest1.21 Apache/recovery acceptance is claimed. The retained artifact and log are preserved. No test failure was reported before cancellation, but that does not establish remaining coverage.
+
+Increase the job ceiling to75 minutes based on the remaining eight no-rewrite baselines and retained full suite. Add an explicitly incomplete Apache progress checkpoint every25 assertions (and on assertion failure), plus flushed stage/progress messages. Do not remove assertions or old baselines. This checkpoint changes only the workflow, test instrumentation and documentation; site/foundation/installer/version bytes remain3e7138e. Next: inspect the replacement full run and actual latest1.21 recovery reports, keep independent review before main integration/publication, and continue separate hosting work. Published1.21 remains immutable; no live operation or release.
+
+## Earlier checkpoints
+
 ## Candidate correction — browser checkpoint requires current capability text
 
 Application38538349627 at53b6ea3/tested merge33c46d2 stopped after859 successful HTTP/browser assertions at the old email-account copy expectation (check860). It expected "Attachments and sending remain unavailable" and did not reach the new Send tests. Preserve that failure as evidence; no new Send UI acceptance is claimed. Update the assertion to require explicit saved-plaintext sending after setup, untested connection status and unavailable attachments. Correct stale staff-assignment text and START-HERE recovery location to structure-1.22.0. Native85/storage80/orchestration/form58 matrices remain separately verified. The Windows build at1aeef7b was deliberately stopped for these corrections before completion; no package acceptance is claimed from it.
