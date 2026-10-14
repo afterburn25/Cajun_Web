@@ -55,6 +55,12 @@ try {
     foreach([[1,'Client One','one@example.invalid'],[2,'Client Two','two@example.invalid']] as $c)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',[$c[1],$c[2],bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     pi_actor();provider_settings_migrate($password);$id=provider_settings_save('',0,'20i fixture',true,$secret,$password);
     provider_inventory_migrate($password);pi_ok('Inventory storage prepared','2'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??''));
+    // Version-1 storage upgrades in place; the new columns are appended.
+    db()->exec('ALTER TABLE '.table('provider_refresh_results').' DROP COLUMN key_fingerprint');
+    db()->exec('ALTER TABLE '.table('provider_package_links').' DROP COLUMN key_fingerprint, DROP COLUMN profile_revision');
+    save_setting('provider_inventory_schema_version','1');
+    provider_inventory_migrate($password);pi_ok('Version-1 storage upgrades in place','2'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'')&&provider_inventory_links($id)===[]);
+    save_setting('provider_inventory_schema_version','99');pi_deny('Unsupported inventory storage version refused',fn()=>provider_inventory_migrate($password));save_setting('provider_inventory_schema_version','2');
     pi_deny('Wrong current password prevents DNS and refresh intent',fn()=>provider_inventory_refresh($id,1,'wrong','pi_resolve','pi_read'));
     pi_deny('Stale revision prevents DNS and refresh intent',fn()=>pi_refresh($id,null,null,2));
     pi_actor(2);pi_deny('Administrator cannot refresh provider inventory',fn()=>pi_refresh($id));pi_deny('Administrator cannot read inventory',fn()=>provider_inventory_latest($id));pi_actor();
