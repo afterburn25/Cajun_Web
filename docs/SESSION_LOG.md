@@ -940,3 +940,9 @@ Codex reproduced all 163 checks on `7f1af0c` and found a real fixture defect: `F
 ## 2026-10-13 — preserve corrected provider foundation and merged email baseline
 
 Starting provider-settings aef95f9; ordinary merge of 46b2826 preserves canonical PR #43/#71 ancestry and main22a2969. Resolved seven documentation-only conflicts by retaining both histories and adding a current checkpoint. Independent canonical snapshot passes 171 checks under PHP/default and no extensions. No application integration or release yet. Original JSON shape finding is corrected. Next: finish exact-main1.19 publication, merge its records here, and integrate the owner-only probe with actual database/transport/browser acceptance.
+
+## 2026-10-13 — prepare fixed 20i probe outside deployment
+
+Starting from reviewed merge `21fa39b`, Codex added `foundation/twentyi` and `tests/twentyi` outside deployment. The adapter constructs only fixed GET `https://api.20i.com/package`, base64-encodes the raw General API key once, accepts only HTTP 200 with a bounded actual JSON list, and emits fixed local result codes. Fifteen declared capabilities remain unverified; both gateway and direct calls refuse all general operations before credentials or transport. `ProbeOnlyLedger` always refuses claims/records and is explicitly not a durable ledger.
+
+Local default PHP and PHP without extensions each pass 120 named synthetic adapter checks against the corrected 171-check canonical foundation. No real HTTP transport, database/profile storage, UI, browser integration, provider call or release is included yet. A PHP 8.2/8.4 isolated matrix retains named evidence; its result must be inspected after push. Next: finish 1.19 publication, reconcile its records, obtain independent adapter review, and implement verified bounded transport plus protected owner persistence before any application connection check is exposed.

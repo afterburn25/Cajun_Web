@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — isolated fixed 20i connection probe
+
+- Added a fixed read-only package-list authentication adapter, finite classifications and explicit refusal of all general provider operations, with 120 synthetic checks. No real transport or application integration; no release version reserved.
+
 ## Unreleased provider contract review
 
 - Recorded the 163-check canonical review and reproduced JSON shape defect; narrowed first integration to protected settings and explicit read-only checks. Inventory needs separately verified response fields and ownership acceptance. Documentation only; no feature or release claimed.

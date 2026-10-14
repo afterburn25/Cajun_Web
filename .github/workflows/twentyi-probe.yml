@@ -1,0 +1,50 @@
+name: 20i probe checks
+
+on:
+  pull_request:
+    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'tests/twentyi/**', '.github/workflows/twentyi-probe.yml']
+  push:
+    branches: [main, codex/provider-settings]
+    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'tests/twentyi/**', '.github/workflows/twentyi-probe.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: twentyi-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    name: 20i probe PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - name: Check out the revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Synthetic probe checks without network access
+        run: |
+          mkdir -p "$RUNNER_TEMP/twentyi-results"
+          docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/twentyi-results:/results" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            for source in foundation/provider/*.php foundation/twentyi/*.php tests/twentyi/*.php; do php -l "$source"; done
+            php tests/twentyi/run.php /results/adapter-default-results.json
+            php -n tests/twentyi/run.php /results/adapter-no-extensions-results.json
+          '
+      - name: Preserve named results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: twentyi-probe-${{ matrix.php }}-${{ github.sha }}
+          path: ${{ runner.temp }}/twentyi-results/
+          if-no-files-found: error
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Synthetic fixed-probe classification and capability refusal only. No HTTP transport, provider call, application, database, UI or deployment acceptance.' >> "$GITHUB_STEP_SUMMARY"

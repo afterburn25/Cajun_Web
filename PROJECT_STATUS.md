@@ -1,5 +1,11 @@
 # Project status
 
+## Current isolated 20i probe preparation
+
+Starting from reviewed merge `21fa39b`, Codex added `foundation/twentyi` and `tests/twentyi` outside deployment. The adapter constructs only fixed GET `https://api.20i.com/package`, base64-encodes the raw General API key once, accepts only HTTP 200 with a bounded actual JSON list, and emits fixed local result codes. Fifteen declared capabilities remain unverified; both gateway and direct calls refuse all general operations before credentials or transport. `ProbeOnlyLedger` always refuses claims/records and is explicitly not a durable ledger.
+
+Local default PHP and PHP without extensions each pass 120 named synthetic adapter checks against the corrected 171-check canonical foundation. No real HTTP transport, database/profile storage, UI, browser integration, provider call or release is included yet. A PHP 8.2/8.4 isolated matrix retains named evidence; its result must be inspected after push. Next: finish 1.19 publication, reconcile its records, obtain independent adapter review, and implement verified bounded transport plus protected owner persistence before any application connection check is exposed.
+
 ## Current integration preparation — protected owner 20i settings
 
 `codex/provider-settings` now preserves merged mail-notice main `22a2969692ab5bcc7f35158dcaa5355c623dc821` and Devin provider foundation `46b282636ad83b22efe149310755d2d316d909bc` through an ordinary merge. Shared documentation conflicts retain both histories; the entire `site/` tree still equals that main commit. No provider application route, database table or deployment mirror is added by this merge.
