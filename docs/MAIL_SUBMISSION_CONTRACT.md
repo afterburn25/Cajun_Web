@@ -1,5 +1,11 @@
 # A-06 — explicit SMTP submission from private local drafts
 
+## Current adapter evidence — 2026-10-14
+
+Server-only coordinator e5849ca has downloaded native proof38533629082:85 storage and68 orchestration checks on each PHP8.2/8.4 runtime. It validates current permissions/revisions, commits strict intent/dispatch audits before DNS/decryption, preserves replay and exact-attempt results, and prevents automatic retries. These fixtures use synthetic credentials/fake transport. Maintained transport2edeec1 retains26 verified isolated reports, including real loopback TLS. No route, Send UI or fresh-schema activation is connected. Independent review and combined packaged HTTP/SMTP/browser/latest-release recovery remain pending. Latest verified public release is1.21.0 at7805e56; prior checkpoints below retain their dated scope.
+
+See [storage/orchestration contract](MAIL_SUBMISSION_STORAGE_CONTRACT.md).
+
 ## Current SMTP increment — bounded socket and loopback TLS
 
 From5375ade, isolated `SubmissionChannel` adds one public numeric destination pinned to the selected SMTP host/port, original-host certificate/SNI verification, TLS1.2/1.3 only, mandatory STARTTLS,5-second I/O/connect and30-second overall budgets, and finite byte/line/write caps. It reuses the established public-address policy without changing existing diagnostic channels. The caller still must validate the full DNS answer set and current authority before opening; no account lookup, credential decryption, database or application route is added.

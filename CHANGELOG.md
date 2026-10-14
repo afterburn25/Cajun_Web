@@ -3,7 +3,7 @@
 ## Unreleased — server-only email submission orchestration
 
 - Connect immutable preparation, full DNS validation, current authority, audited dispatch fences and bounded SMTP through an internal coordinator. Stable replay performs no further work; uncertain delivery cannot retry automatically. No route or Send UI is activated.
-- Storage85 checks verified per PHP8.2/8.4 at4d68e6e. Add separate native orchestration/audit/permission/concurrency fixtures; execution pending.
+- Storage85 checks verified per PHP8.2/8.4 at4d68e6e. All85 storage plus68 orchestration/audit/permission/concurrency checks pass on each PHP8.2/8.4 runtime at e5849ca (downloaded38533629082).
 
 ## Unreleased — unwired submission persistence
 

@@ -1,6 +1,6 @@
 # Proposed durable submission adapter
 
-Storage source4d68e6e has downloaded native85-check proof on PHP8.2/8.4 from38532326383. Current work adds the server-only coordinator in `site/app/mail/submission_dispatch.php`; its new native boundary fixtures are prepared, not yet verified. There is no fresh/base-schema registration, route or Send UI. Review6163822756 covers storage; independent orchestration review and packaged application acceptance remain pending. The contract below defines the integration boundary.
+Storage source4d68e6e has downloaded native85-check proof on PHP8.2/8.4 from38532326383. Current work adds the server-only coordinator in `site/app/mail/submission_dispatch.php`; its68 native boundary checks and all85 storage checks pass on each PHP8.2/8.4 runtime in downloaded run38533629082 at e5849ca. There is no fresh/base-schema registration, route or Send UI. Review6163822756 covers storage; independent orchestration review and packaged application acceptance remain pending. The contract below defines the integration boundary.
 
 ## One reviewed intent and one attempt
 
