@@ -1,5 +1,9 @@
 # Durable hosting operation attempts
 
+## Follow-up — fenced deletion retry
+
+A separate original-approver/current-owner function now atomically fences eligible definite-failure deletion retries. This supersedes earlier blanket deletion-retry exclusions only for the new bounded path. Unknown reconciliation remains refused. [Contract](HOSTING_DEPROVISION_RETRY.md). Native CI and independent review are pending.
+
 ## Follow-up — local provisioning retry
 
 This branch adds a separate explicit owner/password local retry-preparation path for definite provisioning failures marked retryable. Validation now accepts that canonical local event only with its retained eligible failure. It does not return a claim or alter existing dispatch/result bindings. Deletion retry and reconciliation remain unsupported. The older blanket retry restriction below is superseded only for this bounded path. [Detailed contract](HOSTING_PROVISION_RETRY.md).

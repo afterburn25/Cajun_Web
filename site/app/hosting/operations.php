@@ -32,6 +32,20 @@ function hosting_operations_provision_retryable(HostingJournal $journal):void {
     $account=$journal->account();$observations=$account->operations();$last=$observations?end($observations):null;
     if($account->status()!=='failed' || $account->pendingAttempt()!==null || $account->awaitingReconciliation() || !$last || $last->operation!=='hosting.provision' || $last->outcome!=='failed' || !$last->retryable)throw new RuntimeException('Only a recorded definite provisioning failure marked safe to retry can be prepared again. Unknown outcomes require verified reconciliation.');
 }
+/** Retry deletion only from retained definite failure, by the original current approver. */
+function hosting_operations_deprovision_retryable(HostingJournal $journal,int $actor):void {
+    $account=$journal->account();$observations=$account->operations();$last=$observations?end($observations):null;
+    if($account->status()!=='deprovision_failed' || $account->pendingAttempt()!==null || $account->awaitingReconciliation() || !$last || $last->operation!=='hosting.deprovision' || $last->outcome!=='failed' || !$last->retryable)throw new RuntimeException('Only a recorded definite deletion failure marked safe to retry can be attempted again. Unknown outcomes require verified reconciliation.');
+    $approval=null;
+    foreach(json_decode($journal->json(),true)['events'] as $event)if($event['command']==='approve_deprovision')$approval=$event;
+    if(!$approval || $approval['actor']!=='staff:'.$actor || $approval['arguments']!==['retention_confirmed'=>true])throw new RuntimeException('Deletion retry requires the original approver and retained data-retention approval.');
+}
+/** Preserve old ordinary-dispatch bytes; retries have a distinct canonical request identity. */
+function hosting_operations_input(int $revision,string $operation,array $arguments,string $profileId,int $profileRevision,bool $retryDeletion=false):string {
+    $input=['revision'=>$revision,'operation'=>$operation,'arguments'=>$arguments,'profile_id'=>$profileId,'profile_revision'=>$profileRevision];
+    if($retryDeletion)$input['command']='retry_deprovision';
+    return hosting_records_json($input);
+}
 /** Derive the exact retained dispatch boundary from its canonical event prefix. */
 function hosting_operations_binding(array $row,HostingJournal $journal,array $dispatch):array {
     $d=json_decode($journal->json(),true);$revision=(int)$dispatch['revision'];$commands=hosting_operations_commands($dispatch['operation']);
@@ -40,8 +54,14 @@ function hosting_operations_binding(array $row,HostingJournal $journal,array $di
     $beforeJournal=HostingJournal::fromJson(hosting_records_json($before),$row['id'],'client:'.$row['client_id']);
     $after=$before;$after['events'][]=$event;
     $afterJournal=HostingJournal::fromJson(hosting_records_json($after),$row['id'],'client:'.$row['client_id']);
-    $input=hosting_records_json(['revision'=>$revision-1,'operation'=>$dispatch['operation'],'arguments'=>$event['arguments'],'profile_id'=>$dispatch['profile_id'],'profile_revision'=>(int)$dispatch['profile_revision']]);
-    if($dispatch['account_id']!==$row['id'] || $event['id']!==$dispatch['id'] || $event['command']!==$commands[0] || $event['actor']!=='staff:'.$dispatch['actor_id'] || $event['at']!==(int)$dispatch['started_epoch'] || $afterJournal->account()->pendingAttempt()!==$dispatch['attempt_ref'] || $beforeJournal->account()->pendingAttempt()!==null || $dispatch['input_json']!==$input)throw new RuntimeException('Hosting dispatch does not match its journal event.');
+    $retryDeletion=$event['command']==='retry_deprovision';
+    if($retryDeletion){
+        if($dispatch['operation']!=='hosting.deprovision')throw new RuntimeException('A deletion retry cannot dispatch another operation.');
+        hosting_operations_deprovision_retryable($beforeJournal,(int)$dispatch['actor_id']);
+    }
+    $command=$retryDeletion?'retry_deprovision':$commands[0];
+    $input=hosting_operations_input($revision-1,$dispatch['operation'],$event['arguments'],$dispatch['profile_id'],(int)$dispatch['profile_revision'],$retryDeletion);
+    if($dispatch['account_id']!==$row['id'] || $event['id']!==$dispatch['id'] || $event['command']!==$command || $event['actor']!=='staff:'.$dispatch['actor_id'] || $event['at']!==(int)$dispatch['started_epoch'] || $afterJournal->account()->pendingAttempt()!==$dispatch['attempt_ref'] || $beforeJournal->account()->pendingAttempt()!==null || $dispatch['input_json']!==$input)throw new RuntimeException('Hosting dispatch does not match its journal event.');
     $profile=provider_settings_load($dispatch['profile_id']);
     $historical=one('SELECT enabled,has_credentials FROM '.table('provider_revisions').' WHERE profile_id=? AND revision=?',[$dispatch['profile_id'],$dispatch['profile_revision']]);
     if((int)$dispatch['profile_revision']<1 || !$historical || (int)$historical['enabled']!==1 || (int)$historical['has_credentials']!==1)throw new RuntimeException('Hosting dispatch profile revision is unavailable.');
@@ -75,7 +95,7 @@ function hosting_operations_validate(array $row):HostingJournal {
             $covered[$id]=true;
         }
         $prefix['events'][]=$event;
-        if(in_array($event['command'],['retry_deprovision','reconcile'],true))throw new RuntimeException('This hosting operation history requires a newer adapter.');
+        if($event['command']==='reconcile')throw new RuntimeException('This hosting operation history requires a newer adapter.');
         if(!in_array($event['command'],['link_domain','set_grace','open_dispute','close_dispute','cancel_order','request_cancellation'],true) && !isset($covered[$id]))throw new RuntimeException('A hosting dispatch fence or result is missing. Existing data was preserved.');
     }
     return $journal;
@@ -100,12 +120,21 @@ function hosting_operations_retry_provision(string $id,int $client,int $revision
 }
 /** Only the invocation committing a NEW fence receives a claim; saved/pending state never does. */
 function hosting_operations_claim(string $id,int $client,int $revision,string $request,string $operation,array $arguments,string $profileId,int $profileRevision,#[\SensitiveParameter] string $password):?array {
-    return staff_locked(fn()=>staff_transaction(function()use($id,$client,$revision,$request,$operation,$arguments,$profileId,$profileRevision,$password):?array {
+    return hosting_operations_claim_event($id,$client,$revision,$request,$operation,$arguments,$profileId,$profileRevision,$password,false);
+}
+/** A deliberate retry commits its fresh attempt and dispatch fence together; no saved claim is returned again. */
+function hosting_operations_retry_deprovision(string $id,int $client,int $revision,string $request,string $profileId,int $profileRevision,#[\SensitiveParameter] string $password):?array {
+    return hosting_operations_claim_event($id,$client,$revision,$request,'hosting.deprovision',[],$profileId,$profileRevision,$password,true);
+}
+/** Shared internal transaction. The retry flag is not a user-selected journal command. */
+function hosting_operations_claim_event(string $id,int $client,int $revision,string $request,string $operation,array $arguments,string $profileId,int $profileRevision,#[\SensitiveParameter] string $password,bool $retryDeletion):?array {
+    if($retryDeletion && ($operation!=='hosting.deprovision' || $arguments!==[]))throw new InvalidArgumentException('Invalid deletion retry command.');
+    return staff_locked(fn()=>staff_transaction(function()use($id,$client,$revision,$request,$operation,$arguments,$profileId,$profileRevision,$password,$retryDeletion):?array {
         $actor=hosting_records_password($password);hosting_operations_require_ready();hosting_records_client($client,true);hosting_records_id($request);hosting_records_id($profileId);
         $commands=hosting_operations_commands($operation);
         if($revision<0 || $revision>=HostingJournal::MAX_EVENTS || $profileRevision<1)throw new InvalidArgumentException('Invalid hosting operation revision.');
         $row=hosting_records_row($id,$client,true);$journal=hosting_operations_validate($row);
-        $input=hosting_records_json(['revision'=>$revision,'operation'=>$operation,'arguments'=>$arguments,'profile_id'=>$profileId,'profile_revision'=>$profileRevision]);
+        $input=hosting_operations_input($revision,$operation,$arguments,$profileId,$profileRevision,$retryDeletion);
         $existing=one('SELECT * FROM '.table('hosting_dispatches').' WHERE id=?',[$request]);
         if($existing){
             if($existing['account_id']!==$id || (int)$existing['actor_id']!==(int)$actor['id'] || $existing['input_json']!==$input)throw new InvalidArgumentException('This hosting dispatch identity was already used.');
@@ -118,7 +147,8 @@ function hosting_operations_claim(string $id,int $client,int $revision,string $r
         // Keep an existing account tied to the same provider identity through all later operations.
         $prior=one('SELECT profile_id FROM '.table('hosting_dispatches').' WHERE account_id=? ORDER BY revision LIMIT 1',[$id]);
         if($prior && $prior['profile_id']!==$profileId)throw new RuntimeException('Hosting provider reassignment requires a separate verified migration.');
-        $next=hosting_records_append_locked($row,$request,$commands[0],$arguments,(int)$actor['id']);
+        if($retryDeletion)hosting_operations_deprovision_retryable($journal,(int)$actor['id']);
+        $next=hosting_records_append_locked($row,$request,$retryDeletion?'retry_deprovision':$commands[0],$arguments,(int)$actor['id']);
         $event=json_decode($next->json(),true)['events'][$revision];
         $dispatch=['id'=>$request,'account_id'=>$id,'profile_id'=>$profileId,'profile_revision'=>$profileRevision,'actor_id'=>(int)$actor['id'],'revision'=>$revision+1,'operation'=>$operation,'attempt_ref'=>$next->account()->pendingAttempt(),'started_epoch'=>$event['at'],'input_json'=>$input];
         $binding=hosting_operations_binding($row,$next,$dispatch);$bytes=hosting_records_json($binding);

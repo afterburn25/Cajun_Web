@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — fenced deletion retry
+
+Add a separate current-owner/original-approver retry after a retained definite retryable deletion failure, atomically saving the new attempt and dispatch fence. Retain exact result/replay/resource binding and current authority checks. Native fixtures are prepared; CI/review pending. No provider activation or release. [Contract](docs/HOSTING_DEPROVISION_RETRY.md).
+
 ## Unreleased combined hosting/client integration
 
 Preserve mail main1.22 while combining guarded client administration and reviewed hosting journal/storage/dispatch/local-retry foundations. No new hosting UI or remote execution is activated. Add all three hosting native suites and12 internal-path checks to combined full acceptance; preserve every existing test and upgrade baseline. This branch is not a published release.

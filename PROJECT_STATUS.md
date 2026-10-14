@@ -1,5 +1,15 @@
 # Project status
 
+## Current development — explicit fenced deletion retry
+
+The owner requested continuous roadmap progress. Starting combined PR85/a9beb6e, `codex/hosting-deprovision-retry` adds a current-owner/password retry boundary only for retained definite deletion failures marked safe to retry. The original second approver and retention approval are required; original client/provider/resource bindings remain fixed. Its fresh canonical attempt, immutable dispatch fence and strict audit commit together. Exact replay grants no new claim; unknown outcomes remain blocked. No route, worker, provider call, schema activation or version change. See HOSTING_DEPROVISION_RETRY under docs.
+
+Prepared native PHP8.2/8.4 MariaDB coverage includes concurrent requests, access loss while waiting, strict audit rollback, replay/action separation, late results, retained resource ownership and missing/tampered proof. Existing hosting suites remain. Only local syntax is checked at this checkpoint; native CI and independent review are pending. Parent85 has clear combined review6167231488 and client review6166706518; its full application38554890744 remains live after verified native/browser/recovery stages. Published1.22.0/e3b434f and publication documentation4fb0c83 are unchanged; these1.22 development labels are not publishable replacements.
+
+Codex retains hosting persistence/reconciliation/coordinator/UI and release integration. Devin's new read-only20i inventory contract is assigned in issue2 comment6167449082, with no receipt/running inference. Next: verify focused deletion-retry evidence and review, finish parent acceptance and reconcile main publication docs, then continue verified provider reconciliation/dispatch and client controls. Full roadmap active.
+
+## Earlier checkpoints — historical evidence
+
 ## Current combined integration — unreleased and awaiting acceptance
 
 The owner requested continued roadmap work. `codex/hosting-integration` starts from mail main `e3b434ffb2244e454ea9f24fa1de9173b7479ccc`, preserves client83 `eefe29e8ee4019ea7506e0b70179f85d68dbe41a` and its hosting79-82 ancestry, then merges retry84 `e73d78aebba1a2c9e64aa76df75a2e87917e83b5`. Main remains unchanged for the separate1.22.0 release acceptance38553149886. This branch's1.22 labels are test artifacts only; no new release or version is claimed.
