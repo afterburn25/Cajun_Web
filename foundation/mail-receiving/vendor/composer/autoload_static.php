@@ -4,14 +4,14 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit7ea1038edfbc80cd73c5f9b80e2d854b
+class ComposerStaticInit0b710ded9e1fc6ee8b082bff1b24e07a
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
+        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         'def43f6c87e4f8dfd0c9e1b1bab14fe8' => __DIR__ . '/..' . '/symfony/polyfill-iconv/bootstrap.php',
         'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         '5897ea0ac4cccf14d323035e65887801' => __DIR__ . '/..' . '/symfony/polyfill-php82/bootstrap.php',
-        '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         '662a729f963d39afe703c9d9b7ab4a8c' => __DIR__ . '/..' . '/symfony/polyfill-php83/bootstrap.php',
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
@@ -45,6 +45,7 @@ class ComposerStaticInit7ea1038edfbc80cd73c5f9b80e2d854b
             'Symfony\\Contracts\\Translation\\' => 30,
             'Symfony\\Component\\Translation\\' => 30,
             'Symfony\\Component\\Mime\\' => 23,
+            'Symfony\\Component\\HtmlSanitizer\\' => 32,
             'Symfony\\Component\\Clock\\' => 24,
         ),
         'P' =>
@@ -55,8 +56,13 @@ class ComposerStaticInit7ea1038edfbc80cd73c5f9b80e2d854b
             'Psr\\Container\\' => 14,
             'Psr\\Clock\\' => 10,
         ),
+        'M' =>
+        array (
+            'Masterminds\\' => 12,
+        ),
         'L' =>
         array (
+            'League\\Uri\\' => 11,
             'Laravel\\SerializableClosure\\' => 28,
         ),
         'I' =>
@@ -147,6 +153,10 @@ class ComposerStaticInit7ea1038edfbc80cd73c5f9b80e2d854b
         array (
             0 => __DIR__ . '/..' . '/symfony/mime',
         ),
+        'Symfony\\Component\\HtmlSanitizer\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/symfony/html-sanitizer',
+        ),
         'Symfony\\Component\\Clock\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/clock',
@@ -171,6 +181,15 @@ class ComposerStaticInit7ea1038edfbc80cd73c5f9b80e2d854b
         'Psr\\Clock\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/clock/src',
+        ),
+        'Masterminds\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/masterminds/html5/src',
+        ),
+        'League\\Uri\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/league/uri',
+            1 => __DIR__ . '/..' . '/league/uri-interfaces',
         ),
         'Laravel\\SerializableClosure\\' =>
         array (
@@ -266,9 +285,9 @@ class ComposerStaticInit7ea1038edfbc80cd73c5f9b80e2d854b
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit7ea1038edfbc80cd73c5f9b80e2d854b::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit7ea1038edfbc80cd73c5f9b80e2d854b::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit7ea1038edfbc80cd73c5f9b80e2d854b::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit0b710ded9e1fc6ee8b082bff1b24e07a::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit0b710ded9e1fc6ee8b082bff1b24e07a::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit0b710ded9e1fc6ee8b082bff1b24e07a::$classMap;
 
         }, null, ClassLoader::class);
     }

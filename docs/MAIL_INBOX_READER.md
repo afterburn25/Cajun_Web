@@ -1,8 +1,8 @@
-# Bounded A-06 receiving adapter — development contract
+# Recent inbox headers — released 1.17.0
 
-Codex owns `codex/mail-inbox-reader` from publication-record main `532dfe4`, after verified [1.16.0](TEST_REPORT_1.16.0.md). Latest published application remains 1.16.0. The 1.17.0 candidate now includes an exact protected runtime mirror and the application adapter described below; combined acceptance is pending. Preserve Devin [PR #68](https://github.com/afterburn25/Cajun_Web/pull/68) separately, currently `5235b1f`; its custom parser is not accepted for shipment. This contract supersedes suggestions to grow the released diagnostic `ProbeChannel` into a general parser.
+Published and downloaded/verified [1.17.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.17.0) at `fc3bd89c5e1c286f9dc4df12d50dd566a4d4ab86` implements the bounded A-06 recent-header workflow. [Acceptance report](TEST_REPORT_1.17.0.md) records native/concurrency, packaged HTTP over actual isolated TLS, Chromium, Apache and actual 1.16.0 update/recovery. No real mailbox or provider acceptance is claimed. Preserve Devin #68 separately; its custom parser is not shipped.
 
-## Application candidate and owner workflow
+## Owner workflow
 
 Fresh installations create empty request tables. On an upgraded site, an owner opens **Email accounts**, enters their current password and selects **Prepare inbox reading**. This verifies/adds the two request tables and readiness flag without connecting to any server or changing saved credentials. Unknown existing records, incompatible columns/collations or foreign keys are refused; audit failure leaves setup unready. Existing configured account secrets and their private key remain unchanged.
 
@@ -10,9 +10,9 @@ Each staff member needs current global `mail.read` and an active read assignment
 
 DNS runs after committed intent and outside the staff lock. Credential use is serialized with account/grant edits and holds no InnoDB transaction. Authority is refreshed after DNS, at receiving boundaries and before rendering. Started and separate immutable terminal records each require strict audit; a failed terminal commit returns no headers. Only identifiers, saved revisions, timestamps, outcomes, elapsed time, counts and UIDVALIDITY persist. Headers are neither stored nor cached in the session, and the response sends no-store/private and no-referrer. Request history is scoped to the current staff identity and mailbox grant.
 
-The builder verifies canonical dependency/license hashes and all 2,078 runtime mirror files before packaging. Effective access denial for library source and Composer metadata is checked with Apache; the PHP development server alone is not protection evidence. Native authorization/concurrency and packaged synthetic TLS/HTTP/Chromium fixtures are added, together with retained-history/key recovery from the actual 1.16.0 package. These new application checks are pending. Foundation exact-head `8ad1d01` already passed 548 named checks on each PHP 8.2/8.4 runner in [38471766759](https://github.com/afterburn25/Cajun_Web/actions/runs/38471766759), including fresh lock-only byte reproduction. No real account acceptance is claimed.
+The builder verifies canonical dependency/license hashes and all 2,078 runtime mirror files before packaging. Effective access denial for library source and Composer metadata is checked with Apache; the PHP development server alone is not protection evidence. Native authorization/concurrency and packaged synthetic TLS/HTTP/Chromium fixtures are added, together with retained-history/key recovery from the actual 1.16.0 package. These application checks pass in the linked exact-main report. Foundation exact-head `8ad1d01` already passed 548 named checks on each PHP 8.2/8.4 runner in [38471766759](https://github.com/afterburn25/Cajun_Web/actions/runs/38471766759), including fresh lock-only byte reproduction. No real account acceptance is claimed.
 
-The earlier development checkpoints below explain dependency/foundation history; references to an absent application UI in those checkpoints are superseded by this candidate, not a claim of published 1.17.0 acceptance.
+The earlier development checkpoints below explain dependency/foundation history. Their references to an absent application UI or pending acceptance are superseded by the verified 1.17.0 publication above.
 
 ## First receiving boundary
 
