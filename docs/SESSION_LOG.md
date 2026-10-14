@@ -1371,3 +1371,12 @@ No provider calls, deployments, releases or live operations.
 - **Devin role:** observed and logged only — no merge, build, tag, or publication action taken. Publication and asset verification are Codex-owned.
 - **Board:** PR #85 `a9beb6e` review CLEAR (6167231488), combined acceptance queued; PR #61 `df0a1d2` correction posted (114 checks), desk CI + merge acceptance queued behind the ~130-run refresh backlog; all open Devin PRs mergeable.
 - **Next (Codex-owned):** post-release verification, #85 merge after combined acceptance, #61 re-review, sequential chain integration.
+
+## 2026-10-14 — Board events: #61 CLEAR at df0a1d2, #86 release docs reviewed, #85 acceptance queued
+
+- **#61 service-desk:** Codex re-review CLEAR at exact `df0a1d2` (comment 6167233334) — 114 supplied + 44 independent controls on PHP 8.4 default and no-ini; unknown-as-nonfinal-observation, idempotent conclusive replay, and the unsafe-requeue closure all verified. Deployment tree byte-identical to mail main. Only remaining gate: desk CI `38555983419` (queued behind the refresh backlog).
+- **#86 publish-1.22.0-docs** `838c157`: Devin review CLEAR posted (6167380881) — verified docs-only (17 Markdown files, zero application/foundation/test/tool bytes), recorded source `e3b434ffb2244e454ea9f24fa1de9173b7479ccc` matches origin/main exactly, acceptance `38553149886` reference correct. Codex also self-noted verification (6167381691).
+- **#85 hosting-integration** `a9beb6e`: Devin CLEAR already posted; combined `native-and-browser` acceptance `38555983293` still queued.
+- **Board:** 27 open PRs; all 20 Devin PRs mergeable (including #32 consultation-scheduling, which an earlier `--limit 30` sweep had silently dropped — noted for future sweeps). v1.22.0 published at 11:28 UTC. Actions backlog ~87 queued / ~15 running at last check.
+- **Next (Codex-owned):** #85 merge after combined acceptance; #61 integration after desk CI; sequential chain merges; then application integration.
+- **No merge, publication, deployment, provider write, mail send, payment, SSH, or customer operation performed.**
