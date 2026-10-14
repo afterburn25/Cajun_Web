@@ -2,6 +2,7 @@
 from urllib.parse import parse_qs, urlparse
 import requests
 from bs4 import BeautifulSoup
+from release_version import RECOVERY
 
 
 def run(env):
@@ -85,6 +86,18 @@ def run(env):
         return (records('plans') == expected and records()['studio_invoices'] == invoices
                 and all(records(name) == data for name, data in earlier.items())
                 and all((private/name).read_bytes() == data for name, data in keys.items()))
+
+    # The combined latest-baseline scenarios exceed ten updater authentications
+    # in fifteen minutes. Prove the real HTTP throttle, then start an isolated
+    # synthetic test window without changing the deployed security policy.
+    journal = private/RECOVERY/'journal.php'
+    journal_before = journal.read_bytes()
+    records('owner-rate-exhaust')
+    response = action('recover')
+    check(label+' updater throttle refuses recovery without changing consent or private data',
+          'Please wait before another owner authentication attempt.' in response.text
+          and journal.read_bytes() == journal_before and retained(saved))
+    records('owner-rate-reset')
 
     response = action('recover')
     old_client = client.get(target)

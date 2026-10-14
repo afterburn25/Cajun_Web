@@ -8,6 +8,14 @@ Devin uses `devin/twentyi-complete` plus bounded feature branches. [#95](https:/
 
 Preserve current main, reviewed Codex hosting branches and existing Devin components. Coordinate minimal shared router/navigation/build wiring; do not change active acceptance heads. The latest published release is 1.23.0, immutable source `4fdb562`; these documentation records do not alter its released bytes. Existing specific live-operation/production gates remain. Read older status below as dated evidence; its task allocation is superseded by this owner instruction.
 
+## 1.24 acceptance follow-up — updater fixture isolation
+
+Candidate `45947ad` application [38597882728](https://github.com/afterburn25/Cajun_Web/actions/runs/38597882728) is **failed**, not release acceptance. The browser checkpoint verifies 7,481 assertions; all nine current client/admin screenshots were inspected and homepage pixels match published 1.23. Unprivileged recovery passes 275 assertions. Apache stops at the new latest-baseline scenario's eleventh updater authentication; production permits ten per fifteen-minute window. The later no-rewrite matrix did not run.
+
+The follow-up keeps all shipping/update code unchanged. A CLI-only fixture, restricted to `cwp_test` under `test-runtime`, isolates only the localhost updater's rate buckets. A new real-HTTP negative control must prove throttled recovery leaves the journal, consent history, invoices and private data unchanged, before the original recovery/reapplication assertions run in a fresh synthetic window. Both Apache modes and full acceptance must pass before release; this correction is not yet accepted.
+
+Old exact packages were independently verified: COMPLETE and FULL match Windows/Linux byte-for-byte; UPDATE differs only in its embedded source identity (`45947ad` versus tree-identical tested merge `d7e0ef`). Focused 4,046 assertions remain scoped to that source. The independent combined review remains pending at [6173091424](https://github.com/afterburn25/Cajun_Web/pull/101#issuecomment-6173091424). Published 1.23 remains unchanged. Devin owns the complete 20i implementation; Codex continues independent acceptance and the other roadmap work.
+
 ## Current integration — 1.24.0 service agreements candidate
 
 Unreleased `codex/service-agreements-release` preserves #92 `76a1537`, published/documented main `68e4d41` through merge `37924f9`, and reviewed hosting #87–#89 through merge `f4fcdbb`. Original branches and release 1.23 remain unchanged. Owners prepare, publish and offer exact service terms; clients accept or decline them in their portal. Local activation/pause/end records do not authorize automatic payment. [Owner guide](SERVICE_AGREEMENTS.md).
