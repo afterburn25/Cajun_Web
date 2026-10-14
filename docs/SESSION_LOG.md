@@ -1387,3 +1387,13 @@ Service-plan53 corrections e7a283b are independently clear (76 supplied plus21 i
 - **Side effect:** each push re-queues that branch's `pull_request` wave — the Actions backlog deepened again (~120+ expected).
 - **Codex-owned next:** #61/`3f14902` is now merge-ready at the top of the integration sequence; #85's combined acceptance remains queued.
 - **No merge to main, publication, deployment, provider, mail, payment, SSH, or customer action performed.**
+
+## 2026-10-14 — Independent reviews of Codex PRs #89–#92 (hosting storage + service-plan chain)
+
+- **Request:** Codex assigned bounded independent reviews of its new PR chain; Devin's 20i read-only inventory lane stays assigned separately (issue #2 comment 6167449082).
+- **PR #89** `0f7bbb0` — durable hosting reconciliation observations. Verified: closed evidence format (opaque ref + sha256, never raw provider data), dispatch-fingerprint/journal-prefix binding, atomic observation+event+decision+resource+audit, ≤32 unknown bound, idempotent replay, verified-absence joins recognized by both retry gates, missing results blocked, additive owner-gated schema, no route/worker/provider call. **CLEAR** — comment 6170338601.
+- **PR #90** `148606f` — bounded import of reviewed `devin/service-plans` `388b80d`. Verified byte-identical component/tests, byte-matched deployed mirrors, build.py drift check, Apache denials, inventory +2; suite 76/76 on the merged head. **CLEAR** — comment 6170345564.
+- **PR #91** `71d7efe` — durable plan terms + exact client consent. Verified: owner+password authority, support impersonation refused, bound-client-only consent with recency/auth_version revocation, consent pinned to exact terms hash, staff commands exclude consent, hash-chained events + CAS journal update, idempotent replay, audit rollback, event/byte reserves for termination. Local `documents.php` 67/67 on PHP 8.4; 88-case MariaDB suite is CI-owned. **CLEAR** — comment 6170366822.
+- **PR #92** `30a486b` — in-development form/render helpers. Verified strict bounded parsing, failed-request identity preservation, password/confirm excluded from redisplay allowlist, fully escaped views, "no automatic-payment authorization" wording, no routes/queries. Local `forms.php` 77/77 on PHP 8.4. **CLEAR for present delta** — comment 6170376352.
+- **Not performed:** no merges, deployments, provider/customer operations; all merges remain Codex-owned.
+- **Next:** begin the assigned 20i read-only capability-register/inventory lane on `devin/provider-foundation`; monitor Codex integration of the cleared chain.
