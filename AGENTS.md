@@ -1,5 +1,21 @@
 # Working agreement for CajunWebPro
 
+## Current correction — exclude client administration during support
+
+Client-authority application38549059961 atdae2f82 passed its native stage but failed the new HTTP assertion expecting an explicit support-selector refusal, after1,200 passing HTTP assertions. The underlying client writer already rejects support; the admin renderer lacked a corresponding403 view. Add that refusal for both GET and POST, hiding client edit/invitation forms, and retain separate checks for unchanged records and absent forms. This is a concrete runtime correction; the failed run is not complete acceptance. Replacement full application and actual screenshots are required.
+
+Downloaded push38549022824 and PR38549061993 each verify466 native executions (60 client authority +94 records +79 operations per PHP8.2/8.4). The exactdae2f82 clean Windows build and all3 archive members/CRCs/hashes verify, but its HTTP failure prevents acceptance. Published1.21 remains unchanged; these are unreleased test artifacts. Mail38545953062 is fully verified at7,854 checks across all19 workflows; separate retryPR84 continues; Devin service-desk61 now has three independently reproduced findings in6166378842. No independent review response is inferred.
+
+## Earlier checkpoints
+
+## Current work — serialize client identity changes
+
+Codex owns `codex/client-authority` from PR82/1f59074. Existing client edits, invitation creation and public activation now share the staff/hosting guard and strict atomic audit. Exact current account versions reject stale edit/invitation forms; failed edits retain escaped unsaved details for review. Delegated `clients.manage` access is preserved, support is denied, and public activation remains invitation-based. No schema or release version changes. [Client authority contract](docs/CLIENT_AUTHORITY.md).
+
+Local PHP8.4/native MariaDB10.11.16 passes60 concurrent/rollback/authority checks. Added packaged HTTP/Chromium fixtures and retained hosting matrices await current CI acceptance; full application and independent review are still required. Parent82 has verified346 executions in push38545626740 and PR38546272833, tested merge4fcec07. Mail77/e9b77e1 remains separate with current browser1,236 checks, inspected actual screenshots, identical1.21 homepage pixels and verified clean Windows archives; full38545953062 continues. Published1.21 remains immutable. Next: verify this branch's native matrix and real browser/recovery, request focused review and continue hosting reconciliation/coordinator boundaries. Preserve Devin53 and all parent branches.
+
+## Earlier checkpoints
+
 ## Current work — durable hosting attempt and result records
 
 Codex owns `codex/hosting-operations` from5d9b719/PR81. New guarded native storage commits canonical lifecycle events, immutable exact account/client/profile/attempt fences and strict audit before returning a new one-time claim. Replay grants no second call. Internal result persistence binds observations to that committed attempt, preserves uncertainty/access-loss outcomes and retains unique provider-resource ownership across accounts. There is no route, worker, credential decryption, provider request or new release. [Operation contract](docs/HOSTING_OPERATIONS.md).

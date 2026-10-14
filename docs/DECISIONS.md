@@ -1,5 +1,9 @@
 # Decision record
 
+## 2026-10-14 — every client identity writer shares authority serialization
+
+The future hosting coordinator cannot rely on the shared staff guard while legacy client edits or public invitation activation bypass it. Move those existing writers behind the same guard, recheck current authority after waiting, and bind administrative forms to the exact client authorization version. Public activation retains its invitation capability, with active-client/expiry checks and atomic audit; it does not require staff access. Preserve the existing delegated client-management permission. [Contract](CLIENT_AUTHORITY.md).
+
 ## 2026-10-14 — preserve committed attempts and remote observations
 
 Commit an immutable exact account/client/profile/attempt boundary before returning a new provider claim. A replay or pending-state read never authorizes another call. Final observations must survive later access loss but require the exact committed binding; audit/storage failure leaves the prior fence unresolved. Keep provider-resource associations unique and immutable across clients. The internal result path is not exposed as a generic HTTP callback. [Contract](HOSTING_OPERATIONS.md).
