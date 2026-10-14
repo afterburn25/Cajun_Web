@@ -14,7 +14,7 @@ Bounded requirements for the concrete `HttpTransport` implementation that serves
 
 ## Synthetic acceptance
 
-No real provider endpoint is required or authorized for CI. Acceptable proof uses local fixtures only:
+No real provider endpoint is required or authorized for CI. Acceptable proof uses local fixtures only. The established precedent is [tests/mail-receiving/tls_connector.php](../tests/mail-receiving/tls_connector.php): a **namespace-level override** of the socket function that first *asserts the production destination and TLS context* (verified peer/hostname, SNI on the original host, no self-signed, no proxy, TLS ≥1.2) and *then* reroutes the real socket to `127.0.0.1` with a fixture CA — proving the intended policy byte-for-byte without any outbound call. The cURL transport can use the same two-stage shape via an injected resolver/`CURLOPT_RESOLVE` seam plus a local HTTPS fixture.
 
 - A loopback-controlled **fake DNS resolver / socket harness** (injected resolver or `CURLOPT_RESOLVE`-equivalent seam) returning scripted address sets: all-private → `unavailable` with zero connects attempted; mixed private+public → connect only to the public address; empty → `unavailable`.
 - A **local TLS fixture** (the repo already uses isolated-TLS fixtures in mail diagnostics) presenting a self-signed or wrong-host certificate → `tls`; a correct local CA → success, proving hostname verification is real, not pinned-open.
