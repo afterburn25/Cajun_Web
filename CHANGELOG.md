@@ -1,5 +1,10 @@
 # Changelog
 
+## Independent correction review — d830e91
+
+Review-only branch `codex/review-twentyi-refresh-d830e91` starts at Devin's exact `d830e9176cd21e8831b893adc8cf00f59ab94ea2`. All shipping, foundation and tool bytes remain unchanged. The maintained native fixture is preserved with one additional independent control include, plus artifact retention. Checks cover stale observations, reused package identities across replacement credentials, immediate hiding, explicit reapproval authority and audit rollback, absent packages, same-key configuration changes and prior-v1 schema preservation. This is synthetic PHP/MariaDB review only; execution and conclusions remain pending. Never merge this review branch. Devin owns all 20i implementation and any corrections; Codex owns independent review and final integration.
+
+
 ## 1.23.0 — published and verified
 
 Client account edits reject stale versions and retain safely escaped unsaved details; client/invitation writes recheck current authority and audit atomically. Invitations are single-use and unexpired, and client administration is refused during support sessions. Reviewed internal hosting records, dispatch fences and local provisioning retry remain inactive groundwork. Exact-main 8,360 assertions and 25 workflow gates pass; all 16 draft/public assets are downloaded and verified, with prior 1.22 unchanged. [Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0); [report](docs/TEST_REPORT_1.23.0.md). Complete 20i implementation remains assigned to Devin; service agreements and later hosting reconciliation remain separate increments.

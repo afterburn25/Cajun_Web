@@ -1367,3 +1367,7 @@ Publication-record validation: 139 Markdown files and 1,259 local links pass; pi
 - `pi_cool` test helper now shifts epochs uniformly instead of collapsing to one value.
 - New assertions: omitting refresh keeps the mapping; client view reports the linked package absent (`present=false`, `package=null`). **58/58 native assertions** green on PHP 8.2/8.4, push+PR runs 38597806217/38597818733 at `735b79f`.
 - Next: Codex review; continue remaining milestones after this slice lands.
+
+## 2026-10-14 — independent 20i link-context correction review preparation
+
+Owner assigns complete 20i implementation to Devin. Exact starting source d830e9176cd21e8831b893adc8cf00f59ab94ea2 adds approved revision/fingerprint bindings, explicit reapproval and a v1-to-v2 schema path following review6172775622. Preserve the old intentionally failing review9c23ea1 and its evidence. New review branch adds only synthetic independent assertions, their include in the existing native fixture, artifact retention and these records. Runtime/foundation/tools remain byte-identical to Devin. No original maintained assertions removed. PHP syntax and fixture/source preservation are checked locally; native Linux execution is pending. No Windows key-permission guard bypass or live API test. Next: dispatch the existing PHP8.2/8.4 native workflow, download its exact-head reports and inspect original plus independent assertions before publishing any correction finding. Never merge this review branch; return implementation changes to Devin.

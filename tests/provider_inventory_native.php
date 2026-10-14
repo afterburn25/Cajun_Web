@@ -141,6 +141,7 @@ try {
     pi_ok('A settings-only change still suspends the mapping',count($services)===1&&$services[0]['context_changed']===true&&!$services[0]['present']);
     pi_deny('Re-approval without a current-revision observation is refused',fn()=>provider_inventory_relink($link['id'],6,$password));
     provider_inventory_unlink($link['id'],$password);pi_ok('A context-stale mapping can still be removed',provider_inventory_links($id)===[]&&provider_inventory_client_services(1)===[]);
+    require __DIR__.'/provider_inventory_review_controls.php';
     $durable=json_encode([all('SELECT * FROM '.table('provider_refreshes')),all('SELECT * FROM '.table('provider_refresh_results')),all('SELECT * FROM '.table('provider_observation_packages')),all('SELECT * FROM '.table('provider_package_links')),all('SELECT * FROM '.table('provider_package_link_events')),all('SELECT * FROM '.table('audit'))]);
     pi_ok('No durable row contains the secret or auth material',!str_contains($durable,$secret)&&!str_contains($durable,base64_encode($secret))&&!str_contains($durable,'Bearer')&&!str_contains($durable,'Authorization'));
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}

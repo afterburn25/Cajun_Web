@@ -57,7 +57,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: provider-inventory-${{ matrix.php }}-${{ github.sha }}
-          path: qa/provider-inventory-native-results.json
+          path: |
+            qa/provider-inventory-native-results.json
+            qa/provider-inventory-independent-results.json
           if-no-files-found: warn
           retention-days: 14
       - name: Record verification scope
