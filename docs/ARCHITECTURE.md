@@ -246,3 +246,29 @@ VPS terminal launch validates staff role and the mapped server/service, then iss
 ## Review-request boundary — 2026-10-13
 
 [Standalone review-request component](REVIEW_REQUESTS_FOUNDATION.md) stays outside `site/`; no review-request schema, form or admin workflow exists yet. The contract owns capture normalization (http/https website addresses, consent, goals), the `received → in-review → report-drafted → delivered → closed` pipeline, and evidence-labeled findings. Any future server-side fetching must re-verify resolved DNS — the component's literal-address flags are a first line, not complete SSRF protection.
+
+## Prepared provider persistence
+
+The protected owner profile is now prepared in `site/app/providers` with additive schema/migration modules and a dedicated native PHP8.2/8.4 MariaDB workflow. It supports one 20i live profile, private AES-GCM credential storage bound to installation/profile/environment, password-confirmed current-owner writes, staff-mutex serialization, revision checks and strict atomic audit/history. No installer/base-schema/controller/check/UI call sites expose these modules yet. The generated inventory includes them; the builder explicitly refuses provider-master.key in shipping code. This changes the development site tree, but does not publish a release or change v1.19.0.
+
+Syntax checks pass; native database/key/concurrency fixtures are authored but not yet executed. Do not count them as accepted. The fixture covers schema drift/adoption refusal, owner/support/client/session boundaries, encrypted key context/loss/modes, strict audit rollback, concurrent edits and a revoked writer waiting on the shared lock. Next: inspect native matrix, implement audited finite connection-check orchestration, then integrate owner UI and run packaged fresh/update/recovery acceptance.
+
+Transport db66aa0 has independent Devin review (120 adapter/32 policy/333 actual isolated HTTPS checks). Its first CI matrix failed before PHP due to missing nested output mountpoints. fbecf69 repairs that runner setup; replacement runs38509333705/38509337967 are pending. Reviewed documentation PR73 merged at ceedcfd and is retained here by ordinary merge. No real provider request, Actions-secret extraction, customer data, payment or deployment.
+
+## Current provider check orchestration — native matrix pending
+
+Protected owner persistence at af09dfb passed69 named MariaDB/key/current-authority/concurrency checks on each PHP8.2/8.4 cell; push38509785171 artifacts were downloaded and inspected. Repaired transport push38509333705 at fbecf69 passed and its14 JSON artifacts were downloaded: per PHP version120 adapter default +120 no-ini,32 policy default +32 no-ini +33 forced-unavailable,333 actual HTTPS default +333 no-ini, all passed. Devin's independent transport review has no blockers. The full prior build refresh and21 builder guards passed locally. These are isolated component/storage results, not deployed account or application acceptance.
+
+This next preparation reuses canonical provider/twentyi mirrors for the site and adds explicit fixed-check orchestration: committed intent before DNS; current owner/password/revision and shared cooldown/hour limits; DNS outside the staff mutex; authority before decryption and after network; no InnoDB transaction during network; finite independently validated outcome/history; strict terminal audit; lost results stay incomplete. Native orchestration fixtures include process interruption, DNS-time revocation/profile changes and edits serialized behind an active check. The new fixtures have syntax validation only until their matrix completes.
+
+The modules remain unwired: no admin/controller/base-schema/check route or installer activation yet. No new release version, actual20i call, secret extraction or deployment. Next: inspect orchestration matrix and independent owner-storage review, then owner UI/CSRF integration and full packaged acceptance.
+
+## Current 20i owner UI integration — application acceptance pending
+
+Provider check orchestration at f8668fd passed49 named native checks on each PHP8.2/8.4 runner, alongside69 owner-storage checks. Artifacts from38510249127 were downloaded and inspected. They prove strict intent/result audit, finite outcome mapping, cooldown/hour limits, interrupted processes, DNS-time access/profile races and edits serialized behind current checks. The transport's1003 named checks per runtime were independently downloaded from38509333705; prior fixture/server limitations remain accurately scoped.
+
+This increment wires the 20i connection owner page into the existing staff permission map, CSRF action dispatcher and navigation; adds empty provider storage on fresh install; retains explicit password-confirmed additive setup for existing sites. Saving keys never sends a request. The explicit check shows saved revision/time, historical settings and incomplete/unknown outcomes; service capabilities remain unverified. Private fields are never refilled. No URL/CA/transport configuration comes from HTTP.
+
+New packaged HTTP/Chromium fixtures use the existing server-only auto-prepend seam plus an actual loopback HTTPS server. The seam asserts production cURL options before changing only the test destination and CA, and refuses unrecognized DNS. It is outside deployment. Syntax and generated inventory checks are local; combined database/browser/installer acceptance is pending and no screenshots have yet been inspected for this UI. No new release version is reserved, published1.19.0 stays immutable, and no real20i request or secret extraction occurs.
+
+Next: inspect application/native/transport matrices; resolve independent owner-storage and orchestration review; inspect actual desktop/320px screenshots; add latest1.19 upgrade/recovery/private-key retention acceptance before preparing a new release. Continue feasible roadmap work without a release-boundary stop.
