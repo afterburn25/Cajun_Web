@@ -171,7 +171,7 @@ function provider_inventory_link(string $profileId,int $packageId,int $clientId,
         if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$clientId]))throw new InvalidArgumentException('Active client account not found.');
         if(one('SELECT id FROM '.table('provider_package_links').' WHERE profile_id=? AND package_id=?',[$profileId,$packageId]))throw new RuntimeException('That provider package is already linked. Unlink it first.');
         query('INSERT INTO '.table('provider_package_links').' (id,profile_id,package_id,client_id,linked_by,linked_at) VALUES (?,?,?,?,?,?)',[bin2hex(random_bytes(16)),$profileId,$packageId,$clientId,(int)$actor['id'],gmdate('Y-m-d H:i:s')]);
-        query('INSERT INTO '.table('provider_package_link_events').' (id,profile_id,package_id,client_id,event,actor_id,recorded_at) VALUES (?,?,?,?,?,?,?)',[bin2hex(random_bytes(16)),$profileId,$packageId,$clientId,'link',(int)$actor['id'],gmdate('Y-m-d H:i:s')]);
+        query('INSERT INTO '.table('provider_package_link_events').' (profile_id,package_id,client_id,event,actor_id,recorded_at) VALUES (?,?,?,?,?,?)',[$profileId,$packageId,$clientId,'link',(int)$actor['id'],gmdate('Y-m-d H:i:s')]);
         provider_settings_audit((int)$actor['id'],'service_linked','Profile '.$profileId.' package '.$packageId.' client '.$clientId);
     }));
 }
@@ -183,7 +183,7 @@ function provider_inventory_unlink(string $linkId,#[\SensitiveParameter] string 
         $link=one('SELECT * FROM '.table('provider_package_links').' WHERE id=?',[$linkId]);
         if(!$link)throw new InvalidArgumentException('Link not found.');
         query('DELETE FROM '.table('provider_package_links').' WHERE id=?',[$linkId]);
-        query('INSERT INTO '.table('provider_package_link_events').' (id,profile_id,package_id,client_id,event,actor_id,recorded_at) VALUES (?,?,?,?,?,?,?)',[bin2hex(random_bytes(16)),$link['profile_id'],$link['package_id'],$link['client_id'],'unlink',(int)$actor['id'],gmdate('Y-m-d H:i:s')]);
+        query('INSERT INTO '.table('provider_package_link_events').' (profile_id,package_id,client_id,event,actor_id,recorded_at) VALUES (?,?,?,?,?,?)',[$link['profile_id'],$link['package_id'],$link['client_id'],'unlink',(int)$actor['id'],gmdate('Y-m-d H:i:s')]);
         provider_settings_audit((int)$actor['id'],'service_unlinked','Link '.$linkId.' profile '.$link['profile_id'].' package '.$link['package_id']);
     }));
 }
