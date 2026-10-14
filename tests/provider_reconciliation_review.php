@@ -8,11 +8,11 @@ $private=realpath(__DIR__.'/../test-runtime/provider-execution-private');if(!$pr
 $GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/existing','storage'=>$private,'key'=>str_repeat('synthetic-exec-key-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'pex_']];
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=realpath(__DIR__.'/../site');start_session();
 $owner=one('SELECT * FROM '.table('users').' WHERE id=1');$_SESSION=['uid'=>1,'auth_version'=>$owner['auth_version'],'login_at'=>time(),'last_activity'=>time()];$_GET=[];
-$password='Synthetic execution owner passphrase';$checks=[];$observations=[];$reads=0;$expectedSecret='SYNTHETIC_PRIVATE_GENERAL_KEY';
+$password='Synthetic execution owner passphrase';$checks=[];$observations=[];$reads=0;$expectedSecret='SYNTHETIC_PRIVATE_GENERAL_KEY';$reviewSnapshot=null;
 function rr_check(string $name,bool $ok):void{global $checks;$checks[]=['name'=>$name,'passed'=>$ok];}
 function rr_resolve():string{if(db()->inTransaction())throw new LogicException('Unexpected resolver transaction.');return '8.8.8.8';}
 function rr_read(array $row,#[SensitiveParameter] string $secret,string $address,callable $authorize):InventorySnapshot{
-    global $reads,$expectedSecret;$reads++;if($secret!==$expectedSecret||$address!=='8.8.8.8')throw new LogicException('Review credential boundary mismatch.');$authorize();
+    global $reads,$expectedSecret,$reviewSnapshot;$reads++;if($secret!==$expectedSecret||$address!=='8.8.8.8')throw new LogicException('Review credential boundary mismatch.');$authorize();if($reviewSnapshot!==null)return $reviewSnapshot;
     return new InventorySnapshot('complete',[InventoryPackage::fromItem((object)['id'=>901,'name'=>'gone.example','names'=>['gone.example'],'enabled'=>true,'created'=>'2026-01-01T00:00:00Z','typeRef'=>1])],time());
 }
 try{
@@ -33,6 +33,14 @@ try{
     rr_check('Audit failure is surfaced by the actual reconciliation API',$failed);
     rr_check('Failed reconciliation audit rolls back its durable observation',$failed&&$before===$after);
     query('UPDATE '.table('provider_operations').' SET reconciled_outcome=?,reconciled_epoch=? WHERE idempotency_key=?',[$before['reconciled_outcome'],$before['reconciled_epoch'],$key]);
+    foreach(['complete','partial'] as $state){
+        $reviewSnapshot=new InventorySnapshot($state,[],time(),$state==='partial'?1:0,$state==='partial'?['unprojectable_item']:[]);
+        $result=provider_operations_reconcile($id,$revision,'idem-rec-del',$password,'rr_resolve','rr_read');
+        $observations['absence_'.$state]=['snapshot_state'=>$state,'coverage'=>$reviewSnapshot->coverage,'skipped'=>$reviewSnapshot->skipped,'outcome'=>$result['outcome']];
+        rr_check('Deletion remains inconclusive with '.$state.' response and unknown account coverage',in_array($result['outcome'],['inconclusive','unavailable'],true));
+    }
+    $reviewSnapshot=new InventorySnapshot('complete',[InventoryPackage::fromItem((object)['id'=>77,'name'=>'still-present.example','names'=>['still-present.example'],'enabled'=>true,'created'=>'2026-01-01T00:00:00Z','typeRef'=>1])],time());
+    $result=provider_operations_reconcile($id,$revision,'idem-rec-del',$password,'rr_resolve','rr_read');rr_check('Observed target still present honestly refutes claimed deletion',$result['outcome']==='not_observed');$reviewSnapshot=null;
     $grant=one('SELECT profile_revision FROM '.table('provider_operation_grants').' WHERE consumed_key=? AND profile_id=?',[$key,$id]);
     provider_settings_save($id,$revision,'Reconciliation replacement account',true,'SYNTHETIC_RECONCILE_REPLACEMENT_KEY',$password);$replacement=provider_settings_load($id);$expectedSecret='SYNTHETIC_RECONCILE_REPLACEMENT_KEY';$readsBefore=$reads;$error=null;$result=null;
     try{$result=provider_operations_reconcile($id,(int)$replacement['revision'],$key,$password,'rr_resolve','rr_read');}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;$error=$e->getMessage();}
