@@ -2,7 +2,7 @@
 
 ## Current acceptance boundary — storage and UI remain unwired
 
-Provider1.20.0 remains a separate PR74 release candidate. On codex/mail-drafts, the content component atcbd4fd4 passed all71 named checks in each default/no-ini PHP8.2/8.4 cell; downloaded run38513488603 is verified. [PR75](https://github.com/afterburn25/Cajun_Web/pull/75) retains its contract review request6161185221.
+Provider1.20.0 merged through PR74 at6f0b0ce and is now reconciled into this development branch; exact-main acceptance/publication remain pending. On codex/mail-drafts, the content component atcbd4fd4 passed all71 named checks in each default/no-ini PHP8.2/8.4 cell; downloaded run38513488603 is verified. [PR75](https://github.com/afterburn25/Cajun_Web/pull/75) retains its contract review request6161185221.
 
 This increment adds unwired local draft storage and metadata history, exact additive schema validation, current per-author and mailbox Send checks, stable create replay, stale-edit protection, explicit sender-change acknowledgement, retained local discard and canonical template snapshots. Every read/write uses the existing staff mutex; audit and mutations commit together. No credential is decrypted or message sent. Native fixtures cover strict audit rollback, author/owner isolation, grant changes, concurrent creates/edits, revocation while waiting, key preservation and template boundaries. New storage has syntax validation only until its dedicated PHP8.2/8.4 MariaDB workflow completes.
 

@@ -2,6 +2,8 @@
 
 ## Current checkpoint — reviewed storage and unwired compose screens
 
+Current source reconciliation: merged main 6f0b0ce into the draft branch after aeb51a4. Both feature histories and documentation are retained; the builder mirrors provider/twentyi and mail-compose together. This resolves PR merge conflicts so combined CI can run. Main's exact acceptance is still queued, not verified or published. Draft routes/setup remain unwired; no draft version is reserved.
+
 Provider PR #74 merged at 6f0b0ce5a9cba68b6859334818383fcc09e2ba3e after independent review and all 6,593 candidate application checks. Exact-main run 38515419302 and mail regressions 38515462046/38515464139 are queued; the clean Windows build passes. Version 1.20.0 is not published; 1.19.0 remains the latest verified release.
 
 PR #75 storage at 2748030 received independent no-blocker review in comment 6161455602. Its PHP 8.2/8.4 MariaDB workflows remain queued behind existing Actions work. Do not infer native acceptance. The 71 canonical content checks have downloaded default/no-ini matrix proof from 38513488603.
@@ -18,6 +20,21 @@ The [draft contract](MAIL_DRAFTS_CONTRACT.md) was committed first at90d0c14. The
 
 Next: inspect isolated matrix and obtain contract review before application exposure; implement current-authorized per-author/mailbox draft storage, strict audit and revision/idempotency rules, followed by private HTTP/Chromium UI and latest-release recovery. Reconcile verified1.20main before choosing a later version. Keep provider release work moving independently; no real mail or live deployment.
 
+## Current development — 1.20.0 candidate
+
+[PR #74](https://github.com/afterburn25/Cajun_Web/pull/74) implements protected owner 20i settings, an explicit package-list connection check and finite audited history. Published1.19.0 remains unchanged. Codex owns application integration, package/recovery acceptance and release; Devin retains canonical provider ownership and the requested independent storage/check/UI review. The transport review is complete. See [../SESSION_HANDOFF.md](../SESSION_HANDOFF.md) for current evidence and next actions; older preparation assignments below are historical. No live deployment or broader provider capability is claimed.
+
+## Current transport progress
+
+The fixed 20i cURL transport now has 333 local actual isolated HTTPS checks and32 default/33 unavailable-cURL request/DNS checks. Its expanded PHP8.2/8.4 container matrix and independent review remain pending. The prior120-check probe matrix was downloaded and verified. No provider site/schema/UI changes or real API call. Continue with matrix/review and protected owner persistence under the agreed contract; see PROJECT_STATUS and the probe guide for exact evidence.
+
+## Current provider work — draft PR #74
+
+This branch preserves the published **1.19.0** application source `22a2969692ab5bcc7f35158dcaa5355c623dc821` and its verified publication documentation `b472ed292f1b3e72788f681f4b00d6c9169e162a`. All 16 release downloads and 6,328 exact-main application checks passed; the release boundary is complete. Current provider work continues in [draft PR #74](https://github.com/afterburn25/Cajun_Web/pull/74) with no version reserved or application feature exposed yet.
+
+Devin #43/#71 ancestry through `46b282636ad83b22efe149310755d2d316d909bc` is retained by an ordinary merge. Its corrected canonical suite passes 171 default/no-extension PHP checks. Codex's isolated `foundation/twentyi` probe at `6ced20dc90fe93c37ab82399836d7ab0a3228290` passes 120 named synthetic checks under each runtime. It accepts only the fixed package-list connection, preserves JSON list/object identity, emits finite codes and refuses all general operations. `ProbeOnlyLedger` always refuses claims/records; it is not a durable ledger. The entire `site/` tree remains identical to 1.19.0.
+
+Next: inspect the current PHP 8.2/8.4 matrix and [Devin review request](https://github.com/afterburn25/Cajun_Web/pull/43#issuecomment-6160186656), then implement the real bounded TLS/DNS/proxy/deadline transport, protected owner-only credential storage and audited explicit check/history. Use existing current-session/password/CSRF/revision checks and staff locks. Add actual native concurrency, isolated HTTPS, packaged browser and upgrade/recovery acceptance before exposing a connection form. [Owner API map #73](https://github.com/afterburn25/Cajun_Web/pull/73) informs later inventory and lifecycle work; its response schemas and operation-specific entitlements remain separate acceptance. No additional real API call, secret extraction, payment, provisioning, SSH or deployment is authorized by this integration.
 
 ## Latest verified publication — 1.19.0
 

@@ -1,0 +1,135 @@
+<?php
+declare(strict_types=1);
+
+namespace CajunWebPro\Foundation\TwentyI;
+
+if (PHP_SAPI !== 'cli' && !defined('CWP_BOOT')) { http_response_code(404); exit; }
+
+use CajunWebPro\Foundation\MailTransport\{EndpointPolicy,EndpointResolver,ProbeFailure};
+use CajunWebPro\Foundation\Provider\{HttpTransport,TransportException,TransportRequest,TransportResponse};
+
+/** Fixed HTTPS transport. No configurable URL, proxy, CA, redirect or private-address bypass. */
+final class FixedHttpTransport implements HttpTransport
+{
+    private const HEADER_LIMIT = 16384;
+    private string $address;
+    private \Closure $authorize;
+
+    /** DNS precedes credential resolution; the host resolver owns its blocking DNS timeout. */
+    public static function resolve(?callable $lookup=null): string
+    {
+        try {
+            return EndpointPolicy::addresses(EndpointResolver::resolve('api.20i.com',$lookup))[0];
+        } catch (\InvalidArgumentException|ProbeFailure) {
+            throw new TransportException(TransportException::KIND_UNAVAILABLE);
+        }
+    }
+
+    /** Caller resolves/validates the whole DNS answer set before resolving any credential. */
+    public function __construct(string $address, callable $authorize)
+    {
+        $this->address = EndpointPolicy::addresses([$address])[0];
+        $this->authorize = \Closure::fromCallable($authorize);
+    }
+
+    private function validate(#[\SensitiveParameter] TransportRequest $request): void
+    {
+        if ($request->method !== 'GET' || $request->url !== TwentyIAdapter::URL || $request->body !== null
+            || $request->timeoutSeconds > 15 || array_keys($request->headers) !== ['Authorization','Accept']
+            || $request->headers['Accept'] !== 'application/json') {
+            throw new \InvalidArgumentException('Unsupported provider probe request.');
+        }
+        $authorization = $request->headers['Authorization'];
+        if (!is_string($authorization) || !str_starts_with($authorization, 'Bearer ')
+            || strlen($authorization) > 7 + 4 * (int)ceil(TwentyIAdapter::MAX_KEY_BYTES / 3)) {
+            throw new \InvalidArgumentException('Invalid provider probe authorization.');
+        }
+        $encoded = substr($authorization,7);$decoded = base64_decode($encoded,true);
+        if ($decoded === false || $decoded === '' || strlen($decoded) > TwentyIAdapter::MAX_KEY_BYTES
+            || base64_encode($decoded) !== $encoded || preg_match('/[\x00-\x1f\x7f]/',$decoded)) {
+            throw new \InvalidArgumentException('Invalid provider probe authorization.');
+        }
+    }
+
+    public function send(#[\SensitiveParameter] TransportRequest $request): TransportResponse
+    {
+        $this->validate($request);
+        ($this->authorize)();
+        if (!function_exists('curl_init')) throw new TransportException(TransportException::KIND_UNAVAILABLE);
+        $curl = curl_init(TwentyIAdapter::URL);
+        if ($curl === false) throw new TransportException(TransportException::KIND_UNAVAILABLE);
+        $body = '';$headerBytes = 0;$limited = false;
+        $ip = str_contains($this->address,':') ? '['.$this->address.']' : $this->address;
+        try {
+            $options = [
+                CURLOPT_HTTPGET => true,
+                CURLOPT_HTTPHEADER => ['Authorization: '.$request->headers['Authorization'],'Accept: application/json'],
+                CURLOPT_RETURNTRANSFER => false,
+                CURLOPT_HEADER => false,
+                CURLOPT_FOLLOWLOCATION => false,
+                CURLOPT_MAXREDIRS => 0,
+                CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,
+                CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTPS,
+                CURLOPT_PROXY => '',
+                CURLOPT_PRE_PROXY => '',
+                CURLOPT_NOPROXY => '*',
+                CURLOPT_NETRC => CURL_NETRC_IGNORED,
+                CURLOPT_HTTPAUTH => CURLAUTH_NONE,
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_SSL_VERIFYHOST => 2,
+                CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
+                CURLOPT_RESOLVE => ['api.20i.com:443:'.$ip],
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_HTTP09_ALLOWED => false,
+                CURLOPT_FRESH_CONNECT => true,
+                CURLOPT_FORBID_REUSE => true,
+                CURLOPT_NOSIGNAL => true,
+                CURLOPT_CONNECTTIMEOUT_MS => 5000,
+                CURLOPT_TIMEOUT_MS => (int)ceil($request->timeoutSeconds * 1000),
+                CURLOPT_LOW_SPEED_LIMIT => 1,
+                CURLOPT_LOW_SPEED_TIME => 5,
+                CURLOPT_BUFFERSIZE => 16384,
+                CURLOPT_HEADERFUNCTION => static function($handle,string $line) use (&$headerBytes,&$limited): int {
+                    $headerBytes += strlen($line);
+                    if ($headerBytes > self::HEADER_LIMIT) {$limited=true;return 0;}
+                    return strlen($line); // Do not retain or return remote headers.
+                },
+                CURLOPT_WRITEFUNCTION => static function($handle,string $chunk) use (&$body,&$limited): int {
+                    if (strlen($body)+strlen($chunk) > TwentyIAdapter::MAX_BODY_BYTES) {$limited=true;return 0;}
+                    $body .= $chunk;return strlen($chunk);
+                },
+            ];
+            if (!curl_setopt_array($curl,$options)) throw new TransportException(TransportException::KIND_UNAVAILABLE);
+            ($this->authorize)();
+            $ok = curl_exec($curl);
+            $error = curl_errno($curl);$status = (int)curl_getinfo($curl,CURLINFO_RESPONSE_CODE);
+            // This callback may refuse changed/expired application authority; no body is returned then.
+            ($this->authorize)();
+            if ($limited) throw new TransportException(TransportException::KIND_PROTOCOL);
+            if ($ok === false) {
+                $kind = match ($error) {
+                    CURLE_COULDNT_CONNECT, CURLE_COULDNT_RESOLVE_HOST => TransportException::KIND_CONNECT,
+                    // PHP exposes certificate failure as CURLE_SSL_CACERT (libcurl code 60).
+                    // Issuer error 83 has no PHP constant on some supported builds.
+                    CURLE_SSL_CACERT, CURLE_SSL_CONNECT_ERROR, CURLE_SSL_CERTPROBLEM,
+                    CURLE_SSL_CIPHER, CURLE_SSL_CACERT_BADFILE, 83 => TransportException::KIND_TLS,
+                    CURLE_OPERATION_TIMEDOUT => TransportException::KIND_TIMEOUT,
+                    default => TransportException::KIND_PROTOCOL,
+                };
+                throw new TransportException($kind); // Never use curl_error() or provider text.
+            }
+            if ($status < 100 || $status > 599) throw new TransportException(TransportException::KIND_PROTOCOL);
+            // Refuse literal echoes of this request's credentials instead of returning them.
+            // This is not a general-purpose response redaction or disclosure guarantee for other data.
+            $encoded = substr($request->headers['Authorization'],7);
+            $secret = base64_decode($encoded,true);
+            if (str_contains($body,$encoded) || str_contains($body,$secret)) {
+                throw new TransportException(TransportException::KIND_PROTOCOL);
+            }
+            return new TransportResponse($status,[],$body);
+        } finally {
+            // No reusable cookie/auth/connection handle survives this explicit probe.
+            unset($options,$curl,$body,$encoded,$secret);
+        }
+    }
+}
