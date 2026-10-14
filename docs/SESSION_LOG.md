@@ -1336,3 +1336,15 @@ Starting48060cf722b9899450c4b0ca76c8aa2059b4b563, downloaded and inspected both 
 **Result:** #43/#45/#60 MERGEABLE with CI scheduling; #54 computing mergeability at push time.
 
 No provider calls, deployments, releases or live operations.
+
+## 2026-10-14 — merge-refresh wave 2: all remaining conflicting Devin PRs
+
+Sweep after the #43/#45/#54/#60 fix found six more conflicting Devin PRs plus #62 and #36. All resolved with the same docs-union pattern:
+
+- `devin/mail-transport` → `c072a9a` — 16 conflicts including 3 shared code files (`site/admin/controllers/actions.php`, `site/app/staff/accounts.php`, `tests/mail_accounts_native.php`) which take main's version per the recorded `2bea2ca` precedent (no intentional branch divergence); docs unioned; 36 transport checks green.
+- `devin/notifications` → `e36968d` (65 checks green), `devin/backups-foundation` → `39e0581`, `devin/pipeline-foundation` → `8ba4084` (31 checks), `devin/comparisons-foundation` → `8780b12` (30 checks), `devin/revisions-foundation` → `62b6f78` (30 checks), `devin/proposals-foundation` → `f24910d` (35 checks), `devin/ssh-access` → `494d9bf` (70 checks), `devin/domain-foundation` → `4db50f4` (81 checks), `devin/scheduling-adapter` → `10793b9` (71 checks).
+- `devin/mail-bells-adapter` → `a911487`, `devin/review-adapter` → `558a5c1`.
+
+All conflicts were the shared continuity/docs files (CHANGELOG/PROJECT_STATUS/SESSION_HANDOFF ± SESSION_LOG/AGENTS/README/START-HERE). No component or test byte changed on any branch; empty stub headers stripped; each branch's component section preserved. Every open Devin PR now reports MERGEABLE (or computing) — `pull_request` CI can schedule on all of them again.
+
+No provider calls, deployments, releases or live operations.
