@@ -6,6 +6,7 @@ namespace CajunWebPro\Foundation\TwentyIInventory;
 if (PHP_SAPI !== 'cli' && !defined('CWP_BOOT')) { http_response_code(404); exit; }
 
 use InvalidArgumentException;
+use stdClass;
 
 /**
  * One hosting package projected from a 20i `GET /package` list item.
@@ -13,10 +14,16 @@ use InvalidArgumentException;
  * Only the fields a primary source shows are retained: id, created,
  * enabled, name, names, packageTypeName, stackUsers, typeRef and
  * packageLabels (docs.20i.com/api/retrieve-packages-api). Raw provider
- * payloads are never kept; unmapped keys are reported by name only so
- * schema drift is visible without storing unknown values. productSpec
- * is documented as null in every sample — a non-null presence is noted
- * but its shape remains unknown and its content is dropped.
+ * payloads are never kept; unmapped keys are reported by safe name
+ * plus a total count so schema drift is visible without storing
+ * unknown values. productSpec is documented as null in every sample —
+ * a non-null presence is noted but its shape remains unknown and its
+ * content is dropped.
+ *
+ * The reported collection is preserved as-is: if the documented
+ * primary `name` is absent from `names`, the item is rejected as
+ * inconsistent rather than silently unioned into a different set of
+ * domains.
  */
 final readonly class InventoryPackage
 {
@@ -29,10 +36,11 @@ final readonly class InventoryPackage
     private const MAX_KEY_BYTES = 64;
 
     /**
-     * @param string[] $names       Domain names on the package (may include non-primary names).
-     * @param string[] $stackUsers  Documented `stack-user:N` references — provider IDs, not client links.
+     * @param string[] $names         Domain names exactly as reported by the provider.
+     * @param string[] $stackUsers    Documented `stack-user:N` references — provider IDs, not client links.
      * @param string[] $packageLabels
-     * @param string[] $unmappedKeys Names of item fields with no documented meaning; values dropped.
+     * @param string[] $unmappedKeys  Printable unmapped field names (values dropped).
+     * @param int      $unmappedCount Total unmapped field count, including unprintable names.
      */
     public function __construct(
         public int $id,
@@ -47,46 +55,49 @@ final readonly class InventoryPackage
         public array $packageLabels,
         public bool $hasProductSpec,
         public array $unmappedKeys,
+        public int $unmappedCount,
     ) {}
 
     /**
-     * Project one documented list item. Known fields with the wrong type
-     * fail the item — a changed field type means the documented shape no
-     * longer holds. Unknown keys never fail; their names are reported.
+     * Project one documented list item. The item must be a decoded JSON
+     * object (stdClass) — a PHP array is programmer error, a list is
+     * malformed input. Known fields with the wrong type fail the item;
+     * unknown keys never fail and are reported by name only.
      */
     public static function fromItem(mixed $item): self
     {
-        if (!is_array($item) || array_is_list($item)) {
+        if (!$item instanceof stdClass) {
             throw new InvalidArgumentException('Package entry is not an object.');
         }
-        $id = self::allocatedInt($item['id'] ?? null, 'id');
-        $typeRef = self::allocatedInt($item['typeRef'] ?? null, 'typeRef');
-        $enabled = $item['enabled'] ?? null;
+        $id = self::allocatedInt($item->id ?? null, 'id');
+        $typeRef = self::allocatedInt($item->typeRef ?? null, 'typeRef');
+        $enabled = $item->enabled ?? null;
         if (!is_bool($enabled)) throw new InvalidArgumentException('Package enabled flag is not boolean.');
-        $name = self::text($item['name'] ?? null, 'name', self::MAX_NAME_BYTES);
-        $names = self::textList($item['names'] ?? null, 'names', self::MAX_NAMES, self::MAX_NAME_BYTES);
+        $name = self::text($item->name ?? null, 'name', self::MAX_NAME_BYTES);
+        $names = self::textList($item->names ?? null, 'names', self::MAX_NAMES, self::MAX_NAME_BYTES);
         if (!in_array($name, $names, true)) {
-            // The documented examples always include the primary name in names; keep both honest.
-            $names = self::dedupe(array_merge([$name], $names));
+            throw new InvalidArgumentException('Package name is absent from the reported names list.');
         }
-        $packageTypeName = $item['packageTypeName'] ?? null;
+        $packageTypeName = $item->packageTypeName ?? null;
         if ($packageTypeName !== null) $packageTypeName = self::text($packageTypeName, 'packageTypeName', self::MAX_TEXT_BYTES);
-        $createdAt = $item['created'] ?? null;
+        $createdAt = $item->created ?? null;
         if (!is_string($createdAt) || ($epoch = self::createdEpoch($createdAt)) === null) {
             throw new InvalidArgumentException('Package created timestamp is not an ISO-8601 instant.');
         }
-        $stackUsers = self::stackUserList($item['stackUsers'] ?? []);
-        $labels = self::textList($item['packageLabels'] ?? [], 'packageLabels', self::MAX_LABELS, self::MAX_TEXT_BYTES);
-        $hasProductSpec = ($item['productSpec'] ?? null) !== null;
+        $stackUsers = self::stackUserList($item->stackUsers ?? []);
+        $labels = self::textList($item->packageLabels ?? [], 'packageLabels', self::MAX_LABELS, self::MAX_TEXT_BYTES);
+        $hasProductSpec = ($item->productSpec ?? null) !== null;
         $known = ['id', 'created', 'enabled', 'name', 'names', 'packageTypeName', 'productSpec', 'stackUsers', 'typeRef', 'packageLabels'];
         $unmapped = [];
-        foreach (array_keys($item) as $key) {
-            if (is_string($key) && !in_array($key, $known, true)) {
-                $unmapped[] = strlen($key) <= self::MAX_KEY_BYTES ? $key : substr($key, 0, self::MAX_KEY_BYTES);
-            }
+        $unmappedCount = 0;
+        foreach (get_object_vars($item) as $key => $_) {
+            if (in_array($key, $known, true)) continue;
+            $unmappedCount++;
+            $safe = self::safeKey($key);
+            if ($safe !== null && !in_array($safe, $unmapped, true)) $unmapped[] = $safe;
         }
         sort($unmapped);
-        return new self($id, $name, $names, $enabled, $createdAt, $epoch, $typeRef, $packageTypeName, $stackUsers, $labels, $hasProductSpec, array_slice($unmapped, 0, self::MAX_UNMAPPED_KEYS));
+        return new self($id, $name, $names, $enabled, $createdAt, $epoch, $typeRef, $packageTypeName, $stackUsers, $labels, $hasProductSpec, array_slice($unmapped, 0, self::MAX_UNMAPPED_KEYS), $unmappedCount);
     }
 
     private static function allocatedInt(mixed $value, string $field): int
@@ -96,10 +107,24 @@ final readonly class InventoryPackage
         return $value;
     }
 
+    /**
+     * Strict instant validation: real calendar date, real clock time,
+     * documented offset forms. strtotime alone normalizes impossible
+     * dates (2026-02-30 becomes March 2) and must not be trusted.
+     */
     private static function createdEpoch(string $value): ?int
     {
-        if (strlen($value) > 40 || !preg_match('/\A[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})\z/', $value)) {
+        if (strlen($value) > 40
+            || !preg_match('/\A([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})(?:\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})\z/', $value, $m)) {
             return null;
+        }
+        [, $y, $mo, $d, $h, $mi, $s, $tz] = $m;
+        if (!checkdate((int) $mo, (int) $d, (int) $y) || (int) $h > 23 || (int) $mi > 59 || (int) $s > 59) {
+            return null;
+        }
+        if ($tz !== 'Z') {
+            [$oh, $om] = array_map('intval', explode(':', substr($tz, 1)));
+            if ($oh > 14 || ($oh === 14 && $om > 0) || $om > 59) return null;
         }
         $epoch = strtotime($value);
         return $epoch === false ? null : $epoch;
@@ -138,6 +163,25 @@ final readonly class InventoryPackage
             $out[] = $entry;
         }
         return self::dedupe($out);
+    }
+
+    /**
+     * An unmapped key worth reporting by name: printable UTF-8,
+     * truncated at a character boundary — never a byte-split encoding
+     * fragment. Unprintable keys still count toward unmappedCount.
+     */
+    private static function safeKey(string $key): ?string
+    {
+        if (preg_match('//u', $key) !== 1 || preg_match('/[\x00-\x1f\x7f]/', $key)) {
+            return null;
+        }
+        if (strlen($key) > self::MAX_KEY_BYTES) {
+            $key = substr($key, 0, self::MAX_KEY_BYTES);
+            while ($key !== '' && preg_match('//u', $key) !== 1) {
+                $key = substr($key, 0, -1);
+            }
+        }
+        return $key === '' ? null : $key;
     }
 
     /** @return string[] */
