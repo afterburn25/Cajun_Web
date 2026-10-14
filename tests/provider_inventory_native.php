@@ -2,7 +2,7 @@
 /** Actual database refresh/link orchestration with synthetic resolver/transport; no provider API. */
 declare(strict_types=1);
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
-define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/database/schema/workspace.php';require __DIR__.'/../site/app/providers/inventory.php';
+define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/app/providers/inventory.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,TransportException,TransportRequest,TransportResponse};
 use CajunWebPro\Foundation\TwentyIInventory\{InventoryProjector,InventoryRead,InventorySnapshot};
 use CajunWebPro\Foundation\TwentyIInventoryReader\InventoryReader;
