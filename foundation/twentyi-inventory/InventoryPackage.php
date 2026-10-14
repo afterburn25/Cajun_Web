@@ -36,13 +36,17 @@ final readonly class InventoryPackage
     private const MAX_KEY_BYTES = 64;
 
     /**
+     * Construction is factory-only: `fromItem` is the single validated
+     * entry point, so every record carries fields that passed the
+     * documented-shape contract.
+     *
      * @param string[] $names         Domain names exactly as reported by the provider.
      * @param string[] $stackUsers    Documented `stack-user:N` references — provider IDs, not client links.
      * @param string[] $packageLabels
      * @param string[] $unmappedKeys  Printable unmapped field names (values dropped).
      * @param int      $unmappedCount Total unmapped field count, including unprintable names.
      */
-    public function __construct(
+    private function __construct(
         public int $id,
         public string $name,
         public array $names,
@@ -93,7 +97,7 @@ final readonly class InventoryPackage
         foreach (get_object_vars($item) as $key => $_) {
             if (in_array($key, $known, true)) continue;
             $unmappedCount++;
-            $safe = self::safeKey($key);
+            $safe = self::safeKey((string) $key);
             if ($safe !== null && !in_array($safe, $unmapped, true)) $unmapped[] = $safe;
         }
         sort($unmapped);
