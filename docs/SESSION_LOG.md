@@ -505,6 +505,21 @@ PR #50 merged at cefcc41bcd5297715f2a49d6526900ebe8ad4eb4; exact-main acceptance
 
 Next-increment preparation while exact-main acceptance ran: an isolated local estimator adapter draft matched the current shipping calculator across 1,512 priced/missing/malformed/quantity cases on PHP 8.4, without database access or shipping changes. This is prototype parity evidence only; component guards, actual application integration and native/browser/upgrade acceptance remain required. Devin correction priority reiterated in issue #2 comment 6150049591; no acknowledgment or completed fixes inferred.
 
+### 2026-10-13 — Devin A-03 backup/restore foundation
+
+**Request:** "Continue Without Stopping" — next feasible roadmap item (A-03 manifest/restore contract layer, no external gate).
+
+**Starting commit:** `main` `02fc784` (published 1.11.0 baseline). New branch `devin/backups-foundation`.
+
+**Changed:** added `foundation/backups/` (BackupManifest, RestorePlan), `tests/backups/run.php`, `docs/BACKUPS_FOUNDATION.md`, `.github/workflows/backups.yml`, and additive continuity entries. No `site/` or shared-path changes.
+
+**Tests:** `php tests/backups/run.php` — 31 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: secrets-path exclusion (config/keys/.env/storage), sha256 item + manifest hashing, verifyItem, retention expiry, impact classification (missing/identical/differs), exact-phrase authorization, expired/newer-format rejection, guarded applied/abandoned states.
+
+**Failures:** none.
+
+**Blockers:** none for the contract layer; archive/extract/restore-drill remain Codex integration work.
+
+**Next:** PR `devin/backups-foundation`; queue now 14 open Devin PRs awaiting Codex sequencing (#34 closed, superseded by Codex #50).
 ### 2026-10-13 — Devin L-02 review corrections (PR #31)
 
 **Request:** Codex review findings on #31 (issuecomment-6149702908), prioritized per `DEVIN_HANDOFF_1.11.1.md` before new isolated components.
