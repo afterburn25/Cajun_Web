@@ -4,6 +4,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function studio_admin_views(): array {return ['studio-clients'=>'Client workspace','studio-job'=>'Client project','studio-pipeline'=>'Sales pipeline','studio-content'=>'Sales content','studio-prices'=>'Estimator prices','studio-portfolio'=>'Portfolio previews','studio-history'=>'Content history','studio-upgrade'=>'Version & database'];}
 require_once CWP_CODE_ROOT.'/app/settings/revisions.php';
+require_once CWP_CODE_ROOT.'/includes/layout/project_progress.php';
 function studio_admin_action(string $action,array $user): never {
     require_admin();check_csrf();$target='studio-clients';
     if($action==='studio_migrate'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you have a backup before updating.');studio_migrate();flash('Database update completed. Existing content was preserved.');redirect(admin_url('studio-upgrade'));}
@@ -17,12 +18,22 @@ function studio_admin_action(string $action,array $user): never {
         $id=gint($_POST,'id',1,2147483647);
         $_SESSION['studio_invite_link']=studio_new_invite($id,is_string($_POST['expected']??null)?$_POST['expected']:'');flash('New private invitation created. Share it directly with this client; it expires after 24 hours. No email was sent.');redirect(admin_url('studio-clients'));
     }elseif($action==='studio_job'){
+        if(project_progress_mode()){
+            $GLOBALS['cwp_progress_attempt']=project_progress_attempt($_POST);$form=project_progress_form($GLOBALS['cwp_progress_attempt']);
+            $result=project_progress_save($form['id'],$form['client_id'],$form['request_id'],$form['expected'],$form['fields']);
+            flash($result['replayed']?'This project update was already saved. Current details were preserved.':'Project update saved to the client history.');
+            redirect(admin_url('studio-job',['id'=>$result['job_id'],'focus_progress'=>$result['event_id']]).'#progress-'.$result['event_id']);
+        }
+        $id=staff_locked(fn()=>staff_transaction(function()use($action):int {
+            studio_client_manager();if(project_progress_mode())throw new RuntimeException('Project history was enabled while you were editing. Reload the project before saving.');
         $id=gint($_POST,'id',0,2147483647);$client=gint($_POST,'client_id',1,2147483647);$title=posted('title',160);$stage=posted('stage',30);
         if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=?',[$client])||$title===''||!isset(studio_stages()[$stage]))throw new InvalidArgumentException('Choose a client, title and valid stage.');
         $summary=posted('summary',10000);$milestones=posted('milestones',15000);$now=gmdate('Y-m-d H:i:s');
         if($id){$old=studio_job($id);if((int)$old['client_id']!==$client)throw new InvalidArgumentException('Project ownership cannot be transferred through this form. Create a separate project.');query('UPDATE '.table('studio_jobs').' SET title=?,summary=?,stage=?,milestones=?,updated_at=? WHERE id=?',[$title,$summary,$stage,$milestones,$now,$id]);}
         else{query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,stage,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?,?)',[$client,$title,$summary,$stage,$milestones,$now,$now]);$id=(int)db()->lastInsertId();}
-        log_event($action,'Project '.$id);flash('Project saved.');redirect(admin_url('studio-job',['id'=>$id]));
+        log_event($action,'Project '.$id);return $id;
+        }));
+        flash('Project saved. History tracking is not enabled yet.');redirect(admin_url('studio-job',['id'=>$id]));
     }elseif(in_array($action,['studio_message','studio_publish','studio_upload','studio_invoice','studio_paid'],true)){
         $id=gint($_POST,'job_id',1,2147483647);studio_job($id);
         if($action==='studio_message'){$body=posted('body',5000);if(strlen($body)<2)throw new InvalidArgumentException('Write a message.');query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,\'admin\',?,?,?)',[$id,$user['id'],$body,gmdate('Y-m-d H:i:s')]);}

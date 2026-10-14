@@ -1,5 +1,9 @@
 # Dated project progress — implementation contract
 
+## Current editor, timeline and activity implementation
+
+The `codex/project-progress-screens` child preserves native PR106/`c41cc6d` and implements the editor/timeline/activity contract committed first as `19191b4`. [Usage, local evidence and remaining acceptance](PROJECT_HISTORY.md). Earlier storage-only statements below refer to those preserved checkpoints. The existing prepared project save now uses native history, with original request/version retention and current authority; exact activity uses the existing personal read table. Local tests and six final screenshots pass. Committed matrices, full packaged acceptance and independent review remain pending; no release is claimed.
+
 The unreleased `codex/project-progress-storage` branch adds inactive native project history with current authorization, immutable changes, honest legacy adoption, atomic replay/audit and an independently saved history head. Local native PHP/MariaDB checks pass 109 assertions; canonical/deployed pure modes pass 620 more, **729 total**. Actual project forms, timeline/activity and full packaged acceptance remain pending; P-05/P-07 is partial. [Contract and evidence](PROJECT_PROGRESS_CONTRACT.md). Devin retains complete 20i implementation; published 1.23 remains unchanged.
 
 ## Existing behavior and scope

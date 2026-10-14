@@ -297,3 +297,5 @@ def run(web,base,check,qa,php,label,prefix,version):
         ticket_context=service_plan_upgrade({**locals(),'token':token})
         from ticket_upgrade_cases import run as ticket_upgrade
         ticket_upgrade({**locals(),**ticket_context})
+        from project_progress_upgrade_cases import run as progress_upgrade
+        progress_upgrade({**locals(),**ticket_context})

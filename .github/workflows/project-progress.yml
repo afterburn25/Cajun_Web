@@ -2,10 +2,10 @@ name: Project-progress record checks
 
 on:
   pull_request:
-    paths: ['foundation/projects/**', 'tests/project-progress/**', 'site/includes/security/input.php', '.github/workflows/project-progress.yml']
+    paths: ['foundation/projects/**', 'tests/project-progress/**', 'site/includes/security/input.php', 'site/app/projects/**', 'site/includes/layout/project_progress.php', 'site/includes/layout/admin.php', '.github/workflows/project-progress.yml']
   push:
-    branches: [main, 'codex/project-progress']
-    paths: ['foundation/projects/**', 'tests/project-progress/**', 'site/includes/security/input.php', '.github/workflows/project-progress.yml']
+    branches: [main, 'codex/project-progress','codex/project-progress-screens']
+    paths: ['foundation/projects/**', 'tests/project-progress/**', 'site/includes/security/input.php', 'site/app/projects/**', 'site/includes/layout/project_progress.php', 'site/includes/layout/admin.php', '.github/workflows/project-progress.yml']
   workflow_dispatch:
 
 permissions:
@@ -35,6 +35,8 @@ jobs:
             for source in foundation/projects/*.php tests/project-progress/*.php; do php -l "$source"; done
             php tests/project-progress/records.php > qa/project-progress-default.json
             php -n tests/project-progress/records.php > qa/project-progress-no-ini.json
+            php tests/project-progress/forms.php > qa/project-progress-forms-default.json
+            php -n tests/project-progress/forms.php > qa/project-progress-forms-no-ini.json
           '
       - name: Preserve named checks
         if: always()
@@ -46,4 +48,4 @@ jobs:
           retention-days: 14
       - name: Record actual scope
         if: always()
-        run: echo 'Pure snapshot, immutable event and history-link validation only. No native database, current authority, routes, UI, activity, email or provider operation is tested.' >> "$GITHUB_STEP_SUMMARY"
+        run: echo 'Pure snapshots/events and actual form/timeline HTML rendering. No native authority, HTTP/browser, email or provider operation is tested.' >> "$GITHUB_STEP_SUMMARY"

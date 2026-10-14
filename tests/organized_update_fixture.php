@@ -22,6 +22,11 @@ if(in_array($argv[2]??'',['owner-rate-exhaust','owner-rate-reset'],true)){
     }
     echo json_encode(['isolated_owner_window'=>true],JSON_THROW_ON_ERROR);exit;
 }
+if(($argv[2]??'')==='progress'){
+    $saved=[];
+    foreach(['studio_jobs'=>'id','studio_progress_events'=>'job_id,revision','studio_progress_requests'=>'id','studio_progress_heads'=>'id','activity_reads'=>'id'] as $name=>$order)$saved[$name]=all('SELECT * FROM '.table($name).' ORDER BY '.$order);
+    echo json_encode($saved,JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='tickets'){
     $saved=[];
     foreach(['support_tickets'=>'id','support_ticket_events'=>'revision','support_ticket_staff_reads'=>'ticket_id,user_id','support_ticket_client_reads'=>'ticket_id,client_id'] as $name=>$order){

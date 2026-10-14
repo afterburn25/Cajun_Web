@@ -1,10 +1,10 @@
 name: Native project-progress storage checks
 on:
   push:
-    branches: [main, codex/project-progress-storage]
-    paths: ['site/app/projects/**', 'site/app/clients/**', 'site/app/staff/**', 'site/app/support/sessions.php', 'site/includes/auth/**', 'site/database/**', 'foundation/projects/**', 'site/includes/foundation/projects/**', 'tests/project_progress_native*.php', 'tests/project-progress/**', '.github/workflows/project-progress-native.yml']
+    branches: [main, codex/project-progress-storage, codex/project-progress-screens]
+    paths: ['site/app/projects/**', 'site/app/clients/**', 'site/app/staff/**', 'site/app/support/sessions.php', 'site/includes/auth/**', 'site/database/**', 'foundation/projects/**', 'site/includes/foundation/projects/**', 'tests/project_progress_native*.php', 'tests/project_progress_screen_native_cases.php', 'site/app/activity/**', 'site/includes/layout/project_progress.php', 'tests/project-progress/**', '.github/workflows/project-progress-native.yml']
   pull_request:
-    paths: ['site/app/projects/**', 'site/app/clients/**', 'site/app/staff/**', 'site/app/support/sessions.php', 'site/includes/auth/**', 'site/database/**', 'foundation/projects/**', 'site/includes/foundation/projects/**', 'tests/project_progress_native*.php', 'tests/project-progress/**', '.github/workflows/project-progress-native.yml']
+    paths: ['site/app/projects/**', 'site/app/clients/**', 'site/app/staff/**', 'site/app/support/sessions.php', 'site/includes/auth/**', 'site/database/**', 'foundation/projects/**', 'site/includes/foundation/projects/**', 'tests/project_progress_native*.php', 'tests/project_progress_screen_native_cases.php', 'site/app/activity/**', 'site/includes/layout/project_progress.php', 'tests/project-progress/**', '.github/workflows/project-progress-native.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -48,7 +48,7 @@ jobs:
           docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-progress-test sh -ec '
-              for source in site/app/projects/progress.php site/database/schema/project_progress_schema.php site/database/migrations/project_progress_migrate.php site/includes/foundation/projects/*.php tests/project_progress_native*.php tests/project-progress/*.php; do php -l "$source"; done
+              for source in site/app/projects/progress*.php site/includes/layout/project_progress.php site/database/schema/project_progress_schema.php site/database/migrations/project_progress_migrate.php site/includes/foundation/projects/*.php tests/project_progress_native*.php tests/project_progress_screen_native_cases.php tests/project-progress/*.php; do php -l "$source"; done
               for source in foundation/projects/*.php; do cmp "$source" "site/includes/$source"; done
               php tests/project_progress_native.php
               php tests/project-progress/records.php --deployment > qa/project-progress-deployed-default.json
@@ -64,4 +64,4 @@ jobs:
           retention-days: 14
       - name: Record scope
         if: always()
-        run: echo 'Synthetic MariaDB authority, history, replay, concurrency, capacity and audit rollback; exact deployed pure records. No route, browser, activity or provider acceptance.' >> "$GITHUB_STEP_SUMMARY"
+        run: echo 'Synthetic MariaDB authority, history, replay, concurrency, capacity and audit rollback; exact deployed pure records. Includes native personal progress activity; no HTTP/browser or provider acceptance.' >> "$GITHUB_STEP_SUMMARY"
