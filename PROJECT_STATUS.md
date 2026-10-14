@@ -3,6 +3,19 @@
 ## 2026-10-13 — Devin C-01 comparison-facts foundation (unreviewed, unintegrated)
 
 Devin implemented the safe-work portion of C-01 as an isolated canonical component on `devin/comparisons-foundation`: `foundation/comparisons/` (`ComparisonFact`, `ComparisonRegistry`, `ComparisonSection`), `tests/comparisons/run.php` (30 checks), `comparisons.yml` workflow, and [COMPARISONS_FOUNDATION](docs/COMPARISONS_FOUNDATION.md). Implementation status: **Implemented (local/source)**. External gate: **Not required** for the contract layer — populating real competitor facts still requires primary-source review. No `site/` changes, deployment or release.
+## Latest verified publication — 1.22.0
+
+[v1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) is published and freshly downloaded/verified at immutable source/tag `e3b434ffb2244e454ea9f24fa1de9173b7479ccc`, through [PR77](https://github.com/afterburn25/Cajun_Web/pull/77). Authorized staff can review and explicitly send a saved plain-text draft from a currently assigned mailbox, then inspect private submission history. Current author, Send/grant permissions and exact revisions are rechecked; durable attempt records prevent replay. SMTP requires verified TLS. Server acceptance is distinguished from recipient delivery, and unknown or unresolved outcomes cannot automatically resend. [Owner guide](docs/SENDING_EMAIL.md).
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38553149886) passes7,854 assertion executions:2,183 native/form/combined,3,084 estimator,1,236 actual HTTP/Chromium,247 unprivileged recovery,1,083 Apache and21 builder. All21 workflow gates pass, including PHP8.2/8.4 submission matrices. Actual Send/history desktop/mobile images inspected; homepage pixels match1.21.0. Clean Windows/Linux packages agree. All16 public assets, members/checksums and immutable tag verified; prior1.21 assets unchanged. [Report](docs/TEST_REPORT_1.22.0.md); [handoff](docs/DEVIN_HANDOFF_1.22.0.md).
+
+All24 supported starting packages through1.21.0 retain upgrade acceptance. UPDATE stages `cwp-update-1.22.0`; actual1.21 recovery/reapplication preserves previous records, encrypted history, both original keys, drafts and accepted/unknown/unresolved/abandoned submission records without resend. Upgraded owners explicitly prepare submission storage with their current password; fresh setup creates empty ready tables. No real mailbox/provider/merchant or target-host acceptance, live deployment, customer mail, charge or SSH is claimed. Sent-folder synchronization, attachments, HTML composition, reply/forward and OAuth remain separate.
+
+Continue [combined hosting/client PR85](https://github.com/afterburn25/Cajun_Web/pull/85), observed `a9beb6e72208cdfdb7a0ec0f8fe09a7e4883325c`. It preserves mail main plus client83 and reviewed hosting79-82/84 on a separate integration branch. Client83 eefe29e has downloaded7,027 complete application assertions,17 successful workflows, exact Windows/Linux packages and inspected screenshots. Hosting79-82/84 have independent clear reviews at their documented heads. Verify the current client/integration review and combined native/application results before merging; parent evidence does not replace combined acceptance. Hosting helpers remain internal with no route, worker, provider transport or fresh-install activation.
+
+Service-plan53 corrections e7a283b are independently clear (76 supplied plus21 independent controls per PHP8.4 default/no-ini); observed current branch `29200a14ceaeefa7dda646d0de4c543a011cd292` may be newer. Service-desk61 df0a1d2 is independently clear after114 supplied plus44 independent controls per default/no-ini mode: approvals expire, rejected decisions preserve state, attempt tokens reject stale results, and verified resolution is required before a stalled external operation can retry. Unknown observations remain recoverable and conclusive replays preserve state. [Review6167233334](https://github.com/afterburn25/Cajun_Web/pull/61#issuecomment-6167233334). Verify current CI and inspect any newer correction at observed `df0a1d23f5900541557b795511332d1e80be5e52` before integration. Preserve Devin ownership and all original branches. Full billing, broader20i/client hosting and VPS SSH remain incomplete; the roadmap goal stays active.
+
+## Earlier checkpoints — superseded by the publication above
 
 ## Current acceptance — retain full Apache coverage after job timeout
 
@@ -48,7 +61,7 @@ All58 pure form/escaped-template checks pass locally under PHP8.4.25 default/no-
 
 The new screens have no router/action/navigation/base-schema call site, so Send remains unavailable in the deployed application. Published1.21.0 is unchanged and no later version is reserved. Next: obtain independent review, prepare combined SMTP/HTTP fixtures, wire the approved flow and test packaged real loopback SMTP/HTTP/browser/Apache and actual1.21 update/recovery. Devin retains53 corrections;60 remains preserved for later sequential integration. [Adapter contract](docs/MAIL_SUBMISSION_STORAGE_CONTRACT.md).
 
-## Latest verified publication — 1.21.0
+## Previous verified publication — 1.21.0 (superseded checkpoint)
 
 [v1.21.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.21.0) is published and freshly downloaded/verified at immutable source/tag `7805e56aa9e53cb081600589e92991255475474c`, through [PR #75](https://github.com/afterburn25/Cajun_Web/pull/75). Staff can save, edit, preview and retain private local email drafts for currently assigned sending accounts, with canonical active-template insertion. Current author/account/Send access, exact revisions, stable initial-save replay and strict audit protect the workflow. [Owner guide](docs/LOCAL_EMAIL_DRAFTS.md).
 
@@ -164,7 +177,6 @@ This increment adds unwired local draft storage and metadata history, exact addi
 
 No base-schema, controller, navigation or HTTP call site activates this module yet; no new version is reserved. Builder mirroring and installer inventory include the guarded source. Next: inspect native evidence and contract review, then expose owner setup/private compose UI with current CSRF/revision checks and actual packaged browser/latest-release recovery acceptance after reconciling verified1.20main. Keep all real sending/provider/deployment gates intact.
 
-
 ## Earlier component preparation — superseded by current checkpoint
 
 Codex owns `codex/mail-drafts`, starting from main ceedcfd (published application1.19.0). Provider candidate1.20.0 remains in separate [PR #74](https://github.com/afterburn25/Cajun_Web/pull/74), awaiting full candidate acceptance and independent owner storage/check/UI review. The shared-hosting foundation #60 remains outside deployment after [ten negative reproductions](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6161071101); Devin retains those corrections after the provider review priority.
@@ -182,7 +194,6 @@ Next: inspect isolated matrix and obtain contract review before application expo
 Twenty-two supported starting packages through 1.19.0, including 1.0.8 and 1.11.1/1.11.2. UPDATE stages `cwp-update-1.20.0`; tested recovery/reapplication preserves earlier records, provider history and both original private keys. Existing owners explicitly prepare provider settings. The adapter was tested with synthetic loopback HTTPS, not a real 20i account or the target host. Inventory, pricing, provisioning, domain/VPS operations, SSH and billing integration remain unverified and unavailable. No live deployment, real API request, payment or customer mail occurred.
 
 Continue [local draft PR #75](https://github.com/afterburn25/Cajun_Web/pull/75), observed `03e98cd3b9e8742d2f890176e30d09f76b243c51` (OPEN). Storage/content have earlier independent review and native evidence; current integrated routes, forms and recovery require their own application results and screenshot inspection. Independent integration review found no blockers at 03e98cd in [6161813270](https://github.com/afterburn25/Cajun_Web/pull/75#issuecomment-6161813270); newer changes still require review. Add the actual immutable 1.20.0 upgrade/recovery baseline before reserving a later draft release. Codex owns application integration and releases. Devin retains canonical component corrections and independent review; [hosting #60 review](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6161864524) reproduces eight remaining cases at fe58312 despite 111 supplied checks passing. [Service-plan #53 findings](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6161469018) remain a separate correction lane. Preserve all branches and keep the full roadmap active.
-
 
 ## Historical provider preparation checkpoints — superseded by the publication above
 
@@ -238,7 +249,6 @@ Next: inspect the current PHP 8.2/8.4 matrix and [Devin review request](https://
 
 ## Previous verified publication — 1.19.0 (superseded checkpoint)
 
-
 [v1.19.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.19.0) is published and freshly downloaded/verified at immutable source/tag `22a2969692ab5bcc7f35158dcaa5355c623dc821` through [PR #72](https://github.com/afterburn25/Cajun_Web/pull/72). Assigned staff see recent email notices from explicit successful newest-20 inbox checks, with separate per-person opened/dismissed state and exact-message POST opening. Current permissions, mailbox grants and saved revisions filter counts/labels before exposure. Private admin/public bells preserve idle expiry, clear stale display and stay absent in client-support pages. No automatic IMAP synchronization or server read-flag writes. [Owner guide](docs/RECENT_EMAIL_NOTICES.md).
 
 [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38504271899): 1153 native (including 79 notice), 3,084 estimator, 1087 HTTP/Chromium, 205 filesystem/recovery, 779 Apache and 20 builder checks. PHP8.2/8.4 notice/receiving/diagnostic matrices and dependency reproduction pass as recorded in the report. All16 public assets, archive members/checksums and immutable tag verified; Windows/Linux bytes agree. Actual desktop and320px mail-only/public/owner-two-bell screens inspected; anonymous homepage pixels match1.18.0. [Report](docs/TEST_REPORT_1.19.0.md); [handoff](docs/DEVIN_HANDOFF_1.19.0.md).
@@ -247,10 +257,7 @@ Twenty-one supported starting packages:1.0.8 and1.1.0 through1.18.0, including1.
 
 Next: reconcile `codex/provider-settings` (observed `6ced20dc90fe93c37ab82399836d7ab0a3228290`) with this verified main baseline, resolve the proposed [owner 20i settings contract](https://github.com/afterburn25/Cajun_Web/blob/6ced20dc90fe93c37ab82399836d7ab0a3228290/docs/PROVIDER_SETTINGS_CONTRACT.md), and implement protected owner configuration, an explicit fixed read-only connection check and sanitized history. [Draft PR #74](https://github.com/afterburn25/Cajun_Web/pull/74) now preserves reviewed provider46b2826 and contains an isolated fixed probe at6ced20d: 171 canonical and120 adapter checks pass locally under default/no-extension PHP. Its site tree still equals this release; concrete HTTP transport, protected persistence and application integration remain pending. Inspect its current GitHub matrix/review before proceeding. [Owner API reference PR #73](https://github.com/afterburn25/Cajun_Web/pull/73) supplies a broader attributed endpoint map for later work. Preserve Devin provider #43 (observed `OPEN` at `46b282636ad83b22efe149310755d2d316d909bc`) and reviewed #71 ancestry, adapting canonical components without overwriting newer shared application files. The prior owner-requested GET/package succeeded; it proves that read only. Keep the Actions secret protected and retain operation-specific inventory/ownership/provisioning/domain/VPS/payment/SSH acceptance. Continue feasible roadmap work without a release-boundary stop.
 
-
-
 ## Previous verified publication — 1.18.0 (superseded checkpoint)
-
 
 [v1.18.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.18.0) is published and freshly downloaded/verified at immutable source/tag `91550d956c404585545dbd766c96f36f58ae0623` through [PR #70](https://github.com/afterburn25/Cajun_Web/pull/70). Assigned staff can explicitly open exact INBOX messages with current actor, global/read assignment and saved revision, verified TLS and exact UIDVALIDITY/UID/size checks. Escaped plaintext and maintained sanitized formatting appear in an opaque sandbox with restrictive CSP; server read flags stay unchanged. Whole MIME is limited to 256 KiB including encoded attachments. Strict intent/result audit, request limits and personal outcome history retain no message content. [Owner guide](docs/MAIL_MESSAGE_READER.md).
 
@@ -525,7 +532,6 @@ The owner approved a much larger CajunWebPro scope: **web design and white-label
 Release acceptance follow-up (parent `f007803`): HTTP/browser checks reached account revocation; console classification stopped on the intentionally invalid estimator response. The next commit scopes that expected resource message to the precise estimator URL, retains diagnostic JSON, adds original-contact and real-browser fresh-install coverage, scans PHP runtime diagnostics, and improves mobile consent wrapping. Full rerun required before publication.
 
 Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid versioned favicon URLs because it compared the query suffix as part of the path. Parse the URL path and fetch the actual referenced icon for byte equality. Application source is unchanged; rerun the full suite.
-
 
 ## Historical 2026-10-13 — Devin L-02 adapter contract
 
