@@ -1086,3 +1086,7 @@ Started separate `codex/hosting-provision-retry` from1f59074. Added exact curren
 Run38550491194 at9e599ef passed retained94+79 per PHP8.2/8.4 but the new suite collided with existing `hrci_` fixture tables before retry assertions. Use unique `htry_`; no production or assertion change, no acceptance claim for the failed run. Replacement matrix required.
 
 Replacement38550760697 reached the expected inactive-client refusal; the test worker had not caught its InvalidArgumentException. Add that expected refusal class while retaining PDO failure propagation and all assertions. No application change; a fresh complete matrix is required.
+
+### 2026-10-14 — retry native matrices verified
+
+Push38550996210 and PR38551004850 atd101665 each verify434 executions:44 retry +94 records +79 operations per PHP8.2/8.4. No PHP warnings in full push log; all2542 installer dependencies match committed bytes. Runtime remains9e599ef. Mail77/e9 now has complete7,854 application assertions/all19 workflows with verified packages and screens; review requested6166470289. Client83/eefe29e replaces failed support-renderer acceptance with38551118797. Service-desk61 review6166378842 retains56 supplied controls and reproduces six negative/five positive cases in default/no-ini, covering three outstanding findings. No live operation or release.

@@ -17,3 +17,7 @@ Client identity PR83 separately serializes legacy client writers; integrate that
 Initial Linux run38550491194 passed the retained94 record and79 operation cases per runtime, then stopped before retry assertions because the new fixture reused the record suite prefix. The retry fixture now uses its own `htry_` prefix; application code and all assertions are unchanged. Replacement acceptance remains pending.
 
 Replacement38550760697 reached the intended client-deactivation refusal, but its worker caught only RuntimeException while client absence uses InvalidArgumentException. Catch that expected refusal too; unexpected PDO failures still escape. This is a fixture correction, with no application or assertion relaxation. Complete replacement evidence remains required.
+
+## Verified native correction
+
+Downloaded push38550996210 and PR38551004850 atd101665 each pass44 new retry +94 retained record +79 retained operation assertions per PHP8.2/8.4,434 executions. All six reports per run verify; the complete push log has no PHP warnings. Runtime remains9e599ef; later corrections affect only fixture isolation/expected refusal handling and documentation. Full generated refresh,127 Markdown/1085 links and2542 exact committed installer dependency hashes pass. Independent review is still required; this is not provider, application, release or deployment acceptance.
