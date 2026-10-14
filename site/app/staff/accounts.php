@@ -131,7 +131,7 @@ function staff_reset_token(string $email): ?array {
 }
 function staff_view_permission(string $view): ?string {
     // The inbox controller checks mail.read with its exact current mailbox grant.
-    if($view==='mail-inbox')return null;
+    if(in_array($view,['mail-inbox','mail-message'],true))return null; // Mandatory current account authority in both controllers.
     if($view==='consultation-settings')return 'staff.manage';
     if(in_array($view,['consultations','consultation'],true))return 'website.manage';
     if(in_array($view,['login','forgot','reset','staff-setup','security','mailboxes'],true))return null;
@@ -145,6 +145,8 @@ function staff_view_permission(string $view): ?string {
     return 'website.manage';
 }
 function staff_action_permission(string $action): ?string {
+    if($action==='mail_message_setup')return 'staff.manage';
+    if($action==='mail_message_read')return null; // mail_message_read enforces the exact current account scope.
     if($action==='mail_inbox_setup')return 'staff.manage';
     if($action==='mail_inbox_read')return null; // mail_inbox_read enforces the exact account scope.
     if(str_starts_with($action,'mail_inbox_'))return 'mail.read';

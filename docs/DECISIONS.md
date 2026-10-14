@@ -149,3 +149,7 @@ The access component's logical capability/context identifiers are integration co
 ## 2026-10-13 — Bounded payment preparation before charging
 
 Reuse current project invoices and staff/client identities. Owner-only credentials use a separate external master key; public storage fallback cannot hold it. Authorize.net authentication checks are sandbox-only and do not certify other keys or transactions. Prepared invoice requests have no charge action or guest capability. This keeps current manual invoice semantics while the next increment implements transaction concurrency/reconciliation. M2 is partial; no provider success or live activation is inferred from fixtures.
+
+## 2026-10-13 — ship bounded maintained inbox headers in 1.17.0
+
+Source fc3bd89c5e1c286f9dc4df12d50dd566a4d4ab86 bundles the exact maintained IMAP/MIME dependency graph and licenses, with byte verification and private runtime mirroring. Preserve upstream locale filenames and charset-table bytes instead of editing libraries; update path grammar safely and decode only verified vendor source losslessly for scanning. Keep mailbox authority account-scoped and reuse existing identity/grants; generic permission checks without a mailbox cannot authorize reading. Headers remain request-scoped escaped text with strict access audit, not a shared message cache or complete sync cursor. Real mailbox rollout, bodies/attachments/send and exact-message bells are separate acceptance scopes.

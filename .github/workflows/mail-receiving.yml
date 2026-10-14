@@ -25,7 +25,7 @@ jobs:
       - uses: shivammathur/setup-php@d52fc211a0436f8839a587b3b5b8efddab4744ea
         with:
           php-version: ${{ matrix.php }}
-          extensions: openssl, mbstring, iconv, ctype
+          extensions: openssl, mbstring, iconv, ctype, dom
           coverage: none
       - name: Exact dependencies and bounded receiving acceptance
         run: |
@@ -34,13 +34,17 @@ jobs:
           python3 tools/check_mail_vendor.py --reproduce > qa/mail-receiving-vendor.txt
           php tests/mail-receiving/run.php > qa/mail-receiving-results.json
           php tests/mail-receiving/session_test.php > qa/mail-receiving-session-results.json
+          php tests/mail-receiving/body_test.php > qa/mail-message-body-results.json
+          php tests/mail-receiving/message_session_test.php > qa/mail-message-session-results.json
+          php -n -d extension=mbstring -d extension=iconv -d extension=ctype tests/mail-receiving/no_dom_test.php > qa/mail-message-no-dom-results.json
           python3 -m venv .ci-venv
           .ci-venv/bin/pip install --disable-pip-version-check cryptography==50.0.1
           .ci-venv/bin/python tests/mail-receiving/tls_test.py
+          .ci-venv/bin/python tests/mail-receiving/message_tls_test.py
           git diff --exit-code
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: mail-receiving-${{ matrix.php }}-${{ github.event.pull_request.head.sha || github.sha }}
-          path: qa/mail-receiving-*
+          path: qa/mail-*
           if-no-files-found: error
