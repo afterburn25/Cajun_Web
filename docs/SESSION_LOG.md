@@ -1,5 +1,10 @@
 # Session log
 
+## 2026-10-13 — HC-10 VPS lifecycle foundation component
+
+Request: continue without stopping. Started from `main` `5d810b1` on `devin/vps-foundation`. Implemented the safe-work portion of HC-10 per DEPENDENCY_GATES.md: canonical `foundation/vps/` — `VpsSpec` (bounded vCPU/RAM/disk, slug region, OS image), `VpsOffering` (admin monthly price, null = not orderable), `QuotaUsage` (entitlement/usage display, unknown = null), `VpsServer` (guarded lifecycle: pending→provisioning→active⇄suspended, provisioning fail/retry, suspend/resume in-flight rollback, **two-actor decommission** where approver must differ from requester, withdrawal and teardown-failure rollback, no silent cancel of active servers, terminal states, actor-attributed history) — plus `tests/vps/run.php` (58 checks, fixture specs/prices), `vps.yml` workflow, `VPS_FOUNDATION.md`, and continuity docs.
+
+Verified locally on PHP 8.4.25: 58/58 checks, all files `php -l` clean. Scope: no `site/` changes, catalog UI, schema, persistence or provider calls. Gate: Development pending — API verification. Next: Codex review/merge; adapter contract after refactor.
 ## 2026-10-14 — preserve full mail acceptance after runtime limit
 
 Started3e7138e. Downloaded38539811045/tested merge368b7b5:2183 native/form/combined,3084 estimator,1236 HTTP/Chromium,247 filesystem/recovery and21 builder checks pass. GitHub annotation confirms45m limit; Apache had reached no-rewrite1.13, no final Apache report, final source-diff step skipped. This is partial evidence, not application acceptance. Increased limit75m and added atomic incomplete Apache progress every25 checks/failure with flushed messages. No assertions, baselines or shipping bytes changed. Python compilation/docs checks precede replacement full acceptance; independent review remains required.
