@@ -45,7 +45,7 @@ function site_head(string $title, string $active='home', string $description='')
 <link rel="stylesheet" href="<?=esc(asset('site.css'))?>">
 <link rel="stylesheet" href="<?=esc(asset('premium.css'))?>">
 <?php if ($active === 'home'): ?><link rel="preload" as="image" href="<?=esc(asset('hero-detail.webp'))?>"><?php endif; ?>
-<link rel="stylesheet" href="<?=esc(asset('growth.css'))?>"><script defer src="<?=esc(asset('growth.js'))?>"></script><script defer src="<?=esc(asset('site.js'))?>"></script><script defer src="<?=esc(asset('activity.js'))?>"></script>
+<link rel="stylesheet" href="<?=esc(asset('growth.css'))?>"><script defer src="<?=esc(asset('growth.js'))?>"></script><script defer src="<?=esc(asset('site.js'))?>"></script><script defer src="<?=esc(asset('activity.js'))?>"></script><link rel="stylesheet" href="<?=esc(asset('mail-notices.css'))?>"><script defer src="<?=esc(asset('mail-notices.js'))?>"></script>
 <script type="application/ld+json" nonce="<?=nonce()?>"><?=json_encode(['@context'=>'https://schema.org','@type'=>'Organization','name'=>$brand,'url'=>site_url(),'logo'=>asset('logo.png')],JSON_UNESCAPED_SLASHES|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT)?></script>
 </head>
 <body class="cwp-site <?= $active === 'home' ? 'is-home' : 'is-inner' ?>" data-release="<?=esc(CWP_VERSION)?>">
@@ -60,6 +60,7 @@ function site_head(string $title, string $active='home', string $description='')
             <a class="<?=$selected?'active':''?>" href="<?=esc(page_url($key))?>" <?=$selected?'aria-current="page"':''?>><?=$label?></a>
         <?php endforeach; ?>
         </nav>
+        <?php if(!array_key_exists('support',$_GET)&&(!function_exists('support_current')||!support_current())): ?><span hidden data-mail-notice-bell data-mail-notice-endpoint="<?=esc(site_url('api/mail-notices.php'))?>"></span><?php endif; ?>
         <a class="btn outline nav-cta" href="<?=esc(page_url('contact'))?>">Start a Project <?=icon('arrow')?></a>
     </div>
 </header><nav class="growth-subnav" aria-label="Explore our services"><a href="<?=esc(page_url('why-custom'))?>">Why custom</a><a href="<?=esc(page_url('compare-wix'))?>">Wix comparison</a><a href="<?=esc(page_url('compare-squarespace'))?>">Squarespace comparison</a><a href="<?=esc(page_url('packages'))?>">Packages</a><a href="<?=esc(page_url('faq'))?>">Questions</a><a href="<?=esc(page_url('estimate'))?>">Plan a project</a><a href="<?=esc(page_url('consultation'))?>">Consultation</a><a href="<?=esc(site_url('portal/index.php'))?>">Client workspace</a></nav>

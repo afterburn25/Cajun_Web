@@ -65,7 +65,10 @@ def main():
         if not path.is_file() or not path.read_text(encoding="utf-8").strip():
             errors.append(f"Missing or empty continuity document: {name}")
 
-    documents = {path: path.read_text(encoding="utf-8") for path in ROOT.rglob("*.md") if ".git" not in path.relative_to(ROOT).parts and not any(path.is_relative_to(vendor) for vendor in vendors)}
+    # Generated packages and retained test fixtures are evidence, not source
+    # documentation. Their copied upstream READMEs may have omitted export links.
+    generated = {".git", "test-runtime", "qa", "dist"}
+    documents = {path: path.read_text(encoding="utf-8") for path in ROOT.rglob("*.md") if path.relative_to(ROOT).parts[0] not in generated and not any(path.is_relative_to(vendor) for vendor in vendors)}
     local_links = 0
     heading_links = 0
     for path, source in documents.items():
