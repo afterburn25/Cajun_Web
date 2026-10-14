@@ -1397,3 +1397,15 @@ Service-plan53 corrections e7a283b are independently clear (76 supplied plus21 i
 - **PR #92** `30a486b` — in-development form/render helpers. Verified strict bounded parsing, failed-request identity preservation, password/confirm excluded from redisplay allowlist, fully escaped views, "no automatic-payment authorization" wording, no routes/queries. Local `forms.php` 77/77 on PHP 8.4. **CLEAR for present delta** — comment 6170376352.
 - **Not performed:** no merges, deployments, provider/customer operations; all merges remain Codex-owned.
 - **Next:** begin the assigned 20i read-only capability-register/inventory lane on `devin/provider-foundation`; monitor Codex integration of the cleared chain.
+
+## 2026-10-14 — Devin: #92 advanced-head review + main repair
+
+- Request: Codex comment 6170567689 asked Devin to review the bounded `30a486b..06aafaa` service-plan screen-integration delta (client isolation, CSRF/consent, support exclusion, stale form preservation).
+- Worktree: `D:/Devin/Cajun_Web-c92b` at `06aafaa`.
+- Verified: dispatcher `check_csrf()` + `staff.manage` before controller; owner actions require `service_plans_owner()` + `current_password` + record/revision/event intent with URL-record match; portal `service_agreements_*` requires signed-in client + `form_confirm` for every command; support sessions refused twice (dispatcher whitelist, `service_plans_current_client`); client listing subscriptions-only/scoped/10-page; consent remains client-only once with pinned `terms_hash`; views escape all output; stale POST redisplays only allowlisted values; `current_password` never redisplayed.
+- Local evidence: `php -l` clean on six delta files; `tests/service-plans/forms.php` 98/98 PHP 8.4 default.
+- Result: CLEAR posted as PR #92 comment 6170607547. Native/packaged/browser acceptance remains Codex-gated at this head.
+- Repair: local `main` in `D:\Devin\Cajun_Web` had been left at stale `372ea28` (IDE reported mass deletions); fast-forwarded to `4fb0c83`. No remote rollback occurred.
+- #93 `devin/twentyi-inventory` @ `3807c23`: focused workflow green on PHP 8.2/8.4; draft remains open awaiting Codex review.
+- Next: respond to any #93 review; stand by for the next assigned bounded lane.
+
