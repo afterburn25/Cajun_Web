@@ -42,6 +42,13 @@ read — every entry's documented purpose is retrieval only.
 
 Mutating, credential-returning, DNS/mail-write, power, restore and
 transfer endpoints are deliberately absent — not merely unimplemented.
+`InventoryRegister::exclusions()` enumerates the boundary in code:
+`vps.vnc` (credential-bearing), `vps.stop`/`vps.start` (GET-labelled
+mutations), `stackusers.grants` and `packages.stackUserList`
+(access-control identity detail) and `domains.pendingTransferStatus`
+(possible transfer-authorization detail, schema unverified). An
+exclusion is a refusal: none may join the read set without fresh
+review and verified schema.
 `GET /domain`'s list-versus-summary shape is unresolved by the owner
 reference; it is registered for identity projection only and a missing
 `id` key there is an honest partial/empty observation, not a schema

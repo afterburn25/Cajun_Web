@@ -1294,3 +1294,8 @@ Starting local documentation mergee86f2c934d4f4a5d0edd3365dc145a71992606b2 over 
 - `devin/twentyi-inventory-vps` restacked onto `bb042f8`/`f893a15` at current head (PR #94).
 - `InventoryResource` inherits the second-review hardening: numeric unknown keys cast to string (no TypeError), private constructor (factory-only), snapshot detaches record/reason lists, `COVERAGE_COMPLETE` refused.
 - Four identity-only GET descriptors + enumerable exclusions unchanged; 139 checks green under PHP 8.4 default and `php -n`.
+
+## 2026-10-14 — Devin: explicit read exclusions
+
+- `InventoryRegister::exclusions()` enumerates the documented endpoints refused from the inventory surface: `vps.vnc` (credentials), `vps.stop`/`vps.start` (GET-labelled mutations), `stackusers.grants`/`packages.stackUserList` (access-control identity), `domains.pendingTransferStatus` (unverified transfer detail).
+- Operation keys align with `TwentyICatalog` names; checks assert exclusions never appear in the read set. Contract doc updated; exclusions only tighten the boundary.
