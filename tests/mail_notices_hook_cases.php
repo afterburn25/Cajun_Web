@@ -1,0 +1,40 @@
+<?php
+/** Included by the disposable native fixture; exercises production readers and multiple processes. */
+declare(strict_types=1);
+if(PHP_SAPI!=='cli'||!defined('CWP_BOOT')||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
+nt_actor();nt_age();$beforeCalls=$bodyCalls;
+$result=mail_inbox_read($id,2,'nt_resolve','nt_headers');$items=mail_notices_feed();
+nt_ok('Production inbox reader records its complete notice window in the terminal transaction',$result['code']==='ok'&&array_column($items,'uid')===['81','82']&&mail_notices_count()===2);
+nt_ok('Observed window is tied to the actual successful inbox request',one('SELECT request_id FROM '.table('mail_notice_windows').' WHERE account_id=?',[$id])['request_id']===$result['request_id']);
+$result=nt_read($items[0]);
+nt_ok('Production exact notice read uses injected transport with no network transaction',$result['code']==='ok'&&$bodyCalls===$beforeCalls+1&&str_contains($result['content']['text'],'SYNTHETIC_PRIVATE_BODY'));
+nt_ok('Successful exact read binds the submitted opaque handle and local opened state',$result['notice_handle']===$items[0]['handle']&&mail_notices_count()===1&&one('SELECT opened_at FROM '.table('mail_notice_states').' WHERE handle=? AND actor_id=1',[$items[0]['handle']])['opened_at']!==null);
+nt_actor(2);nt_ok('Actual BODY.PEEK reader leaves the other staff count unchanged',mail_notices_count()===2);nt_actor();
+nt_age();$snapshot=nt_snapshot();$results=(int)query('SELECT COUNT(*) FROM '.table('mail_message_results'))->fetchColumn();
+nt_ok('Production message result audit failure rolls back opened state',nt_audit_failure(fn()=>nt_read($items[1]),'message_finished')&&nt_snapshot()===$snapshot);
+nt_ok('Production message audit failure leaves intent incomplete',(int)query('SELECT COUNT(*) FROM '.table('mail_message_results'))->fetchColumn()===$results&&one('SELECT q.id FROM '.table('mail_message_reads').' q LEFT JOIN '.table('mail_message_results').' r ON r.id=q.id WHERE r.id IS NULL')!==null);
+nt_age();$results=(int)query('SELECT COUNT(*) FROM '.table('mail_inbox_results'))->fetchColumn();
+nt_ok('Production inbox audit failure rolls back its replacement window',nt_audit_failure(fn()=>mail_inbox_read($id,2,'nt_resolve',fn()=>nt_batch(['83'])),'inbox_finished')&&nt_snapshot()===$snapshot);
+nt_ok('Production inbox audit failure retains no successful result',(int)query('SELECT COUNT(*) FROM '.table('mail_inbox_results'))->fetchColumn()===$results);
+nt_age();$result=mail_inbox_read($id,2,'nt_resolve',function(){throw new CajunWebPro\Foundation\MailReceiving\ReceivingFailure('tls');});
+nt_ok('Failed inbox check preserves the last successful notices with a failed outcome',$result['code']==='tls'&&nt_snapshot()===$snapshot&&mail_notices_accounts()[0]['latest_outcome']==='failed');
+nt_age();$result=nt_read($items[1],function($host)use($id){nt_observe($id,nt_batch(['99']),null,2);return nt_resolve($host);});
+nt_ok('Notice eviction during DNS denies credentials before transport',$result['code']==='access_changed'&&$result['content']===null&&$bodyCalls===$beforeCalls+2);
+nt_age();$staleCalls=$bodyCalls;nt_deny('Evicted exact notice is denied before new intent',fn()=>nt_read($items[1]));nt_ok('Stale notice never reaches message transport',$bodyCalls===$staleCalls);
+nt_observe($id,nt_batch(['100']),null,2);$item=mail_notices_feed()[0];nt_age();$worker=nt_worker('pause-notice-dns',$item);
+nt_ok('Independent exact-notice process reaches DNS outside the staff mutex',trim(fgets($worker[1][1]))==='resolving');
+nt_observe($id,nt_batch(['101']),null,2);fwrite($worker[1][0],"continue\n");fflush($worker[1][0]);
+nt_ok('Concurrent refresh can evict during DNS and prevents any credential transport',nt_finish($worker)==='access_changed:0');
+$item=mail_notices_feed()[0];$worker=null;
+staff_locked(function()use($id,$item,&$worker):void {
+    $worker=nt_worker('dismiss-notice-worker',$item);nt_ok('Concurrent dismissal waits while refresh owns the staff mutex',trim(fgets($worker[1][1]))==='ready');
+    nt_observe($id,nt_batch(['102']),null,2);
+});
+nt_ok('Dismissal after concurrent eviction refuses stale item without orphaned state',nt_finish($worker)==='unavailable'&&!one('SELECT handle FROM '.table('mail_notice_states').' WHERE handle=?',[$item['handle']]));
+$item=mail_notices_feed()[0];$first=nt_worker('dismiss-notice-worker',$item);$second=nt_worker('dismiss-notice-worker',$item);
+nt_ok('Two independent dismissal processes start',trim(fgets($first[1][1]))==='ready'&&trim(fgets($second[1][1]))==='ready');
+nt_ok('Concurrent same-person dismissals remain idempotent',nt_finish($first)==='dismissed'&&nt_finish($second)==='dismissed'&&(int)query('SELECT COUNT(*) FROM '.table('mail_notice_states').' WHERE handle=? AND actor_id=1',[$item['handle']])->fetchColumn()===1);
+$_SESSION['last_activity']=time()-120;$idle=$_SESSION['last_activity'];$summary=mail_notices_passive_summary();
+nt_ok('Passive header summary is local bounded and preserves idle time',$summary===['count'=>0,'capped'=>false,'url'=>admin_url('mail-notices')]&&$_SESSION['last_activity']===$idle);
+nt_actor(4);nt_deny('Unassigned owner receives no public header summary',fn()=>mail_notices_passive_summary());nt_actor();
+nt_ok('Production hooks never retain bodies headers or credentials',!str_contains(nt_snapshot(),'SYNTHETIC_PRIVATE')&&!str_contains(nt_snapshot(),'private password'));
