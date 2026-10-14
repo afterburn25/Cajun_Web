@@ -62,7 +62,7 @@ def run_browser(env,browser):
     page.on('dialog',lambda d:(dialogs.append(d.message),d.dismiss()))
     def observe(route):
         url=route.request.url
-        if route.request.frame.url=='about:srcdoc':frame_routes.append(url)
+        if not route.request.is_navigation_request() and route.request.frame.url=='about:srcdoc':frame_routes.append(url)
         if url=='https://external.example.invalid/reference':external.append(dict(route.request.headers));route.fulfill(status=200,content_type='text/html',body='<h1>Synthetic destination</h1>')
         elif url.startswith(BASE):route.continue_()
         else:remote.append(url);route.abort()
@@ -86,12 +86,22 @@ def run_browser(env,browser):
     frame.get_by_role('button',name='Injected form').click();page.wait_for_timeout(100)
     script_ran=frame.locator('body').evaluate('Boolean(window.cspInjected)')
     (QA/'message-frame-security.json').write_text(json.dumps({'browser':browser.version,'frame_request_events':frame_resources,'frame_routes':frame_routes,'failed_requests':failed_requests,'dialogs':dialogs,'remote_routes':remote,'script_ran':script_ran,'security_console':security_console},indent=2),encoding='utf-8')
-    check('Actual frame CSP and sandbox independently block injected scripts resources and forms',not frame_resources and not dialogs and not remote and not script_ran)
+    injected_urls={'https://untrusted.example.invalid/injected',BASE+'/existing/admin/index.php?view=settings'}
+    csp_blocked={q['url'] for q in failed_requests if q['failure']=='csp'}
+    # Chromium versions differ on emitting request events for CSP-blocked
+    # attempts. Require the two actual CSP failures and no route/network work;
+    # every reported frame request must belong to those blocked attempts.
+    check('Actual frame CSP and sandbox independently block injected scripts resources and forms',injected_urls<=csp_blocked and set(frame_resources)<=injected_urls and not frame_routes and not dialogs and not remote and not script_ran)
     frame.locator('body').evaluate("(body)=>body.querySelectorAll('img,script,form').forEach(n=>n.remove())")
     saved_url=page.url
     with context.expect_page() as event:frame.get_by_role('link',name='Referenced website').click()
     popup=event.value;popup.wait_for_load_state('load');check('Only user-selected external link opens without referrer or opener',len(external)==1 and 'referer' not in external[0] and popup.evaluate('window.opener===null') and page.url==saved_url);popup.close()
-    page.locator('[data-mail-message]').screenshot(path=str(QA/'Mail-Message-Desktop.png'));page.set_viewport_size({'width':390,'height':844});page.locator('[data-mail-message]').screenshot(path=str(QA/'Mail-Message-Mobile.png'))
+    page.evaluate('()=>{document.activeElement.blur();window.scrollTo(0,0)}')
+    page.screenshot(path=str(QA/'Mail-Message-Desktop.png'))
+    page.set_viewport_size({'width':390,'height':844});expect(page.locator('.admin-sidebar')).not_to_be_in_viewport()
+    page.evaluate('window.scrollTo(0,0)');page.screenshot(path=str(QA/'Mail-Message-Mobile.png'))
+    page.locator('[data-message-plain]').scroll_into_view_if_needed();page.screenshot(path=str(QA/'Mail-Message-Mobile-Plain.png'))
+    page.locator('[data-message-formatted]').scroll_into_view_if_needed();page.screenshot(path=str(QA/'Mail-Message-Mobile-Formatted.png'))
     check('Message controls plaintext and iframe fit mobile screen',page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
     check('Message browser flow has no script errors',not errors)
     before=inbox_server.connections;page.goto(message);check('Browser GET does not reload or cache message content',page.locator('[data-message-content]').count()==0 and inbox_server.connections==before)

@@ -2,7 +2,7 @@
 
 ## 1.18.0 candidate — exact-message reading (unreleased)
 
-- Acceptance investigation: preserve the failing actual-browser defense assertion and capture synthetic request/CSP/sandbox diagnostics before failure. Local replay is not installed-app proof; release remains pending.
+- Acceptance correction: actual Chromium diagnostics prove injected image attempts are blocked by CSP before network handling; the assertion now distinguishes blocked events from network requests and still requires both explicit CSP failures. Stable mobile viewport captures include plaintext and formatted views. Shipping behavior is unchanged; complete release acceptance remains pending.
 
 - Align the actual TLS wrong-UID browser fixture with the established unavailable-message classification; malformed MIME remains a protocol failure and neither exposes partial content.
 - Update the existing browser availability assertion for the new message-reading feature while preserving connection, attachment and sending limitations; all 69 new native message tests pass, corrected browser acceptance pending.
