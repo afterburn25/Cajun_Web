@@ -1,0 +1,35 @@
+<?php
+declare(strict_types=1);
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+require_once CWP_CODE_ROOT.'/app/providers/inventory.php';
+
+/**
+ * Client-facing view of explicitly owner-linked 20i services. Only mappings
+ * the owner approved appear; each row shows the package's last good observed
+ * state. Absence from an observation is displayed honestly and never implies
+ * deletion, cancellation or suspension.
+ */
+function provider_services_portal_render(): never {
+    $client=studio_client();if(!$client)fail_page('Sign in to view your services.',403);
+    if(support_current())support_record('portal.view','services',(string)$client['id']);
+    site_head('Your hosting services','portal');support_banner();
+    echo '<section class="section"><div class="container"><span class="eyebrow">YOUR SERVICES</span><h1>Hosting services</h1><div class="button-row"><a class="btn outline" href="'.esc(studio_url()).'">All projects</a></div>';
+    if(!provider_inventory_ready()) {
+        echo '<p>Your services will appear here once the studio enables hosting inventory.</p></div></section>';site_foot(false);exit;
+    }
+    $services=provider_inventory_client_services((int)$client['id']);
+    if(!$services)echo '<p>No hosting services are linked to your account yet. Contact the studio if you expected one.</p>';
+    echo '<div class="workspace-grid">';
+    foreach($services as $service) {
+        $package=$service['package'];echo '<article class="workspace-card">';
+        if($package) {
+            echo '<h2>'.esc($package['name']).'</h2><p>'.esc($package['package_type_name']??'Hosting package').' · '.esc((int)$package['enabled']===1?'Active':'Disabled').' · Linked '.esc($service['link']['linked_at']).' UTC</p>';
+            if($package['names'])echo '<p>'.esc(implode(', ',$package['names'])).'</p>';
+            echo '<p class="hint">Observed '.esc($service['observed_at']).' UTC. Status reflects the studio\'s last confirmed read.</p>';
+        } else {
+            echo '<h2>Hosting service #'.(int)$service['link']['package_id'].'</h2><p>'.esc($service['observation']===null?'No observation is available yet.':'This service was not present in the last confirmed inventory read.').' Contact the studio for details.</p>';
+        }
+        echo '</article>';
+    }
+    echo '</div></section>';site_foot(false);exit;
+}

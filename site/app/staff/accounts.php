@@ -162,6 +162,7 @@ function staff_action_permission(string $action): ?string {
     if(str_starts_with($action,'appointments_'))return 'website.manage';
     if(in_array($action,['logout','account_save'],true))return null;
     if(str_starts_with($action,'provider_settings_'))return 'staff.manage';
+    if(str_starts_with($action,'provider_inventory_'))return 'staff.manage';
     if(str_starts_with($action,'mail_accounts_'))return 'staff.manage';
     if($action==='reviews_setup')return 'staff.manage';
     if($action==='mail_templates_setup')return 'staff.manage';
