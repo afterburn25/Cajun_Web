@@ -129,13 +129,13 @@ function provider_inventory_refresh(string $id,int $revision,#[\SensitiveParamet
 /** Latest finished refresh of any state — the freshness display. */
 function provider_inventory_latest(string $profileId): ?array {
     provider_settings_manager();
-    return one('SELECT r.*,f.profile_id,f.profile_revision,f.actor_id,f.started_at,f.started_epoch,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? ORDER BY f.started_epoch DESC LIMIT 1',[$profileId]);
+    return one('SELECT r.*,f.profile_id,f.profile_revision,f.actor_id,f.started_at,f.started_epoch,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$profileId]);
 }
 
 /** Last good observation: the newest refresh that actually carried packages. */
 function provider_inventory_observation(string $profileId): ?array {
     provider_settings_manager();
-    return one('SELECT r.*,f.profile_id,f.profile_revision,f.actor_id,f.started_at,f.started_epoch,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? AND r.state IN (\'complete\',\'partial\') ORDER BY f.started_epoch DESC LIMIT 1',[$profileId]);
+    return one('SELECT r.*,f.profile_id,f.profile_revision,f.actor_id,f.started_at,f.started_epoch,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? AND r.state IN (\'complete\',\'partial\') ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$profileId]);
 }
 
 /** Validated package rows of one recorded observation. */
@@ -154,7 +154,7 @@ function provider_inventory_links(string $profileId): array {
 /** Bounded refresh history for one profile — every recorded result, newest first. */
 function provider_inventory_history(string $profileId,int $page=1): array {
     provider_settings_manager();$page=max(1,min($page,100000));
-    return all('SELECT f.id,f.started_at,f.started_epoch,f.profile_revision,r.state,r.reason,r.scope,r.coverage,r.package_count,r.skipped,r.finished_at,r.elapsed_ms,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? ORDER BY f.started_epoch DESC LIMIT 21 OFFSET '.(($page-1)*20),[$profileId]);
+    return all('SELECT f.id,f.started_at,f.started_epoch,f.profile_revision,r.state,r.reason,r.scope,r.coverage,r.package_count,r.skipped,r.finished_at,r.elapsed_ms,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 21 OFFSET '.(($page-1)*20),[$profileId]);
 }
 
 function provider_inventory_link_events(string $profileId,int $page=1): array {
@@ -210,7 +210,7 @@ function provider_inventory_client_services(int $clientId): array {
     $links=all('SELECT l.* FROM '.table('provider_package_links').' l WHERE l.client_id=? ORDER BY l.package_id',[$clientId]);
     $out=[];
     foreach($links as $link) {
-        $observation=one('SELECT r.id AS refresh_id,r.state,r.coverage,f.started_at FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id WHERE f.profile_id=? AND r.state IN (\'complete\',\'partial\') ORDER BY f.started_epoch DESC LIMIT 1',[$link['profile_id']]);
+        $observation=one('SELECT r.id AS refresh_id,r.state,r.coverage,f.started_at FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id WHERE f.profile_id=? AND r.state IN (\'complete\',\'partial\') ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$link['profile_id']]);
         $package=$observation?one('SELECT * FROM '.table('provider_observation_packages').' WHERE refresh_id=? AND package_id=?',[$observation['refresh_id'],$link['package_id']]):null;
         if($package){$package['names']=json_decode($package['names'],true);$package['package_labels']=json_decode($package['package_labels'],true);unset($package['stack_users'],$package['unmapped_keys']);}
         $out[]=['link'=>$link,'package'=>$package,'observed_at'=>$observation['started_at']??null,'observation'=>$observation===null?null:'present','present'=>$package!==null];

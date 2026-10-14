@@ -6,14 +6,15 @@ require_once CWP_CODE_ROOT.'/database/schema/provider_inventory_schema.php';
 
 function provider_inventory_validate_schema(string $name,string $sql): void {
     $unique=match($name) {
-        'provider_refreshes','provider_refresh_results','provider_package_link_events'=>[],
+        'provider_refreshes'=>['seq'=>['seq']],
+        'provider_refresh_results','provider_package_link_events'=>[],
         'provider_observation_packages'=>['observation_identity'=>['refresh_id','package_id']],
         'provider_package_links'=>['link_target'=>['profile_id','package_id']],
         default=>throw new LogicException('Unknown provider inventory storage.'),
     };
     catalog_validate_schema($name,$sql,$unique);
     foreach(all('SHOW FULL COLUMNS FROM '.table($name)) as $column) {
-        if($column['Extra']!=='' && !($name==='provider_package_link_events' && $column['Field']==='id' && $column['Extra']==='auto_increment')) throw new RuntimeException('Incompatible provider inventory columns. Existing data was preserved.');
+        if($column['Extra']!=='' && !(($name==='provider_package_link_events' && $column['Field']==='id' || $name==='provider_refreshes' && $column['Field']==='seq') && $column['Extra']==='auto_increment')) throw new RuntimeException('Incompatible provider inventory columns. Existing data was preserved.');
         if($column['Default']!==null) throw new RuntimeException('Incompatible provider inventory columns. Existing data was preserved.');
         $expected=match(true) {
             $name==='provider_package_link_events' && $column['Field']==='id'=>null,
