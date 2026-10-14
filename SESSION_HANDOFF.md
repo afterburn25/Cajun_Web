@@ -1,10 +1,12 @@
 # Session handoff — read before continuing
 
-## Independent PR109 review in progress
+## Independent PR109 review — three reproduced findings
 
-The owner assigned complete 20i implementation to Devin. This separate `codex/review-twentyi-ledger` branch preserves exact PR109 source `318471ef3d2cc1fb28994efc94dfe8e0dec7b895` and adds review-only synthetic tests/workflow. No shipping or foundation implementation is changed. The new probes test approval binding across profile disable/credential replacement, invalid UTF-8 scope-key refusal, and exact grants after 64 unrelated newer scopes. A failed behavior check is a review finding, not feature acceptance.
+Devin retains complete 20i implementation. This separate `codex/review-twentyi-ledger` branch preserves shipping/foundation source `318471ef3d2cc1fb28994efc94dfe8e0dec7b895`; test source `075e7456a8c64cc6e915113f7436a62af1a01522` adds only isolated review controls/workflow. [Review and correction request6177728792](https://github.com/afterburn25/Cajun_Web/pull/109#issuecomment-6177728792) records three issues: approvals survive configured-account replacement/disable; invalid UTF-8 map keys collide in the scope HMAC; and64 unrelated newer scopes hide an unexpired grant. Correction implementation remains on Devin's branch.
 
-The supplied native suite could not run under Windows because the existing provider vault correctly requires POSIX0600 file permissions; that failed local attempt is retained and is not a provider defect or acceptance claim. The dedicated Linux PHP8.2/8.4/MariaDB workflow runs the unmodified supplied tests followed by these independent controls, uploads both reports even on findings, and uses no real credentials or provider calls. Pending: download exact results/logs, report only reproduced findings to Devin on PR109, and leave corrections on his branch. Current published1.23 remains unchanged; Codex's project-history acceptance and planning work remain separate.
+Supplied push38631145645 and PR38631154380 each pass38 named native checks on PHP8.2/8.4. Independent [review38631821136](https://github.com/afterburn25/Cajun_Web/actions/runs/38631821136) repeats38 successfully per runtime, then reproduces the same four failed behavioral checks and four passing controls per runtime. All eight JSON reports and full logs verify without PHP diagnostics or unexpected fixture failures. This review run is intentionally recorded as **failed behavioral acceptance**, not success. The earlier Windows attempt refused the existing POSIX0600 vault requirement; no protection was changed. Its owned isolated database was shut down after verifying the process identity.
+
+Next: await Devin's exact correction source, inspect schema/installer changes and rerun these controls against it; do not merge this review harness as product implementation. No real provider credentials, transport, customer operation, deployment or release occurred. Published1.23 is unchanged, and Codex's non-20i planning/project-history work remains separate. Full roadmap remains active.
 
 
 ## Owner allocation override — 2026-10-14

@@ -2,7 +2,7 @@
 
 ## Review only — provider operation approvals
 
-- Add isolated current-account/scope/history negative controls for Devin PR109, preserving exact shipping source318471e. Linux results are pending; no implementation, release or deployment change.
+- Add isolated current-account/scope/history negative controls for Devin PR109, preserving exact shipping source318471e. Linux PHP8.2/8.4 reproduces three grouped approval findings after38 supplied tests pass per runtime; review6177728792 requests Devin corrections. No implementation, release or deployment change.
 
 ## 1.23.0 — published and verified
 
