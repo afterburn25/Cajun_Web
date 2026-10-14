@@ -1056,3 +1056,7 @@ PHP8.4.25 default and no-ini both pass52 checks; syntax passes. Matrix execution
 ## 2026-10-14 — Submission matrix mountpoint correction
 
 Starting c809a0d: both cells of38524946551 failed during Docker startup, before PHP, because /workspace/qa did not exist under its read-only parent. Create qa before mounting the dedicated writable results directory, matching the existing content workflow. No source/test behavior or network restriction changed; local52/default/no-ini remains the only accepted preparation execution. Replacement matrix and artifact inspection remain next; draft application38523831728 continues separately.
+
+## 2026-10-14 — Downloaded preparation matrix and replacement draft visuals
+
+From59bb4bf, downloaded38525211291 and inspected all four named JSON reports:52/52 preparation checks per PHP8.2/8.4 default/no-ini cell. Source and tests remain unchanged; this commit records evidence only. Independent review requested in issue2 comment6162716744. Separately, draft231d1f7 application38523831728 has1174 successful HTTP/Chromium checks; actual replacement desktop/mobile captures inspected, homepage pixels equal published1.20, and no PHP diagnostics. Recovery/Apache are still running; do not restart that handle or claim full acceptance. Current draft native/content matrices38523831664/38523831668 downloaded and verified78+41+41/71-per-cell at tested merge144f9f3. Next: finish draft acceptance/release gates and implement maintained MIME/SMTP on this separate branch. No sending, external action or new release.

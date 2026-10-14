@@ -2,6 +2,8 @@
 
 ## Current isolated implementation — immutable submission preparation
 
+Replacement [38525211291](https://github.com/afterburn25/Cajun_Web/actions/runs/38525211291) at59bb4bf is now downloaded and verified: all52 named preparation checks pass in each PHP8.2/8.4 default/no-ini cell (four JSON reports). This proves isolated immutable preparation only. The earlier runner failure is superseded; independent review, MIME/SMTP and application acceptance remain separate.
+
 Initial matrix38524946551 atc809a0d failed before PHP execution because the read-only workspace lacked the nested qa mountpoint. The runner now creates that empty mountpoint before Docker starts, following the existing isolated content workflow. Source, tests, read-only mount and network-disabled boundary are unchanged. No matrix acceptance is claimed until the replacement run succeeds and named evidence is inspected.
 
 From contract22e1b93, `foundation/mail-submission/SubmissionSnapshot.php` now prepares a bounded immutable private snapshot from canonical `DraftContent`. It binds server-supplied submission/author/draft/account identities, exact revisions, selected sender, timestamp and content into a deterministic fingerprint and Message-ID. To/Cc/Bcc remain separate, every intended envelope recipient is retained, and no-recipient drafts are refused. Referenced input/returned-array mutation cannot retarget the snapshot. This fingerprint grants no authority and is not an SMTP receipt.

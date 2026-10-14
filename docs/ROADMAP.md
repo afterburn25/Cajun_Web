@@ -1,5 +1,7 @@
 # Approved roadmap and acceptance criteria
 
+Replacement [38525211291](https://github.com/afterburn25/Cajun_Web/actions/runs/38525211291) at59bb4bf is now downloaded and verified: all52 named preparation checks pass in each PHP8.2/8.4 default/no-ini cell (four JSON reports). This proves isolated immutable preparation only. The earlier runner failure is superseded; independent review, MIME/SMTP and application acceptance remain separate.
+
 Current preparation from contract22e1b93: canonical immutable `SubmissionSnapshot` is implemented outside deployment with52 locally passing default/no-ini checks. It supplies deterministic content/revision binding and envelope inputs only; no MIME/SMTP, authentication, persistence or UI is implemented. PHP8.2/8.4 matrix and independent review are pending. Earlier contract-only descriptions below are historical.
 
 ## Active preparation — SMTP submission

@@ -2,6 +2,8 @@
 
 ## Unreleased — isolated immutable submission preparation
 
+Downloaded replacement38525211291 at59bb4bf verifies52 named preparation checks in all four PHP8.2/8.4 default/no-ini cells. No MIME, SMTP or application acceptance is implied.
+
 Correct the isolated CI mountpoint before container startup; initial38524946551 ran no PHP. Replacement matrix pending.
 
 Add a canonical reference-free private submission snapshot, selected sender/recipient validation, stable Message-ID and full content/revision fingerprint.52 local preparation checks pass default/no-ini; matrix pending. No maintained MIME/SMTP, credentials, persistence, site/runtime integration or sending yet.
