@@ -1,5 +1,43 @@
 # Project status
 
+## Current candidate — 1.23.0 client safeguards and hosting groundwork
+
+Published [1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) remains the latest verified download at immutable sourcee3b434f. Candidate1.23.0 is prepared on `codex/hosting-integration`/PR85 after the verifieda9 combined baseline and documentation-only main mergee86f2c9. No1.23 tag, release or live deployment exists. [Candidate guide](docs/CLIENT_ACCOUNT_SAFEGUARDS.md).
+
+Combineda9/tested mergea4278b8 completed application38554890744 with all8,234 named assertion executions:2,460 native/form/combined,3,084 estimator,1,275 HTTP/Chromium,247 unprivileged recovery,1,147 Apache and21 builder. All21 applicable workflows succeeded. Final reports/ZIP members/CRCs/hashes were downloaded and verified; COMPLETE/FULL are byte-identical to Windows, and UPDATE differs only by its recorded source commit. The actual reviewed desktop/mobile screenshots match the final artifact; homepage pixels equal published1.21 and1.22. Independent client and combined reviews6166706518/6167231488 are clear for that preserved source.
+
+This candidate aligns application/installer/update labels at1.23, adds the actual published1.22 COMPLETE package (2553files, SHA256ba90fc84b4eb3b06e1e89ae46124cab1d759f1df10a0b9a9b1a53394796cf5fb) and its exact UPDATE shims to the retained catalog, and extends all25 supported upgrade baselines. New latest1.22 cases seed accepted, unknown, unresolved and abandoned submission records before updating; they check retained drafts/keys/history and idempotent explicit request replay after update, recovery and reapplication. These new cases are prepared and syntaxchecked only. Current candidate application/latest1.22 recovery, additive review and exact-main release acceptance remain required.
+
+User-facing changes retain current client edit/invitation versions, preserve escaped unsaved changes after conflicts, serialize account changes, enforce one-use unexpired invitations and exclude client administration during support sessions. Existing delegated client-management access and mail Send remain. Hosting lifecycle/journal/storage/dispatch/local provisioning retry are internal groundwork; no hosting UI, worker, fresh storage activation or provider write is enabled. Separate deletion-retry87 is not included. Devin's read-only20i inventory assignment6167449082 and reviewed serviceplan53/service-desk61 stay separate.
+
+Next: refresh/verify the exact candidate installer, run current full acceptance with actual1.22 retention/replay and inspect screenshots, review the new baseline/version delta, then integrate and perform exact-main package/publication gates. Keep1.22 immutable and continue the full roadmap. No customer send, payment, SSH or production provider operation is performed by these tests.
+
+## Earlier checkpoints — historical evidence
+
+## Current integration — published mail baseline preserved
+
+Published [1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) is verified at immutable sourcee3b434f: all16 public assets downloaded and all7,854 exact-main assertion executions checked. Publication documentation PR86 is merged at4fb0c83. This merge preserves that documentation and all existing hosting/client histories; it changes no runtime, tests, workflows, installer bytes or version relative to combined85/a9beb6e. It is not another1.22 release.
+
+Combined PR85 has clear independent review6167231488; client83 has clear review6166706518. Currenta9 browser/native/Windows evidence is verified:2,460 native/form/combined,1,275 HTTP/Chromium,3,084 estimator and21 builder executions, actual desktop/mobile screenshots and identical published homepage pixels. Full application38554890744 passed unprivileged recovery and is still executing Apache at this checkpoint; no full pass or total is claimed yet. Keep that same run alive and inspect its final artifact before integration. All earlier parent evidence stays scoped to its original commit.
+
+The combined source preserves mail Send, current-version/strict-audit client administration, support403 and reviewed internal hosting journal/storage/dispatch/provisioning-retry components. Hosting has no route, worker, provider call or fresh-install activation. Separate PR87/ec5f7e9 adds explicit fenced deletion retry; its native CI and independent review6167717491 are pending and it is not included here. Devin's read-only20i inventory work is assigned in issue2 comment6167449082; no response/execution is inferred. Serviceplan53 and servicedesk61 retain their independently cleared source through newer docs-only main syncs; integrate them separately after current checks.
+
+Next: verify final combined85 recovery/Apache evidence, finish this docs-only reconciliation, and add actual published1.22 upgrade/recovery coverage before reserving a later release. Continue hosting reconciliation/provider coordination/UI with preserved client ownership and explicit operation activation. The full roadmap remains active; no live deployment, customer mail, provider write, charge or SSH.
+
+## Earlier checkpoints — historical evidence
+
+## Current combined integration — unreleased and awaiting acceptance
+
+The owner requested continued roadmap work. `codex/hosting-integration` starts from mail main `e3b434ffb2244e454ea9f24fa1de9173b7479ccc`, preserves client83 `eefe29e8ee4019ea7506e0b70179f85d68dbe41a` and its hosting79-82 ancestry, then merges retry84 `e73d78aebba1a2c9e64aa76df75a2e87917e83b5`. Main remains unchanged for the separate1.22.0 release acceptance38553149886. This branch's1.22 labels are test artifacts only; no new release or version is claimed.
+
+Mail Send behavior is preserved. Client administration now uses the shared authorization guard, exact current account versions and strict atomic audit; support sessions cannot open client administration. Hosting records, immutable journal, dispatch/results and definite-failure local provisioning retry remain internal foundations with no route, worker, provider call or fresh-install activation. See CLIENT_AUTHORITY, HOSTING_RECORDS, HOSTING_OPERATIONS and HOSTING_PROVISION_RETRY contracts under docs.
+
+Independent reviews are CLEAR for hosting79 b6d4d24,80 8bbd209,81 5d9b719,82 1f59074 and84 e73d78a (comments6166505236,6166544455,6166574826,6166607088,6166726058). Client83 review remains requested; its corrected full application38551118797 is downloaded and verified at7,027 assertion executions across17 successful workflows, with exact Windows/Linux archive agreement and inspected current screenshots. Earlier parent evidence remains evidence for those exact parents: client466 native, retry434 native, and mail candidate7,854 application executions. It does not establish this merged branch's acceptance.
+
+Merge resolutions preserve both documentation histories, mail and client browser cases, all old private-path denials, all submission generation/vendor checks and hosting mirrors. The combined full application workflow additionally runs the three retained hosting native suites and denies direct access to all12 new hosting internals in both Apache modes. No supplied assertion or supported upgrade baseline is removed. Installer inventory is regenerated from the combined bytes. Next: inspect combined PHP8.2/8.4/native/HTTP/recovery/Apache evidence and actual screenshots, obtain integration review, and integrate sequentially after verified mail publication. No live mail, provider write, charge, SSH or deployment.
+
+## Earlier checkpoints — superseded by the integration status above
+
 ## Latest verified publication — 1.22.0
 
 [v1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) is published and freshly downloaded/verified at immutable source/tag `e3b434ffb2244e454ea9f24fa1de9173b7479ccc`, through [PR77](https://github.com/afterburn25/Cajun_Web/pull/77). Authorized staff can review and explicitly send a saved plain-text draft from a currently assigned mailbox, then inspect private submission history. Current author, Send/grant permissions and exact revisions are rechecked; durable attempt records prevent replay. SMTP requires verified TLS. Server acceptance is distinguished from recipient delivery, and unknown or unresolved outcomes cannot automatically resend. [Owner guide](docs/SENDING_EMAIL.md).
@@ -63,6 +101,71 @@ Starting1b1520f (verified coordinator e5849ca), prepare guarded controller/view/
 All58 pure form/escaped-template checks pass locally under PHP8.4.25 default/no-ini. Downloaded38534640144 at c5646bf59ef0f26f3e280f5c6bd0eb1c6e8f8164 passes85 storage and81 orchestration/read-model native checks per PHP8.2/8.4 runtime, plus58 form/template checks in each default/no-ini mode (all8 JSON reports inspected;564 check executions). MariaDB checks cover review with zero writes/callbacks, current-authority disclosure, bounded pagination and stale saved-account/draft refusal. PR38534647926 also succeeded. Exact2552 committed installer dependencies and canonical mirrors verify. Previous e5849ca has downloaded85 storage plus68 orchestration checks per PHP8.2/8.4 in38533629082. This is not rendered HTTP/browser or combined SMTP acceptance. Independent coordinator review requested in [6163995056](https://github.com/afterburn25/Cajun_Web/pull/77#issuecomment-6163995056), extending6163822756/6163395444; no response is claimed.
 
 The new screens have no router/action/navigation/base-schema call site, so Send remains unavailable in the deployed application. Published1.21.0 is unchanged and no later version is reserved. Next: obtain independent review, prepare combined SMTP/HTTP fixtures, wire the approved flow and test packaged real loopback SMTP/HTTP/browser/Apache and actual1.21 update/recovery. Devin retains53 corrections;60 remains preserved for later sequential integration. [Adapter contract](docs/MAIL_SUBMISSION_STORAGE_CONTRACT.md).
+
+## Current correction — exclude client administration during support
+
+Client-authority application38549059961 atdae2f82 passed its native stage but failed the new HTTP assertion expecting an explicit support-selector refusal, after1,200 passing HTTP assertions. The underlying client writer already rejects support; the admin renderer lacked a corresponding403 view. Add that refusal for both GET and POST, hiding client edit/invitation forms, and retain separate checks for unchanged records and absent forms. This is a concrete runtime correction; the failed run is not complete acceptance. Replacement full application and actual screenshots are required.
+
+Downloaded push38549022824 and PR38549061993 each verify466 native executions (60 client authority +94 records +79 operations per PHP8.2/8.4). The exactdae2f82 clean Windows build and all3 archive members/CRCs/hashes verify, but its HTTP failure prevents acceptance. Published1.21 remains unchanged; these are unreleased test artifacts. Mail38545953062 is fully verified at7,854 checks across all19 workflows; separate retryPR84 continues; Devin service-desk61 now has three independently reproduced findings in6166378842. No independent review response is inferred.
+
+## Earlier checkpoints
+
+## Current work — serialize client identity changes
+
+Codex owns `codex/client-authority` from PR82/1f59074. Existing client edits, invitation creation and public activation now share the staff/hosting guard and strict atomic audit. Exact current account versions reject stale edit/invitation forms; failed edits retain escaped unsaved details for review. Delegated `clients.manage` access is preserved, support is denied, and public activation remains invitation-based. No schema or release version changes. [Client authority contract](docs/CLIENT_AUTHORITY.md).
+
+Local PHP8.4/native MariaDB10.11.16 passes60 concurrent/rollback/authority checks. Added packaged HTTP/Chromium fixtures and retained hosting matrices await current CI acceptance; full application and independent review are still required. Parent82 has verified346 executions in push38545626740 and PR38546272833, tested merge4fcec07. Mail77/e9b77e1 remains separate with current browser1,236 checks, inspected actual screenshots, identical1.21 homepage pixels and verified clean Windows archives; full38545953062 continues. Published1.21 remains immutable. Next: verify this branch's native matrix and real browser/recovery, request focused review and continue hosting reconciliation/coordinator boundaries. Preserve Devin53 and all parent branches.
+
+## Current work — explicit local provisioning retry
+
+Codex owns `codex/hosting-provision-retry` from PR82/1f59074. A new current-owner/password action moves only a recorded definite provisioning failure marked safe to retry back to local pending state. It commits a stable canonical event and strict audit atomically, preserves old attempts/results and returns no dispatch claim. A later normal claim must recheck current authority/provider settings and fence a distinct attempt. Unknown outcomes, unsafe failures, missing proof and deletion/reconciliation retry remain refused. [Contract](docs/HOSTING_PROVISION_RETRY.md).
+
+Downloaded Linux push38550996210 and PR38551004850 atd101665 each verify44 retry +94 retained record +79 retained operation checks per PHP8.2/8.4,434 executions. The complete push log has no PHP diagnostics. Full generated refresh,127 Markdown/1085 links and2542 exact committed installer dependencies pass. Earlier fixture prefix/refusal-catch failures are documented and not counted as acceptance. Windows could not establish provider-key0600 permissions; that protection remains. Independent review remains pending; no schema/version/route or live operation is added.
+
+Separate PR83/dae2f82 passes60 client-authority +94 records +79 operation checks per PHP8.2/8.4,466 executions in both downloaded push38549022824 and PR38549061993. Its application38549059961 is running and remains unaccepted. Mail77/e9b77e1 full38545953062 now verifies7,854 assertions across all19 workflows, actual screens and Windows/Linux packages; ready for independent review in6166470289. Client83 correctseefe29e support rendering and runs replacement38551118797 after a confirmed HTTP failure in38549059961. Published1.21 remains immutable. Preserve original Devin work and review gates; full roadmap stays active.
+
+## Earlier checkpoints
+
+## Current work — durable hosting attempt and result records
+
+Codex owns `codex/hosting-operations` from5d9b719/PR81. New guarded native storage commits canonical lifecycle events, immutable exact account/client/profile/attempt fences and strict audit before returning a new one-time claim. Replay grants no second call. Internal result persistence binds observations to that committed attempt, preserves uncertainty/access-loss outcomes and retains unique provider-resource ownership across accounts. There is no route, worker, credential decryption, provider request or new release. [Operation contract](docs/HOSTING_OPERATIONS.md).
+
+The shared internal event writer is refactored; the existing94 local-record checks are retained alongside new native operation fixtures for current authority, profile revisions, competing/replayed claims, lost result persistence, restart, unknown outcomes, resource conflicts and two-owner deletion. Downloaded push38545626740 atb7e9f03 passes79 operation +94 retained record checks per PHP8.2/8.4,346 executions with no PHP warnings. Syntax, full generated refresh,126 Markdown/1073 links and2542 exact committed installer dependencies pass; independent review remains pending. Existing storagef8001e9 has188 verified PHP8.2/8.4 checks in push38543267301 and PR38543364218/tested merge690949d; documentation5d9b719 keeps runtime unchanged. Next: verify the new matrix, review the exact durable boundary, then implement deliberate reconciliation/retry and a separately verified provider coordinator.
+
+Mail77/1.22 runtime3e7138e remains unchanged in test/docs heade9b77e1. Run38539811045 explicitly exceeded45m during no-rewrite1.13, retaining6771 passing pre-Apache checks and verified package bytes, but no final Apache or clean-source acceptance. Replacement38545953062 runs with75m and incomplete Apache checkpoints; inspect that same handle. Published1.21 remains immutable at7805e56. Preserve parent81/80/79 and original Devin branches, with independent review before merge/publication. Full roadmap active; no real customer mail,20i operation, payment, SSH or deployment.
+
+## Earlier checkpoints
+
+## Current work — native local hosting records
+
+Codex owns `codex/hosting-storage` from8bbd209/PR80. Guarded owner-only application storage now retains approved local package snapshots and canonical journal events in additive MariaDB tables. Current password/owner/client checks, staff mutex, revision comparison, stable event replay and strict atomic audit protect writes; every load verifies original terms and the event chain. Domain/grace/dispute/cancellation commands stay local. Remote dispatch, result injection and reconciliation are unavailable through this API. No route, fresh-install setup, provider call or release is activated. [Storage contract](docs/HOSTING_RECORDS.md).
+
+Downloaded native PHP8.2/8.4 reports atf8001e9 pass94 named checks per runtime (188 total) from push38543267301 and PR38543364218/tested merge690949d. These cover process restarts, competing distinct/identical requests, authority loss while waiting, audit rollback, malformed schema/history and synthetic uncertain outcomes. All14 applicable workflows pass; local syntax/full generated refresh and125 Markdown/1063 links pass. All2539 installer dependencies and6 canonical mirrors match exact committed bytes. Independent review remains pending in [PR81](https://github.com/afterburn25/Cajun_Web/pull/81#issuecomment-6165365376). Next: review this adapter and implement a separate immutable dispatch/result fence before provider integration. No application/UI/update acceptance is claimed for this adapter.
+
+Parent journal80 at8bbd209 has downloaded/verified1,440 executions from38541667198/tested merge124a6e9:168 supplied +21 review +23 input +148 journal controls in each PHP8.2/8.4 default/no-ini cell. Parent79 retains6,912 application checks and unchanged published1.21 deployment bytes. Mail77 at3e7138e has verified1,236 HTTP/Chromium checks, inspected desktop/mobile screens, current562 native/form and942 combined executions, and a verified clean Windows build. Its application38539811045 still awaits final recovery/Apache acceptance; independent77/79/80 review remains pending. Latest published1.21 stays immutable; preserve Devin53 and original branches.
+
+## Earlier checkpoints
+
+## Current work — immutable hosting lifecycle journal
+
+Codex owns `codex/hosting-journal`, based onb6d4d24/PR79, for a versioned immutable JSON command journal that reconstructs canonical hosting state without PHP object deserialization, reflection, external calls or a competing lifecycle implementation. Exact account/client selection, strict fields/types/encoding, stable event ids, ordered times and bounded data protect reconstruction. Accepted command replay is idempotent; failed transitions preserve the original journal. Returned mutable models cannot change retained bytes. [Journal and durable adapter contract](docs/HOSTING_JOURNAL.md).
+
+Local PHP8.4 default/no-ini each pass148 journal controls covering lifecycle round trips, unknown outcomes, exact attempts, grace/disputes, two actors, retry eligibility, hostile encodings/types and no mutation on refusal. Original168 supplied tests also pass per mode. PHP8.2/8.4 matrix and independent review remain pending. This is outside site/ with no database, auth, provider or UI activation. Next: verify the matrix, review the format and build the separate current-authorized transactional adapter under the documented contract.
+
+Parent hosting79 has downloaded/verified848 component executions and6,912 application checks from38536664079/tested merge773524f; all17 workflows passed. Its COMPLETE archive equals published1.21 byte-for-byte, and homepage pixels match. The small input-delta review remains pending (6164871758). Mail77 candidate3e7138e/1.22 is separate under application38539811045; no release is claimed. Published1.21 at7805e56 remains immutable. Preserve Devin53 corrections and original branches. Full roadmap active; no real provider, customer mail, payment, SSH or deployment.
+
+## Earlier integration checkpoints
+
+## Current integration — reviewed hosting model on a separate branch
+
+Codex integrates Devin PR60 atc53dc4ae69f964fc53a42ee40aed61ba2ab24bdf into current mainff3ce729e49f553cb3354ed09cf12cdeeda30fca on `codex/hosting-foundation-integration`. This merge preserves both histories and all five hosting classes, supplied tests, component guide and workflow. Four shared-document conflicts retain current release continuity plus this explicit integration record. Published1.21.0 stays immutable. Hosting remains outside the deployment tree with no provider/persistence/billing/UI activation.
+
+The earlier independent correction review6163105649 remains scoped to168 supplied and21 independent controls. Integration rechecks reproduced seven further input failures: final-LF SKU/domain values, empty domain labels, edge hyphens and excessive label/total lengths. Codex tightens exact SKU matching and bounded complete domain labels before mutation, retaining the existing ASCII/alphabetic-TLD policy. New23 regression/positive controls cover those inputs and unchanged history on refusal. The corrected component now passes168 supplied +21 retained review +23 input controls locally on PHP8.4 default/no-ini; the combined PHP8.2/8.4 matrix is pending. CI retains original supplied output plus named independent JSON evidence. No domain registration, DNS lookup or actual provider operation occurs.
+
+Mail PR77 remains separate at7fdd242, with last shipping codec5646bf and default-coordinator evidence48060cf:471 actual loopback SMTP/MariaDB checks per PHP8.2/8.4, plus564 earlier native/form executions. Its private Send screens remain unregistered pending independent review and packaged HTTP/browser/latest1.21 recovery acceptance. Devin retains service-plan53 corrections at166c4b3 and mail review; preserve both branches. Next: verify hosting integration CI and review the small input delta before sequential main integration; then define its durable current-authorized provider/account adapter. [Hosting component](docs/HOSTING_FOUNDATION.md).
+
+
+## Latest verified publication — 1.21.0
 
 ## Previous verified publication — 1.21.0 (superseded checkpoint)
 

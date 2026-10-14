@@ -14,7 +14,7 @@ concurrency:
 jobs:
   native-and-browser:
     runs-on: ubuntu-24.04
-    # Browser/SMTP plus 24 retained upgrade baselines and both Apache modes.
+    # Browser/SMTP plus 25 retained upgrade baselines and both Apache modes.
     # The 1.22 candidate exhausted 45m during no-rewrite 1.13; keep every case.
     timeout-minutes: 75
     services:
@@ -89,6 +89,10 @@ jobs:
           .ci-venv/bin/python tests/mail_submission_combined.py
           php8.3 tests/provider_settings_native.php
           php8.3 tests/provider_checks_native.php
+          php8.3 tests/hosting_records_native.php
+          php8.3 tests/hosting_operations_native.php
+          php8.3 tests/hosting_retry_native.php
+          php8.3 tests/client_authority_native.php
       - name: Real HTTP and Chromium application workflows
         run: .ci-venv/bin/python tests/browser_acceptance.py
       - name: Preserve browser checkpoint before the extended recovery matrix

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.23.0 candidate — current client authority and hosting groundwork
+
+Unreleased. Preserve reviewed client conflict/invitation/support safeguards and internal hosting journal/storage/dispatch/local-retry groundwork. Align application/installer/update labels; add actual published1.22 baseline and retained-submission update/recovery/replay cases. Prior combineda9 acceptance passes8,234 checks/all21workflows; this newer candidate still needs its own full acceptance and exact-main release gates. [Candidate guide](docs/CLIENT_ACCOUNT_SAFEGUARDS.md).
+
+## Unreleased combined hosting/client integration
+
+Preserve mail main1.22 while combining guarded client administration and reviewed hosting journal/storage/dispatch/local-retry foundations. No new hosting UI or remote execution is activated. Add all three hosting native suites and12 internal-path checks to combined full acceptance; preserve every existing test and upgrade baseline. This branch is not a published release.
+
 ## 1.22.0 — verified explicit saved-email sending
 
 - Explicit saved-message review, unchecked confirmation and Send; private author history, separate To/Cc/Bcc, current mailbox/Send grants and exact revisions.
@@ -75,6 +83,37 @@ Add a canonical reference-free private submission snapshot, selected sender/reci
 ### Historical SMTP preparation — submission contract preparation
 
 Record the next explicit-send boundary on a separate branch: maintained protocol/MIME, immutable reviewed snapshots, all-recipient pre-DATA acceptance, durable intent and attempt-bound unknown outcomes. Documentation only; no new application version, transport, UI or message sent.
+
+## Unreleased correction — client support context
+
+Return an explicit403 client-administration page without edit or invitation forms when support is selected. Retain mutation denial and add separate actual HTTP checks for GET/POST rendering and unchanged records. First packaged run was incomplete; corrected acceptance is pending.
+
+## Unreleased — client authority integration
+
+Serialize existing client account edits, invitation creation and public activation with staff/hosting authorization changes. Refuse stale client forms; preserve escaped unsaved details. Retain delegated access, rotate revoked sessions, consume invitations once and make audit failure atomic. Add native concurrent-process and actual packaged form/browser checks. No release or provider activation claimed; [contract](docs/CLIENT_AUTHORITY.md).
+
+## Unreleased — explicit local provisioning retry
+
+Add a current-owner/password retry-preparation action for recorded definite provisioning failures explicitly marked retryable. Retain immutable failed observations, exact request replay, strict atomic audit and new-attempt fencing only through a subsequent authorized claim. Unknown outcomes, unsafe failures and deletion/reconciliation remain blocked. New native fixtures await Linux CI; no release or provider activation. [Contract](docs/HOSTING_PROVISION_RETRY.md).
+
+## Unreleased — durable hosting attempt/result storage
+
+Add current-owner exact attempt/profile fences, bound internal results, immutable unique provider-resource associations and strict atomic audit. Stable replay grants no repeat dispatch. Atb7e9f03, downloaded38545626740 passes79 operation +94 retained local-record checks per PHP8.2/8.4. Independent review and application acceptance remain pending. No transport, route, worker or release activation. [Contract](docs/HOSTING_OPERATIONS.md).
+
+
+## Unreleased — local hosting records
+
+Add owner-authorized additive MariaDB journal/event storage, exact client/terms/revision checks, stable replay and strict atomic audit. Native PHP8.2/8.4 each pass94 checks, including competing processes and damaged history, atf8001e9 in38543267301/38543364218. No remote operation, route or fresh-install activation; independent review and application acceptance remain pending. [Contract](docs/HOSTING_RECORDS.md).
+
+
+## Unreleased — hosting lifecycle journal
+
+Add bounded immutable canonical JSON command reconstruction outside deployment. Preserve lifecycle/attempt invariants across process restoration.148 local controls pass per default/no-ini PHP8.4 mode; matrix/review and durable application adapter pending.
+
+## Unreleased — canonical hosting model integration
+
+- Preserve Devin PR60 hosting model/history on current main: packages, account lifecycle, exact-attempt observations, plan changes and explicit panel grants. No deployment/provider/persistence/UI activation.
+- Correct final-LF SKU acceptance and malformed primary-domain labels before state/history mutation. Local168 supplied +21 retained review +23 input checks pass per default/no-ini mode; expanded PHP8.2/8.4 CI pending.
 
 ## 1.21.0 — verified private local email drafts
 
