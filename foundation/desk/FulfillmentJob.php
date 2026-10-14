@@ -18,9 +18,11 @@ require_once __DIR__ . '/ApprovalRequest.php';
  * queued → running → succeeded | failed → (retry back to queued while
  * attempts remain, else dead_letter). A running job whose lease expires
  * becomes `stalled` — recoverable via `requeue()`, never silently
- * re-run. `idempotencyKey` is required so the adapter can detect
- * replays instead of double-executing. Irreversible kinds require an
- * `ApprovalRequest` id before `run()`.
+ * re-run. Every `run()` claim mints an immutable attempt token that
+ * `succeed()`/`fail()` must echo exactly, so a worker from an expired
+ * claim can never settle a replacement attempt. `idempotencyKey` is
+ * required so the adapter can detect replays instead of double-executing.
+ * Irreversible kinds require an `ApprovalRequest` id before `run()`.
  *
  * Backoff is exponential and bounded: `nextAttemptAt` grows by the
  * configured base each attempt. A job that exhausts `maxAttempts`
@@ -43,6 +45,7 @@ final class FulfillmentJob
 
     private string $status = self::QUEUED;
     private int $attempts = 0;
+    private ?string $attemptToken = null;
     private ?int $leaseUntil = null;
     private ?int $nextAttemptAt = null;
     private ?string $lastError = null;
@@ -96,6 +99,12 @@ final class FulfillmentJob
         return $this->nextAttemptAt;
     }
 
+    /** The exact token minted by the latest run() claim, or null when not running. */
+    public function attemptToken(): ?string
+    {
+        return $this->attemptToken;
+    }
+
     public function lastError(): ?string
     {
         return $this->lastError;
@@ -112,7 +121,7 @@ final class FulfillmentJob
      * the approval's state and subject, so a bare id or a stale/denied
      * request cannot release it.
      */
-    public function run(string $actor, int $at, int $leaseSeconds, ?ApprovalRequest $approval = null): void
+    public function run(string $actor, int $at, int $leaseSeconds, ?ApprovalRequest $approval = null): string
     {
         $this->requireStatus(self::QUEUED);
         if ($this->needsApproval()) {
@@ -140,19 +149,27 @@ final class FulfillmentJob
         }
         $this->attempts++;
         $this->leaseUntil = $at + $leaseSeconds;
+        // A fresh token per claim: an older worker can never settle a
+        // replacement attempt that was requeued after its lease expired.
+        $this->attemptToken = $this->id . '#' . $this->attempts;
         $this->move(self::RUNNING, $actor, $at, 'attempt ' . $this->attempts);
+        return $this->attemptToken;
     }
 
-    public function succeed(string $actor, int $at, string $note = ''): void
+    /**
+     * The caller must name the exact token returned by the run() claim it
+     * is reporting — a stale worker cannot settle a replacement attempt.
+     */
+    public function succeed(string $actor, int $at, string $token, string $note = ''): void
     {
-        $this->requireStatus(self::RUNNING);
+        $this->requireAttempt($token);
         $this->move(self::SUCCEEDED, $actor, $at, $note !== '' ? $note : 'completed');
     }
 
     /** Honest failure: retryable while attempts remain, else dead-letter. */
-    public function fail(string $error, string $actor, int $at): void
+    public function fail(string $error, string $actor, int $at, string $token): void
     {
-        $this->requireStatus(self::RUNNING);
+        $this->requireAttempt($token);
         if (trim($error) === '') {
             throw new InvalidArgumentException('A failed attempt must record an error.');
         }
@@ -171,6 +188,9 @@ final class FulfillmentJob
         if ($this->status !== self::RUNNING || $this->leaseUntil === null || $now < $this->leaseUntil) {
             return false;
         }
+        // The expired token is released here: it stays recorded in history
+        // but can never settle a later attempt after recovery.
+        $this->attemptToken = null;
         $this->move(self::STALLED, 'system', $now, 'lease expired without completion');
         return true;
     }
@@ -205,6 +225,14 @@ final class FulfillmentJob
     {
         if ($this->status !== $status) {
             throw new LogicException("Job is {$this->status}, not {$status}.");
+        }
+    }
+
+    private function requireAttempt(string $token): void
+    {
+        $this->requireStatus(self::RUNNING);
+        if ($token !== $this->attemptToken) {
+            throw new LogicException('Completion must name the exact token of the running attempt.');
         }
     }
 

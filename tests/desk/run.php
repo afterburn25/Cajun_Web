@@ -60,21 +60,23 @@ throws('malformed parse rejected', fn () => TraceLink::parse('nocolon'));
 $j = job();
 check('new job queued', $j->status() === 'queued' && $j->attempts() === 0);
 check('reversible job runs without approval', (function () use ($j) { $j->run('staff-amy', 10, 60); return $j->status() === 'running'; })());
-$j->succeed('staff-amy', 20);
+check('run returns the attempt token', $j->attemptToken() === 'provision-1#1');
+$j->succeed('staff-amy', 20, 'provision-1#1');
 check('succeeded is terminal-ish', $j->status() === 'succeeded');
 throws('succeeded job cannot rerun', fn () => $j->run('staff-amy', 30, 60));
 
 $j2 = job();
-$j2->run('s', 0, 60);
-$j2->fail('provider 500', 's', 10);
+$tok = $j2->run('s', 0, 60);
+$j2->fail('provider 500', 's', 10, $tok);
 check('failed retries to queued', $j2->status() === 'queued' && $j2->attempts() === 1);
 check('backoff recorded', $j2->nextAttemptAt() === 70);
 throws('retry refused during backoff', fn () => $j2->run('s', 50, 60));
-$j2->run('s', 70, 60); // due now
-$j2->fail('provider 500 again', 's', 80);
+$tok = $j2->run('s', 70, 60); // due now
+check('second claim mints a new token', $tok === 'provision-1#2');
+$j2->fail('provider 500 again', 's', 80, $tok);
 check('second backoff grows', $j2->nextAttemptAt() === 200);
-$j2->run('s', 200, 60);
-$j2->fail('third failure', 's', 210);
+$tok = $j2->run('s', 200, 60);
+$j2->fail('third failure', 's', 210, $tok);
 check('exhausted job dead-letters', $j2->status() === 'dead_letter');
 check('last error kept', $j2->lastError() === 'third failure');
 throws('dead-letter cannot rerun', fn () => $j2->run('s', 300, 60));
@@ -100,12 +102,13 @@ throws('wrong-kind approval refused', fn () => $j4->run('s', 0, 60, $wrong));
 $other = new ApprovalRequest('apr-o', 'deprovision', new TraceLink('order', 'ord-1'), 'staff-amy', 0, 3600);
 $other->approve('staff-ben', 'owner', 5);
 throws('untraced subject refused', fn () => $j4->run('s', 0, 60, $other));
-$j4->run('s', 0, 60, $pend);
+$j4->run('s', 10, 60, $pend);
 check('approved matching request runs', $j4->status() === 'running');
 
 throws('job needs trace links', fn () => new FulfillmentJob('x', 'provision', 'k', [], 3, 60));
 throws('empty idempotency key rejected', fn () => new FulfillmentJob('x', 'provision', ' ', [new TraceLink('order', 'o')], 3, 60));
-throws('fail needs error', fn () => (function () { $j = job(); $j->run('s', 0, 60); $j->fail('', 's', 1); })());
+throws('fail needs error', fn () => (function () { $j = job(); $tok = $j->run('s', 0, 60); $j->fail('', 's', 1, $tok); })());
+throws('completion needs exact attempt token', fn () => (function () { $j = job(); $j->run('s', 0, 60); $j->succeed('s', 1, 'provision-1#99'); })());
 
 // ── ApprovalRequest ──────────────────────────────────────────────
 
@@ -126,6 +129,55 @@ $ap3 = new ApprovalRequest('apr-3', 'deprovision', $subj, 'staff-amy', 0, 3600);
 throws('denial needs reason', fn () => $ap3->deny('staff-ben', 'owner', 10, ''));
 $ap3->deny('staff-ben', 'owner', 10, 'client changed mind');
 check('denied with reason', $ap3->status(20) === 'denied' && $ap3->reason() === 'client changed mind');
+
+// Approved decisions expire like live requests — a stale approval cannot
+// release a later destructive run.
+$ap4 = new ApprovalRequest('apr-4', 'deprovision', $subj, 'staff-amy', 0, 200);
+$ap4->approve('staff-ben', 'owner', 110);
+check('approval valid after decision', $ap4->approved(110) && $ap4->approved(199));
+check('approval expires at boundary', $ap4->status(200) === 'expired' && !$ap4->approved(200));
+check('no authority before decision instant', !$ap4->approved(109));
+$jx = job('deprovision');
+throws('expired approval cannot run job', fn () => $jx->run('s', 300, 60, $ap4));
+
+$ap5 = new ApprovalRequest('apr-5', 'refund', $subj, 'staff-amy', 100, 3600);
+throws('cannot decide before request exists', fn () => $ap5->approve('staff-ben', 'owner', 50));
+
+// A refused denial must not mutate a retained decision: state and reason
+// are identical before and after the rejected call.
+$ap6 = new ApprovalRequest('apr-6', 'refund', $subj, 'staff-amy', 0, 3600);
+$ap6->deny('staff-ben', 'owner', 10, 'original reason');
+throws('second denial refused', fn () => $ap6->deny('staff-ben', 'owner', 20, 'injected reason'));
+check('refused denial keeps reason', $ap6->reason() === 'original reason' && $ap6->decidedBy() === 'staff-ben');
+$ap7 = new ApprovalRequest('apr-7', 'refund', $subj, 'staff-amy', 0, 3600);
+$ap7->approve('staff-ben', 'owner', 10);
+throws('denial on approved refused', fn () => $ap7->deny('staff-ben', 'owner', 20, 'injected'));
+check('approved record keeps null reason', $ap7->reason() === null && $ap7->approved(30));
+
+// Stale worker results cannot settle a replacement attempt.
+$j5 = job('provision');
+$tokA = $j5->run('workerA', 100, 10);
+check('first claim token minted', $tokA === 'provision-1#1' && $j5->attemptToken() === $tokA);
+check('lease expiry stalls first worker', $j5->expireLease(110));
+check('expiry releases the old token', $j5->attemptToken() === null);
+$j5->requeue('staff-amy', 111);
+$tokB = $j5->run('workerB', 112, 60);
+check('replacement claim mints new token', $tokB === 'provision-1#2' && $j5->attemptToken() === $tokB);
+throws('old worker success refused', fn () => $j5->succeed('workerA', 113, $tokA));
+throws('old worker failure refused', fn () => $j5->fail('gone', 'workerA', 113, $tokA));
+check('attempt two still runs under new worker', $j5->status() === 'running' && $j5->attempts() === 2);
+$j5->succeed('workerB', 120, $tokB);
+check('new worker settles its own attempt', $j5->status() === 'succeeded');
+
+// One worker holding sequential claims cannot reuse an earlier token.
+$j6 = job('provision');
+$tok1 = $j6->run('workerA', 0, 10);
+$j6->expireLease(15);
+$j6->requeue('staff-amy', 16);
+$tok2 = $j6->run('workerA', 17, 60);
+throws('same worker cannot reuse old token', fn () => $j6->succeed('workerA', 20, $tok1));
+$j6->succeed('workerA', 25, $tok2);
+check('same worker settles with current token', $j6->status() === 'succeeded');
 
 // ── TicketMessage + SupportTicket ────────────────────────────────
 

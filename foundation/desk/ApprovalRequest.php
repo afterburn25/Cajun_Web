@@ -31,6 +31,7 @@ final class ApprovalRequest
 
     private string $status = self::REQUESTED;
     private ?string $decidedBy = null;
+    private ?int $decidedAt = null;
     private ?string $reason = null;
 
     public function __construct(
@@ -54,7 +55,10 @@ final class ApprovalRequest
 
     public function status(int $now): string
     {
-        if ($this->status === self::REQUESTED && $now >= $this->expiresAt) {
+        // Expiry bounds every live decision, not just an undecided request:
+        // a stale approval can never authorize a later destructive attempt.
+        if (($this->status === self::REQUESTED || $this->status === self::APPROVED)
+            && $now >= $this->expiresAt) {
             return self::EXPIRED;
         }
         return $this->status;
@@ -62,7 +66,10 @@ final class ApprovalRequest
 
     public function approved(int $now): bool
     {
-        return $this->status($now) === self::APPROVED;
+        // Authority exists only on or after its recorded decision instant.
+        return $this->status($now) === self::APPROVED
+            && $this->decidedAt !== null
+            && $now >= $this->decidedAt;
     }
 
     public function decidedBy(): ?string
@@ -89,14 +96,18 @@ final class ApprovalRequest
         if (trim($reason) === '') {
             throw new InvalidArgumentException('A denial needs a recorded reason.');
         }
-        $this->reason = $reason;
-        $this->decide($actor, $actorRole, $at, false);
+        $this->decide($actor, $actorRole, $at, false, $reason);
     }
 
-    private function decide(string $actor, string $actorRole, int $at, bool $grant): void
+    private function decide(string $actor, string $actorRole, int $at, bool $grant, ?string $reason = null): void
     {
+        // Every check precedes every mutation: a refused decision leaves the
+        // recorded decision instant, decider and reason completely untouched.
         if ($this->status($at) !== self::REQUESTED) {
             throw new LogicException('Only a live request can be decided.');
+        }
+        if ($at < $this->requestedAt) {
+            throw new LogicException('A request cannot be decided before it exists.');
         }
         if ($actor === $this->requestedBy) {
             throw new LogicException('The requester cannot decide their own request.');
@@ -105,6 +116,10 @@ final class ApprovalRequest
             throw new LogicException("Approval requires role '{$this->approverRole}'.");
         }
         $this->decidedBy = $actor;
+        $this->decidedAt = $at;
+        if ($reason !== null) {
+            $this->reason = $reason;
+        }
         $this->status = $grant ? self::APPROVED : self::DENIED;
     }
 }

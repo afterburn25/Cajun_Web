@@ -3,7 +3,8 @@
 ## Unreleased — HC-12 service-desk foundation (Devin, isolated component)
 
 - Added canonical `foundation/desk/` classes (`TraceLink` typed `kind:id` record links over an allowlisted kind set; `FulfillmentJob` recoverable queue model with bounded exponential backoff, lease-expiry stall recovery, required idempotency keys and irreversible kinds verified against a live same-kind `ApprovalRequest` whose subject is traced; `ApprovalRequest` expiring role-gated two-party approvals; `TicketMessage`/`SupportTicket` internal tickets with staff-only notes structurally invisible to clients) plus `docs/DESK_FOUNDATION.md`.
-- Added `tests/desk/run.php` (56 synthetic checks; fixtures only, `php -n` clean) and the `desk.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- Added `tests/desk/run.php` (78 synthetic checks; fixtures only, `php -n` clean) and the `desk.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- Corrected three review findings: `ApprovalRequest` expiry now bounds approved decisions too (authority exists only between the recorded decision instant and `expiresAt`, with pre-request decisions refused); `FulfillmentJob::run()` mints an immutable attempt token that `succeed()`/`fail()` must echo exactly so a stale worker cannot settle a replacement attempt; `ApprovalRequest::deny()` validates everything before mutating, so a refused decision can no longer rewrite the retained reason.
 - No `site/` changes, queues, persistence, mail or UI. Not yet integrated or released.
 ## 1.20.0 — candidate, not published
 ## 1.20.0 — verified owner 20i connection
