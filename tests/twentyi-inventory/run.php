@@ -45,9 +45,11 @@ function doc_item(int $id = 797701): array
 {
     return ['id' => $id, 'created' => '2020-01-15T16:30:30+00:00', 'enabled' => true, 'name' => 'example-site.test', 'names' => ['example-site.test'], 'packageTypeName' => 'Linux Unlimited', 'productSpec' => null, 'stackUsers' => ['stack-user:989901'], 'typeRef' => 811, 'packageLabels' => []];
 }
+/** The form a real JSON response body takes after object-preserving decode. */
+function obj(array $item): stdClass { return json_decode(json_encode($item)); }
 function body(array $items): string { return json_encode(array_values($items)); }
 function response(int $status, array|string $body): TransportResponse { return new TransportResponse($status, [], is_string($body) ? $body : body($body)); }
-function project(mixed $r, int $at = 1729000000): InventorySnapshot { return $r instanceof TransportResponse ? InventoryProjector::packagesList($r, $at) : InventoryProjector::unavailableFromTransport($r, $at); }
+function project(mixed $r, int $at = 1729000000, string $scope = ''): InventorySnapshot { return $r instanceof TransportResponse ? InventoryProjector::packagesList($r, $at, $scope) : InventoryProjector::unavailableFromTransport($r, $at, $scope); }
 
 // --- Request descriptors: closed read set ---------------------------------
 
@@ -104,21 +106,21 @@ ok('Duplicate package id keeps the first and marks partial', ($s = project(respo
 ok('Skip reasons are recorded', $s->skipReasons === ['Duplicate package id in response.']);
 ok('Mixed valid and invalid items give partial with the valid item', ($s = project(response(200, [doc_item(1), ['broken' => true]])))->state === InventorySnapshot::PARTIAL && count($s->packages) === 1 && $s->skipped === 1);
 ok('Digit-string ids normalize to integers', project(response(200, [array_replace(doc_item(), ['id' => '445', 'typeRef' => '900'])]))->packages[0]->id === 445);
-deny('Zero package id is refused', fn() => InventoryPackage::fromItem(array_replace(doc_item(), ['id' => 0])));
-deny('Negative package id is refused', fn() => InventoryPackage::fromItem(array_replace(doc_item(), ['id' => -1])));
-deny('Float package id is refused', fn() => InventoryPackage::fromItem(array_replace(doc_item(), ['id' => 1.5])));
-deny('Wrong stackUsers shape is refused', fn() => InventoryPackage::fromItem(array_replace(doc_item(), ['stackUsers' => [123]])));
-deny('Non-reference stackUsers entry is refused', fn() => InventoryPackage::fromItem(array_replace(doc_item(), ['stackUsers' => ['user:1']])));
-ok('UTF-8 names are retained', InventoryPackage::fromItem(array_replace(doc_item(), ['name' => 'café-site.test']))->name === 'café-site.test');
-deny('Control characters in names are refused', fn() => InventoryPackage::fromItem(array_replace(doc_item(), ['name' => "bad\x01name.test"])));
-deny('Invalid UTF-8 names are refused', fn() => InventoryPackage::fromItem(array_replace(doc_item(), ['name' => "bad\xffname"])));
-deny('Overlong names are refused', fn() => InventoryPackage::fromItem(array_replace(doc_item(), ['name' => str_repeat('a', 254)])));
-deny('Nested names array is refused', fn() => InventoryPackage::fromItem(array_replace(doc_item(), ['names' => [['nested']]])));
-ok('A present non-null productSpec is flagged, not parsed', InventoryPackage::fromItem(array_replace(doc_item(), ['productSpec' => ['unknown' => 'shape']]))->hasProductSpec === true);
-ok('Documented null productSpec is not flagged', InventoryPackage::fromItem(doc_item())->hasProductSpec === false);
-ok('Null packageTypeName stays null', InventoryPackage::fromItem(array_replace(doc_item(), ['packageTypeName' => null]))->packageTypeName === null);
-ok('Primary name is unioned into names when omitted', InventoryPackage::fromItem(array_replace(doc_item(), ['names' => ['alias.test']]))->names === ['example-site.test', 'alias.test']);
-ok('Duplicate names dedupe', InventoryPackage::fromItem(array_replace(doc_item(), ['names' => ['example-site.test', 'example-site.test']]))->names === ['example-site.test']);
+deny('Zero package id is refused', fn() => InventoryPackage::fromItem(obj(array_replace(doc_item(), ['id' => 0]))));
+deny('Negative package id is refused', fn() => InventoryPackage::fromItem(obj(array_replace(doc_item(), ['id' => -1]))));
+deny('Float package id is refused', fn() => InventoryPackage::fromItem(obj(array_replace(doc_item(), ['id' => 1.5]))));
+deny('Wrong stackUsers shape is refused', fn() => InventoryPackage::fromItem(obj(array_replace(doc_item(), ['stackUsers' => [123]]))));
+deny('Non-reference stackUsers entry is refused', fn() => InventoryPackage::fromItem(obj(array_replace(doc_item(), ['stackUsers' => ['user:1']]))));
+ok('UTF-8 names are retained', InventoryPackage::fromItem(obj(array_replace(doc_item(), ['name' => 'café-site.test', 'names' => ['café-site.test']])))->name === 'café-site.test');
+deny('Control characters in names are refused', fn() => InventoryPackage::fromItem(obj(array_replace(doc_item(), ['name' => "bad\x01name.test"]))));
+deny('Invalid UTF-8 names are refused', fn() => InventoryPackage::fromItem((object) array_replace(doc_item(), ['name' => "bad\xffname"])));
+deny('Overlong names are refused', fn() => InventoryPackage::fromItem(obj(array_replace(doc_item(), ['name' => str_repeat('a', 254)]))));
+deny('Nested names array is refused', fn() => InventoryPackage::fromItem(obj(array_replace(doc_item(), ['names' => [['nested']]]))));
+ok('A present non-null productSpec is flagged, not parsed', InventoryPackage::fromItem(obj(array_replace(doc_item(), ['productSpec' => ['unknown' => 'shape']])))->hasProductSpec === true);
+ok('Documented null productSpec is not flagged', InventoryPackage::fromItem(obj(doc_item()))->hasProductSpec === false);
+ok('Null packageTypeName stays null', InventoryPackage::fromItem(obj(array_replace(doc_item(), ['packageTypeName' => null])))->packageTypeName === null);
+ok('Primary name absent from names is an inconsistency skip, not a union', ($s = project(response(200, [array_replace(doc_item(), ['names' => ['alias.test']])])))->state === InventorySnapshot::PARTIAL && $s->skipped === 1 && $s->skipReasons === ['Package name is absent from the reported names list.']);
+ok('Duplicate names dedupe', InventoryPackage::fromItem(obj(array_replace(doc_item(), ['names' => ['example-site.test', 'example-site.test']])))->names === ['example-site.test']);
 
 // --- Response classification -------------------------------------------------
 
@@ -138,9 +140,32 @@ $snap = project(response(200, body(array_fill(0, InventoryProjector::MAX_PACKAGE
 ok('Item count over the bound is unavailable', $snap->reason === 'response_limit');
 ok('Transport failure maps to its finite kind', project(new TransportException(TransportException::KIND_TIMEOUT))->reason === 'transport_timeout');
 ok('An unavailable snapshot carries no packages', project(response(500, ''))->packages === []);
-deny('An unavailable snapshot cannot be built with packages', fn() => new InventorySnapshot(InventorySnapshot::UNAVAILABLE, [InventoryPackage::fromItem(doc_item())], 0, 0, [], 'x'));
+deny('An unavailable snapshot cannot be built with packages', fn() => new InventorySnapshot(InventorySnapshot::UNAVAILABLE, [InventoryPackage::fromItem(obj(doc_item()))], 0, 0, [], 'x'));
 deny('A complete snapshot cannot claim skipped items', fn() => new InventorySnapshot(InventorySnapshot::COMPLETE, [], 0, 1, ['x']));
 deny('A partial snapshot must name its skips', fn() => new InventorySnapshot(InventorySnapshot::PARTIAL, [], 0, 1, []));
+
+// --- Review regressions: object/list identity, coverage, field integrity ----
+
+ok('JSON object body {} is unexpected shape, not an empty inventory', project(response(200, '{}'))->reason === 'unexpected_shape');
+ok('JSON object with numeric keys is unexpected shape, not a list', project(response(200, '{"0":'.json_encode(doc_item()).'}'))->reason === 'unexpected_shape');
+ok('JSON array of scalars does not project', ($s = project(response(200, '[1,2,3]')))->state === InventorySnapshot::PARTIAL && $s->packages === []);
+ok('List items that are JSON arrays are skipped', project(response(200, '[[1,2]]'))->skipped === 1);
+ok('Impossible calendar date is rejected, not normalized', project(response(200, [array_replace(doc_item(), ['created' => '2026-02-30T16:30:30+00:00'])]))->skipped === 1);
+ok('Hour 24 is rejected', project(response(200, [array_replace(doc_item(), ['created' => '2026-02-28T24:00:00+00:00'])]))->skipped === 1);
+ok('Oversized UTF-8 key truncates at a character boundary', ($s = project(response(200, [array_replace(doc_item(), [str_repeat('a', 63).'é' => 1])])))->state === InventorySnapshot::COMPLETE && json_encode($s) !== false && $s->packages[0]->unmappedCount === 1);
+ok('Unprintable key still counts but is not named', ($s = project(response(200, [json_decode(json_encode(array_replace(doc_item(), ["bad\x01key" => 1])))])))->state === InventorySnapshot::COMPLETE && $s->packages[0]->unmappedKeys === [] && $s->packages[0]->unmappedCount === 1);
+ok('Scope is recorded on the observation', project(response(200, []), 1729000000, 'twenty-i:acct-9:packages.list')->scope === 'twenty-i:acct-9:packages.list');
+ok('Scope is recorded on unavailable observations', project(response(500, '{}'), 1729000000, 'twenty-i:acct-9')->scope === 'twenty-i:acct-9');
+ok('Coverage is never claimed complete', project(response(200, [doc_item()]))->coverage === InventorySnapshot::COVERAGE_UNKNOWN);
+deny('Snapshot rejects a non-record package', fn() => new InventorySnapshot(InventorySnapshot::COMPLETE, [['not' => 'record']], 0));
+deny('Snapshot rejects negative observedAt', fn() => new InventorySnapshot(InventorySnapshot::COMPLETE, [], -1));
+deny('Snapshot rejects negative skipped count', fn() => new InventorySnapshot(InventorySnapshot::PARTIAL, [], 0, -1, ['x']));
+deny('Snapshot rejects a free-form unavailable reason', fn() => InventorySnapshot::unavailable('the provider said: '.str_repeat('x', 300), 0));
+deny('Snapshot rejects unavailable with a reason outside the closed set', fn() => InventorySnapshot::unavailable('custom_reason', 0));
+deny('Snapshot rejects control bytes in scope', fn() => new InventorySnapshot(InventorySnapshot::COMPLETE, [], 0, 0, [], '', "sc\x01ope"));
+deny('Snapshot rejects complete coverage on a partial observation', fn() => new InventorySnapshot(InventorySnapshot::PARTIAL, [], 0, 1, ['x'], '', '', InventorySnapshot::COVERAGE_COMPLETE));
+deny('Snapshot rejects partial without skipped items', fn() => new InventorySnapshot(InventorySnapshot::PARTIAL, [], 0));
+deny('fromItem refuses a plain array (object identity required)', fn() => InventoryPackage::fromItem(doc_item()));
 
 // ---------------------------------------------------------------------------
 

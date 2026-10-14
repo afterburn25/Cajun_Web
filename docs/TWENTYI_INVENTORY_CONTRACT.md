@@ -47,12 +47,31 @@ transfer endpoints are deliberately absent — not merely unimplemented.
   and dropped. Unknown keys are reported **by name only** in
   `unmappedKeys`; values are never retained. StackUsers stay opaque
   `stack-user:N` references — provider identity, never a client link.
-- `InventorySnapshot`: `complete` (all items projected), `partial`
-  (some items skipped, reasons named), or `unavailable` (kind only —
-  `authentication`, `rate_limited`, `remote_error`, `unexpected_status`,
-  `response_limit`, `malformed_body`, `unexpected_shape`,
-  `transport_*`). An unavailable observation never looks like an empty
-  inventory.
+- `InventorySnapshot`: `complete` (all *returned* items projected),
+  `partial` (some items skipped, reasons named), or `unavailable`
+  (closed reason set — `authentication`, `rate_limited`,
+  `remote_error`, `unexpected_status`, `response_limit`,
+  `malformed_body`, `unexpected_shape`, `transport_*`). An unavailable
+  observation never looks like an empty inventory.
+- **Coverage is never claimed**: `coverage` is always `unknown` — no
+  pagination/completeness contract is documented, so a fully projected
+  response is not proof of account-wide inventory. `scope` records the
+  caller-supplied provider account/operation identity so stored
+  observations cannot be confused between accounts.
+- JSON decode preserves object/list identity: `{ }` and
+  `{"0": <item>}` are `unexpected_shape`, never an empty or populated
+  inventory; list items must be JSON objects.
+- The reported collection is preserved exactly — a documented `name`
+  absent from `names` is an inconsistency skip, not a unioned guess.
+  `created` must be a real calendar instant (impossible dates are
+  rejected, not normalized). Unmapped keys are reported only when
+  printable UTF-8 and truncate at character boundaries;
+  `unmappedCount` records the total so unprintable names still surface
+  as drift.
+- The snapshot constructor validates contents: records must be
+  projected package records, counts/timestamps non-negative, reasons
+  bounded printable, states consistent, and unavailable reasons drawn
+  from the closed set.
 - Duplicate package IDs keep the first entry and mark the snapshot
   partial — a duplicated identity means the response is not trusted.
 
