@@ -1,0 +1,37 @@
+# Financial offer and installment invoice interface
+
+This contract follows verified native invoice source `a2d64a898f98fc0b58d11d17433e2ee670ffea95` in draft#114. [Proof6180013045](https://github.com/afterburn25/Cajun_Web/pull/114#issuecomment-6180013045) verifies2,388 focused executions, including178 financial checks and69 unchanged ledger checks per PHP runtime; all26 triggered workflows pass. Preserve the [offer/consent](DESIGN_PAYMENT_STORAGE_CONTRACT.md) and [invoice](DESIGN_PAYMENT_INVOICES_CONTRACT.md) contracts. This document precedes interface implementation; it does not activate checkout. Devin retains complete20i.
+
+## Existing project pages
+
+Add a clearly labeled **Financial agreement** section to the actual staff project page and the corresponding authorized client project view. Keep the existing design progress, messages, proposals, file delivery and unrelated invoices. Reuse the established navy/gold styling, responsive layout, escaped rendering and route/action conventions. No separate replacement application or browser-only mockup.
+
+Show exact offered title, source proposal version, item descriptions, quantities, unit prices, discounts, tax, subtotal and USD total, followed by complete terms and the ordered payment stages. Each stage shows its purpose, amount, agreed due date and referenced project milestone where applicable. Clearly distinguish agreed allocations, issued invoices, recorded payments and remaining invoice balances. A deposit amount or final allocation is never labeled paid without ledger evidence. Dates and production progress do not trigger billing.
+
+Financial history retains offered/accepted/declined/withdrawn/issued events and their original terms, real actor category, date and client feedback. Current and historic content must render as escaped text, including titles, terms, comments and invoice instructions. Bound history pages and payloads using the native APIs; unavailable/corrupt storage must display a contained error, not a new empty financial agreement or zero balance. Preserve existing page functions when the financial module is unprepared or unavailable.
+
+## Staff editing and issuance
+
+Only current staff with both payments.manage and clients.manage may publish, withdraw or issue. Preparation requires the existing current owner/password and an explicit backup acknowledgement. Financial and invoice storage setup remain deliberate; show prerequisites for existing payment preparation and ledger setup instead of silently activating them. Failure remains inline and never retains a password. Existing installations retain all project/invoice/payment data.
+
+The offer form uses ordinary labeled fields and structured item/stage rows, not a JSON editor. Bind the actual current latest approved proposal and server-derived content digest. Permit full payment or an ordered deposit/milestone/final schedule with fixed amounts or percentages; final remainder is calculated by the model. Current project milestones come from authorized planning data. Convert strictly validated decimal input to integer cents/basis points, preserving exact submitted text after failure. Reject overflow, unsupported currency, malformed scalars/arrays, unknown fields and over-bounded rows; never round an input into a different consent amount.
+
+Use stable32-hex IDs for each submitted offer, item, stage and action. Keep the original request ID and expected financial head when redisplaying stale/invalid submissions; do not mint an automatic retry against changed terms. A successful replay clearly says the original action was already saved. The user must explicitly reload/review current terms before replacing a stale draft. Textarea/number/select labels and error association remain usable by keyboard and at320px. Adding/removing/reordering rows must preserve existing IDs and entered values, with a usable no-JavaScript submission path.
+
+An accepted unissued stage offers a deliberate **Issue invoice** action, with its exact stage title/amount displayed. It posts only the original request/head, schedule/fingerprint and stage binding; the server derives invoice facts. Replays open the original invoice. Once any stage has an invoice, hide replacement/withdraw controls and explain that agreed terms are frozen; native refusal still protects forged/stale posts. No cancellation, credit or replacement-invoice shortcut is introduced.
+
+## Client decisions and invoice links
+
+Only the actual active current client may accept or decline the exact offered financial agreement. Display the complete prices, schedule and terms before the explicit decision. Acceptance requires a clear acknowledgement of those exact financial terms; declining requires the existing meaningful feedback. Post the original offer ID/fingerprint/head/request, never client-supplied prices. A proposal decision does not substitute for this financial approval. A stale decision preserves its submitted feedback and explains that the offer changed; it must not approve the replacement offer.
+
+Staff and scoped support cannot act as the client to consent. Scoped support may only read the permitted financial projection with existing current-access checks and audit. Client views omit staff IDs, internal request hashes and private receipt notes. Active/inactive accounts, current ownership, auth-version and idle/absolute expiry continue to be checked by the native layer under lock. Passive rendering must not extend idle deadlines.
+
+Each issued stage links to the existing authorized invoice page and current receipt/balance path. Resolve links from stored invoice identity, not arbitrary submitted URLs. Verify both current project ownership and immutable client binding; foreign invoices and tampered mappings remain unavailable. Existing invoice activity continues to represent newly issued invoices. Financial offers must be clearly discoverable from the project view; additional offer-specific notifications may only be claimed when actually implemented and tested.
+
+Online payment remains explicitly unavailable until the separate merchant/checkout/reconciliation work is complete. Do not show a working Pay button or report a charge from this interface increment. Retain existing payment instructions and verified external receipts.
+
+## Acceptance
+
+Add meaningful form/render tests for exact decimal conversion, malformed/over-bounded inputs, output escaping, original request/head retention and permission projection. Native tests retain all178 financial and69 existing-ledger cases. Actual authenticated HTTP/browser tests must cover explicit setup, a priced full and split offer, real client acceptance/decline, stale concurrent decisions, withdrawal before issuance, unique invoice/replay, frozen terms, ledger balances/links, two-client separation, support read-only, CSRF failures and password omission.
+
+Inspect complete desktop and320px staff/client/error screens, including keyboard and no-JavaScript behavior. Verify fresh and existing-install setup, latest-published1.23 populated update/recovery with retained accepted terms/invoices/receipts, private module denial under both Apache modes, current embedded hashes and exact packages. Preserve already-started consent-only full38645906931 as evidence for26e1008; new interface acceptance must run against its own exact source. Independent parent/combined review and exact-main acceptance remain required before incremental publication. This interface alone does not complete production checkout or the full roadmap.

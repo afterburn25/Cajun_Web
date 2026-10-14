@@ -1,5 +1,13 @@
 # Working agreement for CajunWebPro
 
+## Current work — financial forms contract; native invoice CI verified
+
+Draft#114 native invoice source `a2d64a898f98fc0b58d11d17433e2ee670ffea95` now has **2,388 independently verified focused executions and all26 triggered workflows green**. PHP8.2/8.4 each pass178 financial/obligation checks,69 unchanged legacy-ledger checks and175 deployed records in each default/no-ini mode. All16 JSON reports and full logs were downloaded and matched; no PHP diagnostics. Tested merge `a8efc444` is tree-identical. The full local installer refresh completed and all2628 dependency hashes match committed shipping bytes. [Proof6180013045](https://github.com/afterburn25/Cajun_Web/pull/114#issuecomment-6180013045). Linux verifies the full ledger suite that stopped at Windows0600 permissions locally; the partial Windows result remains retained.
+
+The [financial interface contract](docs/DESIGN_PAYMENT_FORMS_CONTRACT.md) now precedes actual forms in this same draft: staff structured quote/schedule editing, actual client consent, escaped history, unique invoice actions and existing balance/receipt links, with original stale drafts, current authority, deliberate owner setup, desktop/mobile and no-JavaScript acceptance. No financial route or checkout is implemented yet. Next: implement these actual staff/client forms and complete new browser/package/update acceptance. Earlier consent-only full38645906931 remains running against26e1008 and must not be restarted or counted for newer invoice/UI code. Published1.23 and frozen planning113 are unchanged; parent/combined independent review remains pending.
+
+Devin owns complete20i. Corrections in107/109 have scoped clearance; current reconciliation115 at51a143b has independently reproduced unknown-coverage deletion, replacement-account observation and audit rollback findings, plus the five earlier execution findings and one stale base-schema hash. [Review6180038918](https://github.com/afterburn25/Cajun_Web/pull/115#issuecomment-6180038918) returns those fixes to Devin. No real provider/merchant operation or deployment occurred. Earlier entries below are historical checkpoints.
+
 ## Current work — planning forms, dashboard and personal updates
 
 `codex/project-planning-screens` preserves native PR112/`5e44a6b`; contract `77f92db` precedes implementation. The existing project page now edits scope/contact/date/actions/blockers and structured milestones, while clients see the saved plan and dated snapshots. Personal planning activity opens the exact authorized revision; stale drafts keep their original request/version. Owner setup remains explicit. [Usage and evidence](docs/PROJECT_PLANNING.md); [interface contract](docs/PROJECT_PLANNING_SCREENS_CONTRACT.md).

@@ -33,3 +33,7 @@ Then connect actual admin/client financial offer forms and invoice actions, esca
 ## Native implementation evidence
 
 Contract `f57f895` precedes code. Local PHP8.4/MariaDB passes178 named checks under128MiB (95 prior financial-history checks and83 invoice/ledger cases). Existing ledger local coverage stops after33 passing checks at Windows0600 private-permission enforcement; unchanged full suite is included in LinuxCI. Current committed CI, actual forms, browser and packaged acceptance remain pending. Original consent-only full38645906931 is separate evidence for26e1008.
+
+## Committed CI and actual interface follow-on
+
+Source `a2d64a8` has2388 verified focused executions/all26 workflows; [proof6180013045](https://github.com/afterburn25/Cajun_Web/pull/114#issuecomment-6180013045). All178 native and69 unchanged ledger checks pass per PHP8.2/8.4. Installer refresh and2628 exact hashes pass. The [actual financial forms contract](DESIGN_PAYMENT_FORMS_CONTRACT.md) precedes interface code; HTTP/browser and new package/recovery acceptance remain pending.
