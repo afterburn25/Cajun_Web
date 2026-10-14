@@ -83,6 +83,21 @@ rejects('non-list inclusions rejected', fn () => plan(['inclusions' => ['one' =>
 rejects('malformed limit name rejected', fn () => plan(['limits' => ['Edits Per Month' => 4]]));
 rejects('empty limit name rejected', fn () => plan(['limits' => ['' => 4]]));
 rejects('list-style limits rejected', fn () => plan(['limits' => [4]]));
+rejects('trailing-newline limit name rejected', fn () => plan(['limits' => ["updates\n" => 1]]));
+
+// caller-held references must never mutate retained caps or drift termsHash
+$cap = 1;
+$refLimits = ['updates' => &$cap];
+$refPlan = plan(['limits' => $refLimits]);
+$refPlan->activate();
+$refHash = $refPlan->termsHash();
+$refSub = PlanSubscription::start('sub-ref', $refPlan, 'client-7', 'owner-1', '2026-10-14T12:00:00Z');
+$cap = -99;
+check('stored limits detached from caller references', $refPlan->limits['updates'] === 1);
+check('terms hash stable after external mutation', $refPlan->termsHash() === $refHash);
+check('subscription snapshot matches stable terms', $refSub->plan->limits['updates'] === 1);
+$refSub->recordConsent('client-7', $refPlan->termsHash(), '2026-10-14T13:00:00Z');
+check('consent still valid against unchanged terms', $refSub->consent() !== null);
 
 // --- Lifecycle: draft → active → retired -----------------------------------
 
@@ -126,6 +141,9 @@ check('refused consent left state and history unchanged', $sub->consent() === nu
 rejects('consent before start instant rejected', fn () => $sub->recordConsent('client-7', $active->termsHash(), '2020-01-01T00:00:00Z'));
 rejects('relative consent time rejected', fn () => $sub->recordConsent('client-7', $active->termsHash(), 'tomorrow'));
 rejects('date-only consent time rejected', fn () => $sub->recordConsent('client-7', $active->termsHash(), '2026-10-14'));
+rejects('trailing-newline instant rejected', fn () => $sub->recordConsent('client-7', $active->termsHash(), "2026-10-14T00:00:00Z\n"));
+rejects('trailing-newline start instant rejected', fn () => PlanSubscription::start('sub-lf', $active, 'client-7', 'owner-1', "2026-10-14T12:00:00Z\n"));
+check('refused newline instant left state unchanged', $sub->consent() === null && count($sub->history()) === 1);
 
 $sub->recordConsent('client-7', $active->termsHash(), '2026-10-14T00:00:00Z');
 check('consent pins terms hash', $sub->consent()['termsHash'] === $active->termsHash());

@@ -27,8 +27,8 @@ final class ServicePlan
     private const BANNED = '#\b(unlimited|infinite|unmetered|forever|24/7 guaranteed|never goes down|guaranteed uptime)\b#i';
     /** Customer-facing term strings are bounded so terms stay reviewable. */
     private const TERM_MAX_BYTES = 1000;
-    /** Canonical meter names: lowercase snake_case, bounded. */
-    private const LIMIT_NAME = '/^[a-z][a-z0-9_]{0,63}$/';
+    /** Canonical meter names: lowercase snake_case, bounded — `\z` end-anchored so a trailing newline cannot slip in. */
+    private const LIMIT_NAME = '/^[a-z][a-z0-9_]{0,63}\z/';
 
     private string $status = self::DRAFT;
 
@@ -92,6 +92,7 @@ final class ServicePlan
                 throw new InvalidArgumentException('Terms cannot promise unbounded or guaranteed service: ' . $text);
             }
         }
+        $cleanLimits = [];
         foreach ($limits as $limit => $cap) {
             if (!is_string($limit) || !preg_match(self::LIMIT_NAME, $limit)) {
                 throw new InvalidArgumentException('Limit names must be canonical lowercase identifiers: ' . $limit);
@@ -99,8 +100,11 @@ final class ServicePlan
             if (!is_int($cap) || $cap < 0) {
                 throw new InvalidArgumentException('Limits must be non-negative integer caps: ' . $limit);
             }
+            // Copy into a fresh array — caller-held references must never
+            // mutate stored caps (or drift termsHash after activation).
+            $cleanLimits[$limit] = $cap;
         }
-        return new self($id, $name, $cadence, $priceAmount, $currency, $inclusions, $exclusions, $limits, $supportExpectation, $createdBy);
+        return new self($id, $name, $cadence, $priceAmount, $currency, $inclusions, $exclusions, $cleanLimits, $supportExpectation, $createdBy);
     }
 
     /** Publish the plan — it becomes subscribable and immutable. */

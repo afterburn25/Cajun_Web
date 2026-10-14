@@ -32,7 +32,7 @@ final class PlanSubscription
     private const TERMINAL = [self::CANCELLED, self::ABANDONED];
 
     /** Explicit UTC instant — no relative or ambiguous strings. */
-    private const INSTANT = '/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z$/';
+    private const INSTANT = '/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z\z/';
 
     private string $state = self::PENDING_CONSENT;
     private ?array $consent = null;
