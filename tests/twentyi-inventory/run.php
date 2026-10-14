@@ -230,6 +230,15 @@ deny('Resource record refuses a missing operation', fn() => \CajunWebPro\Foundat
 deny('Resource record refuses a list item', fn() => \CajunWebPro\Foundation\TwentyIInventory\InventoryResource::fromItem([1, 2], InventoryRead::VPS_LIST));
 deny('Resource record refuses a plain array item', fn() => \CajunWebPro\Foundation\TwentyIInventory\InventoryResource::fromItem(['id' => 1], InventoryRead::VPS_LIST));
 
+// --- Explicit read exclusions -------------------------------------------------
+
+$exclusions = InventoryRegister::exclusions();
+ok('Exclusion register is non-empty and well-formed', count($exclusions) >= 5 && array_reduce($exclusions, fn($c, $e) => $c && isset($e['operation'], $e['method'], $e['path'], $e['reason']) && $e['method'] === 'GET' && $e['reason'] !== '', true));
+ok('Excluded operations are never in the read set', array_reduce($exclusions, fn($c, $e) => $c && !isset(InventoryRegister::all()[$e['operation']]), true));
+ok('VNC credential read is excluded', in_array('vps.vnc', array_column($exclusions, 'operation'), true));
+ok('GET-labelled power mutations are excluded as reads', in_array('vps.stop', array_column($exclusions, 'operation'), true) && in_array('vps.start', array_column($exclusions, 'operation'), true));
+ok('Access-grant and transfer-detail reads are excluded', in_array('stackusers.grants', array_column($exclusions, 'operation'), true) && in_array('domains.pendingTransferStatus', array_column($exclusions, 'operation'), true));
+
 // ---------------------------------------------------------------------------
 
 $failed = count(array_filter($checks, fn($c) => !$c['passed']));

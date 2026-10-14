@@ -64,6 +64,31 @@ final class InventoryRegister
         ];
     }
 
+    /**
+     * Documented endpoints deliberately refused from the inventory surface.
+     * Naming them in code keeps the safety boundary enumerable: a future
+     * extension cannot mistake "documented GET" for "safe inventory read".
+     *
+     * @return list<array{operation:string,method:string,path:string,reason:string}>
+     */
+    public static function exclusions(): array
+    {
+        return [
+            ['operation' => 'vps.vnc', 'method' => 'GET', 'path' => '/vps/{vpsId}/vnc',
+                'reason' => 'Returns VNC connection credentials — credential-bearing read, never inventory.'],
+            ['operation' => 'vps.stop', 'method' => 'GET', 'path' => '/vps/{vpsId}/stop',
+                'reason' => 'GET-labelled power mutation — semantically a write, refused as a read.'],
+            ['operation' => 'vps.start', 'method' => 'GET', 'path' => '/vps/{vpsId}/start',
+                'reason' => 'GET-labelled power mutation — semantically a write, refused as a read.'],
+            ['operation' => 'stackusers.grants', 'method' => 'GET', 'path' => '/reseller/{resellerId}/stackUser/{stackUserId}/grants',
+                'reason' => 'Access-grant detail is access-control information, outside inventory scope.'],
+            ['operation' => 'packages.stackUserList', 'method' => 'GET', 'path' => '/package/{packageId}/stackUserList',
+                'reason' => 'Enumerates stack-user access identities on a package — sensitive identity read.'],
+            ['operation' => 'domains.pendingTransferStatus', 'method' => 'GET', 'path' => '/package/{packageId}/domain/{domainId}/pendingTransferStatus',
+                'reason' => 'Transfer status may carry authorization detail; schema unverified, excluded.'],
+        ];
+    }
+
     /** The only operation whose response shape has evidence enough to project fully. */
     public static function projectable(string $operation): bool
     {
