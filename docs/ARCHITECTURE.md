@@ -1,5 +1,10 @@
 # Architecture notes
 
+## Unreleased local hosting persistence
+
+Guarded `site/app/hosting/records.php` uses the canonical hosting mirror with owner/password checks and an additive journal/event schema. It is unregistered and does not arm provider actions. Current tables, integrity/replay rules and pending dispatch layer are described in [HOSTING_RECORDS](HOSTING_RECORDS.md).
+
+
 ## Latest verified publication — 1.21.0
 
 [v1.21.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.21.0) is published and freshly downloaded/verified at immutable source/tag `7805e56aa9e53cb081600589e92991255475474c`, through [PR #75](https://github.com/afterburn25/Cajun_Web/pull/75). Staff can save, edit, preview and retain private local email drafts for currently assigned sending accounts, with canonical active-template insertion. Current author/account/Send access, exact revisions, stable initial-save replay and strict audit protect the workflow. [Owner guide](LOCAL_EMAIL_DRAFTS.md).
