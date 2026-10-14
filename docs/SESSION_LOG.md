@@ -1310,3 +1310,27 @@ Publication-record validation: 139 Markdown files and 1,259 local links pass; pi
 - `devin/twentyi-inventory-vps` restacked at `1ddeb8a`; `InventoryResource` got the same cast + private ctor; 139 checks green both modes.
 - PR #85 `21ebe69` additive review posted (6171280735): verified 1.23.0 version consistency, regenerated inventory hashes match blob bytes, pinned 1.22.0 baseline SHA `ba90fc84` equals published SHA256SUMS, submission-retention lane preserves no-resend fences and both master keys. CLEAR — merge remains Codex's call.
 - Next: await Codex re-review of `bb042f8`/`1ddeb8a` and #85 merge decision.
+
+## 2026-10-14 — Devin: inventory read extension restacked (hardened base)
+
+- `devin/twentyi-inventory-vps` restacked onto `bb042f8`/`f893a15` at current head (PR #94).
+- `InventoryResource` inherits the second-review hardening: numeric unknown keys cast to string (no TypeError), private constructor (factory-only), snapshot detaches record/reason lists, `COVERAGE_COMPLETE` refused.
+- Four identity-only GET descriptors + enumerable exclusions unchanged; 139 checks green under PHP 8.4 default and `php -n`.
+
+## 2026-10-14 — Devin: explicit read exclusions
+
+- `InventoryRegister::exclusions()` enumerates the documented endpoints refused from the inventory surface: `vps.vnc` (credentials), `vps.stop`/`vps.start` (GET-labelled mutations), `stackusers.grants`/`packages.stackUserList` (access-control identity), `domains.pendingTransferStatus` (unverified transfer detail).
+- Operation keys align with `TwentyICatalog` names; checks assert exclusions never appear in the read set. Contract doc updated; exclusions only tighten the boundary.
+## 2026-10-14 — Devin: complete 20i ownership; authenticated inventory reader (#95 first slice)
+
+- Owner scope override on issue #2 (6171468180): complete end-to-end 20i integration assigned to Devin; Codex retains final review/merge/release coordination. Acknowledged at 6171594708.
+- `devin/twentyi-complete` integration branch created at main `4fb0c83`; pushed.
+- `devin/twentyi-inventory-reader` branched at `f893a15` (devin/twentyi-inventory head); implements `foundation/twentyi-inventory-reader/InventoryReader`:
+  - One bounded request per read; secret resolved once via lazy resolver, attached as `Bearer base64(key)`, never retained.
+  - Refusal before contact for wrong provider, non-evidenced operations (only `packages.list` executes — documented schema + issue #65 evidence), unusable account identity, unresolvable/invalid secret.
+  - Internally derived scope `twenty-i|<account>|<op>`; TransportException → finite kinds; other throws → `transport_unknown`.
+  - New `tests/twentyi-inventory-reader/run.php`: 28 named checks, PHP 8.4 default + `php -n` green; inventory suite unaffected (99/99).
+  - New workflow `twentyi-inventory-reader.yml` (PHP 8.2/8.4 matrix, no-network image); `docs/TWENTYI_INVENTORY_READER.md` contract.
+- Stacked draft PR #99 → `devin/twentyi-inventory` at `76fed7c`.
+- No persistence, routes, UI or live call — those remain in #96/#97 and require operation-specific authorization.
+- Next: #96 persistence/migrations/explicit client linking on `devin/twentyi-complete` after reader review feedback.
