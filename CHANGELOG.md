@@ -17,6 +17,18 @@
 ## 1.15.0 — candidate, consultation scheduling
 ## Unreleased — 1.16.0 candidate: explicit email connection checks
 ## 1.17.0 candidate — bounded recent inbox headers (unreleased)
+## 1.18.0 candidate — exact-message reading (unreleased)
+
+- Acceptance correction: actual Chromium diagnostics prove injected image attempts are blocked by CSP before network handling; the assertion now distinguishes blocked events from network requests and still requires both explicit CSP failures. Stable mobile viewport captures include plaintext and formatted views. Shipping behavior is unchanged; complete release acceptance remains pending.
+
+- Align the actual TLS wrong-UID browser fixture with the established unavailable-message classification; malformed MIME remains a protocol failure and neither exposes partial content.
+- Update the existing browser availability assertion for the new message-reading feature while preserving connection, attachment and sending limitations; all 69 new native message tests pass, corrected browser acceptance pending.
+- Independent review of 21e00c0 reproduced the components and reviewed application access/rendering boundaries with no blocking finding. Candidate native database checks pass; complete browser/update/recovery/Apache evidence remains pending. Correct staged owner/recovery instructions to candidate 1.18.0.
+- Add explicit assigned-staff message opening with current account/actor/revision and exact INBOX/UIDVALIDITY/UID checks, bounded MIME content and unchanged server read flags. Separate strict audit/results, request limits, owner-prepared upgrade storage and empty fresh-install storage retain no message contents.
+- Decode raw MIME through private maintained parser state, preserve escaped plaintext and show minimal sanitized formatting in an opaque sandbox with restrictive CSP. No automatic remote resources, attachment content or sending. Missing DOM has an honest plaintext/unavailable-format fallback.
+- Preserve all 36 existing dependency pins and add four maintained formatting dependencies. Correct PHP 8.2 full-document handling by stripping html/body wrappers while preserving sanitized children; all 1,227 components pass on PHP 8.2/8.4 at 740b4e2 with fresh byte reproduction.
+- Add actual 1.17.0 update/recovery and original key/history preservation fixtures, alongside native/concurrency, packaged TLS/HTTP/Chromium and Apache checks. Application acceptance, independent review and release remain pending; latest published release remains 1.17.0.
+
 ## 1.17.0 — verified recent inbox headers
 
 - Preserve early browser evidence so failures can be investigated while the complete recovery matrix continues.
