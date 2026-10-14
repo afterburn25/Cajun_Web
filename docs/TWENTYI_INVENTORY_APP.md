@@ -1,0 +1,70 @@
+# 20i inventory application slice — contract
+
+Status: implemented on `devin/twentyi-refresh` (draft PR #100). This document describes the runnable application path built on the read-only contracts in `TWENTYI_INVENTORY_CONTRACT.md` and `TWENTYI_INVENTORY_READER.md`. Everything below is exercised only through synthetic fixtures and injected resolver/transport seams; no live 20i call, real credential, mutation or deployment has occurred.
+
+## Scope
+
+One explicit owner action — **Refresh package inventory** — performs a single authenticated `GET /package` read against the saved provider profile, validates every item against the documented shape, and persists a durable observation. Owners may then explicitly link an observed package identity to an active client account; clients see only their linked services.
+
+Not included: provider mutations, plan-type/balance/detail projections (undocumented schemas), VPS/domain reads (separate `-vps` layer), background refresh, or any automatic operation.
+
+## Storage
+
+`site/database/schema/provider_inventory_schema.php` prepares five InnoDB tables, all under the shared strict validator (`catalog_validate_schema` + per-table checks in `provider_inventory_migrate.php`):
+
+| Table | Purpose |
+|---|---|
+| `provider_refreshes` | Durable refresh **intent**: random hex `id` PK, `seq` auto-increment insertion order, profile id, exact profile revision, actor, started at/epoch. |
+| `provider_refresh_results` | Bounded **result** per intent: state, finite reason, scope, coverage, counts, skipped reasons, finished at, elapsed ms. `id` references the intent. |
+| `provider_observation_packages` | Verbatim validated package rows keyed `(refresh_id, package_id)`. Rows hang off the intent so a later failure can never erase a prior observation. |
+| `provider_package_links` | Explicit owner-approved mapping `(profile_id, package_id) → studio_clients.id`, unique per target, with `linked_by`/`linked_at`. |
+| `provider_package_link_events` | Ordered audit trail of `link`/`unlink` events (auto-increment id; insertion-stable ordering). |
+
+Fresh installs create empty ready tables via `schema_statements` and record `provider_inventory_schema_version=1`. Existing installs run `provider_inventory_migrate($password)` — owner password + staff mutex, strict validation of any pre-existing tables, never rebuilds or truncates.
+
+## Refresh protocol
+
+`provider_inventory_refresh($profileId, $revision, $password)` mirrors the connection-check protocol:
+
+1. Staff mutex + transaction: owner re-authorization with the exact current profile revision and password; per-profile 30-second cooldown and 20/hour per-actor limit enforced inside the lock; durable intent row written and audited — intent failure or audit failure prevents any network work.
+2. DNS resolution outside the lock through `EndpointPolicy` — private/link-local addresses refuse before credentials open.
+3. Under the mutex again: owner re-authorized, credential unsealed (`provider_settings_unseal`) only after a mid-flight authority check; the lazy secret resolver and the transport both re-check authorization. `InventoryReader::read` over `FixedHttpTransport` performs exactly one bounded request.
+4. After the read, authority is checked once more — any change downgrades the outcome to `access_changed` and the snapshot is discarded.
+5. A bounded result row is persisted: validated `complete`/`partial` snapshots keep package rows; `unavailable`, `refused`, `access_changed` and `credential` failures record finite reasons only.
+
+Return codes: `complete | partial | unavailable | refused | access_changed`. Package rows persist only for `complete`/`partial`.
+
+**Last-good semantics:** reads of the "latest" result and the "last good" observation (`complete`/`partial`) order by `started_epoch DESC, seq DESC`; the stored `seq` insertion sequence makes ties deterministic. Unavailable refreshes never displace the last good observation.
+
+## Linking
+
+`provider_inventory_link($profileId, $packageId, $clientId, $revision, $password)` — inside staff mutex + transaction: owner password + exact revision; the package must exist in the profile's last good observation; the client must be an active `studio_clients` row; duplicate `(profile, package)` links are refused. An auditable `link` event is recorded.
+
+`provider_inventory_unlink($linkId, $password)` — owner password + readiness; deletes the mapping and records an `unlink` event. Deleting a link never deletes observation data.
+
+Links are never inferred from provider fields (names, domains, stack users). Support sessions and non-owner staff cannot link, unlink, refresh or read inventory (`provider_settings_manager`/`provider_checks_authority` enforce owner role + `staff.manage` + no support context).
+
+## Views
+
+- **Admin provider settings** (`site/admin/views/providers.php`): prepare/refresh forms (password-confirmed), latest refresh badge/reason, observed package cards (type, enabled state, names, labels, stack users) with owner link/unlink controls, a "linked services not in the latest observation" section so stale mappings remain visible and unlinkable, ordered link history, and paginated refresh history.
+- **Portal `?services`** (`site/includes/layout/provider_services.php`): shows only packages explicitly linked to the signed-in client, with the last good observed state or an honest absent marker — absence never implies deletion/suspension. Stack-user identities and unmapped keys are not exposed to clients.
+
+## Failure model
+
+| Condition | Result |
+|---|---|
+| Wrong password / stale revision / non-owner / support session / client | refusal before any intent or network work |
+| Disabled profile / no credentials | `refused` — no contact |
+| Audit insert failure | no durable intent; nothing starts |
+| Private/unresolvable DNS | `unavailable` (bounded reason) |
+| `TransportException` kinds | `unavailable` with `transport_*` reason |
+| HTTP 401 | `unavailable` / `authentication` |
+| Malformed/oversized/object-shaped body | `unavailable` / finite reason |
+| Authority or revision change mid-flight | `access_changed`, snapshot discarded |
+| Result-audit failure | retained incomplete intent (no fabricated result) |
+
+No arbitrary exception text, credential material or ciphertext is persisted; the native suite asserts no durable row contains the secret, its base64 form, or `Bearer`/`Authorization` material.
+
+## Verification
+
+`tests/provider_inventory_native.php` + `.github/workflows/provider-inventory.yml` (PHP 8.2/8.4 + MariaDB 10.11): 58 named assertions covering storage preparation, authorization and revision checks before any network access, cooldown and hourly limits, injected resolver/transport classification, complete/partial/unavailable persistence, last-good preservation, link restrictions and isolation, unlink events, mid-flight races via pause-worker fixtures, and secret-material absence from durable rows. Named results retained as `provider-inventory-<php>-<sha>` artifacts.
