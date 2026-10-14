@@ -1,5 +1,9 @@
 # Explicit local provisioning retry
 
+## Follow-up — fenced deletion retry
+
+A separate original-approver/current-owner function now atomically fences eligible definite-failure deletion retries. This supersedes earlier blanket deletion-retry exclusions only for the new bounded path. Unknown reconciliation remains refused. [Contract](HOSTING_DEPROVISION_RETRY.md). Native CI and independent review are pending.
+
 Unreleased work on `codex/hosting-provision-retry` from PR82/1f59074, separate from client authority PR83 and mail PR77. No route, provider request, worker, credential decryption by the retry function, schema change or release version is added.
 
 `hosting_operations_retry_provision()` is a deliberate current-owner/password action. It requires an active selected client, exact current hosting revision, stable request identity, ready operation storage and a fully validated journal/fence/result chain. Eligibility is limited to a recorded definite `hosting.provision` failure with `retryable=true`. An unknown timeout, missing result, successful response without a resource identity, unsafe failure, active account or already-pending retry is refused. Generic local-record commands still cannot request retries.

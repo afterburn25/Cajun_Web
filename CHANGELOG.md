@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased — deletion retry parent reconciliation
+
+Preserve verified e6 deletion retry67/retained217 per PHP runtime while merging parent1.23 candidate21. Both histories and all tests remain; regenerate combined inventory. Current merged native acceptance/review pending; no release or provider activation.
+
+## Unreleased — deletion fixture correction
+
+Preserve the single20i profile policy in native deletion-retry tests; an unknown profile must refuse without changing state. Runtime/installer unchanged; initial ec5 PHP8.2 run failed in fixture setup after51 new checks. Replacement matrix pending.
+
+## Unreleased — fenced deletion retry
+
+Add a separate current-owner/original-approver retry after a retained definite retryable deletion failure, atomically saving the new attempt and dispatch fence. Retain exact result/replay/resource binding and current authority checks. Native fixtures are prepared; CI/review pending. No provider activation or release. [Contract](docs/HOSTING_DEPROVISION_RETRY.md).
+
 ## 1.23.0 candidate — current client authority and hosting groundwork
 
 Unreleased. Preserve reviewed client conflict/invitation/support safeguards and internal hosting journal/storage/dispatch/local-retry groundwork. Align application/installer/update labels; add actual published1.22 baseline and retained-submission update/recovery/replay cases. Prior combineda9 acceptance passes8,234 checks/all21workflows; this newer candidate still needs its own full acceptance and exact-main release gates. [Candidate guide](docs/CLIENT_ACCOUNT_SAFEGUARDS.md).

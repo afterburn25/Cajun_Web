@@ -1,5 +1,25 @@
 # CajunWebPro — project source of truth
 
+## Current deletion-retry branch — reviewed parent candidate preserved
+
+`codex/hosting-deprovision-retry`/PR87 now merges parent85 candidate21ebe69 into verified deletion-retrye6a6a54, preserving both histories. The deletion adapter and67 native cases remain byte-identical to e6. Current version labels follow the parent's unreleased1.23 candidate; this separate branch is not included in PR85 and is not a release. Published1.22/e3b434f remains immutable.
+
+Downloaded e6 push38561724140 and PR38561730188 each pass67 deletion-retry +94 records +79 operations +44 local provisioning-retry checks per PHP8.2/8.4,568 named executions per matrix. All16 reports across the two runs are checked; the PR log has no PHP diagnostics/errors. The originalec5 run failed after51 new checks because a fixture tried an unsupported second20i profile; its failure is retained and the corrected unknown-profile case preserves the single-profile policy. Independent runtime review6167717491 remains pending; no receipt/approval is inferred.
+
+The parenta9 integration is independently clear and fully accepted at8,234 checks/all21workflows. Parent21 adds actual1.22 upgrade/recovery/replay and version1.23; its full application38562463459 and additive review6168129933 remain separate gates. This merge resolves eight Markdown conflicts, removes an extra EOF blank line, keeps both workflow additions and regenerates the combined installer inventory. Local syntax/inventory/documentation and the new combined native matrix still need verification before acceptance of this merge.
+
+Only the original currently authorized deletion approver can deliberately retry a retained definite failure marked safe to retry. The new attempt and dispatch fence commit together; stable replay grants no new call, missing/unknown results stay blocked, and resource ownership history remains. There is still no route, worker, provider call or hosting-storage activation. See HOSTING_DEPROVISION_RETRY under docs. Next: verify current merged native/source preservation, obtain review, then implement verified reconciliation/provider coordination and actual hosting/client controls on preserved branches.
+
+## Earlier checkpoints — historical evidence
+
+## Current development — explicit fenced deletion retry
+
+The owner requested continuous roadmap progress. Starting combined PR85/a9beb6e, `codex/hosting-deprovision-retry` adds a current-owner/password retry boundary only for retained definite deletion failures marked safe to retry. The original second approver and retention approval are required; original client/provider/resource bindings remain fixed. Its fresh canonical attempt, immutable dispatch fence and strict audit commit together. Exact replay grants no new claim; unknown outcomes remain blocked. No route, worker, provider call, schema activation or version change. See HOSTING_DEPROVISION_RETRY under docs.
+
+Prepared native PHP8.2/8.4 MariaDB coverage includes concurrent requests, access loss while waiting, strict audit rollback, replay/action separation, late results, retained resource ownership and missing/tampered proof. Existing hosting suites remain. Only local syntax is checked at this checkpoint; native CI and independent review are pending. Parent85 has clear combined review6167231488 and client review6166706518; its full application38554890744 remains live after verified native/browser/recovery stages. Published1.22.0/e3b434f and publication documentation4fb0c83 are unchanged; these1.22 development labels are not publishable replacements.
+
+Codex retains hosting persistence/reconciliation/coordinator/UI and release integration. Devin's new read-only20i inventory contract is assigned in issue2 comment6167449082, with no receipt/running inference. Next: verify focused deletion-retry evidence and review, finish parent acceptance and reconcile main publication docs, then continue verified provider reconciliation/dispatch and client controls. Full roadmap active.
+
 ## Current candidate — 1.23.0 client safeguards and hosting groundwork
 
 Published [1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) remains the latest verified download at immutable sourcee3b434f. Candidate1.23.0 is prepared on `codex/hosting-integration`/PR85 after the verifieda9 combined baseline and documentation-only main mergee86f2c9. No1.23 tag, release or live deployment exists. [Candidate guide](docs/CLIENT_ACCOUNT_SAFEGUARDS.md).
