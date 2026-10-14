@@ -1,5 +1,7 @@
 # Recent inbox headers — released 1.17.0
 
+Current [1.19.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.19.0) adds recent notices and admin/public email bells from explicit newest-20 inbox checks. Upgraded owners prepare notice storage in Email accounts. [Owner workflow](RECENT_EMAIL_NOTICES.md). The count is last-checked metadata, not full unread synchronization; opening/dismissal stays local and server flags remain unchanged. Earlier checkpoints below retain their historical scope.
+
 Current [1.18.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.18.0) adds explicit individual-message opening to assigned recent inbox headers. Upgraded owners prepare message reading in Email accounts; readers use My email accounts → Open inbox → Load recent headers → Open message. See [individual email reading](MAIL_MESSAGE_READER.md). Whole messages above 256 KiB (including attachments) use a regular mail app. Sending, attachment downloads and automatic synchronization remain incomplete. Older release notes below retain their historical scope.
 
 Published and downloaded/verified [1.17.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.17.0) at `fc3bd89c5e1c286f9dc4df12d50dd566a4d4ab86` implements the bounded A-06 recent-header workflow. [Acceptance report](TEST_REPORT_1.17.0.md) records native/concurrency, packaged HTTP over actual isolated TLS, Chromium, Apache and actual 1.16.0 update/recovery. No real mailbox or provider acceptance is claimed. Preserve Devin #68 separately; its custom parser is not shipped.
