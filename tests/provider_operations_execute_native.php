@@ -6,8 +6,10 @@ define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
 require_once __DIR__.'/../site/app/providers/operations.php';
+require_once __DIR__.'/../site/app/providers/reconcile.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,OperationResult,ProviderCredential,ProviderGateway,ProviderOperation,TransportException,TransportRequest,TransportResponse};
 use CajunWebPro\Foundation\TwentyI\Operations\TwentyIOperationAdapter;
+use CajunWebPro\Foundation\TwentyIInventory\{InventoryPackage,InventorySnapshot};
 $private=__DIR__.'/../test-runtime/provider-execution-private';@mkdir($private,0700,true);@mkdir(__DIR__.'/../qa',0700,true);
 $GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/existing','storage'=>realpath($private),'key'=>str_repeat('synthetic-exec-key-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'pex_']];
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=realpath(__DIR__.'/../site');start_session();
@@ -35,6 +37,23 @@ function pe_perform(array $row,#[SensitiveParameter] string $secret,string $addr
 }
 function pe_exec(string $profile,int $revision,string $grantId,string $key,string $pw):OperationResult {
     return provider_operations_execute($profile,$revision,$grantId,$key,$pw,'pe_resolve','pe_perform');
+}
+$scriptedReads=[];$readCount=0;
+/** Scripted reconcile read: replays queued InventorySnapshot fixtures or throws a queued failure. */
+function pe_read(array $row,#[SensitiveParameter] string $secret,string $address,callable $authorize):InventorySnapshot {
+    global $scriptedReads,$readCount;$readCount++;
+    if($secret!=='SYNTHETIC_PRIVATE_GENERAL_KEY'||$address!=='8.8.8.8')throw new LogicException('Invalid credential/network boundary');
+    $next=array_shift($scriptedReads)??new InventorySnapshot('complete',[],time());
+    if($next instanceof Throwable)throw $next;
+    return $next;
+}
+/** Validated package fixture carrying the given names and id. */
+function pe_package(int $id,array $names):InventoryPackage {
+    return InventoryPackage::fromItem((object)['id'=>$id,'name'=>$names[0],'names'=>$names,'enabled'=>true,'created'=>'2026-01-01T00:00:00Z','typeRef'=>1]);
+}
+function pe_snapshot(array $packages):InventorySnapshot {return new InventorySnapshot('complete',$packages,time());}
+function pe_reconcile(string $profile,int $revision,string $key,string $pw):array {
+    return provider_operations_reconcile($profile,$revision,$key,$pw,'pe_resolve','pe_read');
 }
 try {
     foreach(schema_statements('pex_') as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
@@ -133,6 +152,54 @@ try {
     pe_deny('A grant refuses to execute against another profile',fn()=>pe_exec(str_repeat('f',32),1,$grant9,'idem-cross-1',$password));
     $r=pe_exec($profile,1,$grant9,'idem-cross-1',$password);
     pe_ok('The grant still executes on its own profile','succeeded'===$r->status);
+
+    // ---- reconciliation of uncertain results over the scripted read ----
+    $grantR=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'gone.example'],$password);
+    $scripted=[new TransportResponse(503,[],'')];
+    pe_exec($profile,1,$grantR,'idem-rec-gone',$password);
+    $grantR2=provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>42,'delete-id'=>77],$password);
+    $scripted=[new TransportResponse(503,[],'')];
+    pe_exec($profile,1,$grantR2,'idem-rec-del',$password);
+    pe_ok('Two uncertain rows exist for reconciliation',2<=(int)query("SELECT COUNT(*) FROM ".table('provider_operations')." WHERE status='uncertain'")->fetchColumn());
+    pe_deny('Reconcile requires the owner password',fn()=>pe_reconcile($profile,1,'idem-rec-gone','wrong'));
+    pe_deny('Reconcile refuses a stale revision',fn()=>pe_reconcile($profile,9,'idem-rec-gone',$password));
+    pe_actor(2);pe_deny('Administrator cannot reconcile',fn()=>pe_reconcile($profile,1,'idem-rec-gone',$password));pe_actor();
+    $r=pe_reconcile($profile,1,'idem-create-1',$password);
+    pe_ok('Resolved rows cannot be reconciled','refused'===$r['outcome']);
+    $r=pe_reconcile($profile,1,'no-such-key',$password);
+    pe_ok('Unknown keys refuse reconciliation','refused'===$r['outcome']);
+    query('INSERT INTO '.table('provider_operations').' (id,idempotency_key,fingerprint,operation,status,result_message,attempts,claimed_at,claimed_epoch) VALUES (?,?,?,?,?,?,?,?,?)',[bin2hex(random_bytes(16)),'idem-orphan',hash('sha256','orphan'),'packages.create','uncertain','',0,gmdate('Y-m-d H:i:s'),time()]);
+    $r=pe_reconcile($profile,1,'idem-orphan',$password);
+    pe_ok('An uncertain row without an approved scope refuses','refused'===$r['outcome']);
+    // The domain was never observed: honest not_observed, no retry.
+    $scriptedReads=[pe_snapshot([pe_package(90,['other.example'])])];$readCount=0;
+    $r=pe_reconcile($profile,1,'idem-rec-gone',$password);
+    pe_ok('Absent effect reconciles not_observed','not_observed'===$r['outcome']&&1===$readCount);
+    pe_ok('Reconcile result is durably recorded','not_observed'===one('SELECT reconciled_outcome FROM '.table('provider_operations').' WHERE idempotency_key=?',['idem-rec-gone'])['reconciled_outcome']);
+    pe_ok('The recorded provider outcome stays truthful','uncertain'===one('SELECT status FROM '.table('provider_operations').' WHERE idempotency_key=?',['idem-rec-gone'])['status']);
+    pe_ok('Reconciliation is audited',1<=(int)query("SELECT COUNT(*) FROM ".table('audit')." WHERE action='provider.operation_reconcile'")->fetchColumn());
+    // A fresh observation showing the domain updates the reconcile marker.
+    $scriptedReads=[pe_snapshot([pe_package(91,['gone.example'])])];
+    $r=pe_reconcile($profile,1,'idem-rec-gone',$password);
+    pe_ok('Observed effect reconciles','observed'===$r['outcome']);
+    // packages.update with delete-id: target absent = removal is visible.
+    $scriptedReads=[pe_snapshot([pe_package(42,['u.example'])])];
+    $r=pe_reconcile($profile,1,'idem-rec-del',$password);
+    pe_ok('Removed package reconciles observed','observed'===$r['outcome']);
+    $scriptedReads=[pe_snapshot([pe_package(77,['still.example']),pe_package(42,['u.example'])])];
+    $r=pe_reconcile($profile,1,'idem-rec-del',$password);
+    pe_ok('Still-present target reconciles not_observed','not_observed'===$r['outcome']);
+    // A field-only update cannot be observed: inconclusive, no read sent.
+    $readCount=0;
+    $r=pe_reconcile($profile,1,'idem-upd-1',$password);
+    pe_ok('Field-only update reconciles inconclusive without a read','inconclusive'===$r['outcome']&&0===$readCount);
+    // Read failures keep the row uncertain without a conclusion.
+    $scriptedReads=[new TransportException('timeout')];
+    $r=pe_reconcile($profile,1,'idem-rec-gone',$password);
+    pe_ok('A failed observation reconciles unavailable','unavailable'===$r['outcome']);
+    $scriptedReads=[new InventorySnapshot('unavailable',[],time(),0,[],'authentication')];
+    $r=pe_reconcile($profile,1,'idem-rec-gone',$password);
+    pe_ok('A refused observation reconciles unavailable','unavailable'===$r['outcome']);
     $durable=json_encode([all('SELECT * FROM '.table('provider_operations')),all('SELECT * FROM '.table('provider_operation_grants')),all('SELECT * FROM '.table('audit'))]);
     pe_ok('No durable row contains secret or auth material',!str_contains($durable,$secret)&&!str_contains($durable,'Bearer'));
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}

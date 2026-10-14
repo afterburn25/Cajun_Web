@@ -117,3 +117,16 @@ key replay and foreign-fingerprint conflict without re-sending,
 `failed`, mid-send access change → `uncertain` while the durable row
 keeps the provider-truthful result, and a durable-storage secret scan.
 No provider call is made.
+
+## Reconciliation
+
+`uncertain` results reconcile through
+`provider_operations_reconcile` — an owner-password, revision-bound,
+single evidence-backed observation of the package list (the only read
+with authenticated evidence). `packages.create` reconciles on the
+approved `domain_name` appearing in observed package names;
+`packages.update` with `delete-id` reconciles on the target's absence;
+other field-only updates are `inconclusive` with no read sent. The
+outcome is recorded on the ledger row (`reconciled_outcome`) without
+rewriting the provider-truthful result, and audited. A reconcile never
+re-sends the request.

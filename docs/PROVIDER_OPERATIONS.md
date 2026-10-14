@@ -131,3 +131,30 @@ attempts, timestamps — is shown for reconciliation; `uncertain` rows
 carry the reconcile-before-retrying notice. Granting a missing scope
 field is refused by the register's required-field rules, and the stored
 scope must reconstruct its fingerprint before execution.
+
+## Reconciliation (`provider_operations_reconcile`)
+
+An `uncertain` ledger row is never silently retried; reconciliation
+answers "did the approved effect land?" through the one evidence-backed
+read (`GET /package` via `InventoryReader`). The owner re-enters their
+password and the exact profile revision; the row must exist as
+`uncertain` and be backed by the consumed grant's stored scope.
+Outcomes are honest and durable:
+
+- `observed` — the approved effect is visible in a fresh observation
+  (created domain present, or delete-id package absent).
+- `not_observed` — the effect is not visible; the request may not have
+  landed. The owner verifies in the 20i panel before any new request.
+- `inconclusive` — the operation's effect is not observable from the
+  package list (e.g. label/limit updates); no read is sent.
+- `unavailable` — no usable observation (credential, transport,
+  access-change or refused-read); the row stays uncertain.
+- `refused` — the row is not uncertain, the key is unknown, the
+  approved scope record is missing/mismatched, or the operation has no
+  observation check. Audited as `provider.operation_reconcile_refused`.
+
+The outcome is stored on the ledger row (`reconciled_outcome` /
+`reconciled_epoch`, schema v4) and audited
+(`provider.operation_reconcile`); the recorded provider result is
+immutable. Owner access is re-verified at the send boundary and after
+the read — a mid-observation access change yields `unavailable`.

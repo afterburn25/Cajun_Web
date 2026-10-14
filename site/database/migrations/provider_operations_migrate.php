@@ -15,7 +15,7 @@ function provider_operations_validate_schema(string $name,string $sql): void {
         $sequence=$column['Field']==='seq'&&$name==='provider_operation_grants';
         if(($column['Extra']!=='')!==$sequence || ($column['Default']!==null&&!$sequence)) throw new RuntimeException('Incompatible provider operation columns. Existing data was preserved.');
         $expected=match($column['Field']) {
-            'idempotency_key','fingerprint','operation','status','provider_code','external_id','id','profile_id','scope_fingerprint','consumed_key'=>'ascii_bin',
+            'idempotency_key','fingerprint','operation','status','provider_code','external_id','id','profile_id','scope_fingerprint','consumed_key','reconciled_outcome'=>'ascii_bin',
             'result_message','scope_params'=>'utf8mb4_unicode_ci',
             default=>null,
         };
@@ -52,15 +52,17 @@ function provider_operations_validate_schema(string $name,string $sql): void {
 }
 
 function provider_operations_ready(): bool {
-    return (one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']??'')==='3';
+    return (one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']??'')==='4';
 }
 
 /**
- * Grant-table upgrade steps; columns are appended so existing data and
+ * Append-only upgrade steps; columns are appended so existing data and
  * column order are preserved.
- *  v2 — approved-revision binding (profile_revision).
+ *  v2 — approved-revision binding (profile_revision) on grants.
  *  v3 — approval-request storage (scope_params, consumed_key,
  *       consumed_at) for single-use executed grants.
+ *  v4 — reconciliation results (reconciled_outcome, reconciled_epoch)
+ *       on the ledger; the recorded provider outcome stays immutable.
  */
 function provider_operations_upgrade_v2(): void {
     $add=function(string $column,string $definition):void {
@@ -76,22 +78,30 @@ function provider_operations_upgrade_v3(): void {
     $add('consumed_key','VARCHAR(190) CHARACTER SET ascii COLLATE ascii_bin NULL');
     $add('consumed_at','DATETIME NULL');
 }
+function provider_operations_upgrade_v4(): void {
+    $add=function(string $column,string $definition):void {
+        if(!one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operations',$column]))db()->exec('ALTER TABLE '.table('provider_operations').' ADD COLUMN '.$column.' '.$definition);
+    };
+    $add('reconciled_outcome','VARCHAR(20) CHARACTER SET ascii COLLATE ascii_bin NULL');
+    $add('reconciled_epoch','BIGINT UNSIGNED NULL');
+}
 
 function provider_operations_migrate(#[\SensitiveParameter] string $password): void {
     staff_locked(function()use($password):void {
         $actor=provider_settings_owner($password,false);
         $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']??'');
-        if(!in_array($version,['','1','2','3'],true))throw new RuntimeException('This provider operation storage version is not supported. Existing data was preserved.');
+        if(!in_array($version,['','1','2','3','4'],true))throw new RuntimeException('This provider operation storage version is not supported. Existing data was preserved.');
         foreach(provider_operations_schema(config()['db']['prefix']) as $name=>$sql) {
             if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))db()->exec($sql);
         }
         if($version==='1')provider_operations_upgrade_v2();
         if(in_array($version,['1','2'],true))provider_operations_upgrade_v3();
+        if(in_array($version,['1','2','3'],true))provider_operations_upgrade_v4();
         foreach(provider_operations_schema(config()['db']['prefix']) as $name=>$sql)provider_operations_validate_schema($name,$sql);
         staff_transaction(function()use($actor,$version):void {
             if(!provider_operations_ready()) {
                 if($version==='')foreach(array_keys(provider_operations_schema(config()['db']['prefix'])) as $name)if((int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn())throw new RuntimeException('Unrecognized provider operation records exist. No data was adopted.');
-                save_setting('provider_operations_schema_version','3');
+                save_setting('provider_operations_schema_version','4');
             }
             provider_settings_audit((int)$actor['id'],'operations_setup','Additive provider operation storage verified');
         });

@@ -4,6 +4,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/providers/checks.php';
 require_once CWP_CODE_ROOT.'/app/providers/operations.php';
 require_once CWP_CODE_ROOT.'/app/providers/inventory.php';
+require_once CWP_CODE_ROOT.'/app/providers/reconcile.php';
 use CajunWebPro\Foundation\Provider\OperationResult;
 use CajunWebPro\Foundation\TwentyI\Operations\TwentyIOperationRegister;
 
@@ -109,6 +110,12 @@ function provider_operations_admin_action(string $action):void {
         $result=provider_operations_execute($id,(int)$revision,posted('grant_id',32),posted('idempotency_key',200),$password);
         $status=$result->status;
         flash('Operation '.$result->operation.': '.$status.' — '.$result->message,$status===OperationResult::SUCCEEDED?'success':($status===OperationResult::UNCERTAIN?'warning':'error'));
+        redirect(admin_url('provider-operations'));
+    }
+    if($action==='provider_operations_reconcile'){
+        $revision=posted('revision',10);if(!ctype_digit($revision))throw new InvalidArgumentException('Reload the current 20i page.');
+        $result=provider_operations_reconcile($id,(int)$revision,posted('idempotency_key',200),$password);
+        flash('Reconciliation: '.$result['outcome'].' — '.$result['message'],$result['outcome']==='observed'?'success':($result['outcome']==='inconclusive'||$result['outcome']==='unavailable'?'warning':'error'));
         redirect(admin_url('provider-operations'));
     }
     throw new InvalidArgumentException('Unknown provider operation action.');
