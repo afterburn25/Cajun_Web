@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — hosting lifecycle journal
+
+Add bounded immutable canonical JSON command reconstruction outside deployment. Preserve lifecycle/attempt invariants across process restoration.148 local controls pass per default/no-ini PHP8.4 mode; matrix/review and durable application adapter pending.
+
 ## Unreleased — canonical hosting model integration
 
 - Preserve Devin PR60 hosting model/history on current main: packages, account lifecycle, exact-attempt observations, plan changes and explicit panel grants. No deployment/provider/persistence/UI activation.

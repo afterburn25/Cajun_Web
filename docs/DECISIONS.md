@@ -1,5 +1,9 @@
 # Decision record
 
+## 2026-10-14 — reconstruct hosting through validated commands
+
+Use versioned strict JSON commands replayed through the existing canonical HostingAccount rather than PHP object deserialization or assigning private state fields. Journal instances retain immutable bytes; state readers get independent models. Identity checks and hashes are not authorization or proof of a provider operation. Durable transaction/audit/dispatch fencing remains a separate adapter requirement. See HOSTING_JOURNAL.
+
 ## 2026-10-13 — Owner-approved dependency-aware development
 
 **D-034 — Accepted:** Missing 20i account entitlements/API credentials, domain/VPS endpoint access, merchant production acceptance or SSH transport does not constitute a blanket development halt. Separate independent source work from external acceptance and label implementation progress separately from external gate/release/deployment state. Reclassify HC-07 as "Awaiting API verification", HC-09/HC-10 as "Development pending — API verification", and A-10 as "Architecture/security validation pending". Continue mocked and isolated safe feature work, then move to next feasible priority if an integration cannot be completed. No real financial/provider/SSH action until its specific security, customer-authorization and owner-approved launch gate passes. See [dependency gates](DEPENDENCY_GATES.md). This is a planning/agent instruction, not evidence those items are implemented.
