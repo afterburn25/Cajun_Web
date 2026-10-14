@@ -1,5 +1,9 @@
 # Service-plan records and client agreement contract
 
+## Current combined candidate
+
+Preserved screen head `76a1537` passed 8,847 full assertions, exact Windows/Linux package comparison and actual desktop/mobile inspection. Its bounded footer/mobile review remains pending. Current `codex/service-agreements-release` combines that source with main `68e4d41` and hosting `1c92e6b`; it adds 1.24 labels and actual 1.23 upgrade/agreement recovery cases. Combined acceptance and release are pending. [Owner guide](SERVICE_AGREEMENTS.md). Earlier preparation checkpoints below are historical.
+
 ## Scope and ownership
 
 Unreleased Codex application increment from PR90/148606fbab8fac1eba0c7c300927bb81f6d6d954. It preserves the exact reviewed Devin service-plan classes and supplied tests. HC-06/HC-11 are partially implemented; this increment supplies durable local service terms and enrollment, not recurring billing. Owner UI and authenticated client agreement screens are the next bounded layer. [Canonical terms](SERVICE_PLANS_FOUNDATION.md), [dependency gates](DEPENDENCY_GATES.md) and [client authority](CLIENT_AUTHORITY.md) remain applicable.

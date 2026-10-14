@@ -7,6 +7,13 @@ define('CWP_BOOT',true);define('CWP_ROOT',$root);
 require $root.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=require $root.'/config.php';
 if(config()['db']['name']!=='cwp_test')exit(2);
+if(($argv[2]??'')==='plans'){
+    $saved=[];
+    foreach(['service_plans','service_plan_events','service_subscriptions','service_subscription_events'] as $name){
+        $saved[$name]=all('SELECT * FROM '.table($name).' ORDER BY id');
+    }
+    echo json_encode($saved,JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='submissions'){
     echo json_encode(['intents'=>all('SELECT * FROM '.table('mail_submissions').' ORDER BY id'),'dispatches'=>all('SELECT * FROM '.table('mail_submission_dispatches').' ORDER BY id'),'results'=>all('SELECT * FROM '.table('mail_submission_results').' ORDER BY id')],JSON_THROW_ON_ERROR);exit;
 }

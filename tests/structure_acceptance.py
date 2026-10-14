@@ -66,7 +66,7 @@ try:
     finally:root.chmod(0o755)
     r=run(root);check('Denied filesystem operation can retry after permission correction',r.returncode==0)
     # Exercise the newly added baseline first; keep every historical baseline.
-    for version,with_shims in [(v,shims) for v in ['1.22.0','1.11.0','1.11.1','1.11.2','1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0'] for shims in [False,True]]:
+    for version,with_shims in [(v,shims) for v in ['1.23.0','1.22.0','1.11.0','1.11.1','1.11.2','1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0'] for shims in [False,True]]:
         label=('organized-retained-routes-' if with_shims else 'organized-fresh-routes-')+version
         root,private=fixture(label,version)
         if with_shims:

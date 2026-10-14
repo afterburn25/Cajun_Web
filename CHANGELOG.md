@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.24.0 candidate — service agreements
+
+Unreleased. Combine owner service-plan authoring/offers, exact client consent and local agreement lifecycle screens with preserved internal hosting deletion-retry/reconciliation groundwork. Add actual published 1.23 as a retained upgrade baseline, preserving all older cases and adding agreement consent/history recovery. Version labels and installer inventory follow this candidate; full combined acceptance, review and exact-main delivery remain pending. [Guide](docs/SERVICE_AGREEMENTS.md).
+
 ## 1.23.0 — published and verified
 
 Client account edits reject stale versions and retain safely escaped unsaved details; client/invitation writes recheck current authority and audit atomically. Invitations are single-use and unexpired, and client administration is refused during support sessions. Reviewed internal hosting records, dispatch fences and local provisioning retry remain inactive groundwork. Exact-main 8,360 assertions and 25 workflow gates pass; all 16 draft/public assets are downloaded and verified, with prior 1.22 unchanged. [Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0); [report](docs/TEST_REPORT_1.23.0.md). Complete 20i implementation remains assigned to Devin; service agreements and later hosting reconciliation remain separate increments.

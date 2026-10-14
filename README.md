@@ -8,6 +8,18 @@ Devin uses `devin/twentyi-complete` plus bounded feature branches. [#95](https:/
 
 Preserve current main, reviewed Codex hosting branches and existing Devin components. Coordinate minimal shared router/navigation/build wiring; do not change active acceptance heads. The latest published release is 1.23.0, immutable source `4fdb562`; these documentation records do not alter its released bytes. Existing specific live-operation/production gates remain. Read older status below as dated evidence; its task allocation is superseded by this owner instruction.
 
+## Current integration — 1.24.0 service agreements candidate
+
+Unreleased `codex/service-agreements-release` preserves #92 `76a1537`, published/documented main `68e4d41` through merge `37924f9`, and reviewed hosting #87–#89 through merge `f4fcdbb`. Original branches and release 1.23 remain unchanged. Owners prepare, publish and offer exact service terms; clients accept or decline them in their portal. Local activation/pause/end records do not authorize automatic payment. [Owner guide](docs/SERVICE_AGREEMENTS.md).
+
+Parent #92 has verified 8,847 full assertions and inspected desktop/mobile screens; parent #89 has verified 8,578. These are parent evidence, not acceptance of this combination. The candidate adds actual published 1.23 archive/shim hashes as the 26th retained starting package, submission replay/recovery checks, and actual upgraded owner/client agreement creation, consent and activation across recovery/reapplication. New combined application, package, browser and independent review remain pending; footer/mobile review 6171344188 is still requested.
+
+Devin retains the complete 20i implementation. PR100 review [6172775622](https://github.com/afterburn25/Cajun_Web/pull/100#issuecomment-6172775622) independently reproduced stale-observation linking and replacement-credential-context reuse on both PHP runtimes. Latest observed `0ead711` adds history/stale-link display but does not change those linking boundaries. Corrections and review remain required. This candidate integrates previously reviewed hosting groundwork only; no new 20i application implementation or live provider operation is added by Codex.
+
+Local PHP 8.4 default/no-ini verifies 1,476 pure form/document/model executions plus 29 source/lint checks. All 2,581 installer dependencies match exact combined bytes; selected plan and hosting source files match their preserved reviewed parents. Documentation verifies 145 Markdown files and 1,300 local links. Native database, HTTP, Apache, package and independent review acceptance of this candidate are still pending.
+
+Next: commit the exact candidate, run combined acceptance on preserved sources, obtain the bounded integration/baseline review, and only then merge and run exact-main release acceptance. No 1.24 tag/release or target-host deployment exists.
+
 ## Latest verified publication — 1.23.0
 
 [Version 1.23.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0) is published and freshly downloaded/verified at immutable source/tag `4fdb56266c77f6e6bf7b58e966d24696e1eaefc8`, through [PR #85](https://github.com/afterburn25/Cajun_Web/pull/85). Client account edits reject stale forms and retain escaped unsaved details for review. Client changes/invitations recheck current authority, serialize writes and audit atomically; invitation activation is single-use and unexpired. Client administration is refused during support sessions. [Owner guide](docs/CLIENT_ACCOUNT_SAFEGUARDS.md).

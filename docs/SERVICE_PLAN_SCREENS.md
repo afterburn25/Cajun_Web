@@ -1,5 +1,9 @@
 # Owner and client service-agreement screens
 
+## Current combined candidate
+
+Preserved screen head `76a1537` passed 8,847 full assertions, exact Windows/Linux package comparison and actual desktop/mobile inspection. Its bounded footer/mobile review remains pending. Current `codex/service-agreements-release` combines that source with main `68e4d41` and hosting `1c92e6b`; it adds 1.24 labels and actual 1.23 upgrade/agreement recovery cases. Combined acceptance and release are pending. [Owner guide](SERVICE_AGREEMENTS.md). Earlier preparation checkpoints below are historical.
+
 ## Implemented integration — acceptance pending
 
 The owner/client read models, controllers, routes, navigation and permission mappings are implemented on PR92. Four admin views cover plan list/detail and agreement list/detail; the existing portal handles `agreements=1` and `agreement=<id>`. Owners explicitly prepare storage. No automatic schema activation, invoice generation, scheduled charge or provider action is added.

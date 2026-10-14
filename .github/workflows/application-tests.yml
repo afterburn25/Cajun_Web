@@ -14,7 +14,7 @@ concurrency:
 jobs:
   native-and-browser:
     runs-on: ubuntu-24.04
-    # Browser/SMTP plus 25 retained upgrade baselines and both Apache modes.
+    # Browser/SMTP plus 26 retained upgrade baselines and both Apache modes.
     # The 1.22 candidate exhausted 45m during no-rewrite 1.13; keep every case.
     # Hosting storage38567952137 exhausted75m during Apache; preserve all cases.
     timeout-minutes: 105

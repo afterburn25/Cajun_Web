@@ -1,5 +1,9 @@
 # Release register
 
+## Prepared 1.24.0 — not published
+
+The candidate uses staging `cwp-update-1.24.0` and recovery `structure-1.24.0`, preserving the permanent shared `structure-1.11.0` lock. Its catalog has 26 retained starting packages through actual published 1.23 (COMPLETE SHA-256 `057a58c42e847fe68454c1a7dac47afad10c8c05f46de4301842654b356f7228`, 2,566 members). Full combined recovery and release acceptance remain pending. Public 1.23 assets are unchanged. [Service-agreement guide](SERVICE_AGREEMENTS.md).
+
 ## Latest verified publication — 1.23.0
 
 [Version 1.23.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0) is published and freshly downloaded/verified at immutable source/tag `4fdb56266c77f6e6bf7b58e966d24696e1eaefc8`, through [PR #85](https://github.com/afterburn25/Cajun_Web/pull/85). Client account edits reject stale forms and retain escaped unsaved details for review. Client changes/invitations recheck current authority, serialize writes and audit atomically; invitation activation is single-use and unexpired. Client administration is refused during support sessions. [Owner guide](CLIENT_ACCOUNT_SAFEGUARDS.md).
