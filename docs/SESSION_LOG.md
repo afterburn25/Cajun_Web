@@ -1012,3 +1012,7 @@ Browser checkpoint follow-through: run38511333232 at6765af5 tested merge25f8c8c 
 ## 2026-10-14 — preserve both histories and restore draft PR testing
 
 Merged main6f0b0ce into draftsaeb51a4 after GitHub reported PR75 CONFLICTING and scheduled no new PR checks. Resolved only shared documentation and the canonical builder area list, preserving both lanes; regenerated combined installer inventory. Native draft evidence is still pending. Earlier duplicate push38515159117 was cancelled before discovering the merge conflict; a new PR run must cover the combined source. No main change, deployment or publication. Next inspect combined native matrix and finish independent exact-main provider acceptance.
+
+## 2026-10-14 — draft native evidence verified
+
+Downloaded successful run38515162950 at2748030/tested merge6121ddb: all78 named native MariaDB checks pass on both PHP8.2/8.4. This includes schema drift/adoption refusal, strict audit rollback, author isolation, six current-access-loss cases on read/write, template boundaries, no credential decryption, concurrent create/edit and revocation while waiting. Old duplicate push38515159117 is confirmed cancelled. Merge9f95370 preserves current provider main6f0b0ce and prepared draftUIaeb51a4; all2,530 committed installer dependencies verified. Main acceptance38515419302 is now running; no1.20publication. Next push the resolved draft branch, inspect combined checks, then wire/test its still-unreachable screens.

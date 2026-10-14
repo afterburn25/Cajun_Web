@@ -2,11 +2,11 @@
 
 ## Current checkpoint — reviewed storage and unwired compose screens
 
-Current source reconciliation: merged main 6f0b0ce into the draft branch after aeb51a4. Both feature histories and documentation are retained; the builder mirrors provider/twentyi and mail-compose together. This resolves PR merge conflicts so combined CI can run. Main's exact acceptance is still queued, not verified or published. Draft routes/setup remain unwired; no draft version is reserved.
+Current source reconciliation: merged main 6f0b0ce into the draft branch after aeb51a4. Both feature histories and documentation are retained; the builder mirrors provider/twentyi and mail-compose together. This resolves PR merge conflicts so combined CI can run. Main's exact acceptance is running, not yet verified or published. Draft routes/setup remain unwired; no draft version is reserved.
 
-Provider PR #74 merged at 6f0b0ce5a9cba68b6859334818383fcc09e2ba3e after independent review and all 6,593 candidate application checks. Exact-main run 38515419302 and mail regressions 38515462046/38515464139 are queued; the clean Windows build passes. Version 1.20.0 is not published; 1.19.0 remains the latest verified release.
+Provider PR #74 merged at 6f0b0ce5a9cba68b6859334818383fcc09e2ba3e after independent review and all 6,593 candidate application checks. Exact-main run 38515419302 is running; mail regressions are tracked by 38515462046/38515464139 and the clean Windows build passes. Version 1.20.0 is not published; 1.19.0 remains the latest verified release.
 
-PR #75 storage at 2748030 received independent no-blocker review in comment 6161455602. Its PHP 8.2/8.4 MariaDB workflows remain queued behind existing Actions work. Do not infer native acceptance. The 71 canonical content checks have downloaded default/no-ini matrix proof from 38513488603.
+PR #75 storage at 2748030 received independent no-blocker review in comment 6161455602. Downloaded run 38515162950 (tested merge 6121ddb2e6c801931235553c730ec1ac5de94fbe) passes all 78 named native MariaDB checks on both PHP 8.2 and 8.4. This validates storage, strict audit and authorization races; the newer combined source and prepared screens still need their own acceptance. The 71 canonical content checks have downloaded default/no-ini matrix proof from 38513488603.
 
 This increment prepares separate guarded compose/list/preview controller and view files, with exact mailbox choices, current author checks, preserved stale form revisions, template replacement confirmation, retained discard/history and escaped plaintext. They have no router/action/navigation/base-schema/setup call site yet. The raw form parser preserves whitespace and rejects header controls before trimming could hide them. All 41 named form-input checks pass locally under PHP 8.4.25 default and no-ini; this proves input handling only, not rendered HTTP/browser behavior. Dedicated native CI now includes those form checks.
 
