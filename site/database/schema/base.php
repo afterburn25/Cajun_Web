@@ -9,6 +9,8 @@ require_once CWP_CODE_ROOT.'/app/mail/connections.php';
 require_once CWP_CODE_ROOT.'/app/mail/inbox.php';
 require_once CWP_CODE_ROOT.'/app/mail/messages.php';
 require_once CWP_CODE_ROOT.'/app/mail/notices.php';
+require_once CWP_CODE_ROOT.'/app/mail/drafts.php';
+require_once CWP_CODE_ROOT.'/app/mail/submissions.php';
 require_once CWP_CODE_ROOT.'/app/providers/settings.php';
 require_once CWP_CODE_ROOT.'/app/marketing/reviews.php';
 require_once CWP_CODE_ROOT.'/app/marketing/appointments.php';
@@ -26,7 +28,7 @@ function schema_statements(string $prefix): array {
         'rate_limits'=>'CREATE TABLE '.$t('rate_limits').' (bucket CHAR(64) PRIMARY KEY,attempts INT UNSIGNED NOT NULL,expires BIGINT NOT NULL,INDEX expiry(expires))'.$engine,
         'resets'=>'CREATE TABLE '.$t('resets').' (token_hash CHAR(64) PRIMARY KEY,user_id INT UNSIGNED NOT NULL,expires BIGINT NOT NULL,INDEX reset_expiry(expires))'.$engine,
         'audit'=>'CREATE TABLE '.$t('audit').' (id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,user_id INT NOT NULL DEFAULT 0,action VARCHAR(80) NOT NULL,detail VARCHAR(400) NOT NULL,created_at DATETIME NOT NULL,INDEX audit_date(created_at))'.$engine,
-    ] + studio_schema($prefix) + staff_schema($prefix) + support_schema($prefix) + catalog_schema($prefix) + payments_schema($prefix) + attempts_schema($prefix) + notifications_schema($prefix) + ledger_schema($prefix) + delivery_schema($prefix) + activity_schema($prefix) + mail_templates_schema($prefix) + mail_accounts_schema($prefix) + reviews_schema($prefix) + appointments_schema($prefix) + mail_connections_schema($prefix) + mail_inbox_schema($prefix) + mail_messages_schema($prefix) + mail_notices_schema($prefix) + provider_settings_schema($prefix);
+    ] + studio_schema($prefix) + staff_schema($prefix) + support_schema($prefix) + catalog_schema($prefix) + payments_schema($prefix) + attempts_schema($prefix) + notifications_schema($prefix) + ledger_schema($prefix) + delivery_schema($prefix) + activity_schema($prefix) + mail_templates_schema($prefix) + mail_accounts_schema($prefix) + reviews_schema($prefix) + appointments_schema($prefix) + mail_connections_schema($prefix) + mail_inbox_schema($prefix) + mail_messages_schema($prefix) + mail_notices_schema($prefix) + provider_settings_schema($prefix) + mail_drafts_schema($prefix) + mail_submissions_schema($prefix);
 }
 function default_settings(): array { return [
     'brand_name'=>'CajunWebPro','hero_line1'=>'Websites Built','hero_line2'=>'to Dominate',
