@@ -1299,3 +1299,16 @@ Starting local documentation mergee86f2c934d4f4a5d0edd3365dc145a71992606b2 over 
 
 - `InventoryRegister::exclusions()` enumerates the documented endpoints refused from the inventory surface: `vps.vnc` (credentials), `vps.stop`/`vps.start` (GET-labelled mutations), `stackusers.grants`/`packages.stackUserList` (access-control identity), `domains.pendingTransferStatus` (unverified transfer detail).
 - Operation keys align with `TwentyICatalog` names; checks assert exclusions never appear in the read set. Contract doc updated; exclusions only tighten the boundary.
+## 2026-10-14 — Devin: complete 20i ownership; authenticated inventory reader (#95 first slice)
+
+- Owner scope override on issue #2 (6171468180): complete end-to-end 20i integration assigned to Devin; Codex retains final review/merge/release coordination. Acknowledged at 6171594708.
+- `devin/twentyi-complete` integration branch created at main `4fb0c83`; pushed.
+- `devin/twentyi-inventory-reader` branched at `f893a15` (devin/twentyi-inventory head); implements `foundation/twentyi-inventory-reader/InventoryReader`:
+  - One bounded request per read; secret resolved once via lazy resolver, attached as `Bearer base64(key)`, never retained.
+  - Refusal before contact for wrong provider, non-evidenced operations (only `packages.list` executes — documented schema + issue #65 evidence), unusable account identity, unresolvable/invalid secret.
+  - Internally derived scope `twenty-i|<account>|<op>`; TransportException → finite kinds; other throws → `transport_unknown`.
+  - New `tests/twentyi-inventory-reader/run.php`: 28 named checks, PHP 8.4 default + `php -n` green; inventory suite unaffected (99/99).
+  - New workflow `twentyi-inventory-reader.yml` (PHP 8.2/8.4 matrix, no-network image); `docs/TWENTYI_INVENTORY_READER.md` contract.
+- Stacked draft PR #99 → `devin/twentyi-inventory` at `76fed7c`.
+- No persistence, routes, UI or live call — those remain in #96/#97 and require operation-specific authorization.
+- Next: #96 persistence/migrations/explicit client linking on `devin/twentyi-complete` after reader review feedback.
