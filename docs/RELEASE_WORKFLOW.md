@@ -1,5 +1,13 @@
 # GitHub testing, incremental releases and agent continuity
 
+## Candidate 1.20.0 — owner 20i connection and recovery acceptance
+
+The next unused version is prepared as **1.20.0**, not published. Source defaults and installer agree; verified published1.19.0 COMPLETE/UPDATE bytes and shims are retained as the22nd supported starting package (1.0.8 and1.1.0 through1.19.0, including1.11.1/1.11.2). UPDATE stages cwp-update-1.20.0, uses target-specific recovery, and retains the permanent structure-1.11.0 mutex. No existing tag or release asset changed.
+
+The new actual1.19 installation/update/recovery/reapplication fixtures preserve nonempty email notices and every earlier record, then prepare owner provider storage, save an encrypted key, retain synthetic uncertain/incomplete check history, recover original files and reapply the candidate. They verify both original private keys and a blank-key edit that decrypts the provider credential after recovery. Apache direct-internal denial and filesystem recovery matrices now include the new provider paths/1.19 baseline. These new recovery cases have syntax-only validation until candidate CI completes.
+
+Prior exact application run38511333232 at6765af5 passed package and native stages and was running HTTP/Chromium when this candidate was prepared; inspect its final evidence rather than infer success. Native provider118 and isolated transport1003 checks per PHP8.2/8.4 at28e4bf2 are downloaded/verified. Independent transport review is complete; owner storage/orchestration/UI review remains requested. Next: inspect browser checkpoint/screenshots, candidate full matrix and review, then merge/test exact main and publish/download-verify only after all gates pass. No live API call, secret extraction or deployment.
+
 ## Latest verified publication — 1.19.0
 
 [v1.19.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.19.0) is published and freshly downloaded/verified at immutable source/tag `22a2969692ab5bcc7f35158dcaa5355c623dc821` through [PR #72](https://github.com/afterburn25/Cajun_Web/pull/72). Assigned staff see recent email notices from explicit successful newest-20 inbox checks, with separate per-person opened/dismissed state and exact-message POST opening. Current permissions, mailbox grants and saved revisions filter counts/labels before exposure. Private admin/public bells preserve idle expiry, clear stale display and stay absent in client-support pages. No automatic IMAP synchronization or server read-flag writes. [Owner guide](RECENT_EMAIL_NOTICES.md).
