@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — preparation evidence
+
+- Verified all14 PHP8.2/8.4 preparation reports at bead26f, including exact long Unicode decoding on the runner. Reconciled accepted draft main7805e56 without deploying submission code. Draft1.21 release gates remain running.
+
 ## Unreleased — maintained offline MIME preparation
 
 Fix initial expanded-matrix long-subject folding compatibility without weakening parser equality.29 local MIME/168 independent parser checks now cover14 cases including emoji/combining characters on Python3.10/3.12/3.14; replacement matrix pending.

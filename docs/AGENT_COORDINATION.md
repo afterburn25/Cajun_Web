@@ -1,5 +1,15 @@
 # Codex and Devin work allocation
 
+## Current work — draft release checks and verified MIME preparation
+
+Draft PR75 is merged at `7805e56aa9e53cb081600589e92991255475474c` after independent reviews and all6,912 named candidate checks in [38523831728](https://github.com/afterburn25/Cajun_Web/actions/runs/38523831728):1431 native/form,3084 estimator,1174 HTTP/Chromium,233 filesystem/recovery,969 Apache,21 builder. Actual desktop/mobile draft images are inspected; homepage pixels match1.20. Exact-main application [38527733738](https://github.com/afterburn25/Cajun_Web/actions/runs/38527733738) and clean Windows packaging are running. Candidate1.21.0 is not yet published; latest verified public release remains1.20.0. Keep main stable through these release gates.
+
+Submission PR77 is now based on main, with both histories preserved. Downloaded [38527225238](https://github.com/afterburn25/Cajun_Web/actions/runs/38527225238) at bead26f/tested merge17effd6 passes14 named JSON reports: each PHP8.2/8.4 runtime has52 snapshot checks per default/no-ini mode,29 MIME checks per mode,168 independent parser checks per mode and1 unavailable-runtime check. All6 original PHPMailer7.1.1 files reproduce from the pinned upstream commit. This supersedes the failed long-subject matrix38526761646 without weakening exact decoded equality. Independent review requested in [6163105944](https://github.com/afterburn25/Cajun_Web/pull/77#issuecomment-6163105944). No submission source is in the deployment tree yet.
+
+Hosting PR60 correctionc53dc4a passes168 supplied and21 independent controls in both local modes; [review6163105649](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6163105649) is clear for the isolated component. Service-plan PR53 at166c4b3 still needs reference-detachment and terminal-newline fixes from6162609466. Devin retains those corrections and independent mail review. Codex owns SMTP transport/fixtures and later durable storage/UI integration; integrate corrected components sequentially after the current release gate. No customer mail, real provider operation, payment, SSH or deployment is enabled. The full roadmap remains active.
+
+## Earlier preparation checkpoints — superseded by the current section
+
 ## Current SMTP preparation — maintained MIME, matrix pending
 
 MIME matrix38526761646 atf7a3437 failed independent parsing of a long Unicode subject, despite both PHP runtimes producing byte-identical output to Windows. Python3.10.6 reproduced an extra leading space when folding moved the first encoded word off the Subject line; Python3.12.10/3.14 did not. The adapter now leaves room for the first encoded word after Subject on the first physical line. Added maximum-length emoji and combining-character cases:29 local MIME and168 independent parser checks over14 fixtures pass under PHP default/no-ini, with Python3.10/3.12/3.14 verification. The original parser assertion is unchanged. Replacement expanded matrix is pending; prior snapshot52 matrix remains separately verified.
