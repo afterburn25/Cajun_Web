@@ -1,5 +1,9 @@
 # Working agreement for CajunWebPro
 
+## Project history screens — integration in progress
+
+Codex starts `codex/project-progress-screens` at preserved PR106/c41cc6d. [The editor/timeline/activity contract](docs/PROJECT_PROGRESS_CONTRACT.md#existing-editor-timeline-and-activity-integration-contract) now precedes dependent implementation. Keep the existing project editor and portal, explicit owner setup, stale draft/original replay behavior, current native authorization, exact dated history and personal activity links. No screen implementation or acceptance yet at this contract checkpoint. Parent native e8c463d has verified838 executions per push/PR matrix and all24 workflows; its independent review is pending. Devin retains complete20i; published1.23 and frozen acceptance candidates stay unchanged.
+
 ## Native project history — focused CI verified, integration pending
 
 On `codex/project-progress-storage`, preserved base `3677ccf`, contracts `0876738` and `86e5cb7` precede implementation. The inactive native adapter adds exact owner-prepared schema, current staff/client/support access, atomic project/event/request/head/audit writes, honest legacy baselines, original-request replay and bounded validated history. The existing project editor and portal are unchanged; actual forms, timeline/activity integration and packaged acceptance remain next. Complete 20i implementation remains with Devin under [his accepted assignment](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171594708).

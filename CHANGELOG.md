@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — project history screen contract
+
+- Define existing editor/timeline/activity integration before implementation on a child branch. No runtime change in this contract commit.
+
 ## Unreleased — native project history
 
 - Add protected owner preparation and current-authorized project history, exact legacy baselines, atomic writes and original request replay. Independently anchor the latest event to detect truncated history even after a project reverts to earlier fields.
