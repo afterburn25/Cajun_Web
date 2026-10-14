@@ -16,6 +16,7 @@ function provider_inventory_validate_schema(string $name,string $sql): void {
         if($column['Extra']!=='' && !($name==='provider_package_link_events' && $column['Field']==='id' && $column['Extra']==='auto_increment')) throw new RuntimeException('Incompatible provider inventory columns. Existing data was preserved.');
         if($column['Default']!==null) throw new RuntimeException('Incompatible provider inventory columns. Existing data was preserved.');
         $expected=match(true) {
+            $name==='provider_package_link_events' && $column['Field']==='id'=>null,
             in_array($column['Field'],['id','profile_id','refresh_id','state','reason','scope','coverage','skip_reasons','created_at','unmapped_keys','event'],true)=>'ascii_bin',
             in_array($column['Field'],['name','names','package_type_name','stack_users','package_labels'],true)=>'utf8mb4_unicode_ci',
             default=>null,
