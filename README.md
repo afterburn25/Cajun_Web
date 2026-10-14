@@ -2,7 +2,7 @@
 
 ## Structured project planning — unreleased pure records
 
-The separate `codex/project-planning` branch defines scope/contact/target dates, client actions/blockers and structured milestone ownership/status/dependencies, with immutable dated history. Local211 named checks pass in each PHP8.4 default/no-ini mode. [Contract and actual evidence](docs/PROJECT_PLANNING_CONTRACT.md). Native storage, current authorization, dashboard/forms/activity and full acceptance remain next; this branch does not activate planning. Full P-05/P-07 stays partial. PR108 acceptance remains separate, and Devin retains complete20i.
+The separate `codex/project-planning` branch defines scope/contact/target dates, client actions/blockers and structured milestone ownership/status/dependencies, with immutable dated history. Implementation84f84f0 now passes211 named checks in every PHP8.2/8.4 default/no-ini mode:844 per push/PR matrix, with downloaded reports/logs verified and all22 workflows successful. [Contract and actual evidence](docs/PROJECT_PLANNING_CONTRACT.md). Native storage, current authorization, dashboard/forms/activity and full acceptance remain next; this branch does not activate planning. Full P-05/P-07 stays partial. PR108 acceptance remains separate, and Devin retains complete20i.
 
 ## Unreleased project history screens
 
