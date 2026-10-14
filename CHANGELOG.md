@@ -1,5 +1,45 @@
 # Changelog
 
+## 1.20.0 — candidate, not published
+
+Protected owner20i settings, explicit fixed read-only connection checks and retained finite outcomes. Add current-password/CSRF/revision protection, private encrypted credentials and additive setup. Candidate acceptance includes published1.19 update/recovery with original private key preservation; results pending. General hosting/domain/VPS/SSH operations remain unverified.
+
+## Unreleased — exact-byte installer inventory correction
+
+Regenerate owner UI dependency hashes from the committed LF source bytes after CI rejected Windows-normalized development hashes. No application behavior change.
+
+## Unreleased — owner 20i connection screen
+
+Wire protected owner settings, explicit fixed connection checks, finite/history displays and fresh/additive setup. Add actual packaged HTTP/Chromium against isolated HTTPS. Combined application acceptance and release remain pending.
+
+## Unreleased — audited explicit provider-check preparation
+
+Add unwired current-owner fixed-check orchestration, finite retained outcomes, request limits and interrupted-result handling; reuse canonical provider mirrors and add native process fixtures. Application integration remains pending.
+
+## Unreleased — owner provider storage preparation
+
+Add unwired owner-only encrypted 20i profile and retained metadata history, exact additive migration, native fixtures/workflow and provider-key package exclusion. Native acceptance and application integration remain pending.
+
+## Unreleased — isolated transport runner repair
+
+Create writable output mountpoints before mounting the source read-only. This fixes a pre-test Docker startup failure; no application or transport behavior changes.
+
+## Unreleased — isolated 20i HTTPS transport
+
+- Fixed destination/pinning/TLS and proxy/redirect refusal, finite errors, bounded streamed headers/body and transfer deadlines, with 333 local actual synthetic HTTPS checks and request/DNS policy evidence. No admin application integration or real API operation; matrix/review pending.
+
+## Unreleased — isolated fixed 20i connection probe
+
+- Added a fixed read-only package-list authentication adapter, finite classifications and explicit refusal of all general provider operations, with 120 synthetic checks. No real transport or application integration; no release version reserved.
+
+## Unreleased provider contract review
+
+- Recorded the 163-check canonical review and reproduced JSON shape defect; narrowed first integration to protected settings and explicit read-only checks. Inventory needs separately verified response fields and ownership acceptance. Documentation only; no feature or release claimed.
+
+## Unreleased — provider settings contract preparation
+
+Claim an isolated owner20i settings/read-only check contract after the1.19 email increment. Documentation only; no API call, application feature, release or deployment.
+
 ## Unreleased — HC-07 provider foundation (Devin, isolated component)
 
 - Added [PROVIDER_TRANSPORT_CONTRACT.md](docs/PROVIDER_TRANSPORT_CONTRACT.md): synthetic acceptance checklist for the concrete cURL `HttpTransport` — validated-then-pinned public DNS, verified TLS on the original hostname, ambient-proxy/env refusal, redirect non-follow, bounded deadlines and a counting body cap, honest pre/post-send exception kinds, and a credential non-disclosure sweep. Documentation only; no runtime changes.
@@ -39,6 +79,7 @@
 
 ## 1.19.0 — verified recent email notices
 
+## 1.19.0 — verified recent email notices
 
 - Explicit successful inbox reads populate a newest-20 observation window with exact mailbox generation/UID identity; strict result/audit failures roll back notice changes. Failed reads retain the prior window.
 - Current-authorized notice page, per-staff opened/dismissed state, independent handle/full-tuple POST opening, and private admin/public bells. Passive polling never fetches mail or renews idle login; client-support pages suppress staff email notices. Server read flags remain unchanged.
@@ -54,7 +95,6 @@
 - Added bounded current-window metadata, separate per-person opened/dismissed markers, exact current mailbox permission filtering, collision refusal and independent full-tuple resolution.
 - Added explicit owner migration with column/key/relationship compatibility checks and strict audit; observation helpers require the successful terminal-result transaction. No schema/reader/HTTP integration or bell UI is wired yet.
 - Local PHP syntax passes. Native database fixtures and PHP 8.2/8.4 workflow are added; database and full application acceptance remain pending. Published/download-verified 1.18.0 remains immutable; its publication documentation is merged into this preparation branch.
-
 
 
 ## 1.18.0 — verified individual email reading
