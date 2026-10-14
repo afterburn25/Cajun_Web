@@ -1345,3 +1345,10 @@ Publication-record validation: 139 Markdown files and 1,259 local links pass; pi
 - `tests/provider_inventory_native.php`: ~30 MariaDB orchestration checks incl. DNS/read races, revocation, audit failure, isolation, secret scan. New `provider-inventory.yml` (PHP 8.2/8.4 + MariaDB 10.11). Not yet CI-verified.
 - Draft PR #100 → devin/twentyi-inventory-reader at ac8f1a6.
 - Next: CI results; HTTP/browser wiring and packaged acceptance; further #97 lifecycle work.
+## 2026-10-14 — Devin: refresh-slice CI corrections complete, 56/56 green (PR #100)
+
+- Parent commit `ac8f1a6`; fixes: `78e9170` (drop duplicate `studio_schema` require), `c5ae70d` (skip duplicate studio table creation — `schema_statements` already creates them), `f8b3ea1` (explicit indexes on FK columns InnoDB auto-indexes: `linked_by`, `actor_id`), `0bcdfc5`+`7019866` (`provider_package_link_events.id` → `BIGINT AUTO_INCREMENT` for insertion-stable ordering; validator collation exception for the numeric id; event inserts drop manual hex ids).
+- Failure sequence on `provider-inventory.yml`: function redeclare → table-exists → auto-index mismatch → link-event ordering nondeterminism (same-second `recorded_at` + random hex id) → numeric-id collation mismatch. Each fixed and re-verified.
+- Final: runs 38591754189 (push) and 38591761386 (pull_request) both report **PASS: 56 native provider inventory assertions** on PHP 8.2 and PHP 8.4 — migration, authorization refusals, revision checks, cooldown, resolver/transport classification, complete/partial/unavailable persistence, last-good preservation, link restrictions, duplicate rejection, client isolation, and ordered unlink events.
+- Continuity docs synced (PROJECT_STATUS, SESSION_HANDOFF, CHANGELOG). No live call/credential/mutation; synthetic fixtures only.
+- Next: report on issues #96/#97 and PR #100; await Codex review; then continue lifecycle reads → hosting operations → domains/VPS behind explicit gates.
