@@ -1,5 +1,13 @@
 # CajunWebPro — project source of truth
 
+## Owner allocation override — 2026-10-14
+
+The owner instructed: **“let devin do the complete 20i integration.”** Devin owns the entire implementation: provider adapters, native persistence/migrations and client ownership, admin and client portal screens, hosting lifecycle/controls, domains, VPS/cloud, support handoffs and VPS SSH, with their tests and documentation. This supersedes earlier component-only assignments and statements reserving all 20i application/UI work to Codex. Codex retains non-20i development and final independent review, combined acceptance, merge/release coordination. [Full handoff and acceptance](docs/DEVIN_COMPLETE_20I_HANDOFF.md); [authoritative GitHub assignment](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171468180).
+
+Devin uses `devin/twentyi-complete` plus bounded feature branches. [#95](https://github.com/afterburn25/Cajun_Web/issues/95), [#96](https://github.com/afterburn25/Cajun_Web/issues/96) and [#97](https://github.com/afterburn25/Cajun_Web/issues/97) now cover provider adapters, persistence/client linking, and actual admin/client screens and service workflows. Start with protected refresh through saved inventory and explicit linking to the client service view; continue every remaining milestone. These issues are workstreams, not stopping points. Receipt of the expanded ownership still requires Devin's acknowledgement or observable implementation; the earlier #93/#94 deliveries prove only the prior bounded work.
+
+Preserve current main, reviewed Codex hosting branches and existing Devin components. Coordinate minimal shared router/navigation/build wiring; do not change active acceptance heads. The latest published release remains 1.22.0, source `e3b434f`; no release or runtime changes result from this documentation. Existing specific live-operation/production gates remain. Read older status below as dated evidence; its task allocation is superseded by this owner instruction.
+
 ## Latest verified publication — 1.22.0
 
 [v1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) is published and freshly downloaded/verified at immutable source/tag `e3b434ffb2244e454ea9f24fa1de9173b7479ccc`, through [PR77](https://github.com/afterburn25/Cajun_Web/pull/77). Authorized staff can review and explicitly send a saved plain-text draft from a currently assigned mailbox, then inspect private submission history. Current author, Send/grant permissions and exact revisions are rechecked; durable attempt records prevent replay. SMTP requires verified TLS. Server acceptance is distinguished from recipient delivery, and unknown or unresolved outcomes cannot automatically resend. [Owner guide](docs/SENDING_EMAIL.md).

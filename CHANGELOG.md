@@ -1,5 +1,9 @@
 # Changelog
 
+## Development coordination — complete 20i ownership
+
+Transfer the complete 20i implementation to Devin, including application persistence and admin/client portal screens. Record the full requirements, bounded workstreams and shared-file ownership; Codex retains non-20i work and final review/release coordination. Documentation only; no application, version, installer or published-package change.
+
 ## 1.22.0 — verified explicit saved-email sending
 
 - Explicit saved-message review, unchecked confirmation and Send; private author history, separate To/Cc/Bcc, current mailbox/Send grants and exact revisions.
