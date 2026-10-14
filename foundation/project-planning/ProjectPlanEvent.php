@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace CajunWebPro\Foundation\ProjectPlanning;
+if(PHP_SAPI!=='cli'&&!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once __DIR__.'/ProjectPlan.php';
 
 /** Immutable public planning history. The native adapter must validate current access and the retained head. */

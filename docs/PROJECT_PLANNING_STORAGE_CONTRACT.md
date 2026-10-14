@@ -1,5 +1,9 @@
 # Native project planning storage
 
+## Current implementation and evidence
+
+Contracted native adapter/schema/migration and exact guarded pure mirrors are implemented aftered1ab72. Local PHP8.4.25/MariaDB10.11.16 passes126 named native checks with memory_limit128M, including full4,096-event and nearly32MiB valid histories, current authorization while waiting, concurrency, original replay, exact schema, corruption, lost tails and atomic failures. Canonical/deployed pure default/no-ini each pass211 (844 executions);970 local executions total. Full installer refresh and exact inventories are checked before commit. No existing project/provider route, UI or permission changed. Current committed PHP8.2/8.4 native artifacts and independent review remain pending. Next is actual planning dashboard/forms/activity after that evidence; this native increment does not complete P-05/P-07.
+
 ## Scope and preserved source
 
 This contract precedes implementation on `codex/project-planning-storage`, starting at PR110 documentation head `6bcf4e746c989af9a6248e0db966a0dd0ac91cb9`. Its pure implementation84f84f0 has verified211 named checks per PHP8.2/8.4 default/no-ini mode. [Plan and event contract](PROJECT_PLANNING_CONTRACT.md). Existing project identity, stage/free-text milestones, progress history, files, invoices and deliveries remain authoritative and unchanged. New structured milestones are explicitly entered; no legacy text is silently converted.

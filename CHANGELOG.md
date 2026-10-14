@@ -1,8 +1,10 @@
 # Changelog
 
-## Unreleased — native planning contract
+## Unreleased — native structured project planning
 
-- Specify current-authorized structured plan persistence, exact replay, independent history anchoring and bounded pages before implementation. No native or UI acceptance is claimed by this contract.
+- Add explicit owner-prepared structured plans, atomic original-request replay and independent current-plan/history anchors, preserving existing project fields.
+- Validate current staff/client/support authority and complete history within4,096-event/32MiB processing bounds; preserve all records at capacity.
+- Verify126 native MariaDB checks under128MiB plus211 canonical/deployed pure assertions in each default/no-ini mode. Actual forms/dashboard/activity, current committed CI and independent release acceptance remain pending.
 
 ## Unreleased — structured project planning records
 

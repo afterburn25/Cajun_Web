@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 use CajunWebPro\Foundation\ProjectPlanning\{ProjectPlan, ProjectPlanEvent};
-require __DIR__.'/../../foundation/project-planning/ProjectPlanEvent.php';
+require __DIR__.'/../../'.(in_array('--deployment',$argv??[],true)?'site/includes/':'').'foundation/project-planning/ProjectPlanEvent.php';
 $checks = [];
 function check(string $name, bool $pass): void {
     global $checks; $checks[] = ['name' => $name, 'passed' => $pass];

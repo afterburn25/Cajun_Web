@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace CajunWebPro\Foundation\ProjectPlanning;
+if(PHP_SAPI!=='cli'&&!defined('CWP_BOOT')){http_response_code(404);exit;}
 
 /** Exact public planning facts; persistence and current access belong to the adapter. */
 final readonly class ProjectPlan
