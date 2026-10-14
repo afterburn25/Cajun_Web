@@ -1,5 +1,9 @@
 # Session handoff — read before continuing
 
+## Current preparation — owner and client service-agreement screens
+
+Separate codex/service-plan-screens starts from storage PR91/71d7efe. The committed screen contract defines current-authorized owner authoring/offers and exact-client agreement/history with CSRF, explicit confirmation and honest payment wording. No route or screen is implemented by this contract. Parent91 remains frozen for full acceptance and independent review; its current PHP8.2/8.4 matrices verify740 model/document and174 native checks per push/PR. Next implement and test the scoped screens without changing the parent source.
+
 ## Current work — saved service terms and exact client agreement
 
 Codex owns `codex/service-plan-records`, based on preserved import PR90/148606f and its candidate85/21ebe69 ancestry. This bounded HC-06/HC-11 increment adds private plan/subscription documents, additive storage and current owner/client operations. Published1.22/e3b434f, candidate85 and original Devin53 remain unchanged. Hosting deletion/reconciliation87–89 are separate.

@@ -1284,3 +1284,7 @@ Local import verification before the enclosing merge commit:236 supplied/canonic
 ## 2026-10-14 — persist exact service terms and client agreement
 
 Owner requested continued roadmap implementation. Start preserved service-plan import148606f on separate codex/service-plan-records; implement documents, additive four-table schema/setup and owner/client authority with immutable event/audit transactions. Add current-auth and concurrent MariaDB fixtures plus bounded document checks, CI and private Apache paths. Published1.22, candidate85 and original Devin work stay unchanged. Local67 default/no-ini document checks and87 native checks pass; initial pure fixture count error is recorded in the contract. GitHub matrices, combined acceptance and independent review remain pending. Next verify current CI, then implement owner/client forms and actual browser flows; automatic payments and external operations remain gated. The enclosing commit records this exact source.
+
+## 2026-10-14 — agree owner/client service-plan screen boundary
+
+Start storage71d7efe on separate codex/service-plan-screens. Commit SERVICE_PLAN_SCREENS contract before dependent route/UI work; source, schema, installer and release remain unchanged. Parent native/model matrices are downloaded and verified. Next implement bounded current-authorized lists, strict forms, escaped owner/client views and real browser acceptance. No screen or production activation is claimed.
