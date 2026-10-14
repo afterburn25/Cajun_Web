@@ -4,7 +4,7 @@ if (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); ex
 // GENERATED from canonical bootstrap modules by tools/build.py.
 
 // config/defaults.php
-const CWP_VERSION = '1.18.0';
+const CWP_VERSION = '1.19.0';
 const CWP_GUARD = "<?php http_response_code(404); exit; ?>\n";
 
 // includes/security/input.php
@@ -143,7 +143,7 @@ function admin_url(string $view='dashboard',array $params=[]): string { return s
 /** Release-versioned URLs prevent an old stylesheet surviving an upgrade. */
 
 function asset(string $path): string {
-    static $paths = ['activity.js'=>'assets/js/activity.js','admin.css'=>'assets/css/admin.css','admin.js'=>'assets/js/admin.js','bayou-detail.webp'=>'images/backgrounds/bayou-detail.webp','bayou.webp'=>'images/backgrounds/bayou.webp','emblem.png'=>'images/branding/emblem.png','favicon.png'=>'images/icons/favicon.png','growth.css'=>'assets/css/growth.css','growth.js'=>'assets/js/growth.js','hero-detail.webp'=>'images/backgrounds/hero-detail.webp','hero.webp'=>'images/backgrounds/hero.webp','logo.png'=>'images/branding/logo.png','micrograin.png'=>'images/backgrounds/micrograin.png','payment-trial.js'=>'assets/js/payment-trial.js','premium.css'=>'assets/css/premium.css','project-construction.webp'=>'images/portfolio/project-construction.webp','project-placeholder.svg'=>'images/portfolio/project-placeholder.svg','project-restaurant.webp'=>'images/portfolio/project-restaurant.webp','project-wellness.webp'=>'images/portfolio/project-wellness.webp','site.css'=>'assets/css/site.css','site.js'=>'assets/js/site.js','staff-setup.js'=>'assets/js/staff-setup.js'];
+    static $paths = ['mail-notices.js'=>'assets/js/mail-notices.js','mail-notices.css'=>'assets/css/mail-notices.css','activity.js'=>'assets/js/activity.js','admin.css'=>'assets/css/admin.css','admin.js'=>'assets/js/admin.js','bayou-detail.webp'=>'images/backgrounds/bayou-detail.webp','bayou.webp'=>'images/backgrounds/bayou.webp','emblem.png'=>'images/branding/emblem.png','favicon.png'=>'images/icons/favicon.png','growth.css'=>'assets/css/growth.css','growth.js'=>'assets/js/growth.js','hero-detail.webp'=>'images/backgrounds/hero-detail.webp','hero.webp'=>'images/backgrounds/hero.webp','logo.png'=>'images/branding/logo.png','micrograin.png'=>'images/backgrounds/micrograin.png','payment-trial.js'=>'assets/js/payment-trial.js','premium.css'=>'assets/css/premium.css','project-construction.webp'=>'images/portfolio/project-construction.webp','project-placeholder.svg'=>'images/portfolio/project-placeholder.svg','project-restaurant.webp'=>'images/portfolio/project-restaurant.webp','project-wellness.webp'=>'images/portfolio/project-wellness.webp','site.css'=>'assets/css/site.css','site.js'=>'assets/js/site.js','staff-setup.js'=>'assets/js/staff-setup.js'];
     if (!isset($paths[$path])) throw new InvalidArgumentException('Unknown public asset.');
     return site_url($paths[$path]).'?v='.rawurlencode(CWP_VERSION);
 }
