@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.23.0 — published and verified
+
+Client account edits reject stale versions and retain safely escaped unsaved details; client/invitation writes recheck current authority and audit atomically. Invitations are single-use and unexpired, and client administration is refused during support sessions. Reviewed internal hosting records, dispatch fences and local provisioning retry remain inactive groundwork. Exact-main 8,360 assertions and 25 workflow gates pass; all 16 draft/public assets are downloaded and verified, with prior 1.22 unchanged. [Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0); [report](docs/TEST_REPORT_1.23.0.md). Complete 20i implementation remains assigned to Devin; service agreements and later hosting reconciliation remain separate increments.
+
+
 ## Development coordination — acknowledged full 20i ownership
 
 Reconcile the ownership handoff with merged client/hosting groundwork main `4fdb562`, preserving both histories. Record Devin's explicit acceptance and first reader PR #99. No runtime or release asset changes relative to main.
