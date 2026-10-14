@@ -1,5 +1,15 @@
 # CajunWebPro — project source of truth
 
+## Current work — explicit local provisioning retry
+
+Codex owns `codex/hosting-provision-retry` from PR82/1f59074. A new current-owner/password action moves only a recorded definite provisioning failure marked safe to retry back to local pending state. It commits a stable canonical event and strict audit atomically, preserves old attempts/results and returns no dispatch claim. A later normal claim must recheck current authority/provider settings and fence a distinct attempt. Unknown outcomes, unsafe failures, missing proof and deletion/reconciliation retry remain refused. [Contract](docs/HOSTING_PROVISION_RETRY.md).
+
+Downloaded Linux push38550996210 and PR38551004850 atd101665 each verify44 retry +94 retained record +79 retained operation checks per PHP8.2/8.4,434 executions. The complete push log has no PHP diagnostics. Full generated refresh,127 Markdown/1085 links and2542 exact committed installer dependencies pass. Earlier fixture prefix/refusal-catch failures are documented and not counted as acceptance. Windows could not establish provider-key0600 permissions; that protection remains. Independent review remains pending; no schema/version/route or live operation is added.
+
+Separate PR83/dae2f82 passes60 client-authority +94 records +79 operation checks per PHP8.2/8.4,466 executions in both downloaded push38549022824 and PR38549061993. Its application38549059961 is running and remains unaccepted. Mail77/e9b77e1 full38545953062 now verifies7,854 assertions across all19 workflows, actual screens and Windows/Linux packages; ready for independent review in6166470289. Client83 correctseefe29e support rendering and runs replacement38551118797 after a confirmed HTTP failure in38549059961. Published1.21 remains immutable. Preserve original Devin work and review gates; full roadmap stays active.
+
+## Earlier checkpoints
+
 ## Latest verified publication — 1.21.0
 
 [v1.21.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.21.0) is published and freshly downloaded/verified at immutable source/tag `7805e56aa9e53cb081600589e92991255475474c`, through [PR #75](https://github.com/afterburn25/Cajun_Web/pull/75). Staff can save, edit, preview and retain private local email drafts for currently assigned sending accounts, with canonical active-template insertion. Current author/account/Send access, exact revisions, stable initial-save replay and strict audit protect the workflow. [Owner guide](docs/LOCAL_EMAIL_DRAFTS.md).

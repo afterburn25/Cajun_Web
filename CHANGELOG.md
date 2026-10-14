@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — explicit local provisioning retry
+
+Add a current-owner/password retry-preparation action for recorded definite provisioning failures explicitly marked retryable. Retain immutable failed observations, exact request replay, strict atomic audit and new-attempt fencing only through a subsequent authorized claim. Unknown outcomes, unsafe failures and deletion/reconciliation remain blocked. New native fixtures await Linux CI; no release or provider activation. [Contract](docs/HOSTING_PROVISION_RETRY.md).
+
 ## Unreleased — durable hosting attempt/result storage
 
 Add current-owner exact attempt/profile fences, bound internal results, immutable unique provider-resource associations and strict atomic audit. Stable replay grants no repeat dispatch. Atb7e9f03, downloaded38545626740 passes79 operation +94 retained local-record checks per PHP8.2/8.4. Independent review and application acceptance remain pending. No transport, route, worker or release activation. [Contract](docs/HOSTING_OPERATIONS.md).

@@ -1076,3 +1076,17 @@ Codex integrates Devin PR60 atc53dc4ae69f964fc53a42ee40aed61ba2ab24bdf into curr
 The earlier independent correction review6163105649 remains scoped to168 supplied and21 independent controls. Integration rechecks reproduced seven further input failures: final-LF SKU/domain values, empty domain labels, edge hyphens and excessive label/total lengths. Codex tightens exact SKU matching and bounded complete domain labels before mutation, retaining the existing ASCII/alphabetic-TLD policy. New23 regression/positive controls cover those inputs and unchanged history on refusal. The corrected component now passes168 supplied +21 retained review +23 input controls locally on PHP8.4 default/no-ini; the combined PHP8.2/8.4 matrix is pending. CI retains original supplied output plus named independent JSON evidence. No domain registration, DNS lookup or actual provider operation occurs.
 
 Mail PR77 remains separate at7fdd242, with last shipping codec5646bf and default-coordinator evidence48060cf:471 actual loopback SMTP/MariaDB checks per PHP8.2/8.4, plus564 earlier native/form executions. Its private Send screens remain unregistered pending independent review and packaged HTTP/browser/latest1.21 recovery acceptance. Devin retains service-plan53 corrections at166c4b3 and mail review; preserve both branches. Next: verify hosting integration CI and review the small input delta before sequential main integration; then define its durable current-authorized provider/account adapter. [Hosting component](HOSTING_FOUNDATION.md).
+
+## 2026-10-14 — explicit local provisioning retry from PR82
+
+Started separate `codex/hosting-provision-retry` from1f59074. Added exact current-owner/client/revision local retry preparation after retained definite retryable failure, canonical validation, strict audit and no dispatch claim. Native process/replay/rollback fixtures plus original94+79 cases prepared. Local Windows fixture stopped at existing provider-key0600 permission validation before retry assertions; Linux matrix acceptance is pending. Full installer refresh and documentation verification underway; no live action/schema/version/release. Client83 has466 verified executions per push/PR matrix and active application38549059961; mail38545953062 remains active.
+
+### Retry fixture isolation correction
+
+Run38550491194 at9e599ef passed retained94+79 per PHP8.2/8.4 but the new suite collided with existing `hrci_` fixture tables before retry assertions. Use unique `htry_`; no production or assertion change, no acceptance claim for the failed run. Replacement matrix required.
+
+Replacement38550760697 reached the expected inactive-client refusal; the test worker had not caught its InvalidArgumentException. Add that expected refusal class while retaining PDO failure propagation and all assertions. No application change; a fresh complete matrix is required.
+
+### 2026-10-14 — retry native matrices verified
+
+Push38550996210 and PR38551004850 atd101665 each verify434 executions:44 retry +94 records +79 operations per PHP8.2/8.4. No PHP warnings in full push log; all2542 installer dependencies match committed bytes. Runtime remains9e599ef. Mail77/e9 now has complete7,854 application assertions/all19 workflows with verified packages and screens; review requested6166470289. Client83/eefe29e replaces failed support-renderer acceptance with38551118797. Service-desk61 review6166378842 retains56 supplied controls and reproduces six negative/five positive cases in default/no-ini, covering three outstanding findings. No live operation or release.
