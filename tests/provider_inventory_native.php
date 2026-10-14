@@ -29,6 +29,7 @@ function pi_read(array $row,#[SensitiveParameter] string $key,string $address,ca
 }
 function pi_refresh(string $id,?callable $resolver=null,?callable $transport=null,int $revision=1):string {global $password;return provider_inventory_refresh($id,$revision,$password,$resolver??'pi_resolve',$transport??'pi_read');}
 function pi_cool():void {query('UPDATE '.table('provider_refreshes').' SET started_epoch=started_epoch-120 WHERE started_epoch>?',[time()-30]);}
+function pi_aged():void {query('UPDATE '.table('provider_refreshes').' SET started_epoch=started_epoch-7200');}
 function pi_count(string $name):int {return (int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn();}
 function pi_audit_failure(string $action,callable $fn):bool {
     db()->exec('CREATE TRIGGER pcin_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='provider.".$action."' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic inventory audit failure'; END IF; END");
@@ -53,7 +54,7 @@ try {
     staff_seed_owner(1);foreach([2=>'administrator',3=>'owner'] as $id=>$role)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode(array_keys(staff_permissions()))]);
     foreach([[1,'Client One','one@example.invalid'],[2,'Client Two','two@example.invalid']] as $c)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',[$c[1],$c[2],bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     pi_actor();provider_settings_migrate($password);$id=provider_settings_save('',0,'20i fixture',true,$secret,$password);
-    provider_inventory_migrate($password);pi_ok('Inventory storage prepared','1'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??''));
+    provider_inventory_migrate($password);pi_ok('Inventory storage prepared','2'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??''));
     pi_deny('Wrong current password prevents DNS and refresh intent',fn()=>provider_inventory_refresh($id,1,'wrong','pi_resolve','pi_read'));
     pi_deny('Stale revision prevents DNS and refresh intent',fn()=>pi_refresh($id,null,null,2));
     pi_actor(2);pi_deny('Administrator cannot refresh provider inventory',fn()=>pi_refresh($id));pi_deny('Administrator cannot read inventory',fn()=>provider_inventory_latest($id));pi_actor();
@@ -104,6 +105,42 @@ try {
         $authorize();pi_ok('Profile remains unchanged throughout locked read',(int)provider_settings_load($id)['revision']===3);return pi_read($row,$secret,$address,$authorize);
     });
     pi_ok('Current refresh completes before serialized edit',$code==='complete'&&pi_finish($GLOBALS['inv_edit_worker'])==='saved'&&(int)provider_settings_profile()['revision']===4);pi_cool();
+    // Context binding: mappings are approved against the exact profile
+    // revision and the credential context that produced the observation.
+    pi_aged();$observation=provider_inventory_observation($id);
+    pi_ok('Fixture ends with an older-revision last good observation',(int)$observation['profile_revision']===3&&(int)provider_settings_profile()['revision']===4);
+    pi_deny('Linking refuses an observation from an older profile revision',fn()=>provider_inventory_link($id,201,1,4,$password));
+    $scripted=[new TransportResponse(200,[],json_encode([pi_item(201,'c.example')]))];
+    pi_ok('Refresh under the current revision renews the binding context',pi_refresh($id,null,null,4)==='complete'&&(int)provider_inventory_observation($id)['profile_revision']===4);pi_cool();
+    provider_inventory_link($id,201,1,4,$password);
+    $link=provider_inventory_links($id)[0];$observation=provider_inventory_observation($id);
+    pi_ok('Link binds the approved revision and credential context',(int)$link['profile_revision']===4&&(int)$link['current_revision']===4&&$link['key_fingerprint']!==''&&$link['key_fingerprint']===$observation['key_fingerprint']);
+    $services=provider_inventory_client_services(1);
+    pi_ok('Approved-context mapping serves its package',count($services)===1&&$services[0]['present']&&$services[0]['package']['name']==='c.example'&&$services[0]['context_changed']===false);
+    $fingerprintOne=$observation['key_fingerprint'];
+    // Replacing the configured key is a new context: the same package id in a
+    // different account must never flow through the old mapping.
+    provider_settings_save($id,4,'Rotated fixture key',true,'ROTATED_SYNTHETIC_GENERAL_KEY',$password);$secret='ROTATED_SYNTHETIC_GENERAL_KEY';
+    $scripted=[new TransportResponse(200,[],json_encode([pi_item(201,'other-account-private.example')]))];
+    pi_ok('Replacement-context refresh completes under the new revision',pi_refresh($id,null,null,5)==='complete');pi_cool();
+    $observation=provider_inventory_observation($id);pi_ok('Credential contexts produce distinct fingerprints',(int)$observation['profile_revision']===5&&$observation['key_fingerprint']!==$fingerprintOne);
+    $services=provider_inventory_client_services(1);
+    pi_ok('Changed context exposes nothing through the old mapping',count($services)===1&&!$services[0]['present']&&$services[0]['package']===null&&$services[0]['context_changed']===true);
+    $link=provider_inventory_links($id)[0];pi_ok('Old mapping remains stored and is marked stale',(int)$link['profile_revision']===4&&(int)$link['current_revision']===5);
+    pi_deny('Re-approval requires the exact current revision',fn()=>provider_inventory_relink($link['id'],4,$password));
+    pi_deny('Re-approval requires the owner password',fn()=>provider_inventory_relink($link['id'],5,'wrong'));
+    provider_inventory_relink($link['id'],5,$password);
+    $link=provider_inventory_links($id)[0];
+    pi_ok('Re-approval rebinds the mapping to the current context',(int)$link['profile_revision']===5&&$link['key_fingerprint']===$observation['key_fingerprint']&&provider_inventory_link_events($id)[0]['event']==='relink');
+    $services=provider_inventory_client_services(1);
+    pi_ok('Re-approved mapping serves the current-context data',count($services)===1&&$services[0]['present']&&$services[0]['package']['name']==='other-account-private.example'&&$services[0]['context_changed']===false);
+    // Any settings change — even one that keeps the same key — suspends the
+    // mapping because account continuity cannot be verified by the key bytes.
+    provider_settings_save($id,5,'Renamed fixture profile',true,'',$password);
+    $services=provider_inventory_client_services(1);
+    pi_ok('A settings-only change still suspends the mapping',count($services)===1&&$services[0]['context_changed']===true&&!$services[0]['present']);
+    pi_deny('Re-approval without a current-revision observation is refused',fn()=>provider_inventory_relink($link['id'],6,$password));
+    provider_inventory_unlink($link['id'],$password);pi_ok('A context-stale mapping can still be removed',provider_inventory_links($id)===[]&&provider_inventory_client_services(1)===[]);
     $durable=json_encode([all('SELECT * FROM '.table('provider_refreshes')),all('SELECT * FROM '.table('provider_refresh_results')),all('SELECT * FROM '.table('provider_observation_packages')),all('SELECT * FROM '.table('provider_package_links')),all('SELECT * FROM '.table('provider_package_link_events')),all('SELECT * FROM '.table('audit'))]);
     pi_ok('No durable row contains the secret or auth material',!str_contains($durable,$secret)&&!str_contains($durable,base64_encode($secret))&&!str_contains($durable,'Bearer')&&!str_contains($durable,'Authorization'));
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}

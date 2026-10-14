@@ -18,7 +18,7 @@ function provider_inventory_validate_schema(string $name,string $sql): void {
         if($column['Default']!==null) throw new RuntimeException('Incompatible provider inventory columns. Existing data was preserved.');
         $expected=match(true) {
             $name==='provider_package_link_events' && $column['Field']==='id'=>null,
-            in_array($column['Field'],['id','profile_id','refresh_id','state','reason','scope','coverage','skip_reasons','created_at','unmapped_keys','event'],true)=>'ascii_bin',
+            in_array($column['Field'],['id','profile_id','refresh_id','state','reason','scope','coverage','skip_reasons','created_at','unmapped_keys','event','key_fingerprint'],true)=>'ascii_bin',
             in_array($column['Field'],['name','names','package_type_name','stack_users','package_labels'],true)=>'utf8mb4_unicode_ci',
             default=>null,
         };
@@ -60,6 +60,16 @@ function provider_inventory_validate_schema(string $name,string $sql): void {
     }
 }
 
+/** Adds the binding columns to version-1 storage. Columns are appended so existing data and column order are preserved. */
+function provider_inventory_upgrade_v2(): void {
+    $add=function(string $name,string $column,string $definition):void {
+        if(!one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].$name,$column]))db()->exec('ALTER TABLE '.table($name).' ADD COLUMN '.$column.' '.$definition);
+    };
+    $add('provider_refresh_results','key_fingerprint','CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL');
+    $add('provider_package_links','key_fingerprint','CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL');
+    $add('provider_package_links','profile_revision','INT UNSIGNED NOT NULL');
+}
+
 /**
  * Prepares inventory storage. Requires provider settings and the client
  * workspace to exist first — links reference both. The owner's current
@@ -71,13 +81,14 @@ function provider_inventory_migrate(#[\SensitiveParameter] string $password): vo
         $actor=provider_settings_owner($password);
         if((one('SELECT value FROM '.table('settings').' WHERE name=?',['studio_schema_version'])['value']??'')!=='2')throw new RuntimeException('Prepare the client workspace before provider inventory.');
         $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'');
-        if(!in_array($version,['','1'],true))throw new RuntimeException('This provider inventory storage version is not supported. Existing data was preserved.');
+        if(!in_array($version,['','1','2'],true))throw new RuntimeException('This provider inventory storage version is not supported. Existing data was preserved.');
         foreach(provider_inventory_schema(config()['db']['prefix']) as $name=>$sql) {
             if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))db()->exec($sql);
-            provider_inventory_validate_schema($name,$sql);
         }
+        if($version==='1')provider_inventory_upgrade_v2();
+        foreach(provider_inventory_schema(config()['db']['prefix']) as $name=>$sql)provider_inventory_validate_schema($name,$sql);
         staff_transaction(function()use($actor):void {
-            save_setting('provider_inventory_schema_version','1');
+            save_setting('provider_inventory_schema_version','2');
             provider_settings_audit((int)$actor['id'],'inventory_prepared','20i inventory storage ready');
         });
     });

@@ -22,7 +22,9 @@ function provider_services_portal_render(): never {
     echo '<div class="workspace-grid">';
     foreach($services as $service) {
         $package=$service['package'];echo '<article class="workspace-card">';
-        if($package) {
+        if($service['context_changed']) {
+            echo '<h2>Hosting service #'.(int)$service['link']['package_id'].'</h2><p>The studio changed its provider settings since this service was approved. Details are hidden until the studio confirms this service under the current settings. Contact the studio if this stays unavailable.</p>';
+        } elseif($package) {
             echo '<h2>'.esc($package['name']).'</h2><p>'.esc($package['package_type_name']??'Hosting package').' · '.esc((int)$package['enabled']===1?'Active':'Disabled').' · Linked '.esc($service['link']['linked_at']).' UTC</p>';
             if($package['names'])echo '<p>'.esc(implode(', ',$package['names'])).'</p>';
             echo '<p class="hint">Observed '.esc($service['observed_at']).' UTC. Status reflects the studio\'s last confirmed read.</p>';

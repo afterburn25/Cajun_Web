@@ -21,7 +21,7 @@ function provider_inventory_admin_action(string $action):void {
         provider_inventory_migrate($password);flash('20i inventory storage is ready.');redirect(admin_url('provider-settings'));
     }
     provider_settings_manager();$id=posted('profile_id',32);
-    if($action==='provider_inventory_refresh'||$action==='provider_inventory_link'){
+    if($action==='provider_inventory_refresh'||$action==='provider_inventory_link'||$action==='provider_inventory_relink'){
         $revision=posted('revision',10);if(!ctype_digit($revision))throw new InvalidArgumentException('Reload the current 20i form.');
     }
     if($action==='provider_inventory_refresh'){
@@ -34,6 +34,9 @@ function provider_inventory_admin_action(string $action):void {
     }
     if($action==='provider_inventory_unlink'){
         provider_inventory_unlink(posted('link_id',32),$password);flash('Service link removed.');redirect(admin_url('provider-settings'));
+    }
+    if($action==='provider_inventory_relink'){
+        provider_inventory_relink(posted('link_id',32),(int)$revision,$password);flash('Service link re-approved under the current provider settings.');redirect(admin_url('provider-settings'));
     }
     throw new InvalidArgumentException('Unknown provider inventory action.');
 }
