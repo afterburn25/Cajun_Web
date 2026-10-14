@@ -231,3 +231,7 @@ Keep at most32 immutable inconclusive observations per committed dispatch and bo
 ## 2026-10-14 — ticket client revisions track public events only
 
 Immutable ticket history has a global revision for authorized staff and a consecutive public sequence for clients. Private notes/assignment do not change client projections, update times or read cursors. Native client writes will compare the public revision inside the shared lock, preserving privacy when staff-only history changes. Related-record typing never grants access; current database ownership remains mandatory. The current pure document module prepares this contract; storage and UI remain pending. [Contract](SUPPORT_TICKETS_CONTRACT.md).
+
+## 2026-10-14 — anchor complete project history independently of current fields
+
+In the unreleased native progress branch, the A → B → A negative control showed that removing a reverted tail could leave current fields equal to the older head. Add `studio_progress_heads` with a restrictive current-event reference, revision and exact hash; atomically update it alongside existing project fields, event/request rows and audit. Validate it on reads, writes and original-request replay. This is an integrity anchor attached to the existing project, not a replacement project system. The prior99 native checks did not cover this loss case; keep their scope explicit and require the new regression before acceptance. Complete20i remains with Devin.

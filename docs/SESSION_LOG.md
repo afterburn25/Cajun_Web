@@ -1460,3 +1460,7 @@ Starting2b0b701 on `codex/project-progress`. Source inspection of actual posted(
 ## 2026-10-14 — native project history contract
 
 Starting3677ccf, separate `codex/project-progress-storage` worktree; pure correction/source remains preserved in105. Before dependent code, record exact two-table event/request design, legacy first-edit token, atomic audit/history writes, current access and finite4,096-event validation with30-event pages. No runtime change yet. Exact prior ticket9741/application/package/image evidence verified; independent reviews remain pending. Native implementation and actual database/concurrency fixtures next; no20i implementation changes.
+
+## 2026-10-14 — reproduce and specify project-tail loss correction
+
+Parent0876738, native implementation still uncommitted. Initial84 checks passed; expanded99 passed after correcting a fixture-only MariaDB constraint-name replacement collision. Additional isolated negative control created three events for A → B → A, removed the reverted tail inside a rolled-back transaction and incorrectly accepted one remaining event. Record the third-table head-anchor contract before its dependent fix. Next: restrictive latest-event FK, independent hash/revision check, atomic head writes, tail-loss/missing-head/replay regressions and fresh native acceptance. This source has never been released.
