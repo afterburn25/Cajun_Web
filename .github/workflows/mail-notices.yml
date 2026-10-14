@@ -1,0 +1,65 @@
+name: Mail notice storage checks
+on:
+  push:
+    branches: [main, codex/mail-notices]
+    paths: ['site/app/mail/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_notices*.php', '.github/workflows/mail-notices.yml']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mail-notices-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-notices:
+    name: Mail notice storage PHP ${{ matrix.php }} and MariaDB
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    services:
+      database:
+        image: mariadb:10.11
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Prepare official PHP with PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-notice-test -f tests/invitations/Dockerfile tests/invitations
+      - name: Native current-permission and observation persistence tests
+        run: |
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-notice-test sh -ec '
+              php -l site/app/mail/notices.php
+              php -l site/database/schema/mail_notices_schema.php
+              php -l site/database/migrations/mail_notices_migrate.php
+              php -l tests/mail_notices_native.php
+              php tests/mail_notices_native.php
+            '
+      - name: Preserve named storage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mail-notices-${{ matrix.php }}-${{ github.sha }}
+          path: qa/mail-notices-native-results.json
+          if-no-files-found: warn
+          retention-days: 14
