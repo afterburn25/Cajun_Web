@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — owner provider storage preparation
+
+Add unwired owner-only encrypted 20i profile and retained metadata history, exact additive migration, native fixtures/workflow and provider-key package exclusion. Native acceptance and application integration remain pending.
+
 ## Unreleased — isolated transport runner repair
 
 Create writable output mountpoints before mounting the source read-only. This fixes a pre-test Docker startup failure; no application or transport behavior changes.

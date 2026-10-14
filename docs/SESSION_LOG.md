@@ -966,3 +966,9 @@ The transport pins validated public DNS, verifies TLS/hostname, refuses proxies/
 ## 2026-10-14 — transport CI mountpoint repair
 
 Starting db66aa0570f9450f88de933a314985754cb2439d, continuing the owner roadmap. Independent Devin review reproduced120/32/333 checks without blockers. Both push matrix cells failed before PHP because nested output mountpoints were absent in the read-only source. Create qa and test-runtime before container startup; network isolation and source protections remain. No fresh matrix success claimed; provider persistence files are uncommitted, syntax-only and unwired. Next: verify replacement matrix and native owner persistence.
+
+## 2026-10-14 — protected owner provider persistence preparation
+
+Starting b49f821d411a19a76eb6ff9949421db6c0d78fe6, after preserving reviewed API documentation PR73, prepare unwired profile/vault/schema migration and native MariaDB fixtures. Syntax-only local validation; Linux key modes and concurrent database acceptance await the new matrix. Build refresh and key-package guard verification recorded separately when complete. Profile key/ciphertext remain outside history. No live call or activation. Next: exact native evidence and audited check orchestration/UI.
+
+Local evidence before this commit: four application modules and native fixture pass PHP syntax; all21 builder guard checks pass, including provider key exclusion. Full canonical build refresh has generated the inventory and is still completing repository-wide PHP lint; no package/release generated.

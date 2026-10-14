@@ -324,3 +324,12 @@ Move an item through `approved` → `in progress` → `implemented` → `verifie
 L-01 standalone estimator PR #27 is being integrated with arithmetic/result validation fixes; application adaptation remains pending. W-01 PR #7 now includes a real portfolio adapter and will be integrated next. Neither full roadmap item is complete. [Contract](PUBLIC_COMPONENT_INTEGRATION.md).
 
 L-02 standalone review-request contract on `devin/review-requests` ([guide](REVIEW_REQUESTS_FOUNDATION.md)): capture normalization, consent-aware contacts, legal stage pipeline and human-reviewed findings with labeled evidence. No form, storage, mail or URL fetching yet — application adaptation is a separate agreed step.
+
+## HC-07 development checkpoint
+
+The protected owner profile is now prepared in `site/app/providers` with additive schema/migration modules and a dedicated native PHP8.2/8.4 MariaDB workflow. It supports one 20i live profile, private AES-GCM credential storage bound to installation/profile/environment, password-confirmed current-owner writes, staff-mutex serialization, revision checks and strict atomic audit/history. No installer/base-schema/controller/check/UI call sites expose these modules yet. The generated inventory includes them; the builder explicitly refuses provider-master.key in shipping code. This changes the development site tree, but does not publish a release or change v1.19.0.
+
+Syntax checks pass; native database/key/concurrency fixtures are authored but not yet executed. Do not count them as accepted. The fixture covers schema drift/adoption refusal, owner/support/client/session boundaries, encrypted key context/loss/modes, strict audit rollback, concurrent edits and a revoked writer waiting on the shared lock. Next: inspect native matrix, implement audited finite connection-check orchestration, then integrate owner UI and run packaged fresh/update/recovery acceptance.
+
+Transport db66aa0 has independent Devin review (120 adapter/32 policy/333 actual isolated HTTPS checks). Its first CI matrix failed before PHP due to missing nested output mountpoints. fbecf69 repairs that runner setup; replacement runs38509333705/38509337967 are pending. Reviewed documentation PR73 merged at ceedcfd and is retained here by ordinary merge. No real provider request, Actions-secret extraction, customer data, payment or deployment.
+

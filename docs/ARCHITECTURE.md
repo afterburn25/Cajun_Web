@@ -246,3 +246,12 @@ VPS terminal launch validates staff role and the mapped server/service, then iss
 ## Review-request boundary — 2026-10-13
 
 [Standalone review-request component](REVIEW_REQUESTS_FOUNDATION.md) stays outside `site/`; no review-request schema, form or admin workflow exists yet. The contract owns capture normalization (http/https website addresses, consent, goals), the `received → in-review → report-drafted → delivered → closed` pipeline, and evidence-labeled findings. Any future server-side fetching must re-verify resolved DNS — the component's literal-address flags are a first line, not complete SSRF protection.
+
+## Prepared provider persistence
+
+The protected owner profile is now prepared in `site/app/providers` with additive schema/migration modules and a dedicated native PHP8.2/8.4 MariaDB workflow. It supports one 20i live profile, private AES-GCM credential storage bound to installation/profile/environment, password-confirmed current-owner writes, staff-mutex serialization, revision checks and strict atomic audit/history. No installer/base-schema/controller/check/UI call sites expose these modules yet. The generated inventory includes them; the builder explicitly refuses provider-master.key in shipping code. This changes the development site tree, but does not publish a release or change v1.19.0.
+
+Syntax checks pass; native database/key/concurrency fixtures are authored but not yet executed. Do not count them as accepted. The fixture covers schema drift/adoption refusal, owner/support/client/session boundaries, encrypted key context/loss/modes, strict audit rollback, concurrent edits and a revoked writer waiting on the shared lock. Next: inspect native matrix, implement audited finite connection-check orchestration, then integrate owner UI and run packaged fresh/update/recovery acceptance.
+
+Transport db66aa0 has independent Devin review (120 adapter/32 policy/333 actual isolated HTTPS checks). Its first CI matrix failed before PHP due to missing nested output mountpoints. fbecf69 repairs that runner setup; replacement runs38509333705/38509337967 are pending. Reviewed documentation PR73 merged at ceedcfd and is retained here by ordinary merge. No real provider request, Actions-secret extraction, customer data, payment or deployment.
+
