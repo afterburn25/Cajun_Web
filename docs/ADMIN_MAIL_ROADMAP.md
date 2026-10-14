@@ -1,5 +1,15 @@
 # Admin webmail, staff access, templates and email notifications
 
+## Current SMTP increment — bounded socket and loopback TLS
+
+From5375ade, isolated `SubmissionChannel` adds one public numeric destination pinned to the selected SMTP host/port, original-host certificate/SNI verification, TLS1.2/1.3 only, mandatory STARTTLS,5-second I/O/connect and30-second overall budgets, and finite byte/line/write caps. It reuses the established public-address policy without changing existing diagnostic channels. The caller still must validate the full DNS answer set and current authority before opening; no account lookup, credential decryption, database or application route is added.
+
+Actual local PHP8.4.25/OpenSSL loopback fixtures pass398 named checks: implicit TLS/STARTTLS, exact MIME DATA, all recipients before DATA, PLAIN/LOGIN, trust/hostname/expiry failures, downgrade/injection refusal, malformed replies, body/final disconnects, explicit final rejection and uncertain final outcomes. Test-only namespace interception asserts production options before routing to synthetic loopback; production has no alternate CA/private-address switch. Local policy tests pass27 default and23 no-ini checks, the latter proving missing OpenSSL refusal before any socket. Attempting the full local no-ini TLS suite correctly could not run without that extension; no no-ini TLS acceptance is claimed. The isolated Docker workflow requires compiled OpenSSL and prepares both modes under `--network none`; matrix verification is pending.
+
+Prior session-only [38528949541](https://github.com/afterburn25/Cajun_Web/actions/runs/38528949541) at5375ade has18 downloaded, inspected JSON reports: PHP8.2/8.4 default/no-ini each80 session,52 snapshot,29 MIME and168 parser checks, plus1 unavailable-runtime check per runtime. This does not cover the new channel. Independent submission review and durable exact-attempt storage/authorization remain required before application exposure. Draft1.21 exact-main application38527733738 is in Apache acceptance; Windows build and actual desktop/mobile visual review pass, and17 other exact-main workflows pass. Latest public release is still1.20.0; full roadmap active.
+
+## Earlier isolated checkpoints
+
 ## Current SMTP increment — maintained session, synthetic evidence
 
 Starting0ddbb80, added isolated `SubmissionTransport`/`SmtpSession` and finite attempt-bound outcomes. PHPMailer low-level commands provide EHLO/auth/envelope/DATA; every recipient must succeed before DATA. Mandatory TLS assertions, explicit PLAIN/LOGIN, current-authority callback boundaries, bounded strict replies, exact prepared DATA and conservative terminator/final-reply handling prevent silent partial submission and automatic retry. Original vendor bytes remain unchanged.

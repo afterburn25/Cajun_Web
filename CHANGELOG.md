@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — isolated SMTP TLS channel
+
+- Added public-destination pinning, verified original-host TLS and finite I/O for submission.398 actual local loopback TLS checks pass; expanded PHP8.2/8.4 network-isolated matrix pending. No deployable version or application exposure.
+
 ## Unreleased — isolated maintained SMTP session
 
 - Require all envelope recipients before DATA; bind finite results to the exact attempt/private snapshot; preserve unknown final outcomes without retry.80 local synthetic checks pass per PHP mode; real TLS and application integration remain pending. No deployable version change.

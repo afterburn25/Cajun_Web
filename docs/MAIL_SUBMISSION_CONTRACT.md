@@ -1,5 +1,15 @@
 # A-06 — explicit SMTP submission from private local drafts
 
+## Current SMTP increment — bounded socket and loopback TLS
+
+From5375ade, isolated `SubmissionChannel` adds one public numeric destination pinned to the selected SMTP host/port, original-host certificate/SNI verification, TLS1.2/1.3 only, mandatory STARTTLS,5-second I/O/connect and30-second overall budgets, and finite byte/line/write caps. It reuses the established public-address policy without changing existing diagnostic channels. The caller still must validate the full DNS answer set and current authority before opening; no account lookup, credential decryption, database or application route is added.
+
+Actual local PHP8.4.25/OpenSSL loopback fixtures pass398 named checks: implicit TLS/STARTTLS, exact MIME DATA, all recipients before DATA, PLAIN/LOGIN, trust/hostname/expiry failures, downgrade/injection refusal, malformed replies, body/final disconnects, explicit final rejection and uncertain final outcomes. Test-only namespace interception asserts production options before routing to synthetic loopback; production has no alternate CA/private-address switch. Local policy tests pass27 default and23 no-ini checks, the latter proving missing OpenSSL refusal before any socket. Attempting the full local no-ini TLS suite correctly could not run without that extension; no no-ini TLS acceptance is claimed. The isolated Docker workflow requires compiled OpenSSL and prepares both modes under `--network none`; matrix verification is pending.
+
+Prior session-only [38528949541](https://github.com/afterburn25/Cajun_Web/actions/runs/38528949541) at5375ade has18 downloaded, inspected JSON reports: PHP8.2/8.4 default/no-ini each80 session,52 snapshot,29 MIME and168 parser checks, plus1 unavailable-runtime check per runtime. This does not cover the new channel. Independent submission review and durable exact-attempt storage/authorization remain required before application exposure. Draft1.21 exact-main application38527733738 is in Apache acceptance; Windows build and actual desktop/mobile visual review pass, and17 other exact-main workflows pass. Latest public release is still1.20.0; full roadmap active.
+
+## Earlier session-only checkpoint
+
 Current isolated session increment has80 local default/no-ini transcript checks; [transport scope](MAIL_SUBMISSION_TRANSPORT.md). Real TLS/channel, durable storage and application exposure remain pending. Earlier statements that no session exists are historical.
 
 Verified expanded matrix38527225238 at bead26f/tested merge17effd6: PHP8.2/8.4 each pass52 snapshot,29 MIME and168 independent parser checks per default/no-ini mode, plus1 unavailable-runtime check. All14 JSON reports and exact upstream reproduction are inspected. Earlier pending/25-check statements below are historical. Independent review remains requested in PR77; no transport or application exposure yet.

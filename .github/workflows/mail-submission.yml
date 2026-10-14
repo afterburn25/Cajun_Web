@@ -15,7 +15,7 @@ jobs:
   preparation:
     name: Submission preparation PHP ${{ matrix.php }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -36,10 +36,21 @@ jobs:
             php -n tests/mail-submission/mime.php qa/submission-mime-no-ini-results.json
             php tests/mail-submission/transport.php qa/submission-transport-default-results.json
             php -n tests/mail-submission/transport.php qa/submission-transport-no-ini-results.json
+            php tests/mail-submission/channel_policy.php qa/submission-channel-policy-results.json
+            php -n tests/mail-submission/channel_policy.php qa/submission-channel-policy-no-ini-results.json
             php -n -d disable_functions=ctype_alnum tests/mail-submission/mime_unavailable.php qa/submission-mime-unavailable-results.json
           '
           python3 tests/mail-submission/verify_mime.py "$RUNNER_TEMP/submission-results/submission-mime-default-results.json" "$RUNNER_TEMP/submission-results/submission-mime-parser-default-results.json"
           python3 tests/mail-submission/verify_mime.py "$RUNNER_TEMP/submission-results/submission-mime-no-ini-results.json" "$RUNNER_TEMP/submission-results/submission-mime-parser-no-ini-results.json"
+      - name: Build isolated TLS test runtime
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -f tests/mail-submission/Dockerfile -t cwp-submission-fixture:${{ matrix.php }} tests/mail-submission
+      - name: Actual loopback SMTP TLS without external networking
+        run: |
+          mkdir -p test-runtime "$RUNNER_TEMP/submission-runtime"
+          docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/submission-results:/workspace/qa" -v "$RUNNER_TEMP/submission-runtime:/workspace/test-runtime" -w /workspace cwp-submission-fixture:${{ matrix.php }} sh -ec '
+            python tests/mail-submission/tls_test.py
+            python tests/mail-submission/tls_test.py --no-ini
+          '
       - name: Preserve named preparation evidence
         if: always()
         uses: actions/upload-artifact@v4
