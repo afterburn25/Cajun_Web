@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — combined submission acceptance preparation
+
+- Add reusable isolated SMTP server and a dedicated MariaDB/TLS matrix for the default coordinator, exact saved MIME, conservative outcomes, strict audit failure and no-resend behavior. Syntax checks pass; execution pending. No shipping runtime or route activation.
+
 ## Unreleased — private Send/history screen preparation
 
 - Prepare guarded saved-message review with explicit confirmation and current-authorized private submission history. Preserve stale form identities/revisions and prevent existing attempts from displaying another Send action.

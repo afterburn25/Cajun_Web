@@ -1,6 +1,10 @@
 # Admin webmail, staff access, templates and email notifications
 
-## Current preparation — private Send review and history screens
+## Current acceptance preparation — default coordinator with real SMTP/TLS
+
+Starting23d0fcd, prepare a reusable isolated SMTP server and a dedicated PHP8.2/8.4 MariaDB+TLS workflow. It invokes the default application coordinator, default DNS resolver and maintained SMTP transport, with test-only namespace interception that asserts production destination/TLS options before mapping to loopback. Cases cover SSL/STARTTLS, exact persisted MIME bytes/Message-ID/Date/body, all recipients, authentication/sender/recipient/DATA refusal, explicit final rejection, lost/malformed confirmation, current grant loss, strict intent/dispatch/result audit failures and stable/different-form replay. A real accepted transmission with failed result persistence must retain an unresolved fence and cannot resend. Original keys and metadata-only audits remain checked. These new combined tests have syntax validation only until their matrix runs; no combined acceptance is claimed yet. They add no shipping runtime changes or HTTP test-driver option.
+
+### Previously verified private screen preparation
 
 Starting1b1520f (verified coordinator e5849ca), prepare guarded controller/view/read-model files for explicit saved-message review and private submission history. The review displays the saved From/To/Cc/Bcc/subject/plaintext body, requires an unchecked confirmation and exact positive saved revisions, and carries a stable intent id. It never takes message content or endpoints from the Send form. Stale failed forms retain their earlier revisions; existing attempts lead to immutable history with no resend control. Current author/Send/mailbox authority protects bounded history and review. Accepted means server responsibility, not recipient delivery; uncertain/dispatched records warn against resending. Owner-password setup and no-store/no-referrer handling are prepared.
 
