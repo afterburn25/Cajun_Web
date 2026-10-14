@@ -39,7 +39,7 @@ reason.
   else reaches the URL path;
 - body keys are exactly the documented allowlist; unknown keys,
   missing required fields, wrong types, control bytes, oversized
-  strings (>1024), lists >64, map/json beyond depth 8 / 256 nodes all
+  strings (>1024), lists >64, map/json beyond depth 8 / 256 nodes counting every visited value including scalar leaves all
   refuse before a request object exists;
 - serialized body is canonical JSON bounded to 8 KiB;
 - `Content-Type: application/json`, `Accept: application/json`,
@@ -54,7 +54,8 @@ provider is never classified as a clean failure:
 
 | Outcome | Classification |
 |---|---|
-| 2xx | `succeeded` — status is authoritative even if the body is unreadable |
+| 200/201/204 | `succeeded` — status is authoritative even if the body is unreadable |
+| other 2xx, incl. 202 | `uncertain` — accepted/queued is not a completed write; reconcile before retrying |
 | 401/403 | `failed` `authentication` (bounded message, no body echo) |
 | other 4xx | `failed` `http_{status}` — provably rejected |
 | 3xx, 429, 5xx | `uncertain` — received; reconcile before any retry |
