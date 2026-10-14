@@ -1,5 +1,9 @@
 # Decision record
 
+## 2026-10-14 — distinct ticket viewer revisions and support identity
+
+A ticket desk grant does not imply client administration, mail, payment or support-login privileges. Client concurrency/read cursors depend only on public events; staff concurrency/read cursors include private events. Real support sessions reply as staff through public projections and do not share client read cursors. Related references confer no access and are resolved again against current ownership. Keep strict audit atomic with ticket and read-state writes. [Contract](SUPPORT_TICKETS_CONTRACT.md).
+
 ## 2026-10-14 — distinguish branch integration from reviewed publication
 
 The owner has authorized continued implementation and isolated tests on separate branches. Earlier assistant-authored checkpoints postponed even testable route integration until independent review. Prepare the concrete admin/router/setup integration and packaged synthetic acceptance on unreleased PR77 now, so review can assess the complete behavior. Retain independent review and exact-source acceptance before merge/publication. This does not authorize customer mail, live deployment, provider writes, payment or SSH, and does not claim review received.

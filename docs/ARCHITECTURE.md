@@ -1,5 +1,9 @@
 # Architecture notes
 
+## Native support conversation storage
+
+Current-authorized ticket records, append-only hash-linked events and staff/client read cursors use separate additive InnoDB tables. Public projections have independent sequence numbers so private notes never change a client stale-form token, ordering or unread count. All mutation and viewer authority uses the existing shared staff lock and atomic strict audit. See [contract](SUPPORT_TICKETS_CONTRACT.md). No route or provider dispatcher is activated.
+
 ## Latest verified publication — 1.22.0
 
 [v1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) is published and freshly downloaded/verified at immutable source/tag `e3b434ffb2244e454ea9f24fa1de9173b7479ccc`, through [PR77](https://github.com/afterburn25/Cajun_Web/pull/77). Authorized staff can review and explicitly send a saved plain-text draft from a currently assigned mailbox, then inspect private submission history. Current author, Send/grant permissions and exact revisions are rechecked; durable attempt records prevent replay. SMTP requires verified TLS. Server acceptance is distinguished from recipient delivery, and unknown or unresolved outcomes cannot automatically resend. [Owner guide](SENDING_EMAIL.md).
