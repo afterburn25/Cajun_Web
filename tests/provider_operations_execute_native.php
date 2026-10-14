@@ -86,9 +86,11 @@ try {
     $grant2=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'other.example'],$password);
     $r=pe_exec($profile,1,$grant2,'idem-create-1',$password);
     pe_ok('Granted-but-foreign fingerprint on a used key conflicts','conflict'===$r->status&&count($sentRequests)===1);
+    pe_ok('The colliding attempt consumed its approval','used'===one('SELECT CASE WHEN consumed_key IS NOT NULL THEN \'used\' ELSE \'open\' END s FROM '.table('provider_operation_grants').' WHERE id=?',[$grant2])['s']);
+    $grant2b=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'other.example'],$password);
     $scripted=[new TransportResponse(200,[],'{}')];
-    $r=pe_exec($profile,1,$grant2,'idem-create-other',$password);
-    pe_ok('The other grant executes its own key','succeeded'===$r->status&&count($sentRequests)===2);
+    $r=pe_exec($profile,1,$grant2b,'idem-create-other',$password);
+    pe_ok('A fresh grant executes its own key','succeeded'===$r->status&&count($sentRequests)===2);
 
     // ---- conservative classification ----
     $grant3=provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>42,'labels'=>['a'=>'b']],$password);
