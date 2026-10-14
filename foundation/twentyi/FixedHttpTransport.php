@@ -12,6 +12,9 @@ use CajunWebPro\Foundation\Provider\{HttpTransport,TransportException,TransportR
 final class FixedHttpTransport implements HttpTransport
 {
     private const HEADER_LIMIT = 16384;
+    /** Canonical write bodies are bounded to 8KiB by the request builder. */
+    private const REQUEST_BODY_LIMIT = 8192;
+    private const URL_BASE = 'https://api.20i.com/';
     private string $address;
     private \Closure $authorize;
 
@@ -34,20 +37,43 @@ final class FixedHttpTransport implements HttpTransport
 
     private function validate(#[\SensitiveParameter] TransportRequest $request): void
     {
-        if ($request->method !== 'GET' || $request->url !== TwentyIAdapter::URL || $request->body !== null
-            || $request->timeoutSeconds > 15 || array_keys($request->headers) !== ['Authorization','Accept']
-            || $request->headers['Accept'] !== 'application/json') {
-            throw new \InvalidArgumentException('Unsupported provider probe request.');
+        if ($request->timeoutSeconds > 15) {
+            throw new \InvalidArgumentException('Unsupported provider request.');
         }
-        $authorization = $request->headers['Authorization'];
+        if ($request->method === 'GET') {
+            if ($request->url !== TwentyIAdapter::URL || $request->body !== null
+                || array_keys($request->headers) !== ['Authorization','Accept']
+                || $request->headers['Accept'] !== 'application/json') {
+                throw new \InvalidArgumentException('Unsupported provider probe request.');
+            }
+        } elseif ($request->method === 'POST') {
+            // Only the closed catalog may construct these: a fixed-host,
+            // path-only URL, a bounded JSON body and three fixed headers.
+            $path = str_starts_with($request->url, self::URL_BASE) ? substr($request->url, strlen(self::URL_BASE)) : '';
+            if ($path === '' || strlen($path) > 190 || !preg_match('/^[a-zA-Z0-9_\/*.\-]+$/D', $path)
+                || !is_string($request->body) || $request->body === ''
+                || strlen($request->body) > self::REQUEST_BODY_LIMIT
+                || array_keys($request->headers) !== ['Authorization','Accept','Content-Type']
+                || $request->headers['Accept'] !== 'application/json'
+                || $request->headers['Content-Type'] !== 'application/json') {
+                throw new \InvalidArgumentException('Unsupported provider write request.');
+            }
+        } else {
+            throw new \InvalidArgumentException('Unsupported provider request method.');
+        }
+        $this->validateAuthorization($request->headers['Authorization'] ?? null);
+    }
+
+    private function validateAuthorization(mixed $authorization): void
+    {
         if (!is_string($authorization) || !str_starts_with($authorization, 'Bearer ')
             || strlen($authorization) > 7 + 4 * (int)ceil(TwentyIAdapter::MAX_KEY_BYTES / 3)) {
-            throw new \InvalidArgumentException('Invalid provider probe authorization.');
+            throw new \InvalidArgumentException('Invalid provider authorization.');
         }
         $encoded = substr($authorization,7);$decoded = base64_decode($encoded,true);
         if ($decoded === false || $decoded === '' || strlen($decoded) > TwentyIAdapter::MAX_KEY_BYTES
             || base64_encode($decoded) !== $encoded || preg_match('/[\x00-\x1f\x7f]/',$decoded)) {
-            throw new \InvalidArgumentException('Invalid provider probe authorization.');
+            throw new \InvalidArgumentException('Invalid provider authorization.');
         }
     }
 
@@ -56,14 +82,16 @@ final class FixedHttpTransport implements HttpTransport
         $this->validate($request);
         ($this->authorize)();
         if (!function_exists('curl_init')) throw new TransportException(TransportException::KIND_UNAVAILABLE);
-        $curl = curl_init(TwentyIAdapter::URL);
+        $curl = curl_init($request->url);
         if ($curl === false) throw new TransportException(TransportException::KIND_UNAVAILABLE);
         $body = '';$headerBytes = 0;$limited = false;
         $ip = str_contains($this->address,':') ? '['.$this->address.']' : $this->address;
         try {
-            $options = [
-                CURLOPT_HTTPGET => true,
-                CURLOPT_HTTPHEADER => ['Authorization: '.$request->headers['Authorization'],'Accept: application/json'],
+            $headers = ['Authorization: '.$request->headers['Authorization'],'Accept: application/json'];
+            $options = $request->method === 'POST'
+                ? [CURLOPT_POST => true, CURLOPT_POSTFIELDS => $request->body, CURLOPT_HTTPHEADER => array_merge($headers,['Content-Type: application/json'])]
+                : [CURLOPT_HTTPGET => true, CURLOPT_HTTPHEADER => $headers];
+            $options += [
                 CURLOPT_RETURNTRANSFER => false,
                 CURLOPT_HEADER => false,
                 CURLOPT_FOLLOWLOCATION => false,
