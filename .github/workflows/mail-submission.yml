@@ -26,7 +26,7 @@ jobs:
           persist-credentials: false
       - name: Offline immutable submission preparation
         run: |
-          mkdir -p "$RUNNER_TEMP/submission-results"
+          mkdir -p qa "$RUNNER_TEMP/submission-results"
           docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/submission-results:/workspace/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
             for source in foundation/mail-submission/*.php tests/mail-submission/*.php; do php -l "$source"; done
             php tests/mail-submission/run.php qa/submission-default-results.json

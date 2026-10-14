@@ -2,6 +2,8 @@
 
 ## Unreleased — isolated immutable submission preparation
 
+Correct the isolated CI mountpoint before container startup; initial38524946551 ran no PHP. Replacement matrix pending.
+
 Add a canonical reference-free private submission snapshot, selected sender/recipient validation, stable Message-ID and full content/revision fingerprint.52 local preparation checks pass default/no-ini; matrix pending. No maintained MIME/SMTP, credentials, persistence, site/runtime integration or sending yet.
 
 ## Unreleased — submission contract preparation
