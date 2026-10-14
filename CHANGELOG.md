@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — HC-08 hosting lifecycle foundation (Devin, isolated component)
+
+- Added canonical `foundation/hosting/` classes (`HostingPackage` concrete SKU→provider-type mapping with non-negative integer quotas — `unlimited`/`unmetered` naming refused; `OperationResult` honest applied/failed/timeout records where timeout is a distinct non-retryable unknown; `StackCpGrant` explicit panel-access grants; `PlanChange` queued upgrade/downgrade/renewal with over-limit downgrade refusal; `HostingAccount` guarded lifecycle with grace windows, billing-dispute suspension protection and two-actor retention-gated deprovisioning) plus `docs/HOSTING_FOUNDATION.md`.
+- Added `tests/hosting/run.php` (111 synthetic checks; fixtures only, `php -n` clean) and the `hosting.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- Corrected the component per [PR #60 review](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6161071101): results are bound to the expected operation name and account subject (a `delete-hosting` receipt can no longer activate an account; provider resource ids are distinct from operation receipts); timeouts leave operations explicitly unresolved until `reconcileTimeout()` records evidence — no cancel-as-never-provisioned, no retry, and confirmed remote resources are adopted rather than recreated; non-retryable failures cannot retry; `suspend()`/`beginResume()` are local intent pending a confirmed provider result; `PlanChange` approves before dispatch (effective time enforced, downgrade requires a complete validated fitting observation, timeout → `uncertain` → `resolve()`); `fits()` rejects mistyped/negative observations and undeclared metrics; `StackCpGrant` cannot authorize before issuance; `requestCancellation`/`approveDeprovision` require non-empty actor identities.
+- Corrected the component again per [PR #60 re-review](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6161864524): every dispatch mints an immutable `attemptRef` (`acct#n` / `pc#n`) that the recorded result must echo, so a stale receipt from an earlier attempt or earlier plan change can never satisfy a later dispatch; while a timed-out attempt is unresolved no further result is accepted — a delayed response can never rewrite later or terminal state; `PlanChange` gains an explicit `dispatch()` transition that closes cancellation once a provider call may be in flight; downgrade approval requires an observed reading for every metered target limit (a partial observation leaves the change queued, not labeled over-limit); an applied provisioning result without a provider resource id is held for reconciliation instead of activating; reconciled/failed deprovision re-attempts mint fresh identities. Suite 111 → **142** checks.
+- Corrected the component a third time per [PR #60 review](https://github.com/afterburn25/Cajun_Web/pull/60): `reconcileTimeout()` and `PlanChange::resolve()` now require the exact unresolved/dispatched `attemptRef` and refuse a replayed reconcile or resolve callback for an earlier attempt before any mutation — a stale callback can no longer clear a newer dispatch still in flight. A `failed` deprovision result no longer arms another destructive attempt: the account lands in `deprovision_failed` with no attempt in flight, and only the explicit `retryDeprovision()` transition re-dispatches — refused outright when the provider marked the failure `retryable:false`. `HostingPackage` copies validated quotas into a fresh reference-free array so caller-held PHP references can never mutate a stored package's limits. Suite 142 → **168** checks.
+- No `site/` changes, provider calls, credentials, schema or UI. Not yet integrated or released.
+## 1.20.0 — candidate, not published
 ## 1.22.0 — verified explicit saved-email sending
 
 - Explicit saved-message review, unchecked confirmation and Send; private author history, separate To/Cc/Bcc, current mailbox/Send grants and exact revisions.
@@ -83,7 +92,6 @@ Record the next explicit-send boundary on a separate branch: maintained protocol
 - Additive owner setup and fresh installation; actual1.20.0 update/recovery/reapplication retains existing records, prior provider history, added drafts and both original private keys.23 starting versions supported.
 - Published/download-verified `7805e56aa9e53cb081600589e92991255475474c` after 6912 named exact-main application checks and PHP8.2/8.4 matrices. All16 assets, ZIP members, checksums/tag and Windows/Linux bytes verified. Actual desktop/mobile views inspected; homepage pixels equal1.20.0.
 
-
 ## 1.20.0 — verified owner 20i connection
 
 - Protected owner profile with private AES-GCM credentials, password/CSRF/revision safeguards and retained settings history. Fresh setup creates empty ready storage; upgraded owners explicitly prepare it.
@@ -162,6 +170,8 @@ Claim an isolated owner20i settings/read-only check contract after the1.19 email
 - Preserve all 36 existing dependency pins and add four maintained formatting dependencies. Correct PHP 8.2 full-document handling by stripping html/body wrappers while preserving sanitized children; all 1,227 components pass on PHP 8.2/8.4 at 740b4e2 with fresh byte reproduction.
 - Add actual 1.17.0 update/recovery and original key/history preservation fixtures, alongside native/concurrency, packaged TLS/HTTP/Chromium and Apache checks. Application acceptance, independent review and release remain pending; latest published release remains 1.17.0.
 
+## 1.19.0 candidate — recent email notices (unreleased)
+
 ## 1.19.0 — verified recent email notices
 
 - Explicit successful inbox reads populate a newest-20 observation window with exact mailbox generation/UID identity; strict result/audit failures roll back notice changes. Failed reads retain the prior window.
@@ -178,7 +188,6 @@ Claim an isolated owner20i settings/read-only check contract after the1.19 email
 - Added bounded current-window metadata, separate per-person opened/dismissed markers, exact current mailbox permission filtering, collision refusal and independent full-tuple resolution.
 - Added explicit owner migration with column/key/relationship compatibility checks and strict audit; observation helpers require the successful terminal-result transaction. No schema/reader/HTTP integration or bell UI is wired yet.
 - Local PHP syntax passes. Native database fixtures and PHP 8.2/8.4 workflow are added; database and full application acceptance remain pending. Published/download-verified 1.18.0 remains immutable; its publication documentation is merged into this preparation branch.
-
 
 ## 1.18.0 — verified individual email reading
 
@@ -490,7 +499,6 @@ No application source/asset import, feature implementation, host repair, databas
 - Candidate 91ef30d: 50 native and 143 HTTP/browser checks passed; final browser-admin, sitemap and favicon-reference assertions added before merge.
 
 Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid versioned favicon URLs because it compared the query suffix as part of the path. Parse the URL path and fetch the actual referenced icon for byte equality. Application source is unchanged; rerun the full suite.
-
 
 ## Historical component contract — review-request adapter contract (L-02 dependency)
 
