@@ -505,6 +505,21 @@ PR #50 merged at cefcc41bcd5297715f2a49d6526900ebe8ad4eb4; exact-main acceptance
 
 Next-increment preparation while exact-main acceptance ran: an isolated local estimator adapter draft matched the current shipping calculator across 1,512 priced/missing/malformed/quantity cases on PHP 8.4, without database access or shipping changes. This is prototype parity evidence only; component guards, actual application integration and native/browser/upgrade acceptance remain required. Devin correction priority reiterated in issue #2 comment 6150049591; no acknowledgment or completed fixes inferred.
 
+### 2026-10-13 — Devin A-10 SSH access-model foundation
+
+**Request:** "Continue Without Stopping" — under the dependency-gate policy, implement A-10's safe-work list (access/grant policies, staff audit model, one-time launch token design, session lifecycle) as an isolated component.
+
+**Starting commit:** `main` `de70c5d` (post PR #38 directory-refactor merge). New branch `devin/ssh-access`.
+
+**Changed:** added `foundation/ssh-access/` (ServiceTarget, TargetRegistry, AccessGrant, LaunchToken, TerminalSession, AuditEvent, TerminalTransport+TransportException, LaunchDecision+SessionBroker), `tests/ssh-access/run.php`, `docs/SSH_ACCESS_FOUNDATION.md`, `.github/workflows/ssh-access.yml`, and additive continuity entries in CHANGELOG/PROJECT_STATUS/SESSION_HANDOFF. No `site/` or shared-path changes.
+
+**Tests:** `php tests/ssh-access/run.php` — 65 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: target validation, grant expiry/revocation/consent/scope, token mint/hash/single-use/replay/expiry/TTL/entropy, session idle+absolute timeouts and terminal-state guards, broker denials (unapproved target, unusable grant, missing scope, binding mismatch, replay, expiry, wrong secret, concurrent cap), concurrency slots freed by idle expiry, transport failure rollback, and staff-attributed audit events.
+
+**Failures:** none.
+
+**Blockers:** A-10 gate `Architecture/security validation pending` — no SSH transport/gateway exists or was simulated; `TerminalTransport` is a boundary interface only.
+
+**Next:** PR `devin/ssh-access` for Codex review in the foundation queue; Codex owns integration sequencing after #31/#32/#34.
 ### 2026-10-13 — Devin L-02 review corrections (PR #31)
 
 **Request:** Codex review findings on #31 (issuecomment-6149702908), prioritized per `DEVIN_HANDOFF_1.11.1.md` before new isolated components.
