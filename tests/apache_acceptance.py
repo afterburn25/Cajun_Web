@@ -7,6 +7,12 @@ from bs4 import BeautifulSoup
 ROOT=Path(__file__).resolve().parents[1];QA=ROOT/'qa';RUNTIME=ROOT/'test-runtime/apache';checks=[]
 def check(name,value):
     checks.append({'name':name,'passed':bool(value)})
+    if len(checks)%25==0 or not value:
+        QA.mkdir(exist_ok=True)
+        checkpoint=QA/'apache-progress.json.tmp'
+        checkpoint.write_text(json.dumps({'complete':False,'scope':'Partial Apache progress; not final acceptance','checks':checks},indent=2)+'\n')
+        checkpoint.replace(QA/'apache-progress.json')
+        print('Apache progress:',len(checks),name,flush=True)
     if not value:raise AssertionError(name)
 def csrf(r):return BeautifulSoup(r.text,'html.parser').select_one('meta[name=csrf-token],input[name=csrf]').get('content') or BeautifulSoup(r.text,'html.parser').select_one('input[name=csrf]')['value']
 def wait(base):
@@ -19,6 +25,7 @@ try:
     package=next((ROOT/'dist').glob('*-COMPLETE-UPLOAD.zip'))
     for rewrite,port in [(True,8094),(False,8095)]:
         label='rewrite' if rewrite else 'no-rewrite';work=RUNTIME/label;web=work/'web';work.mkdir(parents=True,exist_ok=True)
+        print('Apache acceptance starting:',label,flush=True)
         with zipfile.ZipFile(package) as z:
             z.extractall(web);z.extractall(web/'subfolder');expected={n:z.read(n) for n in z.namelist()}
         # Exact readable, root-owned unused scaffold fixture; PHP must select external storage.
@@ -70,7 +77,7 @@ PHPIniDir /etc/php/8.3/apache2
                 cookies=[c for c in session.cookies if c.name.startswith('cwp_')];check(label+suffix+' shared session cookie uses site scope',len(cookies)==1 and cookies[0].path==(suffix+'/') and cookies[0].has_nonstandard_attr('HttpOnly'))
                 for n in ['images/branding/logo.png','images/icons/favicon.png','favicon.ico','images/backgrounds/hero.webp','images/portfolio/project-restaurant.webp','assets/css/site.css','assets/css/premium.css','assets/js/site.js','assets/js/activity.js']:
                     rr=session.get(url+'/'+n);check(label+suffix+' exact public asset '+n,rr.status_code==200 and rr.content==expected[n])
-                for n in ['app/mail/drafts.php','admin/controllers/mail_drafts.php','admin/views/mail_drafts.php','database/schema/mail_drafts_schema.php','database/migrations/mail_drafts_migrate.php','includes/foundation/mail-compose/DraftContent.php','app/providers/settings.php','app/providers/credentials.php','app/providers/checks.php','admin/controllers/providers.php','admin/views/providers.php','database/schema/provider_settings_schema.php','database/migrations/provider_settings_migrate.php','includes/foundation/twentyi/FixedHttpTransport.php','includes/foundation/provider/ProviderGateway.php','app/mail/notices.php','admin/controllers/mail_notices.php','admin/views/mail_notices.php','api/handlers/mail_notices.php','database/schema/mail_notices_schema.php','database/migrations/mail_notices_migrate.php','app/mail/messages.php','admin/controllers/mail_message.php','admin/views/mail_message.php','database/schema/mail_messages_schema.php','database/migrations/mail_messages_migrate.php','includes/foundation/mail-receiving/MessageReader.php','includes/foundation/mail-receiving/BodyDecoder.php','includes/foundation/mail-receiving/BodyHtml.php','includes/foundation/mail-receiving/vendor/symfony/html-sanitizer/HtmlSanitizer.php','includes/foundation/mail-receiving/vendor/autoload.php','includes/foundation/mail-receiving/vendor/composer/installed.json','includes/foundation/mail-receiving/composer.lock','includes/bootstrap.php','app/staff/accounts.php','pages/home/body.php','database/schema/base.php','config/example.php','admin/controllers/router.php','admin/views/auth.php','portal/controllers/router.php','api/handlers/inquiry.php','media/serve.php','webhooks/authorize-net/receive.php','config.php','includes/','images/','assets/js/','storage/','upload/']:
+                for n in ['app/mail/submissions.php','app/mail/submission_dispatch.php','app/mail/submission_views.php','admin/controllers/mail_submissions.php','admin/views/mail_submissions.php','database/schema/mail_submissions_schema.php','database/migrations/mail_submissions_migrate.php','includes/foundation/mail-submission/SubmissionChannel.php','includes/foundation/mail-submission/vendor/phpmailer/src/SMTP.php','app/mail/drafts.php','admin/controllers/mail_drafts.php','admin/views/mail_drafts.php','database/schema/mail_drafts_schema.php','database/migrations/mail_drafts_migrate.php','includes/foundation/mail-compose/DraftContent.php','app/providers/settings.php','app/providers/credentials.php','app/providers/checks.php','admin/controllers/providers.php','admin/views/providers.php','database/schema/provider_settings_schema.php','database/migrations/provider_settings_migrate.php','includes/foundation/twentyi/FixedHttpTransport.php','includes/foundation/provider/ProviderGateway.php','app/mail/notices.php','admin/controllers/mail_notices.php','admin/views/mail_notices.php','api/handlers/mail_notices.php','database/schema/mail_notices_schema.php','database/migrations/mail_notices_migrate.php','app/mail/messages.php','admin/controllers/mail_message.php','admin/views/mail_message.php','database/schema/mail_messages_schema.php','database/migrations/mail_messages_migrate.php','includes/foundation/mail-receiving/MessageReader.php','includes/foundation/mail-receiving/BodyDecoder.php','includes/foundation/mail-receiving/BodyHtml.php','includes/foundation/mail-receiving/vendor/symfony/html-sanitizer/HtmlSanitizer.php','includes/foundation/mail-receiving/vendor/autoload.php','includes/foundation/mail-receiving/vendor/composer/installed.json','includes/foundation/mail-receiving/composer.lock','includes/bootstrap.php','app/staff/accounts.php','pages/home/body.php','database/schema/base.php','config/example.php','admin/controllers/router.php','admin/views/auth.php','portal/controllers/router.php','api/handlers/inquiry.php','media/serve.php','webhooks/authorize-net/receive.php','config.php','includes/','images/','assets/js/','storage/','upload/']:
                     check(label+suffix+' direct private/internal/listing denial '+n,session.get(url+'/'+n).status_code==403)
                 for area in ['storage','upload']:
                     for filename,body in [('probe.php','<?php echo "EXECUTABLE-UPLOAD-MUST-NOT-RUN";'),('private.txt','PRIVATE-MUST-NOT-LEAK')]:
@@ -114,7 +121,7 @@ PHPIniDir /etc/php/8.3/apache2
             check(label+' Apache legacy POST invokes canonical action with body and session',r.status_code==200 and 'current password' in r.text.lower() and 'Location' not in r.headers and ('STUDIO RELEASE '+VERSION) in r.text)
             check(label+' Apache upgraded canonical portal still serves',session.get(base+'/legacy/portal/index.php').status_code==200)
             from organized_update_cases import run as organized_update
-            for number,version in enumerate(['1.11.0','1.11.1','1.11.2','1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0']):
+            for number,version in enumerate(['1.11.0','1.11.1','1.11.2','1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0']):
                 organized_update(web,base,check,QA,php,label,('aor' if rewrite else 'aon')+str(number)+'_',version)
         finally:
             proc.terminate()

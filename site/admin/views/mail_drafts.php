@@ -30,6 +30,7 @@ $accounts=$data['accounts'];
 </nav>
 <?php else: $row=$data['row'];$values=$data['values']; ?>
 <p><a class="text-link" href="<?=esc(admin_url('mail-drafts',['account_id'=>$data['account']]))?>">Back to my drafts</a></p>
+<?php if($row&&$row['status']==='draft'): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-send',['draft_id'=>$data['id']]))?>">Review saved message for sending</a></p><?php endif; ?>
 <?php if($row): ?><p><?=badge($row['status'])?> · Saved version <?=(int)$row['revision']?> · Updated <?=esc($row['updated_at'])?> UTC</p><?php endif; ?>
 <?php if($row&&(int)$row['revision']!==$data['revision']): ?><p class="notice warning">Your entered text is preserved with its earlier version. Open the saved draft in a separate tab to compare before making a new edit.</p><p><a class="btn outline" target="_blank" rel="noopener" href="<?=esc(admin_url('mail-draft',['draft_id'=>$data['id']]))?>">Open current saved version</a></p><?php endif; ?>
 <?php if($data['unsaved']!==null): ?>

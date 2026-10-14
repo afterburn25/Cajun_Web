@@ -1,5 +1,13 @@
 # Installation, packaging and updates
 
+## Candidate1.22 — latest1.21 recovery pending
+
+Candidate1.22 UPDATE stages cwp-update-1.22.0 and retains24 recognized starting packages through1.21.0, including1.0.8 and1.11.1/1.11.2. The new1.21 original-draft/submission recovery cases are prepared, not yet accepted. Keep the published1.21 package until this candidate is verified and released. [Sending/setup guide](SENDING_EMAIL.md).
+
+## Unreleased submission setup
+
+Development PR77 adds empty ready submission storage on fresh setup. Existing sites first prepare accounts/drafts, then an owner opens My email submissions and confirms their current password to prepare additive tables. No email is sent by setup. This branch is not a published package; actual1.21 update/recovery acceptance remains required.
+
 ## Latest verified publication — 1.21.0
 
 [v1.21.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.21.0) is published and freshly downloaded/verified at immutable source/tag `7805e56aa9e53cb081600589e92991255475474c`, through [PR #75](https://github.com/afterburn25/Cajun_Web/pull/75). Staff can save, edit, preview and retain private local email drafts for currently assigned sending accounts, with canonical active-template insertion. Current author/account/Send access, exact revisions, stable initial-save replay and strict audit protect the workflow. [Owner guide](LOCAL_EMAIL_DRAFTS.md).

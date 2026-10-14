@@ -7,6 +7,43 @@ define('CWP_BOOT',true);define('CWP_ROOT',$root);
 require $root.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=require $root.'/config.php';
 if(config()['db']['name']!=='cwp_test')exit(2);
+if(($argv[2]??'')==='submissions'){
+    echo json_encode(['intents'=>all('SELECT * FROM '.table('mail_submissions').' ORDER BY id'),'dispatches'=>all('SELECT * FROM '.table('mail_submission_dispatches').' ORDER BY id'),'results'=>all('SELECT * FROM '.table('mail_submission_results').' ORDER BY id')],JSON_THROW_ON_ERROR);exit;
+}
+if(in_array($argv[2]??'',['drafts-seed','submissions-seed'],true)){
+    require_once $root.'/app/mail/drafts.php';
+    $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=$root;
+    start_session();$actor=one('SELECT auth_version FROM '.table('users').' WHERE id=1');
+    $_SESSION=['uid'=>1,'auth_version'=>$actor['auth_version'],'login_at'=>time(),'last_activity'=>time()];
+    $account=one('SELECT * FROM '.table('mail_accounts').' ORDER BY id LIMIT 1');
+    if($argv[2]==='drafts-seed'){
+        $password='Synthetic organized upgrade passphrase';
+        $fields=array_intersect_key($account,array_flip(['label','address','imap_host','imap_port','imap_encryption','imap_username','smtp_host','smtp_port','smtp_encryption','smtp_username']));
+        $fields['smtp_host']='smtp.example.net';$fields['imap_port']=(string)$fields['imap_port'];$fields['smtp_port']=(string)$fields['smtp_port'];
+        mail_accounts_save($account['id'],(int)$account['revision'],$fields,true,['imap_password'=>'','smtp_password'=>''],$password);
+        $grant=one('SELECT * FROM '.table('mail_account_grants').' WHERE account_id=? AND user_id=1',[$account['id']]);
+        mail_accounts_grant($account['id'],1,(int)$grant['revision'],true,true,true,0,$password);
+        $account=one('SELECT * FROM '.table('mail_accounts').' WHERE id=?',[$account['id']]);
+        $id=bin2hex(random_bytes(16));$discard=bin2hex(random_bytes(16));
+        $content=static fn(string $body)=>new \CajunWebPro\Foundation\MailCompose\DraftContent(['retained@example.invalid'],[],['private@example.invalid'],'Original 1.21 draft',$body);
+        mail_drafts_save($id,0,$account['id'],(int)$account['revision'],$content('Original 1.21 first text'));
+        mail_drafts_save($id,1,$account['id'],(int)$account['revision'],$content('Original 1.21 edited text'));
+        mail_drafts_save($discard,0,$account['id'],(int)$account['revision'],$content('Original 1.21 discarded text'));mail_drafts_discard($discard,1);
+    }else{
+        require_once $root.'/app/mail/submissions.php';
+        foreach(['accepted','unknown','unresolved','abandoned'] as $state){
+            $draft=bin2hex(random_bytes(16));$id=bin2hex(random_bytes(16));
+            $content=new \CajunWebPro\Foundation\MailCompose\DraftContent(['retained@example.invalid'],[],['private@example.invalid'],'Synthetic upgrade '.$state,'SYNTHETIC_UPGRADE_PRIVATE_BODY');
+            mail_drafts_save($draft,0,$account['id'],(int)$account['revision'],$content);
+            mail_submissions_prepare($id,$draft,1,(int)$account['revision']);
+            if($state!=='abandoned'){
+                query('UPDATE '.table('mail_submission_dispatches').' SET started_epoch=0');$claim=mail_submissions_claim($id);
+                if(in_array($state,['accepted','unknown'],true))mail_submissions_record(new \CajunWebPro\Foundation\MailSubmission\TransportOutcome($claim['message'],$claim['row']['attempt_id'],$state,'confirmation',$state==='accepted'?'accepted':'timeout',$state==='accepted'?250:null));
+            }
+        }
+    }
+    echo json_encode(['fixture'=>'Synthetic persisted history only; no DNS credentials or SMTP transmission'],JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='drafts'){
     echo json_encode(['drafts'=>all('SELECT * FROM '.table('mail_drafts').' ORDER BY id'),'history'=>all('SELECT * FROM '.table('mail_draft_revisions').' ORDER BY draft_id,revision')],JSON_THROW_ON_ERROR);exit;
 }

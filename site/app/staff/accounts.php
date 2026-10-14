@@ -12,7 +12,7 @@ foreach (['access/AuthorizationVersion','access/AccessContext','access/MailboxGr
 }
 function staff_ready(): bool { return setting('staff_schema_version') === '1'; }
 require_once CWP_CODE_ROOT.'/database/schema/staff_schema.php';
-function staff_permissions(): array { return ['mail.read'=>'Read recent headers from explicitly assigned email accounts', 'mail.send'=>'Send from explicitly assigned email accounts (sending unavailable)', 'mail.templates.manage'=>'Personal and shared email templates (no sending or mailbox access)', 'payments.manage'=>'Invoice payment requests and verified external receipts (also needs client access)', 'catalog.manage'=>'Service catalog, internal costs and catalog invoices (also needs client access)', 'website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support']; }
+function staff_permissions(): array { return ['mail.read'=>'Read recent headers from explicitly assigned email accounts', 'mail.send'=>'Review and send saved drafts from explicitly assigned email accounts', 'mail.templates.manage'=>'Personal and shared email templates (no sending or mailbox access)', 'payments.manage'=>'Invoice payment requests and verified external receipts (also needs client access)', 'catalog.manage'=>'Service catalog, internal costs and catalog invoices (also needs client access)', 'website.manage'=>'Website, portfolio and inquiries','clients.manage'=>'Client projects, files and manual invoices','support.login'=>'Open permitted client portals for support','support.write'=>'Send Studio messages and upload files during support','support.download'=>'Download private files during support']; }
 function staff_profile(array $user): ?array {
     if (!staff_ready()) return $user + ['role'=>'owner','enabled'=>1,'permissions'=>'[]']; // Existing access until explicit upgrade.
     $p=one('SELECT role,enabled,permissions FROM '.table('staff_profiles').' WHERE user_id=?',[$user['id']]);
@@ -130,7 +130,7 @@ function staff_reset_token(string $email): ?array {
     }));
 }
 function staff_view_permission(string $view): ?string {
-    if(in_array($view,['mail-drafts','mail-draft'],true))return null; // Draft controller enforces current Send plus exact mailbox/author.
+    if(in_array($view,['mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft'],true))return null; // Draft controller enforces current Send plus exact mailbox/author.
     if($view==='mail-notices')return null; // The mail-specific actor and exact grants protect this projection.
     // The inbox controller checks mail.read with its exact current mailbox grant.
     if(in_array($view,['mail-inbox','mail-message'],true))return null; // Mandatory current account authority in both controllers.
@@ -147,6 +147,8 @@ function staff_view_permission(string $view): ?string {
     return 'website.manage';
 }
 function staff_action_permission(string $action): ?string {
+    if($action==='mail_submissions_setup')return 'staff.manage';
+    if(str_starts_with($action,'mail_submissions_'))return null; // Current author/Send/mailbox/review checks in submission controller.
     if($action==='mail_drafts_setup')return 'staff.manage';
     if(str_starts_with($action,'mail_drafts_'))return null; // Strict actor/account/author checks in every draft action.
     if($action==='mail_notices_setup')return 'staff.manage';

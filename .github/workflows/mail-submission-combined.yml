@@ -1,0 +1,65 @@
+name: Mail submission combined checks
+on:
+  push:
+    branches: [main, codex/mail-submission]
+    paths: ['site/app/mail/**', 'site/includes/foundation/mail-submission/**', 'site/includes/foundation/mail-transport/**', 'tests/mail_submission_combined*', 'tests/mail_submission_*connector.php', 'tests/mail_submission_server.py', 'tests/mail-submission/Dockerfile.combined', '.github/workflows/mail-submission-combined.yml']
+  pull_request:
+    paths: ['site/app/mail/**', 'site/includes/foundation/mail-submission/**', 'site/includes/foundation/mail-transport/**', 'tests/mail_submission_combined*', 'tests/mail_submission_*connector.php', 'tests/mail_submission_server.py', 'tests/mail-submission/Dockerfile.combined', '.github/workflows/mail-submission-combined.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mail-submission-combined-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  combined:
+    name: Real submission SMTP and MariaDB PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    services:
+      database:
+        image: mariadb:10.11
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Prepare official PHP PDO and isolated TLS fixture runtime
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-submission-combined -f tests/mail-submission/Dockerfile.combined tests/mail-submission
+      - name: Default application coordinator with real SMTP TLS and MariaDB
+        run: |
+          python3 tools/check_mail_submission_vendor.py --require-mirror
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-submission-combined sh -ec '
+              php -l tests/mail_submission_combined_driver.php
+              php -l tests/mail_submission_native_connector.php
+              php -l tests/mail_submission_socket_connector.php
+              python3 tests/mail_submission_combined.py
+            '
+      - name: Preserve named combined evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mail-submission-combined-${{ matrix.php }}-${{ github.sha }}
+          path: qa/mail-submission-combined-results.json
+          if-no-files-found: error
+          retention-days: 14

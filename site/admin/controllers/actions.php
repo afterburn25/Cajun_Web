@@ -14,6 +14,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     if(str_starts_with($action,'provider_settings_')){provider_settings_admin_action($action);return;}
     if(str_starts_with($action,'mail_accounts_')){mail_accounts_admin_action($action);return;}
     if(str_starts_with($action,'mail_notices_'))mail_notices_admin_action($action);
+    if(str_starts_with($action,'mail_submissions_')){mail_submissions_admin_action($action);return;}
     if(str_starts_with($action,'mail_drafts_')){$draftResult=mail_drafts_admin_action($action);return;}
     if(str_starts_with($action,'mail_message_')){$messageResult=mail_message_admin_action($action);return;}
     if(str_starts_with($action,'mail_inbox_')){$inboxResult=mail_inbox_admin_action($action);return;}

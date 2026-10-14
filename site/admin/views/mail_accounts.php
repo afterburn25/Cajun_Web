@@ -3,15 +3,15 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 $page=max(1,min((int)($_GET['p']??1),100000));
 ?>
-<p class="notice">Manage email settings, check saved connections and load recent inbox headers. Open individual messages after message reading is prepared. Attachments and sending remain unavailable.</p>
+<p class="notice">Manage email settings, check saved connections and load recent inbox headers. Open individual messages after message reading is prepared. Send saved plaintext drafts after submission storage is prepared. Attachments remain unavailable.</p>
 <?php if ($view==='mailboxes'):
     $rows=mail_accounts_assigned($page);
 ?>
-<?php if(mail_drafts_admin_access($actor)): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-drafts'))?>">My email drafts</a></p><?php endif; ?>
+<?php if(mail_drafts_admin_access($actor)): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-drafts'))?>">My email drafts</a> <a class="btn outline" href="<?=esc(admin_url('mail-submissions'))?>">My email submissions</a></p><?php endif; ?>
 <?php if(mail_notices_access($actor)): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-notices'))?>">Recent email notices</a></p><?php endif; ?>
-<p>Your owner assigns each email account separately. Read access lets you request recent inbox headers and individual messages. Send assignments also let you prepare private local drafts. Sending is not available yet.</p>
+<p>Your owner assigns each email account separately. Read access lets you request recent inbox headers and individual messages. Send assignments let you prepare private drafts, review saved messages and submit them from that account.</p>
 <div class="workspace-grid"><?php foreach (array_slice($rows,0,20) as $row): ?>
-<article class="workspace-card"><h2><?=esc($row['label'])?></h2><p><?=esc($row['address'])?></p><p>Assigned: <?=esc(implode(' and ',array_keys(array_filter(['Read'=>$row['can_read'],'Send'=>$row['can_send']]))))?></p><?php if($row['can_read']): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-inbox',['account_id'=>$row['id']]))?>">Open inbox</a></p><?php endif; ?><?php if($row['can_send']): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-drafts',['account_id'=>$row['id']]))?>">My drafts</a> <a class="btn outline" href="<?=esc(admin_url('mail-draft',['account_id'=>$row['id']]))?>">New draft</a></p><?php endif; ?><p>Expires: <?=$row['expires_at']===null?'No expiry':esc(gmdate('Y-m-d H:i:s',(int)$row['expires_at']).' UTC')?></p></article>
+<article class="workspace-card"><h2><?=esc($row['label'])?></h2><p><?=esc($row['address'])?></p><p>Assigned: <?=esc(implode(' and ',array_keys(array_filter(['Read'=>$row['can_read'],'Send'=>$row['can_send']]))))?></p><?php if($row['can_read']): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-inbox',['account_id'=>$row['id']]))?>">Open inbox</a></p><?php endif; ?><?php if($row['can_send']): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-drafts',['account_id'=>$row['id']]))?>">My drafts</a> <a class="btn outline" href="<?=esc(admin_url('mail-draft',['account_id'=>$row['id']]))?>">New draft</a> <a class="btn outline" href="<?=esc(admin_url('mail-submissions',['account_id'=>$row['id']]))?>">Submission history</a></p><?php endif; ?><p>Expires: <?=$row['expires_at']===null?'No expiry':esc(gmdate('Y-m-d H:i:s',(int)$row['expires_at']).' UTC')?></p></article>
 <?php endforeach; ?></div>
 <?php if (!$rows): ?><p>No currently available email accounts are assigned to you.</p><?php endif; ?>
 <?php elseif ($view==='mail-accounts'):
@@ -65,7 +65,7 @@ admin_input($protocol.'_password',($record && $record['has_credentials'])?'New a
 <?php endforeach; ?></div>
 <p class="hint">Passwords are never displayed or refilled after an error. Reenter any changed password before resubmitting. Use your provider's approved account or app password.</p>
 <?php admin_check('enabled','Make this saved account available to assigned staff',$values['enabled']); ?>
-<p class="hint">Availability does not verify a server connection or turn on sending. Keep a recoverable backup of the database and private mail-master.key together.</p>
+<p class="hint">Saving settings does not check a connection or send an email. Keep a recoverable backup of the database and private mail-master.key together.</p>
 <?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?>
 <button class="btn gold">Save email account</button>
 </form>
@@ -78,7 +78,7 @@ admin_input($protocol.'_password',($record && $record['has_credentials'])?'New a
 <?php elseif ($record['has_credentials']): ?><button class="btn outline" name="action" value="mail_accounts_enable">Enable saved account</button><?php endif; ?>
 <?php if ($record['has_credentials']): ?><button class="btn outline" name="action" value="mail_accounts_clear">Clear saved passwords and disable</button><?php endif; ?>
 </form><p class="hint">Disabling removes current staff availability. Clearing removes stored passwords and disables this account; settings and assignment history remain.</p></section>
-<section class="workspace-card"><h2>Staff assignments</h2><p>Each staff member needs a separate assignment, including owners. Administrators also need the matching Read assigned email or Send from assigned email permission under Administrators. The owner also needs the corresponding assignment to check each connection. Reading and sending messages remain unavailable.</p>
+<section class="workspace-card"><h2>Staff assignments</h2><p>Each staff member needs a separate assignment, including owners. Administrators also need the matching Read assigned email or Send from assigned email permission under Administrators. The owner also needs the corresponding assignment to check each connection. Reading and sending also require their respective storage to be prepared.</p>
 <?php $grants=mail_accounts_grants($accountId);$options=[];
 foreach (all('SELECT u.id,u.name,u.email FROM '.table('users').' u JOIN '.table('staff_profiles')." p ON p.user_id=u.id WHERE p.enabled=1 AND u.password_hash<>'' AND p.role IN ('owner','administrator') ORDER BY u.name,u.id") as $staff) $options[(string)$staff['id']]=$staff['name'].' · '.$staff['email'];
 foreach ([null,...$grants] as $grant):
