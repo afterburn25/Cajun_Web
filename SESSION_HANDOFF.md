@@ -1,8 +1,24 @@
 # Session handoff — read before continuing
 
+## Latest verified publication — 1.21.0
+
+[v1.21.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.21.0) is published and freshly downloaded/verified at immutable source/tag `7805e56aa9e53cb081600589e92991255475474c`, through [PR #75](https://github.com/afterburn25/Cajun_Web/pull/75). Staff can save, edit, preview and retain private local email drafts for currently assigned sending accounts, with canonical active-template insertion. Current author/account/Send access, exact revisions, stable initial-save replay and strict audit protect the workflow. [Owner guide](docs/LOCAL_EMAIL_DRAFTS.md).
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38527733738) passes 6,912 named checks: 1431 native/form, 3084 estimator, 1174 HTTP/Chromium, 233 recovery, 969 Apache and 21 builder. PHP8.2/8.4 matrices pass; actual desktop/mobile drafts inspected, homepage pixels match1.20.0, and Windows/Linux packages agree. All16 public assets, members/checksums and immutable tag verified; prior1.20.0 assets unchanged. [Report](docs/TEST_REPORT_1.21.0.md); [handoff](docs/DEVIN_HANDOFF_1.21.0.md).
+
+Twenty-three supported starting packages through1.20.0, including1.0.8 and1.11.1/1.11.2. UPDATE stages `cwp-update-1.21.0`; actual1.20 recovery/reapplication retains earlier records, provider history, edited/discarded drafts and both original private keys. Fresh setup creates empty ready drafts; upgraded owners explicitly prepare them with their password. Drafts do not send or synchronize a server Drafts folder. No live deployment, real provider request, payment, customer mail or SSH occurred.
+
+Continue [SMTP preparation PR #77](https://github.com/afterburn25/Cajun_Web/pull/77), observed `180e23fc2005104e95f0001aea7411a97a2d4b8a`. Codex owns its maintained MIME/session/channel, durable application adapter and release integration. Downloaded source2edeec1 run38529526469 passes26 isolated JSON reports: each PHP8.2/8.4 default/no-ini mode passes52 snapshot,29 MIME,168 independent parser,80 SMTP session,27 destination-policy and398 loopback TLS checks, plus1 unavailable-runtime check per runtime. These are component tests outside deployment; current-authorized persistent dispatch, explicit Send UI and application/update acceptance remain pending. Independent review request is [6163395444](https://github.com/afterburn25/Cajun_Web/pull/77#issuecomment-6163395444).
+
+Devin retains service-plan53 reference-detachment/newline corrections ([6162609466](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6162609466)) and independent submission review. Hosting60 c53dc4a passes168 supplied and21 independent local controls per mode, with clear isolated review [6163105649](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6163105649). Neither component is activated in the application. Preserve separate branches and integrate reviewed work sequentially. Full billing, broader20i/client hosting and VPS SSH remain incomplete; the full roadmap stays active.
+
+Next implementation follows the [durable submission storage contract](docs/MAIL_SUBMISSION_STORAGE_CONTRACT.md). Its proposed tables and native tests are not implemented yet. Main publication records ff3ce72 are reconciled here with both histories retained; no submission source is deployed and no new version is reserved.
+
+## Earlier SMTP implementation checkpoints — dated evidence
+
 Next implementation: [durable submission storage contract](docs/MAIL_SUBMISSION_STORAGE_CONTRACT.md). It specifies unique saved-revision intent/dispatch fences, strict audit before credential exposure, exact attempt/content-bound results, conservative interruption handling and current-authorized history. In particular, lost access after a verified250 must not relabel or discard the actual acceptance result. This contract adds no tables, routes or sending activation.
 
-## Current SMTP increment — bounded socket and loopback TLS
+## Historical SMTP increment — bounded socket and loopback TLS
 
 From5375ade, isolated `SubmissionChannel` adds one public numeric destination pinned to the selected SMTP host/port, original-host certificate/SNI verification, TLS1.2/1.3 only, mandatory STARTTLS,5-second I/O/connect and30-second overall budgets, and finite byte/line/write caps. It reuses the established public-address policy without changing existing diagnostic channels. The caller still must validate the full DNS answer set and current authority before opening; no account lookup, credential decryption, database or application route is added.
 
@@ -12,7 +28,7 @@ Prior session-only [38528949541](https://github.com/afterburn25/Cajun_Web/action
 
 ## Earlier isolated checkpoints
 
-## Current SMTP increment — maintained session, synthetic evidence
+## Historical SMTP increment — maintained session, synthetic evidence
 
 Starting0ddbb80, added isolated `SubmissionTransport`/`SmtpSession` and finite attempt-bound outcomes. PHPMailer low-level commands provide EHLO/auth/envelope/DATA; every recipient must succeed before DATA. Mandatory TLS assertions, explicit PLAIN/LOGIN, current-authority callback boundaries, bounded strict replies, exact prepared DATA and conservative terminator/final-reply handling prevent silent partial submission and automatic retry. Original vendor bytes remain unchanged.
 
@@ -22,7 +38,7 @@ Draft main7805e56 application38527733738 is still running and Windows packaging 
 
 ## Earlier evidence checkpoints
 
-## Current work — draft release checks and verified MIME preparation
+## Historical work — draft release checks and verified MIME preparation
 
 Draft PR75 is merged at `7805e56aa9e53cb081600589e92991255475474c` after independent reviews and all6,912 named candidate checks in [38523831728](https://github.com/afterburn25/Cajun_Web/actions/runs/38523831728):1431 native/form,3084 estimator,1174 HTTP/Chromium,233 filesystem/recovery,969 Apache,21 builder. Actual desktop/mobile draft images are inspected; homepage pixels match1.20. Exact-main application [38527733738](https://github.com/afterburn25/Cajun_Web/actions/runs/38527733738) and clean Windows packaging are running. Candidate1.21.0 is not yet published; latest verified public release remains1.20.0. Keep main stable through these release gates.
 
@@ -32,7 +48,7 @@ Hosting PR60 correctionc53dc4a passes168 supplied and21 independent controls in 
 
 ## Earlier preparation checkpoints — superseded by the current section
 
-## Current SMTP preparation — maintained MIME, matrix pending
+## Historical SMTP preparation — maintained MIME, matrix pending
 
 MIME matrix38526761646 atf7a3437 failed independent parsing of a long Unicode subject, despite both PHP runtimes producing byte-identical output to Windows. Python3.10.6 reproduced an extra leading space when folding moved the first encoded word off the Subject line; Python3.12.10/3.14 did not. The adapter now leaves room for the first encoded word after Subject on the first physical line. Added maximum-length emoji and combining-character cases:29 local MIME and168 independent parser checks over14 fixtures pass under PHP default/no-ini, with Python3.10/3.12/3.14 verification. The original parser assertion is unchanged. Replacement expanded matrix is pending; prior snapshot52 matrix remains separately verified.
 
@@ -46,7 +62,7 @@ Next: inspect the expanded matrix and independent review, implement pinned/bound
 
 ## Earlier contract-only checkpoint — superseded for implementation by the current section
 
-## Current work — SMTP submission contract on a separate branch
+## Historical work — SMTP submission contract on a separate branch
 
 Codex owns `codex/mail-submission`, starting from draft candidate231d1f7. [Submission contract](docs/MAIL_SUBMISSION_CONTRACT.md) defines the next A-06 boundary: immutable reviewed content, maintained MIME/SMTP, all-recipient acceptance before DATA, durable single-attempt dispatch and explicit unknown outcomes. This initial commit is documentation only: no dependency import, application source/schema/version change, Send control or external operation. Reconcile accepted PR75/main before later application integration; no new version is reserved.
 
@@ -58,7 +74,7 @@ Next: implement isolated immutable submission preparation and maintained MIME, t
 
 ## Earlier draft branch checkpoint — superseded for ownership by the current section
 
-## Current 1.21.0 candidate — acceptance fixture corrections
+## Historical 1.21.0 acceptance fixture corrections
 
 Latest published/download-verified version remains [1.20.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.20.0), source 6f0b0ce; publication docs are on main a20e45e. PR #75 remains a candidate with no tag or release. Starting head c43cca5 has independent integration review at03e98cd and additive conflict/recovery review atf147417 ([6162116293](https://github.com/afterburn25/Cajun_Web/pull/75#issuecomment-6162116293)); its main merge changed documentation only.
 
@@ -121,7 +137,7 @@ The [draft contract](docs/MAIL_DRAFTS_CONTRACT.md) was committed first at90d0c14
 
 Next: inspect isolated matrix and obtain contract review before application exposure; implement current-authorized per-author/mailbox draft storage, strict audit and revision/idempotency rules, followed by private HTTP/Chromium UI and latest-release recovery. Reconcile verified1.20main before choosing a later version. Keep provider release work moving independently; no real mail or live deployment.
 
-## Latest verified publication — 1.20.0
+## Previous verified publication — 1.20.0 (superseded checkpoint)
 
 [v1.20.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.20.0) is published and freshly downloaded/verified at immutable source/tag `6f0b0ce5a9cba68b6859334818383fcc09e2ba3e`, through [PR #74](https://github.com/afterburn25/Cajun_Web/pull/74). Owners can save a protected 20i General API key, explicitly check the package-list read and inspect settings/check history. Saving or viewing makes no request. Current owner/password/CSRF/revision checks, strict intent/result audit and a separate private encryption key protect the workflow. [Owner guide](docs/PROVIDER_CONNECTION_SETTINGS.md).
 

@@ -1,28 +1,32 @@
 # Changelog
 
-## Unreleased — durable submission contract
+## Unreleased — isolated SMTP submission
+
+Immutable MIME, maintained bounded SMTP and pinned TLS are verified at2edeec1 through26 downloaded PHP8.2/8.4 reports. Durable current-authorized application persistence and Send UI remain to implement; see PR77. The released1.21 draft workflow is separate.
+
+### Historical SMTP preparation — durable submission contract
 
 - Specify atomic intent/dispatch/result persistence and exact content/attempt binding before application implementation; accepted server outcomes remain recorded even if later browser access expires. Documentation only.
 
-## Unreleased — isolated SMTP TLS channel
+### Historical SMTP preparation — isolated SMTP TLS channel
 
 - Added public-destination pinning, verified original-host TLS and finite I/O for submission.398 actual local loopback TLS checks pass; expanded PHP8.2/8.4 network-isolated matrix pending. No deployable version or application exposure.
 
-## Unreleased — isolated maintained SMTP session
+### Historical SMTP preparation — isolated maintained SMTP session
 
 - Require all envelope recipients before DATA; bind finite results to the exact attempt/private snapshot; preserve unknown final outcomes without retry.80 local synthetic checks pass per PHP mode; real TLS and application integration remain pending. No deployable version change.
 
-## Unreleased — preparation evidence
+### Historical SMTP preparation — preparation evidence
 
 - Verified all14 PHP8.2/8.4 preparation reports at bead26f, including exact long Unicode decoding on the runner. Reconciled accepted draft main7805e56 without deploying submission code. Draft1.21 release gates remain running.
 
-## Unreleased — maintained offline MIME preparation
+### Historical SMTP preparation — maintained offline MIME preparation
 
 Fix initial expanded-matrix long-subject folding compatibility without weakening parser equality.29 local MIME/168 independent parser checks now cover14 cases including emoji/combining characters on Python3.10/3.12/3.14; replacement matrix pending.
 
 Pin/reproduce original PHPMailer7.1.1 source/license; generate bounded immutable plaintext MIME with Bcc privacy, literal Unicode/space-sensitive subjects, fixed UTC dates and exact message identity.25 local MIME plus144 independent parser checks per default/no-ini mode pass; missing-function refusal passes. Expanded matrix/review pending. No SMTP, persistence, application integration or sending.
 
-## Unreleased — isolated immutable submission preparation
+### Historical SMTP preparation — isolated immutable submission preparation
 
 Downloaded replacement38525211291 at59bb4bf verifies52 named preparation checks in all four PHP8.2/8.4 default/no-ini cells. No MIME, SMTP or application acceptance is implied.
 
@@ -30,26 +34,17 @@ Correct the isolated CI mountpoint before container startup; initial38524946551 
 
 Add a canonical reference-free private submission snapshot, selected sender/recipient validation, stable Message-ID and full content/revision fingerprint.52 local preparation checks pass default/no-ini; matrix pending. No maintained MIME/SMTP, credentials, persistence, site/runtime integration or sending yet.
 
-## Unreleased — submission contract preparation
+### Historical SMTP preparation — submission contract preparation
 
 Record the next explicit-send boundary on a separate branch: maintained protocol/MIME, immutable reviewed snapshots, all-recipient pre-DATA acceptance, durable intent and attempt-bound unknown outcomes. Documentation only; no new application version, transport, UI or message sent.
 
-## 1.21.0 — candidate, not published
+## 1.21.0 — verified private local email drafts
 
-- Acceptance fixture correction from c43cca5: explicitly authenticate the original1.20 owner before provider seeding; wait for the responsive drawer and reset scroll before mobile draft capture. Prior run38520608916 passed native/browser/filesystem checks but Apache was incomplete and mobile visual approval was withheld. Shipping source is unchanged; replacement acceptance pending.
+- Private author/mailbox drafts with bounded To/Cc/Bcc and plaintext, canonical active-template insertion, escaped preview and retained discard/history. No SMTP sending or server Drafts synchronization.
+- Current Send/grant/account/author gates, optimistic revisions, stable create replay and strict metadata audit. Sender changes require confirmation; concurrent discard preserves a separate escaped copy of unsaved text.
+- Additive owner setup and fresh installation; actual1.20.0 update/recovery/reapplication retains existing records, prior provider history, added drafts and both original private keys.23 starting versions supported.
+- Published/download-verified `7805e56aa9e53cb081600589e92991255475474c` after 6912 named exact-main application checks and PHP8.2/8.4 matrices. All16 assets, ZIP members, checksums/tag and Windows/Linux bytes verified. Actual desktop/mobile views inspected; homepage pixels equal1.20.0.
 
-- Private local drafts for current authorized authors/mailboxes, canonical template insertion and escaped preview; no sending.
-- Preserve unsaved form text separately when a concurrent discard rejects an edit; keep retained saved content unchanged.
-- Pin the actual verified1.20.0 package and upgrade shims; extend filesystem/Apache/recovery through23 starting packages. New tests preserve nonempty prior provider history, both original keys and added drafts through update/recovery/reapplication. These new cases require combined acceptance.
-- 1.20.0 publication is independently verified; this candidate has no tag/release. Review03e98cd is clear, but new changes require review and native/browser/package acceptance.
-
-## Unreleased — private local draft storage preparation
-
-Add unwired author/mailbox draft storage, replay and revision protection, explicit sender review, strict audit and retained metadata history. Native PHP8.2/8.4 fixtures are prepared; syntax-only acceptance so far. No UI, migration activation or sending.
-
-## Unreleased — isolated local draft content
-
-Add bounded plaintext draft content and canonical template insertion outside deployment. No persistence, compose UI or sending yet.71 local default/no-ini checks pass; PHP8.2/8.4 matrix pending. Provider1.20release remains a separate branch.
 
 ## 1.20.0 — verified owner 20i connection
 

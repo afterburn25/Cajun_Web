@@ -1,6 +1,22 @@
 # Admin webmail, staff access, templates and email notifications
 
-## Current SMTP increment — bounded socket and loopback TLS
+## Latest verified publication — 1.21.0
+
+[v1.21.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.21.0) is published and freshly downloaded/verified at immutable source/tag `7805e56aa9e53cb081600589e92991255475474c`, through [PR #75](https://github.com/afterburn25/Cajun_Web/pull/75). Staff can save, edit, preview and retain private local email drafts for currently assigned sending accounts, with canonical active-template insertion. Current author/account/Send access, exact revisions, stable initial-save replay and strict audit protect the workflow. [Owner guide](LOCAL_EMAIL_DRAFTS.md).
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38527733738) passes 6,912 named checks: 1431 native/form, 3084 estimator, 1174 HTTP/Chromium, 233 recovery, 969 Apache and 21 builder. PHP8.2/8.4 matrices pass; actual desktop/mobile drafts inspected, homepage pixels match1.20.0, and Windows/Linux packages agree. All16 public assets, members/checksums and immutable tag verified; prior1.20.0 assets unchanged. [Report](TEST_REPORT_1.21.0.md); [handoff](DEVIN_HANDOFF_1.21.0.md).
+
+Twenty-three supported starting packages through1.20.0, including1.0.8 and1.11.1/1.11.2. UPDATE stages `cwp-update-1.21.0`; actual1.20 recovery/reapplication retains earlier records, provider history, edited/discarded drafts and both original private keys. Fresh setup creates empty ready drafts; upgraded owners explicitly prepare them with their password. Drafts do not send or synchronize a server Drafts folder. No live deployment, real provider request, payment, customer mail or SSH occurred.
+
+Continue [SMTP preparation PR #77](https://github.com/afterburn25/Cajun_Web/pull/77), observed `180e23fc2005104e95f0001aea7411a97a2d4b8a`. Codex owns its maintained MIME/session/channel, durable application adapter and release integration. Downloaded source2edeec1 run38529526469 passes26 isolated JSON reports: each PHP8.2/8.4 default/no-ini mode passes52 snapshot,29 MIME,168 independent parser,80 SMTP session,27 destination-policy and398 loopback TLS checks, plus1 unavailable-runtime check per runtime. These are component tests outside deployment; current-authorized persistent dispatch, explicit Send UI and application/update acceptance remain pending. Independent review request is [6163395444](https://github.com/afterburn25/Cajun_Web/pull/77#issuecomment-6163395444).
+
+Devin retains service-plan53 reference-detachment/newline corrections ([6162609466](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6162609466)) and independent submission review. Hosting60 c53dc4a passes168 supplied and21 independent local controls per mode, with clear isolated review [6163105649](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6163105649). Neither component is activated in the application. Preserve separate branches and integrate reviewed work sequentially. Full billing, broader20i/client hosting and VPS SSH remain incomplete; the full roadmap stays active.
+
+Next implementation follows the [durable submission storage contract](MAIL_SUBMISSION_STORAGE_CONTRACT.md). Its proposed tables and native tests are not implemented yet. Main publication records ff3ce72 are reconciled here with both histories retained; no submission source is deployed and no new version is reserved.
+
+## Earlier SMTP implementation checkpoints — dated evidence
+
+## Historical SMTP increment — bounded socket and loopback TLS
 
 From5375ade, isolated `SubmissionChannel` adds one public numeric destination pinned to the selected SMTP host/port, original-host certificate/SNI verification, TLS1.2/1.3 only, mandatory STARTTLS,5-second I/O/connect and30-second overall budgets, and finite byte/line/write caps. It reuses the established public-address policy without changing existing diagnostic channels. The caller still must validate the full DNS answer set and current authority before opening; no account lookup, credential decryption, database or application route is added.
 
@@ -10,7 +26,7 @@ Prior session-only [38528949541](https://github.com/afterburn25/Cajun_Web/action
 
 ## Earlier isolated checkpoints
 
-## Current SMTP increment — maintained session, synthetic evidence
+## Historical SMTP increment — maintained session, synthetic evidence
 
 Starting0ddbb80, added isolated `SubmissionTransport`/`SmtpSession` and finite attempt-bound outcomes. PHPMailer low-level commands provide EHLO/auth/envelope/DATA; every recipient must succeed before DATA. Mandatory TLS assertions, explicit PLAIN/LOGIN, current-authority callback boundaries, bounded strict replies, exact prepared DATA and conservative terminator/final-reply handling prevent silent partial submission and automatic retry. Original vendor bytes remain unchanged.
 
@@ -29,6 +45,7 @@ Current preparation from contract22e1b93: canonical immutable `SubmissionSnapsho
 ## Active preparation — SMTP submission
 
 The separate `codex/mail-submission` branch records the [bounded submission contract](MAIL_SUBMISSION_CONTRACT.md), based on draft candidate231d1f7. Documentation only at this checkpoint; no sending is implemented or enabled. Draft PR75 acceptance38523831728 and1.20.0 publication remain separate. Follow current status/handoff for exact evidence and continued ownership.
+
 
 ## Latest verified publication — 1.19.0
 
