@@ -12,6 +12,12 @@ function ledger_invoice(int $id): array {
 /** Independent of mutable payment status/history; protects the original invoiced obligation. */
 function ledger_invoice_hash(array $i): string {return hash('sha256',json_encode([(int)$i['id'],(int)$i['job_id'],(int)$i['client_id'],(int)$i['amount_cents'],$i['currency'],$i['reference'],$i['title'],$i['instructions'],catalog_snapshot((int)$i['id'])],JSON_THROW_ON_ERROR));}
 function ledger_balance(array $i): array {
+    require_once CWP_CODE_ROOT.'/app/billing/design_payment_invoices.php';
+    design_payment_invoice_guard($i);
+    return ledger_balance_record($i);
+}
+/** Internal balance projection after the caller validates any design-invoice binding. */
+function ledger_balance_record(array $i): array {
     if(!ledger_ready())return ['paid_cents'=>$i['status']==='paid'?(int)$i['amount_cents']:0,'due_cents'=>$i['status']==='issued'?(int)$i['amount_cents']:0,'revision'=>0];
     $v=one('SELECT COUNT(*) AS entries,COALESCE(MAX(id),0) AS revision,COALESCE(SUM(CASE WHEN kind=\'reversal\' THEN -CAST(amount_cents AS SIGNED) ELSE amount_cents END),0) AS paid,MIN(invoice_hash) AS first_hash,MAX(invoice_hash) AS last_hash FROM '.table('invoice_payments').' WHERE invoice_id=?',[$i['id']]);
     $paid=(int)$v['paid'];$total=(int)$i['amount_cents'];

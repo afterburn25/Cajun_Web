@@ -5,6 +5,7 @@ require_once CWP_CODE_ROOT.'/portal/controllers/plans.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/tickets.php';
 require_once CWP_CODE_ROOT.'/includes/layout/project_progress.php';
 require_once CWP_CODE_ROOT.'/includes/layout/project_planning.php';
+require_once CWP_CODE_ROOT.'/includes/layout/design_financial.php';
 if(array_key_exists('job',$_GET)){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if(array_key_exists('agreements',$_GET) || array_key_exists('agreement',$_GET) || (is_string($_POST['action']??null) && str_starts_with($_POST['action'],'service_agreements_')))header('Cache-Control: no-store, private');
 $error='';$supportRequested=array_key_exists('support',$_GET);$supportId=is_string($_GET['support']??null)?$_GET['support']:'';

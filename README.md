@@ -1,5 +1,13 @@
 # CajunWebPro — project source of truth
 
+## Current work — actual financial forms, locally verified
+
+Draft#114 continues from contract head `b7a2d0c`: the existing staff and client project pages now contain structured quotes/payment stages, explicit client consent, exact history, unique stage-invoice actions and current ledger balances/receipt links. Owner setup remains deliberate; current permissions and client ownership are checked. Original stale drafts remain bound to their reviewed terms, including read-only retention after concurrent issuance. Row controls work without JavaScript. [Usage and evidence](docs/DESIGN_FINANCIAL_AGREEMENTS.md).
+
+Local evidence: **209 native financial checks under128MiB**, **84 form/render checks per default/no-ini mode**, and **52 real HTTP/Edge feature checks plus one runtime-diagnostics check**. Exact amounts, full/split offers, decline/withdrawal, replay/freeze, partial receipts, tenant isolation, support read-only, keyboard and320px layouts pass. The installer refresh and18 changed-PHP syntax checks pass; all2,632 dependency hashes match2,633 shipping files. Six desktop/320px staff/client/error screens were inspected. Focused committed CI, new full application/package/Apache and latest1.23 populated recovery acceptance, and independent parent/combined review remain next. Actual checkout is not enabled; HC-11/P-05 stays partial.
+
+Earlier consent-only full38645906931 has completed successfully: downloaded final reports verify11,024 named assertions and Linux archives match their manifests and source26e1008. That evidence does not certify the newer invoice/forms code. Published1.23 and frozen planning113 are unchanged. Devin’s full20i ownership and acknowledgement were reverified;115 remains51a143b with the previously delivered corrections still outstanding. Codex changed no20i implementation. Earlier sections below are historical checkpoints.
+
 ## Current work — planning forms, dashboard and personal updates
 
 `codex/project-planning-screens` preserves native PR112/`5e44a6b`; contract `77f92db` precedes implementation. The existing project page now edits scope/contact/date/actions/blockers and structured milestones, while clients see the saved plan and dated snapshots. Personal planning activity opens the exact authorized revision; stale drafts keep their original request/version. Owner setup remains explicit. [Usage and evidence](docs/PROJECT_PLANNING.md); [interface contract](docs/PROJECT_PLANNING_SCREENS_CONTRACT.md).

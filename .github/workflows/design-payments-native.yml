@@ -1,0 +1,74 @@
+name: Native design-payment consent checks
+on:
+  push:
+    branches: [main, codex/design-payment-schedules]
+    paths: ['site/includes/layout/design_financial*.php', 'site/admin/controllers/**', 'site/portal/controllers/**', 'site/admin/views/studio/job.php', 'site/portal/views/workspace.php', 'site/assets/css/growth.css', 'site/app/billing/**', 'site/app/projects/**', 'site/app/clients/**', 'site/app/staff/**', 'site/app/support/sessions.php', 'site/includes/auth/**', 'site/database/**', 'foundation/design-payments/**', 'site/includes/foundation/design-payments/**', 'tests/design_payments_*.php', 'tests/design-payments/**', '.github/workflows/design-payments-native.yml']
+  pull_request:
+    paths: ['site/includes/layout/design_financial*.php', 'site/admin/controllers/**', 'site/portal/controllers/**', 'site/admin/views/studio/job.php', 'site/portal/views/workspace.php', 'site/assets/css/growth.css', 'site/app/billing/**', 'site/app/projects/**', 'site/app/clients/**', 'site/app/staff/**', 'site/app/support/sessions.php', 'site/includes/auth/**', 'site/database/**', 'foundation/design-payments/**', 'site/includes/foundation/design-payments/**', 'tests/design_payments_*.php', 'tests/design-payments/**', '.github/workflows/design-payments-native.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: design-payments-native-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-financial:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    services:
+      database:
+        image: mariadb:10.11
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Prepare official PHP with PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-design-payments-test -f tests/invitations/Dockerfile tests/invitations
+      - name: Validate native history and deployed records
+        run: |
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-design-payments-test sh -ec '
+              for source in site/app/billing/design_payment*.php site/includes/layout/design_financial*.php site/database/schema/design_payment*.php site/database/migrations/design_payment*.php site/includes/foundation/design-payments/*.php tests/design_payments_*.php tests/design-payments/*.php; do php -l "$source"; done
+              cmp foundation/design-payments/DesignPaymentSchedule.php site/includes/foundation/design-payments/DesignPaymentSchedule.php
+              php -d memory_limit=128M tests/design_payments_native.php
+              php tests/design_payments_legacy_ledger.php
+              php tests/design-payments/records.php --deployment > qa/design-payment-schedules-deployed-default.json
+              php -n tests/design-payments/records.php --deployment > qa/design-payment-schedules-deployed-no-ini.json
+              php tests/design-payments/forms.php > qa/design-financial-forms-default.json
+              php -n tests/design-payments/forms.php > qa/design-financial-forms-no-ini.json
+            '
+      - name: Preserve named evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: design-payments-native-${{ matrix.php }}-${{ github.sha }}
+          path: |
+            qa/design-payments-native-results.json
+            qa/ledger-native-results.json
+            qa/design-payment-schedules-deployed-*.json
+            qa/design-financial-forms-*.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record scope
+        if: always()
+        run: echo 'Synthetic MariaDB financial offers, explicit consent, unique obligation invoices, existing ledger, authority, replay, concurrency, bounded history and rollback; exact deployed pure allocations. No HTTP/browser, charge or provider acceptance.' >> "$GITHUB_STEP_SUMMARY"

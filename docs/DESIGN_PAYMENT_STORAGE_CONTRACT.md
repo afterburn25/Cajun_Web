@@ -1,0 +1,35 @@
+# Native design payment schedule records and financial consent
+
+This extends draft#114 from verified `be5d947386ada4afd92e0b401667e588adf5f2af`, preserving planning#113. Pure schedule acceptance is175 checks per PHP8.2/8.4 default/no-ini cell,1,400 downloaded executions across push/PR, with all22 workflows green; [review request6179220385](https://github.com/afterburn25/Cajun_Web/pull/114#issuecomment-6179220385). This contract precedes native implementation. [Financial rules and complete outcome](DESIGN_PAYMENT_SCHEDULES_CONTRACT.md) remain authoritative; Devin retains full20i implementation.
+
+## Persistence and transitions
+
+Add two explicitly owner-prepared tables: immutable `design_payment_events` and one `design_payment_heads` anchor per project. No existing invoice, project, proposal, payment or gateway row is adopted or changed by setup. The schema version is separate; unknown populated tables/versions, incompatible columns/indexes/foreign keys and inherited transactions refuse. Setup requires the current owner password and strict transactional audit. No fresh-install, HTTP or automatic setup activation is included in this increment.
+
+`design_payments_publish(project, client, request, expected, fields)` publishes the exact financial offer. Its schedule ID equals the32-hex request ID. Current staff must have both payments.manage and clients.manage. Under the shared staff mutex and a transaction, recheck current staff, active client/project ownership, exact latest **approved** proposal content/version/approving client, and every referenced current noncancelled project milestone. A free-text proposal approval does not approve the added prices; the new schedule starts `offered` regardless of the proposal's decision.
+
+`design_payments_decide(project, client, request, expected, schedule, fingerprint, choice, comment)` accepts `accepted` or `declined` only from the actual current client session, with current active account/version, idle/absolute expiry and ownership checked inside the lock. An explicit financial decision names the exact current offer and SHA256 of all its terms. Declining requires meaningful feedback. An earlier proposal decision, changed price, stale offer, support identity or staff session cannot substitute. Only an offered schedule can receive a new decision; original identical retries return the original result after current authorization and retained-history verification.
+
+`design_payments_withdraw(...)` is an explicit staff action on a current offered or accepted schedule with a reason, leaving immutable evidence. A later offer requires a new schedule identity and fresh client consent. This module creates no invoices, so there is no paid or issued schedule to cancel here. Invoice issuance will be added separately with a permanent one-invoice-per-obligation map; once an obligation is issued, edits/withdrawal must refuse until a dedicated reviewed amendment/credit policy exists. Do not wire issuance without enforcing this rule.
+
+Each event binds the project/client, sequence, action, real actor type/ID, UTC time, prior head, original expected version, payload and request fingerprint. Strict audit and event/head persistence commit together. The canonical full chain is validated on every read/write; event IDs, row projections, fingerprints, request fingerprints, transitions, sequence, times and anchored count/bytes must agree. Limit4096 events and32MiB of retained event bytes, stream bounded batches, and never prune financial consent to make a write fit. Failed or stale writes do not replace original request/version; original retries remain usable at capacity. A newer offer invalidates the prior current consent but retains it as history.
+
+## Reads and access
+
+Staff and clients can read paginated immutable history (10 entries/page), current schedule/status and an expected version for their next explicit action. Client projections omit staff IDs and internal request material. Read-only scoped support may inspect the client's financial terms through the existing verified support session and audit; it cannot decide, publish or withdraw. Passive reads preserve session idle deadlines. Current ownership and complete-chain validation happen before counts, metadata or history are returned; a corrupted/unavailable record is never a new empty plan or an accepted payment.
+
+The proposal digest is computed from the actual retained proposal identity/project/type/version/title/body/preview URL/creation time, excluding its mutable decision fields. New offers and decisions require that same proposal to remain the latest approved version, approved by this client. Staff can withdraw a current offer after its source changes, without rewriting the source. Financial history remains readable if a later proposal or milestone changes; new consent is refused until a new valid offer is published. Replaying an already committed request requires current identity/ownership and intact history, but does not repeat the action or rewrite historical terms after later source changes.
+
+## Acceptance and subsequent work
+
+Native MariaDB tests must cover additive setup and denial cases; real staff/client/support accounts; exact proposal/milestone binding; client-only financial acceptance/decline; changed/stale terms; original retries and conflicting request IDs; publish/decision/withdraw audit rollback; corrupt/lost event/head evidence; wrong ownership and account/permission changes while waiting; concurrent same/different requests; bounded history and passive sessions. Use isolated synthetic fixtures. Mirror the tested pure class and verify the shipping installer inventory without exposing a route.
+
+Then add actual admin/client forms, historical term rendering, current invoice mapping/issuance and existing-ledger balances, packaged HTTP/browser and latest-release recovery tests. Existing customer checkout and production processing remain disabled until their own complete merchant/authorization/reconciliation gates pass. This native module alone does not complete HC-11 or authorize any external operation.
+
+## Local implementation evidence
+
+Native contract `2e367c4` precedes implementation. `php -d memory_limit=128M tests/design_payments_native.php` passes95 named checks on PHP8.4.25/MariaDB10.11.16 with a fresh synthetic prefix. Deployed default/no-ini pure records each pass175. The earlier redirect interruption and missing support-fixture metadata are retained as incomplete/failed evidence and corrected without bypassing permissions. Dedicated PHP8.2/8.4 native CI, full package/private-path regression and independent review are pending. No actual staff/client form, invoice issuance or external payment is activated.
+
+## Native CI and issuance contract
+
+Native `26e1008` has1780 independently downloaded named executions across PHP8.2/8.4 push/PR matrices; [proof6179711113](https://github.com/afterburn25/Cajun_Web/pull/114#issuecomment-6179711113). Full application38645906931 is still pending. The next [invoice binding contract](DESIGN_PAYMENT_INVOICES_CONTRACT.md) precedes its implementation; original offers/consent remain preserved.

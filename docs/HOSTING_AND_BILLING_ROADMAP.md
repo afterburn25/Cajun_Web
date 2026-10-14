@@ -1,5 +1,7 @@
 # CajunWebPro custom hosting commerce, billing and client platform
 
+**Current HC-11/P-05 financial work:** draft#114 now has exact native consent and one immutable invoice per accepted stage, with178 native checks per runtime and2388 verified focused executions/all26 workflows. Actual financial forms/links under the new interface contract and combined application/review acceptance remain pending; HC-11 is not complete. [Invoice contract](DESIGN_PAYMENT_INVOICES_CONTRACT.md). Devin retains complete20i; published1.23 is unchanged.
+
 ## Implementation continuity when external accounts are unavailable (owner policy 2026-10-13)
 
 See [dependency gate policy](DEPENDENCY_GATES.md): `HC-07` **Awaiting API verification**, `HC-09` and `HC-10` **Development pending — API verification**. Continue first-party product, pricing, cart, client portal, invoice/workflow, adapter interface, protected settings, idempotency, jobs and test-fixture work without using fabricated live 20i results. Keep real reseller/domain/VPS operations unorderable or disabled until exact account entitlements, costs, endpoints and staging acceptance are verified. A missing key is not a reason to halt unrelated web-design, payment foundation or portal work. These statuses describe validation gates and **do not change implemented/release state**.
@@ -154,6 +156,8 @@ Sell unmanaged/managed VPS only if 20i account product access, API endpoints, pr
 **Acceptance:** Real test provision/build readiness, safe retry, start/stop as available, billing synchronization and teardown verified. Don't publish VPS inventory and accept money before tested provisioning supports it.
 
 ## HC-11 — Web-design payment forms and maintenance commerce (P0 payments / P1 project integration)
+
+**Current development:** [native payment schedule records](DESIGN_PAYMENT_STORAGE_CONTRACT.md) retain proposal-bound prices, immutable offers and explicit current-client consent. Local95 native plus175 deployed record checks per default/no-ini mode pass. Committed native CI/review, actual forms, invoice issuance and checkout remain pending; this does not complete HC-11.
 
 The owner explicitly wants payment forms for web-design services as well as infrastructure checkout. Deliver a standalone design-payment flow in the approved navy/gold theme using the same Authorize.net settings and payment engine. It must work with 20i disabled and no hosting/domain/VPS purchase. Do not delay design payments until domain provisioning is available. This is a planned requirement; inspect current 1.1.0 source before determining the implementation gap.
 
