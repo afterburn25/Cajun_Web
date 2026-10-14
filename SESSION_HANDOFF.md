@@ -22,8 +22,6 @@ GitHub explicitly cancelled the job for exceeding45 minutes. Apache reached no-r
 
 Increase the job ceiling to75 minutes based on the remaining eight no-rewrite baselines and retained full suite. Add an explicitly incomplete Apache progress checkpoint every25 assertions (and on assertion failure), plus flushed stage/progress messages. Do not remove assertions or old baselines. This checkpoint changes only the workflow, test instrumentation and documentation; site/foundation/installer/version bytes remain3e7138e. Next: inspect the replacement full run and actual latest1.21 recovery reports, keep independent review before main integration/publication, and continue separate hosting work. Published1.21 remains immutable; no live operation or release.
 
-## Earlier checkpoints
-
 ## Candidate correction — browser checkpoint requires current capability text
 
 Application38538349627 at53b6ea3/tested merge33c46d2 stopped after859 successful HTTP/browser assertions at the old email-account copy expectation (check860). It expected "Attachments and sending remain unavailable" and did not reach the new Send tests. Preserve that failure as evidence; no new Send UI acceptance is claimed. Update the assertion to require explicit saved-plaintext sending after setup, untested connection status and unavailable attachments. Correct stale staff-assignment text and START-HERE recovery location to structure-1.22.0. Native85/storage80/orchestration/form58 matrices remain separately verified. The Windows build at1aeef7b was deliberately stopped for these corrections before completion; no package acceptance is claimed from it.
@@ -38,8 +36,6 @@ Integrated routes53b6ea3 have downloaded38538343622 proof:85 storage plus80 orch
 
 Read the candidate [sending guide](docs/SENDING_EMAIL.md). Next: inspect/fix the active packaged SMTP/browser run and actual images, then run complete acceptance on this candidate with latest1.21 recovery and reconcile reviewed hosting79/main before merge. Latest published/download-verified release remains1.21.0 at7805e56. No tag, new publication, deployment, customer mail, provider write, charge or SSH. Full roadmap active.
 
-## Earlier route integration checkpoint
-
 ## Current development — explicit Send connected on unreleased PR77
 
 Starting `7fdd242`, connect saved-message review, explicit POST Send and private submission history to the admin router, permission map, mailbox/draft navigation and fresh/additive setup. Current author, global Send, exact mailbox grants, CSRF and saved account/draft revisions remain required. Fresh setup prepares empty submission tables; existing owners explicitly prepare storage with their current password. No server Sent-folder synchronization or recipient-delivery claim is added.
@@ -49,8 +45,6 @@ Prepared packaged HTTP/Chromium acceptance uses the default coordinator and main
 Earlier assistant-authored route-exposure waiting language is clarified: authorized branch development and isolated HTTP/browser testing may proceed before independent review. Independent review remains a merge/publication gate; no reviewer response is claimed. See [DECISIONS](docs/DECISIONS.md) for this scheduling clarification. The new branch is not a release: published1.21.0/tag7805e56 remains unchanged, no later version is reserved, and latest1.21 update/recovery acceptance is still required before a later candidate. No real customer mail, deployment, provider write, charge or SSH.
 
 Hosting integration PR79 atb6d4d24 preserves mainff3ce72 and Devin60c53dc4a; its focused848 checks are downloaded/verified, while full application38536664079 remains running at this checkpoint. Devin53 corrections and independent77/79 review remain separate. Next: inspect/fix packaged mail acceptance and actual screenshots; extend actual1.21 recovery, reconcile accepted hosting/main and prepare the next tested release. Full roadmap remains active.
-
-## Earlier SMTP checkpoints — historical evidence
 
 ## Current verified acceptance — default coordinator with real SMTP/TLS
 
@@ -90,8 +84,6 @@ Actual local PHP8.4.25/OpenSSL loopback fixtures pass398 named checks: implicit 
 
 Prior session-only [38528949541](https://github.com/afterburn25/Cajun_Web/actions/runs/38528949541) at5375ade has18 downloaded, inspected JSON reports: PHP8.2/8.4 default/no-ini each80 session,52 snapshot,29 MIME and168 parser checks, plus1 unavailable-runtime check per runtime. This does not cover the new channel. Independent submission review and durable exact-attempt storage/authorization remain required before application exposure. Draft1.21 exact-main application38527733738 is in Apache acceptance; Windows build and actual desktop/mobile visual review pass, and17 other exact-main workflows pass. Latest public release is still1.20.0; full roadmap active.
 
-## Earlier isolated checkpoints
-
 ## Historical SMTP increment — maintained session, synthetic evidence
 
 Starting0ddbb80, added isolated `SubmissionTransport`/`SmtpSession` and finite attempt-bound outcomes. PHPMailer low-level commands provide EHLO/auth/envelope/DATA; every recipient must succeed before DATA. Mandatory TLS assertions, explicit PLAIN/LOGIN, current-authority callback boundaries, bounded strict replies, exact prepared DATA and conservative terminator/final-reply handling prevent silent partial submission and automatic retry. Original vendor bytes remain unchanged.
@@ -100,8 +92,6 @@ All80 named synthetic transcript checks pass under local PHP8.4.25 default/no-in
 
 Draft main7805e56 application38527733738 is still running and Windows packaging remains under verification; latest public release remains1.20.0. Keep main stable for1.21 release gates. Devin retains service-plan corrections and independent submission review; hostingc53dc4a isolated re-review is clear. Full roadmap active.
 
-## Earlier evidence checkpoints
-
 ## Historical work — draft release checks and verified MIME preparation
 
 Draft PR75 is merged at `7805e56aa9e53cb081600589e92991255475474c` after independent reviews and all6,912 named candidate checks in [38523831728](https://github.com/afterburn25/Cajun_Web/actions/runs/38523831728):1431 native/form,3084 estimator,1174 HTTP/Chromium,233 filesystem/recovery,969 Apache,21 builder. Actual desktop/mobile draft images are inspected; homepage pixels match1.20. Exact-main application [38527733738](https://github.com/afterburn25/Cajun_Web/actions/runs/38527733738) and clean Windows packaging are running. Candidate1.21.0 is not yet published; latest verified public release remains1.20.0. Keep main stable through these release gates.
@@ -109,8 +99,6 @@ Draft PR75 is merged at `7805e56aa9e53cb081600589e92991255475474c` after indepen
 Submission PR77 is now based on main, with both histories preserved. Downloaded [38527225238](https://github.com/afterburn25/Cajun_Web/actions/runs/38527225238) at bead26f/tested merge17effd6 passes14 named JSON reports: each PHP8.2/8.4 runtime has52 snapshot checks per default/no-ini mode,29 MIME checks per mode,168 independent parser checks per mode and1 unavailable-runtime check. All6 original PHPMailer7.1.1 files reproduce from the pinned upstream commit. This supersedes the failed long-subject matrix38526761646 without weakening exact decoded equality. Independent review requested in [6163105944](https://github.com/afterburn25/Cajun_Web/pull/77#issuecomment-6163105944). No submission source is in the deployment tree yet.
 
 Hosting PR60 correctionc53dc4a passes168 supplied and21 independent controls in both local modes; [review6163105649](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6163105649) is clear for the isolated component. Service-plan PR53 at166c4b3 still needs reference-detachment and terminal-newline fixes from6162609466. Devin retains those corrections and independent mail review. Codex owns SMTP transport/fixtures and later durable storage/UI integration; integrate corrected components sequentially after the current release gate. No customer mail, real provider operation, payment, SSH or deployment is enabled. The full roadmap remains active.
-
-## Earlier preparation checkpoints — superseded by the current section
 
 ## Historical SMTP preparation — maintained MIME, matrix pending
 
@@ -124,8 +112,6 @@ No SMTP transport/session, credential access, database, site mirror, route, Send
 
 Next: inspect the expanded matrix and independent review, implement pinned/bounded TLS SMTP with real loopback fixtures and honest partial/unknown results, then durable current-authorized attempt storage and explicit review/Send UI. Finish draft candidate/exact-main release gates independently. The full roadmap remains active; no customer mail, payment, provider write, SSH or deployment.
 
-## Earlier contract-only checkpoint — superseded for implementation by the current section
-
 ## Historical work — SMTP submission contract on a separate branch
 
 Codex owns `codex/mail-submission`, starting from draft candidate231d1f7. [Submission contract](docs/MAIL_SUBMISSION_CONTRACT.md) defines the next A-06 boundary: immutable reviewed content, maintained MIME/SMTP, all-recipient acceptance before DATA, durable single-attempt dispatch and explicit unknown outcomes. This initial commit is documentation only: no dependency import, application source/schema/version change, Send control or external operation. Reconcile accepted PR75/main before later application integration; no new version is reserved.
@@ -135,8 +121,6 @@ PR75 correction231d1f7 remains independently under application acceptance [38523
 Independent re-review of Devin hosting5ab13fd passes its142 checks/default/no-ini plus8 positive controls, but4 additional cases remain ([6162609186](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6162609186)): unbound reconciliation replay, automatic rearming after nonretryable deletion and referenced quota mutation. Service-plan166c4b3 passes68/default/no-ini plus12 positive controls, but4 cases expose referenced limit mutation and trailing-LF canonical identifiers/times ([6162609466](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6162609466)). Both components remain separate and outside deployment; Devin retains focused corrections.
 
 Next: implement isolated immutable submission preparation and maintained MIME, then bounded loopback SMTP tests and independent review before any application exposure. In parallel, finish draft candidate and exact-main release acceptance. No customer mail, payment, provider write, SSH or live deployment. The full roadmap remains active.
-
-## Earlier draft branch checkpoint — superseded for ownership by the current section
 
 ## Historical 1.21.0 acceptance fixture corrections
 
@@ -149,8 +133,6 @@ This correction explicitly signs the owner in, checks the provider form and succ
 Current isolated PHP8.2/8.4 artifacts are verified: run38520609061 passes78 draft-native +41 default-form +41 no-ini-form checks per runtime; run38520609024 passes71 content checks per default/no-ini cell. Clean Windows c43cca5 build passes (COMPLETE2531, UPDATE2518, FULL5062 files). These results remain scoped to c43cca5/tested merge c91dd4b. Python/PHP syntax for the corrected fixtures passes locally; corrected runtime acceptance is pending.
 
 Next: push the fixture corrections, inspect all replacement candidate checks and the new actual mobile image, then merge only accepted work and repeat acceptance on exact main before release preparation. Devin has submitted hosting5ab13fd and service-plan166c4b3 corrections; independently re-review them on their separate branches while candidate CI runs. Codex owns application/release integration. The full roadmap continues; no customer mail, real provider operation, payment, SSH or deployment is activated.
-
-## Historical draft preparation — superseded by the checkpoint above
 
 ## Candidate 1.21.0 — local email drafts; acceptance pending
 
@@ -278,6 +260,7 @@ Next: reconcile `codex/provider-settings` (observed `6ced20dc90fe93c37ab82399836
 
 ## Previous verified publication — 1.18.0 (superseded checkpoint)
 
+
 [v1.18.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.18.0) is published and freshly downloaded/verified at immutable source/tag `91550d956c404585545dbd766c96f36f58ae0623` through [PR #70](https://github.com/afterburn25/Cajun_Web/pull/70). Assigned staff can explicitly open exact INBOX messages with current actor, global/read assignment and saved revision, verified TLS and exact UIDVALIDITY/UID/size checks. Escaped plaintext and maintained sanitized formatting appear in an opaque sandbox with restrictive CSP; server read flags stay unchanged. Whole MIME is limited to 256 KiB including encoded attachments. Strict intent/result audit, request limits and personal outcome history retain no message content. [Owner guide](docs/MAIL_MESSAGE_READER.md).
 
 [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38492678532): 1074 native (including 69 message), 3,084 estimator, 1032 HTTP/Chromium, 191 filesystem/recovery, 701 Apache and 19 builder checks. Each PHP 8.2/8.4 receiving runner passes 1,227 named checks, including actual no-DOM and isolated TLS, plus fresh reproduction of all 40 dependency packages. Existing diagnostic transport checks pass. All 16 public assets, archive members/checksums and immutable tag verified; Windows/Linux bytes agree. Homepage pixels match 1.17.0; actual desktop/mobile message views inspected. [Report](docs/TEST_REPORT_1.18.0.md); [handoff](docs/DEVIN_HANDOFF_1.18.0.md).
@@ -315,6 +298,14 @@ Next executable work: select/pin the maintained shared-host-compatible IMAP/MIME
 Permanent organized packaging remains in force. Seventeen supported starting packages: 1.0.8 and 1.1.0 through 1.14.0. UPDATE stages cwp-update-1.15.0 with target-specific recovery and shared structure-1.11.0/mutex.php. Actual 1.14.0 update/recovery retains review history, email credentials/assignments/private key, templates and added appointment/configuration history. Prior 1.14.0 asset fingerprints remain unchanged. No live deployment or external payment/provider/mail/SSH activation.
 
 Next executable work: return to A-06 webmail transport, evaluate maintained PHP/shared-host-compatible options and define a bounded connection/inbound-message contract before integration. Reuse the released email profiles, private credential key, current mailbox assignments and canonical permission policy; validate TLS/network boundaries and hostile-content handling with isolated tests. Real account acceptance, outgoing mail and A-08 email bells remain separate gates. The separate owner-requested 20i package-list diagnostic succeeded in run 38458492995, job 115510304263 (HTTP 200 and valid list); its earlier secret-availability blocker is resolved. This establishes only authenticated GET /package, not a shipped adapter or other entitlements. See [issue #65](https://github.com/afterburn25/Cajun_Web/issues/65) and preserved ops/twentyi-read-only-check-20261013 at 7e87d8c; do not rerun or expand provider calls without their own authorization. Continue feasible 20i/merchant/VPS/SSH development under operation-specific verification rules; preserve other Devin branches and current activity/support implementations. The roadmap remains active.
+
+## Devin A-06 mail-transport component handoff (independent)
+
+Branched from `main` `ad2f39d` (published 1.15.0 record). Isolated bounded transport: `foundation/mail-transport/` (6 files — `MailSocket`, `MailTransportException`, `TlsMailSocket`, `ImapParser`, `ImapSession`, `InboundSync`), `tests/mail-transport/run.php` (34 scripted-socket checks, all pass locally on PHP 8.4 and under `php -n`), `docs/MAIL_TRANSPORT.md`, `.github/workflows/mail-transport.yml` (PHP 8.2/8.4, `--network none`).
+
+Option review recorded in the session log: ext-imap is PECL-only/problematic on PHP 8.4 and `php-imap2` still requires it — so the component vendors a minimal read-only subset rather than taking a Composer/PECL dependency. Read-only by construction (EXAMINE, header summaries only); TLS verification is mandatory; authorization and credential storage stay caller-side per the released A-06 model.
+
+**Gate:** none for the contract layer; real dialing, credential decryption, persistence, sending, and account acceptance remain Codex integration work. **Not integrated:** additive-only outside `site/`.
 
 ## Previous verified publication — 1.14.0 (superseded checkpoint)
 
@@ -433,8 +424,6 @@ Existing sites back up files/database/private storage, merge UPDATE and have an 
 A new independent L-01 estimator component arrived during release: [PR #27](https://github.com/afterburn25/Cajun_Web/pull/27), `devin/lead-estimator` at `b69da9626448a2ddfdf30b425dc7c2d5e16d1582`. Its 40 isolated PHP checks pass on 8.2/8.4; it starts from old pre-1.1 main `e9549d4d0ea9bd4ff4c68dc6d4dd242d864af812` and does not implement the application form/storage. Preserve it alongside PR #7. Next integration task: inspect both components against current main, reconcile stale baseline/docs and agree actual application adapters before shipping; component tests are not integrated acceptance.
 
 **Next:** preserve Devin portfolio [PR #7](https://github.com/afterburn25/Cajun_Web/pull/7) at `55d60670497d987286e64630e037e1ba2ec3a318`; [handoff](docs/DEVIN_HANDOFF_1.10.0.md). Refresh main/open work and claim the next bounded independent roadmap feature, or complete actual merchant acceptance before production card checkout. No background continuation is scheduled.
-
-## Historical checkpoints — superseded where noted
 
 ## 2026-10-13 — Native regression fixes
 

@@ -22,8 +22,6 @@ GitHub explicitly cancelled the job for exceeding45 minutes. Apache reached no-r
 
 Increase the job ceiling to75 minutes based on the remaining eight no-rewrite baselines and retained full suite. Add an explicitly incomplete Apache progress checkpoint every25 assertions (and on assertion failure), plus flushed stage/progress messages. Do not remove assertions or old baselines. This checkpoint changes only the workflow, test instrumentation and documentation; site/foundation/installer/version bytes remain3e7138e. Next: inspect the replacement full run and actual latest1.21 recovery reports, keep independent review before main integration/publication, and continue separate hosting work. Published1.21 remains immutable; no live operation or release.
 
-## Earlier checkpoints
-
 ## Current candidate preparation — 1.22.0 remains unreleased
 
 Starting53b6ea3, reserve candidate1.22.0 after verifying no tag/release exists. Add the actual immutable1.21.0 COMPLETE package to the retained baseline catalog (2531 files; SHA256307ed8f26db291efaac2a72d91683bb14e188080e5927507764b339c50a0b6b1), with its exact published UPDATE shim hashes. Extend filesystem/Apache baselines through1.21.0. Original1.21 fixtures now retain edited/discarded drafts before update; new additive submission cases preserve synthetic accepted, uncertain, unresolved and abandoned records through recovery/reapplication, including original keys and no resend controls. These recovery additions are prepared, not yet executed. They make no SMTP/provider call.
@@ -31,8 +29,6 @@ Starting53b6ea3, reserve candidate1.22.0 after verifying no tag/release exists. 
 Integrated routes53b6ea3 have downloaded38538343622 proof:85 storage plus80 orchestration/read-model native checks per PHP8.2/8.4, and58 form/template checks in each default/no-ini mode (8 reports;562 executions). The obsolete unwired-route assertion was replaced by actual HTTP authorization cases, not a removed safety condition. Application38538349627 at53b6ea3 is running; it does not test this newer version/baseline increment. Local new fixtures compile/lint. Independent review request6164631071 remains pending; no response is claimed.
 
 Read the candidate [sending guide](SENDING_EMAIL.md). Next: inspect/fix the active packaged SMTP/browser run and actual images, then run complete acceptance on this candidate with latest1.21 recovery and reconcile reviewed hosting79/main before merge. Latest published/download-verified release remains1.21.0 at7805e56. No tag, new publication, deployment, customer mail, provider write, charge or SSH. Full roadmap active.
-
-## Earlier route integration checkpoint
 
 ## Current development — explicit Send connected on unreleased PR77
 
@@ -43,8 +39,6 @@ Prepared packaged HTTP/Chromium acceptance uses the default coordinator and main
 Earlier assistant-authored route-exposure waiting language is clarified: authorized branch development and isolated HTTP/browser testing may proceed before independent review. Independent review remains a merge/publication gate; no reviewer response is claimed. See [DECISIONS](DECISIONS.md) for this scheduling clarification. The new branch is not a release: published1.21.0/tag7805e56 remains unchanged, no later version is reserved, and latest1.21 update/recovery acceptance is still required before a later candidate. No real customer mail, deployment, provider write, charge or SSH.
 
 Hosting integration PR79 atb6d4d24 preserves mainff3ce72 and Devin60c53dc4a; its focused848 checks are downloaded/verified, while full application38536664079 remains running at this checkpoint. Devin53 corrections and independent77/79 review remain separate. Next: inspect/fix packaged mail acceptance and actual screenshots; extend actual1.21 recovery, reconcile accepted hosting/main and prepare the next tested release. Full roadmap remains active.
-
-## Earlier SMTP checkpoints — historical evidence
 
 ## Current verified acceptance — default coordinator with real SMTP/TLS
 
@@ -72,8 +66,6 @@ Devin retains service-plan53 reference-detachment/newline corrections ([61626094
 
 Next implementation follows the [durable submission storage contract](MAIL_SUBMISSION_STORAGE_CONTRACT.md). Its proposed tables and native tests are not implemented yet. Main publication records ff3ce72 are reconciled here with both histories retained; no submission source is deployed and no new version is reserved.
 
-## Earlier SMTP implementation checkpoints — dated evidence
-
 ## Historical SMTP increment — bounded socket and loopback TLS
 
 From5375ade, isolated `SubmissionChannel` adds one public numeric destination pinned to the selected SMTP host/port, original-host certificate/SNI verification, TLS1.2/1.3 only, mandatory STARTTLS,5-second I/O/connect and30-second overall budgets, and finite byte/line/write caps. It reuses the established public-address policy without changing existing diagnostic channels. The caller still must validate the full DNS answer set and current authority before opening; no account lookup, credential decryption, database or application route is added.
@@ -81,8 +73,6 @@ From5375ade, isolated `SubmissionChannel` adds one public numeric destination pi
 Actual local PHP8.4.25/OpenSSL loopback fixtures pass398 named checks: implicit TLS/STARTTLS, exact MIME DATA, all recipients before DATA, PLAIN/LOGIN, trust/hostname/expiry failures, downgrade/injection refusal, malformed replies, body/final disconnects, explicit final rejection and uncertain final outcomes. Test-only namespace interception asserts production options before routing to synthetic loopback; production has no alternate CA/private-address switch. Local policy tests pass27 default and23 no-ini checks, the latter proving missing OpenSSL refusal before any socket. Attempting the full local no-ini TLS suite correctly could not run without that extension; no no-ini TLS acceptance is claimed. The isolated Docker run38529526469 at2edeec1 is now downloaded and verified:26 named JSON reports pass. Each PHP8.2/8.4 runtime passes52 snapshot,29 MIME,168 independent parser,80 session,27 policy and398 actual TLS checks in each default/no-ini mode, plus1 unavailable-runtime check. Docker uses `--network none` and requires compiled OpenSSL. This proves the bounded components, not durable application acceptance. Independent review requested in PR77 comment6163395444.
 
 Prior session-only [38528949541](https://github.com/afterburn25/Cajun_Web/actions/runs/38528949541) at5375ade has18 downloaded, inspected JSON reports: PHP8.2/8.4 default/no-ini each80 session,52 snapshot,29 MIME and168 parser checks, plus1 unavailable-runtime check per runtime. This does not cover the new channel. Independent submission review and durable exact-attempt storage/authorization remain required before application exposure. Draft1.21 exact-main application38527733738 is in Apache acceptance; Windows build and actual desktop/mobile visual review pass, and17 other exact-main workflows pass. Latest public release is still1.20.0; full roadmap active.
-
-## Earlier isolated checkpoints
 
 ## Historical SMTP increment — maintained session, synthetic evidence
 
@@ -177,6 +167,7 @@ Next: reconcile `codex/provider-settings` (observed `6ced20dc90fe93c37ab82399836
 
 
 ## Previous verified publication — 1.18.0 (superseded checkpoint)
+
 
 [v1.18.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.18.0) is published and freshly downloaded/verified at immutable source/tag `91550d956c404585545dbd766c96f36f58ae0623` through [PR #70](https://github.com/afterburn25/Cajun_Web/pull/70). Assigned staff can explicitly open exact INBOX messages with current actor, global/read assignment and saved revision, verified TLS and exact UIDVALIDITY/UID/size checks. Escaped plaintext and maintained sanitized formatting appear in an opaque sandbox with restrictive CSP; server read flags stay unchanged. Whole MIME is limited to 256 KiB including encoded attachments. Strict intent/result audit, request limits and personal outcome history retain no message content. [Owner guide](MAIL_MESSAGE_READER.md).
 
@@ -423,7 +414,7 @@ Owner-controlled creation/invitation, role and mailbox grants, reset and deactiv
 
 ### A-06 — Multi-account admin webmail and setup
 
-Verified 1.13.0 delivers bounded profile/password/assignment preparation and the administrative UI. [Guide and acceptance](ADMIN_EMAIL_ACCOUNTS.md). No real connection, inbox or sending is included; full A-06 remains incomplete.
+Verified 1.13.0 delivers bounded profile/password/assignment preparation and the administrative UI. [Guide and acceptance](ADMIN_EMAIL_ACCOUNTS.md). The isolated Devin `devin/mail-transport` branch adds the bounded read-only IMAP contract layer (`foundation/mail-transport/`, [contract](MAIL_TRANSPORT.md)) — real connection, inbox, persistence and sending are still not included; full A-06 remains incomplete.
 
 Add Email with incoming/outgoing account configuration, separate connection tests, mailbox access grants, account switching/combined inbox, folders, read/unread, search, compose/reply/forward, drafts and attachments. Preserve server-side mailbox permissions, encrypted credentials, safe message rendering and correct send/sync failure handling. Full workflows and native two-account tests: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-06--multiple-email-accounts-and-webmail).
 

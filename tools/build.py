@@ -8,11 +8,6 @@ SCAFFOLDS={'storage/.htaccess','storage/index.php','upload/.htaccess','upload/in
 ROOT_FILES={'.htaccess','favicon.ico','index.php','install.php','robots.php','sitemap.php'}
 def sha(data):return hashlib.sha256(data).hexdigest()
 def write(path,data):path.parent.mkdir(parents=True,exist_ok=True);path.write_text(data,encoding='utf-8',newline='\n')
-def source_bytes(commit,name):
-    # cat-file treats this as an object expression, never a possible filesystem
-    # path. `git show` otherwise stats SHA:path and can exceed Windows MAX_PATH
-    # even when the real checked-out dependency file is readable.
-    return subprocess.check_output(['git','cat-file','blob',commit+':'+name],cwd=ROOT)
 def safe(name):
     p=PurePosixPath(name)
     if p.is_absolute() or '..' in p.parts or '\\' in name or ':' in name or str(p)!=name:raise RuntimeError('Unsafe path: '+name)
@@ -151,7 +146,7 @@ def main():
         if p.is_symlink():raise RuntimeError('Project contains symlink')
         if '/' in n and n.split('/')[0] not in allowed:raise RuntimeError('Unapproved full-project area: '+n)
         if p.name in {'config.php','proxy-config.php','.installed.php','payment-master.key'} or p.name.startswith('.env') or p.suffix in {'.pem','.key','.p12','.sql'} or any(part in {'.git','node_modules','__pycache__','qa','dist','test-runtime'} for part in PurePosixPath(n).parts):raise RuntimeError('Unsanitized full-project source: '+n)
-        data=source_bytes(commit,n)
+        data=subprocess.check_output(['git','show',commit+':'+n],cwd=ROOT)
         if p.read_bytes()!=data:
             # Git's declared text normalization is allowed for development docs/tools.
             # Shipping bytes remain strict because their installer hashes are byte-based.

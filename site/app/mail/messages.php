@@ -45,18 +45,15 @@ function mail_message_record(array $started,string $code,int $elapsed,#[\Sensiti
     if(!array_key_exists($code,mail_message_outcomes())||($code==='ok')!==($content!==null))throw new LogicException('Invalid local message result.');
     staff_transaction(function()use($started,$code,$elapsed,$content):void {
         query('INSERT INTO '.table('mail_message_results').' (id,outcome,result_code,finished_at,elapsed_ms,message_bytes) VALUES (?,?,?,?,?,?)',[$started['id'],$code==='ok'?'success':'failed',$code,gmdate('Y-m-d H:i:s'),max(0,min($elapsed,2147483647)),$content['bytes']??null]);
-        if($content!==null){require_once CWP_CODE_ROOT.'/app/mail/notices.php';mail_notices_opened($started,$content);}
         mail_accounts_audit((int)$started['actor_id'],'message_finished','Read '.$started['id'].' '.$code);
     });
 }
 /** Test seams are internal PHP callables; never exposed through owner/HTTP configuration. */
-function mail_message_read(string $id,int $revision,string $validity,string $uid,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null): array {
+function mail_message_read(string $id,int $revision,string $validity,string $uid,?callable $resolver=null,?callable $transport=null): array {
     mail_message_identity($validity,$uid);
-    if($noticeHandle!==null){require_once CWP_CODE_ROOT.'/app/mail/notices.php';mail_notices_handle($noticeHandle);}
     if(db()->inTransaction())throw new LogicException('Message reads cannot run inside a transaction.');
-    [$started,$row]=staff_locked(fn()=>staff_transaction(function()use($id,$revision,$validity,$uid,$noticeHandle):array {
+    [$started,$row]=staff_locked(fn()=>staff_transaction(function()use($id,$revision,$validity,$uid):array {
         [$actor,$row]=mail_message_authority($id,$revision);
-        if($noticeHandle!==null)mail_notices_resolve($noticeHandle,['account_id'=>$id,'account_revision'=>$revision,'folder'=>'INBOX','uidvalidity'=>$validity,'uid'=>$uid]);
         try {EndpointPolicy::host($row['imap_host']);EndpointPolicy::port('imap',(int)$row['imap_port'],$row['imap_encryption']);}
         catch(InvalidArgumentException) {throw new InvalidArgumentException('Message reading requires a public incoming server on 993/TLS or 143/STARTTLS. Ask an owner to check the saved settings.');}
         $now=time();
@@ -74,11 +71,10 @@ function mail_message_read(string $id,int $revision,string $validity,string $uid
     catch(InvalidArgumentException) {$code='destination';}
     catch(ProbeFailure $e) {$code=$e->getMessage();}
     catch(Throwable) {$code='connection';}
-    return staff_locked(function()use($started,$code,$addresses,$begin,$transport,$noticeHandle):array {
-        $authorize=static function()use($started,$noticeHandle):array {
+    return staff_locked(function()use($started,$code,$addresses,$begin,$transport):array {
+        $authorize=static function()use($started):array {
             try {[$actor,$row]=mail_message_authority($started['account_id'],$started['account_revision']);
                 if((int)$actor['id']!==$started['actor_id'])throw new RuntimeException('Changed actor.');
-                if($noticeHandle!==null)mail_notices_resolve($noticeHandle,$started);
                 return $row;
             }catch(InvalidArgumentException|RuntimeException $e) {if($e instanceof PDOException)throw $e;throw new ReceivingFailure('access_changed');}
         };
@@ -99,7 +95,7 @@ function mail_message_read(string $id,int $revision,string $validity,string $uid
             }
         }
         mail_message_record($started,$code,(int)((hrtime(true)-$begin)/1e6),$content);
-        return ['code'=>$code,'request_id'=>$started['id'],'account_id'=>$started['account_id'],'account_revision'=>$started['account_revision'],'actor_id'=>$started['actor_id'],'uidvalidity'=>$started['uidvalidity'],'uid'=>$started['uid'],'notice_handle'=>$noticeHandle,'loaded_at'=>gmdate('Y-m-d H:i:s'),'content'=>$content];
+        return ['code'=>$code,'request_id'=>$started['id'],'account_id'=>$started['account_id'],'account_revision'=>$started['account_revision'],'actor_id'=>$started['actor_id'],'uidvalidity'=>$started['uidvalidity'],'uid'=>$started['uid'],'loaded_at'=>gmdate('Y-m-d H:i:s'),'content'=>$content];
     });
 }
 function mail_message_history(string $id,int $page=1): array {

@@ -33,9 +33,16 @@ jobs:
           python3 -m venv .ci-venv
           .ci-venv/bin/pip install --disable-pip-version-check cryptography==50.0.1
           .ci-venv/bin/python tests/mail-transport/tls_test.py
+      - name: Scripted-socket inbound transport checks
+        run: |
+          for source in foundation/mail-transport/*.php foundation/webmail/*.php tests/mail-transport/run.php; do php -l "$source"; done
+          php tests/mail-transport/run.php > qa/mail-transport-inbound-results.txt
+          php -n tests/mail-transport/run.php
+        env:
+          CI: true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: mail-transport-${{ matrix.php }}-${{ github.sha }}
-          path: qa/mail-transport-*-results.json
+          path: qa/mail-transport-*-results.*
           if-no-files-found: error

@@ -1,5 +1,45 @@
 # Session log
 
+## 2026-10-13 — Devin v1.17.0 verification, queue refresh, and #68 mirror fix
+
+**Request:** Continue Without Stopping. PR #69 merged at `fc3bd89`; exact-main acceptance run `38480568403` succeeded; v1.17.0 published.
+
+**Work:**
+- Refreshed all Devin queue branches onto `fc3bd89` (guarded stage-3 union for doc anchors). Remote survey: zero markers, main is ancestor of every PR branch.
+- Fixed #68's real CI failure on the refreshed head: added byte-identical `site/includes/foundation/mail-transport/` mirrors for the six canonical files (the merged main lists `mail-transport` in `build.py`'s verified areas), then regenerated `site/install/inventory.generated.php` via `tools/build.py --refresh`. Head `998790c`: 20/20 checks SUCCESS, MERGEABLE.
+- Verified no other Devin branch diverges from main under `site/` — the gap was unique to mail-transport (earlier scan noise on other foundations was missing mirrors in unlisted areas, not damage).
+- Reviewed #69's post-review commits `2bd8ed3` (inbox routes delegate to `mail_accounts_can` account-scoped checks — verified still requiring global permission + active temporal grant) and `181f0d0` (browser-test diagnostics). Posted delta review; no findings.
+- Independent v1.17.0 byte verification: tag → `fc3bd89`; COMPLETE-UPLOAD 2363/2363, UPDATE 2350/2350 (`cwp-update-1.17.0/` staging), FULL-PROJECT 4700/4700 file hashes; 6 thin shims; `history_sha256` verified; 19 supported starting versions; no private-key leakage. Posted to issue #2 (comment 6157283206).
+
+**Next:** v1.18.0 or the next Codex-named increment; keep the queue current; #68 stays a preserved reference component.
+
+## 2026-10-13 — Devin independent PR #69 review (draft head)
+
+**Request:** Continue Without Stopping. Branch AGENTS.md on `codex/mail-inbox-reader` names Devin's assignment as independent PR #69 review/reproduction (no edits to Codex-owned application/build paths).
+
+**Work:** Read the full receiving stack at `de19a84`: `foundation/mail-receiving/` (`ReceivingStream`, `BoundedTokenizer`, `HeaderSession`, `HeaderDecoder`, `InboxReader`, `ReceivingFailure`, `bootstrap.php`), `site/app/mail/inbox.php`, schema/migration, controller/view, `tools/check_mail_vendor.py`, `tools/build.py` delta, `owner-update.php` `@`-path fix, and `tests/mail_inbox_native.php` (104-line native suite). Verified via a detached worktree; removed it after review.
+
+**Verification (local, Windows PHP 8.4 + cryptography 50.0.1):** `run.php` 17/17, `session_test.php` 48/48, `tls_test.py` 483/483 real loopback TLS checks; `check_mail_vendor.py` reports 36 locked packages / 2070 vendored files byte-exact and the 2078-file `site/includes` mirror byte-identical. `--reproduce` failed locally on a Windows temp-file cleanup quirk inside Composer's tmp-zip handling (no content drift; ubuntu CI covers reproduction).
+
+**Findings:** No blocking issues at `de19a84`. Two non-blocking observations posted on the PR (mid-command `+` continuation classified `connection` rather than `protocol`; redundant `$encryption` parameter). Review comment: https://github.com/afterburn25/Cajun_Web/pull/69#issuecomment-6156461803
+
+**Next:** re-verify commits after `de19a84` and the combined acceptance when #69 leaves draft; 1.17.0 byte-verification on publication.
+
+## 2026-10-13 — Devin v1.16.0 verification and branch-refresh repair
+
+**Request:** Continue Without Stopping. After PR #67 merged (`372ea28`) and v1.16.0 published (record `532dfe4`), verify the release and refresh the Devin queue.
+
+**Starting state:** `devin/mail-transport` after a failed scripted refresh that had committed conflict markers into 5 branches, truncated `CHANGELOG.md`/`PROJECT_STATUS.md`/`SESSION_HANDOFF.md` on 13 branches, and committed scratch files here.
+
+**Work:**
+- Repaired all damaged branches by recomputing true three-way union merges per file against each merge commit's real parents (stage 1/2/3 blobs, temp files outside the repo, guards rejecting empty or marker output). Hand-resolved the two genuine code conflicts: `devin/refactor-payload-verify` (`tools/update/owner-update.php` took main's stronger manifest/history verification; `tests/structure_worker.php` retains the staged-manifest hash-check adapted to main's dynamic update version — PHP -l clean) and `devin/apache-autoindex-fix` (intended comment-only diff verified, python ast parse clean). Removed accidentally committed `tmp-mergefix/*` from this branch.
+- Refreshed every `devin/*` branch onto `532dfe4` (v1.16.0 publication record) using normal merges plus guarded stage-3 union for doc anchors.
+- Final remote survey: zero `<<<<<<<` markers, zero scratch files, zero unintended empty files across all 28 devin/codex remote branches; `origin/main` is an ancestor of every Devin head.
+- Independent v1.16.0 verification: tag → `372ea28b`; all manifest `source_commit` fields agree; SHA256SUMS OK on downloaded assets; COMPLETE-UPLOAD 280/280, UPDATE 267/267 (`cwp-update-1.16.0/` staging), FULL-PROJECT 524/524 file hashes; 6 thin shims correct; `history_sha256` `620d6dd7…` matches; 18 supported starting packages; no `config.php`/`mail-master.key` leakage. Posted to issue #2.
+
+**Known state:** `devin/mail-transport` is preserved per the 1.16.0 handoff — its custom parser is not accepted for shipment; Codex's `foundation/mail-receiving/` (PR #69, vendored pinned `directorytree/imapengine`) is the receiving path. This branch remains a reference implementation with the bounded-sync improvement intact.
+
+**Next:** review PR #69 when it leaves draft; verify 1.17.0 byte-for-byte on publication.
 ## 2026-10-14 — preserve full mail acceptance after runtime limit
 
 Started3e7138e. Downloaded38539811045/tested merge368b7b5:2183 native/form/combined,3084 estimator,1236 HTTP/Chromium,247 filesystem/recovery and21 builder checks pass. GitHub annotation confirms45m limit; Apache had reached no-rewrite1.13, no final Apache report, final source-diff step skipped. This is partial evidence, not application acceptance. Increased limit75m and added atomic incomplete Apache progress every25 checks/failure with flushed messages. No assertions, baselines or shipping bytes changed. Python compilation/docs checks precede replacement full acceptance; independent review remains required.
@@ -691,6 +731,23 @@ Run 38457999787 at 6d72e02 passes all 5,535 named application checks: 893 native
 
 PR #66 merged at 8749bc5a89e52f8f35a193cc49d306136576ec8e, preserving corrected #32 through 3617ad5. Exact-main 38460197599: 5535 named checks (893 native, 3084 estimator, 923 HTTP/Chromium, 129 filesystem, 487 Apache, 19 builder). All 16 draft/public assets and tag downloaded/verified; Windows/Linux bytes match; prior 1.14.0 fingerprints unchanged. Homepage pixels retained; actual consultation public/admin desktop/mobile screens inspected. Snapshot concurrency defect corrected with current locking reads and retained process regression. Updated release records, guide and handoff. No live deployment, provider calendar or outgoing decision message. Next: scoped A-06 webmail transport/inbound-message work with current account/grant/key boundaries and isolated TLS/hostile-content acceptance. The roadmap continues.
 
+## 2026-10-13 — Devin A-06 mail-transport component
+
+Request: continue the roadmap without stopping; the 1.15.0 handoff names bounded A-06 webmail transport/inbound contract work as the next Devin-feasible increment. Starting commit: `ad2f39d` (verified 1.15.0 publication record). Branch: `devin/mail-transport`. Owned paths recorded on issue #2.
+
+Option review: PHP's bundled ext-imap moved to PECL for PHP 8.4 and cPanel marks it deprecated/problematic; `javanile/php-imap2` still requires ext-imap and is Composer-oriented/semi-maintained. Both conflict with the shared-host/no-Composer constraint, so the component vendors a minimal read-only IMAP4rev1 subset instead of taking a dependency.
+
+Added `foundation/mail-transport/`: `MailSocket` (injectable stream contract), `MailTransportException` (classified kinds, fixed messages — no credential/payload bytes), `TlsMailSocket` (mandatory peer verification, TLS 1.2/1.3, 1–60s timeouts, 8192-byte line cap, 16MiB literal cap), `ImapParser` (atoms/quoted/lists/NIL plus mid-response `{n}` literals; oversized/malformed input throws `protocol`), `ImapSession` (greeting→CAPABILITY→STARTTLS→LOGIN→EXAMINE/UID SEARCH/UID FETCH→LOGOUT; EXAMINE keeps polling read-only; plaintext login refused), `InboundSync` (bridge returning `{ConnectionResult, list<MailMessage>}`; disabled profile is `untested` and never dialed; authorization stays with the caller's PermissionPolicy + active MailboxAssignment).
+
+Added `tests/mail-transport/run.php` (34 scripted-socket checks — all pass on PHP 8.4 locally and under `php -n`), `.github/workflows/mail-transport.yml` (official PHP 8.2/8.4, `--network none`), and `docs/MAIL_TRANSPORT.md` with the adapter contract. No site/, schema, installer, live-network, credential-store or send-path changes; real account acceptance remains a separate authorized gate.
+
+### Codex mail-connection-checks review (parallel branch)
+
+Codex started `codex/mail-connection-checks` at `1209d84` immediately after 1.15.0 — bounded owner-triggered incoming/outgoing authentication *diagnostics* (no message reads) claiming the same `foundation/mail-transport/` directory, namespace and workflow filename as this branch. Devin verified the claimed evidence independently: 103/103 endpoint-policy checks and 147/147 real loopback TLS/protocol checks pass locally on PHP 8.4 (`php -n` included for the policy suite). `d92a71c` adds the full application path (owner/password/revision/assignment authority under the staff advisory lock, atomic rate limits, DNS between lock acquisitions, per-credential-payload re-authorization, honest `access_changed`, append-only version-bound results, additive owner-gated schema). Review posted on [PR #67](https://github.com/afterburn25/Cajun_Web/pull/67): contract conformance confirmed with three non-blocking nits (`2001:2::/48` benchmarking range accepted, `* BYE` classified as protocol, CNAME-chain address merging). Merge conflict with this branch is guaranteed; recommendation recorded — Codex's channel/policy layer is strictly stronger for real dialing and should be canonical, with #68's parser/session/sync adapted onto `ProbeChannel` (which needs a literal-read method for the receiving path). Sequencing decision is Codex's lane.
+
+Codex pushed `45cfbd2` strengthening acceptance: the TLS suite grew to 313 real loopback checks (SNI-on-pinned-address, STARTTLS buffered-reply injection, reply/byte floods, hostile literal markers, per-payload re-authorization for SMTP AUTH LOGIN) and the native suite added migration-refusal, disabled/future/revoked identity, role-refresh and DNS-interleave revocation cases. Devin re-verified all suites locally (104 policy / 13 resolver / 313 TLS) and corrected a mistaken nit on the record: `2001:2::/48` was already rejected inside `2001::/23`; the accepted `2001:200::1` is ordinary unicast. No remaining findings on #67.
+
+Also on this branch: bounded `InboundSync` to the newest 200 unseen summaries per folder (`MAX_MESSAGES_PER_FOLDER`) with a 250-UID scripted regression — 36 checks pass under `php -n`.
 ## 2026-10-13 — claim A-06 connection diagnostics after verified 1.15.0
 
 Continue the owner's roadmap from publication-record main ad2f39d on codex/mail-connection-checks. Review current email account/key/grant code and upstream PHP/PHPMailer/Webklex/Horde/MIME requirements. Choose a narrow dependency-free authentication diagnostic first; general inbox/MIME handling still requires a reviewed maintained stack and its own acceptance. Add the contract, non-shipping foundation/mail-transport classes and tests/mail-transport, plus independent PHP 8.2/8.4 CI. Local PHP 8.4 passes 103 no-extension policy checks and 147 actual loopback TLS/protocol checks with ephemeral fixture certificates and synthetic credentials, including pre-credential revocation. No production private-network override or test CA exists. Application schema/owner controls/history/rate/concurrency tests and combined release acceptance remain next. Latest publication is 1.15.0; no version bump, live mailbox, provider write or deployment occurs. Preserve independent Devin and ops branches. Separately verified the sanitized successful owner-requested 20i GET /package job 115510304263; secret availability is resolved for that diagnostic only, with issue #65 retaining other gates.

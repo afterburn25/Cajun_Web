@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased isolated component — A-06 mail transport
+
+- Add `foundation/mail-transport/`: a bounded read-only IMAP4rev1 subset over injectable sockets — greeting/capability/STARTTLS/login, EXAMINE-based unseen header fetches, honest classified failures, mandatory TLS peer verification and bounded line/literal reads. `InboundSync` maps fetched summaries onto the released A-06 `MailMessage`/`ConnectionResult` contract; authorization remains caller-side.
+- Add 34 scripted-socket checks (PHP 8.2/8.4, `--network none`) and `docs/MAIL_TRANSPORT.md`. No network dial, credentials, persistence, send path, or application integration; real mailbox acceptance remains a separate gate.
 ## 1.22.0 — verified explicit saved-email sending
 
 - Explicit saved-message review, unchecked confirmation and Send; private author history, separate To/Cc/Bcc, current mailbox/Send grants and exact revisions.
@@ -83,7 +87,6 @@ Record the next explicit-send boundary on a separate branch: maintained protocol
 - Additive owner setup and fresh installation; actual1.20.0 update/recovery/reapplication retains existing records, prior provider history, added drafts and both original private keys.23 starting versions supported.
 - Published/download-verified `7805e56aa9e53cb081600589e92991255475474c` after 6912 named exact-main application checks and PHP8.2/8.4 matrices. All16 assets, ZIP members, checksums/tag and Windows/Linux bytes verified. Actual desktop/mobile views inspected; homepage pixels equal1.20.0.
 
-
 ## 1.20.0 — verified owner 20i connection
 
 - Protected owner profile with private AES-GCM credentials, password/CSRF/revision safeguards and retained settings history. Fresh setup creates empty ready storage; upgraded owners explicitly prepare it.
@@ -140,16 +143,8 @@ Claim an isolated owner20i settings/read-only check contract after the1.19 email
 - Added `tests/provider/run.php` (124 synthetic checks) plus `FileLedger.php`/`file_ledger_worker.php` (a real four-process `flock` claim race — beyond scripted interleaving) and the `provider.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, schema, persistence, admin UI or real provider calls; HC-07 external gate remains `Awaiting API verification`. Not yet integrated or released. Exactly-once remote execution is not claimed — crash-after-write resolves to `uncertain`, not silent re-execution.
 
-## 1.11.1 — candidate, motion preferences and organized updates
-
-## 1.11.2 — candidate, canonical live estimator integration
-
-## 1.12.0 — candidate, administrator email-template library
-## 1.13.0 — candidate, email account preparation
-## 1.14.0 — candidate, human website review workflow
 ## 1.15.0 — candidate, consultation scheduling
 ### Historical — 1.16.0 candidate: explicit email connection checks
-## 1.17.0 candidate — bounded recent inbox headers (unreleased)
 ## 1.18.0 candidate — exact-message reading (unreleased)
 
 - Acceptance correction: actual Chromium diagnostics prove injected image attempts are blocked by CSP before network handling; the assertion now distinguishes blocked events from network requests and still requires both explicit CSP failures. Stable mobile viewport captures include plaintext and formatted views. Shipping behavior is unchanged; complete release acceptance remains pending.
@@ -179,7 +174,15 @@ Claim an isolated owner20i settings/read-only check contract after the1.19 email
 - Added explicit owner migration with column/key/relationship compatibility checks and strict audit; observation helpers require the successful terminal-result transaction. No schema/reader/HTTP integration or bell UI is wired yet.
 - Local PHP syntax passes. Native database fixtures and PHP 8.2/8.4 workflow are added; database and full application acceptance remain pending. Published/download-verified 1.18.0 remains immutable; its publication documentation is merged into this preparation branch.
 
+- Acceptance correction: actual Chromium diagnostics prove injected image attempts are blocked by CSP before network handling; the assertion now distinguishes blocked events from network requests and still requires both explicit CSP failures. Stable mobile viewport captures include plaintext and formatted views. Shipping behavior is unchanged; complete release acceptance remains pending.
 
+- Align the actual TLS wrong-UID browser fixture with the established unavailable-message classification; malformed MIME remains a protocol failure and neither exposes partial content.
+- Update the existing browser availability assertion for the new message-reading feature while preserving connection, attachment and sending limitations; all 69 new native message tests pass, corrected browser acceptance pending.
+- Independent review of 21e00c0 reproduced the components and reviewed application access/rendering boundaries with no blocking finding. Candidate native database checks pass; complete browser/update/recovery/Apache evidence remains pending. Correct staged owner/recovery instructions to candidate 1.18.0.
+- Add explicit assigned-staff message opening with current account/actor/revision and exact INBOX/UIDVALIDITY/UID checks, bounded MIME content and unchanged server read flags. Separate strict audit/results, request limits, owner-prepared upgrade storage and empty fresh-install storage retain no message contents.
+- Decode raw MIME through private maintained parser state, preserve escaped plaintext and show minimal sanitized formatting in an opaque sandbox with restrictive CSP. No automatic remote resources, attachment content or sending. Missing DOM has an honest plaintext/unavailable-format fallback.
+- Preserve all 36 existing dependency pins and add four maintained formatting dependencies. Correct PHP 8.2 full-document handling by stripping html/body wrappers while preserving sanitized children; all 1,227 components pass on PHP 8.2/8.4 at 740b4e2 with fresh byte reproduction.
+- Add actual 1.17.0 update/recovery and original key/history preservation fixtures, alongside native/concurrency, packaged TLS/HTTP/Chromium and Apache checks. Application acceptance, independent review and release remain pending; latest published release remains 1.17.0.
 ## 1.18.0 — verified individual email reading
 
 - Assigned staff explicitly open an exact INBOX message under current account/actor/global and mailbox permissions, saved revision, UIDVALIDITY/UID and size checks. Verified TLS and BODY.PEEK preserve server read flags.
@@ -490,7 +493,6 @@ No application source/asset import, feature implementation, host repair, databas
 - Candidate 91ef30d: 50 native and 143 HTTP/browser checks passed; final browser-admin, sitemap and favicon-reference assertions added before merge.
 
 Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid versioned favicon URLs because it compared the query suffix as part of the path. Parse the URL path and fetch the actual referenced icon for byte equality. Application source is unchanged; rerun the full suite.
-
 
 ## Historical component contract — review-request adapter contract (L-02 dependency)
 

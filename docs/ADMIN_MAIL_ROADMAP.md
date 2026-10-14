@@ -40,8 +40,6 @@ Devin retains service-plan53 reference-detachment/newline corrections ([61626094
 
 Next implementation follows the [durable submission storage contract](MAIL_SUBMISSION_STORAGE_CONTRACT.md). Its proposed tables and native tests are not implemented yet. Main publication records ff3ce72 are reconciled here with both histories retained; no submission source is deployed and no new version is reserved.
 
-## Earlier SMTP implementation checkpoints — dated evidence
-
 ## Historical SMTP increment — bounded socket and loopback TLS
 
 From5375ade, isolated `SubmissionChannel` adds one public numeric destination pinned to the selected SMTP host/port, original-host certificate/SNI verification, TLS1.2/1.3 only, mandatory STARTTLS,5-second I/O/connect and30-second overall budgets, and finite byte/line/write caps. It reuses the established public-address policy without changing existing diagnostic channels. The caller still must validate the full DNS answer set and current authority before opening; no account lookup, credential decryption, database or application route is added.
@@ -49,8 +47,6 @@ From5375ade, isolated `SubmissionChannel` adds one public numeric destination pi
 Actual local PHP8.4.25/OpenSSL loopback fixtures pass398 named checks: implicit TLS/STARTTLS, exact MIME DATA, all recipients before DATA, PLAIN/LOGIN, trust/hostname/expiry failures, downgrade/injection refusal, malformed replies, body/final disconnects, explicit final rejection and uncertain final outcomes. Test-only namespace interception asserts production options before routing to synthetic loopback; production has no alternate CA/private-address switch. Local policy tests pass27 default and23 no-ini checks, the latter proving missing OpenSSL refusal before any socket. Attempting the full local no-ini TLS suite correctly could not run without that extension; no no-ini TLS acceptance is claimed. The isolated Docker run38529526469 at2edeec1 is now downloaded and verified:26 named JSON reports pass. Each PHP8.2/8.4 runtime passes52 snapshot,29 MIME,168 independent parser,80 session,27 policy and398 actual TLS checks in each default/no-ini mode, plus1 unavailable-runtime check. Docker uses `--network none` and requires compiled OpenSSL. This proves the bounded components, not durable application acceptance. Independent review requested in PR77 comment6163395444.
 
 Prior session-only [38528949541](https://github.com/afterburn25/Cajun_Web/actions/runs/38528949541) at5375ade has18 downloaded, inspected JSON reports: PHP8.2/8.4 default/no-ini each80 session,52 snapshot,29 MIME and168 parser checks, plus1 unavailable-runtime check per runtime. This does not cover the new channel. Independent submission review and durable exact-attempt storage/authorization remain required before application exposure. Draft1.21 exact-main application38527733738 is in Apache acceptance; Windows build and actual desktop/mobile visual review pass, and17 other exact-main workflows pass. Latest public release is still1.20.0; full roadmap active.
-
-## Earlier isolated checkpoints
 
 ## Historical SMTP increment — maintained session, synthetic evidence
 
@@ -93,6 +89,7 @@ The [bounded contract](MAIL_NOTICES_CONTRACT.md) and [Devin review request](http
 
 
 ## Previous verified publication — 1.18.0 (superseded checkpoint)
+
 
 [v1.18.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.18.0) is published and freshly downloaded/verified at immutable source/tag `91550d956c404585545dbd766c96f36f58ae0623` through [PR #70](https://github.com/afterburn25/Cajun_Web/pull/70). Assigned staff can explicitly open exact INBOX messages with current actor, global/read assignment and saved revision, verified TLS and exact UIDVALIDITY/UID/size checks. Escaped plaintext and maintained sanitized formatting appear in an opaque sandbox with restrictive CSP; server read flags stay unchanged. Whole MIME is limited to 256 KiB including encoded attachments. Strict intent/result audit, request limits and personal outcome history retain no message content. [Owner guide](MAIL_MESSAGE_READER.md).
 

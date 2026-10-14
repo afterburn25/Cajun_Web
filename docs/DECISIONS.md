@@ -150,6 +150,10 @@ The access component's logical capability/context identifiers are integration co
 | D-041 | Invariant | Serialize every administrator credential/owner transition per installation | Activation, reset, account edits and owner changes use one advisory lock plus transactions, preventing concurrent last-owner removal. Full code/data backup is required for downgrade. |
 | D-042 | Packaging | Keep canonical foundations and bundle verified copies; derive embedded core | Prevents deployed copies drifting from tested components or installer bootstrap. Customer installation still requires no build tools. |
 
+## 2026-10-13 — A-06 transport dependency choice
+
+PHP's bundled ext-imap moved to PECL for PHP 8.4 and cPanel marks it deprecated/problematic; `javanile/php-imap2` still requires ext-imap and is Composer-oriented/semi-maintained. Either dependency would violate the shared-host/no-Composer installation constraint, so `foundation/mail-transport/` vendors a minimal read-only IMAP4rev1 subset instead: injectable sockets, mandatory TLS peer verification, bounded line/literal reads and classified honest failures. The subset is deliberately narrow (EXAMINE + header summaries) rather than a general client; widening it later stays cheap. Real dialing and credential decryption remain adapter-side gates.
+
 ## 2026-10-13 — Bounded payment preparation before charging
 
 Reuse current project invoices and staff/client identities. Owner-only credentials use a separate external master key; public storage fallback cannot hold it. Authorize.net authentication checks are sandbox-only and do not certify other keys or transactions. Prepared invoice requests have no charge action or guest capability. This keeps current manual invoice semantics while the next increment implements transaction concurrency/reconciliation. M2 is partial; no provider success or live activation is inferred from fixtures.

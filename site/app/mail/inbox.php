@@ -65,7 +65,6 @@ function mail_inbox_record(array $started,string $code,int $elapsed,#[\Sensitive
     if(!array_key_exists($code,mail_inbox_messages()) || ($code==='ok')!==($batch!==null))throw new LogicException('Invalid local inbox result.');
     staff_transaction(function()use($started,$code,$elapsed,$batch):void {
         query('INSERT INTO '.table('mail_inbox_results').' (id,outcome,result_code,finished_at,elapsed_ms,message_count,mailbox_total,uidvalidity) VALUES (?,?,?,?,?,?,?,?)',[$started['id'],$code==='ok'?'success':'failed',$code,gmdate('Y-m-d H:i:s'),max(0,min($elapsed,2147483647)),$batch===null?null:count($batch['messages']),$batch['total']??null,$batch['uidvalidity']??null]);
-        if($batch!==null){require_once CWP_CODE_ROOT.'/app/mail/notices.php';mail_notices_observe($started,$batch);}
         mail_accounts_audit((int)$started['actor_id'],'inbox_finished','Read '.$started['id'].' '.$code);
     });
 }

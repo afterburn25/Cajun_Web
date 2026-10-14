@@ -9,6 +9,13 @@ intended website directory. There is no site/, version/ or upload/ wrapper.
 Keep its organized subdirectories. Open install.php over HTTPS, fill the one-page
 form and select Install. Setup is keyless. Do not use setup on an installed site.
 
+UPDATE is for a recognized installed 1.0.8 through 1.17.0 website. Back up the
+website files, database, and configured private storage before starting. Extract
+the update into the existing website directory; it creates only the new staging
+directory cwp-update-1.18.0/. Do not copy its site/ payload over the live site.
+Do not overwrite an existing different staging directory. Open
+cwp-update-1.18.0/owner-update.php over HTTPS and authenticate as the owner.
+UPDATE is for a recognized installed 1.0.8 through 1.19.0 website. Back up the
 UPDATE is for a recognized installed 1.0.8 through 1.21.0 website. Back up the
 website files, database, and configured private storage before starting. Extract
 the update into the existing website directory; it creates only the new staging
@@ -25,6 +32,8 @@ private storage in structure-1.22.0/. Configuration, keys, database and private
 files are never replaced or reset by this structure update.
 
 After verifying the website, administration, portal, callbacks and private files,
+remove the exact cwp-update-1.18.0 staging directory using your hosting panel.
+remove the exact cwp-update-1.20.0 staging directory using your hosting panel.
 remove the exact cwp-update-1.22.0 staging directory using your hosting panel.
 Keep recovery copies with your backup. Recovery after application changes may
 require manual review; never restore a database independently of its backup set.
