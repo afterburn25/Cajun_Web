@@ -107,6 +107,12 @@ def run_browser(env,browser):
     form=page.locator('[data-mail-draft-editor]');form.locator('[name=subject]').focus();page.keyboard.press('Tab')
     check('Keyboard moves from subject to message field',form.locator('[name=body]').evaluate('(node)=>node===document.activeElement'))
     page.screenshot(path=str(QA/'Mail-Draft-Desktop.png'),full_page=True);page.set_viewport_size({'width':320,'height':800})
+    # Wait for the existing responsive drawer transition before judging the mobile view.
+    # Restore the top so full-page capture does not place off-viewport fixed elements in the image.
+    expect(page.locator('.admin-sidebar')).not_to_be_in_viewport()
+    page.evaluate("window.scrollTo({top:0,left:0,behavior:'instant'})")
+    expect(page.locator('.sidebar-toggle')).to_be_in_viewport()
+    check('Mobile draft editor has settled closed navigation',page.locator('.sidebar-toggle').get_attribute('aria-expanded')=='false' and page.locator('.admin-sidebar').evaluate('(node)=>node.getBoundingClientRect().right<=0'))
     check('Compose form fits narrow mobile viewport',page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
     page.screenshot(path=str(QA/'Mail-Draft-Mobile.png'),full_page=True)
     form.get_by_role('button',name='Save draft',exact=True).click();expect(page.locator('.notice.success')).to_contain_text('Draft saved locally')

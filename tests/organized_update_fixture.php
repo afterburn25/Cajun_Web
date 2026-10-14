@@ -16,6 +16,7 @@ if(($argv[2]??'')==='provider-seed'){
     start_session();$actor=one('SELECT auth_version FROM '.table('users').' WHERE id=1');
     $_SESSION=['uid'=>1,'auth_version'=>$actor['auth_version'],'login_at'=>time(),'last_activity'=>time()];
     $profile=provider_settings_profile();
+    if(!$profile)throw new RuntimeException('Create the original provider profile through the authenticated owner form before seeding check history');
     $code=provider_checks_check($profile['id'],(int)$profile['revision'],'Synthetic organized upgrade passphrase',fn()=>'8.8.8.8',fn()=>\CajunWebPro\Foundation\Provider\ConnectionCheck::unknown('timeout'));
     if($code!=='timeout')throw new RuntimeException('Unexpected synthetic provider check result');
     staff_locked(fn()=>staff_transaction(function()use($profile):void {

@@ -44,8 +44,14 @@ def run(web,base,check,qa,php,label,prefix,version):
     prior_notices=records('notices') if version in ['1.19.0','1.20.0'] else None
     prior_provider=None;prior_provider_key=None
     if version=='1.20.0':
+        # Fresh installation creates the owner, but does not authenticate this browser.
+        login=url+'/admin/index.php?view=login'
+        session.post(login,data={'csrf':token(session.get(login)),'action':'login','email':'organized@example.invalid','password':password})
         settings=url+'/admin/index.php?view=provider-settings';secret='SYNTHETIC_ORIGINAL_120_GENERAL_KEY'
-        r=session.post(settings,data={'csrf':token(session.get(settings)),'action':'provider_settings_save','profile_id':'','revision':'0','current_password':password,'label':'Earlier 1.20 provider connection','general_key':secret,'enabled':'1'})
+        r=session.get(settings)
+        check(label+' owner signs in before saving original provider settings',r.status_code==200 and BeautifulSoup(r.text,'html.parser').select_one('input[name=action][value=provider_settings_save]') is not None)
+        r=session.post(settings,data={'csrf':token(r),'action':'provider_settings_save','profile_id':'','revision':'0','current_password':password,'label':'Earlier 1.20 provider connection','general_key':secret,'enabled':'1'})
+        check(label+' authenticated original provider save succeeds before history seeding','20i settings saved' in r.text and len(records('provider')['profiles'])==1)
         records('provider-seed');prior_provider=records('provider');prior_provider_key=(private/'provider-master.key').read_bytes()
         check(label+' original 1.20 installation holds encrypted provider profile and nonempty check history','20i settings saved' in r.text and len(prior_provider['profiles'])==1 and len(prior_provider['history'])==1 and len(prior_provider['checks'])==2 and len(prior_provider['results'])==1 and secret not in prior_provider['profiles'][0]['credentials'] and secret not in r.text and len(prior_provider_key)==32 and prior_provider_key!=prior_key and (private/'provider-master.key').stat().st_mode&0o777==0o600)
     check(label+' retained schema contains meaningful client project and invoice records',all(before[n]['count']>0 for n in before))

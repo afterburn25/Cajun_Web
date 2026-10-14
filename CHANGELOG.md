@@ -2,6 +2,8 @@
 
 ## 1.21.0 — candidate, not published
 
+- Acceptance fixture correction from c43cca5: explicitly authenticate the original1.20 owner before provider seeding; wait for the responsive drawer and reset scroll before mobile draft capture. Prior run38520608916 passed native/browser/filesystem checks but Apache was incomplete and mobile visual approval was withheld. Shipping source is unchanged; replacement acceptance pending.
+
 - Private local drafts for current authorized authors/mailboxes, canonical template insertion and escaped preview; no sending.
 - Preserve unsaved form text separately when a concurrent discard rejects an edit; keep retained saved content unchanged.
 - Pin the actual verified1.20.0 package and upgrade shims; extend filesystem/Apache/recovery through23 starting packages. New tests preserve nonempty prior provider history, both original keys and added drafts through update/recovery/reapplication. These new cases require combined acceptance.

@@ -1,5 +1,19 @@
 # Project status
 
+## Current 1.21.0 candidate — acceptance fixture corrections
+
+Latest published/download-verified version remains [1.20.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.20.0), source 6f0b0ce; publication docs are on main a20e45e. PR #75 remains a candidate with no tag or release. Starting head c43cca5 has independent integration review at03e98cd and additive conflict/recovery review atf147417 ([6162116293](https://github.com/afterburn25/Cajun_Web/pull/75#issuecomment-6162116293)); its main merge changed documentation only.
+
+Downloaded application run [38520608916](https://github.com/afterburn25/Cajun_Web/actions/runs/38520608916), tested merge c91dd4b, passed 1,431 native/form checks, 3,084 estimator comparisons, 1,173 HTTP/Chromium checks, 233 unprivileged filesystem/recovery checks and 21 builder checks. Apache stopped after 455 successful assertions: the new actual1.20 baseline tried saving provider settings before browser sign-in, then dereferenced its absent profile. This is a failed/incomplete run, not full Apache or application acceptance; no final clean-source step ran. Actual1.20 provider/draft preservation in Apache and no-rewrite remain pending.
+
+This correction explicitly signs the owner in, checks the provider form and successful save before seeding history, and gives an explicit missing-profile fixture error. The mobile draft capture also waits for the existing drawer transition and scrolls to the top. Prior desktop preview is inspected and homepage desktop/mobile pixels equal1.20; the mid-transition mobile screenshot is not accepted. No shipping PHP/CSS, schema, installer inventory or package behavior changes in these test corrections.
+
+Current isolated PHP8.2/8.4 artifacts are verified: run38520609061 passes78 draft-native +41 default-form +41 no-ini-form checks per runtime; run38520609024 passes71 content checks per default/no-ini cell. Clean Windows c43cca5 build passes (COMPLETE2531, UPDATE2518, FULL5062 files). These results remain scoped to c43cca5/tested merge c91dd4b. Python/PHP syntax for the corrected fixtures passes locally; corrected runtime acceptance is pending.
+
+Next: push the fixture corrections, inspect all replacement candidate checks and the new actual mobile image, then merge only accepted work and repeat acceptance on exact main before release preparation. Devin has submitted hosting5ab13fd and service-plan166c4b3 corrections; independently re-review them on their separate branches while candidate CI runs. Codex owns application/release integration. The full roadmap continues; no customer mail, real provider operation, payment, SSH or deployment is activated.
+
+## Historical draft preparation — superseded by the checkpoint above
+
 ## Candidate 1.21.0 — local email drafts; acceptance pending
 
 Version 1.20.0 is published/download-verified at6f0b0ce with6,593 named exact-main checks and all16 public assets verified. Its publication record is merged through [PR76](https://github.com/afterburn25/Cajun_Web/pull/76) at a20e45e and reconciled here with both histories preserved. This branch prepares the next unused candidate1.21.0, not a published release.
