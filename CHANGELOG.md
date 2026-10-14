@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — retain full acceptance after confirmed job timeout
+
+Raise the application job allowance from75 to105 minutes after run38567952137 expired during Apache. No test or baseline is removed and no shipping source changes. Replacement acceptance remains pending.
+
 ## Unreleased — durable hosting observation storage
 
 Add internal immutable unknown/conclusive evidence, exact dispatch/prefix validation, atomic reconciliation/resource/audit and separately authorized retries after validated absence. Preserve original observations, legacy semantics and missing-result refusal. Native Linux acceptance/review pending; Windows stopped at retained private-key permission protection. No route, activation or new release. [Contract](docs/HOSTING_RECONCILIATION.md).

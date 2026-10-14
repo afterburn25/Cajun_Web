@@ -1,5 +1,13 @@
 # Session handoff — read before continuing
 
+## Current acceptance correction — allow the complete retained test matrix
+
+Application38567952137 at0f7bbb0 is terminal cancelled: GitHub reports that its75-minute job allowance expired during Apache. Final shipping-source verification was skipped. Downloaded partial artifacts/logs are preserved; no complete application acceptance is claimed. This correction raises only the job allowance to105 minutes, retaining every test, supported baseline and fail-fast assertion. No site, foundation, test or packaging bytes change.
+
+Start0f7bbb0 on `codex/hosting-reconciliation-storage`/PR89. Its verified846 focused native executions per matrix and7046 browser checkpoint remain scoped to that source. Replacement full acceptance and independent review remain required. Published1.22.0 and candidate85 remain unchanged. Codex separately continues service-agreement screens92/06aafaa; Devin has the20i assignment in issue2/comment6170260528. Next run the corrected exact branch once and inspect its final artifact, packages and actual images. No production activation or new release.
+
+## Earlier checkpoints — historical evidence
+
 ## Current work — durable hosting observations
 
 Current verified checkpoint: native push38566812922 at48b9d85 passes131 new reconciliation +94 records +79 operations +44 provisioning-retry +67 deletion-retry checks on each PHP8.2/8.4,830 executions. All10 downloaded reports/every job step passed; no PHP diagnostics. Canonical parent88 remains verified1,820. Candidate85/21 completed full38562463459 at8,360 checks/all21workflows, including actual1.22 recovery/replay; its independent review remains pending. Published1.22 is unchanged.

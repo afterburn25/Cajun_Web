@@ -1294,3 +1294,9 @@ Owner requested continued roadmap work. Start b597559 on codex/hosting-reconcili
 ## 2026-10-14 — verify native reconciliation and bound unknown history
 
 At48b9d85, download all10 reports from38566812922:131 new plus284 retained per PHP8.2/8.4,830 total, clean diagnostics. Current1.23/21 full8,360/all21 and package/image/recovery checks also verified; review remains pending. Add32-unknown bound with reserved conclusive resolution and eight boundary/local-bypass cases. Existing assertions remain. Next verify current matrix and additive independent review, then full application acceptance.
+
+## 2026-10-14 — preserve full matrix after confirmed75-minute timeout
+
+Application38567952137 at0f7bbb0 is terminal cancelled: GitHub reports that its75-minute job allowance expired during Apache. Final shipping-source verification was skipped. Downloaded partial artifacts/logs are preserved; no complete application acceptance is claimed. This correction raises only the job allowance to105 minutes, retaining every test, supported baseline and fail-fast assertion. No site, foundation, test or packaging bytes change.
+
+Start0f7bbb0 on `codex/hosting-reconciliation-storage`/PR89. Its verified846 focused native executions per matrix and7046 browser checkpoint remain scoped to that source. Replacement full acceptance and independent review remain required. Published1.22.0 and candidate85 remain unchanged. Codex separately continues service-agreement screens92/06aafaa; Devin has the20i assignment in issue2/comment6170260528. Next run the corrected exact branch once and inspect its final artifact, packages and actual images. No production activation or new release.
