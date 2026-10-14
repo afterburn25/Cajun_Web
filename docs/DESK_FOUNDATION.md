@@ -14,7 +14,7 @@ admin screens and ticket views are the integration gate.
 | File | Role |
 | --- | --- |
 | `foundation/desk/TraceLink.php` | Typed `kind:id` reference over an allowlisted record-kind set — order/invoice/service/client/ticket chains staff can follow without raw database access. Unknown kinds and malformed keys are refused. |
-| `foundation/desk/FulfillmentJob.php` | One unit of provisioning work: `queued → running → succeeded | failed → queued (backoff) | dead_letter`. Lease-expired runs go `stalled` for explicit `requeue()` recovery (which clears stale backoff). Every `run()` claim mints an immutable attempt token (`id#n`) that `succeed()`/`fail()` must echo exactly — a worker reporting for an expired claim can never settle a replacement attempt, and the token is released when the lease expires. Required `idempotencyKey` for replay detection. Bounded exponential backoff (`base × 2^attempts`); exhaustion is honest `dead_letter`, never fabricated success. Irreversible kinds (`deprovision`/`refund`/`purge`) refuse `run()` without a **live approved `ApprovalRequest` of the same kind whose subject is one of the job's trace links** — a bare id or stale/denied request cannot release it. |
+| `foundation/desk/FulfillmentJob.php` | One unit of provisioning work: `queued → running → succeeded | failed → queued (backoff) | dead_letter`. Lease-expired runs go `stalled` for explicit recovery. Every `run()` claim mints an immutable attempt token (`id#n`) that `succeed()`/`fail()` must echo exactly — a worker reporting for an expired claim can never settle a replacement attempt, and the token is released for settlement when the lease expires. **A stalled attempt is uncertain** — the expired worker may already have run the external operation — so `requeue()` is fenced behind `resolveStalled(token, outcome, evidence)`: an explicit verified resolution bound to the exact stalled attempt token, with non-empty evidence. `completed` settles the job terminally with no resend; `not_executed` is the only outcome that releases a retry through `requeue()` (which also clears stale backoff); `unknown` keeps the job blocked. Resolutions are immutable and retained per token — identical replay returns quietly, conflicting evidence is refused, and absent/mismatched evidence never releases a retry. Required `idempotencyKey` for replay detection. Bounded exponential backoff (`base × 2^attempts`); exhaustion is honest `dead_letter`, never fabricated success. Irreversible kinds (`deprovision`/`refund`/`purge`) refuse `run()` without a **live approved `ApprovalRequest` of the same kind whose subject is one of the job's trace links** — a bare id or stale/denied request cannot release it, and expiry is rechecked at every claim including a verified retry. |
 | `foundation/desk/ApprovalRequest.php` | `requested → approved | denied | expired`. The requester can never decide; the approver must hold the required role (default `owner`); denials need a reason; decisions expire. Expiry bounds **approved** decisions as well as pending ones — `approved($now)` is true only between the recorded decision instant and `expiresAt`, so a stale approval can never release a later attempt. All decision checks run before any field mutation, so a refused decision cannot rewrite the retained decider or reason. |
 | `foundation/desk/TicketMessage.php` | Immutable ticket message: `client`/`staff`/`system` author kinds, plain-text body. `internal` is staff-only — the flag is fixed at construction and `clientVisible()` answers it structurally. |
 | `foundation/desk/SupportTicket.php` | Ticket lifecycle `open → pending → resolved → closed`, with honest `resolved → open` reopen. Explicit staff assignment, attributed history, trace links, and `clientMessages()`/`allMessages()` separation so internal notes never reach a client view. `unreadFor($reader, $since, $includeInternal)` counts internal notes for staff only. |
@@ -26,6 +26,11 @@ admin screens and ticket views are the integration gate.
 - An interrupted job is `stalled` and recoverable, not lost or silently
   re-run; a timed-out provider call never auto-retries (HC-08's
   `OperationResult` handles the transport side).
+- Stalled-attempt recovery requires verified, attempt-bound evidence:
+  an operator's requeue click and the job's idempotency string are not
+  proof the provider did not execute. Only a recorded `not_executed`
+  resolution for the exact stalled token releases a retry; `completed`
+  is terminal and `unknown` stays blocked.
 - Irreversible work cannot run without a live two-party approval, and
   an approval's authority ends at `expiresAt` even after it was granted.
 - Completion/failure results are bound to the exact attempt token minted
@@ -55,12 +60,15 @@ irreversible job.
 
 ## Tests
 
-`tests/desk/run.php` — 78 synthetic checks covering link grammar,
+`tests/desk/run.php` — 103 synthetic checks covering link grammar,
 retry/backoff/dead-letter, stall recovery, attempt-token binding
-(including stale-worker and same-worker-token-reuse refusals), approval
-gates (role, self-approval, expiry of pending **and** approved
-decisions, pre-decision authority, denial reasons, refused-decision
-immutability), ticket lifecycle, internal-note isolation and unread
-counting. Fixtures only; `php -n` clean. CI:
+(including stale-worker and same-worker-token-reuse refusals),
+attempt-bound stall resolutions (missing/wrong-attempt/empty/conflicting
+evidence, `unknown` blocking, `completed` terminality, `not_executed`
+fenced retry, per-attempt re-verification, approval expiry rechecked at
+the replacement claim), approval gates (role, self-approval, expiry of
+pending **and** approved decisions, pre-decision authority, denial
+reasons, refused-decision immutability), ticket lifecycle, internal-note
+isolation and unread counting. Fixtures only; `php -n` clean. CI:
 `.github/workflows/desk.yml` on official PHP 8.2/8.4 with
 `--network none`.

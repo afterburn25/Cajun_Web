@@ -17,12 +17,21 @@ require_once __DIR__ . '/ApprovalRequest.php';
  *
  * queued → running → succeeded | failed → (retry back to queued while
  * attempts remain, else dead_letter). A running job whose lease expires
- * becomes `stalled` — recoverable via `requeue()`, never silently
- * re-run. Every `run()` claim mints an immutable attempt token that
- * `succeed()`/`fail()` must echo exactly, so a worker from an expired
- * claim can never settle a replacement attempt. `idempotencyKey` is
- * required so the adapter can detect replays instead of double-executing.
- * Irreversible kinds require an `ApprovalRequest` id before `run()`.
+ * becomes `stalled` — recoverable, never silently re-run. Every `run()`
+ * claim mints an immutable attempt token that `succeed()`/`fail()` must
+ * echo exactly, so a worker from an expired claim can never settle a
+ * replacement attempt. `idempotencyKey` is required so the adapter can
+ * detect replays instead of double-executing.  Irreversible kinds
+ * require an `ApprovalRequest` id before `run()`.
+ *
+ * A stalled attempt is *uncertain*: the expired worker may already have
+ * executed the external operation. `requeue()` therefore cannot release
+ * a stalled job on its own — `resolveStalled()` must first record an
+ * explicit, attempt-bound verified resolution carrying evidence:
+ * `completed` settles the job terminally with no resend, `not_executed`
+ * releases a separately fenced retry, and `unknown` keeps the job
+ * blocked. Resolutions are immutable and retained per attempt token —
+ * absent, mismatched or `unknown` evidence never releases a retry.
  *
  * Backoff is exponential and bounded: `nextAttemptAt` grows by the
  * configured base each attempt. A job that exhausts `maxAttempts`
@@ -43,12 +52,20 @@ final class FulfillmentJob
     /** Job kinds that permanently destroy or move money — approval-gated. */
     public const IRREVERSIBLE = ['deprovision', 'refund', 'purge'];
 
+    /** Verified outcomes for a stalled attempt. */
+    public const RESOLUTION_COMPLETED = 'completed';
+    public const RESOLUTION_NOT_EXECUTED = 'not_executed';
+    public const RESOLUTION_UNKNOWN = 'unknown';
+
     private string $status = self::QUEUED;
     private int $attempts = 0;
     private ?string $attemptToken = null;
+    private ?string $stalledToken = null;
     private ?int $leaseUntil = null;
     private ?int $nextAttemptAt = null;
     private ?string $lastError = null;
+    /** @var array<string,array{outcome:string,evidence:string,actor:string,at:int}> */
+    private array $resolutions = [];
     /** @var list<array{status:string,at:int,actor:string,note:string}> */
     private array $history = [];
 
@@ -103,6 +120,18 @@ final class FulfillmentJob
     public function attemptToken(): ?string
     {
         return $this->attemptToken;
+    }
+
+    /** The token of the attempt that stalled, or null when not stalled. */
+    public function stalledToken(): ?string
+    {
+        return $this->stalledToken;
+    }
+
+    /** The recorded verified resolution for an attempt token, or null. */
+    public function resolution(string $token): ?array
+    {
+        return $this->resolutions[$token] ?? null;
     }
 
     public function lastError(): ?string
@@ -188,17 +217,62 @@ final class FulfillmentJob
         if ($this->status !== self::RUNNING || $this->leaseUntil === null || $now < $this->leaseUntil) {
             return false;
         }
-        // The expired token is released here: it stays recorded in history
-        // but can never settle a later attempt after recovery.
+        // The expired token is released for settlement but retained for
+        // resolution binding: the stalled attempt's outcome is uncertain
+        // until resolveStalled() records verified evidence against it.
+        $this->stalledToken = $this->attemptToken;
         $this->attemptToken = null;
         $this->move(self::STALLED, 'system', $now, 'lease expired without completion');
         return true;
     }
 
     /**
-     * Recover a stalled job for another try. Manual recovery clears the
-     * leftover backoff — an operator's requeue is deliberate, so a stale
-     * `nextAttemptAt` from an earlier failure must not block it.
+     * Record a verified resolution for the stalled attempt. The token
+     * must name the exact attempt that stalled and the evidence must be
+     * non-empty — an absent or mismatched claim is refused. Resolutions
+     * are immutable: an identical replay returns quietly, a conflicting
+     * outcome for the same attempt is refused.
+     *
+     * `completed` settles the job terminally — the operation already ran
+     * and must never be resent. `not_executed` keeps the job stalled but
+     * eligible for a separately fenced `requeue()`. `unknown` leaves the
+     * job blocked. The adapter performs the actual provider verification;
+     * this model requires and represents that evidence.
+     */
+    public function resolveStalled(string $token, string $outcome, string $evidence, string $actor, int $at): void
+    {
+        $this->requireStatus(self::STALLED);
+        if ($token === '' || $token !== $this->stalledToken) {
+            throw new LogicException('Resolution must name the exact token of the stalled attempt.');
+        }
+        if (!in_array($outcome, [self::RESOLUTION_COMPLETED, self::RESOLUTION_NOT_EXECUTED, self::RESOLUTION_UNKNOWN], true)) {
+            throw new InvalidArgumentException("Unknown resolution outcome '{$outcome}'.");
+        }
+        if (trim($evidence) === '') {
+            throw new InvalidArgumentException('A verified resolution requires evidence.');
+        }
+        $recorded = $this->resolutions[$token] ?? null;
+        if ($recorded !== null) {
+            if ($recorded['outcome'] === $outcome && $recorded['evidence'] === $evidence) {
+                return;
+            }
+            throw new LogicException('A conflicting resolution for this attempt is already recorded.');
+        }
+        $this->resolutions[$token] = ['outcome' => $outcome, 'evidence' => $evidence, 'actor' => $actor, 'at' => $at];
+        if ($outcome === self::RESOLUTION_COMPLETED) {
+            $this->stalledToken = null;
+            $this->move(self::SUCCEEDED, $actor, $at, 'stalled attempt ' . $token . ' verified completed');
+            return;
+        }
+        $this->move(self::STALLED, $actor, $at, 'stalled attempt ' . $token . ' resolved ' . $outcome);
+    }
+
+    /**
+     * Recover a stalled job for another try. A stalled attempt erases
+     * certainty about the external operation, so retry is fenced: only a
+     * recorded `not_executed` resolution for the stalled attempt can
+     * release it — missing, conflicting or `unknown` evidence leaves the
+     * job blocked. Manual recovery also clears the leftover backoff.
      */
     public function requeue(string $actor, int $at): void
     {
@@ -207,8 +281,13 @@ final class FulfillmentJob
             $this->move(self::DEAD_LETTER, $actor, $at, 'stalled beyond max attempts');
             return;
         }
+        $resolution = $this->stalledToken !== null ? ($this->resolutions[$this->stalledToken] ?? null) : null;
+        if ($resolution === null || $resolution['outcome'] !== self::RESOLUTION_NOT_EXECUTED) {
+            throw new LogicException('A stalled attempt needs a verified not_executed resolution before retry.');
+        }
+        $this->stalledToken = null;
         $this->nextAttemptAt = null;
-        $this->move(self::QUEUED, $actor, $at, 'stalled job requeued for recovery');
+        $this->move(self::QUEUED, $actor, $at, 'verified not_executed; stalled job requeued for recovery');
     }
 
     private static function allLinks(array $trace): bool

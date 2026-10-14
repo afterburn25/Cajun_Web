@@ -85,6 +85,7 @@ $j3 = job('provision', 2);
 $j3->run('s', 0, 30);
 check('running lease held', !$j3->expireLease(20));
 check('lease expiry stalls', $j3->expireLease(40) && $j3->status() === 'stalled');
+$j3->resolveStalled('provision-1#1', 'not_executed', 'provider shows no request', 'staff-amy', 45);
 $j3->requeue('staff-amy', 50);
 check('stalled requeues', $j3->status() === 'queued');
 check('requeue clears stale backoff', $j3->nextAttemptAt() === null);
@@ -160,6 +161,7 @@ $tokA = $j5->run('workerA', 100, 10);
 check('first claim token minted', $tokA === 'provision-1#1' && $j5->attemptToken() === $tokA);
 check('lease expiry stalls first worker', $j5->expireLease(110));
 check('expiry releases the old token', $j5->attemptToken() === null);
+$j5->resolveStalled($tokA, 'not_executed', 'provider shows no request', 'staff-amy', 111);
 $j5->requeue('staff-amy', 111);
 $tokB = $j5->run('workerB', 112, 60);
 check('replacement claim mints new token', $tokB === 'provision-1#2' && $j5->attemptToken() === $tokB);
@@ -173,11 +175,88 @@ check('new worker settles its own attempt', $j5->status() === 'succeeded');
 $j6 = job('provision');
 $tok1 = $j6->run('workerA', 0, 10);
 $j6->expireLease(15);
+$j6->resolveStalled($tok1, 'not_executed', 'provider shows no request', 'staff-amy', 15);
 $j6->requeue('staff-amy', 16);
 $tok2 = $j6->run('workerA', 17, 60);
 throws('same worker cannot reuse old token', fn () => $j6->succeed('workerA', 20, $tok1));
 $j6->succeed('workerA', 25, $tok2);
 check('same worker settles with current token', $j6->status() === 'succeeded');
+
+// A stalled attempt erases certainty about the external operation, so
+// requeue is fenced behind an explicit attempt-bound verified
+// resolution — an operator click and the idempotency key are not
+// evidence about what the provider did.
+$jr = job('provision');
+$tokR = $jr->run('workerA', 100, 10);
+$jr->expireLease(110);
+check('stalled attempt token retained', $jr->stalledToken() === $tokR);
+throws('requeue refused without resolution', fn () => $jr->requeue('staff-amy', 111));
+throws('replacement claim refused while stalled', fn () => $jr->run('workerB', 112, 60));
+throws('resolution needs the stalled token', fn () => $jr->resolveStalled('provision-1#99', 'not_executed', 'e', 'staff-amy', 111));
+throws('resolution needs evidence', fn () => $jr->resolveStalled($tokR, 'not_executed', ' ', 'staff-amy', 111));
+throws('resolution needs known outcome', fn () => $jr->resolveStalled($tokR, 'maybe', 'e', 'staff-amy', 111));
+check('still stalled after refused evidence', $jr->status() === 'stalled' && $jr->resolution($tokR) === null);
+$jr->resolveStalled($tokR, 'unknown', 'provider unreachable', 'staff-amy', 112);
+check('unknown resolution recorded', $jr->resolution($tokR)['outcome'] === 'unknown');
+throws('unknown resolution keeps retry blocked', fn () => $jr->requeue('staff-amy', 113));
+check('unknown resolution stays stalled', $jr->status() === 'stalled');
+$jr->resolveStalled($tokR, 'unknown', 'provider unreachable', 'staff-amy', 114);
+check('identical resolution replays quietly', $jr->status() === 'stalled');
+throws('conflicting resolution refused', fn () => $jr->resolveStalled($tokR, 'completed', 'different', 'staff-amy', 115));
+
+// Verified not_executed releases a separately fenced retry — the only
+// path back to queued.
+$jr2 = job('provision');
+$tokR2 = $jr2->run('workerA', 100, 10);
+$jr2->expireLease(110);
+$jr2->resolveStalled($tokR2, 'not_executed', 'provider log: no such request', 'staff-amy', 115);
+check('not_executed recorded with metadata', $jr2->resolution($tokR2) === ['outcome' => 'not_executed', 'evidence' => 'provider log: no such request', 'actor' => 'staff-amy', 'at' => 115]);
+check('not_executed resolution stays stalled', $jr2->status() === 'stalled');
+$jr2->requeue('staff-amy', 120);
+check('verified retry releases to queued', $jr2->status() === 'queued');
+$tokR3 = $jr2->run('workerB', 121, 60);
+check('fenced retry mints fresh token', $tokR3 === 'provision-1#2');
+throws('old resolution does not settle new attempt', fn () => $jr2->succeed('workerA', 122, $tokR2));
+
+// Verified completed is terminal — no resend of an already-run operation.
+$jr3 = job('provision');
+$tokR4 = $jr3->run('workerA', 100, 10);
+$jr3->expireLease(110);
+$jr3->resolveStalled($tokR4, 'completed', 'provider id pr-77 confirmed', 'staff-amy', 120);
+check('completed resolution settles job', $jr3->status() === 'succeeded');
+throws('completed job cannot requeue', fn () => $jr3->requeue('staff-amy', 121));
+throws('completed job cannot rerun', fn () => $jr3->run('workerB', 122, 60));
+
+// The second stall needs its own evidence — the first attempt's
+// resolution never releases a later stalled attempt.
+$jr4 = job('provision');
+$tokS1 = $jr4->run('workerA', 0, 10);
+$jr4->expireLease(15);
+$jr4->resolveStalled($tokS1, 'not_executed', 'no request seen', 'staff-amy', 16);
+$jr4->requeue('staff-amy', 16);
+$tokS2 = $jr4->run('workerB', 17, 10);
+$jr4->expireLease(30);
+throws('prior resolution does not release new stall', fn () => $jr4->requeue('staff-amy', 31));
+throws('prior token cannot resolve new stall', fn () => $jr4->resolveStalled($tokS1, 'not_executed', 'e2', 'staff-amy', 31));
+$jr4->resolveStalled($tokS2, 'not_executed', 'verified for attempt 2', 'staff-amy', 32);
+$jr4->requeue('staff-amy', 33);
+check('new evidence releases new stall', $jr4->status() === 'queued');
+
+// Approval expiry is rechecked at the replacement claim: a verified
+// retry still cannot run under an approval that lapsed while stalled.
+$subjR = new TraceLink('order', 'ord-9');
+$apr = new ApprovalRequest('apr-r', 'refund', $subjR, 'staff-amy', 0, 130);
+$apr->approve('staff-ben', 'owner', 100);
+$jr5 = job('refund');
+$jr5->run('workerA', 100, 10, $apr);
+$jr5->expireLease(110);
+$jr5->resolveStalled('refund-1#1', 'not_executed', 'ledger shows no refund', 'staff-amy', 120);
+$jr5->requeue('staff-amy', 125);
+throws('expired approval blocks verified retry', fn () => $jr5->run('workerB', 131, 60, $apr));
+$apr2 = new ApprovalRequest('apr-r2', 'refund', $subjR, 'staff-amy', 0, 3600);
+$apr2->approve('staff-ben', 'owner', 126);
+$jr5->run('workerB', 132, 60, $apr2);
+check('live approval runs verified retry', $jr5->status() === 'running' && $jr5->attempts() === 2);
 
 // ── TicketMessage + SupportTicket ────────────────────────────────
 
