@@ -102,6 +102,35 @@ try {
         $authorize();pi_ok('Profile remains unchanged throughout locked read',(int)provider_settings_load($id)['revision']===3);return pi_read($row,$secret,$address,$authorize);
     });
     pi_ok('Current refresh completes before serialized edit',$code==='complete'&&pi_finish($GLOBALS['inv_edit_worker'])==='saved'&&(int)provider_settings_profile()['revision']===4);pi_cool();
+
+    // Independent review reproduction, using only synthetic data and scripted I/O.
+    $reviewOriginalSecret=$secret;
+    $reviewProfile=provider_settings_profile();
+    $reviewObservation=provider_inventory_observation($id);
+    $reviewPackage=provider_inventory_packages($reviewObservation['id'])[0];
+    $review=['current_revision'=>(int)$reviewProfile['revision'],'observation_revision'=>(int)$reviewObservation['profile_revision'],'package_id'=>(int)$reviewPackage['package_id']];
+    try {
+        provider_inventory_link($id,(int)$reviewPackage['package_id'],1,(int)$reviewProfile['revision'],$password);
+        $review['stale_observation_link_created']=true;
+    } catch (RuntimeException|InvalidArgumentException) {$review['stale_observation_link_created']=false;}
+    // Replace the configured credential, then return a valid same-id package
+    // from that new synthetic account context. No existing link is reapproved.
+    $secret='SYNTHETIC_OTHER_ACCOUNT_KEY';
+    provider_settings_save($id,(int)$reviewProfile['revision'],'Replacement credential context',true,$secret,$password);
+    $reviewRevision=(int)provider_settings_profile()['revision'];
+    query('UPDATE '.table('provider_refreshes').' SET started_epoch=?',[time()-3601]);
+    $scripted=[new TransportResponse(200,[],json_encode([pi_item((int)$reviewPackage['package_id'],'other-account-private.example')]))];
+    $review['replacement_refresh_result']=pi_refresh($id,null,null,$reviewRevision);
+    $reviewServices=provider_inventory_client_services(1);
+    $review['same_link_new_context_name']=$reviewServices[0]['package']['name']??null;
+    $review['link_count']=count(provider_inventory_links($id));
+    $review['link_event_count']=count(provider_inventory_link_events($id));
+    file_put_contents(__DIR__.'/../qa/independent-binding-reproduction.json',json_encode($review,JSON_PRETTY_PRINT));
+
+    $secret=$reviewOriginalSecret;
+    $checks[]=['name'=>'REVIEW: stale-observation client link must be refused','passed'=>!$review['stale_observation_link_created']];
+    $checks[]=['name'=>'REVIEW: replacement credential context must not reuse previous client link','passed'=>$review['same_link_new_context_name']!=='other-account-private.example'];
+
     $durable=json_encode([all('SELECT * FROM '.table('provider_refreshes')),all('SELECT * FROM '.table('provider_refresh_results')),all('SELECT * FROM '.table('provider_observation_packages')),all('SELECT * FROM '.table('provider_package_links')),all('SELECT * FROM '.table('provider_package_link_events')),all('SELECT * FROM '.table('audit'))]);
     pi_ok('No durable row contains the secret or auth material',!str_contains($durable,$secret)&&!str_contains($durable,base64_encode($secret))&&!str_contains($durable,'Bearer')&&!str_contains($durable,'Authorization'));
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}

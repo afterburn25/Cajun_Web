@@ -1,5 +1,12 @@
 # Session handoff — read before continuing
 
+## Independent review branch — 20i inventory binding
+
+This branch preserves exact application source `672a92f` from Devin PR #100 and adds two negative review assertions to the existing disposable MariaDB fixture. It checks that a newly requested client link cannot use an observation from an older profile revision and that replacing the configured credential cannot silently reuse an earlier client mapping for returned same-id package data. Expected safe behavior is refusal/reapproval; failure is evidence to return to Devin, not accepted application behavior. The branch is for review only and must not be merged into the product. Runtime/installer bytes are unchanged.
+
+The first Windows attempt was refused by the existing owner-only 0600 key-file guard before testing inventory behavior; that is not a product failure or passing review. It is retained locally. Run the unchanged runtime on the Linux PHP 8.2/8.4 + MariaDB fixture and retain named results plus the synthetic reproduction metadata. No provider API, real credential, customer data or live operation is involved. Devin retains all implementation corrections; Codex performs independent review.
+
+
 ## Current candidate — 1.23.0 client safeguards and hosting groundwork
 
 Published [1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) remains the latest verified download at immutable sourcee3b434f. Candidate1.23.0 is prepared on `codex/hosting-integration`/PR85 after the verifieda9 combined baseline and documentation-only main mergee86f2c9. No1.23 tag, release or live deployment exists. [Candidate guide](docs/CLIENT_ACCOUNT_SAFEGUARDS.md).

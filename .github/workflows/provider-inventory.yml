@@ -1,7 +1,7 @@
 name: Provider inventory checks
 on:
   push:
-    branches: [main, devin/twentyi-complete, devin/twentyi-refresh]
+    branches: [main, devin/twentyi-complete, devin/twentyi-refresh, codex/review-twentyi-refresh-672a92f]
     paths: ['site/app/providers/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_inventory*.php', '.github/workflows/provider-inventory.yml']
   pull_request:
   workflow_dispatch:
@@ -57,7 +57,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: provider-inventory-${{ matrix.php }}-${{ github.sha }}
-          path: qa/provider-inventory-native-results.json
+          path: |
+            qa/provider-inventory-native-results.json
+            qa/independent-binding-reproduction.json
           if-no-files-found: warn
           retention-days: 14
       - name: Record verification scope
