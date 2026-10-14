@@ -48,7 +48,10 @@ final class ProviderGateway
 
     /**
      * Verify credentials with the provider's cheapest read endpoint.
-     * Transport failures classify to a finite unreachable kind — raw
+     * Failures before the request could be sent classify to a finite
+     * unreachable kind; faults after the request may have been sent
+     * (timeout, protocol break, unclassified) classify UNKNOWN — the
+     * outcome is indeterminate, never an invented failure. Raw
      * exception text never reaches the result.
      */
     public function checkConnection(ProviderCredential $credential): ConnectionCheck
@@ -56,7 +59,12 @@ final class ProviderGateway
         try {
             return $this->adapter->probe($this->transport, $credential);
         } catch (TransportException $e) {
-            return ConnectionCheck::unreachable($e->kind);
+            return match ($e->kind) {
+                TransportException::KIND_TIMEOUT,
+                TransportException::KIND_PROTOCOL,
+                TransportException::KIND_UNKNOWN => ConnectionCheck::unknown($e->kind),
+                default => ConnectionCheck::unreachable($e->kind),
+            };
         }
     }
 

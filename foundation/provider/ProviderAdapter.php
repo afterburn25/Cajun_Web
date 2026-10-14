@@ -36,6 +36,14 @@ interface ProviderAdapter
     /**
      * Authenticate against the provider's cheapest read endpoint and
      * classify the outcome. Must not perform any mutating operation.
+     *
+     * The adapter pins the exact endpoint it probes — fixed host,
+     * method and path; callers cannot redirect it elsewhere. VERIFIED
+     * is allowed only when the response is the endpoint's strictly
+     * accepted success shape (an otherwise-unparseable or differently
+     * shaped 2xx is UNKNOWN, never a pass). Transport failures thrown
+     * by send() are classified by the gateway — probe must not convert
+     * them into authentication verdicts.
      */
     public function probe(HttpTransport $transport, ProviderCredential $credential): ConnectionCheck;
 

@@ -175,8 +175,11 @@ final class FixtureTwentyIAdapter implements ProviderAdapter
     public function probe(HttpTransport $transport, ProviderCredential $credential): ConnectionCheck
     {
         $response = $transport->send(new TransportRequest('GET', 'https://fixture.invalid/api/package', ['Authorization' => 'Bearer ' . $credential->secret()]));
+        $decoded = json_decode($response->body, true);
+        $accepted = $response->ok() && is_array($decoded) && array_is_list($decoded);
         return match (true) {
-            $response->ok() => ConnectionCheck::verified('fixture credentials accepted'),
+            $accepted => ConnectionCheck::verified('fixture credentials accepted'),
+            $response->ok() => ConnectionCheck::unknown('fixture returned an unexpected 2xx body'),
             $response->status === 401 || $response->status === 403 => ConnectionCheck::authenticationFailed('fixture rejected credentials'),
             default => ConnectionCheck::unsupported('fixture status ' . $response->status),
         };
@@ -530,8 +533,41 @@ check($check->checkedAt !== '', 'check carries a timestamp');
 
 $transport->script = [new TransportException('connect timeout to https://fixture.invalid?token=SYNTHETIC_PRIVATE')];
 $probe = $gateway->checkConnection(credential());
-check($probe->state === ConnectionCheck::UNREACHABLE, 'probe classifies transport failure as unreachable');
+check($probe->state === ConnectionCheck::UNKNOWN, 'unclassified transport failure classifies as unknown');
 check(strpos($probe->detail, 'SYNTHETIC_PRIVATE') === false && strpos($probe->detail, 'fixture.invalid') === false, 'probe detail is a finite kind, not raw transport text');
+
+// A fault demonstrably before any request was sent is unreachable —
+// a definitive never-delivered verdict, not invented ambiguity.
+$transport->script = [new TransportException(TransportException::KIND_CONNECT)];
+check($gateway->checkConnection(credential())->state === ConnectionCheck::UNREACHABLE, 'pre-send connect failure classifies as unreachable');
+$transport->script = [new TransportException(TransportException::KIND_TLS)];
+check($gateway->checkConnection(credential())->state === ConnectionCheck::UNREACHABLE, 'TLS failure classifies as unreachable');
+$transport->script = [new TransportException(TransportException::KIND_UNAVAILABLE)];
+check($gateway->checkConnection(credential())->state === ConnectionCheck::UNREACHABLE, 'unavailable failure classifies as unreachable');
+
+// Post-send ambiguity is UNKNOWN — the request may have been sent but
+// no usable verdict arrived. It is never a pass and never a clean fail.
+foreach ([TransportException::KIND_TIMEOUT, TransportException::KIND_PROTOCOL] as $kind) {
+    $transport->script = [new TransportException($kind)];
+    $probe = $gateway->checkConnection(credential());
+    check($probe->state === ConnectionCheck::UNKNOWN && !$probe->ok(), 'post-send ' . $kind . ' fault classifies as unknown');
+    check($probe->detail === $kind, 'unknown detail carries the finite transport kind');
+}
+
+// A successful status with an unaccepted body shape is UNKNOWN, not
+// VERIFIED — probes only pass on the strictly accepted list shape.
+$transport->script = [new TransportResponse(200, [], '{"packages":{"a":1}}')];
+check($gateway->checkConnection(credential())->state === ConnectionCheck::UNKNOWN, 'non-list 2xx body is unknown, not verified');
+$transport->script = [new TransportResponse(200, [], 'not json at all')];
+check($gateway->checkConnection(credential())->state === ConnectionCheck::UNKNOWN, 'unparseable 2xx body is unknown, not verified');
+$transport->script = [new TransportResponse(200, [], '[]')];
+check($gateway->checkConnection(credential())->state === ConnectionCheck::VERIFIED, 'empty accepted list body still verifies');
+
+// Check details are bounded classifications like operation messages —
+// durable attempt history must not grow provider bodies or raw errors.
+expectThrows(fn () => ConnectionCheck::unreachable(str_repeat('x', 201)), 'check detail length is bounded');
+expectThrows(fn () => ConnectionCheck::unknown("bad\nmessage"), 'check detail rejects control characters');
+expectThrows(fn () => ConnectionCheck::verified("invalid\xFFutf8"), 'check detail rejects malformed UTF-8');
 
 // --- ExternalResource ---------------------------------------------------------
 $link = ExternalResource::link('hosting_account', '42', 'pkg_9');
