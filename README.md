@@ -1,5 +1,9 @@
 # CajunWebPro — project source of truth
 
+## Current development — 1.20.0 candidate
+
+[PR #74](https://github.com/afterburn25/Cajun_Web/pull/74) implements protected owner 20i settings, an explicit package-list connection check and finite audited history. Published1.19.0 remains unchanged. Codex owns application integration, package/recovery acceptance and release; Devin retains canonical provider ownership and the requested independent storage/check/UI review. The transport review is complete. See [SESSION_HANDOFF.md](SESSION_HANDOFF.md) for current evidence and next actions; older preparation assignments below are historical. No live deployment or broader provider capability is claimed.
+
 ## Latest verified publication — 1.19.0
 
 [v1.19.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.19.0) is published and freshly downloaded/verified at immutable source/tag `22a2969692ab5bcc7f35158dcaa5355c623dc821` through [PR #72](https://github.com/afterburn25/Cajun_Web/pull/72). Assigned staff see recent email notices from explicit successful newest-20 inbox checks, with separate per-person opened/dismissed state and exact-message POST opening. Current permissions, mailbox grants and saved revisions filter counts/labels before exposure. Private admin/public bells preserve idle expiry, clear stale display and stay absent in client-support pages. No automatic IMAP synchronization or server read-flag writes. [Owner guide](docs/RECENT_EMAIL_NOTICES.md).
