@@ -1,5 +1,16 @@
 # Session log
 
+## 2026-10-13 — Devin scheduling adapter contract (L-03 dependency)
+
+**Request:** Continue the roadmap — same docs-only contract pattern as estimator (#35) and review requests (#36), for the live `consultation` route + L-03 foundation.
+
+**Starting commit:** `b975915`. New branch `devin/scheduling-adapter`. Owned: `docs/SCHEDULING_ADAPTER.md` + continuity docs. Documentation only.
+
+**Work:** Mapped `growth_submit`'s consultation branch to the foundation: `preferred_date`+`period`+`timezone` → preferred-range `TimeWindow` (period bands in the requester's zone, UTC storage), `Consultation` lifecycle keeps request→confirm honest, staff pick a concrete slot through `ConsultationCalendar::slots()`/`isBookable`/`transition`, additive `consultations` table (UTC epoch, computed conflicts), `SchedulePolicy`/`WeeklyRule` from admin settings. Also landed PR #36 (L-02 adapter contract) this session and corrected PR #34 to `60fd276` (dead-CSS removal, metrics artifact, all checks green).
+
+**Verification:** `tools/check_docs.py` passes. No code executed or changed.
+
+**Next:** Codex review of the three contract docs (#35, #36, this PR) sets adapter implementation order. Queued: #31, #32, #34, #35, #36.
 ## 2026-10-14 — preserve full mail acceptance after runtime limit
 
 Started3e7138e. Downloaded38539811045/tested merge368b7b5:2183 native/form/combined,3084 estimator,1236 HTTP/Chromium,247 filesystem/recovery and21 builder checks pass. GitHub annotation confirms45m limit; Apache had reached no-rewrite1.13, no final Apache report, final source-diff step skipped. This is partial evidence, not application acceptance. Increased limit75m and added atomic incomplete Apache progress every25 checks/failure with flushed messages. No assertions, baselines or shipping bytes changed. Python compilation/docs checks precede replacement full acceptance; independent review remains required.
@@ -551,6 +562,13 @@ Integration refresh: preserved latest Devin #35 head efc967a (publication-record
 
 PR #55 merged at 4fd0d5efdc9d94f1f5b29d76be857d944f5f8c36; exact-main acceptance 38433670555 passes 4873 named checks (3084 estimator / 618 native / 802 HTTP-browser / 73 filesystem / 279 Apache / 17 builder). Preserved #35 through efc967a. All three clean-source artifacts match Windows/Linux; all 16 draft and public assets, hashes, members, directories and immutable tag verified. Prior 1.11.1 fingerprints unchanged. Homepage desktop/mobile pixels identical; inspected real screenshots. No live deployment/external activation. Reviewed #56: 36 checks pass, but reproduced second-order substitutions and malformed placeholders falsely resolving; requested precise corrections. #31 still needs no-mbstring portability and #36 accurate APIs/semantics; #32 corrected 71 checks pass locally. Next actual work is A-07 template persistence/admin preview after component correction, with existing staff isolation and no real mail sending. Publication records are documentation only.
 
+### 2026-10-13 — Devin L-03 adapter-contract reconciliation
+
+**Request:** apply the same API-accuracy pass Codex required on #36 to the scheduling adapter doc, against the corrected #32 contract.
+
+**Changed (docs only):** confirmation flow now uses `ConsultationCalendar::reschedule()` + `transition()` on the calendar-tracked instance; documented the tracked-instance discipline (stale copies refused, returned instance is what must be persisted); recorded the corrected `WeeklyRule::expand()` dual-endpoint DST validation and first-occurrence fall-back semantics; acceptance list updated for stale-instance and end-in-gap cases.
+
+**Tests:** documentation-only change; component checks remain 71 on `devin/consultation-scheduling`.
 
 ### 2026-10-13 — Devin L-02 portability correction (Codex review)
 
