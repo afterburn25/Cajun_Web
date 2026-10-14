@@ -3,10 +3,11 @@
 declare(strict_types=1);
 namespace CajunWebPro\Foundation\MailTransport {
     function dns_get_record(string $host,int $type):array|false {
-        if(PHP_SAPI!=='cli-server'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||$host!=='inbox-fixture.example.net'||$type!==(DNS_A|DNS_AAAA|DNS_CNAME))throw new \RuntimeException('Isolated fixture forbids external mail DNS');
+        if(PHP_SAPI!=='cli-server'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||!in_array($host,['inbox-fixture.example.net','api.20i.com'],true)||$type!==(DNS_A|DNS_AAAA|DNS_CNAME))throw new \RuntimeException('Isolated fixture forbids external DNS');
         return [['type'=>'A','ip'=>'8.8.8.8']];
     }
 }
+namespace { require_once __DIR__.'/twentyi/tls_connector.php'; }
 namespace CajunWebPro\Foundation\MailReceiving {
     function stream_socket_client(string $remote,?int &$errno=null,?string &$errstr=null,?float $timeout=null,int $flags=STREAM_CLIENT_CONNECT,$context=null) {
         if(PHP_SAPI!=='cli-server'||getenv('CWP_TEST_DATABASE')!=='cwp_test')throw new \RuntimeException('Not an isolated HTTP fixture');
