@@ -71,7 +71,7 @@ PHPIniDir /etc/php/8.3/apache2
                 cookies=[c for c in session.cookies if c.name.startswith('cwp_')];check(label+suffix+' shared session cookie uses site scope',len(cookies)==1 and cookies[0].path==(suffix+'/') and cookies[0].has_nonstandard_attr('HttpOnly'))
                 for n in ['images/branding/logo.png','images/icons/favicon.png','favicon.ico','images/backgrounds/hero.webp','images/portfolio/project-restaurant.webp','assets/css/site.css','assets/css/premium.css','assets/js/site.js','assets/js/activity.js']:
                     rr=session.get(url+'/'+n);check(label+suffix+' exact public asset '+n,rr.status_code==200 and rr.content==expected[n])
-                for n in ['includes/foundation/mail-receiving/vendor/autoload.php','includes/foundation/mail-receiving/vendor/composer/installed.json','includes/foundation/mail-receiving/composer.lock','includes/bootstrap.php','app/staff/accounts.php','pages/home/body.php','database/schema/base.php','config/example.php','admin/controllers/router.php','admin/views/auth.php','portal/controllers/router.php','api/handlers/inquiry.php','media/serve.php','webhooks/authorize-net/receive.php','config.php','includes/','images/','assets/js/','storage/','upload/']:
+                for n in ['app/mail/messages.php','admin/controllers/mail_message.php','admin/views/mail_message.php','database/schema/mail_messages_schema.php','database/migrations/mail_messages_migrate.php','includes/foundation/mail-receiving/MessageReader.php','includes/foundation/mail-receiving/BodyDecoder.php','includes/foundation/mail-receiving/BodyHtml.php','includes/foundation/mail-receiving/vendor/symfony/html-sanitizer/HtmlSanitizer.php','includes/foundation/mail-receiving/vendor/autoload.php','includes/foundation/mail-receiving/vendor/composer/installed.json','includes/foundation/mail-receiving/composer.lock','includes/bootstrap.php','app/staff/accounts.php','pages/home/body.php','database/schema/base.php','config/example.php','admin/controllers/router.php','admin/views/auth.php','portal/controllers/router.php','api/handlers/inquiry.php','media/serve.php','webhooks/authorize-net/receive.php','config.php','includes/','images/','assets/js/','storage/','upload/']:
                     check(label+suffix+' direct private/internal/listing denial '+n,session.get(url+'/'+n).status_code==403)
                 for area in ['storage','upload']:
                     for filename,body in [('probe.php','<?php echo "EXECUTABLE-UPLOAD-MUST-NOT-RUN";'),('private.txt','PRIVATE-MUST-NOT-LEAK')]:
@@ -115,7 +115,7 @@ PHPIniDir /etc/php/8.3/apache2
             check(label+' Apache legacy POST invokes canonical action with body and session',r.status_code==200 and 'current password' in r.text.lower() and 'Location' not in r.headers and ('STUDIO RELEASE '+VERSION) in r.text)
             check(label+' Apache upgraded canonical portal still serves',session.get(base+'/legacy/portal/index.php').status_code==200)
             from organized_update_cases import run as organized_update
-            for number,version in enumerate(['1.11.0','1.11.1','1.11.2','1.12.0','1.13.0','1.14.0','1.15.0','1.16.0']):
+            for number,version in enumerate(['1.11.0','1.11.1','1.11.2','1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0']):
                 organized_update(web,base,check,QA,php,label,('aor' if rewrite else 'aon')+str(number)+'_',version)
         finally:
             proc.terminate()
