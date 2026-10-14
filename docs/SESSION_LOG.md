@@ -1298,6 +1298,7 @@ Semantics: atomic INSERT claims an idempotency key; resolved rows replay recorde
 
 Tests: native MariaDB suite covering schema refusals, claim/replay/conflict/uncertain/record races, gateway at-most-once through a synthetic adapter, a real cross-process claim race, and grant lifecycle including audit. CI lane on PHP 8.2/8.4 + MariaDB 10.11 with named JSON results. Next: Codex review; execution-path wiring (grant check + gateway + adapter execute) remains gated on the write-boundary contract and operation acceptance.
 
+<<<<<<< HEAD
 ## 2026-10-16 — Devin: 20i execution path (grant → gateway → adapter)
 
 Request: continue the complete 20i assignment — wire the documented write surface through owner-grant authority, the durable ledger and the closed request builder.
@@ -1317,3 +1318,19 @@ Request: continue the complete 20i assignment — make approved operations reach
 Files/actions: `provider_operation_grants` v2 — `scope_params` (canonical JSON of the approved request), `consumed_key`, `consumed_at`; a grant is now the complete approved request and is consumed atomically at approval time (one grant, one request, one key). `provider_operations_execute` takes `grantId + idempotencyKey` — stored scope must reconstruct its fingerprint before any credential/address work. `provider_operation_grant` validates the operation is registered+shape-complete and bounds the stored scope (≤4096). New `provider-operations` Studio page (`staff.manage` view; owner password per action): approve/run/revoke forms, approval states, operation ledger history with uncertain-reconciliation notice. Migration `provider_operations_schema_version` → '2' with v1 ALTER upgrade. Native suites updated for the grant-id interface + v1→v2 ALTER coverage.
 
 Tests: `php -l` clean; **native suites green — 39 ledger/grant + 34 execution assertions on PHP 8.2 and 8.4** at `f3cf6dd`. CI iterations fixed: canonical-JSON key ordering in the body assertion; a colliding key correctly consumes its grant (approval is spent at approval time); the second-profile test replaced by foreign-profile refusal since only one provider profile exists. Next: Codex review of #111, then reconciliation workflow polish and documented-shape write acceptance.
+
+## 2026-10-16 — Devin: grant binding corrections from independent review
+
+Codex review 6177728792 reproduced three approval-boundary gaps at `318471e`. Fixes on `devin/twentyi-ledger` (`6ca730f`):
+
+1. **Revision/account binding** — `provider_operation_grants.profile_revision` (schema v2, ALTER upgrade for v1) records the approved profile revision; `provider_operation_grant_active` now requires an enabled profile at that exact revision. Key replacement or any settings save changes the revision and suspends the grant; disable/enable cycles never revive it. Granting also requires an enabled profile.
+2. **UTF-8 scope keys** — `provider_operations_canonical` refuses map keys whose `json_encode` fails, matching gateway canonicalization.
+3. **Newest-same-scope** — `grant_active` queries the indexed exact scope for its newest row instead of scanning the latest 64 grants.
+
+Tests: native suite extended to cover the v1→v2 ALTER upgrade, revision invalidation on settings save and disable/enable, invalid UTF-8 scope keys, and same-scope lookup beyond 64 other grants.
+
+## 2026-10-16 — Devin: merge review corrections into execution branch
+
+Codex review 6177258236 on #107 (`5f624a2`) reproduced two write-boundary gaps, fixed on `devin/twentyi-operations` (`d7006c5`): HTTP 202 and other non-terminal 2xx classify `uncertain` (accepted ≠ completed, RFC9110 §15.3.3); the 256-node request bound now counts every visited value including scalar leaves (a 384-leaf body under 8KiB previously built). Suite now 90 named checks incl. exact-boundary/over-boundary/nested fixtures and the 202-vs-201/204 distinction.
+
+Merged `origin/devin/twentyi-operations` (`d7006c5`) and `origin/devin/twentyi-ledger` (`6ca730f`) into `devin/twentyi-execution` with normal merges. Schema reconciled to v3: v2 adds `profile_revision` (approved-revision binding), v3 adds `scope_params`/`consumed_key`/`consumed_at` (single-use executed grants). `provider_operations_execute` also refuses grants whose approved revision is stale. Union-resolved schema/migration/test/log conflicts; `php -l` clean. Native suites re-run pending CI.

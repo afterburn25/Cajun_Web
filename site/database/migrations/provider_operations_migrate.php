@@ -52,34 +52,47 @@ function provider_operations_validate_schema(string $name,string $sql): void {
 }
 
 function provider_operations_ready(): bool {
-    return (one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']??'')==='2';
+    return (one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']??'')==='3';
 }
 
-/** Adds the approval-request columns to version-1 grant storage. Columns are appended so existing data and column order are preserved. */
+/**
+ * Grant-table upgrade steps; columns are appended so existing data and
+ * column order are preserved.
+ *  v2 — approved-revision binding (profile_revision).
+ *  v3 — approval-request storage (scope_params, consumed_key,
+ *       consumed_at) for single-use executed grants.
+ */
 function provider_operations_upgrade_v2(): void {
-    $add=function(string $name,string $column,string $definition):void {
-        if(!one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].$name,$column]))db()->exec('ALTER TABLE '.table($name).' ADD COLUMN '.$column.' '.$definition);
+    $add=function(string $column,string $definition):void {
+        if(!one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operation_grants',$column]))db()->exec('ALTER TABLE '.table('provider_operation_grants').' ADD COLUMN '.$column.' '.$definition);
     };
-    $add('provider_operation_grants','scope_params','VARCHAR(4096) NULL');
-    $add('provider_operation_grants','consumed_key','VARCHAR(190) CHARACTER SET ascii COLLATE ascii_bin NULL');
-    $add('provider_operation_grants','consumed_at','DATETIME NULL');
+    $add('profile_revision','INT UNSIGNED NOT NULL');
+}
+function provider_operations_upgrade_v3(): void {
+    $add=function(string $column,string $definition):void {
+        if(!one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operation_grants',$column]))db()->exec('ALTER TABLE '.table('provider_operation_grants').' ADD COLUMN '.$column.' '.$definition);
+    };
+    $add('scope_params','VARCHAR(4096) NULL');
+    $add('consumed_key','VARCHAR(190) CHARACTER SET ascii COLLATE ascii_bin NULL');
+    $add('consumed_at','DATETIME NULL');
 }
 
 function provider_operations_migrate(#[\SensitiveParameter] string $password): void {
     staff_locked(function()use($password):void {
         $actor=provider_settings_owner($password,false);
         $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']??'');
-        if(!in_array($version,['','1','2'],true))throw new RuntimeException('This provider operation storage version is not supported. Existing data was preserved.');
+        if(!in_array($version,['','1','2','3'],true))throw new RuntimeException('This provider operation storage version is not supported. Existing data was preserved.');
         foreach(provider_operations_schema(config()['db']['prefix']) as $name=>$sql) {
             if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))db()->exec($sql);
         }
         if($version==='1')provider_operations_upgrade_v2();
+        if(in_array($version,['1','2'],true))provider_operations_upgrade_v3();
         foreach(provider_operations_schema(config()['db']['prefix']) as $name=>$sql)provider_operations_validate_schema($name,$sql);
         staff_transaction(function()use($actor,$version):void {
-            if($version===''&&!provider_operations_ready()) {
-                foreach(array_keys(provider_operations_schema(config()['db']['prefix'])) as $name)if((int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn())throw new RuntimeException('Unrecognized provider operation records exist. No data was adopted.');
+            if(!provider_operations_ready()) {
+                if($version==='')foreach(array_keys(provider_operations_schema(config()['db']['prefix'])) as $name)if((int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn())throw new RuntimeException('Unrecognized provider operation records exist. No data was adopted.');
+                save_setting('provider_operations_schema_version','3');
             }
-            if(!provider_operations_ready())save_setting('provider_operations_schema_version','2');
             provider_settings_audit((int)$actor['id'],'operations_setup','Additive provider operation storage verified');
         });
     });

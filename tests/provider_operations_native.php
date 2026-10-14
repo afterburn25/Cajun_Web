@@ -52,13 +52,13 @@ try {
     po_deny('Operation storage requires owner password',fn()=>provider_operations_migrate('wrong'));
     po_actor(2);po_deny('Administrator cannot prepare operation storage',fn()=>provider_operations_migrate($password));po_actor();
     provider_operations_migrate($password);
-    po_ok('Operation storage records version','2'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']??''));
+    po_ok('Operation storage records version','3'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']??''));
     provider_operations_migrate($password);po_ok('Migration is idempotent',provider_operations_ready());
-    save_setting('provider_operations_schema_version','99');po_deny('Unsupported version refused',fn()=>provider_operations_migrate($password));save_setting('provider_operations_schema_version','2');
-    // Simulate version-1 storage: drop the approval-request columns, then migrate.
-    db()->exec('ALTER TABLE '.table('provider_operation_grants').' DROP COLUMN scope_params, DROP COLUMN consumed_key, DROP COLUMN consumed_at');
+    save_setting('provider_operations_schema_version','99');po_deny('Unsupported version refused',fn()=>provider_operations_migrate($password));save_setting('provider_operations_schema_version','3');
+    // Simulate version-1 storage: drop the revision binding and the approval-request columns, then migrate through both steps.
+    db()->exec('ALTER TABLE '.table('provider_operation_grants').' DROP COLUMN profile_revision, DROP COLUMN scope_params, DROP COLUMN consumed_key, DROP COLUMN consumed_at');
     save_setting('provider_operations_schema_version','1');provider_operations_migrate($password);
-    po_ok('Version-1 storage gains the approval-request columns',provider_operations_ready()&&(one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operation_grants','scope_params'])!==null));
+    po_ok('Version-1 storage gains revision binding and approval-request columns',provider_operations_ready()&&(one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operation_grants','profile_revision'])!==null)&&(one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operation_grants','scope_params'])!==null));
     db()->exec('ALTER TABLE '.table('provider_operations').' ADD INDEX unexpected(status)');po_deny('Extra index refused without change',fn()=>provider_operations_migrate($password));db()->exec('ALTER TABLE '.table('provider_operations').' DROP INDEX unexpected');
 
     // ---- ledger claim/record semantics ----
@@ -110,6 +110,23 @@ try {
     po_ok('Changed params do not match',!provider_operation_grant_active($profile,'packages.create',provider_operations_scope('packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'b.example'])));
     po_ok('Different operation does not match',!provider_operation_grant_active($profile,'packages.delete',$active));
     po_ok('Different profile does not match',!provider_operation_grant_active(str_repeat('f',32),'packages.create',$active));
+    // Invalid UTF-8 map keys cannot collapse distinct scopes into one fingerprint.
+    po_deny('Invalid UTF-8 scope key is refused',fn()=>provider_operations_scope('packages.create',["\xff"=>'same']));
+    po_deny('A second invalid UTF-8 scope key is refused',fn()=>provider_operations_scope('packages.create',["\xfe"=>'same']));
+    // Approval is bound to the approved profile revision and enabled state.
+    provider_settings_save($profile,(int)(one('SELECT revision FROM '.table('provider_profiles').' WHERE id=?',[$profile])['revision']??0),'20i fixture',true,$secret,$password);
+    po_ok('Any settings save invalidates the approved revision',!provider_operation_grant_active($profile,'packages.create',$active));
+    $grantId=provider_operation_grant($profile,'packages.create',$scope,$password);
+    po_ok('Re-grant under current configuration is active',provider_operation_grant_active($profile,'packages.create',$active));
+    provider_settings_state($profile,(int)(one('SELECT revision FROM '.table('provider_profiles').' WHERE id=?',[$profile])['revision']??0),'disable',$password);
+    po_ok('Disabled profile suspends the grant',!provider_operation_grant_active($profile,'packages.create',$active));
+    provider_settings_state($profile,(int)(one('SELECT revision FROM '.table('provider_profiles').' WHERE id=?',[$profile])['revision']??0),'enable',$password);
+    po_ok('Re-enable after a revision change does not revive it',!provider_operation_grant_active($profile,'packages.create',$active));
+    $grantId=provider_operation_grant($profile,'packages.create',$scope,$password);
+    po_ok('Grant under the re-approved configuration is active',provider_operation_grant_active($profile,'packages.create',$active));
+    // The newest grant for THIS scope decides even after many other-scope grants.
+    for($i=0;$i<70;$i++)provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>1000+$i],$password);
+    po_ok('Newest same-scope grant found beyond 64 other rows',provider_operation_grant_active($profile,'packages.create',$active));
     query('UPDATE '.table('provider_operation_grants').' SET expires_epoch=? WHERE id=?',[time()-1,$grantId]);
     po_ok('Expired grant is inactive',!provider_operation_grant_active($profile,'packages.create',$active));
     $grantId2=provider_operation_grant($profile,'packages.create',$scope,$password);
