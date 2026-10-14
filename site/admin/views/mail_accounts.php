@@ -7,6 +7,7 @@ $page=max(1,min((int)($_GET['p']??1),100000));
 <?php if ($view==='mailboxes'):
     $rows=mail_accounts_assigned($page);
 ?>
+<?php if(mail_notices_access($actor)): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-notices'))?>">Recent email notices</a></p><?php endif; ?>
 <p>Your owner assigns each email account separately. Read access lets you request recent inbox headers and individual messages. Sending is not available yet.</p>
 <div class="workspace-grid"><?php foreach (array_slice($rows,0,20) as $row): ?>
 <article class="workspace-card"><h2><?=esc($row['label'])?></h2><p><?=esc($row['address'])?></p><p>Assigned: <?=esc(implode(' and ',array_keys(array_filter(['Read'=>$row['can_read'],'Send'=>$row['can_send']]))))?></p><?php if($row['can_read']): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-inbox',['account_id'=>$row['id']]))?>">Open inbox</a></p><?php endif; ?><p>Expires: <?=$row['expires_at']===null?'No expiry':esc(gmdate('Y-m-d H:i:s',(int)$row['expires_at']).' UTC')?></p></article>
@@ -24,6 +25,10 @@ $page=max(1,min((int)($_GET['p']??1),100000));
 <section class="workspace-card" data-message-setup><h2>Prepare message reading</h2><p>Prepare private request history before assigned staff open individual messages. This step connects to no email server.</p>
 <form method="post"><?php admin_action('mail_message_setup'); ?><?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Prepare message reading</button></form></section>
 <?php else: ?><p>Message reading is ready. Use Open message after loading recent inbox headers.</p><?php endif; ?>
+<?php if(!mail_notices_ready()): ?>
+<section class="workspace-card" data-mail-notices-setup><h2>Prepare email notices</h2><p>After inbox and message reading are prepared, enable recent email notices for assigned administrators. The bell uses the newest checked message window; this step contacts no server.</p>
+<form method="post"><?php admin_action('mail_notices_setup'); ?><?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Prepare email notices</button></form></section>
+<?php else: ?><p>Email notices are ready. Load recent headers to update the checked message window.</p><?php endif; ?>
 <p class="hint">Only owners manage account settings and assignments. Owning a profile does not grant mailbox access.</p>
 <div class="workspace-grid"><?php foreach (array_slice($rows,0,20) as $row): ?>
 <article class="workspace-card"><h2><a href="<?=esc(admin_url('mail-account',['account_id'=>$row['id']]))?>"><?=esc($row['label'])?></a></h2><p><?=esc($row['address'])?></p><p><?=badge((int)$row['enabled']===1?'saved':'disabled')?> · Open settings for connection checks · Version <?=(int)$row['revision']?></p></article>
