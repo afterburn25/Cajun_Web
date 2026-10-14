@@ -4,6 +4,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 ?>
 <section class="workspace-card" data-mail-message>
 <a href="<?=esc(admin_url('mail-inbox',['account_id'=>$accountId]))?>">← Recent inbox headers</a>
+<p><a href="<?=esc(admin_url('mail-notices'))?>">Recent email notices</a></p>
 <h2><?=esc($record['label'])?></h2><p><?=esc($record['address'])?> · INBOX · Saved version <?=(int)$record['revision']?></p>
 <p>Read this message without changing its server read flag. Remote images, attachments and sending are unavailable in this view. Messages over 256 KiB, including any attachments, must be opened in your regular email app.</p>
 <?php if(!mail_messages_ready()): ?><p class="notice">An owner must prepare message reading in Email accounts first.</p>
