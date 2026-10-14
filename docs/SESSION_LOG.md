@@ -505,6 +505,21 @@ PR #50 merged at cefcc41bcd5297715f2a49d6526900ebe8ad4eb4; exact-main acceptance
 
 Next-increment preparation while exact-main acceptance ran: an isolated local estimator adapter draft matched the current shipping calculator across 1,512 priced/missing/malformed/quantity cases on PHP 8.4, without database access or shipping changes. This is prototype parity evidence only; component guards, actual application integration and native/browser/upgrade acceptance remain required. Devin correction priority reiterated in issue #2 comment 6150049591; no acknowledgment or completed fixes inferred.
 
+### 2026-10-13 — Devin A-09 support-access foundation
+
+**Request:** "Continue Without Stopping" — next feasible roadmap item (A-09 support-access contract layer, no external gate).
+
+**Starting commit:** `main` `cefcc41` (1.11.1 merged). New branch `devin/support-access`.
+
+**Changed:** added `foundation/support-access/` (SupportGrant, SupportSession, SupportBroker, SupportDenied), `tests/support-access/run.php`, `docs/SUPPORT_ACCESS_FOUNDATION.md`, `.github/workflows/support-access.yml`, and additive continuity entries. No `site/` or shared-path changes.
+
+**Tests:** `php tests/support-access/run.php` — 37 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: staff≠client identity enforcement, TTL bounds, revocation, sensitive-action flag separation, launch denials audited (revoked grant, per-client concurrency), expiry, close/double-close, revocation killing live sessions, banner text, audit trail.
+
+**Failures:** none (one self-caught fix — broker capacity checks now use the launch timestamp rather than real `time()` so synthetic clocks work).
+
+**Blockers:** none for the contract layer; portal session issuance, banner UI and permission wiring remain Codex integration work.
+
+**Next:** PR `devin/support-access`; queue now 16 open Devin PRs awaiting Codex sequencing.
 ### 2026-10-13 — Devin L-02 review corrections (PR #31)
 
 **Request:** Codex review findings on #31 (issuecomment-6149702908), prioritized per `DEVIN_HANDOFF_1.11.1.md` before new isolated components.
