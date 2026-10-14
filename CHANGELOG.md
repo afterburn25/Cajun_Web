@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — explicit saved-draft Send integration
+
+Connect private review/Send/history with exact current authority and additive/fresh setup. Prepare actual HTTP/Chromium/SMTP and Apache acceptance; validation is pending. Published1.21.0 remains immutable.
+
 ## Unreleased — combined submission acceptance preparation
 
 - Add reusable isolated SMTP server and a dedicated MariaDB/TLS matrix for the default coordinator, exact saved MIME, conservative outcomes, strict audit failure and no-resend behavior. Downloaded38535733829 at48060cf passes471 combined checks per PHP8.2/8.4 runtime. No shipping runtime or route activation.

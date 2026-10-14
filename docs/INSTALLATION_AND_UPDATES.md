@@ -1,5 +1,9 @@
 # Installation, packaging and updates
 
+## Unreleased submission setup
+
+Development PR77 adds empty ready submission storage on fresh setup. Existing sites first prepare accounts/drafts, then an owner opens My email submissions and confirms their current password to prepare additive tables. No email is sent by setup. This branch is not a published package; actual1.21 update/recovery acceptance remains required.
+
 ## Latest verified publication — 1.21.0
 
 [v1.21.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.21.0) is published and freshly downloaded/verified at immutable source/tag `7805e56aa9e53cb081600589e92991255475474c`, through [PR #75](https://github.com/afterburn25/Cajun_Web/pull/75). Staff can save, edit, preview and retain private local email drafts for currently assigned sending accounts, with canonical active-template insertion. Current author/account/Send access, exact revisions, stable initial-save replay and strict audit protect the workflow. [Owner guide](LOCAL_EMAIL_DRAFTS.md).

@@ -1,5 +1,5 @@
 <?php
-/** Prepared admin screens only. Router/actions/navigation do not load this controller yet. */
+/** Current-authorized explicit saved-message review and private submission history. */
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_drafts.php';

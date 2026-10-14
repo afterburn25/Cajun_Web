@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-10-14 — saved-message Send route integration
+
+Owner requested continuous roadmap work. Starting7fdd242, wire existing guarded submission modules into admin/setup and prepare packaged synthetic SMTP/HTTP/browser acceptance. Local58 form checks pass per default/no-ini; full application/native/browser acceptance remains pending. No real external mail. See current PROJECT_STATUS and PR77.
+
 ## 2026-10-13 — HC-07 provider foundation component
 
 Request: continue without stopping under the dependency-gate policy; PR #38 refactor remains Codex's open merge gate (current head `49eae7f`; install POST segfaults mod_php under the new OPcache fixture flags — diagnosed and reported on the PR; Devin #41 closed as superseded, #42 UTF-8 build fix still open).

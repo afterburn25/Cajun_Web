@@ -1,5 +1,5 @@
 <?php
-/** Unwired private submission storage. These functions do not resolve, decrypt or send. */
+/** Private submission storage. These functions do not resolve, decrypt or send. */
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/mail/drafts.php';

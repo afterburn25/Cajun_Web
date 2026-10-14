@@ -40,7 +40,7 @@ if(($argv[1]??'')==='worker') {
     catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo str_contains($e->getMessage(),'changed')?'stale':'denied';}exit;
 }
 try {
-    foreach(schema_statements('drci_') as $name=>$sql)if(!in_array($name,['mail_drafts','mail_draft_revisions'],true))db()->exec($sql);
+    foreach(schema_statements('drci_') as $name=>$sql)if(!in_array($name,['mail_drafts','mail_draft_revisions'],true)&&!str_starts_with($name,'mail_submission'))db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
     for($i=1;$i<=5;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Draft staff '.$i,'draft'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);

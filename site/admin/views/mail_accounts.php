@@ -3,15 +3,15 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 $page=max(1,min((int)($_GET['p']??1),100000));
 ?>
-<p class="notice">Manage email settings, check saved connections and load recent inbox headers. Open individual messages after message reading is prepared. Attachments and sending remain unavailable.</p>
+<p class="notice">Manage email settings, check saved connections and load recent inbox headers. Open individual messages after message reading is prepared. Send saved plaintext drafts after submission storage is prepared. Attachments remain unavailable.</p>
 <?php if ($view==='mailboxes'):
     $rows=mail_accounts_assigned($page);
 ?>
-<?php if(mail_drafts_admin_access($actor)): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-drafts'))?>">My email drafts</a></p><?php endif; ?>
+<?php if(mail_drafts_admin_access($actor)): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-drafts'))?>">My email drafts</a> <a class="btn outline" href="<?=esc(admin_url('mail-submissions'))?>">My email submissions</a></p><?php endif; ?>
 <?php if(mail_notices_access($actor)): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-notices'))?>">Recent email notices</a></p><?php endif; ?>
-<p>Your owner assigns each email account separately. Read access lets you request recent inbox headers and individual messages. Send assignments also let you prepare private local drafts. Sending is not available yet.</p>
+<p>Your owner assigns each email account separately. Read access lets you request recent inbox headers and individual messages. Send assignments let you prepare private drafts, review saved messages and submit them from that account.</p>
 <div class="workspace-grid"><?php foreach (array_slice($rows,0,20) as $row): ?>
-<article class="workspace-card"><h2><?=esc($row['label'])?></h2><p><?=esc($row['address'])?></p><p>Assigned: <?=esc(implode(' and ',array_keys(array_filter(['Read'=>$row['can_read'],'Send'=>$row['can_send']]))))?></p><?php if($row['can_read']): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-inbox',['account_id'=>$row['id']]))?>">Open inbox</a></p><?php endif; ?><?php if($row['can_send']): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-drafts',['account_id'=>$row['id']]))?>">My drafts</a> <a class="btn outline" href="<?=esc(admin_url('mail-draft',['account_id'=>$row['id']]))?>">New draft</a></p><?php endif; ?><p>Expires: <?=$row['expires_at']===null?'No expiry':esc(gmdate('Y-m-d H:i:s',(int)$row['expires_at']).' UTC')?></p></article>
+<article class="workspace-card"><h2><?=esc($row['label'])?></h2><p><?=esc($row['address'])?></p><p>Assigned: <?=esc(implode(' and ',array_keys(array_filter(['Read'=>$row['can_read'],'Send'=>$row['can_send']]))))?></p><?php if($row['can_read']): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-inbox',['account_id'=>$row['id']]))?>">Open inbox</a></p><?php endif; ?><?php if($row['can_send']): ?><p><a class="btn outline" href="<?=esc(admin_url('mail-drafts',['account_id'=>$row['id']]))?>">My drafts</a> <a class="btn outline" href="<?=esc(admin_url('mail-draft',['account_id'=>$row['id']]))?>">New draft</a> <a class="btn outline" href="<?=esc(admin_url('mail-submissions',['account_id'=>$row['id']]))?>">Submission history</a></p><?php endif; ?><p>Expires: <?=$row['expires_at']===null?'No expiry':esc(gmdate('Y-m-d H:i:s',(int)$row['expires_at']).' UTC')?></p></article>
 <?php endforeach; ?></div>
 <?php if (!$rows): ?><p>No currently available email accounts are assigned to you.</p><?php endif; ?>
 <?php elseif ($view==='mail-accounts'):

@@ -79,6 +79,12 @@ jobs:
           php8.3 tests/mail_drafts_form.php
           cp qa/mail-drafts-form-results.json qa/mail-drafts-form-default-results.json
           php8.3 -n tests/mail_drafts_form.php
+          php8.3 tests/mail_submissions_native.php
+          php8.3 tests/mail_submission_dispatch_native.php
+          php8.3 tests/mail_submission_forms.php
+          cp qa/mail-submission-forms-results.json qa/mail-submission-forms-default-results.json
+          php8.3 -n tests/mail_submission_forms.php
+          .ci-venv/bin/python tests/mail_submission_combined.py
           php8.3 tests/provider_settings_native.php
           php8.3 tests/provider_checks_native.php
       - name: Real HTTP and Chromium application workflows

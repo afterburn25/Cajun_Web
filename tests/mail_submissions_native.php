@@ -46,7 +46,8 @@ if(str_starts_with($argv[1]??'','worker-')) {
     catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
 }
 try {
-    foreach(schema_statements('suci_') as $sql)db()->exec($sql);
+    // Begin before submission setup so additive schema refusal remains exercised.
+    foreach(schema_statements('suci_') as $name=>$sql)if(!str_starts_with($name,'mail_submission'))db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
     for($i=1;$i<=5;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Submission staff '.$i,'submission'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);

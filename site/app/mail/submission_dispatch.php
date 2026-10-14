@@ -1,5 +1,5 @@
 <?php
-/** Server-only coordinator. No route, configuration driver or automatic retry invokes this module. */
+/** Server-only coordinator for one explicit reviewed admin submission; no automatic retry. */
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/mail/submissions.php';
