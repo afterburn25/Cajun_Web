@@ -15,6 +15,18 @@ Devin implemented the safe-work portion of P-02 as an isolated canonical compone
 ## Active integration — A-06 email connection checks
 ## Active candidate — 1.17.0 recent inbox headers
 ## Active candidate — 1.18.0 exact-message reading
+
+
+## Active candidate — 1.19.0 recent email notices
+
+Codex owns `codex/mail-notices` / [draft PR #72](https://github.com/afterburn25/Cajun_Web/pull/72); latest published/download-verified release is 1.18.0. Recent notices, exact-message actions, per-staff state, private counts, owner preparation and admin/public bells are implemented. [Guide](docs/RECENT_EMAIL_NOTICES.md); [contract](docs/MAIL_NOTICES_CONTRACT.md). This is newest20/last-explicit-check metadata, not automatic synchronization or server flag writes.
+
+At179e35b35172ff2ace13e750640cbe08e2ae779b, [native matrix38500685343](https://github.com/afterburn25/Cajun_Web/actions/runs/38500685343) passes79 named checks on each PHP8.2/8.4, downloaded and inspected. Its PR merge98b9f5d731d6329720d0273aea0401de99fc4286 has identical tree38842cfdc504f9d8941e1bbb65de48877ef3d131. [Application run38500685398](https://github.com/afterburn25/Cajun_Web/actions/runs/38500685398) passes1153 native,3084 estimator,20 builder guards and1070 HTTP/browser assertions before a simulated-outage wait fails. Prior ordinary-pageshow cancellations are fixed; actual support isolation, exact TLS message opening, separate staff state, revoked/future/expired grants and320px layout checks pass. The outage fixture installed Playwright's clock after existing page timers, contrary to its documented ordering. Current test-only correction installs the clock before navigation and waits for actual503/200/204 responses. No application behavior or assertion is weakened; full new-source browser/Apache/recovery acceptance remains pending.
+
+Windows clean-source179e35b build succeeds:2500 COMPLETE,4978 FULL,2487 UPDATE members; all three ZIP integrity checks pass and copies are retained. Desktop notice and public mobile screenshots were inspected. Anonymous homepage desktop/mobile pixels equal verified1.18.0. The admin mobile screenshot caught its sidebar transition; current fixture waits until the drawer leaves the viewport and captures the full page. Owner two-bell screenshots remain pending. Reviews through8a955cc have no blockers; lifecycle/support review is requested in #72 comment6159513046. Immutable1.18 inventories support21 starting packages; nonempty notice recovery/reapplication and exact-main/downloaded release gates still must pass. Preserve Devin provider #43 separately (latest inspected688ff55 is documentation-only since reviewedb58366a; canonical component150 checks remains unchanged). No live mailbox, provider write, charge, SSH or deployment.
+
+
+
 ## Latest verified publication — 1.18.0
 
 [v1.18.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.18.0) is published and freshly downloaded/verified at immutable source/tag `91550d956c404585545dbd766c96f36f58ae0623` through [PR #70](https://github.com/afterburn25/Cajun_Web/pull/70). Assigned staff can explicitly open exact INBOX messages with current actor, global/read assignment and saved revision, verified TLS and exact UIDVALIDITY/UID/size checks. Escaped plaintext and maintained sanitized formatting appear in an opaque sandbox with restrictive CSP; server read flags stay unchanged. Whole MIME is limited to 256 KiB including encoded attachments. Strict intent/result audit, request limits and personal outcome history retain no message content. [Owner guide](docs/MAIL_MESSAGE_READER.md).
