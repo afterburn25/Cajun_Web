@@ -31,13 +31,22 @@ jobs:
           persist-credentials: false
       - name: Syntax and reader contract checks using the official PHP image
         run: |
-          docker run --rm --network none -v "$PWD:/workspace:ro" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+          mkdir -p qa
+          docker run --rm --network none -v "$PWD:/workspace:ro" -v "$PWD/qa:/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
             for source in foundation/twentyi-inventory-reader/*.php foundation/provider/*.php tests/twentyi-inventory-reader/*.php; do php -l "$source"; done
-            php tests/twentyi-inventory-reader/run.php
-            php -n tests/twentyi-inventory-reader/run.php
-            php tests/twentyi-inventory/run.php
-            php -n tests/twentyi-inventory/run.php
+            php tests/twentyi-inventory-reader/run.php > /qa/reader-results.json
+            php -n tests/twentyi-inventory-reader/run.php > /qa/reader-results-no-ini.json
+            php tests/twentyi-inventory/run.php > /qa/inventory-results.json
+            php -n tests/twentyi-inventory/run.php > /qa/inventory-results-no-ini.json
           '
+      - name: Preserve named check evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: twentyi-reader-${{ matrix.php }}-${{ github.sha }}
+          path: qa/*.json
+          if-no-files-found: warn
+          retention-days: 14
       - name: Record verification scope
         if: always()
         run: |

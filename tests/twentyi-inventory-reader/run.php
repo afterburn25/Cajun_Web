@@ -208,6 +208,7 @@ ok('partial_skip_classified', (function (): bool {
     return $s->state === InventorySnapshot::PARTIAL && $s->skipped === 1 && count($s->packages) === 1;
 })());
 
-$failed = array_filter($checks, fn($c) => !$c['passed']);
-printf("%d checks, %d failed\n", count($checks), count($failed));
-exit($failed ? 1 : 0);
+$failed = count(array_filter($checks, fn($c) => !$c['passed']));
+echo json_encode(['passed' => $failed === 0, 'scope' => 'Synthetic authenticated-reader checks: scripted transports and fixture bodies derived from public documentation. No live 20i call, real credential, persistence, client linking or deployment exercised.', 'checks' => $checks], JSON_PRETTY_PRINT), "\n";
+fwrite(STDERR, count($checks) . " checks, {$failed} failed\n");
+exit($failed === 0 ? 0 : 1);
