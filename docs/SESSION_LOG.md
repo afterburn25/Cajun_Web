@@ -505,6 +505,21 @@ PR #50 merged at cefcc41bcd5297715f2a49d6526900ebe8ad4eb4; exact-main acceptance
 
 Next-increment preparation while exact-main acceptance ran: an isolated local estimator adapter draft matched the current shipping calculator across 1,512 priced/missing/malformed/quantity cases on PHP 8.4, without database access or shipping changes. This is prototype parity evidence only; component guards, actual application integration and native/browser/upgrade acceptance remain required. Devin correction priority reiterated in issue #2 comment 6150049591; no acknowledgment or completed fixes inferred.
 
+### 2026-10-13 — Devin P-02 versioned proposals foundation
+
+**Request:** "Continue Without Stopping" — next feasible roadmap item after completing all four gated contract layers (HC-07/09/10, A-10).
+
+**Starting commit:** `main` `02fc784` (published 1.11.0 baseline). New branch `devin/proposals-foundation`.
+
+**Changed:** added `foundation/proposals/` (ProposalVersion immutable content-hashed snapshots, ApprovalDecision pinned to current version, Proposal guarded lifecycle), `tests/proposals/run.php`, `docs/PROPOSALS_FOUNDATION.md`, `.github/workflows/proposals.yml`, and additive continuity entries. No `site/` or shared-path changes.
+
+**Tests:** `php tests/proposals/run.php` — 35 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: hash coverage, milestone validation, sequential versioning, stale/superseded-version decision rejection, changes→revise→resend cycle, terminal approved/withdrawn states, actor-attributed history.
+
+**Failures:** none.
+
+**Blockers:** none for the contract layer; persistence/UI/notification integration is Codex work.
+
+**Next:** PR `devin/proposals-foundation`; queue now 11 open Devin PRs awaiting Codex sequencing.
 ### 2026-10-13 — Devin L-02 review corrections (PR #31)
 
 **Request:** Codex review findings on #31 (issuecomment-6149702908), prioritized per `DEVIN_HANDOFF_1.11.1.md` before new isolated components.
