@@ -34,6 +34,48 @@ function nt_audit_failure(callable $fn,string $action):bool {
     db()->exec('CREATE TRIGGER ntci_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='mail_accounts.".$action."' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic notice audit failure'; END IF; END");
     try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER ntci_fail');}return $failed;
 }
+function nt_age():void {
+    foreach(['mail_inbox_reads','mail_message_reads'] as $table)query('UPDATE '.table($table).' SET started_epoch=?',[time()-7200]);
+}
+function nt_resolve(string $host):array {
+    if(db()->inTransaction())throw new LogicException('Notice DNS must be outside a transaction');
+    return ['8.8.8.8'];
+}
+function nt_headers(array $row,#[SensitiveParameter] array $secrets,string $address,callable $authorize):array {
+    if(db()->inTransaction()||$address!=='8.8.8.8'||$secrets['imap_password']!=='synthetic notice private password')throw new LogicException('Notice header boundary');
+    $authorize();return nt_batch(['81','82']);
+}
+$bodyCalls=0;
+function nt_body(array $row,#[SensitiveParameter] array $secrets,string $address,string $epoch,string $uid,callable $authorize):array {
+    global $bodyCalls;$bodyCalls++;
+    if(db()->inTransaction()||$address!=='8.8.8.8'||$secrets['imap_password']!=='synthetic notice private password')throw new LogicException('Notice message boundary');
+    $authorize();$raw="Subject: SYNTHETIC_PRIVATE_SUBJECT\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\nSYNTHETIC_PRIVATE_BODY";
+    return ['folder'=>'INBOX','uidvalidity'=>$epoch,'uid'=>$uid,'seen'=>false,'bytes'=>(string)strlen($raw),'raw'=>$raw];
+}
+function nt_read(array $item,?callable $resolver=null):array {
+    return mail_message_read($item['account_id'],(int)$item['account_revision'],$item['uidvalidity'],$item['uid'],$resolver??'nt_resolve','nt_body',$item['handle']);
+}
+function nt_worker(string $mode,array $item):array {
+    $process=proc_open([PHP_BINARY,__FILE__,$mode,base64_encode(json_encode($item))],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);
+    if(!is_resource($process))throw new RuntimeException('Cannot start notice fixture process');
+    foreach([1,2] as $stream)stream_set_timeout($pipes[$stream],15);
+    return [$process,$pipes];
+}
+function nt_finish(array $worker):string {
+    [$process,$pipes]=$worker;fclose($pipes[0]);$out=stream_get_contents($pipes[1]);$error=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);
+    if(proc_close($process)!==0)throw new RuntimeException('Notice worker failed: '.$error);
+    return $out;
+}
+if(in_array($argv[1]??'',['pause-notice-dns','dismiss-notice-worker'],true)) {
+    nt_actor();$item=json_decode(base64_decode($argv[2]),true,512,JSON_THROW_ON_ERROR);
+    if($argv[1]==='pause-notice-dns') {
+        $result=nt_read($item,function($host){echo "resolving\n";fflush(STDOUT);if(trim(fgets(STDIN))!=='continue')throw new RuntimeException('Notice DNS sync');return nt_resolve($host);});
+        echo $result['code'].':'.$bodyCalls;
+    }else {
+        echo "ready\n";fflush(STDOUT);try{mail_notices_dismiss($item['handle'],$item);echo 'dismissed';}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;echo 'unavailable';}
+    }
+    exit;
+}
 try {
     foreach(schema_statements('ntci_') as $name=>$sql)if(!str_starts_with($name,'mail_notice_'))db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
@@ -85,5 +127,6 @@ try {
     save_setting('mail_notices_schema_version','0');nt_deny('Unknown nonempty storage cannot be silently adopted',fn()=>mail_notices_migrate($password));save_setting('mail_notices_schema_version','1');
     $stored=nt_snapshot();nt_ok('Notice storage retains no message contents or credentials',!str_contains($stored,'PRIVATE_SUBJECT')&&!str_contains($stored,'PRIVATE_SENDER')&&!str_contains($stored,'private password')&&!str_contains($stored,'Synthetic message date'));
     nt_ok('Notice projection returns no ciphertext or message content',!str_contains(json_encode(mail_notices_feed()),'credentials')&&!str_contains(json_encode(mail_notices_feed()),'PRIVATE_'));
+    require __DIR__.'/mail_notices_hook_cases.php';
 }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();$checks[]=['name'=>'Unexpected: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,(string)$e."\n");}
-$pass=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/mail-notices-native-results.json',json_encode(['passed'=>$pass,'scope'=>'Native local notice storage and current permissions; synthetic committed read facts, no HTTP UI or external mailbox acceptance','checks'=>$checks],JSON_PRETTY_PRINT)."\n");echo count($checks).' native email notice checks: '.($pass?'PASS':'FAIL')."\n";exit($pass?0:1);
+$pass=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/mail-notices-native-results.json',json_encode(['passed'=>$pass,'scope'=>'Native local notice storage, current permissions, actual reader hooks with injected DNS/transport, rollback and separate-process races; no HTTP UI or real mailbox acceptance','checks'=>$checks],JSON_PRETTY_PRINT)."\n");echo count($checks).' native email notice checks: '.($pass?'PASS':'FAIL')."\n";exit($pass?0:1);

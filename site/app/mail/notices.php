@@ -9,6 +9,11 @@ require_once CWP_CODE_ROOT.'/database/migrations/mail_notices_migrate.php';
 function mail_notices_ready(): bool {
     return (one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_notices_schema_version'])['value']??'')==='1';
 }
+/** Navigation eligibility only; all data operations recheck the current session and grants. */
+function mail_notices_access(array $actor): bool {
+    $permissions=json_decode($actor['permissions']??'[]',true);
+    return !support_current()&&staff_ready()&&(($actor['role']??'')==='owner'||(is_array($permissions)&&in_array('mail.read',$permissions,true)));
+}
 function mail_notices_actor(bool $ready=true): array {
     $actor=mail_accounts_actor();$permissions=json_decode($actor['permissions'],true);
     // Global eligibility only. The projection and item actions still require exact assignments.
@@ -89,6 +94,14 @@ function mail_notices_passive_count(): int {
     $last=array_intersect_key($_SESSION,array_flip(['last_activity','client_last']));
     try{return mail_notices_count();}
     finally{foreach(['last_activity','client_last'] as $key){if(array_key_exists($key,$last))$_SESSION[$key]=$last[$key];else unset($_SESSION[$key]);}}
+}
+function mail_notices_passive_summary(): array {
+    $last=array_intersect_key($_SESSION,array_flip(['last_activity','client_last']));
+    try {
+        [$sql,$args]=mail_notices_accounts_sql(mail_notices_actor());
+        if(!one('SELECT a.id'.$sql.' LIMIT 1',$args))throw new RuntimeException('No current email notice access.');
+        $count=mail_notices_count();return ['count'=>$count,'capped'=>$count>=100,'url'=>admin_url('mail-notices')];
+    }finally{foreach(['last_activity','client_last'] as $key){if(array_key_exists($key,$last))$_SESSION[$key]=$last[$key];else unset($_SESSION[$key]);}}
 }
 function mail_notices_feed(int $page=1): array {
     [$sql,$args]=mail_notices_projection(mail_notices_actor());$page=max(1,min($page,100000));
