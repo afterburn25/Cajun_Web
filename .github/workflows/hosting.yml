@@ -1,0 +1,55 @@
+name: Hosting lifecycle checks
+
+on:
+  pull_request:
+    paths: ['foundation/hosting/**', 'tests/hosting/**', '.github/workflows/hosting.yml']
+  push:
+    branches: [main, codex/hosting-foundation-integration]
+    paths: ['foundation/hosting/**', 'tests/hosting/**', '.github/workflows/hosting.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hosting-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    name: Hosting checks PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - name: Check out the revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Syntax and hosting checks using the official PHP image
+        run: |
+          mkdir -p qa
+          docker run --rm --network none --user "$(id -u):$(id -g)" -v "$PWD:/workspace" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            for source in foundation/hosting/*.php tests/hosting/*.php; do php -l "$source"; done
+            php tests/hosting/run.php > qa/hosting-supplied-default.txt
+            php -n tests/hosting/run.php > qa/hosting-supplied-no-ini.txt
+            php tests/hosting/review_controls.php > qa/hosting-review-default.json
+            php -n tests/hosting/review_controls.php > qa/hosting-review-no-ini.json
+            php tests/hosting/input_controls.php > qa/hosting-input-default.json
+            php -n tests/hosting/input_controls.php > qa/hosting-input-no-ini.json
+          '
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Isolated hosting-lifecycle contract checks only. No provider calls, credentials, persistence or UI are tested by this job.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve supplied and independent evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hosting-${{ matrix.php }}-${{ github.sha }}
+          path: qa/hosting-*
+          if-no-files-found: error
+          retention-days: 14

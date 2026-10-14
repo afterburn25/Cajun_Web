@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — canonical hosting model integration
+
+- Preserve Devin PR60 hosting model/history on current main: packages, account lifecycle, exact-attempt observations, plan changes and explicit panel grants. No deployment/provider/persistence/UI activation.
+- Correct final-LF SKU acceptance and malformed primary-domain labels before state/history mutation. Local168 supplied +21 retained review +23 input checks pass per default/no-ini mode; expanded PHP8.2/8.4 CI pending.
+
 ## 1.21.0 — verified private local email drafts
 
 - Private author/mailbox drafts with bounded To/Cc/Bcc and plaintext, canonical active-template insertion, escaped preview and retained discard/history. No SMTP sending or server Drafts synchronization.
