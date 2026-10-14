@@ -44,7 +44,7 @@ try {
     nt_actor(2);nt_deny('Mail reader cannot prepare storage',fn()=>mail_notices_migrate($password));nt_actor();
     nt_deny('Count refuses unprepared storage',fn()=>mail_notices_count());
     nt_ok('Strict setup audit rolls back readiness',nt_audit_failure(fn()=>mail_notices_migrate($password),'notice_setup')&&!mail_notices_ready());
-    db()->exec('ALTER TABLE '.table('mail_notice_items').' DROP INDEX message_identity');nt_deny('Migration refuses missing full identity uniqueness',fn()=>mail_notices_migrate($password));db()->exec('ALTER TABLE '.table('mail_notice_items').' ADD UNIQUE message_identity(account_id,account_revision,folder,uidvalidity,uid)');
+    db()->exec('ALTER TABLE '.table('mail_notice_items').' ADD INDEX notice_fixture_account(account_id), DROP INDEX message_identity');nt_deny('Migration refuses missing full identity uniqueness',fn()=>mail_notices_migrate($password));db()->exec('ALTER TABLE '.table('mail_notice_items').' ADD UNIQUE message_identity(account_id,account_revision,folder,uidvalidity,uid), DROP INDEX notice_fixture_account');
     db()->exec('ALTER TABLE '.table('mail_notice_items').' MODIFY uid VARCHAR(10) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL');nt_deny('Migration refuses nonbinary UID collation',fn()=>mail_notices_migrate($password));db()->exec('ALTER TABLE '.table('mail_notice_items').' MODIFY uid VARCHAR(10) CHARACTER SET ascii COLLATE ascii_bin NOT NULL');
     mail_notices_migrate($password);mail_notices_migrate($password);nt_ok('Setup is additive idempotent and empty',mail_notices_ready()&&mail_notices_count()===0&&mail_notices_feed()===[]);
     nt_ok('Never-observed account is distinguished from checked empty',mail_notices_accounts()[0]['checked_at']===null);

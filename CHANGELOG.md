@@ -2,6 +2,7 @@
 
 ## Unreleased — recent email notice storage preparation
 
+- Added a native migration fixture that removes full-tuple uniqueness while preserving the supporting foreign-key index; this tests application refusal rather than InnoDB index protection. Database acceptance remains pending.
 - Added bounded current-window metadata, separate per-person opened/dismissed markers, exact current mailbox permission filtering, collision refusal and independent full-tuple resolution.
 - Added explicit owner migration with column/key/relationship compatibility checks and strict audit; observation helpers require the successful terminal-result transaction. No schema/reader/HTTP integration or bell UI is wired yet.
 - Local PHP syntax passes. Native database fixtures and PHP 8.2/8.4 workflow are added; database and full application acceptance remain pending. Existing 1.18.0 release source is unchanged on main.
