@@ -1,7 +1,8 @@
 <?php
 declare(strict_types=1);
 if(PHP_SAPI!=='cli')exit(2);
-require __DIR__.'/../../foundation/projects/ProjectProgressEvent.php';
+$source=in_array('--deployment',$argv,true)?'site/includes/foundation':'foundation';
+require __DIR__.'/../../'.$source.'/projects/ProjectProgressEvent.php';
 define('CWP_BOOT',true);
 require __DIR__.'/../../site/includes/security/input.php';
 use CajunWebPro\Foundation\Projects\{ProjectSnapshot,ProjectProgressEvent};

@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — native project history
+
+- Add protected owner preparation and current-authorized project history, exact legacy baselines, atomic writes and original request replay. Independently anchor the latest event to detect truncated history even after a project reverts to earlier fields.
+- Verify 109 native and 620 pure local assertions, capacity, concurrency and corruption refusal. Native PHP8.2/8.4 push/PR CI verifies838 executions per matrix; independent review and actual editor/timeline/activity integration remain pending. Existing screens remain unchanged.
+
+## Unreleased — native project history preparation
+
+- Record exact additive event/request persistence and current-authority contract before implementation on a separate preserved branch. No runtime change in this contract commit.
+
 ## Unreleased — project-progress records
 
 - Preserve a separate dated project-history contract, then add strict immutable public snapshots/events, stale-head and history validation, public projection and155 named synthetic checks per mode outside deployment. Preserve exact CRLF/CR descriptions/milestones accepted by the actual existing project form. Native schema/authority/UI/activity remain pending. Current shipping bytes are unchanged; parent ticket browser/package evidence remains scoped.
