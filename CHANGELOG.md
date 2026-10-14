@@ -2,6 +2,8 @@
 
 ## Verification records — 2026-10-14
 
+Final financial forms PR 114 acceptance now verifies 11,326 assertions/all 28 workflows and identical Windows/Linux packages. Notification PR 116 Windows packages verify; its full browser/recovery run remains live. No released application bytes change.
+
 Record financial notification PR 116 focused CI (3,364 verified executions), parent PR 114 browser/Windows evidence and preserved full acceptance runs. Confirm Devin retains all 20i implementation and that its newest docs-only delta does not resolve outstanding behavior findings. Review checkout shipping and test bytes are unchanged.
 
 ## Reconciliation review delivered — 2026-10-14
