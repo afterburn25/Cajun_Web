@@ -16,7 +16,7 @@ use Throwable;
  *   1. capability check — unverified/unsupported operations are refused
  *      before any claim or transport work;
  *   2. canonical fingerprint — sha256 over provider id, account
- *      identity, operation name and recursively-sorted params;
+ *      identity, operation name and type-preserving canonical params (map keys sorted, list order kept, map/list types never merged, graph bounded);
  *   3. atomic claim — the ledger durably reserves the key BEFORE any
  *      remote call. A second caller with the same key can never execute;
  *      it observes REPLAY / IN_PROGRESS / UNCERTAIN / CONFLICT instead;
@@ -35,6 +35,9 @@ use Throwable;
  */
 final class ProviderGateway
 {
+    private const MAX_PARAM_DEPTH = 32;
+    private const MAX_PARAM_NODES = 2048;
+
     public function __construct(
         private ProviderAdapter $adapter,
         private HttpTransport $transport,
@@ -139,39 +142,48 @@ final class ProviderGateway
     }
 
     /**
-     * Canonical binding of a key to one request. Arrays are sorted
-     * recursively by key so logically-equal params hash identically;
-     * anything not JSON-representable is rejected rather than hashed
-     * ambiguously.
+     * Canonical binding of a key to one request. The JSON type of every
+     * node is preserved — a map (even one whose keys become sequential
+     * after sorting) never canonicalizes into a list, and list order is
+     * semantically significant so it is never sorted. Map keys sort
+     * recursively so logically-equal requests hash identically; objects,
+     * resources, non-finite numbers, cycles and oversized graphs are
+     * rejected rather than hashed ambiguously.
      */
     private static function fingerprint(string $providerId, string $accountIdentity, ProviderOperation $operation): string
     {
-        $canonical = self::canonicalize($operation->params);
+        $nodes = 0;
+        $canonical = self::canonicalValue($operation->params, 0, $nodes);
         return hash('sha256', implode("\n", [$providerId, $accountIdentity, $operation->name, $canonical]));
     }
 
-    /**
-     * @param array<string,mixed> $value
-     */
-    private static function canonicalize(array $value): string
+    private static function canonicalValue(mixed $value, int $depth, int &$nodes): string
     {
-        $normalized = self::normalize($value);
-        $json = json_encode($normalized, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_LINE_TERMINATORS);
+        if (++$nodes > self::MAX_PARAM_NODES || $depth > self::MAX_PARAM_DEPTH) {
+            throw new InvalidArgumentException('Operation parameter graph exceeds the supported size and depth.');
+        }
+        if (is_array($value)) {
+            $parts = [];
+            if (array_is_list($value)) {
+                foreach ($value as $item) {
+                    $parts[] = self::canonicalValue($item, $depth + 1, $nodes);
+                }
+                return '[' . implode(',', $parts) . ']';
+            }
+            ksort($value, SORT_STRING);
+            foreach ($value as $key => $item) {
+                $encodedKey = json_encode((string) $key);
+                $parts[] = $encodedKey . ':' . self::canonicalValue($item, $depth + 1, $nodes);
+            }
+            return '{' . implode(',', $parts) . '}';
+        }
+        if (is_object($value) || is_resource($value)) {
+            throw new InvalidArgumentException('Operation parameters must be JSON scalars, lists or maps.');
+        }
+        $json = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_LINE_TERMINATORS);
         if ($json === false) {
             throw new InvalidArgumentException('Operation parameters must be JSON-representable.');
         }
         return $json;
-    }
-
-    private static function normalize(mixed $value): mixed
-    {
-        if (!is_array($value)) {
-            return $value;
-        }
-        // Sequential arrays keep order; associative arrays sort by key.
-        if ($value !== [] && array_keys($value) !== range(0, count($value) - 1)) {
-            ksort($value);
-        }
-        return array_map(self::normalize(...), $value);
     }
 }

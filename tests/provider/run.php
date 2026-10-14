@@ -334,6 +334,61 @@ check($r1->status === OperationResult::SUCCEEDED, 'ordered-params request execut
 check($r2->replayed, 'canonicalized params replay regardless of key order');
 check(count($transport->requests) === 2, 'reordered identical request performs no extra call');
 
+// --- Regression: canonicalization preserves map/list JSON type -------
+// The reviewed defect: sorting numeric keys turned the map
+// {"1":"B","0":"A"} into sequential keys, so it fingerprinted
+// identically to the list ["A","B"] and replayed a different request's
+// result. Map shape must be preserved.
+$transport->script = [new TransportResponse(200, [], '{"id":"pkg_map"}')];
+$before = count($transport->requests);
+$r1 = $gateway->perform(credential(), new ProviderOperation('hosting.create', 'shape-key', ['payload' => [1 => 'B', 0 => 'A']]));
+check($r1->status === OperationResult::SUCCEEDED && $r1->externalId === 'pkg_map', 'numeric-key map request executes');
+$r2 = $gateway->perform(credential(), new ProviderOperation('hosting.create', 'shape-key', ['payload' => ['A', 'B']]));
+check($r2->status === OperationResult::CONFLICT, 'JSON list with same values is a different request, not a replay');
+check(count($transport->requests) === $before + 1, 'map/list distinction performs no second transport call');
+
+// The same map in a different key order is the SAME request.
+$transport->script = [new TransportResponse(200, [], '{"id":"pkg_map2"}')];
+$before = count($transport->requests);
+$r1 = $gateway->perform(credential(), new ProviderOperation('hosting.create', 'shape-map', ['payload' => [2 => 'c', 1 => 'b']]));
+$r2 = $gateway->perform(credential(), new ProviderOperation('hosting.create', 'shape-map', ['payload' => [1 => 'b', 2 => 'c']]));
+check($r1->status === OperationResult::SUCCEEDED, 'first numeric-map request executes');
+check($r2->replayed && $r2->externalId === 'pkg_map2', 'reordered numeric-key map replays as the same request');
+check(count($transport->requests) === $before + 1, 'reordered map performs no extra transport call');
+
+// List order is semantically significant — it is never sorted away.
+$transport->script = [new TransportResponse(200, [], '{"id":"pkg_l1"}'), new TransportResponse(200, [], '{"id":"pkg_l2"}')];
+$before = count($transport->requests);
+$r1 = $gateway->perform(credential(), new ProviderOperation('hosting.create', 'shape-list', ['payload' => ['A', 'B']]));
+check($r1->status === OperationResult::SUCCEEDED, 'ordered list request executes');
+$r2 = $gateway->perform(credential(), new ProviderOperation('hosting.create', 'shape-list', ['payload' => ['B', 'A']]));
+check($r2->status === OperationResult::CONFLICT, 'reordered list is a different request, not a replay');
+check(count($transport->requests) === $before + 1, 'list-order distinction performs no second transport call');
+
+// Nested shape: a map inside a list inside a map keeps every level's type.
+$transport->script = [new TransportResponse(200, [], '{"id":"pkg_n1"}')];
+$before = count($transport->requests);
+$nested = ['outer' => ['list' => [['k' => 1, 'j' => 2], 'x'], 'map' => [1 => 'z']]];
+$nestedReordered = ['outer' => ['map' => [1 => 'z'], 'list' => [['j' => 2, 'k' => 1], 'x']]];
+$nestedList = ['outer' => ['list' => [['k' => 1, 'j' => 2], 'x'], 'map' => ['z']]];
+$r1 = $gateway->perform(credential(), new ProviderOperation('hosting.create', 'shape-nested', $nested));
+check($r1->status === OperationResult::SUCCEEDED, 'nested map/list request executes');
+$r2 = $gateway->perform(credential(), new ProviderOperation('hosting.create', 'shape-nested', $nestedReordered));
+check($r2->replayed && $r2->externalId === 'pkg_n1', 'nested reordered maps replay as the same request');
+$r3 = $gateway->perform(credential(), new ProviderOperation('hosting.create', 'shape-nested', $nestedList));
+check($r3->status === OperationResult::CONFLICT, 'nested map-to-list change conflicts');
+check(count($transport->requests) === $before + 1, 'nested checks performed exactly one transport call');
+
+// Unsupported values cannot be smuggled into a fingerprint — the graph
+// is restricted to JSON scalars, lists and maps, bounded in size/depth.
+expectThrows(fn () => $gateway->perform(credential(), new ProviderOperation('hosting.create', 'shape-obj', ['o' => new stdClass()])), 'object param rejected before claim');
+$deep = 'x'; for ($i = 0; $i < 40; $i++) { $deep = [$deep]; }
+expectThrows(fn () => $gateway->perform(credential(), new ProviderOperation('hosting.create', 'shape-deep', ['d' => $deep])), 'over-deep param graph rejected');
+expectThrows(fn () => $gateway->perform(credential(), new ProviderOperation('hosting.create', 'shape-nan', ['n' => NAN])), 'non-finite param rejected');
+$wide = []; for ($i = 0; $i < 2100; $i++) { $wide['k' . $i] = $i; }
+expectThrows(fn () => $gateway->perform(credential(), new ProviderOperation('hosting.create', 'shape-wide', ['w' => $wide])), 'oversized param graph rejected');
+check(!isset($ledger->results['shape-obj']) && !isset($ledger->results['shape-deep']) && !isset($ledger->results['shape-nan']) && !isset($ledger->results['shape-wide']), 'rejected param graphs left no ledger state');
+
 // --- Gateway: retry classification -------------------------------------------
 // Idempotent (read-only) operations retry within the bounded policy.
 $transport->script = [
@@ -342,14 +397,14 @@ $transport->script = [
 ];
 $r = $gateway->perform(credential(), new ProviderOperation('packages.list', 'idem-2'));
 check($r->status === OperationResult::SUCCEEDED && $r->attempts === 2, 'idempotent retryable response retried to success');
-check(count($transport->requests) === 4, 'retry consumed two transport calls');
+check(count($transport->requests) === 8, 'retry consumed two transport calls');
 
 $transport->script = [new TransportResponse(503, [], ''), new TransportResponse(503, [], '')];
 $r = $gateway->perform(credential(), new ProviderOperation('packages.list', 'idem-3'));
 check($r->status === OperationResult::RETRYABLE && $r->attempts === 3, 'exhausted idempotent retries recorded as retryable');
 check($ledger->results['idem-3']->status === OperationResult::RETRYABLE, 'exhausted result recorded for later replay');
 $r = $gateway->perform(credential(), new ProviderOperation('packages.list', 'idem-3'));
-check($r->replayed && count($transport->requests) === 7, 'exhausted operation replays without re-executing');
+check($r->replayed && count($transport->requests) === 11, 'exhausted operation replays without re-executing');
 
 $transport->script = [new TransportException(TransportException::KIND_CONNECT)];
 $r = $gateway->perform(credential(), new ProviderOperation('packages.list', 'idem-4'));
