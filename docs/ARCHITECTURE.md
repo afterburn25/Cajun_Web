@@ -331,3 +331,7 @@ Candidate1.21.0 uses the verified1.20.0 baseline with existing encrypted provide
 ## Prepared service-plan storage
 
 Private `site/app/plans/` contains bounded canonical terms/agreement documents and current-authorized transactional operations. The paired schema and migration live under `site/database/`; no router or automatic schema activation is added. [Storage, ownership and acceptance contract](SERVICE_PLAN_RECORDS.md).
+
+## Support-ticket conversation preparation
+
+`site/app/support/ticket_documents.php` privately wraps the byte-preserved desk models in canonical bounded records. It emits public-only client events and reconstructs fresh mutable models for staff/native use. The builder verifies canonical/deployed desk equality. No bootstrap/router call site loads this helper yet. Native tables, current authority, client/staff screens and activity wiring remain pending under [the support-ticket contract](SUPPORT_TICKETS_CONTRACT.md); provider executors and20i controls remain Devin-owned.

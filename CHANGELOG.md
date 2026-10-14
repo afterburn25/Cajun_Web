@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — support-ticket conversation preparation
+
+Preserve reviewed desk models in private application includes; add immutable ticket documents with separate public event sequencing, staff-only notes and closure reserves. Add canonical/deployed/document validation and future Apache private-path coverage. No ticket route, database storage or UI is activated; no new version or release is published.
+
 ## Unreleased — 1.24 recovery acceptance fixture
 
 Preserve the updater authentication limit while isolating its synthetic recovery-test windows. Add an HTTP rejection assertion proving an exhausted limit leaves the update journal and business/private records unchanged. The previous candidate run failed at its eleventh authentication; fresh combined acceptance and independent review remain required. No shipping behavior or published archive changes.
