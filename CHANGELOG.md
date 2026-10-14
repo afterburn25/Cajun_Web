@@ -2,6 +2,8 @@
 
 ## 1.19.0 candidate — recent email notices (unreleased)
 
+Keep the initial count request alive on ordinary page display while retaining BFCache/lifecycle invalidation. Suppress email notices during client support, including actual shared portal headers. Add actual-support and delayed-count browser regressions; preserve strict null-status network-failure assertions. Full native1153 and estimator3084 checks pass at8a955cc; browser/visual and new-source acceptance remain pending.
+
 Both supported PHP versions pass 79 notice integration checks at the 92b3863 tree. Correct pre-account/pre-inbox test schemas to omit dependent notice tables; read immutable Git blobs without Windows pathname ambiguity; add a long-path builder guard and explicit owner two-bell narrow-screen coverage. Twenty local builder checks pass. Full current application/visual/recovery/package acceptance remains pending.
 
 Correct the native fixture to load its notice module once after fresh schema integration; this fixes a test bootstrap fatal without changing application behavior. Integrated runtime acceptance is still pending.

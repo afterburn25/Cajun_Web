@@ -3,7 +3,7 @@ import json,time
 from urllib.parse import urljoin
 import requests
 from playwright.sync_api import expect
-from release_cases import db
+from release_cases import db,chosen_form
 from staff_cases import OWNER,STAFF
 
 def run_browser(env,browser):
@@ -41,6 +41,14 @@ def run_browser(env,browser):
     anonymous=requests.get(endpoint);check('Anonymous private count has no payload',anonymous.status_code==204 and not anonymous.content and 'no-store' in anonymous.headers.get('Cache-Control',''))
     check('Private count endpoint rejects mutations',owner.post(endpoint).status_code==405 and owner.post(endpoint).headers.get('Allow')=='GET')
     check('Support query cannot display notice metadata',owner.get(endpoint+'?support=synthetic').status_code==204 and owner.get(center+'&support=synthetic').status_code==403)
+    chosen_form(owner,root+'?view=support','support_policy','client_id',1,{'allowed':'1','owner_password':OWNER})
+    supported=chosen_form(owner,root+'?view=support','support_start','client_id',1,{})
+    check('Actual client support page contains no email notice mount','support=' in supported.url and not soup(supported).select('[data-mail-notice-bell]'))
+    support_context=browser.new_context();support_context.add_cookies([{'name':c.name,'value':c.value,'url':BASE+'/existing/'} for c in owner.cookies]);support_page=support_context.new_page();support_requests=[]
+    support_page.on('request',lambda request:support_requests.append(request.url) if '/api/mail-notices.php' in request.url else None)
+    support_page.goto(supported.url,wait_until='networkidle');support_page.bring_to_front()
+    check('Actual support browser displays no mail bell and performs no count fetch',support_page.locator('[data-mail-notice-bell],.mail-notice-bell').count()==0 and not support_requests)
+    support_context.close();submit(owner,supported.url,'support_end')
     client=requests.Session();submit(client,BASE+'/existing/portal/index.php','login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
     check('Client login does not expose staff email count',client.get(endpoint).status_code==204)
     member_id=db("SELECT id FROM ci_users WHERE email='request-staff@example.invalid'")[0]['id'];original=db('SELECT permissions FROM ci_staff_profiles WHERE user_id=?',[member_id])[0]['permissions']
@@ -99,6 +107,11 @@ def run_browser(env,browser):
     check('Owner email and workspace bells coexist at 320px',page.locator('.mail-notice-bell').count()==1 and page.locator('.activity-bell').count()==1 and page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'))
     check('Owner bells keep separate authorized destinations',page.locator('.mail-notice-bell').get_attribute('href')==center and page.locator('.activity-bell').get_attribute('href')==root+'?view=activity')
     context.close()
+    delayed=browser.new_context();delayed.add_cookies([{'name':c.name,'value':c.value,'url':BASE+'/existing/'} for c in owner.cookies]);pending=[];p=delayed.new_page()
+    p.route('**/api/mail-notices.php',lambda route:pending.append(route));p.goto(center);p.bring_to_front();p.wait_for_timeout(150)
+    check('Ordinary page show keeps a single pending count request',len(pending)==1)
+    pending[0].fulfill(status=200,content_type='application/json',body=json.dumps({'count':1,'capped':False,'url':center}));expect(p.locator('.mail-notice-bell')).to_have_text('🔔 Mail 1')
+    check('Pending initial count is accepted without a page-show abort',True);delayed.close()
     context=browser.new_context(viewport={'width':320,'height':800});page=context.new_page();page.goto(home);page.bring_to_front();page.wait_for_load_state('networkidle')
     check('Anonymous browser shows no mail bell',page.locator('.mail-notice-bell').count()==0 and page.locator('[data-mail-notice-bell]').is_hidden());context.close()
     for path in ['app/mail/notices.php','admin/controllers/mail_notices.php','admin/views/mail_notices.php','database/schema/mail_notices_schema.php','database/migrations/mail_notices_migrate.php','api/handlers/mail_notices.php']:

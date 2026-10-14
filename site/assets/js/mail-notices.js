@@ -8,6 +8,7 @@ document.querySelectorAll('[data-mail-notice-bell]').forEach((host) => {
     host.closest('.nav-inner')?.classList.remove('has-mail-notices');
   };
   const refresh = async () => {
+    if (new URL(location.href).searchParams.has('support')) { clear(); return; }
     if (document.hidden || !document.hasFocus() || pending || Date.now() - last < 60000) return;
     pending = true; last = Date.now();
     const controller = new AbortController(), current = generation, timer = setTimeout(() => controller.abort(), 8000);
@@ -20,7 +21,7 @@ document.querySelectorAll('[data-mail-notice-bell]').forEach((host) => {
       if (!response.ok) throw new Error('Unavailable');
       const data = await response.json(), url = new URL(data.url, location.href);
       if (url.origin !== location.origin || url.username || url.password || !Number.isInteger(data.count) || data.count < 0 || data.count > 100) throw new Error('Invalid notices');
-      if (current !== generation || document.hidden || !document.hasFocus()) { clear(); return; }
+      if (current !== generation || document.hidden || !document.hasFocus() || new URL(location.href).searchParams.has('support')) { clear(); return; }
       const link = document.createElement('a'), count = data.count >= 100 ? '99+' : String(data.count);
       link.className = 'mail-notice-bell'; link.href = url.href; link.textContent = '🔔 Mail ' + count;
       link.setAttribute('aria-label', 'Email notices: ' + count + ' recent notices. Open your email notices.');
@@ -38,7 +39,10 @@ document.querySelectorAll('[data-mail-notice-bell]').forEach((host) => {
   // Returning from the browser's back/forward cache must not restore an old private badge.
   window.addEventListener('pagehide', invalidate);
   window.addEventListener('blur', invalidate);
-  window.addEventListener('pageshow', () => { invalidate(); last = -Infinity; refresh(); });
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) { invalidate(); last = -Infinity; }
+    refresh();
+  });
   window.addEventListener('focus', () => { invalidate(); last = -Infinity; refresh(); });
   document.addEventListener('visibilitychange', () => { invalidate(); if (!document.hidden) { last = -Infinity; refresh(); } });
   setInterval(refresh, 60000); refresh();

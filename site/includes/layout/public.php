@@ -60,7 +60,7 @@ function site_head(string $title, string $active='home', string $description='')
             <a class="<?=$selected?'active':''?>" href="<?=esc(page_url($key))?>" <?=$selected?'aria-current="page"':''?>><?=$label?></a>
         <?php endforeach; ?>
         </nav>
-        <span hidden data-mail-notice-bell data-mail-notice-endpoint="<?=esc(site_url('api/mail-notices.php'))?>"></span>
+        <?php if(!array_key_exists('support',$_GET)&&(!function_exists('support_current')||!support_current())): ?><span hidden data-mail-notice-bell data-mail-notice-endpoint="<?=esc(site_url('api/mail-notices.php'))?>"></span><?php endif; ?>
         <a class="btn outline nav-cta" href="<?=esc(page_url('contact'))?>">Start a Project <?=icon('arrow')?></a>
     </div>
 </header><nav class="growth-subnav" aria-label="Explore our services"><a href="<?=esc(page_url('why-custom'))?>">Why custom</a><a href="<?=esc(page_url('compare-wix'))?>">Wix comparison</a><a href="<?=esc(page_url('compare-squarespace'))?>">Squarespace comparison</a><a href="<?=esc(page_url('packages'))?>">Packages</a><a href="<?=esc(page_url('faq'))?>">Questions</a><a href="<?=esc(page_url('estimate'))?>">Plan a project</a><a href="<?=esc(page_url('consultation'))?>">Consultation</a><a href="<?=esc(site_url('portal/index.php'))?>">Client workspace</a></nav>

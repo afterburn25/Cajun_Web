@@ -10,7 +10,7 @@ Open **My email accounts**, select an assigned inbox, and explicitly load recent
 
 ## Use the bell
 
-The admin and public website headers show an email bell for currently authorized staff. The count describes messages in the last checked windows that were observed unread and have not been opened or dismissed by that person. It stops displaying an exact number above 99. This is not the live count of all unread mail.
+The admin and public website headers show an email bell for currently authorized staff. Client-support pages suppress it; return to your administrator view to use staff email. The count describes messages in the last checked windows that were observed unread and have not been opened or dismissed by that person. It stops displaying an exact number above 99. This is not the live count of all unread mail.
 
 Opening the bell displays your recent notices. **Open message** explicitly requests that exact message through the existing reader. **Dismiss for me** removes it from your count. These actions do not set the mailbox's Seen flag or change another person's local opened/dismissed state. Actual server flags returned by later explicit reads can update the shared observation.
 
