@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — structured project planning contract
+
+- Record the scope/contact/date/client-action/blocker and structured milestone boundary before implementation. No runtime change in this contract commit.
+
 ## Unreleased — project history screens and activity
 
 - Connect explicit owner preparation and existing project create/edit forms to atomic dated history, original retries and retained escaped stale drafts.

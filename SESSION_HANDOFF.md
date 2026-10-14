@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Current work — structured project planning
+
+Codex starts `codex/project-planning` from preserved PR108/`7e1665f`. The [planning contract](docs/PROJECT_PLANNING_CONTRACT.md) precedes dependent code: scope/contact/target date, client actions/blockers and structured milestones with explicit states, responsible party, dates and dependencies. Pure records come first; native storage and the existing project dashboard follow. Full P-05/P-07 remains active, and no planning functionality is claimed yet.
+
+PR108 stays unchanged while full application38628432378 and exact Windows build finish; its pure/native matrices verify848/898 executions each. Devin retains complete20i; the independent PR107 review6177258236 requests202 outcome and node-bound corrections on his branch. Published1.23 and earlier candidates remain preserved.
+
 ## Project history screens — local acceptance verified, unreleased
 
 `codex/project-progress-screens` preserves PR106/`c41cc6d`; contract `19191b4` precedes implementation. The existing project editor and client portal now show dated history with honest initial snapshots, retained stale drafts, original-request replay and exact personal activity links. Owner setup remains explicit. [Usage and detailed evidence](docs/PROJECT_HISTORY.md); [contract](docs/PROJECT_PROGRESS_CONTRACT.md#existing-editor-timeline-and-activity-integration-contract).
