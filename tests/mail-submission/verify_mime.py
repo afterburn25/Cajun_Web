@@ -22,7 +22,7 @@ for fixture in data['messages']:
     check(name+' base64 body preserves every decoded byte',message.get_payload(decode=True)==s['body'].replace('\n','\r\n').encode('utf-8'))
     check(name+' wire lines fit SMTP bounds',max(map(len,raw.split(b'\r\n')))<=998 and len(raw)<=65536)
     check(name+' header fields have no parser defects',all(not getattr(value,'defects',()) for _,value in message.items()))
-assert len(data['messages'])==12
+assert len(data['messages'])==14
 result={'passed':True,'scope':'Independent standard-library MIME parse of synthetic maintained-library output only','checks':checks}
 if len(sys.argv)>2:Path(sys.argv[2]).write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8',newline='\n')
 print('PASS:',len(checks),'independent MIME decoding/header/privacy checks')

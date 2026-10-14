@@ -33,9 +33,11 @@ final class OfflineMailer extends PHPMailer
     public function literalSubject(string $text):string
     {
         if($text==='')return '';
-        $wrapped=rtrim($this->wrapText($this->encodeQ($text,'text'),63,true),"\r\n");
+        // Leave room for "Subject: " on the first physical header line. Some
+        // older parsers retain a leading fold as an extra subject space.
+        $wrapped=rtrim($this->wrapText($this->encodeQ($text,'text'),54,true),"\r\n");
         $parts=explode("=\r\n",$wrapped);
-        foreach($parts as $part)if(strlen($part)>63)throw new PreparationFailure('encoding_failed');
+        foreach($parts as $part)if(strlen($part)>54)throw new PreparationFailure('encoding_failed');
         return implode(' ',array_map(fn(string $part):string=>'=?UTF-8?Q?'.$part.'?=',$parts));
     }
 

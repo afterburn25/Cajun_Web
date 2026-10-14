@@ -1,5 +1,7 @@
 # Immutable email and maintained MIME preparation
 
+MIME matrix38526761646 atf7a3437 failed independent parsing of a long Unicode subject, despite both PHP runtimes producing byte-identical output to Windows. Python3.10.6 reproduced an extra leading space when folding moved the first encoded word off the Subject line; Python3.12.10/3.14 did not. The adapter now leaves room for the first encoded word after Subject on the first physical line. Added maximum-length emoji and combining-character cases:29 local MIME and168 independent parser checks over14 fixtures pass under PHP default/no-ini, with Python3.10/3.12/3.14 verification. The original parser assertion is unchanged. Replacement expanded matrix is pending; prior snapshot52 matrix remains separately verified.
+
 Isolated development on `codex/mail-submission`, based on draft candidate231d1f7. Nothing in this component sends mail, authenticates a user, reads credentials or writes a database. It is not mirrored into `site/`, has no route or Send control and does not reserve an application version. Follow the [full submission contract](MAIL_SUBMISSION_CONTRACT.md) before application integration.
 
 ## Components

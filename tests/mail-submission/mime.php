@@ -7,7 +7,7 @@ $checks=[];$messages=[];$complete=false;
 function check(string $name,bool $passed):void{global $checks;$checks[]=['name'=>$name,'passed'=>$passed];if(!$passed)throw new RuntimeException($name);}
 function snapshot(DraftContent $content):SubmissionSnapshot{return new SubmissionSnapshot(str_repeat('1',32),7,str_repeat('2',32),3,str_repeat('a',32),4,"Studio+o'neil@example.invalid",$content,1791964800);}
 try {
-    $subjects=['Simple subject',' Leading and trailing spaces ','=?UTF-8?B?Tm90IGV2YWx1YXRlZA==?=','Résumé — project','',str_repeat('é',100),str_repeat('x',200),'Question? Equals= underscore_'];
+    $subjects=['Simple subject',' Leading and trailing spaces ','=?UTF-8?B?Tm90IGV2YWx1YXRlZA==?=','Résumé — project','',str_repeat('é',100),str_repeat('x',200),'Question? Equals= underscore_',str_repeat('🚀',50),str_repeat("e\u{0301}",66)];
     foreach($subjects as $i=>$subject){
         $draft=new DraftContent(['Client+work@example.invalid'],['copy@example.invalid'],['private-envelope@example.invalid'],$subject,".first\n..second\n\nRésumé\tliteral </textarea><script>no()</script>\n");$snap=snapshot($draft);$a=PreparedMime::fromSnapshot($snap);$b=PreparedMime::fromSnapshot($snap);
         check('MIME bytes are repeatable for subject case '.$i,$a->bytes===$b->bytes&&$a->sha256===hash('sha256',$a->bytes));
