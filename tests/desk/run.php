@@ -197,12 +197,23 @@ throws('resolution needs evidence', fn () => $jr->resolveStalled($tokR, 'not_exe
 throws('resolution needs known outcome', fn () => $jr->resolveStalled($tokR, 'maybe', 'e', 'staff-amy', 111));
 check('still stalled after refused evidence', $jr->status() === 'stalled' && $jr->resolution($tokR) === null);
 $jr->resolveStalled($tokR, 'unknown', 'provider unreachable', 'staff-amy', 112);
-check('unknown resolution recorded', $jr->resolution($tokR)['outcome'] === 'unknown');
-throws('unknown resolution keeps retry blocked', fn () => $jr->requeue('staff-amy', 113));
-check('unknown resolution stays stalled', $jr->status() === 'stalled');
+check('unknown observation recorded', $jr->observations($tokR) === [['evidence' => 'provider unreachable', 'actor' => 'staff-amy', 'at' => 112]]);
+throws('unknown keeps retry blocked', fn () => $jr->requeue('staff-amy', 113));
+check('unknown stays stalled', $jr->status() === 'stalled');
 $jr->resolveStalled($tokR, 'unknown', 'provider unreachable', 'staff-amy', 114);
-check('identical resolution replays quietly', $jr->status() === 'stalled');
-throws('conflicting resolution refused', fn () => $jr->resolveStalled($tokR, 'completed', 'different', 'staff-amy', 115));
+check('identical unknown replays without duplicating', count($jr->observations($tokR)) === 1);
+$jr->resolveStalled($tokR, 'unknown', 'second probe still unclear', 'staff-ben', 115);
+check('distinct unknown observations retained', count($jr->observations($tokR)) === 2);
+check('no conclusive resolution yet', $jr->resolution($tokR) === null);
+// A later conclusive verdict for the same stalled token completes the
+// stall; the unknown evidence stays recorded and never released retry.
+$jr->resolveStalled($tokR, 'completed', 'provider log confirms request pr-9', 'staff-amy', 120);
+check('unknown can conclude completed', $jr->status() === 'succeeded' && $jr->resolution($tokR)['outcome'] === 'completed');
+check('unknown observations retained after completion', count($jr->observations($tokR)) === 2);
+$histBefore = $jr->history();
+$jr->resolveStalled($tokR, 'completed', 'provider log confirms request pr-9', 'staff-amy', 125);
+check('completed verdict replays after success', $jr->status() === 'succeeded' && $jr->history() === $histBefore);
+throws('conflicting conclusive refused after completion', fn () => $jr->resolveStalled($tokR, 'not_executed', 'different evidence', 'staff-amy', 126));
 
 // Verified not_executed releases a separately fenced retry — the only
 // path back to queued.
@@ -227,6 +238,18 @@ check('completed resolution settles job', $jr3->status() === 'succeeded');
 throws('completed job cannot requeue', fn () => $jr3->requeue('staff-amy', 121));
 throws('completed job cannot rerun', fn () => $jr3->run('workerB', 122, 60));
 
+// Unknown is recoverable the other way too: a later verified
+// not_executed for the same stalled token releases the fenced retry.
+$jrU = job('provision');
+$tokU = $jrU->run('workerA', 100, 10);
+$jrU->expireLease(110);
+$jrU->resolveStalled($tokU, 'unknown', 'provider timeout', 'staff-amy', 112);
+throws('still no requeue while unknown', fn () => $jrU->requeue('staff-amy', 113));
+$jrU->resolveStalled($tokU, 'not_executed', 'provider confirms no such request', 'staff-ben', 120);
+check('unknown can conclude not_executed', $jrU->resolution($tokU)['outcome'] === 'not_executed' && count($jrU->observations($tokU)) === 1);
+$jrU->requeue('staff-amy', 125);
+check('retry released after conclusive resolution', $jrU->status() === 'queued');
+
 // The second stall needs its own evidence — the first attempt's
 // resolution never releases a later stalled attempt.
 $jr4 = job('provision');
@@ -241,6 +264,14 @@ throws('prior token cannot resolve new stall', fn () => $jr4->resolveStalled($to
 $jr4->resolveStalled($tokS2, 'not_executed', 'verified for attempt 2', 'staff-amy', 32);
 $jr4->requeue('staff-amy', 33);
 check('new evidence releases new stall', $jr4->status() === 'queued');
+// Identical not_executed replay after requeue+reclaim is a no-op and
+// does not touch the newer running attempt.
+$tokS3 = $jr4->run('workerC', 40, 60);
+check('third claim mints its own token', $tokS3 === 'provision-1#3');
+$hist4 = $jr4->history();
+$jr4->resolveStalled($tokS2, 'not_executed', 'verified for attempt 2', 'staff-amy', 45);
+check('retained not_executed replays after reclaim', $jr4->status() === 'running' && $jr4->attemptToken() === $tokS3 && $jr4->history() === $hist4);
+throws('changed-evidence replay on old token refused', fn () => $jr4->resolveStalled($tokS2, 'not_executed', 'different', 'staff-amy', 46));
 
 // Approval expiry is rechecked at the replacement claim: a verified
 // retry still cannot run under an approval that lapsed while stalled.

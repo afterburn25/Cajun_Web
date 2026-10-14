@@ -64,8 +64,10 @@ final class FulfillmentJob
     private ?int $leaseUntil = null;
     private ?int $nextAttemptAt = null;
     private ?string $lastError = null;
-    /** @var array<string,array{outcome:string,evidence:string,actor:string,at:int}> */
+    /** @var array<string,array{outcome:string,evidence:string,actor:string,at:int}> conclusive resolutions, keyed by attempt token */
     private array $resolutions = [];
+    /** @var array<string,list<array{evidence:string,actor:string,at:int}>> inconclusive observations, append-only per token */
+    private array $observations = [];
     /** @var list<array{status:string,at:int,actor:string,note:string}> */
     private array $history = [];
 
@@ -128,10 +130,16 @@ final class FulfillmentJob
         return $this->stalledToken;
     }
 
-    /** The recorded verified resolution for an attempt token, or null. */
+    /** The recorded conclusive resolution for an attempt token, or null. */
     public function resolution(string $token): ?array
     {
         return $this->resolutions[$token] ?? null;
+    }
+
+    /** All inconclusive observations recorded for an attempt token. */
+    public function observations(string $token): array
+    {
+        return $this->observations[$token] ?? [];
     }
 
     public function lastError(): ?string
@@ -241,6 +249,17 @@ final class FulfillmentJob
      */
     public function resolveStalled(string $token, string $outcome, string $evidence, string $actor, int $at): void
     {
+        // Idempotent replay first: an identical repeat of the recorded
+        // conclusive resolution returns quietly even after the job has
+        // left `stalled` (e.g. a completed verdict already settled it or
+        // a not_executed verdict was consumed by requeue).
+        $recorded = $this->resolutions[$token] ?? null;
+        if ($recorded !== null) {
+            if ($recorded['outcome'] === $outcome && $recorded['evidence'] === $evidence) {
+                return;
+            }
+            throw new LogicException('A conflicting resolution for this attempt is already recorded.');
+        }
         $this->requireStatus(self::STALLED);
         if ($token === '' || $token !== $this->stalledToken) {
             throw new LogicException('Resolution must name the exact token of the stalled attempt.');
@@ -251,12 +270,18 @@ final class FulfillmentJob
         if (trim($evidence) === '') {
             throw new InvalidArgumentException('A verified resolution requires evidence.');
         }
-        $recorded = $this->resolutions[$token] ?? null;
-        if ($recorded !== null) {
-            if ($recorded['outcome'] === $outcome && $recorded['evidence'] === $evidence) {
-                return;
+        if ($outcome === self::RESOLUTION_UNKNOWN) {
+            // An inconclusive observation is retained but never final:
+            // a later conclusive, attempt-bound resolution may still
+            // complete the stall — the unknown evidence stays recorded.
+            foreach ($this->observations[$token] ?? [] as $obs) {
+                if ($obs['evidence'] === $evidence && $obs['actor'] === $actor) {
+                    return;
+                }
             }
-            throw new LogicException('A conflicting resolution for this attempt is already recorded.');
+            $this->observations[$token][] = ['evidence' => $evidence, 'actor' => $actor, 'at' => $at];
+            $this->move(self::STALLED, $actor, $at, 'stalled attempt ' . $token . ' observed unknown');
+            return;
         }
         $this->resolutions[$token] = ['outcome' => $outcome, 'evidence' => $evidence, 'actor' => $actor, 'at' => $at];
         if ($outcome === self::RESOLUTION_COMPLETED) {
