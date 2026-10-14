@@ -1,5 +1,15 @@
 # Admin webmail, staff access, templates and email notifications
 
+## Current SMTP increment — maintained session, synthetic evidence
+
+Starting0ddbb80, added isolated `SubmissionTransport`/`SmtpSession` and finite attempt-bound outcomes. PHPMailer low-level commands provide EHLO/auth/envelope/DATA; every recipient must succeed before DATA. Mandatory TLS assertions, explicit PLAIN/LOGIN, current-authority callback boundaries, bounded strict replies, exact prepared DATA and conservative terminator/final-reply handling prevent silent partial submission and automatic retry. Original vendor bytes remain unchanged.
+
+All80 named synthetic transcript checks pass under local PHP8.4.25 default/no-ini. Testing found and corrected an extra final blank line from the maintained DATA iterator; byte-for-byte equality remains required for the saved MIME. Expanded PHP8.2/8.4 workflow now includes these tests but is not yet verified. This is protocol/session evidence only: no socket opener, DNS/TLS/deadline proof, persistence, site mirror or Send UI. Next: bounded pinned submission channel and real loopback TLS fixtures, then independent review and durable authorized application integration. [Transport guide](MAIL_SUBMISSION_TRANSPORT.md).
+
+Draft main7805e56 application38527733738 is still running and Windows packaging remains under verification; latest public release remains1.20.0. Keep main stable for1.21 release gates. Devin retains service-plan corrections and independent submission review; hostingc53dc4a isolated re-review is clear. Full roadmap active.
+
+## Earlier evidence checkpoints
+
 Current development from3891fa6 adds [maintained MIME preparation](MAIL_SUBMISSION_PREPARATION.md) outside deployment: local25 MIME/144 independent parser checks per default/no-ini mode pass,6 pinned vendor files reproduce. Expanded PHP8.2/8.4 matrix and independent review are pending. No SMTP/network, persistence or Send UI; earlier snapshot-only checkpoints below are historical.
 
 Replacement [38525211291](https://github.com/afterburn25/Cajun_Web/actions/runs/38525211291) at59bb4bf is now downloaded and verified: all52 named preparation checks pass in each PHP8.2/8.4 default/no-ini cell (four JSON reports). This proves isolated immutable preparation only. The earlier runner failure is superseded; independent review, MIME/SMTP and application acceptance remain separate.

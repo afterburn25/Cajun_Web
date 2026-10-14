@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — isolated maintained SMTP session
+
+- Require all envelope recipients before DATA; bind finite results to the exact attempt/private snapshot; preserve unknown final outcomes without retry.80 local synthetic checks pass per PHP mode; real TLS and application integration remain pending. No deployable version change.
+
 ## Unreleased — preparation evidence
 
 - Verified all14 PHP8.2/8.4 preparation reports at bead26f, including exact long Unicode decoding on the runner. Reconciled accepted draft main7805e56 without deploying submission code. Draft1.21 release gates remain running.

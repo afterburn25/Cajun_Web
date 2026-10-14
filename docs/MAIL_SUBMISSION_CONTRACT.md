@@ -1,5 +1,7 @@
 # A-06 — explicit SMTP submission from private local drafts
 
+Current isolated session increment has80 local default/no-ini transcript checks; [transport scope](MAIL_SUBMISSION_TRANSPORT.md). Real TLS/channel, durable storage and application exposure remain pending. Earlier statements that no session exists are historical.
+
 Verified expanded matrix38527225238 at bead26f/tested merge17effd6: PHP8.2/8.4 each pass52 snapshot,29 MIME and168 independent parser checks per default/no-ini mode, plus1 unavailable-runtime check. All14 JSON reports and exact upstream reproduction are inspected. Earlier pending/25-check statements below are historical. Independent review remains requested in PR77; no transport or application exposure yet.
 
 Current development from3891fa6 adds [maintained MIME preparation](MAIL_SUBMISSION_PREPARATION.md) outside deployment: local25 MIME/144 independent parser checks per default/no-ini mode pass,6 pinned vendor files reproduce. Expanded PHP8.2/8.4 matrix and independent review are pending. No SMTP/network, persistence or Send UI; earlier snapshot-only checkpoints below are historical.

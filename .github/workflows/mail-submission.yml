@@ -34,6 +34,8 @@ jobs:
             php -n tests/mail-submission/run.php qa/submission-no-ini-results.json
             php tests/mail-submission/mime.php qa/submission-mime-default-results.json
             php -n tests/mail-submission/mime.php qa/submission-mime-no-ini-results.json
+            php tests/mail-submission/transport.php qa/submission-transport-default-results.json
+            php -n tests/mail-submission/transport.php qa/submission-transport-no-ini-results.json
             php -n -d disable_functions=ctype_alnum tests/mail-submission/mime_unavailable.php qa/submission-mime-unavailable-results.json
           '
           python3 tests/mail-submission/verify_mime.py "$RUNNER_TEMP/submission-results/submission-mime-default-results.json" "$RUNNER_TEMP/submission-results/submission-mime-parser-default-results.json"
