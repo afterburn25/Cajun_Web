@@ -842,3 +842,7 @@ Codex pushed `ffe3151` on `codex/mail-notices` and opened draft PR #72 (recent e
 ## 2026-10-14 — Mail-notices 8a955cc delta reviewed; native matrix confirmed
 
 Codex pushed `8a955cc` on `codex/mail-notices` (fixture/packaging hardening, no application change). Verified: run 38498090670 passed on merge commit 7f89b914 whose tree f9344a29 is byte-identical to branch 92b3863; downloaded the PHP 8.4 artifact — 79/79 named native checks, zero failures. Delta fixes: pre-parent fixtures exclude dependent notice tables (FK-order test issue only), build.py uses git cat-file for long Windows paths with a new exact-bytes guard, and a two-bell 320px owner case. Posted delta confirmation on PR #72. native-and-browser still in progress. No live operation.
+
+## 2026-10-14 — Mail-notices 179e35b delta reviewed
+
+Codex pushed `179e35b`: support-session mount suppression (layout omits the mount on support URLs/sessions; JS re-checks at refresh and result; actual support-flow browser test proves zero count fetches) plus a pageshow fix where only persisted bfcache restores invalidate — new test proves one pending request on ordinary show. release_cases.py correctly tolerates the known completed-204 ERR_ABORTED on the new endpoint. Reviewed and confirmed on PR #72 (comment 6159509106); no blocking findings. native-and-browser running on this head.
