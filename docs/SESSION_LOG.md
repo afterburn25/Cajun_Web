@@ -527,6 +527,21 @@ PR #50 merged at cefcc41bcd5297715f2a49d6526900ebe8ad4eb4; exact-main acceptance
 
 Next-increment preparation while exact-main acceptance ran: an isolated local estimator adapter draft matched the current shipping calculator across 1,512 priced/missing/malformed/quantity cases on PHP 8.4, without database access or shipping changes. This is prototype parity evidence only; component guards, actual application integration and native/browser/upgrade acceptance remain required. Devin correction priority reiterated in issue #2 comment 6150049591; no acknowledgment or completed fixes inferred.
 
+### 2026-10-13 — Devin P-04 service-plan foundation
+
+**Request:** "Continue Without Stopping" — next feasible roadmap item (P-04 plan/subscription contract layer, no external gate).
+
+**Starting commit:** `main` `02fc784` (published 1.11.0 baseline). New branch `devin/service-plans`.
+
+**Changed:** added `foundation/service-plans/` (ServicePlan, PlanSubscription), `tests/service-plans/run.php`, `docs/SERVICE_PLANS_FOUNDATION.md`, `.github/workflows/service-plans.yml`, and additive continuity entries. No `site/` or shared-path changes.
+
+**Tests:** `php tests/service-plans/run.php` — 46 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: banned "unbounded service" phrasing, typed cadence/limits/currency, draft→active→retired plan lifecycle, pinned subscription pricing, consent-gated recurring activation bound to termsHash, one-time activation without consent, pause/resume/cancel/abandon guards, actor-attributed history.
+
+**Failures:** none (one self-caught ordering fix — currency normalized before validation; double-consent guard added).
+
+**Blockers:** none for the contract layer; plan UI, billing capture and request workflow remain Codex integration work.
+
+**Next:** PR `devin/service-plans`; queue now 15 open Devin PRs awaiting Codex sequencing.
 ### 2026-10-13 — Devin L-02 review corrections (PR #31)
 
 **Request:** Codex review findings on #31 (issuecomment-6149702908), prioritized per `DEVIN_HANDOFF_1.11.1.md` before new isolated components.
@@ -1259,3 +1274,9 @@ Merge main4fb0c83 into combined85/a9beb6e, resolving nine Markdown conflicts by 
 ## 2026-10-14 — prepare1.23 after verified combined hosting/client acceptance
 
 Starting local documentation mergee86f2c934d4f4a5d0edd3365dc145a71992606b2 over verifieda9/main4fb, reserve unused candidate1.23.0 with no tag/release. Downloaded application38554890744 passes8,234 named executions across21workflows with exact packages and actual screenshots verified. Runtime reviews6166706518/6167231488 are clear. Add actual immutable1.22 archive/shim catalog,25retained baselines and latest1.22 submission preservation/replay after update/recovery. Existing tests remain. Correctly retain UTF-8 guide text and update its recovery path tostructure-1.23.0. New fixtures compile; installer refresh/current candidate CI/additive review and exactmain acceptance follow. Separate87 deletion retry/currentDevin components remain excluded.
+
+## 2026-10-14 — preserve reviewed service-plan work for application integration
+
+Owner requested continuous roadmap progress and checked integration of separate Devin work. Start21ebe69 and merge388b80d, union three Markdown conflicts, preserve reviewed e7a283b classes/tests, add private mirrors/build drift guards and deployment-path controls. Parent1.23 full8,360 verified; model review clear, new combined acceptance pending. Next verify local/native/import proof and implement owner-authored durable terms and exact client consent before any recurring billing.
+
+Local import verification before the enclosing merge commit:236 supplied/canonical/deployed assertion executions pass across PHP8.4 default/no-ini; no diagnostics. Two mirrors exactly match Devin388 and reviewed correction. Documentation137Markdown/1216links and clean diff pass. Focused native PHP8.2/8.4/import review remain pending.

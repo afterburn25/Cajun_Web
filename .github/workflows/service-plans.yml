@@ -1,0 +1,53 @@
+name: Service-plan contract checks
+
+on:
+  pull_request:
+  push:
+    branches: [main, codex/service-plan-integration]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: service-plans-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    name: Service-plan checks PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - name: Check out the revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Syntax and service-plan checks using the official PHP image
+        run: |
+          mkdir -p qa
+          docker run --rm --network none --user "$(id -u):$(id -g)" -v "$PWD:/workspace:ro" -v "$PWD/qa:/workspace/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            for source in foundation/service-plans/*.php tests/service-plans/*.php; do php -l "$source"; done
+            php tests/service-plans/run.php > qa/service-plans-supplied-default.txt
+            php -n tests/service-plans/run.php > qa/service-plans-supplied-no-ini.txt
+            php tests/service-plans/review_controls.php > qa/service-plans-review-default.json
+            php -n tests/service-plans/review_controls.php > qa/service-plans-review-no-ini.json
+            php tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-default.json
+            php -n tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-no-ini.json
+          '
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Isolated service-plan/subscription contract checks only. No billing, persistence or application integration is tested by this job.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve original and deployed model evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: service-plans-${{ matrix.php }}-${{ github.sha }}
+          path: qa/service-plans-*
+          if-no-files-found: error
+          retention-days: 14

@@ -2489,6 +2489,8 @@ function setup_expected_files(): array { return [
     'includes/foundation/scheduling/SchedulePolicy.php'=>'47603702f92828df062c49c65e87248dd4e554b166eba6864d1725b46c44d4ee',
     'includes/foundation/scheduling/TimeWindow.php'=>'589a86d8032e2c8375b20d8ed1f2f49a654bdabe121cf87cbb43f50650601db6',
     'includes/foundation/scheduling/WeeklyRule.php'=>'224db32aec36d1551dfe0d090b58130230a4a5c424cf597a305504386a1faa8c',
+    'includes/foundation/service-plans/PlanSubscription.php'=>'d36a2f69eb88de50097a60bfb013357fa20c9f93194192ac7ef6c8526d8a6b18',
+    'includes/foundation/service-plans/ServicePlan.php'=>'13b0228b99738f3e29134dbb2c51596cbc801c1b807c17e7baa996a79a113f59',
     'includes/foundation/twentyi/FixedHttpTransport.php'=>'020f20535db0781075c28400924286e4707f531e5b212b4599c4229aa925485b',
     'includes/foundation/twentyi/ProbeOnlyLedger.php'=>'c5a7ca70f5a736c622dacb36b93ecc491bc7de5a24bc672e8370fce3a884c735',
     'includes/foundation/twentyi/TwentyIAdapter.php'=>'baccb49ac111338641ea31828d4aa1bf769af0044f78cd8315163dffd5633920',

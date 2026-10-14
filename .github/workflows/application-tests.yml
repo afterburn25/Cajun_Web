@@ -57,6 +57,8 @@ jobs:
       - name: Native database, upgrade and authorization integration
         run: |
           python3 tests/prepare_legacy.py
+          php8.3 tests/service-plans/run.php > qa/service-plans-supplied-default.txt
+          php8.3 tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-results.json
           php8.3 tests/estimator_adapter.php
           php8.3 tests/native.php
           php8.3 tests/staff_native.php

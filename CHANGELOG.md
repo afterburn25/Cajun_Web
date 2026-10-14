@@ -8,6 +8,13 @@ Unreleased. Preserve reviewed client conflict/invitation/support safeguards and 
 
 Preserve mail main1.22 while combining guarded client administration and reviewed hosting journal/storage/dispatch/local-retry foundations. No new hosting UI or remote execution is activated. Add all three hosting native suites and12 internal-path checks to combined full acceptance; preserve every existing test and upgrade baseline. This branch is not a published release.
 
+## Unreleased — P-04 service-plan foundation (Devin, isolated component)
+
+- Added canonical `foundation/service-plans/` classes (`ServicePlan` with typed cadence/price/limits, concrete inclusions and banned "unbounded service" phrasing, immutable once active; `PlanSubscription` with pinned agreed price, consent-gated recurring activation bound to `termsHash`, and actor-attributed lifecycle) plus `docs/SERVICE_PLANS_FOUNDATION.md`.
+- Added `tests/service-plans/run.php` (46 synthetic checks; fixture plans only) and the `service-plans.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- Corrected the component per [PR #53 review](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6161469018): `recordConsent` now requires the consenting actor to be the subscribing client and the presented `termsHash` to equal the subscription's pinned snapshot (no self-generated hash, no arbitrary-actor consent); all customer-facing terms are strictly typed bounded valid-UTF-8 plain strings (non-strings, Stringable objects, whitespace-only, oversized and malformed limit names refused — a `termsHash()` can never silently change or throw), and the currency check anchors absolutely (`"USD\n"` no longer passes); every event requires a non-empty actor and an explicit UTC instant (`YYYY-MM-DDTHH:MM:SSZ`, relative/date-only forms refused) with monotonic history — out-of-order events leave state and history unchanged. Suite 46 → **68** checks.
+- Corrected again per [PR #53 re-review](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6162609466): retained `limits` are copied into a fresh reference-free array so caller-held PHP references can never mutate a stored cap or drift `termsHash()` after activation/subscription start; `LIMIT_NAME` and `INSTANT` now end-anchor with `\z` — a trailing-newline meter name (`"updates\n"`) or instant (`"2026-10-14T12:00:00Z\n"`) is refused without mutating state or history. Suite 68 → **76** checks.
+- No `site/` changes, billing capture or persistence. Not yet integrated or released.
 ## 1.22.0 — verified explicit saved-email sending
 
 - Explicit saved-message review, unchecked confirmation and Send; private author history, separate To/Cc/Bcc, current mailbox/Send grants and exact revisions.
@@ -122,7 +129,6 @@ Add bounded immutable canonical JSON command reconstruction outside deployment. 
 - Additive owner setup and fresh installation; actual1.20.0 update/recovery/reapplication retains existing records, prior provider history, added drafts and both original private keys.23 starting versions supported.
 - Published/download-verified `7805e56aa9e53cb081600589e92991255475474c` after 6912 named exact-main application checks and PHP8.2/8.4 matrices. All16 assets, ZIP members, checksums/tag and Windows/Linux bytes verified. Actual desktop/mobile views inspected; homepage pixels equal1.20.0.
 
-
 ## 1.20.0 — verified owner 20i connection
 
 - Protected owner profile with private AES-GCM credentials, password/CSRF/revision safeguards and retained settings history. Fresh setup creates empty ready storage; upgraded owners explicitly prepare it.
@@ -201,6 +207,8 @@ Claim an isolated owner20i settings/read-only check contract after the1.19 email
 - Preserve all 36 existing dependency pins and add four maintained formatting dependencies. Correct PHP 8.2 full-document handling by stripping html/body wrappers while preserving sanitized children; all 1,227 components pass on PHP 8.2/8.4 at 740b4e2 with fresh byte reproduction.
 - Add actual 1.17.0 update/recovery and original key/history preservation fixtures, alongside native/concurrency, packaged TLS/HTTP/Chromium and Apache checks. Application acceptance, independent review and release remain pending; latest published release remains 1.17.0.
 
+## 1.19.0 candidate — recent email notices (unreleased)
+
 ## 1.19.0 — verified recent email notices
 
 - Explicit successful inbox reads populate a newest-20 observation window with exact mailbox generation/UID identity; strict result/audit failures roll back notice changes. Failed reads retain the prior window.
@@ -217,7 +225,6 @@ Claim an isolated owner20i settings/read-only check contract after the1.19 email
 - Added bounded current-window metadata, separate per-person opened/dismissed markers, exact current mailbox permission filtering, collision refusal and independent full-tuple resolution.
 - Added explicit owner migration with column/key/relationship compatibility checks and strict audit; observation helpers require the successful terminal-result transaction. No schema/reader/HTTP integration or bell UI is wired yet.
 - Local PHP syntax passes. Native database fixtures and PHP 8.2/8.4 workflow are added; database and full application acceptance remain pending. Published/download-verified 1.18.0 remains immutable; its publication documentation is merged into this preparation branch.
-
 
 ## 1.18.0 — verified individual email reading
 
@@ -530,7 +537,6 @@ No application source/asset import, feature implementation, host repair, databas
 
 Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid versioned favicon URLs because it compared the query suffix as part of the path. Parse the URL path and fetch the actual referenced icon for byte equality. Application source is unchanged; rerun the full suite.
 
-
 ## Historical component contract — review-request adapter contract (L-02 dependency)
 
 - Add `docs/REVIEW_REQUESTS_ADAPTER.md`: the contract for adopting the review-request foundation (PR #31) in the live `website-review` lead path — `WebsiteAddress` intake normalization, consent-aware `ReviewContact`, stage persistence via an additive `review_stages` table, `review_reports` as the delivery gate, and staff transition controls through `ReviewInbox`. No shipping code or schema changes; records two decisions for integration review.
@@ -542,3 +548,7 @@ Added separate private draft controller/view sources and 38 named raw form-input
 ### Local email draft application integration (unreleased)
 
 Connect fresh/additive setup, current-authorized admin compose/list/preview/template/discard/history and mailbox navigation. Add packaged HTTP/Chromium and Apache cases plus1.19 recovery/reapplication retaining active/discarded drafts and original keys. These integration scenarios await CI; no SMTP or release publication. Application job budget45minutes preserves all assertions while accommodating the additional recovery cases.
+
+## Unreleased — preserve reviewed service-plan component
+
+Merge Devin53/388b80d without rewriting source/history, mirror reviewed classes and retain supplied76 plus independent21 controls across canonical/deployed copies. No plan UI/storage/billing activation or release. Combined acceptance pending.
