@@ -5,7 +5,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <section class="workspace-card" data-mail-inbox>
 <a href="<?=esc(admin_url('mailboxes'))?>">← My email accounts</a>
 <h2><?=esc($record['label'])?></h2><p><?=esc($record['address'])?> · INBOX · Saved version <?=(int)$record['revision']?></p>
-<p>Load the newest 20 inbox headers. This view shows sender, subject and reported date. Opening messages, attachments and sending will be added separately. Loading headers leaves read flags unchanged.</p>
+<p>Load the newest 20 inbox headers. This view shows sender, subject and reported date. Select Open message to read one message. Attachments and sending remain unavailable. Loading headers leaves read flags unchanged.</p>
 <?php if(!mail_inbox_ready()): ?>
 <p class="notice">An owner must prepare inbox reading in Email accounts first.</p>
 <?php else: ?>
@@ -25,6 +25,11 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <p><strong>From:</strong> <?=esc($message['from']!==''?$message['from']:'Not provided')?></p>
 <p><strong>Date from message:</strong> <?=esc($message['date']!==''?$message['date']:'Not provided')?></p>
 <?php if($message['headers_truncated']): ?><p class="hint">A long header has been shortened for this view.</p><?php endif; ?>
+<?php if(mail_messages_ready()): $messageRoute=['account_id'=>$accountId,'revision'=>(string)$record['revision'],'uidvalidity'=>$batch['uidvalidity'],'uid'=>$message['uid']]; ?>
+<form method="post" action="<?=esc(admin_url('mail-message',$messageRoute))?>" data-open-message><?php admin_action('mail_message_read'); ?>
+<?php foreach($messageRoute as $key=>$value): ?><input type="hidden" name="<?=esc($key)?>" value="<?=esc($value)?>"><?php endforeach; ?>
+<button class="btn outline">Open message</button></form>
+<?php else: ?><p class="hint">An owner must prepare message reading before you can open this message.</p><?php endif; ?>
 </article><?php endforeach; ?></div>
 <?php endif; ?>
 <?php $historyPage=max(1,min((int)($_GET['p']??1),100000));$history=mail_inbox_history($accountId,$historyPage); ?>

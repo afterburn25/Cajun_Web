@@ -11,8 +11,8 @@ def checked_path(name):
 def check(check_runtime=True):
  m=json.loads((BUNDLE/'vendor-manifest.json').read_text(encoding='utf-8'));lock=json.loads((BUNDLE/'composer.lock').read_text(encoding='utf-8'));config=json.loads((BUNDLE/'composer.json').read_text(encoding='utf-8'))
  assert m['schema']==1 and m['php_platform']=='8.2.0'
- assert config['require']=={'directorytree/imapengine':'1.25.6','zbateson/mail-mime-parser':'4.0.6'} and config['config']['allow-plugins'] is False and config['config']['platform']['php']=='8.2.0' and config['config']['bin-compat']=='full'
- assert not lock.get('packages-dev') and len(lock['packages'])==len(m['packages'])==36
+ assert config['require']=={'directorytree/imapengine':'1.25.6','zbateson/mail-mime-parser':'4.0.6','symfony/html-sanitizer':'7.4.20'} and config['config']['allow-plugins'] is False and config['config']['platform']['php']=='8.2.0' and config['config']['bin-compat']=='full'
+ assert not lock.get('packages-dev') and len(lock['packages'])==len(m['packages'])==40
  expected={p['name']:p for p in m['packages']}
  for p in lock['packages']:
   e=expected[p['name']];assert (e['version'],e['reference'],e['license'])==(p['version'],p['source']['reference'],p['license'])
