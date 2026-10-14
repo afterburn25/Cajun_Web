@@ -1,5 +1,9 @@
 # Changelog
 
+## Verification records — 2026-10-14
+
+Record financial notification PR 116 focused CI (3,364 verified executions), parent PR 114 browser/Windows evidence and preserved full acceptance runs. Confirm Devin retains all 20i implementation and that its newest docs-only delta does not resolve outstanding behavior findings. Review checkout shipping and test bytes are unchanged.
+
 ## Reconciliation review delivered — 2026-10-14
 
 Devin retains complete20i. [Review6180038918](https://github.com/afterburn25/Cajun_Web/pull/115#issuecomment-6180038918) reports three new issues on exact115 source `51a143bc3cb0ad095dd33bc059ce68b303735a7d`: unknown/partial collection coverage falsely confirms deletion; an actual configured-account replacement can reconcile the previous account's uncertain write; and an audit failure leaves an updated observation committed. The five prior executor/view/migration failures also reproduce. One committed installer hash remains stale: database/schema/base.php among2586 dependencies. Runtime corrections remain on Devin branches.
