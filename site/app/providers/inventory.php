@@ -151,6 +151,12 @@ function provider_inventory_links(string $profileId): array {
     return all('SELECT l.*,c.name AS client_name,c.email AS client_email,u.name AS linked_by_name FROM '.table('provider_package_links').' l JOIN '.table('studio_clients').' c ON c.id=l.client_id LEFT JOIN '.table('users').' u ON u.id=l.linked_by WHERE l.profile_id=? ORDER BY l.package_id',[$profileId]);
 }
 
+/** Bounded refresh history for one profile — every recorded result, newest first. */
+function provider_inventory_history(string $profileId,int $page=1): array {
+    provider_settings_manager();$page=max(1,min($page,100000));
+    return all('SELECT f.id,f.started_at,f.started_epoch,f.profile_revision,r.state,r.reason,r.scope,r.coverage,r.package_count,r.skipped,r.finished_at,r.elapsed_ms,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? ORDER BY f.started_epoch DESC LIMIT 21 OFFSET '.(($page-1)*20),[$profileId]);
+}
+
 function provider_inventory_link_events(string $profileId,int $page=1): array {
     provider_settings_manager();$page=max(1,min($page,100000));
     return all('SELECT e.*,u.name AS actor_name,c.name AS client_name FROM '.table('provider_package_link_events').' e LEFT JOIN '.table('users').' u ON u.id=e.actor_id LEFT JOIN '.table('studio_clients').' c ON c.id=e.client_id WHERE e.profile_id=? ORDER BY e.recorded_at DESC,e.id DESC LIMIT 21 OFFSET '.(($page-1)*20),[$profileId]);

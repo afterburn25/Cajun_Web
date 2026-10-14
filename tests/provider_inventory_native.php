@@ -86,6 +86,8 @@ try {
     pi_deny('Duplicate package link refused',fn()=>provider_inventory_link($id,101,2,1,$password));
     $services=provider_inventory_client_services(1);pi_ok('Client sees only the linked observed package',count($services)===1&&(int)$services[0]['link']['package_id']===101&&$services[0]['present']&&$services[0]['package']['name']==='a.example'&&!isset($services[0]['package']['stack_users']));
     pi_ok('Other client sees no linked services',provider_inventory_client_services(2)===[]);
+    $scripted=[new TransportResponse(200,[],json_encode([pi_item(201,'c.example')]))];pi_ok('Refresh omitting the linked package completes',pi_refresh($id)==='complete');pi_cool();
+    $services=provider_inventory_client_services(1);pi_ok('Linked mapping persists honestly when absent from the last good read',count($services)===1&&!$services[0]['present']&&$services[0]['package']===null&&provider_inventory_links($id)!==[]);
     $link=provider_inventory_links($id)[0];pi_deny('Unlink requires owner password',fn()=>provider_inventory_unlink($link['id'],'wrong'));
     provider_inventory_unlink($link['id'],$password);pi_ok('Unlink removes mapping and records event',provider_inventory_links($id)===[]&&count(provider_inventory_link_events($id))===2&&provider_inventory_link_events($id)[0]['event']==='unlink');
     pi_ok('Unlinked package absent from client view',provider_inventory_client_services(1)===[]);
@@ -94,7 +96,7 @@ try {
     $row=provider_settings_profile();provider_settings_state($id,1,'disable',$password);fwrite($worker[1][0],"continue\n");fflush($worker[1][0]);pi_ok('Profile change during DNS prevents credential transport',pi_finish($worker)==='access_changed:0');provider_settings_state($id,2,'enable',$password);pi_cool();
     $worker=pi_worker('pause-dns',$id,3);pi_ok('Race worker reaches DNS',trim(fgets($worker[1][1]))==='resolving');query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');fwrite($worker[1][0],"continue\n");fflush($worker[1][0]);pi_ok('Owner revocation during DNS prevents credential transport',pi_finish($worker)==='access_changed:0');query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');pi_actor();pi_cool();
     $code=provider_inventory_refresh($id,3,$password,'pi_resolve',function($row,$secret,$address,$authorize){query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');return InventorySnapshot::unavailable('transport_unknown',time(),'twenty-i|x|packages.list');});
-    pi_ok('Owner revocation before result discards the read',$code==='access_changed'&&pi_count('provider_observation_packages')===3);query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');pi_actor();pi_cool();
+    pi_ok('Owner revocation before result discards the read',$code==='access_changed'&&pi_count('provider_observation_packages')===4);query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');pi_actor();pi_cool();
     $before=pi_count('provider_refresh_results');pi_ok('Terminal audit failure leaves an incomplete retained intent',pi_audit_failure('refresh_finished',fn()=>pi_refresh($id,null,null,3))&&pi_count('provider_refresh_results')===$before);pi_cool();
     $scripted=[new TransportResponse(200,[],json_encode([pi_item(201,'c.example')]))];
     $code=provider_inventory_refresh($id,3,$password,'pi_resolve',function($row,$secret,$address,$authorize)use($id):InventorySnapshot {
