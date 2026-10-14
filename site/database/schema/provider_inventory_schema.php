@@ -1,0 +1,23 @@
+<?php
+declare(strict_types=1);
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+
+/**
+ * Durable 20i inventory storage. A refresh is a durable intent row plus a
+ * separate bounded result; validated package rows hang off the intent so a
+ * failed or ambiguous refresh can never erase the last good observation.
+ * Links are explicit owner-approved mappings between a provider package
+ * identity and a client account — never inferred from provider fields.
+ */
+function provider_inventory_schema(string $prefix): array {
+    if (!preg_match('/^[a-zA-Z][a-zA-Z0-9_]{1,19}$/D',$prefix)) throw new InvalidArgumentException('Invalid prefix.');
+    $engine=' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci';
+    $id='CHAR(32) CHARACTER SET ascii COLLATE ascii_bin';$ascii=' CHARACTER SET ascii COLLATE ascii_bin';
+    return [
+        'provider_refreshes'=>'CREATE TABLE `'.$prefix.'provider_refreshes` (id '.$id.' PRIMARY KEY,seq BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE,profile_id '.$id.' NOT NULL,profile_revision INT UNSIGNED NOT NULL,actor_id INT UNSIGNED NOT NULL,started_at DATETIME NOT NULL,started_epoch BIGINT UNSIGNED NOT NULL,INDEX profile_refreshes(profile_id,started_epoch),INDEX actor_refreshes(actor_id,started_epoch),FOREIGN KEY (profile_id) REFERENCES `'.$prefix.'provider_profiles` (id) ON DELETE RESTRICT,FOREIGN KEY (actor_id) REFERENCES `'.$prefix.'users` (id) ON DELETE RESTRICT)'.$engine,
+        'provider_refresh_results'=>'CREATE TABLE `'.$prefix.'provider_refresh_results` (id '.$id.' PRIMARY KEY,state VARCHAR(16)'.$ascii.' NOT NULL,reason VARCHAR(40)'.$ascii.' NOT NULL,scope VARCHAR(190)'.$ascii.' NOT NULL,coverage VARCHAR(16)'.$ascii.' NOT NULL,package_count INT UNSIGNED NOT NULL,skipped INT UNSIGNED NOT NULL,skip_reasons TEXT'.$ascii.' NOT NULL,finished_at DATETIME NOT NULL,elapsed_ms INT UNSIGNED NOT NULL,key_fingerprint CHAR(64)'.$ascii.' NOT NULL,FOREIGN KEY (id) REFERENCES `'.$prefix.'provider_refreshes` (id) ON DELETE RESTRICT)'.$engine,
+        'provider_observation_packages'=>'CREATE TABLE `'.$prefix.'provider_observation_packages` (id '.$id.' PRIMARY KEY,refresh_id '.$id.' NOT NULL,package_id BIGINT UNSIGNED NOT NULL,name VARCHAR(253) NOT NULL,names TEXT NOT NULL,enabled INT UNSIGNED NOT NULL,created_at VARCHAR(40)'.$ascii.' NOT NULL,created_epoch BIGINT UNSIGNED NOT NULL,type_ref BIGINT UNSIGNED NOT NULL,package_type_name VARCHAR(120) NULL,stack_users TEXT NOT NULL,package_labels TEXT NOT NULL,has_spec INT UNSIGNED NOT NULL,unmapped_keys TEXT'.$ascii.' NOT NULL,unmapped_count INT UNSIGNED NOT NULL,UNIQUE KEY observation_identity(refresh_id,package_id),INDEX package_history(package_id,refresh_id),FOREIGN KEY (refresh_id) REFERENCES `'.$prefix.'provider_refreshes` (id) ON DELETE RESTRICT)'.$engine,
+        'provider_package_links'=>'CREATE TABLE `'.$prefix.'provider_package_links` (id '.$id.' PRIMARY KEY,profile_id '.$id.' NOT NULL,package_id BIGINT UNSIGNED NOT NULL,client_id INT UNSIGNED NOT NULL,linked_by INT UNSIGNED NOT NULL,linked_at DATETIME NOT NULL,key_fingerprint CHAR(64)'.$ascii.' NOT NULL,profile_revision INT UNSIGNED NOT NULL,UNIQUE KEY link_target(profile_id,package_id),INDEX client_links(client_id),INDEX link_actor(linked_by),FOREIGN KEY (profile_id) REFERENCES `'.$prefix.'provider_profiles` (id) ON DELETE RESTRICT,FOREIGN KEY (client_id) REFERENCES `'.$prefix.'studio_clients` (id) ON DELETE RESTRICT,FOREIGN KEY (linked_by) REFERENCES `'.$prefix.'users` (id) ON DELETE RESTRICT)'.$engine,
+        'provider_package_link_events'=>'CREATE TABLE `'.$prefix.'provider_package_link_events` (id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,profile_id '.$id.' NOT NULL,package_id BIGINT UNSIGNED NOT NULL,client_id INT UNSIGNED NOT NULL,event VARCHAR(8)'.$ascii.' NOT NULL,actor_id INT UNSIGNED NOT NULL,recorded_at DATETIME NOT NULL,INDEX profile_events(profile_id,recorded_at),INDEX client_events(client_id,recorded_at),INDEX event_actor(actor_id),FOREIGN KEY (actor_id) REFERENCES `'.$prefix.'users` (id) ON DELETE RESTRICT)'.$engine,
+    ];
+}

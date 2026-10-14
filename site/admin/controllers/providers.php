@@ -2,6 +2,44 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/providers/checks.php';
+require_once CWP_CODE_ROOT.'/app/providers/inventory.php';
+
+function provider_inventory_message(?string $code):string {
+    return [
+        'complete'=>'The observed package list was saved.',
+        'partial'=>'A partial observation was saved; some reported packages could not be validated.',
+        'unavailable'=>'No usable inventory was returned. The last good observation is unchanged.',
+        'refused'=>'The refresh was refused before a usable read completed. No observation changed.',
+        'credential'=>'Protected credentials could not be opened. Check the original private key and saved settings.',
+        'access_changed'=>'Current access or the saved profile changed during the refresh. No observation was recorded under the stale settings.',
+    ][$code??'']??'The refresh did not complete. Try again after the cooldown.';
+}
+
+function provider_inventory_admin_action(string $action):void {
+    $password=posted('current_password',200);
+    if($action==='provider_inventory_prepare'){
+        provider_inventory_migrate($password);flash('20i inventory storage is ready.');redirect(admin_url('provider-settings'));
+    }
+    provider_settings_manager();$id=posted('profile_id',32);
+    if($action==='provider_inventory_refresh'||$action==='provider_inventory_link'||$action==='provider_inventory_relink'){
+        $revision=posted('revision',10);if(!ctype_digit($revision))throw new InvalidArgumentException('Reload the current 20i form.');
+    }
+    if($action==='provider_inventory_refresh'){
+        $code=provider_inventory_refresh($id,(int)$revision,$password);
+        flash(provider_inventory_message($code),$code==='complete'?'success':'error');redirect(admin_url('provider-settings'));
+    }
+    if($action==='provider_inventory_link'){
+        $client=(int)posted('client_id',10);$package=(int)posted('package_id',20);
+        provider_inventory_link($id,$package,$client,(int)$revision,$password);flash('Service linked to the client.');redirect(admin_url('provider-settings'));
+    }
+    if($action==='provider_inventory_unlink'){
+        provider_inventory_unlink(posted('link_id',32),$password);flash('Service link removed.');redirect(admin_url('provider-settings'));
+    }
+    if($action==='provider_inventory_relink'){
+        provider_inventory_relink(posted('link_id',32),(int)$revision,$password);flash('Service link re-approved under the current provider settings.');redirect(admin_url('provider-settings'));
+    }
+    throw new InvalidArgumentException('Unknown provider inventory action.');
+}
 
 function provider_settings_admin_action(string $action):void {
     $password=posted('current_password',200);

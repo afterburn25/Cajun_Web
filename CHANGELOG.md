@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — 20i inventory slice binding corrections (devin/twentyi-refresh)
+
+Links to observed 20i packages are now bound to the exact profile revision and the credential context approved at link time. Client service views suppress data when the provider settings change until the owner explicitly re-approves the mapping under a current observation; an identical package id under a replaced key can never flow through an old link. Observations carry an installation-bound credential fingerprint (never key material); schema version 2 upgrades existing tables in place. Native MariaDB suite: 74 assertions on PHP 8.2/8.4.
+
 ## 1.23.0 — published and verified
 
 Client account edits reject stale versions and retain safely escaped unsaved details; client/invitation writes recheck current authority and audit atomically. Invitations are single-use and unexpired, and client administration is refused during support sessions. Reviewed internal hosting records, dispatch fences and local provisioning retry remain inactive groundwork. Exact-main 8,360 assertions and 25 workflow gates pass; all 16 draft/public assets are downloaded and verified, with prior 1.22 unchanged. [Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0); [report](docs/TEST_REPORT_1.23.0.md). Complete 20i implementation remains assigned to Devin; service agreements and later hosting reconciliation remain separate increments.
@@ -23,6 +27,13 @@ Preserve mail main1.22 while combining guarded client administration and reviewe
 ## Unreleased — read-only 20i inventory contract
 
 - `foundation/twentyi-inventory/`: closed documented GET descriptors, allowlist package projection, honest complete/partial/unavailable snapshots and an evidence-graded capability register. Contract-only; no live calls, persistence, routes or client linking.
+
+## Unreleased — 20i inventory application slice (`devin/twentyi-refresh`)
+
+- Owner-triggered provider inventory: durable refresh intent + bounded result rows, verbatim validated `provider_observation_packages`, explicit owner→client `provider_package_links` against `studio_clients`, and ordered `provider_package_link_events` (auto-increment id for insertion-stable ordering).
+- Refresh orchestration mirrors the connection-check protocol: staff-locked intent, private-DNS refusal, mid-flight authority rechecks downgrading to `access_changed`, lazy secret resolution at the transport boundary, cooldown, and last-good preservation on unavailable refreshes.
+- Admin provider-settings section (prepare/refresh/link/unlink/history) and portal `?services` view showing only explicitly linked services. `staff_action_permission` maps `provider_inventory_*` to `staff.manage`.
+- `tests/provider_inventory_native.php` + `provider-inventory.yml`: 56 native MariaDB assertions on PHP 8.2/8.4 — authorization refusals, revision checks, cooldown, resolver/transport classification, complete/partial/unavailable persistence, link restrictions, duplicate rejection, client isolation, unlink events. Synthetic fixtures only; no live call, real credential or mutation.
 
 ## 1.22.0 — verified explicit saved-email sending
 
