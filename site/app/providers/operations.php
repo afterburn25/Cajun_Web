@@ -106,18 +106,27 @@ function provider_operations_canonical(mixed $value,int $depth,int &$nodes): str
     return $json;
 }
 
-/** Owner-approved grant for one exact operation+scope on a profile. */
+/**
+ * Owner-approved grant for one exact operation+scope on a profile.
+ * The approved parameters are stored as bounded canonical JSON so a
+ * grant is a complete approved request — execution supplies only the
+ * idempotency key and consumes the grant once.
+ */
 function provider_operation_grant(string $profileId,string $operation,array $scopeParams,#[\SensitiveParameter] string $password,int $ttlSeconds=3600): string {
     if (!preg_match('/^[a-z0-9]+(\.[a-z0-9]+)*$/',$operation)) throw new InvalidArgumentException('Operation names use dotted lowercase form.');
     if ($ttlSeconds<60||$ttlSeconds>86400) throw new InvalidArgumentException('Grant duration must be between 60 seconds and 24 hours.');
-    return staff_locked(function()use($profileId,$operation,$scopeParams,$password,$ttlSeconds):string {
+    $spec=(new TwentyIOperationRegister())->get($operation);
+    if ($spec===null||!$spec->shapeComplete) throw new InvalidArgumentException('Only documented, shape-complete operations can be granted.');
+    $nodes=0;$scopeJson=provider_operations_canonical($scopeParams,0,$nodes);
+    if (strlen($scopeJson)>4096) throw new InvalidArgumentException('The approved scope exceeds the bounded grant size.');
+    return staff_locked(function()use($profileId,$operation,$scopeJson,$password,$ttlSeconds):string {
         $actor=provider_settings_owner($password);
         $profile=provider_settings_load($profileId,true);
-        $scope=provider_operations_scope($operation,$scopeParams);
+        $scope=provider_operations_scope($operation,json_decode($scopeJson,true));
         $id=bin2hex(random_bytes(16));
-        return staff_transaction(function()use($profile,$operation,$scope,$actor,$ttlSeconds,$id):string {
-            query('INSERT INTO '.table('provider_operation_grants').' (id,profile_id,operation,scope_fingerprint,granted_by,granted_at,expires_epoch) VALUES (?,?,?,?,?,?,?)',
-                [$id,$profile['id'],$operation,$scope,(int)$actor['id'],gmdate('Y-m-d H:i:s'),time()+$ttlSeconds]);
+        return staff_transaction(function()use($profile,$operation,$scope,$scopeJson,$actor,$ttlSeconds,$id):string {
+            query('INSERT INTO '.table('provider_operation_grants').' (id,profile_id,operation,scope_fingerprint,scope_params,granted_by,granted_at,expires_epoch) VALUES (?,?,?,?,?,?,?,?)',
+                [$id,$profile['id'],$operation,$scope,$scopeJson,(int)$actor['id'],gmdate('Y-m-d H:i:s'),time()+$ttlSeconds]);
             provider_settings_audit((int)$actor['id'],'operation_grant','Granted '.$operation.' on '.$profile['id']);
             return $id;
         });
@@ -135,6 +144,18 @@ function provider_operation_grant_active(string $profileId,string $operation,str
         }
     }
     return false;
+}
+
+/** Recent grant records for owner review, newest first. */
+function provider_operation_grants(string $profileId,int $limit=40): array {
+    if (!provider_operations_ready()||$limit<1) return [];
+    return all('SELECT id,operation,scope_params,granted_at,expires_epoch,revoked_at,consumed_key,consumed_at FROM '.table('provider_operation_grants').' WHERE profile_id=? ORDER BY seq DESC LIMIT '.$limit,[$profileId]);
+}
+
+/** Recent ledger outcomes for reconciliation review, newest first. */
+function provider_operations_history(int $limit=40): array {
+    if (!provider_operations_ready()||$limit<1) return [];
+    return all('SELECT idempotency_key,operation,status,result_message,provider_code,external_id,attempts,claimed_at,resolved_epoch FROM '.table('provider_operations').' ORDER BY claimed_epoch DESC,id DESC LIMIT '.$limit);
 }
 
 /** Revoke a grant durably; revoking twice or an unknown grant refuses. */
@@ -163,32 +184,54 @@ function provider_operations_perform(array $row,#[\SensitiveParameter] string $s
 }
 
 /**
- * One owner-approved provider write. Requires: owner password + current
- * profile revision, a shape-complete registered operation, and an
- * active grant for this exact operation+scope — all before any
- * credential is opened or address resolved. The gateway's durable
- * ledger claim guarantees at-most-once execution; ambiguous outcomes
- * classify uncertain, never silently retried.
+ * One owner-approved provider write against a stored grant. Requires:
+ * owner password + current profile revision, and an unconsumed,
+ * unexpired, unrevoked grant whose stored canonical scope reconstructs
+ * the exact request — all verified under the staff lock before any
+ * credential is opened or address resolved. The grant is consumed
+ * atomically at approval time: one grant, one request, one key. The
+ * gateway's durable ledger claim then guarantees at-most-once
+ * execution; ambiguous outcomes classify uncertain, never silently
+ * retried.
  *
  * Returns a bounded OperationResult — never throws for provider-side
  * outcomes. Resolver/perform are internal test seams, never HTTP input.
  */
-function provider_operations_execute(string $profileId,int $revision,ProviderOperation $operation,#[\SensitiveParameter] string $password,?callable $resolver=null,?callable $perform=null): OperationResult {
+function provider_operations_execute(string $profileId,int $revision,string $grantId,string $idempotencyKey,#[\SensitiveParameter] string $password,?callable $resolver=null,?callable $perform=null): OperationResult {
     if(db()->inTransaction())throw new LogicException('Provider operations cannot run inside a transaction.');
-    $register=new TwentyIOperationRegister();$spec=$register->get($operation->name);
-    $started=staff_locked(fn()=>staff_transaction(function()use($profileId,$revision,$password,$operation,$spec,$register):array {
+    if(!preg_match('/^[\x20-\x7e]{1,190}$/D',$idempotencyKey))throw new InvalidArgumentException('The idempotency key must be 1-190 printable characters.');
+    $register=new TwentyIOperationRegister();
+    $started=staff_locked(fn()=>staff_transaction(function()use($profileId,$revision,$grantId,$idempotencyKey,$password,$register):array {
         [$actor,$row]=provider_checks_authority($profileId,$revision,$password);
         if(!provider_operations_ready())throw new RuntimeException('Prepare provider operation storage first.');
-        return ['actor'=>(int)$actor['id'],'revision'=>$revision,'granted'=>$spec!==null&&$spec->shapeComplete&&provider_operation_grant_active($profileId,$operation->name,provider_operations_scope($operation->name,$operation->params))];
+        $out=static function(string $reason,?string $name,array $actor):array {
+            return ['actor'=>(int)$actor['id'],'operation'=>$name,'reason'=>$reason,'params'=>[]];
+        };
+        $grant=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=? AND profile_id=?',[$grantId,$profileId]);
+        $valid=$grant!==null&&$grant['revoked_at']===null&&(int)$grant['expires_epoch']>time()&&$grant['consumed_key']===null&&$grant['scope_params']!==null;
+        if(!$valid)return $out('no_grant',null,$actor);
+        $params=json_decode((string)$grant['scope_params'],true);
+        // Stored scope must reconstruct the approved fingerprint exactly.
+        if(!is_array($params)||!hash_equals((string)$grant['scope_fingerprint'],provider_operations_scope((string)$grant['operation'],$params)))
+            return $out('no_grant',null,$actor);
+        $spec=$register->get((string)$grant['operation']);
+        if($spec===null||!$spec->shapeComplete)return $out('unbuildable',(string)$grant['operation'],$actor);
+        // Atomically consume the approval: one grant, one request, one key.
+        $consumed=query('UPDATE '.table('provider_operation_grants').' SET consumed_key=?,consumed_at=? WHERE id=? AND consumed_key IS NULL AND revoked_at IS NULL',
+            [$idempotencyKey,gmdate('Y-m-d H:i:s'),$grant['id']]);
+        if($consumed->rowCount()!==1)return $out('no_grant',(string)$grant['operation'],$actor);
+        provider_settings_audit((int)$actor['id'],'operation_approved','Approved '.(string)$grant['operation'].' for one request on '.$profileId);
+        return ['actor'=>(int)$actor['id'],'operation'=>(string)$grant['operation'],'reason'=>'ok','params'=>$params];
     }));
-    if($spec===null||!$spec->shapeComplete) {
-        provider_settings_audit($started['actor'],'operation_refused','Refused undocumented or incomplete operation '.$operation->name);
-        return OperationResult::unsupported($operation->name);
+    if($started['reason']==='unbuildable') {
+        provider_settings_audit($started['actor'],'operation_refused','Refused undocumented or incomplete operation '.$started['operation']);
+        return OperationResult::unsupported((string)$started['operation']);
     }
-    if(!$started['granted']) {
-        provider_settings_audit($started['actor'],'operation_refused','No active grant for '.$operation->name.' on profile '.$profileId);
-        return OperationResult::failed($operation->name,'No active owner grant covers this exact request.','no_grant');
+    if($started['reason']!=='ok') {
+        provider_settings_audit($started['actor'],'operation_refused','No active grant '.$grantId.' on profile '.$profileId);
+        return OperationResult::failed($started['operation']??'provider.operation','No active owner grant covers this exact request.','no_grant');
     }
+    $operation=new ProviderOperation((string)$started['operation'],$idempotencyKey,$started['params']);
     $address='';
     try{$address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];}
     catch(Throwable $e){if($e instanceof PDOException)throw $e;return OperationResult::failed($operation->name,'Provider endpoint unavailable before send.','unreachable');}

@@ -33,8 +33,8 @@ function pe_perform(array $row,#[SensitiveParameter] string $secret,string $addr
     $credential=new ProviderCredential('twenty-i',$row['id'],static function()use($secret,$authorize):string{$authorize();return $secret;});
     return (new ProviderGateway(new TwentyIOperationAdapter(),new PeTransport(),new ProviderOperationLedger()))->perform($credential,$operation);
 }
-function pe_exec(string $profile,int $revision,ProviderOperation $op,string $pw):OperationResult {
-    return provider_operations_execute($profile,$revision,$op,$pw,'pe_resolve','pe_perform');
+function pe_exec(string $profile,int $revision,string $grantId,string $key,string $pw):OperationResult {
+    return provider_operations_execute($profile,$revision,$grantId,$key,$pw,'pe_resolve','pe_perform');
 }
 try {
     foreach(schema_statements('pex_') as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
@@ -44,83 +44,93 @@ try {
     pe_actor();provider_settings_migrate($password);provider_operations_migrate($password);
     $profile=provider_settings_save('',0,'20i fixture',true,$secret,$password);
     $scope=['resellerId'=>'*','type'=>'synthetic','domain_name'=>'client.example'];
-    $op=new ProviderOperation('packages.create','idem-create-1',$scope);
+    $deadGrant=str_repeat('0',32);
 
     // ---- authority gates ----
-    pe_deny('Execution requires owner password',fn()=>pe_exec($profile,1,$op,'wrong'));
-    pe_actor(2);pe_deny('Administrator cannot execute',fn()=>pe_exec($profile,1,$op,$password));pe_actor();
-    pe_deny('Stale profile revision refused before any work',fn()=>pe_exec($profile,9,$op,$password));
+    pe_deny('Execution requires owner password',fn()=>pe_exec($profile,1,$deadGrant,'k1','wrong'));
+    pe_actor(2);pe_deny('Administrator cannot execute',fn()=>pe_exec($profile,1,$deadGrant,'k1',$password));pe_actor();
+    pe_deny('Stale profile revision refused before any work',fn()=>pe_exec($profile,9,$deadGrant,'k1',$password));
+    pe_deny('Malformed idempotency key refused',fn()=>pe_exec($profile,1,$deadGrant,"bad\nkey",$password));
     pe_ok('No transport without authority',$sentRequests===[]);
 
     // ---- grant gate ----
-    $r=pe_exec($profile,1,$op,$password);
-    pe_ok('Ungranted exact scope refuses with no_grant',$r->status===OperationResult::FAILED&&$r->providerCode==='no_grant'&&$sentRequests===[]);
+    $r=pe_exec($profile,1,$deadGrant,'idem-none-1',$password);
+    pe_ok('Unknown grant refuses with no_grant',$r->status===OperationResult::FAILED&&$r->providerCode==='no_grant'&&$sentRequests===[]);
     pe_ok('Refusal writes no ledger row',0===(int)query('SELECT COUNT(*) FROM '.table('provider_operations'))->fetchColumn());
     pe_ok('Refusal is audited',1===(int)query("SELECT COUNT(*) FROM ".table('audit')." WHERE action='provider.operation_refused'")->fetchColumn());
-    $r=pe_exec($profile,1,new ProviderOperation('packages.delete','idem-del-1'),$password);
-    pe_ok('Shape-incomplete documented op refuses unsupported',$r->status===OperationResult::UNSUPPORTED);
-    $r=pe_exec($profile,1,new ProviderOperation('vps.power','idem-vps-1'),$password);
-    pe_ok('Unregistered op refuses unsupported',$r->status===OperationResult::UNSUPPORTED);
-    pe_ok('Unsupported attempts never claim or call',0===(int)query('SELECT COUNT(*) FROM '.table('provider_operations'))->fetchColumn()&&$sentRequests===[]);
+    pe_deny('Shape-incomplete documented op cannot be granted',fn()=>provider_operation_grant($profile,'packages.delete',['resellerId'=>'*'],$password));
+    pe_deny('Unregistered op cannot be granted',fn()=>provider_operation_grant($profile,'vps.power',['resellerId'=>'*'],$password));
+    pe_deny('Oversized scope cannot be granted',fn()=>provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'x.example','label'=>str_repeat('l',5000)],$password));
+    pe_ok('Ungrantable attempts leave no rows',0===(int)query('SELECT COUNT(*) FROM '.table('provider_operation_grants'))->fetchColumn());
 
     // ---- granted execution over the real adapter+gateway+ledger ----
-    provider_operation_grant($profile,'packages.create',$scope,$password);
+    $grant1=provider_operation_grant($profile,'packages.create',$scope,$password);
+    pe_ok('Grant stores the bounded approved scope',1===(int)query("SELECT COUNT(*) FROM ".table('provider_operation_grants')." WHERE id=? AND scope_params IS NOT NULL AND scope_fingerprint<>''",[$grant1])->fetchColumn());
     $scripted=[new TransportResponse(200,[],'{}')];
-    $r=pe_exec($profile,1,$op,$password);
-    pe_ok('Granted operation executes once','succeeded'===$r->status&&count($sentRequests)===1);
+    $r=pe_exec($profile,1,$grant1,'idem-create-1',$password);
+    pe_ok('Granted operation executes once','succeeded'===$r->status&&$r->operation==='packages.create'&&count($sentRequests)===1);
     $request=$sentRequests[0];
     pe_ok('Write posts to the documented path','POST'===$request->method&&str_contains($request->url,'/reseller/*/addWeb'));
     pe_ok('Authorization attaches only at send time','Bearer '.base64_encode($secret)===$request->headers['Authorization']);
     $body=json_decode((string)$request->body,true);
     pe_ok('Body carries only allowlisted fields',$body===['type'=>'synthetic','domain_name'=>'client.example']);
-    $r=pe_exec($profile,1,$op,$password);
-    pe_ok('Same idempotency key replays without re-sending','succeeded'===$r->status&&$r->replayed&&count($sentRequests)===1);
-    $r=pe_exec($profile,1,new ProviderOperation('packages.create','idem-create-1',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'ungranted.example']),$password);
-    pe_ok('Ungranted scope cannot even observe key state','no_grant'===$r->providerCode&&count($sentRequests)===1);
-    provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'other.example'],$password);
-    $r=pe_exec($profile,1,new ProviderOperation('packages.create','idem-create-1',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'other.example']),$password);
-    pe_ok('Granted-but-foreign fingerprint on a used key conflicts','conflict'===$r->status&&count($sentRequests)===1);
-    pe_ok('Ledger row recorded with bounded fields',1===(int)query("SELECT COUNT(*) FROM ".table('provider_operations')." WHERE idempotency_key='idem-create-1' AND status='succeeded' AND operation='packages.create'")->fetchColumn());
+    pe_ok('The grant is single-use and records its key',1===(int)query("SELECT COUNT(*) FROM ".table('provider_operation_grants')." WHERE id=? AND consumed_key='idem-create-1' AND consumed_at IS NOT NULL",[$grant1])->fetchColumn());
+    $r=pe_exec($profile,1,$grant1,'idem-create-1b',$password);
+    pe_ok('A consumed grant cannot execute again','no_grant'===$r->providerCode&&count($sentRequests)===1);
+    $grant1b=provider_operation_grant($profile,'packages.create',$scope,$password);
+    $r=pe_exec($profile,1,$grant1b,'idem-create-1',$password);
+    pe_ok('Same key under a fresh grant replays from the ledger','succeeded'===$r->status&&$r->replayed&&count($sentRequests)===1);
 
-    // ---- grant scope isolation ----
-    provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>42,'labels'=>['a'=>'b']],$password);
-    $r=pe_exec($profile,1,new ProviderOperation('packages.update','idem-upd-1',['resellerId'=>'*','id'=>42,'labels'=>['a'=>'changed']]),$password);
-    pe_ok('Grant does not cover changed params','no_grant'===$r->providerCode&&count($sentRequests)===1);
-    $r=pe_exec($profile,1,new ProviderOperation('packages.update','idem-upd-2',['resellerId'=>'*','id'=>42,'labels'=>['a'=>'b']]),$password);
-    pe_ok('Exact approved scope executes','succeeded'===$r->status&&count($sentRequests)===2);
+    // ---- key conflicts under another grant ----
+    $grant2=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'other.example'],$password);
+    $r=pe_exec($profile,1,$grant2,'idem-create-1',$password);
+    pe_ok('Granted-but-foreign fingerprint on a used key conflicts','conflict'===$r->status&&count($sentRequests)===1);
+    $scripted=[new TransportResponse(200,[],'{}')];
+    $r=pe_exec($profile,1,$grant2,'idem-create-other',$password);
+    pe_ok('The other grant executes its own key','succeeded'===$r->status&&count($sentRequests)===2);
 
     // ---- conservative classification ----
-    provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d2.example'],$password);
+    $grant3=provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>42,'labels'=>['a'=>'b']],$password);
     $scripted=[new TransportResponse(503,[],'')];
-    $r=pe_exec($profile,1,new ProviderOperation('packages.create','idem-create-2',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d2.example']),$password);
+    $r=pe_exec($profile,1,$grant3,'idem-upd-1',$password);
     pe_ok('5xx after send classifies uncertain','uncertain'===$r->status&&$r->needsReconciliation());
-    $r=pe_exec($profile,1,new ProviderOperation('packages.create','idem-create-2',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d2.example']),$password);
+    $grant3b=provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>42,'labels'=>['a'=>'b']],$password);
+    $r=pe_exec($profile,1,$grant3b,'idem-upd-1',$password);
     pe_ok('Uncertain result replays without re-sending','uncertain'===$r->status&&$r->replayed&&count($sentRequests)===3);
+    $grant4=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d2.example'],$password);
     $scripted=[new TransportException('timeout')];
-    $r=pe_exec($profile,1,new ProviderOperation('packages.create','idem-create-2b',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d2.example']),$password);
+    $r=pe_exec($profile,1,$grant4,'idem-create-4',$password);
     pe_ok('Post-send timeout is uncertain, never retried','uncertain'===$r->status&&$r->needsReconciliation());
+    $grant5=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d2b.example'],$password);
     $scripted=[new TransportException('connect')];
-    $r=pe_exec($profile,1,new ProviderOperation('packages.create','idem-create-2c',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d2.example']),$password);
+    $r=pe_exec($profile,1,$grant5,'idem-create-5',$password);
     pe_ok('Pre-send failure is a clean failed','failed'===$r->status);
     $scripted=[];
 
     // ---- access change mid-send ----
-    provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d3.example'],$password);
+    $grant6=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d3.example'],$password);
     $onSend=function():void {query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');};
-    $r=pe_exec($profile,1,new ProviderOperation('packages.create','idem-create-3',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d3.example']),$password);
+    $r=pe_exec($profile,1,$grant6,'idem-create-6',$password);
     pe_ok('Access change after a landed write surfaces uncertain','uncertain'===$r->status);
     query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');pe_actor();
-    $r=pe_exec($profile,1,new ProviderOperation('packages.create','idem-create-3',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d3.example']),$password);
+    $grant6b=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d3.example'],$password);
+    $r=pe_exec($profile,1,$grant6b,'idem-create-6',$password);
     pe_ok('Ledger replays the provider-truthful recorded result','succeeded'===$r->status&&$r->replayed);
 
-    // ---- grant revocation ----
-    provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d4.example'],$password);
-    $gid=one('SELECT id FROM '.table('provider_operation_grants').' WHERE operation=? ORDER BY seq DESC LIMIT 1',['packages.create'])['id'];
-    provider_operation_revoke($gid,$password);
-    $r=pe_exec($profile,1,new ProviderOperation('packages.create','idem-create-4',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d4.example']),$password);
-    pe_ok('Revoked grant refuses before transport','no_grant'===$r->providerCode);
+    // ---- revocation and expiry ----
+    $grant7=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d4.example'],$password);
+    provider_operation_revoke($grant7,$password);
+    $r=pe_exec($profile,1,$grant7,'idem-create-7',$password);
+    pe_ok('Revoked grant refuses before transport','no_grant'===$r->providerCode&&count($sentRequests)===6);
+    $grant8=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d5.example'],$password,60);
+    query('UPDATE '.table('provider_operation_grants').' SET expires_epoch=? WHERE id=?',[time()-1,$grant8]);
+    $r=pe_exec($profile,1,$grant8,'idem-create-8',$password);
+    pe_ok('Expired grant refuses before transport','no_grant'===$r->providerCode);
+    $other=provider_settings_save('',0,'Second profile',true,$secret,$password);
+    $r=pe_exec($other,1,provider_operation_grant($other,'packages.create',$scope,$password),'idem-cross-1',$password);
+    pe_ok('A grant is bound to its own profile','succeeded'===$r->status);
     $durable=json_encode([all('SELECT * FROM '.table('provider_operations')),all('SELECT * FROM '.table('provider_operation_grants')),all('SELECT * FROM '.table('audit'))]);
     pe_ok('No durable row contains secret or auth material',!str_contains($durable,$secret)&&!str_contains($durable,'Bearer'));
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
-$ok=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/provider-execution-native-results.json',json_encode(['passed'=>$ok,'scope'=>'Owner-granted execution over real gateway+ledger against MariaDB with scripted transport; no provider call','checks'=>$checks],JSON_PRETTY_PRINT));
+$ok=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/provider-execution-native-results.json',json_encode(['passed'=>$ok,'scope'=>'Owner-granted single-use execution over real gateway+ledger against MariaDB with scripted transport; no provider call','checks'=>$checks],JSON_PRETTY_PRINT));
 echo ($ok?'PASS':'FAIL').': '.count($checks).' native provider execution assertions'.PHP_EOL;exit($ok?0:1);

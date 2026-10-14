@@ -73,15 +73,21 @@ and a durable-storage secret scan. No provider call is made.
 ## Execution (`provider_operations_execute`)
 
 One owner-approved provider write, wired end-to-end on
-`devin/twentyi-execution`:
+`devin/twentyi-execution`. A grant is the complete approved request —
+it stores the canonical JSON of the approved parameters alongside the
+scope fingerprint, and is consumed atomically when executed
+(single-use, `consumed_key`/`consumed_at`):
 
 1. Under the staff lock: owner password + current profile revision via
-   `provider_checks_authority`, storage ready, then an active grant for
-   the exact `provider_operations_scope` fingerprint — all before any
-   credential is opened or an address is resolved.
-2. Shape-incomplete or unregistered operations refuse `unsupported`
-   before any claim; a missing grant refuses `failed/no_grant` and both
-   refusals are audited. No ledger row is written for a refusal.
+   `provider_checks_authority`, storage ready, then the grant row —
+   matching profile, unexpired, unrevoked, unconsumed, stored scope
+   reconstructing its fingerprint, operation shape-complete — checked
+   and consumed in one transaction, all before any credential is opened
+   or an address is resolved.
+2. Shape-incomplete or unregistered operations cannot be granted at
+   all; a missing/expired/revoked/consumed grant refuses
+   `failed/no_grant` and the refusal is audited. No ledger row is
+   written for a refusal.
 3. The endpoint address resolves once through `EndpointPolicy` outside
    the lock; a resolution failure returns `failed/unreachable`.
 4. `provider_operations_perform` builds the credential with a resolver
@@ -109,3 +115,16 @@ on real MariaDB with a scripted transport: authority gates, grant
 scope/expiry/revocation, exactly-once send, replay and conflict without
 re-sending, uncertain propagation, mid-call access change, and a
 durable-storage secret scan.
+
+## Admin surface (`provider-operations`)
+
+The Studio "20i operations" page (`staff.manage` view; every action
+re-enters the owner password) offers: storage setup, approving one
+exact documented request (operation + bounded JSON scope + 5 min–24 h
+expiry), listing approvals with their state (active / used / expired /
+revoked), running an approval with a caller-chosen idempotency key, and
+revoking. The operation ledger history — key, operation, status,
+attempts, timestamps — is shown for reconciliation; `uncertain` rows
+carry the reconcile-before-retrying notice. Granting a missing scope
+field is refused by the register's required-field rules, and the stored
+scope must reconstruct its fingerprint before execution.

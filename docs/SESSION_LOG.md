@@ -1309,3 +1309,11 @@ Files/actions: `foundation/twentyi-operations/TwentyIOperationAdapter.php` (new 
 Tests: `php -l` clean on all touched files; contract suite 81/81 still green on the merged tree; **native suites green in CI — 38 ledger/grant + 28 execution assertions on PHP 8.2 and 8.4** (runs 38633904468/38633892500 and siblings) at `143e4a6`. One CI iteration fixed a test-ordering issue: an ungranted scope refuses `no_grant` before observing key state, so the conflict assertion now grants both scopes first.
 
 Known failures/blockers: live provider sends remain unexecuted and gated on operation-specific acceptance; only packages.create/packages.update are shape-complete. Next: CI green, Codex review, then admin grant/manage UI and reconciliation surface for uncertain results.
+
+## 2026-10-16 — Devin: grant-carried approvals + owner operations page
+
+Request: continue the complete 20i assignment — make approved operations reachable by the owner through a bounded admin surface.
+
+Files/actions: `provider_operation_grants` v2 — `scope_params` (canonical JSON of the approved request), `consumed_key`, `consumed_at`; a grant is now the complete approved request and is consumed atomically at approval time (one grant, one request, one key). `provider_operations_execute` takes `grantId + idempotencyKey` — stored scope must reconstruct its fingerprint before any credential/address work. `provider_operation_grant` validates the operation is registered+shape-complete and bounds the stored scope (≤4096). New `provider-operations` Studio page (`staff.manage` view; owner password per action): approve/run/revoke forms, approval states, operation ledger history with uncertain-reconciliation notice. Migration `provider_operations_schema_version` → '2' with v1 ALTER upgrade. Native suites updated for the grant-id interface + v1→v2 ALTER coverage.
+
+Tests: `php -l` clean; native suites pending CI. Next: CI green, Codex review of #111, then reconciliation workflow polish and documented-shape write acceptance.
