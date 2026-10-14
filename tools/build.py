@@ -59,7 +59,16 @@ def generated(refresh):
             if refresh:
                 target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(source.read_bytes())
     check_mirror(required=True)
-    for area in ['access','invitations','portfolio','estimator','email-templates','webmail','review-requests','scheduling','mail-transport','provider','twentyi']:
+    from check_mail_submission_vendor import check as check_submission_vendor, check_mirror as check_submission_mirror
+    check_submission_vendor()
+    submission=ROOT/'foundation/mail-submission'
+    for source in submission.rglob('*'):
+        if source.is_symlink():raise RuntimeError('Symlink in submission source')
+        if source.is_file() and refresh:
+            target=SITE/'includes/foundation/mail-submission'/source.relative_to(submission)
+            target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(source.read_bytes())
+    check_submission_mirror(required=True)
+    for area in ['access','invitations','portfolio','estimator','email-templates','webmail','review-requests','scheduling','mail-transport','provider','twentyi','mail-compose']:
         for source in (ROOT/'foundation'/area).glob('*.php'):
             target=SITE/'includes/foundation'/area/source.name
             if refresh:

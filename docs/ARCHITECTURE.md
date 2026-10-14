@@ -1,9 +1,22 @@
 # Architecture notes
 
-## Latest verified publication — 1.18.0
+## Unreleased submission integration
 
-## Latest verified publication — 1.19.0
-## Latest verified publication — 1.20.0
+PR77 connects admin views mail-send/mail-submissions/mail-submission and mail_submissions_* actions to the existing current-authorized coordinator and private storage. Fresh setup creates empty ready tables; existing owners use additive password-confirmed setup. Saved immutable intent, committed dispatch fence and exact result remain separate. SMTP uses pinned verified TLS; synthetic test connectors exist only under tests. Review and full packaged acceptance remain pending.
+
+## Latest verified publication — 1.21.0
+
+[v1.21.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.21.0) is published and freshly downloaded/verified at immutable source/tag `7805e56aa9e53cb081600589e92991255475474c`, through [PR #75](https://github.com/afterburn25/Cajun_Web/pull/75). Staff can save, edit, preview and retain private local email drafts for currently assigned sending accounts, with canonical active-template insertion. Current author/account/Send access, exact revisions, stable initial-save replay and strict audit protect the workflow. [Owner guide](LOCAL_EMAIL_DRAFTS.md).
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38527733738) passes 6,912 named checks: 1431 native/form, 3084 estimator, 1174 HTTP/Chromium, 233 recovery, 969 Apache and 21 builder. PHP8.2/8.4 matrices pass; actual desktop/mobile drafts inspected, homepage pixels match1.20.0, and Windows/Linux packages agree. All16 public assets, members/checksums and immutable tag verified; prior1.20.0 assets unchanged. [Report](TEST_REPORT_1.21.0.md); [handoff](DEVIN_HANDOFF_1.21.0.md).
+
+Twenty-three supported starting packages through1.20.0, including1.0.8 and1.11.1/1.11.2. UPDATE stages `cwp-update-1.21.0`; actual1.20 recovery/reapplication retains earlier records, provider history, edited/discarded drafts and both original private keys. Fresh setup creates empty ready drafts; upgraded owners explicitly prepare them with their password. Drafts do not send or synchronize a server Drafts folder. No live deployment, real provider request, payment, customer mail or SSH occurred.
+
+Continue [SMTP preparation PR #77](https://github.com/afterburn25/Cajun_Web/pull/77), observed `180e23fc2005104e95f0001aea7411a97a2d4b8a`. Codex owns its maintained MIME/session/channel, durable application adapter and release integration. Downloaded source2edeec1 run38529526469 passes26 isolated JSON reports: each PHP8.2/8.4 default/no-ini mode passes52 snapshot,29 MIME,168 independent parser,80 SMTP session,27 destination-policy and398 loopback TLS checks, plus1 unavailable-runtime check per runtime. These are component tests outside deployment; current-authorized persistent dispatch, explicit Send UI and application/update acceptance remain pending. Independent review request is [6163395444](https://github.com/afterburn25/Cajun_Web/pull/77#issuecomment-6163395444).
+
+Devin retains service-plan53 reference-detachment/newline corrections ([6162609466](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6162609466)) and independent submission review. Hosting60 c53dc4a passes168 supplied and21 independent local controls per mode, with clear isolated review [6163105649](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6163105649). Neither component is activated in the application. Preserve separate branches and integrate reviewed work sequentially. Full billing, broader20i/client hosting and VPS SSH remain incomplete; the full roadmap stays active.
+
+## Previous verified publication — 1.20.0 (superseded checkpoint)
 
 [v1.20.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.20.0) is published and freshly downloaded/verified at immutable source/tag `6f0b0ce5a9cba68b6859334818383fcc09e2ba3e`, through [PR #74](https://github.com/afterburn25/Cajun_Web/pull/74). Owners can save a protected 20i General API key, explicitly check the package-list read and inspect settings/check history. Saving or viewing makes no request. Current owner/password/CSRF/revision checks, strict intent/result audit and a separate private encryption key protect the workflow. [Owner guide](PROVIDER_CONNECTION_SETTINGS.md).
 
@@ -286,3 +299,11 @@ This increment wires the 20i connection owner page into the existing staff permi
 New packaged HTTP/Chromium fixtures use the existing server-only auto-prepend seam plus an actual loopback HTTPS server. The seam asserts production cURL options before changing only the test destination and CA, and refuses unrecognized DNS. It is outside deployment. Syntax and generated inventory checks are local; combined database/browser/installer acceptance is pending and no screenshots have yet been inspected for this UI. No new release version is reserved, published1.19.0 stays immutable, and no real20i request or secret extraction occurs.
 
 Next: inspect application/native/transport matrices; resolve independent owner-storage and orchestration review; inspect actual desktop/320px screenshots; add latest1.19 upgrade/recovery/private-key retention acceptance before preparing a new release. Continue feasible roadmap work without a release-boundary stop.
+
+## Private local draft adapter (development)
+
+Canonical foundation/mail-compose/DraftContent validates plain text and exact recipient groups. app/mail/drafts.php applies current sessions, author ownership and exact Send grants inside the staff mutex, with strict transactional metadata audit, stable initial-save replay and optimistic edits. Separate mail_drafts/mail_draft_revisions tables retain private content/current state and metadata history. Guarded admin/controllers/mail_drafts.php and admin/views/mail_drafts.php use raw bounded fields, preserve stale input and escape preview; fresh schema and explicit owner migration share the same definitions. Existing account hub exposes entry points. No mail credential decryption or delivery call is part of composing. [Workflow](LOCAL_EMAIL_DRAFTS.md). Integration acceptance is pending.
+
+## Local draft recovery and concurrent discard
+
+Candidate1.21.0 uses the verified1.20.0 baseline with existing encrypted provider state and private keys before file update. Draft storage stays additive and file recovery retains its rows. A rejected stale edit of a now-discarded draft renders a separate bounded escaped unsaved projection only after current author/mailbox checks; it never reactivates or overwrites the saved record.
