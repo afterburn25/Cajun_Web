@@ -73,7 +73,7 @@ if(($argv[1]??'')==='revoke-client-worker') {query('UPDATE '.table('studio_clien
 if(($argv[1]??'')==='retry-worker') {
     hr_actor((int)$argv[2]);echo "ready\n";fflush(STDOUT);
     try{hosting_operations_retry_provision($argv[3],1,(int)$argv[4],$argv[5],$password);echo 'prepared';}
-    catch(RuntimeException $e){if($e instanceof PDOException)throw $e;echo str_contains($e->getMessage(),'changed')?'stale':'denied';}exit;
+    catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo str_contains($e->getMessage(),'changed')?'stale':'denied';}exit;
 }
 function hr_failed(int $account,int $request,bool $retryable=true):array {
     global $package,$password;

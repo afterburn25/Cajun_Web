@@ -1084,3 +1084,5 @@ Started separate `codex/hosting-provision-retry` from1f59074. Added exact curren
 ### Retry fixture isolation correction
 
 Run38550491194 at9e599ef passed retained94+79 per PHP8.2/8.4 but the new suite collided with existing `hrci_` fixture tables before retry assertions. Use unique `htry_`; no production or assertion change, no acceptance claim for the failed run. Replacement matrix required.
+
+Replacement38550760697 reached the expected inactive-client refusal; the test worker had not caught its InvalidArgumentException. Add that expected refusal class while retaining PDO failure propagation and all assertions. No application change; a fresh complete matrix is required.

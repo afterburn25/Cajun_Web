@@ -15,3 +15,5 @@ Native fixtures cover current authority, stale revisions, nested transactions, s
 Client identity PR83 separately serializes legacy client writers; integrate that accepted branch before relying on the guard during provider coordination. Parent82, journal80, foundation79 and original Devin branches remain intact. Published1.21 stays immutable. See [operation contract](HOSTING_OPERATIONS.md), [local storage](HOSTING_RECORDS.md) and [activation gates](DEPENDENCY_GATES.md).
 
 Initial Linux run38550491194 passed the retained94 record and79 operation cases per runtime, then stopped before retry assertions because the new fixture reused the record suite prefix. The retry fixture now uses its own `htry_` prefix; application code and all assertions are unchanged. Replacement acceptance remains pending.
+
+Replacement38550760697 reached the intended client-deactivation refusal, but its worker caught only RuntimeException while client absence uses InvalidArgumentException. Catch that expected refusal too; unexpected PDO failures still escape. This is a fixture correction, with no application or assertion relaxation. Complete replacement evidence remains required.
