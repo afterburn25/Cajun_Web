@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased combined hosting/client integration
+
+Preserve mail main1.22 while combining guarded client administration and reviewed hosting journal/storage/dispatch/local-retry foundations. No new hosting UI or remote execution is activated. Add all three hosting native suites and12 internal-path checks to combined full acceptance; preserve every existing test and upgrade baseline. This branch is not a published release.
+
 ## Unreleased — complete retained application acceptance
 
 Allow75 minutes for the existing full mail/upgrade/Apache suite after verified45m cancellation. Preserve incomplete Apache progress checkpoints without weakening assertions. Runtime/version/installer unchanged; replacement acceptance pending.
@@ -76,6 +80,10 @@ Return an explicit403 client-administration page without edit or invitation form
 ## Unreleased — client authority integration
 
 Serialize existing client account edits, invitation creation and public activation with staff/hosting authorization changes. Refuse stale client forms; preserve escaped unsaved details. Retain delegated access, rotate revoked sessions, consume invitations once and make audit failure atomic. Add native concurrent-process and actual packaged form/browser checks. No release or provider activation claimed; [contract](docs/CLIENT_AUTHORITY.md).
+
+## Unreleased — explicit local provisioning retry
+
+Add a current-owner/password retry-preparation action for recorded definite provisioning failures explicitly marked retryable. Retain immutable failed observations, exact request replay, strict atomic audit and new-attempt fencing only through a subsequent authorized claim. Unknown outcomes, unsafe failures and deletion/reconciliation remain blocked. New native fixtures await Linux CI; no release or provider activation. [Contract](docs/HOSTING_PROVISION_RETRY.md).
 
 ## Unreleased — durable hosting attempt/result storage
 

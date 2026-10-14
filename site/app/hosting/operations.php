@@ -27,6 +27,11 @@ function hosting_operations_commands(string $operation):array {
 function hosting_operations_result_data(OperationResult $result):array {
     return ['operation'=>$result->operation,'outcome'=>$result->outcome,'at'=>$result->at,'subject_ref'=>$result->subjectRef,'receipt'=>$result->receipt,'resource_ref'=>$result->resourceRef,'error'=>$result->error,'retryable'=>$result->retryable,'attempt_ref'=>$result->attemptRef];
 }
+/** Local retry eligibility requires a definite, recorded, explicitly retryable failure. */
+function hosting_operations_provision_retryable(HostingJournal $journal):void {
+    $account=$journal->account();$observations=$account->operations();$last=$observations?end($observations):null;
+    if($account->status()!=='failed' || $account->pendingAttempt()!==null || $account->awaitingReconciliation() || !$last || $last->operation!=='hosting.provision' || $last->outcome!=='failed' || !$last->retryable)throw new RuntimeException('Only a recorded definite provisioning failure marked safe to retry can be prepared again. Unknown outcomes require verified reconciliation.');
+}
 /** Derive the exact retained dispatch boundary from its canonical event prefix. */
 function hosting_operations_binding(array $row,HostingJournal $journal,array $dispatch):array {
     $d=json_decode($journal->json(),true);$revision=(int)$dispatch['revision'];$commands=hosting_operations_commands($dispatch['operation']);
@@ -63,11 +68,35 @@ function hosting_operations_validate(array $row):HostingJournal {
     }
     $resource=one('SELECT id,account_id,profile_id,resource_ref FROM '.table('hosting_resources').' WHERE account_id=?',[$row['id']]);
     if($resource!==$resourceExpected)throw new RuntimeException('Saved hosting resource association is inconsistent.');
+    $prefix=$d;$prefix['events']=[];
     foreach($events as $id=>$event){
-        if(in_array($event['command'],['retry_provision','retry_deprovision','reconcile'],true))throw new RuntimeException('This hosting operation history requires a newer adapter.');
+        if($event['command']==='retry_provision'){
+            hosting_operations_provision_retryable(HostingJournal::fromJson(hosting_records_json($prefix),$row['id'],'client:'.$row['client_id']));
+            $covered[$id]=true;
+        }
+        $prefix['events'][]=$event;
+        if(in_array($event['command'],['retry_deprovision','reconcile'],true))throw new RuntimeException('This hosting operation history requires a newer adapter.');
         if(!in_array($event['command'],['link_domain','set_grace','open_dispute','close_dispute','cancel_order','request_cancellation'],true) && !isset($covered[$id]))throw new RuntimeException('A hosting dispatch fence or result is missing. Existing data was preserved.');
     }
     return $journal;
+}
+/** Explicit owner request only returns local pending state, never a network claim. */
+function hosting_operations_retry_provision(string $id,int $client,int $revision,string $event,#[\SensitiveParameter] string $password):HostingJournal {
+    return staff_locked(fn()=>staff_transaction(function()use($id,$client,$revision,$event,$password):HostingJournal {
+        $actor=hosting_records_password($password);hosting_operations_require_ready();hosting_records_client($client,true);hosting_records_id($event);
+        if($revision<0 || $revision>=HostingJournal::MAX_EVENTS)throw new InvalidArgumentException('Invalid hosting retry revision.');
+        $row=hosting_records_row($id,$client,true);$journal=hosting_operations_validate($row);
+        $input=hosting_records_json(['revision'=>$revision,'command'=>'retry_provision','arguments'=>[]]);
+        $old=one('SELECT * FROM '.table('hosting_record_events').' WHERE id=?',[$event]);
+        if($old){
+            if($old['account_id']!==$id || (int)$old['actor_id']!==(int)$actor['id'] || $old['input_json']!==$input)throw new InvalidArgumentException('This hosting retry identity was already used.');
+            return $journal;
+        }
+        if($journal->revision()!==$revision)throw new RuntimeException('This hosting record changed. Reload before requesting a retry.');
+        hosting_operations_provision_retryable($journal);
+        $next=hosting_records_append_locked($row,$event,'retry_provision',[],(int)$actor['id']);
+        hosting_records_audit((int)$actor['id'],'provision_retry_requested','Local account '.$id.' retry event '.$event);return $next;
+    }));
 }
 /** Only the invocation committing a NEW fence receives a claim; saved/pending state never does. */
 function hosting_operations_claim(string $id,int $client,int $revision,string $request,string $operation,array $arguments,string $profileId,int $profileRevision,#[\SensitiveParameter] string $password):?array {

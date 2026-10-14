@@ -1221,3 +1221,27 @@ Request: continue the roadmap and integrate separate branches without interrupti
 Resolve inspected conflicts by retaining both documentation histories, all submission and client browser calls, all existing private-file checks plus the four client paths, the75-minute ceiling/progress instrumentation, the submission dependency checker and hosting mirror generation. Automatic router merge retains mail routes and explicit support-client refusal. Regenerate the complete installer inventory from combined source. No reviewed client/hosting model or adapter behavior is changed in this merge.
 
 Verification: documentation132 Markdown/1152 links passes, Python build/browser/Apache/client fixture compilation passes, PHP router/client-account syntax passes, canonical receiving/submission mirrors pass; combined application/native tests have not yet run. Independent hosting79/80/81/82 reviews are CLEAR; client83 review/full application remain pending. Next merge preserved local retry84, verify byte preservation, then run combined native/application acceptance and request integration review. No schema activation, provider call, credential use, mail, payment, SSH, release or deployment is added.
+
+## 2026-10-14 — explicit local provisioning retry from PR82
+
+Started separate `codex/hosting-provision-retry` from1f59074. Added exact current-owner/client/revision local retry preparation after retained definite retryable failure, canonical validation, strict audit and no dispatch claim. Native process/replay/rollback fixtures plus original94+79 cases prepared. Local Windows fixture stopped at existing provider-key0600 permission validation before retry assertions; Linux matrix acceptance is pending. Full installer refresh and documentation verification underway; no live action/schema/version/release. Client83 has466 verified executions per push/PR matrix and active application38549059961; mail38545953062 remains active.
+
+### Retry fixture isolation correction
+
+Run38550491194 at9e599ef passed retained94+79 per PHP8.2/8.4 but the new suite collided with existing `hrci_` fixture tables before retry assertions. Use unique `htry_`; no production or assertion change, no acceptance claim for the failed run. Replacement matrix required.
+
+Replacement38550760697 reached the expected inactive-client refusal; the test worker had not caught its InvalidArgumentException. Add that expected refusal class while retaining PDO failure propagation and all assertions. No application change; a fresh complete matrix is required.
+
+### 2026-10-14 — retry native matrices verified
+
+Push38550996210 and PR38551004850 atd101665 each verify434 executions:44 retry +94 records +79 operations per PHP8.2/8.4. No PHP warnings in full push log; all2542 installer dependencies match committed bytes. Runtime remains9e599ef. Mail77/e9 now has complete7,854 application assertions/all19 workflows with verified packages and screens; review requested6166470289. Client83/eefe29e replaces failed support-renderer acceptance with38551118797. Service-desk61 review6166378842 retains56 supplied controls and reproduces six negative/five positive cases in default/no-ini, covering three outstanding findings. No live operation or release.
+
+
+## 2026-10-14 — integrate preserved provisioning retry into the combined branch
+
+Starting integration67e855b, merge retry84 e73d78a without changing its reviewed adapter or44 native checks. Retain both documentation histories and add an explicit current status to distinguish historical checkpoints. Add hosting records94, operations79 and retry44 native suites to full application acceptance alongside client60; add direct Apache denials for12 hosting internal files. Existing mail, client, recovery, vendor and package checks remain present. Regenerate installer inventory; verify exact parent-source preservation before publishing the integration PR.
+
+Parent review comments6166505236/6166544455/6166574826/6166607088/6166726058 clear hosting79-82/84. Client83 review/full application and this combined branch's full acceptance remain pending. Mail77 is already merged at e3b434f with complete candidate7,854 and clear independent review; its exact-main38553149886 and release preparation run separately. No merge to main, new version, published package, hosting schema activation, real provider request, payment, mail or SSH is performed by this integration.
+
+
+Combined-merge local verification: all33 selected mail files equal e3b434f exactly, all10 client implementation/fixture files equal eefe29e, and all25 hosting foundation/mirror/adapter/native-test files equal e73d78a. Browser calls run once each; full workflow retains all submission/client suites and adds the three hosting suites; Apache retains every main denial plus16 client/hosting paths. Python fixtures compile, dependency mirrors verify, docs133 Markdown/1164 links pass. Installer inventory regenerated; exact committed-byte check follows this merge commit. Client38551118797 has now completed: downloaded final reports verify7,027 executions (1,491 native/form,3,084 estimator,1,213 HTTP,233 recovery,985 Apache,21 builder), all17 workflows pass, all3 Windows/Linux archives match and actual current images were inspected. These are parent results; combined application acceptance remains required.
