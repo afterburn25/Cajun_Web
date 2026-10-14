@@ -1,5 +1,9 @@
 # Project status
 
+## Native project history — isolated work in progress
+
+Codex starts `codex/project-progress-storage` at preserved3677ccf. [The native adapter contract](docs/PROJECT_PROGRESS_CONTRACT.md) specifies additive event/request tables, exact legacy adoption, atomic project/history/audit writes, original-request replay, current staff/client/support authority and bounded validated history. Contract only at this checkpoint; native implementation/tests and later actual forms/timeline/activity remain pending. Pure record CI for3677ccf is pending; original2b0b701 evidence is historical. Devin retains complete20i; accepted ticket candidate02f41e6 stays frozen for independent review.
+
 ## Current next increment — dated project progress
 
 Codex owns P-05/P-07 progress history on `codex/project-progress`, starting from preserved PR104/`02f41e6`. The existing editor overwrites the latest title, summary, stage and milestones; the client currently has no dated record of those changes. [The new contract](docs/PROJECT_PROGRESS_CONTRACT.md) specifies honest tracking baselines, immutable public changes, stale-form/replay handling, current authority and exact activity links. Pure records now preserve exact legacy CRLF/CR multiline text after inspecting the actual project input helper. Local PHP8.4 default/no-ini pass155 named assertions per mode,310 executions total. Earlier2b0b701 passed148 per PHP8.2/8.4 mode and all22 workflows; the compatibility correction needs new exact CI/review. Native storage/UI remain pending. Records stay outside deployment; shipping bytes are unchanged. Devin retains complete20i implementation; no provider files or active acceptance heads are changed.
