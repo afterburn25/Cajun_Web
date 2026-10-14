@@ -1281,3 +1281,21 @@ Also retained completed #89/1c92e6b acceptance 38580190394 (8,578 assertions, 18
 Update current publication/installation/status/roadmap records, owner guide, report and Devin handoff while preserving older histories. These changes are Markdown only relative to the published source. The optional documentation-branch application run at cc7ee81 is superseded by this documentation update; runtime equality to fully accepted release4f is independently checked. Its incomplete run is not counted as a pass. Current documentation checks remain required before merging these records. Next: integrate ready preserved follow-ons into a new version with combined acceptance, continue non-20i work, and review Devin's end-to-end delivery. Full roadmap active.
 
 Publication-record validation: 139 Markdown files and 1,259 local links pass; pinned receiving/submission vendor checks and whitespace checks pass. Runtime, foundation, tests, tools and workflow bytes remain identical to released4f. No application assertions are attributed to this documentation commit.
+
+## 2026-10-15 — Devin: durable provider operation ledger and owner grants
+
+Request: continue the complete 20i integration. Starting main `68e4d41` on new branch `devin/twentyi-ledger`. Added `site/database/schema/provider_operations_schema.php` (provider_operations ledger + provider_operation_grants approvals), `site/database/migrations/provider_operations_migrate.php` (strict schema validation, owner-password migration, version-1 marker), `site/app/providers/operations.php` (`ProviderOperationLedger` implementing the shared `OperationLedger` contract plus owner grant/revoke/active-check functions and canonical scope fingerprints), fresh-install wiring in `schema_statements`/`deploy.php`, `docs/PROVIDER_OPERATIONS.md`, native suite `tests/provider_operations_native.php` and workflow `.github/workflows/provider-operations.yml`.
+
+Semantics: atomic INSERT claims an idempotency key; resolved rows replay recorded results; foreign fingerprints conflict; stale claims classify uncertain. Grants are owner-password, expiry-bound, revocable approvals bound to an exact canonical scope; the newest matching grant decides. No credential, request, transport or provider call exists in this layer.
+
+Tests: native MariaDB suite covering schema refusals, claim/replay/conflict/uncertain/record races, gateway at-most-once through a synthetic adapter, a real cross-process claim race, and grant lifecycle including audit. CI lane on PHP 8.2/8.4 + MariaDB 10.11 with named JSON results. Next: Codex review; execution-path wiring (grant check + gateway + adapter execute) remains gated on the write-boundary contract and operation acceptance.
+
+## 2026-10-16 — Devin: grant binding corrections from independent review
+
+Codex review 6177728792 reproduced three approval-boundary gaps at `318471e`. Fixes on this branch:
+
+1. **Revision/account binding** — `provider_operation_grants.profile_revision` (schema v2, ALTER upgrade for v1) records the approved profile revision; `provider_operation_grant_active` now requires an enabled profile at that exact revision. Key replacement or any settings save changes the revision and suspends the grant; disable/enable cycles never revive it. Granting also requires an enabled profile.
+2. **UTF-8 scope keys** — `provider_operations_canonical` refuses map keys whose `json_encode` fails, matching gateway canonicalization.
+3. **Newest-same-scope** — `grant_active` queries the indexed exact scope for its newest row instead of scanning the latest 64 grants.
+
+Tests: native suite extended to cover the v1→v2 ALTER upgrade, revision invalidation on settings save and disable/enable, invalid UTF-8 scope keys, and same-scope lookup beyond 64 other grants. CI pending.
