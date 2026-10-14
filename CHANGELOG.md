@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — state-only hosting reconciliation
+
+Add a distinct non-dispatching reconciliation method/journal command; preserve legacy command semantics, retain original observations and require explicit later deletion retry. Local95 new plus360 retained controls pass per default/no-ini mode; native persistence/provider verification/CI/review remain separate pending work. No route or release. [Contract](docs/HOSTING_RECONCILIATION.md).
+
 ## Unreleased — deletion retry parent reconciliation
 
 Preserve verified e6 deletion retry67/retained217 per PHP runtime while merging parent1.23 candidate21. Both histories and all tests remain; regenerate combined inventory. Current merged native acceptance/review pending; no release or provider activation.
