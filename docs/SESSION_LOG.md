@@ -1333,3 +1333,8 @@ Tests: native suite extended to cover the v1→v2 ALTER upgrade, revision invali
 Codex review 6177258236 on #107 (`5f624a2`) reproduced two write-boundary gaps, fixed on `devin/twentyi-operations` (`d7006c5`): HTTP 202 and other non-terminal 2xx classify `uncertain` (accepted ≠ completed, RFC9110 §15.3.3); the 256-node request bound now counts every visited value including scalar leaves (a 384-leaf body under 8KiB previously built). Suite now 90 named checks incl. exact-boundary/over-boundary/nested fixtures and the 202-vs-201/204 distinction.
 
 Merged `origin/devin/twentyi-operations` (`d7006c5`) and `origin/devin/twentyi-ledger` (`6ca730f`) into `devin/twentyi-execution` with normal merges. Schema reconciled to v3: v2 adds `profile_revision` (approved-revision binding), v3 adds `scope_params`/`consumed_key`/`consumed_at` (single-use executed grants). `provider_operations_execute` also refuses grants whose approved revision is stale. Union-resolved schema/migration/test/log conflicts; `php -l` clean. Native suites re-run pending CI.
+
+
+## 2026-10-16 — Devin: hostname-list children join the shared node budget
+
+Codex follow-up review on `d7006c5` verified both original corrections but found `hostname_list` children bypassed the 256-node bound (counted 4 containers + 64 uncounted hostnames + 189 map values = 257 values accepted). `TwentyIRequestBuilder::bounded` now increments the shared node budget per hostname-list child. Added Codex's exact mixed fixtures: 64 `extra_domain_names` + 188 `documentRoots` = 256 builds; +189 = 257 refuses. 92/92 synthetic checks on default and no-ini modes.

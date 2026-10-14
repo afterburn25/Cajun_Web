@@ -121,7 +121,14 @@ final class TwentyIRequestBuilder
                 if (!is_array($value) || count($value) > self::MAX_LIST || array_values($value) !== $value) {
                     throw new InvalidArgumentException('Field ' . $field . ' requires a bounded list of hostnames.');
                 }
-                return array_map(static fn(mixed $item): string => self::hostname($field, $item), $value);
+                $out = [];
+                foreach ($value as $item) {
+                    if (++$nodes > self::MAX_NODES) {
+                        throw new InvalidArgumentException('Field ' . $field . ' exceeds structural bounds.');
+                    }
+                    $out[] = self::hostname($field, $item);
+                }
+                return $out;
             case 'map':
                 if (!is_array($value) || array_values($value) === $value) {
                     throw new InvalidArgumentException('Field ' . $field . ' requires a string-keyed map.');
