@@ -2,7 +2,7 @@
 
 ## Unreleased — local hosting records
 
-Add owner-authorized additive MariaDB journal/event storage, exact client/terms/revision checks, stable replay and strict atomic audit. Prepare competing-process and damaged-history native acceptance. No remote operation, route or fresh-install activation; matrix/review pending. [Contract](docs/HOSTING_RECORDS.md).
+Add owner-authorized additive MariaDB journal/event storage, exact client/terms/revision checks, stable replay and strict atomic audit. Native PHP8.2/8.4 each pass94 checks, including competing processes and damaged history, atf8001e9 in38543267301/38543364218. No remote operation, route or fresh-install activation; independent review and application acceptance remain pending. [Contract](docs/HOSTING_RECORDS.md).
 
 
 ## Unreleased — hosting lifecycle journal
