@@ -1360,3 +1360,10 @@ Publication-record validation: 139 Markdown files and 1,259 local links pass; pi
 - Fresh-install wiring added earlier on `-refresh` (`cb93528`): `schema_statements` includes `provider_inventory_schema`, `deploy.php` records `provider_inventory_schema_version`; native suite still 56/56 on both runtimes.
 - `devin/twentyi-complete` advanced to `68e4d41`.
 - Next: Codex review of the restacked PRs; continue lifecycle reads once the slice lands.
+## 2026-10-14 — Devin: stale links, refresh history, deterministic refresh ordering
+
+- Admin providers view: linked packages absent from the latest observation are now listed with an honest absence note and an unlink control (previously vanished, stranding mappings). Added `provider_inventory_history` — bounded per-profile result list rendered under the package table.
+- Fixed nondeterministic last-good/latest selection: `provider_refreshes` gains `seq BIGINT UNSIGNED AUTO_INCREMENT UNIQUE`; all `ORDER BY started_epoch DESC` queries add `,seq DESC`. Same-second refreshes (possible when tests bypass the real 30s cooldown) now order by insertion. Validator allows `auto_increment` on `seq` and `link_events.id` and expects the `seq` unique index.
+- `pi_cool` test helper now shifts epochs uniformly instead of collapsing to one value.
+- New assertions: omitting refresh keeps the mapping; client view reports the linked package absent (`present=false`, `package=null`). **58/58 native assertions** green on PHP 8.2/8.4, push+PR runs 38597806217/38597818733 at `735b79f`.
+- Next: Codex review; continue remaining milestones after this slice lands.
