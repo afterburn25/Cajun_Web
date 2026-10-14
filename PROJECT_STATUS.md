@@ -1,5 +1,15 @@
 # Project status
 
+## Current 20i owner UI integration — application acceptance pending
+
+Provider check orchestration at f8668fd passed49 named native checks on each PHP8.2/8.4 runner, alongside69 owner-storage checks. Artifacts from38510249127 were downloaded and inspected. They prove strict intent/result audit, finite outcome mapping, cooldown/hour limits, interrupted processes, DNS-time access/profile races and edits serialized behind current checks. The transport's1003 named checks per runtime were independently downloaded from38509333705; prior fixture/server limitations remain accurately scoped.
+
+This increment wires the 20i connection owner page into the existing staff permission map, CSRF action dispatcher and navigation; adds empty provider storage on fresh install; retains explicit password-confirmed additive setup for existing sites. Saving keys never sends a request. The explicit check shows saved revision/time, historical settings and incomplete/unknown outcomes; service capabilities remain unverified. Private fields are never refilled. No URL/CA/transport configuration comes from HTTP.
+
+New packaged HTTP/Chromium fixtures use the existing server-only auto-prepend seam plus an actual loopback HTTPS server. The seam asserts production cURL options before changing only the test destination and CA, and refuses unrecognized DNS. It is outside deployment. Syntax and generated inventory checks are local; combined database/browser/installer acceptance is pending and no screenshots have yet been inspected for this UI. No new release version is reserved, published1.19.0 stays immutable, and no real20i request or secret extraction occurs.
+
+Next: inspect application/native/transport matrices; resolve independent owner-storage and orchestration review; inspect actual desktop/320px screenshots; add latest1.19 upgrade/recovery/private-key retention acceptance before preparing a new release. Continue feasible roadmap work without a release-boundary stop.
+
 ## Current provider check orchestration — native matrix pending
 
 Protected owner persistence at af09dfb passed69 named MariaDB/key/current-authority/concurrency checks on each PHP8.2/8.4 cell; push38509785171 artifacts were downloaded and inspected. Repaired transport push38509333705 at fbecf69 passed and its14 JSON artifacts were downloaded: per PHP version120 adapter default +120 no-ini,32 policy default +32 no-ini +33 forced-unavailable,333 actual HTTPS default +333 no-ini, all passed. Devin's independent transport review has no blockers. The full prior build refresh and21 builder guards passed locally. These are isolated component/storage results, not deployed account or application acceptance.

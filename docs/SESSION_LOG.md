@@ -976,3 +976,7 @@ Local evidence before this commit: four application modules and native fixture p
 ## 2026-10-14 — current-authority provider check preparation
 
 Starting af09dfbbe68e5fcd16d57a278f18837387782038. Downloaded transport run38509333705 and storage38509785171; all named cells pass (transport1003 per PHP, owner storage69 per PHP). Add unwired check orchestrator, canonical mirrors/build ownership and native current-authority/interruption/serialization fixtures. Syntax-only new fixture evidence; matrix pending. No live call or activation. Next: inspect exact native matrix, review, owner UI and packaged acceptance.
+
+## 2026-10-14 — owner 20i UI and isolated packaged acceptance
+
+Starting f8668fd9a444174c5be87ed73772e01f70ecf0c1, downloaded exact native storage/check matrix38510249127:69+49 checks per PHP8.2/8.4 cell, all pass. Wire the existing permission/CSRF/controller/navigation and fresh schema paths to protected owner settings and explicit check history. Add actual loopback TLS fixture and packaged HTTP/Chromium tests, preserving production-option assertions before test-only remapping. Syntax/generated inventory validation only for new UI; combined application matrix and independent review pending. Published1.19.0 unchanged; no real API/secret extraction/deployment. Next: application evidence, screenshots, review and1.19 update/recovery preservation.

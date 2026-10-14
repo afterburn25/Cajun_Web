@@ -1,11 +1,12 @@
 <?php
 declare(strict_types=1);
 namespace CajunWebPro\Foundation\TwentyI;
-if (PHP_SAPI !== 'cli') exit(2);
+if (PHP_SAPI !== 'cli' && !(PHP_SAPI==='cli-server' && getenv('CWP_TEST_DATABASE')==='cwp_test')) exit(2);
 
 /** Only this test file remaps the fixed production destination to the synthetic loopback server. */
 function curl_init(?string $url=null): \CurlHandle|false {
     if($url!==TwentyIAdapter::URL)throw new \RuntimeException('Unexpected fixture URL.');
+    if(PHP_SAPI==='cli-server')$GLOBALS['twentyi_fixture']=\json_decode(\file_get_contents(__DIR__.'/../../test-runtime/provider-http/config.json'),true,flags:JSON_THROW_ON_ERROR);
     $port=$GLOBALS['twentyi_fixture']['port'];
     return \curl_init('https://api.20i.com:'.$port.'/package');
 }

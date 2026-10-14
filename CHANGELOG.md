@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — owner 20i connection screen
+
+Wire protected owner settings, explicit fixed connection checks, finite/history displays and fresh/additive setup. Add actual packaged HTTP/Chromium against isolated HTTPS. Combined application acceptance and release remain pending.
+
 ## Unreleased — audited explicit provider-check preparation
 
 Add unwired current-owner fixed-check orchestration, finite retained outcomes, request limits and interrupted-result handling; reuse canonical provider mirrors and add native process fixtures. Application integration remains pending.
