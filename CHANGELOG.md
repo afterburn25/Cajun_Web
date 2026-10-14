@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — unwired submission persistence
+
+- Add guarded additive immutable intent/dispatch/result storage with current author/Send/revision gates, stable replay, strict audit and exact private-content/attempt binding. Prepare MariaDB concurrency/native evidence; not yet verified.
+- Preserve canonical submission dependency bytes in the deployment mirror and refresh installer inventory. No route, fresh-schema activation, DNS/credential orchestration, Send UI or new version.
+
 ## Unreleased — isolated SMTP submission
 
 Immutable MIME, maintained bounded SMTP and pinned TLS are verified at2edeec1 through26 downloaded PHP8.2/8.4 reports. Durable current-authorized application persistence and Send UI remain to implement; see PR77. The released1.21 draft workflow is separate.

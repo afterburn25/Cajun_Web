@@ -20,4 +20,18 @@ def check(reproduce=False):
             assert remote==contents,name
     print('PASS:6 pinned original PHPMailer7.1.1 source/license/metadata files'+(' reproduced from upstream commit' if reproduce else ' match recorded hashes'))
 
-if __name__=='__main__':check('--reproduce' in sys.argv)
+def check_mirror(required=False):
+    root=Path(__file__).resolve().parents[1];base=root/'foundation/mail-submission';mirror=root/'site/includes/foundation/mail-submission'
+    if not mirror.exists():
+        assert not required,'Missing submission runtime mirror'
+        return
+    expected={p.relative_to(base).as_posix() for p in base.rglob('*') if p.is_file()}
+    actual={p.relative_to(mirror).as_posix() for p in mirror.rglob('*') if p.is_file()}
+    assert expected==actual,'Submission mirror member mismatch'
+    assert not any(p.is_symlink() for p in mirror.rglob('*'))
+    for name in expected:assert (base/name).read_bytes()==(mirror/name).read_bytes(),name
+    print(f'PASS:{len(expected)} submission runtime files match the canonical bundle byte-for-byte')
+
+if __name__=='__main__':
+    check('--reproduce' in sys.argv)
+    check_mirror('--require-mirror' in sys.argv)

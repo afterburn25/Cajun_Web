@@ -1,5 +1,14 @@
 # Admin webmail, staff access, templates and email notifications
 
+## Current development — unwired submission persistence
+
+Starting43bd554, prepare three additive tables and strict schema/adoption checks for private immutable submissions, one dispatch fence and one terminal result. Current author/account/Send gates, saved revision uniqueness, stable intent replay, strict audit and the existing staff mutex protect preparation/claim. Results bind the exact reserved attempt, private fingerprint (including Bcc) and MIME hash. Finalization records actual acceptance even after session/grant loss; browser-facing reads still require current access. Accepted or unresolved sends block reuse of the same draft; known failures permit a new reviewed revision. Actor/account limits bound abandoned preparation and dispatch.
+
+Prepared native MariaDB fixtures exercise owner setup, malformed/adopted schema, rollback, current permission boundaries, damaged snapshots, stale account/draft changes, private Bcc mismatches, uncertain results, replay/conflicting receipts, two-process duplicate preparation/claims, revocation while waiting and limits. Syntax and canonical mirror/documentation checks pass locally; the new PHP8.2/8.4 native workflow has not yet run. No native acceptance is claimed at this checkpoint.
+
+The builder now copies15 exact canonical submission runtime/dependency files, preserving original vendor bytes and licenses; installer inventory is refreshed (2549 shipping files). Storage functions are guarded but unwired: no fresh/base-schema registration, public/admin route, setup action, DNS/credential-decryption orchestration or Send UI calls them. Published1.21.0 remains immutable. Independent transport review6163395444 remains pending; the prior26-report isolated transport matrix at2edeec1 is verified. Next: inspect/fix native matrix, obtain review and implement the current-authorized resolver/dispatch orchestration before UI exposure. [Storage contract](MAIL_SUBMISSION_STORAGE_CONTRACT.md).
+
+
 ## Latest verified publication — 1.21.0
 
 [v1.21.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.21.0) is published and freshly downloaded/verified at immutable source/tag `7805e56aa9e53cb081600589e92991255475474c`, through [PR #75](https://github.com/afterburn25/Cajun_Web/pull/75). Staff can save, edit, preview and retain private local email drafts for currently assigned sending accounts, with canonical active-template insertion. Current author/account/Send access, exact revisions, stable initial-save replay and strict audit protect the workflow. [Owner guide](LOCAL_EMAIL_DRAFTS.md).
