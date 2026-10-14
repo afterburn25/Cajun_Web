@@ -1,5 +1,9 @@
 # Explicit fenced deletion retry
 
+## Verified native boundary; parent candidate reconciled
+
+At e6a6a54, push38561724140 and PR38561730188 each pass67 new +94/79/44 retained checks per PHP8.2/8.4,568 executions per matrix. Exact reports/logs are downloaded and checked. The new parent21 merge preserves those adapter/test bytes but requires its own combined checks. Independent runtime review6167717491 is pending. Parent1.23 latest1.22 upgrade acceptance and exact-main/publication remain separate. Earlier pending/failed checkpoints below are retained history.
+
 ## Fixture correction — retain the single configured provider policy
 
 At ec5f7e9, push38559629380 PHP8.2 passed all94 record,79 operation and44 provisioning-retry checks plus51 named deletion-retry checks, then the new fixture failed when it attempted to create a second20i profile. The production settings API intentionally permits only one. Preserve that refusal: replace the impossible setup with an unknown-profile request and explicitly verify unchanged journal/fence/result/audit state. Runtime operations and installer bytes are unchanged. The failed report and complete job115837210320 log are retained; no full deletion-retry pass is claimed. Replacement PHP8.2/8.4 acceptance remains required.

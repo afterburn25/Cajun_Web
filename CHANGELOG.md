@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — deletion retry parent reconciliation
+
+Preserve verified e6 deletion retry67/retained217 per PHP runtime while merging parent1.23 candidate21. Both histories and all tests remain; regenerate combined inventory. Current merged native acceptance/review pending; no release or provider activation.
+
 ## Unreleased — deletion fixture correction
 
 Preserve the single20i profile policy in native deletion-retry tests; an unknown profile must refuse without changing state. Runtime/installer unchanged; initial ec5 PHP8.2 run failed in fixture setup after51 new checks. Replacement matrix pending.
@@ -8,15 +12,26 @@ Preserve the single20i profile policy in native deletion-retry tests; an unknown
 
 Add a separate current-owner/original-approver retry after a retained definite retryable deletion failure, atomically saving the new attempt and dispatch fence. Retain exact result/replay/resource binding and current authority checks. Native fixtures are prepared; CI/review pending. No provider activation or release. [Contract](docs/HOSTING_DEPROVISION_RETRY.md).
 
+## 1.23.0 candidate — current client authority and hosting groundwork
+
+Unreleased. Preserve reviewed client conflict/invitation/support safeguards and internal hosting journal/storage/dispatch/local-retry groundwork. Align application/installer/update labels; add actual published1.22 baseline and retained-submission update/recovery/replay cases. Prior combineda9 acceptance passes8,234 checks/all21workflows; this newer candidate still needs its own full acceptance and exact-main release gates. [Candidate guide](docs/CLIENT_ACCOUNT_SAFEGUARDS.md).
+
 ## Unreleased combined hosting/client integration
 
 Preserve mail main1.22 while combining guarded client administration and reviewed hosting journal/storage/dispatch/local-retry foundations. No new hosting UI or remote execution is activated. Add all three hosting native suites and12 internal-path checks to combined full acceptance; preserve every existing test and upgrade baseline. This branch is not a published release.
+
+## 1.22.0 — verified explicit saved-email sending
+
+- Explicit saved-message review, unchecked confirmation and Send; private author history, separate To/Cc/Bcc, current mailbox/Send grants and exact revisions.
+- Deterministic maintained MIME and bounded verified SMTP/TLS, durable one-time dispatch records, truthful accepted/rejected/not-submitted/unknown results. No automatic resend after accepted, unknown or unresolved outcomes; result-storage failure preserves uncertainty.
+- Additive owner setup and fresh installation; all24 starting packages through1.21.0 accepted. Actual1.21 update/recovery retains drafts, submission records, prior encrypted history and original keys without resend.
+- Published/download-verified `e3b434ffb2244e454ea9f24fa1de9173b7479ccc` after7,854 exact-main assertions and all21 workflows. All16 assets, archive members/checksums/tag and Windows/Linux bytes verified. Actual desktop/mobile views inspected; homepage pixels equal1.21.0. No live customer mail or deployment.
 
 ## Unreleased — complete retained application acceptance
 
 Allow75 minutes for the existing full mail/upgrade/Apache suite after verified45m cancellation. Preserve incomplete Apache progress checkpoints without weakening assertions. Runtime/version/installer unchanged; replacement acceptance pending.
 
-## 1.22.0 candidate — not released
+## Historical1.22.0 candidate preparation
 
 Explicit saved-message review/Send and private results; latest1.21 package/recovery baseline prepared. [Sending guide](docs/SENDING_EMAIL.md). Full acceptance and independent review remain pending.
 

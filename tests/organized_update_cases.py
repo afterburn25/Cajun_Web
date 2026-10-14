@@ -26,26 +26,29 @@ def run(web,base,check,qa,php,label,prefix,version):
         assert p.returncode==0,p.stderr
         return json.loads(p.stdout)
     before=records('seed')
-    if version=='1.21.0':records('drafts-seed')
-    prior_drafts=records('drafts') if version=='1.21.0' else None
-    prior_templates=records('templates') if version in ['1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0'] else None
-    prior_accounts=records('mail-accounts') if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0'] else None
-    prior_key=(private/'mail-master.key').read_bytes() if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0'] else None
-    prior_review=records('review-intake') if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0'] else None
-    prior_reports=records('reviews') if version in ['1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0'] else None
-    prior_appointment=records('appointment-intake') if version in ['1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0'] else None
-    prior_schedule=records('appointments') if version in ['1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0'] else None
-    if version in ['1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0']:records('mail-checks-seed')
-    prior_checks=records('mail-checks') if version in ['1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0'] else None
-    if version in ['1.17.0','1.18.0','1.19.0','1.20.0','1.21.0']:records('inbox-seed')
-    prior_inbox=records('inbox') if version in ['1.17.0','1.18.0','1.19.0','1.20.0','1.21.0'] else None
-    if version in ['1.18.0','1.19.0','1.20.0','1.21.0']:records('messages-seed')
-    prior_messages=records('messages') if version in ['1.18.0','1.19.0','1.20.0','1.21.0'] else None
-    if version in ['1.19.0','1.20.0','1.21.0']:
+    if version in ['1.21.0','1.22.0']:records('drafts-seed')
+    prior_submissions=None
+    if version=='1.22.0':
+        records('submissions-seed');prior_submissions=records('submissions')
+    prior_drafts=records('drafts') if version in ['1.21.0','1.22.0'] else None
+    prior_templates=records('templates') if version in ['1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0','1.22.0'] else None
+    prior_accounts=records('mail-accounts') if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0','1.22.0'] else None
+    prior_key=(private/'mail-master.key').read_bytes() if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0','1.22.0'] else None
+    prior_review=records('review-intake') if version in ['1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0','1.22.0'] else None
+    prior_reports=records('reviews') if version in ['1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0','1.22.0'] else None
+    prior_appointment=records('appointment-intake') if version in ['1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0','1.22.0'] else None
+    prior_schedule=records('appointments') if version in ['1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0','1.22.0'] else None
+    if version in ['1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0','1.22.0']:records('mail-checks-seed')
+    prior_checks=records('mail-checks') if version in ['1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0','1.22.0'] else None
+    if version in ['1.17.0','1.18.0','1.19.0','1.20.0','1.21.0','1.22.0']:records('inbox-seed')
+    prior_inbox=records('inbox') if version in ['1.17.0','1.18.0','1.19.0','1.20.0','1.21.0','1.22.0'] else None
+    if version in ['1.18.0','1.19.0','1.20.0','1.21.0','1.22.0']:records('messages-seed')
+    prior_messages=records('messages') if version in ['1.18.0','1.19.0','1.20.0','1.21.0','1.22.0'] else None
+    if version in ['1.19.0','1.20.0','1.21.0','1.22.0']:
         records('notices-seed');prior_inbox=records('inbox')
-    prior_notices=records('notices') if version in ['1.19.0','1.20.0','1.21.0'] else None
+    prior_notices=records('notices') if version in ['1.19.0','1.20.0','1.21.0','1.22.0'] else None
     prior_provider=None;prior_provider_key=None
-    if version in ['1.20.0','1.21.0']:
+    if version in ['1.20.0','1.21.0','1.22.0']:
         # Fresh installation creates the owner, but does not authenticate this browser.
         login=url+'/admin/index.php?view=login'
         session.post(login,data={'csrf':token(session.get(login)),'action':'login','email':'organized@example.invalid','password':password})
@@ -221,7 +224,7 @@ def run(web,base,check,qa,php,label,prefix,version):
         r=session.post(mail,data={'csrf':token(session.get(mail)),'action':'mail_accounts_save','account_id':account['id'],'revision':account['revision'],'current_password':password,**{k:account[k] for k in ['label','address','imap_host','imap_port','imap_encryption','imap_username','smtp_host','smtp_port','smtp_encryption','smtp_username','enabled']},'imap_password':'','smtp_password':''})
         check(label+' recovered private key decrypts and changed generation hides old notices','Email settings saved' in r.text and records('mail-accounts')['accounts'][0]['revision']==account['revision']+1 and (private/'mail-master.key').read_bytes()==prior_key and session.get(endpoint).json()['count']==0 and records('notices')==saved_notices)
 
-    if version in ['1.19.0','1.20.0','1.21.0']:
+    if version in ['1.19.0','1.20.0','1.21.0','1.22.0']:
         def prior_retained():
             return records('notices')==prior_notices and records('messages')==prior_messages and records('inbox')==prior_inbox and records('mail-checks')==prior_checks and records('appointments')==prior_schedule and records('reviews')==prior_reports and records('mail-accounts')==prior_accounts and records('templates')==prior_templates and (private/'mail-master.key').read_bytes()==prior_key
     if version=='1.19.0':
@@ -244,7 +247,7 @@ def run(web,base,check,qa,php,label,prefix,version):
         restored=records('provider')
         check(label+' original provider key decrypts after recovery and reapplication','20i settings saved' in r.text and restored['profiles'][0]['revision']==profile['revision']+1 and len(restored['history'])==2 and restored['checks']==saved['checks'] and restored['results']==saved['results'] and (private/'provider-master.key').read_bytes()==provider_key and prior_retained())
 
-    if version in ['1.20.0','1.21.0']:
+    if version in ['1.20.0','1.21.0','1.22.0']:
         provider_key=prior_provider_key;restored=records('provider')
         check(label+' update and recovery preserve original provider profile check history and both keys',restored==prior_provider and prior_retained() and (private/'provider-master.key').read_bytes()==provider_key)
         settings=url+'/admin/index.php?view=provider-settings';profile=restored['profiles'][0]
@@ -284,3 +287,7 @@ def run(web,base,check,qa,php,label,prefix,version):
     if version=='1.21.0':
         from mail_submission_upgrade_cases import run as submission_upgrade
         submission_upgrade({**locals(),'token':token})
+
+    if version=='1.22.0':
+        from submission_retention_122 import run as submission_retention
+        submission_retention({**locals(),'token':token})

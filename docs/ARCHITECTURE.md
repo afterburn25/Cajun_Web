@@ -1,5 +1,19 @@
 # Architecture notes
 
+## Latest verified publication — 1.22.0
+
+[v1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) is published and freshly downloaded/verified at immutable source/tag `e3b434ffb2244e454ea9f24fa1de9173b7479ccc`, through [PR77](https://github.com/afterburn25/Cajun_Web/pull/77). Authorized staff can review and explicitly send a saved plain-text draft from a currently assigned mailbox, then inspect private submission history. Current author, Send/grant permissions and exact revisions are rechecked; durable attempt records prevent replay. SMTP requires verified TLS. Server acceptance is distinguished from recipient delivery, and unknown or unresolved outcomes cannot automatically resend. [Owner guide](SENDING_EMAIL.md).
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38553149886) passes7,854 assertion executions:2,183 native/form/combined,3,084 estimator,1,236 actual HTTP/Chromium,247 unprivileged recovery,1,083 Apache and21 builder. All21 workflow gates pass, including PHP8.2/8.4 submission matrices. Actual Send/history desktop/mobile images inspected; homepage pixels match1.21.0. Clean Windows/Linux packages agree. All16 public assets, members/checksums and immutable tag verified; prior1.21 assets unchanged. [Report](TEST_REPORT_1.22.0.md); [handoff](DEVIN_HANDOFF_1.22.0.md).
+
+All24 supported starting packages through1.21.0 retain upgrade acceptance. UPDATE stages `cwp-update-1.22.0`; actual1.21 recovery/reapplication preserves previous records, encrypted history, both original keys, drafts and accepted/unknown/unresolved/abandoned submission records without resend. Upgraded owners explicitly prepare submission storage with their current password; fresh setup creates empty ready tables. No real mailbox/provider/merchant or target-host acceptance, live deployment, customer mail, charge or SSH is claimed. Sent-folder synchronization, attachments, HTML composition, reply/forward and OAuth remain separate.
+
+Continue [combined hosting/client PR85](https://github.com/afterburn25/Cajun_Web/pull/85), observed `a9beb6e72208cdfdb7a0ec0f8fe09a7e4883325c`. It preserves mail main plus client83 and reviewed hosting79-82/84 on a separate integration branch. Client83 eefe29e has downloaded7,027 complete application assertions,17 successful workflows, exact Windows/Linux packages and inspected screenshots. Hosting79-82/84 have independent clear reviews at their documented heads. Verify the current client/integration review and combined native/application results before merging; parent evidence does not replace combined acceptance. Hosting helpers remain internal with no route, worker, provider transport or fresh-install activation.
+
+Service-plan53 corrections e7a283b are independently clear (76 supplied plus21 independent controls per PHP8.4 default/no-ini); observed current branch `29200a14ceaeefa7dda646d0de4c543a011cd292` may be newer. Service-desk61 df0a1d2 is independently clear after114 supplied plus44 independent controls per default/no-ini mode: approvals expire, rejected decisions preserve state, attempt tokens reject stale results, and verified resolution is required before a stalled external operation can retry. Unknown observations remain recoverable and conclusive replays preserve state. [Review6167233334](https://github.com/afterburn25/Cajun_Web/pull/61#issuecomment-6167233334). Verify current CI and inspect any newer correction at observed `df0a1d23f5900541557b795511332d1e80be5e52` before integration. Preserve Devin ownership and all original branches. Full billing, broader20i/client hosting and VPS SSH remain incomplete; the roadmap goal stays active.
+
+## Earlier checkpoints — superseded by the publication above
+
 ## Unreleased submission integration
 
 PR77 connects admin views mail-send/mail-submissions/mail-submission and mail_submissions_* actions to the existing current-authorized coordinator and private storage. Fresh setup creates empty ready tables; existing owners use additive password-confirmed setup. Saved immutable intent, committed dispatch fence and exact result remain separate. SMTP uses pinned verified TLS; synthetic test connectors exist only under tests. Review and full packaged acceptance remain pending.
@@ -10,6 +24,8 @@ Guarded `site/app/hosting/records.php` uses the canonical hosting mirror with ow
 
 
 ## Latest verified publication — 1.21.0
+
+## Previous verified publication — 1.21.0 (superseded checkpoint)
 
 [v1.21.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.21.0) is published and freshly downloaded/verified at immutable source/tag `7805e56aa9e53cb081600589e92991255475474c`, through [PR #75](https://github.com/afterburn25/Cajun_Web/pull/75). Staff can save, edit, preview and retain private local email drafts for currently assigned sending accounts, with canonical active-template insertion. Current author/account/Send access, exact revisions, stable initial-save replay and strict audit protect the workflow. [Owner guide](LOCAL_EMAIL_DRAFTS.md).
 
