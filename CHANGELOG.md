@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — native structured project planning
+
+- Add explicit owner-prepared structured plans, atomic original-request replay and independent current-plan/history anchors, preserving existing project fields.
+- Validate current staff/client/support authority and complete history within4,096-event/32MiB processing bounds; preserve all records at capacity.
+- Verify126 native MariaDB checks under128MiB plus211 canonical/deployed pure assertions in each default/no-ini mode. Exact PHP8.2/8.4 native/deployed CI verifies1,096 per push/PR matrix and all26 workflows. Actual forms/dashboard/activity and independent release acceptance remain pending.
+
 ## Unreleased — structured project planning records
 
 - Add immutable public plans with calendar dates, client action requests, blockers and bounded milestone dependency graphs; reject cycles, missing prerequisites and inconsistent completed states.

@@ -1,5 +1,18 @@
 # Session handoff — read before continuing
 
+## Current work — native planning CI verified
+
+`codex/project-planning-storage` preserves PR110/6bcf4e7; contract `ed1ab72` precedes native implementation. It adds exact owner-prepared plan/event/request/head storage, atomic saves, complete bounded history, original-request replay and current staff/client/scoped-support projections. Current planning stays separate from existing project stage/free-text milestones. [Native contract and evidence](docs/PROJECT_PLANNING_STORAGE_CONTRACT.md). No dashboard, route, automatic setup or planning activity delivery is active yet. Full P-05/P-07 remains partial.
+
+Local PHP8.4.25/MariaDB10.11.16 verifies **126 named native checks under128MiB**, including competing edits/retries, authority/ownership changes while waiting, exact original replay, audit/request/head rollback, two-client/support isolation, corrupted/lost history and A→B→A tail loss. A4,096-event fixture and a nearly32MiB valid history remain readable; new writes at capacity refuse without pruning and original retries still work. Oversized stored current-plan JSON is bounded in SQL before payload retrieval. Canonical/deployed pure default/no-ini runs each pass211,844 executions; total local970. Exact committed CI is now independently verified below; independent review and actual interface acceptance remain next.
+
+Parent PR1087e1665f now has verified **10,191 full assertions and all26 workflows**:1,431 HTTP/browser,1,617 Apache and275 recovery. All101 final images match the inspected checkpoint, six current desktop/320px images were inspected, and exact Windows/Linux COMPLETE2,611/UPDATE2,598/FULL5,273 archives are identical. [Final candidate proof6177968549](https://github.com/afterburn25/Cajun_Web/pull/108#issuecomment-6177968549). Independent combined/parent reviews and later exact-main release acceptance remain pending. Keep that source frozen and published1.23 unchanged.
+
+Devin retains complete20i and PR107/109 corrections; no provider implementation is changed here. Next: obtain the bounded independent review and define the exact interface contract, then connect actual planning forms/dashboard/activity on a separate preserved branch. Older sections below are historical checkpoints.
+
+
+[Draft PR112](https://github.com/afterburn25/Cajun_Web/pull/112) native implementation `63b692fc5a66b2120f02b5bc3e713cc65c718e63` now has independently verified [push38634428293](https://github.com/afterburn25/Cajun_Web/actions/runs/38634428293) and [PR38634467552](https://github.com/afterburn25/Cajun_Web/actions/runs/38634467552):126 native plus211 deployed pure default/no-ini checks per PHP8.2/8.4, **1,096 executions per matrix / 2,192 across both**. All12 JSON reports/full logs verify against local assertion names; PHP diagnostics are empty. Native runs enforce128MiB. Tested merge `e8534da14b406ed7d4d37413c013a9321d24c989` is tree-identical and all26 triggered workflows pass. [Bounded independent review6178086725](https://github.com/afterburn25/Cajun_Web/pull/112#issuecomment-6178086725) is pending. This establishes native/pure evidence, not actual UI/activity/HTTP or release acceptance.
+
 ## Current work — structured planning CI verified
 
 `codex/project-planning` preserves PR108/`7e1665f`; contract `e042c43` precedes immutable public plans and dated revisions. Scope/contact/target dates, client actions/blockers and structured milestones retain responsible party, explicit status and validated dependencies. [Contract and remaining integration](docs/PROJECT_PLANNING_CONTRACT.md). Shipping and existing provider/project components remain unchanged.
