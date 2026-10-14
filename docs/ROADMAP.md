@@ -1,5 +1,9 @@
 # Approved roadmap and acceptance criteria
 
+## Active preparation — SMTP submission
+
+The separate `codex/mail-submission` branch records the [bounded submission contract](MAIL_SUBMISSION_CONTRACT.md), based on draft candidate231d1f7. Documentation only at this checkpoint; no sending is implemented or enabled. Draft PR75 acceptance38523831728 and1.20.0 publication remain separate. Follow current status/handoff for exact evidence and continued ownership.
+
 ## Candidate 1.21.0 — local email drafts; acceptance pending
 
 Version 1.20.0 is published/download-verified at6f0b0ce with6,593 named exact-main checks and all16 public assets verified. Its publication record is merged through [PR76](https://github.com/afterburn25/Cajun_Web/pull/76) at a20e45e and reconciled here with both histories preserved. This branch prepares the next unused candidate1.21.0, not a published release.

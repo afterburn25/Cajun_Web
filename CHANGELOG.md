@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — submission contract preparation
+
+Record the next explicit-send boundary on a separate branch: maintained protocol/MIME, immutable reviewed snapshots, all-recipient pre-DATA acceptance, durable intent and attempt-bound unknown outcomes. Documentation only; no new application version, transport, UI or message sent.
+
 ## 1.21.0 — candidate, not published
 
 - Acceptance fixture correction from c43cca5: explicitly authenticate the original1.20 owner before provider seeding; wait for the responsive drawer and reset scroll before mobile draft capture. Prior run38520608916 passed native/browser/filesystem checks but Apache was incomplete and mobile visual approval was withheld. Shipping source is unchanged; replacement acceptance pending.

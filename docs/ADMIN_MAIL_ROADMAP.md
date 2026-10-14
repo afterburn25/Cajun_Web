@@ -1,5 +1,9 @@
 # Admin webmail, staff access, templates and email notifications
 
+## Active preparation — SMTP submission
+
+The separate `codex/mail-submission` branch records the [bounded submission contract](MAIL_SUBMISSION_CONTRACT.md), based on draft candidate231d1f7. Documentation only at this checkpoint; no sending is implemented or enabled. Draft PR75 acceptance38523831728 and1.20.0 publication remain separate. Follow current status/handoff for exact evidence and continued ownership.
+
 ## Latest verified publication — 1.19.0
 
 [v1.19.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.19.0) is published and freshly downloaded/verified at immutable source/tag `22a2969692ab5bcc7f35158dcaa5355c623dc821` through [PR #72](https://github.com/afterburn25/Cajun_Web/pull/72). Assigned staff see recent email notices from explicit successful newest-20 inbox checks, with separate per-person opened/dismissed state and exact-message POST opening. Current permissions, mailbox grants and saved revisions filter counts/labels before exposure. Private admin/public bells preserve idle expiry, clear stale display and stay absent in client-support pages. No automatic IMAP synchronization or server read-flag writes. [Owner guide](RECENT_EMAIL_NOTICES.md).

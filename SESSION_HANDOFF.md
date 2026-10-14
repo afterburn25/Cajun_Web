@@ -1,5 +1,17 @@
 # Session handoff — read before continuing
 
+## Current work — SMTP submission contract on a separate branch
+
+Codex owns `codex/mail-submission`, starting from draft candidate231d1f7. [Submission contract](docs/MAIL_SUBMISSION_CONTRACT.md) defines the next A-06 boundary: immutable reviewed content, maintained MIME/SMTP, all-recipient acceptance before DATA, durable single-attempt dispatch and explicit unknown outcomes. This initial commit is documentation only: no dependency import, application source/schema/version change, Send control or external operation. Reconcile accepted PR75/main before later application integration; no new version is reserved.
+
+PR75 correction231d1f7 remains independently under application acceptance [38523831728](https://github.com/afterburn25/Cajun_Web/actions/runs/38523831728), currently running. Keep that run alive and inspect its results/mobile image. Prior38520608916 is incomplete after Apache's unauthenticated old1.20 fixture; latest published/download-verified version remains1.20.0 at6f0b0ce. Other historical draft checkpoints below remain dated evidence, not acceptance of the current run.
+
+Independent re-review of Devin hosting5ab13fd passes its142 checks/default/no-ini plus8 positive controls, but4 additional cases remain ([6162609186](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6162609186)): unbound reconciliation replay, automatic rearming after nonretryable deletion and referenced quota mutation. Service-plan166c4b3 passes68/default/no-ini plus12 positive controls, but4 cases expose referenced limit mutation and trailing-LF canonical identifiers/times ([6162609466](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6162609466)). Both components remain separate and outside deployment; Devin retains focused corrections.
+
+Next: implement isolated immutable submission preparation and maintained MIME, then bounded loopback SMTP tests and independent review before any application exposure. In parallel, finish draft candidate and exact-main release acceptance. No customer mail, payment, provider write, SSH or live deployment. The full roadmap remains active.
+
+## Earlier draft branch checkpoint — superseded for ownership by the current section
+
 ## Current 1.21.0 candidate — acceptance fixture corrections
 
 Latest published/download-verified version remains [1.20.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.20.0), source 6f0b0ce; publication docs are on main a20e45e. PR #75 remains a candidate with no tag or release. Starting head c43cca5 has independent integration review at03e98cd and additive conflict/recovery review atf147417 ([6162116293](https://github.com/afterburn25/Cajun_Web/pull/75#issuecomment-6162116293)); its main merge changed documentation only.
