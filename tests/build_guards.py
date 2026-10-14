@@ -1,7 +1,9 @@
 """Exercise real builder rejection paths in an isolated copy, never shipping source."""
 from pathlib import Path
-import importlib.util,json,os,shutil
-ROOT=Path(__file__).resolve().parents[1];QA=ROOT/'qa';WORK=ROOT/'test-runtime/build-guards';checks=[]
+import importlib.util,json,os,shutil,subprocess,tempfile
+ROOT=Path(__file__).resolve().parents[1];QA=ROOT/'qa';checks=[]
+(ROOT/'test-runtime').mkdir(exist_ok=True)
+WORK=Path(tempfile.mkdtemp(prefix='build-guards-',dir=ROOT/'test-runtime'))
 spec=importlib.util.spec_from_file_location('cwp_build',ROOT/'tools/build.py');build=importlib.util.module_from_spec(spec);spec.loader.exec_module(build)
 WORK.mkdir(parents=True,exist_ok=True);build.SITE=WORK/'site';shutil.copytree(ROOT/'site',build.SITE)
 def check(name,value):
@@ -18,6 +20,9 @@ def temporary(name,data,test):
         if old is None:p.unlink()
         else:p.write_bytes(old)
 try:
+    commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
+    long_name='site/includes/foundation/mail-receiving/vendor/zbateson/mail-mime-parser/src/Header/Consumer/QuotedStringMimeLiteralPartTokenSplitPatternTrait.php'
+    check('Builder reads the exact long dependency Git blob without filesystem path ambiguity',build.source_bytes(commit,long_name)==(ROOT/long_name).read_bytes())
     check('Builder accepts exact organized scaffold inventory',len(build.inventory())>100)
     check('Installer inventory uses portable case-sensitive path order',list(build.inventory())==sorted(build.inventory()))
     temporary('storage/client.zip',b'customer bytes','Builder rejects runtime storage contents')
