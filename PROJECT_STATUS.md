@@ -1,5 +1,13 @@
 # Project status
 
+## Project history screens — local acceptance verified, unreleased
+
+`codex/project-progress-screens` preserves PR106/`c41cc6d`; contract `19191b4` precedes implementation. The existing project editor and client portal now show dated history with honest initial snapshots, retained stale drafts, original-request replay and exact personal activity links. Owner setup remains explicit. [Usage and detailed evidence](docs/PROJECT_HISTORY.md); [contract](docs/PROJECT_PROGRESS_CONTRACT.md#existing-editor-timeline-and-activity-integration-contract).
+
+Local verification passes 139 native assertions, 57 form/render assertions in each PHP8.4 default/no-ini mode, and 43 portable HTTP/Edge behavior assertions plus one local PHP diagnostic check. All six final desktop/320px images were inspected; sidebar transition capture timing was corrected in the test. The refreshed installer has 2,610 exact dependency hashes across 2,611 shipping files. Latest-1.23 populated recovery/replay cases are syntax-checked but packaged execution is pending. Next: commit this implementation, publish a stacked draft PR, verify exact PHP8.2/8.4 and full application/package acceptance, then obtain independent review. Full P-05/P-07 remains partial.
+
+Devin retains complete20i under [his verified acceptance](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171594708). Canonical project/desk models and provider implementation are unchanged from the base. Published1.23 and frozen PR101/104/105/106 remain preserved; their pending reviews are not implied by this local result. Older sections below are historical checkpoints.
+
 ## Native project history — focused CI verified, integration pending
 
 On `codex/project-progress-storage`, preserved base `3677ccf`, contracts `0876738` and `86e5cb7` precede implementation. The inactive native adapter adds exact owner-prepared schema, current staff/client/support access, atomic project/event/request/head/audit writes, honest legacy baselines, original-request replay and bounded validated history. The existing project editor and portal are unchanged; actual forms, timeline/activity integration and packaged acceptance remain next. Complete 20i implementation remains with Devin under [his accepted assignment](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171594708).

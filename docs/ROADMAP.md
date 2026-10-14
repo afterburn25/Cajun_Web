@@ -1,6 +1,6 @@
 # Approved roadmap and acceptance criteria
 
-The unreleased `codex/project-progress-storage` branch adds inactive native project history with current authorization, immutable changes, honest legacy adoption, atomic replay/audit and an independently saved history head. Local native PHP/MariaDB checks pass 109 assertions; canonical/deployed pure modes pass 620 more, **729 total**. Focused PHP8.2/8.4 native CI is verified at838 executions per push/PR matrix. Actual project forms, timeline/activity, independent review and full packaged acceptance remain pending; P-05/P-07 is partial. [Contract and evidence](PROJECT_PROGRESS_CONTRACT.md). Devin retains complete 20i implementation; published 1.23 remains unchanged.
+The unreleased `codex/project-progress-screens` branch connects the existing project editor, dated client/staff history and personal activity. Owner preparation, original retry identities and stale drafts are preserved. Local139 native,57 form/render per default/no-ini mode and43 actual HTTP/Edge behavior checks plus1 diagnostic check pass; six final desktop/mobile captures are inspected. Exact committed CI, packaged recovery/reapplication, full acceptance and independent review remain pending. P-05/P-07 stays partial. [Current guide and evidence](PROJECT_HISTORY.md); [contract](PROJECT_PROGRESS_CONTRACT.md). Complete20i stays with Devin; published1.23 is unchanged.
 
 ## Current ticket screens and activity — unreleased
 

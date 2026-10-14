@@ -89,8 +89,9 @@ try {
     pg_ok('Support audit failure rolls back both support and general audit',pg_fail_audit(fn()=>project_progress_client_get($job,1,0,'',$sid),'support_events')&&pg_snapshot()===$before);
     query('UPDATE '.table('support_clients').' SET allowed=0 WHERE client_id=1');pg_deny('Revoked scoped support access refuses later reads',fn()=>project_progress_client_get($job,1,0,'',$sid));pg_staff();
     require __DIR__.'/project_progress_native_integrity.php';
+    require __DIR__.'/project_progress_screen_native_cases.php';
     require __DIR__.'/project_progress_native_limits.php';
     $audit=project_progress_json(all('SELECT * FROM '.table('audit')));pg_ok('General history audit omits project content and credentials',!str_contains($audit,'Exact')&&!str_contains($audit,'Published progress')&&!str_contains($audit,$password)&&!str_contains($audit,'progress-client'));
     pg_ok('Progress does not create invoices or payment records',(int)query('SELECT COUNT(*) FROM '.table('studio_invoices'))->fetchColumn()===0);
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,(string)$e."\n");}
-$passed=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/project-progress-native-results.json',json_encode(['passed'=>$passed,'scope'=>'Native MariaDB synthetic history, current authority, replay, atomicity, corruption and concurrency; no HTTP/UI/activity/provider acceptance.','checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));echo ($passed?'PASS':'FAIL').': '.count($checks).' native project-progress checks'.PHP_EOL;exit($passed?0:1);
+$passed=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/project-progress-native-results.json',json_encode(['passed'=>$passed,'scope'=>'Native MariaDB synthetic history, current authority, replay, atomicity, corruption and concurrency; native project activity included; no HTTP/UI/provider acceptance.','checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));echo ($passed?'PASS':'FAIL').': '.count($checks).' native project-progress checks'.PHP_EOL;exit($passed?0:1);

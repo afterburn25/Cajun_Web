@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased — project history screens and activity
+
+- Connect explicit owner preparation and existing project create/edit forms to atomic dated history, original retries and retained escaped stale drafts.
+- Add paginated staff/client timelines and exact-update personal activity links, with current permissions, client separation and scoped read-only support access.
+- Verify local native/form/HTTP/Edge behavior and six final desktop/mobile screenshots; prepare populated latest-1.23 recovery/reapplication. Exact committed CI, packaged acceptance and independent review remain pending. [Guide](docs/PROJECT_HISTORY.md).
+
+## Unreleased — project history screen contract
+
+- Define existing editor/timeline/activity integration before implementation on a child branch. No runtime change in this contract commit.
+
 ## Unreleased — native project history
 
 - Add protected owner preparation and current-authorized project history, exact legacy baselines, atomic writes and original request replay. Independently anchor the latest event to detect truncated history even after a project reverts to earlier fields.

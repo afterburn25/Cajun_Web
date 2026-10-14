@@ -102,6 +102,7 @@ jobs:
           php8.3 tests/support_tickets_native.php
           php8.3 tests/project_progress_native.php
           php8.3 tests/project-progress/records.php --deployment > qa/project-progress-deployed-results.json
+          php8.3 tests/project-progress/forms.php > qa/project-progress-forms-results.json
           php8.3 tests/hosting_records_native.php
           php8.3 tests/hosting_operations_native.php
           php8.3 tests/hosting_retry_native.php

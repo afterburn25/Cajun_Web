@@ -1,5 +1,5 @@
 <?php
-/** Inactive native project-history adapter; no route, automatic setup or external dispatch. */
+/** Native project history; explicit owner setup, current authority and no external dispatch. */
 declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/clients/workspace.php';
