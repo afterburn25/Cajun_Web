@@ -11,9 +11,9 @@ Twenty-two supported starting packages through 1.19.0, including 1.0.8 and 1.11.
 Continue [local draft PR #75](https://github.com/afterburn25/Cajun_Web/pull/75), observed `03e98cd3b9e8742d2f890176e30d09f76b243c51` (OPEN). Storage/content have earlier independent review and native evidence; current integrated routes, forms and recovery require their own application results and screenshot inspection. Independent integration review found no blockers at 03e98cd in [6161813270](https://github.com/afterburn25/Cajun_Web/pull/75#issuecomment-6161813270); newer changes still require review. Add the actual immutable 1.20.0 upgrade/recovery baseline before reserving a later draft release. Codex owns application integration and releases. Devin retains canonical component corrections and independent review; [hosting #60 review](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6161864524) reproduces eight remaining cases at fe58312 despite 111 supplied checks passing. [Service-plan #53 findings](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6161469018) remain a separate correction lane. Preserve all branches and keep the full roadmap active.
 
 
-## Historical provider preparation checkpoints — superseded by the candidate above
+## Historical provider preparation checkpoints — superseded by the publication above
 
-The intermediate records below describe their commit-time state. The candidate section above governs current work.
+The intermediate records below describe their commit-time state. The publication section above governs current work.
 
 ### Packaging correction
 
