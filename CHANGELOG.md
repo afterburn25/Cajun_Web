@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — structured project planning records
+
+- Add immutable public plans with calendar dates, client action requests, blockers and bounded milestone dependency graphs; reject cycles, missing prerequisites and inconsistent completed states.
+- Retain dated exact plan revisions, original milestone identities and client-safe projections. Caller aliases cannot rewrite accepted data.
+- Verify211 named pure assertions per default/no-ini mode. Shipping code is unchanged; native persistence, screens, committed CI and independent acceptance remain pending.
+
 ## Unreleased — structured project planning contract
 
 - Record the scope/contact/date/client-action/blocker and structured milestone boundary before implementation. No runtime change in this contract commit.

@@ -1,10 +1,12 @@
 # Session handoff — read before continuing
 
-## Current work — structured project planning
+## Current work — structured project planning records
 
-Codex starts `codex/project-planning` from preserved PR108/`7e1665f`. The [planning contract](docs/PROJECT_PLANNING_CONTRACT.md) precedes dependent code: scope/contact/target date, client actions/blockers and structured milestones with explicit states, responsible party, dates and dependencies. Pure records come first; native storage and the existing project dashboard follow. Full P-05/P-07 remains active, and no planning functionality is claimed yet.
+`codex/project-planning` preserves PR108/`7e1665f`; contract `e042c43` precedes the pure implementation. It adds immutable scope/contact/date/client-action/blocker fields and structured milestones with responsible party, explicit state, date and a validated dependency graph. Dated events retain exact before/after, stable milestone identities and client-safe projection. [Contract and evidence](docs/PROJECT_PLANNING_CONTRACT.md). Current shipping source, existing progress records and provider implementation remain unchanged.
 
-PR108 stays unchanged while full application38628432378 and exact Windows build finish; its pure/native matrices verify848/898 executions each. Devin retains complete20i; the independent PR107 review6177258236 requests202 outcome and node-bound corrections on his branch. Published1.23 and earlier candidates remain preserved.
+Local PHP8.4.25 default/no-ini each pass211 named synthetic checks,422 executions total. Coverage includes real calendar boundaries, missing/cyclic dependencies, prerequisite completion,100 retained milestones, caller-reference immutability, canonical/hostile JSON, exact history, stale/no-op/removal refusal and cross-client projection. This is pure data evidence only. Next: push the scoped draft PR and verify PHP8.2/8.4 matrices, then document and implement native current-authorized persistence and the actual project dashboard. P-05/P-07 remains partial.
+
+Parent PR108 stays frozen. Its focused matrices verify848/898 executions each; exact Windows COMPLETE2611/UPDATE2598/FULL5273 archives now independently verify. Full application38628432378 has produced a browser checkpoint; downloaded final browser/package/Apache evidence and independent review remain required. Devin owns complete20i and the corrections requested in PR107 comment6177258236. Published1.23 and earlier candidates are preserved. Older sections below are historical checkpoints.
 
 ## Project history screens — local acceptance verified, unreleased
 

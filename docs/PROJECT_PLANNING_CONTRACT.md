@@ -1,5 +1,9 @@
 # Project planning and structured milestones
 
+## Current implementation and evidence
+
+Contract `e042c43` precedes pure `ProjectPlan` and `ProjectPlanEvent`, named tests and the isolated PHP8.2/8.4 workflow. Local PHP8.4.25 default/no-ini each pass211 named assertions (422 executions). Actual coverage includes valid/invalid Gregorian dates, UTF8 byte and aggregate bounds, exact multiline preservation, unknown/duplicate/canonical JSON, graph cycles including disconnected/100-node cases, completed prerequisites, immutable caller/return aliases, exact initial/update events, stale/no-op/removal refusal, client-safe projection and bounded history. Current shipping source and existing foundation components are unchanged from7e1665f. Native/current-access, HTTP/UI, notification, package and independent review acceptance are not claimed. Committed CI remains next before native integration.
+
 ## Purpose and ownership
 
 Implement the remaining [P-05 project dashboard](CLIENT_PORTAL_ROADMAP.md#p-05--web-design-project-workspace-and-progress) planning fields: recorded scope, assigned contact, target date, client actions, blockers and structured milestones with ownership, dates, dependencies and explicit states. Existing projects, designs/proposals, files, invoices, deliveries and dated field history remain the source of truth for those respective functions. Design-only customers receive the same project planning functionality. No automatic completion percentage, payment-derived production progress, guaranteed date or fabricated historical milestone is introduced.

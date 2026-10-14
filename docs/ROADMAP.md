@@ -1,5 +1,9 @@
 # Approved roadmap and acceptance criteria
 
+## Structured project planning — unreleased pure records
+
+The separate `codex/project-planning` branch defines scope/contact/target dates, client actions/blockers and structured milestone ownership/status/dependencies, with immutable dated history. Local211 named checks pass in each PHP8.4 default/no-ini mode. [Contract and actual evidence](PROJECT_PLANNING_CONTRACT.md). Native storage, current authorization, dashboard/forms/activity and full acceptance remain next; this branch does not activate planning. Full P-05/P-07 stays partial. PR108 acceptance remains separate, and Devin retains complete20i.
+
 The unreleased `codex/project-progress-screens` branch connects the existing project editor, dated client/staff history and personal activity. Owner preparation, original retry identities and stale drafts are preserved. Local139 native,57 form/render per default/no-ini mode and43 actual HTTP/Edge behavior checks plus1 diagnostic check pass; six final desktop/mobile captures are inspected. Exact committed CI, packaged recovery/reapplication, full acceptance and independent review remain pending. P-05/P-07 stays partial. [Current guide and evidence](PROJECT_HISTORY.md); [contract](PROJECT_PROGRESS_CONTRACT.md). Complete20i stays with Devin; published1.23 is unchanged.
 
 ## Current ticket screens and activity — unreleased
