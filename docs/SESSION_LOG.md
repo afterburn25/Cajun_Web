@@ -1364,3 +1364,10 @@ No provider calls, deployments, releases or live operations.
 - **Result:** CLEAR posted at comment 6167231488. Combined `native-and-browser` acceptance on the merge ref is the remaining gate — Codex-owned.
 - **Board:** main `e3b434f` exact-main acceptance still in progress (v1.22.0 gate); PR #61 `df0a1d2` correction posted (114 checks), CI wave scheduled, re-review pending; all open Devin PRs mergeable.
 - **No merge, publication, deployment, provider write, mail send, payment, SSH, or customer operation performed.**
+
+## 2026-10-14 — v1.22.0 mail-submission release published (observed)
+
+- **Event:** Codex published [v1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) at 2026-10-14T11:28:49Z from main `e3b434f` (PR #77 merge) after exact-main acceptance `38553149886` completed success. All 16 release assets present (COMPLETE-UPLOAD / FULL-PROJECT / UPDATE / TEST-EVIDENCE / manifests / SHA256SUMS / docs).
+- **Devin role:** observed and logged only — no merge, build, tag, or publication action taken. Publication and asset verification are Codex-owned.
+- **Board:** PR #85 `a9beb6e` review CLEAR (6167231488), combined acceptance queued; PR #61 `df0a1d2` correction posted (114 checks), desk CI + merge acceptance queued behind the ~130-run refresh backlog; all open Devin PRs mergeable.
+- **Next (Codex-owned):** post-release verification, #85 merge after combined acceptance, #61 re-review, sequential chain integration.
