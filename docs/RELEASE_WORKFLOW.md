@@ -1,5 +1,19 @@
 # GitHub testing, incremental releases and agent continuity
 
+## Latest verified publication — 1.23.0
+
+[Version 1.23.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0) is published and freshly downloaded/verified at immutable source/tag `4fdb56266c77f6e6bf7b58e966d24696e1eaefc8`, through [PR #85](https://github.com/afterburn25/Cajun_Web/pull/85). Client account edits reject stale forms and retain escaped unsaved details for review. Client changes/invitations recheck current authority, serialize writes and audit atomically; invitation activation is single-use and unexpired. Client administration is refused during support sessions. [Owner guide](CLIENT_ACCOUNT_SAFEGUARDS.md).
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38587338059) passes **8,360 named assertion executions and all 25 workflow gates**: 2,460 native/form/combined, 3,084 estimator, 1,275 HTTP/Chromium, 261 unprivileged recovery, 1,259 Apache and 21 builder. Actual client-conflict/Send/history screenshots are verified; homepage pixels match 1.22. Clean Windows/Linux packages agree. All 16 draft and public files, archive members/checksums/directories and immutable tag were downloaded and verified; prior 1.22 assets remain unchanged. [Report](TEST_REPORT_1.23.0.md); [handoff](DEVIN_HANDOFF_1.23.0.md).
+
+All 25 supported starting packages through 1.22.0 retain upgrade acceptance. UPDATE stages `cwp-update-1.23.0`. Actual latest 1.22 update/recovery/reapplication preserves nonempty drafts, submission history/fences and both original encryption keys; replaying original requests cannot send again. Reviewed internal hosting records/journals/dispatch/provisioning-retry helpers remain inactive groundwork. This release does not add hosting controls or activate a provider operation.
+
+**Next integration:** #87-#89 preserve deletion retry and reconciliation; #89 `1c92e6b` now has verified 8,578 full application assertions, 18 workflow gates and identical Windows/Linux packages. #90-#92 preserve service-plan records and actual owner/client agreements; current #92 `76a1537` has verified 8,847 full assertions, focused PHP 8.2/8.4 matrices and inspected desktop/mobile views. Its bounded footer/mobile-fixture review 6171344188 remains pending. Prepare a later version with new combined acceptance; never replace the 1.23 assets with these follow-on test archives.
+
+Devin has acknowledged **complete end-to-end 20i ownership**, including persistence, admin/client UI, hosting, domains, VPS/cloud and support/SSH. [Assignment and acknowledgement](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171594708). Reader #99 `565aa3d` has isolated component clearance [6172038729](https://github.com/afterburn25/Cajun_Web/pull/99#issuecomment-6172038729); refresh/storage/link/client-view integration is still required. Codex continues the non-20i roadmap and final review/integration/releases. No target-host deployment, real customer message, charge, provider operation or SSH acceptance is claimed. The full roadmap remains active.
+
+## Earlier publication records — historical evidence
+
 ## Latest verified publication — 1.22.0
 
 [v1.22.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.22.0) is published and freshly downloaded/verified at immutable source/tag `e3b434ffb2244e454ea9f24fa1de9173b7479ccc`, through [PR77](https://github.com/afterburn25/Cajun_Web/pull/77). Authorized staff can review and explicitly send a saved plain-text draft from a currently assigned mailbox, then inspect private submission history. Current author, Send/grant permissions and exact revisions are rechecked; durable attempt records prevent replay. SMTP requires verified TLS. Server acceptance is distinguished from recipient delivery, and unknown or unresolved outcomes cannot automatically resend. [Owner guide](SENDING_EMAIL.md).

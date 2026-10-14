@@ -196,6 +196,12 @@ Source22a2969692ab5bcc7f35158dcaa5355c623dc821 retains exact current-window iden
 
 Use cURL for fixed HTTPS rather than implementing an HTTP parser. Reject entire mixed DNS answer sets and pin one accepted address. Local resolver latency is governed by the host; transfer deadlines do not pretend to bound blocking DNS. Keep test-only address/CA remapping outside production, verify original options first, and execute CI fixtures with networking disabled. PHP -n disables configuration; compiled extensions remain, so explicitly test unavailable cURL initialization instead of assuming it disappears.
 
+## 2026-10-14 — Complete 20i implementation assigned to Devin
+
+Owner instruction: “let devin do the complete 20i integration.” Devin's prior isolated-component scope is expanded to end-to-end provider/application work, including data, ownership, native UI, controls/lifecycle, domains, VPS and support/SSH integration. Codex keeps non-20i work and final review/merge/release coordination. Shared router/build wiring may be implemented narrowly by Devin with documented coordination; it is not reserved so broadly that application work cannot proceed. Existing branch history, immutable releases and operation-specific production gates stay in force. [Complete handoff](DEVIN_COMPLETE_20I_HANDOFF.md).
+
+## Preserved earlier branch checkpoint
+
 ## 2026-10-14 — retain consent model before persistence
 
 Preserve Devin service-plan source and history by ordinary merge; mirror canonical code rather than reimplementing consent semantics. Durable owner-authored terms/revisions and authenticated exact-client consent must precede client activation, invoices or renewals. Importing a model is not a subscription or billing feature.
