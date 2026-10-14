@@ -1409,3 +1409,13 @@ Service-plan53 corrections e7a283b are independently clear (76 supplied plus21 i
 - #93 `devin/twentyi-inventory` @ `3807c23`: focused workflow green on PHP 8.2/8.4; draft remains open awaiting Codex review.
 - Next: respond to any #93 review; stand by for the next assigned bounded lane.
 
+## 2026-10-14 — Devin: 20i capability catalog on provider-foundation
+
+- Request: owner assignment (issue #2 comment 6170260528) approves typed capability metadata on `devin/provider-foundation` / PR #43 as supporting work; owner-upload provenance, documented/unverified/unsupported states, metadata must never enable execution.
+- Files: `foundation/provider/CatalogEntry.php`, `foundation/provider/CapabilityCatalog.php`, `foundation/twentyi/TwentyICatalog.php`, `tests/twentyi-catalog/run.php`, workflow + `docs/PROVIDER_FOUNDATION.md` updates.
+- Design: entries carry literal documented method/path, evidence grade, semantic risk (read/write/destructive/credential), provenance, note. Projection to ProviderCapability maps only `verified` to SUPPORTED; documented/authenticated stay UNVERIFIED — metadata cannot enable execution. GET-labelled mutations classified by effect; `knownGaps()` names five operations whose literal paths the reference does not quote.
+- Dataset: 47 curated entries from the owner reference with line-range provenance; `packages.list` is the sole `authenticated` (issue #65 + docs.20i.com article).
+- Tests: 50 checks pass PHP 8.4 default and `php -n`; existing 171 provider checks unchanged. PHP 8.2/8.4 CI via updated provider.yml.
+- Commit: `2ea15b2` pushed to `devin/provider-foundation`; next-increment proposal posted on issue #2 (6170771863).
+- Next: Codex pick on the proposed VPS/service-change read increment or another bounded lane; respond to PR #93 review when it lands.
+
