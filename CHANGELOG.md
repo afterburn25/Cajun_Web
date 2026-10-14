@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — owner and client service-agreement screens
+
+Connect reviewed-plan authoring, exact-client offers and explicit client agreements to the existing admin and portal. Preserve unsaved stale drafts, require current authority and CSRF, keep service agreement separate from payment authorization, and exclude support impersonation. Bounded validated lists and inactive-client controls are tested locally; packaged browser acceptance and independent review remain pending.
+
 ## Unreleased — prepared service-agreement form components
 
 Add strict exact-price/intent/confirmation parsing and escaped shared terms/history/form rendering. Passwords are excluded from redisplay, confirmation remains unchecked and service agreement is distinguished from payment authorization. Routes and actions remain unconnected.

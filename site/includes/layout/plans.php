@@ -61,3 +61,42 @@ function service_plans_agreement_history(ServiceSubscriptionDocument $doc):void 
     }
     echo '</ol><p class="hint">Accepting service terms does not authorize automatic payments. Review invoices and payment arrangements separately.</p></section>';
 }
+function service_plans_ui_intent(ServicePlanDocument|ServiceSubscriptionDocument $doc,string $action):array {
+    if(($_SERVER['REQUEST_METHOD']??'GET')==='POST' && ($_POST['action']??null)===$action) {
+        $values=service_plans_form_values($_POST);return array_intersect_key($values,array_flip(['record_id','revision','event_id']));
+    }
+    return ['record_id'=>$doc->data()['id'],'revision'=>$doc->revision(),'event_id'=>bin2hex(random_bytes(16))];
+}
+function service_plans_ui_page():int {return service_plans_form_number(['page'=>$_GET['p']??'0'],'page',10000);}
+function service_plans_ui_pagination(array $page,callable $url):void {
+    echo '<nav class="button-row" aria-label="Agreement pages">';
+    if($page['page']>0)echo '<a class="btn outline" href="'.esc($url($page['page']-1)).'">Previous</a>';
+    if($page['more'])echo '<a class="btn outline" href="'.esc($url($page['page']+1)).'">Next</a>';
+    echo '</nav>';
+}
+function service_plans_agreement_controls(ServiceSubscriptionDocument $doc,bool $owner,bool $clientActive=true):void {
+    $model=$doc->model();$commands=[];
+    if($model->state()==='pending-consent') {
+        if($owner && $clientActive && $model->consent())$commands['activate']='Activate this agreement';
+        if(!$owner && !$model->consent())$commands['consent']='Accept these service terms';
+        $commands['abandon']=$owner?'Withdraw this offer':'Decline this offer';
+    }elseif(in_array($model->state(),['active','paused'],true)) {
+        if($owner && ($model->state()==='active' || $clientActive))$commands[$model->state()==='active'?'pause':'resume']=$model->state()==='active'?'Pause this agreement':'Resume this agreement';
+        $commands['cancel']='End this agreement';
+    }
+    foreach($commands as $command=>$label) {
+        $action=($owner?'service_plans_':'service_agreements_').$command;$intent=service_plans_ui_intent($doc,$action);
+        echo '<section class="workspace-card"><h2>'.esc($label).'</h2><form method="post">';service_plans_intent_fields($action,$intent,csrf_field());
+        if($owner)echo '<input type="hidden" name="client_id" value="'.(int)$doc->data()['client_id'].'">';
+        if($command==='consent') {
+            $hash=($_POST['action']??null)===$action?service_plans_form_values($_POST)['terms_hash']:$model->plan->termsHash();
+            echo '<input type="hidden" name="terms_hash" value="'.esc($hash).'"><p>Accept the exact service scope and price shown above. This does not authorize automatic payments.</p>';
+        }
+        if($command==='cancel') {
+            $reason=($_POST['action']??null)===$action?service_plans_form_values($_POST)['reason']:'';
+            echo '<label>Reason for ending this agreement<textarea name="reason" maxlength="1000" rows="3" required>'.esc($reason).'</textarea></label><p class="hint">This records the end of this agreement. Any final balance or refund must be arranged separately with the studio.</p>';
+        }
+        service_plans_confirmation($command==='consent'?'I agree to the service terms and price shown above.':'I have reviewed and confirm this agreement change.',$owner);
+        echo '<button class="btn gold">'.esc($label).'</button></form></section>';
+    }
+}

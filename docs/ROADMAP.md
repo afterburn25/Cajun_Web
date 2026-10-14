@@ -1,5 +1,17 @@
 # Approved roadmap and acceptance criteria
 
+## Current work — owner and client service-agreement screens
+
+Codex continues PR92 on `codex/service-plan-screens` from30a486b, preserving storage91/71d7efe and import90/148606f. Owner setup, bounded plan/agreement lists, draft authoring, publication/retirement and exact-client offers now connect to the existing admin routes. Clients can review their pinned terms, explicitly agree, decline a pending offer or end an eligible agreement in their portal. Owner activation/pause/resume/end controls never create client consent. Current authority, shared locking, session CSRF, exact revisions/hashes, empty passwords, unchecked confirmations and support exclusion remain enforced. Stale draft text remains escaped and visible even if another session has published the plan; changing published terms requires a new plan.
+
+Local PHP8.4 default/no-ini each pass98 named form/rendering checks. Native MariaDB10.11.16 passes124 checks, retaining all87 storage cases and adding bounded projections, client isolation, delegated/support exclusion, stale session and revocation-while-waiting tests. New packaged HTTP/Chromium workflows and actual desktop/mobile screenshots are prepared but not yet run. All2579 shipping files are inventoried with exact canonical vendor mirrors. Current remote matrices, full application acceptance, independent review and release gates remain pending; these screens are not published.
+
+Parent91 application38574289104 reports success and its artifact/log are downloaded; full independent artifact/visual verification is next. Separate hosting89 application38567952137 is terminal cancelled because its75-minute job deadline expired during Apache; final source verification was skipped, so it is not accepted. This branch increases the full-suite allowance to105 minutes while retaining every test. Import90 full8465/all18 and candidate85 full8360/all21 remain verified at their own commits; review gates remain. Published1.22.0/e3b434f is unchanged.
+
+Devin is assigned the20i inventory/provider lane in [issue2 comment6170260528](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6170260528); acknowledgement/start remains unconfirmed. Codex retains application storage, permissions, screens and integration/releases. Next verify these actual packaged screens, inspect their images, resolve any failures and obtain the bounded review. No new release, live provider call, charge, customer mail, SSH or deployment.
+
+## Earlier checkpoints — historical evidence
+
 ## Current work — saved service terms and exact client agreement
 
 Codex owns `codex/service-plan-records`, based on preserved import PR90/148606f and its candidate85/21ebe69 ancestry. This bounded HC-06/HC-11 increment adds private plan/subscription documents, additive storage and current owner/client operations. Published1.22/e3b434f, candidate85 and original Devin53 remain unchanged. Hosting deletion/reconciliation87–89 are separate.

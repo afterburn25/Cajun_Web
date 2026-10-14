@@ -1,10 +1,10 @@
 # Owner and client service-agreement screens
 
-## Prepared components
+## Implemented integration — acceptance pending
 
-The form parser and shared escaped rendering functions are implemented, with77 named PHP8.4 checks in each default/no-ini mode. They are not called by a route yet. Current-authorized lists, controller actions, router/navigation integration and HTTP/Chromium acceptance remain pending. Screens are not released or usable merely because these pure functions pass.
+The owner/client read models, controllers, routes, navigation and permission mappings are implemented on PR92. Four admin views cover plan list/detail and agreement list/detail; the existing portal handles `agreements=1` and `agreement=<id>`. Owners explicitly prepare storage. No automatic schema activation, invoice generation, scheduled charge or provider action is added.
 
-Prepared Codex contract from storage PR91/71d7efecb09f0eb3f78b8b147363077badf2bdd0 on `codex/service-plan-screens`. This contract does not activate a route. Storage and its independent review remain separate; [saved terms contract](SERVICE_PLAN_RECORDS.md) governs every mutation.
+Local PHP8.4 default/no-ini each pass98 form/rendering checks; native MariaDB passes124 retained/new storage and projection checks. Actual packaged HTTP/Chromium fixtures cover setup, authoring, stale forms, publication, exact offers, client consent, lifecycle actions and audience exclusion; they are prepared and syntaxchecked only. Browser/release acceptance remains pending. The preserved storage contract in [SERVICE_PLAN_RECORDS.md](SERVICE_PLAN_RECORDS.md) governs each mutation.
 
 ## Owned scope
 
