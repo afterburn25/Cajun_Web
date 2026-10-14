@@ -37,7 +37,7 @@ The standalone PHP 8.2+ classes in [foundation/provider](../foundation/provider)
 
 ## Integration work for the adapter phase
 
-1. Site adapter: encrypted credential storage (installation private key, per SMTP), `OperationLedger` over an additive table with a unique idempotency-key column claimed atomically (`INSERT` with fingerprint + reserved_at; expired reservations classify `uncertain`), cURL `HttpTransport` with verified TLS, and the concrete 20i adapter once real endpoints/entitlements are verified.
+1. Site adapter: encrypted credential storage (installation private key, per SMTP), `OperationLedger` over an additive table with a unique idempotency-key column claimed atomically (`INSERT` with fingerprint + reserved_at; expired reservations classify `uncertain`), cURL `HttpTransport` with verified TLS (acceptance: [PROVIDER_TRANSPORT_CONTRACT.md](PROVIDER_TRANSPORT_CONTRACT.md)), and the concrete 20i adapter once real endpoints/entitlements are verified.
 2. Admin → Settings → Providers screens: masked credential entry, connection check, capability display — all owner-only.
 3. `build.py` gains `'provider'` in the foundation bundling list and the inventory regenerates; post-refactor destination is `site/includes/foundation/provider/` (`.htaccess` denial + `CWP_BOOT` guards already in place on each file).
 
