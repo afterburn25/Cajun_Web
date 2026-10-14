@@ -1,10 +1,10 @@
 name: Native project-planning storage checks
 on:
   push:
-    branches: [main, codex/project-planning-storage]
-    paths: ['site/app/projects/**', 'site/app/clients/**', 'site/app/staff/**', 'site/app/support/sessions.php', 'site/includes/auth/**', 'site/database/**', 'foundation/project-planning/**', 'site/includes/foundation/project-planning/**', 'tests/project_planning_native*.php', 'tests/project-planning/**', '.github/workflows/project-planning-native.yml']
+    branches: [main, codex/project-planning-storage, codex/project-planning-screens]
+    paths: ['site/app/projects/**', 'site/app/clients/**', 'site/app/staff/**', 'site/app/support/sessions.php', 'site/includes/auth/**', 'site/database/**', 'foundation/project-planning/**', 'site/includes/foundation/project-planning/**', 'tests/project_planning_*.php', 'site/app/activity/**', 'site/includes/layout/project_planning*.php', 'tests/project-planning/**', '.github/workflows/project-planning-native.yml']
   pull_request:
-    paths: ['site/app/projects/**', 'site/app/clients/**', 'site/app/staff/**', 'site/app/support/sessions.php', 'site/includes/auth/**', 'site/database/**', 'foundation/project-planning/**', 'site/includes/foundation/project-planning/**', 'tests/project_planning_native*.php', 'tests/project-planning/**', '.github/workflows/project-planning-native.yml']
+    paths: ['site/app/projects/**', 'site/app/clients/**', 'site/app/staff/**', 'site/app/support/sessions.php', 'site/includes/auth/**', 'site/database/**', 'foundation/project-planning/**', 'site/includes/foundation/project-planning/**', 'tests/project_planning_*.php', 'site/app/activity/**', 'site/includes/layout/project_planning*.php', 'tests/project-planning/**', '.github/workflows/project-planning-native.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -48,7 +48,7 @@ jobs:
           docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-planning-test sh -ec '
-              for source in site/app/projects/planning*.php site/database/schema/project_planning_schema.php site/database/migrations/project_planning_migrate.php site/includes/foundation/project-planning/*.php tests/project_planning_native*.php tests/project-planning/*.php; do php -l "$source"; done
+              for source in site/app/projects/planning*.php site/database/schema/project_planning_schema.php site/database/migrations/project_planning_migrate.php site/includes/foundation/project-planning/*.php tests/project_planning_*.php tests/project-planning/*.php site/includes/layout/project_planning*.php; do php -l "$source"; done
               for source in foundation/project-planning/*.php; do cmp "$source" "site/includes/$source"; done
               php -d memory_limit=128M tests/project_planning_native.php
               php tests/project-planning/records.php --deployment > qa/project-planning-deployed-default.json
@@ -64,4 +64,4 @@ jobs:
           retention-days: 14
       - name: Record scope
         if: always()
-        run: echo 'Synthetic MariaDB authority, history, replay, concurrency, capacity and audit rollback; exact deployed pure records. No dashboard, HTTP/browser, activity dispatch or provider acceptance.' >> "$GITHUB_STEP_SUMMARY"
+        run: echo 'Synthetic MariaDB authority, history, replay, concurrency, capacity and audit rollback; exact deployed pure records. Personal activity authority, cursors and read-state acceptance. No HTTP/browser or provider acceptance.' >> "$GITHUB_STEP_SUMMARY"
