@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — recurring invoice terms contract
+
+Record the immutable schedule/source/timezone/due-rule contract before implementation; no deployed behavior changes.
+
 ## Unreleased — recurring billing calendar
 
 Add a pure immutable calendar for monthly, quarterly and annual periods, explicit original-day/month-end rules, direct date lookup and bounded windows. Local 203 checks pass in each default/no-ini PHP mode; committed CI and independent review remain next. No deployed billing or invoice behavior changes.

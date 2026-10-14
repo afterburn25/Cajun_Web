@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Current work — exact recurring invoice terms contract
+
+Codex starts `codex/recurring-billing-terms` from frozen calendar PR 117/`8f8ea1c`. [The terms contract](docs/RECURRING_BILLING_TERMS_CONTRACT.md) binds the exact client/project/source-agreement revision, USD amount, original calendar, explicit billing timezone and due-date rule. Its deterministic period facts prepare one invoice per period without treating existing service acceptance as automatic-payment consent. This increment remains pure and outside deployment; implementation and focused acceptance are next. Native current authority, explicit client consent, activation/pause/change rules, unique invoices and actual screens remain required.
+
+Calendar PR 117 has [1,624 verified focused executions/all 22 workflows](https://github.com/afterburn25/Cajun_Web/pull/117#issuecomment-6181069260), with independent review pending. Notification PR 116/`f053dac` has [9,370 verified checkpoint checks and inspected views](https://github.com/afterburn25/Cajun_Web/pull/116#issuecomment-6181069467); original full38654568775 remains in recovery acceptance. Parent PR 114 has 11,326 verified full checks and exact Windows/Linux archives. These sources stay frozen. Published 1.23/main `68e4d41` is unchanged; Devin retains complete 20i and the eight outstanding execution/reconciliation corrections. Earlier sections are dated checkpoints.
+
 ## Current work — recurring billing calendar implemented
 
 Following contract `31fe0dd`, `codex/billing-calendar` adds an immutable pure calendar for monthly, quarterly and annual maintenance billing. It preserves the original anchor and explicit original-day/month-end alignment, calculates exact half-open periods, performs direct date lookup and bounds requested windows. Local PHP 8.4 default and no-ini modes each pass **203 named checks** (406 executions), including independent Gregorian oracle comparisons, century/leap boundaries, original-day recovery after a short month, strict malformed inputs, range limits, immutable results and timezone independence. [Contract and evidence](docs/BILLING_CALENDAR_CONTRACT.md).
