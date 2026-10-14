@@ -1,5 +1,7 @@
 # Approved roadmap and acceptance criteria
 
+HC-11/P-05/P-07: [financial agreement activity](DESIGN_FINANCIAL_ACTIVITY.md) is implemented and locally verified on a separate branch from frozen a9a5f40.254 native and76 HTTP/Edge checks pass; focused/full current acceptance and independent review remain pending. Existing financial forms acceptance continues on its unchanged source; checkout remains incomplete.
+
 **Current HC-11/P-05 financial work:** draft#114 now connects actual project quote/schedule editing, real client consent, unique invoice actions, current balances and receipt links. Local209 native,84 form checks per mode and52 HTTP/browser checks plus one diagnostics assertion pass. [Usage and remaining acceptance](DESIGN_FINANCIAL_AGREEMENTS.md). Current committed CI, full package/update/recovery acceptance and independent review are next. Checkout and full HC-11 remain incomplete. Devin retains complete20i; published1.23 is unchanged.
 
 ## Current work — planning forms, dashboard and personal updates

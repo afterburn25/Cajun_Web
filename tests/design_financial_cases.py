@@ -143,3 +143,5 @@ def run_browser(env, browser):
     for path in ['app/billing/design_payment_forms.php','app/billing/design_payment_actions.php','includes/layout/design_financial.php','includes/layout/design_financial_editor.php']:
         check('HTTP denies direct financial internal '+path,requests.get(BASE+'/existing/'+path).status_code==404)
     check('Financial section offers no card or payment submission button','>Pay now<' not in client.get(client_url).text and 'Online payment is not available' in client.get(client_url).text)
+    import design_financial_activity_cases
+    design_financial_activity_cases.run(env,browser,owner,client,other,job,cid)

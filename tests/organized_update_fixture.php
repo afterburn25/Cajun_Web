@@ -23,7 +23,8 @@ if(in_array($argv[2]??'',['owner-rate-exhaust','owner-rate-reset'],true)){
     echo json_encode(['isolated_owner_window'=>true],JSON_THROW_ON_ERROR);exit;
 }
 if(($argv[2]??'')==='financial'){
-    $saved=[];foreach(['design_payment_events'=>'job_id,sequence','design_payment_heads'=>'id','design_payment_invoices'=>'id','studio_invoices'=>'id','invoice_payments'=>'id'] as $name=>$order)$saved[$name]=all('SELECT * FROM '.table($name).' ORDER BY '.$order);
+    $financialReads=all('SELECT * FROM '.table('activity_reads')." WHERE event_key LIKE 'financial:%' ORDER BY id");
+    $saved=[];foreach(['design_payment_events'=>'job_id,sequence','design_payment_heads'=>'id','design_payment_invoices'=>'id','studio_invoices'=>'id','invoice_payments'=>'id'] as $name=>$order)$saved[$name]=all('SELECT * FROM '.table($name).' ORDER BY '.$order);$saved['financial_activity_reads']=$financialReads;
     echo json_encode($saved,JSON_THROW_ON_ERROR);exit;
 }
 if(($argv[2]??'')==='planning'){
