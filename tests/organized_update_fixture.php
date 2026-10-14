@@ -7,6 +7,17 @@ define('CWP_BOOT',true);define('CWP_ROOT',$root);
 require $root.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=require $root.'/config.php';
 if(config()['db']['name']!=='cwp_test')exit(2);
+if(($argv[2]??'')==='messages-seed'){
+    require_once $root.'/app/mail/messages.php';
+    $account=one('SELECT id,revision FROM '.table('mail_accounts').' ORDER BY id LIMIT 1');
+    $started=['id'=>str_repeat('a',32),'account_id'=>$account['id'],'account_revision'=>(int)$account['revision'],'actor_id'=>1,'folder'=>'INBOX','uidvalidity'=>'1234','uid'=>'82','started_at'=>gmdate('Y-m-d H:i:s'),'started_epoch'=>time()];
+    query('INSERT INTO '.table('mail_message_reads').' (id,account_id,account_revision,actor_id,folder,uidvalidity,uid,started_at,started_epoch) VALUES (?,?,?,?,?,?,?,?,?)',array_values($started));
+    mail_message_record($started,'connection',1);
+    echo json_encode(['fixture'=>'Synthetic failed message request only; no network attempted'],JSON_THROW_ON_ERROR);exit;
+}
+if(($argv[2]??'')==='messages'){
+    echo json_encode(['requests'=>all('SELECT * FROM '.table('mail_message_reads').' ORDER BY id'),'results'=>all('SELECT * FROM '.table('mail_message_results').' ORDER BY id')],JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='inbox-seed'){
     require_once $root.'/app/mail/inbox.php';
     $account=one('SELECT id,revision FROM '.table('mail_accounts').' ORDER BY id LIMIT 1');
