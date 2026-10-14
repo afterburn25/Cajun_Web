@@ -1,5 +1,15 @@
 # Session handoff — read before continuing
 
+## Current work — reconciliation without automatic dispatch
+
+Codex owns `codex/hosting-reconciliation` from PR87/bd0e46e, preserving parent85/21ebe69. A new canonical `reconcileWithoutDispatch()` method and distinct journal command settle conclusive observations without arming another provider attempt. Confirmed-not-removed deletion remains failed until a separate currently authorized retry. Old reconciliation command semantics remain compatible; the application still rejects new reconciliation histories until durable verification/storage is implemented. No route, schema activation, provider call, worker or release version is added. See HOSTING_RECONCILIATION under docs.
+
+Local PHP8.4 default/no-ini each passes95 new named controls plus unchanged168 supplied/21 review/23 input/148 journal checks, with no PHP diagnostics. The initial fixture by-reference notice was corrected; it is not hidden as a clean run. PHP8.2/8.4 CI and independent review are pending. Next implement immutable unknown/conclusive observation storage, exact dispatch/resource bindings, atomic result/audit, and deliberate current-authorized retries; a model transition itself does not prove provider evidence or permit a network call.
+
+Parent87/e6 native568 per matrix is verified; newer bd parent merge native job38563512668 succeeded but its reports still need download/inspection. Independent runtime review6167717491 remains pending. Parent85/a9 has full8,234/all21 proof; candidate1.23/21's full38562463459 and additive review6168129933 continue separately. This branch is excluded from that release candidate. Published1.22/e3b434f remains immutable. Devin owns read-only20i inventory; Codex retains durable hosting/provider coordination/UI and release integration. Full roadmap active.
+
+## Earlier checkpoints — historical evidence
+
 ## Current deletion-retry branch — reviewed parent candidate preserved
 
 `codex/hosting-deprovision-retry`/PR87 now merges parent85 candidate21ebe69 into verified deletion-retrye6a6a54, preserving both histories. The deletion adapter and67 native cases remain byte-identical to e6. Current version labels follow the parent's unreleased1.23 candidate; this separate branch is not included in PR85 and is not a release. Published1.22/e3b434f remains immutable.

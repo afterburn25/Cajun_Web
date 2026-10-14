@@ -1282,3 +1282,7 @@ Starting local documentation mergee86f2c934d4f4a5d0edd3365dc145a71992606b2 over 
 ## 2026-10-14 — reconcile deletion retry with parent1.23 candidate
 
 Starting e6a6a547888e808a2441015eca796d9dab198ef1, merge21ebe6928ecd4c4dcbda2c8b27333583e5b2d5fa. Preserve exact operations.php and native deletion cases, combine documentation/workflow histories, regenerate inventory and fix the prior extra EOF blank line. e6 native568 per matrix is verified; new merge checks/review remain pending. Keep original failed51-check fixture evidence and independent review6167717491 request. No merge into parent85/main, release or operation activation.
+
+## 2026-10-14 — separate observed reconciliation from another dispatch
+
+Starting bd0e46e803901a51f2859d03767d637f2153c397, add the distinct canonical method/journal command and95 named controls, retain all360 original controls and legacy semantics, extend focused default/no-ini PHP8.2/8.4 workflow and mirror/inventory. Local clean modes pass after fixing a fixture notice; current CI/independent review pending. Durable observations, exact evidence binding and application retry integration remain next work, with no activation. Parent1.23 acceptance continues unchanged.

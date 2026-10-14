@@ -199,3 +199,7 @@ Use cURL for fixed HTTPS rather than implementing an HTTP parser. Reject entire 
 ## 2026-10-14 — deletion retry retains the original current approver
 
 A canonical deletion retry arms an attempt immediately, so it must commit its dispatch fence in the same guarded transaction. Require the original second approver to remain a current owner and retain the original retention confirmation, rather than letting any owner inherit a destructive approval. Ordinary dispatch input bytes remain unchanged; a retry discriminator prevents action identity reuse. Approval transfer and unknown-outcome reconciliation remain separate reviewed workflows. See [contract](HOSTING_DEPROVISION_RETRY.md).
+
+## 2026-10-14 — distinct state-only reconciliation command
+
+A new command records observed outcomes without scheduling a second action. Preserve the historical rearming command rather than silently rewriting serialized journal semantics, and keep the application refusing both until durable evidence storage exists. Negative deletion confirmation holds failed without a pending attempt; a separate current-original-approver retry must fence its own new attempt. Unknown or partial inventory never proves absence. [Contract and next persistence requirements](HOSTING_RECONCILIATION.md).
