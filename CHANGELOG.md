@@ -8,6 +8,9 @@ Client account edits reject stale versions and retain safely escaped unsaved det
 ## Unreleased — 20i write boundary (descriptive)
 
 Closed package-lifecycle write descriptors (`packages.create`/`update` buildable; `userstatus`/`delete` refused pending documented fields), allowlisted request construction, conservative success/failed/uncertain classification and named refusal surface for domains/VPS/SSH/billing/email. Descriptive only — the adapter still refuses every operation; no credential, transport, ledger or provider call. 81 synthetic checks on PHP 8.2/8.4. [Contract](docs/TWENTYI_OPERATIONS_CONTRACT.md).
+## Unreleased — provider operation ledger and owner grants
+
+Durable at-most-once operation ledger (`provider_operations`) implementing the shared OperationLedger contract — claim/replay/conflict/uncertain semantics — plus owner-password grant records bound to exact canonical operation scopes with expiry, revocation and audit. Fresh installs create both tables; existing installs run the owner migration. Persistence only: no credential, request, transport or provider call. [Guide](docs/PROVIDER_OPERATIONS.md).
 
 ## Development coordination — acknowledged full 20i ownership
 
