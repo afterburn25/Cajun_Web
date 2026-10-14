@@ -1,14 +1,19 @@
 # Changelog
 
-## 1.20.0 — candidate, not published
+## 1.20.0 — verified owner 20i connection
 
-Protected owner20i settings, explicit fixed read-only connection checks and retained finite outcomes. Add current-password/CSRF/revision protection, private encrypted credentials and additive setup. Candidate acceptance includes published1.19 update/recovery with original private key preservation; results pending. General hosting/domain/VPS/SSH operations remain unverified.
+- Protected owner profile with private AES-GCM credentials, password/CSRF/revision safeguards and retained settings history. Fresh setup creates empty ready storage; upgraded owners explicitly prepare it.
+- Fixed explicit package-list GET with public DNS validation, pinned verified TLS, bounded parsing and transfer, no proxy/redirect/retry. Strict intent audit precedes dispatch; terminal results remain finite and historical or incomplete outcomes stay visible. Saving/viewing never contacts the provider.
+- Published/download-verified source `6f0b0ce5a9cba68b6859334818383fcc09e2ba3e` after 6593 named exact-main application checks plus PHP 8.2/8.4 matrices. All 16 assets/tag, member hashes and Windows/Linux bytes verified. Actual desktop/mobile settings screens inspected; homepage pixels equal 1.19.0.
+- Twenty-two starting versions supported; actual 1.19.0 recovery/reapplication preserves existing records, provider history and both original encryption keys. No live-account adapter or target-host acceptance is claimed. Other provider operations remain unavailable.
+
+### Earlier 1.20 development records — historical scope
 
 ## Unreleased — exact-byte installer inventory correction
 
 Regenerate owner UI dependency hashes from the committed LF source bytes after CI rejected Windows-normalized development hashes. No application behavior change.
 
-## Unreleased — owner 20i connection screen
+### Included in 1.20.0 — owner 20i connection screen
 
 Wire protected owner settings, explicit fixed connection checks, finite/history displays and fresh/additive setup. Add actual packaged HTTP/Chromium against isolated HTTPS. Combined application acceptance and release remain pending.
 
@@ -24,7 +29,7 @@ Add unwired owner-only encrypted 20i profile and retained metadata history, exac
 
 Create writable output mountpoints before mounting the source read-only. This fixes a pre-test Docker startup failure; no application or transport behavior changes.
 
-## Unreleased — isolated 20i HTTPS transport
+### Included in 1.20.0 — isolated 20i HTTPS transport
 
 - Fixed destination/pinning/TLS and proxy/redirect refusal, finite errors, bounded streamed headers/body and transfer deadlines, with 333 local actual synthetic HTTPS checks and request/DNS policy evidence. No admin application integration or real API operation; matrix/review pending.
 
