@@ -6,46 +6,52 @@
 - Added `tests/desk/run.php` (56 synthetic checks; fixtures only, `php -n` clean) and the `desk.yml` GitHub workflow (PHP 8.2/8.4, no network).
 - No `site/` changes, queues, persistence, mail or UI. Not yet integrated or released.
 ## 1.20.0 — candidate, not published
+## 1.20.0 — verified owner 20i connection
 
-Protected owner20i settings, explicit fixed read-only connection checks and retained finite outcomes. Add current-password/CSRF/revision protection, private encrypted credentials and additive setup. Candidate acceptance includes published1.19 update/recovery with original private key preservation; results pending. General hosting/domain/VPS/SSH operations remain unverified.
+- Protected owner profile with private AES-GCM credentials, password/CSRF/revision safeguards and retained settings history. Fresh setup creates empty ready storage; upgraded owners explicitly prepare it.
+- Fixed explicit package-list GET with public DNS validation, pinned verified TLS, bounded parsing and transfer, no proxy/redirect/retry. Strict intent audit precedes dispatch; terminal results remain finite and historical or incomplete outcomes stay visible. Saving/viewing never contacts the provider.
+- Published/download-verified source `6f0b0ce5a9cba68b6859334818383fcc09e2ba3e` after 6593 named exact-main application checks plus PHP 8.2/8.4 matrices. All 16 assets/tag, member hashes and Windows/Linux bytes verified. Actual desktop/mobile settings screens inspected; homepage pixels equal 1.19.0.
+- Twenty-two starting versions supported; actual 1.19.0 recovery/reapplication preserves existing records, provider history and both original encryption keys. No live-account adapter or target-host acceptance is claimed. Other provider operations remain unavailable.
 
-## Unreleased — exact-byte installer inventory correction
+### Earlier 1.20 development records — historical scope
+
+### Historical — exact-byte installer inventory correction
 
 Regenerate owner UI dependency hashes from the committed LF source bytes after CI rejected Windows-normalized development hashes. No application behavior change.
 
-## Unreleased — owner 20i connection screen
+### Historical preparation for 1.20.0 — owner 20i connection screen
 
 Wire protected owner settings, explicit fixed connection checks, finite/history displays and fresh/additive setup. Add actual packaged HTTP/Chromium against isolated HTTPS. Combined application acceptance and release remain pending.
 
-## Unreleased — audited explicit provider-check preparation
+### Historical — audited explicit provider-check preparation
 
 Add unwired current-owner fixed-check orchestration, finite retained outcomes, request limits and interrupted-result handling; reuse canonical provider mirrors and add native process fixtures. Application integration remains pending.
 
-## Unreleased — owner provider storage preparation
+### Historical — owner provider storage preparation
 
 Add unwired owner-only encrypted 20i profile and retained metadata history, exact additive migration, native fixtures/workflow and provider-key package exclusion. Native acceptance and application integration remain pending.
 
-## Unreleased — isolated transport runner repair
+### Historical — isolated transport runner repair
 
 Create writable output mountpoints before mounting the source read-only. This fixes a pre-test Docker startup failure; no application or transport behavior changes.
 
-## Unreleased — isolated 20i HTTPS transport
+### Historical preparation for 1.20.0 — isolated 20i HTTPS transport
 
 - Fixed destination/pinning/TLS and proxy/redirect refusal, finite errors, bounded streamed headers/body and transfer deadlines, with 333 local actual synthetic HTTPS checks and request/DNS policy evidence. No admin application integration or real API operation; matrix/review pending.
 
-## Unreleased — isolated fixed 20i connection probe
+### Historical — isolated fixed 20i connection probe
 
 - Added a fixed read-only package-list authentication adapter, finite classifications and explicit refusal of all general provider operations, with 120 synthetic checks. No real transport or application integration; no release version reserved.
 
-## Unreleased provider contract review
+### Historical provider contract review
 
 - Recorded the 163-check canonical review and reproduced JSON shape defect; narrowed first integration to protected settings and explicit read-only checks. Inventory needs separately verified response fields and ownership acceptance. Documentation only; no feature or release claimed.
 
-## Unreleased — provider settings contract preparation
+### Historical — provider settings contract preparation
 
 Claim an isolated owner20i settings/read-only check contract after the1.19 email increment. Documentation only; no API call, application feature, release or deployment.
 
-## Unreleased — HC-07 provider foundation (Devin, isolated component)
+### Historical — HC-07 provider foundation (Devin, isolated component)
 
 - Finite probe classification per the [owner 20i settings contract](https://github.com/afterburn25/Cajun_Web/blob/codex/provider-settings/docs/PROVIDER_SETTINGS_CONTRACT.md): `ConnectionCheck` gains an `unknown` state for post-send ambiguity (timeout/protocol/lost result/unaccepted 2xx shape) — never reported as a pass or a clean failure; `unreachable` is reserved for faults demonstrably before send. Check details are bounded printable classifications (≤200 bytes, no control characters), and `probe()`/`HttpTransport` docblocks now state the pinned-endpoint, strict-shape, no-redirect/proxy, DNS-validation and byte-cap invariants adapters and transports must honor. Codex review follow-up: the fixture probe decodes with JSON object/list identity preserved — objects (incl. `{}`/`{"0":…}`), scalars, null, malformed/trailing and over-depth bodies classify `unknown`, never `verified`; validation wording says bytes, not chars. All 171 checks pass locally on PHP 8.4 with/without php.ini. No shipping integration.
 
@@ -64,7 +70,7 @@ Claim an isolated owner20i settings/read-only check contract after the1.19 email
 ## 1.13.0 — candidate, email account preparation
 ## 1.14.0 — candidate, human website review workflow
 ## 1.15.0 — candidate, consultation scheduling
-## Unreleased — 1.16.0 candidate: explicit email connection checks
+### Historical — 1.16.0 candidate: explicit email connection checks
 ## 1.17.0 candidate — bounded recent inbox headers (unreleased)
 ## 1.18.0 candidate — exact-message reading (unreleased)
 
