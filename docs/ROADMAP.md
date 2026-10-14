@@ -1,5 +1,9 @@
 # Approved roadmap and acceptance criteria
 
+## A-06/A-07 independent draft preparation
+
+On codex/mail-drafts, the [bounded draft contract](MAIL_DRAFTS_CONTRACT.md) and isolated plaintext/recipient/template content checks are implemented outside deployment.71 default/no-ini local checks pass; runtime matrix and application storage/UI remain pending. This neither sends mail nor reserves a version. Provider1.20acceptance continues separately inPR74.
+
 ## Latest verified publication — 1.19.0
 
 [v1.19.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.19.0) is published and freshly downloaded/verified at immutable source/tag `22a2969692ab5bcc7f35158dcaa5355c623dc821` through [PR #72](https://github.com/afterburn25/Cajun_Web/pull/72). Assigned staff see recent email notices from explicit successful newest-20 inbox checks, with separate per-person opened/dismissed state and exact-message POST opening. Current permissions, mailbox grants and saved revisions filter counts/labels before exposure. Private admin/public bells preserve idle expiry, clear stale display and stay absent in client-support pages. No automatic IMAP synchronization or server read-flag writes. [Owner guide](RECENT_EMAIL_NOTICES.md).

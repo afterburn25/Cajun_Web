@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — isolated local draft content
+
+Add bounded plaintext draft content and canonical template insertion outside deployment. No persistence, compose UI or sending yet.71 local default/no-ini checks pass; PHP8.2/8.4 matrix pending. Provider1.20release remains a separate branch.
+
 ## 1.19.0 — verified recent email notices
 
 - Explicit successful inbox reads populate a newest-20 observation window with exact mailbox generation/UID identity; strict result/audit failures roll back notice changes. Failed reads retain the prior window.

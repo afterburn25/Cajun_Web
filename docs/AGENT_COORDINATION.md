@@ -1,5 +1,14 @@
 # Codex and Devin work allocation
 
+## Active independent work — local email draft content
+
+Codex owns `codex/mail-drafts`, starting from main ceedcfd (published application1.19.0). Provider candidate1.20.0 remains in separate [PR #74](https://github.com/afterburn25/Cajun_Web/pull/74), awaiting full candidate acceptance and independent owner storage/check/UI review. The shared-hosting foundation #60 remains outside deployment after [ten negative reproductions](https://github.com/afterburn25/Cajun_Web/pull/60#issuecomment-6161071101); Devin retains those corrections after the provider review priority.
+
+The [draft contract](MAIL_DRAFTS_CONTRACT.md) was committed first at90d0c14. The new foundation/mail-compose content component validates bounded To/Cc/Bcc, plain UTF-8 subject/body, header/control injection, unfinished drafts and canonical active-template insertion. It preserves literal text and source snapshots without adding a second template engine. All71 named checks pass locally under PHP8.4.25 default and no-ini. Its isolated PHP8.2/8.4 matrix is prepared, not yet accepted. No site, schema, installer, version, deployed mirror, SMTP or remote account change.
+
+Next: inspect isolated matrix and obtain contract review before application exposure; implement current-authorized per-author/mailbox draft storage, strict audit and revision/idempotency rules, followed by private HTTP/Chromium UI and latest-release recovery. Reconcile verified1.20main before choosing a later version. Keep provider release work moving independently; no real mail or live deployment.
+
+
 ## Latest verified publication — 1.19.0
 
 [v1.19.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.19.0) is published and freshly downloaded/verified at immutable source/tag `22a2969692ab5bcc7f35158dcaa5355c623dc821` through [PR #72](https://github.com/afterburn25/Cajun_Web/pull/72). Assigned staff see recent email notices from explicit successful newest-20 inbox checks, with separate per-person opened/dismissed state and exact-message POST opening. Current permissions, mailbox grants and saved revisions filter counts/labels before exposure. Private admin/public bells preserve idle expiry, clear stale display and stay absent in client-support pages. No automatic IMAP synchronization or server read-flag writes. [Owner guide](RECENT_EMAIL_NOTICES.md).
