@@ -75,8 +75,11 @@ try {
     pe_ok('Body carries only allowlisted fields',$body===['type'=>'synthetic','domain_name'=>'client.example']);
     $r=pe_exec($profile,1,$op,$password);
     pe_ok('Same idempotency key replays without re-sending','succeeded'===$r->status&&$r->replayed&&count($sentRequests)===1);
+    $r=pe_exec($profile,1,new ProviderOperation('packages.create','idem-create-1',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'ungranted.example']),$password);
+    pe_ok('Ungranted scope cannot even observe key state','no_grant'===$r->providerCode&&count($sentRequests)===1);
+    provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'other.example'],$password);
     $r=pe_exec($profile,1,new ProviderOperation('packages.create','idem-create-1',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'other.example']),$password);
-    pe_ok('Reused key with different params conflicts','conflict'===$r->status&&count($sentRequests)===1);
+    pe_ok('Granted-but-foreign fingerprint on a used key conflicts','conflict'===$r->status&&count($sentRequests)===1);
     pe_ok('Ledger row recorded with bounded fields',1===(int)query("SELECT COUNT(*) FROM ".table('provider_operations')." WHERE idempotency_key='idem-create-1' AND status='succeeded' AND operation='packages.create'")->fetchColumn());
 
     // ---- grant scope isolation ----
