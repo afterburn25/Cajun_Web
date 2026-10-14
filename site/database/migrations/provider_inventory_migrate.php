@@ -27,8 +27,8 @@ function provider_inventory_validate_schema(string $name,string $sql): void {
         'provider_refreshes'=>['profile_refreshes'=>['profile_id','started_epoch'],'actor_refreshes'=>['actor_id','started_epoch']],
         'provider_refresh_results'=>[],
         'provider_observation_packages'=>['package_history'=>['package_id','refresh_id']],
-        'provider_package_links'=>['client_links'=>['client_id']],
-        'provider_package_link_events'=>['profile_events'=>['profile_id','recorded_at'],'client_events'=>['client_id','recorded_at']],
+        'provider_package_links'=>['client_links'=>['client_id'],'link_actor'=>['linked_by']],
+        'provider_package_link_events'=>['profile_events'=>['profile_id','recorded_at'],'client_events'=>['client_id','recorded_at'],'event_actor'=>['actor_id']],
     };
     foreach($other as $key=>$columns)$expected[$key]=[1,$columns];
     $actual=[];
