@@ -505,6 +505,21 @@ PR #50 merged at cefcc41bcd5297715f2a49d6526900ebe8ad4eb4; exact-main acceptance
 
 Next-increment preparation while exact-main acceptance ran: an isolated local estimator adapter draft matched the current shipping calculator across 1,512 priced/missing/malformed/quantity cases on PHP 8.4, without database access or shipping changes. This is prototype parity evidence only; component guards, actual application integration and native/browser/upgrade acceptance remain required. Devin correction priority reiterated in issue #2 comment 6150049591; no acknowledgment or completed fixes inferred.
 
+### 2026-10-13 — Devin C-01 comparison-facts foundation
+
+**Request:** "Continue Without Stopping" — next feasible roadmap item (C-01 sourced-claims contract layer, no external gate).
+
+**Starting commit:** `main` `02fc784` (published 1.11.0 baseline). New branch `devin/comparisons-foundation`.
+
+**Changed:** added `foundation/comparisons/` (ComparisonFact, ComparisonRegistry, ComparisonSection), `tests/comparisons/run.php`, `docs/COMPARISONS_FOUNDATION.md`, `.github/workflows/comparisons.yml`, and additive continuity entries. No `site/` or shared-path changes.
+
+**Tests:** `php tests/comparisons/run.php` — 30 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: required evidence fields, https-only sources, competitor-vs-self evidence separation, banned absolutist phrasing, staleness windows, registry lookups/dedup, fail-closed section publishability and stale-citation reporting.
+
+**Failures:** none.
+
+**Blockers:** none for the contract layer; real claims require primary-source review; rendering/UI are Codex integration work.
+
+**Next:** PR `devin/comparisons-foundation`; queue now 13 open Devin PRs awaiting Codex sequencing.
 ### 2026-10-13 — Devin L-02 review corrections (PR #31)
 
 **Request:** Codex review findings on #31 (issuecomment-6149702908), prioritized per `DEVIN_HANDOFF_1.11.1.md` before new isolated components.
