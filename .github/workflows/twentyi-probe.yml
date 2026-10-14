@@ -1,0 +1,59 @@
+name: 20i probe checks
+
+on:
+  pull_request:
+    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/mail-transport/**', 'tests/twentyi/**', '.github/workflows/twentyi-probe.yml']
+  push:
+    branches: [main, codex/provider-settings]
+    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/mail-transport/**', 'tests/twentyi/**', '.github/workflows/twentyi-probe.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: twentyi-probe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  probe:
+    name: 20i probe PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - name: Check out the revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Build the isolated test runtime
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -f tests/twentyi/Dockerfile -t cwp-twentyi-fixture:${{ matrix.php }} tests/twentyi
+      - name: Synthetic probe and actual HTTPS checks without external network access
+        run: |
+          mkdir -p "$RUNNER_TEMP/twentyi-results"
+          mkdir -p "$RUNNER_TEMP/twentyi-runtime"
+          mkdir -p qa test-runtime
+          docker run --rm --network none -v "$PWD:/workspace:ro" -v "$RUNNER_TEMP/twentyi-results:/workspace/qa" -v "$RUNNER_TEMP/twentyi-runtime:/workspace/test-runtime" -w /workspace cwp-twentyi-fixture:${{ matrix.php }} sh -ec '
+            for source in foundation/provider/*.php foundation/twentyi/*.php tests/twentyi/*.php; do php -l "$source"; done
+            php tests/twentyi/run.php qa/adapter-default-results.json
+            php -n tests/twentyi/run.php qa/adapter-no-extensions-results.json
+            php tests/twentyi/transport_policy.php > qa/transport-policy-results.json
+            php -n tests/twentyi/transport_policy.php > qa/transport-no-ini-results.json
+            php -n -d disable_functions=curl_init tests/twentyi/transport_policy.php > qa/transport-curl-unavailable-results.json
+            python tests/twentyi/tls_test.py
+            python tests/twentyi/tls_test.py --no-ini
+          '
+      - name: Preserve named results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: twentyi-probe-${{ matrix.php }}-${{ github.sha }}
+          path: ${{ runner.temp }}/twentyi-results/
+          if-no-files-found: error
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Synthetic probe/policy and actual loopback PHP/cURL HTTPS, with test-only destination/CA remapping after production-option validation. Docker --network none prevents external calls. No real 20i API, application, database, UI or deployment acceptance. PHP -n disables configuration, not compiled extensions; both modes run HTTPS. A separate disabled-curl_init run proves finite unavailable refusal.' >> "$GITHUB_STEP_SUMMARY"
