@@ -44,8 +44,11 @@ def run_browser(env, browser, owner, settings_url, configure_owner):
     for changes, label in [({'csrf': 'bad'}, 'CSRF'), ({'domain_query': 'example.com'}, 'unoffered extension'), ({'domain_query': '<script>bad</script>'}, 'invalid query'), ({'search_policy': 'f'*32}, 'stale approval')]:
         r=client.post(url, data={**original, 'domain_query': 'example.invalid', **changes})
         check('Client domain form refuses '+label, not db('SELECT * FROM ci_provider_domain_client_searches') and provider.calls==calls and '<script>bad</script>' not in r.text)
+    chosen_form(owner, admin+'?view=support', 'support_policy', 'client_id', cid, {'allowed':'1','owner_password':OWNER})
+    check('Fixture owner explicitly permits support for the new client', db('SELECT allowed FROM ci_support_clients WHERE client_id=?',[cid])[0]['allowed']==1)
     support=chosen_form(owner, admin+'?view=support', 'support_start', 'client_id', cid, {})
     support_url=support.url
+    check('Fixture opens a real client support session', '?support=' in support_url and 'Support session' in support.text)
     check('Actual support session cannot open client domain search', owner.get(support_url+'&domains=1').status_code==403 and provider.calls==calls)
     submit(owner, support_url, 'support_end', {})
     db('UPDATE ci_provider_domain_searches SET started_epoch=started_epoch-7200')

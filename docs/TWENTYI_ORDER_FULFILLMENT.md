@@ -141,3 +141,8 @@ Source `5bec4fb2cd0826386617098972ae3eb3a6fff0e1`, [run38807146247](https://gith
 |12005934484|PHP8.4/MariaDB10.11|`ded3fa807fe4cb72d4c26174d9bb178677f04be946b1bd967f124df3e71b7321`|
 
 Local proof: `work/20i-5bec-native-verification.json`; original downloaded ZIPs retained beside it. Full5bec38807153582 is in browser, earlier e37538805429786 in Apache at this checkpoint.
+
+
+## Accepted-order wording browser verification — 2026-10-15
+
+Source5bec4fb2 and testmergefe1f8684056e47cab2def5c4526704d508625e20 share tree6af747dc5b9857453de8176e881b656e1b484c98. Full run38807153582 browser artifact12007782227 downloaded/CRC/SHA256 verified: `793db721ef6a79f048b5b8d8793f5b361c363298c53e2eb77487b22b3d47bd7e`.1738 named HTTP/Chromium checks pass; unexpected browser and PHP diagnostics are empty. Actual owner active desktop and client active mobile screenshots were inspected; accepted-request wording no longer contradicts active hosting. Proof `work/20i-5bec-browser-verification.json`. Full recovery/Apache and newer client-search acceptance remain separate.

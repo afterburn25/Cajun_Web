@@ -1,6 +1,6 @@
 # Active 20i increment — client domain availability
 
-Private client domain search is implemented above PR138 with explicit owner enablement, shared provider limits and separate client history. Local syntax passes; new native/browser acceptance, screenshots, review and release remain pending. Full20i scope is unchanged. [Client-search scope](TWENTYI_CLIENT_DOMAIN_SEARCH.md).
+Private client domain search is implemented above PR138 with explicit owner enablement, shared provider limits and separate client history. Native1fbeb passes106 combined checks including50 client checks in all four combinations, with exact Windows packages verified. Actual browser acceptance, screenshots, review and release remain pending. Full20i scope is unchanged. [Client-search scope](TWENTYI_CLIENT_DOMAIN_SEARCH.md).
 
 # Approved roadmap and acceptance criteria
 

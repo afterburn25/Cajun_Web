@@ -1,3 +1,7 @@
+# Verification checkpoint — client domain search
+
+Native1fbeb passes106 combined checks including50 client checks in each of four PHP/database combinations; exact Windows packages verified. Correct the browser fixture to grant support access before asserting that real support sessions cannot search. No runtime authorization change. Browser/recovery/review acceptance remains pending. [Evidence](docs/TWENTYI_CLIENT_DOMAIN_SEARCH.md).
+
 # Development checkpoint — private client domain search
 
 Add explicit owner enablement, a native client search form and private history through the existing authenticated 20i reader. Share owner/client rate limits, preserve independent client identity, recheck current access and prevent request replay. Add missing-history recovery and native/browser regression coverage. Local syntax passes; new runtime acceptance and release remain pending. [Scope](docs/TWENTYI_CLIENT_DOMAIN_SEARCH.md).

@@ -1,6 +1,6 @@
 # Client domain availability search
 
-Status: implemented on `codex/twentyi-client-domain-search`, parent `5bec4fb2`; local syntax validation only. Native database and actual HTTP/Chromium acceptance are pending. This is unreleased development above hosting PR 138, not a live-enabled service.
+Status: native-tested at `1fbebcac` on `codex/twentyi-client-domain-search`, [draft PR139](https://github.com/afterburn25/Cajun_Web/pull/139). Actual HTTP/Chromium acceptance and independent review remain pending. This is unreleased development above hosting PR 138, not a live-enabled service.
 
 ## Owner setup
 
@@ -24,6 +24,22 @@ An interrupted first preparation can resume only with compatible empty tables an
 
 ## Verification and remaining scope
 
-Local changed-file PHP lint and Python AST checks pass. New native cases cover owner approval, interrupted preparation, isolation, current sessions, audit rollback, shared limits, concurrency, revocation, idempotent replay and exact history restoration. Actual browser cases cover owner/client forms, invitation/login, support refusal, private headers, real synthetic authenticated HTTPS, desktop/mobile screenshots and private-file protection. These cases must execute and their artifacts/screenshots be inspected before acceptance is claimed.
+Local changed-file PHP lint and Python AST checks pass. New native cases cover owner approval, interrupted preparation, isolation, current sessions, audit rollback, shared limits, concurrency, revocation, idempotent replay and exact history restoration. Actual browser cases cover owner/client forms, invitation/login, support refusal, private headers, real synthetic authenticated HTTPS, desktop/mobile screenshots and private-file protection. Native cases now pass as recorded below. Browser cases must execute and their artifacts/screenshots be inspected before browser acceptance is claimed.
 
 Linux native matrices use PHP 8.2/8.4 with MariaDB 10.11/MySQL 8.4; the Windows private-key guard is not relaxed for local tests. Provider responses are isolated fixtures. No live API call, domain reservation, price quote or purchase is performed by these tests. Domain periods/pricing, checkout, registrar ownership, registration/transfer/renewal and the remaining full20i workflow are separate required implementation work.
+
+
+## Native client-search acceptance — 2026-10-15
+
+Source `1fbebcac0992cc7f3d71c91b33e4c97d047f4a4b`, [PR139](https://github.com/afterburn25/Cajun_Web/pull/139), [run38810375887](https://github.com/afterburn25/Cajun_Web/actions/runs/38810375887). All four PHP8.2/8.4 with MariaDB10.11/MySQL8.4 combinations pass. Downloaded artifacts match GitHub SHA256, ZIP CRC and every named result. Each contains106 combined owner/client checks, including the50-case client subset; those counts are not additive.
+
+| Artifact | SHA256 |
+|---|---|
+|12008521772|`ab5d4c85b96ebcfc79723019e74ab9e5410b3948792e64e96defe8bb14dce419`|
+|12008227522|`3cea24f5b2cde07e8cf637c668428da417fbc6a61ce5e03e63b85fba85b62829`|
+|12007977896|`daaebcdd286e8b7695d5db729c94e099de4a4dac6432df440fd90adeabe35de7`|
+|12007059361|`651ff868a12b4f890973e838597a58845a56ce90854d64098f382fa8e14b80f0`|
+
+Proof retained locally as `work/20i-1fbeb-client-native-verification.json`. Actual browser acceptance remains pending. Source inspection found that the new browser fixture client lacked a support-access policy: the follow-up fixture uses the real owner policy form before opening support, retaining the production refusal assertion. No runtime authorization rule is relaxed.
+
+Exact1fbeb Windows artifacts independently verify11 checksums and all source/member/directory/update bytes: FULL5416, COMPLETE2659, UPDATE2646. Stored under `work/20i-client-1fbeb-windows-dist` with verification JSON. This is development package evidence, not a published release.

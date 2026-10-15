@@ -1,3 +1,7 @@
+# Current checkpoint — PR139 native verified
+
+Codex owns complete20i and client-search PR139 at1fbeb, with four native combinations and exact Windows packages verified. The current test-only correction grants its new synthetic client explicit support permission through the real owner form before checking search refusal. Full browser acceptance and review remain pending; keep all earlier runs and PR138 intact. [Handoff](../SESSION_HANDOFF.md).
+
 # Current ownership — client domain-search branch
 
 Codex owns `codex/twentyi-client-domain-search`, parent5bec4fb2, above PR138. Scope: provider domain reader adapters/shared limits, additive client policy/history, owner configuration and actual portal routes/forms, related migrations/tests/workflows/docs. No other agent is claimed active. Preserve PR138 and current main6ec7a749 licensing history; integrate sequentially after acceptance. [Current handoff](../SESSION_HANDOFF.md).
