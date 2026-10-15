@@ -260,3 +260,7 @@ The machine-readable authoritative map is [tools/directory-map.json](../tools/di
 ## Existing-site migration and recovery
 
 Use [START-HERE](../START-HERE.txt) and [migration guide](STRUCTURE_MIGRATION.md). UPDATE is a staged owner workflow, not a blind overwrite of live files. Keep legacy runtime data and custom code intact; do not recursively delete old directories to make them look clean.
+
+## Prepared service-plan storage
+
+Private `site/app/plans/` contains bounded canonical terms/agreement documents and current-authorized transactional operations. The paired schema and migration live under `site/database/`; no router or automatic schema activation is added. [Storage, ownership and acceptance contract](SERVICE_PLAN_RECORDS.md).

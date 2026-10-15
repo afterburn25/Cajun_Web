@@ -9,6 +9,8 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     $permission=staff_action_permission($action);if($permission!==null)staff_require($permission);
     if(in_array($action,['staff_migrate','staff_save','staff_invite'],true))staff_admin_action($action);
     if(in_array($action,['support_migrate','support_policy','support_start'],true))support_admin_action($action);
+    if(str_starts_with($action,'recurring_')){recurring_ui_action($action);return;}
+    if(str_starts_with($action,'service_plans_')){service_plans_admin_action($action);return;}
     if(str_starts_with($action,'catalog_'))catalog_admin_action($action,$user);
     if(str_starts_with($action,'payments_'))payments_admin_action($action);
     if(str_starts_with($action,'provider_settings_')){provider_settings_admin_action($action);return;}

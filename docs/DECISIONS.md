@@ -1,5 +1,9 @@
 # Decision record
 
+## 2026-10-15 — Reuse service agreements for 20i commercial intent
+
+Retain #90–#92 through a normal merge as the exact client/terms-consent dependency. Agreement acceptance and activation do not establish payment or provisioning eligibility. Add that eligibility using the existing catalog, invoice ledger, hosting and provider journals. Prepared missing agreement tables require restoration; do not recreate empty consent history. Codex owns this work under the 20i P0 override.
+
 ## Separate constructible requests from purchase authority — 2026-10-15
 
 A documented request builder is not commercial consent. The generic owner approval path admits only package-label changes; purchases, renewal, mixed billing/deletion and mail require dedicated persisted intent and eligibility workflows. Existing high-risk grants cannot dispatch through the generic route. Missing stamped operation tables require original database recovery, never empty replacement. This implements independent review findings on PR126 without discarding inherited history.

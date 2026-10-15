@@ -542,6 +542,8 @@ Use the same tokenized Authorize.net payment service, transaction records, verif
 
 ### P-04 — Maintenance/service plans
 
+**20i commercial dependency, integration in progress:** the combined `codex/twentyi-fulfillment` branch preserves exact plan/client consent and the recurring whole-period billing interface through #130/#133/#135 source35a564a1. Its standalone full38750019637 passed; combined acceptance is required. This supplies agreements and invoices, not provider orders, automatic-payment authority or active services. [Commercial dependency](TWENTYI_COMMERCIAL_ELIGIBILITY.md) and [current integration record](TWENTYI_FULFILLMENT_INTEGRATION.md) identify the remaining order/payment/provider mapping work. General finance expansion remains paused.
+
 Owner-defined inclusions, exclusions, limits, support expectations and request workflow. Acceptance: agreed prices and terms, explicit recurring-payment consent where applicable, genuine service status, and no invented 'unlimited support' promise.
 
 ### P-05 — Web-design project progress and delivery workspace

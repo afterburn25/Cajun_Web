@@ -1,5 +1,9 @@
 # Changelog
 
+## Combined20i integration checkpoint — 2026-10-15
+
+Preserve domain/cloud9ab6dc58, commercial/recurring recovery35a564a1 and nameserver deltasf8654252 as merge parents. Keep the newly approved client-portal design from main0b96f3d5. Combine all native/browser/recovery/Apache cases, add internal-path denial for new20i files, and regenerate the shipping inventory. No provider execution permission is widened. Combined CI, review, artifact inspection, order fulfillment and the remaining native controls are pending; this is not a release. [Integration/evidence](docs/TWENTYI_FULFILLMENT_INTEGRATION.md) includes original sources and exact test scope. Billing changelog/history remains in the preserved [35a parent](https://github.com/afterburn25/Cajun_Web/blob/35a564a1a2f6660258ff0e0f2fcf057cb24a07f3/CHANGELOG.md).
+
 ## Domain search retained-view fixture repair — 2026-10-15
 
 From099aa2e8 on #136, actual inventory job116492616664 showed an undefined domain-search function while directly rendering the combined provider page. The production router already loads the provider controller. Both retained inventory/upgrade fixtures now use that controller; all earlier cases remain and new assertions prove a combined-page GET creates no tables or settings and leaves populated legacy facts unchanged. Runtime shipping bytes are unchanged.

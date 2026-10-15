@@ -323,3 +323,9 @@ def run(web,base,check,qa,php,label,prefix,version):
         check(label+' reapplication retains cloud migration and original inventory history', '<h2>Complete</h2>' in response.text and inventory_records()==original_inventory)
         replay=inventory_records('replay')
         check(label+' recovered original consumed approval cannot replay provider operation', replay['network_calls']==0 and replay['status']=='failed' and inventory_records()==original_inventory)
+
+    if version=='1.23.0':
+        from service_plan_upgrade_cases import run as service_plan_upgrade
+        agreement_context=service_plan_upgrade({**locals(),'token':token})
+        from recurring_billing_upgrade_cases import run as recurring_upgrade
+        recurring_upgrade({**locals(),**agreement_context})

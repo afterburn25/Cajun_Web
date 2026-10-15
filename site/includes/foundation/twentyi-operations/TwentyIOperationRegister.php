@@ -89,9 +89,9 @@ final class TwentyIOperationRegister
             new TwentyIOperation(
                 'domains.nameservers', 'POST', '/package/{packageId}/domain/{domainId}/nameservers',
                 ['packageId', 'domainId'],
-                [],
-                [],
-                shapeComplete: false, // owner supplied ns/old-ns arrays; actual delta implementation pending
+                ['ns' => 'hostname_list', 'old-ns' => 'hostname_list'],
+                ['ns', 'old-ns'],
+                shapeComplete: true, // Exact disjoint additions/removals; native consent/read workflow remains separate.
             ),
             new TwentyIOperation(
                 'domains.dns', 'POST', '/package/{packageId}/domain/{domainId}/dns',

@@ -1,19 +1,28 @@
-# Project status — complete 20i P0
+# Project status — complete20i integration
 
-Codex owns implementation through release. Published baseline remains [v1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0), source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`; main remains `c42dd6d70fe57276d75835419db9d6e8e51aaa7f`. Full 20i remains unfinished. No production action or deployment occurred.
+Codex continues the complete20i P0 priority. This is an implementation/integration branch, not a released or live-verified platform. Published version remains [1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) at7190b582; inspected main0b96f3d5 adds only the approved portal-design records to c42dd6d7.
 
-## Domain search — PR #136
+The combined `codex/twentyi-fulfillment` source preserves these exact parents:
+- Domain search/cloud `9ab6dc58eb2a2e9648968fbe94091c5bbe1e45a8`, tree80f679da9f90aed603d45a00a9d145761823a040; retains cloud #127/#128 through1d9e372c.
+- Billing recovery `35a564a1a2f6660258ff0e0f2fcf057cb24a07f3`; retains #130/#132/#133/#135, existing clients, immutable plan consent, recurring invoices and the corrected FK-safe missing-schedule fixture.
+- Nameserver request component `f8654252e1d029c0474c4fbf54839142b621ff65`, treead25e1e908bf68d6a4897aa0bbc204bf246716aa; retains main0b96f3d5 and the approved client-portal design.
 
-[PR #136](https://github.com/afterburn25/Cajun_Web/pull/136) extends cloud #127 on `codex/twentyi-domain-search`. At `099aa2e8cef128d340f634b9cbebe2c46c2fa2cf`, [native domain workflow38755410653](https://github.com/afterburn25/Cajun_Web/actions/runs/38755410653) passed **54 named assertions on each of four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 combinations**, including two concurrent owners sharing one provider-read allowance. Actual named JSON results were parsed from all four logs.
+All three histories are merge parents; source branches and existing PRs remain intact. The combined work is for completing order/provider fulfillment and testing existing dependencies together. It is not permission to publish unfinished controls or automatically charge customers.
 
-The broader [inventory workflow38755469853](https://github.com/afterburn25/Cajun_Web/actions/runs/38755469853) failed because two older native fixtures rendered the combined provider view without its controller, leaving `provider_domain_search_ready` undefined. [Full application run38755410755](https://github.com/afterburn25/Cajun_Web/actions/runs/38755410755) failed native acceptance and skipped browser execution; its remaining recovery checks are retained. This checkpoint repairs both test fixtures to load the same controller as the real admin route, retains all original assertions, and adds checks that the unprepared combined page changes neither table inventory nor settings. It does not hide a failing feature or change runtime behavior.
+## Evidence and limits
 
-Full application concurrency now distinguishes source commits so a necessary fix does not cancel an earlier candidate's running recovery evidence. Duplicate runs of the same source still share a group. **The corrected fixtures and packaged browser cases await new CI.** No screenshot/artifact or release acceptance is claimed for this descendant.
+Nameserver f8654252 [workflow38759308990](https://github.com/afterburn25/Cajun_Web/actions/runs/38759308990) passed **230 named assertions per run**, including79 nameserver cases, in default/no-ini PHP8.2 and8.4: four actual JSON reports,920 assertion executions. Canonical shipping hashes and documentation checks passed. This is network-disabled request construction; no native nameserver screen, ownership observation, dispatch or completed DNS change is claimed.
 
-## Other integration candidates
+Domain #136 at9ab6dc58 passed22 focused workflows, including the four repaired inventory/upgrade combinations. [Full38757561159](https://github.com/afterburn25/Cajun_Web/actions/runs/38757561159) has passed build/native, actual HTTP/Chromium and recovery; Apache is still running at this checkpoint. The earlier099 full38755410755 completed with the retained native fixture failure, browser skipped, and passing289 recovery/1,531 Apache checks. Its failure is not hidden or recast as acceptance.
 
-- Cloud #127, source `1d9e372cac7ff9739d339b2544c7c9cfbcee3e33`: full run38719850550 succeeded using merge source97b0b869 with identical tree24330be9; current screenshots and package comparison remain pending before1.25 integration/release.
-- Billing recovery #135, source `35a564a1a2f6660258ff0e0f2fcf057cb24a07f3`: [full run38750019637](https://github.com/afterburn25/Cajun_Web/actions/runs/38750019637) succeeded, including1,513 HTTP/browser,275 recovery and1,527 Apache checks. Current artifacts/package comparison and independent review remain pending. Preserve #130/#133/#135 ancestry.
-- Client/public domain search, verified pricing/periods, registration/transfer, native hosting controls, VPS/cloud lifecycle, support/SSH and the complete order-to-service journey remain unfinished.
+Billing35a [full38750019637](https://github.com/afterburn25/Cajun_Web/actions/runs/38750019637) succeeded, including1,513 HTTP/Chromium,275 recovery and1,527 Apache checks. Cloud1d9 has separate full38719850550 success on an identical-tree PR merge source. Current screenshots/package comparisons and required independent reviews remain separate outstanding gates. Those parent results do not certify this combined descendant.
 
-Local writes and shell artifact downloads are restricted. Review-request comments and PR metadata updates were rejected by the approval policy; source commits and PR creation work through the GitHub connector. The complete owner API source remains a previously requested input. Continue independent P0 implementation; no missing implementation is classified as owner-gated.
+Merged Python acceptance drivers pass in-memory AST checks. **Combined native/browser/recovery acceptance has not run yet.** Installer hashes are rebuilt from the selected exact shipping bytes. The existing unpublished1.25 version/staging labels are retained for development testing; a combined release scope/version and exact-main acceptance must be selected before publication. No tag or release asset changed.
+
+## Remaining implementation
+
+The combined branch supplies hosting/cloud ownership, bounded owner domain search, service agreements/recurring billing and exact nameserver request deltas. It still needs verified provider-plan mappings, an authenticated selected-plan order, payment/manual-fulfillment eligibility, the durable order-to-provider-to-client-service connection, native hosting/domain/VPS controls and support/interactive SSH. Client/public search, domain periods/pricing/registration/transfer and native nameserver current-state/confirmation/reconciliation are unfinished. These are engineering tasks, not missing-owner-approval labels.
+
+Real writes stay disabled until their operation-specific account, ownership, consent and acceptance gates are met. No provider call, DNS change, charge, customer mail, SSH or deployment occurred. The complete owner API reference was requested once; continue independent work while it remains unavailable. Local filesystem writes and shell artifact downloads are restricted. GitHub review-request comments and PR metadata edits were rejected by the approval policy; source commits/branch/PR creation are available.
+
+See [integration decisions](docs/TWENTYI_FULFILLMENT_INTEGRATION.md) and [approved portal design](docs/APPROVED_CLIENT_PORTAL_DESIGN.md). Other roadmap development remains paused.

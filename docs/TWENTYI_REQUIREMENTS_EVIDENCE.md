@@ -1,5 +1,7 @@
 # Complete 20i requirements and evidence
 
+Current integration work is on `codex/twentyi-fulfillment`, preserving domain9ab/cloud1d9, billing35a and nameserverf865 with main0b96's approved portal design. [Ancestry, named evidence and remaining gates](TWENTYI_FULFILLMENT_INTEGRATION.md). Component/parent success does not certify the combined tree. Nameserver deltas are request-tested only; no native control is complete. Order-to-service fulfillment remains unfinished. Publication remains1.24; no live acceptance is added.
+
 Current1.25/#127 candidate includes cloud/server assignments and the real1.24 baseline with populated ownership/unknown-operation recovery fixtures. Candidate acceptance is pending; immutable publication remains1.24. Capability rows distinguish released package workflows from branch-tested cloud and unfinished controls.
 
 
