@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased continuity —20i review and recurring packages
+
+- Verified corrected-label20i review346/346 at8e068cf; assigned separate failed browser-fixture grant-query correction toDevin.
+- Recorded exact Windows billing121/abaa200 packages and preserved live full38668021580. Full application/recovery/Linux comparison and independent reviews remain pending; shipping code unchanged by this handoff.
+
 ## Unreleased review — scoped20i regression acceptance
 
 - Verified346 named checks on8e068cf; the populated migration and ambiguous reconciliation findings clear, with earlier controls intact. Corrected the preserved probes' static source annotation without changing expectations or product code. Full20i/application/live acceptance remains pending.
