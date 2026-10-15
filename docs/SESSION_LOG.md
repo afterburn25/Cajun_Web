@@ -1,3 +1,7 @@
+## 2026-10-15 — preserve latest main and publish the combined test candidate
+
+Starting25cdc25a, normally merge latest mainc3b1a69c. Its only delta from the already retained a1e64f81 is the licensing/error-page acceptance record in SESSION_HANDOFF; preserve that attributed evidence with the concise current handoff. Shipping files remain byte-identical to the reviewed combined cloud/catalog/registrar/mailbox source. Final canonical refresh81543 passed; prior64575,88009 and86317 are complete. Changed PHP/Python syntax, exact dependency mirrors, documentation and whitespace checks pass. All original agent branches remain intact. This final merge enables fresh combined CI after the intermediate local merges intentionally skipped duplicated automatic runs. No new release or live action. Next: inspect new native/full runs, repair actual failures and verify exact artifacts before main/release acceptance.
+
 ## 2026-10-15 — combine all three parallel agent increments
 
 Final independent catalog/cloud shared-code reviews found no concrete integration defect. Cloud review found outdated capability copy; replace its blanket unavailable claim with the bounded connection-check result and accurate remaining-feature list, keeping the exact visible browser assertion. This is a shipping text change and receives final canonical refresh81543 after completed64575. Domain next branch is `codex/twentyi-nameserver-observations`; catalog discovery contract intake follows its original full-artifact verification. Root freezes combined source for CI.

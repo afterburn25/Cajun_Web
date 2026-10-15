@@ -2,7 +2,7 @@
 
 Continue the complete 20i P0 scope in [the owner takeover](docs/TWENTYI_CODEX_TAKEOVER_REQUEST.md) and [requirements checklist](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md). The goal is active. Published v1.24.0 is unchanged; the prior turn made implementation and verified-evidence progress.
 
-Root worktree: `C:\Users\after\Documents\Codex\2026-10-12\ok-x20\work\Cajun_Web-twentyi-service-orders`. Branch `codex/twentyi-mailbox-controls`, [PR140](https://github.com/afterburn25/Cajun_Web/pull/140), parent catalog merge `577b279b`, normally merging cloud `33a2a2b013a3d8d340d0f26bbabd960f96312189` in this checkpoint; registrar mergec1585199 is retained. It normally merges main `a1e64f81502e8478dcb98152038a219eee1be4dd` and preserves licensing audits inside the existing domain-replacement transaction. Actual isolated PHP8.4/MariaDB fixture `licmerge1015_` passes40 named checks; it is populated and must not be rerun under the same prefix. Catalog agent independently reviewed the conflict resolution. No Website_Core execution.
+Root worktree: `C:\Users\after\Documents\Codex\2026-10-12\ok-x20\work\Cajun_Web-twentyi-service-orders`. Branch `codex/twentyi-mailbox-controls`, [PR140](https://github.com/afterburn25/Cajun_Web/pull/140), parent cloud integration `25cdc25af0796e8a9d2e87b66e4334f041d61bf7`, normally merging documentation-only main `c3b1a69c3b8162f6cc10bfd8d4289c7b4c8c0ce8`; catalog577b279b and registrarc1585199 are retained. It preserves runtime main `a1e64f81502e8478dcb98152038a219eee1be4dd` and preserves licensing audits inside the existing domain-replacement transaction. Actual isolated PHP8.4/MariaDB fixture `licmerge1015_` passes40 named checks; it is populated and must not be rerun under the same prefix. Catalog agent independently reviewed the conflict resolution. No Website_Core execution.
 
 ## Active evidence
 
@@ -19,7 +19,7 @@ Root worktree: `C:\Users\after\Documents\Codex\2026-10-12\ok-x20\work\Cajun_Web-
 
 ## Next actions
 
-1. Complete cloud merge refresh64575 and independent shared review, commit normally, then push the combined branch. Earlier registrar/catalog intermediate merges deliberately skipped duplicate automatic CI; the final source requires the complete suites. Preserve all source branches and prior runs.
+1. Push this final combined branch and inspect its new exact-source native/full CI. Refresh81543 and independent shared reviews passed; mainc3b1a69c adds documentation only. Earlier registrar/catalog intermediate merges deliberately skipped duplicate automatic CI; the final source requires the complete suites. Preserve all source branches and prior runs.
 2. Inspect exact combined native matrices and full packaged browser/recovery/Apache results. New mailbox sequence-order regressions must pass; inspect corrected owner-mobile registrar capture and every new actual desktop/mobile screen. The capability visibility fix retains its original assertion and must be verified by a fresh browser pass.
 3. Download and verify final artifacts, named outcomes, diagnostics, package checksums and exact source/member inventories. Independent combined review and exact-main acceptance precede publication; v1.24.0 remains published until that completes.
 4. Continue remaining complete20i requirements after the increment. Automatic discovery, domain commerce/management, full hosting controls/lifecycle, VPS lifecycle and scoped support/SSH remain implementation work.
@@ -31,3 +31,11 @@ Keep provider key-file protections; Windows native provider setup still refuses 
 PR attachment attempts reached the100-attachment limit; use ordinary links and preserve existing attachments. Prior PR comment/review/metadata auto-review rejections must not be bypassed through a different tool. Git source integration and documented local reviews remain separate actions.
 
 [Archived prior handoff](docs/archive/2026-10-15-a894de58-SESSION_HANDOFF.md) preserves older checkpoints and incoming main context. Current summaries should remain concise; archive superseded status instead of prepending contradictory “current” sections.
+
+## Preserved incoming main evidence
+
+The following report is imported from mainc3b1a69c; it describes a1e64f81 and does not certify this combined source.
+
+Acceptance evidence: [run 38817902722](https://github.com/afterburn25/Cajun_Web/actions/runs/38817902722) on `a1e64f81` passes all 15 `native-and-browser` steps including "Application server has no PHP runtime warnings or errors". The preceding cumulative run 38813445946 failed that check on a pre-existing defect unrelated to licensing: `fail_page()` called `http_response_code()` unconditionally, warning whenever an exception fired after `layout/public.php` emitted its header (58 warnings across `existing`/`ledger-upgrade`/`delivery-upgrade`/`activity-upgrade`/`portfolio-upgrade` fixture sites). `a1e64f81` guards the call with `headers_sent()`; the fail page still renders.
+
+Not live-verified: production needs `license_core_dir` pointing at a Website_Core checkout; no real purchase/bundle/install/validation cycle has run. Full details in [LICENSING_IMPLEMENTATION.md](docs/LICENSING_IMPLEMENTATION.md). This workstream is separate from 20i P0 below.

@@ -1,3 +1,7 @@
+## Integration checkpoint — latest main evidence
+
+Preserve the latest main acceptance record alongside the combined20i source. No additional runtime behavior or release version changes in this final merge.
+
 ## Unreleased — combined cloud website creation
 
 The admin capability summary now distinguishes the connection check from separate service permissions and no longer lists implemented domain search and hosting creation as unavailable.
