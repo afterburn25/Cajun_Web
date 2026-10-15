@@ -1,5 +1,13 @@
 # Accepted order to local hosting identity
 
+## Current fixture correction — 2026-10-15
+
+Parent8d97d06e native [38784300909](https://github.com/afterburn25/Cajun_Web/actions/runs/38784300909) passed all four combinations. Actual named JSON:36 preparation checks including rendered hidden-intent round trip,42 association and82 order checks within317 combined;108 ledger separately. PR merge11c255bdb379663f87e33e75254844a08dcddb44 and source share tree5f7bebff049f21257600f8e7875839d7f3ccfabf. Full38784310341 is running; its diagnostic response is still pending.
+
+The operations browser fixture directly incremented provider_profiles.revision to exercise stale-grant reconciliation, without creating its provider_revisions entry. That impossible fixture persisted into the later hosting suite, whose association validator requires original enabled credential-bearing revision history. Replace the direct increment with the actual authenticated provider settings form. Assert exact previous history plus one current revision and no provider network effects. Keep the existing stale-reconciliation and successful-hosting assertions. New native cases deliberately create an orphan revision, require refusal and verify complete rollback before restoring the fixture. This is a test correction, not weakened runtime validation. Syntax checks pass locally; descendant database/browser acceptance is pending, and the original browser root cause remains to be confirmed from saved response evidence.
+
+Parent26ec full38778539068 now succeeds; its final artifact has not yet been downloaded. Previous8ad complete artifact/source/Windows-Linux verification remains valid for8ad only. Main0b96f3d5 and immutable1.24 publication are unchanged. Continue exact browser verification, selected provider configuration and existing-engine fulfillment, independent review, integration and releases.
+
 Development branch `codex/twentyi-service-orders`, PR #138, parent `5728c2dfd576253fe85716fbbc3f1844d6d12b8b`. Codex continues the complete 20i P0 takeover. This increment is internal preparation; no provider request is sent and no active service is claimed.
 
 ## Implemented boundary

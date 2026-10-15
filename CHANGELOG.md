@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — provider browser fixture history
+
+- Change the stale-provider-context browser fixture through the real settings form so its current revision has retained original history. Preserve the reconciliation-refusal assertion and add history/network checks plus native orphan-revision rollback coverage. Application protections and shipping bytes are unchanged; complete descendant browser acceptance remains pending.
+
 ## Unreleased — preparation submission diagnosis
 
 - Preserve the failed Chromium submit assertion and add actual response/screenshot evidence plus native rendered-form roundtrip coverage. Direct native cases pass; the end-to-end form failure is unresolved at this checkpoint. No runtime workaround or publication.

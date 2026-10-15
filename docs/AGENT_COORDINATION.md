@@ -1,5 +1,7 @@
 # Agent coordination — complete20i P0
 
+Current PR138 parent8d97: Codex repairs the cross-suite provider fixture, which incremented a profile revision without its history. Use the actual settings form, retain stale-context refusal, and prove orphan-history mapping rollback. Parent rendered-form native36/42/82 within317 plus108 ledger passes all4 combinations; descendant/full browser result is pending. No shipping behavior or production guard changed. [Current handoff](../SESSION_HANDOFF.md).
+
 Latest PR138 parentf4: Codex is tracing the actual Chromium preparation-submit failure. All24 focused workflows and35 new native preparation checks ×4 pass; UI acceptance is not established. Tests now retain the real response and round-trip rendered intent. Preserve the in-flight recovery/Apache evidence. [Current handoff](../SESSION_HANDOFF.md).
 
 Current PR138, parent26ec4a7e: Codex owns native hosting preparation and client progress, including form/projection tests and agreement-route wiring. Parent native82/42/281 plus108 ledger passed all4 combinations; new descendant acceptance pending. Existing full runs are preserved. [Current source/evidence/next work](TWENTYI_ORDER_SERVICE_LINKS.md). Older “current” subsections below are dated historical records; no external agent is claimed running.

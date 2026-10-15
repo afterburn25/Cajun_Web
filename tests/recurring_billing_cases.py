@@ -329,6 +329,8 @@ def run_browser(env, browser):
     owner.post(hosting_owner, data={**service_setup,'confirm':'1','current_password':OWNER})
     check('Actual hosting preparation creates both native storage families', db("SELECT name,value FROM ci_settings WHERE name IN ('hosting_order_links_schema_version','hosting_records_schema_version') ORDER BY name")==[{'name':'hosting_order_links_schema_version','value':'1'},{'name':'hosting_records_schema_version','value':'1'}])
     mapping = form_data(form_for(owner.get(hosting_owner), 'service_plans_order_map_service'))
+    check('Hosting browser fixture retains enabled original provider revision',
+          db('SELECT enabled,has_credentials FROM ci_provider_revisions WHERE profile_id=? AND revision=?',[mapping['profile_id'],int(mapping['profile_revision'])])==[{'enabled':1,'has_credentials':1}])
     mapping.update({'reseller_id':'42','package_type':'811','package_label':'Synthetic <reviewed package>','package_region':'Synthetic location','package_websites':'1','package_disk_mb':'0','mapping_only':'1','confirm':'1','current_password':OWNER})
     for delta,label in [({'csrf':'bad'},'CSRF'),({'current_password':'wrong'},'owner password'),({'confirm':''},'confirmation'),({'mapping_only':''},'local mapping review'),({'package_websites':'-1'},'negative limit'),({'profile_revision':'0'},'stale connection'),({'order_hash':'a'*64},'stale order')]:
         response = owner.post(hosting_owner,data={**mapping,**delta})
