@@ -3,7 +3,8 @@
 ## Unreleased coordination — complete 20i ownership and recurring acceptance
 
 - Keep complete 20i implementation/fixes with Devin; report the new #115 replay fixture counter failure and record unreviewed #122.
-- Record #123 frozen source, 2,636 focused executions and running full/package acceptance; retain parent #121 final 11,780 executions and identical archives.
+- Record #123 frozen source, 2,636 focused executions, 9,775 browser-checkpoint executions, four inspected new activity images and verified exact Windows packages; full acceptance remains pending.
+- Retain parent #121 final 11,780 executions and identical archives; record 69 inherited visual comparisons inspected, 25 pending and two unresolved footer capture boundaries.
 - Documentation only on this review branch; runtime, installer, tests, versions and published assets unchanged. Independent review remains required.
 
 ## Unreleased continuity —20i review and recurring packages
