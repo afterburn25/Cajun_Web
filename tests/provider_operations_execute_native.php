@@ -30,8 +30,9 @@ final class PeTransport implements HttpTransport {
 }
 /** The real execution path: gateway + write adapter + durable ledger over the scripted transport. */
 function pe_perform(array $row,#[SensitiveParameter] string $secret,string $address,callable $authorize,ProviderOperation $operation):OperationResult {
-    if($secret!=='SYNTHETIC_PRIVATE_GENERAL_KEY'||$address!=='8.8.8.8')throw new LogicException('Invalid credential/network boundary');
-    $credential=new ProviderCredential('twenty-i',$row['id'],static function()use($secret,$authorize):string{$authorize();return $secret;});
+    if(!in_array($secret,['SYNTHETIC_PRIVATE_GENERAL_KEY','SYNTHETIC_REPLACEMENT_KEY'],true)||$address!=='8.8.8.8')throw new LogicException('Invalid credential/network boundary');
+    $identity=$row['id'].':'.(int)$row['revision'].':'.provider_operations_credential_fingerprint($secret);
+    $credential=new ProviderCredential('twenty-i',$identity,static function()use($secret,$authorize):string{$authorize();return $secret;});
     return (new ProviderGateway(new TwentyIOperationAdapter(),new PeTransport(),new ProviderOperationLedger()))->perform($credential,$operation);
 }
 function pe_exec(string $profile,int $revision,string $grantId,string $key,string $pw):OperationResult {
