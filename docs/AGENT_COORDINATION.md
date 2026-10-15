@@ -76,3 +76,7 @@ Codex owns `codex/twentyi-service-orders`, [PR138](https://github.com/afterburn2
 ## Current continuation — atomic order/service association
 
 Parent5728c2df, PR138: add one native order/service association with exact commercial and provider-request context, atomic audit/replay and missing-history guards; preserve existing hosting/provider engines. Parent actual browser artifact and four order screenshots are now inspected. New runtime validation is pending Linux CI after the local Windows key-permission refusal; no protection was relaxed. Mapping does not verify provider entitlement or authorize dispatch. [Exact scope, evidence, limitations and continuation](TWENTYI_ORDER_SERVICE_LINKS.md).
+
+## 2026-10-15 — Cloud website native acceptance and handoff
+
+Startingce8d4e89, record41 corrected native checks per PHP8.2/8.4 and MariaDB10.11/MySQL8.4 combination in run38821117816, verified from all four downloaded artifacts. Root review found no further source issue. Installer refresh15011, changed PHP syntax, all2,662 indexed hashes and documentation checks passed. Earlier4aa browser checkpoint verifies1,792 HTTP checks including18 cloud checks and four inspected screenshots. Exact corrected full38821117748 passed native and remains in browser; complete application/release acceptance remains pending. No runtime edit, provider call, deployment or release in this documentation checkpoint. Next: root sequential integration, combined installer generation and exact combined acceptance. See cloud evidence for retained failures, hashes and limitations.

@@ -44,3 +44,16 @@ The later4aa68171 adds process-concurrency coverage; independent review identifi
 Concurrency checkpoint: all four PHP8.2/8.4 and MariaDB10.11/MySQL8.4 combinations at `4aa68171ba921473ebadc46f5e71670ad37ea035` pass33 named native checks in [run38819232444](https://github.com/afterburn25/Cajun_Web/actions/runs/38819232444), including the two-process duplicate form test. Downloaded artifacts12012845114,12012602701,12011619593,12011504623 have verified published SHA256, valid ZIP CRC and all named outcomes; exact digests are retained locally in `qa/cloud-concurrency-verification.json`. This predates the paired-loss and transaction-entry corrections and does not certify those later changes.
 
 The recovery query at2febba4e failed native MySQL8.4/PHP8.2 run38820482050, job116715582421, with an illegal mixed-collation CONCAT. The enclosing correction casts all audit-prefix/ID/suffix operands to binary, retaining exact request-ID matching on both database engines. The failed report is preserved; later acceptance must verify this compatibility correction.
+
+## Corrected native acceptance — 2026-10-15
+
+Exact `ce8d4e892756044377e7e640a77aa6ede0d0ac6a` passes **41 named native checks in every combination** in [run38821117816](https://github.com/afterburn25/Cajun_Web/actions/runs/38821117816). All four downloaded ZIP CRCs, SHA256 and named outcomes are verified; local proof is `qa/cloud-corrected-native-verification.json`.
+
+- provider-cloud-sites-8.4-mariadb-10.11, artifact12013741424: `df9741fa857fd98516c05491038beb49b571d865545609e05485d6fc3b6bfb0e`.
+- provider-cloud-sites-8.2-mysql-8.4, artifact12013367522: `dd555d988e57e99dc69e29b03184956f79b4a76a267dc87eaf804e7286b1d5aa`.
+- provider-cloud-sites-8.4-mysql-8.4, artifact12013252497: `35d0dbeadb0233dec33a046ef83dff5002337cc4e1f7717aba3aa165de431b48`.
+- provider-cloud-sites-8.2-mariadb-10.11, artifact12013202679: `4662eb53541667b5e3170c0de208fbe98701c4036787be434369ff6a25c22195`.
+
+The preceding2feb run38820482050 passed39 checks on both MariaDB jobs and failed both MySQL jobs on the mixed-collation CONCAT; all four outcome archives were downloaded and verified in `qa/cloud-recovery-2feb-verification.json`. Corrected ce8d passes both engines while retaining the same independent witnesses, and adds the two transaction preservation checks. Root independently reviewed both corrections without further confirmed source findings. Full installer refresh15011 is complete; all2,662 indexed source hashes match.
+
+Earlier4aa [browser checkpoint38819232463](https://github.com/afterburn25/Cajun_Web/actions/runs/38819232463), artifact12012696801 SHA `58854bd3f709aef624fd64338064444ca25fbdd5e2d292cba69cf63468e8164d`, has valid ZIP CRC and all1,792 HTTP checks passed, including18 cloud website checks. Owner/client desktop/mobile screenshots were visually inspected for readable forms/status, wrapping, clipping and overlap. The320px owner page is long but fits; no new layout defect was found. Local proof is `qa/cloud-browser-4aa-verification.json`. This earlier browser evidence does not certify later runtime corrections. Exact corrected [full38821117748](https://github.com/afterburn25/Cajun_Web/actions/runs/38821117748) passed native and is currently in browser. Root must inspect its exact artifacts and complete combined acceptance before release.
