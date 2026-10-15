@@ -43,7 +43,7 @@ function service_orders_agreement(string $id,int $client,int $revision,string $h
 /** A future resume must not turn today's paused service into current purchase authority. */
 function service_orders_billing_eligible(\CajunWebPro\Foundation\RecurringBilling\RecurringBillingSchedule $billing,int $at):bool {
     $terms=\CajunWebPro\Foundation\RecurringBilling\RecurringBillingTerms::fromArray($billing->data()['terms']);$current=$terms->periodAt($at);
-    return $billing->phase()==='running'&&$current!==null
+    return $current!==null
         &&$billing->assessment(0,$at)['eligible']&&$billing->assessment($current['index'],$at)['eligible'];
 }
 /** Inspect a specific existing invoice; matching amounts alone never create an order. */

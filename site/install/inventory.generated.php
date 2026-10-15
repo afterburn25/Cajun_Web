@@ -110,7 +110,7 @@ function setup_expected_files(): array { return [
     'app/hosting/order_document.php'=>'1ba6a99df3e3dc249240cffcd0c9ae4adb2fe5622ee306243a0d093ebd7b727c',
     'app/hosting/order_links.php'=>'5a5f15b20e6cb82528e8df0d6da3a8a8c213e6ef4073056527d632ab5ee49df0',
     'app/hosting/order_views.php'=>'0f9424598ab00763b4e87d7c22fb175466ed210b064ba5007b3111de9eab73d8',
-    'app/hosting/orders.php'=>'e806def0c58a1f026ac033094c30734ae2afa4cca660287638ecf0ed0e372d1b',
+    'app/hosting/orders.php'=>'bc1e0523e90cc82bdf994d2bda83f98220ef39c376c006e8fa3b15a97f57b535',
     'app/hosting/reconciliation.php'=>'022d923ed17c832cdd35b371ebfc4b1fda92bbb67ec4142442048e6ac41dc630',
     'app/hosting/records.php'=>'087db68087c21683ddf7de1275b57aed507f622d785235d0949256c92e1cfa61',
     'app/hosting/storage.php'=>'7c1dc2442c232a547754cc869c1667a35797e4c2186e949dfdbe8fd45f03b20d',

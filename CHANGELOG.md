@@ -827,3 +827,6 @@ Next: refresh generated shipping mirrors, push this checkpoint, run the reader a
 ## Order-derived local hosting identity
 
 Parent5728c2df, PR138: add one native order/service association with exact commercial and provider-request context, atomic audit/replay and missing-history guards; preserve existing hosting/provider engines. Parent actual browser artifact and four order screenshots are now inspected. New runtime validation is pending Linux CI after the local Windows key-permission refusal; no protection was relaxed. Mapping does not verify provider entitlement or authorize dispatch. [Exact scope, evidence, limitations and continuation](docs/TWENTYI_ORDER_SERVICE_LINKS.md).
+
+
+Current follow-up:8adf passed all four native combinations, including42 new association checks within277 combined checks. A reproduced future-pause/end timing defect is corrected with four additional effective-boundary cases; exact descendant validation remains pending. See [details](docs/TWENTYI_ORDER_SERVICE_LINKS.md).

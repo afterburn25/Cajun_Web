@@ -114,6 +114,13 @@ try{
     $billing=recurring_billing_validate(recurring_billing_row(rb_id(9500)));
     $termsNow=\CajunWebPro\Foundation\RecurringBilling\RecurringBillingTerms::fromArray($billing->data()['terms']);
     $nextPeriod=$termsNow->periodAt(time())['index']+1;
+    // Last-recorded phase is not the current period: future pause/end preserve today's eligibility.
+    $futureEpoch=(new DateTimeImmutable($termsNow->period($nextPeriod)['start'],new DateTimeZone('UTC')))->getTimestamp();
+    foreach(['pause','end'] as $futureCommand){
+        $planned=$billing->append(rb_id($futureCommand==='pause'?9540:9541),$futureCommand,'staff:1',time(),['period_index'=>$nextPeriod,'reason'=>'Synthetic planned future service boundary']);
+        rb_ok('Future '.$futureCommand.' preserves current effective hosting eligibility',service_orders_billing_eligible($planned,time()));
+        rb_ok('Future '.$futureCommand.' blocks hosting exactly at its effective boundary',!service_orders_billing_eligible($planned,$futureEpoch));
+    }
     foreach([[9530,'pause',1581292800,1],[9531,'resume',time(),$nextPeriod]] as [$eventId,$command,$at,$period]){
         $args=['period_index'=>$period,'reason'=>'Synthetic scheduled hosting boundary'];$next=$billing->append(rb_id($eventId),$command,'staff:1',$at,$args);
         query('INSERT INTO '.table('recurring_billing_events').' (id,schedule_id,actor_staff_id,actor_client_id,revision,recorded_epoch,input_json,before_sha256,after_sha256) VALUES (?,?,1,NULL,?,?,?,?,?)',[rb_id($eventId),rb_id(9500),$next->revision(),$at,recurring_billing_json(['revision'=>$billing->revision(),'command'=>$command,'arguments'=>$args]),$billing->fingerprint(),$next->fingerprint()]);

@@ -26,3 +26,19 @@ New association source passes PHP syntax checks. First local Windows PHP8.4/Mari
 4. Expose usable progress/service ownership and cancellation through the native portals, then run actual extracted-package journeys. Continue the complete hosting/domain/VPS/support/SSH scope and normal incremental integration/releases.
 
 Documented addWeb method/fields/assigned-ID response: [20i primary provisioning documentation](https://docs.20i.com/api/provision-hosting-package-api), read2026-10-15. Assigned ID alone is not proof that setup is active. Original complete API reference remains requested once; no secret or additional live call was requested.
+
+
+## Effective-period correction after native association acceptance
+
+Parent8adf6b6504a38e41a80be0b9142ba113ce5393a2 passed [native38777224050](https://github.com/afterburn25/Cajun_Web/actions/runs/38777224050) in all four PHP/database combinations. Actual named JSON from each job:42 association checks,78 order checks,277 combined recurring/order/association checks and108 separate ledger checks, all passed. The42/78 are subsets of277. PR test merge63ce5a56 has the exact same tree950d8379 as8adf. Full38777230717 remains in progress; parent success does not certify this follow-up.
+
+A local read-only synthetic regression on8adf reproduced future-pause and future-end false refusals: the original and current schedule periods were eligible, while the order adapter returned false because the last recorded phase described next month's boundary. Remove that extra last-phase test and rely on both effective-period assessments. Added four canonical future pause/end current/boundary assertions, preserving the original future-resume refusal. Exact descendant native/full acceptance is pending. Local after-fix probe now reports current eligibility for both cases; this is not provider or HTTP acceptance.
+
+The freshly downloaded5728 desktop and mobile homepage screenshots are pixel-identical to the saved accepted1.24 screenshots. Full-resolution320px staff order screenshot was also inspected with readable labels and no clipping. No UI redesign, provider call or production transaction is introduced.
+
+
+## Verified parent full artifact and local build
+
+Source5728 full38772216038 and earlierc05 full38771842434 completed successfully. Artifact11993778298 was downloaded and matched SHA256 `289247bfc93c652c3989c52c41b0a3a3ee4885f1d327099d321b30d88d25e2f1` (85,704,764bytes). All11 files listed in SHA256SUMS, all ZIP member hashes, implied directory inventories and shipping mirrors match. FULL-PROJECT5,367files equals a fresh Git archive of5728 byte-for-byte; COMPLETE-UPLOAD2,635files and UPDATE2,622files match the exact source/payload. Actual terminal reports pass1,623 HTTP/Chromium,289 recovery and1,743 Apache checks; intermediate Apache progress and subset reports are not added again. The first independent verifier expected explicit ZIP directory entries; the builder intentionally records implied directories. Correcting that verification assumption retained every member/hash/directory comparison; no product change was needed.
+
+The local clean8adf Windows build also completed:5,374 FULL-PROJECT,2,638 COMPLETE-UPLOAD and2,625 UPDATE members. Its preserved outputs are development artifacts with inherited1.25 labels, not a publication. Exact Linux/Windows comparison for8adf awaits its full artifact. Current timing-correction source is a descendant and needs its own acceptance.
