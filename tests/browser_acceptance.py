@@ -198,6 +198,8 @@ try:
         notices_browser(globals(),browser)
         from provider_settings_cases import run_browser as provider_browser
         provider_browser(globals(),browser)
+        from provider_operations_cases import run_browser as provider_operations_browser
+        provider_operations_browser(globals(),browser)
         from mail_drafts_cases import run_browser as drafts_browser
         drafts_browser(globals(),browser)
         from mail_submissions_cases import run_browser as submissions_browser

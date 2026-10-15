@@ -1,9 +1,31 @@
 # Changelog
 
+## Unreleased — 20i domain ownership links (devin/twentyi-domain-links)
+
+Owner-approved domain→client mappings over the observed inventory: `provider_domain_links`/`provider_domain_link_events` (provider-inventory schema v3) bind `(profile_id, domain)` to a client with the carrying package, credential-context fingerprint and approved revision. Linking requires the `(package_id, domain)` pair in the last good observation under the exact current revision — the reseller case of several clients' domains on one package. Admin gains per-domain link/unlink/re-approve controls with a stale-domain section; the client portal surfaces linked domains with honest absence markers. Additive migration preserves v1/v2 data. `domains.renew` also joined the buildable write catalog (documented `name`/`years`/`renewPrivacy`); `addDomain`/`transferDomain`/`nameservers`/`dns` are catalogued shape-incomplete and refused.
+
+## Unreleased — 20i write execution path (devin/twentyi-execution, devin/twentyi-reconcile)
+
+- `provider_operations_execute` performs one owner-approved provider write: owner password + current profile revision + active exact-scope grant required before any credential is opened or an endpoint address resolved; undocumented or shape-incomplete operations refuse before any ledger claim; missing grants refuse `no_grant` and are audited.
+- `TwentyIOperationAdapter` (foundation + site mirror) implements `ProviderAdapter` over the closed documented catalog — supports only shape-complete operations, builds the allowlisted bounded request, attaches `Authorization` at send time only, classifies outcomes conservatively (`uncertain` for 3xx/429/5xx, other non-terminal 2xx and post-send transport faults; `failed` for provably pre-send failures).
+- Execution runs through `ProviderGateway` over the durable `ProviderOperationLedger` — atomic idempotency claim before send, replay/conflict/in-progress/stale-uncertain semantics, durable record required. Owner access is re-verified at send and after; access changes around a possibly-landed write surface `uncertain` for reconciliation.
+- Native MariaDB suite `tests/provider_operations_execute_native.php` covers authority gates, grant scope/expiry/revocation, exactly-once send, replay/conflict without re-sending, uncertain propagation and a durable secret scan — scripted transport only, no provider call. Live sends remain gated on operation-specific acceptance.
+
+## Unreleased — 20i inventory slice binding corrections (devin/twentyi-refresh)
+
+Links to observed 20i packages are now bound to the exact profile revision and the credential context approved at link time. Client service views suppress data when the provider settings change until the owner explicitly re-approves the mapping under a current observation; an identical package id under a replaced key can never flow through an old link. Observations carry an installation-bound credential fingerprint (never key material); schema version 2 upgrades existing tables in place. Native MariaDB suite: 77 assertions on PHP 8.2/8.4.
+
 ## 1.23.0 — published and verified
 
 Client account edits reject stale versions and retain safely escaped unsaved details; client/invitation writes recheck current authority and audit atomically. Invitations are single-use and unexpired, and client administration is refused during support sessions. Reviewed internal hosting records, dispatch fences and local provisioning retry remain inactive groundwork. Exact-main 8,360 assertions and 25 workflow gates pass; all 16 draft/public assets are downloaded and verified, with prior 1.22 unchanged. [Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0); [report](docs/TEST_REPORT_1.23.0.md). Complete 20i implementation remains assigned to Devin; service agreements and later hosting reconciliation remain separate increments.
 
+
+## Unreleased — 20i write boundary (descriptive)
+
+Closed package-lifecycle write descriptors (`packages.create`/`update` buildable; `userstatus`/`delete` refused pending documented fields), allowlisted request construction, conservative success/failed/uncertain classification and named refusal surface for domains/VPS/SSH/billing/email. Descriptive only — the adapter still refuses every operation; no credential, transport, ledger or provider call. 81 synthetic checks on PHP 8.2/8.4. [Contract](docs/TWENTYI_OPERATIONS_CONTRACT.md).
+## Unreleased — provider operation ledger and owner grants
+
+Durable at-most-once operation ledger (`provider_operations`) implementing the shared OperationLedger contract — claim/replay/conflict/uncertain semantics — plus owner-password grant records bound to exact canonical operation scopes with expiry, revocation and audit. Fresh installs create both tables; existing installs run the owner migration. Persistence only: no credential, request, transport or provider call. [Guide](docs/PROVIDER_OPERATIONS.md).
 
 ## Development coordination — acknowledged full 20i ownership
 
@@ -20,6 +42,16 @@ Unreleased. Preserve reviewed client conflict/invitation/support safeguards and 
 ## Unreleased combined hosting/client integration
 
 Preserve mail main1.22 while combining guarded client administration and reviewed hosting journal/storage/dispatch/local-retry foundations. No new hosting UI or remote execution is activated. Add all three hosting native suites and12 internal-path checks to combined full acceptance; preserve every existing test and upgrade baseline. This branch is not a published release.
+## Unreleased — read-only 20i inventory contract
+
+- `foundation/twentyi-inventory/`: closed documented GET descriptors, allowlist package projection, honest complete/partial/unavailable snapshots and an evidence-graded capability register. Contract-only; no live calls, persistence, routes or client linking.
+
+## Unreleased — 20i inventory application slice (`devin/twentyi-refresh`)
+
+- Owner-triggered provider inventory: durable refresh intent + bounded result rows, verbatim validated `provider_observation_packages`, explicit owner→client `provider_package_links` against `studio_clients`, and ordered `provider_package_link_events` (auto-increment id for insertion-stable ordering).
+- Refresh orchestration mirrors the connection-check protocol: staff-locked intent, private-DNS refusal, mid-flight authority rechecks downgrading to `access_changed`, lazy secret resolution at the transport boundary, cooldown, and last-good preservation on unavailable refreshes.
+- Admin provider-settings section (prepare/refresh/link/unlink/history) and portal `?services` view showing only explicitly linked services. `staff_action_permission` maps `provider_inventory_*` to `staff.manage`.
+- `tests/provider_inventory_native.php` + `provider-inventory.yml`: 56 native MariaDB assertions on PHP 8.2/8.4 — authorization refusals, revision checks, cooldown, resolver/transport classification, complete/partial/unavailable persistence, link restrictions, duplicate rejection, client isolation, unlink events. Synthetic fixtures only; no live call, real credential or mutation.
 
 ## 1.22.0 — verified explicit saved-email sending
 
@@ -555,3 +587,15 @@ Added separate private draft controller/view sources and 38 named raw form-input
 ### Local email draft application integration (unreleased)
 
 Connect fresh/additive setup, current-authorized admin compose/list/preview/template/discard/history and mailbox navigation. Add packaged HTTP/Chromium and Apache cases plus1.19 recovery/reapplication retaining active/discarded drafts and original keys. These integration scenarios await CI; no SMTP or release publication. Application job budget45minutes preserves all assertions while accommodating the additional recovery cases.
+
+## Unreleased — 20i uncertain-write reconciliation (devin/twentyi-reconcile)
+
+- `provider_operations_reconcile` resolves an `uncertain` ledger row through one owner-authorized, evidence-backed observation of the package list (`GET /package` — the only authenticated-read evidence). Outcomes: `observed`, `not_observed`, `inconclusive` (no read sent for unobservable updates), `unavailable`, `refused`. The recorded provider result is never rewritten and the request is never re-sent.
+- `provider_operations` schema v4 appends `reconciled_outcome`/`reconciled_epoch`; the owner operations page shows the reconcile badge and a password-bound check action on uncertain rows.
+- Fresh installs now stamp the created schema versions (`provider_inventory`=2, `provider_operations`=4) rather than a stale '1'.
+
+## Unreleased — packaged provider-operations acceptance + approval-time build validation (devin/twentyi-reconcile)
+
+- `provider_operation_grant` now requires the approved scope to construct a documented bounded request — undocumented fields refuse at approval, not at send.
+- New packaged HTTP/Chromium suite covers the owner operations surface end-to-end: storage setup, owner-only gates, exact-scope approval, a single bounded POST through the real transport stub, idempotent replay, 202→uncertain classification, reconcile `not_observed`/`observed`, revocation, and internal-file denial.
+- The loopback provider fixture and TLS connector gained a strict POST branch and a package list that reflects recorded creates.

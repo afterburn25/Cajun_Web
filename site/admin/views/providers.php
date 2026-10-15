@@ -54,5 +54,86 @@ admin_input('current_password','Your current owner password','','password','requ
 <?php foreach(array_slice($history,0,20) as $snapshot): ?><article><h3>Version <?=(int)$snapshot['revision']?> · <?=esc($snapshot['label'])?></h3><p><?=esc($snapshot['recorded_at'])?> UTC · <?=esc($snapshot['actor_name']??'Former owner')?> · <?=esc(ucfirst($snapshot['action']))?> · <?=esc((int)$snapshot['enabled']===1?'Checks enabled':'Checks disabled')?> · <?=esc((int)$snapshot['has_credentials']===1?'Key was saved':'No key saved')?></p></article><?php endforeach; ?>
 <nav aria-label="Settings history pages"><?php if($historyPage>1): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['history_page'=>$historyPage-1]))?>">Newer settings</a><?php endif; ?><?php if(count($history)>20): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['history_page'=>$historyPage+1]))?>">Older settings</a><?php endif; ?></nav></section>
 <?php endif; ?>
+<section class="workspace-card" data-provider-inventory><h2>Hosting package inventory</h2>
+<p>An explicit refresh performs one authenticated package-list read against the saved 20i profile and keeps the validated result. Observations are scoped to this saved profile and never claim to be complete account coverage.</p>
+<?php if(!provider_inventory_ready()): ?>
+<p>Prepare durable inventory storage first. Back up your database before adding these tables.</p>
+<form method="post"><?php admin_action('provider_inventory_prepare'); ?><?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?><button class="btn gold">Prepare inventory storage</button></form>
+<?php else:
+$latest=provider_inventory_latest($profileId);$observation=provider_inventory_observation($profileId);
+$packages=$observation?provider_inventory_packages($observation['id']):[];
+$links=[];foreach(provider_inventory_links($profileId) as $link)$links[(int)$link['package_id']]=$link;
+$clients=provider_inventory_clients();
+?>
+<?php if($latest): ?><p>Last refresh: <?=badge($latest['state'])?> <?=esc($latest['started_at'])?> UTC · <?=esc($latest['actor_name']??'Former owner')?> · Saved version <?=(int)$latest['profile_revision']?><?php if($latest['reason']!==''): ?> · <?=esc(str_replace('_',' ',$latest['reason']))?><?php endif; ?></p>
+<?php if($observation&&(int)$observation['profile_revision']!==(int)$record['revision']): ?><p class="hint">The saved observation below was made under an earlier settings version; refresh under the current version before relying on it.</p><?php endif; ?>
+<?php else: ?><p>No inventory refresh has been recorded.</p><?php endif; ?>
+<?php if((int)$record['enabled']===1&&$record['has_credentials']): ?>
+<form method="post" data-provider-refresh><?php admin_action('provider_inventory_refresh'); ?>
+<input type="hidden" name="profile_id" value="<?=esc($profileId)?>"><input type="hidden" name="revision" value="<?=(int)$record['revision']?>">
+<?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?><button class="btn gold">Refresh package inventory</button></form>
+<p class="hint">One bounded request per refresh. Wait 30 seconds between refreshes; each owner can start up to 20 per hour.</p>
+<?php else: ?><p>Save a General API key and allow explicit checks before refreshing inventory.</p><?php endif; ?>
+<?php if($observation): ?>
+<h3>Observed packages<?=$observation['id']!==($latest['id']??null)?' — earlier than the latest refresh':''?></h3>
+<p><?=esc($observation['started_at'])?> UTC · <?=esc($observation['state'])?> · coverage <?=esc($observation['coverage'])?><?php if($observation['skipped']>0): ?> · <?=(int)$observation['skipped']?> skipped<?php endif; ?></p>
+<?php if($observation['state']==='partial'): ?><p class="hint">Some reported packages were skipped because they did not match the documented shape. Absence from a partial observation does not prove a package was removed.</p><?php endif; ?>
+<?php foreach($packages as $package): $linked=$links[(int)$package['package_id']]??null; ?>
+<article class="workspace-card"><h3><?=esc($package['name'])?> <span class="workspace-status">#<?=(int)$package['package_id']?></span></h3>
+<p><?=esc($package['package_type_name']??'Type unreported')?> · <?=esc((int)$package['enabled']===1?'Enabled':'Disabled')?> · Created <?=esc($package['created_at'])?><?php if($package['names']): ?> · <?=esc(implode(', ',$package['names']))?><?php endif; ?></p>
+<?php if($package['package_labels']||$package['stack_users']): ?><p class="hint"><?php if($package['package_labels']): ?>Labels: <?=esc(implode(', ',$package['package_labels']))?><?php endif; ?><?php if($package['stack_users']): ?> Stack users: <?=esc(implode(', ',$package['stack_users']))?><?php endif; ?></p><?php endif; ?>
+<?php if($linked): $linkStale=(int)$linked['profile_revision']!==(int)$record['revision']; ?><p><?=badge('linked')?> <?=esc($linked['client_name'])?> · linked <?=esc($linked['linked_at'])?> UTC by <?=esc($linked['linked_by_name']??'Former owner')?><?=$linkStale?' · '.badge('requires re-approval'):''?></p>
+<?php if($linkStale): ?><p class="hint">Provider settings changed after this link was approved, so the client view is suspended. Verify this package still belongs to the intended client under the current provider account, then re-approve it.</p>
+<?php if((int)$observation['profile_revision']===(int)$record['revision']): ?><form method="post"><?php admin_action('provider_inventory_relink'); ?><input type="hidden" name="link_id" value="<?=esc($linked['id'])?>"><input type="hidden" name="revision" value="<?=(int)$record['revision']?>"><?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Re-approve link</button></form><?php else: ?><p class="hint">Refresh the inventory under the current settings before re-approving.</p><?php endif; ?>
+<?php endif; ?>
+<form method="post"><?php admin_action('provider_inventory_unlink'); ?><input type="hidden" name="link_id" value="<?=esc($linked['id'])?>"><?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Unlink service</button></form>
+<?php elseif($clients): ?><form method="post"><?php admin_action('provider_inventory_link'); ?>
+<input type="hidden" name="profile_id" value="<?=esc($profileId)?>"><input type="hidden" name="revision" value="<?=(int)$record['revision']?>"><input type="hidden" name="package_id" value="<?=(int)$package['package_id']?>">
+<label>Client account<select name="client_id" required><?php foreach($clients as $client): ?><option value="<?=(int)$client['id']?>"><?=esc($client['name'].' · '.$client['email'])?></option><?php endforeach; ?></select></label>
+<?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Link to client</button></form>
+<?php endif; ?></article>
+<?php endforeach; ?>
+<?php $observedIds=[];foreach($packages as $package)$observedIds[(int)$package['package_id']]=true;
+$staleLinks=[];foreach($links as $linked)if(!isset($observedIds[(int)$linked['package_id']]))$staleLinks[]=$linked;
+if($staleLinks): ?><h3>Linked services not in the latest observation</h3>
+<p class="hint">These mappings were approved earlier but the package was absent from the last good read. Absence does not prove the package was removed; refresh again or unlink the mapping.</p>
+<?php foreach($staleLinks as $linked): ?><article class="workspace-card"><h3>Service #<?=(int)$linked['package_id']?></h3>
+<p><?=badge('linked')?> <?=esc($linked['client_name'])?> · linked <?=esc($linked['linked_at'])?> UTC by <?=esc($linked['linked_by_name']??'Former owner')?><?=(int)$linked['profile_revision']!==(int)$record['revision']?' · '.badge('requires re-approval'):''?></p>
+<?php if((int)$linked['profile_revision']!==(int)$record['revision']): ?><p class="hint">Provider settings changed after this link was approved. It can be re-approved only if the package appears in a current observation; otherwise remove it.</p><?php endif; ?>
+<form method="post"><?php admin_action('provider_inventory_unlink'); ?><input type="hidden" name="link_id" value="<?=esc($linked['id'])?>"><?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Unlink service</button></form></article>
+<?php endforeach; ?><?php endif; ?>
+<?php $domainLinks=[];foreach(provider_inventory_domain_links($profileId) as $dl)$domainLinks[$dl['domain']]=$dl;
+$observedDomains=[];foreach($packages as $package)foreach($package['names'] as $name){$d=strtolower(trim((string)$name));if($d!=='')$observedDomains[$d]=(int)$package['package_id'];}
+ksort($observedDomains);
+if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
+<p class="hint">Domain links assign one observed domain to a client independently of the hosting package that carries it. Nothing is inferred from registration or address fields; a domain that stops appearing in a current observation must be unlinked or re-approved.</p>
+<?php foreach($observedDomains as $d=>$pkgId): $linked=$domainLinks[$d]??null;$linkStale=$linked&&(int)$linked['profile_revision']!==(int)$record['revision']; ?>
+<article class="workspace-card"><h3><?=esc($d)?> <span class="workspace-status">package #<?=$pkgId?></span></h3>
+<?php if($linked): ?><p><?=badge('linked')?> <?=esc($linked['client_name'])?> · linked <?=esc($linked['linked_at'])?> UTC by <?=esc($linked['linked_by_name']??'Former owner')?><?=$linkStale?' · '.badge('requires re-approval'):''?></p>
+<?php if($linkStale): ?><p class="hint">Provider settings changed after this link was approved, so the client view is suspended. Verify the domain still belongs to the intended client, then re-approve it.</p>
+<?php if((int)$observation['profile_revision']===(int)$record['revision']): ?><form method="post"><?php admin_action('provider_inventory_domain_relink'); ?><input type="hidden" name="link_id" value="<?=esc($linked['id'])?>"><input type="hidden" name="revision" value="<?=(int)$record['revision']?>"><?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Re-approve domain link</button></form><?php else: ?><p class="hint">Refresh the inventory under the current settings before re-approving.</p><?php endif; ?>
+<?php endif; ?>
+<form method="post"><?php admin_action('provider_inventory_domain_unlink'); ?><input type="hidden" name="link_id" value="<?=esc($linked['id'])?>"><?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Unlink domain</button></form>
+<?php elseif($clients): ?><form method="post"><?php admin_action('provider_inventory_domain_link'); ?>
+<input type="hidden" name="profile_id" value="<?=esc($profileId)?>"><input type="hidden" name="revision" value="<?=(int)$record['revision']?>"><input type="hidden" name="package_id" value="<?=$pkgId?>"><input type="hidden" name="domain" value="<?=esc($d)?>">
+<label>Client account<select name="client_id" required><?php foreach($clients as $client): ?><option value="<?=(int)$client['id']?>"><?=esc($client['name'].' · '.$client['email'])?></option><?php endforeach; ?></select></label>
+<?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Link domain to client</button></form>
+<?php endif; ?></article>
+<?php endforeach; ?>
+<?php $staleDomains=array_diff(array_keys($domainLinks),array_keys($observedDomains));if($staleDomains): ?><h4>Linked domains not in the latest observation</h4>
+<p class="hint">These domain mappings were approved earlier but the name is absent from the last good read. Absence does not prove the domain was removed; refresh again or unlink the mapping.</p>
+<?php foreach($staleDomains as $d): $linked=$domainLinks[$d]; ?><article class="workspace-card"><h3><?=esc($d)?></h3>
+<p><?=badge('linked')?> <?=esc($linked['client_name'])?> · linked <?=esc($linked['linked_at'])?> UTC by <?=esc($linked['linked_by_name']??'Former owner')?><?=(int)$linked['profile_revision']!==(int)$record['revision']?' · '.badge('requires re-approval'):''?></p>
+<form method="post"><?php admin_action('provider_inventory_domain_unlink'); ?><input type="hidden" name="link_id" value="<?=esc($linked['id'])?>"><?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Unlink domain</button></form></article>
+<?php endforeach; ?><?php endif; ?>
+<?php endif; ?>
+<?php $events=provider_inventory_link_events($profileId);if($events): ?><h3>Link history</h3><?php foreach(array_slice($events,0,20) as $event): ?><p><?=esc($event['recorded_at'])?> UTC · <?=esc(match($event['event']){'link'=>'Linked','relink'=>'Re-approved',default=>'Unlinked'})?> package #<?=(int)$event['package_id']?><?=$event['client_name']?' · '.esc($event['client_name']):''?> · <?=esc($event['actor_name']??'Former owner')?></p><?php endforeach; ?><?php endif; ?>
+<?php $domainEvents=provider_inventory_domain_link_events($profileId);if($domainEvents): ?><h3>Domain link history</h3><?php foreach(array_slice($domainEvents,0,20) as $event): ?><p><?=esc($event['recorded_at'])?> UTC · <?=esc(match($event['event']){'link'=>'Linked','relink'=>'Re-approved',default=>'Unlinked'})?> <?=esc($event['domain'])?><?=$event['client_name']?' · '.esc($event['client_name']):''?> · <?=esc($event['actor_name']??'Former owner')?></p><?php endforeach; ?><?php endif; ?>
+<?php endif; ?>
+<?php $refreshPage=max(1,min((int)($_GET['refresh_page']??1),100000));$history=provider_inventory_history($profileId,$refreshPage);if($history): ?><h3>Refresh history</h3>
+<?php foreach(array_slice($history,0,20) as $row): ?><p><?=esc($row['started_at'])?> UTC · <?=badge($row['state'])?><?=$row['reason']!==''?' · '.esc(str_replace('_',' ',$row['reason'])):''?><?php if(in_array($row['state'],['complete','partial'],true)): ?> · <?=(int)$row['package_count']?> packages<?=$row['skipped']>0?', '.(int)$row['skipped'].' skipped':''?><?php endif; ?> · saved version <?=(int)$row['profile_revision']?> · <?=esc($row['actor_name']??'Former owner')?></p><?php endforeach; ?>
+<nav aria-label="Refresh history pages"><?php if($refreshPage>1): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['refresh_page'=>$refreshPage-1]))?>">Newer refreshes</a><?php endif; ?><?php if(count($history)>20): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['refresh_page'=>$refreshPage+1]))?>">Older refreshes</a><?php endif; ?></nav>
+<?php endif; ?>
+<?php endif; ?></section>
 <section class="workspace-card"><h2>Service capabilities</h2><p>These capabilities remain unverified and unavailable, including after a successful connection check.</p>
 <ul><li>Hosting inventory, plan types and account balance</li><li>Hosting creation, changes and deletion</li><li>Domain search, registration, renewals and transfers</li><li>VPS inventory, ordering and power controls</li><li>Backup restoration and SSH access</li></ul></section>
