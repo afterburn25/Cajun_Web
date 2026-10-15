@@ -1,5 +1,9 @@
 # Changelog
 
+## Verification records — complete 20i ownership and final notifications
+
+Confirm Devin ownership; current-source review clears seven prior defects and retains migration plus conflicting-scope reconciliation findings. Preserve failed initial fixture evidence and unchanged product bytes. Verify separate financial notification candidate:11,404 named checks/all25 workflows,117 matching final images and identical Windows/Linux archives. Review/integration remain pending; publication stays1.23.0.
+
 ## Verification records — recurring lifecycle
 
 Verify separate PR119 whole-period consent/lifecycle:2,568 focused executions on PHP8.2/8.4 default/no-ini, exact source and unchanged shipping/terms/calendar. Native authority, authenticated consent, unique invoices, interfaces and independent review remain required. Preserve running notification acceptance and Devin correction ownership.
