@@ -19,6 +19,17 @@ try {
     rb_deny('Lost mapping plus changed reference refuses a new payment request',fn()=>payments_prepare($issued['invoice_id'],'full',7,$paymentReview,str_repeat('7',64)));
 } finally {db()->rollBack();}
 rb_ok('Restoring lost binding restores original invoice and audit exactly',rb_snapshot()===$beforeLostBinding&&ledger_balance(ledger_invoice($issued['invoice_id']))['due_cents']===1001);
+db()->beginTransaction();
+try {
+    query('DELETE FROM '.table('settings').' WHERE name=?',['recurring_billing_schema_version']);
+    query('UPDATE '.table('studio_invoices').' SET reference=? WHERE id=?',['Changed legacy reference',$issued['invoice_id']]);
+    rb_deny('Missing version marker cannot bypass retained recurring mapping',fn()=>ledger_balance(ledger_invoice($issued['invoice_id'])));
+    rb_deny('Missing version marker refuses recurring manual receipt',fn()=>ledger_receive($issued['invoice_id'],100,'bank','Synthetic missing marker receipt',gmdate('Y-m-d'),str_repeat('8',64),$originReview));
+    rb_deny('Missing version marker refuses recurring payment request',fn()=>payments_prepare($issued['invoice_id'],'full',7,$paymentReview,str_repeat('9',64)));
+    query('DELETE FROM '.table('recurring_billing_invoices').' WHERE id=?',[rb_id(400)]);
+    rb_deny('Missing marker and mapping still consult independent recurring origin',fn()=>ledger_balance(ledger_invoice($issued['invoice_id'])));
+} finally {db()->rollBack();}
+rb_ok('Version marker restoration retains original recurring invoice and history',recurring_billing_ready()&&rb_snapshot()===$beforeLostBinding);
 $origin=one('SELECT * FROM '.table('audit').' WHERE action=? AND detail LIKE ?',['recurring_billing.issued','% invoice '.$issued['invoice_id']]);
 $mapping=one('SELECT * FROM '.table('recurring_billing_invoices').' WHERE id=?',[rb_id(400)]);
 query('DELETE FROM '.table('recurring_billing_invoices').' WHERE id=?',[rb_id(400)]);

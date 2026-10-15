@@ -46,7 +46,9 @@ function recurring_billing_invoice_guard(array $invoice):void {
         $version=one('SELECT value FROM '.table('settings').' WHERE name=?',['recurring_billing_schema_version'])['value']??'';
         // A missing established mapping can no longer prove which invoices were recurring.
         // Preserve legacy behavior only before this feature was ever prepared.
-        if($version!==''||str_starts_with($invoice['reference'],'RI-'))throw new RuntimeException('Recurring invoice storage is unavailable. Restore the original database if it was previously prepared.');
+        $mapped=false;
+        if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'recurring_billing_invoices']))$mapped=one('SELECT id FROM '.table('recurring_billing_invoices').' WHERE invoice_id=?',[$invoice['id']])!==null;
+        if($version!==''||$mapped||recurring_billing_invoice_origin((int)$invoice['id'])!==null||str_starts_with($invoice['reference'],'RI-'))throw new RuntimeException('Recurring invoice storage is unavailable. Restore the original database if it was previously prepared.');
         return;
     }
     $work=function()use($invoice):void{
