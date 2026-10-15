@@ -178,9 +178,13 @@ function hosting_operations_fence_locked(array $row,string $request,string $oper
 }
 /** Trusted internal finalizer, never an HTTP callback. Preserve reality despite later access loss. */
 function hosting_operations_record(string $dispatchId,string $fingerprint,OperationResult $result):void {
+    staff_locked(fn()=>staff_transaction(fn()=>hosting_operations_record_locked($dispatchId,$fingerprint,$result)));
+}
+/** Shared atomic finalizer; callers must establish an exact committed result before entering. */
+function hosting_operations_record_locked(string $dispatchId,string $fingerprint,OperationResult $result):void {
+    if(!db()->inTransaction())throw new LogicException('Hosting result persistence requires its owning transaction.');
     hosting_records_id($dispatchId);
     if(!preg_match('/\A[a-f0-9]{64}\z/',$fingerprint))throw new InvalidArgumentException('Invalid hosting dispatch fingerprint.');
-    staff_locked(fn()=>staff_transaction(function()use($dispatchId,$fingerprint,$result):void {
         hosting_operations_require_ready();$dispatch=one('SELECT * FROM '.table('hosting_dispatches').' WHERE id=?',[$dispatchId]);
         if(!$dispatch || !hash_equals(hash('sha256',$dispatch['binding_json']),$fingerprint))throw new InvalidArgumentException('No matching committed hosting dispatch exists.');
         $binding=json_decode($dispatch['binding_json'],true,16,JSON_THROW_ON_ERROR);
@@ -195,5 +199,4 @@ function hosting_operations_record(string $dispatchId,string $fingerprint,Operat
         query('INSERT INTO '.table('hosting_operation_results').' (id,event_id,result_json) VALUES (?,?,?)',[$dispatchId,$event,$bytes]);
         if($result->operation==='hosting.provision' && $result->outcome==='applied' && $result->resourceRef!==null)query('INSERT INTO '.table('hosting_resources').' (id,account_id,profile_id,resource_ref) VALUES (?,?,?,?)',[$dispatchId,$row['id'],$dispatch['profile_id'],$result->resourceRef]);
         hosting_records_audit((int)$dispatch['actor_id'],'result_recorded','Account '.$row['id'].' dispatch '.$dispatchId.' '.$result->outcome);
-    }));
 }

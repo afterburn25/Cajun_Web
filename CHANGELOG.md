@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — exact retained hosting-result recovery
+
+- Add owner-reviewed local recovery from the original provider ledger after interrupted hosting finalization, preserving exact request/account binding and pending/failed/unknown states. Commit native result and recovery audit atomically; never resend or replace original outcomes. New native and packaged acceptance is pending.
+
 ## Unreleased — exact fulfillment packaging correction
 
 - Verify49 new native fulfillment cases across all four supported combinations. Regenerate the installer hash from the exact committed LF service bytes after full packaging correctly rejected local CRLF drift. No release is certified by native checks alone.

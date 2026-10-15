@@ -44,6 +44,12 @@ function hf_snapshot(bool $withAudit=true):string {
     $out=[];foreach(['hosting_fulfillments','hosting_order_links','hosting_records','hosting_record_events','hosting_dispatches','hosting_operation_results','hosting_resources','provider_operations','service_orders','service_order_events','studio_invoices','invoice_payments','audit'] as $name){if(!$withAudit&&$name==='audit')continue;$out[$name]=all('SELECT * FROM '.table($name).' ORDER BY id');}return service_plans_json($out);
 }
 function hf_read(array $c):\CajunWebPro\Foundation\Hosting\HostingJournal {return hosting_operations_validate(hosting_records_row($c['link']['account_id'],1));}
+function hf_recovery_args(array $c):array {
+    global $password;
+    $approval=one('SELECT * FROM '.table('hosting_fulfillments').' WHERE id=?',[$c['request']]);
+    $provider=one('SELECT * FROM '.table('provider_operations').' WHERE idempotency_key=?',['hosting-order:'.$c['request']]);
+    return [$c['order']->data()['id'],1,$c['request'],$approval['binding_sha256'],hash('sha256',service_plans_json($provider)),$password];
+}
 function hf_audit_failure(string $action,callable $fn):bool {
     $trigger=config()['db']['prefix'].'hf_fail';db()->exec('CREATE TRIGGER `'.$trigger.'` BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='hosting_records.".$action."' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic final fulfillment audit failure'; END IF; END");
     try{$fn();$failed=false;}catch(PDOException){$failed=true;}finally{db()->exec('DROP TRIGGER `'.$trigger.'`');}return $failed;
@@ -111,6 +117,37 @@ if(($argv[1]??'')==='fulfillment-worker'){
         $lost=hf_context(55000);$calls=HfTransport::$calls;HfTransport::$body='{"result":866241}';
         rb_ok('Final hosting-result audit failure retains provider acknowledgement and original fence',hf_audit_failure('result_recorded',fn()=>hf_run($lost))&&HfTransport::$calls===$calls+1&&hf_read($lost)->account()->status()==='provisioning'&&!one('SELECT id FROM '.table('hosting_operation_results').' WHERE id=?',[$lost['request']])&&one('SELECT status FROM '.table('provider_operations').' WHERE idempotency_key=?',['hosting-order:'.$lost['request']])['status']==='accepted_pending');
         $calls=HfTransport::$calls;rb_ok('Missing local result cannot reclaim an already accepted purchase',hf_run($lost)['state']==='replayed'&&HfTransport::$calls===$calls);
+        $recover=hf_recovery_args($lost);$before=hf_snapshot();
+        foreach([1=>2,3=>str_repeat('a',64),4=>str_repeat('b',64),5=>'wrong'] as $field=>$value){$bad=$recover;$bad[$field]=$value;rb_deny('Local recovery rejects foreign or stale reviewed authority '.$field,fn()=>hosting_fulfillment_recover(...$bad));}
+        rb_staff(2);rb_deny('Delegated staff cannot recover provider fulfillment',fn()=>hosting_fulfillment_recover(...$recover));rb_client();rb_deny('Client cannot supply retained-result recovery authority',fn()=>hosting_fulfillment_recover(...$recover));rb_staff();
+        rb_ok('Rejected local recovery leaves all records and provider count unchanged',hf_snapshot()===$before&&HfTransport::$calls===$calls);
+        $retained=one('SELECT * FROM '.table('provider_operations').' WHERE idempotency_key=?',['hosting-order:'.$lost['request']]);
+        foreach(['fingerprint'=>str_repeat('c',64),'operation'=>'domains.renew','external_id'=>'0','attempts'=>2,'claimed_epoch'=>0,'resolved_epoch'=>time()+3600,'status'=>'claimed'] as $field=>$value){
+            query('UPDATE '.table('provider_operations').' SET '.$field.'=? WHERE id=?',[$value,$retained['id']]);
+            try{$changedProof=hf_recovery_args($lost);rb_deny('Recovery validates original provider '.$field.' beyond its reviewed hash',fn()=>hosting_fulfillment_recover(...$changedProof));}
+            finally{query('UPDATE '.table('provider_operations').' SET '.$field.'=? WHERE id=?',[$retained[$field],$retained['id']]);}
+        }
+        query('DELETE FROM '.table('provider_operations').' WHERE id=?',[$retained['id']]);
+        try{rb_deny('Recovery cannot fabricate a missing original provider response',fn()=>hosting_fulfillment_recover(...$recover));}
+        finally{query('INSERT INTO '.table('provider_operations').' ('.implode(',',array_keys($retained)).') VALUES ('.implode(',',array_fill(0,count($retained),'?')).')',array_values($retained));}
+        rb_ok('Damaged proof refusals retain original approval and exact restored rows',hf_snapshot()===$before&&HfTransport::$calls===$calls);
+        rb_ok('Recovery audit failure rolls back the reconstructed native result',hf_audit_failure('fulfillment_recovered',fn()=>hosting_fulfillment_recover(...$recover))&&hf_snapshot()===$before&&HfTransport::$calls===$calls);
+        $lo=$lost['order'];service_orders_change($lo->data()['id'],1,$lo->revision(),rb_id(55090),'revoke_manual',['reason'=>'Synthetic cancellation of future authority after purchase'],$password);
+        rb_ok('Exact original response recovers locally despite later commercial revocation',hosting_fulfillment_recover(...$recover)==='accepted_pending'&&hf_read($lost)->account()->acknowledgedResourceRef()==='866241'&&hf_read($lost)->account()->providerRef()===null&&HfTransport::$calls===$calls);
+        rb_ok('Recovery preserves original response time and every provider ledger field',one('SELECT * FROM '.table('provider_operations').' WHERE id=?',[$retained['id']])===$retained&&json_decode(one('SELECT result_json FROM '.table('hosting_operation_results').' WHERE id=?',[$lost['request']])['result_json'],true)['at']===(int)$retained['resolved_epoch']);
+        $before=hf_snapshot();rb_ok('Repeated local recovery is inert and never sends a provider request',hosting_fulfillment_recover(...$recover)==='already_recorded'&&hf_snapshot()===$before&&HfTransport::$calls===$calls);
+        $originalArgs=hf_recovery_args($c);rb_ok('Recovery cannot rewrite an already recorded normal result',hosting_fulfillment_recover(...$originalArgs)==='already_recorded'&&hf_snapshot()===$before&&HfTransport::$calls===$calls);
+        $unfinishedArgs=hf_recovery_args($changed);rb_deny('A claimed provider row cannot become a recovered rejection or acceptance',fn()=>hosting_fulfillment_recover(...$unfinishedArgs));
+        $lostFailure=hf_context(62000);HfTransport::$status=400;
+        try{rb_ok('Definite rejection fixture retains provider result when local finalization fails',hf_audit_failure('result_recorded',fn()=>hf_run($lostFailure)));}
+        finally{HfTransport::$status=200;}
+        $failureArgs=hf_recovery_args($lostFailure);$calls=HfTransport::$calls;
+        rb_ok('Retained definite failure recovers as failure without resending or activating',hosting_fulfillment_recover(...$failureArgs)==='failed'&&hf_read($lostFailure)->account()->status()==='failed'&&!hf_read($lostFailure)->account()->awaitingReconciliation()&&HfTransport::$calls===$calls);
+        $lostUnknown=hf_context(63000);HfTransport::$timeout=true;
+        try{rb_ok('Unknown response fixture retains provider result when local finalization fails',hf_audit_failure('result_recorded',fn()=>hf_run($lostUnknown)));}
+        finally{HfTransport::$timeout=false;}
+        $unknownArgs=hf_recovery_args($lostUnknown);$calls=HfTransport::$calls;
+        rb_ok('Retained unknown outcome remains unresolved after local recovery',hosting_fulfillment_recover(...$unknownArgs)==='timeout'&&hf_read($lostUnknown)->account()->awaitingReconciliation()&&hf_read($lostUnknown)->account()->providerRef()===null&&HfTransport::$calls===$calls);
         $race=hf_context(56000);$ro=$race['order'];$payload=base64_encode(service_plans_json(['order_id'=>$ro->data()['id'],'revision'=>$ro->revision(),'order_hash'=>$ro->fingerprint(),'link_hash'=>$race['link']['binding_sha256'],'request'=>$race['request'],'review'=>$race['review']]));$workers=[];
         for($i=0;$i<2;$i++){
             $process=proc_open([PHP_BINARY,__DIR__.'/recurring_billing_native.php','fulfillment-worker',$payload],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);

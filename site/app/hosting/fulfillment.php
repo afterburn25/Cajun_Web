@@ -120,13 +120,60 @@ function hosting_fulfillment_authorize(array $binding):array {
     });
 }
 /** Preserve bounded classifications only; a provider acknowledgement is never an active service. */
-function hosting_fulfillment_result(array $binding,HostingProviderResult $result):HostingFulfillmentResult {
-    $subject=$binding['account_id'];$attempt=$binding['dispatch']['attempt_ref'];$at=time();
+function hosting_fulfillment_result(array $binding,HostingProviderResult $result,?int $recordedAt=null):HostingFulfillmentResult {
+    $subject=$binding['account_id'];$attempt=$binding['dispatch']['attempt_ref'];$at=$recordedAt??time();
     if($result->operation==='packages.create'){
         if($result->status===HostingProviderResult::ACCEPTED_PENDING&&$result->externalId!==null)return HostingFulfillmentResult::acceptedPending('hosting.provision',$result->externalId,$at,$subject,$attempt);
         if($result->status===HostingProviderResult::FAILED)return HostingFulfillmentResult::failed('hosting.provision','provider_rejected_request',true,$at,$subject,$attempt);
     }
     return HostingFulfillmentResult::timeout('hosting.provision',$at,$subject,$attempt);
+}
+/** Exact retained ledger proof; never reconstruct a missing or unresolved provider response. */
+function hosting_fulfillment_retained_result(array $binding,array $provider,string $fingerprint):HostingFulfillmentResult {
+    $claimed=(int)$provider['claimed_epoch'];$resolved=(int)$provider['resolved_epoch'];
+    if($provider['idempotency_key']!==$binding['provider_key']||!hash_equals($fingerprint,$provider['fingerprint'])||$provider['operation']!=='packages.create'||(int)$provider['attempts']!==1||$claimed<$binding['created_at']||$resolved<$claimed||$resolved>time())throw new RuntimeException('The retained provider result does not match the original approved request.');
+    $result=match($provider['status']){
+        'accepted_pending'=>$provider['external_id']!==null?HostingProviderResult::acceptedPending('packages.create',$provider['external_id']):throw new RuntimeException('The original assigned package identity is missing.'),
+        'failed'=>$provider['external_id']===null?HostingProviderResult::failed('packages.create','provider_rejected_request'):throw new RuntimeException('The original failed result is inconsistent.'),
+        'uncertain'=>$provider['external_id']===null?HostingProviderResult::uncertain('packages.create'):throw new RuntimeException('The original unknown result is inconsistent.'),
+        default=>throw new RuntimeException('The original provider request has no recoverable recorded outcome. Do not resend it.'),
+    };
+    return hosting_fulfillment_result($binding,$result,$resolved);
+}
+/**
+ * Owner-reviewed local recovery only. No resolver, transport, gateway execution or ledger claim.
+ * Recover a recorded fact even after commercial consent expires; this grants no new purchase.
+ */
+function hosting_fulfillment_recover(string $orderId,int $client,string $request,string $approvalHash,string $providerHash,#[\SensitiveParameter] string $password):string {
+    service_plans_id($request);service_orders_hash($approvalHash);service_orders_hash($providerHash);
+    return recurring_billing_locked(function()use($orderId,$client,$request,$approvalHash,$providerHash,$password):string {
+        $actor=service_orders_owner($password);hosting_records_owner();hosting_fulfillment_require();hosting_records_client($client,false);
+        $order=service_orders_validate(service_orders_row($orderId));
+        if($order->data()['client_id']!==$client)throw new RuntimeException('Hosting order unavailable.');
+        $link=one('SELECT * FROM '.table('hosting_order_links').' WHERE id=?',[$orderId]);
+        $approval=one('SELECT * FROM '.table('hosting_fulfillments').' WHERE id=? AND order_id=?',[$request,$orderId]);
+        if(!$link||!$approval||!hash_equals($approval['binding_sha256'],$approvalHash))throw new RuntimeException('Review the original fulfillment approval before recovery.');
+        $binding=hosting_fulfillment_validate($approval,$order,$link);hosting_fulfillment_history($order,$link);
+        $provider=one('SELECT * FROM '.table('provider_operations').' WHERE idempotency_key=? FOR UPDATE',[$binding['provider_key']]);
+        if(!$provider||!hash_equals(hash('sha256',service_plans_json($provider)),$providerHash))throw new RuntimeException('The reviewed original provider result is unavailable or changed.');
+        [, $profile]=provider_checks_authority($binding['dispatch']['profile_id'],$binding['dispatch']['profile_revision'],$password);
+        if(!hash_equals($binding['credential_sha256'],hash('sha256',$profile['credentials'])))throw new RuntimeException('Restore the original reviewed provider context before recovery.');
+        $secret=provider_settings_key_value(provider_settings_unseal($profile['id'],$profile['environment'],$profile['credentials']));
+        try{
+            $identity=$profile['id'].':'.(int)$profile['revision'].':'.provider_operations_credential_fingerprint($secret);
+            $fingerprint=\CajunWebPro\Foundation\Provider\ProviderGateway::requestFingerprint('twenty-i',$identity,new HostingProviderOperation('packages.create',$binding['provider_key'],$binding['request']['params']));
+        }finally{unset($secret);}
+        $result=hosting_fulfillment_retained_result($binding,$provider,$fingerprint);
+        $old=one('SELECT result_json FROM '.table('hosting_operation_results').' WHERE id=?',[$request]);
+        if($old){
+            $prior=json_decode($old['result_json'],true,16,JSON_THROW_ON_ERROR);
+            if($prior['outcome']!==$result->outcome||$prior['resource_ref']!==$result->resourceRef)throw new RuntimeException('An existing hosting result must be preserved; use its evidence reconciliation path.');
+            return 'already_recorded';
+        }
+        hosting_operations_record_locked($request,$binding['dispatch_sha256'],$result);
+        hosting_records_audit((int)$actor['id'],'fulfillment_recovered','Order '.$orderId.' dispatch '.$request.' provider result '.$provider['id'].' sha256 '.$providerHash);
+        return $result->outcome;
+    });
 }
 /**
  * Internal application service; no route enables this until its native approval UI is integrated.

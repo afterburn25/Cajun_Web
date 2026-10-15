@@ -1,6 +1,6 @@
 # Dedicated hosting order fulfillment
 
-Status: implementing from d3541693 on `codex/twentyi-service-orders` / [PR138](https://github.com/afterburn25/Cajun_Web/pull/138). This is an internal application service. No HTTP approval action or scheduled worker enables it yet. Automated provider catalog/configuration verification, the native approval screen, result recovery and authenticated active-service confirmation remain required. Published version stays1.24; no live provider operation is claimed.
+Status: implementing from d3541693 on `codex/twentyi-service-orders` / [PR138](https://github.com/afterburn25/Cajun_Web/pull/138). This is an internal application service. No HTTP approval action or scheduled worker enables it yet. Automated provider catalog/configuration verification, the native approval screen, the recovery screen and authenticated active-service confirmation remain required. Published version stays1.24; no live provider operation is claimed.
 
 ## Authorization and execution
 
@@ -20,7 +20,7 @@ The additive `hosting_fulfillments` family retains immutable approval bindings t
 
 Existing order progress now validates retained fulfillment history when an order-derived provider dispatch exists. Clients still receive only the local service reference, creation time, lifecycle state and order-cancellation flag. Provider IDs, configuration review, payment evidence and credentials remain private. Cancelling the order does not erase an accepted provider purchase or delete hosting.
 
-A failure recording the hosting result can leave the original provider acknowledgement in the existing operation ledger with an unresolved hosting dispatch. Replaying the submission cannot resend it. A dedicated verified local-result recovery path must connect those exact retained records; this increment does not reconstruct missing provider evidence or claim that recovery is complete. Authenticated exact-ID inventory confirmation remains separate work.
+A failure recording the hosting result can leave the original provider acknowledgement in the existing operation ledger with an unresolved hosting dispatch. Replaying the submission cannot resend it. The internal owner-reviewed local recovery service connects those exact retained records; it does not reconstruct missing provider evidence. Its native tests and UI acceptance are tracked separately below. Authenticated exact-ID inventory confirmation remains separate work.
 
 ## Verification
 
@@ -40,3 +40,13 @@ Source ab0ec30b7fe8c7bd9ab5a7580bab0db59372efb5, tree d6500f4cc1c8635b28a9bef8e3
 Full38795172503 and domain38795172355 failed before application execution because the new fulfillment.php was locally CRLF while Git correctly retained LF; its installer inventory had hashed the local CRLF bytes. The clean Windows build also refused that exact working/source mismatch. This checkpoint normalizes the working file to its already committed LF bytes and regenerates the canonical installer hash. No runtime semantics or failing assertions are changed. Corrected-source full acceptance remains required; no package from ab0 is certified or published.
 
 Parentf6c browser artifact11999264877 was downloaded and hash/CRC checked: SHA2561ef9c1be512eee34d89cea6cac8866889e5ae53b7e50fc72e29b7c23e9b829f1. Actual1652 HTTP checks pass, with empty PHP diagnostics and no unexpected browser/network errors. The actual320px admin/client order screenshots retain readable navy/gold progress cards. Its full38790555173 was still running Apache at inspection. This is parent evidence only.
+
+## Exact retained-result recovery
+
+From184c008b, `hosting_fulfillment_recover` requires the current owner/password, matching existing client/order/approval, the original provider revision and encrypted-credential digest, and a hash of the reviewed retained provider row. It uses the gateway's unchanged canonical fingerprint implementation to verify the original request and credential identity; the fingerprint helper is now available to this verifier. It does not call the gateway execution method, claim a ledger row, resolve a network destination or send a request.
+
+Only a recorded packages.create result with one attempt and valid original claim/result times is recoverable. Accepted-pending needs its bounded allocated package ID; definite failure remains failure, and uncertain remains unknown. Missing, still-claimed, foreign, changed or inconsistent evidence is refused. Recovery never replaces a previously recorded different hosting outcome. Repeating recovery is inert. A later payment/policy cancellation cannot erase an already recorded purchase; recovery records the past fact and grants no further purchase authority.
+
+The existing hosting finalizer now exposes its internal transaction-owned portion so the native result and recovery audit commit together. Audit failure rolls both back, retaining the original provider response and unresolved fence. Provider rows are not edited. Original response time and pending-versus-active distinction are preserved. The current original provider configuration/key is required to verify its fingerprint; if unavailable, restore that context rather than infer it. This is an internal service; no HTTP recovery or dispatch screen is enabled yet.
+
+Local syntax, both pure hosting modes and the provider contract suite are checked. New native recovery cases cover mismatched proof/credential fingerprint, operation/ID/time/attempt tampering, missing/unresolved response, current owner/password/client isolation, audit rollback, later consent revocation, replay, and recovered pending/failed/unknown outcomes. Exact descendant database and packaged acceptance is pending; ab0's49 fulfillment checks do not certify this recovery increment.
