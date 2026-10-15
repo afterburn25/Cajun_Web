@@ -6,6 +6,7 @@ require_once CWP_CODE_ROOT.'/app/providers/operations.php';
 require_once CWP_CODE_ROOT.'/app/providers/inventory.php';
 require_once CWP_CODE_ROOT.'/app/providers/reconcile.php';
 require_once CWP_CODE_ROOT.'/app/providers/domain_search.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_registrar.php';
 use CajunWebPro\Foundation\Provider\OperationResult;
 use CajunWebPro\Foundation\TwentyI\Operations\TwentyIOperationRegister;
 
@@ -21,6 +22,7 @@ function provider_inventory_message(?string $code):string {
 }
 
 function provider_inventory_admin_action(string $action):void {
+    if(str_starts_with($action,'provider_inventory_registrar_')){provider_registrar_admin_action($action);return;}
     if(str_starts_with($action,'provider_inventory_domain_search_')){provider_domain_search_admin_action($action);return;}
     $password=posted('current_password',200);
     if($action==='provider_inventory_prepare'){

@@ -1,3 +1,9 @@
+## Unreleased - registered-domain inventory
+
+- Explicit owner refresh of bounded registered-domain identities and distinct client assignments; native owner/client views keep hosting links separate.
+- Current complete observations, exact identity/context and latest-attempt freshness govern assignment and disclosure; failures never fall back through older success.
+- Adds native schema, permissions, atomic audit, concurrent reapproval and recovery fixtures. Native/browser acceptance and nameserver execution remain pending. See [scope](docs/TWENTYI_REGISTRAR_INVENTORY.md).
+
 # Integration checkpoint — current main and domain replacement rollback
 
 Normally merge main16f07e49 into the20i client-search branch. Preserve licensing/domain controls and fix failed replacement leaving the original domain disabled. Local4 rollback cases and35 native licensing checks pass; combined acceptance/review pending. Earlier e375 full application artifacts/packages are now verified. Published1.24 remains unchanged.

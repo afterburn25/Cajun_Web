@@ -1,3 +1,7 @@
+# Registrar prerequisite - 2026-10-15
+
+Parallel `codex/twentyi-domain-controls` implements distinct registered-domain inventory and explicit local client assignment through the existing reader. Current complete id/name observations are separate from hosted names; latest failure/partial/unfinished/stale reads cannot be overridden by older success. This establishes the native assignment prerequisite only. Nameserver observation/consent/write response/reconciliation remain unfinished; no mutation is enabled. [Provenance and verification](TWENTYI_REGISTRAR_INVENTORY.md).
+
 # Native nameserver control — implementing
 
 Current evidence: f8654252 passed [workflow38759308990](https://github.com/afterburn25/Cajun_Web/actions/runs/38759308990),230 named cases in each of PHP8.2/8.4 default/no-ini runs (920 executions); actual four JSON reports were inspected. Of each run,79 named cases cover nameservers. Mirror/inventory and documentation checks passed. This proves the request component only. It is now retained in the combined [fulfillment integration](TWENTYI_FULFILLMENT_INTEGRATION.md); combined acceptance and the native workflow below remain pending. Older checkpoint wording below is historical.

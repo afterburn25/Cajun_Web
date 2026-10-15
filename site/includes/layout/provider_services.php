@@ -2,6 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/providers/inventory.php';
+require_once CWP_CODE_ROOT.'/app/providers/registrar.php';
 
 /**
  * Client-facing view of explicitly owner-linked 20i services. Only mappings
@@ -59,5 +60,6 @@ function provider_services_portal_render(): never {
         }
         echo '</article>';
     }
+    require CWP_CODE_ROOT.'/portal/views/registered_domains.php';
     echo '</div></section>';site_foot(false);exit;
 }

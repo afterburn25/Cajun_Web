@@ -1,3 +1,7 @@
+# Parallel 20i increment - registered domains
+
+2026-10-15: user authorized simultaneous agents. The domain agent owns `codex/twentyi-domain-controls` from `0ebc46237fce565005b581fe5a96a2691b9840b5`; root owns integration/releases. Adds sanitized registrar identity reads through existing inventory, distinct explicit client assignments, latest-attempt freshness, owner/client PHP views and recovery/tests. Hosted-domain links never become registrar authority. Local PHP8.4 synthetic checks pass64 registrar plus139 inventory/28 reader/82 cloud cases per mode; native CI and browser acceptance are pending. Nameserver writes remain disabled pending verified response/authority contracts. No provider operation or release. [Scope, provenance and next steps](TWENTYI_REGISTRAR_INVENTORY.md).
+
 # Current ownership — mailbox controls
 
 Codex owns `codex/twentyi-mailbox-controls` above preserved client-search PR139, parentc00874b1. Current files: typed mailbox boundary, existing provider adapter/transport, matching tests/workflows/protection/build mirrors and docs. Native approval/persistence/admin/client forms are the next implementation step, not delegated or completed. Preserve current mainb66062e4 for later normal integration and the running parent full suites. [Mailbox continuation](TWENTYI_MAILBOX_CONTROLS.md).
