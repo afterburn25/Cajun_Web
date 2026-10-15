@@ -5,6 +5,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/licenses/service.php';
 require_once CWP_CODE_ROOT.'/app/licenses/bundle.php';
 require_once CWP_CODE_ROOT.'/app/billing/catalog.php';
+require_once CWP_CODE_ROOT.'/app/mail/transport.php';
 
 /**
  * Map a catalog product SKU to a Website Core industry module.
@@ -73,7 +74,32 @@ function license_fulfill_invoice(int $invoiceId): ?array {
         }
     }
 
+    license_notify_customer($clientId, $key, $snapshot);
     return $license;
+}
+
+/**
+ * Email the customer their license key and portal link after fulfilment.
+ * Mail delivery is best-effort — a mail failure must not break fulfilment.
+ */
+function license_notify_customer(int $clientId, string $licenseKey, array $snapshot): void {
+    $client = one('SELECT email, name FROM '.table('studio_clients').' WHERE id=?', [$clientId]);
+    if (!$client || !filter_var($client['email'], FILTER_VALIDATE_EMAIL)) return;
+    $portal = site_url('portal/index.php');
+    $body = "Hello ".$client['name'].",\n\n"
+        ."Your purchase of ".$snapshot['title']." is ready.\n\n"
+        ."License key: ".$licenseKey."\n\n"
+        ."Your website package and downloads are in your client workspace:\n".$portal."\n\n"
+        ."Register the domain where this website will run from your workspace. "
+        ."The license is tied to that domain — if you move the site, update the "
+        ."registered domain and the old installation will deactivate automatically.\n\n"
+        ."CajunWebPro";
+    try {
+        send_message($client['email'], 'Your website license · '.$snapshot['title'], $body);
+    } catch (Throwable) {
+        // Mail not configured or delivery failed — license remains valid,
+        // and the key is visible in the portal workspace.
+    }
 }
 
 /**
