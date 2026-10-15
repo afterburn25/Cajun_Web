@@ -1,3 +1,7 @@
+## Acceptance checkpoint — combined20i38bb
+
+Verified all four mailbox/registrar/catalog/cloud native matrices and exact Windows packages. Full combined browser/recovery/Apache acceptance is still running. Dispatch three further isolated implementation slices while preserving original branches. Documentation only; no runtime, version, release or live deployment change.
+
 ## Integration checkpoint — latest main evidence
 
 Preserve the latest main acceptance record alongside the combined20i source. No additional runtime behavior or release version changes in this final merge.

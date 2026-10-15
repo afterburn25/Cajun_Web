@@ -1,3 +1,36 @@
+## Combined38bb acceptance checkpoint — 2026-10-15
+
+Exact source38bb69ccd1c1fc45f479022fe11748ca78b756d2 and PR merge dab7005f3df5a6c2bcbbf947d402ec56315179f2 have identical tree4c1a7613f800336167b4a827e13c3e9f6bac243d. All four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 combinations are downloaded, digest/CRC checked and every named outcome inspected: mailbox38824046181 has91 cases including four sequence-order regressions; registrar38824052817 has63 native and64/64 reader cases; catalog38824052748 has43 within508 combined,51/51 pure and13 reports; cloud38824052849 has41 native. Overlapping report counts are not added. These are synthetic provider fixtures on real PHP/databases, not real provider acceptance.
+
+| Workstream | Artifact | SHA256 |
+|---|---|---|
+| Mailbox | 12013949941 | `fd1921e8e2aa89988992696e950ee1fd727040c3af5ab0ec379047784705eba7` |
+| Mailbox | 12013329523 | `db9888ea582a7fa39e18e3e7ab839d066891d1db60c4720c4e1629be94082c04` |
+| Mailbox | 12013184915 | `af94e3c171f9946b147615f78fd07aa1d0e2424be1bef814726beac2931397c7` |
+| Mailbox | 12013119727 | `0ac53c90f6d81a346048a09b7351ebac45174a68a16020190a41c75194dd1942` |
+| Registrar | 12015065163 | `237e3cf50aaea5716c7ac933be3cb70f612d4d29f5f2b738ea6d28d29c21fe1e` |
+| Registrar | 12014925103 | `63f87597704573b3f64d1f674fa355861690774563c2888034f68cfb17b18aaa` |
+| Registrar | 12014805549 | `2af7e401e20406562d7ba478ab3970f19cf3e4132ce864b824f9c9090cc9799a` |
+| Registrar | 12014401432 | `3fd1e336074cd69458732d0a20afae538d173167d7fb777a9f49a0f90faf96e7` |
+| Catalog | 12014951205 | `adb371d4588c985eb0ac886602d353006107a3e7d6b6452b26e19f72f13cfa97` |
+| Catalog | 12014940916 | `6e7e5861b13450493f134187aaa048d0d13e0e5a5e7c7e0431b4393d7e13c70b` |
+| Catalog | 12014700834 | `4f2982b7b55de2331a7487c66da29fdd5e8121fc27a1c4c03f2f667da3d9bbc4` |
+| Catalog | 12014591576 | `4ba35a0444871c91a561c4abd93b8af64d8bcd7c24379020839e2f850a534619` |
+| Cloud | 12014460982 | `385fce3a463fec5d351cf91d9b5afe022abc6a27ab967ec123c0fd4b676ea2cd` |
+| Cloud | 12014435918 | `26107deeebb961b2dcca8029cd38cbdc0c0846aec44234d29bada19aea123af0` |
+| Cloud | 12014167393 | `ae1e8c92f2f73b71b77d3b13c5b7097b47182fe7bd4db65aa704bd09d3c759b7` |
+| Cloud | 12013229943 | `9e6b8a50f908ad67b11ba7192403cf6a849325554e09c6965685d3ffc6bbc3e0` |
+
+Windows build84801 completed successfully. All11 checksums and ZIP CRCs, unique/safe member paths, per-file hashes and directory lists match. FULL5466 equals exact Git38bb; COMPLETE2683 equals its site tree; UPDATE2670 has exact filtered payload and generated source/history manifest. Preserved build-evidence and proof paths are in the handoff. This is development package verification; current Linux/browser comparison is pending.
+
+Full application38824052505 passed build/native and is in HTTP/Chromium. Thirty companion PR workflows report success; no combined browser/recovery/Apache pass is claimed yet. Root/cross-agent shared source review found no concrete integration defect. The retained mailbox334 browser failure and corrected registrar mobile capture still require fresh combined browser evidence.
+
+Parent catalog8f full38819685543 final artifact12013629800, SHA2569ed044b20a7bc21860a3cef3d2ef4d768cbd428d59ce48d35b16cbaa99de25ef is independently verified:1794 HTTP/289 recovery/1827 Apache,64 terminal reports, all11 checksums and exact FULL5429/COMPLETE2664/UPDATE2651; screenshots match its earlier checkpoint. This parent evidence does not replace combined acceptance.
+
+Next agent implementation assignments are recorded in the current handoff: domain renewal intake/review; catalog readiness/history; observed cloud package/client assignment. Original source branches remain preserved. Exact missing discovery/nameserver schemas are documented in separate9ea/fcf branches; no provider contract is inferred from missing documentation. No release or live action.
+
+The following checkpoints retain their historical acceptance state.
+
 ## 2026-10-15 — combine all three parallel agent increments
 
 Starting catalog merge577b279b, normally merge cloud33a2a2b0 (runtimece8d4e89), preserving registrarc1585199, mailbox work and current-maina894 history. Resolve shared controller/services imports, browser calls, provider fixture POST admission, workflow branch lists and Apache private-path union to retain every feature. Fixed transport auto-merges the independently typed mailbox and cloud write boundaries with registrar reads. Keep the cloud shared-operation preparation guard, binary audit matching, history witnesses and accepted-pending semantics.

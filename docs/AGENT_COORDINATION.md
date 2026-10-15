@@ -1,6 +1,6 @@
-# Current ownership — parallel 20i workers
+# Current ownership — parallel20i continuation
 
-The owner explicitly requested parallel agents. Root and three additional agents work on separate branches/worktrees from0ebc4623. [Bounded assignments and shared integration rules](TWENTYI_PARALLEL_WORK.md). Root owns mailbox work and integration/releases; the others own catalog mappings, registrar inventory/client links and existing cloud-server website creation. Registrar725573f0 is preserved by normal mergec1585199, catalog8f7028 by merge577b279b, and cloud33a2a2b0 is now combined with both with final combined acceptance still required. Domain agent reviewed shared routing/protection and the bounded correction for the retained mailbox334 browser failure. Cloud agent verified exactce8d browser evidence and reviews shared cloud glue; catalog agent reviews the combined operation/schema/fixture integration. All checkpoints below are historical, with their then-current acceptance state.
+Owner-authorized root plus three agents continue independently. Combined acceptance source38bb is preserved with all four downloaded native matrices verified; full browser/recovery/Apache remains active. Root owns integration/releases. New slices from38bb are domain renewal requests/review, catalog readiness/history and exact returned cloud package observation/client assignment. [Current precise ownership and shared files](../SESSION_HANDOFF.md); [verified evidence](TWENTYI_PARALLEL_WORK.md). Original725/8f/33a2 branches remain intact. Domain nameserver9ea and catalog intakefcf/PR144 are separate documented contracts, not completed readers. The following dated entries are historical.
 
 # Parallel 20i increment - registered domains
 

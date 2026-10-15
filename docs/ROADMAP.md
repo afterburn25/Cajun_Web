@@ -1,3 +1,7 @@
+# Current20i continuation — 2026-10-15
+
+Combined38bb has four downloaded native matrices and exact Windows packages verified; full38824052505 browser/recovery/Apache remains active. Three next implementation lanes are renewal request/admin review, catalog readiness/history and cloud returned-package observation/explicit client assignment. Complete hosting/domain/VPS lifecycle, discovery and support/SSH remain unfinished. [Current status](../PROJECT_STATUS.md) and [requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) govern scope; older checkpoints below preserve their historical states. No release or live action in this checkpoint.
+
 # Active 20i parallel work
 
 Root integrates native mailbox creation, provider plan mappings, registrar ownership/client links and existing cloud-server website creation from three parallel agent branches. [Bounded assignments and acceptance status](TWENTYI_PARALLEL_WORK.md). Mailbox334 passes87 native cases in each supported combination; the new sequence-order recovery cases and combined runtime/browser/recovery/Apache acceptance remain pending. Full mail/domain/VPS controls, automatic catalog discovery and support/SSH remain unfinished. No completion estimate advances solely from source presence. Checkpoints below are historical; current status and the requirements checklist govern remaining work.
