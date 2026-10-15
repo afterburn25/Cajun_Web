@@ -1,5 +1,13 @@
 # Approved roadmap and acceptance criteria
 
+## Paused by owner: complete 20i takeover — 2026-10-15
+
+The owner explicitly transferred the entire 20i implementation to Codex as P0. Earlier Devin-only allocation and mail-development next steps below are historical and superseded. Unrelated Reply/Forward work is preserved on this branch and paused; it is excluded from the new `codex/twentyi-complete` integration.
+
+This recoverable checkpoint preserves protected draft storage, origin/content bindings, migration, shipping mirrors, native regression cases and a Linux workflow written after `402850fe48a5a605ed7065de48721ff4eb059dc8`. The explicit installer refresh completed successfully; it did not build a release. Native behavior is UNVERIFIED: the first local Windows run failed before feature assertions because existing credential storage requires POSIX 0600 permissions. That guard was not weakened. The owned synthetic MariaDB was stopped and its fixture data retained. Linux CI has not run for these new bytes; this preservation commit skips CI intentionally while unrelated work is paused. The earlier 1,412 content checks certify d2b4ffd only, not this native increment. No HTTP Reply/Forward interface, live mail operation or release is claimed.
+
+Resume only after the owner's 20i priority is complete: review the preserved native API and tests, execute Linux native acceptance, then complete authenticated message-read creation, UI, MIME submission and package/recovery verification. Existing accepted source and running/completed acceptance evidence remain retained.
+
 ## Current recurring-notification increment
 
 Codex recurring notification follow-on now has locally verified activity/bell integration and exact history links on `codex/recurring-billing-activity`; [scope and pending gates](RECURRING_BILLING_ACTIVITY.md). P-07/HC-06 remain partial: full packaged/recovery acceptance and review are pending, as are broader billing automation and production activation. Devin retains complete20i implementation. Published1.23 is unchanged.

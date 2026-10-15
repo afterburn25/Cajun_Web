@@ -1,5 +1,13 @@
 # Changelog
 
+## Paused by owner: complete 20i takeover — 2026-10-15
+
+The owner explicitly transferred the entire 20i implementation to Codex as P0. Earlier Devin-only allocation and mail-development next steps below are historical and superseded. Unrelated Reply/Forward work is preserved on this branch and paused; it is excluded from the new `codex/twentyi-complete` integration.
+
+This recoverable checkpoint preserves protected draft storage, origin/content bindings, migration, shipping mirrors, native regression cases and a Linux workflow written after `402850fe48a5a605ed7065de48721ff4eb059dc8`. The explicit installer refresh completed successfully; it did not build a release. Native behavior is UNVERIFIED: the first local Windows run failed before feature assertions because existing credential storage requires POSIX 0600 permissions. That guard was not weakened. The owned synthetic MariaDB was stopped and its fixture data retained. Linux CI has not run for these new bytes; this preservation commit skips CI intentionally while unrelated work is paused. The earlier 1,412 content checks certify d2b4ffd only, not this native increment. No HTTP Reply/Forward interface, live mail operation or release is claimed.
+
+Resume only after the owner's 20i priority is complete: review the preserved native API and tests, execute Linux native acceptance, then complete authenticated message-read creation, UI, MIME submission and package/recovery verification. Existing accepted source and running/completed acceptance evidence remain retained.
+
 ## Unreleased preparation — admin mail replies and forwarding
 
 - Parse bounded received Reply-To/From and thread identifiers with the maintained stack plus strict raw-input guards; construct editable reply/forward content with honest omission notices, without hidden recipients or attachments. All60 new cases pass in each local default/minimal-with-mbstring mode.

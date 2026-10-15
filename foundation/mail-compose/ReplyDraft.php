@@ -11,7 +11,7 @@ require_once __DIR__.'/ReplyMetadata.php';
 /** Editable, bounded plain-text content from a received message; never sends or saves. */
 final readonly class ReplyDraft
 {
-    private function __construct(public DraftContent $content,public MessageThread $thread,public array $omissions) {}
+    private function __construct(public string $mode,public DraftContent $content,public MessageThread $thread,public array $omissions) {}
 
     public static function prepare(string $mode,#[\SensitiveParameter] string $raw):self
     {
@@ -39,6 +39,6 @@ final readonly class ReplyDraft
             $marker="\n[Quoted text shortened to fit this draft. Open the original message for the rest.]";
             $body=mb_strcut($body,0,$maximum-strlen($marker),'UTF-8').$marker;
         }
-        return new self(new DraftContent($metadata?->recipients??[],[],[],$subject,$body.$footer),$metadata?->thread??MessageThread::none(),$omissions);
+        return new self($mode,new DraftContent($metadata?->recipients??[],[],[],$subject,$body.$footer),$metadata?->thread??MessageThread::none(),$omissions);
     }
 }
