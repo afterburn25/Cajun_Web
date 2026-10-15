@@ -23,4 +23,4 @@ function nonce(): string { return esc($GLOBALS['cwp_nonce'] ?? ''); }
 
 function redirect(string $url): never { header('Location: ' . $url, true, 303); exit; }
 
-function fail_page(string $message,int $status=503): never { http_response_code($status); echo '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CajunWebPro</title><body style="background:#06101f;color:#eef2f8;font:18px system-ui;padding:10vw;line-height:1.6"><h1>CajunWebPro</h1><p>' . esc($message) . '</p></body></html>'; exit; }
+function fail_page(string $message,int $status=503): never { if(!headers_sent())http_response_code($status); echo '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CajunWebPro</title><body style="background:#06101f;color:#eef2f8;font:18px system-ui;padding:10vw;line-height:1.6"><h1>CajunWebPro</h1><p>' . esc($message) . '</p></body></html>'; exit; }
