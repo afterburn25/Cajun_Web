@@ -10,10 +10,10 @@ def run_browser(env,browser):
     db('DELETE FROM ci_rate_limits')
     root=BASE+'/existing/admin/index.php';url=root+'?view=provider-settings';secret='SYNTHETIC_RAW_GENERAL_KEY'
     check('Fresh installation prepares empty provider settings',db("SELECT value FROM fresh_settings WHERE name='provider_settings_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_provider_profiles'))
-    check('Fresh packaged installation stamps current cloud inventory storage',db("SELECT value FROM fresh_settings WHERE name='provider_inventory_schema_version'")==[{'value':'4'}] and db('SHOW TABLES LIKE "fresh_provider_observation_cloud"')!=[] and db('SHOW COLUMNS FROM fresh_provider_refreshes LIKE "operation"')!=[])
+    check('Fresh packaged installation stamps current cloud inventory storage',db("SELECT value FROM fresh_settings WHERE name='provider_inventory_schema_version'")==[{'value':'5'}] and db('SHOW TABLES LIKE "fresh_provider_observation_cloud"')!=[] and db('SHOW COLUMNS FROM fresh_provider_refreshes LIKE "operation"')!=[])
     fresh_owner=requests.Session();submit(fresh_owner,BASE+'/fresh/admin/index.php?view=login','login',{'email':'fresh@example.invalid','password':'Fresh synthetic passphrase 2026'})
     fresh_provider=fresh_owner.get(BASE+'/fresh/admin/index.php?view=provider-settings')
-    check('Fresh owner provider page does not require redundant inventory preparation',fresh_provider.status_code==200 and 'Prepare inventory storage' not in fresh_provider.text and 'Cloud server inventory' in fresh_provider.text)
+    check('Fresh owner provider page does not require redundant inventory preparation',fresh_provider.status_code==200 and 'Prepare inventory storage' not in fresh_provider.text and 'Cloud server inventory' in fresh_provider.text and 'Save your 20i connection above' in fresh_provider.text)
     fresh_owner.close()
     owner=requests.Session();submit(owner,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     r=submit(owner,url,'provider_settings_setup',{'current_password':OWNER,'csrf':'invalid'})
@@ -82,7 +82,7 @@ def run_browser(env,browser):
     # Domain ownership links over a seeded observed package.
     provider_server.packages.append({'id':910,'typeRef':1,'name':'client-pack.example','names':['client-pack.example','linked-domain.example','shared.example'],'enabled':True,'created':'2000-01-01T00:00:00Z'})
     r=owner.post(url,data={'csrf':token(owner.get(url)),'action':'provider_inventory_prepare','current_password':OWNER})
-    check('Packaged inventory storage prepares with domain link tables',db('SHOW TABLES LIKE "ci_provider_domain_links"')!=[] and db('SELECT value FROM ci_settings WHERE name="provider_inventory_schema_version"')==[{'value':'4'}])
+    check('Packaged inventory storage prepares with domain link tables',db('SHOW TABLES LIKE "ci_provider_domain_links"')!=[] and db('SELECT value FROM ci_settings WHERE name="provider_inventory_schema_version"')==[{'value':'5'}])
     def inv_post(action_name,**values):
         current=db('SELECT revision FROM ci_provider_profiles')[0]['revision']
         return owner.post(url,data={'csrf':token(owner.get(url)),'action':action_name,'profile_id':pid,'revision':str(current),'current_password':OWNER,**values})
@@ -99,7 +99,7 @@ def run_browser(env,browser):
         return {t:db('SELECT * FROM ci_'+t+' ORDER BY id') for t in preserved_tables}
     for old_version in ['1','2']:
         # These are actual historical table layouts populated through the HTTP APIs.
-        for table in ['provider_domain_links','provider_domain_link_events']:
+        for table in ['provider_domain_links','provider_domain_link_events','provider_cloud_links','provider_cloud_link_events']:
             assert not db('SELECT * FROM ci_'+table), 'Only empty isolated fixture tables may be replaced'
             db('DROP TABLE ci_'+table)
         assert not db('SELECT * FROM ci_provider_observation_cloud')
@@ -120,7 +120,7 @@ def run_browser(env,browser):
         r=inv_post('provider_inventory_prepare')
         after=snapshot()
         projected={t:[{k:row[k] for k in before[t][i]} for i,row in enumerate(rows)] for t,rows in after.items()}
-        check('Populated v'+old_version+' HTTP upgrade preserves every original record and binding',r.status_code==200 and projected==before and db('SELECT value FROM ci_settings WHERE name="provider_inventory_schema_version"')==[{'value':'4'}])
+        check('Populated v'+old_version+' HTTP upgrade preserves every original record and binding',r.status_code==200 and projected==before and db('SELECT value FROM ci_settings WHERE name="provider_inventory_schema_version"')==[{'value':'5'}])
         if old_version=='1':
             client_page=alice.get(services_url)
             check('Legacy v1 client link stays suppressed after upgrade','client-pack.example' not in client_page.text and 'Details are hidden' in client_page.text)
@@ -207,4 +207,42 @@ def run_browser(env,browser):
         rendered.locator('[data-provider-cloud]').screenshot(path=str(QA/('Provider-Cloud-'+label+'.png')))
         check('Cloud screen '+label+' fits viewport',rendered.evaluate('document.documentElement.scrollWidth <= innerWidth'))
     check('Cloud screen has no browser errors',not cloud_errors);capture.close()
+    # Explicit cloud assignment and safe client projection through actual packaged routes.
+    cloud_observation=db('SELECT r.id FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id WHERE f.operation="cloudservers.list" AND r.state IN ("complete","partial") ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1')[0]['id']
+    cloud_args={'server_id':'1201','client_id':str(alice_id),'refresh_id':cloud_observation}
+    before_calls=provider_server.calls
+    r=inv_post('provider_inventory_cloud_link',**cloud_args,csrf='bad')
+    check('Cloud assignment rejects invalid CSRF without link or network','session expired' in r.text.lower() and not db('SELECT * FROM ci_provider_cloud_links') and provider_server.calls==before_calls)
+    r=inv_post('provider_inventory_cloud_link',**cloud_args,current_password='wrong')
+    check('Cloud assignment rejects wrong password','current password' in r.text and not db('SELECT * FROM ci_provider_cloud_links'))
+    r=inv_post('provider_inventory_cloud_link',**{**cloud_args,'server_id':'1201garbage'})
+    check('Cloud assignment rejects coercible server identifiers','Reload the current cloud assignment form' in r.text and not db('SELECT * FROM ci_provider_cloud_links'))
+    r=inv_post('provider_inventory_cloud_link',**cloud_args)
+    cloud_link=db('SELECT * FROM ci_provider_cloud_links')[0]
+    check('Owner approves one client cloud assignment without provider request','Cloud server linked to the client' in r.text and cloud_link['client_id']==alice_id and cloud_link['revision']==1 and cloud_link['refresh_id']==cloud_observation and provider_server.calls==before_calls)
+    cloud_card=soup(alice.get(services_url)).select_one('[data-client-cloud]')
+    check('Assigned client sees cloud units without sibling hosted packages',cloud_card and 'cloud.browser.invalid' in cloud_card.text and 'Memory (MB)' in cloud_card.text and '2048' in cloud_card.text and 'Hosted package IDs' not in cloud_card.text and '911' not in cloud_card.text and 'CLOUD_BROWSER_PRIVATE' not in cloud_card.text)
+    check('Other client cannot discover cloud metadata by query tampering','cloud.browser.invalid' not in bob.get(services_url+'&client_id='+str(alice_id)+'&server_id=1201').text)
+    r=inv_post('provider_inventory_cloud_link',**cloud_args)
+    check('Replayed cloud assignment cannot create a duplicate','already linked' in r.text and len(db('SELECT * FROM ci_provider_cloud_links'))==1 and len(db('SELECT * FROM ci_provider_cloud_link_events'))==1)
+    for session,title,selector in [(owner,'Provider-Cloud-Assignment','[data-cloud-assignments]'),(alice,'Client-Cloud-Service','[data-client-cloud]')]:
+        capture=browser.new_context(viewport={'width':1440,'height':1050});capture.add_cookies([{'name':c.name,'value':c.value,'domain':c.domain,'path':c.path} for c in session.cookies]);rendered=capture.new_page();capture_errors=[];rendered.on('pageerror',lambda e:capture_errors.append(str(e)))
+        for width,height,label in [(1440,1050,'Desktop'),(320,740,'Mobile')]:
+            rendered.set_viewport_size({'width':width,'height':height});rendered.goto(url if session is owner else services_url);rendered.evaluate('document.fonts.ready');expect(rendered.locator(selector)).to_be_visible();rendered.locator(selector).screenshot(path=str(QA/(title+'-'+label+'.png')))
+            check(title+' '+label+' fits viewport',rendered.evaluate('document.documentElement.scrollWidth <= innerWidth'))
+        check(title+' has no script errors',not capture_errors);capture.close()
+    r=inv_post('provider_settings_save',label='Cloud assignment revised settings',enabled='1',general_key='')
+    cloud_card=soup(alice.get(services_url)).select_one('[data-client-cloud]')
+    check('Settings edit hides cloud details pending owner review',cloud_card and 'Server details are hidden' in cloud_card.text and 'cloud.browser.invalid' not in cloud_card.text)
+    r=inv_post('provider_inventory_cloud_relink',link_id=cloud_link['id'],link_revision='1',refresh_id=cloud_observation)
+    check('Cloud reapproval rejects old observation after settings edit','cloud observation changed' in r.text.lower() and db('SELECT revision FROM ci_provider_cloud_links')==[{'revision':1}])
+    db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-7200');r=inv_post('provider_inventory_cloud_refresh')
+    cloud_observation=db('SELECT r.id FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id WHERE f.operation="cloudservers.list" AND r.state IN ("complete","partial") ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1')[0]['id']
+    check('New cloud read cannot silently approve stale assignment','cloud.browser.invalid' not in alice.get(services_url).text)
+    r=inv_post('provider_inventory_cloud_relink',link_id=cloud_link['id'],link_revision='1',refresh_id=cloud_observation)
+    check('Explicit owner cloud reapproval restores assigned client only','re-approved under the current settings' in r.text and db('SELECT revision FROM ci_provider_cloud_links')==[{'revision':2}] and 'cloud.browser.invalid' in alice.get(services_url).text and 'cloud.browser.invalid' not in bob.get(services_url).text)
+    r=inv_post('provider_inventory_cloud_unlink',link_id=cloud_link['id'],link_revision='1')
+    check('Stale cloud unlink form preserves newer approval','assignment changed' in r.text and len(db('SELECT * FROM ci_provider_cloud_links'))==1)
+    r=inv_post('provider_inventory_cloud_unlink',link_id=cloud_link['id'],link_revision='2')
+    check('Cloud unlink removes client visibility and retains approval history','Cloud assignment removed' in r.text and not db('SELECT * FROM ci_provider_cloud_links') and db('SELECT event FROM ci_provider_cloud_link_events ORDER BY id')==[{'event':'link'},{'event':'relink'},{'event':'unlink'}] and 'cloud.browser.invalid' not in alice.get(services_url).text)
     check('Provider fixture stays clean after cloud reads',not provider_server.errors)

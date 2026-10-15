@@ -5,7 +5,9 @@ use CajunWebPro\Foundation\TwentyIInventory\InventoryRead;
 ?>
 <section class="workspace-card" data-provider-cloud><h2>Cloud server inventory</h2>
 <p>Refresh the cloud server list from your saved 20i account. This makes one live read when you submit the form. Observed specifications do not establish service health, prices or client ownership.</p>
-<?php if(!$record||!provider_inventory_ready()): ?>
+<?php if(!$record): ?>
+<p>Save your 20i connection above before reading cloud servers.</p>
+<?php elseif(!provider_inventory_ready()): ?>
 <p>Prepare inventory storage above before reading cloud servers. Existing package records and links are preserved.</p>
 <?php else:
 $cloudLatest=provider_inventory_latest($profileId,InventoryRead::CLOUD_SERVERS_LIST);
@@ -29,9 +31,10 @@ if($cloudLatest): ?><p>Last cloud refresh: <?=badge($cloudLatest['state'])?> · 
 <dl><?php foreach(['CpuCores'=>'CPU cores','RamMb'=>'Memory (MB)','OsDiskSizeGb'=>'OS disk (GB)','DataDiskSizeGb'=>'Data disk (GB)','Provider'=>'Infrastructure provider','Zone'=>'Zone','Country'=>'Country','VpsOsId'=>'OS reference','spec'=>'Size reference'] as $field=>$label): ?><dt><?=esc($label)?></dt><dd><?=esc($facts[$field]===null?'Not reported':(string)$facts[$field])?></dd><?php endforeach; ?></dl>
 <?php else: ?><p>Configuration was not reported.</p><?php endif; ?>
 <p>Hosted package IDs: <?=esc($server->packageIds===null?'Not reported':($server->packageIds?implode(', ',$server->packageIds):'None in this observation'))?>.</p>
-<p class="hint">Client assignment, service health and management controls require their own verified workflows. Unmapped provider fields: <?=(int)$cloudRow['unmapped_count']?>.</p>
+<p class="hint">Client assignments are managed below. Service health and management controls are not established by this read. Unmapped provider fields: <?=(int)$cloudRow['unmapped_count']?>.</p>
 </article><?php endforeach; ?>
 <?php endif; ?>
+<?php require CWP_CODE_ROOT.'/admin/views/provider_cloud_links.php'; ?>
 <?php $cloudHistory=provider_inventory_history($profileId,1,InventoryRead::CLOUD_SERVERS_LIST);if($cloudHistory): ?><h3>Cloud refresh history</h3>
 <?php foreach(array_slice($cloudHistory,0,20) as $row): ?><p><?=esc($row['started_at'])?> UTC · <?=badge($row['state'])?> · <?=(int)$row['package_count']?> server records · <?=(int)$row['skipped']?> skipped · saved version <?=(int)$row['profile_revision']?></p><?php endforeach; ?>
 <?php endif; ?>

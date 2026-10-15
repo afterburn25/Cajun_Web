@@ -1,5 +1,14 @@
 # Cloud server inventory
 
+
+## Client assignments under implementation
+
+The `codex/twentyi-cloud-links` increment adds schema5 and typed owner assignment/reapproval/removal forms. It uses existing client accounts and the current cloud observation; names or hosted-package membership cannot infer ownership. Each approval binds a profile revision, credential-context fingerprint and exact observation. Link revisions reject stale forms, and append-only events preserve original approvals even after removal. Owner password/authority and strict audit are required; no assignment action sends a provider request or changes billing.
+
+Client cards expose only the explicitly assigned server's saved name/location/specifications with original units and observation time. Hosted package IDs never enter the client projection because they may identify other clients. Changed/disabled settings hide metadata; refreshing alone does not reapprove an assignment. Absence from an unknown/partial observation is not evidence of deletion or cancellation. Removing an assignment revokes portal visibility only. Orders, renewal policy, health/status and interactive controls remain unfinished.
+
+Back up the original database/key, then use the existing owner preparation action to upgrade v1–v4 to5. Established missing tables require restoration, not empty reconstruction. Fresh setup stamps5. Added native/browser cases are prepared; acceptance has not yet been established. The earlier reader-only notes below describe the prior increment.
+
 Development only on `codex/twentyi-cloud-inventory`; not integrated, released or live-verified. Codex retains complete 20i P0 ownership. This is the next path after the separate 1.24 inventory/operation candidate, not completion of the cloud platform.
 
 ## Evidence and boundaries

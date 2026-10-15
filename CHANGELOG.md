@@ -1,5 +1,13 @@
 # Changelog
 
+## Cloud assignment implementation checkpoint — 2026-10-15
+
+Codex continues complete20i P0 implementation on `codex/twentyi-cloud-links`, starting from cloud inventory1b6ede97 and retaining its setup-message correction. Stable inventory/operations #126 is normally merged at main5dd2a3e1; exact-main acceptance38699707455 is running and1.24 remains unpublished. Cloud read/setup #127 remains independently tested and under review. All earlier source histories are retained.
+
+This checkpoint adds explicit owner cloud/server-to-existing-client assignments, current-observation/profile-bound approval, stale-form revisions, removal/reapproval and immutable context events. Clients receive only their assigned server's specifications; hosted package IDs, credentials and other clients are excluded. Changed/disabled provider settings hide metadata until explicit review. The existing lock, authorization, audit, refresh and migration engines are reused; assignment never contacts20i or creates billing/order ownership. Schema5 adds two tables with populated v1/v2/v3/v4 upgrade and missing-history recovery cases. Typed owner forms and actual portal cards are implemented with synthetic native and packaged browser cases.
+
+Only changed-PHP syntax, Python syntax, generated inventory and documentation checks are local evidence at this point. Native database matrices, browser rendering/screenshots, independent review and full integrated release acceptance remain pending. Complete commercial order-derived ownership, health/status, native controls, domain/VPS lifecycle and SSH remain unfinished. No live operation, deployment or release is claimed. Next: run native inventory matrices, fix findings, run actual packaged browser cases and integrate this bounded increment with #127 after review; preserve stable main acceptance.
+
 ## Fresh installer version correction — 2026-10-15
 
 Independent review of cloud checkpoint 86660e34 identified that the fresh installer still stamped inventory version 3 after creating version 4 tables ([finding](https://github.com/afterburn25/Cajun_Web/pull/127#discussion_r4280167474)). This correction updates the installer stamp and adds actual fresh-package assertions for version/table/column agreement and the owner's provider page without redundant preparation. Generated inventory is refreshed. The earlier cloud native matrix passes 660 and reader matrix 996 named executions; those do not prove this new fresh-install correction. The running old browser checkpoint is preserved; its reports will be inspected before a corrected checkpoint is dispatched. No release or live operation is claimed.

@@ -19,7 +19,8 @@ function provider_services_portal_render(): never {
     }
     $services=provider_inventory_client_services((int)$client['id']);
     $domains=provider_inventory_client_domains((int)$client['id']);
-    if(!$services&&!$domains)echo '<p>No hosting services are linked to your account yet. Contact the studio if you expected one.</p>';
+    $cloudServices=provider_cloud_client_services((int)$client['id']);
+    if(!$services&&!$domains&&!$cloudServices)echo '<p>No hosting services are linked to your account yet. Contact the studio if you expected one.</p>';
     echo '<div class="workspace-grid">';
     foreach($services as $service) {
         $package=$service['package'];echo '<article class="workspace-card">';
@@ -44,6 +45,17 @@ function provider_services_portal_render(): never {
             echo '<p class="hint">Observed '.esc($domain['observed_at']).' UTC. Status reflects the studio\'s last confirmed read.</p>';
         } else {
             echo '<p>'.esc($domain['observed_at']===null?'No observation is available yet.':'The studio could not confirm this domain on its approved hosting package. Details are hidden while the studio reviews the link.').' Contact the studio for details.</p>';
+        }
+        echo '</article>';
+    }
+    foreach($cloudServices as $cloud) {
+        echo '<article class="workspace-card" data-client-cloud><h2>'.esc($cloud['server']['name']??('Cloud server #'.$cloud['server_id'])).'</h2>';
+        if($cloud['context_changed'])echo '<p>The studio needs to review this cloud assignment under its current provider settings. Server details are hidden until the assignment is confirmed.</p>';
+        elseif(!$cloud['server'])echo '<p>This server was not present in the latest saved cloud observation. This does not confirm cancellation or deletion. Contact the studio for an update.</p>';
+        else {
+            $server=$cloud['server'];echo '<p>Cloud server #'.(int)$server['id'].' · Location '.esc($server['location']??'not reported').' · Specification '.esc($server['product_spec']??'not reported').'</p>';
+            if($server['configuration']!==null){echo '<dl>';foreach(['CpuCores'=>'CPU cores','RamMb'=>'Memory (MB)','OsDiskSizeGb'=>'OS disk (GB)','DataDiskSizeGb'=>'Data disk (GB)'] as $key=>$label)echo '<dt>'.esc($label).'</dt><dd>'.esc($server['configuration'][$key]===null?'Not reported':(string)$server['configuration'][$key]).'</dd>';echo '</dl>';}
+            echo '<p class="hint">Observed '.esc($cloud['observed_at']).' UTC. These are saved provider specifications, not a live health check. Billing and renewal terms are separate.</p>';
         }
         echo '</article>';
     }
