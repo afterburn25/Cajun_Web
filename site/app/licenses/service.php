@@ -38,7 +38,7 @@ function license_get(string $key): ?array {
  */
 function license_register_domain(int $licenseId, string $domain): void {
     $domain = strtolower(trim($domain));
-    if (!preg_match('/^[a-z0-9][a-z0-9\-\.]*\.[a-z]{2,}$/D', $domain)) {
+    if (strlen($domain) > 253 || !preg_match('/^[a-z0-9][a-z0-9\-\.]*\.[a-z]{2,}$/D', $domain)) {
         throw new InvalidArgumentException('Invalid domain format.');
     }
     $now = gmdate('Y-m-d H:i:s');
