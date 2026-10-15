@@ -56,7 +56,9 @@ admin_input('current_password','Your current owner password','','password','requ
 <?php endif; ?>
 <section class="workspace-card" data-provider-inventory><h2>Hosting package inventory</h2>
 <p>An explicit refresh performs one authenticated package-list read against the saved 20i profile and keeps the validated result. Observations are scoped to this saved profile and never claim to be complete account coverage.</p>
-<?php if(!provider_inventory_ready()): ?>
+<?php if(!$record): ?>
+<p>Save your 20i connection above before refreshing inventory.</p>
+<?php elseif(!provider_inventory_ready()): ?>
 <p>Prepare durable inventory storage first. Back up your database before adding these tables.</p>
 <form method="post"><?php admin_action('provider_inventory_prepare'); ?><?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?><button class="btn gold">Prepare inventory storage</button></form>
 <?php else:
