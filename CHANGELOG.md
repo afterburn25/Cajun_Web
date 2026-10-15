@@ -2,7 +2,7 @@
 
 ## Unreleased — recurring lifecycle contract
 
-Define immutable explicit client consent and future whole-period lifecycle before implementation. No shipping or payment behavior changes.
+Define immutable explicit client consent and future whole-period lifecycle before implementation. Clarify that future termination overrides later planned boundaries while preserving elapsed periods. No shipping or payment behavior changes.
 
 ## Unreleased — immutable recurring invoice terms
 

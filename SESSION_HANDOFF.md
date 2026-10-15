@@ -2,7 +2,7 @@
 
 ## Current work — recurring invoice lifecycle contract
 
-Codex starts `codex/recurring-billing-lifecycle` from frozen terms PR 118/`4b99e64`. [The lifecycle contract](docs/RECURRING_BILLING_LIFECYCLE_CONTRACT.md) defines explicit exact-terms client consent, future whole-period activation/pause/resume/end, immutable replayable history and period eligibility. It is pure preparation for native records/unique invoices and real screens, not a deployed recurring billing workflow. Parent terms has 2,976 verified focused executions/all 22 workflows; independent calendar/terms/lifecycle review remains required before native integration.
+Codex starts `codex/recurring-billing-lifecycle` from frozen terms PR 118/`4b99e64`. [The lifecycle contract](docs/RECURRING_BILLING_LIFECYCLE_CONTRACT.md) defines explicit exact-terms client consent, future whole-period activation/pause/resume/end, immutable replayable history and period eligibility. Future termination overrides later planned activation/pause/resume, preserving the client’s ability to end future billing. It is pure preparation for native records/unique invoices and real screens, not a deployed recurring billing workflow. Parent terms has 2,976 verified focused executions/all 22 workflows; independent calendar/terms/lifecycle review remains required before native integration.
 
 Notification full38654568775 remains live at Apache protection on frozen116/f053dac. Devin retains complete20i: current115/5c38ec6 clears missing-field approval but seven prior defects and the production write timeout/header mismatch remain, verified in review38658989715. Published1.23/main68e4d41 remains unchanged. Earlier sections are historical checkpoints.
 

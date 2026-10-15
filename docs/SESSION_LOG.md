@@ -1628,3 +1628,7 @@ Request: continue roadmap with Devin owning complete 20i. Starting contracts bdd
 ## 2026-10-14 — Recurring invoice lifecycle contract
 
 Request: continue full roadmap with Devin complete20i. Starting frozen118/4b99e64 on separate codex/recurring-billing-lifecycle. Inspected immutable terms/calendar and native service agreement requirements. Contracted exact client consent, bounded append-only decisions, strictly future whole-period activation/pause/resume/end, deterministic eligibility and explicit native authority/unique-invoice follow-on. Terms2976/all22verified; native integration waits for independent review and exact native contract. Notification full38654568775 remains live Apache. Devin corrections remain separate, latestreview6181407808. Documentation only; no shipping/schema/provider changes. Next: implement and verify this pure lifecycle, then required native workflow. Published1.23 unchanged.
+
+## 2026-10-14 — Preserve the ability to end future billing
+
+Contract refinement before implementation commit: an end boundary may override previously planned later activation/pause/resume. Enforcing monotonic future boundaries on termination would wrongly prevent a client cancelling the next period after a later resume was scheduled. Retain monotonic activation/pause/resume, immutable history, and strictly future dates; termination stops all periods from its boundary without rewriting elapsed periods. Add explicit tests for ending before a delayed activation and before a planned resume.
