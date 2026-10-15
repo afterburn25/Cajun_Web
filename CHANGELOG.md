@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — authenticated hosting setup confirmation
+
+- Confirm the original accepted hosting ID through the existing authenticated inventory reader, with matching enabled status, domain, type and credential context. Retain exact evidence and commit native adoption/audit atomically; unavailable or mismatched reads stay pending.
+- Add native owner status controls, private client progress and native/browser confirmation regressions. Correct the optional-license legacy fixture and archived documentation link exposed by parent CI. New exact-head acceptance is pending.
+
 ## Unreleased — unresolved timeout presentation
 
 - Correct owner/client fulfillment projections to recognize the canonical failed-but-unresolved timeout state. Show uncertainty and no retry control; retain the native regression that exposed the defect.

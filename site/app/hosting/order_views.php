@@ -54,7 +54,7 @@ function service_orders_form_action(string $action,string $agreement,int $client
     if($owner&&in_array($command,['prepare_service','map_service'],true)){
         hosting_order_links_form_action($command,$context['document'],$client,$password);return;
     }
-    if($owner&&in_array($command,['prepare_fulfillment','fulfill_service','recover_fulfillment','retry_fulfillment'],true)){
+    if($owner&&in_array($command,['prepare_fulfillment','fulfill_service','recover_fulfillment','retry_fulfillment','prepare_confirmation','confirm_fulfillment'],true)){
         require_once CWP_CODE_ROOT.'/app/hosting/fulfillment_views.php';
         hosting_fulfillment_form_action($command,$context['document'],$client,$password);return;
     }

@@ -12,6 +12,7 @@ function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $
         echo '<section class="workspace-card" data-hosting-progress><h2>Hosting setup progress</h2><p class="workspace-status">'.esc($label).'</p><p>Service reference: <span class="hosting-service-reference">'.esc($p['account_id']).'</span></p><p>Record prepared '.esc(gmdate('Y-m-d H:i:s',$p['created_at'])).' UTC.</p>';
         if($p['order_cancelled'])echo '<p>Your hosting request is cancelled. Its service record and invoice history are retained. Cancellation of a request does not delete an existing website.</p>';
         elseif($p['status']==='pending')echo '<p>The studio has prepared your service record. Provider setup has not started; this is not an active hosting service.</p>';
+        elseif($p['status']==='active')echo '<p>The provider confirmed this service enabled at its last setup check. Website content, DNS propagation and SSL are checked separately.</p>';
         elseif($p['status']==='unknown')echo '<p>The setup outcome is uncertain. The studio must review the original attempt before any further setup request.</p>';
         if($owner){
             echo '<p>Reviewed package: '.esc($p['package']['label']).' · Type '.esc($p['package']['provider_type']).' · '.esc($p['package']['region']).'</p>';

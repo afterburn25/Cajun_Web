@@ -46,7 +46,7 @@ class ProviderServer:
                 if fixture.write_mode in ('success','uncertain_landed'):
                     status=200 if fixture.write_mode=='success' else 202;result={'id':100+len(fixture.packages)}
                     if self.path.endswith('/addWeb') and isinstance(payload,dict) and isinstance(payload.get('domain_name'),str):
-                        name=payload['domain_name'];fixture.packages.append({'id':result['id'],'typeRef':1,'name':name,'names':[name]+(payload.get('extra_domain_names') or []),'enabled':True,'created':'2000-01-01T00:00:00Z'})
+                        name=payload['domain_name'];fixture.packages.append({'id':result['id'],'typeRef':int(payload.get('type',1)),'name':name,'names':[name]+(payload.get('extra_domain_names') or []),'enabled':True,'created':'2000-01-01T00:00:00Z'})
                     body=json.dumps({'result':result['id']} if fixture.write_mode=='success' and self.path.endswith('/addWeb') else result).encode()
                 else:
                     status,body={'uncertain':(202,b'{"status":"accepted"}'),'failure':(400,b'{"error":"refused"}'),'authentication':(401,b'private synthetic response'),'echo':(200,b'"SYNTHETIC_RAW_GENERAL_KEY"')}[fixture.write_mode]

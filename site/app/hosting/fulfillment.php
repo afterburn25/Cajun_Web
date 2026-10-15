@@ -54,6 +54,7 @@ function hosting_fulfillment_validate(array $row,ServiceOrderDocument $order,arr
             if($data['outcome']==='accepted_pending'){
                 $provider=one('SELECT operation,status,external_id FROM '.table('provider_operations').' WHERE idempotency_key=?',[$b['provider_key']]);
                 if(!$provider||$provider['operation']!=='packages.create'||$provider['status']!=='accepted_pending'||$provider['external_id']!==$data['resource_ref'])throw new RuntimeException('Original provider acknowledgement is missing or differs.');
+                require_once CWP_CODE_ROOT.'/app/hosting/fulfillment_confirmation.php';hosting_fulfillment_confirmation_history($b,$data);
             }
         }
         $audit=all('SELECT user_id FROM '.table('audit').' WHERE action=? AND detail=? LIMIT 2',['hosting_records.fulfillment_approved',hosting_fulfillment_audit_detail($row)]);

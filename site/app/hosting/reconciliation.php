@@ -74,6 +74,15 @@ function hosting_reconciliation_record(string $dispatchId,string $fingerprint,st
     hosting_records_id($dispatchId);hosting_records_id($observationId);
     if(!preg_match('/\A[a-f0-9]{64}\z/',$fingerprint))throw new InvalidArgumentException('Invalid hosting dispatch fingerprint.');
     return staff_locked(fn()=>staff_transaction(function()use($dispatchId,$fingerprint,$observationId,$input):bool {
+        return hosting_reconciliation_record_locked($dispatchId,$fingerprint,$observationId,$input);
+    }));
+}
+
+/** Internal transaction-owned portion for atomic order confirmation and its audit. */
+function hosting_reconciliation_record_locked(string $dispatchId,string $fingerprint,string $observationId,array $input):bool {
+    if(!db()->inTransaction())throw new LogicException('Hosting reconciliation needs its owning transaction.');
+    hosting_records_id($dispatchId);hosting_records_id($observationId);
+    if(!preg_match('/\A[a-f0-9]{64}\z/',$fingerprint))throw new InvalidArgumentException('Invalid hosting dispatch fingerprint.');
         hosting_operations_require_ready();
         hosting_storage_require('reconciliation');
         $dispatch=one('SELECT * FROM '.table('hosting_dispatches').' WHERE id=?',[$dispatchId]);
@@ -98,5 +107,4 @@ function hosting_reconciliation_record(string $dispatchId,string $fingerprint,st
         }
         hosting_records_audit((int)$dispatch['actor_id'],'reconciliation_recorded','Account '.$row['id'].' dispatch '.$dispatchId.' observation '.$observationId.' '.$data['outcome']);
         return true;
-    }));
 }

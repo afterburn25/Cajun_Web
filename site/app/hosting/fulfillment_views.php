@@ -2,7 +2,7 @@
 /** Owner forms around the existing order execution and retained-result recovery services. */
 declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
-require_once CWP_CODE_ROOT.'/app/hosting/fulfillment.php';
+require_once CWP_CODE_ROOT.'/app/hosting/fulfillment_confirmation.php';
 require_once CWP_CODE_ROOT.'/app/plans/forms.php';
 
 /** Read-only readiness; lost established history is never a fresh setup invitation. */
@@ -41,7 +41,7 @@ function hosting_fulfillment_view(string $orderId,int $client):array {
         $ready=hosting_fulfillment_setup_ready();$profileCurrent=false;
         try{[, $profile]=provider_checks_authority($binding['profile_id'],$binding['profile_revision']);$profileCurrent=hash_equals($binding['credential_sha256'],hash('sha256',$profile['credentials']));}
         catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;}
-        $view=['ready'=>$ready,'order'=>$order,'link_hash'=>$link['binding_sha256'],'account_id'=>$link['account_id'],'profile_current'=>$profileCurrent,'package'=>$binding['package'],'reseller_id'=>$binding['request']['params']['resellerId'],'eligible'=>service_orders_assess($order,time())['eligible'],'mode'=>'prepare','hosting_revision'=>$journal->revision(),'dispatch'=>null];
+        $view=['ready'=>$ready,'confirmation_ready'=>provider_inventory_ready(),'order'=>$order,'link_hash'=>$link['binding_sha256'],'account_id'=>$link['account_id'],'profile_current'=>$profileCurrent,'package'=>$binding['package'],'reseller_id'=>$binding['request']['params']['resellerId'],'eligible'=>service_orders_assess($order,time())['eligible'],'mode'=>'prepare','hosting_revision'=>$journal->revision(),'dispatch'=>null];
         if(!$ready)return $view;
         hosting_fulfillment_require();hosting_fulfillment_history($order,$link);$journal=hosting_operations_validate(hosting_records_row($link['account_id'],$client));
         $view['hosting_revision']=$journal->revision();$account=$journal->account();
@@ -52,9 +52,13 @@ function hosting_fulfillment_view(string $orderId,int $client):array {
         if(!$approval)throw new RuntimeException('Restore the original hosting fulfillment approval.');
         $b=hosting_fulfillment_validate($approval,$order,$link);
         $result=one('SELECT result_json FROM '.table('hosting_operation_results').' WHERE id=?',[$dispatch['id']]);
-        $view['dispatch']=['id'=>$dispatch['id'],'approval_hash'=>$approval['binding_sha256'],'created_at'=>$b['created_at'],'outcome'=>null,'package_id'=>null,'provider_hash'=>null];
+        $view['dispatch']=['id'=>$dispatch['id'],'approval_hash'=>$approval['binding_sha256'],'created_at'=>$b['created_at'],'outcome'=>null,'package_id'=>null,'provider_hash'=>null,'confirmation'=>null];
         if($result){
             $r=json_decode($result['result_json'],true,16,JSON_THROW_ON_ERROR);$view['dispatch']['outcome']=$r['outcome'];$view['dispatch']['package_id']=$r['resource_ref'];
+            if($r['outcome']==='accepted_pending'){
+                $latest=one('SELECT observation_json FROM '.table('hosting_observations').' WHERE dispatch_id=? ORDER BY recorded_epoch DESC,id DESC LIMIT 1',[$dispatch['id']]);
+                if($latest){$proof=json_decode($latest['observation_json'],true,16,JSON_THROW_ON_ERROR);$savedProof=hosting_fulfillment_confirmation_proof($b,$r,substr($proof['evidence_ref'],17));$view['dispatch']['confirmation']=['at'=>$savedProof['observed_at'],'reason'=>$savedProof['reason']];}
+            }
             if($account->awaitingReconciliation()&&$account->pendingAttempt()===$dispatch['attempt_ref'])$view['mode']=$r['outcome']==='accepted_pending'?'pending_confirmation':'unknown';
         }elseif($account->pendingAttempt()===$dispatch['attempt_ref']){
             $view['mode']='unresolved';
@@ -72,6 +76,10 @@ function hosting_fulfillment_view(string $orderId,int $client):array {
 function hosting_fulfillment_form_action(string $command,ServiceOrderDocument $order,int $client,#[\SensitiveParameter] string $password,?callable $resolver=null,?callable $perform=null):void {
     service_plans_form_confirm($_POST);
     if($command==='prepare_fulfillment'){hosting_fulfillment_prepare($password);return;}
+    if($command==='prepare_confirmation'){hosting_fulfillment_confirmation_prepare($password);return;}
+    if($command==='confirm_fulfillment'){
+        hosting_fulfillment_confirm($order->data()['id'],$client,service_plans_form_id($_POST,'dispatch_id'),service_plans_form_hash($_POST,'approval_hash'),$password,$resolver,$perform);return;
+    }
     if($command==='fulfill_service'){
         $review=['account_type'=>($_POST['review_account_type']??null)==='1','defaults'=>($_POST['review_defaults']??null)==='1','costs'=>($_POST['review_costs']??null)==='1','confirmation'=>service_plans_form_text($_POST,'provision_confirmation',270,true)];
         hosting_fulfillment_execute($order->data()['id'],$client,service_plans_form_number($_POST,'order_revision',127),service_plans_form_hash($_POST,'order_hash'),service_plans_form_hash($_POST,'link_hash'),service_plans_form_id($_POST,'event_id'),$review,$password,$resolver,$perform);return;

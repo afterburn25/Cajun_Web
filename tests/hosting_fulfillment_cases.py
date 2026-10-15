@@ -139,3 +139,6 @@ def run_browser(env, browser, owner, client, foreign, cid, job, command, capture
     check('Client sees honest uncertainty after ambiguous provider response','Hosting setup outcome needs review' in client.get(unknown['client']).text)
     capture(owner,unknown['owner'],'staff-fulfillment-unknown');capture(client,unknown['client'],'client-fulfillment-unknown')
     check('Fulfillment fixture observed only valid protected requests',not provider.errors)
+
+    from hosting_confirmation_cases import run_browser as confirm_browser
+    confirm_browser(env,browser,owner,client,foreign,c,unknown,capture)

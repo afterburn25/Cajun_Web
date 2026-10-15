@@ -1,6 +1,16 @@
 # Dedicated hosting order fulfillment
 
-Status: native approval and recovery screens are implementing on `codex/twentyi-service-orders` / [PR138](https://github.com/afterburn25/Cajun_Web/pull/138), from87970faa. Internal execution/recovery is branch-tested; new rendered forms and packaged browser acceptance are pending. Automated provider catalog/configuration verification and authenticated active-service confirmation remain required. Published version stays1.24; no live provider operation is claimed.
+Status: authenticated exact-ID confirmation is implementing from3929e891 on `codex/twentyi-service-orders` / [PR138](https://github.com/afterburn25/Cajun_Web/pull/138). Parent owner approval/recovery forms pass four native combinations; new confirmation and packaged browser acceptance are pending. Automated provider catalog/configuration verification remains unfinished. Published version stays1.24; no live provider operation is claimed.
+
+## Authenticated service confirmation
+
+The owner status action reuses the existing package inventory reader, durable refresh storage, shared cooldown and hourly limit. Its internal receipt identifies the exact newly recorded refresh; it never guesses the last observation. An additional internal authority check validates the existing order/client/owner and original provider revision/cipher before credential access, send and persistence. HTTP cannot inject a resolver, transport or scope callback.
+
+Only the originally assigned accepted package ID, enabled flag, accepted primary domain and package type can confirm that original client service. A failed, disabled, missing or mismatched observation stays pending. It cannot prove absence or permit another purchase. The original provider ledger/attempt stays unchanged. The [official package response](https://docs.20i.com/api/retrieve-packages-api) documents these fields; [addWeb](https://docs.20i.com/api/provision-hosting-package-api) supplies the new ID. The application treats their agreement as confirmation of provider-enabled service state, not website, DNS or SSL health.
+
+The saved refresh, selected package fields, digest, read-start/read-finish audits and checking-owner audit remain bound to the native hosting observation. History validation rechecks that original proof, including after later refreshes or context changes. Missing/tampered evidence refuses projection and adoption until restored. Conclusive native event, resource association and confirmation audit share one transaction using the existing reconciliation helper; audit failure leaves the completed authenticated read and pending service, with no new purchase. Repeated active confirmation is inert. This action can record a past purchase after commercial cancellation without authorizing any new purchase.
+
+The owner card displays the last check/result and an explicit status-check form. Optional status storage is prepared through a password-confirmed additive POST, never GET; established missing tables/marker require restoration. Current client views retain their bounded local reference/status projection. New native and real HTTP/Chromium/TLS-fixture cases cover private controls, wrong intent, exact and disabled package responses, cooldown, replay, audit rollback, revocation and original proof restoration. Exact descendant CI/package acceptance is pending.
 
 ## Native owner and client screens
 
@@ -73,3 +83,14 @@ The clean64d Windows build and independent verifier confirm all11 checksums, eve
 Parentf6c full38790555173 succeeded. Downloaded artifact12002476258,87,724,680bytes,SHA2564430492385c5a6acb2d0355a89a8150e57aeb14d67ca80c8a90fc3afbffc90ad, verifies all11 checksums, exact f6c source/identical test merge20d524ae,5381/2640/2627 members,1652HTTP/289recovery/1763Apache and no unexpected browser/PHP diagnostics. Its COMPLETE package is byte-identical to the independently verified61c Windows runtime build. This full acceptance belongs to the pending-state parent, not the newer execution/recovery service.
 
 Main advanced from0b96 to161e3eddf21402f387bdd455e46cacabd9307786 with separate licensing/download work. The current integration retains that ancestry with64d rather than resetting either side. Inspection reproduced a PHP parse error from a committed conflict marker in database/schema/base.php; remove only that marker. Guard optional license tables before portal/admin GET queries and keep license administration under owner authority instead of ordinary website editing. Add real HTTP missing-table/restoration cases and a native authorization regression. Regenerate installer inventory. Licensing feature completeness is not certified by these compatibility repairs; its inherited limitations remain documented. Combined new native/full acceptance is required before release. No other repository or live system was modified.
+
+## Verified native forms and inherited fixture correction
+
+Source3929e891c51467663d0a3e243f45eab09db287e5/tree2afe933fd49a4d86763897f227dc830da3ba7cc9 passed [native38801170013](https://github.com/afterburn25/Cajun_Web/actions/runs/38801170013) on PHP8.2/8.4 with MariaDB10.11/MySQL8.4. All downloaded archives pass SHA256/CRC and every named report:32 native rendered-form cases,76 fulfillment cases within427 combined recurring/order checks,82/42/38 order subsets,108 ledger and68 forms in each mode. Subsets are not additive.
+
+- Artifact12004616582: `9f0fcc736faa97631766470c234ef7424ed6a8ba08103402979da4e24a283ed1`.
+- Artifact12004362300: `5dfa1ee215bb52487bbaf87067c5abbb563ccb79548ef3dba1de5516401bf88e`.
+- Artifact12003639331: `f6a723ac02305cba459c784677e24d83750fd36bf1bcbe8f5553abb170cbbb3b`.
+- Artifact12003314914: `bc095d2f2f905e3839056340423552afcac5fb1e17012fc5f3ac322deb9b77ed`.
+
+Parent25a7 failed the retained unknown-outcome assertion because canonical timeout is failed plus awaitingReconciliation.3929 corrects both projections without changing the assertion or retry safeguards. Its repository check also exposed an archived relative link; corrected here. Parent8797 browser artifact12004012734, SHA071fd71fa6a44bf98543e6dcefcade8a0d28c59adc2b9d99de3bdbaed0268f0c, contains1651 successful HTTP checks followed by the optional-license fixture failure. The native base intentionally uses legacy schema, so those optional tables do not exist. The corrected fixture proves absence/readability/no GET DDL first, then explicitly creates only disposable canonical tables for the unchanged missing-table/restoration tests. Neither parent is claimed as complete packaged acceptance.
