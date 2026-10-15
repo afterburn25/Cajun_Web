@@ -1,5 +1,13 @@
 # Working agreement for CajunWebPro
 
+## Current work — recurring invoice lifecycle implemented
+
+After contracts `de68460`/`857395a`, `codex/recurring-billing-lifecycle` implements immutable exact-terms client acceptance and recorded activation, pause, resume and termination for future whole periods. The document retains declared actors, exact event replay and earlier decisions. Future termination overrides later planned activation/pause/resume, preserving the client's ability to end future billing. Deterministic assessment keeps expired/paused/ended/unstarted/zero-price periods distinct and never changes the original calendar or amount. [Contract and native follow-on](docs/RECURRING_BILLING_LIFECYCLE_CONTRACT.md).
+
+Local PHP 8.4 default/no-ini each pass **321 named checks** (642 executions), identical reports and empty diagnostics. Coverage includes lifecycle/actor combinations, literal period facts, consent-hash binding, future-only local dates, termination overrides, retry conflicts, canonical JSON/context/type limits, DST/date-line boundaries, the reserved final termination slot, aggregate byte limits and immutable results. The initial float-version test fixture lost its decimal representation during JSON encoding; it was corrected to send actual decimal JSON and the original failed report is retained. Focused committed PHP 8.2/8.4 CI and independent calendar/terms/lifecycle review are next.
+
+This pure component remains outside deployment. Native current authority and authenticated consent, retained source validation, overlapping-schedule prevention, transactional unique period invoices and real staff/client interfaces remain required. Parent PR 118/`4b99e64` has 2,976 verified focused executions/all22workflows; shipping/calendar/terms bytes remain unchanged. Notification full38654568775 remains live at Apache protection on frozen116/f053dac. Devin retains complete20i: current115/5c38ec6 clears missing-field approval but seven earlier defects and the write-contract mismatch remain. Published1.23/main68e4d41 is unchanged. Earlier sections are historical checkpoints.
+
 ## Current work — recurring invoice terms implemented
 
 Following contracts `bdd4b46` and `8bae286`, `codex/recurring-billing-terms` implements an immutable canonical document for the exact client/project/source-subscription revision, USD amount, original billing calendar, explicit IANA timezone and due-date rule. It returns stable schedule/period identities and proposed period facts without asserting consent, billability or an issued invoice. [Contract and scope](docs/RECURRING_BILLING_TERMS_CONTRACT.md).
