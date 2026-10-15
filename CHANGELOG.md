@@ -1,3 +1,7 @@
+## Unreleased cloud verification
+
+Add native two-process request replay coverage and isolated-branch application acceptance. Runtime unchanged from7e742c3b; CI results remain pending.
+
 ## Unreleased — cloud website creation
 
 Cloud agent owns `codex/twentyi-vps-controls` from0ebc4623: native owner Add website on an explicitly assigned existing server, safe client request summaries, existing gateway/ledger and exact documented addWeb transport. Local synthetic checks pass; native/browser acceptance and root integration remain pending. Server lifecycle/power/console/SSH are still unfinished. See [cloud scope](docs/TWENTYI_CLOUD_WEBSITES.md). No release/live action.

@@ -80,4 +80,3 @@ jobs:
         if: always()
         run: |
           echo 'Native cloud website permissions, exact assignment binding, shared durable gateway, replay, revocation, missing-history refusal and actual PHP form rendering. Disposable MariaDB/MySQL and synthetic provider only; no real API, browser or deployment.' >> "$GITHUB_STEP_SUMMARY"
-

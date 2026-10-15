@@ -33,6 +33,11 @@ function cw_perform(array $row,string $key,string $address,callable $authorize,P
     return (new ProviderGateway(new TwentyIOperationAdapter(),new CwTransport($authorize),new ProviderOperationLedger()))->perform($credential,$operation);
 }
 function cw_create(string $domain,string $nonce='',?callable $dns=null,string $pass=''): \CajunWebPro\Foundation\Provider\OperationResult {global $link,$refresh,$password;return provider_cloud_sites_create($nonce?:bin2hex(random_bytes(16)),$link['id'],(int)$link['revision'],1,$refresh,$domain,[],true,$pass?:$password,$dns??'cw_dns','cw_perform');}
+if(($argv[1]??'')==='paused-request'){
+    cw_owner();$profileId=one('SELECT id FROM '.table('provider_profiles'))['id'];$link=provider_cloud_links($profileId)[0];$refresh=provider_inventory_observation($profileId,InventoryRead::CLOUD_SERVERS_LIST)['id'];
+    $result=cw_create('concurrent.example',$argv[2],function(){echo "resolving\n";fflush(STDOUT);stream_set_timeout(STDIN,20);if(trim((string)fgets(STDIN))!=='continue')throw new RuntimeException('Synchronization failed');return cw_dns();});
+    echo $result->status.':'.$calls;exit;
+}
 try{
     foreach(schema_statements('pcws_') as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
     save_setting('studio_schema_version','2');foreach(default_settings() as $key=>$value)save_setting($key,$value);
@@ -57,6 +62,14 @@ try{
     $beforeDns=$dnsCalls;$again=cw_create('first.example',$nonce);cw_ok('Repeated original form makes no DNS or second provider call',$again->status==='accepted_pending'&&$calls===1&&$dnsCalls===$beforeDns);
     cw_deny('Changed same nonce is refused',fn()=>cw_create('changed.example',$nonce));cw_deny('Fresh nonce cannot recreate accepted domain',fn()=>cw_create('first.example'));
     cw_ok('Returned package is not automatically linked or active',(int)query('SELECT COUNT(*) FROM '.table('provider_package_links'))->fetchColumn()===0&&(int)query('SELECT COUNT(*) FROM '.table('provider_observation_packages'))->fetchColumn()===0);
+    $parallel=bin2hex(random_bytes(16));$worker=proc_open([PHP_BINARY,__FILE__,'paused-request',$parallel],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);if(!is_resource($worker))throw new RuntimeException('Cannot start concurrency fixture');stream_set_timeout($pipes[1],25);
+    try{
+        if(trim((string)fgets($pipes[1]))!=='resolving')throw new RuntimeException('Worker did not reach DNS boundary');
+        $beforeDns=$dnsCalls;$second=cw_create('concurrent.example',$parallel);
+        cw_ok('Concurrent original form sees durable pending approval without DNS or send',$second->status==='uncertain'&&$dnsCalls===$beforeDns&&$calls===1);
+        fwrite($pipes[0],"continue\n");fclose($pipes[0]);$workerOutput=stream_get_contents($pipes[1]);$workerError=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);$exit=proc_close($worker);$worker=null;
+        cw_ok('Concurrent worker alone sends once through native durable gateway',$exit===0&&$workerOutput==='accepted_pending:1'&&$workerError===''&&one('SELECT status FROM '.table('provider_operations').' WHERE idempotency_key=?',['cloudsite:'.$parallel])['status']==='accepted_pending');
+    }finally{if(is_resource($worker)){proc_terminate($worker);foreach($pipes as $pipe)if(is_resource($pipe))fclose($pipe);proc_close($worker);}}
     $mode='timeout';$unknown=bin2hex(random_bytes(16));$result=cw_create('timeout.example',$unknown);cw_ok('Timeout durable status is uncertain with one attempt',$result->status==='uncertain'&&$calls===2);cw_create('timeout.example',$unknown);cw_deny('Fresh nonce cannot retry unknown domain',fn()=>cw_create('timeout.example'));cw_ok('Unknown replay never sends again',$calls===2);$mode='accepted';
     $failedDns=cw_create('dns.example','',fn()=>'127.0.0.1');cw_ok('Private DNS refusal records a zero-send failure',$failedDns->status==='failed'&&$failedDns->attempts===0&&$calls===2);cw_ok('New reviewed request after definite no-send failure may proceed',cw_create('dns.example')->status==='accepted_pending'&&$calls===3);
     $before=$calls;$result=cw_create('revoked.example','',function(){query('UPDATE '.table('studio_clients').' SET active=0 WHERE id=1');return cw_dns();});query('UPDATE '.table('studio_clients').' SET active=1 WHERE id=1');cw_ok('Client deactivation during DNS prevents send',$result->status==='failed'&&$result->attempts===0&&$calls===$before);

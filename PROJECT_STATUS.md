@@ -1,3 +1,7 @@
+## 2026-10-15 — Cloud branch CI and process concurrency
+
+Implementation7e742c3be5bf04a0a0eed1751290f5146c9e61af is pushed as [draft PR143](https://github.com/afterburn25/Cajun_Web/pull/143), based on mailbox0ebc. Installer refresh47682 completed successfully; all2662 staged dependency hashes were verified. Native push38819055916 and boundary38819055822 are queued, not accepted. Attachment failed the existing100-identity cap; the normal PR link remains usable. Added a true two-process same-request race at the DNS boundary to native coverage. Enabled the full application workflow on this isolated cloud branch because the active mailbox base advanced and shared-file merge conflicts currently prevent a PR merge-ref run. No branch rebase, unrelated merge or PR metadata bypass. Next: inspect exact native and packaged CI and repair concrete failures; root handles sequential combined integration and release.
+
 # Parallel development: cloud website control — 2026-10-15
 
 The owner requested simultaneous 20i agents. `codex/twentyi-vps-controls`, starting `0ebc46237fce565005b581fe5a96a2691b9840b5`, implements the documented Add website action on an existing explicitly assigned cloud server, with exact typed transport, current owner/client/assignment checks, existing gateway/ledger replay protection, pending package IDs and private client request summaries. No server purchase, power, rebuild, console or SSH is claimed. [Scope and verification](docs/TWENTYI_CLOUD_WEBSITES.md).
