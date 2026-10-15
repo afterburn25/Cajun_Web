@@ -1,10 +1,10 @@
 name: Native recurring agreement and period invoice checks
 on:
   push:
-    branches: [main, codex/recurring-billing-records, codex/recurring-billing-screens]
-    paths: ['site/app/billing/**', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/recurring-billing/forms.php', 'site/includes/layout/recurring_billing.php', 'site/admin/controllers/recurring_billing.php', 'site/portal/controllers/recurring_billing.php', '.github/workflows/recurring-billing-native.yml']
+    branches: [main, codex/recurring-billing-records, codex/recurring-billing-screens, codex/recurring-billing-activity]
+    paths: ['site/app/billing/**', 'site/app/activity/**', 'site/includes/layout/activity.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/recurring-billing/forms.php', 'site/includes/layout/recurring_billing.php', 'site/admin/controllers/recurring_billing.php', 'site/portal/controllers/recurring_billing.php', '.github/workflows/recurring-billing-native.yml']
   pull_request:
-    paths: ['site/app/billing/**', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/recurring-billing/forms.php', 'site/includes/layout/recurring_billing.php', 'site/admin/controllers/recurring_billing.php', 'site/portal/controllers/recurring_billing.php', '.github/workflows/recurring-billing-native.yml']
+    paths: ['site/app/billing/**', 'site/app/activity/**', 'site/includes/layout/activity.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/recurring-billing/forms.php', 'site/includes/layout/recurring_billing.php', 'site/admin/controllers/recurring_billing.php', 'site/portal/controllers/recurring_billing.php', '.github/workflows/recurring-billing-native.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -54,6 +54,7 @@ jobs:
               cmp foundation/recurring-billing/RecurringBillingSchedule.php site/includes/foundation/recurring-billing/RecurringBillingSchedule.php
               php -d memory_limit=128M tests/recurring_billing_native.php
               php tests/design_payments_legacy_ledger.php
+              php -d memory_limit=128M tests/design_payments_native.php
               php tests/recurring-billing/forms.php qa/recurring-billing-forms-default.json
               php -n tests/recurring-billing/forms.php qa/recurring-billing-forms-noini.json
             '
@@ -65,6 +66,7 @@ jobs:
           path: |
             qa/recurring-billing-native-results.json
             qa/ledger-native-results.json
+            qa/design-payments-native-results.json
             qa/recurring-billing-forms-default.json
             qa/recurring-billing-forms-noini.json
           if-no-files-found: error

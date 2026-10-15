@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — recurring billing notifications
+
+- Show retained offers and decisions to the authorized client or financial staff in workspace activity and the existing bell, with independent personal reads.
+- Resolve exact history links after later decisions and validate current authority/full history under the shared lock. Native billing mutations remain unchanged.
+- Local184 recurring/254 financial/76 forms per mode/70 HTTP-browser checks and four new views pass. Focused CI and full packaged/recovery/review acceptance remain pending.
+
 ## Unreleased preparation — recurring billing activity
 
 - Recorded PR121 browser checkpoint verification:9,664 named executions, eight complete new recurring images and unchanged public homepage pixels. Final application/package acceptance and independent review remain pending. Reconfirmed complete20i ownership with Devin; its latest domain-renewal delta is unreviewed.

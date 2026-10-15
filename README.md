@@ -1,5 +1,9 @@
 # CajunWebPro — project source of truth
 
+## Latest development
+
+Recurring offers and decisions now appear in the existing activity center and personal bell, with exact retained-history links. [Usage and scope](docs/RECURRING_BILLING_ACTIVITY.md). Local184 recurring/254 financial/76 default and no-ini forms/70 HTTP-browser checks pass; four new complete views are inspected. Focused CI, packaged acceptance and review remain pending. Parent121 has11,780 verified full checks and identical packages; published1.23 is unchanged. Devin continues the complete20i integration. Older checkpoints below remain historical.
+
 ## Current checkpoint
 
 Devin owns the [complete20i integration](https://github.com/afterburn25/Cajun_Web/issues/2), including all admin/client provider screens, hosting, domains, VPS and support access. Codex continues non20i work and integration/releases. Recurring PR121 has [9,664 verified browser-checkpoint executions and eight inspected new views](https://github.com/afterburn25/Cajun_Web/pull/121#issuecomment-6182873109); full acceptance and independent review remain pending. The next isolated notification increment has a committed contract only. Published1.23 and main68e4d41 remain unchanged; older checkpoints below are historical.

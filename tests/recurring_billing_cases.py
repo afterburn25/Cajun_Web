@@ -32,8 +32,8 @@ def run_browser(env, browser):
         invitation=soup(response).select_one('.notice.info a[href*="invite="]')['href']; client=requests.Session()
         submit(client,invitation,'activate',{'password':OWNER,'confirm_password':OWNER});submit(client,portal,'login',{'email':email,'password':OWNER});clients.append((cid,client))
     (cid,client),(_,foreign)=clients
-    submit(owner,admin+'?view=studio-clients','studio_job',{'client_id':str(cid),'title':'Recurring browser project','summary':'Synthetic web care','stage':'design','milestones':''})
-    job=db('SELECT id FROM ci_studio_jobs WHERE title=?',['Recurring browser project'])[0]['id']
+    submit(owner,admin+'?view=studio-clients','studio_job',{'client_id':str(cid),'title':'Recurring browser <project>','summary':'Synthetic web care','stage':'design','milestones':''})
+    job=db('SELECT id FROM ci_studio_jobs WHERE title=?',['Recurring browser <project>'])[0]['id']
     project=listing+'&job='+str(job)
     terms={'name':'Recurring browser care','cadence':'monthly','price':'125.01','inclusions':'Agreed web care','exclusions':'New features','limits':'','support':'Business hours','current_password':OWNER}
     response=submit(owner,admin+'?view=service-plan','service_plans_create',terms);plan=parse_qs(urlparse(response.url).query)['record'][0]
@@ -127,3 +127,6 @@ def run_browser(env, browser):
         page.wait_for_load_state('networkidle')
         check('Retained client error '+label+' keeps original revision without overflow',page.locator('[name=revision]').input_value()=='0' and page.evaluate('document.documentElement.scrollWidth <= window.innerWidth'))
         page.screenshot(path=str(QA/('recurring-client-error-'+label+'.png')),full_page=True);context.close()
+
+    from recurring_billing_activity_cases import run_browser as activity_browser
+    activity_browser(env,browser,owner,client,foreign,job,cid,schedule,capture)

@@ -37,6 +37,12 @@ function rb_historical_billing(int $id,int $source):RecurringBillingSchedule {
     return $d;
 }
 function rb_issue(int $id,int $request,int $period=0):array {$d=rb_read($id);return recurring_billing_issue(rb_id($id),1,$d->revision(),$d->fingerprint(),$period,rb_id($request));}
+if(($argv[1]??'')==='activity-worker'){
+    require_once CWP_CODE_ROOT.'/app/activity/events.php';$audience=$argv[2];if($audience==='admin')rb_staff(2);else rb_client();
+    echo "ready\n";fflush(STDOUT);
+    try{if($argv[3]==='mark')activity_mark($audience,[$argv[4]],true);else activity_source($audience,$argv[4]);echo 'allowed';}
+    catch(RuntimeException|InvalidArgumentException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
+}
 if(($argv[1]??'')==='worker'){
     rb_staff();echo "ready\n";fflush(STDOUT);try{$r=recurring_billing_issue($argv[2],1,(int)$argv[3],$argv[4],(int)$argv[5],$argv[6]);echo $r['replayed']?'replay':'new';}catch(RuntimeException|InvalidArgumentException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
 }
@@ -78,5 +84,6 @@ try {
     require __DIR__.'/recurring_billing_native_extra.php';
     require __DIR__.'/recurring_billing_interface_cases.php';
     rb_ok('Existing project fields are unchanged',$projects===recurring_billing_json(all('SELECT * FROM '.table('studio_jobs'))));rb_ok('No provider call or payment attempt is created',rb_count('provider_profiles')===0&&rb_count('payment_attempts')===0);rb_ok('Audit excludes agreement text and passwords',!str_contains(recurring_billing_json(all('SELECT * FROM '.table('audit'))),$password)&&!str_contains(recurring_billing_json(all('SELECT * FROM '.table('audit'))),$fields['terms']));
+    require __DIR__.'/recurring_billing_activity_cases.php';
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,(string)$e.PHP_EOL);}
 $passed=!in_array(false,array_column($checks,'passed'),true);file_put_contents(__DIR__.'/../qa/recurring-billing-native-results.json',json_encode(['passed'=>$passed,'scope'=>'Synthetic MariaDB native recurring consent/history, replacement and existing-ledger period invoices; no HTTP, merchant or provider call. Historical fixtures use real canonical documents.','php'=>PHP_VERSION,'checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));echo ($passed?'PASS':'FAIL').': '.count($checks).' native recurring checks'.PHP_EOL;exit($passed?0:1);
