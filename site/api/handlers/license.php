@@ -28,6 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// Rate limiting: max 10 requests per minute per IP
+$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+$rateKey = 'license_validate_' . hash('sha256', $ip);
+if (!consume_rate($rateKey, 10, 60)) {
+    license_response(false, 'Rate limit exceeded. Please try again later.');
+}
+
 $input = json_decode(file_get_contents('php://input'), true);
 if (!is_array($input)) {
     license_response(false, 'Invalid JSON payload');
@@ -45,6 +52,11 @@ if (!is_string($domain) || strlen($domain) < 4 || !str_contains($domain, '.')) {
 }
 
 try {
+    // Log the validation attempt for security audit
+    $auditData = json_encode(['license_key' => substr($licenseKey, 0, 8) . '...', 'domain' => $domain, 'ip' => $ip]);
+    query('INSERT INTO ' . table('audit') . ' (user_id, action, detail, created_at) VALUES (0, ?, ?, ?)',
+        ['license.validate', $auditData, gmdate('Y-m-d H:i:s')]);
+
     // Look up the license key
     $license = one(
         'SELECT id, license_key, is_active FROM ' . table('website_licenses') . ' WHERE license_key = ?',
