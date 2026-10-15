@@ -48,3 +48,9 @@ This pure increment owns only `foundation/recurring-billing/`, `tests/recurring-
 ## Acceptance
 
 Named checks must cover exact JSON/data/fingerprint identity, all bound context fields, strict types/limits, unsupported formats and duplicate/noncanonical JSON, literal escaped-later text, caller mutation, calendar alignment/leap/century transitions, independent due-date examples across months/years/leap days, zero/maximum amounts, stable period identity, direct lookup, invalid/overflow epochs, local midnight/DST/date-line conversions and process-timezone independence. Run PHP 8.2/8.4 default/no-ini in isolated network-disabled CI, inspect actual reports/logs and preserve the frozen parent evidence. This proves pure terms/facts only; the full recurring billing workflow remains incomplete.
+
+## Implementation and local evidence
+
+Contracts `bdd4b46`/`8bae286` precede `foundation/recurring-billing/RecurringBillingTerms.php`. The corrected source revision bound matches native `ServiceSubscriptionDocument::MAX_EVENTS` (256). `tests/recurring-billing/terms.php` passes 372 named cases in each local PHP 8.4 default/no-ini mode with identical named results and no runtime diagnostics. Its literal canonical document and dates independently check the retained facts; malformed context/JSON/text/epochs and boundary cases are rejected. Timezone tests include New York spring/fall changes, Kathmandu, Kiritimati, Apia's skipped date, local renewal midnight and process-default independence.
+
+Run `php tests/recurring-billing/terms.php` and `php -n tests/recurring-billing/terms.php`. `.github/workflows/recurring-billing-terms.yml` runs both modes in official PHP 8.2/8.4 containers with network disabled and a read-only source mount. Committed CI and independent review remain pending at this implementation checkpoint. No shipping files, database, installer, version or provider behavior changed.
