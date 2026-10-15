@@ -1,5 +1,9 @@
 # Agent coordination — complete20i P0
 
+Current162c35fb preparation flow now passes1652 actual HTTP/Chromium checks. Fresh11997794227 artifact/hash, all55 named-check reports and actual desktop/mobile screenshots inspected; submit saves exactly1 association/service with no alert. Native38/42/82 within319 plus108 ledger ×4 and24 focused workflows pass. Full38785450426 recovery/Apache continue. Codex moves on to selected provider configuration and existing-engine fulfillment; original fixture failure is resolved. [Current handoff](../SESSION_HANDOFF.md).
+
+Latest verified162c35fb retains all original requirements and corrects the provider fixture via the real settings form. All24 focused workflows pass; actual native38/42/82 within319 plus108 ledger ×4. Windows exact-source packages verified. Current full38785450426 browser is pending. Original8d97 saved response confirms inconsistent history with no partial service. Codex retains complete20i ownership; independent review and exact-main release remain gates. [Current handoff](../SESSION_HANDOFF.md). Older “pending” entries below retain historical state.
+
 Current PR138 parent8d97: Codex repairs the cross-suite provider fixture, which incremented a profile revision without its history. Use the actual settings form, retain stale-context refusal, and prove orphan-history mapping rollback. Parent rendered-form native36/42/82 within317 plus108 ledger passes all4 combinations; descendant/full browser result is pending. No shipping behavior or production guard changed. [Current handoff](../SESSION_HANDOFF.md).
 
 Latest PR138 parentf4: Codex is tracing the actual Chromium preparation-submit failure. All24 focused workflows and35 new native preparation checks ×4 pass; UI acceptance is not established. Tests now retain the real response and round-trip rendered intent. Preserve the in-flight recovery/Apache evidence. [Current handoff](../SESSION_HANDOFF.md).

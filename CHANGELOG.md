@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — verified hosting preparation browser journey
+
+- Corrected provider fixture now passes1652 actual HTTP/Chromium checks; saved order/service identity, private client progress, replay, cancellation and restoration remain verified. Four native combinations pass38 preparation checks within319 combined, plus108 ledger. Exact Windows packages verified. Current full recovery/Apache, independent review and integration/release remain pending; published version stays1.24.
+
 ## Unreleased — provider browser fixture history
 
 - Change the stale-provider-context browser fixture through the real settings form so its current revision has retained original history. Preserve the reconciliation-refusal assertion and add history/network checks plus native orphan-revision rollback coverage. Application protections and shipping bytes are unchanged; complete descendant browser acceptance remains pending.
