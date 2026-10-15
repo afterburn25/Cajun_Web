@@ -127,8 +127,9 @@ try {
     // ---- revocation and expiry ----
     $grant7=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d4.example'],$password);
     provider_operation_revoke($grant7,$password);
+    $sent=count($sentRequests);
     $r=pe_exec($profile,1,$grant7,'idem-create-7',$password);
-    pe_ok('Revoked grant refuses before transport','no_grant'===$r->providerCode&&count($sentRequests)===6);
+    pe_ok('Revoked grant refuses before transport','no_grant'===$r->providerCode&&count($sentRequests)===$sent);
     $grant8=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d5.example'],$password,60);
     query('UPDATE '.table('provider_operation_grants').' SET expires_epoch=? WHERE id=?',[time()-1,$grant8]);
     $r=pe_exec($profile,1,$grant8,'idem-create-8',$password);
