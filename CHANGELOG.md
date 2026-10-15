@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — preserve newer main and repair integration blockers
+
+- Retain main161e3edd licensing/download history alongside tested20i recovery. Repair its schema parse error, optional-storage portal readiness and owner-only licensing authority. Combined acceptance pending; no licensing feature completeness or new release is claimed.
+- Verify75 fulfillment/recovery cases in all four native combinations and exact64d Windows packages. Parentf6c full acceptance and downloaded packages are now verified.
+
 ## Unreleased — exact retained hosting-result recovery
 
 - Add owner-reviewed local recovery from the original provider ledger after interrupted hosting finalization, preserving exact request/account binding and pending/failed/unknown states. Commit native result and recovery audit atomically; never resend or replace original outcomes. New native and packaged acceptance is pending.

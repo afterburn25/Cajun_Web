@@ -64,6 +64,7 @@ if(($argv[1]??'')==='fulfillment-worker'){
     $start=count($checks);
     try{
         rb_staff();hosting_reconciliation_migrate($password);provider_operations_migrate($password);
+        rb_ok('Merged license administration cannot inherit ordinary website editing authority',staff_view_permission('studio-licenses')==='staff.manage'&&array_reduce(['studio_license_create','studio_license_deactivate','studio_license_bundle','studio_domain_add','studio_domain_deactivate'],static fn(bool $safe,string $action):bool=>$safe&&staff_action_permission($action)==='staff.manage',true));
         rb_ok('Fulfillment GET readiness never prepares storage',!hosting_storage_ready('fulfillment'));
         rb_deny('Fulfillment preparation requires current owner password',fn()=>hosting_fulfillment_migrate('wrong'));
         rb_staff(2);rb_deny('Delegated financial access cannot prepare fulfillment',fn()=>hosting_fulfillment_migrate($password));rb_staff();

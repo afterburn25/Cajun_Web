@@ -12,6 +12,7 @@ function studio_admin_render(string $view,array $user,string $error): void {
 }elseif($view==='studio-prices'){require CWP_CODE_ROOT.'/admin/views/studio/prices.php';
 }elseif($view==='studio-content'){require CWP_CODE_ROOT.'/admin/views/studio/content.php';
 }elseif($view==='studio-history'){require CWP_CODE_ROOT.'/admin/views/studio/history.php';
+}elseif($view==='studio-licenses'){require CWP_CODE_ROOT.'/admin/views/studio/licenses.php';
 }elseif($view==='studio-portfolio'){require CWP_CODE_ROOT.'/admin/views/studio/portfolio.php';
     }
     admin_foot();

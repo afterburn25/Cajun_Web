@@ -1,6 +1,6 @@
 # Dedicated hosting order fulfillment
 
-Status: implementing from d3541693 on `codex/twentyi-service-orders` / [PR138](https://github.com/afterburn25/Cajun_Web/pull/138). This is an internal application service. No HTTP approval action or scheduled worker enables it yet. Automated provider catalog/configuration verification, the native approval screen, the recovery screen and authenticated active-service confirmation remain required. Published version stays1.24; no live provider operation is claimed.
+Status: branch-tested through64d786da, with newer-main integration pending on `codex/twentyi-service-orders` / [PR138](https://github.com/afterburn25/Cajun_Web/pull/138). This is an internal application service. No HTTP approval action or scheduled worker enables it yet. Automated provider catalog/configuration verification, the native approval screen, the recovery screen and authenticated active-service confirmation remain required. Published version stays1.24; no live provider operation is claimed.
 
 ## Authorization and execution
 
@@ -50,3 +50,18 @@ Only a recorded packages.create result with one attempt and valid original claim
 The existing hosting finalizer now exposes its internal transaction-owned portion so the native result and recovery audit commit together. Audit failure rolls both back, retaining the original provider response and unresolved fence. Provider rows are not edited. Original response time and pending-versus-active distinction are preserved. The current original provider configuration/key is required to verify its fingerprint; if unavailable, restore that context rather than infer it. This is an internal service; no HTTP recovery or dispatch screen is enabled yet.
 
 Local syntax, both pure hosting modes and the provider contract suite are checked. New native recovery cases cover mismatched proof/credential fingerprint, operation/ID/time/attempt tampering, missing/unresolved response, current owner/password/client isolation, audit rollback, later consent revocation, replay, and recovered pending/failed/unknown outcomes. Exact descendant database and packaged acceptance is pending; ab0's49 fulfillment checks do not certify this recovery increment.
+
+## Verified recovery checkpoint and newer-main integration
+
+Recovery source64d786da32b75484ca8d6298a83aef068e4881dc, tree2217968d9394254de4b37b96990a526ddbdda018, passed [native38796552263](https://github.com/afterburn25/Cajun_Web/actions/runs/38796552263) on all four supported PHP/database combinations. Downloaded/hash/CRC checked reports each pass75 fulfillment/recovery cases within394 combined recurring/order checks; the75 include26 newly added recovery checks. Retained order/association/preparation subsets remain82/42/38; ledger108 and forms68 per mode pass.
+
+- Artifact 12003045393: SHA256 `0698dbc2065de2e492fa079e186e416716f0fe87abbda6146a25df0c73acdb30`.
+- Artifact 12002656072: SHA256 `f41a6bdd744191b81be573c598b72ed0d66c53c583c7e46cefe66d02c38cac81`.
+- Artifact 12002467363: SHA256 `7e198ae8b07d0e0f7b5b2e0c5773f780c588efaa42450238facc726b546fe912`.
+- Artifact 12002457434: SHA256 `2b225bafc7057b62013efb553aad7311e6a4347c89fb5ac112e8bd130e16772f`.
+
+The clean64d Windows build and independent verifier confirm all11 checksums, every archive member/directory, exact Git source and update payload: FULL5386, COMPLETE2643, UPDATE2630. These are development packages, not a published1.25 release. Full38796559132/job116634368707 has passed build/native and is running real HTTP/Chromium; recovery/Apache remain outstanding. Its retained hosting operation matrix38796558955 and PR native38796559191 also pass all4 jobs. Parent184c full38796052971 has reached HTTP/Chromium. Preserve both runs.
+
+Parentf6c full38790555173 succeeded. Downloaded artifact12002476258,87,724,680bytes,SHA2564430492385c5a6acb2d0355a89a8150e57aeb14d67ca80c8a90fc3afbffc90ad, verifies all11 checksums, exact f6c source/identical test merge20d524ae,5381/2640/2627 members,1652HTTP/289recovery/1763Apache and no unexpected browser/PHP diagnostics. Its COMPLETE package is byte-identical to the independently verified61c Windows runtime build. This full acceptance belongs to the pending-state parent, not the newer execution/recovery service.
+
+Main advanced from0b96 to161e3eddf21402f387bdd455e46cacabd9307786 with separate licensing/download work. The current integration retains that ancestry with64d rather than resetting either side. Inspection reproduced a PHP parse error from a committed conflict marker in database/schema/base.php; remove only that marker. Guard optional license tables before portal/admin GET queries and keep license administration under owner authority instead of ordinary website editing. Add real HTTP missing-table/restoration cases and a native authorization regression. Regenerate installer inventory. Licensing feature completeness is not certified by these compatibility repairs; its inherited limitations remain documented. Combined new native/full acceptance is required before release. No other repository or live system was modified.

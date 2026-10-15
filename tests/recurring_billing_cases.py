@@ -404,3 +404,24 @@ def run_browser(env, browser):
     finally:
         db('UPDATE ci_service_orders SET journal_json=? WHERE id=?',[original_order_row['journal_json'],order_row['id']])
     check('Order journal restoration preserves exact original record',db('SELECT * FROM ci_service_orders WHERE id=?',[order_row['id']])==[original_order_row])
+
+    # New main added licensing. An older/missing optional family must not break the hosting client portal.
+    licensing_before={name:db('SELECT * FROM ci_'+name+' ORDER BY id') for name in ['website_licenses','license_domains','license_bundles']}
+    retained_orders=db('SELECT * FROM ci_service_orders ORDER BY id')
+    for name in licensing_before:
+        db('RENAME TABLE ci_'+name+' TO ci_retained_'+name)
+        try:
+            response=client.get(portal)
+            check('Client workspace remains readable without optional '+name,
+                  response.status_code==200 and 'Recurring browser project' in response.text
+                  and 'SQLSTATE' not in response.text and 'Fatal error' not in response.text)
+            response=owner.get(admin+'?view=studio-licenses')
+            check('Owner gets controlled unavailable state for '+name,
+                  response.status_code==200 and 'Website license storage is unavailable' in response.text
+                  and 'SQLSTATE' not in response.text and 'Fatal error' not in response.text)
+            check('Portal GET does not recreate missing '+name,not db('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['ci_'+name]))
+        finally:
+            db('RENAME TABLE ci_retained_'+name+' TO ci_'+name)
+    check('Optional storage restoration preserves all license and hosting records',
+          all(db('SELECT * FROM ci_'+name+' ORDER BY id')==rows for name,rows in licensing_before.items())
+          and db('SELECT * FROM ci_service_orders ORDER BY id')==retained_orders)
