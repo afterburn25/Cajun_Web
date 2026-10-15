@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — 20i domain ownership links (devin/twentyi-domain-links)
+
+Owner-approved domain→client mappings over the observed inventory: `provider_domain_links`/`provider_domain_link_events` (provider-inventory schema v3) bind `(profile_id, domain)` to a client with the carrying package, credential-context fingerprint and approved revision. Linking requires the `(package_id, domain)` pair in the last good observation under the exact current revision — the reseller case of several clients' domains on one package. Admin gains per-domain link/unlink/re-approve controls with a stale-domain section; the client portal surfaces linked domains with honest absence markers. Additive migration preserves v1/v2 data. `domains.renew` also joined the buildable write catalog (documented `name`/`years`/`renewPrivacy`); `addDomain`/`transferDomain`/`nameservers`/`dns` are catalogued shape-incomplete and refused.
+
 ## Unreleased — 20i write execution path (devin/twentyi-execution, devin/twentyi-reconcile)
 
 - `provider_operations_execute` performs one owner-approved provider write: owner password + current profile revision + active exact-scope grant required before any credential is opened or an endpoint address resolved; undocumented or shape-incomplete operations refuse before any ledger claim; missing grants refuse `no_grant` and are audited.
