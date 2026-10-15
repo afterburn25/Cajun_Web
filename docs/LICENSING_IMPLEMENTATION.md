@@ -19,13 +19,19 @@ Implements `POST /api/validate.php` — the endpoint that Website Core calls to 
 
 **Response:**
 ```json
-{"authorized": true}
-// or
-{"authorized": false, "error": "License key not found"}
+HTTP 200 {"authorized": true}
+// or — explicit denial (takes the site offline at next validation):
+HTTP 200 {"authorized": false, "error": "License key not found"}
 ```
 
+**Transient conditions use non-200 status codes** — this is contractually
+required. `200 + authorized:false` is the only definitive denial verdict;
+Website Core treats any non-200 (429 rate limit, 400 malformed request,
+5xx server error) as inconclusive and retries rather than deactivating
+the site.
+
 **Features:**
-- Rate limiting: 10 requests per minute per IP
+- Rate limiting: 10 requests per minute per IP (HTTP 429)
 - Audit logging: all validation attempts logged to `audit` table
 - Multiple domain support: allows test + public sites on same license key, capped at 2 active domains per license — a third requires deactivating one first, which takes that site offline at its next validation
 - Active check: deactivated licenses are rejected
