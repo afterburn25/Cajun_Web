@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased coordination — ticket acceptance and mail preparation
+
+- Verify original #124 final11907 named executions, 21 workflow runs, complete inspected ticket captures and identical Windows/Linux packages.
+- Preserve isolated Reply/Forward draft125 at1f0efe6, with232 local component executions; remote verification and application implementation remain pending.
+- Assign the still-failed f8df480 revocation fixture to Devin; all20i implementation/fixes remain his responsibility. Main/latest published1.23 unchanged.
+
+
 ## Unreleased coordination — complete 20i ownership and recurring acceptance
 
 - Keep complete 20i implementation/fixes with Devin. Review #122/b6aad59 storage readiness and upgrade coverage; verify failed native reports and assign the remaining corrections. Preserve #115 replay-counter finding; new head44391f6 does not contain that correction.
