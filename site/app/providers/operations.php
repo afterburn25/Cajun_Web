@@ -11,7 +11,7 @@ foreach(['TwentyIOperation','TwentyIOperationRegister','TwentyIRequestBuilder','
 
 use CajunWebPro\Foundation\Provider\{LedgerClaim,OperationLedger,OperationResult,ProviderCredential,ProviderGateway,ProviderOperation};
 use CajunWebPro\Foundation\TwentyI\FixedHttpTransport;
-use CajunWebPro\Foundation\TwentyI\Operations\{TwentyIOperationAdapter,TwentyIOperationRegister};
+use CajunWebPro\Foundation\TwentyI\Operations\{TwentyIOperationAdapter,TwentyIOperationRegister,TwentyIRequestBuilder};
 use CajunWebPro\Foundation\MailTransport\EndpointPolicy;
 
 /**
@@ -119,10 +119,15 @@ function provider_operations_canonical(mixed $value,int $depth,int &$nodes): str
 function provider_operation_grant(string $profileId,string $operation,array $scopeParams,#[\SensitiveParameter] string $password,int $ttlSeconds=3600): string {
     if (!preg_match('/^[a-z0-9]+(\.[a-z0-9]+)*$/',$operation)) throw new InvalidArgumentException('Operation names use dotted lowercase form.');
     if ($ttlSeconds<60||$ttlSeconds>86400) throw new InvalidArgumentException('Grant duration must be between 60 seconds and 24 hours.');
-    $spec=(new TwentyIOperationRegister())->get($operation);
+    $register=new TwentyIOperationRegister();
+    $spec=$register->get($operation);
     if ($spec===null||!$spec->shapeComplete) throw new InvalidArgumentException('Only documented, shape-complete operations can be granted.');
     $nodes=0;$scopeJson=provider_operations_canonical($scopeParams,0,$nodes);
     if (strlen($scopeJson)>4096) throw new InvalidArgumentException('The approved scope exceeds the bounded grant size.');
+    // The approved scope must actually build a bounded documented
+    // request — approving an unbuildable scope can never produce a run.
+    try{(new TwentyIRequestBuilder($register))->build(new ProviderOperation($operation,'grant-validation',json_decode($scopeJson,true)));}
+    catch(InvalidArgumentException $e){throw new InvalidArgumentException('The approved request fields do not form a documented request: '.$e->getMessage());}
     return staff_locked(function()use($profileId,$operation,$scopeJson,$password,$ttlSeconds):string {
         $actor=provider_settings_owner($password);
         $profile=provider_settings_load($profileId,true);

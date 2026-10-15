@@ -589,3 +589,9 @@ Connect fresh/additive setup, current-authorized admin compose/list/preview/temp
 - `provider_operations_reconcile` resolves an `uncertain` ledger row through one owner-authorized, evidence-backed observation of the package list (`GET /package` — the only authenticated-read evidence). Outcomes: `observed`, `not_observed`, `inconclusive` (no read sent for unobservable updates), `unavailable`, `refused`. The recorded provider result is never rewritten and the request is never re-sent.
 - `provider_operations` schema v4 appends `reconciled_outcome`/`reconciled_epoch`; the owner operations page shows the reconcile badge and a password-bound check action on uncertain rows.
 - Fresh installs now stamp the created schema versions (`provider_inventory`=2, `provider_operations`=4) rather than a stale '1'.
+
+## Unreleased — packaged provider-operations acceptance + approval-time build validation (devin/twentyi-reconcile)
+
+- `provider_operation_grant` now requires the approved scope to construct a documented bounded request — undocumented fields refuse at approval, not at send.
+- New packaged HTTP/Chromium suite covers the owner operations surface end-to-end: storage setup, owner-only gates, exact-scope approval, a single bounded POST through the real transport stub, idempotent replay, 202→uncertain classification, reconcile `not_observed`/`observed`, revocation, and internal-file denial.
+- The loopback provider fixture and TLS connector gained a strict POST branch and a package list that reflects recorded creates.

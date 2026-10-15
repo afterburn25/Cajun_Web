@@ -123,7 +123,7 @@ function setup_expected_files(): array { return [
     'app/providers/checks.php'=>'0c4e843fa8734d5645c09379af959718ce384a31482600f80c59f2354b2459e2',
     'app/providers/credentials.php'=>'a25fd07765bf924819dedd6772b32ee11ad5e81fa130735a8869f8666b53b186',
     'app/providers/inventory.php'=>'625cd41318042db1a1615484b8d426112a7c211ae8f76ce1240707ba2c812a1f',
-    'app/providers/operations.php'=>'9e24e4001a8f9916d574e2622d74e78bba13a7000c4b10e5a328b6c5ad7f2328',
+    'app/providers/operations.php'=>'f2956c91921156dfd2372a1abad15f5b6a4f320a23158673da220f32701ccd78',
     'app/providers/reconcile.php'=>'ada657f045624147b691eb8795a5e9fcf7e63c94c4d0ff0b80e209c142f66bb6',
     'app/providers/settings.php'=>'15e47fc5b5b9bbe39ae398e1789eb38627cffdb86e8f8de65e20b61bb2127871',
     'app/settings/revisions.php'=>'edcf7ba63bea26eeb964e0b44379d78ae93dd00535754d2375e07bfd5fcdc1bb',

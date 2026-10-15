@@ -80,6 +80,7 @@ try {
     pe_deny('Shape-incomplete documented op cannot be granted',fn()=>provider_operation_grant($profile,'packages.delete',['resellerId'=>'*'],$password));
     pe_deny('Unregistered op cannot be granted',fn()=>provider_operation_grant($profile,'vps.power',['resellerId'=>'*'],$password));
     pe_deny('Oversized scope cannot be granted',fn()=>provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'x.example','label'=>str_repeat('l',5000)],$password));
+    pe_deny('An unbuildable scope refuses at approval',fn()=>provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'x.example','bogus_field'=>1],$password));
     pe_ok('Ungrantable attempts leave no rows',0===(int)query('SELECT COUNT(*) FROM '.table('provider_operation_grants'))->fetchColumn());
 
     // ---- granted execution over the real adapter+gateway+ledger ----
