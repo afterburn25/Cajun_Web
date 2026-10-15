@@ -1,3 +1,7 @@
+# Current development — four parallel 20i workers
+
+The owner requested simultaneous agents. Root continues native mailbox creation; three agents now own catalog mappings, registrar inventory/client links and cloud website creation on separate branches from0ebc4623. [Current allocation, changes, evidence and next actions](docs/TWENTYI_PARALLEL_WORK.md). Native mailbox policy/storage/forms/history and shared-gateway dispatch are implemented; new Linux database/browser acceptance remains pending. Published1.24.0 is unchanged. Prior checkpoints below remain historical evidence.
+
 # Current development — native mailbox creation boundary
 
 Codex owns `codex/twentyi-mailbox-controls`, starting `c00874b1` above client-search PR139. Added exact documented mailbox creation request/response validation inside the existing provider adapter/gateway/ledger and fixed transport. Generic grants/default adapter cannot execute it. Raw mailbox passwords are resolved transiently and echoed response passwords are discarded; replay and unknown outcomes cannot resubmit creation. [Implementation, tests and required native continuation](docs/TWENTYI_MAILBOX_CONTROLS.md).

@@ -9,6 +9,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   if($action==='message')support_message($supportId,$jobId,posted('body',5000));else support_upload($supportId,$jobId);
   flash('Saved as Studio support.');redirect(studio_url(['job'=>$jobId]));
  }
+ elseif($action==='client_mailbox_create'){if(!$client)throw new RuntimeException('Sign in to continue.');provider_mailbox_client_action($client);}
  elseif($action==='client_domain_search'){if(!$client)throw new RuntimeException('Sign in to continue.');provider_domain_client_action($client);}
  elseif(str_starts_with($action,'recurring_')){if(!$client)throw new RuntimeException('Sign in to continue.');recurring_ui_action($action,(int)$client['id']);}
  elseif(str_starts_with($action,'service_agreements_')){if(!$client)throw new RuntimeException('Sign in to continue.');service_plans_portal_action($action,$client);}

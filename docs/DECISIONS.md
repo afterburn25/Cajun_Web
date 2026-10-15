@@ -1,5 +1,11 @@
 # Decision record
 
+## 2026-10-15 — parallel workers and transient mailbox passwords
+
+The owner explicitly authorized simultaneous agents. Root owns mailbox work and integration/releases; three actual workers own catalog mappings, registrar inventory/client links and cloud website creation in isolated branches from0ebc. [Allocation](TWENTYI_PARALLEL_WORK.md).
+
+Immediate mailbox creation retains no recoverable password, superseding the earlier proposed encrypted payload for this increment. Its request-bound master-key HMAC detects changed-password nonce reuse; the password is used only by the immediate authorized resolver. Interrupted requests cannot resume or resend, so a queued password vault is unnecessary for this workflow. Future queued operations need separate design. Owner request limits are distinct from unverified provider quotas/costs.
+
 ## 2026-10-15 — Reuse service agreements for 20i commercial intent
 
 Retain #90–#92 through a normal merge as the exact client/terms-consent dependency. Agreement acceptance and activation do not establish payment or provisioning eligibility. Add that eligibility using the existing catalog, invoice ledger, hosting and provider journals. Prepared missing agreement tables require restoration; do not recreate empty consent history. Codex owns this work under the 20i P0 override.

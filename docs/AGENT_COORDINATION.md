@@ -1,3 +1,7 @@
+# Current ownership — parallel 20i workers
+
+The owner explicitly requested parallel agents. Root and three additional agents are now actually running on separate branches/worktrees from0ebc4623. [Bounded assignments and shared integration rules](TWENTYI_PARALLEL_WORK.md). Root owns mailbox work and integration/releases; the others own catalog mappings, registrar inventory/client links and existing cloud-server website creation. Statements below that no other agents are active are historical.
+
 # Current ownership — mailbox controls
 
 Codex owns `codex/twentyi-mailbox-controls` above preserved client-search PR139, parentc00874b1. Current files: typed mailbox boundary, existing provider adapter/transport, matching tests/workflows/protection/build mirrors and docs. Native approval/persistence/admin/client forms are the next implementation step, not delegated or completed. Preserve current mainb66062e4 for later normal integration and the running parent full suites. [Mailbox continuation](TWENTYI_MAILBOX_CONTROLS.md).

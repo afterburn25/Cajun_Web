@@ -143,3 +143,5 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <ul><li>Hosting plan types and account balance</li><li>Hosting creation, plan changes and deletion</li><li>Domain search, registration, renewals and transfers</li><li>VPS ordering and power controls</li><li>Backup restoration and SSH access</li></ul></section>
 
 <?php require CWP_CODE_ROOT.'/admin/views/provider_domain_search.php'; ?>
+
+<?php require CWP_CODE_ROOT.'/admin/views/provider_mailboxes.php'; ?>

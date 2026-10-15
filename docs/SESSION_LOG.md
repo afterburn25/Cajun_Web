@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-10-15 — parallel 20i agents and native mailbox application
+
+Owner requested simultaneous workers. Starting0ebc4623, root adds native mailbox schema/policies/requests, safe forms/history and existing-gateway dispatch; three additional isolated branches implement catalog mappings, registrar links and cloud website creation. Changed PHP/Python syntax and95 mailbox/230 existing operation checks pass; new native/browser tests await Linux CI. Parent exact Windows build and focused artifacts are verified separately. No release/live effects. [Exact allocation, changes, evidence, limitations and next steps](TWENTYI_PARALLEL_WORK.md). Continue native matrix/browser verification and sequential agent integration.
+
 ## 1.25 candidate — cloud inventory and explicit client assignments
 Local candidate verification: PHP syntax for the original-release fixture, Python compilation of all changed drivers, regenerated canonical installer/bootstrap and documentation checks (170 Markdown files/1,347 links) pass. No current native/browser results are claimed yet; independent review and complete acceptance remain pending.
 

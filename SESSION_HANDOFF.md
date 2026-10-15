@@ -1,3 +1,7 @@
+# Current handoff — parallel agents and native mailbox application
+
+Parent0ebc4623, branch `codex/twentyi-mailbox-controls`, draftPR140. Root owns native mailbox policy/storage/forms/history and shared-gateway dispatch; the three additional agents are actively implementing isolated catalog, registrar and cloud increments. [Exact ownership, current evidence, limitations and next steps](docs/TWENTYI_PARALLEL_WORK.md). New native/browser cases are prepared, not passed; inspect current Linux CI before acceptance. Parent build59233 is completed and verified, not running. Preserve all existing checks/main/history and integrate each worker sequentially. No live operation or new release.
+
 # Current development — native mailbox creation boundary
 
 Codex owns `codex/twentyi-mailbox-controls`, starting `c00874b1` above client-search PR139. Added exact documented mailbox creation request/response validation inside the existing provider adapter/gateway/ledger and fixed transport. Generic grants/default adapter cannot execute it. Raw mailbox passwords are resolved transiently and echoed response passwords are discarded; replay and unknown outcomes cannot resubmit creation. [Implementation, tests and required native continuation](docs/TWENTYI_MAILBOX_CONTROLS.md).

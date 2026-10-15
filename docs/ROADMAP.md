@@ -1,3 +1,7 @@
+# Active 20i parallel work
+
+Root implements native mailbox creation; three additional agents implement provider plan mappings, registrar ownership/client links and existing cloud-server website creation. [Bounded assignments and acceptance status](TWENTYI_PARALLEL_WORK.md). Native mailbox source is implemented with current database/browser acceptance pending. Full mail/domain/VPS controls, automatic catalog discovery and support/SSH remain unfinished. No completion estimate advances solely from source presence.
+
 # Active 20i increment — client domain availability
 
 Private client domain search is implemented above PR138 with explicit owner enablement, shared provider limits and separate client history. Native1fbeb passes106 combined checks including50 client checks in all four combinations, with exact Windows packages verified. Actual browser acceptance, screenshots, review and release remain pending. Full20i scope is unchanged. [Client-search scope](TWENTYI_CLIENT_DOMAIN_SEARCH.md).

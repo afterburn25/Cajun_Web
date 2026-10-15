@@ -1,3 +1,7 @@
+# Unreleased — native 20i mailbox creation
+
+Add expiring owner permissions, real owner/client creation forms and safe request history over explicit client domains, using the existing provider gateway/ledger. Passwords stay transient; original request history prevents replay and ambiguous-address retries. New native/database/browser coverage is prepared but acceptance remains pending. Three parallel agents now work on separate catalog/domain/cloud increments; their changes are not integrated in this checkpoint. Published1.24.0 is unchanged.
+
 # Integration checkpoint — current main and domain replacement rollback
 
 Normally merge main16f07e49 into the20i client-search branch. Preserve licensing/domain controls and fix failed replacement leaving the original domain disabled. Local4 rollback cases and35 native licensing checks pass; combined acceptance/review pending. Earlier e375 full application artifacts/packages are now verified. Published1.24 remains unchanged.
