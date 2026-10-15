@@ -24,6 +24,12 @@ Implements `POST /api/license` — the endpoint that Website Core calls to valid
 {"authorized": false, "error": "License key not found"}
 ```
 
+**Features:**
+- Rate limiting: 10 requests per minute per IP
+- Audit logging: all validation attempts logged to `audit` table
+- Multiple domain support: allows test + public sites on same license key
+- Active check: deactivated licenses are rejected
+
 ### 2. Database schema
 
 **File:** `site/database/schema/license_schema.php`
@@ -56,10 +62,6 @@ Creates two tables:
 - Calls Website Core build tool: `php tools/build-packages.php bundle <industry> <license_key>`
 - Stores bundle for download in customer portal
 
-**API rate limiting:**
-- Add rate limiting to the license validation endpoint
-- Log validation attempts for security audit
-
 ## Integration points
 
 - Website Core calls `POST https://cajunwebpro.com/api/license` with `{license_key, domain}`
@@ -86,4 +88,3 @@ license_domains (
 2. Create admin UI for license management
 3. Create customer portal UI for domain registration
 4. Implement module bundling tool
-5. Add rate limiting and audit logging
