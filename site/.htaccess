@@ -8,6 +8,7 @@ DirectoryIndex index.php
   RewriteEngine On
   RewriteRule ^robots\.txt$ api/robots.php [L]
   RewriteRule ^sitemap\.xml$ api/sitemap.php [L]
+  RewriteRule ^api/validate$ api/validate.php [L]
 </IfModule>
 <IfModule mod_headers.c>
   Header always set X-Content-Type-Options "nosniff"
