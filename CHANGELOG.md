@@ -1,5 +1,17 @@
 # Changelog
 
+## Necessary 20i agreement dependency and recovery correction — 2026-10-15
+
+Codex retains complete 20i P0 ownership. This isolated `codex/twentyi-order-eligibility` branch starts from the accepted fresh-owner candidate `5fa5998dab9c727b9b2f29c1ff3e162187364280` and normally merges the preserved #90–#92 service-plan descendant `76a1537c7dfde1148339bba1d3595175afb55243`. The normal merge retains original Devin model history and existing application adapters. Current provider routes, operation/history protections and every retained recovery baseline are preserved in shared routing/build/test conflicts. Current main `8b44a7ad5e568481d8b016713e7d3958d19e41f3` has the same source as 5fa and is undergoing separate release acceptance; this branch cannot alter its evidence.
+
+The necessary commercial dependency provides immutable exact owner terms, current-client offers/consent and lifecycle history through existing accounts and native owner/client forms. It does not itself authorize payment, establish a provider product mapping, or qualify an order for provisioning. Those interfaces are the next implementation work. No unrelated finance, inbox or cosmetic development resumes.
+
+Source inspection found a recovery defect in the inherited preparation routine: it could recreate missing established plan/consent tables. Readiness now checks all four established tables; preparation refuses reconstruction and requires the original database. The owner page explains restoration without presenting setup, and client routes fail closed. Twelve genuine native cases and sixteen extracted HTTP cases preserve populated terms/consent/audit through individual table loss/restoration. Existing empty interrupted setup remains retryable. The native workflow now covers PHP 8.2/8.4 with MariaDB 10.11 and MySQL 8.4; synthetic audit-failure triggers are configured only in the disposable MySQL test service.
+
+Local syntax, pure document/form/model checks, regenerated deployment mirrors and documentation checks are recorded with this checkpoint. New combined native/browser evidence and independent review are still required. Prior #92 evidence proves only its old source. Complete 20i order-to-service eligibility, payment/manual consent, provider mapping and durable fulfillment remain unfinished. No release, live operation or deployment is claimed.
+
+Next: inspect the combined native matrix and packaged checkpoint, repair failures and obtain independent review. Then connect exact approved plan/provider mapping and verified existing-invoice or explicit manual fulfillment to durable hosting intent, without inferring paid status or creating a parallel customer/payment system. Finish the independent 1.24 release and cloud #127 full candidate while this dependency proceeds.
+
 ## Fresh owner inventory correction before 1.24 publication — 2026-10-15
 
 Codex retains complete 20i P0 ownership. Starting from normally merged main `5dd2a3e1a7ddb3b63bf9bf98c4da3ac1e13edafc`, this branch fixes a fresh-owner provider page warning discovered by cloud #127 checkpoint [38701151657](https://github.com/afterburn25/Cajun_Web/actions/runs/38701151657). The exact diagnostic was an array-offset-on-null warning in `admin/views/providers.php:71`: fresh installation prepares inventory storage but has no saved provider profile. The shared package view read the missing profile's enabled field. This defect also exists on current main, so 1.24 publication is withheld even though the earlier candidate passed.
@@ -129,6 +141,13 @@ Preserve mail main1.22 while combining guarded client administration and reviewe
 - Admin provider-settings section (prepare/refresh/link/unlink/history) and portal `?services` view showing only explicitly linked services. `staff_action_permission` maps `provider_inventory_*` to `staff.manage`.
 - `tests/provider_inventory_native.php` + `provider-inventory.yml`: 56 native MariaDB assertions on PHP 8.2/8.4 — authorization refusals, revision checks, cooldown, resolver/transport classification, complete/partial/unavailable persistence, link restrictions, duplicate rejection, client isolation, unlink events. Synthetic fixtures only; no live call, real credential or mutation.
 
+## Unreleased — P-04 service-plan foundation (Devin, isolated component)
+
+- Added canonical `foundation/service-plans/` classes (`ServicePlan` with typed cadence/price/limits, concrete inclusions and banned "unbounded service" phrasing, immutable once active; `PlanSubscription` with pinned agreed price, consent-gated recurring activation bound to `termsHash`, and actor-attributed lifecycle) plus `docs/SERVICE_PLANS_FOUNDATION.md`.
+- Added `tests/service-plans/run.php` (46 synthetic checks; fixture plans only) and the `service-plans.yml` GitHub workflow (PHP 8.2/8.4, no network).
+- Corrected the component per [PR #53 review](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6161469018): `recordConsent` now requires the consenting actor to be the subscribing client and the presented `termsHash` to equal the subscription's pinned snapshot (no self-generated hash, no arbitrary-actor consent); all customer-facing terms are strictly typed bounded valid-UTF-8 plain strings (non-strings, Stringable objects, whitespace-only, oversized and malformed limit names refused — a `termsHash()` can never silently change or throw), and the currency check anchors absolutely (`"USD\n"` no longer passes); every event requires a non-empty actor and an explicit UTC instant (`YYYY-MM-DDTHH:MM:SSZ`, relative/date-only forms refused) with monotonic history — out-of-order events leave state and history unchanged. Suite 46 → **68** checks.
+- Corrected again per [PR #53 re-review](https://github.com/afterburn25/Cajun_Web/pull/53#issuecomment-6162609466): retained `limits` are copied into a fresh reference-free array so caller-held PHP references can never mutate a stored cap or drift `termsHash()` after activation/subscription start; `LIMIT_NAME` and `INSTANT` now end-anchor with `\z` — a trailing-newline meter name (`"updates\n"`) or instant (`"2026-10-14T12:00:00Z\n"`) is refused without mutating state or history. Suite 68 → **76** checks.
+- No `site/` changes, billing capture or persistence. Not yet integrated or released.
 ## 1.22.0 — verified explicit saved-email sending
 
 - Explicit saved-message review, unchecked confirmation and Send; private author history, separate To/Cc/Bcc, current mailbox/Send grants and exact revisions.
@@ -243,7 +262,6 @@ Add bounded immutable canonical JSON command reconstruction outside deployment. 
 - Additive owner setup and fresh installation; actual1.20.0 update/recovery/reapplication retains existing records, prior provider history, added drafts and both original private keys.23 starting versions supported.
 - Published/download-verified `7805e56aa9e53cb081600589e92991255475474c` after 6912 named exact-main application checks and PHP8.2/8.4 matrices. All16 assets, ZIP members, checksums/tag and Windows/Linux bytes verified. Actual desktop/mobile views inspected; homepage pixels equal1.20.0.
 
-
 ## 1.20.0 — verified owner 20i connection
 
 - Protected owner profile with private AES-GCM credentials, password/CSRF/revision safeguards and retained settings history. Fresh setup creates empty ready storage; upgraded owners explicitly prepare it.
@@ -322,6 +340,8 @@ Claim an isolated owner20i settings/read-only check contract after the1.19 email
 - Preserve all 36 existing dependency pins and add four maintained formatting dependencies. Correct PHP 8.2 full-document handling by stripping html/body wrappers while preserving sanitized children; all 1,227 components pass on PHP 8.2/8.4 at 740b4e2 with fresh byte reproduction.
 - Add actual 1.17.0 update/recovery and original key/history preservation fixtures, alongside native/concurrency, packaged TLS/HTTP/Chromium and Apache checks. Application acceptance, independent review and release remain pending; latest published release remains 1.17.0.
 
+## 1.19.0 candidate — recent email notices (unreleased)
+
 ## 1.19.0 — verified recent email notices
 
 - Explicit successful inbox reads populate a newest-20 observation window with exact mailbox generation/UID identity; strict result/audit failures roll back notice changes. Failed reads retain the prior window.
@@ -338,7 +358,6 @@ Claim an isolated owner20i settings/read-only check contract after the1.19 email
 - Added bounded current-window metadata, separate per-person opened/dismissed markers, exact current mailbox permission filtering, collision refusal and independent full-tuple resolution.
 - Added explicit owner migration with column/key/relationship compatibility checks and strict audit; observation helpers require the successful terminal-result transaction. No schema/reader/HTTP integration or bell UI is wired yet.
 - Local PHP syntax passes. Native database fixtures and PHP 8.2/8.4 workflow are added; database and full application acceptance remain pending. Published/download-verified 1.18.0 remains immutable; its publication documentation is merged into this preparation branch.
-
 
 ## 1.18.0 — verified individual email reading
 
@@ -650,7 +669,6 @@ No application source/asset import, feature implementation, host repair, databas
 - Candidate 91ef30d: 50 native and 143 HTTP/browser checks passed; final browser-admin, sitemap and favicon-reference assertions added before merge.
 
 Final matrix test correction (parent `7a0c0dd`): run 38356481572 rejected valid versioned favicon URLs because it compared the query suffix as part of the path. Parse the URL path and fetch the actual referenced icon for byte equality. Application source is unchanged; rerun the full suite.
-
 
 ## Historical component contract — review-request adapter contract (L-02 dependency)
 

@@ -1,5 +1,17 @@
 # Session log
 
+## Necessary 20i agreement dependency and recovery correction — 2026-10-15
+
+Codex retains complete 20i P0 ownership. This isolated `codex/twentyi-order-eligibility` branch starts from the accepted fresh-owner candidate `5fa5998dab9c727b9b2f29c1ff3e162187364280` and normally merges the preserved #90–#92 service-plan descendant `76a1537c7dfde1148339bba1d3595175afb55243`. The normal merge retains original Devin model history and existing application adapters. Current provider routes, operation/history protections and every retained recovery baseline are preserved in shared routing/build/test conflicts. Current main `8b44a7ad5e568481d8b016713e7d3958d19e41f3` has the same source as 5fa and is undergoing separate release acceptance; this branch cannot alter its evidence.
+
+The necessary commercial dependency provides immutable exact owner terms, current-client offers/consent and lifecycle history through existing accounts and native owner/client forms. It does not itself authorize payment, establish a provider product mapping, or qualify an order for provisioning. Those interfaces are the next implementation work. No unrelated finance, inbox or cosmetic development resumes.
+
+Source inspection found a recovery defect in the inherited preparation routine: it could recreate missing established plan/consent tables. Readiness now checks all four established tables; preparation refuses reconstruction and requires the original database. The owner page explains restoration without presenting setup, and client routes fail closed. Twelve genuine native cases and sixteen extracted HTTP cases preserve populated terms/consent/audit through individual table loss/restoration. Existing empty interrupted setup remains retryable. The native workflow now covers PHP 8.2/8.4 with MariaDB 10.11 and MySQL 8.4; synthetic audit-failure triggers are configured only in the disposable MySQL test service.
+
+Local syntax, pure document/form/model checks, regenerated deployment mirrors and documentation checks are recorded with this checkpoint. New combined native/browser evidence and independent review are still required. Prior #92 evidence proves only its old source. Complete 20i order-to-service eligibility, payment/manual consent, provider mapping and durable fulfillment remain unfinished. No release, live operation or deployment is claimed.
+
+Next: inspect the combined native matrix and packaged checkpoint, repair failures and obtain independent review. Then connect exact approved plan/provider mapping and verified existing-invoice or explicit manual fulfillment to durable hosting intent, without inferring paid status or creating a parallel customer/payment system. Finish the independent 1.24 release and cloud #127 full candidate while this dependency proceeds.
+
 ## Fresh owner inventory correction before 1.24 publication — 2026-10-15
 
 Codex retains complete 20i P0 ownership. Starting from normally merged main `5dd2a3e1a7ddb3b63bf9bf98c4da3ac1e13edafc`, this branch fixes a fresh-owner provider page warning discovered by cloud #127 checkpoint [38701151657](https://github.com/afterburn25/Cajun_Web/actions/runs/38701151657). The exact diagnostic was an array-offset-on-null warning in `admin/views/providers.php:71`: fresh installation prepares inventory storage but has no saved provider profile. The shared package view read the missing profile's enabled field. This defect also exists on current main, so 1.24 publication is withheld even though the earlier candidate passed.
@@ -575,6 +587,21 @@ PR #50 merged at cefcc41bcd5297715f2a49d6526900ebe8ad4eb4; exact-main acceptance
 
 Next-increment preparation while exact-main acceptance ran: an isolated local estimator adapter draft matched the current shipping calculator across 1,512 priced/missing/malformed/quantity cases on PHP 8.4, without database access or shipping changes. This is prototype parity evidence only; component guards, actual application integration and native/browser/upgrade acceptance remain required. Devin correction priority reiterated in issue #2 comment 6150049591; no acknowledgment or completed fixes inferred.
 
+### 2026-10-13 — Devin P-04 service-plan foundation
+
+**Request:** "Continue Without Stopping" — next feasible roadmap item (P-04 plan/subscription contract layer, no external gate).
+
+**Starting commit:** `main` `02fc784` (published 1.11.0 baseline). New branch `devin/service-plans`.
+
+**Changed:** added `foundation/service-plans/` (ServicePlan, PlanSubscription), `tests/service-plans/run.php`, `docs/SERVICE_PLANS_FOUNDATION.md`, `.github/workflows/service-plans.yml`, and additive continuity entries. No `site/` or shared-path changes.
+
+**Tests:** `php tests/service-plans/run.php` — 46 synthetic checks pass on PHP 8.4.25; all files lint clean. Covers: banned "unbounded service" phrasing, typed cadence/limits/currency, draft→active→retired plan lifecycle, pinned subscription pricing, consent-gated recurring activation bound to termsHash, one-time activation without consent, pause/resume/cancel/abandon guards, actor-attributed history.
+
+**Failures:** none (one self-caught ordering fix — currency normalized before validation; double-consent guard added).
+
+**Blockers:** none for the contract layer; plan UI, billing capture and request workflow remain Codex integration work.
+
+**Next:** PR `devin/service-plans`; queue now 15 open Devin PRs awaiting Codex sequencing.
 ### 2026-10-13 — Devin L-02 review corrections (PR #31)
 
 **Request:** Codex review findings on #31 (issuecomment-6149702908), prioritized per `DEVIN_HANDOFF_1.11.1.md` before new isolated components.
