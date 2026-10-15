@@ -7,10 +7,15 @@ on:
     branches: [main]
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   workflow_dispatch:
+    inputs:
+      checkpoint_only:
+        description: 'Build, native database and browser checkpoint only; not release acceptance'
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
-  group: application-${{ github.ref }}
+  group: application-${{ github.ref }}-${{ inputs.checkpoint_only && 'checkpoint' || 'full' }}
   cancel-in-progress: true
 jobs:
   native-and-browser:
@@ -112,10 +117,10 @@ jobs:
           retention-days: 3
           if-no-files-found: warn
       - name: Unprivileged structure update interruption and recovery
-        if: success() || failure()
+        if: (success() || failure()) && !inputs.checkpoint_only
         run: .ci-venv/bin/python tests/structure_acceptance.py
       - name: Apache protection with and without rewriting
-        if: success() || failure()
+        if: (success() || failure()) && !inputs.checkpoint_only
         run: .ci-venv/bin/python tests/apache_acceptance.py
       - name: Verify tests did not mutate shipping source
         run: git diff --exit-code -- site/
@@ -123,7 +128,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: application-acceptance-${{ github.sha }}
+          name: application-${{ inputs.checkpoint_only && 'checkpoint' || 'acceptance' }}-${{ github.sha }}
           path: |
             qa/
             dist/
