@@ -31,7 +31,8 @@ require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory-reader/Invent
 final class ProviderInventoryAccessChanged extends RuntimeException {}
 
 function provider_inventory_ready(): bool {
-    return (one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'')==='2';
+    $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'');
+    return in_array($version,['2','3'],true);
 }
 
 /** Deterministic credential-context fingerprint — installation-bound, never the key itself. */
