@@ -36,7 +36,7 @@ The combined branch supplies hosting/cloud ownership, bounded owner domain searc
 
 Real writes stay disabled until their operation-specific account, ownership, consent and acceptance gates are met. No provider call, DNS change, charge, customer mail, SSH or deployment occurred. The complete owner API reference was requested once; continue independent work while it remains unavailable. Local filesystem writes and shell artifact downloads are restricted. GitHub review-request comments and PR metadata edits were rejected by the approval policy; source commits/branch/PR creation are available.
 
-See [integration decisions](docs/TWENTYI_FULFILLMENT_INTEGRATION.md) and [approved portal design](docs/APPROVED_CLIENT_PORTAL_DESIGN.md). Other roadmap development remains paused.
+See [integration decisions](../TWENTYI_FULFILLMENT_INTEGRATION.md) and [approved portal design](../APPROVED_CLIENT_PORTAL_DESIGN.md). Other roadmap development remains paused.
 
 
 ## Next concrete actions
@@ -49,11 +49,11 @@ See [integration decisions](docs/TWENTYI_FULFILLMENT_INTEGRATION.md) and [approv
 
 ## Owner-approved client portal design — 2026-10-15
 
-The owner approved the immediately preceding navy/blue/metallic-gold client-portal concept: **“make this the approved design.”** Follow [Approved client portal design](docs/APPROVED_CLIENT_PORTAL_DESIGN.md) for the exact reference identity, locked layout, styling, responsive requirements and data/capability boundaries. Approval record committed at `fd2001e90a54e9936e0c3aebf2714e05a2916a82` from inspected main `c42dd6d70fe57276d75835419db9d6e8e51aaa7f`.
+The owner approved the immediately preceding navy/blue/metallic-gold client-portal concept: **“make this the approved design.”** Follow [Approved client portal design](../APPROVED_CLIENT_PORTAL_DESIGN.md) for the exact reference identity, locked layout, styling, responsive requirements and data/capability boundaries. Approval record committed at `fd2001e90a54e9936e0c3aebf2714e05a2916a82` from inspected main `c42dd6d70fe57276d75835419db9d6e8e51aaa7f`.
 
 Preserve the gold-accented header, left navigation, bayou-sunset welcome banner, four overview tiles, central services/invoices/announcements and right account/actions/support cards. Use the existing approved production logo/favicon and real client-scoped data. Do not replace this with another generic dashboard. Sample identities, amounts, claims and statuses in the concept are not production data or new commercial promises.
 
 Codex applies this baseline to portal implementation within the existing **20i P0** priority; unrelated development stays paused. This approval does not change runtime, release version, API authorization or deployment status. Verification was attachment metadata/hash inspection and a byte-identical local copy, not application testing. **The original PNG remains a conversation attachment and has not been copied into GitHub**; archive the hash-verified original at the intended path documented in the approval before visual acceptance, rather than generating a replacement. Next action: continue the 20i implementation using this approved design and report actual UI/test/release progress separately.
 
 
-Parent sources and conflict resolutions are recorded in [TWENTYI_FULFILLMENT_INTEGRATION](docs/TWENTYI_FULFILLMENT_INTEGRATION.md). Prior billing and domain session histories remain in the corresponding immutable merge parents; this handoff supersedes their current-status sections without erasing Git history.
+Parent sources and conflict resolutions are recorded in [TWENTYI_FULFILLMENT_INTEGRATION](../TWENTYI_FULFILLMENT_INTEGRATION.md). Prior billing and domain session histories remain in the corresponding immutable merge parents; this handoff supersedes their current-status sections without erasing Git history.

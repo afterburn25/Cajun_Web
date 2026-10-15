@@ -2,6 +2,8 @@
 
 ## Unreleased — initial shared-hosting order intake
 
+- Recheck the actual current billing period before initial hosting eligibility, including a paused service with a future scheduled resume.
+
 - Run unchanged complete acceptance for PRs into the isolated 20i integration branch as well as main.
 
 - Add owner-selected agreement/invoice offers and client domain confirmation on existing agreement screens.

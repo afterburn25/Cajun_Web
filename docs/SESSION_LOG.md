@@ -1767,3 +1767,10 @@ Parent226f7cb, commit `Preserve order recovery controls and test competing initi
 ### Enable full acceptance for PR138's integration target
 
 Parent3f895130, commit `Run full application acceptance for the 20i integration target`. PR138 targets `codex/twentyi-fulfillment`; existing full workflow only allowed main-target PRs. Add the exact integration branch to that trigger without removing tests or changing execution/permissions. Source3f PHP8.2/MariaDB named reports passed75 order/232 combined recurring-order/108 ledger checks. Full candidate test pending. Removed only the already-merged PR18 chat attachment after the app's100-attachment limit, then attached138; no GitHub PR/branch was deleted. Other source candidates and evidence preserved.
+
+
+### Current-period order policy
+
+Parentc05c51d0, commit `Check effective billing periods before hosting eligibility`. Source inspection found that the schedule phase may describe a future resume; the order adapter previously checked only phase and original period zero. Reuse periodAt plus current-period assessment, retain the original eligibility rule, and add synthetic canonical pause/future-resume boundary cases. No baseline runtime reproduction claimed; post-fix native/full evidence pending. Existing in-flight full acceptance is preserved by source SHA, no jobs canceled. No provider execution or live financial changes.
+
+Repository continuity run38771842240 exposed six links whose targets were still relative to the former root location after archiving7038 status/handoff. Their targets now resolve from docs/archive; the original archived content and document check are retained.

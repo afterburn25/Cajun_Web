@@ -40,6 +40,12 @@ function service_orders_agreement(string $id,int $client,int $revision,string $h
     if($m->state()!=='active'||$m->consent()===null||$prefix->fingerprint()!==$hash||($termsHash!==null&&$m->plan->termsHash()!==$termsHash))throw new RuntimeException('Hosting order does not match its original accepted service terms.');
     return ['current'=>$current,'prefix'=>$prefix];
 }
+/** A future resume must not turn today's paused service into current purchase authority. */
+function service_orders_billing_eligible(\CajunWebPro\Foundation\RecurringBilling\RecurringBillingSchedule $billing,int $at):bool {
+    $terms=\CajunWebPro\Foundation\RecurringBilling\RecurringBillingTerms::fromArray($billing->data()['terms']);$current=$terms->periodAt($at);
+    return $billing->phase()==='running'&&$current!==null
+        &&$billing->assessment(0,$at)['eligible']&&$billing->assessment($current['index'],$at)['eligible'];
+}
 /** Inspect a specific existing invoice; matching amounts alone never create an order. */
 function service_orders_invoice(ServiceSubscriptionDocument $source,int $invoice,bool $active=true):array {
     if(!db()->inTransaction())throw new LogicException('Invoice binding needs its owning transaction.');
@@ -57,7 +63,7 @@ function service_orders_invoice(ServiceSubscriptionDocument $source,int $invoice
         $row=recurring_billing_row($map['schedule_id']);$family=recurring_billing_family($d['id']);
         if($row['subscription_id']!==$d['id']||(int)$row['client_id']!==$d['client_id']||($active&&($family['row']['id']??null)!==$row['id']))throw new RuntimeException('This invoice belongs to a different or replaced billing agreement.');
         $billing=recurring_billing_validate($row,$family['source']);recurring_billing_invoice_validate($map,$billing);
-        if($active&&($billing->phase()!=='running'||!$billing->assessment(0,time())['eligible']))throw new RuntimeException('Activate the accepted billing schedule before offering initial hosting.');
+        if($active&&!service_orders_billing_eligible($billing,time()))throw new RuntimeException('Activate the accepted billing schedule before offering initial hosting.');
         $basis='initial-recurring-period';$schedule=$map['schedule_id'];$period=0;
     }
     return ['id'=>$invoice,'project_id'=>(int)$i['job_id'],'sha256'=>ledger_invoice_hash($i),'amount_cents'=>(int)$i['amount_cents'],'currency'=>$i['currency'],'basis'=>$basis,'schedule_id'=>$schedule,'period_index'=>$period];

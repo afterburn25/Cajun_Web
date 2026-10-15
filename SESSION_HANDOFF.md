@@ -9,3 +9,5 @@ Preserve full candidate runs 38765096283 and 38767510944. The latter's PR merge 
 Current release remains v1.24.0. No production writes, charges, mail, SSH or deployment. Original full API reference and original approved concept image custody remain as recorded below. Local worktrees remain untouched because this environment is read-only; source changes use the authorized GitHub connector. Existing-PR edits and review-request comments remain blocked by automatic approval review (approval policy never), not by the owner.
 
 Previous candidate details are preserved in [the 7038 checkpoint](docs/archive/2026-10-15-SESSION_HANDOFF-7038cb50.md).
+
+Order follow-up: `phase()` can represent a future decision. `service_orders_billing_eligible()` now checks original and actual-current periods through the existing calendar/schedule APIs. Inspect the native past-pause/future-resume regression and exact full acceptance before integration; do not treat a future scheduled state as current fulfillment policy.

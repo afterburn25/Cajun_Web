@@ -110,6 +110,20 @@ try{
     rb_deny('Later recurring period cannot buy another initial service',fn()=>so_offer($monthlySource,$laterInvoice['invoice_id'],9520));
     $monthly=so_offer($monthlySource,$initialInvoice['invoice_id'],9520);
     rb_ok('Recurring hosting pins original first period schedule invoice and source',$monthly->data()['invoice']['basis']==='initial-recurring-period'&&$monthly->data()['invoice']['period_index']===0&&$monthly->data()['invoice']['schedule_id']===rb_id(9500));
+    // Synthetic historic pause plus future resume, retained through the same canonical schedule format.
+    $billing=recurring_billing_validate(recurring_billing_row(rb_id(9500)));
+    $termsNow=\CajunWebPro\Foundation\RecurringBilling\RecurringBillingTerms::fromArray($billing->data()['terms']);
+    $nextPeriod=$termsNow->periodAt(time())['index']+1;
+    foreach([[9530,'pause',1581292800,1],[9531,'resume',time(),$nextPeriod]] as [$eventId,$command,$at,$period]){
+        $args=['period_index'=>$period,'reason'=>'Synthetic scheduled hosting boundary'];$next=$billing->append(rb_id($eventId),$command,'staff:1',$at,$args);
+        query('INSERT INTO '.table('recurring_billing_events').' (id,schedule_id,actor_staff_id,actor_client_id,revision,recorded_epoch,input_json,before_sha256,after_sha256) VALUES (?,?,1,NULL,?,?,?,?,?)',[rb_id($eventId),rb_id(9500),$next->revision(),$at,recurring_billing_json(['revision'=>$billing->revision(),'command'=>$command,'arguments'=>$args]),$billing->fingerprint(),$next->fingerprint()]);
+        query('UPDATE '.table('recurring_billing_schedules').' SET journal_json=?,journal_sha256=?,revision=? WHERE id=?',[$next->json(),$next->fingerprint(),$next->revision(),rb_id(9500)]);
+        query('UPDATE '.table('recurring_billing_sources').' SET latest_sha256=? WHERE id=?',[$next->fingerprint(),rb_id(9400)]);$billing=$next;
+    }
+    rb_ok('Scheduled future resume retains running last phase while current period stays paused',$billing->phase()==='running'&&!service_orders_billing_eligible($billing,time()));
+    rb_deny('Future resume cannot authorize initial hosting during current pause',fn()=>so_assess($monthly));
+    $resumeEpoch=(new DateTimeImmutable($termsNow->period($nextPeriod)['start'],new DateTimeZone('UTC')))->getTimestamp();
+    rb_ok('Explicit resumed period becomes eligible only at its actual boundary',service_orders_billing_eligible($billing,$resumeEpoch));
     $racing=so_source(9600);$racingInvoice=so_invoice();$workers=[];
     foreach([9610,9611] as $request){
         $p=proc_open([PHP_BINARY,__DIR__.'/recurring_billing_native.php','order-worker',$racing->data()['id'],(string)$racingInvoice,rb_id($request)],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);

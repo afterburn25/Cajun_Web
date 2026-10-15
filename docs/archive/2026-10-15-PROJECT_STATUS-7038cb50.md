@@ -36,4 +36,4 @@ The combined branch supplies hosting/cloud ownership, bounded owner domain searc
 
 Real writes stay disabled until their operation-specific account, ownership, consent and acceptance gates are met. No provider call, DNS change, charge, customer mail, SSH or deployment occurred. The complete owner API reference was requested once; continue independent work while it remains unavailable. Local filesystem writes and shell artifact downloads are restricted. GitHub review-request comments and PR metadata edits were rejected by the approval policy; source commits/branch/PR creation are available.
 
-See [integration decisions](docs/TWENTYI_FULFILLMENT_INTEGRATION.md) and [approved portal design](docs/APPROVED_CLIENT_PORTAL_DESIGN.md). Other roadmap development remains paused.
+See [integration decisions](../TWENTYI_FULFILLMENT_INTEGRATION.md) and [approved portal design](../APPROVED_CLIENT_PORTAL_DESIGN.md). Other roadmap development remains paused.
