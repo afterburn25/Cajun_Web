@@ -1,6 +1,6 @@
 # Approved roadmap and acceptance criteria
 
-HC-06/P-03/P-04 next: [recurring lifecycle and consent](RECURRING_BILLING_LIFECYCLE_CONTRACT.md) is contracted outside deployment. Native current authority, unique invoices, actual interfaces and payment acceptance remain required.
+HC-06/P-03/P-04: [recurring lifecycle and consent](RECURRING_BILLING_LIFECYCLE_CONTRACT.md) is implemented outside deployment with321named local checks per default/no-ini mode. Focused committed CI and independent review are next. Native authority/consent, unique invoices, actual interfaces and payment acceptance remain required.
 
 HC-06/P-03/P-04: [exact recurring invoice terms](RECURRING_BILLING_TERMS_CONTRACT.md) is implemented outside deployment with 372 local checks per default/no-ini mode. Focused committed CI and independent review are next; native authority/consent, lifecycle, unique invoices, actual interfaces and recurring-payment acceptance remain pending.
 
