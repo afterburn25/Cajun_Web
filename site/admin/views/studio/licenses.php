@@ -1,0 +1,98 @@
+<?php
+declare(strict_types=1);
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+
+$licenses = all('SELECT l.*, c.name as customer_name FROM '.table('website_licenses').' l LEFT JOIN '.table('studio_clients').' c ON l.customer_id=c.id ORDER BY l.created_at DESC LIMIT 100');
+$customers = array_column(all('SELECT id,name FROM '.table('studio_clients').' ORDER BY name'),'name','id');
+$products = ['restaurant'=>'Restaurant Website','salon'=>'Salon Website','generic'=>'Generic Business'];
+
+if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">License key created (displayed once): <code>'.esc($_SESSION['license_key_created']).'</code></div>';unset($_SESSION['license_key_created']);}
+?>
+<div class="workspace-grid">
+<section class="workspace-card">
+<h2>Create a license</h2>
+<form method="post">
+<?php admin_action('studio_license_create'); ?>
+<label for="customer_id">Customer</label>
+<select name="customer_id" id="customer_id" required>
+<option value="">Choose a customer…</option>
+<?php foreach($customers as $id=>$name): ?>
+<option value="<?= esc($id) ?>"><?= esc($name) ?></option>
+<?php endforeach; ?>
+</select>
+<label for="product_id">Product</label>
+<select name="product_id" id="product_id" required>
+<option value="">Choose a product…</option>
+<?php foreach($products as $key=>$name): ?>
+<option value="<?= esc($key) ?>"><?= esc($name) ?></option>
+<?php endforeach; ?>
+</select>
+<button class="btn gold">Generate license key</button>
+</form>
+</section>
+</div>
+
+<h2>Active licenses</h2>
+<div class="workspace-grid">
+<?php foreach($licenses as $lic): ?>
+<section class="workspace-card">
+<dl>
+<dt><strong>License key</strong></dt>
+<dd><code><?= esc(substr($lic['license_key'],0,8)) ?>…</code></dd>
+<dt><strong>Customer</strong></dt>
+<dd><?= esc($lic['customer_name'] ?? 'Unknown') ?></dd>
+<dt><strong>Product</strong></dt>
+<dd><?= esc($lic['product_id']) ?></dd>
+<dt><strong>Status</strong></dt>
+<dd><?= $lic['is_active'] ? '<span style="color:green">Active</span>' : '<span style="color:red">Inactive</span>' ?></dd>
+<dt><strong>Created</strong></dt>
+<dd><?= esc($lic['created_at']) ?></dd>
+</dl>
+
+<h3>Registered domains</h3>
+<?php $domains = license_domains((int)$lic['id']); ?>
+<?php if($domains): ?>
+<ul>
+<?php foreach($domains as $d): ?>
+<li>
+<?= esc($d['domain']) ?>
+<?php if((int)$d['is_active']): ?>
+<span style="color:green">Active</span>
+<form method="post" style="display:inline">
+<?php admin_action('studio_domain_deactivate'); ?>
+<input type="hidden" name="license_id" value="<?= esc($lic['id']) ?>">
+<input type="hidden" name="domain" value="<?= esc($d['domain']) ?>">
+<button class="btn outline" type="submit">Deactivate</button>
+</form>
+<?php else: ?>
+<span style="color:red">Deactivated</span>
+<?php endif; ?>
+</li>
+<?php endforeach; ?>
+</ul>
+<?php else: ?>
+<p class="muted">No domains registered</p>
+<?php endif; ?>
+
+<form method="post">
+<?php admin_action('studio_domain_add'); ?>
+<input type="hidden" name="license_id" value="<?= esc($lic['id']) ?>">
+<label for="domain_<?= esc($lic['id']) ?>">Add domain</label>
+<input type="text" name="domain" id="domain_<?= esc($lic['id']) ?>" placeholder="example.com" required>
+<button class="btn outline">Add domain</button>
+</form>
+
+<?php if($lic['is_active']): ?>
+<form method="post">
+<?php admin_action('studio_license_deactivate'); ?>
+<input type="hidden" name="id" value="<?= esc($lic['id']) ?>">
+<button class="btn outline" type="submit">Deactivate license</button>
+</form>
+<?php endif; ?>
+</section>
+<?php endforeach; ?>
+</div>
+<?php if(!$licenses): ?>
+<p class="muted">No licenses created yet.</p>
+<?php endif; ?>
