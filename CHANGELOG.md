@@ -6,6 +6,8 @@
 - Verify #123 frozen source with 11,901 full-application executions, all 28 workflows, four inspected new activity views and byte-identical Windows/Linux packages. Finish all 96 changed inherited visual comparisons; independent review remains pending.
 - Retain all 94 parent #121 inspections; verify the ticket-footer correction through #124 and classify the older planning truncation as incomplete historical capture evidence. Preserve the inherited narrow payment-table limitation.
 - Verify test-only #124/e29c1c1 packaged browser checkpoint: 9,781 named executions, all parent assertions retained and six fully inspected complete ticket views. Final application reports and archives remain pending.
+- Reproduce two additional #122 issues in isolated native/schema and PHP-rendering probes; assign fixes to Devin. New 5127488 has the same tree as tested b6aad59.
+- Verify #124 Windows COMPLETE/UPDATE/FULL archives against exact e29 source; final original-run Linux comparison remains pending.
 - Documentation only on this review branch; runtime, installer, tests, versions and published assets unchanged. Independent review remains required.
 
 ## Unreleased continuity —20i review and recurring packages
