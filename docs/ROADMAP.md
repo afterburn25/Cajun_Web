@@ -1,6 +1,6 @@
 # Current20i continuation — 2026-10-15
 
-Combined38bb has four downloaded native matrices and exact Windows packages verified; full38824052505 browser/recovery/Apache remains active. Three next implementation lanes are renewal request/admin review, catalog readiness/history and cloud returned-package observation/explicit client assignment. Complete hosting/domain/VPS lifecycle, discovery and support/SSH remain unfinished. [Current status](../PROJECT_STATUS.md) and [requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) govern scope; older checkpoints below preserve their historical states. No release or live action in this checkpoint.
+Combined38bb has four downloaded native matrices and exact Windows packages verified; full38824052505 browser hit a fixture-only token extraction error; its reviewed correction requires fresh descendant acceptance while prior recovery continues. Three next implementation lanes are renewal request/admin review, catalog readiness/history and cloud returned-package observation/explicit client assignment. Complete hosting/domain/VPS lifecycle, discovery and support/SSH remain unfinished. [Current status](../PROJECT_STATUS.md) and [requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) govern scope; older checkpoints below preserve their historical states. No release or live action in this checkpoint.
 
 # Active 20i parallel work
 

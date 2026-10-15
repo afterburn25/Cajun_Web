@@ -1,6 +1,6 @@
 # Current ownership — parallel20i continuation
 
-Owner-authorized root plus three agents continue independently. Combined acceptance source38bb is preserved with all four downloaded native matrices verified; full browser/recovery/Apache remains active. Root owns integration/releases. New slices from38bb are domain renewal requests/review, catalog readiness/history and exact returned cloud package observation/client assignment. [Current precise ownership and shared files](../SESSION_HANDOFF.md); [verified evidence](TWENTYI_PARALLEL_WORK.md). Original725/8f/33a2 branches remain intact. Domain nameserver9ea and catalog intakefcf/PR144 are separate documented contracts, not completed readers. The following dated entries are historical.
+Owner-authorized root plus three agents continue independently. Combined acceptance source38bb is preserved with all four downloaded native matrices verified; full38824052505 browser failed on the foreign-client mailbox fixture; root owns its reviewed correction while prior recovery continues. Root owns integration/releases. New slices from38bb are domain renewal requests/review, catalog readiness/history and exact returned cloud package observation/client assignment. [Current precise ownership and shared files](../SESSION_HANDOFF.md); [verified evidence](TWENTYI_PARALLEL_WORK.md). Original725/8f/33a2 branches remain intact. Domain nameserver9ea and catalog intakefcf/PR144 are separate documented contracts, not completed readers. The following dated entries are historical.
 
 # Parallel 20i increment - registered domains
 

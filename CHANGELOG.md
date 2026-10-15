@@ -1,3 +1,7 @@
+## Acceptance repair — foreign-client mailbox fixture
+
+Use the foreign client's actual workspace session token to test mailbox ownership refusal. Retain no-request/network assertions and verify the precise authorization error without password echo. Preserve the failed combined browser artifact and newer main test history; fresh descendant acceptance remains pending. No shipping/version/release change.
+
 ## Acceptance checkpoint — combined20i38bb
 
 Verified all four mailbox/registrar/catalog/cloud native matrices and exact Windows packages. Full combined browser/recovery/Apache acceptance is still running. Dispatch three further isolated implementation slices while preserving original branches. Documentation only; no runtime, version, release or live deployment change.
