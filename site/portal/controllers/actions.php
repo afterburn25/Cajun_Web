@@ -15,9 +15,11 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
  elseif($action==='logout'){unset($_SESSION['client_id'],$_SESSION['client_auth'],$_SESSION['client_last'],$_SESSION['client_login']);session_regenerate_id(true);redirect(studio_url());}
  else{if(!$client)throw new RuntimeException('Sign in to continue.');
  if($action==='license_domain_add'){$licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+  if(!consume_rate(ip_key('client-license'),20,3600))throw new RuntimeException('Please wait before making more license changes.');
   if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=?',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
   license_register_domain($licenseId,$domain);flash('Domain registered.');redirect(studio_url());}
  elseif($action==='license_domain_deactivate'){$licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+  if(!consume_rate(ip_key('client-license'),20,3600))throw new RuntimeException('Please wait before making more license changes.');
   if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=?',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
   license_deactivate_domain($licenseId,$domain);flash('Domain deactivated.');redirect(studio_url());}
  $job=studio_job($jobId,(int)$client['id']);
