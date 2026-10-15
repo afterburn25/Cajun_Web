@@ -1,23 +1,23 @@
 # Complete 20i requirements and evidence
 
 
-Current evidence checkpoint: [438a3122 packaged acceptance checkpoint](https://github.com/afterburn25/Cajun_Web/actions/runs/38692573913) verifies actual populated upgrades, ownership/reapproval/isolation and operation screens (1,371 HTTP/Chromium assertions; desktop/mobile screenshots inspected). It excludes the extended recovery/Apache gates. The strict operation matrix at 2d2892c9 passes 784 named executions on both supported PHP/database versions; shipping bytes equal 438a3122. Independent review of 438a3122 found no major issues. A screenshot-discovered client-message correction now awaits full corrected-candidate acceptance. Historical pending statements below describe their original checkpoints; [current status](../PROJECT_STATUS.md) is authoritative. No 1.24 release or full-platform completion is claimed.
+Codex owns the complete 20i P0 integration. [CajunWebPro 1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly downloaded/verified at immutable source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`. All16 assets, checksums, ZIP members and the tag agree with accepted source; previous1.23 assets are unchanged. This is a GitHub release, not live-site deployment. Full20i is unfinished; unrelated roadmap work remains paused. See [verified release report](TEST_REPORT_1.24.0.md). Older checkpoints below are historical; current capability rows are authoritative.
 
 Status values: not started, implementing, branch-tested, integrated, released, live-verified, awaiting a named external input. A row describes its named scope only. Development, release and live acceptance are independent. This is the complete priority, not a declaration that an initial component finishes it.
 
 | Capability | Required outcome | Status | Evidence / remaining work |
 |---|---|---|---|
 | Connection | Protected configuration, credential rotation, named diagnostics | released | v1.23 protected settings; additional account identity/entitlement work pending |
-| Inventory | Package list, durable refresh, current permissions and honest stale/partial failures | implementing | Inherited #100/#122; takeover native upgrade/render evidence; integrated acceptance pending |
-| Ownership | Explicit resource/client links, original account context, reapproval/unlink and isolation | implementing | Package/domain links inherited; moved-domain and data-isolation fixes in this checkpoint |
+| Inventory | Package list, durable refresh, current permissions and honest stale/partial failures | released | 1.24 package list, durable refresh and recovery; [acceptance38711850732](https://github.com/afterburn25/Cajun_Web/actions/runs/38711850732). Additional resource readers remain separate. |
+| Ownership | Explicit resource/client links, original account context, reapproval/unlink and isolation | released | 1.24 explicit package/domain links, original/current account binding, moved-domain reapproval, unlink and isolation; cloud ownership #127 remains branch-tested. |
 | Discovery | Account capabilities, package types, balance, limits/status/usage and refresh history | not started | Reuse existing descriptors; executable readers beyond packages.list still required |
-| Resources | Registrar/domain, VPS and managed-cloud inventories and explicit ownership | not started | Resource branch40ad600 retained; descriptors alone are not an integrated reader |
-| Pricing | Owner retail prices separate from provider cost, units, currencies and eligibility | implementing | Existing catalog is reusable; provider mappings and verified quotes pending |
+| Resources | Registrar/domain, VPS and managed-cloud inventories and explicit ownership | branch-tested | Cloud/VPS/managed inventory and explicit ownership #127/#128: native848 and c377 checkpoint7,585. Current release candidate and registrar inventory still pending. |
+| Pricing | Owner retail prices separate from provider cost, units, currencies and eligibility | implementing | Service plans/consent #130 with reviewed #132 correction; recurring screens #133 under review. Provider mappings, quotes and complete order eligibility pending. |
 | Order journey | Selected plan → authorized order → verified payment or permitted manual fulfillment | not started | Use existing clients/catalog/invoices/ledger; no production synthetic payments |
 | Provisioning | Persist commercial intent and request, provider IDs, queued/pending/active/failure/unknown | implementing | Existing hosting/gateway/ledger foundations; order-derived ownership and native workflow pending |
 | Lifecycle | Plan changes, suspension/resumption, cancellation, retention and deletion safeguards | implementing | Reuse reviewed #87–#89; native controls and policy wiring pending |
-| Execution | Single gateway/ledger, exact context, safe dispatch, semantic outcomes and no blind retries | implementing | Inherited #107/#109/#111/#115; pending IDs, request arrays and no-blind-retry corrections; label-only consent gate and missing-table recovery fixes under renewed acceptance |
-| Reconciliation | Append operation-specific evidence, retain ambiguity and original attempts | implementing | Inherited #115 and hosting #89; name-only creation and unknown-coverage absence stay inconclusive; exact acknowledged-ID observation covered; full service recovery still pending |
+| Execution | Single gateway/ledger, exact context, safe dispatch, semantic outcomes and no blind retries | released | 1.24 typed package-label consent and single ledger with semantic pending/unknown results; commercial, destructive and other typed native operations remain unfinished. |
+| Reconciliation | Append operation-specific evidence, retain ambiguity and original attempts | released | 1.24 append-only operation evidence and acknowledged-ID observation; uncertain name/absence evidence cannot authorize replay. Full service workflows remain pending. |
 | Jobs/recovery | Bounded cron, leases, backoff, visible errors, no replay after recovery | not started | Reuse jobs/locks and ledger; commercial automation and recovery acceptance pending |
 | Hosting DNS | Typed DNS, nameservers, subdomains and document roots | not started | Verify documented record shapes and actual add/remove nameserver deltas |
 | Hosting mail | Mailboxes, forwarders, autoresponders and quotas | not started | 20i service management only; unrelated admin inbox work paused |
@@ -34,11 +34,13 @@ Status values: not started, implementing, branch-tested, integrated, released, l
 | Support handoff | Scoped, expiring, audited provider support access | not started | Reuse local support identity; provider handoff and revoke/expiry pending |
 | Interactive SSH | Verified destination/host identity, restricted credentials, connect/revoke/disconnect | not started | Implement provider facility or configured secure gateway; external gateway acceptance separately required |
 | Automation consent | Persist policies and eligibility for routine renewals without per-run owner password | not started | Implement minimum billing/consent interface; no unapproved production charge |
-| Packaged product | Native branded admin/client flows, desktop/mobile, root/subfolder, rewrite modes | implementing | New HTTP upgrade/isolation cases added; current package/browser/Apache run pending |
-| Release | Independent review, normal merge, exact-main packages and downloaded assets | not started | First target inherited inventory/ownership/operations; v1.23 unchanged |
+| Packaged product | Native branded admin/client flows, desktop/mobile, root/subfolder, rewrite modes | released | 1.24 scoped inventory/ownership/label operations: actual desktop/mobile, root/subfolder, recovery and Apache modes. Other first-party workflows remain unfinished. |
+| Release | Independent review, normal merge, exact-main packages and downloaded assets | released | Immutable1.24 source7190b582:9,134 full assertions,30 gates, reviewed candidates, normal merge, identical builds and16 draft/public assets verified. Continue next increments. |
 | Live acceptance | Per-operation account entitlement, real reads/writes, merchant, gateway and target host | awaiting a named external input | Previously authorized GET/package only; specific operation acceptance/configuration required when implementation is ready |
 
 ## Defects tracked separately
+
+The first six inherited defects below are repaired and released in1.24, with final main9134 and package/download proof above. Their original checkpoint notes are retained. Current open recurring defect: PR133 review4281512902 (lost mapping plus changed invoice reference), under correction before integration. Whole-platform response contracts and workflows remain unfinished.
 
 | Finding | Repair | Current evidence / remaining gate |
 |---|---|---|

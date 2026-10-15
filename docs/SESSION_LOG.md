@@ -1,5 +1,9 @@
 # Session log
 
+## Publish and verify first 20i takeover release1.24.0 — 2026-10-15
+
+Starting from exact main7190b582, publish only accepted source after full9134/44reports,30 gates, independent reviews, inspected browser screens and identical Windows/Linux packages. Download and verify all16 draft/public assets and unchanged prior1.23 assets. This documentation checkpoint records actual publication; no runtime/build/test change or deployment. Archive prior summaries, update current release/requirements/ownership and preserve histories. Next: cloud1.25 from the real1.24 baseline; correct recurring lost-binding review4281512902 and continue full commercial/native20i workflows.
+
 ## Fresh owner inventory correction before 1.24 publication — 2026-10-15
 
 Codex retains complete 20i P0 ownership. Starting from normally merged main `5dd2a3e1a7ddb3b63bf9bf98c4da3ac1e13edafc`, this branch fixes a fresh-owner provider page warning discovered by cloud #127 checkpoint [38701151657](https://github.com/afterburn25/Cajun_Web/actions/runs/38701151657). The exact diagnostic was an array-offset-on-null warning in `admin/views/providers.php:71`: fresh installation prepares inventory storage but has no saved provider profile. The shared package view read the missing profile's enabled field. This defect also exists on current main, so 1.24 publication is withheld even though the earlier candidate passed.

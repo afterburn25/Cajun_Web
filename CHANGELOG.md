@@ -1,5 +1,9 @@
 # Changelog
 
+## Publish and verify first 20i takeover release1.24.0 — 2026-10-15
+
+Starting from exact main7190b582, publish only accepted source after full9134/44reports,30 gates, independent reviews, inspected browser screens and identical Windows/Linux packages. Download and verify all16 draft/public assets and unchanged prior1.23 assets. This documentation checkpoint records actual publication; no runtime/build/test change or deployment. Archive prior summaries, update current release/requirements/ownership and preserve histories. Next: cloud1.25 from the real1.24 baseline; correct recurring lost-binding review4281512902 and continue full commercial/native20i workflows.
+
 ## Correct 1.24 download and recovery instructions — 2026-10-15
 
 Starting from normally merged `8b44a7ad5e568481d8b016713e7d3958d19e41f3`, correct START-HERE's obsolete 1.23 folder and migration guide's obsolete 1.18 paths. Both now name the actual `cwp-update-1.24.0` staging directory, `structure-1.24.0` recovery journal and retained starting packages through 1.23.0. The shared `structure-1.11.0/mutex.php` remains unchanged. Current Codex 20i ownership supersedes the guide's old Devin allocation. No application, migration, build, fixture or workflow code changes.

@@ -1,10 +1,16 @@
-# Release register
+# Release records
 
-## Current candidate and ownership — 2026-10-15
+## Latest verified publication — 1.24.0
 
-Codex owns the complete20i P0 takeover; earlier Devin-only/non-20i allocation below is historical and superseded. PR126 is preparing1.24.0, not published. Verified1.23.0 remains the latest release. The new candidate includes inventory/ownership/operation recovery and adds the immutable1.23 baseline to every supported update path. Full candidate/main and downloaded release gates remain required; checkpoint_only workflow results are explicitly insufficient for publication.
+Codex owns the complete 20i P0 integration. [CajunWebPro 1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly downloaded/verified at immutable source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`. All16 assets, checksums, ZIP members and the tag agree with accepted source; previous1.23 assets are unchanged. This is a GitHub release, not live-site deployment. Full20i is unfinished; unrelated roadmap work remains paused.
 
-## Latest verified publication — 1.23.0
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38711850732) passes9,134 named assertion executions in44 terminal reports and all30 workflow gates. The29 focused gates contain158 named reports/17,034 executions, counted separately. Fresh/existing setup, populated inventory upgrades, client isolation, moved-domain reapproval, unknown-outcome/no-replay behavior, retained file recovery and both Apache modes pass. Actual desktop/mobile screens were inspected; homepage pixels match1.23 and PHP diagnostics are empty. All12 clean Windows/Linux distribution files match. Full report: [TEST_REPORT_1.24.0.md](TEST_REPORT_1.24.0.md).
+
+Use COMPLETE-UPLOAD for fresh installs, UPDATE for recognized versions through1.23.0, and FULL-PROJECT for development. Update staging is`cwp-update-1.24.0`. Back up files, database and original encryption keys together. Follow packaged instructions; established missing history requires database restoration. See [owner guide](TWENTYI_INVENTORY_OWNER_GUIDE.md).
+
+Earlier entries below preserve historical ownership/status statements; current Codex P0 ownership above supersedes them.
+
+## Historical publication — 1.23.0
 
 [Version 1.23.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0) is published and freshly downloaded/verified at immutable source/tag `4fdb56266c77f6e6bf7b58e966d24696e1eaefc8`, through [PR #85](https://github.com/afterburn25/Cajun_Web/pull/85). Client account edits reject stale forms and retain escaped unsaved details for review. Client changes/invitations recheck current authority, serialize writes and audit atomically; invitation activation is single-use and unexpired. Client administration is refused during support sessions. [Owner guide](CLIENT_ACCOUNT_SAFEGUARDS.md).
 

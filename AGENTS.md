@@ -1,6 +1,6 @@
 # Working agreement for CajunWebPro
 
-Codex owns the complete 20i integration as P0 under the owner's 2026-10-15 override. Unrelated development is paused. Earlier Devin-only allocation is superseded; all source branches and evidence remain preserved. Current integration: `codex/twentyi-complete`, from main `68e4d411acedd9f73cf048018ba570ace9b673be`. Published v1.23.0 (`4fdb56266c77f6e6bf7b58e966d24696e1eaefc8`) remains unchanged. No release or live deployment is claimed.
+Codex owns the complete 20i P0 integration. [CajunWebPro 1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly downloaded/verified at immutable source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`. All16 assets, checksums, ZIP members and the tag agree with accepted source; previous1.23 assets are unchanged. This is a GitHub release, not live-site deployment. Full20i is unfinished; unrelated roadmap work remains paused.
 
 Read [takeover](docs/TWENTYI_CODEX_TAKEOVER.md), [requirements and evidence](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md), current status and handoff first. The priority is implementation through verified incremental releases. Former allocation and stopping points in the [historical agreement](docs/archive/2026-10-15-AGENTS.md) are superseded.
 
