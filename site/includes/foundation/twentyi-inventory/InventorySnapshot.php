@@ -78,7 +78,7 @@ final readonly class InventorySnapshot
         }
         $detachedPackages = [];
         foreach ($packages as $package) {
-            if (!$package instanceof InventoryPackage && !$package instanceof InventoryResource && !$package instanceof InventoryCloudServer) {
+            if (!$package instanceof InventoryPackage && !$package instanceof InventoryResource && !$package instanceof InventoryCloudServer && !$package instanceof InventoryDomain) {
                 throw new InvalidArgumentException('Snapshots carry projected inventory records only.');
             }
             $detachedPackages[] = $package;

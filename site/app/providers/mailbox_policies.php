@@ -14,7 +14,7 @@ function provider_mailbox_resource(string $linkId):array {
     if(!$link||!one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$link['client_id']]))throw new RuntimeException('The approved client domain is unavailable.');
     $profile=provider_settings_load($link['profile_id']);
     if((int)$profile['enabled']!==1||$profile['credentials']===''||(int)$profile['revision']!==(int)$link['profile_revision'])throw new RuntimeException('The provider connection changed. Refresh and reapprove the domain link.');
-    $observation=one('SELECT f.id,f.profile_revision,f.started_epoch,r.state,r.key_fingerprint FROM '.table('provider_refreshes').' f LEFT JOIN '.table('provider_refresh_results').' r ON r.id=f.id WHERE f.profile_id=? AND COALESCE(f.operation,\'packages.list\')=\'packages.list\' ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$profile['id']]);
+    $observation=one('SELECT f.id,f.profile_revision,f.started_epoch,r.state,r.key_fingerprint FROM '.table('provider_refreshes').' f LEFT JOIN '.table('provider_refresh_results').' r ON r.id=f.id WHERE f.profile_id=? AND COALESCE(f.operation,\'packages.list\')=\'packages.list\' ORDER BY f.seq DESC LIMIT 1',[$profile['id']]);
     if(!$observation||$observation['state']!=='complete'||(int)$observation['started_epoch']<time()-900||(int)$observation['started_epoch']>time()+30
         ||!provider_inventory_link_context_matches($link,$profile,$observation))throw new RuntimeException('Refresh the complete hosting inventory before managing mailboxes.');
     $package=one('SELECT names,enabled FROM '.table('provider_observation_packages').' WHERE refresh_id=? AND package_id=?',[$observation['id'],$link['package_id']]);

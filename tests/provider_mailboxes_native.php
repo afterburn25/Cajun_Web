@@ -123,6 +123,18 @@ try {
     db()->beginTransaction();try{mb_deny('Caller transaction refuses creation',fn()=>mb_run($policy1,'transaction'));mb_ok('Caller transaction remains intact',db()->inTransaction());}finally{db()->rollBack();}
     $snapshot=one('SELECT * FROM '.table('provider_refreshes').' WHERE profile_id=? ORDER BY seq DESC LIMIT 1',[$profileId]);query('UPDATE '.table('provider_refreshes').' SET started_epoch=? WHERE id=?',[time()-901,$snapshot['id']]);
     mb_deny('Stale inventory refuses a new request',fn()=>mb_run($policy1,'stale'));query('UPDATE '.table('provider_refreshes').' SET started_epoch=? WHERE id=?',[$snapshot['started_epoch'],$snapshot['id']]);
+    $snapshot['started_epoch']=time();query('UPDATE '.table('provider_refreshes').' SET started_epoch=? WHERE id=?',[$snapshot['started_epoch'],$snapshot['id']]);
+    $laterIntent=mb_id();$earlierEpoch=$snapshot['started_epoch']-1;$before=[$dns,$sent,mb_count('provider_mailbox_requests'),mb_count('provider_operation_grants')];
+    query('INSERT INTO '.table('provider_refreshes').' (id,profile_id,profile_revision,actor_id,started_at,started_epoch,operation) VALUES (?,?,?,?,?,?,?)',[$laterIntent,$profileId,1,1,gmdate('Y-m-d H:i:s',$earlierEpoch),$earlierEpoch,'packages.list']);
+    try {
+        mb_deny('Newer unfinished intent with earlier timestamp fences prior success',fn()=>mb_run($policy1,'newer-unfinished'));
+        mb_ok('Unfinished latest intent refuses before request grant DNS and transport',[$dns,$sent,mb_count('provider_mailbox_requests'),mb_count('provider_operation_grants')]===$before);
+        query('INSERT INTO '.table('provider_refresh_results').' (id,state,reason,scope,coverage,package_count,skipped,skip_reasons,finished_at,elapsed_ms,key_fingerprint) SELECT ?,\'unavailable\',reason,scope,coverage,0,skipped,skip_reasons,finished_at,elapsed_ms,key_fingerprint FROM '.table('provider_refresh_results').' WHERE id=?',[$laterIntent,$snapshot['id']]);
+        mb_deny('Newer failed intent with earlier timestamp fences prior success',fn()=>mb_run($policy1,'newer-failed'));
+        mb_ok('Failed latest intent refuses before request grant DNS and transport',[$dns,$sent,mb_count('provider_mailbox_requests'),mb_count('provider_operation_grants')]===$before);
+    } finally {
+        query('DELETE FROM '.table('provider_refresh_results').' WHERE id=?',[$laterIntent]);query('DELETE FROM '.table('provider_refreshes').' WHERE id=?',[$laterIntent]);
+    }
     query('UPDATE '.table('provider_refresh_results').' SET state=? WHERE id=?',['partial',$snapshot['id']]);mb_deny('Partial latest inventory refuses creation',fn()=>mb_run($policy1,'partial'));query('UPDATE '.table('provider_refresh_results').' SET state=? WHERE id=?',['complete',$snapshot['id']]);
     query('UPDATE '.table('provider_observation_packages').' SET enabled=0 WHERE refresh_id=? AND package_id=?',[$snapshot['id'],101]);mb_deny('Disabled package refuses creation',fn()=>mb_run($policy1,'disabled'));query('UPDATE '.table('provider_observation_packages').' SET enabled=1 WHERE refresh_id=? AND package_id=?',[$snapshot['id'],101]);
     $version=one('SELECT auth_version FROM '.table('users').' WHERE id=1')['auth_version'];query('UPDATE '.table('users').' SET auth_version=? WHERE id=1',[mb_id()]);mb_deny('Changed approving owner revokes client permission',fn()=>mb_run($policy1,'old-owner'));query('UPDATE '.table('users').' SET auth_version=? WHERE id=1',[$version]);

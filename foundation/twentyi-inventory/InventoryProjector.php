@@ -88,6 +88,22 @@ final class InventoryProjector
             array_values($servers), $observedAt, $skipped, $reasons, '', $scope, InventorySnapshot::COVERAGE_UNKNOWN);
     }
 
+    /** 20i SDK registrar example documents only allocated id and name. */
+    public static function domainsList(TransportResponse $response, int $observedAt, string $scope = ''): InventorySnapshot
+    {
+        require_once __DIR__.'/InventoryDomain.php';
+        $decoded=self::listBody($response,$observedAt,$scope,self::MAX_RESOURCES);
+        if ($decoded instanceof InventorySnapshot) return $decoded;
+        $domains=[]; $names=[]; $skipped=0; $reasons=[];
+        foreach($decoded as $item) {
+            try { $domain=InventoryDomain::fromItem($item); }
+            catch (\InvalidArgumentException $e) { self::skip($skipped,$reasons,$e->getMessage()); continue; }
+            if(isset($domains[$domain->id])||isset($names[$domain->name])) { self::skip($skipped,$reasons,'Duplicate registrar identity in response.'); continue; }
+            $domains[$domain->id]=$domain; $names[$domain->name]=true;
+        }
+        return new InventorySnapshot($skipped?InventorySnapshot::PARTIAL:InventorySnapshot::COMPLETE,array_values($domains),$observedAt,$skipped,$reasons,'',$scope,InventorySnapshot::COVERAGE_UNKNOWN);
+    }
+
     /**
      * Identity-only projection for list endpoints whose response schema
      * is not documented (vps.list, managedvps.list, domains.list,

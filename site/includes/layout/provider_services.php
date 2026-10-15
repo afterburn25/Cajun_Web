@@ -2,6 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/providers/inventory.php';
+require_once CWP_CODE_ROOT.'/app/providers/registrar.php';
 
 /**
  * Client-facing view of explicitly owner-linked 20i services. Only mappings
@@ -11,6 +12,7 @@ require_once CWP_CODE_ROOT.'/app/providers/inventory.php';
  */
 function provider_services_portal_render(): never {
     $client=studio_client();if(!$client)fail_page('Sign in to view your services.',403);
+    header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');
     if(support_current())support_record('portal.view','services',(string)$client['id']);
     site_head('Your hosting services','portal');support_banner();
     echo '<section class="section"><div class="container"><span class="eyebrow">YOUR SERVICES</span><h1>Hosting services</h1><div class="button-row"><a class="btn outline" href="'.esc(studio_url()).'">All projects</a></div>';
@@ -60,5 +62,6 @@ function provider_services_portal_render(): never {
         }
         echo '</article>';
     }
+    require CWP_CODE_ROOT.'/portal/views/registered_domains.php';
     echo '</div></section>';site_foot(false);exit;
 }

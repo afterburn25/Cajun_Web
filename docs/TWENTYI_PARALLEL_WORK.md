@@ -1,3 +1,9 @@
+## Integration checkpoint — 2026-10-15 — integrate registered domains with mailbox controls
+
+Starting60bef4d, normally merge domain branch725573f0 with preserved history. Retain both provider controllers/views, browser suites, protected-path lists, fixed transport operations and the private client services view. Independent domain review found no blocking interaction; its adjacent recovery-history recommendation changes mailbox latest-intent selection from wall-clock ordering to sequence ordering. Four native cases exercise a higher sequence with an earlier recent timestamp and verify failed/unfinished refreshes refuse before request/grant/DNS/send. Those new native cases and the merged browser/recovery/Apache suites still require Linux acceptance.
+
+Changed PHP/Python syntax and139 inventory,28 reader,82 cloud,64 registrar,230 operation and95 mailbox synthetic checks pass in both default/no-INI modes. Domain native63 per combination and parent browser1810 are documented in the registrar guide. Catalog exact8f browser1794 and four native matrices are verified; cloud exactce8 has41 native cases per combination. Keep their source branches intact. Canonical installer refresh is required before commit. Intermediate normal merges skip automatic CI to avoid duplicating long work; the final combined source must run complete acceptance. No release, deployment or live provider action. Next: merge ready catalog/cloud increments sequentially, refresh and validate the exact combined source.
+
 # Parallel 20i work — 2026-10-15
 
 ## Current-main integration

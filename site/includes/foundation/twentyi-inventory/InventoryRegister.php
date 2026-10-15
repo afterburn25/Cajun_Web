@@ -53,8 +53,8 @@ final class InventoryRegister
             ),
             InventoryRead::DOMAINS_LIST => new InventoryCapability(
                 InventoryRead::DOMAINS_LIST, 'GET', '/domain',
-                InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, false,
-                'Owner-upload L1259-1265: heading says list but prose describes a summary record — shape unresolved; identity-only projection may legitimately return zero ids.'
+                InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, true,
+                '20i-authored SDK 1.0.6 registrar example: list of id/name objects; only those fields projected. Coverage, registration status and entitlements remain unknown.'
             ),
             InventoryRead::SERVICE_CHANGES => new InventoryCapability(
                 InventoryRead::SERVICE_CHANGES, 'GET', '/reseller/{resellerId}/serviceChangeData',
@@ -97,7 +97,7 @@ final class InventoryRegister
     /** Operations with implemented allowlist projections of documented metadata. */
     public static function projectable(string $operation): bool
     {
-        return in_array($operation, [InventoryRead::PACKAGES_LIST, InventoryRead::CLOUD_SERVERS_LIST], true);
+        return in_array($operation, [InventoryRead::PACKAGES_LIST, InventoryRead::CLOUD_SERVERS_LIST, InventoryRead::DOMAINS_LIST], true);
     }
 
     /** Operations whose list responses support the identity-only projection. */

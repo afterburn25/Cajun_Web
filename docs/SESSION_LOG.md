@@ -1,3 +1,9 @@
+## 2026-10-15 — integrate registered domains with mailbox controls
+
+Starting60bef4d, normally merge domain branch725573f0 with preserved history. Retain both provider controllers/views, browser suites, protected-path lists, fixed transport operations and the private client services view. Independent domain review found no blocking interaction; its adjacent recovery-history recommendation changes mailbox latest-intent selection from wall-clock ordering to sequence ordering. Four native cases exercise a higher sequence with an earlier recent timestamp and verify failed/unfinished refreshes refuse before request/grant/DNS/send. Those new native cases and the merged browser/recovery/Apache suites still require Linux acceptance.
+
+Changed PHP/Python syntax and139 inventory,28 reader,82 cloud,64 registrar,230 operation and95 mailbox synthetic checks pass in both default/no-INI modes. Domain native63 per combination and parent browser1810 are documented in the registrar guide. Catalog exact8f browser1794 and four native matrices are verified; cloud exactce8 has41 native cases per combination. Keep their source branches intact. Canonical installer refresh is required before commit. Intermediate normal merges skip automatic CI to avoid duplicating long work; the final combined source must run complete acceptance. No release, deployment or live provider action. Next: merge ready catalog/cloud increments sequentially, refresh and validate the exact combined source.
+
 # Session log
 
 ## 2026-10-15 — concise current state with retained history
@@ -1963,3 +1969,23 @@ Request: continue complete20i P0 after reporting scope at about30% complete. Sta
 ## 2026-10-15 — begin native mailbox creation on existing provider gateway
 
 Request: continue full20i P0. Startingc00874b1 on new `codex/twentyi-mailbox-controls`. Implemented official mailbox request/response validation, transient protected-secret resolver interface, fixed transport allowlist and existing-gateway execution/replay coverage. Inspected actual provider ledger schema and retained the returned local ID rather than an overlong full email address. Default adapter/generic grants remain unable to send.95 mailbox and230 existing operation checks pass under default/no-INI PHP8.4; fixed transport regressions/syntax pass. Installer refresh49660 completed successfully. Native authorization/storage/forms and full acceptance are next, not completed. Mainadvanced tob66062e4 licensing audit tests and is preserved for later normal merge. No production effect or release.
+
+## 2026-10-15 - parallel registrar inventory and native assignments
+
+User requested agents to accelerate20i. From0ebc4623, isolated branch `codex/twentyi-domain-controls` adds provider-authored id/name projection, existing-reader/fixed-transport GET admission, additive registrar storage, explicit owner/client links and views, and focused native workflow. Latest failed/partial/unfinished/stale reads hide metadata and cannot authorize links. Mainb66062e4 inspected; unrelated work preserved. Local64 new and139/28/82 existing synthetic checks pass per default/no-INI PHP8.4; changed PHP syntax passes. Native Linux and actual browser acceptance pending. No live calls or release. Root integrates/releases. Next inspect native CI, fix failures, add browser cases and obtain independent review. [Full evidence and contract](TWENTYI_REGISTRAR_INVENTORY.md).
+
+## 2026-10-15 - registrar native evidence and real browser coverage
+
+PR142 parent `b6388e5f0698db5885b35e8c11cbe409521b6dda` passes the first native combination PHP8.2/MySQL8.4 in [run38818599203](https://github.com/afterburn25/Cajun_Web/actions/runs/38818599203). Downloaded artifact12011278191 matches SHA256 `72ff8870df90158f8152a4a23f138f7dc4b12ab57bb47cf316a6293f7c2eb0e6`; ZIP CRC and actual reports verify60 native cases plus64 reader cases in each PHP mode. Other native jobs were still pending at this record. Full installer refresh48508 completed; the later view changes require regenerated inventory.
+
+This descendant adds real extracted-package HTTP/Chromium coverage for owner preparation/refresh/CSRF/password/role gates, an actual browser assignment, two clients, newer failed/partial/stale observations, recovery, desktop/mobile screenshots and protected internal paths. Adds explicit private cache/referrer headers to the services response and wraps long domain headings. Python/PHP syntax passes; browser cases have not run yet. The existing Apache list covers added files across root/subfolder and rewrite modes; this is prepared coverage, not a passing Apache claim. Shared synthetic provider fixture retains original endpoints and adds only /domain.
+
+Independent source review of root mailbox delta0ebc..81eb487 identified missing orphan grant/ledger reconciliation after a partial restore; root confirmed and owns that correction. No other confirmed mailbox issue in the inspected permission/replay/storage path; runtime and UI evidence remain independent. PR142 attachment was attempted and refused by the existing100-attachment limit. No metadata/comment bypass, merge, release or real provider operation. Next inspect all native reports, run browser checkpoint, correct failures and pass root the exact integration state.
+
+## 2026-10-15 — registrar preparation safeguard and verified native matrix
+
+Parent2fe7e2ff, PR142: all four downloaded native artifacts verify60 cases plus64 registrar reader cases per PHP mode. Adds early transaction refusal before registrar DDL and three rollback/no-table regression checks; syntax passes, new native execution pending. Browser38819247971 is preserved and running; root retains combined acceptance/integration/releases. [Details and artifact hashes](TWENTYI_REGISTRAR_INVENTORY.md). No provider operation or release.
+
+## 2026-10-15 — registrar native/browser evidence and capture handoff
+
+Parent8b4a101a, PR142: four actual artifacts verify63 native +64/64 reader cases each; source2fe7e2ff checkpoint verifies1,810 HTTP/Chromium checks (36 registrar),62 named reports, empty unexpected diagnostics and exact source/package bytes. Owner desktop and client screens inspected. Owner mobile element capture caught sidebar/sticky-header overlays; test-only navigation/settling/full-page correction awaits root combined screenshot inspection. Shipping source unchanged by this final checkpoint. Combined recovery/Apache remains pending; root owns integration/releases. [Exact evidence](TWENTYI_REGISTRAR_INVENTORY.md).

@@ -1,6 +1,10 @@
 # Current ownership — parallel 20i workers
 
-The owner explicitly requested parallel agents. Root and three additional agents are now actually running on separate branches/worktrees from0ebc4623. [Bounded assignments and shared integration rules](TWENTYI_PARALLEL_WORK.md). Root owns mailbox work and integration/releases; the others own catalog mappings, registrar inventory/client links and existing cloud-server website creation. Statements below that no other agents are active are historical.
+The owner explicitly requested parallel agents. Root and three additional agents work on separate branches/worktrees from0ebc4623. [Bounded assignments and shared integration rules](TWENTYI_PARALLEL_WORK.md). Root owns mailbox work and integration/releases; the others own catalog mappings, registrar inventory/client links and existing cloud-server website creation. Registrar725573f0 is being normally combined into root; catalog8f7028 and cloud33a2a2b0 are ready for sequential source integration with final combined acceptance still required. Domain agent reviewed shared routing/protection and is investigating the mailbox334 browser failure in38820312445. Cloud agent verifies its exact current browser evidence; catalog agent is available for integration review. All checkpoints below are historical, with their then-current acceptance state.
+
+# Parallel 20i increment - registered domains
+
+2026-10-15: user authorized simultaneous agents. The domain agent owns `codex/twentyi-domain-controls` from `0ebc46237fce565005b581fe5a96a2691b9840b5`; root owns integration/releases. Adds sanitized registrar identity reads through existing inventory, distinct explicit client assignments, latest-attempt freshness, owner/client PHP views and recovery/tests. Hosted-domain links never become registrar authority. Local PHP8.4 synthetic checks pass64 registrar plus139 inventory/28 reader/82 cloud cases per mode; native CI and browser acceptance are pending. Nameserver writes remain disabled pending verified response/authority contracts. No provider operation or release. [Scope, provenance and next steps](TWENTYI_REGISTRAR_INVENTORY.md).
 
 # Current ownership — mailbox controls
 
@@ -76,3 +80,11 @@ Codex owns `codex/twentyi-service-orders`, [PR138](https://github.com/afterburn2
 ## Current continuation — atomic order/service association
 
 Parent5728c2df, PR138: add one native order/service association with exact commercial and provider-request context, atomic audit/replay and missing-history guards; preserve existing hosting/provider engines. Parent actual browser artifact and four order screenshots are now inspected. New runtime validation is pending Linux CI after the local Windows key-permission refusal; no protection was relaxed. Mapping does not verify provider entitlement or authorize dispatch. [Exact scope, evidence, limitations and continuation](TWENTYI_ORDER_SERVICE_LINKS.md).
+
+## 2026-10-15 — registrar preparation safeguard and verified native matrix
+
+Parent2fe7e2ff, PR142: all four downloaded native artifacts verify60 cases plus64 registrar reader cases per PHP mode. Adds early transaction refusal before registrar DDL and three rollback/no-table regression checks; syntax passes, new native execution pending. Browser38819247971 is preserved and running; root retains combined acceptance/integration/releases. [Details and artifact hashes](TWENTYI_REGISTRAR_INVENTORY.md). No provider operation or release.
+
+## 2026-10-15 — registrar native/browser evidence and capture handoff
+
+Parent8b4a101a, PR142: four actual artifacts verify63 native +64/64 reader cases each; source2fe7e2ff checkpoint verifies1,810 HTTP/Chromium checks (36 registrar),62 named reports, empty unexpected diagnostics and exact source/package bytes. Owner desktop and client screens inspected. Owner mobile element capture caught sidebar/sticky-header overlays; test-only navigation/settling/full-page correction awaits root combined screenshot inspection. Shipping source unchanged by this final checkpoint. Combined recovery/Apache remains pending; root owns integration/releases. [Exact evidence](TWENTYI_REGISTRAR_INVENTORY.md).

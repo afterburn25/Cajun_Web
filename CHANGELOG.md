@@ -1,3 +1,7 @@
+## Unreleased — combined registrar and mailbox controls
+
+Registered-domain inventory and explicit client assignment are combined with mailbox creation controls. Preserve both workflows and protected paths. Latest mailbox authority follows the original refresh intent sequence even if recovered timestamps are out of order. Four new native regressions and combined acceptance remain pending; published1.24.0 is unchanged.
+
 # Unreleased — native 20i mailbox creation
 
 Preserve current main's licensing mutation audits and error-response guard during20i integration. Domain replacement keeps its transaction and records the acting identity on all three events; failed audit insertion restores original domains and audit history.40 isolated native checks pass; combined acceptance pending.
@@ -11,6 +15,16 @@ Preserve the selected mailbox domain after an invalid form submission and refuse
 Correct the native gateway fingerprint call and refuse partial database recovery that leaves original mailbox grants/results without their request. Native regression cases cover these surviving witnesses; corrected CI remains pending.
 
 Add expiring owner permissions, real owner/client creation forms and safe request history over explicit client domains, using the existing provider gateway/ledger. Passwords stay transient; original request history prevents replay and ambiguous-address retries. New native/database/browser coverage is prepared but acceptance remains pending. Three parallel agents now work on separate catalog/domain/cloud increments; their changes are not integrated in this checkpoint. Published1.24.0 is unchanged.
+
+## Unreleased - registered-domain browser coverage
+
+- Prepared actual packaged owner/client browser flows, freshness/recovery checks and screenshots. Services explicitly send private cache/referrer headers; long domain headings wrap. Current browser acceptance remains pending.
+
+## Unreleased - registered-domain inventory
+
+- Explicit owner refresh of bounded registered-domain identities and distinct client assignments; native owner/client views keep hosting links separate.
+- Current complete observations, exact identity/context and latest-attempt freshness govern assignment and disclosure; failures never fall back through older success.
+- Adds native schema, permissions, atomic audit, concurrent reapproval and recovery fixtures. Native/browser acceptance and nameserver execution remain pending. See [scope](docs/TWENTYI_REGISTRAR_INVENTORY.md).
 
 # Integration checkpoint — current main and domain replacement rollback
 
@@ -937,3 +951,11 @@ Current follow-up:8adf passed all four native combinations, including42 new asso
 
 - Add exact mailbox creation validation to the existing provider execution path, requiring a dedicated protected-secret resolver and refusing generic approval. Preserve safe password handling and at-most-once dispatch after unknown outcomes.
 - Native mailbox management screens and authorization/persistence are still being implemented; this checkpoint does not activate mailbox creation.
+
+## 2026-10-15 — registrar preparation safeguard and verified native matrix
+
+Parent2fe7e2ff, PR142: all four downloaded native artifacts verify60 cases plus64 registrar reader cases per PHP mode. Adds early transaction refusal before registrar DDL and three rollback/no-table regression checks; syntax passes, new native execution pending. Browser38819247971 is preserved and running; root retains combined acceptance/integration/releases. [Details and artifact hashes](docs/TWENTYI_REGISTRAR_INVENTORY.md). No provider operation or release.
+
+## 2026-10-15 — registrar native/browser evidence and capture handoff
+
+Parent8b4a101a, PR142: four actual artifacts verify63 native +64/64 reader cases each; source2fe7e2ff checkpoint verifies1,810 HTTP/Chromium checks (36 registrar),62 named reports, empty unexpected diagnostics and exact source/package bytes. Owner desktop and client screens inspected. Owner mobile element capture caught sidebar/sticky-header overlays; test-only navigation/settling/full-page correction awaits root combined screenshot inspection. Shipping source unchanged by this final checkpoint. Combined recovery/Apache remains pending; root owns integration/releases. [Exact evidence](docs/TWENTYI_REGISTRAR_INVENTORY.md).

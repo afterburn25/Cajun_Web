@@ -1,6 +1,10 @@
 # Active 20i parallel work
 
-Root implements native mailbox creation; three additional agents implement provider plan mappings, registrar ownership/client links and existing cloud-server website creation. [Bounded assignments and acceptance status](TWENTYI_PARALLEL_WORK.md). Native mailbox source is implemented with current database/browser acceptance pending. Full mail/domain/VPS controls, automatic catalog discovery and support/SSH remain unfinished. No completion estimate advances solely from source presence.
+Root integrates native mailbox creation, provider plan mappings, registrar ownership/client links and existing cloud-server website creation from three parallel agent branches. [Bounded assignments and acceptance status](TWENTYI_PARALLEL_WORK.md). Mailbox334 passes87 native cases in each supported combination; the new sequence-order recovery cases and combined runtime/browser/recovery/Apache acceptance remain pending. Full mail/domain/VPS controls, automatic catalog discovery and support/SSH remain unfinished. No completion estimate advances solely from source presence. Checkpoints below are historical; current status and the requirements checklist govern remaining work.
+
+# Parallel 20i increment - registered domains
+
+2026-10-15: user authorized simultaneous agents. The domain agent owns `codex/twentyi-domain-controls` from `0ebc46237fce565005b581fe5a96a2691b9840b5`; root owns integration/releases. Adds sanitized registrar identity reads through existing inventory, distinct explicit client assignments, latest-attempt freshness, owner/client PHP views and recovery/tests. Hosted-domain links never become registrar authority. Local PHP8.4 synthetic checks pass64 registrar plus139 inventory/28 reader/82 cloud cases per mode; native CI and browser acceptance are pending. Nameserver writes remain disabled pending verified response/authority contracts. No provider operation or release. [Scope, provenance and next steps](TWENTYI_REGISTRAR_INVENTORY.md).
 
 # Active 20i increment — client domain availability
 
