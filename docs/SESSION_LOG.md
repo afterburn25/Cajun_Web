@@ -1461,3 +1461,16 @@ Request: continue the 20i assignment without stopping. Two defects found while e
 Files/actions: `site/app/providers/operations.php` (grant-time build validation); `tests/twentyi/tls_connector.php` (strict POST branch mirroring the write transport's option contract, bounded POSTFIELDS); `tests/provider_http_server.py` (do_POST for `/reseller/*/addWeb|updatePackage` with scripted modes success/uncertain/uncertain_landed/failure/authentication/echo; package list now reflects recorded creates for reconcile reads); `tests/provider_operations_cases.py` (new — 22 packaged checks: storage setup, owner-only access, grant refusals, exact-scope approval, one bounded POST through the real transport, replay, 202→uncertain, reconcile not_observed/observed, revoke, internal-file denial, Chromium viewport/console); `tests/browser_acceptance.py` (registered after provider settings); `tests/provider_operations_execute_native.php` (+1 approval-refusal assertion).
 
 Tests: suites pending CI (application-tests packaged lane + native MariaDB lanes). Synthetic ops suite remained 92/92 after merge.
+
+## 2026-10-16 — Devin: Codex deep-review corrections — reconcile semantics, credential-bound identity, send-boundary recheck
+
+Request: continue the 20i assignment; address Codex's blocking findings on the execution/reconcile heads. Corrections merged into this branch at 1cea8d2b (execution side) plus reconcile-specific fixes here:
+
+- `delete-id` absence is no longer `observed`: `InventorySnapshot` enforces `coverage=unknown`, so a list absent of the target can never prove a deletion — outcome is now `inconclusive` (present target still yields `not_observed`).
+- Reconcile binds to the grant's approved `profile_revision`; a settings save/replacement context refuses rather than reading another context's evidence.
+- Reconcile outcome + audit commit inside one `staff_transaction` (no unaudited observation).
+- From the merged execution corrections: builder timeout 15s (bounded contract), adapter header order matches the strict transport fixture, admin view imports `TwentyIOperationRegister`, operation identity is credential-fingerprint-bound (cross-account replay refused), grant/authority rechecked inside the send-boundary authorize closure under the operation lock, migrations are column-driven and converge both historical v2 layouts, and the POST transport allowlists only `/reseller/*/addWeb|updatePackage`.
+
+Files: `site/app/providers/reconcile.php`, `docs/TWENTYI_OPERATIONS_CONTRACT.md`, `tests/provider_operations_execute_native.php` (+replacement-context refusal, corrected absence expectation, live-revision reads), `site/install/inventory.generated.php` (refreshed).
+
+Tests: pending CI — native MariaDB (ledger + execution) and packaged application lanes on the new head. Prior runs: 53 execute/reconcile assertions at the pre-correction head.

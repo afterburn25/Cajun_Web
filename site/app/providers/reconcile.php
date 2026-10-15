@@ -81,7 +81,10 @@ function provider_operations_reconcile_evaluate(array $target,InventorySnapshot 
             if($package instanceof InventoryPackage&&(string)$package->id===$target['value'])
                 return ['not_observed','The targeted package is still present; the removal may not have landed. Verify in the 20i panel before considering another request.'];
         }
-        return ['observed','The targeted package is absent from a fresh provider observation.'];
+        // The observed list never claims account-wide coverage, so its
+        // absence cannot prove a deletion — only an authoritative target
+        // read or a documented complete collection could confirm it.
+        return ['inconclusive','The targeted package is absent from this observation, but partial coverage cannot prove the removal landed. Verify in the 20i panel; the request is not retried.'];
     }
     return ['inconclusive','The approved change cannot be confirmed or ruled out from the package list. Verify the result in the 20i panel; the request is not retried.'];
 }
@@ -102,21 +105,29 @@ function provider_operations_reconcile(string $profileId,int $revision,string $i
         };
         $op=one('SELECT * FROM '.table('provider_operations').' WHERE idempotency_key=?',[$idempotencyKey]);
         if($op===null||$op['status']!=='uncertain')return $refuse('Only a recorded uncertain operation can be reconciled.',$actor);
-        $grant=one('SELECT operation,scope_params FROM '.table('provider_operation_grants').' WHERE consumed_key=? AND profile_id=?',[$idempotencyKey,$profileId]);
+        $grant=one('SELECT operation,scope_params,profile_revision FROM '.table('provider_operation_grants').' WHERE consumed_key=? AND profile_id=?',[$idempotencyKey,$profileId]);
         $params=$grant===null?null:json_decode((string)$grant['scope_params'],true);
         if($grant===null||!is_array($params))return $refuse('No approved scope record exists for this request.',$actor);
+        // The observation must run against the same approved credential
+        // generation — a settings change or replacement account cannot
+        // reconcile another context's operation.
+        if((int)$grant['profile_revision']!==$revision)return $refuse('The approved context changed since this request; verify the result in the 20i panel.',$actor);
         if((string)$grant['operation']!==(string)$op['operation'])return $refuse('The recorded operation does not match its approved scope.',$actor);
         $target=provider_operations_reconcile_target((string)$op['operation'],$params);
         if($target===null)return $refuse('This operation has no observation check. Verify the result in the 20i panel.',$actor);
         return ['actor'=>(int)$actor['id'],'operation'=>(string)$op['operation'],'target'=>$target,'refused'=>null];
     }));
     $finish=static function(string $outcome,string $message)use($started,$idempotencyKey):array {
-        if($outcome!=='refused') {
-            query('UPDATE '.table('provider_operations').' SET reconciled_outcome=?,reconciled_epoch=? WHERE idempotency_key=? AND status=?',[$outcome,time(),$idempotencyKey,'uncertain']);
-            provider_settings_audit($started['actor'],'operation_reconcile','Reconciled '.$idempotencyKey.' '.$started['operation'].' '.$outcome);
-        } else {
-            provider_settings_audit($started['actor'],'operation_reconcile_refused','Reconcile refused for '.$idempotencyKey);
-        }
+        // The recorded outcome and its audit entry commit atomically —
+        // a failed audit must never leave an unaudited observation.
+        staff_transaction(function()use($outcome,$started,$idempotencyKey):void {
+            if($outcome!=='refused') {
+                query('UPDATE '.table('provider_operations').' SET reconciled_outcome=?,reconciled_epoch=? WHERE idempotency_key=? AND status=?',[$outcome,time(),$idempotencyKey,'uncertain']);
+                provider_settings_audit($started['actor'],'operation_reconcile','Reconciled '.$idempotencyKey.' '.$started['operation'].' '.$outcome);
+            } else {
+                provider_settings_audit($started['actor'],'operation_reconcile_refused','Reconcile refused for '.$idempotencyKey);
+            }
+        });
         return ['operation'=>$started['operation'],'outcome'=>$outcome,'message'=>$message];
     };
     if($started['refused']!==null)return $finish('refused',$started['refused']);

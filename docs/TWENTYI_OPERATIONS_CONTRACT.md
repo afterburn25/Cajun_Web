@@ -123,10 +123,14 @@ No provider call is made.
 `uncertain` results reconcile through
 `provider_operations_reconcile` — an owner-password, revision-bound,
 single evidence-backed observation of the package list (the only read
-with authenticated evidence). `packages.create` reconciles on the
-approved `domain_name` appearing in observed package names;
-`packages.update` with `delete-id` reconciles on the target's absence;
-other field-only updates are `inconclusive` with no read sent. The
-outcome is recorded on the ledger row (`reconciled_outcome`) without
-rewriting the provider-truthful result, and audited. A reconcile never
-re-sends the request.
+with authenticated evidence), authorized before and after the read and
+bound to the grant's approved `profile_revision` so a changed credential
+context cannot reconcile an earlier context's operation.
+`packages.create` reconciles on the approved `domain_name` appearing in
+observed package names; `packages.update` with `delete-id` reconciles
+`not_observed` when the target is still present, but its absence stays
+`inconclusive` — the observed list never claims account-wide coverage,
+so absence cannot prove a deletion landed. Field-only updates are
+`inconclusive` with no read sent. The outcome and its audit entry commit
+atomically on the ledger row (`reconciled_outcome`) without rewriting
+the provider-truthful result. A reconcile never re-sends the request.
