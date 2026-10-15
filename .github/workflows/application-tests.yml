@@ -105,6 +105,7 @@ jobs:
           php8.3 tests/provider_operations_native.php
           php8.3 tests/provider_operations_execute_native.php
           php8.3 tests/service_plans_native.php
+          php8.3 tests/recurring_billing_native.php
           php8.3 tests/hosting_records_native.php
           php8.3 tests/hosting_operations_native.php
           php8.3 tests/hosting_retry_native.php

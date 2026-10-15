@@ -1,0 +1,99 @@
+{
+  "source_commit": "66f7760b686c91ca88b8395d350e083cd1ef2516",
+  "source_pr": 120,
+  "integration_parent": "7ce1ef70c76eea83f4ccc76f163fae74228bd7d2",
+  "files": [
+    {
+      "path": "foundation/billing-calendar/BillingCalendar.php",
+      "source_sha256": "0efd6ddae2b32df43a5f42d348de35cfb7640f0c44032fa2889142302b2576e6"
+    },
+    {
+      "path": "foundation/recurring-billing/RecurringBillingTerms.php",
+      "source_sha256": "3b2b1a704e2f5aa8f1897860ba5bbe3ceb8de4b0beaffaab4b81fb70a9deef44"
+    },
+    {
+      "path": "foundation/recurring-billing/RecurringBillingSchedule.php",
+      "source_sha256": "bba7806e391e2fe579b262d3321019e285b2890de9f90901e3bb3d61f2b629ee"
+    },
+    {
+      "path": "site/app/billing/recurring_billing.php",
+      "source_sha256": "2afde02566b2209fca1f91cedc7c7348d7865bb7b889bbc27c9137cbd0b4ee7e"
+    },
+    {
+      "path": "site/app/billing/recurring_billing_invoices.php",
+      "source_sha256": "b184606348bd807065662d3445ec581477b9dea44403673f3713253644596cca"
+    },
+    {
+      "path": "site/database/schema/recurring_billing_schema.php",
+      "source_sha256": "b937f1d01ec2d1dc3ecf03f86d436c1c0d3d3738fab2a4811748b69e4ec75310"
+    },
+    {
+      "path": "site/database/migrations/recurring_billing_migrate.php",
+      "source_sha256": "512aa596f7853d8fabc834d800ef315dba247e6fbaf0f28d12f059f1ba6759d1"
+    },
+    {
+      "path": "tests/recurring_billing_native.php",
+      "source_sha256": "b63d7d892333f92d4a7b921188365b03f5a77685f513436a93049983f42008f1"
+    },
+    {
+      "path": "tests/recurring_billing_native_extra.php",
+      "source_sha256": "6f32079b8c2a34db4de28bf2261238feda664006640c38c590b9bb118d217d1e"
+    },
+    {
+      "path": "tests/billing-calendar/calendar.php",
+      "source_sha256": "9126fdf690c9ca3f7ef163cd7c2681ccceccfa339ffcd1d33d0a9d518ac61b83"
+    },
+    {
+      "path": "tests/recurring-billing/terms.php",
+      "source_sha256": "0d42b0d523341cd4e46a643c4578fbf2ae6e1979fd1f6460579dc2634ff87efb"
+    },
+    {
+      "path": "tests/recurring-billing/schedule.php",
+      "source_sha256": "9ba2a9e678cf218246cfb17b1e2803dbf7cc8dba93a99650293c83b832acfb85"
+    },
+    {
+      "path": ".github/workflows/billing-calendar.yml",
+      "source_sha256": "efa21ae131b2537e8ecfc38872f74c37448e08eb55779dfec9e82a19ff7a124a"
+    },
+    {
+      "path": ".github/workflows/recurring-billing-terms.yml",
+      "source_sha256": "743e1052eb6e7fcfc05ff5ac99e91e05e77c478e5d6d991decd76043774afbf5"
+    },
+    {
+      "path": ".github/workflows/recurring-billing-lifecycle.yml",
+      "source_sha256": "148d58a457eadc25ef739dd312f1276029ae406c236c5bc0f069932376dd286b"
+    },
+    {
+      "path": ".github/workflows/recurring-billing-native.yml",
+      "source_sha256": "9b38c00d72f9d70614b2deebbe4442a9d67b5e310ee5b029f1e3e55f2db0f140"
+    },
+    {
+      "path": "docs/BILLING_CALENDAR_CONTRACT.md",
+      "source_sha256": "bfb7eb480adfbbb61e624142aab751759adca60a71d0d625593edfbff24c3c7e"
+    },
+    {
+      "path": "docs/RECURRING_BILLING_TERMS_CONTRACT.md",
+      "source_sha256": "d9e4f92ae0a3ffed52740add981521362d1867eff4de0996c51217628dde4917"
+    },
+    {
+      "path": "docs/RECURRING_BILLING_LIFECYCLE_CONTRACT.md",
+      "source_sha256": "bec971cef0e57274843e3773677f696f9b82aaac2dc70dfdfa06ecc773afb5c1"
+    },
+    {
+      "path": "docs/RECURRING_BILLING_RECORDS_CONTRACT.md",
+      "source_sha256": "6807a0aaeb5e79ab2c0b257cb46ce4ae11c5e9165a3bbb633ee585c6ac5f8290"
+    },
+    {
+      "path": "tests/recurring_billing_legacy_ledger.php",
+      "source_path": "tests/design_payments_legacy_ledger.php",
+      "source_sha256": "33ce12f12a1da3564231e377697eba47141be89732ef1028258d84fdf556425e"
+    }
+  ],
+  "adaptations": [
+    "Replace unrelated project-history dependency with the same staff mutex/transaction, existing service-plan client authority and bounded project ownership lookup.",
+    "Retain missing established recurring history; do not recreate empty tables.",
+    "Use the existing ledger without importing unrelated design-stage invoices.",
+    "Isolated existing-ledger wrapper keeps its original behavior under a recurring-specific private fixture path."
+  ],
+  "excluded": "Project tracking, design payment stages, financial activity and unrelated #117\u2013#123 ancestors remain preserved on their original branches."
+}

@@ -1,5 +1,13 @@
 # Project status
 
+## Reuse recurring consent and invoices for 20i eligibility — 2026-10-15
+
+Starting from agreement recovery `7ce1ef70c76eea83f4ccc76f163fae74228bd7d2`, branch `codex/twentyi-recurring-eligibility` reuses the existing calendar, immutable billing terms, lifecycle and native invoice records from #117–#120, exact source `66f7760b686c91ca88b8395d350e083cd1ef2516`. Original branches/history remain preserved. The [source manifest](docs/TWENTYI_RECURRING_SOURCE.json) records every original file/hash and adaptations. A whole descendant merge would also enable unrelated project tracking and design-stage finance, so only necessary dependencies are selected. There is no second invoice ledger or provider engine.
+
+Reuse current service-plan client authority and the existing staff mutex/transaction. Retain exact active source terms, client consent, whole-period boundaries and unique existing-ledger invoices. Replace the project-history module dependency with the same bounded existing-project lookup; unrelated project history stays paused. A stamped but missing recurring table now requires original database restoration before setup can run. Twenty-four new native cases check each of four tables, original consent/invoice/audit retention and closed invoice use, including a changed reference that cannot reclassify a lost binding as a legacy invoice. Focused CI covers PHP 8.2/8.4 with MariaDB 10.11/MySQL 8.4 and the existing ledger regression.
+
+Local pure calendar/terms/lifecycle tests pass in default and no-ini modes; their downloaded-style named JSON is retained locally. Native execution and independent review are pending. The preserved #121 screens, full HTTP/recovery acceptance and 20i payment/order/fulfillment adapter remain next work. This is an unreleased necessary dependency; agreement or invoice creation does not authorize an automatic charge or provider request. Codex retains complete 20i P0 ownership. No production operation or deployment occurred.
+
 ## Reuse retained agreement recovery and correct roadmap status — 2026-10-15
 
 Starting from PR #130 `20b3620553e19466c0756978ad9c7d8b26d69d8a`, normally merge preserved agreement-release #101 `588f3329bac4b0b7ff0985d6991ec8f0d38e223a` on `codex/twentyi-order-recovery`. Keep both source parents and current Codex P0 ownership. Reuse original 1.23-to-candidate agreement consent/activation recovery fixtures and isolated owner-throttle fixtures; retain full Apache protections and version-specific mail-fence labels. Preserve both session histories. No deployed runtime changed from20b; current missing-table protection remains. The inherited development version is not a release assignment.
