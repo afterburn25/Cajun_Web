@@ -34,7 +34,7 @@ function hosting_order_links_context(string $orderId,int $client,bool $asClient=
                 }
             }
             $progress=['account_id'=>$row['account_id'],'created_at'=>$b['created_at'],'status'=>$journal->account()->status(),'order_cancelled'=>$order->state()['phase']==='cancelled'];
-            if($progress['status']==='provisioning'&&$journal->account()->awaitingReconciliation()&&$journal->account()->acknowledgedResourceRef()===null)$progress['status']='unknown';
+            if(in_array($progress['status'],['provisioning','failed'],true)&&$journal->account()->awaitingReconciliation()&&$journal->account()->acknowledgedResourceRef()===null)$progress['status']='unknown';
             if(!$asClient){
                 $progress['package']=$b['package'];$progress['reseller_id']=$b['request']['params']['resellerId'];
                 $progress['profile_current']=false;

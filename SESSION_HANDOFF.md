@@ -1,5 +1,7 @@
 # Continue 20i: verify native fulfillment screens and connect authenticated confirmation
 
+Native25a7 run38800708937 exposed an actual projection defect: the canonical timeout state is failed plus awaiting reconciliation, not provisioning. Correct both owner/client projections to honor the unresolved flag; the existing failing test remains unchanged. This descendant requires fresh CI; it does not change provider execution or retry safeguards.
+
 Branch `codex/twentyi-service-orders`, [PR138](https://github.com/afterburn25/Cajun_Web/pull/138). Starting parent87970faa42d715ead902eb59c537eb073ba80c9e/tree74901ef17456c03ac5178ee11287741dd11cfe16. Enclosing checkpoint: Add native hosting approval and recovery screens. No release or live deployment; published1.24/7190b582 remains unchanged.
 
 New `app/hosting/fulfillment_views.php` and `includes/layout/hosting_fulfillment.php` expose existing execution/recovery services through owner-only service agreement actions. Current owner/password, existing route/order/client binding, CSRF, exact hashes/revision, three explicit configuration reviews and CREATE-domain confirmation protect dispatch. GET is read-only. Additive setup refuses lost established history. Original saved provider response can be recovered without a send; definite failure permits local retry preparation followed by fresh approval; unresolved/unknown attempts cannot resend. Client progress stays bounded and distinguishes unknown from pending. Automated provider catalog checks and authenticated exact-ID active confirmation remain required.

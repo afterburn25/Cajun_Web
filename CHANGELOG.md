@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — unresolved timeout presentation
+
+- Correct owner/client fulfillment projections to recognize the canonical failed-but-unresolved timeout state. Show uncertainty and no retry control; retain the native regression that exposed the defect.
+
 ## Unreleased — native hosting fulfillment screens
 
 - Add owner setup approval, original-response recovery and definite-failure retry preparation on existing agreements. Preserve separate cost/default/account review, exact accepted domain and current authority. Clients see pending versus unknown without private provider data.

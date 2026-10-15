@@ -1,5 +1,7 @@
 # Current development: native hosting approval and recovery screens
 
+Native25a7 run38800708937 exposed an actual projection defect: the canonical timeout state is failed plus awaiting reconciliation, not provisioning. Correct both owner/client projections to honor the unresolved flag; the existing failing test remains unchanged. This descendant requires fresh CI; it does not change provider execution or retry safeguards.
+
 Codex owns the complete 20i P0 integration. Published [1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0), immutable source7190b582, is unchanged. Development is on `codex/twentyi-service-orders` / [PR138](https://github.com/afterburn25/Cajun_Web/pull/138). No new release or live deployment is claimed.
 
 This checkpoint adds owner approval, retained-response recovery and definite-failure retry cards to the existing service agreement, plus honest pending/unknown client progress. Setup is explicit and additive; GET does not create storage. A new provider request requires the accepted order, current commercial authority, original provider context, password, typed domain confirmation and separate review of account/type, defaults and costs. Recovery and retry preparation do not send another request. Automated provider catalog verification and authenticated active-service confirmation remain unfinished.

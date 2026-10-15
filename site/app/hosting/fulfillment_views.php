@@ -55,7 +55,7 @@ function hosting_fulfillment_view(string $orderId,int $client):array {
         $view['dispatch']=['id'=>$dispatch['id'],'approval_hash'=>$approval['binding_sha256'],'created_at'=>$b['created_at'],'outcome'=>null,'package_id'=>null,'provider_hash'=>null];
         if($result){
             $r=json_decode($result['result_json'],true,16,JSON_THROW_ON_ERROR);$view['dispatch']['outcome']=$r['outcome'];$view['dispatch']['package_id']=$r['resource_ref'];
-            if($account->status()==='provisioning')$view['mode']=$r['outcome']==='accepted_pending'?'pending_confirmation':'unknown';
+            if($account->awaitingReconciliation()&&$account->pendingAttempt()===$dispatch['attempt_ref'])$view['mode']=$r['outcome']==='accepted_pending'?'pending_confirmation':'unknown';
         }elseif($account->pendingAttempt()===$dispatch['attempt_ref']){
             $view['mode']='unresolved';
             $p=one('SELECT * FROM '.table('provider_operations').' WHERE idempotency_key=?',[$b['provider_key']]);
