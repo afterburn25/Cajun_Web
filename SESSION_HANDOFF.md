@@ -1,5 +1,7 @@
 # Current handoff — parallel agents and native mailbox application
 
+Continue from48e65a50: focused run38819417344 exposed fixture request-ID pollution from the included owner view, now isolated in a rendering function. Require original request/audit/grant fixtures before recovery mutation. Domain review's remaining missing-family witness is repaired before preparation DDL, including loss of the operation marker. Run the descendant Linux matrix/browser; preserve parent failures. Catalog8f7028, registrar2fe7 and cloud4aa branches continue their own recovery review and acceptance. Integrate only reviewed, verified increments sequentially.
+
 Include the catalog-agent review corrections: retain a valid posted mailbox domain after errors, require a fresh selection if unavailable, and refuse preparation inside a caller transaction before DDL. Native tests include multi-domain redisplay and rollback preservation. Root asks both reviewers to inspect the corrected delta after push. Active agent PRs141–143 require sequential integration only after their own checks and combined review.
 
 Continue the81eb native correction: first Linux failure is the private gateway fingerprint call, fixed by the existing public method. Domain-agent independent review found partial loss of request+audit could overlook surviving consumed grants/results; readiness and native regressions now detect it. Preserve run38818497468 and inspect the corrected descendant. Root refresh37690 and generated68109 both completed successfully and are closed; neither is a release build.

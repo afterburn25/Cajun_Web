@@ -16,7 +16,8 @@ function provider_mailbox_document(array $row):array {
 }
 function provider_mailbox_has_history():bool {
     return one('SELECT id FROM '.table('audit').' WHERE action IN (?,?,?) LIMIT 1',['provider.mailbox_prepared','provider.mailbox_policy','provider.mailbox_started'])!==null
-        ||(provider_operations_ready()&&one('SELECT id FROM '.table('provider_operation_grants').' WHERE operation=? LIMIT 1',['mailboxes.create'])!==null)
+        ||(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'provider_operation_grants'])!==null&&one('SELECT id FROM '.table('provider_operation_grants').' WHERE operation=? LIMIT 1',['mailboxes.create'])!==null)
+        ||(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'provider_operations'])!==null&&one('SELECT id FROM '.table('provider_operations').' WHERE operation=? OR (operation IS NULL AND idempotency_key LIKE \'mailbox:%\') LIMIT 1',['mailboxes.create'])!==null)
         ||one('SELECT name FROM '.table('settings').' WHERE name LIKE ? LIMIT 1',['provider_mailbox_policy_%'])!==null;
 }
 /** A GET never creates tables, and lost history never reopens a creation allowance. Caller holds the staff lock. */

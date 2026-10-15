@@ -1,5 +1,7 @@
 # Unreleased — native 20i mailbox creation
 
+Refuse mailbox storage recreation when only the original shared operation ledger survives. Keep native rendering variables isolated so recovery tests retain the original successful request identity. Current acceptance is pending.
+
 Preserve the selected mailbox domain after an invalid form submission and refuse mailbox setup inside a caller-owned transaction. Independent review regressions are included; acceptance remains pending.
 
 Correct the native gateway fingerprint call and refuse partial database recovery that leaves original mailbox grants/results without their request. Native regression cases cover these surviving witnesses; corrected CI remains pending.

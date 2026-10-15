@@ -68,6 +68,9 @@ function mb_render(bool $admin=false):string {
     $mailboxAdmin=$admin;$mailboxOptions=provider_mailbox_options($admin?null:1);$mailboxHistory=provider_mailbox_history($admin?null:1);$mailboxUnavailable=false;
     ob_start();require __DIR__.'/../site/portal/views/mailboxes.php';return ob_get_clean();
 }
+function mb_render_owner(string $profileId):string {
+    $record=provider_settings_load($profileId);ob_start();require __DIR__.'/../site/admin/views/provider_mailboxes.php';return ob_get_clean();
+}
 if(($argv[1]??'')==='worker'){
     mb_client();echo "ready\n";fflush(STDOUT);stream_set_timeout(STDIN,20);if(trim((string)fgets(STDIN))!=='start')exit(2);
     try{mb_run($argv[2],'concurrent',$argv[3]);echo json_encode(['sent'=>$sent,'state'=>'recorded']);}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;echo json_encode(['sent'=>$sent,'state'=>'refused']);}exit;
@@ -138,7 +141,7 @@ try {
     $_POST['mailbox_policy']='f'.str_repeat('0',31);mb_ok('Unavailable posted domain forces a fresh explicit selection',str_contains(mb_render(),'<option value="" selected>Choose a domain</option>'));
     mb_ok('Client form does not expose foreign domain or owner credentials',!str_contains($html,'two.example')&&!str_contains($html,'current_password')&&str_contains($html,'not a complete list'));$_POST=[];
     mb_actor();$html=mb_render(true);mb_ok('Rendered owner creation form requires current password',str_contains($html,'current_password')&&str_contains($html,'provider_inventory_mailbox_create'));
-    $record=provider_settings_load($profileId);ob_start();require __DIR__.'/../site/admin/views/provider_mailboxes.php';$html=ob_get_clean();mb_ok('Native owner view exposes per-domain policy and truthful quota guidance',str_contains($html,'Maximum requests in 24 hours')&&str_contains($html,'does not set mailbox storage')&&!str_contains($html,$mailPassword));
+    $html=mb_render_owner($profileId);mb_ok('Native owner view exposes per-domain policy and truthful quota guidance',str_contains($html,'Maximum requests in 24 hours')&&str_contains($html,'does not set mailbox storage')&&!str_contains($html,$mailPassword));
     foreach(['provider_mailbox_requests','provider_mailbox_policies','provider_operation_grants','provider_operations','audit'] as $table){$json=json_encode(all('SELECT * FROM '.table($table)));mb_ok('No raw mailbox or API password in '.$table,!str_contains($json,$mailPassword)&&!str_contains($json,$secret));}
     save_setting('provider_mailbox_schema_version','');mb_deny('Lost mailbox marker cannot reset history',fn()=>provider_mailbox_prepare($password));save_setting('provider_mailbox_schema_version','1');
     foreach(['provider_mailbox_requests','provider_mailbox_policies'] as $table){db()->exec('RENAME TABLE '.table($table).' TO '.table($table.'_saved'));try{mb_deny('Missing '.$table.' refuses readiness',fn()=>provider_mailbox_ready());mb_deny('Missing '.$table.' cannot be recreated',fn()=>provider_mailbox_prepare($password));}finally{db()->exec('RENAME TABLE '.table($table.'_saved').' TO '.table($table));}}
@@ -147,12 +150,30 @@ try {
     $savedRequest=one('SELECT * FROM '.table('provider_mailbox_requests').' WHERE id=?',[$request]);
     $savedAudit=one('SELECT * FROM '.table('audit').' WHERE action=? AND detail LIKE ?',['provider.mailbox_started','Request '.$request.' %']);
     $savedGrant=one('SELECT * FROM '.table('provider_operation_grants').' WHERE id=?',[$request]);
+    mb_ok('Recovery fixture retains the exact successful request audit and grant',$savedRequest!==null&&$savedAudit!==null&&$savedGrant!==null);
     query('DELETE FROM '.table('provider_mailbox_requests').' WHERE id=?',[$request]);query('DELETE FROM '.table('audit').' WHERE id=?',[$savedAudit['id']]);
     mb_deny('Surviving consumed grant detects lost request and start audit together',fn()=>provider_mailbox_ready());
     query('DELETE FROM '.table('provider_operation_grants').' WHERE id=?',[$request]);
     mb_deny('Surviving mailbox result detects lost request audit and grant together',fn()=>provider_mailbox_ready());
     foreach(['provider_operation_grants'=>$savedGrant,'provider_mailbox_requests'=>$savedRequest,'audit'=>$savedAudit] as $table=>$row)query('INSERT INTO '.table($table).' ('.implode(',',array_keys($row)).') VALUES ('.implode(',',array_fill(0,count($row),'?')).')',array_values($row));
     mb_ok('Exact recovery restores original once-only result',provider_mailbox_ready()&&mb_result($request)['status']==='succeeded');
+    $savedFamily=[];foreach(['provider_mailbox_requests','provider_mailbox_policies'] as $table)$savedFamily[$table]=all('SELECT * FROM '.table($table));
+    $savedFamily['provider_operation_grants']=all('SELECT * FROM '.table('provider_operation_grants').' WHERE operation=?',['mailboxes.create']);
+    $savedFamily['audit']=all('SELECT * FROM '.table('audit').' WHERE action LIKE ?',['provider.mailbox_%']);
+    $savedFamily['settings']=all('SELECT * FROM '.table('settings').' WHERE name LIKE ?',['provider_mailbox_%']);
+    foreach(['provider_mailbox_requests','provider_mailbox_policies'] as $table)query('DELETE FROM '.table($table));
+    query('DELETE FROM '.table('provider_operation_grants').' WHERE operation=?',['mailboxes.create']);query('DELETE FROM '.table('audit').' WHERE action LIKE ?',['provider.mailbox_%']);query('DELETE FROM '.table('settings').' WHERE name LIKE ?',['provider_mailbox_%']);
+    foreach(['provider_mailbox_requests','provider_mailbox_policies'] as $table)db()->exec('RENAME TABLE '.table($table).' TO '.table($table.'_saved'));
+    try {
+        mb_deny('Surviving ledger detects missing mailbox family marker grants and audits',fn()=>provider_mailbox_ready());
+        mb_deny('Surviving ledger prevents recreation of lost mailbox family',fn()=>provider_mailbox_prepare($password));
+        mb_ok('Refused preparation creates no replacement mailbox tables',!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['pmb_provider_mailbox_requests'])&&!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['pmb_provider_mailbox_policies']));
+        save_setting('provider_operations_schema_version','');try{mb_ok('Ledger witness remains visible with lost operation marker',provider_mailbox_has_history());}finally{save_setting('provider_operations_schema_version','4');}
+    }finally{
+        foreach(['provider_mailbox_policies','provider_mailbox_requests'] as $table)db()->exec('RENAME TABLE '.table($table.'_saved').' TO '.table($table));
+        foreach(['provider_operation_grants','provider_mailbox_policies','provider_mailbox_requests','audit','settings'] as $table)foreach($savedFamily[$table] as $row)query('INSERT INTO '.table($table).' ('.implode(',',array_keys($row)).') VALUES ('.implode(',',array_fill(0,count($row),'?')).')',array_values($row));
+    }
+    mb_ok('Exact family recovery preserves original result without replay',provider_mailbox_ready()&&mb_result($request)['status']==='succeeded');
     provider_settings_save($profileId,1,'Changed connection',true,'',$password);mb_client();mb_deny('Changed provider profile invalidates prior creation policy',fn()=>mb_run($policy1,'new-profile'));mb_ok('Old request history remains visible without active creation',provider_mailbox_options(1)===[]&&provider_mailbox_history(1)!==[]);
     $report=['passed'=>true,'checks'=>$checks,'scope'=>'Real disposable MySQL/MariaDB, application authorization/persistence, shared gateway/ledger, synthetic provider transport and actual PHP forms. No real API or browser acceptance.'];
     file_put_contents(__DIR__.'/../qa/provider-mailbox-native-results.json',json_encode($report,JSON_PRETTY_PRINT)."\n");echo json_encode($report,JSON_PRETTY_PRINT),"\n";

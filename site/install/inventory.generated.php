@@ -163,7 +163,7 @@ function setup_expected_files(): array { return [
     'app/providers/domain_search_clients.php'=>'35f6aa4f37715fba97592f6c0bbbc6ecd921c68f9bfe9eb7e7c13117dab536df',
     'app/providers/inventory.php'=>'b29ed926def3361550057b9820b0dd6dedd57e5243c47ef3175a89b335b9f57a',
     'app/providers/mailbox_policies.php'=>'041cdc1a4c18b2d23877c31463a511c0bbced50dfa2ce5aece97e8a472d32cda',
-    'app/providers/mailbox_storage.php'=>'9299a27e3f9edd87432c4207fd6fd9b63f8af9a467bd20163081fd0f0f53fb45',
+    'app/providers/mailbox_storage.php'=>'834a025d92390ba4c10975fbb2438210722716181df6cc511d7a779ead18afa2',
     'app/providers/mailbox_views.php'=>'fd035a1ec48b8b98c564b819a56998ee4bbd6c0645c129dfa76d99ca8d6a9d1b',
     'app/providers/mailboxes.php'=>'0c94eb1e4c0c989d5d6e7dfd29e990f914df9d1fe2933468cb00e6213363ba1f',
     'app/providers/operations.php'=>'d6b3237c87ccdc5f73390266e8c12a6387978626af807f8302d59e0cf36c07ca',

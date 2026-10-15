@@ -1,5 +1,7 @@
 # Current development — four parallel 20i workers
 
+Current48e65 mailbox CI reached recovery cases but a test view include overwrote the fixture request ID. The view now renders in isolated function scope, with an explicit fixture identity assertion. Follow-up domain review also found that a surviving shared ledger must prevent preparation when all mailbox tables/markers/audits/grants are absent; the history witness and native recovery case now cover that loss before DDL. Descendant acceptance is pending. Catalog, registrar and cloud initial matrices have agent-verified passes; their latest review/browser descendants remain separate and unmerged.
+
 Independent catalog review also found and corrected failed-form domain selection and preparation inside a caller transaction; new native regressions await current CI. All three parallel branches now have draftPRs141–143. None is yet integrated or released.
 
 Current81eb mailbox native run failed at an incorrect private fingerprint-helper call; use the existing public interface. Independent review also identified a partial-restore history gap, now repaired with surviving grant/result checks and native regressions. New descendant CI is required; no native pass is claimed. Catalog parent24e75 has agent-reported four native passes while its browser/review corrections continue; domainPR142 is testing. [Current evidence](docs/TWENTYI_PARALLEL_WORK.md).

@@ -1,5 +1,9 @@
 # Session log
 
+## 2026-10-15 — preserve surviving mailbox ledger before setup
+
+Starting48e65a50, native38819417344/job116712054432 reached recovery tests but failed after the included owner view overwrote the test request variable. Isolate view rendering and assert fixture identity before mutation. Independent domain-agent follow-up identified a remaining missing-family case: original ledger results could survive all mailbox tables, markers, audits and grants. History discovery now checks grants and ledger tables independently of their schema marker before any mailbox preparation. Native regressions preserve exact rows, refuse replacement tables and verify original-result recovery. Changed PHP syntax, installer inventory and docs are checked locally; descendant native/browser acceptance remains pending. Catalog/domain/cloud agents continue in isolated branches and initial matrices have passed, with newer corrections still under test. No live operation, integration or release. Enclosing commit: **Preserve mailbox ledger witnesses before setup and isolate recovery fixtures**.
+
 ## 2026-10-15 — native mailbox execution and partial-recovery correction
 
 Catalog-agent independent review additionally identified domain-selection loss after invalid submission and implicit caller transaction commit during fresh preparation. Both are repaired with explicit selection preservation/refusal and a pre-DDL transaction guard; native regressions cover each. Corrected source still requires fresh Linux/database/browser acceptance. Three active agent PRs141–143 remain separate and unmerged.
