@@ -64,7 +64,9 @@ function service_orders_invoice(ServiceSubscriptionDocument $source,int $invoice
 }
 /** Validate original offer, every retained event and independent original offer audit. */
 function service_orders_validate(array $row):ServiceOrderDocument {
-    $initial=ServiceOrderDocument::fromJson($row['initial_json']);$doc=ServiceOrderDocument::fromJson($row['journal_json']);$d=$doc->data();$events=$d['events'];$d['events']=[];
+    try{$initial=ServiceOrderDocument::fromJson($row['initial_json']);$doc=ServiceOrderDocument::fromJson($row['journal_json']);}
+    catch(JsonException|InvalidArgumentException|LogicException $e){throw new RuntimeException('Hosting order history is inconsistent. Restore the original database before continuing.',0,$e);}
+    $d=$doc->data();$events=$d['events'];$d['events']=[];
     if($initial->revision()!==0||$initial->data()!==$d||$d['id']!==$row['id']||$d['agreement']['id']!==$row['agreement_id']||$d['invoice']['id']!==(int)$row['invoice_id']||$d['client_id']!==(int)$row['client_id']||$d['created_by']!==(int)$row['created_by']||$d['created_at']!==(int)$row['created_epoch']||$doc->revision()!==(int)$row['revision']||$doc->fingerprint()!==$row['journal_sha256'])throw new RuntimeException('Retained hosting order is inconsistent.');
     $pin=$d['agreement'];$source=service_orders_agreement($pin['id'],$d['client_id'],$pin['revision'],$pin['sha256'],$pin['terms_hash']);$model=$source['prefix']->model();
     $sourceEvents=$source['prefix']->data()['events'];
@@ -101,7 +103,8 @@ function service_orders_offer(string $id,string $agreement,int $client,int $revi
         if($binding['sha256']!==$invoiceHash)throw new RuntimeException('Review the current invoice before offering hosting.');
         if(one('SELECT id FROM '.table('service_orders').' WHERE agreement_id=? OR invoice_id=? LIMIT 1',[$agreement,$invoice]))throw new RuntimeException('This service agreement or invoice already has an initial hosting order.');
         if(one('SELECT id FROM '.table('audit').' WHERE action=? AND (detail LIKE ? OR detail LIKE ?) LIMIT 1',['service_orders.offered','% agreement '.$agreement.' invoice %','% invoice '.$invoice.' client %']))throw new RuntimeException('Original hosting offer history exists without its order. Restore the original database.');
-        $doc=ServiceOrderDocument::create($id,$client,(int)$actor['id'],time(),['id'=>$agreement,'revision'=>$revision,'sha256'=>$hash,'terms_hash'=>$current->model()->plan->termsHash()],$binding);
+        $sourceEvents=$current->data()['events'];$createdAt=max(time(),$sourceEvents[array_key_last($sourceEvents)]['at']);
+        $doc=ServiceOrderDocument::create($id,$client,(int)$actor['id'],$createdAt,['id'=>$agreement,'revision'=>$revision,'sha256'=>$hash,'terms_hash'=>$current->model()->plan->termsHash()],$binding);
         query('INSERT INTO '.table('service_orders').' (id,agreement_id,invoice_id,client_id,created_by,created_epoch,initial_json,journal_json,journal_sha256,revision) VALUES (?,?,?,?,?,?,?,?,?,0)',[$id,$agreement,$invoice,$client,$actor['id'],$doc->data()['created_at'],$doc->json(),$doc->json(),$doc->fingerprint()]);
         service_orders_audit('staff:'.$actor['id'],'offered','Order '.$id.' agreement '.$agreement.' invoice '.$invoice.' client '.$client.' sha256 '.$doc->fingerprint());return $doc;
     });

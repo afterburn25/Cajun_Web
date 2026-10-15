@@ -340,3 +340,15 @@ def run_browser(env, browser):
         finally:
             db('RENAME TABLE '+retained+' TO ci_'+name)
         check('Restored '+name+' preserves exact hosting history', db('SELECT * FROM ci_service_orders ORDER BY id')==orders_before_restore and db('SELECT * FROM ci_service_order_events ORDER BY id')==order_events_before_restore)
+
+    original_order_row = db('SELECT * FROM ci_service_orders WHERE id=?',[order_row['id']])[0]
+    db('UPDATE ci_service_orders SET journal_json=? WHERE id=?',['{invalid',order_row['id']])
+    try:
+        for session, url in [(owner,hosting_owner),(client,hosting_client)]:
+            response=session.get(url)
+            check('Malformed order journal shows controlled restoration without runtime errors',
+                  response.status_code==200 and 'Restore the original database' in response.text
+                  and 'Fatal error' not in response.text and 'Uncaught' not in response.text)
+    finally:
+        db('UPDATE ci_service_orders SET journal_json=? WHERE id=?',[original_order_row['journal_json'],order_row['id']])
+    check('Order journal restoration preserves exact original record',db('SELECT * FROM ci_service_orders WHERE id=?',[order_row['id']])==[original_order_row])

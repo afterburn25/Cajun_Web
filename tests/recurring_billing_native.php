@@ -37,6 +37,13 @@ function rb_historical_billing(int $id,int $source):RecurringBillingSchedule {
     return $d;
 }
 function rb_issue(int $id,int $request,int $period=0):array {$d=rb_read($id);return recurring_billing_issue(rb_id($id),1,$d->revision(),$d->fingerprint(),$period,rb_id($request));}
+if(($argv[1]??'')==='order-worker'){
+    require_once __DIR__.'/../site/app/hosting/orders.php';rb_staff();echo "ready\n";fflush(STDOUT);
+    try{
+        $source=service_plans_validate(service_plans_row($argv[2],true),true);
+        service_orders_offer($argv[4],$argv[2],1,$source->revision(),$source->fingerprint(),(int)$argv[3],ledger_invoice_hash(ledger_invoice((int)$argv[3])),$password);echo 'new';
+    }catch(RuntimeException|InvalidArgumentException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
+}
 if(($argv[1]??'')==='worker'){
     rb_staff();echo "ready\n";fflush(STDOUT);try{$r=recurring_billing_issue($argv[2],1,(int)$argv[3],$argv[4],(int)$argv[5],$argv[6]);echo $r['replayed']?'replay':'new';}catch(RuntimeException|InvalidArgumentException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
 }

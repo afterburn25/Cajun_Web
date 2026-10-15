@@ -1757,3 +1757,8 @@ Parent `7038cb50`; commit `Add native initial hosting order intake and consent`.
 ### Order adapter correction and browser coverage
 
 Parent146090fd, commit `Honor running billing state in hosting orders and exercise portal journey`. Run38770517159 failed all four combinations at the valid recurring order because the new adapter used `active` instead of the established `running` phase. Corrected product logic to require `running` and eligible first period; retained the original case. Added paused/inactive source checks, explicit missing-history UI for owner/client, and HTTP/Chromium hosting forms in the existing recurring browser driver. Tests added but corrected results pending; no new release or production action.
+
+
+### Stable order acceptance candidate
+
+Parent226f7cb, commit `Preserve order recovery controls and test competing initial offers`. Source226f7cb passed native run38771029583 on PHP8.2/8.4 × MariaDB10.11/MySQL8.4. Actual JSON parsed from all four job logs: 72 new order cases within229 retained recurring/order cases, plus108 separate ledger cases, all passed. Browser driver syntax parsed in memory; real order browser execution still pending. This follow-up adds controlled malformed-journal recovery, read-without-write and concurrent initial-order tests; rerun the exact descendant. Added private-path denial entries and retained browser journey. Parent423dd598 full38765096283 succeeded; logs/artifact metadata retained in order guide, no artifact-byte inspection claim. No production effects or release.

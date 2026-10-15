@@ -85,6 +85,12 @@ try{
     rb_ok('Client order card shows domain invoice and cancellation without manual reason',str_contains($html,'client.example')&&str_contains($html,'Cancel hosting request')&&!str_contains($html,$policy['reason'])&&!str_contains($html,'Permit manual fulfillment'));
     rb_staff();$manual=service_orders_change(rb_id(9100),1,2,rb_id(9113),'revoke_manual',['reason'=>'Revoke the temporary arrangement'],$password);
     rb_ok('Manual revocation removes commercial readiness',!so_assess($manual)['eligible']);
+    $originalOrder=one('SELECT * FROM '.table('service_orders').' WHERE id=?',[rb_id(9100)]);
+    query('UPDATE '.table('service_orders').' SET journal_json=? WHERE id=?',['{invalid',rb_id(9100)]);
+    rb_deny('Malformed order JSON requires controlled restoration',fn()=>so_read());
+    query('UPDATE '.table('service_orders').' SET journal_json=? WHERE id=?',[$originalOrder['journal_json'],rb_id(9100)]);
+    $beforeGet=so_snapshot();service_orders_context($source->data()['id'],1);
+    rb_ok('Current hosting order projection performs no database writes',so_snapshot()===$beforeGet);
     $savedEvent=one('SELECT * FROM '.table('service_order_events').' WHERE id=?',[rb_id(9110)]);
     query('UPDATE '.table('service_order_events').' SET before_sha256=? WHERE id=?',[str_repeat('f',64),rb_id(9110)]);rb_deny('Corrupted order event refuses read',fn()=>so_read());
     query('UPDATE '.table('service_order_events').' SET before_sha256=? WHERE id=?',[$savedEvent['before_sha256'],rb_id(9110)]);
@@ -104,6 +110,19 @@ try{
     rb_deny('Later recurring period cannot buy another initial service',fn()=>so_offer($monthlySource,$laterInvoice['invoice_id'],9520));
     $monthly=so_offer($monthlySource,$initialInvoice['invoice_id'],9520);
     rb_ok('Recurring hosting pins original first period schedule invoice and source',$monthly->data()['invoice']['basis']==='initial-recurring-period'&&$monthly->data()['invoice']['period_index']===0&&$monthly->data()['invoice']['schedule_id']===rb_id(9500));
+    $racing=so_source(9600);$racingInvoice=so_invoice();$workers=[];
+    foreach([9610,9611] as $request){
+        $p=proc_open([PHP_BINARY,__DIR__.'/recurring_billing_native.php','order-worker',$racing->data()['id'],(string)$racingInvoice,rb_id($request)],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);
+        if(!is_resource($p))throw new RuntimeException('Order fixture worker unavailable.');
+        foreach([1,2] as $stream)stream_set_timeout($pipes[$stream],20);$workers[]=[$p,$pipes];
+    }
+    $results=[];foreach($workers as [$p,$pipes]){
+        fclose($pipes[0]);$out=stream_get_contents($pipes[1]);$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);
+        if(proc_close($p)!==0||$err!=='')throw new RuntimeException('Order worker failed: '.$err);
+        $results[]=str_replace("ready\n",'',$out);
+    }
+    sort($results);
+    rb_ok('Concurrent distinct order offers consume an agreement and invoice only once',$results===['denied','new']&&(int)query('SELECT COUNT(*) FROM '.table('service_orders').' WHERE agreement_id=?',[$racing->data()['id']])->fetchColumn()===1);
     $before=so_snapshot();
     foreach(array_keys(service_orders_schema(config()['db']['prefix'])) as $name){
         $retained='retained_'.$name;db()->exec('RENAME TABLE '.table($name).' TO '.table($retained));

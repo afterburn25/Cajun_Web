@@ -23,3 +23,9 @@ Parent hosting-recovery evidence: run [38767511429](https://github.com/afterburn
 ## First native correction
 
 Source146090fd run38770517159 failed all four matrix jobs at the first valid recurring hosting offer: the adapter checked `active` while the retained schedule phase is `running`. This is a new product-adapter defect, not a fixture problem. The correction uses the actual `running` phase and period-zero eligibility from the existing schedule assessment. The original case remains. The follow-up also gives both portals an explicit restoration state for missing established order tables and adds actual HTTP/Chromium setup/offer/accept/manual/revoke/cancel/recovery cases to the retained browser suite. Browser additions are unexecuted until the full candidate runs. Native reports now print even after failure.
+
+## Native success and stable browser candidate
+
+Source226f7cb passed native run38771029583 on PHP8.2/8.4 × MariaDB10.11/MySQL8.4. Actual JSON parsed from all four job logs: 72 new order cases within229 retained recurring/order cases, plus108 separate ledger cases, all passed. Browser driver syntax parsed in memory; real order browser execution still pending. This follow-up adds controlled malformed-journal recovery, read-without-write and concurrent initial-order tests; rerun the exact descendant.
+
+The earlier payment-evidence source423dd598 completed full run38765096283 successfully (PR merge33db5925, verified identical tree). Browser and recovery passed; final Apache log reports1715 checks. Artifact11990319904 SHA256 `c5108b039d4c44431293ad5a914e39890ed7a5e4cff74bd4a0cc0821cfaa04dd`, 83,446,431bytes. Browser checkpoint11988129085 SHA256 `57581bcd8c924ef970c3a54b3734548924356999373b8780ee050ed82b1b5b68`,65,698,183bytes. These metadata/logs are read; artifact bytes/screenshots are not inspected in this environment. This does not certify order descendant source.
