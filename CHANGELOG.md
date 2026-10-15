@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased draft — native recurring agreements and period invoices
+
+Add explicit owner setup, current staff/client authority, immutable consent and future whole-period history, exact active-source binding and non-overlapping replacement. Create unique existing-ledger period invoices with replay protection, historical snapshot guards and atomic audit. Local88 named native checks pass; committed CI, installer acceptance, interfaces and independent review remain required. No scheduler, charge, provider action or release is activated.
+
 ## Draft native recurring billing contract
 
 Define additive records, real client consent, non-overlapping replacement and unique period invoice integration before code. Independent review and deployment gates remain; no runtime change yet.
