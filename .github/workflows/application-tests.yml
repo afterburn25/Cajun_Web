@@ -4,7 +4,7 @@ on:
     branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery]
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   pull_request:
-    branches: [main, codex/twentyi-fulfillment, codex/twentyi-service-orders, codex/twentyi-client-domain-search]
+    branches: [main, codex/twentyi-fulfillment, codex/twentyi-service-orders, codex/twentyi-client-domain-search, codex/twentyi-mailbox-controls]
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   workflow_dispatch:
     inputs:
@@ -71,6 +71,7 @@ jobs:
           php8.3 tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-results.json
           php8.3 tests/twentyi-operations/run.php qa/twentyi-operations-integrated-results.json
           php8.3 tests/twentyi-operations/mailboxes.php qa/twentyi-mailboxes-integrated-results.json
+          php8.3 tests/twentyi-operations/cloud-sites.php qa/twentyi-cloud-sites-integrated-results.json
           php8.3 tests/estimator_adapter.php
           php8.3 tests/native.php
           php8.3 tests/staff_native.php
@@ -104,6 +105,7 @@ jobs:
           php8.3 tests/provider_settings_native.php
           php8.3 tests/provider_checks_native.php
           php8.3 tests/provider_inventory_native.php
+          php8.3 tests/provider_cloud_sites_native.php
           php8.3 tests/provider_inventory_upgrade_native.php
           php8.3 tests/provider_domain_search_native.php
           php8.3 tests/provider_operations_native.php

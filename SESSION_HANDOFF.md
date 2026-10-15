@@ -1,3 +1,9 @@
+# Parallel development: cloud website control — 2026-10-15
+
+The owner requested simultaneous 20i agents. `codex/twentyi-vps-controls`, starting `0ebc46237fce565005b581fe5a96a2691b9840b5`, implements the documented Add website action on an existing explicitly assigned cloud server, with exact typed transport, current owner/client/assignment checks, existing gateway/ledger replay protection, pending package IDs and private client request summaries. No server purchase, power, rebuild, console or SSH is claimed. [Scope and verification](docs/TWENTYI_CLOUD_WEBSITES.md).
+
+Local PHP8.4 default/no-INI passes48 cloud,230 operation and95 mailbox checks per mode; changed PHP/Python syntax passes. Native database and packaged browser cases are prepared for Linux CI, not yet accepted. Installer regeneration follows shipping changes. Root retains integration/release control; preserve other parallel worktrees and current parent CI. No live provider operation or release occurred. Next: inspect exact native/browser reports, fix failures and provide branch evidence for combined review.
+
 # Current development — native mailbox creation boundary
 
 Codex owns `codex/twentyi-mailbox-controls`, starting `c00874b1` above client-search PR139. Added exact documented mailbox creation request/response validation inside the existing provider adapter/gateway/ledger and fixed transport. Generic grants/default adapter cannot execute it. Raw mailbox passwords are resolved transiently and echoed response passwords are discarded; replay and unknown outcomes cannot resubmit creation. [Implementation, tests and required native continuation](docs/TWENTYI_MAILBOX_CONTROLS.md).

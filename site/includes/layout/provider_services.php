@@ -2,6 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/providers/inventory.php';
+require_once CWP_CODE_ROOT.'/app/providers/cloud_sites.php';
 
 /**
  * Client-facing view of explicitly owner-linked 20i services. Only mappings
@@ -56,6 +57,7 @@ function provider_services_portal_render(): never {
             $server=$cloud['server'];echo '<p>Cloud server #'.(int)$server['id'].' · Location '.esc($server['location']??'not reported').' · Specification '.esc($server['product_spec']??'not reported').'</p>';
             if($server['configuration']!==null){echo '<dl>';foreach(['CpuCores'=>'CPU cores','RamMb'=>'Memory (MB)','OsDiskSizeGb'=>'OS disk (GB)','DataDiskSizeGb'=>'Data disk (GB)'] as $key=>$label)echo '<dt>'.esc($label).'</dt><dd>'.esc($server['configuration'][$key]===null?'Not reported':(string)$server['configuration'][$key]).'</dd>';echo '</dl>';}
             echo '<p class="hint">Observed '.esc($cloud['observed_at']).' UTC. These are saved provider specifications, not a live health check. Billing and renewal terms are separate.</p>';
+            foreach(provider_cloud_sites_client_history((int)$server['id']) as $request)echo '<p data-client-cloud-request><strong>'.esc($request['domain']).'</strong> · '.esc($request['status']).' · '.esc($request['created_at']).' UTC</p>';
         }
         echo '</article>';
     }

@@ -1,3 +1,7 @@
+# Parallel cloud agent ownership — 2026-10-15
+
+Cloud agent owns `codex/twentyi-vps-controls` from0ebc4623: native owner Add website on an explicitly assigned existing server, safe client request summaries, existing gateway/ledger and exact documented addWeb transport. Local synthetic checks pass; native/browser acceptance and root integration remain pending. Server lifecycle/power/console/SSH are still unfinished. See [cloud scope](TWENTYI_CLOUD_WEBSITES.md). No release/live action.
+
 # Current ownership — mailbox controls
 
 Codex owns `codex/twentyi-mailbox-controls` above preserved client-search PR139, parentc00874b1. Current files: typed mailbox boundary, existing provider adapter/transport, matching tests/workflows/protection/build mirrors and docs. Native approval/persistence/admin/client forms are the next implementation step, not delegated or completed. Preserve current mainb66062e4 for later normal integration and the running parent full suites. [Mailbox continuation](TWENTYI_MAILBOX_CONTROLS.md).

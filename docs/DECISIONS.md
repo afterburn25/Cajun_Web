@@ -215,3 +215,8 @@ Owner instruction: “let devin do the complete 20i integration.” Devin's prio
 ## 2026-10-15 — Preserve provider acknowledgements separately from completion
 
 Retain the existing gateway/ledger, extending its bounded result with accepted_pending and the provider-issued package ID. A valid documented addWeb acknowledgement proves acceptance, not activation; generic2xx, false/null or mixed envelopes cannot prove business success. Recorded legacy results are preserved. Name-only matches never adopt resources. Current ID-array contracts invalidate old scalar approvals rather than silently translating them. No mixed updatePackage request receives a blanket idempotent capability. Full inner request schemas, first-party order/hosting controls and release acceptance remain required.
+
+
+## 2026-10-15 — Reuse cloud creation request authority
+
+The bounded cloud management increment uses the existing provider approval and operation ledger tables. Its typed, installation-keyed approval envelope binds the explicit server/client assignment and current observation; request nonce consumption precedes DNS and sending. Returned cloud addWeb package IDs remain accepted-pending until separately observed and explicitly linked. Server capacity/domain permission are manually reviewed and not falsely reported as API-verified. This delivers the documented existing-server website operation while full server lifecycle, power and SSH contracts remain separate. No new generic operation approval surface or replacement ledger is introduced.

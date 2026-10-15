@@ -31,7 +31,7 @@ Status values: not started, implementing, branch-tested, integrated, released, l
 | Domain management | Renewal/auto-renew, expiry, privacy, locks, auth-code handling and reconciliation | implementing | Renew request inherited; registrar authority and full business journey pending |
 | VPS/cloud catalog | Supported product/spec/zone/OS, price and entitlement choices | not started | Use full source examples; do not invent account offerings |
 | VPS/cloud lifecycle | Order/provision/status/usage/renew/plan change/cancel | not started | Exact provider effects, IDs and commercial intent required |
-| VPS controls | Power, rebuild, console, snapshot and recovery | not started | VNC is not SSH; destructive/downtime consent required |
+| VPS controls | Power, rebuild, console, snapshot and recovery | implementing | Existing-server Add website is implemented on parallel cloud branch with local synthetic checks; native/browser acceptance pending. Power/rebuild/console/snapshot remain unfinished; VNC is not SSH. [Cloud slice](TWENTYI_CLOUD_WEBSITES.md) |
 | Support handoff | Scoped, expiring, audited provider support access | not started | Reuse local support identity; provider handoff and revoke/expiry pending |
 | Interactive SSH | Verified destination/host identity, restricted credentials, connect/revoke/disconnect | not started | Implement provider facility or configured secure gateway; external gateway acceptance separately required |
 | Automation consent | Persist policies and eligibility for routine renewals without per-run owner password | not started | Implement minimum billing/consent interface; no unapproved production charge |

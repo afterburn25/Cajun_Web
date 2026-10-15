@@ -1,3 +1,7 @@
+## Unreleased — cloud website creation
+
+Cloud agent owns `codex/twentyi-vps-controls` from0ebc4623: native owner Add website on an explicitly assigned existing server, safe client request summaries, existing gateway/ledger and exact documented addWeb transport. Local synthetic checks pass; native/browser acceptance and root integration remain pending. Server lifecycle/power/console/SSH are still unfinished. See [cloud scope](docs/TWENTYI_CLOUD_WEBSITES.md). No release/live action.
+
 # Integration checkpoint — current main and domain replacement rollback
 
 Normally merge main16f07e49 into the20i client-search branch. Preserve licensing/domain controls and fix failed replacement leaving the original domain disabled. Local4 rollback cases and35 native licensing checks pass; combined acceptance/review pending. Earlier e375 full application artifacts/packages are now verified. Published1.24 remains unchanged.

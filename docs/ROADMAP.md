@@ -1,3 +1,7 @@
+## 2026-10-15 cloud website increment
+
+Cloud agent owns `codex/twentyi-vps-controls` from0ebc4623: native owner Add website on an explicitly assigned existing server, safe client request summaries, existing gateway/ledger and exact documented addWeb transport. Local synthetic checks pass; native/browser acceptance and root integration remain pending. Server lifecycle/power/console/SSH are still unfinished. See [cloud scope](TWENTYI_CLOUD_WEBSITES.md). No release/live action.
+
 # Active 20i increment — client domain availability
 
 Private client domain search is implemented above PR138 with explicit owner enablement, shared provider limits and separate client history. Native1fbeb passes106 combined checks including50 client checks in all four combinations, with exact Windows packages verified. Actual browser acceptance, screenshots, review and release remain pending. Full20i scope is unchanged. [Client-search scope](TWENTYI_CLIENT_DOMAIN_SEARCH.md).
