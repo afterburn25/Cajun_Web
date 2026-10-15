@@ -10,10 +10,11 @@ def run_browser(env,browser):
     db('DELETE FROM ci_rate_limits')
     root=BASE+'/existing/admin/index.php';url=root+'?view=provider-settings';secret='SYNTHETIC_RAW_GENERAL_KEY'
     check('Fresh installation prepares empty provider settings',db("SELECT value FROM fresh_settings WHERE name='provider_settings_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_provider_profiles'))
-    check('Fresh packaged installation stamps current cloud inventory storage',db("SELECT value FROM fresh_settings WHERE name='provider_inventory_schema_version'")==[{'value':'5'}] and db('SHOW TABLES LIKE "fresh_provider_observation_cloud"')!=[] and db('SHOW COLUMNS FROM fresh_provider_refreshes LIKE "operation"')!=[])
+    check('Fresh packaged installation stamps current cloud inventory storage',db("SELECT value FROM fresh_settings WHERE name='provider_inventory_schema_version'")==[{'value':'5'}] and db('SHOW TABLES LIKE "fresh_provider_observation_cloud"')!=[] and db('SHOW COLUMNS FROM fresh_provider_refreshes LIKE "operation"')!=[] and db('SHOW TABLES LIKE "fresh_provider_domain_links"')!=[])
     fresh_owner=requests.Session();submit(fresh_owner,BASE+'/fresh/admin/index.php?view=login','login',{'email':'fresh@example.invalid','password':'Fresh synthetic passphrase 2026'})
     fresh_provider=fresh_owner.get(BASE+'/fresh/admin/index.php?view=provider-settings')
     check('Fresh owner provider page does not require redundant inventory preparation',fresh_provider.status_code==200 and 'Prepare inventory storage' not in fresh_provider.text and 'Cloud server inventory' in fresh_provider.text and 'Save your 20i connection above' in fresh_provider.text)
+    check('Fresh owner inventory page directs connection setup without unavailable actions',fresh_provider.status_code==200 and 'Save your 20i connection above before refreshing inventory.' in fresh_provider.text and 'Prepare inventory storage' not in fresh_provider.text and 'data-provider-refresh' not in fresh_provider.text)
     fresh_owner.close()
     owner=requests.Session();submit(owner,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     r=submit(owner,url,'provider_settings_setup',{'current_password':OWNER,'csrf':'invalid'})

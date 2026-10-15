@@ -1,5 +1,13 @@
 # Session handoff
 
+## Cloud ownership: native pass and shared fresh-owner correction — 2026-10-15
+
+Starting at `4d87ef324047052337fdc34c78180a6ec44cf144`, [PR #128](https://github.com/afterburn25/Cajun_Web/pull/128) passes 848 downloaded named native assertions (156 orchestration and 56 migration cases on each PHP/database combination). [Independent review](https://github.com/afterburn25/Cajun_Web/pull/128#issuecomment-6187370517) is clear. Actual packaged checkpoint [38702057933](https://github.com/afterburn25/Cajun_Web/actions/runs/38702057933) passes 1404 HTTP assertions, including cloud assignment/client isolation/reapproval; it fails only the final empty-PHP-diagnostics check with the shared missing-profile warning. That failure is preserved and is not browser acceptance.
+
+This merge retains cloud parent `cc533c36`, including reviewed fresh-owner correction #129 / `5fa5998d` and its original ancestry. The package section now handles absent profile setup before inventory queries/actions. Fresh cloud schema remains version 5; the combined test retains both cloud setup and fresh package-page regressions. No ownership, migration or provider execution semantics changed in this merge. Generated inventory is refreshed. Changed PHP/Python syntax and documentation checks are required locally, followed by exact merged native/browser evidence and review.
+
+Version 1.24 remains unpublished while its separate fresh-profile candidate completes full acceptance. Preserve older main and cloud evidence. Next: inspect corrected combined cloud reports/screenshots, address findings and normally integrate ready #128 into #127; then prepare the next useful release after 1.24 is verified and published. Cloud lifecycle, commercial order-derived ownership, native controls, broader domain/VPS work and SSH remain active P0 implementation. No production request or live deployment is claimed.
+
 ## Cloud assignment implementation checkpoint — 2026-10-15
 
 Codex continues complete20i P0 implementation on `codex/twentyi-cloud-links`, starting from cloud inventory1b6ede97 and retaining its setup-message correction. Stable inventory/operations #126 is normally merged at main5dd2a3e1; exact-main acceptance38699707455 is running and1.24 remains unpublished. Cloud read/setup #127 remains independently tested and under review. All earlier source histories are retained.
@@ -25,6 +33,14 @@ The next implemented path extends the existing InventoryReader, fixed transport,
 Local PHP 8.4 default/no-ini passes 82 cloud reader/transport cases each; the existing 139 inventory and 28 package-reader cases also pass. Native PHP/database cases and real packaged HTTP/Chromium cloud scenarios are implemented but not yet run. They cover populated v1/v2/v3 upgrades, interruption/repeat, retained package/client isolation, mixed and failed cloud reads, consent/rate limits and desktop/mobile screens. The new owner UI, persistence and migrations remain unverified until those runs pass. No live cloud read, provider write, purchase, mail, SSH or deployment has occurred.
 
 Next: refresh generated shipping mirrors, push this checkpoint, run the reader and native inventory matrices, inspect failures, then run the bounded packaged/browser checkpoint and independent review. Add explicit cloud/client ownership, remaining discovery and native control workflows after the underlying path is verified. Continue first-increment release acceptance on the stable branch; exact-main and downloaded-release verification remain required. The full owner API-reference source/link is still pending, while primary public documentation supports this specific read.
+
+## Fresh owner inventory correction before 1.24 publication — 2026-10-15
+
+Codex retains complete 20i P0 ownership. Starting from normally merged main `5dd2a3e1a7ddb3b63bf9bf98c4da3ac1e13edafc`, this branch fixes a fresh-owner provider page warning discovered by cloud #127 checkpoint [38701151657](https://github.com/afterburn25/Cajun_Web/actions/runs/38701151657). The exact diagnostic was an array-offset-on-null warning in `admin/views/providers.php:71`: fresh installation prepares inventory storage but has no saved provider profile. The shared package view read the missing profile's enabled field. This defect also exists on current main, so 1.24 publication is withheld even though the earlier candidate passed.
+
+The inventory section now handles the missing-profile state first and directs the owner to save the connection. It performs no inventory history query or profile-dependent action before that profile exists. Two actual packaged assertions verify the fresh schema stamp and the fresh owner's setup page; the existing final empty-PHP-diagnostics gate must remain. Generated installer inventory is refreshed. No schema, provider operation, credentials, client data or design change is required.
+
+The prior 906df727 candidate has 9,132 verified assertions and clear review; exact-main 5dd2a3e1 run38699707455 remains running and is preserved as historical evidence, not publication approval for the newly discovered path. All 29 focused main workflows passed, with 158 downloaded named reports / 17,034 executions. Actual main screens were inspected. Corrected candidate review, full candidate acceptance, normal merge, exact corrected main and downloaded release gates are required. Native cloud assignments #128 pass 848 assertions; its browser run is preserved and receives this correction afterward. No 1.24 tag, release or deployment has been created. Continue the remaining 20i scope while these gates run.
 
 ## 1.24 candidate: packaged checkpoint verified — 2026-10-15
 
