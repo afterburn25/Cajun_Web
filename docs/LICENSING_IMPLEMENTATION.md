@@ -57,6 +57,9 @@ Functions:
 - `license_create($customerId, $productId)` — creates a new license
 - `license_get($key)` — retrieves license by key
 - `license_register_domain($licenseId, $domain)` — registers a domain
+- `license_replace_domain($licenseId, $oldDomain, $newDomain)` — atomic
+  "change website": deactivates the old domain (old install goes offline
+  at its next validation) and registers the new one in the freed slot
 - `license_deactivate_domain($licenseId, $domain)` — deactivates a domain
 - `license_deactivate($licenseId)` — deactivates entire license
 - `license_domains($licenseId)` — gets all domains for a license
@@ -80,6 +83,8 @@ Adds "Website licenses" to the Studio admin section with:
 Adds license management to the customer workspace:
 - View active licenses with domains
 - Register new domains
+- Replace a domain in one step (old site auto-deactivates — goes offline
+  at its next validation)
 - Deactivate existing domains
 
 ### 6. Module bundling
