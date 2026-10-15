@@ -75,13 +75,24 @@ Adds license management to the customer workspace:
 - Register new domains
 - Deactivate existing domains
 
-### 6. What still needs to be implemented
+### 6. Module bundling
 
-**Module bundling:**
-- Tool that creates bundled ZIPs (core + industry module + license_key)
-- Calls Website Core build tool: `php tools/build-packages.php bundle <industry> <license_key>`
-- Stores bundle for download in customer portal
-- Integration with purchase flow (when customer buys a product, generate key + create bundle)
+**File:** `site/app/licenses/bundle.php`
+
+- `license_bundle($licenseKey, $industry, $coreDir, $outputDir)` — creates bundled ZIP (core + industry module with embedded license_key)
+- `license_bundle_store($licenseId, $zipPath, $title)` — stores bundle record for download tracking
+
+**Admin UI:** `site/admin/views/studio/licenses.php` — "Generate bundle" button creates downloadable ZIP
+
+**Database:** `license_bundles` table stores bundle records
+
+### 7. What still needs to be implemented
+
+**Purchase flow integration:**
+- Auto-generate license key when customer buys a product
+- Auto-create bundled ZIP on purchase
+- Store bundle for download in customer portal
+- Email license key + download link to customer
 
 ## Integration points
 
