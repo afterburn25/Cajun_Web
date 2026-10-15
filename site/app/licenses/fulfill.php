@@ -115,7 +115,8 @@ function license_core_source_dir(): ?string {
         config()['license_core_dir'] ?? '',
     ];
     foreach ($candidates as $dir) {
-        if ($dir !== '' && is_dir($dir.'/site') && is_dir($dir.'/site/modules')) {
+        // Bundle builds read core files from site/ and module sources from examples/
+        if ($dir !== '' && is_dir($dir.'/site') && is_dir($dir.'/examples')) {
             return realpath($dir) ?: $dir;
         }
     }
