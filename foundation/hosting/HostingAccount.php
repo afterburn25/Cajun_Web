@@ -247,6 +247,33 @@ final class HostingAccount
      */
     public function reconcileTimeout(string $actor, int $at, bool $appliedRemotely, ?string $resourceRef, string $evidence, string $attemptRef): void
     {
+        // Preserve the original journal command's semantics for existing callers.
+        $this->resolveTimeout($actor, $at, $appliedRemotely, $resourceRef, $evidence, $attemptRef, true);
+    }
+
+    /**
+     * Record a conclusive observation without arming another provider attempt.
+     * The caller must verify the provider evidence; this model does not do so.
+     * A confirmed not-removed resource remains failed and needs a separate
+     * currently authorized retry with its own durable dispatch fence.
+     */
+    public function reconcileWithoutDispatch(string $actor, int $at, bool $appliedRemotely, ?string $resourceRef, string $evidence, string $attemptRef): void
+    {
+        $last = $this->history[array_key_last($this->history)];
+        if (trim($actor) === '' || $at < 0 || $at < $last['at']) {
+            throw new InvalidArgumentException('Reconciliation needs a named actor and a current observation time.');
+        }
+        if ($this->unresolvedOperation === self::OP_PROVISION && !$appliedRemotely && $resourceRef !== null) {
+            throw new InvalidArgumentException('Absent provisioning cannot also name a created resource.');
+        }
+        if ($this->unresolvedOperation !== self::OP_PROVISION && $resourceRef !== null && $resourceRef !== $this->providerRef) {
+            throw new InvalidArgumentException('Reconciliation names a different provider resource.');
+        }
+        $this->resolveTimeout($actor, $at, $appliedRemotely, $resourceRef, $evidence, $attemptRef, false);
+    }
+
+    private function resolveTimeout(string $actor, int $at, bool $appliedRemotely, ?string $resourceRef, string $evidence, string $attemptRef, bool $rearmDeletion): void
+    {
         if ($this->unresolvedOperation === null || $this->unresolvedAttempt === null) {
             throw new LogicException('No timed-out operation is awaiting reconciliation.');
         }
@@ -274,15 +301,19 @@ final class HostingAccount
             };
         } else {
             if ($operation === self::OP_DEPROVISION) {
-                // A confirmed "not removed" arms a fresh attempt identity so a
-                // delayed result for the failed attempt can never satisfy it.
-                $this->beginAttempt();
+                if ($rearmDeletion) {
+                    // Retained legacy command: fresh identity isolates delayed results.
+                    $this->beginAttempt();
+                } else {
+                    // Observation alone grants no new attempt. Explicit retry is separate.
+                    $this->deprovisionRetryable = true;
+                }
             }
             match ($operation) {
                 self::OP_PROVISION => $this->move(self::FAILED, $actor, $at, $note . ' — provider confirms no resource; retry is safe'),
                 self::OP_SUSPEND => $this->move(self::ACTIVE, $actor, $at, $note . ' — provider confirms still active'),
                 self::OP_RESUME => $this->move(self::SUSPENDED, $actor, $at, $note . ' — provider confirms still suspended'),
-                self::OP_DEPROVISION => $this->move(self::DEPROVISIONING, $actor, $at, $note . ' — provider confirms not removed; re-attempt armed under a fresh attempt id'),
+                self::OP_DEPROVISION => $this->move($rearmDeletion ? self::DEPROVISIONING : self::DEPROVISION_FAILED, $actor, $at, $note . ($rearmDeletion ? ' — provider confirms not removed; re-attempt armed under a fresh attempt id' : ' — provider confirms not removed; explicit retry required')),
                 default => throw new LogicException("Cannot reconcile '{$operation}'."),
             };
         }

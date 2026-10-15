@@ -1,5 +1,13 @@
 # Decision record
 
+## Separate constructible requests from purchase authority — 2026-10-15
+
+A documented request builder is not commercial consent. The generic owner approval path admits only package-label changes; purchases, renewal, mixed billing/deletion and mail require dedicated persisted intent and eligibility workflows. Existing high-risk grants cannot dispatch through the generic route. Missing stamped operation tables require original database recovery, never empty replacement. This implements independent review findings on PR126 without discarding inherited history.
+
+## 2026-10-15 — Codex P0 takeover and first inventory repairs
+
+Owner transferred the complete 20i lane to Codex and paused unrelated development. From main68e4d41, preserved #122/#115 via normal merges through9744110; repaired old-schema readiness, generated-column validation, moved-domain/context display, sibling-name disclosure and two fixture counters. Added genuine populated/interrupted/repeated upgrade and isolation coverage;38 local PHP8.4/MariaDB checks pass. Expanded current PHP/database and packaged HTTP acceptance is pending. Full release review and later hosting/domain/VPS/SSH/billing implementation continue. [Scope, ancestry and evidence](TWENTYI_CODEX_TAKEOVER.md). v1.23 stays unchanged; no live action.
+
 ## 2026-10-14 — distinguish branch integration from reviewed publication
 
 The owner has authorized continued implementation and isolated tests on separate branches. Earlier assistant-authored checkpoints postponed even testable route integration until independent review. Prepare the concrete admin/router/setup integration and packaged synthetic acceptance on unreleased PR77 now, so review can assess the complete behavior. Retain independent review and exact-source acceptance before merge/publication. This does not authorize customer mail, live deployment, provider writes, payment or SSH, and does not claim review received.
@@ -199,3 +207,7 @@ Use cURL for fixed HTTPS rather than implementing an HTTP parser. Reject entire 
 ## 2026-10-14 — Complete 20i implementation assigned to Devin
 
 Owner instruction: “let devin do the complete 20i integration.” Devin's prior isolated-component scope is expanded to end-to-end provider/application work, including data, ownership, native UI, controls/lifecycle, domains, VPS and support/SSH integration. Codex keeps non-20i work and final review/merge/release coordination. Shared router/build wiring may be implemented narrowly by Devin with documented coordination; it is not reserved so broadly that application work cannot proceed. Existing branch history, immutable releases and operation-specific production gates stay in force. [Complete handoff](DEVIN_COMPLETE_20I_HANDOFF.md).
+
+## 2026-10-15 — Preserve provider acknowledgements separately from completion
+
+Retain the existing gateway/ledger, extending its bounded result with accepted_pending and the provider-issued package ID. A valid documented addWeb acknowledgement proves acceptance, not activation; generic2xx, false/null or mixed envelopes cannot prove business success. Recorded legacy results are preserved. Name-only matches never adopt resources. Current ID-array contracts invalidate old scalar approvals rather than silently translating them. No mixed updatePackage request receives a blanket idempotent capability. Full inner request schemas, first-party order/hosting controls and release acceptance remain required.

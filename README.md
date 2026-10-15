@@ -1,6 +1,11 @@
 # CajunWebPro — project source of truth
 
-## Owner allocation override — 2026-10-14
+
+## Current ownership and candidate — 2026-10-15
+
+Codex owns the complete 20i integration as P0, superseding the historical Devin allocation below. Unrelated development is paused and preserved. The unreleased 1.24 candidate is [PR #126](https://github.com/afterburn25/Cajun_Web/pull/126); v1.23 remains the published baseline. See [current status](PROJECT_STATUS.md), [takeover](docs/TWENTYI_CODEX_TAKEOVER.md) and [requirements](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md). The stable inventory/ownership/operation increment is entering full acceptance; native controls, commercial service journeys, domains, VPS/cloud and SSH continue afterward. Repository releases do not imply live deployment or provider activation.
+
+## Historical owner allocation — 2026-10-14 (superseded)
 
 The owner instructed: **“let devin do the complete 20i integration.”** Devin owns the entire implementation: provider adapters, native persistence/migrations and client ownership, admin and client portal screens, hosting lifecycle/controls, domains, VPS/cloud, support handoffs and VPS SSH, with their tests and documentation. This supersedes earlier component-only assignments and statements reserving all 20i application/UI work to Codex. Codex retains non-20i development and final independent review, combined acceptance, merge/release coordination. [Full handoff and acceptance](docs/DEVIN_COMPLETE_20I_HANDOFF.md); [authoritative GitHub assignment](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171468180).
 

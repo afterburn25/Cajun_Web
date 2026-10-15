@@ -1,5 +1,7 @@
 # Unified client portal: hosting, design projects, updates and website downloads
 
+Current ownership and priority: [Codex complete20i takeover](TWENTYI_CODEX_TAKEOVER.md). Earlier allocations/progress summaries below are historical; the complete requirements remain in force.
+
 ## VPS support gate interpretation (owner policy 2026-10-13)
 
 A-10 is **Architecture/security validation pending**, not a project-wide blocker. Continue independent staff permissions, customer/service mapping, audit, explicit consent and safe session UX with isolated tests. Do not permit a live terminal until a properly scoped provider handoff or external secure gateway is reviewed and tested; never add an undeclared SSH daemon/root requirement to the shared-host application. Read [dependency-gate policy](DEPENDENCY_GATES.md). This is documentation-only and does not claim SSH support is implemented.

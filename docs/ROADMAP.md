@@ -1,5 +1,37 @@
 # Approved roadmap and acceptance criteria
 
+## 20i approval and recovery correction — 2026-10-15
+
+The generic request console is narrowed to a typed package-label workflow. Dedicated verified order/quote/payment/message/destructive consent workflows remain required engineering, not completed purchase capability. Historical requests remain available for read-only recovery. See PROJECT_STATUS.md and the complete requirements table for current evidence and remaining release gates.
+
+## Combined inherited work and write-semantics correction — 2026-10-15
+
+Codex retains complete 20i P0 ownership in [PR126](https://github.com/afterburn25/Cajun_Web/pull/126). Main68e4d41 and publishedv1.23.0 remain unchanged; no release or deployment is claimed.
+
+Downloaded/verified [native run38686612548](https://github.com/afterburn25/Cajun_Web/actions/runs/38686612548), exact962cc3e: all four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 jobs pass, with98 inventory plus38 upgrade/render checks each (544 named executions). The upgrade helper used the same assertion label for its two version-specific audit failures; both ran, and this checkpoint labels them separately. This evidence predates the combined shipping changes below; it does not certify this new descendant. Original d2f59fb full application run38686331742 hit the retained quota fixture failure; its recovery/Apache work was left running for evidence, not cancelled.
+
+Normal merge5b115f0 retains resources40ad600 (including #94's identity descriptors), with139 local pure inventory checks passing. Normal merge08b90c8 retains hosting#87–#89 at1c92e6b, adding explicit deletion retry and durable reconciliation storage. Current ownership/status text won documentation conflicts; the incoming history and dedicated architecture/recovery guides remain intact. Regenerated inventory resolves the generated-file conflicts. These inherited components still require combined native/package acceptance; they are not completed hosting workflows.
+
+This checkpoint repairs the inherited blanket HTTP-success classifier. Documented addWeb responses retain the allocated result ID as accepted_pending, separate from verified active service. Empty, malformed, false/null, mixed per-resource maps and unverified envelopes stay uncertain.408/409/425 are ambiguous rather than definite failures. No write, including mixed billing/deletion updatePackage, is blanket retry-safe. The ledger replays pending acknowledgements with their original IDs and one attempt. Reconciliation can observe the acknowledged ID, but a domain-name match alone cannot prove creation. Old results and attempts are preserved.
+
+updatePackage now requires ID arrays and bounded per-package maps restricted to the approved update IDs; overlapping update/delete IDs and scalar legacy approvals are refused. deleteWeb builds the explicitly documented delete-id array. Existing approved scopes are revalidated before consumption/dispatch. This corrects the documented outer request contract; nested field semantics and the remaining native forms are still tracked implementation work. No live provider write ran. Local default/no-ini PHP passes139 named synthetic operation checks each. Native four-combination operation/hosting matrices and exact combined browser/recovery acceptance are next.
+
+The complete owner upload is still being located; the selected repository summary is not a substitute. The owner was asked for its accessible path/link while independent work continues. Required native controls, registrar commerce, VPS/cloud, SSH, catalog/order/payment connections and release verification remain unfinished in the requirements checklist.
+
+Next: inspect native matrix artifacts; fix any failures; run the stable combined packaged/browser/Apache candidate and obtain independent review. Then publish a verified incremental release and continue the remaining20i scope. Do not resume mail or other unrelated feature work.
+
+## Focused CI fixture correction — 2026-10-15
+
+Takeover [PR #126](https://github.com/afterburn25/Cajun_Web/pull/126) is open at first implementation `d2f59fba32b98153119b33072647cccdbb25696d`. Downloaded push run [38686268179](https://github.com/afterburn25/Cajun_Web/actions/runs/38686268179) fails: MariaDB passes 74 assertions (including the repaired revocation check) then the longer fixture reaches the real hourly quota before its audit scenario; MySQL reaches the audit-injection trigger but binary logging requires test-server configuration (error1419). Failed reports remain retained. These are fixture constraints, not relaxed production requirements.
+
+This test-only correction explicitly fills/tests the 20/hour refusal and verifies no intent/network use, then ages only isolated fixture timestamps for the next scenario while retaining rows. The disposable MySQL CI service permits synthetic fault-injection triggers; application-user privilege and production code are unchanged. Local38-case upgrade/render evidence remains scoped to the same shipping code. Current native matrices and full acceptance still require verification. Preserve the original application run38686331742; use a focused manual run for this iteration instead of restarting its long package/recovery work. The commit deliberately skips automatic CI and dispatches the native matrix explicitly, not a release check bypass.
+
+Next: inspect all focused results/logs, correct remaining failures, reconcile resource/hosting descendants, and run complete stable-candidate acceptance/review before release. Codex P0 ownership and v1.23 baseline remain unchanged.
+
+## 2026-10-15 — Codex P0 takeover and first inventory repairs
+
+Owner transferred the complete 20i lane to Codex and paused unrelated development. From main68e4d41, preserved #122/#115 via normal merges through9744110; repaired old-schema readiness, generated-column validation, moved-domain/context display, sibling-name disclosure and two fixture counters. Added genuine populated/interrupted/repeated upgrade and isolation coverage;38 local PHP8.4/MariaDB checks pass. Expanded current PHP/database and packaged HTTP acceptance is pending. Full release review and later hosting/domain/VPS/SSH/billing implementation continue. [Scope, ancestry and evidence](TWENTYI_CODEX_TAKEOVER.md). v1.23 stays unchanged; no live action.
+
 ## Owner allocation override — 2026-10-14
 
 The owner instructed: **“let devin do the complete 20i integration.”** Devin owns the entire implementation: provider adapters, native persistence/migrations and client ownership, admin and client portal screens, hosting lifecycle/controls, domains, VPS/cloud, support handoffs and VPS SSH, with their tests and documentation. This supersedes earlier component-only assignments and statements reserving all 20i application/UI work to Codex. Codex retains non-20i development and final independent review, combined acceptance, merge/release coordination. [Full handoff and acceptance](DEVIN_COMPLETE_20I_HANDOFF.md); [authoritative GitHub assignment](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171468180).

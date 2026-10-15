@@ -1,5 +1,7 @@
 # Owner-supplied 20i API reference: implementation handoff
 
+Current ownership and priority: [Codex complete20i takeover](TWENTYI_CODEX_TAKEOVER.md). Earlier allocations/progress summaries below are historical; the complete requirements remain in force.
+
 ## Status and source provenance
 
 This is a source-derived investigation and implementation handoff, not a shipped integration, provider test, release, deployment, or worker dispatch. The owner supplied the API documentation to accelerate the existing CajunWebPro work. Do not restart the project or replace its custom PHP UI with StackCP, WHMCS, or Easy Builder.
@@ -16,7 +18,7 @@ Starting main for this documentation branch: `22a2969692ab5bcc7f35158dcaa5355c62
 
 At inspection, the shared handoff identifies active mail-notices candidate 1.19.0 / PR #72 and latest verified release 1.18.0. Preserve that lane. Provider [PR #43](https://github.com/afterburn25/Cajun_Web/pull/43), `devin/provider-foundation`, is open and not merged into main; inspected head `6c378f5249d05c9e7734214c124fd1e3b1d09e6a`. Its description reports 163 synthetic checks, not live provider acceptance. [PR #71](https://github.com/afterburn25/Cajun_Web/pull/71) merged request-key validation into Devin's branch, not main. Refresh these states before acting; this handoff does not independently rerun or certify those tests.
 
-Codex retains application, schema, persistence, UI, packaging and release integration. Devin retains canonical provider-contract corrections/review. Reuse reviewed work rather than building a competing gateway or operation ledger. No live/API/secret-bearing workflow is added or triggered by this documentation change.
+Codex now owns the complete integration under the takeover; the former split is historical. Reuse reviewed work rather than building a competing gateway or operation ledger. No live/API/secret-bearing workflow is added or triggered by this documentation change.
 
 ## Source conventions
 
