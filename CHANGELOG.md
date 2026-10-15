@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — recurring lifecycle contract
+
+Define immutable explicit client consent and future whole-period lifecycle before implementation. No shipping or payment behavior changes.
+
 ## Unreleased — immutable recurring invoice terms
 
 Add a pure canonical terms document with exact source/client/project bindings, USD amount, explicit timezone/calendar/due rules and stable period facts. Add 372 named local checks per PHP mode and isolated PHP 8.2/8.4 CI. No application or invoice activation; native consent/lifecycle/unique invoices and independent review remain required.
