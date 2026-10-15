@@ -51,7 +51,7 @@ function service_orders_form_action(string $action,string $agreement,int $client
     // Bind route and order before the native action; native authority is rechecked there.
     $context=service_orders_context($agreement,$client,!$owner);
     if(!$context['document']||$context['document']->data()['id']!==$id)throw new RuntimeException('Hosting order unavailable.');
-    if($owner&&in_array($command,['prepare_service','map_service'],true)){
+    if($owner&&in_array($command,['prepare_service','map_service','map_catalog'],true)){
         hosting_order_links_form_action($command,$context['document'],$client,$password);return;
     }
     if($owner&&in_array($command,['prepare_fulfillment','fulfill_service','recover_fulfillment','retry_fulfillment','prepare_confirmation','confirm_fulfillment'],true)){

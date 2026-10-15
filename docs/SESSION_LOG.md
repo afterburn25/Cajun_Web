@@ -1,3 +1,9 @@
+## 2026-10-15 — integrate reviewed plan catalog and preserve browser failure evidence
+
+Starting registrar mergec1585199, normally merge catalog8f7028db. Its owner-reviewed provider type/cost mappings, immutable recovery pointers, retail-order provenance and existing fulfillment selection auto-merge without shipping conflicts. Documentation keeps both histories and the concise current summary; Apache protection retains the exact union. Local51 catalog document cases pass per default/no-INI PHP8.4, alongside139 inventory/28 reader/82 cloud/64 registrar/230 operations/95 mailbox cases. Changed PHP/Python syntax passes. Installer refresh and independent integration review are required before the merge commit; combined native/browser/recovery/Apache execution remains pending.
+
+Domain agent downloaded mailbox334 browser artifact12012807554 from38820312445; published SHA256010bbb2eae6b966796ebaa497ac452d953330ba5131bcc689a3eae4c6a591d6d matches, CRC checked. Tested merge8d1ee01f has the same tree as334c390c. Named HTTP check1126, Provider UI keeps operation capabilities unverified, failed before mailbox browser cases ran. The exact paragraph is unconditional in source and diagnostics show no PHP errors on that page. Preserve the failure; likely navigation timing is addressed by explicitly waiting for the successful submit navigation and the exact visible paragraph, with HTML/screenshot capture on a future failure. The assertion is retained; no shipping behavior changes for this fixture correction. Fresh execution must confirm it. Native and recovery passed on that prior source while Apache continued. No release or live action.
+
 ## 2026-10-15 — integrate registered domains with mailbox controls
 
 Starting60bef4d, normally merge domain branch725573f0 with preserved history. Retain both provider controllers/views, browser suites, protected-path lists, fixed transport operations and the private client services view. Independent domain review found no blocking interaction; its adjacent recovery-history recommendation changes mailbox latest-intent selection from wall-clock ordering to sequence ordering. Four native cases exercise a higher sequence with an earlier recent timestamp and verify failed/unfinished refreshes refuse before request/grant/DNS/send. Those new native cases and the merged browser/recovery/Apache suites still require Linux acceptance.
@@ -1989,3 +1995,30 @@ Parent2fe7e2ff, PR142: all four downloaded native artifacts verify60 cases plus6
 ## 2026-10-15 — registrar native/browser evidence and capture handoff
 
 Parent8b4a101a, PR142: four actual artifacts verify63 native +64/64 reader cases each; source2fe7e2ff checkpoint verifies1,810 HTTP/Chromium checks (36 registrar),62 named reports, empty unexpected diagnostics and exact source/package bytes. Owner desktop and client screens inspected. Owner mobile element capture caught sidebar/sticky-header overlays; test-only navigation/settling/full-page correction awaits root combined screenshot inspection. Shipping source unchanged by this final checkpoint. Combined recovery/Apache remains pending; root owns integration/releases. [Exact evidence](TWENTYI_REGISTRAR_INVENTORY.md).
+
+## 2026-10-15 — parallel catalog mapping increment
+
+The owner requested parallel 20i agents. The catalog agent owns `codex/twentyi-catalog-controls`, parent `0ebc46237fce565005b581fe5a96a2691b9840b5`; root retains mailbox implementation and integration/releases. Main `b66062e4` was inspected and not merged into this isolated branch. [Catalog scope and continuation](TWENTYI_PLAN_CATALOG.md).
+
+Adds immutable owner-reviewed provider mappings on the existing retail plan screen, private exact decimal cost/currency/period evidence, current account/type/limits/defaults review, expiration/withdrawal, and catalog-backed existing hosting preparation. Original retail consent, commercial eligibility, fulfillment engine and histories are preserved. No automatic discovery or provider entitlement is claimed. Additive native storage, route/forms, historical association provenance and focused tests are included; installer inventory is regenerated.
+
+Local PHP 8.4 default/no-INI each pass 51 named pure document checks; changed/new PHP syntax passes. Native catalog/order fixtures are written but await Linux CI; Windows vault protection was not relaxed. Current browser/package/independent review gates remain pending. No live provider operation, charge, customer mail, SSH, deployment or release occurred. Next: inspect exact branch native matrix and fix any failures, then root integrates with other parallel branches and performs combined acceptance/review. Published 1.24.0 remains unchanged.
+
+## 2026-10-15 — independent catalog review corrections and browser coverage
+
+Starting24e75ca646f13852b54ea148966048ebdec66bec, PR141. Root independently found that rejected oversized/array catalog fields could throw again during redisplay, and malformed recovered association JSON could access format before validation. Corrected both: rendering uses a bounded nonthrowing UTF-8 projection, while association/catalog document validation normalizes malformed history. Added four native malformed-render cases and actual HTTP/Chromium setup, review, rejection, replay and catalog-backed existing fulfillment coverage. Parent native38818360818 has successful PHP8.2/MariaDB and PHP8.2/MySQL jobs; remaining jobs/artifact verification were pending when this entry was written. Local51 pure checks per PHP8.4 mode and changed PHP syntax pass; exact descendant native/browser verification remains required. All runs and previous releases are preserved.
+
+### Verified parent native evidence
+
+Run38818360818 at24e75ca6 succeeded in all four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 combinations. Downloaded ZIP hashes/CRCs and every retained named report verify; each includes36 catalog cases within501 combined recurring/order cases (do not add overlapping report counts). Pure report files were missing because their output directory did not yet exist; the descendant creates it first and fails if a report cannot be written. No missing report is claimed verified.
+
+- Artifact12012092044: SHA256 `76acf4f9d618761375ba4a6ba7ca2a6584e13efbaf534ae1600cdaf148e80d88`.
+- Artifact12011927319: SHA256 `532218e5b4036a7ce57cdbe63c31f9da55d8e632af8382b65d5a3281f9e107e6`.
+- Artifact12011582391: SHA256 `488d2c32a279f20d8d66d3686c689edf7075afbaba5f7c7ee6e52641e9554c3e`.
+- Artifact12011367977: SHA256 `a1d65e844004a40aef623395f4822f1851d8a62a903400c143c05dd8be650596`.
+
+The descendant fixes root’s independent redisplay/recovered-format findings, adds four native render regressions and actual HTTP/Chromium catalog-backed fulfillment tests, and enables this feature branch’s complete application workflow. Local pure51 checks per mode, changed PHP syntax, Python AST and documentation checks pass. Refresh95043 completed successfully; exact installer inventory verified. Descendant native/browser/package/review remains pending.
+
+## Catalog withdrawal recovery correction — 2026-10-15
+
+Starting41123e9b5b95f8bbe4244ee5db64a15eb3a85a58, PR141: source review found that losing a latest withdrawal record together with its matching audit could make an older enabled mapping appear current. Added an independently retained per-plan latest ID/digest pointer in settings, saved atomically with every review. Exact pointer/history checks and plan-family counts refuse missing/older review histories, including loss of both withdrawal and audit. Native fixtures cover paired loss, refusal of new approval, missing pointer and exact restoration. This strengthens recovery; it does not add provider execution. Local syntax and51 pure checks pass; current native/full acceptance remains pending. Preserve parent41123 full38819193594 and native38819193595; do not replace or cancel those runs.

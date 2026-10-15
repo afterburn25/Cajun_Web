@@ -6,6 +6,10 @@ Root integrates native mailbox creation, provider plan mappings, registrar owner
 
 2026-10-15: user authorized simultaneous agents. The domain agent owns `codex/twentyi-domain-controls` from `0ebc46237fce565005b581fe5a96a2691b9840b5`; root owns integration/releases. Adds sanitized registrar identity reads through existing inventory, distinct explicit client assignments, latest-attempt freshness, owner/client PHP views and recovery/tests. Hosted-domain links never become registrar authority. Local PHP8.4 synthetic checks pass64 registrar plus139 inventory/28 reader/82 cloud cases per mode; native CI and browser acceptance are pending. Nameserver writes remain disabled pending verified response/authority contracts. No provider operation or release. [Scope, provenance and next steps](TWENTYI_REGISTRAR_INVENTORY.md).
 
+## Current 20i catalog increment — 2026-10-15
+
+Implementing [owner-reviewed provider plan catalog](TWENTYI_PLAN_CATALOG.md): reusable account/type/limit mapping, distinct private provider-cost evidence, expiry/withdrawal and existing hosting preparation selection. Local pure checks pass; native/browser/packaged acceptance pending. Automatic packageTypes discovery, cost feeds and provider entitlement remain unfinished. This does not complete the full20i roadmap.
+
 # Active 20i increment — client domain availability
 
 Private client domain search is implemented above PR138 with explicit owner enablement, shared provider limits and separate client history. Native1fbeb passes106 combined checks including50 client checks in all four combinations, with exact Windows packages verified. Actual browser acceptance, screenshots, review and release remain pending. Full20i scope is unchanged. [Client-search scope](TWENTYI_CLIENT_DOMAIN_SEARCH.md).

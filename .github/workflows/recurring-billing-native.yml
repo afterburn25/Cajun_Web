@@ -1,10 +1,10 @@
 name: Native recurring agreement and period invoice checks
 on:
   push:
-    branches: [main, codex/recurring-billing-records, codex/twentyi-recurring-eligibility, codex/twentyi-recurring-ui, codex/twentyi-service-orders]
-    paths: ['site/app/billing/**', 'site/app/hosting/order*.php', 'site/app/hosting/fulfillment*.php', 'site/app/hosting/operations.php', 'site/app/hosting/reconciliation.php', 'site/app/providers/inventory.php', 'site/app/hosting/storage.php', 'tests/hosting_fulfillment*_cases.php', 'site/includes/layout/service_orders.php', 'site/includes/layout/hosting_*.php', 'tests/service_orders_*.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
+    branches: [main, codex/recurring-billing-records, codex/twentyi-recurring-eligibility, codex/twentyi-recurring-ui, codex/twentyi-service-orders, codex/twentyi-catalog-controls]
+    paths: ['site/app/providers/plan_catalog*.php', 'site/includes/layout/provider_plan_catalog.php', 'tests/provider_plan_catalog*.php', 'site/app/billing/**', 'site/app/hosting/order*.php', 'site/app/hosting/fulfillment*.php', 'site/app/hosting/operations.php', 'site/app/hosting/reconciliation.php', 'site/app/providers/inventory.php', 'site/app/hosting/storage.php', 'tests/hosting_fulfillment*_cases.php', 'site/includes/layout/service_orders.php', 'site/includes/layout/hosting_*.php', 'tests/service_orders_*.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
   pull_request:
-    paths: ['site/app/billing/**', 'site/app/hosting/order*.php', 'site/app/hosting/fulfillment*.php', 'site/app/hosting/operations.php', 'site/app/hosting/reconciliation.php', 'site/app/providers/inventory.php', 'site/app/hosting/storage.php', 'tests/hosting_fulfillment*_cases.php', 'site/includes/layout/service_orders.php', 'site/includes/layout/hosting_*.php', 'tests/service_orders_*.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
+    paths: ['site/app/providers/plan_catalog*.php', 'site/includes/layout/provider_plan_catalog.php', 'tests/provider_plan_catalog*.php', 'site/app/billing/**', 'site/app/hosting/order*.php', 'site/app/hosting/fulfillment*.php', 'site/app/hosting/operations.php', 'site/app/hosting/reconciliation.php', 'site/app/providers/inventory.php', 'site/app/hosting/storage.php', 'tests/hosting_fulfillment*_cases.php', 'site/includes/layout/service_orders.php', 'site/includes/layout/hosting_*.php', 'tests/service_orders_*.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -62,6 +62,9 @@ jobs:
               cmp foundation/billing-calendar/BillingCalendar.php site/includes/foundation/billing-calendar/BillingCalendar.php
               cmp foundation/recurring-billing/RecurringBillingTerms.php site/includes/foundation/recurring-billing/RecurringBillingTerms.php
               cmp foundation/recurring-billing/RecurringBillingSchedule.php site/includes/foundation/recurring-billing/RecurringBillingSchedule.php
+              mkdir -p qa
+              php tests/provider_plan_catalog_document.php qa/provider-plan-catalog-document-default.json
+              php -n tests/provider_plan_catalog_document.php qa/provider-plan-catalog-document-noini.json
               php -d memory_limit=128M tests/recurring_billing_native.php
               cat qa/service-orders-native-results.json
               cat qa/service-orders-links-native-results.json
@@ -94,6 +97,9 @@ jobs:
             qa/hosting-fulfillment-native-results.json
             qa/hosting-fulfillment-forms-native-results.json
             qa/hosting-confirmation-native-results.json
+            qa/provider-plan-catalog-native-results.json
+            qa/provider-plan-catalog-document-default.json
+            qa/provider-plan-catalog-document-noini.json
             qa/ledger-native-results.json
             qa/recurring-billing-forms-default.json
             qa/recurring-billing-forms-noini.json

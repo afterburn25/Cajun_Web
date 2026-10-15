@@ -1,3 +1,7 @@
+## Unreleased — reviewed provider plan mappings
+
+Combine expiring owner-reviewed provider type and cost mappings with existing retail orders and hosting preparation. Preserve exact selection provenance and withdrawal/recovery history. The provider-settings browser check now waits for returned-page content and retains diagnostics on failure; product behavior is unchanged by that test correction. Combined acceptance remains pending.
+
 ## Unreleased — combined registrar and mailbox controls
 
 Registered-domain inventory and explicit client assignment are combined with mailbox creation controls. Preserve both workflows and protected paths. Latest mailbox authority follows the original refresh intent sequence even if recovered timestamps are out of order. Four new native regressions and combined acceptance remain pending; published1.24.0 is unchanged.
@@ -25,6 +29,22 @@ Add expiring owner permissions, real owner/client creation forms and safe reques
 - Explicit owner refresh of bounded registered-domain identities and distinct client assignments; native owner/client views keep hosting links separate.
 - Current complete observations, exact identity/context and latest-attempt freshness govern assignment and disclosure; failures never fall back through older success.
 - Adds native schema, permissions, atomic audit, concurrent reapproval and recovery fixtures. Native/browser acceptance and nameserver execution remain pending. See [scope](docs/TWENTYI_REGISTRAR_INVENTORY.md).
+
+## Unreleased — preserve catalog withdrawal during recovery
+
+- Retain the exact latest mapping ID/digest independently, preventing a partial restore of review and audit history from reactivating an older withdrawn approval.
+
+## Unreleased — catalog review corrections
+
+- Preserve safe inline rendering after oversized or array catalog form input; validate recovered association shape before reading its format.
+- Add actual HTTP/Chromium catalog form and existing fulfillment preparation coverage, pending execution.
+
+## Unreleased — owner-reviewed 20i plan catalog
+
+- Save versioned provider account/type/limit mappings for exact published retail plans, with expiry, withdrawal and current-owner/connection checks.
+- Keep private provider cost decimal amounts, currencies, periods and tax/allocation evidence separate from client retail prices; no inferred conversion or provider quote.
+- Prepare existing hosting service records from an eligible saved mapping while retaining original order/payment/fulfillment safeguards and immutable provenance.
+- Local pure checks pass; native/browser/packaged acceptance and automatic discovery remain pending. See [scope](docs/TWENTYI_PLAN_CATALOG.md).
 
 # Integration checkpoint — current main and domain replacement rollback
 
