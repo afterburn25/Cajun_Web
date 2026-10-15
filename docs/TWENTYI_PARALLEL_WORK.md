@@ -1,5 +1,22 @@
 # Parallel 20i work — 2026-10-15
 
+## Verified mailbox checkpoint334c390c
+
+All four native combinations in run38820306755 pass87 named outcomes each. Root downloaded every artifact, matched published SHA256, verified ZIP CRC and read every named JSON outcome. This is actual PHP/database application testing with synthetic provider transport, not live provider or browser acceptance. Full application38820312445 remains in progress. Installer refresh19827 completed successfully and is closed. Root source remains onPR140; this follow-up checkpoint changes documentation only.
+
+| Runtime | Artifact | SHA256 |
+|---|---|---|
+| PHP8.2 / MariaDB10.11 | 12012298849 | `f34052e4f740f97b7337568e5b0ef17d5466a2af163ebf444a55d1a9abffcd03` |
+| PHP8.2 / MySQL8.4 | 12012648244 | `86d717e81a31c25f3a30021ad29d2dbfea520cdbaeec07d456c9be722c9abb2a` |
+| PHP8.4 / MariaDB10.11 | 12013220074 | `8b4361db84b6fec782ad84f794bfc44944ba0b0c86b07be0357078e93924f83f` |
+| PHP8.4 / MySQL8.4 | 12012533534 | `ad662673e15ed9e2f8653cc74b915beb998c66a9de20e62d515ff0df502a3e4a` |
+
+Parent0ebc full38815495066 final artifact12012785112 SHA256 `aa47f5ea424d12fc47734d6a070f7ad8a3956375bc83e4f550c1cc94fe945d2f` verifies63 named reports,1774 HTTP/Chromium,289 recovery and1811 Apache outcomes. All11 package checksums and every Git/member byte match (FULL5421, COMPLETE2660, UPDATE2647); test merge5df4a442 is source-equivalent. These parent checks do not certify native mailbox or parallel changes.
+
+Catalog8f7028 recovery-pointer delta has separate root/cloud-agent source review with no further blocking finding; final native/browser checks remain active. Registrar8b4a transaction guard has root source review; native38820338409 and prior2fe browser38819247971 continue. Cloud4aa concurrency artifacts now have agent-verified33 cases in all four combinations;2feb adds orphan ledger/result-audit and preparation witnesses, and the cloud agent is adding an early shared-preparation transaction guard. Three agents remain active; none of their PRs141–143 has been integrated. Continue exact-source verification and sequential integration, then combined acceptance. Published1.24.0 is unchanged.
+
+## Earlier checkpoints
+
 Independent domain-agent review of the current missing-family correction and scoped fixture renderer found no further confirmed blocking issue; this is source review, pending native execution. Parent client-search b09b full run38812924437 completed successfully. Downloaded final artifact12010919887 (SHA256 `baa248314726e08dfbbd5bdd633a7d0b1d8c6daedad99cf3fe02f3ea8b04178f`) verifies62 named reports, including1774 HTTP/Chromium,289 recovery and1807 Apache checks, plus11 package checksums and exact Git/member bytes (FULL5417, COMPLETE2659, UPDATE2646). This parent acceptance does not certify the current mailbox or parallel branches.
 
 Mailbox48e65 focused38819417344/job116712054432 reached recovery checks; a globally included view changed the fixture request ID, producing a test failure. The owner-view fixture now renders in its own function and verifies original request/audit/grant identity. Follow-up domain review found the missing-family preparation path also needs a ledger witness; readiness/preparation now recognize original mailbox results even without mailbox tables, markers, audits or grants, and independently of the operation marker. New native cases require no replacement tables and exact history recovery. Descendant CI is required.

@@ -1,5 +1,7 @@
 # Current development — four parallel 20i workers
 
+Current mailbox runtime334c390c now passes all four native combinations:87 named checks each under PHP8.2/8.4 and MariaDB10.11/MySQL8.4. Actual downloaded artifact hashes, ZIP CRC and JSON outcomes were verified. Full application38820312445 remains active. Three agents continue catalogPR141, registrarPR142 and cloudPR143; their latest corrections/browser checks remain separate. Next: inspect final branch evidence, integrate sequentially, then complete combined acceptance. Published1.24.0 is unchanged. Earlier paragraphs below preserve prior checkpoints.
+
 Current48e65 mailbox CI reached recovery cases but a test view include overwrote the fixture request ID. The view now renders in isolated function scope, with an explicit fixture identity assertion. Follow-up domain review also found that a surviving shared ledger must prevent preparation when all mailbox tables/markers/audits/grants are absent; the history witness and native recovery case now cover that loss before DDL. Descendant acceptance is pending. Catalog, registrar and cloud initial matrices have agent-verified passes; their latest review/browser descendants remain separate and unmerged.
 
 Independent catalog review also found and corrected failed-form domain selection and preparation inside a caller transaction; new native regressions await current CI. All three parallel branches now have draftPRs141–143. None is yet integrated or released.

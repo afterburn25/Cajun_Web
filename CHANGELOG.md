@@ -1,5 +1,7 @@
 # Unreleased — native 20i mailbox creation
 
+Native mailbox runtime334c390c passes87 named checks in each of four PHP/database combinations. Browser and integrated release acceptance remain pending; published1.24.0 is unchanged.
+
 Refuse mailbox storage recreation when only the original shared operation ledger survives. Keep native rendering variables isolated so recovery tests retain the original successful request identity. Current acceptance is pending.
 
 Preserve the selected mailbox domain after an invalid form submission and refuse mailbox setup inside a caller-owned transaction. Independent review regressions are included; acceptance remains pending.
