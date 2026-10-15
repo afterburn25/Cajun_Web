@@ -2,7 +2,8 @@
 declare(strict_types=1);
 define('CWP_BOOT',true);
 require __DIR__.'/../includes/bootstrap.php';
-require CWP_CODE_ROOT.'/app/licenses/service.php';
+require_once CWP_CODE_ROOT.'/app/clients/workspace.php';
+require_once CWP_CODE_ROOT.'/app/licenses/service.php';
 
 /**
  * Download a license bundle (Website Core + industry module ZIP).
@@ -28,7 +29,7 @@ if (!is_string($bundleId) || !preg_match('/^\d+$/D', $bundleId)) {
 }
 
 $bundle = one(
-    'SELECT b.*, l.customer_id FROM ' . table('license_bundles') . ' b
+    'SELECT b.*, l.customer_id, l.license_key FROM ' . table('license_bundles') . ' b
      JOIN ' . table('website_licenses') . ' l ON b.license_id = l.id
      WHERE b.id = ? AND l.customer_id = ? AND l.is_active = 1',
     [(int)$bundleId, $client['id']]
