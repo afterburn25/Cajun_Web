@@ -1,5 +1,17 @@
 # Changelog
 
+## Review corrections and preserved acceptance — 2026-10-15
+
+Starting from b1b0e84, independent review of PR126 reported two P1 defects: generic approval could bypass commercial/message consent, and a missing stamped operation table could be recreated empty, forgetting request history. Both are corrected in this checkpoint. Generic approval and execution allow only the explicit package-label subset; chargeable, destructive, mail and plan requests require their dedicated workflows. An old high-risk grant is refused before consumption, DNS or ledger access. The admin screen now uses package-ID/label fields and hides sending controls on ineligible historical approvals.
+
+Operation migration preflights both original tables for every stamped version 1–4 before any DDL. Readiness fails safely when either is missing; recovery requires the original database. Native regressions rename populated tables reversibly, preserve every ledger/grant/audit row and schema stamp, and verify duplicate suppression after restoration. Existing authority/race/replay cases now dispatch label-only requests; creation acknowledgement tests use the actual lower-level gateway/ledger and explicitly historical consumed grants for read-only reconciliation. No test-only production consent bypass was added.
+
+The exact b1b0e84 focused matrices were downloaded and inspected: 4,456 named executions pass across operation contracts, native operations, hosting and inventory PHP/database combinations. The provider-contract jobs also passed but expose no named artifact and are excluded from that count. The broad b1 run38688509276 passed its native and structure-recovery stages, then its browser stage failed on a malformed package fixture whose primary name was absent from its names array. The fixture is corrected without weakening validation. Its Apache work remains running and is preserved; no full application success is claimed.
+
+Local default/no-ini PHP passes 149 named boundary checks each; changed PHP syntax, Python syntax and generated-mirror checks pass. This new shipping head still needs its native matrix and packaged browser evidence. A manually dispatched browser-checkpoint workflow reuses the exact build/native/browser stages without restarting the older extended recovery run; it explicitly cannot certify a release. Follow-up independent review and exact full application/main/release-asset verification remain release gates.
+
+Next: inspect the new matrix and browser artifacts, fix findings, finish stable integrated acceptance and publish the first tested increment, then continue required commercial order/service and native control workflows. Codex retains P0 ownership; main68e4d41 and publishedv1.23.0 are unchanged. No provider write, payment, customer mail or deployment ran. Full owner reference intake remains pending the accessible file/link; independent engineering continues.
+
 ## Combined inherited work and write-semantics correction — 2026-10-15
 
 Codex retains complete 20i P0 ownership in [PR126](https://github.com/afterburn25/Cajun_Web/pull/126). Main68e4d41 and publishedv1.23.0 remain unchanged; no release or deployment is claimed.

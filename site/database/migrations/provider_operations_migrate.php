@@ -52,7 +52,10 @@ function provider_operations_validate_schema(string $name,string $sql): void {
 }
 
 function provider_operations_ready(): bool {
-    return (one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']??'')==='4';
+    if((one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']??'')!=='4')return false;
+    foreach(['provider_operations','provider_operation_grants'] as $name)
+        if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))return false;
+    return true;
 }
 
 /**
@@ -93,6 +96,13 @@ function provider_operations_migrate(#[\SensitiveParameter] string $password): v
         $actor=provider_settings_owner($password,false);
         $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']??'');
         if(!in_array($version,['','1','2','3','4'],true))throw new RuntimeException('This provider operation storage version is not supported. Existing data was preserved.');
+        // Both tables exist in every stamped version. Reconstructing either
+        // would forget duplicate keys or the original approved request evidence.
+        // Preflight all tables before any DDL so recovery remains reversible.
+        if($version!=='')foreach(array_keys(provider_operations_schema(config()['db']['prefix'])) as $name) {
+            if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))
+                throw new RuntimeException('Established provider operation history is missing. Restore the original database backup; empty replacement tables cannot safely recover prior requests.');
+        }
         foreach(provider_operations_schema(config()['db']['prefix']) as $name=>$sql) {
             if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))db()->exec($sql);
         }

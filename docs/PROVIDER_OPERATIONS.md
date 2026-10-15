@@ -61,7 +61,7 @@ still claims through `ProviderGateway` first.
 validation (exact columns, indexes, FKs, collations); existing foreign
 data is never adopted. `provider_operations_migrate()` is the
 owner-password migration recording `provider_operations_schema_version
-= 1`; fresh installs create the tables and flag via `deploy.php`.
+= 4`; fresh installs create the tables and flag via `deploy.php`.
 
 ## Verification
 
@@ -75,8 +75,7 @@ and a durable-storage secret scan. No provider call is made.
 
 ## Execution (`provider_operations_execute`)
 
-One owner-approved provider write, wired end-to-end on
-`devin/twentyi-execution`. A grant is the complete approved request —
+One owner-approved label-only update, retained from the execution foundation and hardened on `codex/twentyi-complete`. A grant is the complete approved request —
 it stores the canonical JSON of the approved parameters alongside the
 scope fingerprint, and is consumed atomically when executed
 (single-use, `consumed_key`/`consumed_at`):
@@ -84,7 +83,7 @@ scope fingerprint, and is consumed atomically when executed
 1. Under the staff lock: owner password + current profile revision via
    `provider_checks_authority`, storage ready, then the grant row —
    matching profile, unexpired, unrevoked, unconsumed, stored scope
-   reconstructing its fingerprint, operation shape-complete — checked
+   reconstructing its fingerprint, operation shape-complete and admitted by the reviewed generic consent policy — checked
    and consumed in one transaction, all before any credential is opened
    or an address is resolved.
 2. Shape-incomplete or unregistered operations cannot be granted at
@@ -121,8 +120,7 @@ durable-storage secret scan.
 
 The Studio "20i operations" page (`staff.manage` view; every action
 re-enters the owner password) offers: storage setup, approving one
-exact documented request (operation + bounded JSON scope + 5 min–24 h
-expiry), listing approvals with their state (active / used / expired /
+package label change (typed package ID and label + 5 min–24 h expiry), listing approvals with their state (active / used / expired /
 revoked), running an approval with a caller-chosen idempotency key, and
 revoking. The operation ledger history — key, operation, status,
 attempts, timestamps — is shown for reconciliation; `uncertain` rows
@@ -132,15 +130,15 @@ scope must reconstruct its fingerprint before execution.
 
 ## Reconciliation (`provider_operations_reconcile`)
 
-An `uncertain` ledger row is never silently retried; reconciliation
+An `uncertain` or `accepted_pending` ledger row is never silently retried; reconciliation
 answers "did the approved effect land?" through the one evidence-backed
 read (`GET /package` via `InventoryReader`). The owner re-enters their
 password and the exact profile revision; the row must exist as
-`uncertain` and be backed by the consumed grant's stored scope.
+`uncertain` or `accepted_pending` and be backed by the consumed grant's stored scope.
 Outcomes are honest and durable:
 
 - `observed` — the approved effect is visible in a fresh observation
-  (created domain present, or delete-id package absent).
+  (the exact acknowledged package ID is present). A domain match alone is inconclusive; absence under unknown coverage cannot confirm deletion.
 - `not_observed` — the effect is not visible; the request may not have
   landed. The owner verifies in the 20i panel before any new request.
 - `inconclusive` — the operation's effect is not observable from the
@@ -159,3 +157,7 @@ the read — a mid-observation access change yields `unavailable`.
 
 
 Current correction: accepted_pending is stored in the existing bounded status column and replayed with its allocated ID. Old scalar update grants fail current request validation before consumption. Name-only creation matches remain inconclusive. The [current contract](TWENTYI_OPERATIONS_CONTRACT.md) supersedes earlier blanket success/retry descriptions. Combined native/package acceptance is pending on the new checkpoint.
+
+## Consent and recovery correction — 2026-10-15
+
+The generic path checks an explicit label-only allowlist at grant and dispatch. Old purchase/renewal/deletion/mail grants are preserved but refused with consent_required before consumption or network work. Dedicated commercial workflows remain required. A missing ledger or grant table in any stamped version1–4 prevents preparation before DDL; restore the original database with its keys and history. The page remains accessible to report the recovery requirement. Native fixtures verify preserved populated rows and replay after restoration. Lower-level purchase-response tests and historical read-only recovery fixtures do not authorize production purchases.

@@ -1,5 +1,9 @@
 # Approved roadmap and acceptance criteria
 
+## 20i approval and recovery correction — 2026-10-15
+
+The generic request console is narrowed to a typed package-label workflow. Dedicated verified order/quote/payment/message/destructive consent workflows remain required engineering, not completed purchase capability. Historical requests remain available for read-only recovery. See PROJECT_STATUS.md and the complete requirements table for current evidence and remaining release gates.
+
 ## Combined inherited work and write-semantics correction — 2026-10-15
 
 Codex retains complete 20i P0 ownership in [PR126](https://github.com/afterburn25/Cajun_Web/pull/126). Main68e4d41 and publishedv1.23.0 remain unchanged; no release or deployment is claimed.

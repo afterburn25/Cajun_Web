@@ -75,13 +75,14 @@ def run_browser(env,browser):
     check('Provider fixture verified exact request and original TLS hostname',not provider_server.errors and provider_server.names and all(n=='api.20i.com' for n in provider_server.names))
 
     # Domain ownership links over a seeded observed package.
-    provider_server.packages.append({'id':910,'typeRef':1,'name':'client-pack.example','names':['linked-domain.example','shared.example'],'enabled':True,'created':'2000-01-01T00:00:00Z'})
+    provider_server.packages.append({'id':910,'typeRef':1,'name':'client-pack.example','names':['client-pack.example','linked-domain.example','shared.example'],'enabled':True,'created':'2000-01-01T00:00:00Z'})
     r=owner.post(url,data={'csrf':token(owner.get(url)),'action':'provider_inventory_prepare','current_password':OWNER})
     check('Packaged inventory storage prepares with domain link tables',db('SHOW TABLES LIKE "ci_provider_domain_links"')!=[] and db('SELECT value FROM ci_settings WHERE name="provider_inventory_schema_version"')==[{'value':'3'}])
     def inv_post(action_name,**values):
         current=db('SELECT revision FROM ci_provider_profiles')[0]['revision']
         return owner.post(url,data={'csrf':token(owner.get(url)),'action':action_name,'profile_id':pid,'revision':str(current),'current_password':OWNER,**values})
-    inv_post('provider_inventory_refresh')
+    refresh_response=inv_post('provider_inventory_refresh')
+    (QA/'provider-first-refresh.json').write_text(json.dumps({'status':refresh_response.status_code,'results':db('SELECT state,coverage,reason,package_count FROM ci_provider_refresh_results'),'package_ids':db('SELECT package_id FROM ci_provider_observation_packages'),'fixture_errors':provider_server.errors}),encoding='utf-8')
     check('Packaged refresh records a complete observation',db('SELECT r.state FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id ORDER BY f.seq DESC LIMIT 1')[0]['state']=='complete' and db('SELECT COUNT(*) AS n FROM ci_provider_observation_packages')[0]['n']==1)
     alice_id=db('SELECT id FROM ci_studio_clients WHERE email=?',['alice@example.invalid'])[0]['id']
     alice=requests.Session();submit(alice,BASE+'/existing/portal/index.php','login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
@@ -136,6 +137,7 @@ def run_browser(env,browser):
     check('Other client portal hides the linked domain','linked-domain.example' not in bob.get(BASE+'/existing/portal/index.php?services=1').text)
     provider_server.packages[-1]['id']=911
     provider_server.packages[-1]['name']='another-client-private.example'
+    provider_server.packages[-1]['names']=['another-client-private.example','linked-domain.example','shared.example']
     db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-120')
     inv_post('provider_inventory_refresh');r=owner.get(url)
     check('Moved domain owner page shows approved and observed package identities','Approved package #910' in r.text and 'package #911' in r.text and 'Unlink the old binding' in r.text)

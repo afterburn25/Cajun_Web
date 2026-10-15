@@ -123,6 +123,7 @@ function provider_operation_grant(string $profileId,string $operation,array $sco
     $register=new TwentyIOperationRegister();
     $spec=$register->get($operation);
     if ($spec===null||!$spec->shapeComplete) throw new InvalidArgumentException('Only documented, shape-complete operations can be granted.');
+    if (!$register->allowsGenericApproval($operation,$scopeParams)) throw new InvalidArgumentException('This action requires its dedicated order, charge, message or destructive-action authorization. General request approval cannot authorize it.');
     $nodes=0;$scopeJson=provider_operations_canonical($scopeParams,0,$nodes);
     if (strlen($scopeJson)>4096) throw new InvalidArgumentException('The approved scope exceeds the bounded grant size.');
     // The approved scope must actually build a bounded documented
@@ -131,6 +132,7 @@ function provider_operation_grant(string $profileId,string $operation,array $sco
     catch(InvalidArgumentException $e){throw new InvalidArgumentException('The approved request fields do not form a documented request: '.$e->getMessage());}
     return staff_locked(function()use($profileId,$operation,$scopeJson,$password,$ttlSeconds):string {
         $actor=provider_settings_owner($password);
+        if(!provider_operations_ready())throw new RuntimeException('Prepare or recover the original provider operation storage first.');
         $profile=provider_settings_load($profileId,true);
         if((int)$profile['enabled']!==1) throw new RuntimeException('Enable the saved connection before approving operations.');
         $scope=provider_operations_scope($operation,json_decode($scopeJson,true));
@@ -241,6 +243,7 @@ function provider_operations_execute(string $profileId,int $revision,string $gra
             return $out('no_grant',null,$actor);
         $spec=$register->get((string)$grant['operation']);
         if($spec===null||!$spec->shapeComplete)return $out('unbuildable',(string)$grant['operation'],$actor);
+        if(!$register->allowsGenericApproval((string)$grant['operation'],$params))return $out('consent_required',(string)$grant['operation'],$actor);
         // A saved older approval must still satisfy the current request contract.
         try{(new TwentyIRequestBuilder($register))->build(new ProviderOperation((string)$grant['operation'],'dispatch-validation',$params));}
         catch(InvalidArgumentException){return $out('unbuildable',(string)$grant['operation'],$actor);}
@@ -254,6 +257,10 @@ function provider_operations_execute(string $profileId,int $revision,string $gra
     if($started['reason']==='unbuildable') {
         provider_settings_audit($started['actor'],'operation_refused','Refused undocumented or incomplete operation '.$started['operation']);
         return OperationResult::unsupported((string)$started['operation']);
+    }
+    if($started['reason']==='consent_required') {
+        provider_settings_audit($started['actor'],'operation_refused','Dedicated consent required for '.$started['operation'].' on profile '.$profileId);
+        return OperationResult::failed($started['operation'],'This action requires its dedicated order, charge, message or destructive-action authorization.','consent_required');
     }
     if($started['reason']!=='ok') {
         provider_settings_audit($started['actor'],'operation_refused','No active grant '.$grantId.' on profile '.$profileId);

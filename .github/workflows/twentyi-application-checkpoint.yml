@@ -1,0 +1,110 @@
+name: 20i packaged browser checkpoint
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: twentyi-browser-checkpoint-${{ github.sha }}
+  cancel-in-progress: true
+jobs:
+  native-and-browser:
+    runs-on: ubuntu-24.04
+    # Focused build/native/browser evidence only. Full application-tests.yml
+    # remains the release gate including every recovery and Apache case.
+    timeout-minutes: 30
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: isolated-ci-root-only
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Native runtime and browser dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring apache2-bin libapache2-mod-php8.3
+          php8.3 -v
+          php8.3 -m
+          python3 -m venv .ci-venv
+          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 playwright cryptography==50.0.1
+          .ci-venv/bin/python -m playwright install --with-deps chromium
+      - name: Exact source, installer inventory and package checks
+        run: |
+          set -o pipefail
+          mkdir -p qa
+          python3 tools/build.py --commit "$GITHUB_SHA" | tee qa/build-results.txt
+          python3 tests/build_guards.py
+      - name: Native database, upgrade and authorization integration
+        run: |
+          python3 tests/prepare_legacy.py
+          php8.3 tests/estimator_adapter.php
+          php8.3 tests/native.php
+          php8.3 tests/staff_native.php
+          php8.3 tests/support_native.php
+          php8.3 tests/catalog_native.php
+          php8.3 tests/payments_native.php
+          php8.3 tests/attempts_native.php
+          php8.3 tests/notifications_native.php
+          php8.3 tests/ledger_native.php
+          php8.3 tests/delivery_archive.php
+          php8.3 tests/delivery_native.php
+          php8.3 tests/activity_native.php
+          php8.3 tests/mail_templates_native.php
+          php8.3 tests/mail_accounts_native.php
+          php8.3 tests/reviews_native.php
+          php8.3 tests/appointments_native.php
+          php8.3 tests/mail_connections_native.php
+          php8.3 tests/mail_inbox_native.php
+          php8.3 tests/mail_message_native.php
+          php8.3 tests/mail_notices_native.php
+          php8.3 tests/mail_drafts_native.php
+          php8.3 tests/mail_drafts_form.php
+          cp qa/mail-drafts-form-results.json qa/mail-drafts-form-default-results.json
+          php8.3 -n tests/mail_drafts_form.php
+          php8.3 tests/mail_submissions_native.php
+          php8.3 tests/mail_submission_dispatch_native.php
+          php8.3 tests/mail_submission_forms.php
+          cp qa/mail-submission-forms-results.json qa/mail-submission-forms-default-results.json
+          php8.3 -n tests/mail_submission_forms.php
+          .ci-venv/bin/python tests/mail_submission_combined.py
+          php8.3 tests/provider_settings_native.php
+          php8.3 tests/provider_checks_native.php
+          php8.3 tests/provider_inventory_native.php
+          php8.3 tests/provider_inventory_upgrade_native.php
+          php8.3 tests/provider_operations_native.php
+          php8.3 tests/provider_operations_execute_native.php
+          php8.3 tests/hosting_records_native.php
+          php8.3 tests/hosting_operations_native.php
+          php8.3 tests/hosting_retry_native.php
+          php8.3 tests/hosting_delete_retry_native.php
+          php8.3 tests/hosting_reconciliation_native.php
+          php8.3 tests/client_authority_native.php
+      - name: Real HTTP and Chromium application workflows
+        run: .ci-venv/bin/python tests/browser_acceptance.py
+      - name: Verify tests did not mutate shipping source
+        run: git diff --exit-code -- site/
+      - name: Preserve named test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: twentyi-browser-checkpoint-${{ github.sha }}
+          path: |
+            qa/
+            dist/
+          retention-days: 14
+          if-no-files-found: error

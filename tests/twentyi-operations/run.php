@@ -123,6 +123,20 @@ check(!refused(static fn()=>$builder->build(new ProviderOperation('packages.crea
 $mixed['documentRoots']['d188']='public_html';
 check(refused(static fn()=>$builder->build(new ProviderOperation('packages.create','k',$mixed))),'one node over with hostname-list children refuses (257 nodes)');
 
+// Constructible requests are not public approval authority.
+check($register->genericNames()===['packages.update'],'generic menu exposes only the reviewed label subset');
+check($register->allowsGenericApproval('packages.update',['resellerId'=>'*','id'=>[42],'labels'=>[42=>'Client site']]),'explicit label-only approval is eligible');
+foreach([
+ ['packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'a.example']],
+ ['domains.renew',['resellerId'=>'*','name'=>'a.example','years'=>1]],
+ ['packages.delete',['resellerId'=>'*','delete-id'=>[42]]],
+ ['packages.update',['resellerId'=>'*','id'=>[42],'labels'=>[42=>'a'],'delete-id'=>[77]]],
+ ['packages.update',['resellerId'=>'*','id'=>[42],'labels'=>[42=>'a'],'billing'=>[42=>[]]]],
+ ['packages.update',['resellerId'=>'*','id'=>[42],'labels'=>[42=>'a'],'sendWelcomeEmail'=>true]],
+ ['packages.update',['resellerId'=>'*','id'=>[42],'labels'=>[42=>['nested'=>'a']]]],
+ ['packages.update',['resellerId'=>'*','id'=>[42]]],
+] as $i=>[$name,$params])check(!$register->allowsGenericApproval($name,$params),'generic approval refuses high-risk or widened subset '.$i);
+
 // ---- operation semantics: acknowledgement is not active fulfillment ----
 foreach([200,201,202] as $status) {
     $accepted=TwentyIResultClassifier::fromResponse('packages.create',new TransportResponse($status,[],'{"result":123}'));

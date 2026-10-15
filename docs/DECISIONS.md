@@ -1,5 +1,9 @@
 # Decision record
 
+## Separate constructible requests from purchase authority — 2026-10-15
+
+A documented request builder is not commercial consent. The generic owner approval path admits only package-label changes; purchases, renewal, mixed billing/deletion and mail require dedicated persisted intent and eligibility workflows. Existing high-risk grants cannot dispatch through the generic route. Missing stamped operation tables require original database recovery, never empty replacement. This implements independent review findings on PR126 without discarding inherited history.
+
 ## 2026-10-15 — Codex P0 takeover and first inventory repairs
 
 Owner transferred the complete 20i lane to Codex and paused unrelated development. From main68e4d41, preserved #122/#115 via normal merges through9744110; repaired old-schema readiness, generated-column validation, moved-domain/context display, sibling-name disclosure and two fixture counters. Added genuine populated/interrupted/repeated upgrade and isolation coverage;38 local PHP8.4/MariaDB checks pass. Expanded current PHP/database and packaged HTTP acceptance is pending. Full release review and later hosting/domain/VPS/SSH/billing implementation continue. [Scope, ancestry and evidence](TWENTYI_CODEX_TAKEOVER.md). v1.23 stays unchanged; no live action.

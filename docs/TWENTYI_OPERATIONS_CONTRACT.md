@@ -1,6 +1,6 @@
 # 20i write boundary and response semantics
 
-Codex owns the complete [20i takeover](TWENTYI_CODEX_TAKEOVER.md). The existing adapter, protected transport, owner grants and durable gateway/ledger are retained. This boundary is executable through the owner operation workflow; it is not the completed first-party hosting platform. No current synthetic test proves live provider behavior.
+Codex owns the complete [20i takeover](TWENTYI_CODEX_TAKEOVER.md). The existing adapter, protected transport, owner grants and durable gateway/ledger are retained. Request construction is separate from approval authority. Only label-only package updates are currently admitted by the generic owner workflow; the complete first-party commercial platform remains in progress. No current synthetic test proves live provider behavior.
 
 ## Request contracts
 
@@ -8,7 +8,7 @@ Codex owns the complete [20i takeover](TWENTYI_CODEX_TAKEOVER.md). The existing 
 |---|---|---|
 | packages.create | POST /reseller/{resellerId}/addWeb | Existing bounded type/domain/extra names/label/document roots/StackUser/template fields. [Official creation guide](https://docs.20i.com/api/provision-hosting-package-api) supplies the result-ID response. |
 | packages.update | POST /reseller/{resellerId}/updatePackage | Owner complete-reference clarification: id/delete-id arrays; billing, labels, limit, limit-set, packageBundleTypes are per-package maps. Outer shape and target isolation implemented; inner-field semantics still require full-reference intake and typed forms. |
-| packages.delete | POST /reseller/{resellerId}/deleteWeb | Owner clarification: nonempty delete-id array. Destructive, separately approved request; never an automatic cancellation effect. |
+| packages.delete | POST /reseller/{resellerId}/deleteWeb | Owner clarification: nonempty delete-id array. Destructive builder only; the generic approval/dispatch path refuses it until dedicated authorization is implemented. |
 | domains.renew | POST /reseller/{resellerId}/renewDomain | Existing name/years/renewPrivacy request. This is not proof of TLD eligibility, a verified quote, completed renewal or registrar entitlement. |
 | packages.userstatus | POST /package/{packageId}/userStatus | Owner supplied includeRepeated/subservices; value-domain implementation remains pending. |
 | domains.nameservers | POST /package/{packageId}/domain/{domainId}/nameservers | Owner supplied ns/old-ns arrays and actual add/remove semantics; implementation remains pending. |
@@ -35,10 +35,10 @@ No write is blanket retry-safe. updatePackage can contain billing and deletion; 
 
 ## Authorization, reconciliation and limits
 
-The owner must approve an exact bounded scope and separately execute it with current password, current settings revision and a live single-use grant. The credential context is fenced at dispatch. Rejected stale/expired/revoked grants never become authority for a new context. The gateway records before returning and never automatically repeats an uncertain purchase/delete/renewal.
+The typed owner form admits only resellerId + id + labels, with bounded string labels and matching package IDs. Create, renewal, billing, plan changes, deletion and mail are refused by the generic route even for previously stored grants; a password and raw JSON do not prove commercial or message consent. The owner must approve an exact permitted scope and separately execute it with current password, current settings revision and a live single-use grant. The credential context is fenced at dispatch. Rejected stale/expired/revoked grants never become authority for a new context. The gateway records before returning and never automatically repeats an uncertain purchase/delete/renewal.
 
 Reconciliation observes a provider-issued package ID when one was retained. A matching domain name alone is inconclusive about creation. An incomplete list cannot prove deletion. Observing a package does not certify service readiness, order fulfillment or registrar rights. Original attempt/result fields remain retained; current observation summaries and append-only audit events record checks. Structured operation-specific reconciliation history and native service workflows remain required platform work.
 
 ## Verification
 
-The current local pure boundary suite passes139 named cases with default PHP and with no ini;50 transport-policy cases stop before any network. Native PHP8.2/8.4 × MariaDB10.11/MySQL8.4 operation/hosting matrices and packaged acceptance are dispatched on the containing checkpoint and must be verified from their actual reports. Tests cover allocated IDs, pending replay, false/null/mixed responses, authorization/context races and absence/name ambiguity. The earlier544 native inventory executions at962cc3e cover that earlier head only. Release, provider and target-host acceptance remain separate.
+The current local pure boundary suite passes149 named cases with default PHP and with no ini;50 transport-policy cases stop before any network. The preceding b1b0e84 matrices have 4,456 inspected named executions; this descendant requires new native and packaged results. A browser-only checkpoint does not replace the full release acceptance gate. Tests cover allocated IDs, pending replay, false/null/mixed responses, authorization/context races and absence/name ambiguity. The earlier544 native inventory executions at962cc3e cover that earlier head only. Release, provider and target-host acceptance remain separate.

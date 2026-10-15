@@ -9,8 +9,10 @@ $canonical=__DIR__.'/../site/includes/foundation/provider/';
 foreach (['ProviderCapability','ProviderCredential','TransportRequest','TransportResponse','TransportException','HttpTransport','ProviderOperation','OperationResult','ConnectionCheck','RetryPolicy','LedgerClaim','OperationLedger','ProviderAdapter','ProviderGateway'] as $class) require_once $canonical.$class.'.php';
 require_once __DIR__.'/../site/app/providers/operations.php';
 use CajunWebPro\Foundation\Provider\{ConnectionCheck,HttpTransport,OperationResult,ProviderAdapter,ProviderCapability,ProviderCredential,ProviderGateway,ProviderOperation,TransportRequest,TransportResponse,LedgerClaim,OperationLedger};
+$prefix=getenv('CWP_TEST_PREFIX')?:'prop_';
+if(!preg_match('/^pops_[a-z0-9_]{1,12}$/D',$prefix)&&$prefix!=='prop_')exit(2);
 $private=__DIR__.'/../test-runtime/provider-operations-private';@mkdir($private,0700,true);@mkdir(__DIR__.'/../qa',0700,true);
-$GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/existing','storage'=>realpath($private),'key'=>str_repeat('synthetic-ops-key-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'prop_']];
+$GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/existing','storage'=>realpath($private),'key'=>str_repeat('synthetic-ops-key-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>$prefix]];
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=realpath(__DIR__.'/../site');start_session();
 $checks=[];$password='Synthetic operations owner passphrase';$secret='SYNTHETIC_PRIVATE_GENERAL_KEY';
 function po_ok(string $name,bool $ok):void {global $checks;$checks[]=['name'=>$name,'passed'=>$ok];if(!$ok)throw new RuntimeException($name);}
@@ -42,7 +44,7 @@ if(($argv[1]??'')==='claim-worker') {
     echo 'recorded';exit;
 }
 try {
-    foreach(schema_statements('prop_') as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
+    foreach(schema_statements($prefix) as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
     for($i=1;$i<=3;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Operations staff '.$i,'ops'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);foreach([2=>'administrator'] as $id=>$role)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode(array_keys(staff_permissions()))]);
@@ -108,44 +110,65 @@ try {
     po_ok('Post-record claim replays worker result','replay'===$ledger->claim('race-key','race-fp',time())->state);
 
     // ---- owner grants ----
-    $scope=['resellerId'=>'*','type'=>'synthetic','domain_name'=>'a.example'];
-    po_deny('Grant requires owner password',fn()=>provider_operation_grant($profile,'packages.create',$scope,'wrong'));
-    po_actor(2);po_deny('Administrator cannot grant',fn()=>provider_operation_grant($profile,'packages.create',$scope,$password));po_actor();
-    po_deny('Grant bounds the duration',fn()=>provider_operation_grant($profile,'packages.create',$scope,$password,30));
-    po_deny('Grant bounds the duration upper',fn()=>provider_operation_grant($profile,'packages.create',$scope,$password,90000));
-    $grantId=provider_operation_grant($profile,'packages.create',$scope,$password);
-    $active=provider_operations_scope('packages.create',$scope);
-    po_ok('Fresh grant covers its exact scope',provider_operation_grant_active($profile,'packages.create',$active));
-    po_ok('Reordered params produce the same scope',provider_operation_grant_active($profile,'packages.create',provider_operations_scope('packages.create',['domain_name'=>'a.example','resellerId'=>'*','type'=>'synthetic'])));
-    po_ok('Changed params do not match',!provider_operation_grant_active($profile,'packages.create',provider_operations_scope('packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'b.example'])));
+    $scope=['resellerId'=>'*','id'=>[42],'labels'=>[42=>'a']];
+    po_deny('Grant requires owner password',fn()=>provider_operation_grant($profile,'packages.update',$scope,'wrong'));
+    po_actor(2);po_deny('Administrator cannot grant',fn()=>provider_operation_grant($profile,'packages.update',$scope,$password));po_actor();
+    po_deny('Grant bounds the duration',fn()=>provider_operation_grant($profile,'packages.update',$scope,$password,30));
+    po_deny('Grant bounds the duration upper',fn()=>provider_operation_grant($profile,'packages.update',$scope,$password,90000));
+    $grantId=provider_operation_grant($profile,'packages.update',$scope,$password);
+    $active=provider_operations_scope('packages.update',$scope);
+    po_ok('Fresh grant covers its exact scope',provider_operation_grant_active($profile,'packages.update',$active));
+    po_ok('Reordered params produce the same scope',provider_operation_grant_active($profile,'packages.update',provider_operations_scope('packages.update',['labels'=>[42=>'a'],'id'=>[42],'resellerId'=>'*'])));
+    po_ok('Changed params do not match',!provider_operation_grant_active($profile,'packages.update',provider_operations_scope('packages.update',['resellerId'=>'*','id'=>[42],'labels'=>[42=>'b']])));
     po_ok('Different operation does not match',!provider_operation_grant_active($profile,'packages.delete',$active));
-    po_ok('Different profile does not match',!provider_operation_grant_active(str_repeat('f',32),'packages.create',$active));
+    po_ok('Different profile does not match',!provider_operation_grant_active(str_repeat('f',32),'packages.update',$active));
     // Invalid UTF-8 map keys cannot collapse distinct scopes into one fingerprint.
-    po_deny('Invalid UTF-8 scope key is refused',fn()=>provider_operations_scope('packages.create',["\xff"=>'same']));
-    po_deny('A second invalid UTF-8 scope key is refused',fn()=>provider_operations_scope('packages.create',["\xfe"=>'same']));
+    po_deny('Invalid UTF-8 scope key is refused',fn()=>provider_operations_scope('packages.update',["\xff"=>'same']));
+    po_deny('A second invalid UTF-8 scope key is refused',fn()=>provider_operations_scope('packages.update',["\xfe"=>'same']));
     // Approval is bound to the approved profile revision and enabled state.
     provider_settings_save($profile,(int)(one('SELECT revision FROM '.table('provider_profiles').' WHERE id=?',[$profile])['revision']??0),'20i fixture',true,$secret,$password);
-    po_ok('Any settings save invalidates the approved revision',!provider_operation_grant_active($profile,'packages.create',$active));
-    $grantId=provider_operation_grant($profile,'packages.create',$scope,$password);
-    po_ok('Re-grant under current configuration is active',provider_operation_grant_active($profile,'packages.create',$active));
+    po_ok('Any settings save invalidates the approved revision',!provider_operation_grant_active($profile,'packages.update',$active));
+    $grantId=provider_operation_grant($profile,'packages.update',$scope,$password);
+    po_ok('Re-grant under current configuration is active',provider_operation_grant_active($profile,'packages.update',$active));
     provider_settings_state($profile,(int)(one('SELECT revision FROM '.table('provider_profiles').' WHERE id=?',[$profile])['revision']??0),'disable',$password);
-    po_ok('Disabled profile suspends the grant',!provider_operation_grant_active($profile,'packages.create',$active));
+    po_ok('Disabled profile suspends the grant',!provider_operation_grant_active($profile,'packages.update',$active));
     provider_settings_state($profile,(int)(one('SELECT revision FROM '.table('provider_profiles').' WHERE id=?',[$profile])['revision']??0),'enable',$password);
-    po_ok('Re-enable after a revision change does not revive it',!provider_operation_grant_active($profile,'packages.create',$active));
-    $grantId=provider_operation_grant($profile,'packages.create',$scope,$password);
-    po_ok('Grant under the re-approved configuration is active',provider_operation_grant_active($profile,'packages.create',$active));
+    po_ok('Re-enable after a revision change does not revive it',!provider_operation_grant_active($profile,'packages.update',$active));
+    $grantId=provider_operation_grant($profile,'packages.update',$scope,$password);
+    po_ok('Grant under the re-approved configuration is active',provider_operation_grant_active($profile,'packages.update',$active));
     // The newest grant for THIS scope decides even after many other-scope grants.
-    for($i=0;$i<70;$i++)provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>[1000+$i]],$password);
-    po_ok('Newest same-scope grant found beyond 64 other rows',provider_operation_grant_active($profile,'packages.create',$active));
+    for($i=0;$i<70;$i++)provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>[1000+$i],'labels'=>[1000+$i=>'other']],$password);
+    po_ok('Newest same-scope grant found beyond 64 other rows',provider_operation_grant_active($profile,'packages.update',$active));
     query('UPDATE '.table('provider_operation_grants').' SET expires_epoch=? WHERE id=?',[time()-1,$grantId]);
-    po_ok('Expired grant is inactive',!provider_operation_grant_active($profile,'packages.create',$active));
-    $grantId2=provider_operation_grant($profile,'packages.create',$scope,$password);
-    po_ok('Re-grant supersedes expiry',provider_operation_grant_active($profile,'packages.create',$active));
+    po_ok('Expired grant is inactive',!provider_operation_grant_active($profile,'packages.update',$active));
+    $grantId2=provider_operation_grant($profile,'packages.update',$scope,$password);
+    po_ok('Re-grant supersedes expiry',provider_operation_grant_active($profile,'packages.update',$active));
     po_deny('Revoke requires owner password',fn()=>provider_operation_revoke($grantId2,'wrong'));
     provider_operation_revoke($grantId2,$password);
-    po_ok('Revoked grant is inactive',!provider_operation_grant_active($profile,'packages.create',$active));
+    po_ok('Revoked grant is inactive',!provider_operation_grant_active($profile,'packages.update',$active));
     po_deny('Double revoke refuses',fn()=>provider_operation_revoke($grantId2,$password));
     po_ok('Grant and revoke audit events recorded',2<=(int)query("SELECT COUNT(*) FROM ".table('audit')." WHERE action IN ('provider.operation_grant','provider.operation_revoke')")->fetchColumn());
+
+    // Each established version must recover both ORIGINAL tables. Keep real
+    // populated rows in renamed tables and verify no empty substitute appears.
+    $ledgerBefore=all('SELECT * FROM '.table('provider_operations').' ORDER BY id');
+    $grantsBefore=all('SELECT * FROM '.table('provider_operation_grants').' ORDER BY seq');
+    $auditsBefore=all('SELECT * FROM '.table('audit').' ORDER BY id');
+    foreach(['1','2','3','4'] as $stamp)foreach(['provider_operations','provider_operation_grants'] as $missing){
+        save_setting('provider_operations_schema_version',$stamp);
+        $held=$missing.'_recovery';
+        db()->exec('RENAME TABLE '.table($missing).' TO '.table($held));
+        try{
+            po_ok('Missing history is not ready v'.$stamp.' '.$missing,!provider_operations_ready());
+            $error='';try{provider_operations_migrate($password);}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;$error=$e->getMessage();}
+            po_ok('Missing stamped table requires original recovery v'.$stamp.' '.$missing,str_contains($error,'Restore the original database backup'));
+            po_ok('Recovery creates no empty replacement v'.$stamp.' '.$missing,!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$missing]));
+            po_ok('Failed recovery preserves schema stamp v'.$stamp.' '.$missing,one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']===$stamp);
+        }finally{db()->exec('RENAME TABLE '.table($held).' TO '.table($missing));}
+        po_ok('Recovery preserves ledger grants and audit v'.$stamp.' '.$missing,$ledgerBefore===all('SELECT * FROM '.table('provider_operations').' ORDER BY id')&&$grantsBefore===all('SELECT * FROM '.table('provider_operation_grants').' ORDER BY seq')&&$auditsBefore===all('SELECT * FROM '.table('audit').' ORDER BY id'));
+    }
+    save_setting('provider_operations_schema_version','4');provider_operations_migrate($password);
+    po_ok('Restored original ledger still suppresses duplicate dispatch',$ledger->claim('op-1',$fp,time())->state==='replay');
 
     // ---- storage is secret-free ----
     $leak=false;

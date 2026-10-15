@@ -103,9 +103,17 @@ function provider_operations_admin_action(string $action):void {
         provider_operations_migrate($password);flash('Provider operation approval records are ready.');redirect(admin_url('provider-operations'));
     }
     provider_settings_manager();$id=posted('profile_id',32);
+    if($action==='provider_operations_label_grant'){
+        $package=posted('package_id',18);$label=posted('package_label',160);
+        if(!preg_match('/^[1-9][0-9]{0,17}$/D',$package))throw new InvalidArgumentException('Enter a valid hosting package ID.');
+        if($label===''||preg_match('/[\x00-\x1f\x7f]/',$label))throw new InvalidArgumentException('Enter a label of 1–160 bytes without control characters.');
+        $ttl=posted('ttl_seconds',10);if(!ctype_digit($ttl))throw new InvalidArgumentException('Choose an approval duration.');
+        $params=['resellerId'=>'*','id'=>[(int)$package],'labels'=>[(int)$package=>$label]];
+        provider_operation_grant($id,'packages.update',$params,$password,(int)$ttl);
+        flash('The package label change is approved for one request.');redirect(admin_url('provider-operations'));
+    }
     if($action==='provider_operations_grant'){
-        $raw=(string)($_POST['scope_params']??'');
-        if(strlen($raw)>4096)throw new InvalidArgumentException('The approved request fields exceed the bounded size.');
+        $raw=posted('scope_params',4096);
         $params=json_decode($raw,true);
         if(!is_array($params))throw new InvalidArgumentException('Enter the approved request fields as a JSON object.');
         $ttl=posted('ttl_seconds',10);if(!ctype_digit($ttl))throw new InvalidArgumentException('Choose a grant duration.');

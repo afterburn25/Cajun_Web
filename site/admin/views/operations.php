@@ -3,21 +3,23 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 use CajunWebPro\Foundation\TwentyI\Operations\TwentyIOperationRegister;
 $record=provider_settings_profile();$profileId=$record['id']??'';$revision=(int)($record['revision']??0);
-$register=new TwentyIOperationRegister();$buildable=$register->buildableNames();
+$register=new TwentyIOperationRegister();$buildable=$register->genericNames();
 $grants=$profileId!==''?provider_operation_grants($profileId):[];
 $history=provider_operations_history();
 ?>
-<section class="workspace-card"><h2>Approved 20i operations</h2>
-<p>An approval records the exact documented request — operation and every field — for one run. Running it needs your password again plus a fresh idempotency key you choose; the approved fields cannot be widened at send time. Each approval is used once, expires, and can be revoked.</p>
-<p>Requests are checked against the supported field contract. Requests are claimed before sending to suppress duplicate local submissions; ambiguous outcomes are recorded as <strong>uncertain</strong> for reconciliation, never silently retried. An accepted request with a provider-issued ID remains <strong>accepted pending</strong> until its service is verified.</p>
+<section class="workspace-card"><h2>Change a hosting package label</h2>
+<p>Choose an existing package and its new label. Approval lasts for the duration you select and can be used once. You will review the approved fields before sending the change.</p>
+<p>Purchases, renewals, plan changes, deletion and customer email require their dedicated order and consent workflows, which are not available here yet. Earlier operation records remain available below for recovery.</p>
 <?php if($record&&(int)$record['enabled']===1&&$record['has_credentials']&&$buildable): ?>
 <form method="post" data-provider-grant>
-<?php admin_action('provider_operations_grant'); ?>
+<?php admin_action('provider_operations_label_grant'); ?>
 <input type="hidden" name="profile_id" value="<?=esc($profileId)?>">
-<p><label for="operation">Documented operation</label><br>
-<select id="operation" name="operation"><?php foreach($buildable as $name): ?><option value="<?=esc($name)?>"><?=esc($name)?></option><?php endforeach; ?></select></p>
-<?php admin_textarea('scope_params','Approved request fields (JSON object)',isset($_POST['scope_params'])&&($_POST['action']??'')==='provider_operations_grant'?(string)$_POST['scope_params']:'',3,4096); ?>
-<p class="hint">Only fields documented for the chosen operation are accepted. Path ids like <code>resellerId</code> belong here too.</p>
+<?php
+$submitted=($_POST['action']??'')==='provider_operations_label_grant';
+admin_input('package_id','Hosting package ID',$submitted&&is_string($_POST['package_id']??null)?$_POST['package_id']:'','text','required inputmode="numeric" pattern="[1-9][0-9]{0,17}" maxlength="18"');
+admin_input('package_label','New package label',$submitted&&is_string($_POST['package_label']??null)?$_POST['package_label']:'','text','required maxlength="160"');
+?>
+<p class="hint">Use the package ID shown in your 20i inventory. This changes the package label only. An uncertain result needs checking before another request.</p>
 <p><label for="ttl_seconds">Approval valid for</label><br>
 <select id="ttl_seconds" name="ttl_seconds"><?php foreach([300=>'5 minutes',900=>'15 minutes',3600=>'1 hour',14400=>'4 hours',86400=>'24 hours'] as $secs=>$label): ?><option value="<?=$secs?>"<?=$secs===3600?' selected':''?>><?=$label?></option><?php endforeach; ?></select></p>
 <?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?>
@@ -33,11 +35,13 @@ $history=provider_operations_history();
 <p>Approved <?=esc($grant['granted_at'])?> UTC · Expires <?=esc(gmdate('Y-m-d H:i:s',(int)$grant['expires_epoch']))?> UTC<?=$grant['consumed_key']!==null?' · Used for key <code>'.esc($grant['consumed_key']).'</code> at '.esc($grant['consumed_at']).' UTC':''?></p>
 <p><code><?=esc((string)$grant['scope_params'])?></code></p>
 <?php if($state==='active'): ?>
+<?php $params=json_decode((string)$grant['scope_params'],true);$canSend=is_array($params)&&$register->allowsGenericApproval((string)$grant['operation'],$params); ?>
+<?php if(!$canSend): ?><p>This earlier approval requires its dedicated order or consent workflow and cannot be sent from this page.</p><?php endif; ?>
 <form method="post"><?=csrf_field()?>
 <input type="hidden" name="profile_id" value="<?=esc($profileId)?>"><input type="hidden" name="revision" value="<?=$revision?>"><input type="hidden" name="grant_id" value="<?=esc($grant['id'])?>">
-<?php admin_input('idempotency_key','Idempotency key for this one run','','text','required maxlength="190" autocomplete="off"'); ?>
+<?php if($canSend)admin_input('idempotency_key','Idempotency key for this one run','','text','required maxlength="190" autocomplete="off"'); ?>
 <?php admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?>
-<button class="btn outline" name="action" value="provider_operations_run">Send the approved request</button>
+<?php if($canSend): ?><button class="btn outline" name="action" value="provider_operations_run">Send the approved request</button><?php endif; ?>
 <button class="btn outline" name="action" value="provider_operations_revoke" formnovalidate>Revoke approval</button>
 </form>
 <?php endif; ?></article>

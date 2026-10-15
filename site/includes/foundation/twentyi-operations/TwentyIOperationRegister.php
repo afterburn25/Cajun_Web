@@ -144,6 +144,29 @@ final class TwentyIOperationRegister
         return $names;
     }
 
+    /** Public owner approval is narrower than request construction. */
+    public function genericNames(): array { return ['packages.update']; }
+
+    /**
+     * Only the documented label-only subset has no purchase, deletion, plan,
+     * billing or welcome-email effect. Commercial/message operations require
+     * a dedicated verified order/quote/consent workflow, still being implemented.
+     * A JSON scope plus a password is not such authorization.
+     */
+    public function allowsGenericApproval(string $operation,array $params): bool
+    {
+        $spec=$this->get($operation);
+        if($spec===null || !$spec->shapeComplete)return false;
+        if($spec->mayChargeBilling || $spec->mayTriggerEmail || $spec->destructive) {
+            if($operation!=='packages.update')return false;
+            $keys=array_keys($params);sort($keys);
+            if($keys!==['id','labels','resellerId'] || !is_array($params['labels']) || !$params['labels'])return false;
+            foreach($params['labels'] as $value)if(!is_string($value))return false;
+            return true; // The builder separately enforces target IDs and bounds.
+        }
+        return false; // Future operations need an explicit reviewed admission rule.
+    }
+
     /** @return list<string> */
     public function names(): array
     {
