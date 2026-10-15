@@ -60,7 +60,8 @@ query(
 );
 
 // Serve the file
-$filename = 'Website-Core-' . $bundle['title'] . '-' . substr($bundle['license_key'], 0, 8) . '.zip';
+$safeTitle = preg_replace('/[^A-Za-z0-9._-]+/', '-', (string) $bundle['title']);
+$filename = 'Website-Core-' . trim($safeTitle, '-') . '-' . substr($bundle['license_key'], 0, 8) . '.zip';
 header('Content-Type: application/zip');
 header('Content-Disposition: attachment; filename="' . $filename . '"');
 header('Content-Length: ' . filesize($path));

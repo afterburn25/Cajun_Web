@@ -73,7 +73,7 @@ function setup_expected_files(): array { return [
     'admin/views/testimonial.php'=>'56d2bc2ae5d430fdbec177c011710c8d7ce1d8d59aac6606adb193927a5750e5',
     'admin/views/testimonials.php'=>'993c8414859731a6156517bdefde7b71c63799dc6b9e25cd2ae100b28e7c3d48',
     'api/activity.php'=>'e9a113194c25a7b138b78fad939b00cd7d5deb850dc8b24718f236dd99dfeeef',
-    'api/bundle-download.php'=>'bff846eaa919182f1483c630c0a63c5fc4f2db95728496a54e02421371f18a9a',
+    'api/bundle-download.php'=>'302389717a66937f334deabc57a3bfead01755cdebe953c5de6c97719ba85bfc',
     'api/handlers/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
     'api/handlers/activity.php'=>'d06746037aecd445fb81e3c8ab6e9bb12501f35da24c7b08c8329c19a0b5e56e',
     'api/handlers/inquiry.php'=>'ba1be86ef471996456f169262bde298c73a086d4eba2bd0fba8252ae637443e9',
