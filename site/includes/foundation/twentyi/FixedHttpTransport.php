@@ -41,7 +41,7 @@ final class FixedHttpTransport implements HttpTransport
             throw new \InvalidArgumentException('Unsupported provider request.');
         }
         if ($request->method === 'GET') {
-            if (!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server'], true) || $request->body !== null
+            if ((!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server'], true) && !$this->isDomainSearch($request->url)) || $request->body !== null
                 || array_keys($request->headers) !== ['Authorization','Accept']
                 || $request->headers['Accept'] !== 'application/json') {
                 throw new \InvalidArgumentException('Unsupported provider probe request.');
@@ -63,6 +63,16 @@ final class FixedHttpTransport implements HttpTransport
             throw new \InvalidArgumentException('Unsupported provider request method.');
         }
         $this->validateAuthorization($request->headers['Authorization'] ?? null);
+    }
+
+    private function isDomainSearch(string $url): bool
+    {
+        require_once __DIR__.'/../twentyi-inventory-reader/DomainSearch.php';
+        $prefix=\CajunWebPro\Foundation\TwentyIInventoryReader\DomainSearch::URL_PREFIX;
+        if (!str_starts_with($url,$prefix)) return false;
+        $name=substr($url,strlen($prefix));
+        try { return \CajunWebPro\Foundation\TwentyIInventoryReader\DomainSearch::name($name)===$name; }
+        catch (\InvalidArgumentException) { return false; }
     }
 
     private function validateAuthorization(mixed $authorization): void

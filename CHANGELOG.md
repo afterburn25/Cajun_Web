@@ -1,5 +1,19 @@
 # Changelog
 
+## Domain search implementation checkpoint — 2026-10-15
+
+Codex owns complete 20i P0. Branch `codex/twentyi-domain-search` starts from cloud candidate `1d9e372cac7ff9739d339b2544c7c9cfbcee3e33`; it preserves all existing history. Current main remains `c42dd6d70fe57276d75835419db9d6e8e51aaa7f`, and immutable published 1.24 remains source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`.
+
+Implemented the bounded exact-name domain search reader and narrow allowlist in the existing fixed HTTPS transport. The reader accepts documented NDJSON packets in either order and the official console's JSON array example. Only an exact query result with `can: register` and a matching header confirms observed availability. Other names remain unverified suggestions. Invalid, incomplete, conflicting, oversized, unauthorized, rate-limited and failed responses cannot become availability. Secrets and remote error text are excluded from results; no retry, price, reservation or entitlement is inferred. Shipping mirrors and installer inventory accompany the source.
+
+Actual local evidence before this session became read-only: 77 named synthetic assertions pass with PHP's default configuration and again with `-n` (154 executions). The workflow now runs these cases on PHP 8.2 and 8.4. Current remote checks have not yet been observed. There is no native search screen, durable throttle/history, sold-TLD configuration, pricing or checkout in this checkpoint; those remain implementation work. This component is not a completed domain workflow or release.
+
+Cloud #127 candidate full run [38719850550](https://github.com/afterburn25/Cajun_Web/actions/runs/38719850550) passed at synthetic merge `97b0b869a72c527d350c8aa63262dfa01ff23854`, whose tree `24330be901adebc9ae1ab1379ed2312663b03901` equals source 1d9e372c. Its actual current screenshots and Linux/Windows package comparison remain unverified. Preserve 29 focused gates (162 reports / 17,666 named executions) and independent clear review 6189930717. These are cloud evidence, not domain-search tests.
+
+Billing correction #135 is remotely committed at `35a564a1a2f6660258ff0e0f2fcf057cb24a07f3`; 21 focused workflows pass and full acceptance [38750019637](https://github.com/afterburn25/Cajun_Web/actions/runs/38750019637) is running. Its local earlier dirty edits remain preserved and need reconciliation with that remote commit. Review-request comments and PR metadata updates were rejected because this session cannot request approval. Shell filesystem is read-only and its network is restricted; a local artifact-download attempt was denied. No release gate is waived.
+
+Next: finish typed native domain search, durable shared throttling/429 backoff, account/revision-bound history, local sold-TLD filtering and actual native/HTTP tests; then continue domain pricing and purchase eligibility. Verify current cloud images/packages before normal merge and exact-main 1.25 acceptance/publication. Finish current billing acceptance and independent review before integrating dependencies. The owner's complete API reference is still a previously requested external input; do not ask again or stop independent implementation. No provider call, charge, customer mail, SSH or production deployment occurred.
+
 ## 1.25 candidate — cloud inventory and explicit client assignments
 Local candidate verification: PHP syntax for the original-release fixture, Python compilation of all changed drivers, regenerated canonical installer/bootstrap and documentation checks (170 Markdown files/1,347 links) pass. No current native/browser results are claimed yet; independent review and complete acceptance remain pending.
 
