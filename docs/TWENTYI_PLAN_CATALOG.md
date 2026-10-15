@@ -36,3 +36,7 @@ Run38818360818 at24e75ca6 succeeded in all four PHP8.2/8.4 × MariaDB10.11/MySQL
 - Artifact12011367977: SHA256 `a1d65e844004a40aef623395f4822f1851d8a62a903400c143c05dd8be650596`.
 
 The descendant fixes root’s independent redisplay/recovered-format findings, adds four native render regressions and actual HTTP/Chromium catalog-backed fulfillment tests, and enables this feature branch’s complete application workflow. Local pure51 checks per mode, changed PHP syntax, Python AST and documentation checks pass. Refresh95043 completed successfully; exact installer inventory verified. Descendant native/browser/package/review remains pending.
+
+## Catalog withdrawal recovery correction — 2026-10-15
+
+Starting41123e9b5b95f8bbe4244ee5db64a15eb3a85a58, PR141: source review found that losing a latest withdrawal record together with its matching audit could make an older enabled mapping appear current. Added an independently retained per-plan latest ID/digest pointer in settings, saved atomically with every review. Exact pointer/history checks and plan-family counts refuse missing/older review histories, including loss of both withdrawal and audit. Native fixtures cover paired loss, refusal of new approval, missing pointer and exact restoration. This strengthens recovery; it does not add provider execution. Local syntax and51 pure checks pass; current native/full acceptance remains pending. Preserve parent41123 full38819193594 and native38819193595; do not replace or cancel those runs.

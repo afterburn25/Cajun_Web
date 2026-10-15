@@ -11,13 +11,14 @@ require_once CWP_CODE_ROOT.'/database/migrations/service_orders_migrate.php';
 function provider_plan_catalog_state():array {
     $version=one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_plan_catalog_version'])['value']??'';
     $exists=(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'provider_plan_catalog']);
-    $history=(bool)one('SELECT id FROM '.table('audit').' WHERE action IN (?,?) LIMIT 1',['provider_catalog.setup','provider_catalog.saved']);
+    $history=(bool)one('SELECT id FROM '.table('audit').' WHERE action IN (?,?) LIMIT 1',['provider_catalog.setup','provider_catalog.saved'])||(bool)one('SELECT name FROM '.table('settings').' WHERE name LIKE ? LIMIT 1',['provider_plan_catalog_latest_%']);
     if(($version!==''&&$version!=='1')||(($version!==''||$history)&&($version!=='1'||!$exists)))throw new RuntimeException('Original provider catalog history is unavailable. Restore the original database.');
     if($version==='1'){
         if((int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE action=?',['provider_catalog.setup'])->fetchColumn()!==1)throw new RuntimeException('Original catalog setup audit is missing or inconsistent.');
         $rows=(int)query('SELECT COUNT(*) FROM '.table('provider_plan_catalog'))->fetchColumn();
         $audits=(int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE action=?',['provider_catalog.saved'])->fetchColumn();
         if($rows!==$audits)throw new RuntimeException('Original provider catalog records or audit history are missing.');
+        if((int)query('SELECT COUNT(DISTINCT plan_id) FROM '.table('provider_plan_catalog'))->fetchColumn()!==(int)query('SELECT COUNT(*) FROM '.table('settings').' WHERE name LIKE ?',['provider_plan_catalog_latest_%'])->fetchColumn())throw new RuntimeException('Original provider catalog version pointers are missing.');
     }
     return ['ready'=>$version==='1','exists'=>$exists];
 }
@@ -50,6 +51,9 @@ function provider_plan_catalog_history(string $plan):array {
         if(count($audit)!==1||(int)$audit[0]['user_id']!==$d['created_by'])throw new RuntimeException('Original catalog approval is missing.');
         $result[]=$d+['sha256'=>$sha];$previous=['id'=>$d['id'],'sha256'=>$sha,'created_at'=>$d['created_at']];
     }
+    $pointer=one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_plan_catalog_latest_'.$plan])['value']??null;
+    $expected=$previous?$previous['id'].':'.$previous['sha256']:null;
+    if($pointer!==$expected)throw new RuntimeException('Original latest provider catalog review is missing. Restore its history before continuing.');
     return $result;
 }
 function provider_plan_catalog_current(string $plan):?array {$history=provider_plan_catalog_history($plan);return $history?end($history):null;}
@@ -82,7 +86,7 @@ function provider_plan_catalog_save(string $id,string $planId,int $planRevision,
         $bytes=service_plans_json($d);provider_plan_catalog_document($bytes);$sha=hash('sha256',$bytes);
         if($old){if($old['binding_json']!==$bytes)throw new RuntimeException('Mapping identity is already used for different details.');return $d+['sha256'=>$sha];}
         $row=['id'=>$id,'plan_id'=>$planId,'revision'=>$d['revision'],'created_by'=>(int)$actor['id'],'created_epoch'=>$at,'binding_json'=>$bytes,'binding_sha256'=>$sha];
-        query('INSERT INTO '.table('provider_plan_catalog').' (id,plan_id,revision,created_by,created_epoch,binding_json,binding_sha256) VALUES (?,?,?,?,?,?,?)',array_values($row));provider_plan_catalog_audit((int)$actor['id'],'saved',provider_plan_catalog_detail($row));provider_plan_catalog_history($planId);return $d+['sha256'=>$sha];
+        query('INSERT INTO '.table('provider_plan_catalog').' (id,plan_id,revision,created_by,created_epoch,binding_json,binding_sha256) VALUES (?,?,?,?,?,?,?)',array_values($row));provider_plan_catalog_audit((int)$actor['id'],'saved',provider_plan_catalog_detail($row));save_setting('provider_plan_catalog_latest_'.$planId,$id.':'.$sha);provider_plan_catalog_history($planId);return $d+['sha256'=>$sha];
     });
 }
 function provider_plan_catalog_context(string $plan):array {

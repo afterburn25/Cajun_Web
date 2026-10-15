@@ -1,3 +1,7 @@
+## Catalog withdrawal recovery correction — 2026-10-15
+
+Starting41123e9b5b95f8bbe4244ee5db64a15eb3a85a58, PR141: source review found that losing a latest withdrawal record together with its matching audit could make an older enabled mapping appear current. Added an independently retained per-plan latest ID/digest pointer in settings, saved atomically with every review. Exact pointer/history checks and plan-family counts refuse missing/older review histories, including loss of both withdrawal and audit. Native fixtures cover paired loss, refusal of new approval, missing pointer and exact restoration. This strengthens recovery; it does not add provider execution. Local syntax and51 pure checks pass; current native/full acceptance remains pending. Preserve parent41123 full38819193594 and native38819193595; do not replace or cancel those runs.
+
 # Catalog native evidence and review follow-up — 2026-10-15
 
 PR141 parent24e75ca6 is verified at36catalog checks within501combined native checks in all4combinations; actual artifact hashes/CRCs/reports retained. Descendant repairs independent redisplay/recovered-format findings and adds actual browser coverage, pending current acceptance. [Exact scope and artifact evidence](docs/TWENTYI_PLAN_CATALOG.md). Root retains integration and release ownership.

@@ -1,3 +1,7 @@
+## Unreleased — preserve catalog withdrawal during recovery
+
+- Retain the exact latest mapping ID/digest independently, preventing a partial restore of review and audit history from reactivating an older withdrawn approval.
+
 ## Unreleased — catalog review corrections
 
 - Preserve safe inline rendering after oversized or array catalog form input; validate recovered association shape before reading its format.
