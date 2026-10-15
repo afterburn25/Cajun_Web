@@ -937,3 +937,7 @@ Current follow-up:8adf passed all four native combinations, including42 new asso
 ## 2026-10-15 — registrar preparation safeguard and verified native matrix
 
 Parent2fe7e2ff, PR142: all four downloaded native artifacts verify60 cases plus64 registrar reader cases per PHP mode. Adds early transaction refusal before registrar DDL and three rollback/no-table regression checks; syntax passes, new native execution pending. Browser38819247971 is preserved and running; root retains combined acceptance/integration/releases. [Details and artifact hashes](docs/TWENTYI_REGISTRAR_INVENTORY.md). No provider operation or release.
+
+## 2026-10-15 — registrar native/browser evidence and capture handoff
+
+Parent8b4a101a, PR142: four actual artifacts verify63 native +64/64 reader cases each; source2fe7e2ff checkpoint verifies1,810 HTTP/Chromium checks (36 registrar),62 named reports, empty unexpected diagnostics and exact source/package bytes. Owner desktop and client screens inspected. Owner mobile element capture caught sidebar/sticky-header overlays; test-only navigation/settling/full-page correction awaits root combined screenshot inspection. Shipping source unchanged by this final checkpoint. Combined recovery/Apache remains pending; root owns integration/releases. [Exact evidence](docs/TWENTYI_REGISTRAR_INVENTORY.md).

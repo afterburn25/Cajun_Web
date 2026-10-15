@@ -1,5 +1,6 @@
 """Actual extracted-package owner/client routes and Chromium; local TLS provider only."""
 import requests
+from playwright.sync_api import expect
 from release_cases import db, chosen_form
 from staff_cases import OWNER, STAFF
 
@@ -50,8 +51,10 @@ def run_browser(env, browser):
     with page.expect_navigation():form.get_by_role('button',name='Assign registered domain',exact=True).click()
     check('Chromium owner assignment saves one explicit domain without provider mutation',len(db('SELECT * FROM ci_provider_registrar_links'))==1 and provider.calls==calls+1 and provider.posts==posts and not errors)
     for width,height,label in [(1440,1000,'Desktop'),(320,740,'Mobile')]:
-        page.set_viewport_size({'width':width,'height':height});page.evaluate('document.fonts.ready');page.locator('#registered-domains').screenshot(path=str(qa/('Registered-Domains-Owner-'+label+'.png')))
-        check('Registered domain owner '+label+' fits viewport',page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
+        page.set_viewport_size({'width':width,'height':height});page.goto(url);page.evaluate('document.fonts.ready')
+        if label=='Mobile':expect(page.locator('.admin-sidebar')).not_to_be_in_viewport()
+        page.evaluate('window.scrollTo({top:0,left:0,behavior:"instant"})');page.screenshot(path=str(qa/('Registered-Domains-Owner-'+label+'.png')),full_page=True)
+        check('Registered domain owner '+label+' fits viewport',not errors and page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
     context.close()
     chosen_form(owner,url,link_action,'domain_id',1702,{'client_id':str(other_id),'current_password':OWNER})
     response=client.get(services);cards=soup(response).select('[data-client-registered-domain]')

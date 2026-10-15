@@ -1,3 +1,7 @@
+# Registrar integration candidate — verified native and browser checkpoint
+
+Parent `8b4a101ae9289c4d96599d2f383ea69269df9dc7`, branch `codex/twentyi-domain-controls`, draft PR142. Current shipping code passes63 native and64/64 reader cases across all four PHP/database combinations. Parent2fe7e2ff actual extracted-package run passes1,810 HTTP/Chromium checks (36 registrar),62 named reports, empty PHP/unexpected browser diagnostics and exact downloaded package/source verification. Owner desktop and both client screenshots are clear; owner mobile capture caught a sidebar transition/sticky-header overlay. This final test-only checkpoint corrects capture navigation/settling/full-page framing without hiding UI; root must inspect the resulting screenshot in combined acceptance. No new runtime behavior or release. [Exact artifacts, screenshots and limits](docs/TWENTYI_REGISTRAR_INVENTORY.md).
+
 # Registered-domain native matrix verified; browser checkpoint running
 
 Starting source `2fe7e2ff6dfe41cce2d7dde94f43456762793464`, draft PR142. Downloaded all four native artifacts from run38819248043: each verifies60 database cases and64 registrar reader cases in each PHP mode. This descendant adds an early caller-transaction refusal before registrar DDL and three focused rollback checks; the added checks still need Linux execution. Browser checkpoint38819247971 remains running and is preserved; it intentionally omits the extended recovery/Apache matrix. Root owns integration/releases. [Exact evidence and boundaries](docs/TWENTYI_REGISTRAR_INVENTORY.md).
