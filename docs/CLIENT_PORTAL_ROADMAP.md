@@ -1,5 +1,9 @@
 # Unified client portal: hosting, design projects, updates and website downloads
 
+## Current recurring-notification increment
+
+Codex recurring notification follow-on now has locally verified activity/bell integration and exact history links on `codex/recurring-billing-activity`; [scope and pending gates](RECURRING_BILLING_ACTIVITY.md). P-07/HC-06 remain partial: full packaged/recovery acceptance and review are pending, as are broader billing automation and production activation. Devin retains complete20i implementation. Published1.23 is unchanged.
+
 ## Current work — planning forms, dashboard and personal updates
 
 `codex/project-planning-screens` preserves native PR112/`5e44a6b`; contract `77f92db` precedes implementation. The existing project page now edits scope/contact/date/actions/blockers and structured milestones, while clients see the saved plan and dated snapshots. Personal planning activity opens the exact authorized revision; stale drafts keep their original request/version. Owner setup remains explicit. [Usage and evidence](PROJECT_PLANNING.md); [interface contract](PROJECT_PLANNING_SCREENS_CONTRACT.md).

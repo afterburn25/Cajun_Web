@@ -58,6 +58,7 @@ function recurring_ui_context(array $q,?int $client=null):array {
             $maps=all('SELECT * FROM '.table('recurring_billing_invoices').' WHERE schedule_id=? ORDER BY period_index DESC LIMIT 21 OFFSET '.($q['invoices_page']*20),[$q['schedule']]);
             $invoices=recurring_ui_slice($maps,$q['invoices_page']);$invoices['items']=array_map(fn($m)=>recurring_ui_invoice($m,$doc),$invoices['items']);
             $map=one('SELECT * FROM '.table('recurring_billing_invoices').' WHERE schedule_id=? AND period_index=?',[$q['schedule'],$selected]);
+            $q['history_page']=recurring_ui_history_page($doc,$q['history_page'],$q['focus_event']);$out['query']=$q;
             $history=recurring_ui_slice(array_slice(array_reverse($data['events']),$q['history_page']*10,11),$q['history_page'],10);
             return $out+['document'=>$doc,'source'=>recurring_ui_source_view($family['source']),'current'=>$family['row']['id']===$row['id'],
                 'history'=>$history,'invoices'=>$invoices,'assessment'=>$assessment,'selected_invoice'=>$map?recurring_ui_invoice($map,$doc):null]+$next;

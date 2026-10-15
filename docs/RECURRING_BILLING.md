@@ -47,3 +47,7 @@ Related: [interface contract](RECURRING_BILLING_INTERFACE_CONTRACT.md), [native 
 ## Focused acceptance and recovery follow-up
 
 Draft [PR121](https://github.com/afterburn25/Cajun_Web/pull/121) at `e9ee051` has independently downloaded/verified1280 focused named executions across push/PR PHP8.2/8.4 matrices, with all29 triggered workflows successful. The retained1.23 upgrade fixture now includes recurring consent, invoices, partial receipts, original-request replay and future termination through real HTTP recovery/reapplication. These new scenarios have only syntax verification at this checkpoint; their combined Apache execution, Windows/Linux packages and independent review remain required. No release or automatic collection is claimed.
+
+## Notifications
+
+The separate [recurring activity increment](RECURRING_BILLING_ACTIVITY.md) adds personal offer/decision updates and exact retained-history links to the existing workspace bell. Local source/browser acceptance is verified; focused CI, complete packaged recovery and independent review remain pending. Native agreement/invoice mutations are unchanged.

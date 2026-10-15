@@ -68,6 +68,27 @@ def run(env):
           and document['terms']['anchor'] == anchor
           and not initial['recurring_billing_invoices'])
 
+    client_center, staff_center = portal+'?activity=1', admin+'?view=activity'
+    offer_key, consent_key = 'recurring-offer:'+schedule, 'recurring-event:'+consent['request_id']
+    activation_key = 'recurring-event:'+activation['request_id']
+    for actor, center, key in [(client, client_center, offer_key), (owner, staff_center, consent_key)]:
+        mark = dict(fields(actor, center, 'activity_mark'), keys=json.dumps([key]), state='read')
+        actor.post(center, data=mark)
+    reads = records('recurring')['activity_reads']
+    check(label + ' upgraded recurring offer and consent retain separate personal reads',
+          any(r['actor_type']=='client' and r['event_key']==offer_key for r in reads)
+          and any(r['actor_type']=='admin' and r['event_key']==consent_key for r in reads)
+          and not any(r['event_key']==activation_key for r in reads))
+
+    def exact_activity():
+        response = client.get(client_center+'&open='+activation_key)
+        staff_response = owner.get(staff_center+'&open='+consent_key)
+        return (response.status_code==200 and staff_response.status_code==200
+                and urlparse(response.url).fragment=='recurring-event-'+activation['request_id']
+                and urlparse(staff_response.url).fragment=='recurring-event-'+consent['request_id']
+                and BeautifulSoup(response.text,'html.parser').find(id='recurring-event-'+activation['request_id']) is not None
+                and BeautifulSoup(staff_response.text,'html.parser').find(id='recurring-event-'+consent['request_id']) is not None)
+
     # Only the historical dates are seeded. Invoice/payment actions remain real HTTP.
     # No clock override or future-period eligibility bypass enters the shipped code.
     fixture = subprocess.run([env['php'], str(Path(__file__).with_name('recurring_billing_browser_fixture.php')),
@@ -127,6 +148,9 @@ def run(env):
           and anchor in client.get(client_detail).text
           and 'Invoice balance: $20.00 USD' in client.get(client_period).text)
 
+    check(label + ' first reapplication restores exact recurring destinations and original read status',
+          exact_activity() and retained(saved))
+
     owner.post(offer_url, data=offer)
     client.post(client_detail, data=consent)
     owner.post(detail, data=activation)
@@ -165,3 +189,6 @@ def run(env):
     response = owner.post(period, data=issue)
     check(label + ' second recovered end and invoice replays retain exact original records',
           retained(ended) and 'invoice_id=' + invoice_id in response.url)
+
+    check(label + ' second reapplication preserves original recurring notice destinations and personal reads',
+          exact_activity() and retained(ended))

@@ -1,5 +1,9 @@
 # Codex and Devin work allocation
 
+## Current recurring-notification increment
+
+Codex recurring notification follow-on now has locally verified activity/bell integration and exact history links on `codex/recurring-billing-activity`; [scope and pending gates](RECURRING_BILLING_ACTIVITY.md). P-07/HC-06 remain partial: full packaged/recovery acceptance and review are pending, as are broader billing automation and production activation. Devin retains complete20i implementation. Published1.23 is unchanged.
+
 ## Recurring billing draft 121 — focused CI verified, recovery acceptance prepared
 
 Draft [PR 121](https://github.com/afterburn25/Cajun_Web/pull/121) preserves implementation `e9ee051bd2617df1a7e004d2f462bbe15a7c921a` above native120/66f7760. Downloaded focused runs [38667207543](https://github.com/afterburn25/Cajun_Web/actions/runs/38667207543) and [38667516353](https://github.com/afterburn25/Cajun_Web/actions/runs/38667516353) verify **1,280 named executions**, 640 per PHP8.2/8.4 matrix: 115 native + 69 unchanged legacy ledger + 68 default forms + 68 no-ini forms per runtime. Tested merge `433e0871b2434b998549a34bf61be6e5664ef5eb` is tree-identical; reports match the local cases and full logs have no PHP diagnostics. All29 triggered workflows pass. Local44 HTTP/Edge checks and eight inspected full images remain separately scoped evidence.

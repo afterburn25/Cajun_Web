@@ -1,5 +1,9 @@
 # Approved roadmap and acceptance criteria
 
+## Current recurring-notification increment
+
+Codex recurring notification follow-on now has locally verified activity/bell integration and exact history links on `codex/recurring-billing-activity`; [scope and pending gates](RECURRING_BILLING_ACTIVITY.md). P-07/HC-06 remain partial: full packaged/recovery acceptance and review are pending, as are broader billing automation and production activation. Devin retains complete20i implementation. Published1.23 is unchanged.
+
 HC-06/P-03/P-04: [actual recurring staff/client screens](RECURRING_BILLING.md) are implemented after contract4eb85bf over native120. Local115native,68form per mode and44HTTP/browser/diagnostics checks pass. End-to-end interface acceptance, retained upgrade/recovery and independent review remain pending; automation and actual merchant acceptance remain separate incomplete requirements. Published1.23 is unchanged.
 
 HC-06/P-03/P-04: [recurring lifecycle and consent](RECURRING_BILLING_LIFECYCLE_CONTRACT.md) is implemented outside deployment with321named local checks per default/no-ini mode. Focused committed CI and independent review are next. Native authority/consent, unique invoices, actual interfaces and payment acceptance remain required.
