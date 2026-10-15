@@ -1,5 +1,9 @@
 # Changelog
 
+## Draft recurring billing staff/client interface
+
+Add protected recurring offer/preview, actual client decisions, dated whole-period controls, bounded validated history and existing-ledger invoice/payment links. Preserve failed draft text and review tokens, require explicit consent and bind invoice issuance to its reviewed period. Add native/form/HTTP browser tests and scoped mobile facts styling. Independent and full release acceptance remain pending.
+
 ## Draft recurring billing interface contract
 
 Define staff/client forms, exact presented terms, dated lifecycle and period/invoice history before implementation. Parent native120 remains frozen and verified; no runtime change yet.

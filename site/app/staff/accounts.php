@@ -130,6 +130,7 @@ function staff_reset_token(string $email): ?array {
     }));
 }
 function staff_view_permission(string $view): ?string {
+    if($view==='recurring-billing')return 'payments.manage'; // Controller also requires current clients.manage.
     if($view==='activity')return null; // Current project/ticket actors independently authorize the activity controller.
     if(in_array($view,['tickets','ticket','ticket-new'],true))return 'support.tickets';
     if(in_array($view,['service-plans','service-plan','service-agreements','service-agreement'],true))return 'staff.manage';
@@ -150,6 +151,8 @@ function staff_view_permission(string $view): ?string {
     return 'website.manage';
 }
 function staff_action_permission(string $action): ?string {
+    if($action==='recurring_setup')return 'staff.manage';
+    if(str_starts_with($action,'recurring_'))return 'payments.manage';
     if($action==='design_financial_setup')return 'staff.manage';
     if(str_starts_with($action,'design_financial_'))return 'payments.manage';
     if($action==='tickets_setup')return 'staff.manage';

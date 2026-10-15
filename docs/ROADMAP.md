@@ -1,5 +1,7 @@
 # Approved roadmap and acceptance criteria
 
+HC-06/P-03/P-04: [actual recurring staff/client screens](RECURRING_BILLING.md) are implemented after contract4eb85bf over native120. Local115native,68form per mode and44HTTP/browser/diagnostics checks pass. End-to-end interface acceptance, retained upgrade/recovery and independent review remain pending; automation and actual merchant acceptance remain separate incomplete requirements. Published1.23 is unchanged.
+
 HC-06/P-03/P-04: [recurring lifecycle and consent](RECURRING_BILLING_LIFECYCLE_CONTRACT.md) is implemented outside deployment with321named local checks per default/no-ini mode. Focused committed CI and independent review are next. Native authority/consent, unique invoices, actual interfaces and payment acceptance remain required.
 
 HC-06/P-03/P-04: [exact recurring invoice terms](RECURRING_BILLING_TERMS_CONTRACT.md) is implemented outside deployment with 372 local checks per default/no-ini mode. Focused committed CI and independent review are next; native authority/consent, lifecycle, unique invoices, actual interfaces and recurring-payment acceptance remain pending.

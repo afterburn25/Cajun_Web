@@ -1,10 +1,10 @@
 name: Native recurring agreement and period invoice checks
 on:
   push:
-    branches: [main, codex/recurring-billing-records]
-    paths: ['site/app/billing/**', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', '.github/workflows/recurring-billing-native.yml']
+    branches: [main, codex/recurring-billing-records, codex/recurring-billing-screens]
+    paths: ['site/app/billing/**', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/recurring-billing/forms.php', 'site/includes/layout/recurring_billing.php', 'site/admin/controllers/recurring_billing.php', 'site/portal/controllers/recurring_billing.php', '.github/workflows/recurring-billing-native.yml']
   pull_request:
-    paths: ['site/app/billing/**', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', '.github/workflows/recurring-billing-native.yml']
+    paths: ['site/app/billing/**', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/recurring-billing/forms.php', 'site/includes/layout/recurring_billing.php', 'site/admin/controllers/recurring_billing.php', 'site/portal/controllers/recurring_billing.php', '.github/workflows/recurring-billing-native.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -54,6 +54,8 @@ jobs:
               cmp foundation/recurring-billing/RecurringBillingSchedule.php site/includes/foundation/recurring-billing/RecurringBillingSchedule.php
               php -d memory_limit=128M tests/recurring_billing_native.php
               php tests/design_payments_legacy_ledger.php
+              php tests/recurring-billing/forms.php qa/recurring-billing-forms-default.json
+              php -n tests/recurring-billing/forms.php qa/recurring-billing-forms-noini.json
             '
       - name: Preserve actual named evidence
         if: always()
@@ -63,8 +65,10 @@ jobs:
           path: |
             qa/recurring-billing-native-results.json
             qa/ledger-native-results.json
+            qa/recurring-billing-forms-default.json
+            qa/recurring-billing-forms-noini.json
           if-no-files-found: error
           retention-days: 14
       - name: Scope
         if: always()
-        run: echo 'Native MariaDB agreement/consent/history and unique period invoices with current authority, replacement, replay, concurrent workers and rollback. Historical fixtures are synthetic; no HTTP/browser, scheduler, merchant or provider acceptance.' >> "$GITHUB_STEP_SUMMARY"
+        run: echo 'Native MariaDB agreement/consent/history, current-authorized UI projections, original-calendar form/render checks and unique invoices. Historical fixtures are synthetic. Real HTTP/browser acceptance runs separately; no scheduler, merchant or provider acceptance.' >> "$GITHUB_STEP_SUMMARY"
