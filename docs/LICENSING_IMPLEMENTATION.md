@@ -115,11 +115,13 @@ Adds license management to the customer workspace:
 - Both hooks run AFTER the transaction commits — fulfilment failure never rolls back a recorded payment
 - Bundle generation requires a Website Core source checkout: `license_core_source_dir()` checks sibling dirs and `config()['license_core_dir']`; if unavailable the license is still created and the bundle can be generated later from admin
 - Payment reversal does NOT deactivate licenses — deactivation stays a manual admin action
+- Customer receives a best-effort email with the license key and portal link on fulfilment (`send_message()`); failure is logged, not fatal
 
-### 9. Remaining
+### 9. Customer email notification
 
-- Email notification to customer with license key + download link
-- Optional: list catalog products in the admin create-license form
+On fulfilment the customer is emailed their license key plus a link to the
+portal workspace where bundles can be downloaded and domains registered.
+Best-effort: a mail failure is logged but does not block license creation.
 
 ## Integration points
 
@@ -132,17 +134,37 @@ Adds license management to the customer workspace:
 
 ```sql
 website_licenses (
-  id, license_key (unique), customer_id, product_id, is_active,
-  created_at, updated_at
+  id, license_key (unique), customer_id, product_id (VARCHAR(60) SKU),
+  is_active, created_at, updated_at
 )
 
 license_domains (
   id, license_id, domain, is_active, registered_at, deactivated_at
 )
+
+license_bundles (
+  id, license_id, title, path (private storage), created_at
+)
 ```
+
+## Test coverage
+
+- `tests/license_native.php` — service-layer checks (key generation,
+  domain normalization, multi-domain, 2-active cap, deactivation, SKU
+  mapping, bundle guards); runs in CI on MariaDB.
+- `tests/license_bundle_functional.php` — builds a real bundle from the
+  Website_Core checkout and verifies the extracted layout
+  (`site/install.php` + `site/modules/industries/*/addon.json` with
+  embedded `license_key`) matches the Website Core installer's
+  expectations. 14 checks, all passing.
+- Website Core side: `LicenseApiContractTest` spawns a real `php -S`
+  mock of this API and verifies the HTTP wire contract including the
+  200-vs-non-200 denial/transient semantics.
 
 ## Next steps
 
-1. Implement module bundling tool (creates downloadable ZIPs)
-2. Integrate with purchase flow (auto-generate license key on sale)
-3. Test the complete flow end-to-end
+1. Configure `license_core_dir` on production pointing to a Website Core
+   checkout so fulfilment can generate bundles automatically.
+2. Run a live end-to-end cycle: purchase → fulfilment → portal download →
+   Website Core install → periodic validation → domain change → old-site
+   deactivation. None of this has been run against a live environment.
