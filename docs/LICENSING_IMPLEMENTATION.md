@@ -34,6 +34,7 @@ the site.
 - Rate limiting: 10 requests per minute per IP (HTTP 429)
 - Audit logging: all validation attempts logged to `audit` table
 - Multiple domain support: allows test + public sites on same license key, capped at 2 active domains per license — a third requires deactivating one first, which takes that site offline at its next validation
+- www/apex equivalence: `www.example.com` and `example.com` name the same site — registration canonicalizes `www.` to the apex and validation accepts either form, so the pair never consumes two slots
 - Active check: deactivated licenses are rejected
 
 ### 2. Database schema
