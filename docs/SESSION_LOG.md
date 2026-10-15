@@ -1894,3 +1894,38 @@ All changed PHP/Python syntax, installer refresh and documentation checks pass. 
 Continued full20i goal from1fbebcac on client-search branch/PR139. Downloaded and SHA256/CRC/named-report verified all four native artifacts:106 combined checks each including50 client checks. Exact Windows build95816 completed and independently verifies11 checksums, FULL5416/COMPLETE2659/UPDATE2646 and Git/member/directory/update equivalence. Parent5bec downloaded browser artifact passes1738 named checks; actual owner/mobile client active screenshots confirm the pending-wording fix. Evidence and immutable hashes recorded in guides.
 
 Source inspection found new browser fixture lacked explicit support permission for its new client. Corrected test setup through the real owner support_policy form, asserting permission/session before the existing refusal; no runtime rule changed. Python AST/docs pass. Full1fbeb38810400216 remains in native application integration; newer browser and full acceptance pending.22 workflows passed by latest listing,3 still running. Next: push follow-up, inspect same and descendant handles, fix real failures, review and normal integration/release. PR139 attachment failed at chat100-attachment cap; ordinary link retained. No live action or publication. Enclosing commit **Prepare permitted support fixture for client domain acceptance**.
+
+## Website licensing/DRM workstream (Devin) — 2026-10-15
+
+Owner direction: full purchase-to-install DRM for Website Core bundles sold through cajunwebpro.com. Implemented on `main`:
+
+- `site/api/validate.php` + `api/handlers/license.php` — JSON validation endpoint (`{license_key, domain}` -> `{authorized}`), rate-limited 10/min/IP, audited. `.htaccess` rewrite for clean `/api/validate`. Contract: only `200 + authorized:false` is a definitive denial; 429/400/5xx are transient (matching Website Core change — transient conditions must never take customer sites offline).
+- `site/database/schema/license_schema.php` — `website_licenses` (unique key, customer FK, `product_id` VARCHAR(60) SKU), `license_domains` (unique license+domain, max 2 active = public+test), `license_bundles`.
+- `site/app/licenses/service.php` — key generation (128-bit, 1062-dup retry), domain register/deactivate with 2-active cap.
+- `site/app/licenses/bundle.php` — builds Website_Core + industry module ZIP with `license_key` injected into `addon.json`; ZipArchive and malformed-manifest guards; secrets/storage excluded.
+- `site/app/licenses/fulfill.php` — `license_fulfill_invoice()` post-transaction hook in both `catalog_transition` and `ledger_receive` paid paths; idempotent per customer+product; failure never rolls back payment; SKU convention `WEBSITE-{INDUSTRY}`; private-storage bundles only; best-effort customer email with license key + portal link.
+- Admin UI `studio-licenses` (create/deactivate/domains/bundle list+regenerate); portal domain management + owner-only `api/bundle-download.php` (realpath-contained, support sessions rejected, audited).
+- `tests/license_native.php` (30+ assertions, CI/MariaDB) + `tests/license_bundle_functional.php` (14 checks, real Website_Core checkout, extraction verified: `site/install.php` + module manifest with embedded key).
+- Fixed: leftover `<<<<<<< HEAD` merge marker in `schema/base.php` shipped broken until build caught it; installer inventory refreshed via `python tools/build.py --refresh` (required after every site/ change).
+
+Remaining (no live environment here): production `license_core_dir` config, real purchase->bundle->install->validation cycle, live-domain change deactivation.
+
+## Licensing follow-up: domain semantics + atomic replace — 2026-10-15
+
+Hardening pass on the licensing workstream, all on `main` through `cec31673`:
+
+- **www/apex equivalence** (`d68ba1cc`): `www.example.com` and `example.com` name the same site — registration canonicalizes `www.` to apex, validation matches either form; the pair never consumes two license slots.
+- **2-active cap on reactivation**: reactivating a previously deactivated domain also respects the 2-active limit.
+- **Key-generation collision retry**: `license_create` retries on the astronomically-unlikely duplicate-key PDO error.
+- **Atomic domain replace** (`31dcab62`): `license_replace_domain()` + `license_domain_replace` portal action + per-domain Replace form — a customer's "change website" deactivates the old domain in one step (old install offline at its next validation; new domain registers in the freed slot). Same-domain and inactive-domain replacements refused. Native test cases added.
+- **Portal UX copy** (`6ec7a749`): explains the 2-domain cap, deactivation effect, www/apex equivalence.
+- Website_Core side (`devin/website-core`): inconclusive validation preserves the stored verdict (`recordValidation ?bool` — transient outages can't 503 a licensed site); `detectDomain()` reports the canonical `app.url` so a moved site self-denies (HTTP_HOST deliberately untrusted); admin "Validate now"; license-warning only when a license row exists; `disable()` recovery exemption; native CI licensed-bundle leg proves the whole cycle on real MySQL/MariaDB including moved-site denial and reactivation.
+
+Still not live-verified: production `license_core_dir`, real purchase→bundle→install→validation cycle.
+
+
+## 2026-10-15 — Preserve current main and repair replacement rollback during20i integration
+
+Continued complete20i objective fromf86c745c/PR139. Normal merge preserves main16f07e49 including licensing/domain controls. Both session histories retained; incoming handoff archived. Source inspection and actual temporary-table MariaDB reproduction showed invalid replacement/database failure disabled the original licensed domain. Added a transaction with original-row lock and rollback, plus caller-transaction refusal. Local4 corrected cases and35 named merged native licensing checks pass (isolated fixture prefix/config only; actual app functions). Added persistent CI native report; no Website_Core execution. All merged/changed PHP/Python syntax and installer refresh pass. Current combined Linux/browser/recovery/review acceptance remains pending.
+
+Earlier e375 full38805429786 now succeeded: downloaded final artifact12008047599 SHA256275ef98dbe59118e7f1b3df45efba35b1f9bb36eb404ac6e9dea703752167a7b verifies61 named reports, including1737 HTTP,289 recovery,1787 Apache. All Linux archive/source/member checks pass; FULL/COMPLETE match verified Windows bytes, UPDATE changes only source metadata. Parent f86 full38811407918 is in browser after package/native pass. No actual client-search browser completion yet; preserve same run. Next: finish/push this merge, inspect combined current-head artifacts/screenshots, review then exact-main release. Enclosing commit **Merge current main and preserve domain replacement on failure**. No live provider/write/payment/mail/SSH/deployment; full20i scope unchanged.

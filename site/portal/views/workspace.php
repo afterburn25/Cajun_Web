@@ -19,7 +19,8 @@ if($licenses):?>
 <ul>
 <?php foreach($domains as $d):?>
 <li><?=esc($d['domain'])?> <span style="color:green">Active</span>
-<form method="post" style="display:inline"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_deactivate"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><input type="hidden" name="domain" value="<?=esc($d['domain'])?>"><button class="btn outline">Deactivate</button></form></li>
+<form method="post" style="display:inline"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_deactivate"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><input type="hidden" name="domain" value="<?=esc($d['domain'])?>"><button class="btn outline">Deactivate</button></form>
+<form method="post" style="display:inline"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_replace"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><input type="hidden" name="old_domain" value="<?=esc($d['domain'])?>"><input type="text" name="new_domain" placeholder="new-domain.com" style="width:14em" required><button class="btn outline">Replace</button></form></li>
 <?php endforeach;?>
 </ul>
 <?php else:?><p class="muted">No domains registered yet.</p><?php endif;?>
@@ -28,6 +29,7 @@ if($licenses):?>
 <?php foreach($bundles as $b):?><li><a href="<?=esc(site_url('api/bundle-download.php?id='.(int)$b['id']))?>"><?=esc($b['title'])?> ↓</a> <small><?=esc(gmdate('Y-m-d',strtotime($b['created_at'])))?></small></li><?php endforeach;?>
 </ul><?php endif;?>
 <form method="post"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_add"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><label>Register domain<input type="text" name="domain" placeholder="example.com" required></label><button class="btn gold">Add domain</button></form>
+<p class="hint">Up to 2 active domains per license (e.g. your public site and a test site). Registering or moving a domain takes the old site offline at its next license check. <code>www.</code> addresses count as the same site as their base domain.</p>
 </article>
 <?php endforeach;?>
 </div>

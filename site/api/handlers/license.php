@@ -10,8 +10,13 @@ boot();
  * See Website_Core/docs/LICENSING_API.md for the contract.
  */
 
-function license_response(bool $authorized, ?string $error = null): never {
-    http_response_code(200);
+// Contract: HTTP 200 + authorized:false means a DEFINITIVE license/domain
+// denial (takes the installed site offline at next validation). Transient
+// conditions — rate limiting, bad input, server errors — must use non-200
+// status codes so Website Core treats them as inconclusive and retries,
+// never as license denial. See Website_Core/docs/LICENSING_API.md.
+function license_response(bool $authorized, ?string $error = null, int $status = 200): never {
+    http_response_code($status);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode([
         'authorized' => $authorized,
@@ -32,23 +37,23 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 $rateKey = 'license_validate_' . hash('sha256', $ip);
 if (!consume_rate($rateKey, 10, 60)) {
-    license_response(false, 'Rate limit exceeded. Please try again later.');
+    license_response(false, 'Rate limit exceeded. Please try again later.', 429);
 }
 
 $input = json_decode(file_get_contents('php://input'), true);
 if (!is_array($input)) {
-    license_response(false, 'Invalid JSON payload');
+    license_response(false, 'Invalid JSON payload', 400);
 }
 
 $licenseKey = $input['license_key'] ?? '';
 $domain = $input['domain'] ?? '';
 
 if (!is_string($licenseKey) || strlen($licenseKey) < 8 || strlen($licenseKey) > 255) {
-    license_response(false, 'Invalid license key format');
+    license_response(false, 'Invalid license key format', 400);
 }
 
 if (!is_string($domain) || strlen($domain) < 4 || strlen($domain) > 253 || !str_contains($domain, '.')) {
-    license_response(false, 'Invalid domain format');
+    license_response(false, 'Invalid domain format', 400);
 }
 
 $domain = strtolower(trim($domain));
@@ -73,10 +78,14 @@ try {
         license_response(false, 'License is deactivated');
     }
 
-    // Check if domain is registered for this license
+    // Check if domain is registered for this license. The www/apex pair
+    // names the same site — a customer who registered example.com and
+    // installs at www.example.com (or vice versa) is not a second
+    // instance and must not be denied.
+    $alt = str_starts_with($domain, 'www.') ? substr($domain, 4) : 'www.' . $domain;
     $domainRegistered = one(
-        'SELECT id FROM ' . table('license_domains') . ' WHERE license_id = ? AND domain = ? AND is_active = 1',
-        [$license['id'], $domain]
+        'SELECT id FROM ' . table('license_domains') . ' WHERE license_id = ? AND domain IN (?, ?) AND is_active = 1',
+        [$license['id'], $domain, $alt]
     );
 
     if (!$domainRegistered) {
@@ -86,5 +95,5 @@ try {
     license_response(true);
 } catch (\Throwable $e) {
     report_error($e);
-    license_response(false, 'Internal server error');
+    license_response(false, 'Internal server error', 500);
 }

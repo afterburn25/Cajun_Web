@@ -146,3 +146,10 @@ Local proof: `work/20i-5bec-native-verification.json`; original downloaded ZIPs 
 ## Accepted-order wording browser verification — 2026-10-15
 
 Source5bec4fb2 and testmergefe1f8684056e47cab2def5c4526704d508625e20 share tree6af747dc5b9857453de8176e881b656e1b484c98. Full run38807153582 browser artifact12007782227 downloaded/CRC/SHA256 verified: `793db721ef6a79f048b5b8d8793f5b361c363298c53e2eb77487b22b3d47bd7e`.1738 named HTTP/Chromium checks pass; unexpected browser and PHP diagnostics are empty. Actual owner active desktop and client active mobile screenshots were inspected; accepted-request wording no longer contradicts active hosting. Proof `work/20i-5bec-browser-verification.json`. Full recovery/Apache and newer client-search acceptance remain separate.
+
+
+## Full merged hosting acceptance verified — 2026-10-15
+
+[e375 full run38805429786](https://github.com/afterburn25/Cajun_Web/actions/runs/38805429786) completed successfully. Sourcee37517facecaeb1b91cf5aaad44d03b3fd6428a2/testmerge15746f7fd716ecd752d5f6f0e448e24df3274ff4 share treea561f58b7e014a100aee6d28567c69bbd761d1de. Actual final artifact12008047599 (99,542,646 bytes), SHA256 `275ef98dbe59118e7f1b3df45efba35b1f9bb36eb404ac6e9dea703752167a7b`, was downloaded and ZIP CRC/hash checked.61 named-check reports pass, including1737 HTTP/Chromium,289 recovery,1787 Apache; overlapping native/component subsets are not summed. Unexpected browser/PHP diagnostics are empty.
+
+All11 package checksums, member hashes/directories, exact source and update payload verify: FULL5406/COMPLETE2654/UPDATE2641. Windows/Linux FULL and COMPLETE are byte-identical (SHA256 `abcd1aa801a7d01a94a19a42e0f00a97b463162720f8d96d36590af82aa9a07e` and `cb5292d9d00c082588843a3c0895c7aec5c62d8ae097f93e91f90510832e7f7b`). UPDATE differs only in its source/test-merge identifier. Retained proofs `work/20i-e375-full-verification.json`, `work/20i-e375-linux-verification.json`, `work/20i-e375-windows-linux-comparison.json`. Newer5bec wording/client-search/latest-main changes still require their own current-head acceptance and review; no release is claimed.

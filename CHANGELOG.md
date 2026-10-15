@@ -1,3 +1,7 @@
+# Integration checkpoint — current main and domain replacement rollback
+
+Normally merge main16f07e49 into the20i client-search branch. Preserve licensing/domain controls and fix failed replacement leaving the original domain disabled. Local4 rollback cases and35 native licensing checks pass; combined acceptance/review pending. Earlier e375 full application artifacts/packages are now verified. Published1.24 remains unchanged.
+
 # Verification checkpoint — client domain search
 
 Native1fbeb passes106 combined checks including50 client checks in each of four PHP/database combinations; exact Windows packages verified. Correct the browser fixture to grant support access before asserting that real support sessions cannot search. No runtime authorization change. Browser/recovery/review acceptance remains pending. [Evidence](docs/TWENTYI_CLIENT_DOMAIN_SEARCH.md).

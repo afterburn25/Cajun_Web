@@ -5,7 +5,7 @@
 
 Codex owns the complete 20i P0 integration. [Version1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly download-verified at immutable source7190b582. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38711850732) passes9,134 named executions and30 gates; all16 assets, tag, manifests and ZIP contents match accepted source. Previous1.23 assets remain unchanged. [Current status](PROJECT_STATUS.md), [release evidence](docs/TEST_REPORT_1.24.0.md) and [requirements](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md) define current scope. Complete20i remains unfinished; unrelated work stays paused. No live deployment is claimed.
 
-Next: cloud1.25/#127 with actual1.24 upgrade baseline and minimum commercial eligibility #130/#133. Native hosting/domain/VPS controls, complete fulfillment, scoped support and SSH remain active work. All status below this point is historical unless explicitly dated after publication.
+Next: verify client domain-search PR139 and its normal main16f07e49 integration, retain hosting PR138 evidence and finish independent review/combined release gates. Native hosting/domain/VPS controls, automatic catalog/configuration, complete fulfillment, scoped support and SSH remain active work. All status below this point is historical unless explicitly dated after publication.
 
 ## Historical owner allocation — 2026-10-14 (superseded)
 
