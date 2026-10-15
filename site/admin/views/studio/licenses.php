@@ -85,6 +85,18 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 
 <?php if($lic['is_active']): ?>
 <form method="post">
+<?php admin_action('studio_license_bundle'); ?>
+<input type="hidden" name="id" value="<?= esc($lic['id']) ?>">
+<label for="industry_<?= esc($lic['id']) ?>">Create bundle</label>
+<select name="industry" id="industry_<?= esc($lic['id']) ?>" required>
+<option value="">Choose industry…</option>
+<option value="restaurant">Restaurant</option>
+<option value="salon">Salon</option>
+<option value="generic">Generic Business</option>
+</select>
+<button class="btn gold" type="submit">Generate bundle</button>
+</form>
+<form method="post">
 <?php admin_action('studio_license_deactivate'); ?>
 <input type="hidden" name="id" value="<?= esc($lic['id']) ?>">
 <button class="btn outline" type="submit">Deactivate license</button>

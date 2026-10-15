@@ -69,6 +69,14 @@ function studio_admin_action(string $action,array $user): never {
         $licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);
         require_once CWP_CODE_ROOT.'/app/licenses/service.php';
         license_deactivate_domain($licenseId,$domain);$target='studio-licenses';
+    }elseif($action==='studio_license_bundle'){
+        $id=gint($_POST,'id',1,2147483647);$license=one('SELECT * FROM '.table('website_licenses').' WHERE id=?',[$id]);
+        if(!$license)throw new InvalidArgumentException('License not found.');
+        $industry=posted('industry',50);$coreDir=CWP_ROOT.'/../Website_Core';$outDir=config()['storage'].'/bundles';
+        require_once CWP_CODE_ROOT.'/app/licenses/bundle.php';
+        $zipPath=license_bundle($license['license_key'],$industry,$coreDir,$outDir);
+        license_bundle_store($id,$zipPath,$industry.' bundle');
+        flash('Bundle created: '.basename($zipPath));$target='studio-licenses';
     }else throw new InvalidArgumentException('Unknown studio action.');
     log_event($action);flash('Saved.');redirect(admin_url($target));
 }
