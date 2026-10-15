@@ -4,7 +4,7 @@ on:
   pull_request:
     paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
   push:
-    branches: [main, devin/twentyi-operations, devin/twentyi-execution, devin/twentyi-reconcile, codex/twentyi-nameserver-controls, codex/twentyi-mailbox-controls]
+    branches: [main, devin/twentyi-operations, devin/twentyi-execution, devin/twentyi-reconcile, codex/twentyi-nameserver-controls, codex/twentyi-mailbox-controls, codex/twentyi-vps-controls]
     paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
   workflow_dispatch:
 
@@ -45,6 +45,8 @@ jobs:
             php -n tests/twentyi-operations/run.php qa/operations-no-ini-results.json
             php tests/twentyi-operations/mailboxes.php qa/mailbox-default-results.json
             php -n tests/twentyi-operations/mailboxes.php qa/mailbox-no-ini-results.json
+            php tests/twentyi-operations/cloud-sites.php qa/cloud-sites-default-results.json
+            php -n tests/twentyi-operations/cloud-sites.php qa/cloud-sites-no-ini-results.json
             cat qa/operations-default-results.json
             cat qa/operations-no-ini-results.json
           '

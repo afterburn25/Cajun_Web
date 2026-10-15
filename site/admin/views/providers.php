@@ -139,8 +139,8 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <?php endif; ?>
 <?php endif; ?></section>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_cloud.php'; ?>
-<section class="workspace-card"><h2>Service capabilities</h2><p>These capabilities remain unverified and unavailable, including after a successful connection check.</p>
-<ul><li>Hosting plan types and account balance</li><li>Hosting creation, plan changes and deletion</li><li>Domain search, registration, renewals and transfers</li><li>VPS ordering and power controls</li><li>Backup restoration and SSH access</li></ul></section>
+<section class="workspace-card"><h2>Service capabilities</h2><p>A successful connection check confirms access to the hosting list. It does not confirm that every service is available or approved for use.</p>
+<h3>Additional services still to be connected</h3><ul><li>Automatic hosting plan discovery and account balance</li><li>Hosting plan changes and deletion</li><li>Domain registration, renewals and transfers</li><li>VPS ordering and power controls</li><li>Backup restoration and SSH access</li></ul></section>
 
 <?php require CWP_CODE_ROOT.'/admin/views/provider_domain_search.php'; ?>
 

@@ -225,3 +225,8 @@ Retain the existing gateway/ledger, extending its bounded result with accepted_p
 ## 2026-10-15 — typed owner catalog evidence before automatic discovery
 
 Use immutable, expiring owner-reviewed provider plan mappings to reuse exact package configuration. Preserve exact decimal major currency units and explicit period/tax/allocation evidence separately from USD retail cents. Unknown wholesale cost is null; do not infer conversion, margin, allocation or provider quote. Official public sources do not supply a verified packageTypes response schema, so this increment introduces no invented automatic reader. Catalog selection binds original accepted plan and existing order preparation; dedicated fulfillment review remains required. [Scope and evidence](TWENTYI_PLAN_CATALOG.md).
+
+
+## 2026-10-15 — Reuse cloud creation request authority
+
+The bounded cloud management increment uses the existing provider approval and operation ledger tables. Its typed, installation-keyed approval envelope binds the explicit server/client assignment and current observation; request nonce consumption precedes DNS and sending. Returned cloud addWeb package IDs remain accepted-pending until separately observed and explicitly linked. Server capacity/domain permission are manually reviewed and not falsely reported as API-verified. This delivers the documented existing-server website operation while full server lifecycle, power and SSH contracts remain separate. No new generic operation approval surface or replacement ledger is introduced.

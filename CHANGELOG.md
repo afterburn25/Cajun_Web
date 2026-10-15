@@ -1,3 +1,9 @@
+## Unreleased — combined cloud website creation
+
+The admin capability summary now distinguishes the connection check from separate service permissions and no longer lists implemented domain search and hosting creation as unavailable.
+
+Add an owner-reviewed website to an explicitly linked existing cloud server using the shared provider operation history. Preserve returned package IDs as accepted pending independent observation and explicit linking. Combine cloud, registrar, catalog and mailbox workflows with original branch histories and shared recovery guards. Complete combined acceptance remains pending.
+
 ## Unreleased — reviewed provider plan mappings
 
 Combine expiring owner-reviewed provider type and cost mappings with existing retail orders and hosting preparation. Preserve exact selection provenance and withdrawal/recovery history. The provider-settings browser check now waits for returned-page content and retains diagnostics on failure; product behavior is unchanged by that test correction. Combined acceptance remains pending.
@@ -45,6 +51,18 @@ Add expiring owner permissions, real owner/client creation forms and safe reques
 - Keep private provider cost decimal amounts, currencies, periods and tax/allocation evidence separate from client retail prices; no inferred conversion or provider quote.
 - Prepare existing hosting service records from an eligible saved mapping while retaining original order/payment/fulfillment safeguards and immutable provenance.
 - Local pure checks pass; native/browser/packaged acceptance and automatic discovery remain pending. See [scope](docs/TWENTYI_PLAN_CATALOG.md).
+
+## Unreleased cloud recovery correction
+
+Refuse cloud request replay after paired approval/audit loss when the shared ledger or result audit survives. Refuse operation re-preparation after a lost marker with retained history. New native regressions are pending CI.
+
+## Unreleased cloud verification
+
+Add native two-process request replay coverage and isolated-branch application acceptance. Runtime unchanged from7e742c3b; CI results remain pending.
+
+## Unreleased — cloud website creation
+
+Cloud agent owns `codex/twentyi-vps-controls` from0ebc4623: native owner Add website on an explicitly assigned existing server, safe client request summaries, existing gateway/ledger and exact documented addWeb transport. Local synthetic checks pass; native/browser acceptance and root integration remain pending. Server lifecycle/power/console/SSH are still unfinished. See [cloud scope](docs/TWENTYI_CLOUD_WEBSITES.md). No release/live action.
 
 # Integration checkpoint — current main and domain replacement rollback
 
@@ -979,3 +997,11 @@ Parent2fe7e2ff, PR142: all four downloaded native artifacts verify60 cases plus6
 ## 2026-10-15 — registrar native/browser evidence and capture handoff
 
 Parent8b4a101a, PR142: four actual artifacts verify63 native +64/64 reader cases each; source2fe7e2ff checkpoint verifies1,810 HTTP/Chromium checks (36 registrar),62 named reports, empty unexpected diagnostics and exact source/package bytes. Owner desktop and client screens inspected. Owner mobile element capture caught sidebar/sticky-header overlays; test-only navigation/settling/full-page correction awaits root combined screenshot inspection. Shipping source unchanged by this final checkpoint. Combined recovery/Apache remains pending; root owns integration/releases. [Exact evidence](docs/TWENTYI_REGISTRAR_INVENTORY.md).
+
+2026-10-15 cloud preparation review correction, starting `2febba4eef5f658a46de33b9b905108d41cb47d6`: `provider_operations_migrate()` now rejects an inherited database transaction before acquiring the staff lock or performing DDL. The native cloud fixture checks fresh preparation creates no table/marker and preserves rollback of an unrelated sentinel write. This closes the implicit-commit risk without changing storage versions or recovery records. Changed PHP syntax and documentation checks pass; installer refresh is included. Corrected-head Linux acceptance remains required. Next: verify the new native and packaged reports, then integrate through the parent branch.
+
+The recovery query at2febba4e failed native MySQL8.4/PHP8.2 run38820482050, job116715582421, with an illegal mixed-collation CONCAT. The enclosing correction casts all audit-prefix/ID/suffix operands to binary, retaining exact request-ID matching on both database engines. The failed report is preserved; later acceptance must verify this compatibility correction.
+
+## 2026-10-15 — Cloud website native acceptance and handoff
+
+Startingce8d4e89, record41 corrected native checks per PHP8.2/8.4 and MariaDB10.11/MySQL8.4 combination in run38821117816, verified from all four downloaded artifacts. Root review found no further source issue. Installer refresh15011, changed PHP syntax, all2,662 indexed hashes and documentation checks passed. Earlier4aa browser checkpoint verifies1,792 HTTP checks including18 cloud checks and four inspected screenshots. Exact corrected full38821117748 passed native and remains in browser; complete application/release acceptance remains pending. No runtime edit, provider call, deployment or release in this documentation checkpoint. Next: root sequential integration, combined installer generation and exact combined acceptance. See cloud evidence for retained failures, hashes and limitations.

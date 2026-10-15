@@ -1,6 +1,6 @@
 # Current ownership — parallel 20i workers
 
-The owner explicitly requested parallel agents. Root and three additional agents work on separate branches/worktrees from0ebc4623. [Bounded assignments and shared integration rules](TWENTYI_PARALLEL_WORK.md). Root owns mailbox work and integration/releases; the others own catalog mappings, registrar inventory/client links and existing cloud-server website creation. Registrar725573f0 is preserved by normal mergec1585199; catalog8f7028 is now combined and cloud33a2a2b0 is next for sequential source integration with final combined acceptance still required. Domain agent reviewed shared routing/protection and is investigating the mailbox334 browser failure in38820312445. Cloud agent verifies its exact current browser evidence; catalog agent is available for integration review. All checkpoints below are historical, with their then-current acceptance state.
+The owner explicitly requested parallel agents. Root and three additional agents work on separate branches/worktrees from0ebc4623. [Bounded assignments and shared integration rules](TWENTYI_PARALLEL_WORK.md). Root owns mailbox work and integration/releases; the others own catalog mappings, registrar inventory/client links and existing cloud-server website creation. Registrar725573f0 is preserved by normal mergec1585199, catalog8f7028 by merge577b279b, and cloud33a2a2b0 is now combined with both with final combined acceptance still required. Domain agent reviewed shared routing/protection and the bounded correction for the retained mailbox334 browser failure. Cloud agent verified exactce8d browser evidence and reviews shared cloud glue; catalog agent reviews the combined operation/schema/fixture integration. All checkpoints below are historical, with their then-current acceptance state.
 
 # Parallel 20i increment - registered domains
 
@@ -9,6 +9,10 @@ The owner explicitly requested parallel agents. Root and three additional agents
 # Parallel catalog ownership — 2026-10-15
 
 Owner-authorized subagent `twentyi_catalog` owns isolated branch `codex/twentyi-catalog-controls` at parent0ebc4623. Scope: provider plan catalog document/storage, owner retail plan forms, existing hosting preparation/provenance, bounded native/pure tests and related docs. Root owns integration and publication; other agents own mailbox/domain/VPS controls. Shared integration files are `site/app/hosting/order_links.php`, `order_link_views.php`, `order_views.php`, admin plan controller/view, hosting preparation layout, service-order schema validator, native recurring driver/workflow and generated installer inventory. [Exact catalog scope](TWENTYI_PLAN_CATALOG.md). Do not claim automatic discovery or live acceptance.
+
+# Parallel cloud agent ownership — 2026-10-15
+
+Cloud agent owns `codex/twentyi-vps-controls` from0ebc4623: native owner Add website on an explicitly assigned existing server, safe client request summaries, existing gateway/ledger and exact documented addWeb transport. Local synthetic checks pass; native/browser acceptance and root integration remain pending. Server lifecycle/power/console/SSH are still unfinished. See [cloud scope](TWENTYI_CLOUD_WEBSITES.md). No release/live action.
 
 # Current ownership — mailbox controls
 
@@ -92,3 +96,7 @@ Parent2fe7e2ff, PR142: all four downloaded native artifacts verify60 cases plus6
 ## 2026-10-15 — registrar native/browser evidence and capture handoff
 
 Parent8b4a101a, PR142: four actual artifacts verify63 native +64/64 reader cases each; source2fe7e2ff checkpoint verifies1,810 HTTP/Chromium checks (36 registrar),62 named reports, empty unexpected diagnostics and exact source/package bytes. Owner desktop and client screens inspected. Owner mobile element capture caught sidebar/sticky-header overlays; test-only navigation/settling/full-page correction awaits root combined screenshot inspection. Shipping source unchanged by this final checkpoint. Combined recovery/Apache remains pending; root owns integration/releases. [Exact evidence](TWENTYI_REGISTRAR_INVENTORY.md).
+
+## 2026-10-15 — Cloud website native acceptance and handoff
+
+Startingce8d4e89, record41 corrected native checks per PHP8.2/8.4 and MariaDB10.11/MySQL8.4 combination in run38821117816, verified from all four downloaded artifacts. Root review found no further source issue. Installer refresh15011, changed PHP syntax, all2,662 indexed hashes and documentation checks passed. Earlier4aa browser checkpoint verifies1,792 HTTP checks including18 cloud checks and four inspected screenshots. Exact corrected full38821117748 passed native and remains in browser; complete application/release acceptance remains pending. No runtime edit, provider call, deployment or release in this documentation checkpoint. Next: root sequential integration, combined installer generation and exact combined acceptance. See cloud evidence for retained failures, hashes and limitations.
