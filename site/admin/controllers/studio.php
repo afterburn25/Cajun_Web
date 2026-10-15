@@ -69,6 +69,11 @@ function studio_admin_action(string $action,array $user): never {
         $licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);
         require_once CWP_CODE_ROOT.'/app/licenses/service.php';
         license_deactivate_domain($licenseId,$domain);$target='studio-licenses';
+    }elseif($action==='studio_domain_replace'){
+        $licenseId=gint($_POST,'license_id',1,2147483647);$old=posted('old_domain',255);$new=posted('new_domain',255);
+        if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=?',[$licenseId]))throw new InvalidArgumentException('License not found.');
+        require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+        license_replace_domain($licenseId,$old,$new);flash('Domain replaced — the old site goes offline at its next license check.');$target='studio-licenses';
     }elseif($action==='studio_license_bundle'){
         $id=gint($_POST,'id',1,2147483647);$license=one('SELECT * FROM '.table('website_licenses').' WHERE id=?',[$id]);
         if(!$license)throw new InvalidArgumentException('License not found.');
