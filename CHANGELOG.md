@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — verified pending provisioning storage
+
+- Verify pending acknowledgement, exact-ID confirmation, replay, rollback and original-history recovery on all four supported PHP/database combinations. Current packaged descendant acceptance remains pending; published version stays1.24.
+
 ## Unreleased — pending-history recovery fixture
 
 - Simulate a damaged database restore only within the disposable test, restoring foreign-key enforcement before validating refusal and exact recovery. Keep the real application constraints and original missing-history assertion. First native failure is retained; corrected descendant acceptance is pending.
