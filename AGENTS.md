@@ -1,5 +1,11 @@
 # Working agreement for CajunWebPro
 
+## Recurring billing interface contract — 2026-10-14
+
+Codex begins real staff/client recurring screens on `codex/recurring-billing-screens` from frozen120/66f7760. [Interface contract](docs/RECURRING_BILLING_INTERFACE_CONTRACT.md) precedes code: exact source-derived terms, preview/explicit consent, original-calendar effective dates, retained failed inputs, current authority, bounded history and actual period invoice links. No UI is implemented at this checkpoint. Parent native acceptance is independently verified628executions/all26 workflows via120comments6182041823/6182063294. Independent review remains required before merge/release, while isolated interface development proceeds.
+
+Complete20i remains Devin-owned. Current1159eaf8ff is newer than the reviewed0a44625 and is not yet independently cleared. Main68e4d41/published1.23 is unchanged. Previous goal turn made concrete progress by implementing/testing native records and invoices. Next: implement the interface and real browser/native/form checks, refresh installer metadata, then complete combined acceptance and independent review. Earlier sections are dated records.
+
 ## Native recurring billing implemented for isolated verification — 2026-10-14
 
 On `codex/recurring-billing-records`, contract `e95208f` precedes native recurring agreement and period-invoice implementation. Owner-password setup adds four bounded tables without adopting existing data. Current financial/client permissions and actual client sessions govern immutable offers, exact consent, whole-period lifecycle and retained source/plan history. A durable source head and generation chain prevent overlapping replacements, including a withdrawn intermediate offer attempting to bypass an earlier end date. Canonical command arguments prevent caller field order changing retained evidence.
