@@ -1597,3 +1597,16 @@ Owner direction: full purchase-to-install DRM for Website Core bundles sold thro
 - Fixed: leftover `<<<<<<< HEAD` merge marker in `schema/base.php` shipped broken until build caught it; installer inventory refreshed via `python tools/build.py --refresh` (required after every site/ change).
 
 Remaining (no live environment here): production `license_core_dir` config, real purchase->bundle->install->validation cycle, live-domain change deactivation.
+
+## Licensing follow-up: domain semantics + atomic replace — 2026-10-15
+
+Hardening pass on the licensing workstream, all on `main` through `cec31673`:
+
+- **www/apex equivalence** (`d68ba1cc`): `www.example.com` and `example.com` name the same site — registration canonicalizes `www.` to apex, validation matches either form; the pair never consumes two license slots.
+- **2-active cap on reactivation**: reactivating a previously deactivated domain also respects the 2-active limit.
+- **Key-generation collision retry**: `license_create` retries on the astronomically-unlikely duplicate-key PDO error.
+- **Atomic domain replace** (`31dcab62`): `license_replace_domain()` + `license_domain_replace` portal action + per-domain Replace form — a customer's "change website" deactivates the old domain in one step (old install offline at its next validation; new domain registers in the freed slot). Same-domain and inactive-domain replacements refused. Native test cases added.
+- **Portal UX copy** (`6ec7a749`): explains the 2-domain cap, deactivation effect, www/apex equivalence.
+- Website_Core side (`devin/website-core`): inconclusive validation preserves the stored verdict (`recordValidation ?bool` — transient outages can't 503 a licensed site); `detectDomain()` reports the canonical `app.url` so a moved site self-denies (HTTP_HOST deliberately untrusted); admin "Validate now"; license-warning only when a license row exists; `disable()` recovery exemption; native CI licensed-bundle leg proves the whole cycle on real MySQL/MariaDB including moved-site denial and reactivation.
+
+Still not live-verified: production `license_core_dir`, real purchase→bundle→install→validation cycle.
