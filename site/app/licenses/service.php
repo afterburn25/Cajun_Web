@@ -49,6 +49,11 @@ function license_get(string $key): ?array {
  */
 function license_register_domain(int $licenseId, string $domain): void {
     $domain = strtolower(trim($domain));
+    // Canonicalize www. to the apex — validation treats the www/apex pair
+    // as the same site, so storing apex keeps one slot per real site.
+    if (str_starts_with($domain, 'www.')) {
+        $domain = substr($domain, 4);
+    }
     if (strlen($domain) > 253 || !preg_match('/^[a-z0-9][a-z0-9\-\.]*\.[a-z]{2,}$/D', $domain)) {
         throw new InvalidArgumentException('Invalid domain format.');
     }

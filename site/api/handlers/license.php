@@ -78,10 +78,14 @@ try {
         license_response(false, 'License is deactivated');
     }
 
-    // Check if domain is registered for this license
+    // Check if domain is registered for this license. The www/apex pair
+    // names the same site — a customer who registered example.com and
+    // installs at www.example.com (or vice versa) is not a second
+    // instance and must not be denied.
+    $alt = str_starts_with($domain, 'www.') ? substr($domain, 4) : 'www.' . $domain;
     $domainRegistered = one(
-        'SELECT id FROM ' . table('license_domains') . ' WHERE license_id = ? AND domain = ? AND is_active = 1',
-        [$license['id'], $domain]
+        'SELECT id FROM ' . table('license_domains') . ' WHERE license_id = ? AND domain IN (?, ?) AND is_active = 1',
+        [$license['id'], $domain, $alt]
     );
 
     if (!$domainRegistered) {

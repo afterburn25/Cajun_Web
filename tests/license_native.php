@@ -43,6 +43,11 @@ try{
     lic_deny('Third active domain denied (2-instance cap)',fn()=>license_register_domain($licId,'third.example.com'));
     lic_ok('Cap leaves exactly two domain rows',count(license_domains($licId))===2);
 
+    // www canonicalizes to apex — www.example.com is the same site, not a third instance
+    license_register_domain($licId,'WWW.EXAMPLE.COM');
+    $domains=license_domains($licId);
+    lic_ok('www canonicalizes to apex row',count($domains)===2&&(int)array_column($domains,'is_active','domain')['example.com']===1);
+
     // Re-registering reactivates instead of duplicating
     license_deactivate_domain($licId,'example.com');
     license_register_domain($licId,'example.com');
