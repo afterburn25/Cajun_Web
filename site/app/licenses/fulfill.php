@@ -59,8 +59,9 @@ function license_fulfill_invoice(int $invoiceId): ?array {
     $license = one('SELECT * FROM '.table('website_licenses').' WHERE license_key=?', [$key]);
     if (!$license) return null;
 
-    // Generate bundle in background storage
-    $storage = config()['storage'] ?? sys_get_temp_dir();
+    // Generate bundle in private storage — never fall back to a shared temp dir
+    $storage = config()['storage'] ?? '';
+    if ($storage === '') return $license; // cannot store bundles; admin can regenerate
     $outDir = $storage.'/bundles/license-'.$license['id'];
     if (!is_dir($outDir)) mkdir($outDir, 0700, true);
 

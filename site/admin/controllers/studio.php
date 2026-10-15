@@ -72,8 +72,11 @@ function studio_admin_action(string $action,array $user): never {
     }elseif($action==='studio_license_bundle'){
         $id=gint($_POST,'id',1,2147483647);$license=one('SELECT * FROM '.table('website_licenses').' WHERE id=?',[$id]);
         if(!$license)throw new InvalidArgumentException('License not found.');
-        $industry=posted('industry',50);$coreDir=CWP_ROOT.'/../Website_Core';$outDir=config()['storage'].'/bundles';
-        require_once CWP_CODE_ROOT.'/app/licenses/bundle.php';
+        $industry=posted('industry',50);
+        require_once CWP_CODE_ROOT.'/app/licenses/fulfill.php';
+        $coreDir=license_core_source_dir();
+        if($coreDir===null)throw new RuntimeException('Website Core source not found. Configure license_core_dir.');
+        $outDir=config()['storage'].'/bundles';
         $zipPath=license_bundle($license['license_key'],$industry,$coreDir,$outDir);
         license_bundle_store($id,$zipPath,$industry.' bundle');
         flash('Bundle created: '.basename($zipPath));$target='studio-licenses';
