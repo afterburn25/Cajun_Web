@@ -1,5 +1,9 @@
 # Recurring billing in the studio and client portal
 
+## Original invoice identity and restoration
+
+The append-only `recurring_billing.issued` audit entry is part of permanent financial history. Retain it with the original invoice, schedule and binding; never prune these entries. Current validation requires one matching original actor, schedule and period. A missing binding or origin requires original database restoration. Editing the displayed invoice reference cannot convert recurring debt into an ordinary invoice, and retained period issuance prevents duplicate billing after binding loss. Restore the original database as a unit; this is not tamper-proof recovery after all independent records have been deleted.
+
 Current integration: Codex owns complete 20i P0. These preserved interface requirements come from #121 at `abaa20081870ede3bae9a606f71d730972792d6d`; former allocation and acceptance notes below remain historical. The current branch reuses only the necessary billing dependency and requires its own native/HTTP/recovery/review evidence. [Source provenance](TWENTYI_RECURRING_SOURCE.json).
 
 This interface is a draft implementation on `codex/recurring-billing-screens`, following native PR120/`66f7760` and interface contract `4eb85bf`. It is not part of published 1.23.0. Independent review, combined application/upgrade/recovery/package acceptance and exact-main release checks remain required.

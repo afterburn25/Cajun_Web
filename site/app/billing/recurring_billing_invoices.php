@@ -13,7 +13,21 @@ function recurring_billing_invoice_input(string $id,int $client,int $revision,st
 function recurring_billing_invoice_instructions(string $id,array $period):string {
     return 'Agreed recurring invoice '.$id.'; period '.$period['index'].': '.$period['start'].' to '.$period['end'].' (end exclusive); timezone '.$period['timezone'].'. Due '.$period['due'].'. Full agreed billing terms are retained in your client account.';
 }
+/** The append-only issuance audit is an independent origin retained with every invoice.
+ * Its exact structured detail predates this correction and is written atomically with
+ * the map/invoice. Do not prune recurring_billing.issued history or infer origin from
+ * editable display fields. A missing or conflicting origin requires DB restoration.
+ */
+function recurring_billing_invoice_origin(int $invoice):?array {
+    if($invoice<1)throw new InvalidArgumentException('Choose an existing invoice.');
+    $rows=all('SELECT user_id,detail,created_at FROM '.table('audit').' WHERE action=? AND detail LIKE ? ORDER BY id LIMIT 2',['recurring_billing.issued','% invoice '.$invoice]);
+    if(!$rows)return null;
+    if(count($rows)!==1||!preg_match('/\Astaff:([1-9][0-9]*); Schedule ([a-f0-9]{32}) period (0|[1-9][0-9]*) invoice ([1-9][0-9]*)\z/',$rows[0]['detail'],$m)||(int)$m[1]!== (int)$rows[0]['user_id']||(int)$m[4]!==$invoice)throw new RuntimeException('Recurring invoice origin history is inconsistent. Restore the original database.');
+    return ['staff_id'=>(int)$m[1],'schedule_id'=>$m[2],'period_index'=>(int)$m[3],'created_at'=>$rows[0]['created_at']];
+}
 function recurring_billing_invoice_validate(array $map,RecurringBillingSchedule $current):array {
+    $origin=recurring_billing_invoice_origin((int)$map['invoice_id']);
+    if($origin===null||$origin['staff_id']!==(int)$map['staff_id']||$origin['schedule_id']!==$map['schedule_id']||$origin['period_index']!==(int)$map['period_index'])throw new RuntimeException('The recurring invoice has no matching original issuance history. Restore the original database.');
     $data=$current->data();$revision=(int)$map['schedule_revision'];
     if($data['terms']['id']!==$map['schedule_id']||$revision<1||$revision>$current->revision())throw new RuntimeException('The recurring invoice has no retained agreement prefix.');
     $data['events']=array_slice($data['events'],0,$revision);$prefix=RecurringBillingSchedule::fromJson(recurring_billing_json($data));
@@ -37,7 +51,7 @@ function recurring_billing_invoice_guard(array $invoice):void {
     }
     $work=function()use($invoice):void{
         $map=one('SELECT * FROM '.table('recurring_billing_invoices').' WHERE invoice_id=?',[$invoice['id']]);
-        if(!$map){if(str_starts_with($invoice['reference'],'RI-'))throw new RuntimeException('The recurring invoice binding is missing.');return;}
+        if(!$map){if(recurring_billing_invoice_origin((int)$invoice['id'])!==null||str_starts_with($invoice['reference'],'RI-'))throw new RuntimeException('The recurring invoice binding is missing.');return;}
         recurring_billing_require();
         $row=recurring_billing_row($map['schedule_id']);$family=recurring_billing_family($row['subscription_id']);$doc=recurring_billing_validate($row,$family['source']);$i=recurring_billing_invoice_validate($map,$doc);
         if(recurring_billing_invoice_snapshot($invoice)!==recurring_billing_invoice_snapshot($i)||(isset($invoice['client_id'])&&(int)$invoice['client_id']!==(int)$row['client_id']))throw new RuntimeException('The reviewed recurring invoice ownership changed.');
@@ -59,6 +73,7 @@ function recurring_billing_issue(string $id,int $client,int $revision,string $ha
         $terms=RecurringBillingTerms::fromArray($doc->data()['terms']);recurring_billing_source($terms,true,false,$family['source']);
         $at=time();$a=$doc->assessment($period,$at);if(!$a['eligible'])throw new RuntimeException('This agreed period is not eligible for invoicing.');
         if(one('SELECT id FROM '.table('recurring_billing_invoices').' WHERE schedule_id=? AND period_index=?',[$id,$period]))throw new RuntimeException('This recurring period already has an invoice.');
+        if(one('SELECT id FROM '.table('audit').' WHERE action=? AND detail LIKE ? LIMIT 1',['recurring_billing.issued','staff:%; Schedule '.$id.' period '.$period.' invoice %']))throw new RuntimeException('This recurring period has retained issuance history without its binding. Restore the original database before continuing.');
         $t=$terms->data();$p=$a['period'];query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,currency,instructions,created_at) VALUES (?,?,?,?,?,?,?)',[$t['project_id'],'RI-'.strtoupper(bin2hex(random_bytes(12))),$t['title'],$p['amount_cents'],$p['currency'],recurring_billing_invoice_instructions($id,$p),gmdate('Y-m-d H:i:s',$at)]);
         $invoice=(int)db()->lastInsertId();$snapshot=recurring_billing_json(['period'=>$p,'invoice'=>recurring_billing_invoice_snapshot(one('SELECT * FROM '.table('studio_invoices').' WHERE id=?',[$invoice]))]);
         query('INSERT INTO '.table('recurring_billing_invoices').' (id,schedule_id,period_index,invoice_id,staff_id,issued_epoch,schedule_revision,schedule_sha256,request_sha256,snapshot_json,snapshot_sha256) VALUES (?,?,?,?,?,?,?,?,?,?,?)',[$request,$id,$period,$invoice,(int)substr($actor,6),$at,$revision,$hash,$input,$snapshot,hash('sha256',$snapshot)]);

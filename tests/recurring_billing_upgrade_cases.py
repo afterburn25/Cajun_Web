@@ -92,17 +92,12 @@ def run(env):
           and 'Invoice balance: $20.00 USD' in client.get(client_period).text)
 
     stable = records()
-    earlier = {name: records(name) for name in ['financial', 'planning', 'progress', 'tickets', 'plans',
-                                               'submissions', 'drafts', 'provider', 'mail-accounts', 'templates']}
-    # Shared invoice/receipt rows are compared by the recurring snapshot, so a later
-    # intentional receipt need not rewrite the baseline for unrelated financial terms.
-    for name in ['studio_invoices', 'invoice_payments']:
-        earlier['financial'].pop(name)
+    earlier = {name: records(name) for name in ['plans', 'submissions', 'drafts', 'provider',
+                                               'mail-accounts', 'templates', 'notices', 'messages',
+                                               'inbox', 'mail-checks', 'appointments', 'reviews']}
 
     def retained(expected):
         current = {name: records(name) for name in earlier}
-        for name in ['studio_invoices', 'invoice_payments']:
-            current['financial'].pop(name)
         return (records('recurring') == expected and current == earlier
                 and all(records()[name] == stable[name] for name in ['studio_clients', 'studio_jobs'])
                 and all((private / name).read_bytes() == data for name, data in keys.items()))

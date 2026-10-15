@@ -1,5 +1,11 @@
 # Session log
 
+## Preserve recurring origin after individual binding loss — 2026-10-15
+
+Starting from f28c1f44, normally merge reviewed #132 (5d2785cf) at29ecc28f. Reproductiona01933cc / native run38716949510 fails the exact changed-reference/lost-map regression on all four supported PHP/database combinations. Reuse the existing append-only recurring issuance audit as an independent invoice origin. Every invoice binding must match one original actor/schedule/period entry; lost bindings cannot become legacy invoices through reference edits or allow a second invoice for the same period. Missing/ambiguous origin requires original database restoration. Preserve atomic invoice/map/audit writes and legacy behavior; no new ledger, schema or provider engine.
+
+Extend native tests for balance, manual receipt, payment requests, duplicate period prevention and origin corruption/restoration; add actual stale HTTP receipt/issuance recovery checks. Packaged f28 browser run38715215186 also reproduced a missing project-specific recurring entry; add that scoped link after current project ownership validation. Retained recovery now compares the existing plans/mail/provider/appointments/reviews history rather than calling excluded project/design-finance fixture modes. Current native/browser/full recovery and renewed independent review are required. No release or production transaction is claimed. Published1.24 remains unchanged; continue complete20i P0.
+
 ## Necessary 20i agreement dependency and recovery correction — 2026-10-15
 
 Codex retains complete 20i P0 ownership. This isolated `codex/twentyi-order-eligibility` branch starts from the accepted fresh-owner candidate `5fa5998dab9c727b9b2f29c1ff3e162187364280` and normally merges the preserved #90–#92 service-plan descendant `76a1537c7dfde1148339bba1d3595175afb55243`. The normal merge retains original Devin model history and existing application adapters. Current provider routes, operation/history protections and every retained recovery baseline are preserved in shared routing/build/test conflicts. Current main `8b44a7ad5e568481d8b016713e7d3958d19e41f3` has the same source as 5fa and is undergoing separate release acceptance; this branch cannot alter its evidence.

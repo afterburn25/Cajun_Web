@@ -1,5 +1,11 @@
 # Changelog
 
+## Preserve recurring origin after individual binding loss — 2026-10-15
+
+Starting from f28c1f44, normally merge reviewed #132 (5d2785cf) at29ecc28f. Reproductiona01933cc / native run38716949510 fails the exact changed-reference/lost-map regression on all four supported PHP/database combinations. Reuse the existing append-only recurring issuance audit as an independent invoice origin. Every invoice binding must match one original actor/schedule/period entry; lost bindings cannot become legacy invoices through reference edits or allow a second invoice for the same period. Missing/ambiguous origin requires original database restoration. Preserve atomic invoice/map/audit writes and legacy behavior; no new ledger, schema or provider engine.
+
+Extend native tests for balance, manual receipt, payment requests, duplicate period prevention and origin corruption/restoration; add actual stale HTTP receipt/issuance recovery checks. Packaged f28 browser run38715215186 also reproduced a missing project-specific recurring entry; add that scoped link after current project ownership validation. Retained recovery now compares the existing plans/mail/provider/appointments/reviews history rather than calling excluded project/design-finance fixture modes. Current native/browser/full recovery and renewed independent review are required. No release or production transaction is claimed. Published1.24 remains unchanged; continue complete20i P0.
+
 ## Reuse recurring staff/client screens and retained recovery — 2026-10-15
 
 Starting from native dependency `26be6d2bcc874d83ba543f8b9979a5c829e4bb3d`, reuse the existing #121 forms, owner/client screens, native projections, browser fixtures and retained 1.23 recovery at `abaa20081870ede3bae9a606f71d730972792d6d`. All original source paths/hashes are recorded in the [source manifest](docs/TWENTYI_RECURRING_SOURCE.json). Wire current staff/payment/client permissions and protected portal routes; support sessions cannot view or consent. Reuse only the necessary responsive billing styles, scoped to recurring forms. Unrelated project tracking, design finance and financial-activity features stay on their preserved branches.
