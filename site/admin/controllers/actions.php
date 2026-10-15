@@ -11,6 +11,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     if(in_array($action,['support_migrate','support_policy','support_start'],true))support_admin_action($action);
     if(str_starts_with($action,'tickets_'))support_tickets_admin_action($action);
     if(str_starts_with($action,'service_plans_')){service_plans_admin_action($action);return;}
+    if(str_starts_with($action,'recurring_')){recurring_ui_action($action);return;}
     if(str_starts_with($action,'design_financial_')){design_financial_admin_action($action);return;}
     if(str_starts_with($action,'catalog_'))catalog_admin_action($action,$user);
     if(str_starts_with($action,'payments_'))payments_admin_action($action);

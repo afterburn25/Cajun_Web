@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased — recurring billing recovery verification
+
+- Draft121/e9ee051 focused artifacts independently verify1280 named executions and all29 workflows. Actual local44 HTTP/Edge checks and eight full screenshots remain separately scoped.
+- Added recurring-specific1.23 upgrade/recovery/replay cases and explicit combined native/form workflow checks. Syntax verified; new recovery scenarios and complete package/application acceptance remain pending. Shipping runtime is unchanged.
+
+## Draft recurring billing staff/client interface
+
+Add protected recurring offer/preview, actual client decisions, dated whole-period controls, bounded validated history and existing-ledger invoice/payment links. Preserve failed draft text and review tokens, require explicit consent and bind invoice issuance to its reviewed period. Add native/form/HTTP browser tests and scoped mobile facts styling. Independent and full release acceptance remain pending.
+
+## Draft recurring billing interface contract
+
+Define staff/client forms, exact presented terms, dated lifecycle and period/invoice history before implementation. Parent native120 remains frozen and verified; no runtime change yet.
+
 ## Unreleased draft — native recurring agreements and period invoices
 
 Add explicit owner setup, current staff/client authority, immutable consent and future whole-period history, exact active-source binding and non-overlapping replacement. Create unique existing-ledger period invoices with replay protection, historical snapshot guards and atomic audit. Local88 named native checks pass; committed CI, installer acceptance, interfaces and independent review remain required. No scheduler, charge, provider action or release is activated.
