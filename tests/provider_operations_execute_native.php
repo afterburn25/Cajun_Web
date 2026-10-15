@@ -8,16 +8,17 @@ require __DIR__.'/../site/database/schema/base.php';
 require_once __DIR__.'/../site/app/providers/operations.php';
 require_once __DIR__.'/../site/app/providers/reconcile.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,OperationResult,ProviderCredential,ProviderGateway,ProviderOperation,TransportException,TransportRequest,TransportResponse};
+use CajunWebPro\Foundation\TwentyI\FixedHttpTransport;
 use CajunWebPro\Foundation\TwentyI\Operations\TwentyIOperationAdapter;
 use CajunWebPro\Foundation\TwentyIInventory\{InventoryPackage,InventorySnapshot};
 $private=__DIR__.'/../test-runtime/provider-execution-private';@mkdir($private,0700,true);@mkdir(__DIR__.'/../qa',0700,true);
 $GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/existing','storage'=>realpath($private),'key'=>str_repeat('synthetic-exec-key-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'pex_']];
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=realpath(__DIR__.'/../site');start_session();
-$checks=[];$password='Synthetic execution owner passphrase';$secret='SYNTHETIC_PRIVATE_GENERAL_KEY';$sentRequests=[];$scripted=[];$onSend=null;
+$checks=[];$password='Synthetic execution owner passphrase';$secret='SYNTHETIC_PRIVATE_GENERAL_KEY';$sentRequests=[];$scripted=[];$onSend=null;$onResolve=null;
 function pe_ok(string $name,bool $ok):void {global $checks;$checks[]=['name'=>$name,'passed'=>$ok];if(!$ok)throw new RuntimeException($name);}
 function pe_deny(string $name,callable $fn):void {try{$fn();}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;pe_ok($name,true);return;}pe_ok($name,false);}
 function pe_actor(int $id=1):void {$u=one('SELECT * FROM '.table('users').' WHERE id=?',[$id]);$_SESSION=['uid'=>$id,'auth_version'=>$u['auth_version'],'login_at'=>time(),'last_activity'=>time()];}
-function pe_resolve():string {if(db()->inTransaction())throw new LogicException('DNS under transaction');return '8.8.8.8';}
+function pe_resolve():string {if(db()->inTransaction())throw new LogicException('DNS under transaction');global $onResolve;if($onResolve!==null){$h=$onResolve;$onResolve=null;$h();}return '8.8.8.8';}
 /** Scripted transport: records each request, replays queued responses/exceptions, optional mid-send hook. */
 final class PeTransport implements HttpTransport {
     public function send(#[SensitiveParameter] TransportRequest $request):TransportResponse {
@@ -147,13 +148,45 @@ try {
     // ---- revocation and expiry ----
     $grant7=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d4.example'],$password);
     provider_operation_revoke($grant7,$password);
-    $r=pe_exec($profile,1,$grant7,'idem-create-7',$password);
     $sent=count($sentRequests);
+    $r=pe_exec($profile,1,$grant7,'idem-create-7',$password);
     pe_ok('Revoked grant refuses before transport','no_grant'===$r->providerCode&&count($sentRequests)===$sent);
     $grant8=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d5.example'],$password,60);
     query('UPDATE '.table('provider_operation_grants').' SET expires_epoch=? WHERE id=?',[time()-1,$grant8]);
     $r=pe_exec($profile,1,$grant8,'idem-create-8',$password);
     pe_ok('Expired grant refuses before transport','no_grant'===$r->providerCode);
+
+    // ---- send-boundary re-verification ----
+    $grantR=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d6.example'],$password);
+    $sent=count($sentRequests);
+    $onResolve=fn()=>provider_operation_revoke($grantR,$password);
+    $r=pe_exec($profile,1,$grantR,'idem-create-rev',$password);
+    pe_ok('Revocation between consumption and send aborts the request','uncertain'===$r->status&&count($sentRequests)===$sent);
+
+    // ---- credential-context binding ----
+    $grantA=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'acct-a.example'],$password);
+    $r=pe_exec($profile,1,$grantA,'idem-acct-1',$password);
+    pe_ok('First account write succeeds','succeeded'===$r->status);
+    provider_settings_save($profile,1,'20i fixture',true,'SYNTHETIC_REPLACEMENT_KEY',$password); // revision 2, replacement credential context
+    $grantB=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'acct-a.example'],$password);
+    $sent=count($sentRequests);
+    $r=pe_exec($profile,2,$grantB,'idem-acct-1',$password);
+    pe_ok('Replacement account cannot replay the old account\'s result','conflict'===$r->status&&count($sentRequests)===$sent);
+    provider_settings_save($profile,2,'20i fixture',true,$secret,$password); // restore fixture secret at revision 3
+    $grantC=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'acct-c.example'],$password);
+    $r=pe_exec($profile,3,$grantC,'idem-acct-c',$password);
+    pe_ok('Restored context executes normally','succeeded'===$r->status);
+
+    // ---- real fixed-transport request validation ----
+    $transport=new FixedHttpTransport('8.8.8.8',function():void{throw new RuntimeException('authorize marker reached');});
+    $credential=new ProviderCredential('twenty-i','fixture-identity',static fn():string=>'SYNTHETIC_PRIVATE_GENERAL_KEY');
+    $adapter=new TwentyIOperationAdapter();
+    foreach([['packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'w1.example']],['packages.update',['resellerId'=>'*','id'=>42,'labels'=>['a'=>'b']]]] as $i=>[$name,$params]){
+        try{$adapter->execute($transport,$credential,new ProviderOperation($name,'itx-'.$i,$params));pe_ok('Real transport accepts the '.$name.' request to the send boundary',false);}
+        catch(RuntimeException $e){pe_ok('Real transport accepts the '.$name.' request to the send boundary',$e->getMessage()==='authorize marker reached');}
+    }
+    try{$transport->send(new TransportRequest('POST','https://api.20i.com/unknown/path',['Authorization'=>'Bearer '.base64_encode('SYNTHETIC_PRIVATE_GENERAL_KEY'),'Accept'=>'application/json','Content-Type'=>'application/json'],'{}',15));pe_ok('Undocumented transport paths still refuse',false);}
+    catch(InvalidArgumentException $e){pe_ok('Undocumented transport paths still refuse',true);}
     $grant9=provider_operation_grant($profile,'packages.create',$scope,$password);
     pe_deny('A grant refuses to execute against another profile',fn()=>pe_exec(str_repeat('f',32),1,$grant9,'idem-cross-1',$password));
     $r=pe_exec($profile,1,$grant9,'idem-cross-1',$password);

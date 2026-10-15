@@ -47,10 +47,11 @@ final class FixedHttpTransport implements HttpTransport
                 throw new \InvalidArgumentException('Unsupported provider probe request.');
             }
         } elseif ($request->method === 'POST') {
-            // Only the closed catalog may construct these: a fixed-host,
-            // path-only URL, a bounded JSON body and three fixed headers.
+            // Only the documented write endpoints may ever carry a body:
+            // a fixed-host URL on the two catalogued reseller paths, a
+            // bounded JSON body and three fixed headers.
             $path = str_starts_with($request->url, self::URL_BASE) ? substr($request->url, strlen(self::URL_BASE)) : '';
-            if ($path === '' || strlen($path) > 190 || !preg_match('/^[a-zA-Z0-9_\/*.\-]+$/D', $path)
+            if (!preg_match('/^reseller\/[A-Za-z0-9_.*-]{1,80}\/(addWeb|updatePackage)$/D', $path)
                 || !is_string($request->body) || $request->body === ''
                 || strlen($request->body) > self::REQUEST_BODY_LIMIT
                 || array_keys($request->headers) !== ['Authorization','Accept','Content-Type']

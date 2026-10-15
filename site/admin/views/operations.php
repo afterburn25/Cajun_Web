@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+use CajunWebPro\Foundation\TwentyI\Operations\TwentyIOperationRegister;
 $record=provider_settings_profile();$profileId=$record['id']??'';$revision=(int)($record['revision']??0);
 $register=new TwentyIOperationRegister();$buildable=$register->buildableNames();
 $grants=$profileId!==''?provider_operation_grants($profileId):[];

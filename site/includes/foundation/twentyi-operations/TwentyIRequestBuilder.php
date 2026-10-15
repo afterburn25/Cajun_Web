@@ -29,7 +29,7 @@ final class TwentyIRequestBuilder
 {
     public const HOST = 'https://api.20i.com';
     public const MAX_BODY_BYTES = 8192;
-    public const TIMEOUT_SECONDS = 30.0;
+    public const TIMEOUT_SECONDS = 15.0;
 
     private const MAX_STRING = 1024;
     private const MAX_LIST = 64;
