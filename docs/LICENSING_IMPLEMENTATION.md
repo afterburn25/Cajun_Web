@@ -1,15 +1,15 @@
 # Licensing System Implementation — Cajunwebpro.com
 
-Integration note,2026-10-15: inherited from main161e3edd. The20i integration retains this work and repairs its schema conflict-marker syntax error, missing-table portal/admin reads and broad website-editor access to license administration. These compatibility repairs do not certify licensing as complete. Source inspection still finds string product choices versus an integer product_id column, domain actions placed behind a project lookup although their portal forms are on the all-projects page, a root-relative bundle link, and a sibling Website_Core checkout requirement. Those remain explicit acceptance/review gates; no bundle generation or external Website_Core operation has been exercised by the20i work. The historical implementation claims below are not current end-to-end evidence.
+Integration note,2026-10-15: the20i branch now retains main13f9662d and its separate licensing changes. Earlier findings about integer product identifiers, project-bound domain actions and root-relative downloads have been corrected upstream. Our optional-storage portal/admin guards and owner-only licensing permissions remain. Main also introduces paid-invoice fulfillment/mail hooks, native licensing tests and optional external bundle-source configuration. This normal merge still needs combined billing/portal/packaged acceptance; neither this note nor20i confirmation tests certify licensing end to end. No Website_Core checkout was read, changed or executed by this20i work, and no customer mail was sent. Historical implementation claims below describe the inherited module, not newly established live acceptance.
 
 ## What has been implemented
 
 ### 1. License validation API endpoint
 
-**File:** `site/api/license.php` (public entry point)
+**File:** `site/api/validate.php` (public entry point)
 **File:** `site/api/handlers/license.php` (handler)
 
-Implements `POST /api/license` — the endpoint that Website Core calls to validate license keys.
+Implements `POST /api/validate.php` — the endpoint that Website Core calls to validate license keys. A `.htaccess` rewrite also exposes the clean URL `POST /api/validate`.
 
 **Request:**
 ```json
@@ -29,7 +29,7 @@ Implements `POST /api/license` — the endpoint that Website Core calls to valid
 **Features:**
 - Rate limiting: 10 requests per minute per IP
 - Audit logging: all validation attempts logged to `audit` table
-- Multiple domain support: allows test + public sites on same license key
+- Multiple domain support: allows test + public sites on same license key, capped at 2 active domains per license — a third requires deactivating one first, which takes that site offline at its next validation
 - Active check: deactivated licenses are rejected
 
 ### 2. Database schema
@@ -99,16 +99,27 @@ Adds license management to the customer workspace:
 
 **Portal UI:** `site/portal/views/workspace.php` — shows "Downloads" section with bundle links per license
 
-### 8. What still needs to be implemented
+### 8. Purchase flow integration
 
-**Purchase flow integration:**
-- Auto-generate license key when customer buys a product
-- Auto-create bundled ZIP on purchase
-- Email license key + download link to customer
+**File:** `site/app/licenses/fulfill.php`
+
+- `license_fulfill_invoice($invoiceId)` — idempotent; creates license + bundle when a catalog invoice becomes `paid`
+- Product mapping: SKU `WEBSITE-{INDUSTRY}` → module `industry-{industry}` (e.g., `WEBSITE-RESTAURANT` → restaurant module)
+- Hooked into both payment paths:
+  - `catalog_transition()` — non-ledger path, fires after invoice marked paid
+  - `ledger_receive()` — ledger path, fires after full-balance receipt marks invoice paid
+- Both hooks run AFTER the transaction commits — fulfilment failure never rolls back a recorded payment
+- Bundle generation requires a Website Core source checkout: `license_core_source_dir()` checks sibling dirs and `config()['license_core_dir']`; if unavailable the license is still created and the bundle can be generated later from admin
+- Payment reversal does NOT deactivate licenses — deactivation stays a manual admin action
+
+### 9. Remaining
+
+- Email notification to customer with license key + download link
+- Optional: list catalog products in the admin create-license form
 
 ## Integration points
 
-- Website Core calls `POST https://cajunwebpro.com/api/license` with `{license_key, domain}`
+- Website Core calls `POST https://cajunwebpro.com/api/validate.php` with `{license_key, domain}` (base URL configurable via `license.api_url` in Website Core)
 - Website Core expects `{"authorized": true/false, "error": "message"}`
 - Multiple domains per license key are supported (test + public sites)
 - Domain changes deactivate the old site automatically on next validation

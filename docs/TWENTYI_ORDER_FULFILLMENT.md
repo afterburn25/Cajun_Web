@@ -1,6 +1,6 @@
 # Dedicated hosting order fulfillment
 
-Status: authenticated exact-ID confirmation is implementing from3929e891 on `codex/twentyi-service-orders` / [PR138](https://github.com/afterburn25/Cajun_Web/pull/138). Parent owner approval/recovery forms pass four native combinations; new confirmation and packaged browser acceptance are pending. Automated provider catalog/configuration verification remains unfinished. Published version stays1.24; no live provider operation is claimed.
+Status: authenticated exact-ID confirmation is branch-tested at4d059a5b across all four native combinations, with exact Windows packages verified. Its full browser/recovery/Apache acceptance and the newer-main13f9662d combined tree remain pending on `codex/twentyi-service-orders` / [PR138](https://github.com/afterburn25/Cajun_Web/pull/138). Automated catalog/configuration verification and the rest of complete20i remain unfinished. Published1.24 unchanged; no live verification is claimed.
 
 ## Authenticated service confirmation
 
@@ -94,3 +94,14 @@ Source3929e891c51467663d0a3e243f45eab09db287e5/tree2afe933fd49a4d86763897f227dc8
 - Artifact12003314914: `bc095d2f2f905e3839056340423552afcac5fb1e17012fc5f3ac322deb9b77ed`.
 
 Parent25a7 failed the retained unknown-outcome assertion because canonical timeout is failed plus awaitingReconciliation.3929 corrects both projections without changing the assertion or retry safeguards. Its repository check also exposed an archived relative link; corrected here. Parent8797 browser artifact12004012734, SHA071fd71fa6a44bf98543e6dcefcade8a0d28c59adc2b9d99de3bdbaed0268f0c, contains1651 successful HTTP checks followed by the optional-license fixture failure. The native base intentionally uses legacy schema, so those optional tables do not exist. The corrected fixture proves absence/readability/no GET DDL first, then explicitly creates only disposable canonical tables for the unchanged missing-table/restoration tests. Neither parent is claimed as complete packaged acceptance.
+
+## Verified exact-ID confirmation and newer-main merge
+
+Source4d059a5b6a8c0985cfecef245475c5247052b4de, treef0fa66952f978c02cc424cce7011c8de8caa9723, passed [native38803587713](https://github.com/afterburn25/Cajun_Web/actions/runs/38803587713) on all four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 combinations. Every downloaded archive matches SHA256/CRC and passes38 new confirmation cases,32 native owner-form cases and76 fulfillment cases within465 combined recurring/order checks. Retained82/42/38 order subsets,108 ledger and68 forms per mode pass. Subsets are not additive.
+
+- Artifact12005856781: `78681be38919f7be4f38253b778c862d6bb5c559d4311cffe8a3e3b00950d764`.
+- Artifact12005517158: `bc94fbf7d14f82912801c63a779b281ed0a92172077ac0395b67191e1f7b2b7a`.
+- Artifact12005142380: `eb4a4c1c7ec74c1bf20495867b3e2767f44e5c0d6346bb53989afc3cd19cddd9`.
+- Artifact12004619718: `4c0ddcb5aea2badc1cec0f551cf8f2474d4d18550b260df38fc844f44b0af2b3`.
+
+The clean4d059 Windows build was independently verified and retained:11 checksummed files, FULL5403/COMPLETE2653/UPDATE2640 members, exact Git source, all directory lists and update payload. These development1.25 labels do not publish a release. Full38803596849/job116658626115 passed packaging and was in native integration at inspection. Parent evidence does not certify this normal merge with main13f9662d597ecd1bcac090361f40c112d5bfa2e5. Preserve both source histories; optional licensing readiness and owner-only administration guards remain. The incoming licensing module and paid-invoice hooks need their combined regression run; no Website_Core execution or live operation was performed.

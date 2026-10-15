@@ -1,6 +1,6 @@
 # Approved roadmap and acceptance criteria
 
-PR138 connects accepted orders to provider setup and native owner approval/recovery; those forms are now native-tested. Authenticated exact-ID confirmation and owner status controls are implementing, with new exact-head acceptance pending. Automated catalog/configuration verification and all remaining native controls continue. [Current implementation/evidence](TWENTYI_ORDER_FULFILLMENT.md). Published1.24 remains unchanged.
+PR138 connects accepted orders to provider setup and native owner approval/recovery; those forms are now native-tested. Authenticated exact-ID confirmation and owner status controls passed all four native combinations at 4d059a5b; full browser/recovery/Apache acceptance and the newer-main merge remain pending. Automated catalog/configuration verification and all remaining native controls continue. [Current implementation/evidence](TWENTYI_ORDER_FULFILLMENT.md). Published1.24 remains unchanged.
 
 Current20i P0 checkpoint:1.24 inventory/ownership/label-operation recovery is published and download-verified. Full platform remains unfinished. [Current requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) and [release evidence](TEST_REPORT_1.24.0.md) supersede older status notes. Cloud1.25 and necessary commercial eligibility continue.
 

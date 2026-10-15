@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — verified confirmation and current-main integration
+
+- Verify38 authenticated confirmation cases on all four native combinations and exact4d059 Windows packages. Full descendant browser/recovery/Apache acceptance remains pending.
+- Preserve main13f9662d licensing changes through a normal merge while retaining20i and optional-storage/owner-access safeguards. Regenerate combined inventory; new combined acceptance is required.
+
 ## Unreleased — authenticated hosting setup confirmation
 
 - Confirm the original accepted hosting ID through the existing authenticated inventory reader, with matching enabled status, domain, type and credential context. Retain exact evidence and commit native adoption/audit atomically; unavailable or mismatched reads stay pending.

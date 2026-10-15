@@ -25,7 +25,7 @@ if($licenses):?>
 <?php else:?><p class="muted">No domains registered yet.</p><?php endif;?>
 <?php $bundles=all('SELECT * FROM '.table('license_bundles').' WHERE license_id=? ORDER BY created_at DESC',[$lic['id']]);?>
 <?php if($bundles):?><h4>Downloads</h4><ul>
-<?php foreach($bundles as $b):?><li><a href="<?=esc('/api/bundle-download.php?id='.$b['id'])?>"><?=esc($b['title'])?> ↓</a> <small><?=esc(gmdate('Y-m-d',strtotime($b['created_at'])))?></small></li><?php endforeach;?>
+<?php foreach($bundles as $b):?><li><a href="<?=esc(site_url('api/bundle-download.php?id='.(int)$b['id']))?>"><?=esc($b['title'])?> ↓</a> <small><?=esc(gmdate('Y-m-d',strtotime($b['created_at'])))?></small></li><?php endforeach;?>
 </ul><?php endif;?>
 <form method="post"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_add"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><label>Register domain<input type="text" name="domain" placeholder="example.com" required></label><button class="btn gold">Add domain</button></form>
 </article>

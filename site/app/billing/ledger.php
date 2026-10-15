@@ -3,6 +3,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/database/schema/ledger_schema.php';
+require_once CWP_CODE_ROOT.'/app/licenses/fulfill.php';
 function ledger_ready(): bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['invoice_ledger_schema_version'])['value']??'')==='1';}
 function ledger_require(): array {if(!ledger_ready())throw new RuntimeException('Enable invoice payments first.');return payments_require();}
 function ledger_invoice(int $id): array {
@@ -32,7 +33,7 @@ function ledger_key(string $key,string $review): void {if(!preg_match('/^[a-f0-9
 function ledger_receive(int $invoice,int $amount,string $method,string $reference,string $date,string $key,string $review): int {
     ledger_key($key,$review);$reference=trim($reference);
     if($amount<1||$amount>99999999||!isset(ledger_methods()[$method])||strlen($reference)<5||strlen($reference)>500||!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/D',$date,$m)||!checkdate((int)$m[2],(int)$m[3],(int)$m[1])||$date>gmdate('Y-m-d')||$date<'1900-01-01')throw new InvalidArgumentException('Enter a positive USD amount, payment method, verified reference and valid receipt date no later than today.');
-    return staff_locked(fn()=>staff_transaction(function() use($invoice,$amount,$method,$reference,$date,$key,$review): int {
+    $id=staff_locked(fn()=>staff_transaction(function() use($invoice,$amount,$method,$reference,$date,$key,$review): int {
         $actor=ledger_require();$hash=hash('sha256',json_encode([$invoice,$amount,$method,$reference,$date,$review],JSON_THROW_ON_ERROR));
         $old=one('SELECT * FROM '.table('invoice_payments').' WHERE request_key=?',[$key]);
         if($old){if((int)$old['actor_id']!==(int)$actor['id']||$old['kind']!=='manual'||!hash_equals($old['request_hash'],$hash))throw new RuntimeException('This receipt request was already used with different details.');return (int)$old['id'];}
@@ -49,6 +50,9 @@ function ledger_receive(int $invoice,int $amount,string $method,string $referenc
         query('UPDATE '.table('payment_requests')." SET status='superseded' WHERE invoice_id=? AND status='prepared'",[$invoice]);
         return $id;
     }));
+    $fresh=one('SELECT status FROM '.table('studio_invoices').' WHERE id=?',[$invoice]);
+    if($fresh&&$fresh['status']==='paid'){try{license_fulfill_invoice($invoice);}catch(Throwable){/* Fulfilment failure must not roll back the recorded receipt. Admin can retry from the license page. */}}
+    return (int)$id;
 }
 function ledger_reverse(int $entry,string $reason,string $key,string $review,#[\SensitiveParameter] string $password): int {
     ledger_key($key,$review);$reason=trim($reason);if(strlen($reason)<10||strlen($reason)>500)throw new InvalidArgumentException('Explain the recording correction (10–500 characters).');

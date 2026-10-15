@@ -9,6 +9,9 @@ require_once CWP_CODE_ROOT.'/app/licenses/service.php';
  * Returns the path to the created ZIP file.
  */
 function license_bundle(string $licenseKey, string $industry, string $coreDir, string $outputDir): string {
+    if (!class_exists('ZipArchive')) {
+        throw new RuntimeException('The zip PHP extension is required to build bundles.');
+    }
     $license = license_get($licenseKey);
     if (!$license) {
         throw new InvalidArgumentException('License key not found.');
@@ -68,7 +71,10 @@ function license_bundle(string $licenseKey, string $industry, string $coreDir, s
         $rel = str_replace('\\', '/', substr($path, strlen($moduleBase) + 1));
         if ($rel === 'addon.json') {
             $content = file_get_contents($path);
-            $manifest = json_decode($content, true);
+            $manifest = is_string($content) ? json_decode($content, true) : null;
+            if (!is_array($manifest)) {
+                throw new RuntimeException('Module manifest is not valid JSON.');
+            }
             $manifest['license_key'] = $licenseKey;
             $zip->addFromString('site/modules/industries/' . basename($moduleDir) . '/addon.json',
                 json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
