@@ -1,7 +1,7 @@
 name: Provider inventory checks
 on:
   push:
-    branches: [main, devin/twentyi-complete, devin/twentyi-refresh]
+    branches: [main, devin/twentyi-complete, devin/twentyi-refresh, devin/twentyi-domain-links]
     paths: ['site/app/providers/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_inventory*.php', '.github/workflows/provider-inventory.yml']
   pull_request:
   workflow_dispatch:
