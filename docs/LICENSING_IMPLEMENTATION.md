@@ -4,10 +4,10 @@
 
 ### 1. License validation API endpoint
 
-**File:** `site/api/license.php` (public entry point)
+**File:** `site/api/validate.php` (public entry point)
 **File:** `site/api/handlers/license.php` (handler)
 
-Implements `POST /api/license` — the endpoint that Website Core calls to validate license keys.
+Implements `POST /api/validate.php` — the endpoint that Website Core calls to validate license keys. A `.htaccess` rewrite also exposes the clean URL `POST /api/validate`.
 
 **Request:**
 ```json
@@ -27,7 +27,7 @@ Implements `POST /api/license` — the endpoint that Website Core calls to valid
 **Features:**
 - Rate limiting: 10 requests per minute per IP
 - Audit logging: all validation attempts logged to `audit` table
-- Multiple domain support: allows test + public sites on same license key
+- Multiple domain support: allows test + public sites on same license key, capped at 2 active domains per license — a third requires deactivating one first, which takes that site offline at its next validation
 - Active check: deactivated licenses are rejected
 
 ### 2. Database schema
@@ -117,7 +117,7 @@ Adds license management to the customer workspace:
 
 ## Integration points
 
-- Website Core calls `POST https://cajunwebpro.com/api/license` with `{license_key, domain}`
+- Website Core calls `POST https://cajunwebpro.com/api/validate.php` with `{license_key, domain}` (base URL configurable via `license.api_url` in Website Core)
 - Website Core expects `{"authorized": true/false, "error": "message"}`
 - Multiple domains per license key are supported (test + public sites)
 - Domain changes deactivate the old site automatically on next validation
