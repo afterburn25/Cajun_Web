@@ -122,7 +122,7 @@ PHPIniDir /etc/php/8.3/apache2
             check(label+' Apache upgraded canonical portal still serves',session.get(base+'/legacy/portal/index.php').status_code==200)
             from organized_update_cases import run as organized_update
             # Exercise the newly added baseline first; keep every historical baseline.
-            for number,version in enumerate(['1.23.0','1.22.0','1.11.0','1.11.1','1.11.2','1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0']):
+            for number,version in enumerate(['1.24.0','1.23.0','1.22.0','1.11.0','1.11.1','1.11.2','1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0']):
                 organized_update(web,base,check,QA,php,label,('aor' if rewrite else 'aon')+str(number)+'_',version)
         finally:
             proc.terminate()

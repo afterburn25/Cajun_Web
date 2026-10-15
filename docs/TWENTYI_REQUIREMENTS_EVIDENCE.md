@@ -1,5 +1,7 @@
 # Complete 20i requirements and evidence
 
+Current1.25/#127 candidate includes cloud/server assignments and the real1.24 baseline with populated ownership/unknown-operation recovery fixtures. Candidate acceptance is pending; immutable publication remains1.24. Capability rows distinguish released package workflows from branch-tested cloud and unfinished controls.
+
 
 Codex owns the complete 20i P0 integration. [CajunWebPro 1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly downloaded/verified at immutable source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`. All16 assets, checksums, ZIP members and the tag agree with accepted source; previous1.23 assets are unchanged. This is a GitHub release, not live-site deployment. Full20i is unfinished; unrelated roadmap work remains paused. See [verified release report](TEST_REPORT_1.24.0.md). Older checkpoints below are historical; current capability rows are authoritative.
 

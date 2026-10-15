@@ -1,5 +1,7 @@
 # Cloud server inventory
 
+Current1.25 candidate on#127 uses published1.24 source7190b582. The older checkpoints below are historical. Current package/recovery acceptance and release gates remain pending.
+
 
 ## Client assignments integrated on the development branch
 
