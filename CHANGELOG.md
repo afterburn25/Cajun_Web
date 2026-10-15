@@ -1,9 +1,25 @@
 # Changelog
 
+## Paused by owner: complete 20i takeover — 2026-10-15
+
+The owner explicitly transferred the entire 20i implementation to Codex as P0. Earlier Devin-only allocation and mail-development next steps below are historical and superseded. Unrelated Reply/Forward work is preserved on this branch and paused; it is excluded from the new `codex/twentyi-complete` integration.
+
+This recoverable checkpoint preserves protected draft storage, origin/content bindings, migration, shipping mirrors, native regression cases and a Linux workflow written after `402850fe48a5a605ed7065de48721ff4eb059dc8`. The explicit installer refresh completed successfully; it did not build a release. Native behavior is UNVERIFIED: the first local Windows run failed before feature assertions because existing credential storage requires POSIX 0600 permissions. That guard was not weakened. The owned synthetic MariaDB was stopped and its fixture data retained. Linux CI has not run for these new bytes; this preservation commit skips CI intentionally while unrelated work is paused. The earlier 1,412 content checks certify d2b4ffd only, not this native increment. No HTTP Reply/Forward interface, live mail operation or release is claimed.
+
+Resume only after the owner's 20i priority is complete: review the preserved native API and tests, execute Linux native acceptance, then complete authenticated message-read creation, UI, MIME submission and package/recovery verification. Existing accepted source and running/completed acceptance evidence remain retained.
+
+## Unreleased preparation — admin mail replies and forwarding
+
+- Parse bounded received Reply-To/From and thread identifiers with the maintained stack plus strict raw-input guards; construct editable reply/forward content with honest omission notices, without hidden recipients or attachments. All60 new cases pass in each local default/minimal-with-mbstring mode.
+- Verify928 focused initial-source executions and [1,412 new-source executions](https://github.com/afterburn25/Cajun_Web/pull/125#issuecomment-6184606426), including actual PHP8.2/8.4 no-DOM behavior. Application integration remains pending.
+- Add an immutable bounded conversation-identifier component and 45 named tests in each default/no-ini mode, outside deployment.
+- Extend the existing PHP8.2/8.4 mail-compose matrix without removing original cases.
+- Keep current-authorized draft persistence, MIME threading and UI integration explicitly pending; no shipping source, version, provider implementation or release changed.
+
 ## Unreleased test correction — complete ticket screenshots
 
 - Wait for the actual authenticated activity bell and fonts before ticket screenshots; assert PNG dimensions and footer bounds for client/conflict/staff desktop/mobile captures.
-- Verify the 64 px asynchronous layout mechanism with actual PHP/MariaDB/Edge; preserve every original behavior assertion and all application bytes. Local 15-case/six-view evidence passes; packaged acceptance remains pending.
+- Verify the 64 px asynchronous layout mechanism with actual PHP/MariaDB/Edge; preserve every original behavior assertion and all application bytes. Local 15-case/six-view evidence and [final 11,907-execution acceptance](https://github.com/afterburn25/Cajun_Web/pull/124#issuecomment-6184342786) pass; Windows/Linux packages match and independent review remains pending.
 
 ## Unreleased — recurring billing notifications
 

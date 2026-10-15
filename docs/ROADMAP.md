@@ -1,5 +1,13 @@
 # Approved roadmap and acceptance criteria
 
+## Paused by owner: complete 20i takeover — 2026-10-15
+
+The owner explicitly transferred the entire 20i implementation to Codex as P0. Earlier Devin-only allocation and mail-development next steps below are historical and superseded. Unrelated Reply/Forward work is preserved on this branch and paused; it is excluded from the new `codex/twentyi-complete` integration.
+
+This recoverable checkpoint preserves protected draft storage, origin/content bindings, migration, shipping mirrors, native regression cases and a Linux workflow written after `402850fe48a5a605ed7065de48721ff4eb059dc8`. The explicit installer refresh completed successfully; it did not build a release. Native behavior is UNVERIFIED: the first local Windows run failed before feature assertions because existing credential storage requires POSIX 0600 permissions. That guard was not weakened. The owned synthetic MariaDB was stopped and its fixture data retained. Linux CI has not run for these new bytes; this preservation commit skips CI intentionally while unrelated work is paused. The earlier 1,412 content checks certify d2b4ffd only, not this native increment. No HTTP Reply/Forward interface, live mail operation or release is claimed.
+
+Resume only after the owner's 20i priority is complete: review the preserved native API and tests, execute Linux native acceptance, then complete authenticated message-read creation, UI, MIME submission and package/recovery verification. Existing accepted source and running/completed acceptance evidence remain retained.
+
 ## Current recurring-notification increment
 
 Codex recurring notification follow-on now has locally verified activity/bell integration and exact history links on `codex/recurring-billing-activity`; [scope and pending gates](RECURRING_BILLING_ACTIVITY.md). P-07/HC-06 remain partial: full packaged/recovery acceptance and review are pending, as are broader billing automation and production activation. Devin retains complete20i implementation. Published1.23 is unchanged.
@@ -717,6 +725,8 @@ Core account lifecycle is released in 1.2.0 ([PR #10](https://github.com/afterbu
 Owner-controlled creation/invitation, role and mailbox grants, reset and deactivation for additional administrators. Preserve the owner account, deny privilege escalation, revoke disabled sessions and protect the last active owner. Keep staff identities separate from client accounts. Acceptance and permission tests: [Admin mail roadmap](ADMIN_MAIL_ROADMAP.md#a-05--additional-admin-accounts-and-access-foundation).
 
 ### A-06 — Multi-account admin webmail and setup
+
+Current non-20i development: [Reply/Forward preparation](MAIL_REPLY_FORWARD.md) on `codex/mail-replies-forwards`. Conversation identifiers have928 verified focused executions; maintained metadata/recipient parsing and quoted content have120 local executions. [New source d2b4ffd](https://github.com/afterburn25/Cajun_Web/pull/125#issuecomment-6184606426) has1,412 verified remote executions including actual no-DOM cases. Application permissions/storage/MIME/UI and end-to-end acceptance remain pending. This does not complete A-06 or enable a new mail action.
 
 Verified 1.13.0 delivers bounded profile/password/assignment preparation and the administrative UI. [Guide and acceptance](ADMIN_EMAIL_ACCOUNTS.md). No real connection, inbox or sending is included; full A-06 remains incomplete.
 

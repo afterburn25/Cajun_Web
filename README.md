@@ -1,8 +1,12 @@
 # CajunWebPro — project source of truth
 
+## Current non-20i development
+
+[Reply and Forward](docs/MAIL_REPLY_FORWARD.md) is in preparation on a separate branch. Conversation identifiers have928 verified focused executions. Maintained parsing and editable quoted content have [1,412 verified focused executions](https://github.com/afterburn25/Cajun_Web/pull/125#issuecomment-6184606426), including actual no-DOM checks. Application authorization/storage/UI/delivery integration remains pending. Devin owns all 20i implementation and fixes. Published v1.23.0 is unchanged.
+
 ## Ticket screenshot acceptance follow-up
 
-A test-only follow-up waits for the real activity bell before capturing ticket views and verifies full PNG/footer bounds. Fifteen local HTTP/Edge checks and all six complete views pass; packaged acceptance and independent review remain pending. Application and published v1.23.0 bytes are unchanged. See [current handoff](SESSION_HANDOFF.md). Devin retains complete 20i implementation.
+A test-only follow-up waits for the real activity bell before capturing ticket views and verifies full PNG/footer bounds. All six complete views are inspected; [final acceptance](https://github.com/afterburn25/Cajun_Web/pull/124#issuecomment-6184342786) verifies 11,907 named executions and identical Windows/Linux packages. Independent review remains pending. Application and published v1.23.0 bytes are unchanged. See [current handoff](SESSION_HANDOFF.md). Devin retains complete 20i implementation.
 
 ## Latest development
 
