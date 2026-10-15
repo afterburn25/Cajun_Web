@@ -1,4 +1,30 @@
-# Release register
+# Release records
+
+## Latest verified publication — 1.24.0
+
+Codex owns the complete 20i P0 integration. [CajunWebPro 1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly downloaded/verified at immutable source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`. All16 assets, checksums, ZIP members and the tag agree with accepted source; previous1.23 assets are unchanged. This is a GitHub release, not live-site deployment. Full20i is unfinished; unrelated roadmap work remains paused.
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38711850732) passes9,134 named assertion executions in44 terminal reports and all30 workflow gates. The29 focused gates contain158 named reports/17,034 executions, counted separately. Fresh/existing setup, populated inventory upgrades, client isolation, moved-domain reapproval, unknown-outcome/no-replay behavior, retained file recovery and both Apache modes pass. Actual desktop/mobile screens were inspected; homepage pixels match1.23 and PHP diagnostics are empty. All12 clean Windows/Linux distribution files match. Full report: [TEST_REPORT_1.24.0.md](TEST_REPORT_1.24.0.md).
+
+Use COMPLETE-UPLOAD for fresh installs, UPDATE for recognized versions through1.23.0, and FULL-PROJECT for development. Update staging is`cwp-update-1.24.0`. Back up files, database and original encryption keys together. Follow packaged instructions; established missing history requires database restoration. See [owner guide](TWENTYI_INVENTORY_OWNER_GUIDE.md).
+
+Earlier entries below preserve historical ownership/status statements; current Codex P0 ownership above supersedes them.
+
+## Historical publication — 1.23.0
+
+[Version 1.23.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0) is published and freshly downloaded/verified at immutable source/tag `4fdb56266c77f6e6bf7b58e966d24696e1eaefc8`, through [PR #85](https://github.com/afterburn25/Cajun_Web/pull/85). Client account edits reject stale forms and retain escaped unsaved details for review. Client changes/invitations recheck current authority, serialize writes and audit atomically; invitation activation is single-use and unexpired. Client administration is refused during support sessions. [Owner guide](CLIENT_ACCOUNT_SAFEGUARDS.md).
+
+[Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38587338059) passes **8,360 named assertion executions and all 25 workflow gates**: 2,460 native/form/combined, 3,084 estimator, 1,275 HTTP/Chromium, 261 unprivileged recovery, 1,259 Apache and 21 builder. Actual client-conflict/Send/history screenshots are verified; homepage pixels match 1.22. Clean Windows/Linux packages agree. All 16 draft and public files, archive members/checksums/directories and immutable tag were downloaded and verified; prior 1.22 assets remain unchanged. [Report](TEST_REPORT_1.23.0.md); [handoff](DEVIN_HANDOFF_1.23.0.md).
+
+All 25 supported starting packages through 1.22.0 retain upgrade acceptance. UPDATE stages `cwp-update-1.23.0`. Actual latest 1.22 update/recovery/reapplication preserves nonempty drafts, submission history/fences and both original encryption keys; replaying original requests cannot send again. Reviewed internal hosting records/journals/dispatch/provisioning-retry helpers remain inactive groundwork. This release does not add hosting controls or activate a provider operation.
+
+**Next integration:** #87-#89 preserve deletion retry and reconciliation; #89 `1c92e6b` now has verified 8,578 full application assertions, 18 workflow gates and identical Windows/Linux packages. #90-#92 preserve service-plan records and actual owner/client agreements; current #92 `76a1537` has verified 8,847 full assertions, focused PHP 8.2/8.4 matrices and inspected desktop/mobile views. Its bounded footer/mobile-fixture review 6171344188 remains pending. Prepare a later version with new combined acceptance; never replace the 1.23 assets with these follow-on test archives.
+
+Devin has acknowledged **complete end-to-end 20i ownership**, including persistence, admin/client UI, hosting, domains, VPS/cloud and support/SSH. [Assignment and acknowledgement](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171594708). Reader #99 `565aa3d` has isolated component clearance [6172038729](https://github.com/afterburn25/Cajun_Web/pull/99#issuecomment-6172038729); refresh/storage/link/client-view integration is still required. Codex continues the non-20i roadmap and final review/integration/releases. No target-host deployment, real customer message, charge, provider operation or SSH acceptance is claimed. The full roadmap remains active.
+
+Verified 1.23 downloads: [FULL-PROJECT](https://github.com/afterburn25/Cajun_Web/releases/download/v1.23.0/CajunWebPro-1.23.0-FULL-PROJECT.zip), [COMPLETE-UPLOAD](https://github.com/afterburn25/Cajun_Web/releases/download/v1.23.0/CajunWebPro-1.23.0-COMPLETE-UPLOAD.zip), [UPDATE](https://github.com/afterburn25/Cajun_Web/releases/download/v1.23.0/CajunWebPro-1.23.0-UPDATE.zip). All reports, manifests, checksums and instructions are attached.
+
+## Earlier publication records — historical evidence
 
 Verified1.22.0 downloads: [FULL-PROJECT](https://github.com/afterburn25/Cajun_Web/releases/download/v1.22.0/CajunWebPro-1.22.0-FULL-PROJECT.zip), [COMPLETE-UPLOAD](https://github.com/afterburn25/Cajun_Web/releases/download/v1.22.0/CajunWebPro-1.22.0-COMPLETE-UPLOAD.zip), [UPDATE](https://github.com/afterburn25/Cajun_Web/releases/download/v1.22.0/CajunWebPro-1.22.0-UPDATE.zip). Reports, named evidence, manifests, checksums and instructions are attached.
 

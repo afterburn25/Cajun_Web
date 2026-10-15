@@ -9,13 +9,7 @@ function studio_client(): ?array {
  if(!$c||!hash_equals($c['auth_version'],(string)($_SESSION['client_auth']??''))){unset($_SESSION['client_id']);return null;}$_SESSION['client_last']=time();return $c;
 }
 
-function studio_new_invite(int $id): string {require_admin();if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$id]))throw new InvalidArgumentException('Active client not found.');$token=bin2hex(random_bytes(32));query('UPDATE '.table('studio_clients').' SET invite_hash=?,invite_expires=?,auth_version=? WHERE id=?',[hash('sha256',$token),time()+86400,bin2hex(random_bytes(16)),$id]);return studio_url(['invite'=>$token]);}
-
-function studio_activate(string $token,string $password): void {
- if(support_current())throw new RuntimeException('Client security changes are blocked during support.');
- validate_password($password);if(!preg_match('/^[a-f0-9]{64}$/D',$token))throw new InvalidArgumentException('Invalid invitation.');
- db()->beginTransaction();try{$c=one('SELECT * FROM '.table('studio_clients').' WHERE invite_hash=? AND active=1 FOR UPDATE',[hash('sha256',$token)]);if(!$c||(int)$c['invite_expires']<=time())throw new InvalidArgumentException('This invitation expired or has already been used. Ask the studio for a new link.');$hash=password_hash($password,PASSWORD_DEFAULT);if((int)$c['invite_expires']<=time())throw new InvalidArgumentException('This invitation expired. Ask the studio for a new link.');query('UPDATE '.table('studio_clients').' SET password_hash=?,auth_version=?,invite_hash=NULL,invite_expires=NULL WHERE id=?',[$hash,bin2hex(random_bytes(16)),$c['id']]);db()->commit();}catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}
-}
+require_once CWP_CODE_ROOT.'/app/clients/accounts.php';
 
 function studio_login(string $email,string $password): void {
  if(support_current())throw new RuntimeException('Client login is blocked during support.');

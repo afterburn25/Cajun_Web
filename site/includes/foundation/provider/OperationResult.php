@@ -22,6 +22,7 @@ use InvalidArgumentException;
 final readonly class OperationResult
 {
     public const SUCCEEDED = 'succeeded';
+    public const ACCEPTED_PENDING = 'accepted_pending';
     public const FAILED = 'failed';
     public const RETRYABLE = 'retryable';
     public const UNSUPPORTED = 'unsupported';
@@ -59,6 +60,15 @@ final readonly class OperationResult
     public static function failed(string $operation, string $message, ?string $providerCode = null): self
     {
         return new self(self::FAILED, $operation, $message, $providerCode, null, 1, false);
+    }
+
+    /** Durable acknowledgement, not proof of a provisioned or active service. */
+    public static function acceptedPending(string $operation, ?string $externalId = null): self
+    {
+        if ($externalId !== null && !preg_match('/\A[1-9][0-9]{0,17}\z/', $externalId)) {
+            throw new InvalidArgumentException('Acknowledged resources require bounded allocated identifiers.');
+        }
+        return new self(self::ACCEPTED_PENDING, $operation, 'The provider accepted the request; completion still requires verification.', 'accepted_pending', $externalId, 1, false);
     }
 
     public static function retryable(string $operation, string $message, ?string $providerCode = null): self
@@ -107,12 +117,12 @@ final readonly class OperationResult
     /** Whether the operation ended in a durable terminal state. */
     public function isFinal(): bool
     {
-        return in_array($this->status, [self::SUCCEEDED, self::FAILED, self::UNSUPPORTED, self::UNCERTAIN, self::CONFLICT], true);
+        return in_array($this->status, [self::SUCCEEDED, self::ACCEPTED_PENDING, self::FAILED, self::UNSUPPORTED, self::UNCERTAIN, self::CONFLICT], true);
     }
 
     /** Whether reconciliation with the provider is required before retrying. */
     public function needsReconciliation(): bool
     {
-        return $this->status === self::UNCERTAIN;
+        return in_array($this->status, [self::UNCERTAIN, self::ACCEPTED_PENDING], true);
     }
 }

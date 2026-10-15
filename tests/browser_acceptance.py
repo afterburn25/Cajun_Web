@@ -198,10 +198,14 @@ try:
         notices_browser(globals(),browser)
         from provider_settings_cases import run_browser as provider_browser
         provider_browser(globals(),browser)
+        from provider_operations_cases import run_browser as provider_operations_browser
+        provider_operations_browser(globals(),browser)
         from mail_drafts_cases import run_browser as drafts_browser
         drafts_browser(globals(),browser)
         from mail_submissions_cases import run_browser as submissions_browser
         submissions_browser(globals(),browser)
+        from client_authority_cases import run_browser as client_authority_browser
+        client_authority_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)

@@ -5,18 +5,25 @@ on:
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   pull_request:
     branches: [main]
+    paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   workflow_dispatch:
+    inputs:
+      checkpoint_only:
+        description: 'Build, native database and browser checkpoint only; not release acceptance'
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
-  group: application-${{ github.ref }}
+  group: application-${{ github.ref }}-${{ inputs.checkpoint_only && 'checkpoint' || 'full' }}
   cancel-in-progress: true
 jobs:
   native-and-browser:
     runs-on: ubuntu-24.04
-    # Browser/SMTP plus 24 retained upgrade baselines and both Apache modes.
+    # Browser/SMTP plus 25 retained upgrade baselines and both Apache modes.
     # The 1.22 candidate exhausted 45m during no-rewrite 1.13; keep every case.
-    timeout-minutes: 75
+    # Run38567952137 exhausted75m in Apache; retain every baseline and case.
+    timeout-minutes: 105
     services:
       mariadb:
         image: mariadb:10.11
@@ -89,6 +96,16 @@ jobs:
           .ci-venv/bin/python tests/mail_submission_combined.py
           php8.3 tests/provider_settings_native.php
           php8.3 tests/provider_checks_native.php
+          php8.3 tests/provider_inventory_native.php
+          php8.3 tests/provider_inventory_upgrade_native.php
+          php8.3 tests/provider_operations_native.php
+          php8.3 tests/provider_operations_execute_native.php
+          php8.3 tests/hosting_records_native.php
+          php8.3 tests/hosting_operations_native.php
+          php8.3 tests/hosting_retry_native.php
+          php8.3 tests/hosting_delete_retry_native.php
+          php8.3 tests/hosting_reconciliation_native.php
+          php8.3 tests/client_authority_native.php
       - name: Real HTTP and Chromium application workflows
         run: .ci-venv/bin/python tests/browser_acceptance.py
       - name: Preserve browser checkpoint before the extended recovery matrix
@@ -100,10 +117,10 @@ jobs:
           retention-days: 3
           if-no-files-found: warn
       - name: Unprivileged structure update interruption and recovery
-        if: success() || failure()
+        if: (success() || failure()) && !inputs.checkpoint_only
         run: .ci-venv/bin/python tests/structure_acceptance.py
       - name: Apache protection with and without rewriting
-        if: success() || failure()
+        if: (success() || failure()) && !inputs.checkpoint_only
         run: .ci-venv/bin/python tests/apache_acceptance.py
       - name: Verify tests did not mutate shipping source
         run: git diff --exit-code -- site/
@@ -111,7 +128,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: application-acceptance-${{ github.sha }}
+          name: application-${{ inputs.checkpoint_only && 'checkpoint' || 'acceptance' }}-${{ github.sha }}
           path: |
             qa/
             dist/

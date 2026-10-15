@@ -1,8 +1,38 @@
 # Decision record
 
+## Separate constructible requests from purchase authority — 2026-10-15
+
+A documented request builder is not commercial consent. The generic owner approval path admits only package-label changes; purchases, renewal, mixed billing/deletion and mail require dedicated persisted intent and eligibility workflows. Existing high-risk grants cannot dispatch through the generic route. Missing stamped operation tables require original database recovery, never empty replacement. This implements independent review findings on PR126 without discarding inherited history.
+
+## 2026-10-15 — Codex P0 takeover and first inventory repairs
+
+Owner transferred the complete 20i lane to Codex and paused unrelated development. From main68e4d41, preserved #122/#115 via normal merges through9744110; repaired old-schema readiness, generated-column validation, moved-domain/context display, sibling-name disclosure and two fixture counters. Added genuine populated/interrupted/repeated upgrade and isolation coverage;38 local PHP8.4/MariaDB checks pass. Expanded current PHP/database and packaged HTTP acceptance is pending. Full release review and later hosting/domain/VPS/SSH/billing implementation continue. [Scope, ancestry and evidence](TWENTYI_CODEX_TAKEOVER.md). v1.23 stays unchanged; no live action.
+
 ## 2026-10-14 — distinguish branch integration from reviewed publication
 
 The owner has authorized continued implementation and isolated tests on separate branches. Earlier assistant-authored checkpoints postponed even testable route integration until independent review. Prepare the concrete admin/router/setup integration and packaged synthetic acceptance on unreleased PR77 now, so review can assess the complete behavior. Retain independent review and exact-source acceptance before merge/publication. This does not authorize customer mail, live deployment, provider writes, payment or SSH, and does not claim review received.
+
+## 2026-10-14 — every client identity writer shares authority serialization
+
+The future hosting coordinator cannot rely on the shared staff guard while legacy client edits or public invitation activation bypass it. Move those existing writers behind the same guard, recheck current authority after waiting, and bind administrative forms to the exact client authorization version. Public activation retains its invitation capability, with active-client/expiry checks and atomic audit; it does not require staff access. Preserve the existing delegated client-management permission. [Contract](CLIENT_AUTHORITY.md).
+
+## 2026-10-14 — separate retry preparation from dispatch
+
+Enable only deliberate local provisioning retry after an immutable definite failure explicitly marked safe to retry. Returning to pending does not grant a network call or mint an attempt. The later normal claim rechecks current authority and profile state and commits the distinct attempt. Unknown outcomes require verified reconciliation; deletion retries cannot use this path because the canonical model arms a fresh attempt during that transition. [Contract](HOSTING_PROVISION_RETRY.md).
+
+## 2026-10-14 — preserve committed attempts and remote observations
+
+Commit an immutable exact account/client/profile/attempt boundary before returning a new provider claim. A replay or pending-state read never authorizes another call. Final observations must survive later access loss but require the exact committed binding; audit/storage failure leaves the prior fence unresolved. Keep provider-resource associations unique and immutable across clients. The internal result path is not exposed as a generic HTTP callback. [Contract](HOSTING_OPERATIONS.md).
+
+
+## 2026-10-14 — separate local hosting persistence from remote dispatch
+
+Add a current-owner native adapter for immutable local records and canonical local commands first. Do not expose arbitrary journal imports, provider observations, dispatch intents or reconciliation through that API. Preserve original terms and per-event audit atomically; loading a record never grants a remote action. The subsequent provider adapter must own its immutable committed dispatch fence and exact bound result path. See [storage contract](HOSTING_RECORDS.md).
+
+
+## 2026-10-14 — reconstruct hosting through validated commands
+
+Use versioned strict JSON commands replayed through the existing canonical HostingAccount rather than PHP object deserialization or assigning private state fields. Journal instances retain immutable bytes; state readers get independent models. Identity checks and hashes are not authorization or proof of a provider operation. Durable transaction/audit/dispatch fencing remains a separate adapter requirement. See HOSTING_JOURNAL.
 
 ## 2026-10-13 — Owner-approved dependency-aware development
 
@@ -173,3 +203,11 @@ Source22a2969692ab5bcc7f35158dcaa5355c623dc821 retains exact current-window iden
 ## 2026-10-13 — reuse cURL framing and canonical public destination policy
 
 Use cURL for fixed HTTPS rather than implementing an HTTP parser. Reject entire mixed DNS answer sets and pin one accepted address. Local resolver latency is governed by the host; transfer deadlines do not pretend to bound blocking DNS. Keep test-only address/CA remapping outside production, verify original options first, and execute CI fixtures with networking disabled. PHP -n disables configuration; compiled extensions remain, so explicitly test unavailable cURL initialization instead of assuming it disappears.
+
+## 2026-10-14 — Complete 20i implementation assigned to Devin
+
+Owner instruction: “let devin do the complete 20i integration.” Devin's prior isolated-component scope is expanded to end-to-end provider/application work, including data, ownership, native UI, controls/lifecycle, domains, VPS and support/SSH integration. Codex keeps non-20i work and final review/merge/release coordination. Shared router/build wiring may be implemented narrowly by Devin with documented coordination; it is not reserved so broadly that application work cannot proceed. Existing branch history, immutable releases and operation-specific production gates stay in force. [Complete handoff](DEVIN_COMPLETE_20I_HANDOFF.md).
+
+## 2026-10-15 — Preserve provider acknowledgements separately from completion
+
+Retain the existing gateway/ledger, extending its bounded result with accepted_pending and the provider-issued package ID. A valid documented addWeb acknowledgement proves acceptance, not activation; generic2xx, false/null or mixed envelopes cannot prove business success. Recorded legacy results are preserved. Name-only matches never adopt resources. Current ID-array contracts invalidate old scalar approvals rather than silently translating them. No mixed updatePackage request receives a blanket idempotent capability. Full inner request schemas, first-party order/hosting controls and release acceptance remain required.

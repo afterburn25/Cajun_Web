@@ -1,5 +1,61 @@
 # Session log
 
+## Synchronize release entry points after review — 2026-10-15
+
+Review4281622110 on4cbc2375 reproduced stale pending1.24 headers in README, agent coordination, release workflow and inventory owner guide. Update every listed entry point plus current migration instructions to the actual immutable publication, archive earlier coordination and mark historical1.23 sections clearly. No runtime or package bytes change. Starting parent4cbc23758674b29899d235b511b40f0a18cf8503 is “Record verified1.24 publication and current20i continuation”; correctiondf57d0ce is “Synchronize published1.24 across current entry-point guides.” Actual local documentation check passed161 Markdown files/1,330 local links and canonical dependency checks; git diff whitespace check passed. These checks cover documentation/source consistency only, not runtime acceptance, which remains the separately published7190 evidence. Known failure: initial review4281622110 found stale headers and was corrected. Follow-up review4281670745 requested this explicit validation record. Renewed review is pending; continue cloud/commercial20i work.
+
+## Publish and verify first 20i takeover release1.24.0 — 2026-10-15
+
+Starting from exact main7190b582, publish only accepted source after full9134/44reports,30 gates, independent reviews, inspected browser screens and identical Windows/Linux packages. Download and verify all16 draft/public assets and unchanged prior1.23 assets. This documentation checkpoint records actual publication; no runtime/build/test change or deployment. Archive prior summaries, update current release/requirements/ownership and preserve histories. Next: cloud1.25 from the real1.24 baseline; correct recurring lost-binding review4281512902 and continue full commercial/native20i workflows.
+
+## Fresh owner inventory correction before 1.24 publication — 2026-10-15
+
+Codex retains complete 20i P0 ownership. Starting from normally merged main `5dd2a3e1a7ddb3b63bf9bf98c4da3ac1e13edafc`, this branch fixes a fresh-owner provider page warning discovered by cloud #127 checkpoint [38701151657](https://github.com/afterburn25/Cajun_Web/actions/runs/38701151657). The exact diagnostic was an array-offset-on-null warning in `admin/views/providers.php:71`: fresh installation prepares inventory storage but has no saved provider profile. The shared package view read the missing profile's enabled field. This defect also exists on current main, so 1.24 publication is withheld even though the earlier candidate passed.
+
+The inventory section now handles the missing-profile state first and directs the owner to save the connection. It performs no inventory history query or profile-dependent action before that profile exists. Two actual packaged assertions verify the fresh schema stamp and the fresh owner's setup page; the existing final empty-PHP-diagnostics gate must remain. Generated installer inventory is refreshed. No schema, provider operation, credentials, client data or design change is required.
+
+The prior 906df727 candidate has 9,132 verified assertions and clear review; exact-main 5dd2a3e1 run38699707455 remains running and is preserved as historical evidence, not publication approval for the newly discovered path. All 29 focused main workflows passed, with 158 downloaded named reports / 17,034 executions. Actual main screens were inspected. Corrected candidate review, full candidate acceptance, normal merge, exact corrected main and downloaded release gates are required. Native cloud assignments #128 pass 848 assertions; its browser run is preserved and receives this correction afterward. No 1.24 tag, release or deployment has been created. Continue the remaining 20i scope while these gates run.
+
+## 1.24 candidate: packaged checkpoint verified — 2026-10-15
+
+Codex owns the complete 20i integration as P0. The active branch is `codex/twentyi-complete`, [PR #126](https://github.com/afterburn25/Cajun_Web/pull/126), from main `68e4d411acedd9f73cf048018ba570ace9b673be`. Published [v1.23.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0) remains unchanged. This checkpoint starts at `438a3122d3a23bdbd58825ee2da2daec902f351f`; the enclosing commit identifies the corrected candidate. No merge, release or deployment is claimed.
+
+The first increment delivers protected package refresh, explicit client package/domain links, moved-domain and credential-context isolation, populated inventory upgrades, typed label approvals, durable operation history and read-only reconciliation. It retains the original Devin histories and hosting recovery foundations. Commercial order/service workflows, native controls, domain commerce, VPS/cloud and interactive SSH remain active implementation work after this increment.
+
+[Exact 438a3122 checkpoint](https://github.com/afterburn25/Cajun_Web/actions/runs/38692573913) passes 42 downloaded named reports / 7,474 executions, including 1,371 HTTP/Chromium assertions. All 12 generated distribution files match the local Windows build byte for byte; ZIP integrity and member counts are verified (FULL 5,246; COMPLETE 2,591; UPDATE 2,578). This checkpoint deliberately skipped extended recovery and Apache, so it is not release acceptance. The actual refresh diagnostic reports a complete observation with unknown collection coverage and no fixture errors. Desktop/mobile owner/client moved-domain and operation screenshots were inspected. They exposed inaccurate client wording: a moved domain was described as absent. This commit changes it to an unconfirmed approved hosting link and strengthens the existing HTTP assertion without disclosing the new package or another client name.
+
+[Strict native operation matrix](https://github.com/afterburn25/Cajun_Web/actions/runs/38692254706) at 2d2892c9 passes 784 named executions on PHP 8.2/8.4 and MariaDB 10.11/MySQL 8.4. Shipping code matches 438a3122. [Independent review of 438a3122](https://github.com/afterburn25/Cajun_Web/pull/126#issuecomment-6186069993) found no major issues; the new wording correction will receive a follow-up review. Earlier failed fixture/diagnostic runs are preserved in GitHub and local evidence and are not counted as acceptance.
+
+Next: run complete application acceptance on this stable corrected candidate, inspect final reports and corrected screenshots, run exact candidate focused PHP/database gates, and resolve findings. Then merge normally, verify exact main and downloaded draft/release assets, and publish the first tested increment. Preserve all prior baselines, including the checksum-verified published 1.23 package. Continue the remaining 20i platform immediately afterward. Full owner API-reference intake still needs the original accessible file/link; public primary documentation and independent engineering continue. No new live provider call, payment, customer mail or SSH session ran.
+
+## Browser diagnostic correction — 2026-10-15
+
+Candidate2d2892c9 remains unreleased. Prior checkpoint6d9391a completed independent review with no major findings ([review6185823734](https://github.com/afterburn25/Cajun_Web/pull/126#issuecomment-6185823734)). Its native/build stages passed, but browser run38691215693 stopped after1,127 passing named assertions at a test diagnostic NameError: json was not imported. This checkpoint adds the missing import; no shipping code is changed. The failed report is retained and is not browser acceptance. The stricter candidate schema matrix38692254706 is still running.
+
+The earlier b1 full run38688509276 finished with1,271 Apache and261 filesystem-recovery assertions passing. Its browser fixture failure remains recorded. These older results cannot certify1.24. Next: rerun the bounded candidate browser checkpoint, inspect actual upgrade/moved-domain/operation screenshots and reports, resolve any finding, then exact candidate full acceptance and final review before main/release verification. All remaining20i platform work stays active.
+
+## 1.24.0 candidate — 20i inventory, ownership and operation recovery
+
+This is an unreleased candidate on codex/twentyi-complete / PR126, starting from6d9391a. Published1.23.0 and main68e4d41 remain unchanged. The first increment provides protected package refresh, explicit package/domain client links, moved-domain and credential-context isolation, populated inventory upgrades, typed package-label approvals, durable operation history and read-only reconciliation. It retains inherited hosting lifecycle/recovery foundations. It does not complete commercial provisioning, native hosting controls, domains, VPS/cloud or SSH; those remain the active P0 roadmap after this increment.
+
+Review corrections776cab39 pass1,372 inspected named executions: four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 jobs (90 ledger/recovery +104 execution assertions each) and four default/no-ini contract reports (149 each). The exact-package checkpoint38691215693 is running at6d9391a; that source has completed external review with no new inline findings observed. Candidate release acceptance has not run yet. The older b1 full run38688509276 retains its browser fixture failure and ongoing Apache evidence.
+
+Candidate changes add exact Extra/default validation for operation columns, with an invisible auto-increment regression that preserves populated rows. Version labels advance together. The immutable published1.23 COMPLETE archive is checksum-verified (057a58c42e847fe68454c1a7dac47afad10c8c05f46de4301842654b356f7228); all2,566 member hashes and original compatibility-shim hashes are registered for updates. Native filesystem and both Apache modes add1.23 as the first baseline while retaining every older baseline. Existing populated drafts, submission fences, mail/provider keys and other records retain their original preservation checks.
+
+Next gates: inspect the current packaged checkpoint/screenshots, correct any failure, verify the stricter schema case on every supported database/runtime, then run exact1.24 candidate full acceptance and independent review. Only afterward merge normally, test exact main, and verify all draft/downloaded release assets before publication. No release, live provider request, payment, message or deployment is claimed. Continue the remaining complete20i scope after the first release.
+
+## Review corrections and preserved acceptance — 2026-10-15
+
+Starting from b1b0e84, independent review of PR126 reported two P1 defects: generic approval could bypass commercial/message consent, and a missing stamped operation table could be recreated empty, forgetting request history. Both are corrected in this checkpoint. Generic approval and execution allow only the explicit package-label subset; chargeable, destructive, mail and plan requests require their dedicated workflows. An old high-risk grant is refused before consumption, DNS or ledger access. The admin screen now uses package-ID/label fields and hides sending controls on ineligible historical approvals.
+
+Operation migration preflights both original tables for every stamped version 1–4 before any DDL. Readiness fails safely when either is missing; recovery requires the original database. Native regressions rename populated tables reversibly, preserve every ledger/grant/audit row and schema stamp, and verify duplicate suppression after restoration. Existing authority/race/replay cases now dispatch label-only requests; creation acknowledgement tests use the actual lower-level gateway/ledger and explicitly historical consumed grants for read-only reconciliation. No test-only production consent bypass was added.
+
+The exact b1b0e84 focused matrices were downloaded and inspected: 4,456 named executions pass across operation contracts, native operations, hosting and inventory PHP/database combinations. The provider-contract jobs also passed but expose no named artifact and are excluded from that count. The broad b1 run38688509276 passed its native and structure-recovery stages, then its browser stage failed on a malformed package fixture whose primary name was absent from its names array. The fixture is corrected without weakening validation. Its Apache work remains running and is preserved; no full application success is claimed.
+
+Local default/no-ini PHP passes 149 named boundary checks each; changed PHP syntax, Python syntax and generated-mirror checks pass. This new shipping head still needs its native matrix and packaged browser evidence. A manually dispatched checkpoint_only option on the existing application workflow reuses the exact build/native/browser stages without restarting the older extended recovery run; it explicitly cannot certify a release. Follow-up independent review and exact full application/main/release-asset verification remain release gates.
+
+Next: inspect the new matrix and browser artifacts, fix findings, finish stable integrated acceptance and publish the first tested increment, then continue required commercial order/service and native control workflows. Codex retains P0 ownership; main68e4d41 and publishedv1.23.0 are unchanged. No provider write, payment, customer mail or deployment ran. Full owner reference intake remains pending the accessible file/link; independent engineering continues.
+
 ## 2026-10-14 — preserve full mail acceptance after runtime limit
 
 Started3e7138e. Downloaded38539811045/tested merge368b7b5:2183 native/form/combined,3084 estimator,1236 HTTP/Chromium,247 filesystem/recovery and21 builder checks pass. GitHub annotation confirms45m limit; Apache had reached no-rewrite1.13, no final Apache report, final source-diff step skipped. This is partial evidence, not application acceptance. Increased limit75m and added atomic incomplete Apache progress every25 checks/failure with flushed messages. No assertions, baselines or shipping bytes changed. Python compilation/docs checks precede replacement full acceptance; independent review remains required.
@@ -17,6 +73,28 @@ Starting53b6ea3; downloaded8 native/form reports38538343622 pass562 checks. Full
 ## 2026-10-14 — saved-message Send route integration
 
 Owner requested continuous roadmap work. Starting7fdd242, wire existing guarded submission modules into admin/setup and prepare packaged synthetic SMTP/HTTP/browser acceptance. Local58 form checks pass per default/no-ini; full application/native/browser acceptance remains pending. No real external mail. See current PROJECT_STATUS and PR77.
+
+## 2026-10-14 — verified hosting operation matrix
+
+Atb7e9f03, downloaded push38545626740 passes79 operation +94 retained local-record checks per PHP8.2/8.4,346 executions. All named results and no-PHP-warning log verify. All2542 installer dependencies match committed bytes, with6 exact canonical mirrors. This follow-up changes documentation only. Mail38539811045 was cancelled for45m limit; retained6771 pre-Apache checks and verified Windows/Linux packages are partial evidence. Replacemente9b77e1/38545953062 has75m and incomplete progress checkpoints, without changing runtime or dropping tests. Next: independent review, current PR matrix, deliberate hosting reconciliation/retry and final mail acceptance.
+
+## 2026-10-14 — durable hosting attempts
+
+Request: continue full roadmap without stopping. Started5d9b719 on codex/hosting-operations, preserving stacked81/80/79 and Devin branches. Added guarded operation/fence/result/resource storage, additive migration, shared atomic event writer, native process/result fixtures and focused CI. Syntax, full generated refresh and126 Markdown/1073 links passed; current-client locking reads are added after inspecting legacy client writers outside the mutex. A competing-process snapshot regression is included. New native checks remain pending. Existing storage94 per runtime verified, mail38539811045 still in Apache. No provider transport or production action. Next: verify new native results and independent review, then deliberate reconciliation/retry and verified provider coordination.
+
+
+## 2026-10-14 — verified hosting record evidence
+
+Startingf8001e9/PR81, downloaded push38543267301 and PR38543364218/tested merge690949d. Each PHP8.2/8.4 run passes94 named native checks,188 total per run. All14 applicable workflows succeed; no PHP warnings in push log. Verified2539 exact committed installer dependencies and6 canonical mirrors. This documentation-only checkpoint records the evidence and pending independent review; it changes no site/foundation/tests/tools/workflow source. Mail38539811045 remains in Apache acceptance. Authorized issue2 handoff6165365613 records current ownership without inferring Devin receipt. Next: separate durable dispatch/result layer and candidate final acceptance.
+
+## 2026-10-14 — native hosting record adapter
+
+Request: continue roadmap without stopping. Started8bbd209 on new codex/hosting-storage; preserve stacked80/79 and Devin histories. Added guarded app/hosting storage, schema/migration, canonical mirrors/builder, native process fixtures and focused workflow. Documented exact local-only scope and future dispatch gate. Local syntax passes; native/runtime acceptance pending. Parent journal1440 executions downloaded/verified; mail1236 browser checks and screenshots verified, recovery/Apache still active. No live operation or release. Next: inspect native reports, fix failures and obtain independent review.
+
+
+## 2026-10-14 — hosting reconstruction prerequisite
+
+Owner requested continued roadmap work. Startingb6d4d24, prepare canonical HostingJournal,148 named local controls per default/no-ini mode, matrix workflow and durable adapter contract on separate codex/hosting-journal. Site tree unchanged. Parent79 verified6,912 full application and848 focused checks; independent input-delta review remains pending. Mail77 stays separate. Next: inspect matrix/review and implement native current-authorized persistence, never dispatching from a replay.
 
 ## 2026-10-13 — HC-07 provider foundation component
 
@@ -941,8 +1019,7 @@ Local documentation validation also traversed retained generated test-runtime ve
 
 ## 2026-10-14 — PR #72 merged at 22a2969; queue refreshed onto mail-notices head
 
-Codex merged [PR #72](https://github.com/afterburn25/Cajun_Web/pull/72) at `22a2969` — recent email notices are on main; exact-main acceptance run 38504271899 in progress. Devin refreshed all 29 branches onto the merge (26 clean-merge, 14 guarded-union docs resolutions; `devin/build-utf8` still worktree-held). One hiccup: a Windows unlink failure mid-merge on `devin/mail-transport` left staged adds deleted on disk — restored via `git restore`, union-resolved CHANGELOG, pushed. A second error: provider-foundation's own merge committed conflict markers in three docs files before resolution — caught by post-commit marker scan, resolved properly and amended (`6939f86`); force-push touched only my own seconds-old merge commit. Verified: all branches contain `22a2969`, zero `<<<<<<<`/`>>>>>>>` markers anywhere. Re-runs: PR #57's Composer flake cleared green; fresh acceptance runs queued for #52/#36 on their refreshed heads. Next: watch exact-main acceptance → v1.19.0 publication → independent byte verification.
-
+Codex merged [PR #72](https://github.com/afterburn25/Cajun_Web/pull/72) at `22a2969` — recent email notices are on main; exact-main acceptance run 38504271899 in progress. Devin refreshed all 29 branches onto the merge (26 clean-merge, 14 guarded-union docs resolutions; `devin/build-utf8` still worktree-held). One hiccup: a Windows unlink failure mid-merge on `devin/mail-transport` left staged adds deleted on disk — restored via `git restore`, union-resolved CHANGELOG, pushed. A second error: provider-foundation's own merge committed conflict markers in three docs files before resolution — caught by post-commit marker scan, resolved properly and amended (`6939f86`); force-push touched only my own seconds-old merge commit. Verified: all branches contain `22a2969`, zero `
 ## 2026-10-14 — PR #73 owner 20i API reference intake reviewed
 
 Codex opened docs-only PR #73 (`docs/twentyi-owner-api-reference`, head `c5115ab`): a line-referenced contract map of the owner-supplied 20i Reseller API text (195,457 bytes, SHA-256 recorded, 324 example method/path pairs). Devin review posted — no blocking findings: provenance is precise; risk register correctly excludes GET-labelled mutations from read allowlists, treats `Pre` suffixes as non-quote evidence, and flags credential-bearing reads (authCode, VNC, FTP, DKIM); ambiguity preserved (empty ≠ failure, NDJSON ordering, mismatch-not-relink semantics match `ExternalResource`); proposed sequence is consistent with the reviewed non-idempotent/UNCERTAIN design — GET-labelled mutations already structurally impossible via pinned `probe()`. Noted PR #43 head moved to `30a0c55`. Exact-main acceptance 38504271899 on `22a2969` reached the extended recovery/Apache matrix.
@@ -1175,8 +1252,333 @@ Previous goal turn made concrete progress: coordinator and private screen prepar
 
 Starting48060cf722b9899450c4b0ca76c8aa2059b4b563, downloaded and inspected both combined reports from38535733829:471 named checks pass per PHP8.2/8.4 runtime. Default resolver/coordinator/credential decryption/maintained SMTP/pinned TLS use actual local connections and native MariaDB. Exact saved message bytes and identifiers, strict audit boundaries, current grant loss, final rejection, uncertainty, interrupted result persistence and no-retry behavior pass. PR38535741503 also succeeded. Original keys and private audit boundaries retained; no external mail was delivered. Source c5646bf remains the last shipping-code change, with564 earlier native/form executions verified. HTTP/browser/Apache/latest1.21 update/recovery and independent review remain pending. Hosting60c53dc4a retains reviewed isolated source and green checks but conflicts with current main documentation; next feasible parallel branch is canonical hosting integration, preserving Devin source/history. Full roadmap remains active.
 
+## 2026-10-14 — preserve and integrate corrected hosting component
+
+Codex integrates Devin PR60 atc53dc4ae69f964fc53a42ee40aed61ba2ab24bdf into current mainff3ce729e49f553cb3354ed09cf12cdeeda30fca on `codex/hosting-foundation-integration`. This merge preserves both histories and all five hosting classes, supplied tests, component guide and workflow. Four shared-document conflicts retain current release continuity plus this explicit integration record. Published1.21.0 stays immutable. Hosting remains outside the deployment tree with no provider/persistence/billing/UI activation.
+
+The earlier independent correction review6163105649 remains scoped to168 supplied and21 independent controls. Integration rechecks reproduced seven further input failures: final-LF SKU/domain values, empty domain labels, edge hyphens and excessive label/total lengths. Codex tightens exact SKU matching and bounded complete domain labels before mutation, retaining the existing ASCII/alphabetic-TLD policy. New23 regression/positive controls cover those inputs and unchanged history on refusal. The corrected component now passes168 supplied +21 retained review +23 input controls locally on PHP8.4 default/no-ini; the combined PHP8.2/8.4 matrix is pending. CI retains original supplied output plus named independent JSON evidence. No domain registration, DNS lookup or actual provider operation occurs.
+
+Mail PR77 remains separate at7fdd242, with last shipping codec5646bf and default-coordinator evidence48060cf:471 actual loopback SMTP/MariaDB checks per PHP8.2/8.4, plus564 earlier native/form executions. Its private Send screens remain unregistered pending independent review and packaged HTTP/browser/latest1.21 recovery acceptance. Devin retains service-plan53 corrections at166c4b3 and mail review; preserve both branches. Next: verify hosting integration CI and review the small input delta before sequential main integration; then define its durable current-authorized provider/account adapter. [Hosting component](HOSTING_FOUNDATION.md).
+
+## 2026-10-14 — client authority integration from PR82
+
+Started `codex/client-authority` from1f59074, preserving hosting/Devin histories. Implemented shared-lock client create/edit/invite/activation, exact stale-form rejection, strict transaction/audit and escaped unsaved details. Current local native PHP8.4/MariaDB passes60 checks. Prepared actual HTTP/Chromium conflict/invitation/session fixtures and current PHP8.2/8.4 matrix retaining hosting94+79. Current full application, screenshots, matrix artifacts and independent review remain pending. No schema/version/publication or live external operation. Mail38545953062 continues separately; e9 Windows archives and current browser checkpoint/visual/homepage evidence verified. See CLIENT_AUTHORITY.
+
+### 2026-10-14 — packaged client support refusal correction
+
+Downloaded first browser checkpoint from38549059961:1,200 HTTP assertions pass, then support-selector expected403 fails. Add explicit client admin403 rendering for GET/POST support selection while retaining the existing write guard; assert no mutation and no forms separately. Native push/PR matrices466 each and olddae2f82 Windows archives verify. No complete application acceptance claimed. Replace with corrected full run after refresh. Independent service-desk61 review6166378842 reproduces approved-expiry, stale-worker and refused-denial mutation findings; original branch preserved.
+
+
+## 2026-10-14 — combine reviewed hosting parents and client controls with mail main
+
+Request: continue the roadmap and integrate separate branches without interrupting release acceptance. Start exact main e3b434ffb2244e454ea9f24fa1de9173b7479ccc; merge preserved client83 eefe29e8ee4019ea7506e0b70179f85d68dbe41a, including hosting79-82 ancestry, on codex/hosting-integration. Main remains held for mail1.22 acceptance38553149886; no publication is claimed.
+
+Resolve inspected conflicts by retaining both documentation histories, all submission and client browser calls, all existing private-file checks plus the four client paths, the75-minute ceiling/progress instrumentation, the submission dependency checker and hosting mirror generation. Automatic router merge retains mail routes and explicit support-client refusal. Regenerate the complete installer inventory from combined source. No reviewed client/hosting model or adapter behavior is changed in this merge.
+
+Verification: documentation132 Markdown/1152 links passes, Python build/browser/Apache/client fixture compilation passes, PHP router/client-account syntax passes, canonical receiving/submission mirrors pass; combined application/native tests have not yet run. Independent hosting79/80/81/82 reviews are CLEAR; client83 review/full application remain pending. Next merge preserved local retry84, verify byte preservation, then run combined native/application acceptance and request integration review. No schema activation, provider call, credential use, mail, payment, SSH, release or deployment is added.
+
+## 2026-10-14 — explicit local provisioning retry from PR82
+
+Started separate `codex/hosting-provision-retry` from1f59074. Added exact current-owner/client/revision local retry preparation after retained definite retryable failure, canonical validation, strict audit and no dispatch claim. Native process/replay/rollback fixtures plus original94+79 cases prepared. Local Windows fixture stopped at existing provider-key0600 permission validation before retry assertions; Linux matrix acceptance is pending. Full installer refresh and documentation verification underway; no live action/schema/version/release. Client83 has466 verified executions per push/PR matrix and active application38549059961; mail38545953062 remains active.
+
+### Retry fixture isolation correction
+
+Run38550491194 at9e599ef passed retained94+79 per PHP8.2/8.4 but the new suite collided with existing `hrci_` fixture tables before retry assertions. Use unique `htry_`; no production or assertion change, no acceptance claim for the failed run. Replacement matrix required.
+
+Replacement38550760697 reached the expected inactive-client refusal; the test worker had not caught its InvalidArgumentException. Add that expected refusal class while retaining PDO failure propagation and all assertions. No application change; a fresh complete matrix is required.
+
+### 2026-10-14 — retry native matrices verified
+
+Push38550996210 and PR38551004850 atd101665 each verify434 executions:44 retry +94 records +79 operations per PHP8.2/8.4. No PHP warnings in full push log; all2542 installer dependencies match committed bytes. Runtime remains9e599ef. Mail77/e9 now has complete7,854 application assertions/all19 workflows with verified packages and screens; review requested6166470289. Client83/eefe29e replaces failed support-renderer acceptance with38551118797. Service-desk61 review6166378842 retains56 supplied controls and reproduces six negative/five positive cases in default/no-ini, covering three outstanding findings. No live operation or release.
+
+
+## 2026-10-14 — integrate preserved provisioning retry into the combined branch
+
+Starting integration67e855b, merge retry84 e73d78a without changing its reviewed adapter or44 native checks. Retain both documentation histories and add an explicit current status to distinguish historical checkpoints. Add hosting records94, operations79 and retry44 native suites to full application acceptance alongside client60; add direct Apache denials for12 hosting internal files. Existing mail, client, recovery, vendor and package checks remain present. Regenerate installer inventory; verify exact parent-source preservation before publishing the integration PR.
+
+Parent review comments6166505236/6166544455/6166574826/6166607088/6166726058 clear hosting79-82/84. Client83 review/full application and this combined branch's full acceptance remain pending. Mail77 is already merged at e3b434f with complete candidate7,854 and clear independent review; its exact-main38553149886 and release preparation run separately. No merge to main, new version, published package, hosting schema activation, real provider request, payment, mail or SSH is performed by this integration.
+
+
+Combined-merge local verification: all33 selected mail files equal e3b434f exactly, all10 client implementation/fixture files equal eefe29e, and all25 hosting foundation/mirror/adapter/native-test files equal e73d78a. Browser calls run once each; full workflow retains all submission/client suites and adds the three hosting suites; Apache retains every main denial plus16 client/hosting paths. Python fixtures compile, dependency mirrors verify, docs133 Markdown/1164 links pass. Installer inventory regenerated; exact committed-byte check follows this merge commit. Client38551118797 has now completed: downloaded final reports verify7,027 executions (1,491 native/form,3,084 estimator,1,213 HTTP,233 recovery,985 Apache,21 builder), all17 workflows pass, all3 Windows/Linux archives match and actual current images were inspected. These are parent results; combined application acceptance remains required.
+
 ## 2026-10-14 —1.22.0 published and download-verified
 
 Starting exact main e3b434ffb2244e454ea9f24fa1de9173b7479ccc, record reviewed77 publication after full 38553149886/7,854 assertion executions and21 successful workflows. All16 draft/public assets, manifests/checksums/tag and Windows/Linux bytes verified. Actual3Send/history images inspected; homepage pixels match1.21. Prior1.21 assets unchanged; all24 starting versions and actual1.21 record/key/recovery/no-resend acceptance pass. Updated release/status/roadmap/owner guide/report and agent handoff; source/deployment unchanged. No real customer mail, provider write, charge or SSH. Continue [combined hosting/client PR85](https://github.com/afterburn25/Cajun_Web/pull/85), observed `a9beb6e72208cdfdb7a0ec0f8fe09a7e4883325c`. It preserves mail main plus client83 and reviewed hosting79-82/84 on a separate integration branch. Client83 eefe29e has downloaded7,027 complete application assertions,17 successful workflows, exact Windows/Linux packages and inspected screenshots. Hosting79-82/84 have independent clear reviews at their documented heads. Verify the current client/integration review and combined native/application results before merging; parent evidence does not replace combined acceptance. Hosting helpers remain internal with no route, worker, provider transport or fresh-install activation.
 
 Service-plan53 corrections e7a283b are independently clear (76 supplied plus21 independent controls per PHP8.4 default/no-ini); observed current branch `29200a14ceaeefa7dda646d0de4c543a011cd292` may be newer. Service-desk61 df0a1d2 is independently clear after114 supplied plus44 independent controls per default/no-ini mode: approvals expire, rejected decisions preserve state, attempt tokens reject stale results, and verified resolution is required before a stalled external operation can retry. Unknown observations remain recoverable and conclusive replays preserve state. [Review6167233334](https://github.com/afterburn25/Cajun_Web/pull/61#issuecomment-6167233334). Verify current CI and inspect any newer correction at observed `df0a1d23f5900541557b795511332d1e80be5e52` before integration. Preserve Devin ownership and all original branches. Full billing, broader20i/client hosting and VPS SSH remain incomplete; the roadmap goal stays active.
+
+## 2026-10-14 — preserve published1.22 records in combined hosting
+
+Merge main4fb0c83 into combined85/a9beb6e, resolving nine Markdown conflicts by retaining both histories and adding current scoped status. No site/foundation/tests/tools/workflows/version change relative to a9. The full a9 acceptance38554890744 remains live; do not push this reconciliation until its artifact is retained, because a push would cancel that run. Local documentation/link and runtime-equality checks follow. Reviewed deletion retry87 stays separate. Next: verify the same full run, publish this docs reconciliation, then actual1.22 baseline/new-version candidate.
+
+## 2026-10-14 — prepare1.23 after verified combined hosting/client acceptance
+
+Starting local documentation mergee86f2c934d4f4a5d0edd3365dc145a71992606b2 over verifieda9/main4fb, reserve unused candidate1.23.0 with no tag/release. Downloaded application38554890744 passes8,234 named executions across21workflows with exact packages and actual screenshots verified. Runtime reviews6166706518/6167231488 are clear. Add actual immutable1.22 archive/shim catalog,25retained baselines and latest1.22 submission preservation/replay after update/recovery. Existing tests remain. Correctly retain UTF-8 guide text and update its recovery path tostructure-1.23.0. New fixtures compile; installer refresh/current candidate CI/additive review and exactmain acceptance follow. Separate87 deletion retry/currentDevin components remain excluded.
+
+## 2026-10-14 — Transfer complete 20i ownership
+
+Request: the owner first asked for more Devin assignments, then explicitly assigned the complete 20i integration. Starting source: main `4fb0c833b31e89ab9c46a7d941b36a34a34f3bc2`; separate branch `codex/20i-ownership-handoff`. Updated GitHub issue #2 and posted comment 6171468180; created and then expanded #95–#97 into provider, application persistence/client ownership, and admin/client UI/lifecycle workstreams. All three edited bodies/titles were reread and verified. Added the full handoff and corrected current allocation in AGENTS, README, project status, session handoff, coordination, roadmap, decisions and changelog. Older allocation is explicitly superseded; historical publication evidence is preserved.
+
+This commit changes documentation only. Existing acceptance heads #92/06aafaa, isolated polish76a1537 and #89/1c92e6b are unchanged. #85/21ebe69 has additive review 6171280735; #93/bb042f8 has independent clearance 6171343671 with 99 supplied +15 independent local checks in each PHP mode and 396 named CI assertions in each push/PR run. Those are scoped earlier evidence, not tests of the full new assignment. Expanded-scope acknowledgement remains pending. Next Devin implements the runnable refresh/storage/link/client-view milestone and continues the full lane; Codex reviews completed work and advances non-20i acceptance/releases. No application deployment, live provider request, charge, mail or SSH session.
+
+## 2026-10-14 — Reconcile acknowledged 20i ownership with current main
+
+Request: let Devin implement the complete 20i integration. Starting ownership branch `7032e3a`, merge main `4fdb562` normally and preserve both documentation histories. Resolve eight Markdown insertion conflicts without changing runtime relative to main. Update the handoff, coordination, roadmap and current status with acknowledgement 6171594708, integration branch `devin/twentyi-complete`, reader PR #99 at `565aa3d`, and the main dependency notice 6171715373. Earlier pending-acknowledgement entries remain dated history.
+
+Exact-main application 38587338059 is still running. Do not merge this documentation PR while it would cancel that release acceptance. Local documentation checks pass for 137 Markdown files and 1,221 local links; both pinned mail dependency checks and diff/whitespace checks pass. The complete changed-file list relative to main contains ten Markdown files only; site, foundation, tests, tools, workflows and version bytes equal main. Reader review 6172038729 reports no blocking runtime finding at 565aa3d: 28 supplied reader +99 inventory +31 independent checks pass per local PHP default/no-ini mode. Downloaded CI 38587813678 tests the identical merge tree on PHP 8.2/8.4; reader output is summary-only, so retaining named JSON artifacts was requested as a nonblocking evidence improvement. No full 20i milestone or production operation is claimed. Next: Devin completes the usable refresh/storage/link/client-view path and continues all assigned capabilities; Codex reviews and integrates ready work while advancing the non-20i roadmap.
+
+## 2026-10-14 — Publish and freshly verify 1.23.0; preserve full 20i ownership
+
+Starting documentation `cc7ee81`, record immutable release source `4fdb562` from reviewed #85. Full exact-main 38587338059 finished successfully: downloaded and inspected 8,360 named assertions, all 25 workflows, original 1.21/1.22 mail recovery/replay, current images and exact Windows/Linux packages. Independently verified 153 focused-matrix evidence files, including client/hosting native and retained mail/provider suites. Prepared 16 assets, created annotated v1.23.0 and a draft, downloaded and verified every draft byte/member/directory/checksum, published, then freshly downloaded and verified all 16 public files. Prior 1.22 metadata/assets remain unchanged. No deployment or live operation.
+
+Also retained completed #89/1c92e6b acceptance 38580190394 (8,578 assertions, 18 workflows, identical packages) and #92/76a1537 acceptance 38584988395 (8,847 assertions, actual images, identical packages). After retaining older06 acceptance, advanced #92 by normal fast-forward to76 and rewrote its current PR evidence. The bounded polish review is still pending. Devin's full 20i acknowledgement and reader review remain recorded; no implementation was reassigned to Codex.
+
+Update current publication/installation/status/roadmap records, owner guide, report and Devin handoff while preserving older histories. These changes are Markdown only relative to the published source. The optional documentation-branch application run at cc7ee81 is superseded by this documentation update; runtime equality to fully accepted release4f is independently checked. Its incomplete run is not counted as a pass. Current documentation checks remain required before merging these records. Next: integrate ready preserved follow-ons into a new version with combined acceptance, continue non-20i work, and review Devin's end-to-end delivery. Full roadmap active.
+
+Publication-record validation: 139 Markdown files and 1,259 local links pass; pinned receiving/submission vendor checks and whitespace checks pass. Runtime, foundation, tests, tools and workflow bytes remain identical to released4f. No application assertions are attributed to this documentation commit.
+
+## 2026-10-15 — Devin: closed 20i write-boundary component (descriptive, not executable)
+
+Request: continue the complete 20i integration. Starting main `68e4d41` on new branch `devin/twentyi-operations`. Added `foundation/twentyi-operations/` (Four classes: `TwentyIOperation`, `TwentyIOperationRegister`, `TwentyIRequestBuilder`, `TwentyIResultClassifier`), canonical mirrors under `site/includes/foundation/twentyi-operations/`, `tools/build.py` area registration, regenerated `site/install/inventory.generated.php`, contract `docs/TWENTYI_OPERATIONS_CONTRACT.md`, workflow `.github/workflows/twentyi-operations.yml`, and synthetic suite `tests/twentyi-operations/run.php`.
+
+Scope: the register catalogs exactly the four documented package-lifecycle writes from `docs/TWENTYI_OWNER_API_REFERENCE.md` §1 — `packages.create` (addWeb), `packages.update` (updatePackage) shape-complete with literal field allowlists and billing/destructive/email risk flags; `packages.userstatus` and `packages.delete` catalogued shape-incomplete (reference names the endpoint without body fields) so the builder refuses them rather than inventing fields. `exclusions()` names the refused write surfaces (StackCP users/grants, domains, VPS, SSH, email, billing) with reasons. The builder produces a bounded TransportRequest (positive-id or `*` slots, allowlisted keys, canonical JSON <=8 KiB, 30 s timeout, fixed host, no Authorization header). The classifier is write-conservative: 2xx succeeded, 4xx failed, 3xx/429/5xx uncertain, provably-pre-send transport failures failed, post-send ambiguity uncertain.
+
+Tests: **81 named synthetic checks pass** on local PHP (default and `php -n` modes); the suite asserts the adapter still refuses every operation — register membership is not execution authority. No HTTP transport, credential, database or provider call. Docker-based CI lanes added for PHP 8.2/8.4 with named JSON artifacts.
+
+Known limits: no execution wiring (ProviderGateway ledger/grant flow), no response schemas beyond documented id fields, no live verification of any documented example. Next: Codex review of this boundary; application grant/ledger wiring and operation-specific acceptance gates before any transport execution.
+## 2026-10-15 — Devin: durable provider operation ledger and owner grants
+
+Request: continue the complete 20i integration. Starting main `68e4d41` on new branch `devin/twentyi-ledger`. Added `site/database/schema/provider_operations_schema.php` (provider_operations ledger + provider_operation_grants approvals), `site/database/migrations/provider_operations_migrate.php` (strict schema validation, owner-password migration, version-1 marker), `site/app/providers/operations.php` (`ProviderOperationLedger` implementing the shared `OperationLedger` contract plus owner grant/revoke/active-check functions and canonical scope fingerprints), fresh-install wiring in `schema_statements`/`deploy.php`, `docs/PROVIDER_OPERATIONS.md`, native suite `tests/provider_operations_native.php` and workflow `.github/workflows/provider-operations.yml`.
+
+Semantics: atomic INSERT claims an idempotency key; resolved rows replay recorded results; foreign fingerprints conflict; stale claims classify uncertain. Grants are owner-password, expiry-bound, revocable approvals bound to an exact canonical scope; the newest matching grant decides. No credential, request, transport or provider call exists in this layer.
+
+Tests: native MariaDB suite covering schema refusals, claim/replay/conflict/uncertain/record races, gateway at-most-once through a synthetic adapter, a real cross-process claim race, and grant lifecycle including audit. CI lane on PHP 8.2/8.4 + MariaDB 10.11 with named JSON results. Next: Codex review; execution-path wiring (grant check + gateway + adapter execute) remains gated on the write-boundary contract and operation acceptance.
+
+## 2026-10-16 — Devin: 20i execution path (grant → gateway → adapter)
+
+Request: continue the complete 20i assignment — wire the documented write surface through owner-grant authority, the durable ledger and the closed request builder.
+
+Starting commit: `588ef07` (merge of `devin/twentyi-operations` + `devin/twentyi-ledger` into `devin/twentyi-execution`).
+
+Files/actions: `foundation/twentyi-operations/TwentyIOperationAdapter.php` (new ProviderAdapter: supports() only for shape-complete ops, builds via TwentyIRequestBuilder, attaches Authorization at send boundary only, classifies via TwentyIResultClassifier; packages.update reported idempotent, create one-attempt); `site/app/providers/operations.php` (`provider_operations_execute` — owner password + current revision + active exact-scope grant before any credential/address work, endpoint resolve outside lock, perform over real gateway+ledger+FixedHttpTransport with send-time and post-call reauthorization, access-change → uncertain); `tests/provider_operations_execute_native.php` (native MariaDB suite, scripted transport only); `provider-operations.yml` runs both native suites on PHP 8.2/8.4; docs updated; mirror + installer inventory refreshed via build.py.
+
+Tests: `php -l` clean on all touched files; contract suite 81/81 still green on the merged tree; **native suites green in CI — 38 ledger/grant + 28 execution assertions on PHP 8.2 and 8.4** (runs 38633904468/38633892500 and siblings) at `143e4a6`. One CI iteration fixed a test-ordering issue: an ungranted scope refuses `no_grant` before observing key state, so the conflict assertion now grants both scopes first.
+
+Known failures/blockers: live provider sends remain unexecuted and gated on operation-specific acceptance; only packages.create/packages.update are shape-complete. Next: CI green, Codex review, then admin grant/manage UI and reconciliation surface for uncertain results.
+
+## 2026-10-16 — Devin: grant-carried approvals + owner operations page
+
+Request: continue the complete 20i assignment — make approved operations reachable by the owner through a bounded admin surface.
+
+Files/actions: `provider_operation_grants` v2 — `scope_params` (canonical JSON of the approved request), `consumed_key`, `consumed_at`; a grant is now the complete approved request and is consumed atomically at approval time (one grant, one request, one key). `provider_operations_execute` takes `grantId + idempotencyKey` — stored scope must reconstruct its fingerprint before any credential/address work. `provider_operation_grant` validates the operation is registered+shape-complete and bounds the stored scope (≤4096). New `provider-operations` Studio page (`staff.manage` view; owner password per action): approve/run/revoke forms, approval states, operation ledger history with uncertain-reconciliation notice. Migration `provider_operations_schema_version` → '2' with v1 ALTER upgrade. Native suites updated for the grant-id interface + v1→v2 ALTER coverage.
+
+Tests: `php -l` clean; **native suites green — 39 ledger/grant + 34 execution assertions on PHP 8.2 and 8.4** at `f3cf6dd`. CI iterations fixed: canonical-JSON key ordering in the body assertion; a colliding key correctly consumes its grant (approval is spent at approval time); the second-profile test replaced by foreign-profile refusal since only one provider profile exists. Next: Codex review of #111, then reconciliation workflow polish and documented-shape write acceptance.
+
+## 2026-10-16 — Devin: grant binding corrections from independent review
+
+Codex review 6177728792 reproduced three approval-boundary gaps at `318471e`. Fixes on `devin/twentyi-ledger` (`6ca730f`):
+
+1. **Revision/account binding** — `provider_operation_grants.profile_revision` (schema v2, ALTER upgrade for v1) records the approved profile revision; `provider_operation_grant_active` now requires an enabled profile at that exact revision. Key replacement or any settings save changes the revision and suspends the grant; disable/enable cycles never revive it. Granting also requires an enabled profile.
+2. **UTF-8 scope keys** — `provider_operations_canonical` refuses map keys whose `json_encode` fails, matching gateway canonicalization.
+3. **Newest-same-scope** — `grant_active` queries the indexed exact scope for its newest row instead of scanning the latest 64 grants.
+
+Tests: native suite extended to cover the v1→v2 ALTER upgrade, revision invalidation on settings save and disable/enable, invalid UTF-8 scope keys, and same-scope lookup beyond 64 other grants.
+
+## 2026-10-16 — Devin: merge review corrections into execution branch
+
+Codex review 6177258236 on #107 (`5f624a2`) reproduced two write-boundary gaps, fixed on `devin/twentyi-operations` (`d7006c5`): HTTP 202 and other non-terminal 2xx classify `uncertain` (accepted ≠ completed, RFC9110 §15.3.3); the 256-node request bound now counts every visited value including scalar leaves (a 384-leaf body under 8KiB previously built). Suite now 90 named checks incl. exact-boundary/over-boundary/nested fixtures and the 202-vs-201/204 distinction.
+
+Merged `origin/devin/twentyi-operations` (`d7006c5`) and `origin/devin/twentyi-ledger` (`6ca730f`) into `devin/twentyi-execution` with normal merges. Schema reconciled to v3: v2 adds `profile_revision` (approved-revision binding), v3 adds `scope_params`/`consumed_key`/`consumed_at` (single-use executed grants). `provider_operations_execute` also refuses grants whose approved revision is stale. Union-resolved schema/migration/test/log conflicts; `php -l` clean. Native suites re-run pending CI.
+## 2026-10-14 — Read-only 20i inventory contract (`devin/twentyi-inventory`)
+
+- **Request:** Codex-assigned lane (issue #2 comment 6167449082): a read-only 20i hosting inventory contract/projection on a new branch from main `4fb0c83`, owning `foundation/twentyi-inventory/`, `tests/twentyi-inventory/`, its workflow and contract docs only.
+- **Evidence gathered:** 20i Support Database article "retrieve packages via the API" (docs.20i.com/api/retrieve-packages-api, published 2020-02-18) documents the `GET /package` list-item shape used by the projector; full schemas for detail/types/balance remain behind the My20i Apiary console and are registered as documented-only with unknown shapes.
+- **Changed:** new `foundation/twentyi-inventory/` (`InventoryRead` closed GET descriptors — fixed host, allocated-ID validation, no credential handling; `InventoryPackage` allowlist record with unmapped-key name reporting; `InventorySnapshot` complete/partial/unavailable; `InventoryProjector` status/body classification; `InventoryRegister` evidence-graded capabilities); `tests/twentyi-inventory/run.php`; `.github/workflows/twentyi-inventory.yml`; `docs/TWENTYI_INVENTORY_CONTRACT.md`; continuity docs.
+- **Tests:** 73 named checks pass under PHP 8.4 default and `php -n` locally — descriptor closedness, field allowlist, sensitive-field non-retention, duplicate/mismatched IDs, malformed/truncated/oversized bodies, status classification, register evidence levels. Synthetic scope; no live call, credential, persistence or client linking.
+- **Known limits:** `/package` pagination semantics undocumented; only `packages.list` is projectable. No `site/` mirror, installer hash or route added — integration is Codex-owned.
+- **Next:** open draft PR; monitor Codex integration of the cleared #87–#92 chain.
+
+## 2026-10-14 — Devin: #93 corrections + restacked extension
+
+- Codex review 6170804386 on `3807c23` found four reproducible defects; all corrected at `08fe0ce`:
+  1. json_decode now preserves object/list identity (`{}`/`{"0":...}` are `unexpected_shape`, never empty inventories).
+  2. Snapshots carry caller-supplied `scope` and `coverage=unknown` — response completeness is not account-wide completeness.
+  3. `names` preserved exactly (absent primary name = inconsistency skip); `created` requires a real calendar instant; unmapped keys are printable-UTF-8-safe + `unmappedCount`.
+  4. `InventorySnapshot` validates typed records, non-negative counts, state consistency, and a closed unavailable-reason set.
+- Tests: 93 checks pass PHP 8.4 default and `php -n`.
+- `devin/twentyi-inventory-vps` rebased onto `08fe0ce` at `8003a93` (PR #94); `InventoryResource`/`resourceList` updated to stdClass + scope/coverage; 126 checks green both modes.
+- Reply posted on #93 (6170975671) citing each fix; earlier review deliveries listed for Codex's bookkeeping.
+- Next: await Codex re-review of #93/#94.
+## 2026-10-14 — Devin: #93 second-round corrections + #85 refreshed-head review
+
+- Codex follow-up 6171175612 on `aeb8fc0` found two boundary defects; corrected at `bb042f8`:
+  1. Numeric JSON object keys (int via get_object_vars) crashed `safeKey(string)` under strict types — now cast to exact string; reported by name in `unmappedKeys`.
+  2. `InventoryPackage` constructor is private (factory-only via `fromItem`); `InventorySnapshot` rebuilds packages/skipReasons lists so caller-held references cannot mutate validated observations; `COVERAGE_COMPLETE` rejected outright.
+- 99 checks pass PHP 8.4 default + `php -n` (+6 boundary regressions). Reply 6171257648.
+- `devin/twentyi-inventory-vps` restacked at `1ddeb8a`; `InventoryResource` got the same cast + private ctor; 139 checks green both modes.
+- PR #85 `21ebe69` additive review posted (6171280735): verified 1.23.0 version consistency, regenerated inventory hashes match blob bytes, pinned 1.22.0 baseline SHA `ba90fc84` equals published SHA256SUMS, submission-retention lane preserves no-resend fences and both master keys. CLEAR — merge remains Codex's call.
+- Next: await Codex re-review of `bb042f8`/`1ddeb8a` and #85 merge decision.
+
+## 2026-10-14 — Devin: inventory read extension restacked (hardened base)
+
+- `devin/twentyi-inventory-vps` restacked onto `bb042f8`/`f893a15` at current head (PR #94).
+- `InventoryResource` inherits the second-review hardening: numeric unknown keys cast to string (no TypeError), private constructor (factory-only), snapshot detaches record/reason lists, `COVERAGE_COMPLETE` refused.
+- Four identity-only GET descriptors + enumerable exclusions unchanged; 139 checks green under PHP 8.4 default and `php -n`.
+
+## 2026-10-14 — Devin: explicit read exclusions
+
+- `InventoryRegister::exclusions()` enumerates the documented endpoints refused from the inventory surface: `vps.vnc` (credentials), `vps.stop`/`vps.start` (GET-labelled mutations), `stackusers.grants`/`packages.stackUserList` (access-control identity), `domains.pendingTransferStatus` (unverified transfer detail).
+- Operation keys align with `TwentyICatalog` names; checks assert exclusions never appear in the read set. Contract doc updated; exclusions only tighten the boundary.
+## 2026-10-14 — Devin: complete 20i ownership; authenticated inventory reader (#95 first slice)
+
+- Owner scope override on issue #2 (6171468180): complete end-to-end 20i integration assigned to Devin; Codex retains final review/merge/release coordination. Acknowledged at 6171594708.
+- `devin/twentyi-complete` integration branch created at main `4fb0c83`; pushed.
+- `devin/twentyi-inventory-reader` branched at `f893a15` (devin/twentyi-inventory head); implements `foundation/twentyi-inventory-reader/InventoryReader`:
+  - One bounded request per read; secret resolved once via lazy resolver, attached as `Bearer base64(key)`, never retained.
+  - Refusal before contact for wrong provider, non-evidenced operations (only `packages.list` executes — documented schema + issue #65 evidence), unusable account identity, unresolvable/invalid secret.
+  - Internally derived scope `twenty-i|<account>|<op>`; TransportException → finite kinds; other throws → `transport_unknown`.
+  - New `tests/twentyi-inventory-reader/run.php`: 28 named checks, PHP 8.4 default + `php -n` green; inventory suite unaffected (99/99).
+  - New workflow `twentyi-inventory-reader.yml` (PHP 8.2/8.4 matrix, no-network image); `docs/TWENTYI_INVENTORY_READER.md` contract.
+- Stacked draft PR #99 → `devin/twentyi-inventory` at `76fed7c`.
+- No persistence, routes, UI or live call — those remain in #96/#97 and require operation-specific authorization.
+- Next: #96 persistence/migrations/explicit client linking on `devin/twentyi-complete` after reader review feedback.
+## 2026-10-14 — Devin: refresh orchestration, durable observations, owner linking (#96/#97 slice)
+
+- `devin/twentyi-refresh` branched at `565aa3d` (devin/twentyi-inventory-reader head). Implements the first runnable milestone slice on real application storage.
+- `site/database/schema/provider_inventory_schema.php` + `provider_inventory_migrate.php`: provider_refreshes intents, bounded refresh results, verbatim validated observation_packages rows, unique provider_package_links to studio_clients, link events; owner-password migrate with strict existing-table validation.
+- `site/app/providers/inventory.php`: provider_inventory_refresh mirrors the connection-check protocol (locked intent → DNS → locked re-authority → gated secret resolution → one InventoryReader read → re-authority → bounded durable result). Mid-flight changes record access_changed with no package rows; last good observation never replaced.
+- Explicit `provider_inventory_link`/`unlink` (owner password + exact revision + observed-package + active-client checks, unique target, event trail). No inference from provider fields.
+- Admin `provider-settings` view: prepare/refresh/inventory/link/unlink + link history. Portal `?services` shows the signed-in client's explicitly linked services only. `staff_action_permission` maps `provider_inventory_*` to staff.manage; router dispatches prefix.
+- `site/includes/foundation/twentyi-inventory{,-reader}/` mirrors added; build.py area list extended; installer inventory regenerated clean.
+- `tests/provider_inventory_native.php`: ~30 MariaDB orchestration checks incl. DNS/read races, revocation, audit failure, isolation, secret scan. New `provider-inventory.yml` (PHP 8.2/8.4 + MariaDB 10.11). Not yet CI-verified.
+- Draft PR #100 → devin/twentyi-inventory-reader at ac8f1a6.
+- Next: CI results; HTTP/browser wiring and packaged acceptance; further #97 lifecycle work.
+## 2026-10-14 — Devin: refresh-slice CI corrections complete, 56/56 green (PR #100)
+
+- Parent commit `ac8f1a6`; fixes: `78e9170` (drop duplicate `studio_schema` require), `c5ae70d` (skip duplicate studio table creation — `schema_statements` already creates them), `f8b3ea1` (explicit indexes on FK columns InnoDB auto-indexes: `linked_by`, `actor_id`), `0bcdfc5`+`7019866` (`provider_package_link_events.id` → `BIGINT AUTO_INCREMENT` for insertion-stable ordering; validator collation exception for the numeric id; event inserts drop manual hex ids).
+- Failure sequence on `provider-inventory.yml`: function redeclare → table-exists → auto-index mismatch → link-event ordering nondeterminism (same-second `recorded_at` + random hex id) → numeric-id collation mismatch. Each fixed and re-verified.
+- Final: runs 38591754189 (push) and 38591761386 (pull_request) both report **PASS: 56 native provider inventory assertions** on PHP 8.2 and PHP 8.4 — migration, authorization refusals, revision checks, cooldown, resolver/transport classification, complete/partial/unavailable persistence, last-good preservation, link restrictions, duplicate rejection, client isolation, and ordered unlink events.
+- Continuity docs synced (PROJECT_STATUS, SESSION_HANDOFF, CHANGELOG). No live call/credential/mutation; synthetic fixtures only.
+- Next: report on issues #96/#97 and PR #100; await Codex review; then continue lifecycle reads → hosting operations → domains/VPS behind explicit gates.
+## 2026-10-14 — Devin: stack restacked onto merged main + named-JSON evidence
+
+- Main advanced twice: `4fdb562` (PR #85 hosting/client merge) then `68e4d41` (PR #98 — 1.23 release record + 20i ownership handoff docs). Whole stack rebased: `devin/twentyi-inventory` → `9c1db5a`, `-vps` → `11b1fde`, `-reader` → `11661b5`, `-refresh` → `dcd0ad8`. Docs conflicts resolved by union; no code conflicts.
+- Corrected a topology mistake mid-restack: reader was briefly rebased onto `-vps`; moved back onto `-inv` (its PR #99 base) and `-refresh` followed; the stray `InventoryResource` site mirror was removed and installer inventory regenerated clean.
+- Codex's #99 clearance (6172038729) asked for named JSON results retained as CI artifacts: `tests/twentyi-inventory-reader/run.php` now emits the same named-check JSON shape as the inventory suite, and the workflow mounts a writable `qa/` dir capturing all four reports (reader+inventory × default+no-ini) as run artifacts. Reader head `e53ff2d`; workflow green both cells.
+- Fresh-install wiring added earlier on `-refresh` (`cb93528`): `schema_statements` includes `provider_inventory_schema`, `deploy.php` records `provider_inventory_schema_version`; native suite still 56/56 on both runtimes.
+- `devin/twentyi-complete` advanced to `68e4d41`.
+- Next: Codex review of the restacked PRs; continue lifecycle reads once the slice lands.
+## 2026-10-14 — Devin: stale links, refresh history, deterministic refresh ordering
+
+- Admin providers view: linked packages absent from the latest observation are now listed with an honest absence note and an unlink control (previously vanished, stranding mappings). Added `provider_inventory_history` — bounded per-profile result list rendered under the package table.
+- Fixed nondeterministic last-good/latest selection: `provider_refreshes` gains `seq BIGINT UNSIGNED AUTO_INCREMENT UNIQUE`; all `ORDER BY started_epoch DESC` queries add `,seq DESC`. Same-second refreshes (possible when tests bypass the real 30s cooldown) now order by insertion. Validator allows `auto_increment` on `seq` and `link_events.id` and expects the `seq` unique index.
+- `pi_cool` test helper now shifts epochs uniformly instead of collapsing to one value.
+- New assertions: omitting refresh keeps the mapping; client view reports the linked package absent (`present=false`, `package=null`). **58/58 native assertions** green on PHP 8.2/8.4, push+PR runs 38597806217/38597818733 at `735b79f`.
+- Next: Codex review; continue remaining milestones after this slice lands.
+## 2026-10-14 — Devin: binding corrections for PR #100 review
+
+- Codex requested changes on #100 (comment 6172775622): (P1) a replacement credential context silently reused existing client links — a new account's package data flowed through an old mapping; (P2) `provider_inventory_link` accepted packages from an observation recorded under an older profile revision.
+- Fix at `d830e91`: `provider_refresh_results.key_fingerprint` (installation-bound `hash_hmac` of the key at unseal) binds observations to their credential context; `provider_package_links` persists the approved fingerprint + `profile_revision`. Linking requires the last good observation's revision to equal the submitted current revision. Client reads suppress package data whenever the approved revision/context no longer matches; `provider_inventory_relink` is the explicit owner re-approval path (exact revision + current-revision observation still containing the package; `relink` event). Rotation and account change take the same honest path — key bytes cannot prove account continuity.
+- Schema version 2; appended-column upgrade for version-1 tables (pre-existing links load unverified). Admin view marks stale-context links and offers re-approval only when a current observation supports it; portal shows a pending-review marker.
+- Native suite now 77/77 on PHP 8.2/8.4 (latest push run 38602172014), including 19 new assertions: binding regressions plus the version-1 in-place upgrade path — dropped-column fixture re-migrates, unsupported versions refuse, and a simulated pre-upgrade mapping loads unverified and stays suppressed in the client view (`e3224be`, `07a77c3`).
+- Also per Codex's #94 clearance requests: contract docs on `devin/twentyi-inventory`/`devin/twentyi-inventory-vps` no longer assign linking to Codex (`25f3bee`/`a2e6ded`), and PR #94's body was refreshed to current heads/counts.
+- Next: Codex recheck of #100 at `d830e91`+; continue remaining milestones after review.
+
+## 2026-10-16 — Devin: reconcile uncertain writes via evidence-backed observation
+
+Request: continue the complete 20i assignment — the remaining write-path increment is a reconciliation surface for `uncertain` results. New branch `devin/twentyi-reconcile` = merge of `devin/twentyi-execution` (`9af8e1f9`) + `devin/twentyi-refresh` (`7314da4`), giving the write path access to the verified authenticated read.
+
+Files/actions: `site/app/providers/reconcile.php` (new — `provider_operations_reconcile`: owner password + exact revision + enabled credentials; row must be a recorded `uncertain` backed by the consumed grant's stored scope; one evidence-backed `GET /package` observation via `provider_inventory_read`; reauthorization at send boundary and after; outcomes `observed`/`not_observed`/`inconclusive`/`unavailable`/`refused`; never re-sends). `provider_operations` schema v4 adds `reconciled_outcome`/`reconciled_epoch` (append-only, recorded outcome immutable). Admin `provider-operations` page: uncertain rows show the reconcile result badge and a password-bound "Check the provider now" action. Execution suite extended with 14 reconcile assertions (authority gates, refused non-uncertain/unknown/orphan rows, observed/not_observed, delete-id absence, inconclusive with no read, unavailable on read failure, durable record + audit, truthful immutability).
+
+Merge resolutions: schema_statements union (inventory + operations), deploy version stamps (`provider_inventory_schema_version`='2', `provider_operations_schema_version`='4' — fresh installs now stamp the created version rather than a stale '1'), controller/actions union, build.py mirror list union, docs union. All contract suites re-green on the merged tree (90+99+28); `php -l` clean.
+
+Tests: **native MariaDB suites green on PHP 8.2/8.4** — 47 ledger/grant + 51 execution/reconcile + 77 inventory assertions (run 38643151558 and siblings) at `58bec11`. PR #115 opened.
+
+Known limits: reconcile uses only `packages.list` — the single verified read; other read endpoints remain documented-unverified. Live provider sends still require operation-specific acceptance. Next: Codex review, then remaining milestones (domains, VPS/cloud, support/SSH).
+
+
+## 2026-10-16 — Devin: hostname-list children join the shared node budget
+
+Codex follow-up review on `d7006c5` verified both original corrections but found `hostname_list` children bypassed the 256-node bound (counted 4 containers + 64 uncounted hostnames + 189 map values = 257 values accepted). `TwentyIRequestBuilder::bounded` now increments the shared node budget per hostname-list child. Added Codex's exact mixed fixtures: 64 `extra_domain_names` + 188 `documentRoots` = 256 builds; +189 = 257 refuses. 92/92 synthetic checks on default and no-ini modes.
+
+## 2026-10-16 — Devin: CRLF/stale-hash corrections on the stack
+
+CI on #115 caught `site/database/schema/base.php` committed with CRLF working-copy bytes — the locally-refreshed installer inventory hashed CRLF while the merged blob is LF, so CI legitimately reported stale hashes. Normalized to LF and regenerated (`f102e1e5`). The same staleness existed on `devin/twentyi-execution` after the node-budget merge (auto-merged generated file, not regenerated) — refreshed at `603b8f0c`; Codex had already flagged the same class of issue on #109, fixed at `d57b0cf9`.
+
+## 2026-10-16 — Devin: write transport branch closes a false-uncertain defect
+
+Inspection found `FixedHttpTransport::validate` refused every non-GET request as "Unsupported provider probe request"; the exception escaped the adapter's `TransportException` catch and surfaced through the generic handler as `uncertain` — a request that provably never sent would sit in the reconcile queue forever. `send()` now supports a strict write branch: POST only, URL must be `https://api.20i.com/` + bounded path charset, JSON body ≤8KiB, Authorization+Accept+Content-Type headers only — identical TLS/resolve/no-redirect/proxy-refusal socket discipline and credential-echo refusal as the probe. The adapter catches `InvalidArgumentException` from send as provable pre-send `failed` (code `refused`). Credential resolution, authorize callbacks and header attachment remain at the send boundary. Synthetic ops suite 92/92; native execution suite gains a transport-refusal assertion (pending MariaDB lane).
+
+
+## 2026-10-16 — Devin: grant approval validates buildability; packaged HTTP coverage for the operations surface
+
+Request: continue the 20i assignment without stopping. Two defects found while extending coverage: (1) `provider_operation_grant` approved scopes that could never build — an undocumented field passed approval and only failed at send; approval now runs the closed `TwentyIRequestBuilder` over the approved scope and refuses unbuildable requests. (2) The packaged acceptance suite exercised the settings page but never the operations page.
+
+Files/actions: `site/app/providers/operations.php` (grant-time build validation); `tests/twentyi/tls_connector.php` (strict POST branch mirroring the write transport's option contract, bounded POSTFIELDS); `tests/provider_http_server.py` (do_POST for `/reseller/*/addWeb|updatePackage` with scripted modes success/uncertain/uncertain_landed/failure/authentication/echo; package list now reflects recorded creates for reconcile reads); `tests/provider_operations_cases.py` (new — 22 packaged checks: storage setup, owner-only access, grant refusals, exact-scope approval, one bounded POST through the real transport, replay, 202→uncertain, reconcile not_observed/observed, revoke, internal-file denial, Chromium viewport/console); `tests/browser_acceptance.py` (registered after provider settings); `tests/provider_operations_execute_native.php` (+1 approval-refusal assertion).
+
+Tests: suites pending CI (application-tests packaged lane + native MariaDB lanes). Synthetic ops suite remained 92/92 after merge.
+
+## 2026-10-16 — Devin: Codex deep-review corrections — reconcile semantics, credential-bound identity, send-boundary recheck
+
+Request: continue the 20i assignment; address Codex's blocking findings on the execution/reconcile heads. Corrections merged into this branch at 1cea8d2b (execution side) plus reconcile-specific fixes here:
+
+- `delete-id` absence is no longer `observed`: `InventorySnapshot` enforces `coverage=unknown`, so a list absent of the target can never prove a deletion — outcome is now `inconclusive` (present target still yields `not_observed`).
+- Reconcile binds to the grant's approved `profile_revision`; a settings save/replacement context refuses rather than reading another context's evidence.
+- Reconcile outcome + audit commit inside one `staff_transaction` (no unaudited observation).
+- From the merged execution corrections: builder timeout 15s (bounded contract), adapter header order matches the strict transport fixture, admin view imports `TwentyIOperationRegister`, operation identity is credential-fingerprint-bound (cross-account replay refused), grant/authority rechecked inside the send-boundary authorize closure under the operation lock, migrations are column-driven and converge both historical v2 layouts, and the POST transport allowlists only `/reseller/*/addWeb|updatePackage`.
+
+Files: `site/app/providers/reconcile.php`, `docs/TWENTYI_OPERATIONS_CONTRACT.md`, `tests/provider_operations_execute_native.php` (+replacement-context refusal, corrected absence expectation, live-revision reads), `site/install/inventory.generated.php` (refreshed).
+
+Tests: pending CI — native MariaDB (ledger + execution) and packaged application lanes on the new head. Prior runs: 53 execute/reconcile assertions at the pre-correction head.
+
+## 2026-10-16 — Devin: catalogued domain operations; `domains.renew` joins the buildable set
+
+The owner API reference documents `POST /reseller/{resellerId}/renewDomain` with a complete three-field shape (`name`, `years`, `renewPrivacy`, L239-249) — catalogued buildable with `mayChargeBilling` (balance-funded). `addDomain`/`transferDomain`/`nameservers`/`dns` are catalogued shape-incomplete: the reference names purposes or partial field lists but not complete request shapes (registrant/contact/registry inputs; added/removed ns field names; dns `new`/`delete` record shapes), so the builder refuses them rather than inventing fields. The fixed POST transport allowlist and the packaged HTTPS fixture each gained exactly `renewDomain`. Reconciliation has no observation check for renewals — an uncertain renewal refuses with panel-verification guidance. Packaged suite gained a real renew POST case plus ambiguous consumed-history and changed-context reconcile refusals.
+
+Files: `foundation/twentyi-operations/TwentyIOperationRegister.php`, `foundation/twentyi/FixedHttpTransport.php`, mirrors under `site/includes/foundation/`, `tests/twentyi-operations/run.php` (+17 checks), `tests/provider_http_server.py`, `tests/provider_operations_cases.py` (+3 packaged checks), `docs/TWENTYI_OPERATIONS_CONTRACT.md`, `.github/workflows/twentyi-operations.yml` (push trigger covers -exec/-rec).
+
+Tests: synthetic write-boundary suite **109/109** in default and `php -n` modes locally; native/packaged lanes pending CI on this head.
+
+## 2026-10-16 — Devin: owner-approved domain ownership links (schema v3)
+
+Domain-level client ownership on `devin/twentyi-domain-links` (stacked on `devin/twentyi-reconcile`): `provider_domain_links`/`provider_domain_link_events` mirror the package-link model — owner password + exact current profile revision, the `(package_id, domain)` pair must appear in the last good observation's `names`, fingerprint+revision context binding, `link`/`relink`/`unlink` events. Links assign one observed domain to a client independently of the carrying package (multi-client reseller case). Admin provider-settings page renders per-domain link/unlink/re-approve controls plus a stale-domain section; portal `?services` shows linked domains with observed/honest-absent markers. Schema v3 is additive — existing v1/v2 installs gain the tables through the same validated migration; fresh installs stamp 3. Native suite gains 16 domain-link assertions (refusals, normalization, absence honesty, rebind, client isolation); packaged suite gains refresh→link→portal→unlink coverage against the HTTPS fixture.
+
+Files: `site/database/schema/provider_inventory_schema.php`, `site/database/migrations/provider_inventory_migrate.php`, `site/app/providers/inventory.php`, `site/admin/controllers/providers.php`, `site/admin/views/providers.php`, `site/includes/layout/provider_services.php`, `site/install/actions/deploy.php`, `tests/provider_inventory_native.php`, `tests/provider_settings_cases.py`, `docs/TWENTYI_INVENTORY_APP.md`.
+
+Tests: PHP lint clean on all touched files; native MariaDB + packaged lanes pending CI.
+
+## 2026-10-15 — Codex P0 takeover and first inventory repairs
+
+Owner transferred the complete 20i lane to Codex and paused unrelated development. From main68e4d41, preserved #122/#115 via normal merges through9744110; repaired old-schema readiness, generated-column validation, moved-domain/context display, sibling-name disclosure and two fixture counters. Added genuine populated/interrupted/repeated upgrade and isolation coverage;38 local PHP8.4/MariaDB checks pass. Expanded current PHP/database and packaged HTTP acceptance is pending. Full release review and later hosting/domain/VPS/SSH/billing implementation continue. [Scope, ancestry and evidence](TWENTYI_CODEX_TAKEOVER.md). v1.23 stays unchanged; no live action.
+
+## Focused CI fixture correction — 2026-10-15
+
+Takeover [PR #126](https://github.com/afterburn25/Cajun_Web/pull/126) is open at first implementation `d2f59fba32b98153119b33072647cccdbb25696d`. Downloaded push run [38686268179](https://github.com/afterburn25/Cajun_Web/actions/runs/38686268179) fails: MariaDB passes 74 assertions (including the repaired revocation check) then the longer fixture reaches the real hourly quota before its audit scenario; MySQL reaches the audit-injection trigger but binary logging requires test-server configuration (error1419). Failed reports remain retained. These are fixture constraints, not relaxed production requirements.
+
+This test-only correction explicitly fills/tests the 20/hour refusal and verifies no intent/network use, then ages only isolated fixture timestamps for the next scenario while retaining rows. The disposable MySQL CI service permits synthetic fault-injection triggers; application-user privilege and production code are unchanged. Local38-case upgrade/render evidence remains scoped to the same shipping code. Current native matrices and full acceptance still require verification. Preserve the original application run38686331742; use a focused manual run for this iteration instead of restarting its long package/recovery work. The commit deliberately skips automatic CI and dispatches the native matrix explicitly, not a release check bypass.
+
+Next: inspect all focused results/logs, correct remaining failures, reconcile resource/hosting descendants, and run complete stable-candidate acceptance/review before release. Codex P0 ownership and v1.23 baseline remain unchanged.
+
+## Combined inherited work and write-semantics correction — 2026-10-15
+
+Codex retains complete 20i P0 ownership in [PR126](https://github.com/afterburn25/Cajun_Web/pull/126). Main68e4d41 and publishedv1.23.0 remain unchanged; no release or deployment is claimed.
+
+Downloaded/verified [native run38686612548](https://github.com/afterburn25/Cajun_Web/actions/runs/38686612548), exact962cc3e: all four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 jobs pass, with98 inventory plus38 upgrade/render checks each (544 named executions). The upgrade helper used the same assertion label for its two version-specific audit failures; both ran, and this checkpoint labels them separately. This evidence predates the combined shipping changes below; it does not certify this new descendant. Original d2f59fb full application run38686331742 hit the retained quota fixture failure; its recovery/Apache work was left running for evidence, not cancelled.
+
+Normal merge5b115f0 retains resources40ad600 (including #94's identity descriptors), with139 local pure inventory checks passing. Normal merge08b90c8 retains hosting#87–#89 at1c92e6b, adding explicit deletion retry and durable reconciliation storage. Current ownership/status text won documentation conflicts; the incoming history and dedicated architecture/recovery guides remain intact. Regenerated inventory resolves the generated-file conflicts. These inherited components still require combined native/package acceptance; they are not completed hosting workflows.
+
+This checkpoint repairs the inherited blanket HTTP-success classifier. Documented addWeb responses retain the allocated result ID as accepted_pending, separate from verified active service. Empty, malformed, false/null, mixed per-resource maps and unverified envelopes stay uncertain.408/409/425 are ambiguous rather than definite failures. No write, including mixed billing/deletion updatePackage, is blanket retry-safe. The ledger replays pending acknowledgements with their original IDs and one attempt. Reconciliation can observe the acknowledged ID, but a domain-name match alone cannot prove creation. Old results and attempts are preserved.
+
+updatePackage now requires ID arrays and bounded per-package maps restricted to the approved update IDs; overlapping update/delete IDs and scalar legacy approvals are refused. deleteWeb builds the explicitly documented delete-id array. Existing approved scopes are revalidated before consumption/dispatch. This corrects the documented outer request contract; nested field semantics and the remaining native forms are still tracked implementation work. No live provider write ran. Local default/no-ini PHP passes139 named synthetic operation checks each. Native four-combination operation/hosting matrices and exact combined browser/recovery acceptance are next.
+
+The complete owner upload is still being located; the selected repository summary is not a substitute. The owner was asked for its accessible path/link while independent work continues. Required native controls, registrar commerce, VPS/cloud, SSH, catalog/order/payment connections and release verification remain unfinished in the requirements checklist.
+
+Next: inspect native matrix artifacts; fix any failures; run the stable combined packaged/browser/Apache candidate and obtain independent review. Then publish a verified incremental release and continue the remaining20i scope. Do not resume mail or other unrelated feature work.
+
+2026-10-15 CI dispatch correction: GitHub refused manual dispatch of the new workflow because it is absent from main. No run was started or cancelled by that refusal. The existing application workflow now accepts an explicitly named checkpoint_only option; default full acceptance remains unchanged. The short-lived separate workflow is removed. Shipping/runtime/test bytes are unchanged from776cab39; provider matrices38691085578 and38691088191 remain running on that exact source.
+
+## Correct 1.24 download and recovery instructions — 2026-10-15
+
+Starting from normally merged `8b44a7ad5e568481d8b016713e7d3958d19e41f3`, correct START-HERE's obsolete 1.23 folder and migration guide's obsolete 1.18 paths. Both now name the actual `cwp-update-1.24.0` staging directory, `structure-1.24.0` recovery journal and retained starting packages through 1.23.0. The shared `structure-1.11.0/mutex.php` remains unchanged. Current Codex 20i ownership supersedes the guide's old Devin allocation. No application, migration, build, fixture or workflow code changes.
+
+The exact 5fa5998d runtime candidate has 9,134 named full-application assertions and clear independent review; its tree-identical merged 8b44a7ad main has 29 verified focused workflows (158 reports / 17,034 executions), clean Windows packages and inspected browser evidence. Full main run [38707126756](https://github.com/afterburn25/Cajun_Web/actions/runs/38707126756) continues without cancellation. This documentation correction still requires independent review and exact final-source package/instruction verification. Before publication, verify the final main and downloaded assets; previous main evidence must retain its original SHA. Nothing is published or deployed by this correction. Cloud #127 and commercial dependencies #130 remain separate P0 work; all other development remains paused.

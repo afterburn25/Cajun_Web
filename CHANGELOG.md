@@ -1,5 +1,148 @@
 # Changelog
 
+## Synchronize release entry points after review — 2026-10-15
+
+Review4281622110 on4cbc2375 reproduced stale pending1.24 headers in README, agent coordination, release workflow and inventory owner guide. Update every listed entry point plus current migration instructions to the actual immutable publication, archive earlier coordination and mark historical1.23 sections clearly. No runtime or package bytes change. Starting parent4cbc23758674b29899d235b511b40f0a18cf8503 is “Record verified1.24 publication and current20i continuation”; correctiondf57d0ce is “Synchronize published1.24 across current entry-point guides.” Actual local documentation check passed161 Markdown files/1,330 local links and canonical dependency checks; git diff whitespace check passed. These checks cover documentation/source consistency only, not runtime acceptance, which remains the separately published7190 evidence. Known failure: initial review4281622110 found stale headers and was corrected. Follow-up review4281670745 requested this explicit validation record. Renewed review is pending; continue cloud/commercial20i work.
+
+## Publish and verify first 20i takeover release1.24.0 — 2026-10-15
+
+Starting from exact main7190b582, publish only accepted source after full9134/44reports,30 gates, independent reviews, inspected browser screens and identical Windows/Linux packages. Download and verify all16 draft/public assets and unchanged prior1.23 assets. This documentation checkpoint records actual publication; no runtime/build/test change or deployment. Archive prior summaries, update current release/requirements/ownership and preserve histories. Next: cloud1.25 from the real1.24 baseline; correct recurring lost-binding review4281512902 and continue full commercial/native20i workflows.
+
+## Correct 1.24 download and recovery instructions — 2026-10-15
+
+Starting from normally merged `8b44a7ad5e568481d8b016713e7d3958d19e41f3`, correct START-HERE's obsolete 1.23 folder and migration guide's obsolete 1.18 paths. Both now name the actual `cwp-update-1.24.0` staging directory, `structure-1.24.0` recovery journal and retained starting packages through 1.23.0. The shared `structure-1.11.0/mutex.php` remains unchanged. Current Codex 20i ownership supersedes the guide's old Devin allocation. No application, migration, build, fixture or workflow code changes.
+
+The exact 5fa5998d runtime candidate has 9,134 named full-application assertions and clear independent review; its tree-identical merged 8b44a7ad main has 29 verified focused workflows (158 reports / 17,034 executions), clean Windows packages and inspected browser evidence. Full main run [38707126756](https://github.com/afterburn25/Cajun_Web/actions/runs/38707126756) continues without cancellation. This documentation correction still requires independent review and exact final-source package/instruction verification. Before publication, verify the final main and downloaded assets; previous main evidence must retain its original SHA. Nothing is published or deployed by this correction. Cloud #127 and commercial dependencies #130 remain separate P0 work; all other development remains paused.
+
+## Fresh owner inventory correction before 1.24 publication — 2026-10-15
+
+Codex retains complete 20i P0 ownership. Starting from normally merged main `5dd2a3e1a7ddb3b63bf9bf98c4da3ac1e13edafc`, this branch fixes a fresh-owner provider page warning discovered by cloud #127 checkpoint [38701151657](https://github.com/afterburn25/Cajun_Web/actions/runs/38701151657). The exact diagnostic was an array-offset-on-null warning in `admin/views/providers.php:71`: fresh installation prepares inventory storage but has no saved provider profile. The shared package view read the missing profile's enabled field. This defect also exists on current main, so 1.24 publication is withheld even though the earlier candidate passed.
+
+The inventory section now handles the missing-profile state first and directs the owner to save the connection. It performs no inventory history query or profile-dependent action before that profile exists. Two actual packaged assertions verify the fresh schema stamp and the fresh owner's setup page; the existing final empty-PHP-diagnostics gate must remain. Generated installer inventory is refreshed. No schema, provider operation, credentials, client data or design change is required.
+
+The prior 906df727 candidate has 9,132 verified assertions and clear review; exact-main 5dd2a3e1 run38699707455 remains running and is preserved as historical evidence, not publication approval for the newly discovered path. All 29 focused main workflows passed, with 158 downloaded named reports / 17,034 executions. Actual main screens were inspected. Corrected candidate review, full candidate acceptance, normal merge, exact corrected main and downloaded release gates are required. Native cloud assignments #128 pass 848 assertions; its browser run is preserved and receives this correction afterward. No 1.24 tag, release or deployment has been created. Continue the remaining 20i scope while these gates run.
+
+## 1.24 candidate: packaged checkpoint verified — 2026-10-15
+
+Codex owns the complete 20i integration as P0. The active branch is `codex/twentyi-complete`, [PR #126](https://github.com/afterburn25/Cajun_Web/pull/126), from main `68e4d411acedd9f73cf048018ba570ace9b673be`. Published [v1.23.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0) remains unchanged. This checkpoint starts at `438a3122d3a23bdbd58825ee2da2daec902f351f`; the enclosing commit identifies the corrected candidate. No merge, release or deployment is claimed.
+
+The first increment delivers protected package refresh, explicit client package/domain links, moved-domain and credential-context isolation, populated inventory upgrades, typed label approvals, durable operation history and read-only reconciliation. It retains the original Devin histories and hosting recovery foundations. Commercial order/service workflows, native controls, domain commerce, VPS/cloud and interactive SSH remain active implementation work after this increment.
+
+[Exact 438a3122 checkpoint](https://github.com/afterburn25/Cajun_Web/actions/runs/38692573913) passes 42 downloaded named reports / 7,474 executions, including 1,371 HTTP/Chromium assertions. All 12 generated distribution files match the local Windows build byte for byte; ZIP integrity and member counts are verified (FULL 5,246; COMPLETE 2,591; UPDATE 2,578). This checkpoint deliberately skipped extended recovery and Apache, so it is not release acceptance. The actual refresh diagnostic reports a complete observation with unknown collection coverage and no fixture errors. Desktop/mobile owner/client moved-domain and operation screenshots were inspected. They exposed inaccurate client wording: a moved domain was described as absent. This commit changes it to an unconfirmed approved hosting link and strengthens the existing HTTP assertion without disclosing the new package or another client name.
+
+[Strict native operation matrix](https://github.com/afterburn25/Cajun_Web/actions/runs/38692254706) at 2d2892c9 passes 784 named executions on PHP 8.2/8.4 and MariaDB 10.11/MySQL 8.4. Shipping code matches 438a3122. [Independent review of 438a3122](https://github.com/afterburn25/Cajun_Web/pull/126#issuecomment-6186069993) found no major issues; the new wording correction will receive a follow-up review. Earlier failed fixture/diagnostic runs are preserved in GitHub and local evidence and are not counted as acceptance.
+
+Next: run complete application acceptance on this stable corrected candidate, inspect final reports and corrected screenshots, run exact candidate focused PHP/database gates, and resolve findings. Then merge normally, verify exact main and downloaded draft/release assets, and publish the first tested increment. Preserve all prior baselines, including the checksum-verified published 1.23 package. Continue the remaining 20i platform immediately afterward. Full owner API-reference intake still needs the original accessible file/link; public primary documentation and independent engineering continue. No new live provider call, payment, customer mail or SSH session ran.
+
+## Browser diagnostic correction — 2026-10-15
+
+Candidate2d2892c9 remains unreleased. Prior checkpoint6d9391a completed independent review with no major findings ([review6185823734](https://github.com/afterburn25/Cajun_Web/pull/126#issuecomment-6185823734)). Its native/build stages passed, but browser run38691215693 stopped after1,127 passing named assertions at a test diagnostic NameError: json was not imported. This checkpoint adds the missing import; no shipping code is changed. The failed report is retained and is not browser acceptance. The stricter candidate schema matrix38692254706 is still running.
+
+The earlier b1 full run38688509276 finished with1,271 Apache and261 filesystem-recovery assertions passing. Its browser fixture failure remains recorded. These older results cannot certify1.24. Next: rerun the bounded candidate browser checkpoint, inspect actual upgrade/moved-domain/operation screenshots and reports, resolve any finding, then exact candidate full acceptance and final review before main/release verification. All remaining20i platform work stays active.
+
+## 1.24.0 candidate — 20i inventory, ownership and operation recovery
+
+This is an unreleased candidate on codex/twentyi-complete / PR126, starting from6d9391a. Published1.23.0 and main68e4d41 remain unchanged. The first increment provides protected package refresh, explicit package/domain client links, moved-domain and credential-context isolation, populated inventory upgrades, typed package-label approvals, durable operation history and read-only reconciliation. It retains inherited hosting lifecycle/recovery foundations. It does not complete commercial provisioning, native hosting controls, domains, VPS/cloud or SSH; those remain the active P0 roadmap after this increment.
+
+Review corrections776cab39 pass1,372 inspected named executions: four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 jobs (90 ledger/recovery +104 execution assertions each) and four default/no-ini contract reports (149 each). The exact-package checkpoint38691215693 is running at6d9391a; that source has completed external review with no new inline findings observed. Candidate release acceptance has not run yet. The older b1 full run38688509276 retains its browser fixture failure and ongoing Apache evidence.
+
+Candidate changes add exact Extra/default validation for operation columns, with an invisible auto-increment regression that preserves populated rows. Version labels advance together. The immutable published1.23 COMPLETE archive is checksum-verified (057a58c42e847fe68454c1a7dac47afad10c8c05f46de4301842654b356f7228); all2,566 member hashes and original compatibility-shim hashes are registered for updates. Native filesystem and both Apache modes add1.23 as the first baseline while retaining every older baseline. Existing populated drafts, submission fences, mail/provider keys and other records retain their original preservation checks.
+
+Next gates: inspect the current packaged checkpoint/screenshots, correct any failure, verify the stricter schema case on every supported database/runtime, then run exact1.24 candidate full acceptance and independent review. Only afterward merge normally, test exact main, and verify all draft/downloaded release assets before publication. No release, live provider request, payment, message or deployment is claimed. Continue the remaining complete20i scope after the first release.
+
+## Review corrections and preserved acceptance — 2026-10-15
+
+Starting from b1b0e84, independent review of PR126 reported two P1 defects: generic approval could bypass commercial/message consent, and a missing stamped operation table could be recreated empty, forgetting request history. Both are corrected in this checkpoint. Generic approval and execution allow only the explicit package-label subset; chargeable, destructive, mail and plan requests require their dedicated workflows. An old high-risk grant is refused before consumption, DNS or ledger access. The admin screen now uses package-ID/label fields and hides sending controls on ineligible historical approvals.
+
+Operation migration preflights both original tables for every stamped version 1–4 before any DDL. Readiness fails safely when either is missing; recovery requires the original database. Native regressions rename populated tables reversibly, preserve every ledger/grant/audit row and schema stamp, and verify duplicate suppression after restoration. Existing authority/race/replay cases now dispatch label-only requests; creation acknowledgement tests use the actual lower-level gateway/ledger and explicitly historical consumed grants for read-only reconciliation. No test-only production consent bypass was added.
+
+The exact b1b0e84 focused matrices were downloaded and inspected: 4,456 named executions pass across operation contracts, native operations, hosting and inventory PHP/database combinations. The provider-contract jobs also passed but expose no named artifact and are excluded from that count. The broad b1 run38688509276 passed its native and structure-recovery stages, then its browser stage failed on a malformed package fixture whose primary name was absent from its names array. The fixture is corrected without weakening validation. Its Apache work remains running and is preserved; no full application success is claimed.
+
+Local default/no-ini PHP passes 149 named boundary checks each; changed PHP syntax, Python syntax and generated-mirror checks pass. This new shipping head still needs its native matrix and packaged browser evidence. A manually dispatched checkpoint_only option on the existing application workflow reuses the exact build/native/browser stages without restarting the older extended recovery run; it explicitly cannot certify a release. Follow-up independent review and exact full application/main/release-asset verification remain release gates.
+
+Next: inspect the new matrix and browser artifacts, fix findings, finish stable integrated acceptance and publish the first tested increment, then continue required commercial order/service and native control workflows. Codex retains P0 ownership; main68e4d41 and publishedv1.23.0 are unchanged. No provider write, payment, customer mail or deployment ran. Full owner reference intake remains pending the accessible file/link; independent engineering continues.
+
+## Combined inherited work and write-semantics correction — 2026-10-15
+
+Codex retains complete 20i P0 ownership in [PR126](https://github.com/afterburn25/Cajun_Web/pull/126). Main68e4d41 and publishedv1.23.0 remain unchanged; no release or deployment is claimed.
+
+Downloaded/verified [native run38686612548](https://github.com/afterburn25/Cajun_Web/actions/runs/38686612548), exact962cc3e: all four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 jobs pass, with98 inventory plus38 upgrade/render checks each (544 named executions). The upgrade helper used the same assertion label for its two version-specific audit failures; both ran, and this checkpoint labels them separately. This evidence predates the combined shipping changes below; it does not certify this new descendant. Original d2f59fb full application run38686331742 hit the retained quota fixture failure; its recovery/Apache work was left running for evidence, not cancelled.
+
+Normal merge5b115f0 retains resources40ad600 (including #94's identity descriptors), with139 local pure inventory checks passing. Normal merge08b90c8 retains hosting#87–#89 at1c92e6b, adding explicit deletion retry and durable reconciliation storage. Current ownership/status text won documentation conflicts; the incoming history and dedicated architecture/recovery guides remain intact. Regenerated inventory resolves the generated-file conflicts. These inherited components still require combined native/package acceptance; they are not completed hosting workflows.
+
+This checkpoint repairs the inherited blanket HTTP-success classifier. Documented addWeb responses retain the allocated result ID as accepted_pending, separate from verified active service. Empty, malformed, false/null, mixed per-resource maps and unverified envelopes stay uncertain.408/409/425 are ambiguous rather than definite failures. No write, including mixed billing/deletion updatePackage, is blanket retry-safe. The ledger replays pending acknowledgements with their original IDs and one attempt. Reconciliation can observe the acknowledged ID, but a domain-name match alone cannot prove creation. Old results and attempts are preserved.
+
+updatePackage now requires ID arrays and bounded per-package maps restricted to the approved update IDs; overlapping update/delete IDs and scalar legacy approvals are refused. deleteWeb builds the explicitly documented delete-id array. Existing approved scopes are revalidated before consumption/dispatch. This corrects the documented outer request contract; nested field semantics and the remaining native forms are still tracked implementation work. No live provider write ran. Local default/no-ini PHP passes139 named synthetic operation checks each. Native four-combination operation/hosting matrices and exact combined browser/recovery acceptance are next.
+
+The complete owner upload is still being located; the selected repository summary is not a substitute. The owner was asked for its accessible path/link while independent work continues. Required native controls, registrar commerce, VPS/cloud, SSH, catalog/order/payment connections and release verification remain unfinished in the requirements checklist.
+
+Next: inspect native matrix artifacts; fix any failures; run the stable combined packaged/browser/Apache candidate and obtain independent review. Then publish a verified incremental release and continue the remaining20i scope. Do not resume mail or other unrelated feature work.
+
+## Focused CI fixture correction — 2026-10-15
+
+Takeover [PR #126](https://github.com/afterburn25/Cajun_Web/pull/126) is open at first implementation `d2f59fba32b98153119b33072647cccdbb25696d`. Downloaded push run [38686268179](https://github.com/afterburn25/Cajun_Web/actions/runs/38686268179) fails: MariaDB passes 74 assertions (including the repaired revocation check) then the longer fixture reaches the real hourly quota before its audit scenario; MySQL reaches the audit-injection trigger but binary logging requires test-server configuration (error1419). Failed reports remain retained. These are fixture constraints, not relaxed production requirements.
+
+This test-only correction explicitly fills/tests the 20/hour refusal and verifies no intent/network use, then ages only isolated fixture timestamps for the next scenario while retaining rows. The disposable MySQL CI service permits synthetic fault-injection triggers; application-user privilege and production code are unchanged. Local38-case upgrade/render evidence remains scoped to the same shipping code. Current native matrices and full acceptance still require verification. Preserve the original application run38686331742; use a focused manual run for this iteration instead of restarting its long package/recovery work. The commit deliberately skips automatic CI and dispatches the native matrix explicitly, not a release check bypass.
+
+Next: inspect all focused results/logs, correct remaining failures, reconcile resource/hosting descendants, and run complete stable-candidate acceptance/review before release. Codex P0 ownership and v1.23 baseline remain unchanged.
+
+## 2026-10-15 — Codex P0 takeover and first inventory repairs
+
+Owner transferred the complete 20i lane to Codex and paused unrelated development. From main68e4d41, preserved #122/#115 via normal merges through9744110; repaired old-schema readiness, generated-column validation, moved-domain/context display, sibling-name disclosure and two fixture counters. Added genuine populated/interrupted/repeated upgrade and isolation coverage;38 local PHP8.4/MariaDB checks pass. Expanded current PHP/database and packaged HTTP acceptance is pending. Full release review and later hosting/domain/VPS/SSH/billing implementation continue. [Scope, ancestry and evidence](docs/TWENTYI_CODEX_TAKEOVER.md). v1.23 stays unchanged; no live action.
+
+## Unreleased — 20i domain ownership links (devin/twentyi-domain-links)
+
+Owner-approved domain→client mappings over the observed inventory: `provider_domain_links`/`provider_domain_link_events` (provider-inventory schema v3) bind `(profile_id, domain)` to a client with the carrying package, credential-context fingerprint and approved revision. Linking requires the `(package_id, domain)` pair in the last good observation under the exact current revision — the reseller case of several clients' domains on one package. Admin gains per-domain link/unlink/re-approve controls with a stale-domain section; the client portal surfaces linked domains with honest absence markers. Additive migration preserves v1/v2 data. `domains.renew` also joined the buildable write catalog (documented `name`/`years`/`renewPrivacy`); `addDomain`/`transferDomain`/`nameservers`/`dns` are catalogued shape-incomplete and refused.
+
+## Unreleased — 20i write execution path (devin/twentyi-execution, devin/twentyi-reconcile)
+
+- `provider_operations_execute` performs one owner-approved provider write: owner password + current profile revision + active exact-scope grant required before any credential is opened or an endpoint address resolved; undocumented or shape-incomplete operations refuse before any ledger claim; missing grants refuse `no_grant` and are audited.
+- `TwentyIOperationAdapter` (foundation + site mirror) implements `ProviderAdapter` over the closed documented catalog — supports only shape-complete operations, builds the allowlisted bounded request, attaches `Authorization` at send time only, classifies outcomes conservatively (`uncertain` for 3xx/429/5xx, other non-terminal 2xx and post-send transport faults; `failed` for provably pre-send failures).
+- Execution runs through `ProviderGateway` over the durable `ProviderOperationLedger` — atomic idempotency claim before send, replay/conflict/in-progress/stale-uncertain semantics, durable record required. Owner access is re-verified at send and after; access changes around a possibly-landed write surface `uncertain` for reconciliation.
+- Native MariaDB suite `tests/provider_operations_execute_native.php` covers authority gates, grant scope/expiry/revocation, exactly-once send, replay/conflict without re-sending, uncertain propagation and a durable secret scan — scripted transport only, no provider call. Live sends remain gated on operation-specific acceptance.
+
+## Unreleased — 20i inventory slice binding corrections (devin/twentyi-refresh)
+
+Links to observed 20i packages are now bound to the exact profile revision and the credential context approved at link time. Client service views suppress data when the provider settings change until the owner explicitly re-approves the mapping under a current observation; an identical package id under a replaced key can never flow through an old link. Observations carry an installation-bound credential fingerprint (never key material); schema version 2 upgrades existing tables in place. Native MariaDB suite: 77 assertions on PHP 8.2/8.4.
+
+## 1.23.0 — published and verified
+
+Client account edits reject stale versions and retain safely escaped unsaved details; client/invitation writes recheck current authority and audit atomically. Invitations are single-use and unexpired, and client administration is refused during support sessions. Reviewed internal hosting records, dispatch fences and local provisioning retry remain inactive groundwork. Exact-main 8,360 assertions and 25 workflow gates pass; all 16 draft/public assets are downloaded and verified, with prior 1.22 unchanged. [Release](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0); [report](docs/TEST_REPORT_1.23.0.md). Complete 20i implementation remains assigned to Devin; service agreements and later hosting reconciliation remain separate increments.
+
+
+## Unreleased — 20i write boundary (descriptive)
+
+Closed package-lifecycle write descriptors (`packages.create`/`update` buildable; `userstatus`/`delete` refused pending documented fields), allowlisted request construction, conservative success/failed/uncertain classification and named refusal surface for domains/VPS/SSH/billing/email. Descriptive only — the adapter still refuses every operation; no credential, transport, ledger or provider call. 81 synthetic checks on PHP 8.2/8.4. [Contract](docs/TWENTYI_OPERATIONS_CONTRACT.md).
+## Unreleased — provider operation ledger and owner grants
+
+Durable at-most-once operation ledger (`provider_operations`) implementing the shared OperationLedger contract — claim/replay/conflict/uncertain semantics — plus owner-password grant records bound to exact canonical operation scopes with expiry, revocation and audit. Fresh installs create both tables; existing installs run the owner migration. Persistence only: no credential, request, transport or provider call. [Guide](docs/PROVIDER_OPERATIONS.md).
+
+## Development coordination — acknowledged full 20i ownership
+
+Reconcile the ownership handoff with merged client/hosting groundwork main `4fdb562`, preserving both histories. Record Devin's explicit acceptance and first reader PR #99. No runtime or release asset changes relative to main.
+
+## Development coordination — complete 20i ownership
+
+Transfer the complete 20i implementation to Devin, including application persistence and admin/client portal screens. Record the full requirements, bounded workstreams and shared-file ownership; Codex retains non-20i work and final review/release coordination. Documentation only; no application, version, installer or published-package change.
+
+## 1.23.0 candidate — current client authority and hosting groundwork
+
+Unreleased. Preserve reviewed client conflict/invitation/support safeguards and internal hosting journal/storage/dispatch/local-retry groundwork. Align application/installer/update labels; add actual published1.22 baseline and retained-submission update/recovery/replay cases. Prior combineda9 acceptance passes8,234 checks/all21workflows; this newer candidate still needs its own full acceptance and exact-main release gates. [Candidate guide](docs/CLIENT_ACCOUNT_SAFEGUARDS.md).
+
+## Unreleased combined hosting/client integration
+
+Preserve mail main1.22 while combining guarded client administration and reviewed hosting journal/storage/dispatch/local-retry foundations. No new hosting UI or remote execution is activated. Add all three hosting native suites and12 internal-path checks to combined full acceptance; preserve every existing test and upgrade baseline. This branch is not a published release.
+## Unreleased — read-only 20i inventory contract
+
+- `foundation/twentyi-inventory/`: closed documented GET descriptors (packages list/detail/types, balance, VPS/managed-VPS/domain lists, service-change data), allowlist package projection, identity-only resource records for schema-less lists, honest complete/partial/unavailable snapshots with caller-bound scope and unknown coverage, an evidence-graded capability register and an enumerable exclusion list (credential-bearing and GET-mutating endpoints refused). Contract-only; no live calls, persistence, routes or client linking.
+
+## Unreleased — 20i inventory application slice (`devin/twentyi-refresh`)
+
+- Owner-triggered provider inventory: durable refresh intent + bounded result rows, verbatim validated `provider_observation_packages`, explicit owner→client `provider_package_links` against `studio_clients`, and ordered `provider_package_link_events` (auto-increment id for insertion-stable ordering).
+- Refresh orchestration mirrors the connection-check protocol: staff-locked intent, private-DNS refusal, mid-flight authority rechecks downgrading to `access_changed`, lazy secret resolution at the transport boundary, cooldown, and last-good preservation on unavailable refreshes.
+- Admin provider-settings section (prepare/refresh/link/unlink/history) and portal `?services` view showing only explicitly linked services. `staff_action_permission` maps `provider_inventory_*` to `staff.manage`.
+- `tests/provider_inventory_native.php` + `provider-inventory.yml`: 56 native MariaDB assertions on PHP 8.2/8.4 — authorization refusals, revision checks, cooldown, resolver/transport classification, complete/partial/unavailable persistence, link restrictions, duplicate rejection, client isolation, unlink events. Synthetic fixtures only; no live call, real credential or mutation.
+
 ## 1.22.0 — verified explicit saved-email sending
 
 - Explicit saved-message review, unchecked confirmation and Send; private author history, separate To/Cc/Bcc, current mailbox/Send grants and exact revisions.
@@ -75,6 +218,37 @@ Add a canonical reference-free private submission snapshot, selected sender/reci
 ### Historical SMTP preparation — submission contract preparation
 
 Record the next explicit-send boundary on a separate branch: maintained protocol/MIME, immutable reviewed snapshots, all-recipient pre-DATA acceptance, durable intent and attempt-bound unknown outcomes. Documentation only; no new application version, transport, UI or message sent.
+
+## Unreleased correction — client support context
+
+Return an explicit403 client-administration page without edit or invitation forms when support is selected. Retain mutation denial and add separate actual HTTP checks for GET/POST rendering and unchanged records. First packaged run was incomplete; corrected acceptance is pending.
+
+## Unreleased — client authority integration
+
+Serialize existing client account edits, invitation creation and public activation with staff/hosting authorization changes. Refuse stale client forms; preserve escaped unsaved details. Retain delegated access, rotate revoked sessions, consume invitations once and make audit failure atomic. Add native concurrent-process and actual packaged form/browser checks. No release or provider activation claimed; [contract](docs/CLIENT_AUTHORITY.md).
+
+## Unreleased — explicit local provisioning retry
+
+Add a current-owner/password retry-preparation action for recorded definite provisioning failures explicitly marked retryable. Retain immutable failed observations, exact request replay, strict atomic audit and new-attempt fencing only through a subsequent authorized claim. Unknown outcomes, unsafe failures and deletion/reconciliation remain blocked. New native fixtures await Linux CI; no release or provider activation. [Contract](docs/HOSTING_PROVISION_RETRY.md).
+
+## Unreleased — durable hosting attempt/result storage
+
+Add current-owner exact attempt/profile fences, bound internal results, immutable unique provider-resource associations and strict atomic audit. Stable replay grants no repeat dispatch. Atb7e9f03, downloaded38545626740 passes79 operation +94 retained local-record checks per PHP8.2/8.4. Independent review and application acceptance remain pending. No transport, route, worker or release activation. [Contract](docs/HOSTING_OPERATIONS.md).
+
+
+## Unreleased — local hosting records
+
+Add owner-authorized additive MariaDB journal/event storage, exact client/terms/revision checks, stable replay and strict atomic audit. Native PHP8.2/8.4 each pass94 checks, including competing processes and damaged history, atf8001e9 in38543267301/38543364218. No remote operation, route or fresh-install activation; independent review and application acceptance remain pending. [Contract](docs/HOSTING_RECORDS.md).
+
+
+## Unreleased — hosting lifecycle journal
+
+Add bounded immutable canonical JSON command reconstruction outside deployment. Preserve lifecycle/attempt invariants across process restoration.148 local controls pass per default/no-ini PHP8.4 mode; matrix/review and durable application adapter pending.
+
+## Unreleased — canonical hosting model integration
+
+- Preserve Devin PR60 hosting model/history on current main: packages, account lifecycle, exact-attempt observations, plan changes and explicit panel grants. No deployment/provider/persistence/UI activation.
+- Correct final-LF SKU acceptance and malformed primary-domain labels before state/history mutation. Local168 supplied +21 retained review +23 input checks pass per default/no-ini mode; expanded PHP8.2/8.4 CI pending.
 
 ## 1.21.0 — verified private local email drafts
 
@@ -503,3 +677,15 @@ Added separate private draft controller/view sources and 38 named raw form-input
 ### Local email draft application integration (unreleased)
 
 Connect fresh/additive setup, current-authorized admin compose/list/preview/template/discard/history and mailbox navigation. Add packaged HTTP/Chromium and Apache cases plus1.19 recovery/reapplication retaining active/discarded drafts and original keys. These integration scenarios await CI; no SMTP or release publication. Application job budget45minutes preserves all assertions while accommodating the additional recovery cases.
+
+## Unreleased — 20i uncertain-write reconciliation (devin/twentyi-reconcile)
+
+- `provider_operations_reconcile` resolves an `uncertain` ledger row through one owner-authorized, evidence-backed observation of the package list (`GET /package` — the only authenticated-read evidence). Outcomes: `observed`, `not_observed`, `inconclusive` (no read sent for unobservable updates), `unavailable`, `refused`. The recorded provider result is never rewritten and the request is never re-sent.
+- `provider_operations` schema v4 appends `reconciled_outcome`/`reconciled_epoch`; the owner operations page shows the reconcile badge and a password-bound check action on uncertain rows.
+- Fresh installs now stamp the created schema versions (`provider_inventory`=2, `provider_operations`=4) rather than a stale '1'.
+
+## Unreleased — packaged provider-operations acceptance + approval-time build validation (devin/twentyi-reconcile)
+
+- `provider_operation_grant` now requires the approved scope to construct a documented bounded request — undocumented fields refuse at approval, not at send.
+- New packaged HTTP/Chromium suite covers the owner operations surface end-to-end: storage setup, owner-only gates, exact-scope approval, a single bounded POST through the real transport stub, idempotent replay, 202→uncertain classification, reconcile `not_observed`/`observed`, revocation, and internal-file denial.
+- The loopback provider fixture and TLS connector gained a strict POST branch and a package list that reflects recorded creates.

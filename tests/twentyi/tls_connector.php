@@ -5,15 +5,23 @@ if (PHP_SAPI !== 'cli' && !(PHP_SAPI==='cli-server' && getenv('CWP_TEST_DATABASE
 
 /** Only this test file remaps the fixed production destination to the synthetic loopback server. */
 function curl_init(?string $url=null): \CurlHandle|false {
-    if($url!==TwentyIAdapter::URL)throw new \RuntimeException('Unexpected fixture URL.');
+    if(!is_string($url)||!str_starts_with($url,'https://api.20i.com/'))throw new \RuntimeException('Unexpected fixture URL.');
     if(PHP_SAPI==='cli-server')$GLOBALS['twentyi_fixture']=\json_decode(\file_get_contents(__DIR__.'/../../test-runtime/provider-http/config.json'),true,flags:JSON_THROW_ON_ERROR);
     $port=$GLOBALS['twentyi_fixture']['port'];
-    return \curl_init('https://api.20i.com:'.$port.'/package');
+    return \curl_init('https://api.20i.com:'.$port.substr($url,strlen('https://api.20i.com')));
 }
 function curl_setopt_array(\CurlHandle $curl,array $options): bool {
     $input=$GLOBALS['twentyi_fixture'];$address=$input['address']??'8.8.8.8';
     $pin=str_contains($address,':')?'['.$address.']':$address;
-    $expected=[CURLOPT_HTTPGET=>true,CURLOPT_HTTPHEADER=>['Authorization: Bearer '.base64_encode('SYNTHETIC_RAW_GENERAL_KEY'),'Accept: application/json'],
+    $auth='Authorization: Bearer '.base64_encode('SYNTHETIC_RAW_GENERAL_KEY');
+    if(($options[CURLOPT_POST]??false)===true){
+        $expected=[CURLOPT_POST=>true,CURLOPT_POSTFIELDS=>$options[CURLOPT_POSTFIELDS]??null,
+            CURLOPT_HTTPHEADER=>[$auth,'Accept: application/json','Content-Type: application/json']];
+        if(!is_string($options[CURLOPT_POSTFIELDS]??null)||strlen($options[CURLOPT_POSTFIELDS])>8192)throw new \RuntimeException('Unexpected fixture write body.');
+    }else{
+        $expected=[CURLOPT_HTTPGET=>true,CURLOPT_HTTPHEADER=>[$auth,'Accept: application/json']];
+    }
+    $expected+=[
         CURLOPT_RETURNTRANSFER=>false,CURLOPT_HEADER=>false,CURLOPT_FOLLOWLOCATION=>false,CURLOPT_MAXREDIRS=>0,
         CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS,CURLOPT_REDIR_PROTOCOLS=>CURLPROTO_HTTPS,CURLOPT_PROXY=>'',CURLOPT_PRE_PROXY=>'',CURLOPT_NOPROXY=>'*',
         CURLOPT_NETRC=>CURL_NETRC_IGNORED,CURLOPT_HTTPAUTH=>CURLAUTH_NONE,CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2,
