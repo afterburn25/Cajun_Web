@@ -35,6 +35,7 @@ final class InventoryProjector
 {
     public const MAX_BODY_BYTES = 1048576;
     public const MAX_PACKAGES = 4096;
+    public const MAX_RESOURCES = 8192;
     public const MAX_SKIP_REASONS = 3;
     private const JSON_DEPTH = 16;
 
@@ -72,6 +73,42 @@ final class InventoryProjector
     }
 
     /**
+     * Identity-only projection for list endpoints whose response schema
+     * is not documented (vps.list, managedvps.list, domains.list,
+     * reseller.servicechanges). Each item retains only an allocated
+     * numeric `id`; every other field is dropped and reported by name.
+     * Items without an `id` are skipped rather than guessed at, so an
+     * unexpectedly shaped response degrades to PARTIAL/UNAVAILABLE —
+     * never a fabricated inventory.
+     */
+    public static function resourceList(TransportResponse $response, int $observedAt, string $operation, string $scope = ''): InventorySnapshot
+    {
+        $decoded = self::listBody($response, $observedAt, $scope, self::MAX_RESOURCES);
+        if ($decoded instanceof InventorySnapshot) return $decoded;
+        $resources = [];
+        $skipped = 0;
+        $reasons = [];
+        foreach ($decoded as $item) {
+            try {
+                $resource = InventoryResource::fromItem($item, $operation);
+            } catch (\InvalidArgumentException $e) {
+                self::skip($skipped, $reasons, $e->getMessage());
+                continue;
+            }
+            if (isset($resources[$resource->id])) {
+                self::skip($skipped, $reasons, 'Duplicate resource id in response.');
+                continue;
+            }
+            $resources[$resource->id] = $resource;
+        }
+        return new InventorySnapshot(
+            $skipped > 0 ? InventorySnapshot::PARTIAL : InventorySnapshot::COMPLETE,
+            array_values($resources), $observedAt, $skipped, $reasons, '',
+            $scope, InventorySnapshot::COVERAGE_UNKNOWN,
+        );
+    }
+
+    /**
      * Shared response envelope: status classification, byte bound, and
      * a strict JSON top-level list with object identity preserved.
      * Returns the decoded item list (stdClass items), or an UNAVAILABLE
@@ -79,7 +116,7 @@ final class InventoryProjector
      *
      * @return array<int,\stdClass>|InventorySnapshot
      */
-    private static function listBody(TransportResponse $response, int $observedAt, string $scope): array|InventorySnapshot
+    private static function listBody(TransportResponse $response, int $observedAt, string $scope, int $maxItems = self::MAX_PACKAGES): array|InventorySnapshot
     {
         if ($response->status === 401 || $response->status === 403) {
             return InventorySnapshot::unavailable('authentication', $observedAt, $scope);
@@ -98,7 +135,7 @@ final class InventoryProjector
         if (!is_array($decoded)) {
             return InventorySnapshot::unavailable('unexpected_shape', $observedAt, $scope);
         }
-        if (count($decoded) > self::MAX_PACKAGES) {
+        if (count($decoded) > $maxItems) {
             return InventorySnapshot::unavailable('response_limit', $observedAt, $scope);
         }
         return $decoded;
