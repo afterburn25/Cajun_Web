@@ -1,3 +1,11 @@
+# Current development — native mailbox creation boundary
+
+Codex owns `codex/twentyi-mailbox-controls`, starting `c00874b1` above client-search PR139. Added exact documented mailbox creation request/response validation inside the existing provider adapter/gateway/ledger and fixed transport. Generic grants/default adapter cannot execute it. Raw mailbox passwords are resolved transiently and echoed response passwords are discarded; replay and unknown outcomes cannot resubmit creation. [Implementation, tests and required native continuation](docs/TWENTYI_MAILBOX_CONTROLS.md).
+
+Local default/no-INI PHP8.4 passes95 mailbox cases and230 existing operation cases in each mode, plus fixed-transport regressions and changed syntax. Installer refresh49660 completed successfully and is closed. Native storage/authority/forms and browser/live acceptance remain unfinished. No live provider operation, customer mail, deployment or release occurred.
+
+Parent b09b combined38812924437/job116690370817 is in browser; f86 full38811407918/job116685268807 passed recovery and is in Apache. Both are confirmed live and must be preserved. Reviews138/139 remain empty. Freshly fetched main is now `b66062e4cc3e2e670ba1c37d4ae902de2b630c30` (licensing audit tests), after merged16f07e49; preserve and inspect this later normal merge without interrupting current acceptance. Published1.24 remains unchanged.
+
 # Current checkpoint — verified client-search browser and merged Windows packages
 
 Starting source `b09b79278d1a459e4235f9a9431031f53abf6334`, draft PR139. Parent f86 actual browser artifact12009795846 verifies1,774 named checks, empty unexpected diagnostics and inspected desktop/mobile client screens. Current b09b four native artifacts verify106 combined checks including50 client cases each. Exact b09b Windows build86750 is complete and independently verified:11 checksums, FULL5417/COMPLETE2659/UPDATE2646 exact source/member bytes. [Detailed evidence](docs/TWENTYI_CLIENT_DOMAIN_SEARCH.md).

@@ -18,8 +18,8 @@ $register=new TwentyIOperationRegister();
 $builder=new TwentyIRequestBuilder($register);
 
 // ---- catalog shape ----
-check($register->names()===['packages.create','packages.update','domains.renew','domains.register','domains.transfer','domains.nameservers','domains.dns','packages.userstatus','packages.delete'],'closed catalog is exactly the nine documented operations');
-check($register->buildableNames()===['packages.create','packages.update','domains.renew','domains.nameservers','packages.delete'],'only shape-complete operations are buildable');
+check($register->names()===['packages.create','packages.update','domains.renew','domains.register','domains.transfer','domains.nameservers','domains.dns','packages.userstatus','packages.delete','mailboxes.create'],'closed catalog is exactly the ten documented operations');
+check($register->buildableNames()===['packages.create','packages.update','domains.renew','domains.nameservers','packages.delete','mailboxes.create'],'only shape-complete operations are buildable with their required dedicated context');
 check($register->get('packages.create')->mayTriggerEmail&&$register->get('packages.create')->mayChargeBilling,'create flags email and billing risk');
 check($register->get('packages.update')->destructive&&$register->get('packages.update')->mayChargeBilling,'update flags mixed delete and billing');
 check($register->get('domains.renew')->mayChargeBilling&&!$register->get('domains.renew')->destructive,'domain renew flags billing only');

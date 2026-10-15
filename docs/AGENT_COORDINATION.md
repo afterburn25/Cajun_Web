@@ -1,3 +1,7 @@
+# Current ownership — mailbox controls
+
+Codex owns `codex/twentyi-mailbox-controls` above preserved client-search PR139, parentc00874b1. Current files: typed mailbox boundary, existing provider adapter/transport, matching tests/workflows/protection/build mirrors and docs. Native approval/persistence/admin/client forms are the next implementation step, not delegated or completed. Preserve current mainb66062e4 for later normal integration and the running parent full suites. [Mailbox continuation](TWENTYI_MAILBOX_CONTROLS.md).
+
 # Current checkpoint — preserve main16f07e49 in20i integration
 
 Codex owns PR139/current normal integration. Preserve both20i and incoming licensing histories; repair only the reproduced replacement rollback defect needed for safe integration. Local database checks pass; new combined acceptance/review remains pending. Do not execute Website_Core or resume unrelated feature development. [Current handoff](../SESSION_HANDOFF.md).

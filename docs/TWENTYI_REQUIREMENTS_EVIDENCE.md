@@ -21,7 +21,7 @@ Status values: not started, implementing, branch-tested, integrated, released, l
 | Reconciliation | Append operation-specific evidence, retain ambiguity and original attempts | released | 1.24 append-only operation evidence and acknowledged-ID observation; uncertain name/absence evidence cannot authorize replay. Full service workflows remain pending. |
 | Jobs/recovery | Bounded cron, leases, backoff, visible errors, no replay after recovery | not started | Reuse jobs/locks and ledger; commercial automation and recovery acceptance pending |
 | Hosting DNS | Typed DNS, nameservers, subdomains and document roots | not started | Verify documented record shapes and actual add/remove nameserver deltas |
-| Hosting mail | Mailboxes, forwarders, autoresponders and quotas | not started | 20i service management only; unrelated admin inbox work paused |
+| Hosting mail | Mailboxes, forwarders, autoresponders and quotas | implementing | Exact mailbox creation boundary on existing gateway/transport passes95 local synthetic cases per PHP mode; dedicated native authority/storage/forms and provider acceptance remain required. [Current scope](TWENTYI_MAILBOX_CONTROLS.md). Unrelated admin inbox work paused. |
 | Hosting databases | Database and user creation/control | not started | Documented requests need exact identifiers, secret handling and fixtures |
 | Runtime/security | PHP versions/config, SSL/HTTPS, FTP, SSH keys and access/security controls | not started | Native forms, permission checks and account capability states pending |
 | Performance/CMS | CDN/cache and supported WordPress operations | not started | Native supported controls and operation-specific outcomes pending |

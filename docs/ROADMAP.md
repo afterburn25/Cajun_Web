@@ -661,3 +661,7 @@ This increment wires the 20i connection owner page into the existing staff permi
 New packaged HTTP/Chromium fixtures use the existing server-only auto-prepend seam plus an actual loopback HTTPS server. The seam asserts production cURL options before changing only the test destination and CA, and refuses unrecognized DNS. It is outside deployment. Syntax and generated inventory checks are local; combined database/browser/installer acceptance is pending and no screenshots have yet been inspected for this UI. No new release version is reserved, published1.19.0 stays immutable, and no real20i request or secret extraction occurs.
 
 Next: inspect application/native/transport matrices; resolve independent owner-storage and orchestration review; inspect actual desktop/320px screenshots; add latest1.19 upgrade/recovery/private-key retention acceptance before preparing a new release. Continue feasible roadmap work without a release-boundary stop.
+
+### 2026-10-15 —20i hosting mail in implementation
+
+The documented mailbox creation boundary now uses the existing provider gateway, ledger and fixed transport with secret-safe results and replay protection. Native admin/client controls, persistence and acceptance remain required. [Current scope and continuation](TWENTYI_MAILBOX_CONTROLS.md). This does not complete hosting mail or change published1.24.

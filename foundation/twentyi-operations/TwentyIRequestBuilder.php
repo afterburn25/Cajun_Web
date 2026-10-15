@@ -10,6 +10,7 @@ use CajunWebPro\Foundation\Provider\TransportRequest;
 use InvalidArgumentException;
 
 require_once __DIR__.'/NameserverChange.php';
+require_once __DIR__.'/MailboxCreate.php';
 
 /**
  * Translates a validated ProviderOperation into one bounded provider
@@ -38,8 +39,11 @@ final class TwentyIRequestBuilder
     private const MAX_DEPTH = 8;
     private const MAX_NODES = 256;
 
-    public function __construct(private TwentyIOperationRegister $register)
+    private ?\Closure $mailboxPassword;
+
+    public function __construct(private TwentyIOperationRegister $register, ?callable $mailboxPassword = null)
     {
+        $this->mailboxPassword = $mailboxPassword === null ? null : \Closure::fromCallable($mailboxPassword);
     }
 
     public function build(ProviderOperation $operation): TransportRequest
@@ -50,6 +54,10 @@ final class TwentyIRequestBuilder
         }
         if (!$spec->shapeComplete) {
             throw new InvalidArgumentException('Operation ' . $operation->name . ' requires typed request validation that is not yet implemented.');
+        }
+
+        if ($operation->name === MailboxCreate::OPERATION) {
+            return MailboxCreate::request($operation, $this->mailboxPassword);
         }
 
         $params = $operation->params;

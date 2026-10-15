@@ -30,12 +30,14 @@ final class TwentyIOperationAdapter implements ProviderAdapter
     private TwentyIOperationRegister $register;
     private TwentyIRequestBuilder $builder;
     private TwentyIAdapter $probe;
+    private bool $mailboxConfigured;
 
-    public function __construct()
+    public function __construct(?callable $mailboxPassword = null)
     {
         $this->register = new TwentyIOperationRegister();
-        $this->builder = new TwentyIRequestBuilder($this->register);
+        $this->builder = new TwentyIRequestBuilder($this->register, $mailboxPassword);
         $this->probe = new TwentyIAdapter();
+        $this->mailboxConfigured = $mailboxPassword !== null;
     }
 
     public function id(): string { return $this->probe->id(); }
@@ -50,6 +52,10 @@ final class TwentyIOperationAdapter implements ProviderAdapter
         foreach ($this->register->names() as $name) {
             $spec = $this->register->get($name);
             if ($spec === null) continue;
+            if ($name === MailboxCreate::OPERATION && !$this->mailboxConfigured) {
+                $capabilities[] = ProviderCapability::unverified($name, 'Requires dedicated resource authorization and a protected password resolver.');
+                continue;
+            }
             $capabilities[] = $spec->shapeComplete
                 ? ProviderCapability::supported($name, 'Documented write; requires an active owner grant and durable ledger claim.', false)
                 : ProviderCapability::unverified($name, 'Endpoint documented without body fields; request shape unverified.');
@@ -59,6 +65,7 @@ final class TwentyIOperationAdapter implements ProviderAdapter
 
     public function supports(string $operation): bool
     {
+        if ($operation === MailboxCreate::OPERATION && !$this->mailboxConfigured) return false;
         $spec = $this->register->get($operation);
         return $spec !== null && $spec->shapeComplete;
     }
@@ -108,6 +115,8 @@ final class TwentyIOperationAdapter implements ProviderAdapter
         } catch (TransportException $e) {
             return TwentyIResultClassifier::fromTransportFailure($operation->name, $e);
         }
-        return TwentyIResultClassifier::fromResponse($operation->name, $response);
+        return $operation->name === MailboxCreate::OPERATION
+            ? MailboxCreate::result($operation, $request, $response)
+            : TwentyIResultClassifier::fromResponse($operation->name, $response);
     }
 }

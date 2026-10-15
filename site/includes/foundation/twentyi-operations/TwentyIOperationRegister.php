@@ -115,6 +115,13 @@ final class TwentyIOperationRegister
                 shapeComplete: true, // Owner complete-reference clarification: array of IDs.
                 destructive: true,
             ),
+            // Official provision-mailbox-api; the dedicated builder resolves a protected
+            // password reference transiently. Generic approval never admits this operation.
+            new TwentyIOperation(
+                'mailboxes.create', 'POST', '/package/{packageId}/email/{domain}',
+                ['packageId', 'domain'],
+                ['new'=>'json'], ['new'], shapeComplete: true,
+            ),
         ];
         $this->operations = [];
         foreach ($operations as $operation) {

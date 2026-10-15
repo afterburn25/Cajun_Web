@@ -918,3 +918,8 @@ Current follow-up:8adf passed all four native combinations, including42 new asso
 ### Unreleased verification checkpoint — 2026-10-15
 
 - Verified parent client-search HTTP/Chromium and actual desktop/mobile screens, merged-head native matrices, and exact Windows packages. Full combined acceptance and independent review remain pending; published1.24 is unchanged.
+
+### Unreleased20i mailbox implementation — 2026-10-15
+
+- Add exact mailbox creation validation to the existing provider execution path, requiring a dedicated protected-secret resolver and refusing generic approval. Preserve safe password handling and at-most-once dispatch after unknown outcomes.
+- Native mailbox management screens and authorization/persistence are still being implemented; this checkpoint does not activate mailbox creation.
