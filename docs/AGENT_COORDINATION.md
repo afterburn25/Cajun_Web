@@ -1,5 +1,15 @@
 # Codex and Devin work allocation
 
+## Native recurring agreements and period invoices verified — 2026-10-14
+
+Codex [draft PR120](https://github.com/afterburn25/Cajun_Web/pull/120), source `66f7760b686c91ca88b8395d350e083cd1ef2516`, implements native records and invoices after contract `e95208f` on frozen lifecycle119/027afe8. Owner setup, current financial/client authority, actual client consent, full retained source/history, cumulative non-overlapping replacement and atomic unique-period existing-ledger invoices are implemented. Old invoices retain their exact historical agreement prefix after legitimate later service cancellation. Zero/future periods cannot create debt. No scheduler, merchant charge, provider action or recurring HTTP interface is activated.
+
+[Downloaded proof](https://github.com/afterburn25/Cajun_Web/pull/120#issuecomment-6182041823): push38663830883 and PR38663836456 each pass88 recurring +69 original ledger checks on PHP8.2/8.4, **628 named executions total**, all eight reports/full logs checked without PHP diagnostics. Tested merge53386d8 is tree-identical. Local88 checks include actual concurrent workers and audit/mapping rollback. The installer refresh completed, and final metadata/mirrors were independently verified for2641 shipping files after the last guard change. Canonical foundation and original ledger tests remain unchanged. Initial fixture alignment/reason/import failures are retained; native validation was not loosened. Owned local database77388 is confirmed stopped; no build remains running.
+
+At this checkpoint25 of26 exact-source workflows have succeeded; hosting-operation run38663836457 remains live (PHP8.2 passed,8.4 active). Preserve source/run and verify that terminal result. Independent component/native and ordered-parent reviews remain required before merge/release. Next product work is the actual staff/client recurring forms, exact presented terms/explicit decisions and period/invoice history, then full application/recovery/package/exact-main acceptance. Draft interface development can proceed while independent review is pending; no publication may skip it.
+
+Devin still owns complete20i and all its corrections. Reviewed115/0a44625 leaves migration and conflicting-scope reconciliation findings via6181772897; subsequent1100bcf migration change awaits independent review. Financial116/f053 has11404/all25 final acceptance and identical packages. Published1.23/main68e4d41 remains unchanged. This review checkout changes documentation only, keeping its own runtime/harness intact. Earlier sections are dated checkpoints.
+
 ## Current ownership and verified review checkpoint — 2026-10-14
 
 The owner's instruction remains **Devin owns the complete 20i implementation**, including all admin/client interfaces, hosting controls, domains, VPS/cloud and SSH support. [Full assignment](https://github.com/afterburn25/Cajun_Web/issues/2) and [Devin's acknowledgment](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171594708) are confirmed. Codex owns non-20i work, independent review, integration and releases.

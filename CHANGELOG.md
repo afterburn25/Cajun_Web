@@ -1,5 +1,9 @@
 # Changelog
 
+## Verification records — native recurring agreements and invoices
+
+Record separate draft120/66f7760:628 verified focused native/legacy ledger executions, exact2641-file installer metadata and unchanged canonical components. Preserve one remaining hosting CI job, independent review and real recurring interface requirements. No product runtime copied to this review branch or new release published.
+
 ## Verification records — complete 20i ownership and final notifications
 
 Confirm Devin ownership; current-source review clears seven prior defects and retains migration plus conflicting-scope reconciliation findings. Preserve failed initial fixture evidence and unchanged product bytes. Verify separate financial notification candidate:11,404 named checks/all25 workflows,117 matching final images and identical Windows/Linux archives. Review/integration remain pending; publication stays1.23.0.
