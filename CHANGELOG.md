@@ -1,3 +1,7 @@
+## Unreleased — catalog acceptance and discovery contract intake
+
+- Record exact catalog branch native/browser/recovery/package acceptance and the specific provider schemas still needed for automatic discovery; no runtime behavior changes.
+
 ## Unreleased — preserve catalog withdrawal during recovery
 
 - Retain the exact latest mapping ID/digest independently, preventing a partial restore of review and audit history from reactivating an older withdrawn approval.

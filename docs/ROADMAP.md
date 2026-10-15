@@ -1,3 +1,7 @@
+## Catalog acceptance and remaining discovery — 2026-10-15
+
+Owner-reviewed mappings and existing hosting preparation at `8f7028` now have verified four-combination native and complete browser/recovery/Apache/package acceptance. Root's combined integration remains independently gated. Automatic package-type/account/balance discovery is awaiting a precise provider response contract; [the field-level intake](TWENTYI_DISCOVERY_CONTRACT_INTAKE.md) identifies the missing evidence without inferring prices, quotas, currency or entitlement. This documentation increment adds no runtime feature or release.
+
 ## Current 20i catalog increment — 2026-10-15
 
 Implementing [owner-reviewed provider plan catalog](TWENTYI_PLAN_CATALOG.md): reusable account/type/limit mapping, distinct private provider-cost evidence, expiry/withdrawal and existing hosting preparation selection. Local pure checks pass; native/browser/packaged acceptance pending. Automatic packageTypes discovery, cost feeds and provider entitlement remain unfinished. This does not complete the full20i roadmap.

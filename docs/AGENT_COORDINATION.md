@@ -1,3 +1,7 @@
+# Catalog discovery intake ownership — 2026-10-15
+
+Agent `twentyi_catalog` preserves `codex/twentyi-catalog-controls` at verified `8f7028dbbc23d9926d7d0ebde8d2f6b5e6861e98` and owns new branch `codex/twentyi-catalog-discovery-contracts` from it. Current increment is documentation-only contract intake and exact prior acceptance evidence. Owned files: discovery intake/catalog evidence/requirements, roadmap/coordination/session log, status/handoff/changelog. No root checkout, shared runtime, workflow or installer edits. Root owns frozen combined candidate `38bb69cc`, integration and release; its evidence must be verified separately. [Contract gaps and next implementation](TWENTYI_DISCOVERY_CONTRACT_INTAKE.md).
+
 # Parallel catalog ownership — 2026-10-15
 
 Owner-authorized subagent `twentyi_catalog` owns isolated branch `codex/twentyi-catalog-controls` at parent0ebc4623. Scope: provider plan catalog document/storage, owner retail plan forms, existing hosting preparation/provenance, bounded native/pure tests and related docs. Root owns integration and publication; other agents own mailbox/domain/VPS controls. Shared integration files are `site/app/hosting/order_links.php`, `order_link_views.php`, `order_views.php`, admin plan controller/view, hosting preparation layout, service-order schema validator, native recurring driver/workflow and generated installer inventory. [Exact catalog scope](TWENTYI_PLAN_CATALOG.md). Do not claim automatic discovery or live acceptance.

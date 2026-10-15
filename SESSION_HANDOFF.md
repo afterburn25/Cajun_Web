@@ -1,3 +1,9 @@
+## Catalog acceptance and discovery intake — 2026-10-15
+
+Catalog source `8f7028dbbc23d9926d7d0ebde8d2f6b5e6861e98` is independently verified: full run 38819685543 passes 1,794 HTTP/Chromium, 289 recovery and 1,827 Apache checks; native run 38819685552 passes all four combinations with 43 catalog cases within 508 combined recurring/order cases and 51 pure cases per PHP mode. Downloaded artifact hashes/CRCs, 11 distribution checksums, three manifests and exact source members agree. [Detailed evidence](docs/TWENTYI_PLAN_CATALOG.md).
+
+New documentation branch `codex/twentyi-catalog-discovery-contracts` starts from and preserves that exact controls branch. Primary-source intake confirms endpoint names but still lacks packageTypes/account capability/balance response contracts; [the exact missing fields and next action](docs/TWENTYI_DISCOVERY_CONTRACT_INTAKE.md) are recorded without inventing a reader. Root separately owns combined candidate `38bb69cc` and its own acceptance. No runtime, installer, release or live-operation change occurs here; published 1.24.0 remains unchanged.
+
 ## Catalog withdrawal recovery correction — 2026-10-15
 
 Starting41123e9b5b95f8bbe4244ee5db64a15eb3a85a58, PR141: source review found that losing a latest withdrawal record together with its matching audit could make an older enabled mapping appear current. Added an independently retained per-plan latest ID/digest pointer in settings, saved atomically with every review. Exact pointer/history checks and plan-family counts refuse missing/older review histories, including loss of both withdrawal and audit. Native fixtures cover paired loss, refusal of new approval, missing pointer and exact restoration. This strengthens recovery; it does not add provider execution. Local syntax and51 pure checks pass; current native/full acceptance remains pending. Preserve parent41123 full38819193594 and native38819193595; do not replace or cancel those runs.
