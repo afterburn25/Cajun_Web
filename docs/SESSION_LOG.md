@@ -1474,3 +1474,7 @@ Request: continue the 20i assignment; address Codex's blocking findings on the e
 Files: `site/app/providers/reconcile.php`, `docs/TWENTYI_OPERATIONS_CONTRACT.md`, `tests/provider_operations_execute_native.php` (+replacement-context refusal, corrected absence expectation, live-revision reads), `site/install/inventory.generated.php` (refreshed).
 
 Tests: pending CI — native MariaDB (ledger + execution) and packaged application lanes on the new head. Prior runs: 53 execute/reconcile assertions at the pre-correction head.
+
+## 2026-10-14 — Review corrected provider paths without changing product source
+
+Request: fullroadmap, Devin complete20i. Starting115/0a44625(product438badc) on isolated codex/review-twentyi-438badc. Inspected corrections; copied6df892c negative expectations, adapted scripted credentialidentity and own current-generation uncertain reconciliation seeds. Added actualproductionhelper identity probe and conflicting-consumed-grant scope check. Suppliedoriginal tests remainunchanged, their fixture mismatches sent6181628059; workflow records failures and continues independent probes without disguising results. Local writecontract12default+12noini pass; native CI next. No shipping/foundation modifications. Notificationfull38654568775 remainsliveApache; lifecycle119 verified2568/all23. Next: verify exactsource CI reports/logs, distinguish fixes and unresolved behavior, then continue nativebillingcontract/implementation separately. Published1.23unchanged.

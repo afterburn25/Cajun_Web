@@ -1,5 +1,9 @@
 # Changelog
 
+## Corrected 20i independent review
+
+Preserve negative controls while adapting review fixtures to the credential generation contract. Add actual production-helper identity and conflicting-grant reconciliation probes. Local production write validation now passes24executions; native CI remains pending. No product changes.
+
 ## Unreleased — 20i write execution path (devin/twentyi-execution, devin/twentyi-reconcile)
 
 - `provider_operations_execute` performs one owner-approved provider write: owner password + current profile revision + active exact-scope grant required before any credential is opened or an endpoint address resolved; undocumented or shape-incomplete operations refuse before any ledger claim; missing grants refuse `no_grant` and are audited.
