@@ -1,5 +1,11 @@
 # Working agreement for CajunWebPro
 
+## Native recurring billing draft contract — 2026-10-14
+
+Codex starts native records and unique period invoices on `codex/recurring-billing-records`, based on frozen119/027afe8. [Contract](docs/RECURRING_BILLING_RECORDS_CONTRACT.md) precedes code: exact source/client/project binding, authenticated consent, retained whole-period lifecycle, non-overlapping replacement, atomic history/audit and one existing-ledger invoice per period. Draft implementation proceeds while independent component review is pending; review remains mandatory before combined merge/deployment. No native code or interface is claimed at this checkpoint.
+
+Latest continuity:116/f053 final11404/all25 and identical Windows/Linux packages verified via6181752060. Complete20i remains Devin-owned;115/0a44625 review3253146 leaves migration and conflicting-grant reconciliation findings via6181772897. Latest1151100bcf changes migration column positions and is not independently cleared yet. Published1.23/main68e4d41 is unchanged. Earlier native-work timing statements do not prohibit this isolated draft; independent review and exact release acceptance remain unchanged.
+
 ## Current work — recurring invoice lifecycle implemented
 
 After contracts `de68460`/`857395a`, `codex/recurring-billing-lifecycle` implements immutable exact-terms client acceptance and recorded activation, pause, resume and termination for future whole periods. The document retains declared actors, exact event replay and earlier decisions. Future termination overrides later planned activation/pause/resume, preserving the client's ability to end future billing. Deterministic assessment keeps expired/paused/ended/unstarted/zero-price periods distinct and never changes the original calendar or amount. [Contract and native follow-on](docs/RECURRING_BILLING_LIFECYCLE_CONTRACT.md).

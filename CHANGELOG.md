@@ -1,5 +1,9 @@
 # Changelog
 
+## Draft native recurring billing contract
+
+Define additive records, real client consent, non-overlapping replacement and unique period invoice integration before code. Independent review and deployment gates remain; no runtime change yet.
+
 ## Unreleased — immutable recurring invoice lifecycle
 
 Add explicit declared client consent, future whole-period activation/pause/resume/end, stable replayable history and deterministic period eligibility. Termination overrides later planned changes while preserving earlier periods. Local321checks perPHPmode and isolated PHP8.2/8.4 CI cover the pure contract. Native authority, records, invoices, screens and independent review remain required.
