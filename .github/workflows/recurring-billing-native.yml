@@ -62,6 +62,7 @@ jobs:
               cmp foundation/billing-calendar/BillingCalendar.php site/includes/foundation/billing-calendar/BillingCalendar.php
               cmp foundation/recurring-billing/RecurringBillingTerms.php site/includes/foundation/recurring-billing/RecurringBillingTerms.php
               cmp foundation/recurring-billing/RecurringBillingSchedule.php site/includes/foundation/recurring-billing/RecurringBillingSchedule.php
+              mkdir -p qa
               php tests/provider_plan_catalog_document.php qa/provider-plan-catalog-document-default.json
               php -n tests/provider_plan_catalog_document.php qa/provider-plan-catalog-document-noini.json
               php -d memory_limit=128M tests/recurring_billing_native.php

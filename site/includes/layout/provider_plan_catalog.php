@@ -20,7 +20,12 @@ function provider_plan_catalog_form(string $action,string $plan):void {
     provider_plan_catalog_save(service_plans_form_id($_POST,'catalog_id'),$plan,service_plans_form_number($_POST,'plan_revision',256),service_plans_form_hash($_POST,'plan_hash'),$previous?:null,service_plans_form_id($_POST,'profile_id'),service_plans_form_number($_POST,'profile_revision',2147483647),$configuration,service_plans_form_number($_POST,'review_days',30),($_POST['catalog_enabled']??null)==='1',$password);
 }
 function provider_plan_catalog_value(string $key,string $fallback='',int $max=200):string {
-    return ($_POST['action']??null)==='service_plans_catalog_save'?service_plans_form_text($_POST,$key,$max):$fallback;
+    if(($_POST['action']??null)!=='service_plans_catalog_save')return $fallback;
+    // Rendering a rejected POST must not rethrow the original parse failure.
+    $value=$_POST[$key]??'';if(!is_string($value)||preg_match('//u',$value)!==1)return '';
+    $value=substr(str_replace("\0",'',$value),0,$max);
+    while($value!==''&&preg_match('//u',$value)!==1)$value=substr($value,0,-1);
+    return $value;
 }
 function provider_plan_catalog_ui(ServicePlanDocument $plan):void {
     if(!provider_settings_ready()){echo '<section class="workspace-card"><h2>20i package mapping</h2><p>Prepare your provider connection to map this retail plan to a reviewed hosting package.</p><a class="btn outline" href="'.esc(admin_url('provider-settings')).'">Provider connection</a></section>';return;}

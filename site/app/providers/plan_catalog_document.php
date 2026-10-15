@@ -30,6 +30,7 @@ function provider_plan_catalog_package(array $config,string $order):\CajunWebPro
     return new \CajunWebPro\Foundation\Hosting\HostingPackage('order-'.$order,$config['label'],$config['type'],$config['region'],$config['limits']);
 }
 function provider_plan_catalog_document(string $bytes):array {
+    try{
     if(strlen($bytes)>16384)throw new RuntimeException('Provider catalog document exceeds its bound.');
     $d=json_decode($bytes,true,16,JSON_THROW_ON_ERROR);
     if(!is_array($d))throw new RuntimeException('Invalid provider catalog document.');
@@ -41,4 +42,5 @@ function provider_plan_catalog_document(string $bytes):array {
     if($d['revision']===1){if($d['previous_id']!==null||$d['previous_sha256']!==null)throw new RuntimeException('Invalid catalog origin.');}
     else {service_plans_id($d['previous_id']);if(!is_string($d['previous_sha256'])||!preg_match('/\A[a-f0-9]{64}\z/',$d['previous_sha256']))throw new RuntimeException('Invalid catalog predecessor.');}
     if(provider_plan_catalog_config($d['configuration'])!==$d['configuration']||service_plans_json($d)!==$bytes)throw new RuntimeException('Noncanonical provider catalog record.');return $d;
+    }catch(Throwable $e){throw new RuntimeException('Original provider catalog document is inconsistent. Restore its original history.',0,$e);}
 }

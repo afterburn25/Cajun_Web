@@ -1,3 +1,8 @@
+## Unreleased — catalog review corrections
+
+- Preserve safe inline rendering after oversized or array catalog form input; validate recovered association shape before reading its format.
+- Add actual HTTP/Chromium catalog form and existing fulfillment preparation coverage, pending execution.
+
 ## Unreleased — owner-reviewed 20i plan catalog
 
 - Save versioned provider account/type/limit mappings for exact published retail plans, with expiry, withdrawal and current-owner/connection checks.

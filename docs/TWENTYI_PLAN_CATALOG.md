@@ -21,3 +21,18 @@ Read 2026-10-15: the official [addWeb guide](https://docs.20i.com/api/provision-
 Branch `codex/twentyi-catalog-controls` starts at `0ebc46237fce565005b581fe5a96a2691b9840b5`. The enclosing implementation commit records its resulting SHA in Git history. Local PHP 8.4 default/no-INI each pass **51 named pure catalog document checks** in `tests/provider_plan_catalog_document.php`; every changed/new PHP source passes syntax checks. These checks make no network or database request.
 
 `tests/provider_plan_catalog_cases.php` extends the real native recurring/order suite with additive setup, schema refusal, atomic audit rollback, replay/conflicts, owner/client/support isolation, profile/reviewer invalidation, expiry, mapping replacement/withdrawal, actual rendered preparation intent, original retail terms, immutable association provenance and missing-history recovery. It is pending Linux PHP 8.2/8.4 × MariaDB 10.11/MySQL 8.4 execution at this checkpoint. The Windows private-key protection is preserved; no native pass is claimed locally. Actual HTTP/Chromium, independent review and exact packaged acceptance remain required. No live API read/write, payment, customer mail, SSH, deployment or release occurred.
+
+## Review continuation 2026-10-15 — independent catalog review corrections and browser coverage
+
+Starting24e75ca646f13852b54ea148966048ebdec66bec, PR141. Root independently found that rejected oversized/array catalog fields could throw again during redisplay, and malformed recovered association JSON could access format before validation. Corrected both: rendering uses a bounded nonthrowing UTF-8 projection, while association/catalog document validation normalizes malformed history. Added four native malformed-render cases and actual HTTP/Chromium setup, review, rejection, replay and catalog-backed existing fulfillment coverage. Parent native38818360818 has successful PHP8.2/MariaDB and PHP8.2/MySQL jobs; remaining jobs/artifact verification were pending when this entry was written. Local51 pure checks per PHP8.4 mode and changed PHP syntax pass; exact descendant native/browser verification remains required. All runs and previous releases are preserved.
+
+### Verified parent native evidence
+
+Run38818360818 at24e75ca6 succeeded in all four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 combinations. Downloaded ZIP hashes/CRCs and every retained named report verify; each includes36 catalog cases within501 combined recurring/order cases (do not add overlapping report counts). Pure report files were missing because their output directory did not yet exist; the descendant creates it first and fails if a report cannot be written. No missing report is claimed verified.
+
+- Artifact12012092044: SHA256 `76acf4f9d618761375ba4a6ba7ca2a6584e13efbaf534ae1600cdaf148e80d88`.
+- Artifact12011927319: SHA256 `532218e5b4036a7ce57cdbe63c31f9da55d8e632af8382b65d5a3281f9e107e6`.
+- Artifact12011582391: SHA256 `488d2c32a279f20d8d66d3686c689edf7075afbaba5f7c7ee6e52641e9554c3e`.
+- Artifact12011367977: SHA256 `a1d65e844004a40aef623395f4822f1851d8a62a903400c143c05dd8be650596`.
+
+The descendant fixes root’s independent redisplay/recovered-format findings, adds four native render regressions and actual HTTP/Chromium catalog-backed fulfillment tests, and enables this feature branch’s complete application workflow. Local pure51 checks per mode, changed PHP syntax, Python AST and documentation checks pass. Refresh95043 completed successfully; exact installer inventory verified. Descendant native/browser/package/review remains pending.

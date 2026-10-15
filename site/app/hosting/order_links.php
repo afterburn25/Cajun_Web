@@ -37,6 +37,7 @@ function hosting_order_links_validate(array $row,ServiceOrderDocument $order):ar
     try{
         if(strlen($row['binding_json'])>262144||hash('sha256',$row['binding_json'])!==$row['binding_sha256'])throw new RuntimeException('Binding digest differs.');
         $b=json_decode($row['binding_json'],true,24,JSON_THROW_ON_ERROR);
+        if(!is_array($b)||!in_array($b['format']??null,[1,2],true))throw new RuntimeException('Unsupported association format.');
         service_plans_keys($b,[$b['format']===2?'catalog':'format',...($b['format']===2?['format']:[]),'order_id','order_revision','order_sha256','account_id','client_id','created_by','created_at','profile_id','profile_revision','credential_sha256','package','request','commercial']);
         if(service_plans_json($b)!==$row['binding_json']||!in_array($b['format'],[1,2],true)||$b['order_id']!==$row['id']||$b['order_id']!==$order->data()['id']||$b['account_id']!==$row['account_id']||$b['client_id']!==(int)$row['client_id']||$b['client_id']!==$order->data()['client_id']||$b['created_by']!==(int)$row['created_by']||$b['created_at']!==(int)$row['created_epoch']||$b['profile_id']!==$row['profile_id']||$b['profile_revision']!==(int)$row['profile_revision'])throw new RuntimeException('Binding identity differs.');
         service_orders_hash($b['credential_sha256']);

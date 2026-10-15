@@ -1,3 +1,11 @@
+# Catalog native evidence and review follow-up — 2026-10-15
+
+PR141 parent24e75ca6 is verified at36catalog checks within501combined native checks in all4combinations; actual artifact hashes/CRCs/reports retained. Descendant repairs independent redisplay/recovered-format findings and adds actual browser coverage, pending current acceptance. [Exact scope and artifact evidence](docs/TWENTYI_PLAN_CATALOG.md). Root retains integration and release ownership.
+
+# Catalog review correction — 2026-10-15
+
+Starting24e75ca646f13852b54ea148966048ebdec66bec, PR141. Root independently found that rejected oversized/array catalog fields could throw again during redisplay, and malformed recovered association JSON could access format before validation. Corrected both: rendering uses a bounded nonthrowing UTF-8 projection, while association/catalog document validation normalizes malformed history. Added four native malformed-render cases and actual HTTP/Chromium setup, review, rejection, replay and catalog-backed existing fulfillment coverage. Parent native38818360818 has successful PHP8.2/MariaDB and PHP8.2/MySQL jobs; remaining jobs/artifact verification were pending when this entry was written. Local51 pure checks per PHP8.4 mode and changed PHP syntax pass; exact descendant native/browser verification remains required. All runs and previous releases are preserved.
+
 # Parallel catalog increment — 2026-10-15
 
 The owner requested parallel 20i agents. The catalog agent owns `codex/twentyi-catalog-controls`, parent `0ebc46237fce565005b581fe5a96a2691b9840b5`; root retains mailbox implementation and integration/releases. Main `b66062e4` was inspected and not merged into this isolated branch. [Catalog scope and continuation](docs/TWENTYI_PLAN_CATALOG.md).
