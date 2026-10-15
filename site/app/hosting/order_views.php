@@ -54,6 +54,10 @@ function service_orders_form_action(string $action,string $agreement,int $client
     if($owner&&in_array($command,['prepare_service','map_service'],true)){
         hosting_order_links_form_action($command,$context['document'],$client,$password);return;
     }
+    if($owner&&in_array($command,['prepare_fulfillment','fulfill_service','recover_fulfillment','retry_fulfillment'],true)){
+        require_once CWP_CODE_ROOT.'/app/hosting/fulfillment_views.php';
+        hosting_fulfillment_form_action($command,$context['document'],$client,$password);return;
+    }
     $revision=service_plans_form_number($_POST,'order_revision',127);$event=service_plans_form_id($_POST,'event_id');
     $args=match($command){
         'accept'=>['domain_name'=>service_orders_domain(service_plans_form_text($_POST,'domain_name',254,true)),'review_sha256'=>service_plans_form_hash($_POST,'review_sha256')],

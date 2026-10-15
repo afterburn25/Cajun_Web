@@ -30,10 +30,11 @@ function hosting_order_links_context(string $orderId,int $client,bool $asClient=
             if($journal->revision()>0){
                 hosting_operations_require_ready();$journal=hosting_operations_validate(hosting_records_row($row['account_id'],$client));
                 if(one('SELECT id FROM '.table('hosting_dispatches').' WHERE account_id=? LIMIT 1',[$row['account_id']])){
-                    hosting_storage_require('fulfillment');hosting_fulfillment_history($order,$row);
+                    hosting_fulfillment_require();hosting_fulfillment_history($order,$row);
                 }
             }
             $progress=['account_id'=>$row['account_id'],'created_at'=>$b['created_at'],'status'=>$journal->account()->status(),'order_cancelled'=>$order->state()['phase']==='cancelled'];
+            if($progress['status']==='provisioning'&&$journal->account()->awaitingReconciliation()&&$journal->account()->acknowledgedResourceRef()===null)$progress['status']='unknown';
             if(!$asClient){
                 $progress['package']=$b['package'];$progress['reseller_id']=$b['request']['params']['resellerId'];
                 $progress['profile_current']=false;

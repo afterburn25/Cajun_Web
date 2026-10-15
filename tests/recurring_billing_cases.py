@@ -425,3 +425,5 @@ def run_browser(env, browser):
     check('Optional storage restoration preserves all license and hosting records',
           all(db('SELECT * FROM ci_'+name+' ORDER BY id')==rows for name,rows in licensing_before.items())
           and db('SELECT * FROM ci_service_orders ORDER BY id')==retained_orders)
+    from hosting_fulfillment_cases import run_browser as fulfillment_browser
+    fulfillment_browser(env,browser,owner,client,foreign,cid,job,command,capture)

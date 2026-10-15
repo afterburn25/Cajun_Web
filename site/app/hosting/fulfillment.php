@@ -176,7 +176,7 @@ function hosting_fulfillment_recover(string $orderId,int $client,string $request
     });
 }
 /**
- * Internal application service; no route enables this until its native approval UI is integrated.
+ * Application service used by the owner approval form; request input cannot override its dependencies.
  * Resolver/perform are fixed implementation dependencies, never HTTP/configuration inputs.
  * Local replay cannot reconstruct a dispatch claim or resend an incomplete/unknown purchase.
  */

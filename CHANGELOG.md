@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — native hosting fulfillment screens
+
+- Add owner setup approval, original-response recovery and definite-failure retry preparation on existing agreements. Preserve separate cost/default/account review, exact accepted domain and current authority. Clients see pending versus unknown without private provider data.
+- Add native rendered-form and packaged HTTP/Chromium/TLS-fixture cases, including verified receipt, replay, interrupted finalization and no-send recovery. Exact descendant acceptance is pending.
+
 ## Unreleased — preserve newer main and repair integration blockers
 
 - Retain main161e3edd licensing/download history alongside tested20i recovery. Repair its schema parse error, optional-storage portal readiness and owner-only licensing authority. Combined acceptance pending; no licensing feature completeness or new release is claimed.
