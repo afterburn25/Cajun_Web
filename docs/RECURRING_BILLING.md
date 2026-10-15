@@ -43,3 +43,7 @@ Focused tests cover strict form/query types, original-calendar dates, source-der
 The focused PHP8.2/8.4 workflow includes native and default/no-ini form checks. The combined browser suite calls `tests/recurring_billing_cases.py`; Apache acceptance checks private recurring files. Current exact CI results, remaining upgrade/recovery cases, package comparison and independent review belong in the session handoff and PR evidence, not an assumed release claim.
 
 Related: [interface contract](RECURRING_BILLING_INTERFACE_CONTRACT.md), [native records contract](RECURRING_BILLING_RECORDS_CONTRACT.md), [service agreements](SERVICE_AGREEMENTS.md).
+
+## Focused acceptance and recovery follow-up
+
+Draft [PR121](https://github.com/afterburn25/Cajun_Web/pull/121) at `e9ee051` has independently downloaded/verified1280 focused named executions across push/PR PHP8.2/8.4 matrices, with all29 triggered workflows successful. The retained1.23 upgrade fixture now includes recurring consent, invoices, partial receipts, original-request replay and future termination through real HTTP recovery/reapplication. These new scenarios have only syntax verification at this checkpoint; their combined Apache execution, Windows/Linux packages and independent review remain required. No release or automatic collection is claimed.

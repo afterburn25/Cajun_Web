@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — recurring billing recovery verification
+
+- Draft121/e9ee051 focused artifacts independently verify1280 named executions and all29 workflows. Actual local44 HTTP/Edge checks and eight full screenshots remain separately scoped.
+- Added recurring-specific1.23 upgrade/recovery/replay cases and explicit combined native/form workflow checks. Syntax verified; new recovery scenarios and complete package/application acceptance remain pending. Shipping runtime is unchanged.
+
 ## Draft recurring billing staff/client interface
 
 Add protected recurring offer/preview, actual client decisions, dated whole-period controls, bounded validated history and existing-ledger invoice/payment links. Preserve failed draft text and review tokens, require explicit consent and bind invoice issuance to its reviewed period. Add native/form/HTTP browser tests and scoped mobile facts styling. Independent and full release acceptance remain pending.

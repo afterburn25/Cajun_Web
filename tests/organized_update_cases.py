@@ -303,3 +303,5 @@ def run(web,base,check,qa,php,label,prefix,version):
         planning_upgrade({**locals(),**ticket_context})
         from design_financial_upgrade_cases import run as financial_upgrade
         financial_upgrade({**locals(),**ticket_context})
+        from recurring_billing_upgrade_cases import run as recurring_upgrade
+        recurring_upgrade({**locals(),**ticket_context})
