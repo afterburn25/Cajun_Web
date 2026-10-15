@@ -51,6 +51,9 @@ jobs:
           persist-credentials: false
       - name: Prepare official PHP with PDO MySQL
         run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-inventory-test -f tests/invitations/Dockerfile tests/invitations
+      - name: Allow isolated MySQL audit-failure fixture triggers
+        if: matrix.database.label == 'mysql-8.4'
+        run: docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
       - name: Native refresh, observation and link tests
         run: |
           docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \

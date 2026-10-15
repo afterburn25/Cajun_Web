@@ -126,7 +126,16 @@ try {
     pi_deny('Domain unlink requires owner password',fn()=>provider_inventory_domain_unlink($dlink['id'],'wrong'));
     provider_inventory_domain_unlink($dlink['id'],$password);
     pi_ok('Domain unlink removes mapping and records event',provider_inventory_domain_links($id)===[]&&provider_inventory_domain_link_events($id)[0]['event']==='unlink'&&provider_inventory_client_domains(2)===[]);
-    // Mid-flight races.
+    // Exercise the real hourly quota before moving this isolated fixture to
+    // a new time window for unrelated concurrency/audit scenarios.
+    $quota=(int)query('SELECT COUNT(*) FROM '.table('provider_refreshes').' WHERE actor_id=1 AND started_epoch>?',[time()-3600])->fetchColumn();
+    pi_ok('Earlier fixture reads remain within the per-owner hourly quota',$quota<=20);
+    for($i=$quota;$i<20;$i++){pi_cool();$scripted=[new TransportResponse(503,[],'{}')];pi_refresh($id);}
+    pi_cool();$quotaDns=$dnsCalls;$quotaTransport=$transportCalls;$quotaRows=pi_count('provider_refreshes');
+    pi_deny('Per-owner hourly quota refuses the next refresh',fn()=>pi_refresh($id));
+    pi_ok('Hourly refusal persists no intent and performs no network work',$dnsCalls===$quotaDns&&$transportCalls===$quotaTransport&&pi_count('provider_refreshes')===$quotaRows);
+    pi_aged();
+    // Mid-flight races in the next synthetic hour. Original rows stay retained.
     $worker=pi_worker('pause-dns',$id);pi_ok('Refresh worker commits intent before blocking DNS',trim(fgets($worker[1][1]))==='resolving'&&pi_count('provider_refreshes')>pi_count('provider_refresh_results'));
     $row=provider_settings_profile();provider_settings_state($id,1,'disable',$password);fwrite($worker[1][0],"continue\n");fflush($worker[1][0]);pi_ok('Profile change during DNS prevents credential transport',pi_finish($worker)==='access_changed:0');provider_settings_state($id,2,'enable',$password);pi_cool();
     $worker=pi_worker('pause-dns',$id,3);pi_ok('Race worker reaches DNS',trim(fgets($worker[1][1]))==='resolving');query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');fwrite($worker[1][0],"continue\n");fflush($worker[1][0]);pi_ok('Owner revocation during DNS prevents credential transport',pi_finish($worker)==='access_changed:0');query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');pi_actor();pi_cool();
