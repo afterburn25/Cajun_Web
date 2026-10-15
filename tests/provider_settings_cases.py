@@ -144,7 +144,7 @@ def run_browser(env,browser):
     domain_forms=[f for f in soup(r).select('form') if f.select_one('[name=action][value=provider_inventory_domain_relink]')]
     check('Moved domain offers no silent reapproval form',not domain_forms)
     r=alice.get(services_url)
-    check('Moved domain hides new package details from the client','linked-domain.example' in r.text and 'another-client-private.example' not in r.text and 'package #911' not in r.text and 'not present' in r.text)
+    check('Moved domain hides new package details from the client','linked-domain.example' in r.text and 'another-client-private.example' not in r.text and 'package #911' not in r.text and 'could not confirm this domain on its approved hosting package' in r.text and 'not present' not in r.text)
     retained_link=db('SELECT * FROM ci_provider_domain_links');retained_events=db('SELECT * FROM ci_provider_domain_link_events')
     inv_post('provider_inventory_domain_relink',link_id=links[0]['id'])
     check('Forged moved-domain reapproval preserves original link and journal',db('SELECT * FROM ci_provider_domain_links')==retained_link and db('SELECT * FROM ci_provider_domain_link_events')==retained_events)

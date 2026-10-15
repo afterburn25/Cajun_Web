@@ -43,7 +43,7 @@ function provider_services_portal_render(): never {
             echo '<p class="hint">This hosting link does not establish domain registration or renewal rights.</p>';
             echo '<p class="hint">Observed '.esc($domain['observed_at']).' UTC. Status reflects the studio\'s last confirmed read.</p>';
         } else {
-            echo '<p>'.esc($domain['observed_at']===null?'No observation is available yet.':'This domain was not present in the last confirmed inventory read.').' Contact the studio for details.</p>';
+            echo '<p>'.esc($domain['observed_at']===null?'No observation is available yet.':'The studio could not confirm this domain on its approved hosting package. Details are hidden while the studio reviews the link.').' Contact the studio for details.</p>';
         }
         echo '</article>';
     }

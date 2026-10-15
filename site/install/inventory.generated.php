@@ -2529,7 +2529,7 @@ function setup_expected_files(): array { return [
     'includes/layout/growth_portfolio_view.php'=>'5d78fcd5158e1774d12752641c087ecac62cc727a5734683ea91c3fdec224af1',
     'includes/layout/ledger.php'=>'09ea114027352d07ebc71ffe27ff02f43a271cd08d63ec8f9aea9ea704972f1d',
     'includes/layout/marketing.php'=>'0ac18cfeca4532c5c48fab444ec592cc0fce8d54180068184f5f1f5275b7eb35',
-    'includes/layout/provider_services.php'=>'fc383d6f85db5657de5f10da09484648aaeb89500135dd1897f52c1f9f3a1ecd',
+    'includes/layout/provider_services.php'=>'7e4fd5fc4e4557bd74b1d46c46eed769504931c5d4fbd5ad029a1706459d084e',
     'includes/layout/public.php'=>'964ddf29fe1f67ff201c7ab88ff0ec5e228d54b97d4d22e97354d82d771512f9',
     'includes/paths.php'=>'9eea9e207c37671ce434fc80278339fb10b08ac0eeafa5b85672a0178d03dde8',
     'includes/runtime.php'=>'4f13836071285b3faa79d1b43ebb81fc990c9054461861790d18b78f8c3b872e',

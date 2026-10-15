@@ -1,5 +1,8 @@
 # Complete 20i requirements and evidence
 
+
+Current evidence checkpoint: [438a3122 packaged acceptance checkpoint](https://github.com/afterburn25/Cajun_Web/actions/runs/38692573913) verifies actual populated upgrades, ownership/reapproval/isolation and operation screens (1,371 HTTP/Chromium assertions; desktop/mobile screenshots inspected). It excludes the extended recovery/Apache gates. The strict operation matrix at 2d2892c9 passes 784 named executions on both supported PHP/database versions; shipping bytes equal 438a3122. Independent review of 438a3122 found no major issues. A screenshot-discovered client-message correction now awaits full corrected-candidate acceptance. Historical pending statements below describe their original checkpoints; [current status](../PROJECT_STATUS.md) is authoritative. No 1.24 release or full-platform completion is claimed.
+
 Status values: not started, implementing, branch-tested, integrated, released, live-verified, awaiting a named external input. A row describes its named scope only. Development, release and live acceptance are independent. This is the complete priority, not a declaration that an initial component finishes it.
 
 | Capability | Required outcome | Status | Evidence / remaining work |
