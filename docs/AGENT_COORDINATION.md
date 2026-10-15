@@ -1,5 +1,7 @@
 # Agent coordination — 20i P0
 
+Current: cloud #128 is normally integrated into #127 at `235f98e1`; its exact reviewed tree c377 passes native 848 and packaged 7,585 / HTTP 1,406. Full release acceptance remains. Stable 1.24 fresh-owner correction #129 is still completing full acceptance before exact main/release verification. Codex owns all 20i scope; former Devin allocation is superseded. See the concise [current status](../PROJECT_STATUS.md) and [next actions](../SESSION_HANDOFF.md). Earlier paragraphs below are historical evidence.
+
 Active development: `codex/twentyi-cloud-inventory` from 906df727 extends the existing reader/refresh engine with the documented cloud list and owner screen. It is separate from the stable PR #126 candidate so its long acceptance is preserved. [Cloud scope](TWENTYI_CLOUD_INVENTORY.md). No release or live cloud acceptance is claimed.
 
 Codex owns the complete 20i integration as P0 under the owner's 2026-10-15 override. Unrelated development is paused. Earlier Devin-only allocation is superseded; all source branches and evidence remain preserved. Current integration: `codex/twentyi-complete`, from main `68e4d411acedd9f73cf048018ba570ace9b673be`. Published v1.23.0 (`4fdb56266c77f6e6bf7b58e966d24696e1eaefc8`) remains unchanged. No release or live deployment is claimed.

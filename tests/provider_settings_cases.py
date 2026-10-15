@@ -205,7 +205,7 @@ def run_browser(env,browser):
     for width,height,label in [(1440,1050,'Desktop'),(320,740,'Mobile')]:
         rendered.set_viewport_size({'width':width,'height':height});rendered.goto(url);rendered.evaluate('document.fonts.ready')
         expect(rendered.locator('[data-provider-cloud]')).to_contain_text('cloud.browser.invalid')
-        rendered.locator('[data-provider-cloud]').screenshot(path=str(QA/('Provider-Cloud-'+label+'.png')))
+        rendered.evaluate('window.scrollTo({top:0,left:0,behavior:"instant"})');rendered.screenshot(path=str(QA/('Provider-Cloud-'+label+'.png')),full_page=True)
         check('Cloud screen '+label+' fits viewport',rendered.evaluate('document.documentElement.scrollWidth <= innerWidth'))
     check('Cloud screen has no browser errors',not cloud_errors);capture.close()
     # Explicit cloud assignment and safe client projection through actual packaged routes.
@@ -229,7 +229,7 @@ def run_browser(env,browser):
     for session,title,selector in [(owner,'Provider-Cloud-Assignment','[data-cloud-assignments]'),(alice,'Client-Cloud-Service','[data-client-cloud]')]:
         capture=browser.new_context(viewport={'width':1440,'height':1050});capture.add_cookies([{'name':c.name,'value':c.value,'domain':c.domain,'path':c.path} for c in session.cookies]);rendered=capture.new_page();capture_errors=[];rendered.on('pageerror',lambda e:capture_errors.append(str(e)))
         for width,height,label in [(1440,1050,'Desktop'),(320,740,'Mobile')]:
-            rendered.set_viewport_size({'width':width,'height':height});rendered.goto(url if session is owner else services_url);rendered.evaluate('document.fonts.ready');expect(rendered.locator(selector)).to_be_visible();rendered.locator(selector).screenshot(path=str(QA/(title+'-'+label+'.png')))
+            rendered.set_viewport_size({'width':width,'height':height});rendered.goto(url if session is owner else services_url);rendered.evaluate('document.fonts.ready');expect(rendered.locator(selector)).to_be_visible();rendered.evaluate('window.scrollTo({top:0,left:0,behavior:"instant"})');rendered.screenshot(path=str(QA/(title+'-'+label+'.png')),full_page=True)
             check(title+' '+label+' fits viewport',rendered.evaluate('document.documentElement.scrollWidth <= innerWidth'))
         check(title+' has no script errors',not capture_errors);capture.close()
     r=inv_post('provider_settings_save',label='Cloud assignment revised settings',enabled='1',general_key='')

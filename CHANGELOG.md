@@ -1,5 +1,17 @@
 # Changelog
 
+## Cloud inventory and assignments integrated — 2026-10-15
+
+Codex owns the complete 20i P0 integration. Unrelated work stays preserved and paused. Published v1.23.0 remains immutable; 1.24 is withheld for the fresh-owner warning repair until corrected candidate/main and release-download gates pass. No production operation or deployment is claimed.
+
+Cloud inventory and explicit client assignments are combined in [PR #127](https://github.com/afterburn25/Cajun_Web/pull/127), branch `codex/twentyi-cloud-inventory`. Normal merge `235f98e137e838401da26687dd750ac7315b78e0` retains #128 and has the same tree as independently reviewed `c377174cc3072c2ae2aee815c1ccbfd542b8780a`. [Native matrix](https://github.com/afterburn25/Cajun_Web/actions/runs/38703797745): 848 downloaded named executions across PHP 8.2/8.4 and MariaDB 10.11/MySQL 8.4. [Packaged checkpoint](https://github.com/afterburn25/Cajun_Web/actions/runs/38703794283): 7,585 executions in 42 reports, including 1,406 HTTP checks, no PHP diagnostics. Three archive manifests/members/hashes and six actual owner/client screenshots were inspected. [Review](https://github.com/afterburn25/Cajun_Web/pull/128#issuecomment-6187625318) is clear. Extended recovery/Apache were skipped; this is not release acceptance.
+
+The combined implementation reuses the reader/refresh engine, explicit current observation and provider context, existing clients, owner authorization, audit and locks. Schema 5 preserves populated v1–v4 data and immutable approval events. Client cards expose assigned server specifications with original units; hosted package IDs and other clients are excluded. Reapproval/removal rejects stale forms. No assignment creates an order, establishes health or authorizes a provider write.
+
+This continuation starts at the normal merge above. Only the cloud screenshot method changes: full-page captures start at the top, keeping real sticky navigation in its natural location instead of scrolling an oversized element under it. No UI is hidden or rewritten for evidence. Syntax/docs checks cover this commit; its new screenshots remain to be produced by the next release candidate. Prior failed fresh-installer, setup-message and missing-profile runs remain preserved.
+
+Next: complete corrected 1.24 release gates, then prepare full cloud acceptance with the immutable published baseline. Remaining complete-platform scope is tracked in the current handoff.
+
 ## Cloud ownership: native pass and shared fresh-owner correction — 2026-10-15
 
 Starting at `4d87ef324047052337fdc34c78180a6ec44cf144`, [PR #128](https://github.com/afterburn25/Cajun_Web/pull/128) passes 848 downloaded named native assertions (156 orchestration and 56 migration cases on each PHP/database combination). [Independent review](https://github.com/afterburn25/Cajun_Web/pull/128#issuecomment-6187370517) is clear. Actual packaged checkpoint [38702057933](https://github.com/afterburn25/Cajun_Web/actions/runs/38702057933) passes 1404 HTTP assertions, including cloud assignment/client isolation/reapproval; it fails only the final empty-PHP-diagnostics check with the shared missing-profile warning. That failure is preserved and is not browser acceptance.
