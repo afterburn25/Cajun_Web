@@ -1,5 +1,9 @@
 # CajunWebPro — project source of truth
 
+## Latest coordination checkpoint
+
+Devin retains the [complete 20i integration](https://github.com/afterburn25/Cajun_Web/issues/2), including all application screens and fixes. Codex notification [draft #123](https://github.com/afterburn25/Cajun_Web/pull/123) has 2,636 independently verified focused executions; full application/upgrade/package acceptance is running. Parent #121 has 11,780 verified full executions and identical Windows/Linux packages. Independent reviews and applicable inherited-image review remain pending. Published v1.23.0 is unchanged. See the current [handoff](SESSION_HANDOFF.md); earlier sections are historical.
+
 ## Owner allocation override — 2026-10-14
 
 The owner instructed: **“let devin do the complete 20i integration.”** Devin owns the entire implementation: provider adapters, native persistence/migrations and client ownership, admin and client portal screens, hosting lifecycle/controls, domains, VPS/cloud, support handoffs and VPS SSH, with their tests and documentation. This supersedes earlier component-only assignments and statements reserving all 20i application/UI work to Codex. Codex retains non-20i development and final independent review, combined acceptance, merge/release coordination. [Full handoff and acceptance](docs/DEVIN_COMPLETE_20I_HANDOFF.md); [authoritative GitHub assignment](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171468180).

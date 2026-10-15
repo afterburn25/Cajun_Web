@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased coordination — complete 20i ownership and recurring acceptance
+
+- Keep complete 20i implementation/fixes with Devin; report the new #115 replay fixture counter failure and record unreviewed #122.
+- Record #123 frozen source, 2,636 focused executions and running full/package acceptance; retain parent #121 final 11,780 executions and identical archives.
+- Documentation only on this review branch; runtime, installer, tests, versions and published assets unchanged. Independent review remains required.
+
 ## Unreleased continuity —20i review and recurring packages
 
 - Verified corrected-label20i review346/346 at8e068cf; assigned separate failed browser-fixture grant-query correction toDevin.
