@@ -2,6 +2,8 @@
 
 ## Verification records — 2026-10-14
 
+Record separate recurring terms PR 118: both downloaded PHP 8.2/8.4 default/no-ini matrices verify 2,976 named executions, canonical context/date/epoch behavior and unchanged shipping/calendar bytes. Independent review/native consent/lifecycle/unique invoices remain required. Preserve live notification full acceptance and complete Devin 20i ownership.
+
 Verify notification browser checkpoint (9,370 checks and inspected current views) and separate pure calendar PR 117 (1,624 focused executions/all 22 workflows). Preserve its incomplete native billing scope. Confirm that Devin's supplied application success does not resolve the eight unchanged-source review findings.
 
 Final financial forms PR 114 acceptance now verifies 11,326 assertions/all 28 workflows and identical Windows/Linux packages. Notification PR 116 Windows packages verify; its full browser/recovery run remains live. No released application bytes change.
