@@ -28,6 +28,11 @@ function provider_mailbox_ready():bool {
     foreach(['provider_mailbox_policies'=>'provider.mailbox_policy','provider_mailbox_requests'=>'provider.mailbox_started'] as $n=>$action) {
         if((int)query('SELECT COUNT(*) FROM '.table($n))->fetchColumn()!==(int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE action=?',[$action])->fetchColumn())throw new RuntimeException('Original mailbox history is incomplete. Restore the original database.');
     }
+    if(!provider_operations_ready())throw new RuntimeException('Restore the original provider operation history before managing mailboxes.');
+    // Independent durable witnesses survive partial restores of the mailbox family.
+    // A lost request and its start audit must not reopen an already attempted address.
+    if(one('SELECT g.id FROM '.table('provider_operation_grants').' g LEFT JOIN '.table('provider_mailbox_requests').' r ON r.id=g.id WHERE g.operation=? AND r.id IS NULL LIMIT 1',['mailboxes.create'])
+        ||one('SELECT o.id FROM '.table('provider_operations').' o LEFT JOIN '.table('provider_mailbox_requests').' r ON o.idempotency_key=CONCAT(\'mailbox:\',r.id) WHERE (o.operation=? OR (o.operation IS NULL AND o.idempotency_key LIKE \'mailbox:%\')) AND r.id IS NULL LIMIT 1',['mailboxes.create']))throw new RuntimeException('Original mailbox operation requests are missing. Restore the original database.');
     return true;
 }
 function provider_mailbox_validate_schema(string $name,string $sql):void {
@@ -54,6 +59,7 @@ function provider_mailbox_validate_schema(string $name,string $sql):void {
     }
 }
 function provider_mailbox_prepare(#[SensitiveParameter] string $password):void {
+    if(db()->inTransaction())throw new LogicException('Mailbox preparation cannot run inside a transaction.');
     staff_locked(function()use($password):void {
         $actor=provider_settings_owner($password);
         if(!provider_operations_ready()||!provider_inventory_ready()||!studio_ready())throw new RuntimeException('Prepare provider operations, hosting inventory and client accounts first.');

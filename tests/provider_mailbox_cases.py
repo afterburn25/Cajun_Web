@@ -42,7 +42,7 @@ def run_browser(env, browser):
     response=client.get(url)
     check('Owner-approved mailbox form is private and scoped',create in response.text and 'mailbox.example.invalid' in response.text and 'no-store' in response.headers.get('Cache-Control','') and response.headers.get('Referrer-Policy')=='no-referrer' and 'profile_id' not in response.text)
     check('Mailbox portal navigation appears only for approved client','Hosting mailboxes' in client.get(portal).text and create not in foreign.get(url).text)
-    original=form_data(form_for(response,create));password='Synthetic browser mailbox pass 123!'
+    original=form_data(form_for(response,create));original['mailbox_policy']=soup(response).select_one('[name=mailbox_policy] option:not([value=""])')['value'];password='Synthetic browser mailbox pass 123!'
     values={'mailbox_local':'hello','mailbox_password':password,'mailbox_password_confirm':password,'mailbox_confirm':'1'}
     calls=provider.calls
     for changes,label in [({'csrf':'bad'},'CSRF'),({'mailbox_policy':'f'*32},'forged policy'),({'mailbox_password_confirm':'different'},'password mismatch'),({'mailbox_confirm':'0'},'confirmation')]:
@@ -52,6 +52,7 @@ def run_browser(env, browser):
     check('Foreign client cannot use captured mailbox permission',not db('SELECT * FROM ci_provider_mailbox_requests') and provider.calls==calls)
     context=browser.new_context(viewport={'width':1440,'height':1000});context.add_cookies([{'name':c.name,'value':c.value,'url':base} for c in client.cookies]);page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)));page.goto(url)
     form=page.locator('form').filter(has=page.locator('[name=action][value='+create+']'))
+    form.locator('[name=mailbox_policy]').select_option(original['mailbox_policy'])
     sent_fields={name:form.locator('[name='+name+']').input_value() for name in ['csrf','action','mailbox_policy','mailbox_request']}
     form.locator('[name=mailbox_local]').fill('hello');form.locator('[name=mailbox_password]').fill(password);form.locator('[name=mailbox_password_confirm]').fill(password);form.locator('[name=mailbox_confirm]').check()
     with page.expect_navigation():form.get_by_role('button',name='Create mailbox',exact=True).click()
@@ -63,7 +64,7 @@ def run_browser(env, browser):
     check('Client mailbox mobile view has no horizontal overflow',page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
     context.close();calls=provider.calls
     client.post(url,data={**sent_fields,**values});check('Actual HTTP nonce replay cannot resend',provider.calls==calls and len(db('SELECT * FROM ci_provider_mailbox_requests'))==1)
-    submit(client,url,create,values);check('New form cannot recreate confirmed mailbox',provider.calls==calls and len(db('SELECT * FROM ci_provider_mailbox_requests'))==1)
+    submit(client,url,create,{**values,'mailbox_policy':original['mailbox_policy']});check('New form cannot recreate confirmed mailbox',provider.calls==calls and len(db('SELECT * FROM ci_provider_mailbox_requests'))==1)
     check('Mailbox history stays isolated from another client','hello@mailbox.example.invalid' not in foreign.get(url).text)
     support=chosen_form(owner,admin+'?view=support','support_start','client_id',cid,{})
     check('Support cannot open mailbox controls',owner.get(support.url+'&hosting_mail=1').status_code==403 and provider.calls==calls)

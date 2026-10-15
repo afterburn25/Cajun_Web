@@ -1,5 +1,9 @@
 # Unreleased — native 20i mailbox creation
 
+Preserve the selected mailbox domain after an invalid form submission and refuse mailbox setup inside a caller-owned transaction. Independent review regressions are included; acceptance remains pending.
+
+Correct the native gateway fingerprint call and refuse partial database recovery that leaves original mailbox grants/results without their request. Native regression cases cover these surviving witnesses; corrected CI remains pending.
+
 Add expiring owner permissions, real owner/client creation forms and safe request history over explicit client domains, using the existing provider gateway/ledger. Passwords stay transient; original request history prevents replay and ambiguous-address retries. New native/database/browser coverage is prepared but acceptance remains pending. Three parallel agents now work on separate catalog/domain/cloud increments; their changes are not integrated in this checkpoint. Published1.24.0 is unchanged.
 
 # Integration checkpoint — current main and domain replacement rollback

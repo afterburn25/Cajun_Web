@@ -1,5 +1,9 @@
 # Current handoff — parallel agents and native mailbox application
 
+Include the catalog-agent review corrections: retain a valid posted mailbox domain after errors, require a fresh selection if unavailable, and refuse preparation inside a caller transaction before DDL. Native tests include multi-domain redisplay and rollback preservation. Root asks both reviewers to inspect the corrected delta after push. Active agent PRs141–143 require sequential integration only after their own checks and combined review.
+
+Continue the81eb native correction: first Linux failure is the private gateway fingerprint call, fixed by the existing public method. Domain-agent independent review found partial loss of request+audit could overlook surviving consumed grants/results; readiness and native regressions now detect it. Preserve run38818497468 and inspect the corrected descendant. Root refresh37690 and generated68109 both completed successfully and are closed; neither is a release build.
+
 Parent0ebc4623, branch `codex/twentyi-mailbox-controls`, draftPR140. Root owns native mailbox policy/storage/forms/history and shared-gateway dispatch; the three additional agents are actively implementing isolated catalog, registrar and cloud increments. [Exact ownership, current evidence, limitations and next steps](docs/TWENTYI_PARALLEL_WORK.md). New native/browser cases are prepared, not passed; inspect current Linux CI before acceptance. Parent build59233 is completed and verified, not running. Preserve all existing checks/main/history and integrate each worker sequentially. No live operation or new release.
 
 # Current development — native mailbox creation boundary

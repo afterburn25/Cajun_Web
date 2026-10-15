@@ -1,5 +1,9 @@
 # Current development — four parallel 20i workers
 
+Independent catalog review also found and corrected failed-form domain selection and preparation inside a caller transaction; new native regressions await current CI. All three parallel branches now have draftPRs141–143. None is yet integrated or released.
+
+Current81eb mailbox native run failed at an incorrect private fingerprint-helper call; use the existing public interface. Independent review also identified a partial-restore history gap, now repaired with surviving grant/result checks and native regressions. New descendant CI is required; no native pass is claimed. Catalog parent24e75 has agent-reported four native passes while its browser/review corrections continue; domainPR142 is testing. [Current evidence](docs/TWENTYI_PARALLEL_WORK.md).
+
 The owner requested simultaneous agents. Root continues native mailbox creation; three agents now own catalog mappings, registrar inventory/client links and cloud website creation on separate branches from0ebc4623. [Current allocation, changes, evidence and next actions](docs/TWENTYI_PARALLEL_WORK.md). Native mailbox policy/storage/forms/history and shared-gateway dispatch are implemented; new Linux database/browser acceptance remains pending. Published1.24.0 is unchanged. Prior checkpoints below remain historical evidence.
 
 # Current development — native mailbox creation boundary

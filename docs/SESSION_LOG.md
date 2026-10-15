@@ -1,5 +1,11 @@
 # Session log
 
+## 2026-10-15 — native mailbox execution and partial-recovery correction
+
+Catalog-agent independent review additionally identified domain-selection loss after invalid submission and implicit caller transaction commit during fresh preparation. Both are repaired with explicit selection preservation/refusal and a pre-DDL transaction guard; native regressions cover each. Corrected source still requires fresh Linux/database/browser acceptance. Three active agent PRs141–143 remain separate and unmerged.
+
+Starting81eb4874, Linux run38818497468 exposed the private fingerprint-helper invocation; use the existing public gateway interface. Independent domain-agent review reproduced by source analysis a paired request/audit loss gap; require surviving mailbox grants/results to retain their original requests and add real-database regression cases. Changed PHP syntax passes, descendant native/browser CI pending. Preserve failed parent reports and all agent work. No deployment or release.
+
 ## 2026-10-15 — parallel 20i agents and native mailbox application
 
 Owner requested simultaneous workers. Starting0ebc4623, root adds native mailbox schema/policies/requests, safe forms/history and existing-gateway dispatch; three additional isolated branches implement catalog mappings, registrar links and cloud website creation. Changed PHP/Python syntax and95 mailbox/230 existing operation checks pass; new native/browser tests await Linux CI. Parent exact Windows build and focused artifacts are verified separately. No release/live effects. [Exact allocation, changes, evidence, limitations and next steps](TWENTYI_PARALLEL_WORK.md). Continue native matrix/browser verification and sequential agent integration.

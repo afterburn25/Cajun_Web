@@ -24,7 +24,7 @@ function provider_mailbox_request(array $row):array {
         ||!is_array($d['params'])||!is_string($d['password_proof'])||!preg_match('/^[a-f0-9]{64}$/D',$d['password_proof'])||!is_string($d['account_identity']))throw new RuntimeException('Original mailbox request needs recovery.');
     $op=new ProviderOperation(MailboxCreate::OPERATION,'mailbox:'.$d['id'],$d['params']);MailboxCreate::parameters($op);
     if($d['params']['password_ref']!==$d['id']||$d['params']['domain']!==$row['domain_name']||$d['params']['local']!==$row['local_name']
-        ||!is_string($d['ledger_fingerprint'])||!hash_equals($d['ledger_fingerprint'],ProviderGateway::fingerprint('twenty-i',$d['account_identity'],$op)))throw new RuntimeException('Original mailbox request scope changed.');
+        ||!is_string($d['ledger_fingerprint'])||!hash_equals($d['ledger_fingerprint'],ProviderGateway::requestFingerprint('twenty-i',$d['account_identity'],$op)))throw new RuntimeException('Original mailbox request scope changed.');
     $policyRow=one('SELECT * FROM '.table('provider_mailbox_policies').' WHERE id=?',[$d['policy_id']]);
     if(!$policyRow||$policyRow['sha256']!==$d['policy_sha256'])throw new RuntimeException('Original mailbox approval needs recovery.');
     $policy=provider_mailbox_document($policyRow);
@@ -64,7 +64,7 @@ function provider_mailbox_claim(string $policyId,string $request,string $local,#
         $op=new ProviderOperation(MailboxCreate::OPERATION,'mailbox:'.$request,$params);MailboxCreate::parameters($op);
         $account=$binding['profile_id'].':'.$binding['profile_revision'].':'.$binding['key_fingerprint'];
         $policyRow=one('SELECT sha256 FROM '.table('provider_mailbox_policies').' WHERE id=?',[$policyId]);
-        $d=['format'=>1,'id'=>$request,'policy_id'=>$policyId,'policy_sha256'=>$policyRow['sha256'],'actor'=>$actor,'client_id'=>$binding['client_id'],'profile_id'=>$binding['profile_id'],'profile_revision'=>$binding['profile_revision'],'created_epoch'=>$at,'expires_epoch'=>min($policy['expires_epoch'],$at+900),'params'=>$params,'password_proof'=>$proof,'account_identity'=>$account,'ledger_fingerprint'=>ProviderGateway::fingerprint('twenty-i',$account,$op)];
+        $d=['format'=>1,'id'=>$request,'policy_id'=>$policyId,'policy_sha256'=>$policyRow['sha256'],'actor'=>$actor,'client_id'=>$binding['client_id'],'profile_id'=>$binding['profile_id'],'profile_revision'=>$binding['profile_revision'],'created_epoch'=>$at,'expires_epoch'=>min($policy['expires_epoch'],$at+900),'params'=>$params,'password_proof'=>$proof,'account_identity'=>$account,'ledger_fingerprint'=>ProviderGateway::requestFingerprint('twenty-i',$account,$op)];
         $nodes=0;$scope=provider_operations_canonical($params,0,$nodes);$now=gmdate('Y-m-d H:i:s',$at);
         query('INSERT INTO '.table('provider_operation_grants').' (id,profile_id,operation,scope_fingerprint,profile_revision,scope_params,granted_by,granted_at,expires_epoch,consumed_key,consumed_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',[$request,$binding['profile_id'],$op->name,provider_operations_scope($op->name,$params),$binding['profile_revision'],$scope,$policy['owner_id'],$now,$d['expires_epoch'],$op->idempotencyKey,$now]);
         $doc=provider_mailbox_json($d);$row=['id'=>$request,'policy_id'=>$policyId,'profile_id'=>$binding['profile_id'],'client_id'=>$binding['client_id'],'created_epoch'=>$at,'domain_name'=>$binding['domain'],'local_name'=>$local,'document'=>$doc,'sha256'=>hash('sha256',$doc)];

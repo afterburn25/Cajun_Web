@@ -7,7 +7,8 @@ if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 <?php if($mailboxOptions&&!$mailboxUnavailable): ?>
 <form method="post"><?=csrf_field()?><input type="hidden" name="action" value="<?=$mailboxAdmin?'provider_inventory_mailbox_create':'client_mailbox_create'?>">
 <input type="hidden" name="mailbox_request" value="<?=esc(bin2hex(random_bytes(16)))?>">
-<label>Domain<select name="mailbox_policy" required><?php foreach($mailboxOptions as $option): ?><option value="<?=esc($option['id'])?>"><?=esc($option['domain'])?></option><?php endforeach; ?></select></label>
+<?php $selectedPolicy=is_string($_POST['mailbox_policy']??null)&&in_array($_POST['mailbox_policy'],array_column($mailboxOptions,'id'),true)?$_POST['mailbox_policy']:''; ?>
+<label>Domain<select name="mailbox_policy" required><option value=""<?=$selectedPolicy===''?' selected':''?>>Choose a domain</option><?php foreach($mailboxOptions as $option): ?><option value="<?=esc($option['id'])?>"<?=$selectedPolicy===$option['id']?' selected':''?>><?=esc($option['domain'])?></option><?php endforeach; ?></select></label>
 <?php $local=is_string($_POST['mailbox_local']??null)?substr($_POST['mailbox_local'],0,64):''; ?>
 <label>Mailbox name<input name="mailbox_local" value="<?=esc($local)?>" maxlength="64" placeholder="hello" required autocapitalize="none" spellcheck="false"></label>
 <p class="hint">Use lowercase letters, numbers, dots, underscores, plus signs or hyphens. Enter only the part before @.</p>

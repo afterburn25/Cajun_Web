@@ -1,5 +1,11 @@
 # Parallel 20i work — 2026-10-15
 
+Native81eb4874 first Linux run38818497468 failed after preparation/authorization cases at the mailbox fingerprint call: the application invoked the gateway's private helper. Correction uses its existing public `requestFingerprint` interface; no gateway semantics change. Independent domain-agent review also found a partial-restore gap when a request and matching audit are both lost while grants/results survive. Mailbox readiness now reconciles those independent durable records and tests both lost-request/audit and lost-request/audit/grant combinations. Descendant native/browser acceptance is required; original failed results remain preserved.
+
+Independent catalog-agent review found two additional defects: a failed creation form could switch the selected domain, and fresh preparation could implicitly commit a caller transaction through DDL. The form now preserves an available posted selection and otherwise requires an explicit fresh choice; preparation refuses caller transactions before any work. New native regressions cover multi-domain redisplay, unavailable selections and rollback of caller-owned data. Changed syntax passes; corrected native/browser acceptance remains pending.
+
+All three branches now have draft PRs: [catalog141](https://github.com/afterburn25/Cajun_Web/pull/141), [registrar142](https://github.com/afterburn25/Cajun_Web/pull/142), [cloud143](https://github.com/afterburn25/Cajun_Web/pull/143). Catalog parent24e75 has agent-verified36 new catalog cases within501 combined native checks in all four combinations; current41123e9 adds root-review fixes and browser coverage, awaiting its own CI. Registrar b6388e5 has agent-verified first PHP8.2/MySQL artifact with60 native and64 reader cases per default/no-INI run; other combinations and new browser coverage continue. Cloud4aa68171 preserves runtime7e742c3b and adds concurrency coverage; current native/full runs are queued. These reports are scoped to each branch, not integrated release acceptance.
+
 The owner explicitly requested simultaneous agents to speed up implementation. Three additional agents are running in isolated worktrees from `0ebc46237fce565005b581fe5a96a2691b9840b5`; root continues mailbox creation and coordinates integration, review, testing and releases.
 
 | Worker | Branch | Current bounded increment |
