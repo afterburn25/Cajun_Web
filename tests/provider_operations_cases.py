@@ -60,13 +60,13 @@ def run_browser(env,browser):
     check('The grant is consumed by its single run',db('SELECT consumed_key FROM ci_provider_operation_grants WHERE id=?',[gid])[0]['consumed_key']=='packaged-create-1')
 
     grant('packages.create',json.dumps({'resellerId':'*','type':'synthetic','domain_name':'packaged-two.example'}))
-    gid2=db('SELECT id FROM ci_provider_operation_grants WHERE consumed_key IS NULL ORDER BY created_at DESC')[0]['id']
+    gid2=db('SELECT id FROM ci_provider_operation_grants WHERE consumed_key IS NULL ORDER BY seq DESC')[0]['id']
     r=op_post('provider_operations_run',grant_id=gid2,idempotency_key='packaged-create-1')
     check('A replayed idempotency key never sends again',len(provider_server.posts)==1 and db('SELECT attempts FROM ci_provider_operations WHERE idempotency_key=?',['packaged-create-1'])[0]['attempts']==1)
 
     provider_server.write_mode='uncertain'
     grant('packages.create',json.dumps({'resellerId':'*','type':'synthetic','domain_name':'packaged-three.example'}))
-    gid3=db('SELECT id FROM ci_provider_operation_grants WHERE consumed_key IS NULL ORDER BY created_at DESC')[0]['id']
+    gid3=db('SELECT id FROM ci_provider_operation_grants WHERE consumed_key IS NULL ORDER BY seq DESC')[0]['id']
     r=op_post('provider_operations_run',grant_id=gid3,idempotency_key='packaged-create-3')
     ops3=db('SELECT * FROM ci_provider_operations WHERE idempotency_key=?',['packaged-create-3'])
     check('A 202 response classifies uncertain, never silently retried',len(ops3)==1 and ops3[0]['status']=='uncertain')
@@ -78,7 +78,7 @@ def run_browser(env,browser):
 
     provider_server.write_mode='uncertain_landed'
     grant('packages.create',json.dumps({'resellerId':'*','type':'synthetic','domain_name':'packaged-four.example'}))
-    gid4=db('SELECT id FROM ci_provider_operation_grants WHERE consumed_key IS NULL ORDER BY created_at DESC')[0]['id']
+    gid4=db('SELECT id FROM ci_provider_operation_grants WHERE consumed_key IS NULL ORDER BY seq DESC')[0]['id']
     op_post('provider_operations_run',grant_id=gid4,idempotency_key='packaged-create-4')
     r=op_post('provider_operations_reconcile',idempotency_key='packaged-create-4')
     row4=db('SELECT status,reconciled_outcome FROM ci_provider_operations WHERE idempotency_key=?',['packaged-create-4'])[0]
@@ -89,7 +89,7 @@ def run_browser(env,browser):
     provider_server.write_mode='success'
 
     grant('packages.create',json.dumps({'resellerId':'*','type':'synthetic','domain_name':'packaged-five.example'}))
-    gid5=db('SELECT id FROM ci_provider_operation_grants WHERE consumed_key IS NULL ORDER BY created_at DESC')[0]['id']
+    gid5=db('SELECT id FROM ci_provider_operation_grants WHERE consumed_key IS NULL ORDER BY seq DESC')[0]['id']
     posts=len(provider_server.posts)
     op_post('provider_operations_revoke',grant_id=gid5)
     r=op_post('provider_operations_run',grant_id=gid5,idempotency_key='packaged-create-5')
