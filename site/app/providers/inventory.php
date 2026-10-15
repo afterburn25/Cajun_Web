@@ -100,9 +100,14 @@ function provider_inventory_record(array $started,string $state,string $reason,s
  * Resolver/transport are internal test seams, never HTTP input.
  */
 function provider_inventory_refresh(string $id,int $revision,#[\SensitiveParameter] string $password,?callable $resolver=null,?callable $transport=null,string $operation=InventoryRead::PACKAGES_LIST): string {
+    return provider_inventory_refresh_attempt($id,$revision,$password,$resolver,$transport,$operation)['state'];
+}
+/** Internal receipt exposes the exact durable refresh, never a latest-row guess. */
+function provider_inventory_refresh_attempt(string $id,int $revision,#[\SensitiveParameter] string $password,?callable $resolver=null,?callable $transport=null,string $operation=InventoryRead::PACKAGES_LIST,?callable $scopeAuthority=null):array {
     if(!InventoryReader::supports($operation))throw new InvalidArgumentException('This inventory reader is not available.');
     if(db()->inTransaction())throw new LogicException('Provider refreshes cannot run inside a transaction.');
-    $started=staff_locked(fn()=>staff_transaction(function()use($id,$revision,$password,$operation):array {
+    $started=staff_locked(fn()=>staff_transaction(function()use($id,$revision,$password,$operation,$scopeAuthority):array {
+        if($scopeAuthority)$scopeAuthority();
         [$actor]=provider_inventory_authority($id,$revision,$password);$now=time();
         if(one('SELECT id FROM '.table('provider_refreshes').' WHERE profile_id=? AND started_epoch>? LIMIT 1',[$id,$now-30]))throw new RuntimeException('Wait 30 seconds between refreshes of this profile.');
         if((int)query('SELECT COUNT(*) FROM '.table('provider_refreshes').' WHERE actor_id=? AND started_epoch>?',[$actor['id'],$now-3600])->fetchColumn()>=20)throw new RuntimeException('Inventory refresh limit reached. Try again later.');
@@ -113,9 +118,9 @@ function provider_inventory_refresh(string $id,int $revision,#[\SensitiveParamet
     $begin=hrtime(true);$code=null;$address='';
     try{$address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];}
     catch(Throwable $e){if($e instanceof PDOException)throw $e;$code='unavailable';}
-    return staff_locked(function()use($started,$password,$address,$code,$begin,$transport):string {
-        $authorize=static function()use($started):void {
-            try{[$actor]=provider_inventory_authority($started['profile_id'],$started['profile_revision']);if((int)$actor['id']!==$started['actor_id'])throw new RuntimeException('Changed actor.');}
+    $state=staff_locked(function()use($started,$password,$address,$code,$begin,$transport,$scopeAuthority):string {
+        $authorize=static function()use($started,$scopeAuthority):void {
+            try{if($scopeAuthority)$scopeAuthority();[$actor]=provider_inventory_authority($started['profile_id'],$started['profile_revision']);if((int)$actor['id']!==$started['actor_id'])throw new RuntimeException('Changed actor.');}
             catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;throw new ProviderInventoryAccessChanged('Current provider access changed.');}
         };
         $elapsed=static fn():int=>(int)((hrtime(true)-$begin)/1e6);
@@ -152,6 +157,7 @@ function provider_inventory_refresh(string $id,int $revision,#[\SensitiveParamet
         provider_inventory_record($started,$code,'',$snapshot->scope,$snapshot->coverage,count($snapshot->packages),$snapshot->skipped,json_encode(array_values($snapshot->skipReasons)),$elapsed(),$snapshot,$fingerprint);
         return $code;
     });
+    return ['id'=>$started['id'],'state'=>$state];
 }
 
 /** Latest finished refresh of any state — the freshness display. */

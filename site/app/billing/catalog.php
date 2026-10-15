@@ -4,6 +4,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
 require_once CWP_CODE_ROOT.'/app/marketing/growth.php';
+require_once CWP_CODE_ROOT.'/app/licenses/fulfill.php';
 
 require_once CWP_CODE_ROOT.'/database/schema/catalog_schema.php';
 function catalog_ready(): bool {return staff_ready()&&studio_ready()&&setting('catalog_schema_version')==='1';}
@@ -72,4 +73,5 @@ function catalog_transition(int $jobId,int $invoiceId,string $status,string $not
         query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=? WHERE id=?',[$status,$note,$status==='paid'?gmdate('Y-m-d H:i:s'):null,$invoiceId]);
         catalog_audit((int)$actor['id'],'invoice.'.$status,'Invoice '.$invoiceId.' project '.$jobId);
     }));
+    if($status==='paid'){try{license_fulfill_invoice($invoiceId);}catch(Throwable){/* License fulfilment failure must not roll back the payment transition. Admin can retry from the license page. */}}
 }

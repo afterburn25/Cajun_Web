@@ -16,7 +16,7 @@ if($view==='service-agreement') {
     echo '<p><strong>'.esc($item['client']['name']).'</strong> · '.esc(service_plans_agreement_label($doc)).'</p>';
     if(!$item['client']['active'])echo '<div class="notice warning">This client account is inactive. Existing agreements can still be ended or paused; activation and resumption require an active client account.</div>';
     service_plans_terms_view(ServicePlanDocument::fromJson(service_plans_json($doc->data()['plan'])));
-    service_plans_agreement_controls($doc,true,$item['client']['active']);service_plans_agreement_history($doc);return;
+    service_plans_agreement_controls($doc,true,$item['client']['active']);service_plans_agreement_history($doc);service_orders_ui($doc,true);return;
 }
 $id=service_plans_form_text($_GET,'record',32);$doc=$id===''?null:service_plans_get($id);$model=$doc?->model();
 if(!$doc || $model->status()==='draft' || ($_POST['action']??null)==='service_plans_edit') {

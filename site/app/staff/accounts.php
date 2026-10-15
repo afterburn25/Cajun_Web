@@ -130,6 +130,7 @@ function staff_reset_token(string $email): ?array {
     }));
 }
 function staff_view_permission(string $view): ?string {
+    if($view==='studio-licenses')return 'staff.manage';
     if($view==='recurring-billing')return 'payments.manage';
     if(in_array($view,['service-plans','service-plan','service-agreements','service-agreement'],true))return 'staff.manage';
     if(in_array($view,['mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft'],true))return null; // Draft controller enforces current Send plus exact mailbox/author.
@@ -149,6 +150,7 @@ function staff_view_permission(string $view): ?string {
     return 'website.manage';
 }
 function staff_action_permission(string $action): ?string {
+    if(str_starts_with($action,'studio_license_')||str_starts_with($action,'studio_domain_'))return 'staff.manage';
     if(str_starts_with($action,'recurring_'))return 'payments.manage';
     if(str_starts_with($action,'service_plans_'))return 'staff.manage';
     if($action==='mail_submissions_setup')return 'staff.manage';

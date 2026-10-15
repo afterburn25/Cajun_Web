@@ -97,6 +97,13 @@ if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','se
     }
     file_put_contents(__DIR__.'/../test-runtime/'.$folder.'-config.php','<?php return '.var_export(config(),true).';');
     echo json_encode(['ok'=>true]);
+} elseif (($request['operation']??'') === 'prepare-optional-license-storage') {
+    // Test-only optional schema for removal/restoration regression after proving legacy absence.
+    if(config()['db']['name']!=='cwp_test'||config()['db']['prefix']!=='ci_')exit(2);
+    require_once CWP_CODE_ROOT.'/database/schema/license_schema.php';
+    $created=[];
+    foreach(license_schema('ci_') as $name=>$sql)if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['ci_'.$name])){db()->exec($sql);$created[]=$name;}
+    echo json_encode(['created'=>$created],JSON_THROW_ON_ERROR);
 } elseif (($request['operation']??'') === 'remove-recurring-schedule') {
     // Model an incomplete restore only in the explicitly disposable CI database.
     // Normal production foreign keys correctly prevent deleting this retained row.

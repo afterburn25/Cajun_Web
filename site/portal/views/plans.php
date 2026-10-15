@@ -5,7 +5,7 @@ if(isset($_GET['agreement'])) {
     $id=service_plans_form_id($_GET,'agreement');$doc=service_plans_subscription_get($id,(int)$client['id'],true);
     echo '<p class="workspace-status">'.esc(service_plans_agreement_label($doc)).'</p>';
     service_plans_terms_view(ServicePlanDocument::fromJson(service_plans_json($doc->data()['plan'])));
-    service_plans_agreement_controls($doc,false);service_plans_agreement_history($doc);return;
+    service_plans_agreement_controls($doc,false);service_plans_agreement_history($doc);service_orders_ui($doc,false);return;
 }
 $page=service_plans_page(service_plans_ui_page(),true,(int)$client['id']);
 foreach($page['items'] as $item){

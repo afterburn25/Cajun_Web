@@ -1,4 +1,86 @@
+# Development checkpoint — accepted order and active service wording
+
+Parent `e37517fa` merges tested hosting confirmation with newer main. Four native database/PHP combinations and independent exact Windows package verification pass. Parent `4d059a5b` browser evidence passes 1,737 checks; actual screenshots exposed an accepted-order sentence incorrectly saying setup was pending after activation. Correct the sentence and add owner/client browser regression coverage while retaining the pre-activation assertion. New current-head packaged acceptance, review and release remain pending. Published 1.24.0 is unchanged.
+
 # Changelog
+
+## Unreleased — verified confirmation and current-main integration
+
+- Verify38 authenticated confirmation cases on all four native combinations and exact4d059 Windows packages. Full descendant browser/recovery/Apache acceptance remains pending.
+- Preserve main13f9662d licensing changes through a normal merge while retaining20i and optional-storage/owner-access safeguards. Regenerate combined inventory; new combined acceptance is required.
+
+## Unreleased — authenticated hosting setup confirmation
+
+- Confirm the original accepted hosting ID through the existing authenticated inventory reader, with matching enabled status, domain, type and credential context. Retain exact evidence and commit native adoption/audit atomically; unavailable or mismatched reads stay pending.
+- Add native owner status controls, private client progress and native/browser confirmation regressions. Correct the optional-license legacy fixture and archived documentation link exposed by parent CI. New exact-head acceptance is pending.
+
+## Unreleased — unresolved timeout presentation
+
+- Correct owner/client fulfillment projections to recognize the canonical failed-but-unresolved timeout state. Show uncertainty and no retry control; retain the native regression that exposed the defect.
+
+## Unreleased — native hosting fulfillment screens
+
+- Add owner setup approval, original-response recovery and definite-failure retry preparation on existing agreements. Preserve separate cost/default/account review, exact accepted domain and current authority. Clients see pending versus unknown without private provider data.
+- Add native rendered-form and packaged HTTP/Chromium/TLS-fixture cases, including verified receipt, replay, interrupted finalization and no-send recovery. Exact descendant acceptance is pending.
+
+## Unreleased — preserve newer main and repair integration blockers
+
+- Retain main161e3edd licensing/download history alongside tested20i recovery. Repair its schema parse error, optional-storage portal readiness and owner-only licensing authority. Combined acceptance pending; no licensing feature completeness or new release is claimed.
+- Verify75 fulfillment/recovery cases in all four native combinations and exact64d Windows packages. Parentf6c full acceptance and downloaded packages are now verified.
+
+## Unreleased — exact retained hosting-result recovery
+
+- Add owner-reviewed local recovery from the original provider ledger after interrupted hosting finalization, preserving exact request/account binding and pending/failed/unknown states. Commit native result and recovery audit atomically; never resend or replace original outcomes. New native and packaged acceptance is pending.
+
+## Unreleased — exact fulfillment packaging correction
+
+- Verify49 new native fulfillment cases across all four supported combinations. Regenerate the installer hash from the exact committed LF service bytes after full packaging correctly rejected local CRLF drift. No release is certified by native checks alone.
+
+## Unreleased — dedicated hosting order execution service
+
+- Bind explicit owner fulfillment approval, current client consent and payment/manual evidence to the existing hosting attempt and provider gateway/ledger. Recheck authority at credential/send boundaries and retain accepted IDs as pending.
+- Add native concurrency, replay, reversal, revocation, rollback and recovery cases. No route enables this internal service yet; native approval UI, automated provider configuration verification and exact-result recovery remain required. Exact descendant native and packaged acceptance is pending.
+
+## Unreleased — verified pending provisioning storage
+
+- Verify pending acknowledgement, exact-ID confirmation, replay, rollback and original-history recovery on all four supported PHP/database combinations. Current packaged descendant acceptance remains pending; published version stays1.24.
+
+## Unreleased — pending-history recovery fixture
+
+- Simulate a damaged database restore only within the disposable test, restoring foreign-key enforcement before validating refusal and exact recovery. Keep the real application constraints and original missing-history assertion. First native failure is retained; corrected descendant acceptance is pending.
+
+## Unreleased — accepted hosting provisioning
+
+- Retain the provider's assigned hosting ID as pending, separate from an active service. Preserve the original attempt/result; block duplicate dispatch and refuse absent or different-resource reconciliation.
+- Confirm only the exact assigned ID through existing journal/persistence, with regression cases for atomic rollback, replay and missing original history. Local35 pending checks pass in both PHP configurations; native and packaged descendant acceptance remains pending. No provider dispatch or release is enabled.
+
+## Unreleased — verified hosting preparation browser journey
+
+- Corrected provider fixture now passes1652 actual HTTP/Chromium checks; saved order/service identity, private client progress, replay, cancellation and restoration remain verified. Four native combinations pass38 preparation checks within319 combined, plus108 ledger. Exact Windows packages verified. Current full recovery/Apache, independent review and integration/release remain pending; published version stays1.24.
+
+## Unreleased — provider browser fixture history
+
+- Change the stale-provider-context browser fixture through the real settings form so its current revision has retained original history. Preserve the reconciliation-refusal assertion and add history/network checks plus native orphan-revision rollback coverage. Application protections and shipping bytes are unchanged; complete descendant browser acceptance remains pending.
+
+## Unreleased — preparation submission diagnosis
+
+- Preserve the failed Chromium submit assertion and add actual response/screenshot evidence plus native rendered-form roundtrip coverage. Direct native cases pass; the end-to-end form failure is unresolved at this checkpoint. No runtime workaround or publication.
+
+## Unreleased — native hosting preparation and client progress
+
+- Add owner forms to prepare accepted hosting orders with reviewed package/location/numeric limits and current password/confirmation.
+- Show client-safe local service progress and retain its history after order cancellation; refuse missing established associations before querying unavailable tables.
+- Keep mapping separate from verified provider entitlement and dispatch; document package-type automatic defaults. Add native and extracted-package browser coverage, pending exact-head CI. Parent26ec native timing and association tests passed all4 combinations.
+
+## Unreleased — initial shared-hosting order intake
+
+- Recheck the actual current billing period before initial hosting eligibility, including a paused service with a future scheduled resume.
+
+- Run unchanged complete acceptance for PRs into the isolated 20i integration branch as well as main.
+
+- Add owner-selected agreement/invoice offers and client domain confirmation on existing agreement screens.
+- Preserve unique initial obligations, receipt/reversal evidence, expiring manual fulfillment policy, audit history and cancellation without billing/provider side effects.
+- Add native matrix cases; first native run caught a recurring-state adapter mismatch, now corrected; corrected source passed72 new native order cases in all four combinations. Further malformed-history/concurrency and browser acceptance is pending. Provider dispatch remains unfinished.
 
 ## Unreleased — preserve missing hosting history
 
@@ -812,3 +894,11 @@ The next implemented path extends the existing InventoryReader, fixed transport,
 Local PHP 8.4 default/no-ini passes 82 cloud reader/transport cases each; the existing 139 inventory and 28 package-reader cases also pass. Native PHP/database cases and real packaged HTTP/Chromium cloud scenarios are implemented but not yet run. They cover populated v1/v2/v3 upgrades, interruption/repeat, retained package/client isolation, mixed and failed cloud reads, consent/rate limits and desktop/mobile screens. The new owner UI, persistence and migrations remain unverified until those runs pass. No live cloud read, provider write, purchase, mail, SSH or deployment has occurred.
 
 Next: refresh generated shipping mirrors, push this checkpoint, run the reader and native inventory matrices, inspect failures, then run the bounded packaged/browser checkpoint and independent review. Add explicit cloud/client ownership, remaining discovery and native control workflows after the underlying path is verified. Continue first-increment release acceptance on the stable branch; exact-main and downloaded-release verification remain required. The full owner API-reference source/link is still pending, while primary public documentation supports this specific read.
+
+
+## Order-derived local hosting identity
+
+Parent5728c2df, PR138: add one native order/service association with exact commercial and provider-request context, atomic audit/replay and missing-history guards; preserve existing hosting/provider engines. Parent actual browser artifact and four order screenshots are now inspected. New runtime validation is pending Linux CI after the local Windows key-permission refusal; no protection was relaxed. Mapping does not verify provider entitlement or authorize dispatch. [Exact scope, evidence, limitations and continuation](docs/TWENTYI_ORDER_SERVICE_LINKS.md).
+
+
+Current follow-up:8adf passed all four native combinations, including42 new association checks within277 combined checks. A reproduced future-pause/end timing defect is corrected with four additional effective-boundary cases; exact descendant validation remains pending. See [details](docs/TWENTYI_ORDER_SERVICE_LINKS.md).

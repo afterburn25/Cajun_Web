@@ -1,5 +1,7 @@
 # Approved roadmap and acceptance criteria
 
+PR 138 connects accepted orders to provider setup and native approval/recovery/confirmation. The newer-main merge `e37517fa` passes all four native combinations and exact Windows package verification. Parent confirmation passes 1,737 HTTP/Chromium checks. A screenshot-discovered stale pending statement is corrected in the current descendant; its browser regression and full merged acceptance remain pending. Continue client domain search, automatic catalog/configuration discovery and all remaining native controls. [Current implementation/evidence](TWENTYI_ORDER_FULFILLMENT.md). Published 1.24 remains unchanged.
+
 Current20i P0 checkpoint:1.24 inventory/ownership/label-operation recovery is published and download-verified. Full platform remains unfinished. [Current requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) and [release evidence](TEST_REPORT_1.24.0.md) supersede older status notes. Cloud1.25 and necessary commercial eligibility continue.
 
 ## 20i approval and recovery correction — 2026-10-15

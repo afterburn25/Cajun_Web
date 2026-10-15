@@ -37,6 +37,14 @@ function rb_historical_billing(int $id,int $source):RecurringBillingSchedule {
     return $d;
 }
 function rb_issue(int $id,int $request,int $period=0):array {$d=rb_read($id);return recurring_billing_issue(rb_id($id),1,$d->revision(),$d->fingerprint(),$period,rb_id($request));}
+if(($argv[1]??'')==='fulfillment-worker'){require __DIR__.'/hosting_fulfillment_native_cases.php';exit;}
+if(($argv[1]??'')==='order-worker'){
+    require_once __DIR__.'/../site/app/hosting/orders.php';rb_staff();echo "ready\n";fflush(STDOUT);
+    try{
+        $source=service_plans_validate(service_plans_row($argv[2],true),true);
+        service_orders_offer($argv[4],$argv[2],1,$source->revision(),$source->fingerprint(),(int)$argv[3],ledger_invoice_hash(ledger_invoice((int)$argv[3])),$password);echo 'new';
+    }catch(RuntimeException|InvalidArgumentException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
+}
 if(($argv[1]??'')==='worker'){
     rb_staff();echo "ready\n";fflush(STDOUT);try{$r=recurring_billing_issue($argv[2],1,(int)$argv[3],$argv[4],(int)$argv[5],$argv[6]);echo $r['replayed']?'replay':'new';}catch(RuntimeException|InvalidArgumentException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
 }
@@ -94,5 +102,11 @@ try {
         rb_ok('Restored '.$missing.' retains exact consent invoices and audit',recurring_billing_ready()&&rb_snapshot()===$beforeMissing);
     }
     rb_ok('Existing project fields are unchanged',$projects===recurring_billing_json(all('SELECT * FROM '.table('studio_jobs'))));rb_ok('No provider call or payment attempt is created',rb_count('provider_profiles')===0&&rb_count('payment_attempts')===0);rb_ok('Audit excludes agreement text and passwords',!str_contains(recurring_billing_json(all('SELECT * FROM '.table('audit'))),$password)&&!str_contains(recurring_billing_json(all('SELECT * FROM '.table('audit'))),$fields['terms']));
+    require __DIR__.'/service_orders_native_cases.php';
+    require __DIR__.'/service_orders_links_cases.php';
+    require __DIR__.'/service_orders_link_views_cases.php';
+    require __DIR__.'/hosting_fulfillment_native_cases.php';
+    require __DIR__.'/hosting_fulfillment_view_cases.php';
+    require __DIR__.'/hosting_fulfillment_confirmation_cases.php';
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,(string)$e.PHP_EOL);}
 $passed=!in_array(false,array_column($checks,'passed'),true);file_put_contents(__DIR__.'/../qa/recurring-billing-native-results.json',json_encode(['passed'=>$passed,'scope'=>'Synthetic MariaDB native recurring consent/history, replacement and existing-ledger period invoices; no HTTP, merchant or provider call. Historical fixtures use real canonical documents.','php'=>PHP_VERSION,'checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));echo ($passed?'PASS':'FAIL').': '.count($checks).' native recurring checks'.PHP_EOL;exit($passed?0:1);

@@ -223,6 +223,7 @@ try {
     hr_deny('Generic local command cannot forge conclusive reconciliation',fn()=>hosting_records_change(hr_id(60),1,hr_load(hr_id(60))->revision(),hr_id(900034),'reconcile_without_dispatch',[],$password));
     hr_deny('Legacy automatic rearming reconciliation is never a local action',fn()=>hosting_records_change(hr_id(60),1,hr_load(hr_id(60))->revision(),hr_id(900034),'reconcile',[],$password));
     $audits=json_encode(all('SELECT * FROM '.table('audit')));hr_ok('Reconciliation audit excludes evidence bodies digests and provider credentials',!str_contains($audits,'synthetic-local-only-key')&&!str_contains($audits,'synthetic-final-observation')&&!str_contains($audits,'dispatch_fingerprint'));
+    require_once __DIR__.'/hosting_pending_cases.php';
     require_once __DIR__.'/hosting_storage_recovery_cases.php';hr_actor();
     hosting_test_recovery('reconciliation',['hosting_observations','hosting_reconciliations'],fn()=>hosting_reconciliation_ready(),fn()=>hosting_reconciliation_migrate($password),fn()=>hr_observe($bounded,900000,$unknown),fn()=>hr_full(),'hr_ok');
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}

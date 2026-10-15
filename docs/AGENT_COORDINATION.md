@@ -1,5 +1,15 @@
 # Agent coordination — complete20i P0
 
+Current162c35fb preparation flow now passes1652 actual HTTP/Chromium checks. Fresh11997794227 artifact/hash, all55 named-check reports and actual desktop/mobile screenshots inspected; submit saves exactly1 association/service with no alert. Native38/42/82 within319 plus108 ledger ×4 and24 focused workflows pass. Full38785450426 recovery/Apache continue. Codex moves on to selected provider configuration and existing-engine fulfillment; original fixture failure is resolved. [Current handoff](../SESSION_HANDOFF.md).
+
+Latest verified162c35fb retains all original requirements and corrects the provider fixture via the real settings form. All24 focused workflows pass; actual native38/42/82 within319 plus108 ledger ×4. Windows exact-source packages verified. Current full38785450426 browser is pending. Original8d97 saved response confirms inconsistent history with no partial service. Codex retains complete20i ownership; independent review and exact-main release remain gates. [Current handoff](../SESSION_HANDOFF.md). Older “pending” entries below retain historical state.
+
+Current PR138 parent8d97: Codex repairs the cross-suite provider fixture, which incremented a profile revision without its history. Use the actual settings form, retain stale-context refusal, and prove orphan-history mapping rollback. Parent rendered-form native36/42/82 within317 plus108 ledger passes all4 combinations; descendant/full browser result is pending. No shipping behavior or production guard changed. [Current handoff](../SESSION_HANDOFF.md).
+
+Latest PR138 parentf4: Codex is tracing the actual Chromium preparation-submit failure. All24 focused workflows and35 new native preparation checks ×4 pass; UI acceptance is not established. Tests now retain the real response and round-trip rendered intent. Preserve the in-flight recovery/Apache evidence. [Current handoff](../SESSION_HANDOFF.md).
+
+Current PR138, parent26ec4a7e: Codex owns native hosting preparation and client progress, including form/projection tests and agreement-route wiring. Parent native82/42/281 plus108 ledger passed all4 combinations; new descendant acceptance pending. Existing full runs are preserved. [Current source/evidence/next work](TWENTYI_ORDER_SERVICE_LINKS.md). Older “current” subsections below are dated historical records; no external agent is claimed running.
+
 Codex continues the complete20i P0 priority. This is an implementation/integration branch, not a released or live-verified platform. Published version remains [1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) at7190b582; inspected main0b96f3d5 adds only the approved portal-design records to c42dd6d7.
 
 The combined `codex/twentyi-fulfillment` source preserves these exact parents:
@@ -36,3 +46,13 @@ Codex continues PR137 from8ed80fd9 with native invoice/receipt evidence and staf
 Source inspection of parent423dd598 found marker-only hosting readiness and setup paths that attempted additive table creation even for an established family. The new closed hosting storage helper checks every required table and checks original setup audit when a marker is lost. Established missing history now requires original database restoration before any DDL; fresh/interrupted empty setup and strict schema validation remain. This is a recovery repair for the required order/hosting dependency, not a new execution engine.
 
 Native tests retain all previous cases and add each missing records/dispatch/results/resources/observation/reconciliation table, missing marker, whole-family loss, refusal without replacement tables/audit writes, and exact restoration. These new cases are awaiting current-head CI; no baseline reproduction run is claimed. Private-path coverage and installer hashes include the helper. No schema/version transition or provider call is added.
+
+
+## Initial hosting order branch — 2026-10-15
+
+Codex owns `codex/twentyi-service-orders`, [PR138](https://github.com/afterburn25/Cajun_Web/pull/138) into `codex/twentyi-fulfillment` (#137). Scope: exact initial invoice/order/consent, native admin/client cards, commercial evidence and expiring manual policy, native/browser recovery tests. It retains7038 ancestry and all existing provider engines. Provider package mapping/dispatch linkage is next and remains unimplemented. Source226f passed four native combinations; source3f adds concurrency/malformed recovery and awaits full acceptance. Do not merge/release based on parent tests or treat this as complete20i. No other agent was dispatched or messaged by this checkpoint.
+
+
+## Current continuation — atomic order/service association
+
+Parent5728c2df, PR138: add one native order/service association with exact commercial and provider-request context, atomic audit/replay and missing-history guards; preserve existing hosting/provider engines. Parent actual browser artifact and four order screenshots are now inspected. New runtime validation is pending Linux CI after the local Windows key-permission refusal; no protection was relaxed. Mapping does not verify provider entitlement or authorize dispatch. [Exact scope, evidence, limitations and continuation](TWENTYI_ORDER_SERVICE_LINKS.md).

@@ -2,7 +2,7 @@
 /** Authenticated administration for the public growth and private client workflows. */
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
-function studio_admin_views(): array {return ['studio-clients'=>'Client workspace','studio-job'=>'Client project','studio-pipeline'=>'Sales pipeline','studio-content'=>'Sales content','studio-prices'=>'Estimator prices','studio-portfolio'=>'Portfolio previews','studio-history'=>'Content history','studio-upgrade'=>'Version & database'];}
+function studio_admin_views(): array {return ['studio-clients'=>'Client workspace','studio-job'=>'Client project','studio-pipeline'=>'Sales pipeline','studio-content'=>'Sales content','studio-prices'=>'Estimator prices','studio-portfolio'=>'Portfolio previews','studio-history'=>'Content history','studio-upgrade'=>'Version & database','studio-licenses'=>'Website licenses'];}
 require_once CWP_CODE_ROOT.'/app/settings/revisions.php';
 function studio_admin_action(string $action,array $user): never {
     require_admin();check_csrf();$target='studio-clients';
@@ -51,6 +51,35 @@ function studio_admin_action(string $action,array $user): never {
         $id=gint($_POST,'id',1,2147483647);if(!one('SELECT id FROM '.table('projects').' WHERE id=?',[$id]))throw new InvalidArgumentException('Portfolio project not found.');
         $v=['caption'=>posted('caption',500),'walkthrough'=>safe_url(posted('walkthrough',500),true)];foreach(['desktop','mobile','before'] as $key){$value=posted($key,32);if($value!==''&&(!preg_match('/^[a-f0-9]{32}$/D',$value)||!one('SELECT id FROM '.table('media').' WHERE id=?',[$value])))throw new InvalidArgumentException('Choose an uploaded image from the media library.');$v[$key]=$value;}
         save_setting('growth_portfolio_'.$id,json_encode($v,JSON_THROW_ON_ERROR));$target='studio-portfolio';
+    }elseif($action==='studio_license_create'){
+        $customerId=gint($_POST,'customer_id',1,2147483647);$productId=posted('product_id',50);
+        if($productId===''||!one('SELECT id FROM '.table('studio_clients').' WHERE id=?',[$customerId]))throw new InvalidArgumentException('Choose a client and product.');
+        require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+        $key=license_create($customerId,$productId);$_SESSION['license_key_created']=$key;$target='studio-licenses';
+    }elseif($action==='studio_license_deactivate'){
+        $id=gint($_POST,'id',1,2147483647);if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=?',[$id]))throw new InvalidArgumentException('License not found.');
+        require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+        license_deactivate($id);$target='studio-licenses';
+    }elseif($action==='studio_domain_add'){
+        $licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);
+        if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=?',[$licenseId]))throw new InvalidArgumentException('License not found.');
+        require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+        license_register_domain($licenseId,$domain);$target='studio-licenses';
+    }elseif($action==='studio_domain_deactivate'){
+        $licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);
+        require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+        license_deactivate_domain($licenseId,$domain);$target='studio-licenses';
+    }elseif($action==='studio_license_bundle'){
+        $id=gint($_POST,'id',1,2147483647);$license=one('SELECT * FROM '.table('website_licenses').' WHERE id=?',[$id]);
+        if(!$license)throw new InvalidArgumentException('License not found.');
+        $industry=posted('industry',50);
+        require_once CWP_CODE_ROOT.'/app/licenses/fulfill.php';
+        $coreDir=license_core_source_dir();
+        if($coreDir===null)throw new RuntimeException('Website Core source not found. Configure license_core_dir.');
+        $storage=config()['storage']??'';if($storage==='')throw new RuntimeException('Private storage is not configured.');
+        $zipPath=license_bundle($license['license_key'],$industry,$coreDir,$storage.'/bundles');
+        license_bundle_store($id,$zipPath,$industry.' bundle');
+        flash('Bundle created: '.basename($zipPath));$target='studio-licenses';
     }else throw new InvalidArgumentException('Unknown studio action.');
     log_event($action);flash('Saved.');redirect(admin_url($target));
 }
