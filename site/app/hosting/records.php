@@ -3,6 +3,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/clients/workspace.php';
+require_once CWP_CODE_ROOT.'/app/hosting/storage.php';
 require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/hosting/HostingJournal.php';
 require_once CWP_CODE_ROOT.'/database/schema/hosting_records_schema.php';
@@ -10,13 +11,13 @@ require_once CWP_CODE_ROOT.'/database/migrations/hosting_records_migrate.php';
 use CajunWebPro\Foundation\Hosting\{HostingJournal,HostingPackage};
 
 function hosting_records_ready():bool {
-    return (one('SELECT value FROM '.table('settings').' WHERE name=?',['hosting_records_schema_version'])['value']??'')==='1';
+    return hosting_storage_ready('records');
 }
 function hosting_records_owner(bool $ready=true):array {
     if (support_current() || array_key_exists('support',$_GET)) throw new RuntimeException('Leave client support before using hosting records.');
     $actor=admin_user();
     if (!$actor || !staff_ready() || !studio_ready() || $actor['role']!=='owner' || !staff_can('staff.manage',$actor) || !staff_can('clients.manage',$actor)) throw new RuntimeException('An active owner account and prepared client workspace are required.');
-    if ($ready && !hosting_records_ready()) throw new RuntimeException('An owner must prepare hosting records first.');
+    if ($ready) hosting_storage_require('records');
     return $actor;
 }
 function hosting_records_password(#[\SensitiveParameter] string $password,bool $ready=true):array {

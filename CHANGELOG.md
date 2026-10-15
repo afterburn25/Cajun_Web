@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — preserve missing hosting history
+
+- Check every established hosting storage table before reads/setup; lost tables or setup markers with original audit require database restoration instead of empty recreation.
+- Preserve fresh/interrupted empty preparation, strict schemas, original histories and every prior test. Add native per-table/whole-family restoration cases and private-path coverage. Current-head acceptance is pending.
+
 ## Unreleased — native payment evidence and combined recovery
 
 - Add exact existing-ledger receipt evidence with immutable origin, reversal, client/project/invoice binding and bounded history checks. Keep legacy credits, zero/void totals and sandbox observations separate from verified payment.

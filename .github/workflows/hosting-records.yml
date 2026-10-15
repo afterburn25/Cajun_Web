@@ -2,13 +2,13 @@ name: Hosting record storage checks
 on:
   push:
     branches: [main, codex/hosting-storage]
-    paths: ['site/app/hosting/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/hosting/**', 'site/includes/foundation/hosting/**', 'tests/hosting_records*.php', '.github/workflows/hosting-records.yml']
+    paths: ['site/app/hosting/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/hosting/**', 'site/includes/foundation/hosting/**', 'tests/hosting_records*.php', 'tests/hosting_storage_recovery_cases.php', '.github/workflows/hosting-records.yml']
   pull_request:
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: hosting-records-${{ github.ref }}
+  group: hosting-records-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 jobs:
   native-settings:
@@ -49,8 +49,9 @@ jobs:
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
             -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-hosting-test sh -ec '
-              for source in site/app/hosting/*.php site/database/schema/hosting_records_schema.php site/database/migrations/hosting_records_migrate.php tests/hosting_records*.php; do php -l "$source"; done
+              for source in site/app/hosting/*.php site/database/schema/hosting_records_schema.php site/database/migrations/hosting_records_migrate.php tests/hosting_records*.php tests/hosting_storage_recovery_cases.php; do php -l "$source"; done
               php tests/hosting_records_native.php
+              for report in qa/hosting-*-native-results.json; do cat "$report"; printf "\n"; done
             '
       - name: Preserve named storage evidence
         if: always()

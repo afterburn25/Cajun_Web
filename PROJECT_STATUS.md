@@ -21,7 +21,14 @@ Combined parent8ed80fd9 has32 focused workflows passing. [Full38761131563](https
 
 ## Current payment-evidence implementation
 
-From combined parent8ed80fd9 on [PR137](https://github.com/afterburn25/Cajun_Web/pull/137), native receipt assessment validates exact invoice/client/project identity, original receipt audits, corrections, hashes and unresolved attempts. Imported balances, zero/void invoices and sandbox captures cannot become verified new payment. Authorized staff see this distinction in existing recurring invoice cards. The projection does not grant order or provider authority; client payment-history behavior is retained. New native corruption/reversal/legacy/sandbox tests and actual HTTP receipt/correction controls extend the existing suites. Python drivers pass syntax checks; new PHP/database/browser evidence is pending this source's CI.
+From combined parent8ed80fd9 on [PR137](https://github.com/afterburn25/Cajun_Web/pull/137), native receipt assessment validates exact invoice/client/project identity, original receipt audits, corrections, hashes and unresolved attempts. Imported balances, zero/void invoices and sandbox captures cannot become verified new payment. Authorized staff see this distinction in existing recurring invoice cards. The projection does not grant order or provider authority; client payment-history behavior is retained. New native corruption/reversal/legacy/sandbox tests and actual HTTP receipt/correction controls extend the existing suites. Payment source423dd598 (same-tree PR merge33db5925) passed32 focused workflows. Native recurring/ledger run38765096311 passed all four PHP8.2/8.4 and MariaDB10.11/MySQL8.4 combinations; four actual JSON reports contain108 named ledger checks each, including39 new payment-evidence cases (432 executions). Its full38765096283 has passed build/native and actual HTTP/Chromium and is running recovery; it must continue without cancellation. These results do not certify the subsequent hosting recovery repair.
+
+
+## Hosting history recovery guard — 2026-10-15
+
+Source inspection of parent423dd598 found marker-only hosting readiness and setup paths that attempted additive table creation even for an established family. The new closed hosting storage helper checks every required table and checks original setup audit when a marker is lost. Established missing history now requires original database restoration before any DDL; fresh/interrupted empty setup and strict schema validation remain. This is a recovery repair for the required order/hosting dependency, not a new execution engine.
+
+Native tests retain all previous cases and add each missing records/dispatch/results/resources/observation/reconciliation table, missing marker, whole-family loss, refusal without replacement tables/audit writes, and exact restoration. These new cases are awaiting current-head CI; no baseline reproduction run is claimed. Private-path coverage and installer hashes include the helper. No schema/version transition or provider call is added.
 
 ## Remaining implementation
 

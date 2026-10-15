@@ -30,3 +30,9 @@ The combined branch owns the forthcoming fulfillment connection and interaction 
 ## Current continuation — payment evidence
 
 Codex continues PR137 from8ed80fd9 with native invoice/receipt evidence and staff projection. The first combined full run38761131563 failed its Apache1.14 cache precondition after build/native/browser/recovery passed; preserve its evidence and rerun after the fixture correction. All original histories and tests remain. Order/provider fulfillment is still unfinished; payment readiness is not a grant. Local writes and review-request/metadata edits remain restricted, so current implementation checkpoints are GitHub source commits.
+
+## Hosting history recovery guard — 2026-10-15
+
+Source inspection of parent423dd598 found marker-only hosting readiness and setup paths that attempted additive table creation even for an established family. The new closed hosting storage helper checks every required table and checks original setup audit when a marker is lost. Established missing history now requires original database restoration before any DDL; fresh/interrupted empty setup and strict schema validation remain. This is a recovery repair for the required order/hosting dependency, not a new execution engine.
+
+Native tests retain all previous cases and add each missing records/dispatch/results/resources/observation/reconciliation table, missing marker, whole-family loss, refusal without replacement tables/audit writes, and exact restoration. These new cases are awaiting current-head CI; no baseline reproduction run is claimed. Private-path coverage and installer hashes include the helper. No schema/version transition or provider call is added.

@@ -2,13 +2,13 @@ name: Hosting operation storage checks
 on:
   push:
     branches: [main, codex/hosting-operations, codex/hosting-provision-retry, codex/hosting-deprovision-retry, codex/hosting-reconciliation, codex/hosting-reconciliation-storage]
-    paths: ['site/app/hosting/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/hosting/**', 'site/includes/foundation/hosting/**', 'tests/hosting_*native.php', '.github/workflows/hosting-operations.yml']
+    paths: ['site/app/hosting/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/hosting/**', 'site/includes/foundation/hosting/**', 'tests/hosting_*native.php', 'tests/hosting_storage_recovery_cases.php', '.github/workflows/hosting-operations.yml']
   pull_request:
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: hosting-operations-${{ github.ref }}
+  group: hosting-operations-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 jobs:
   native-settings:
@@ -59,12 +59,13 @@ jobs:
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
             -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-hosting-test sh -ec '
-              for source in site/app/hosting/*.php site/database/schema/hosting_*schema.php site/database/migrations/hosting_*migrate.php tests/hosting_*native.php; do php -l "$source"; done
+              for source in site/app/hosting/*.php site/database/schema/hosting_*schema.php site/database/migrations/hosting_*migrate.php tests/hosting_*native.php tests/hosting_storage_recovery_cases.php; do php -l "$source"; done
               php tests/hosting_records_native.php
               php tests/hosting_operations_native.php
               php tests/hosting_retry_native.php
               php tests/hosting_delete_retry_native.php
               php tests/hosting_reconciliation_native.php
+              for report in qa/hosting-*-native-results.json; do cat "$report"; printf "\n"; done
             '
       - name: Preserve named storage evidence
         if: always()

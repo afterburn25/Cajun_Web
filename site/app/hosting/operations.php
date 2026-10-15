@@ -10,10 +10,11 @@ require_once CWP_CODE_ROOT.'/app/hosting/reconciliation.php';
 use CajunWebPro\Foundation\Hosting\{HostingJournal,OperationResult};
 
 function hosting_operations_ready():bool {
-    return (one('SELECT value FROM '.table('settings').' WHERE name=?',['hosting_operations_schema_version'])['value']??'')==='1';
+    return hosting_storage_ready('operations');
 }
 function hosting_operations_require_ready():void {
-    if(!hosting_records_ready() || !provider_settings_ready() || !hosting_operations_ready())throw new RuntimeException('An owner must prepare hosting operation storage first.');
+    hosting_storage_require('records');hosting_storage_require('operations');
+    if(!provider_settings_ready())throw new RuntimeException('An owner must prepare provider storage first.');
 }
 /** Closed mapping. Retry and reconciliation need their own verified evidence path. */
 function hosting_operations_commands(string $operation):array {
