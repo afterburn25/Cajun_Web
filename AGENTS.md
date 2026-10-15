@@ -1,5 +1,11 @@
 # Working agreement for CajunWebPro
 
+## Next increment — recurring billing notifications
+
+Codex starts `codex/recurring-billing-activity` from frozen PR121/`abaa20081870ede3bae9a606f71d730972792d6d`. The [activity contract](docs/RECURRING_BILLING_ACTIVITY_CONTRACT.md) precedes implementation: client/staff recipients, separate offer/event keys, complete-history validation, exact focused event links, bounded personal read state and the existing bell. No notification code exists at this checkpoint. Preserve native agreement/invoice mutations and all20i ownership with Devin.
+
+Parent121 application38668021580 has a downloaded passing browser checkpoint:1588 HTTP/Chromium assertions,115 native recurring and68 default/no-ini forms; complete screenshot inspection and final recovery/Apache/Linux comparison remain pending. Exact Windows packages are verified. Full acceptance is still running; do not alter abaa200. Devin's115 now0624484 changes only browser fixtures over independently cleared8e068cf; its new full application remains unverified. Published1.23/main68e4d41 is unchanged. Next: implement the notification contract and meaningful native/HTTP/recovery cases on this separate branch while finishing parent acceptance and independent reviews.
+
 ## Recurring billing draft 121 — focused CI verified, recovery acceptance prepared
 
 Draft [PR 121](https://github.com/afterburn25/Cajun_Web/pull/121) preserves implementation `e9ee051bd2617df1a7e004d2f462bbe15a7c921a` above native120/66f7760. Downloaded focused runs [38667207543](https://github.com/afterburn25/Cajun_Web/actions/runs/38667207543) and [38667516353](https://github.com/afterburn25/Cajun_Web/actions/runs/38667516353) verify **1,280 named executions**, 640 per PHP8.2/8.4 matrix: 115 native + 69 unchanged legacy ledger + 68 default forms + 68 no-ini forms per runtime. Tested merge `433e0871b2434b998549a34bf61be6e5664ef5eb` is tree-identical; reports match the local cases and full logs have no PHP diagnostics. All29 triggered workflows pass. Local44 HTTP/Edge checks and eight inspected full images remain separately scoped evidence.

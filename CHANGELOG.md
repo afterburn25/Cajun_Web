@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased preparation — recurring billing activity
+
+- Defined the contract for current-authorized recurring offer/decision notifications and exact history links through the existing workspace center and bell. Implementation pending; native mutations and shipping bytes unchanged.
+
 ## Unreleased — recurring billing recovery verification
 
 - Draft121/e9ee051 focused artifacts independently verify1280 named executions and all29 workflows. Actual local44 HTTP/Edge checks and eight full screenshots remain separately scoped.
