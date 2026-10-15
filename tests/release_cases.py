@@ -6,9 +6,13 @@ import requests
 from playwright.sync_api import expect
 from release_version import VERSION
 
-def db(sql, params=()):
-    result=subprocess.run([php,str(ROOT/'tests/fixture_db.php')],input=json.dumps({'sql':sql,'params':params}),text=True,capture_output=True,check=True)
+def fixture_command(request):
+    result=subprocess.run([php,str(ROOT/'tests/fixture_db.php')],input=json.dumps(request),text=True,capture_output=True,check=True)
     return json.loads(result.stdout)
+
+
+def db(sql, params=()):
+    return fixture_command({'sql': sql, 'params': params})
 
 def chosen_form(session,url,action,field,value,changes):
     response=session.get(url)

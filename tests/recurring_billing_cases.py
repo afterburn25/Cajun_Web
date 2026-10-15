@@ -6,7 +6,7 @@ import subprocess
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 import requests
-from release_cases import db, chosen_form
+from release_cases import db, chosen_form, fixture_command
 from staff_cases import OWNER
 
 
@@ -185,6 +185,30 @@ def run_browser(env, browser):
         db('INSERT INTO ci_settings (name,value) VALUES (?,?)', ['recurring_billing_schema_version', '1'])
         db('UPDATE ci_studio_invoices SET reference=?,title=?,instructions=? WHERE id=?', [original_invoice['reference'], original_invoice['title'], original_invoice['instructions'], invoice])
     check('Restoring recurring version marker recovers original invoice history', saved_records()==before_origin_loss)
+    original_schedule = db('SELECT * FROM ci_recurring_billing_schedules WHERE id=?', [historical['schedule_id']])[0]
+    for corruption in ['missing', 'malformed']:
+        if corruption == 'missing':
+            check('Synthetic recovery fixture removes only the intended schedule', fixture_command({'operation': 'remove-recurring-schedule', 'schedule_id': historical['schedule_id']}) == {'removed': 1})
+        else:
+            db('UPDATE ci_recurring_billing_schedules SET journal_json=? WHERE id=?', ['{invalid', historical['schedule_id']])
+        try:
+            response = client.get(portal+'?job='+str(job))
+            check('Client project remains usable with '+corruption+' recurring schedule',
+                  response.status_code == 200 and 'Recurring browser project' in response.text
+                  and 'Project conversation' in response.text and 'Private project files' in response.text
+                  and 'Invoice details are unavailable' in response.text
+                  and original_invoice['reference'] not in response.text
+                  and 'Fatal error' not in response.text and 'Uncaught' not in response.text)
+            check('Corrupt recurring schedule cannot expose another clients project: '+corruption,
+                  'Recurring browser project' not in foreign.get(portal+'?job='+str(job)).text)
+        finally:
+            if corruption == 'missing':
+                columns = list(original_schedule)
+                db('INSERT INTO ci_recurring_billing_schedules (`'+'`,`'.join(columns)+'`) VALUES ('+','.join('?' for _ in columns)+')', [original_schedule[c] for c in columns])
+            else:
+                db('UPDATE ci_recurring_billing_schedules SET journal_json=? WHERE id=?', [original_schedule['journal_json'], historical['schedule_id']])
+        check('Restoring '+corruption+' recurring schedule preserves exact history and restores project invoice',
+              saved_records() == before_origin_loss and original_invoice['reference'] in client.get(portal+'?job='+str(job)).text)
     before_missing = saved_records()
     for table in tables:
         retained = 'ci_retained_'+table

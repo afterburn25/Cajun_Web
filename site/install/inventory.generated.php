@@ -2608,7 +2608,7 @@ function setup_expected_files(): array { return [
     'portal/views/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
     'portal/views/auth.php'=>'c23b9baa48681d2b679488761ba5e835eb70bce48a33d0089a457f88591c06bc',
     'portal/views/plans.php'=>'b05ae4c29408d220c46b755ea2093e1038c75a6d3cee342b0c803745de30053e',
-    'portal/views/workspace.php'=>'9977c3ee449293ac929606af16c19ce572c974fee87895c4128c164fd6178692',
+    'portal/views/workspace.php'=>'715fee5b417992f8a5c8bc3782ea641d91d503cdd6fdd1c5b160cf0d8693cc82',
     'robots.php'=>'643efa6953174e2ccb0f0ca7d282f5d3f67b07f243b1593f47575bfcc960f567',
     'sitemap.php'=>'e73fd55f7d88bc2a4899bdd1305337b6bcf0110aab164d9e9d4cda56f303a3bd',
     'storage/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
