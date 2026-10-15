@@ -67,6 +67,9 @@ rejects('negative price rejected', fn () => plan(['priceAmount' => -1]));
 rejects('bad currency rejected', fn () => plan(['currency' => 'US$']));
 rejects('unknown cadence rejected', fn () => plan(['cadence' => 'weekly']));
 rejects('unlimited inclusion rejected', fn () => plan(['inclusions' => ['Unlimited content edits']]));
+foreach (['Unlimited support', 'Infinite edits', 'Unmetered care', 'Forever support', '24/7 guaranteed help', 'Never goes down', 'Guaranteed uptime'] as $name) {
+    rejects('unsupported service promise in plan name rejected: ' . $name, fn () => plan(['name' => $name]));
+}
 rejects('unmetered support rejected', fn () => plan(['supportExpectation' => 'Unmetered support']));
 rejects('guaranteed uptime rejected', fn () => plan(['inclusions' => ['Updates'], 'supportExpectation' => 'Guaranteed uptime']));
 rejects('non-integer limit rejected', fn () => plan(['limits' => ['edits' => 'many']]));

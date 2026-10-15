@@ -2509,7 +2509,7 @@ function setup_expected_files(): array { return [
     'includes/foundation/scheduling/TimeWindow.php'=>'589a86d8032e2c8375b20d8ed1f2f49a654bdabe121cf87cbb43f50650601db6',
     'includes/foundation/scheduling/WeeklyRule.php'=>'224db32aec36d1551dfe0d090b58130230a4a5c424cf597a305504386a1faa8c',
     'includes/foundation/service-plans/PlanSubscription.php'=>'d36a2f69eb88de50097a60bfb013357fa20c9f93194192ac7ef6c8526d8a6b18',
-    'includes/foundation/service-plans/ServicePlan.php'=>'13b0228b99738f3e29134dbb2c51596cbc801c1b807c17e7baa996a79a113f59',
+    'includes/foundation/service-plans/ServicePlan.php'=>'400e64634e9b70bd1faf5d639883cdd1a2ee752427e72ded82dc4240261f5304',
     'includes/foundation/twentyi-inventory-reader/InventoryReader.php'=>'26d87efa698e0f21d990c73816616ff4f4aa09e4a5ab9d2cd7a52067527a56e4',
     'includes/foundation/twentyi-inventory/InventoryCapability.php'=>'45968185958cfb454ffaa645ac4aefb6d1b9e51c27a11bbf0b37e034729c0e50',
     'includes/foundation/twentyi-inventory/InventoryPackage.php'=>'05904c63c7ee000fa98de6e4dcbdcd65bb6c9967a4ac337d867947249b36ec1e',
