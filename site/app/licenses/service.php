@@ -41,7 +41,20 @@ function license_register_domain(int $licenseId, string $domain): void {
     if (strlen($domain) > 253 || !preg_match('/^[a-z0-9][a-z0-9\-\.]*\.[a-z]{2,}$/D', $domain)) {
         throw new InvalidArgumentException('Invalid domain format.');
     }
+    // A license supports at most 2 active domains (public + test instance).
+    // Registering or reactivating beyond that requires deactivating one first —
+    // the deactivated site's next validation then fails and it goes offline.
     $now = gmdate('Y-m-d H:i:s');
+    $existing = one('SELECT * FROM ' . table('license_domains') . ' WHERE license_id = ? AND domain = ?', [$licenseId, $domain]);
+    if (!$existing || !(int) $existing['is_active']) {
+        $active = (int) query(
+            'SELECT COUNT(*) FROM ' . table('license_domains') . ' WHERE license_id = ? AND is_active = 1',
+            [$licenseId]
+        )->fetchColumn();
+        if ($active >= 2) {
+            throw new InvalidArgumentException('This license already has 2 active domains (public + test). Deactivate one before registering a new site.');
+        }
+    }
     query(
         'INSERT INTO ' . table('license_domains') . ' (license_id, domain, is_active, registered_at) VALUES (?, ?, 1, ?)
          ON DUPLICATE KEY UPDATE is_active = 1, deactivated_at = NULL, registered_at = ?',

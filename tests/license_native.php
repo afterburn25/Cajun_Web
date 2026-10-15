@@ -39,6 +39,10 @@ try{
     license_register_domain($licId,'test.example.com');
     lic_ok('Two active domains per license allowed',count(license_domains($licId))===2);
 
+    // Third active domain exceeds the 2-instance cap
+    lic_deny('Third active domain denied (2-instance cap)',fn()=>license_register_domain($licId,'third.example.com'));
+    lic_ok('Cap leaves exactly two domain rows',count(license_domains($licId))===2);
+
     // Re-registering reactivates instead of duplicating
     license_deactivate_domain($licId,'example.com');
     license_register_domain($licId,'example.com');
