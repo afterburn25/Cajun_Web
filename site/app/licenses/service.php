@@ -16,13 +16,24 @@ function license_generate_key(): string {
  * Create a new license for a customer.
  */
 function license_create(int $customerId, string $productId): string {
-    $key = license_generate_key();
     $now = gmdate('Y-m-d H:i:s');
-    query(
-        'INSERT INTO ' . table('website_licenses') . ' (license_key, customer_id, product_id, is_active, created_at, updated_at) VALUES (?, ?, ?, 1, ?, ?)',
-        [$key, $customerId, $productId, $now, $now]
-    );
-    return $key;
+    // license_key is UNIQUE — 128-bit random keys make collisions essentially
+    // impossible, but retry rather than fail outright if one ever occurs.
+    for ($attempt = 0; $attempt < 3; $attempt++) {
+        $key = license_generate_key();
+        try {
+            query(
+                'INSERT INTO ' . table('website_licenses') . ' (license_key, customer_id, product_id, is_active, created_at, updated_at) VALUES (?, ?, ?, 1, ?, ?)',
+                [$key, $customerId, $productId, $now, $now]
+            );
+            return $key;
+        } catch (PDOException $e) {
+            if ($attempt === 2 || (int) ($e->errorInfo[1] ?? 0) !== 1062) {
+                throw $e; // not a duplicate, or retries exhausted
+            }
+        }
+    }
+    throw new RuntimeException('Could not allocate a unique license key.');
 }
 
 /**
