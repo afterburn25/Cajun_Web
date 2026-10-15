@@ -55,7 +55,7 @@ try {
     foreach([[1,'Client One','one@example.invalid'],[2,'Client Two','two@example.invalid']] as $c)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',[$c[1],$c[2],bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     pi_actor();provider_settings_migrate($password);$id=provider_settings_save('',0,'20i fixture',true,$secret,$password);
     provider_inventory_migrate($password);pi_ok('Inventory storage prepared at v3','3'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'')&&pi_count('provider_domain_links')===0&&pi_count('provider_domain_link_events')===0);
-    // Full v1→v3 upgrade path is exercised on the base branch; this branch verifies v3 stamp and domain-link tables.
+    // Populated v1/v2, interrupted migration and legacy suppression run in provider_inventory_upgrade_native.php.
     save_setting('provider_inventory_schema_version','99');pi_deny('Unsupported inventory storage version refused',fn()=>provider_inventory_migrate($password));save_setting('provider_inventory_schema_version','3');
     pi_deny('Wrong current password prevents DNS and refresh intent',fn()=>provider_inventory_refresh($id,1,'wrong','pi_resolve','pi_read'));
     pi_deny('Stale revision prevents DNS and refresh intent',fn()=>pi_refresh($id,null,null,2));
@@ -109,7 +109,13 @@ try {
     pi_deny('Duplicate domain link refused',fn()=>provider_inventory_domain_link($id,201,'c.example',1,1,$password));
     $clientDomains=provider_inventory_client_domains(2);
     pi_ok('Client sees the linked observed domain',count($clientDomains)===1&&$clientDomains[0]['domain']==='c.example'&&$clientDomains[0]['present']&&!$clientDomains[0]['context_changed']);
+    pi_ok('A domain link exposes no sibling hosting name or names collection',!isset($clientDomains[0]['package']['name'])&&!isset($clientDomains[0]['package']['names']));
     pi_ok('Other client sees no linked domains',provider_inventory_client_domains(1)===[]);
+    $scripted=[new TransportResponse(200,[],json_encode([pi_item(301,'c.example')]))];pi_refresh($id);pi_cool();
+    $clientDomains=provider_inventory_client_domains(2);
+    pi_ok('A moved domain retains its original approved pair without disclosing the new package',count($clientDomains)===1&&!$clientDomains[0]['present']&&$clientDomains[0]['package']===null&&(int)$clientDomains[0]['link']['package_id']===201);
+    pi_deny('A moved domain cannot be silently re-approved on another package',fn()=>provider_inventory_domain_relink($dlink['id'],1,$password));
+    pi_ok('A moved domain stays isolated from the other client',provider_inventory_client_domains(1)===[]);
     $scripted=[new TransportResponse(200,[],json_encode([pi_item(301,'d.example')]))];pi_refresh($id);pi_cool();
     $clientDomains=provider_inventory_client_domains(2);
     pi_ok('Domain absent from the last good read stays honest',count($clientDomains)===1&&!$clientDomains[0]['present']);
@@ -124,8 +130,9 @@ try {
     $worker=pi_worker('pause-dns',$id);pi_ok('Refresh worker commits intent before blocking DNS',trim(fgets($worker[1][1]))==='resolving'&&pi_count('provider_refreshes')>pi_count('provider_refresh_results'));
     $row=provider_settings_profile();provider_settings_state($id,1,'disable',$password);fwrite($worker[1][0],"continue\n");fflush($worker[1][0]);pi_ok('Profile change during DNS prevents credential transport',pi_finish($worker)==='access_changed:0');provider_settings_state($id,2,'enable',$password);pi_cool();
     $worker=pi_worker('pause-dns',$id,3);pi_ok('Race worker reaches DNS',trim(fgets($worker[1][1]))==='resolving');query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');fwrite($worker[1][0],"continue\n");fflush($worker[1][0]);pi_ok('Owner revocation during DNS prevents credential transport',pi_finish($worker)==='access_changed:0');query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');pi_actor();pi_cool();
+    $beforeRevokedRead=pi_count('provider_observation_packages');
     $code=provider_inventory_refresh($id,3,$password,'pi_resolve',function($row,$secret,$address,$authorize){query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');return InventorySnapshot::unavailable('transport_unknown',time(),'twenty-i|x|packages.list');});
-    pi_ok('Owner revocation before result discards the read',$code==='access_changed'&&pi_count('provider_observation_packages')===3);query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');pi_actor();pi_cool();
+    pi_ok('Owner revocation before result discards the read',$code==='access_changed'&&pi_count('provider_observation_packages')===$beforeRevokedRead);query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');pi_actor();pi_cool();
     $before=pi_count('provider_refresh_results');pi_ok('Terminal audit failure leaves an incomplete retained intent',pi_audit_failure('refresh_finished',fn()=>pi_refresh($id,null,null,3))&&pi_count('provider_refresh_results')===$before);pi_cool();
     $scripted=[new TransportResponse(200,[],json_encode([pi_item(201,'c.example')]))];
     $code=provider_inventory_refresh($id,3,$password,'pi_resolve',function($row,$secret,$address,$authorize)use($id):InventorySnapshot {

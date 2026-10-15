@@ -1,5 +1,9 @@
 # Decision record
 
+## 2026-10-15 — Codex P0 takeover and first inventory repairs
+
+Owner transferred the complete 20i lane to Codex and paused unrelated development. From main68e4d41, preserved #122/#115 via normal merges through9744110; repaired old-schema readiness, generated-column validation, moved-domain/context display, sibling-name disclosure and two fixture counters. Added genuine populated/interrupted/repeated upgrade and isolation coverage;38 local PHP8.4/MariaDB checks pass. Expanded current PHP/database and packaged HTTP acceptance is pending. Full release review and later hosting/domain/VPS/SSH/billing implementation continue. [Scope, ancestry and evidence](TWENTYI_CODEX_TAKEOVER.md). v1.23 stays unchanged; no live action.
+
 ## 2026-10-14 — distinguish branch integration from reviewed publication
 
 The owner has authorized continued implementation and isolated tests on separate branches. Earlier assistant-authored checkpoints postponed even testable route integration until independent review. Prepare the concrete admin/router/setup integration and packaged synthetic acceptance on unreleased PR77 now, so review can assess the complete behavior. Retain independent review and exact-source acceptance before merge/publication. This does not authorize customer mail, live deployment, provider writes, payment or SSH, and does not claim review received.

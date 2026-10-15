@@ -10,7 +10,7 @@ Not included: provider mutations, plan-type/balance/detail projections (undocume
 
 ## Storage
 
-`site/database/schema/provider_inventory_schema.php` prepares five InnoDB tables, all under the shared strict validator (`catalog_validate_schema` + per-table checks in `provider_inventory_migrate.php`):
+`site/database/schema/provider_inventory_schema.php` prepares seven InnoDB tables, all under the shared strict validator (`catalog_validate_schema` + per-table checks in `provider_inventory_migrate.php`):
 
 | Table | Purpose |
 |---|---|
@@ -59,7 +59,7 @@ Links are never inferred from provider fields (names, domains, stack users), and
 ## Views
 
 - **Admin provider settings** (`site/admin/views/providers.php`): prepare/refresh forms (password-confirmed), latest refresh badge/reason, observed package cards (type, enabled state, names, labels, stack users) with owner link/unlink controls, a "linked services not in the latest observation" section so stale mappings remain visible and unlinkable, ordered link history, and paginated refresh history.
-- **Portal `?services`** (`site/includes/layout/provider_services.php`): shows only packages explicitly linked to the signed-in client whose approved context still matches the current profile, with the last good observed state or an honest absent marker — absence never implies deletion/suspension. Context-changed mappings show a pending-review message instead of package data. Owner-linked domains appear the same way, carrying their observed host package name while present. Stack-user identities and unmapped keys are not exposed to clients.
+- **Portal `?services`** (`site/includes/layout/provider_services.php`): shows only packages explicitly linked to the signed-in client whose approved context still matches the current profile, with the last good observed state or an honest absent marker — absence never implies deletion/suspension. Context-changed mappings show a pending-review message instead of package data. Owner-linked domains appear the same way, carrying only their approved package ID while present; sibling primary names and unrelated package names are excluded. Stack-user identities and unmapped keys are not exposed to clients.
 
 ## Failure model
 
@@ -80,3 +80,11 @@ No arbitrary exception text, credential material or ciphertext is persisted; the
 ## Verification
 
 `tests/provider_inventory_native.php` + `.github/workflows/provider-inventory.yml` (PHP 8.2/8.4 + MariaDB 10.11): 77 named assertions covering storage preparation, the version-1 in-place upgrade path (including pre-upgrade mappings loading unverified), authorization and revision checks before any network access, cooldown and hourly limits, injected resolver/transport classification, complete/partial/unavailable persistence, last-good preservation, link restrictions and isolation, unlink events, mid-flight races via pause-worker fixtures, credential-context binding (stale-observation link refusal, replacement-context suppression, explicit re-approval rebinding, settings-only suspension), and secret-material absence from durable rows. Named results retained as `provider-inventory-<php>-<sha>` artifacts.
+
+## Codex takeover correction
+
+## 2026-10-15 — Codex P0 takeover and first inventory repairs
+
+Owner transferred the complete 20i lane to Codex and paused unrelated development. From main68e4d41, preserved #122/#115 via normal merges through9744110; repaired old-schema readiness, generated-column validation, moved-domain/context display, sibling-name disclosure and two fixture counters. Added genuine populated/interrupted/repeated upgrade and isolation coverage;38 local PHP8.4/MariaDB checks pass. Expanded current PHP/database and packaged HTTP acceptance is pending. Full release review and later hosting/domain/VPS/SSH/billing implementation continue. [Scope, ancestry and evidence](TWENTYI_CODEX_TAKEOVER.md). v1.23 stays unchanged; no live action.
+
+Both views require inventory version3. Populated1/2 must use the existing owner-password/CSRF preparation; GET never changes schema. Failed/interrupted additive preparation retains the old stamp, original rows and owner retry. A missing established table is a recovery requirement, not a fresh installation. Domain cards compare the approved package plus revision/fingerprint with the current observation. A changed package is not reapproved by the old link; remove that link and explicitly approve the new pair. Hosted names do not establish registrar entitlement. The38-case upgrade suite renders real PHP owner views against MariaDB; the full original race suite and packaged paths still require current CI.

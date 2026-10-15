@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-15 — Codex P0 takeover and first inventory repairs
+
+Owner transferred the complete 20i lane to Codex and paused unrelated development. From main68e4d41, preserved #122/#115 via normal merges through9744110; repaired old-schema readiness, generated-column validation, moved-domain/context display, sibling-name disclosure and two fixture counters. Added genuine populated/interrupted/repeated upgrade and isolation coverage;38 local PHP8.4/MariaDB checks pass. Expanded current PHP/database and packaged HTTP acceptance is pending. Full release review and later hosting/domain/VPS/SSH/billing implementation continue. [Scope, ancestry and evidence](docs/TWENTYI_CODEX_TAKEOVER.md). v1.23 stays unchanged; no live action.
+
 ## Unreleased — 20i domain ownership links (devin/twentyi-domain-links)
 
 Owner-approved domain→client mappings over the observed inventory: `provider_domain_links`/`provider_domain_link_events` (provider-inventory schema v3) bind `(profile_id, domain)` to a client with the carrying package, credential-context fingerprint and approved revision. Linking requires the `(package_id, domain)` pair in the last good observation under the exact current revision — the reseller case of several clients' domains on one package. Admin gains per-domain link/unlink/re-approve controls with a stale-domain section; the client portal surfaces linked domains with honest absence markers. Additive migration preserves v1/v2 data. `domains.renew` also joined the buildable write catalog (documented `name`/`years`/`renewPrivacy`); `addDomain`/`transferDomain`/`nameservers`/`dns` are catalogued shape-incomplete and refused.

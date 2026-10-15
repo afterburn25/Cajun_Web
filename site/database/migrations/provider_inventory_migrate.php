@@ -11,12 +11,13 @@ function provider_inventory_validate_schema(string $name,string $sql): void {
         'provider_observation_packages'=>['observation_identity'=>['refresh_id','package_id']],
         'provider_package_links'=>['link_target'=>['profile_id','package_id']],
         'provider_domain_links'=>['link_target'=>['profile_id','domain']],
-        'provider_domain_link_events'=>[],
         default=>throw new LogicException('Unknown provider inventory storage.'),
     };
     catalog_validate_schema($name,$sql,$unique);
     foreach(all('SHOW FULL COLUMNS FROM '.table($name)) as $column) {
-        if($column['Extra']!=='' && !(($name==='provider_package_link_events' || $name==='provider_domain_link_events') && $column['Field']==='id' || $name==='provider_refreshes' && $column['Field']==='seq') && $column['Extra']==='auto_increment') throw new RuntimeException('Incompatible provider inventory columns. Existing data was preserved.');
+        $sequenceColumn=(in_array($name,['provider_package_link_events','provider_domain_link_events'],true) && $column['Field']==='id')
+            || ($name==='provider_refreshes' && $column['Field']==='seq');
+        if($column['Extra']!=='' && !($sequenceColumn && $column['Extra']==='auto_increment')) throw new RuntimeException('Incompatible provider inventory columns. Existing data was preserved.');
         if($column['Default']!==null) throw new RuntimeException('Incompatible provider inventory columns. Existing data was preserved.');
         $expected=match(true) {
             ($name==='provider_package_link_events' || $name==='provider_domain_link_events') && $column['Field']==='id'=>null,
@@ -88,9 +89,13 @@ function provider_inventory_migrate(#[\SensitiveParameter] string $password): vo
         if((one('SELECT value FROM '.table('settings').' WHERE name=?',['studio_schema_version'])['value']??'')!=='2')throw new RuntimeException('Prepare the client workspace before provider inventory.');
         $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'');
         if(!in_array($version,['','1','2','3'],true))throw new RuntimeException('This provider inventory storage version is not supported. Existing data was preserved.');
+        $missing=[];
         foreach(provider_inventory_schema(config()['db']['prefix']) as $name=>$sql) {
-            if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))db()->exec($sql);
+            if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))continue;
+            if($version==='3' || ($version!=='' && !in_array($name,['provider_domain_links','provider_domain_link_events'],true)))throw new RuntimeException('Expected provider inventory storage is missing. Restore the original database before preparing; existing data was preserved.');
+            $missing[$name]=$sql;
         }
+        foreach($missing as $sql)db()->exec($sql);
         if($version==='1')provider_inventory_upgrade_v2();
         foreach(provider_inventory_schema(config()['db']['prefix']) as $name=>$sql)provider_inventory_validate_schema($name,$sql);
         staff_transaction(function()use($actor):void {

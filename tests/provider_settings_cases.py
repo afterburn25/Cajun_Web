@@ -84,6 +84,45 @@ def run_browser(env,browser):
     inv_post('provider_inventory_refresh')
     check('Packaged refresh records a complete observation',db('SELECT r.state FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id ORDER BY f.seq DESC LIMIT 1')[0]['state']=='complete' and db('SELECT COUNT(*) AS n FROM ci_provider_observation_packages')[0]['n']==1)
     alice_id=db('SELECT id FROM ci_studio_clients WHERE email=?',['alice@example.invalid'])[0]['id']
+    alice=requests.Session();submit(alice,BASE+'/existing/portal/index.php','login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
+    services_url=BASE+'/existing/portal/index.php?services=1'
+    inv_post('provider_inventory_link',package_id='910',client_id=str(alice_id))
+    package_link=db('SELECT id FROM ci_provider_package_links WHERE package_id=910')[0]['id']
+    preserved_tables=['provider_refreshes','provider_refresh_results','provider_observation_packages','provider_package_links','provider_package_link_events','provider_profiles']
+    def snapshot():
+        return {t:db('SELECT * FROM ci_'+t+' ORDER BY id') for t in preserved_tables}
+    for old_version in ['1','2']:
+        # These are actual historical table layouts populated through the HTTP APIs.
+        for table in ['provider_domain_links','provider_domain_link_events']:
+            assert not db('SELECT * FROM ci_'+table), 'Only empty isolated fixture tables may be replaced'
+            db('DROP TABLE ci_'+table)
+        if old_version=='1':
+            db('ALTER TABLE ci_provider_refresh_results DROP COLUMN key_fingerprint')
+            db('ALTER TABLE ci_provider_package_links DROP COLUMN key_fingerprint, DROP COLUMN profile_revision')
+        db('UPDATE ci_settings SET value=? WHERE name="provider_inventory_schema_version"',[old_version])
+        before=snapshot();schema_before=db('SHOW TABLES')
+        r=owner.get(url);client_page=alice.get(services_url)
+        check('Populated v'+old_version+' routes offer owner preparation and safe client state',r.status_code==200 and 'Prepare inventory storage' in r.text and client_page.status_code==200 and 'once the studio enables hosting inventory' in client_page.text and 'client-pack.example' not in client_page.text)
+        check('Populated v'+old_version+' GET changes neither schema nor retained records',db('SHOW TABLES')==schema_before and snapshot()==before)
+        r=inv_post('provider_inventory_prepare',csrf='invalid')
+        check('Populated v'+old_version+' upgrade rejects invalid CSRF','session expired' in r.text.lower() and db('SHOW TABLES')==schema_before)
+        r=inv_post('provider_inventory_prepare',current_password='wrong')
+        check('Populated v'+old_version+' upgrade requires current owner password','current password' in r.text.lower() and db('SHOW TABLES')==schema_before)
+        r=inv_post('provider_inventory_prepare')
+        after=snapshot()
+        projected={t:[{k:row[k] for k in before[t][i]} for i,row in enumerate(rows)] for t,rows in after.items()}
+        check('Populated v'+old_version+' HTTP upgrade preserves every original record and binding',r.status_code==200 and projected==before and db('SELECT value FROM ci_settings WHERE name="provider_inventory_schema_version"')==[{'value':'3'}])
+        if old_version=='1':
+            client_page=alice.get(services_url)
+            check('Legacy v1 client link stays suppressed after upgrade','client-pack.example' not in client_page.text and 'Details are hidden' in client_page.text)
+            db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-120')
+            inv_post('provider_inventory_refresh');inv_post('provider_inventory_relink',link_id=package_link)
+            check('Legacy v1 link requires fresh observation and explicit approval','client-pack.example' in alice.get(services_url).text)
+        else:
+            check('Verified v2 link preserves authorized client visibility','client-pack.example' in alice.get(services_url).text)
+        before=snapshot();inv_post('provider_inventory_prepare')
+        check('Repeated v'+old_version+' HTTP preparation retains history and fingerprints',snapshot()==before)
+    inv_post('provider_inventory_unlink',link_id=package_link)
     r=inv_post('provider_inventory_domain_link',package_id='910',domain='linked-domain.example',client_id=str(alice_id),current_password='wrong')
     check('Packaged domain link requires owner password','current password' in r.text.lower() and not db('SELECT * FROM ci_provider_domain_links'))
     r=inv_post('provider_inventory_domain_link',package_id='910',domain='unseen.example',client_id=str(alice_id))
@@ -91,12 +130,36 @@ def run_browser(env,browser):
     r=inv_post('provider_inventory_domain_link',package_id='910',domain='linked-domain.example',client_id=str(alice_id))
     links=db('SELECT * FROM ci_provider_domain_links')
     check('Owner links an observed domain exactly once',len(links)==1 and links[0]['domain']=='linked-domain.example' and 'linked' in owner.get(url).text.lower())
-    alice=requests.Session();submit(alice,BASE+'/existing/portal/index.php','login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
     r=alice.get(BASE+'/existing/portal/index.php?services=1')
-    check('Client portal shows the owner-linked domain','linked-domain.example' in r.text and 'client-pack.example' in r.text)
+    check('Client portal shows only the owner-linked domain and approved package','linked-domain.example' in r.text and 'package #910' in r.text and 'client-pack.example' not in r.text and 'shared.example' not in r.text)
     bob=requests.Session();submit(bob,BASE+'/existing/portal/index.php','login',{'email':'bob@example.invalid','password':'Synthetic client passphrase 2026'})
     check('Other client portal hides the linked domain','linked-domain.example' not in bob.get(BASE+'/existing/portal/index.php?services=1').text)
+    provider_server.packages[-1]['id']=911
+    provider_server.packages[-1]['name']='another-client-private.example'
+    db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-120')
+    inv_post('provider_inventory_refresh');r=owner.get(url)
+    check('Moved domain owner page shows approved and observed package identities','Approved package #910' in r.text and 'package #911' in r.text and 'Unlink the old binding' in r.text)
+    domain_forms=[f for f in soup(r).select('form') if f.select_one('[name=action][value=provider_inventory_domain_relink]')]
+    check('Moved domain offers no silent reapproval form',not domain_forms)
+    r=alice.get(services_url)
+    check('Moved domain hides new package details from the client','linked-domain.example' in r.text and 'another-client-private.example' not in r.text and 'package #911' not in r.text and 'not present' in r.text)
+    retained_link=db('SELECT * FROM ci_provider_domain_links');retained_events=db('SELECT * FROM ci_provider_domain_link_events')
+    inv_post('provider_inventory_domain_relink',link_id=links[0]['id'])
+    check('Forged moved-domain reapproval preserves original link and journal',db('SELECT * FROM ci_provider_domain_links')==retained_link and db('SELECT * FROM ci_provider_domain_link_events')==retained_events)
+    check('Moved domain remains hidden from the other client','linked-domain.example' not in bob.get(services_url).text)
+    for session,capture_url,title in [(owner,url,'Provider-Moved-Domain-Owner'),(alice,services_url,'Provider-Moved-Domain-Client')]:
+        capture=browser.new_context(viewport={'width':1440,'height':1050})
+        capture.add_cookies([{'name':c.name,'value':c.value,'domain':c.domain,'path':c.path} for c in session.cookies])
+        rendered=capture.new_page();capture_errors=[];rendered.on('pageerror',lambda e:capture_errors.append(str(e)))
+        for width,height,label in [(1440,1050,'Desktop'),(320,740,'Mobile')]:
+            rendered.set_viewport_size({'width':width,'height':height});rendered.bring_to_front();rendered.goto(capture_url)
+            expect(rendered.locator('[data-activity-bell] a.activity-bell')).to_be_visible()
+            rendered.evaluate('document.fonts.ready')
+            expect(rendered.locator('body')).to_contain_text('linked-domain.example')
+            rendered.screenshot(path=str(QA/(title+'-'+label+'.png')),full_page=True)
+            check(title+' '+label+' fits viewport',rendered.evaluate('document.documentElement.scrollWidth <= innerWidth'))
+        check(title+' has no browser errors',not capture_errors);capture.close()
     r=inv_post('provider_inventory_domain_unlink',link_id=links[0]['id'])
-    check('Domain unlink removes the mapping and records the event',not db('SELECT * FROM ci_provider_domain_links') and db('SELECT event FROM ci_provider_domain_link_events')[0]['event']=='unlink')
+    check('Domain unlink removes the mapping and records the event',not db('SELECT * FROM ci_provider_domain_links') and db('SELECT event FROM ci_provider_domain_link_events ORDER BY id DESC')[0]['event']=='unlink')
     check('Unlinked domain leaves the client view','linked-domain.example' not in alice.get(BASE+'/existing/portal/index.php?services=1').text)
     check('Provider fixture stays clean after inventory reads',not provider_server.errors)

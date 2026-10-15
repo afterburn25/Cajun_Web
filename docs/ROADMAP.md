@@ -1,5 +1,9 @@
 # Approved roadmap and acceptance criteria
 
+## 2026-10-15 — Codex P0 takeover and first inventory repairs
+
+Owner transferred the complete 20i lane to Codex and paused unrelated development. From main68e4d41, preserved #122/#115 via normal merges through9744110; repaired old-schema readiness, generated-column validation, moved-domain/context display, sibling-name disclosure and two fixture counters. Added genuine populated/interrupted/repeated upgrade and isolation coverage;38 local PHP8.4/MariaDB checks pass. Expanded current PHP/database and packaged HTTP acceptance is pending. Full release review and later hosting/domain/VPS/SSH/billing implementation continue. [Scope, ancestry and evidence](TWENTYI_CODEX_TAKEOVER.md). v1.23 stays unchanged; no live action.
+
 ## Owner allocation override — 2026-10-14
 
 The owner instructed: **“let devin do the complete 20i integration.”** Devin owns the entire implementation: provider adapters, native persistence/migrations and client ownership, admin and client portal screens, hosting lifecycle/controls, domains, VPS/cloud, support handoffs and VPS SSH, with their tests and documentation. This supersedes earlier component-only assignments and statements reserving all 20i application/UI work to Codex. Codex retains non-20i development and final independent review, combined acceptance, merge/release coordination. [Full handoff and acceptance](DEVIN_COMPLETE_20I_HANDOFF.md); [authoritative GitHub assignment](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6171468180).

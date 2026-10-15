@@ -39,7 +39,8 @@ function provider_services_portal_render(): never {
         if($domain['context_changed']) {
             echo '<p>The studio changed its provider settings since this domain was approved. Details are hidden until the studio confirms it under the current settings. Contact the studio if this stays unavailable.</p>';
         } elseif($domain['present']) {
-            echo '<p>Domain · hosted on '.esc($domain['package']['name']).' · Linked '.esc($domain['link']['linked_at']).' UTC</p>';
+            echo '<p>Hosted domain · package #'.(int)$domain['package']['package_id'].' · Linked '.esc($domain['link']['linked_at']).' UTC</p>';
+            echo '<p class="hint">This hosting link does not establish domain registration or renewal rights.</p>';
             echo '<p class="hint">Observed '.esc($domain['observed_at']).' UTC. Status reflects the studio\'s last confirmed read.</p>';
         } else {
             echo '<p>'.esc($domain['observed_at']===null?'No observation is available yet.':'This domain was not present in the last confirmed inventory read.').' Contact the studio for details.</p>';

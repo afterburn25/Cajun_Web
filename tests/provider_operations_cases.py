@@ -67,8 +67,9 @@ def run_browser(env,browser):
 
     grant('packages.create',json.dumps({'resellerId':'*','type':'synthetic','domain_name':'packaged-two.example'}))
     gid2=db('SELECT id FROM ci_provider_operation_grants WHERE consumed_key IS NULL ORDER BY seq DESC')[0]['id']
+    posts_before_replay=len(provider_server.posts)
     r=op_post('provider_operations_run',grant_id=gid2,idempotency_key='packaged-create-1')
-    check('A replayed idempotency key never sends again',len(provider_server.posts)==1 and db('SELECT attempts FROM ci_provider_operations WHERE idempotency_key=?',['packaged-create-1'])[0]['attempts']==1)
+    check('A replayed idempotency key never sends again',len(provider_server.posts)==posts_before_replay and db('SELECT attempts FROM ci_provider_operations WHERE idempotency_key=?',['packaged-create-1'])[0]['attempts']==1)
 
     provider_server.write_mode='uncertain'
     grant('packages.create',json.dumps({'resellerId':'*','type':'synthetic','domain_name':'packaged-three.example'}))

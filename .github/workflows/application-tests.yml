@@ -5,6 +5,7 @@ on:
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   pull_request:
     branches: [main]
+    paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -89,6 +90,10 @@ jobs:
           .ci-venv/bin/python tests/mail_submission_combined.py
           php8.3 tests/provider_settings_native.php
           php8.3 tests/provider_checks_native.php
+          php8.3 tests/provider_inventory_native.php
+          php8.3 tests/provider_inventory_upgrade_native.php
+          php8.3 tests/provider_operations_native.php
+          php8.3 tests/provider_operations_execute_native.php
           php8.3 tests/hosting_records_native.php
           php8.3 tests/hosting_operations_native.php
           php8.3 tests/hosting_retry_native.php

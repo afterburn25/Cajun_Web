@@ -32,7 +32,17 @@ final class ProviderInventoryAccessChanged extends RuntimeException {}
 
 function provider_inventory_ready(): bool {
     $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'');
-    return in_array($version,['2','3'],true);
+    // Both admin and portal inventory screens include the v3 domain tables.
+    // Older installations must retain the explicit owner preparation action.
+    return $version==='3';
+}
+
+/** A credential fingerprint fences a context; it does not establish account identity. */
+function provider_inventory_link_context_matches(array $link,array $profile,?array $observation): bool {
+    return $observation!==null && (int)$link['profile_revision']===(int)$profile['revision']
+        && (int)$observation['profile_revision']===(int)$profile['revision']
+        && ($link['key_fingerprint']??'')!==''
+        && hash_equals($link['key_fingerprint'],(string)($observation['key_fingerprint']??''));
 }
 
 /** Deterministic credential-context fingerprint — installation-bound, never the key itself. */
@@ -315,6 +325,7 @@ function provider_inventory_authority_args(#[\SensitiveParameter] string $passwo
  * implies deletion or suspension.
  */
 function provider_inventory_client_services(int $clientId): array {
+    if(!provider_inventory_ready())return [];
     $links=all('SELECT l.* FROM '.table('provider_package_links').' l WHERE l.client_id=? ORDER BY l.package_id',[$clientId]);
     $out=[];
     foreach($links as $link) {
@@ -335,15 +346,17 @@ function provider_inventory_client_services(int $clientId): array {
  * observation never implies the domain was removed.
  */
 function provider_inventory_client_domains(int $clientId): array {
+    if(!provider_inventory_ready())return [];
     $links=all('SELECT l.* FROM '.table('provider_domain_links').' l WHERE l.client_id=? ORDER BY l.domain',[$clientId]);
     $out=[];
     foreach($links as $link) {
         $profile=one('SELECT revision FROM '.table('provider_profiles').' WHERE id=?',[$link['profile_id']]);
         $current=$profile!==null&&(int)$profile['revision']===(int)$link['profile_revision'];
         $observation=$current?one('SELECT r.id AS refresh_id,f.started_at FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id WHERE f.profile_id=? AND r.state IN (\'complete\',\'partial\') AND r.key_fingerprint=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$link['profile_id'],$link['key_fingerprint']]):null;
-        $package=$observation?one('SELECT package_id,name,names,enabled FROM '.table('provider_observation_packages').' WHERE refresh_id=? AND package_id=?',[$observation['refresh_id'],$link['package_id']]):null;
+        $package=$observation?one('SELECT package_id,names,enabled FROM '.table('provider_observation_packages').' WHERE refresh_id=? AND package_id=?',[$observation['refresh_id'],$link['package_id']]):null;
         $present=false;
         if($package){$names=array_map('strtolower',array_map('strval',json_decode($package['names'],true)?:[]));$present=in_array($link['domain'],$names,true);unset($package['names']);}
+        if(!$present)$package=null;
         $out[]=['link'=>$link,'package'=>$package,'domain'=>$link['domain'],'observed_at'=>$observation['started_at']??null,'present'=>$present,'context_changed'=>!$current];
     }
     return $out;

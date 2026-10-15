@@ -1490,3 +1490,7 @@ Domain-level client ownership on `devin/twentyi-domain-links` (stacked on `devin
 Files: `site/database/schema/provider_inventory_schema.php`, `site/database/migrations/provider_inventory_migrate.php`, `site/app/providers/inventory.php`, `site/admin/controllers/providers.php`, `site/admin/views/providers.php`, `site/includes/layout/provider_services.php`, `site/install/actions/deploy.php`, `tests/provider_inventory_native.php`, `tests/provider_settings_cases.py`, `docs/TWENTYI_INVENTORY_APP.md`.
 
 Tests: PHP lint clean on all touched files; native MariaDB + packaged lanes pending CI.
+
+## 2026-10-15 — Codex P0 takeover and first inventory repairs
+
+Owner transferred the complete 20i lane to Codex and paused unrelated development. From main68e4d41, preserved #122/#115 via normal merges through9744110; repaired old-schema readiness, generated-column validation, moved-domain/context display, sibling-name disclosure and two fixture counters. Added genuine populated/interrupted/repeated upgrade and isolation coverage;38 local PHP8.4/MariaDB checks pass. Expanded current PHP/database and packaged HTTP acceptance is pending. Full release review and later hosting/domain/VPS/SSH/billing implementation continue. [Scope, ancestry and evidence](TWENTYI_CODEX_TAKEOVER.md). v1.23 stays unchanged; no live action.

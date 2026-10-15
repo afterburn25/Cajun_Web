@@ -1,5 +1,7 @@
 # Owner-supplied 20i API reference: implementation handoff
 
+Current ownership and priority: [Codex complete20i takeover](TWENTYI_CODEX_TAKEOVER.md). Earlier allocations/progress summaries below are historical; the complete requirements remain in force.
+
 ## Status and source provenance
 
 This is a source-derived investigation and implementation handoff, not a shipped integration, provider test, release, deployment, or worker dispatch. The owner supplied the API documentation to accelerate the existing CajunWebPro work. Do not restart the project or replace its custom PHP UI with StackCP, WHMCS, or Easy Builder.
