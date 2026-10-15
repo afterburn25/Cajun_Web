@@ -1,3 +1,7 @@
+# Parallel catalog ownership — 2026-10-15
+
+Owner-authorized subagent `twentyi_catalog` owns isolated branch `codex/twentyi-catalog-controls` at parent0ebc4623. Scope: provider plan catalog document/storage, owner retail plan forms, existing hosting preparation/provenance, bounded native/pure tests and related docs. Root owns integration and publication; other agents own mailbox/domain/VPS controls. Shared integration files are `site/app/hosting/order_links.php`, `order_link_views.php`, `order_views.php`, admin plan controller/view, hosting preparation layout, service-order schema validator, native recurring driver/workflow and generated installer inventory. [Exact catalog scope](TWENTYI_PLAN_CATALOG.md). Do not claim automatic discovery or live acceptance.
+
 # Current ownership — mailbox controls
 
 Codex owns `codex/twentyi-mailbox-controls` above preserved client-search PR139, parentc00874b1. Current files: typed mailbox boundary, existing provider adapter/transport, matching tests/workflows/protection/build mirrors and docs. Native approval/persistence/admin/client forms are the next implementation step, not delegated or completed. Preserve current mainb66062e4 for later normal integration and the running parent full suites. [Mailbox continuation](TWENTYI_MAILBOX_CONTROLS.md).

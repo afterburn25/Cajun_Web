@@ -1,3 +1,10 @@
+## Unreleased — owner-reviewed 20i plan catalog
+
+- Save versioned provider account/type/limit mappings for exact published retail plans, with expiry, withdrawal and current-owner/connection checks.
+- Keep private provider cost decimal amounts, currencies, periods and tax/allocation evidence separate from client retail prices; no inferred conversion or provider quote.
+- Prepare existing hosting service records from an eligible saved mapping while retaining original order/payment/fulfillment safeguards and immutable provenance.
+- Local pure checks pass; native/browser/packaged acceptance and automatic discovery remain pending. See [scope](docs/TWENTYI_PLAN_CATALOG.md).
+
 # Integration checkpoint — current main and domain replacement rollback
 
 Normally merge main16f07e49 into the20i client-search branch. Preserve licensing/domain controls and fix failed replacement leaving the original domain disabled. Local4 rollback cases and35 native licensing checks pass; combined acceptance/review pending. Earlier e375 full application artifacts/packages are now verified. Published1.24 remains unchanged.

@@ -54,3 +54,5 @@ if($model->subscribable()) {
 echo '<section class="workspace-card"><h2>Plan history</h2><p>Created '.esc(gmdate('Y-m-d H:i:s',$doc->data()['created_at'])).' UTC.</p><ol>';
 foreach($doc->data()['events'] as $event)echo '<li>'.esc(match($event['command']){'replace_draft'=>'Draft terms updated','activate'=>'Terms published','retire'=>'Plan retired'}).' · owner '.(int)$event['actor'].' · '.esc(gmdate('Y-m-d H:i:s',$event['at'])).' UTC</li>';
 echo '</ol></section>';
+
+provider_plan_catalog_ui($doc);

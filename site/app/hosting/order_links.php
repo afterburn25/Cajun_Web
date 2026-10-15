@@ -5,6 +5,7 @@ if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/hosting/orders.php';
 require_once CWP_CODE_ROOT.'/app/hosting/records.php';
 require_once CWP_CODE_ROOT.'/app/providers/operations.php';
+require_once CWP_CODE_ROOT.'/app/providers/plan_catalog.php';
 require_once CWP_CODE_ROOT.'/database/schema/hosting_order_links_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/hosting_order_links_migrate.php';
 use CajunWebPro\Foundation\Hosting\{HostingJournal,HostingPackage};
@@ -36,8 +37,8 @@ function hosting_order_links_validate(array $row,ServiceOrderDocument $order):ar
     try{
         if(strlen($row['binding_json'])>262144||hash('sha256',$row['binding_json'])!==$row['binding_sha256'])throw new RuntimeException('Binding digest differs.');
         $b=json_decode($row['binding_json'],true,24,JSON_THROW_ON_ERROR);
-        service_plans_keys($b,['format','order_id','order_revision','order_sha256','account_id','client_id','created_by','created_at','profile_id','profile_revision','credential_sha256','package','request','commercial']);
-        if(service_plans_json($b)!==$row['binding_json']||$b['format']!==1||$b['order_id']!==$row['id']||$b['order_id']!==$order->data()['id']||$b['account_id']!==$row['account_id']||$b['client_id']!==(int)$row['client_id']||$b['client_id']!==$order->data()['client_id']||$b['created_by']!==(int)$row['created_by']||$b['created_at']!==(int)$row['created_epoch']||$b['profile_id']!==$row['profile_id']||$b['profile_revision']!==(int)$row['profile_revision'])throw new RuntimeException('Binding identity differs.');
+        service_plans_keys($b,[$b['format']===2?'catalog':'format',...($b['format']===2?['format']:[]),'order_id','order_revision','order_sha256','account_id','client_id','created_by','created_at','profile_id','profile_revision','credential_sha256','package','request','commercial']);
+        if(service_plans_json($b)!==$row['binding_json']||!in_array($b['format'],[1,2],true)||$b['order_id']!==$row['id']||$b['order_id']!==$order->data()['id']||$b['account_id']!==$row['account_id']||$b['client_id']!==(int)$row['client_id']||$b['client_id']!==$order->data()['client_id']||$b['created_by']!==(int)$row['created_by']||$b['created_at']!==(int)$row['created_epoch']||$b['profile_id']!==$row['profile_id']||$b['profile_revision']!==(int)$row['profile_revision'])throw new RuntimeException('Binding identity differs.');
         service_orders_hash($b['credential_sha256']);
         $prefix=hosting_order_links_prefix($order,$b['order_revision'],$b['order_sha256']);$pd=$prefix->data();
         if($pd['events'][array_key_last($pd['events'])]['at']>$b['created_at'])throw new RuntimeException('Binding predates consent.');
@@ -48,6 +49,10 @@ function hosting_order_links_validate(array $row,ServiceOrderDocument $order):ar
         service_orders_hash($b['commercial']['payment_review_sha256']);
         $manual=$prefix->manualPolicy($b['created_at']);
         if(!in_array($b['commercial']['basis'],['verified-payment','owner-manual-policy'],true)||($b['commercial']['basis']==='owner-manual-policy'&&($manual===null||$b['commercial']['manual_event_id']!==$manual['event_id']))||($b['commercial']['basis']==='verified-payment'&&$b['commercial']['manual_event_id']!==null))throw new RuntimeException('Commercial snapshot differs.');
+        if($b['format']===2){
+            service_plans_keys($b['catalog'],['id','sha256']);$catalog=provider_plan_catalog_lookup($b['catalog']['id']);provider_plan_catalog_order($catalog,$prefix,false);
+            if($catalog['sha256']!==$b['catalog']['sha256']||$catalog['profile_id']!==$b['profile_id']||$catalog['profile_revision']!==$b['profile_revision']||$catalog['credential_sha256']!==$b['credential_sha256']||$catalog['configuration']['reseller_id']!==$b['request']['params']['resellerId']||provider_plan_catalog_package($catalog['configuration'],$b['order_id'])!=$package)throw new RuntimeException('Original catalog selection differs.');
+        }
         $historical=one('SELECT enabled,has_credentials FROM '.table('provider_revisions').' WHERE profile_id=? AND revision=?',[$b['profile_id'],$b['profile_revision']]);
         if(!$historical||(int)$historical['enabled']!==1||(int)$historical['has_credentials']!==1)throw new RuntimeException('Original provider revision is missing.');
         $account=hosting_records_row($row['account_id'],$b['client_id']);$journal=hosting_records_journal($account);
@@ -59,20 +64,26 @@ function hosting_order_links_validate(array $row,ServiceOrderDocument $order):ar
     }catch(Throwable $e){if($e instanceof PDOException)throw $e;throw new RuntimeException('Order-to-service history is inconsistent. Restore the original database before continuing.',0,$e);}
 }
 /** Owner-reviewed local preparation. One order, one newly created hosting identity, one atomic audit. */
-function hosting_order_links_create(string $orderId,int $client,int $revision,string $orderHash,string $accountId,HostingPackage $package,string $profileId,int $profileRevision,int $reseller,#[\SensitiveParameter] string $password):array {
+function hosting_order_links_create(string $orderId,int $client,int $revision,string $orderHash,string $accountId,HostingPackage $package,string $profileId,int $profileRevision,int $reseller,#[\SensitiveParameter] string $password,?string $catalogId=null):array {
     hosting_records_id($accountId);service_orders_hash($orderHash);
-    return recurring_billing_locked(function()use($orderId,$client,$revision,$orderHash,$accountId,$package,$profileId,$profileRevision,$reseller,$password):array {
+    return recurring_billing_locked(function()use($orderId,$client,$revision,$orderHash,$accountId,$package,$profileId,$profileRevision,$reseller,$password,$catalogId):array {
         $actor=service_orders_owner($password);hosting_records_owner();hosting_order_links_require();service_plans_client_row($client);
         [$providerActor,$profile]=provider_checks_authority($profileId,$profileRevision,$password);
         if((int)$providerActor['id']!==(int)$actor['id'])throw new RuntimeException('Current owner changed.');
         $order=service_orders_validate(service_orders_row($orderId));
         if($order->data()['client_id']!==$client)throw new RuntimeException('Hosting order unavailable.');
         $prefix=hosting_order_links_prefix($order,$revision,$orderHash);
+        $catalog=null;
+        if($catalogId!==null){
+            $catalog=provider_plan_catalog_lookup($catalogId);provider_plan_catalog_order($catalog,$prefix,true);
+            if($catalog['profile_id']!==$profileId||$catalog['profile_revision']!==$profileRevision||$catalog['configuration']['reseller_id']!==$reseller||provider_plan_catalog_package($catalog['configuration'],$orderId)!=$package)throw new RuntimeException('Reload the exact provider catalog selection.');
+        }
         $request=hosting_order_links_request($prefix,$package,$reseller);$pd=json_decode(HostingJournal::create($accountId,$package,'client:'.$client,0)->json(),true)['package'];
         $old=one('SELECT * FROM '.table('hosting_order_links').' WHERE id=? FOR UPDATE',[$orderId]);
         if($old){
             $saved=hosting_order_links_validate($old,$order);$b=$saved['binding'];
             if($b['order_revision']!==$revision||$b['order_sha256']!==$orderHash||$b['account_id']!==$accountId||$b['created_by']!==(int)$actor['id']||$b['profile_id']!==$profileId||$b['profile_revision']!==$profileRevision||$b['credential_sha256']!==hash('sha256',$profile['credentials'])||$b['package']!==$pd||$b['request']!==$request)throw new RuntimeException('This order already has a different local service mapping.');
+            if(($b['catalog']['id']??null)!==$catalogId)throw new RuntimeException('Original provider catalog selection differs.');
             return $saved;
         }
         if($order->revision()!==$revision||$order->fingerprint()!==$orderHash)throw new RuntimeException('Review the current accepted order before mapping it.');
@@ -82,6 +93,7 @@ function hosting_order_links_create(string $orderId,int $client,int $revision,st
         hosting_records_create_locked($accountId,$client,$package,(int)$actor['id']);$account=hosting_records_row($accountId,$client);
         $at=(int)$account['created_epoch'];$manual=$assessment['manual'];
         $b=['format'=>1,'order_id'=>$orderId,'order_revision'=>$revision,'order_sha256'=>$orderHash,'account_id'=>$accountId,'client_id'=>$client,'created_by'=>(int)$actor['id'],'created_at'=>$at,'profile_id'=>$profileId,'profile_revision'=>$profileRevision,'credential_sha256'=>hash('sha256',$profile['credentials']),'package'=>$pd,'request'=>$request,'commercial'=>['basis'=>$assessment['basis'],'payment_review_sha256'=>$assessment['payment']['review_sha256'],'manual_event_id'=>$assessment['basis']==='owner-manual-policy'?$manual['event_id']:null]];
+        if($catalog){$b=['catalog'=>['id'=>$catalog['id'],'sha256'=>$catalog['sha256']]]+$b;$b['format']=2;}
         $bytes=service_plans_json($b);$row=['id'=>$orderId,'account_id'=>$accountId,'client_id'=>$client,'created_by'=>(int)$actor['id'],'created_epoch'=>$at,'profile_id'=>$profileId,'profile_revision'=>$profileRevision,'binding_json'=>$bytes,'binding_sha256'=>hash('sha256',$bytes)];
         query('INSERT INTO '.table('hosting_order_links').' (id,account_id,client_id,created_by,created_epoch,profile_id,profile_revision,binding_json,binding_sha256) VALUES (?,?,?,?,?,?,?,?,?)',array_values($row));
         hosting_records_audit((int)$actor['id'],'order_linked',hosting_order_links_audit_detail($row));

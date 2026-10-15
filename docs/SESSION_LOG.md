@@ -1937,3 +1937,12 @@ Request: continue complete20i P0 after reporting scope at about30% complete. Sta
 ## 2026-10-15 — begin native mailbox creation on existing provider gateway
 
 Request: continue full20i P0. Startingc00874b1 on new `codex/twentyi-mailbox-controls`. Implemented official mailbox request/response validation, transient protected-secret resolver interface, fixed transport allowlist and existing-gateway execution/replay coverage. Inspected actual provider ledger schema and retained the returned local ID rather than an overlong full email address. Default adapter/generic grants remain unable to send.95 mailbox and230 existing operation checks pass under default/no-INI PHP8.4; fixed transport regressions/syntax pass. Installer refresh49660 completed successfully. Native authorization/storage/forms and full acceptance are next, not completed. Mainadvanced tob66062e4 licensing audit tests and is preserved for later normal merge. No production effect or release.
+
+## 2026-10-15 — parallel catalog mapping increment
+
+The owner requested parallel 20i agents. The catalog agent owns `codex/twentyi-catalog-controls`, parent `0ebc46237fce565005b581fe5a96a2691b9840b5`; root retains mailbox implementation and integration/releases. Main `b66062e4` was inspected and not merged into this isolated branch. [Catalog scope and continuation](TWENTYI_PLAN_CATALOG.md).
+
+Adds immutable owner-reviewed provider mappings on the existing retail plan screen, private exact decimal cost/currency/period evidence, current account/type/limits/defaults review, expiration/withdrawal, and catalog-backed existing hosting preparation. Original retail consent, commercial eligibility, fulfillment engine and histories are preserved. No automatic discovery or provider entitlement is claimed. Additive native storage, route/forms, historical association provenance and focused tests are included; installer inventory is regenerated.
+
+Local PHP 8.4 default/no-INI each pass 51 named pure document checks; changed/new PHP syntax passes. Native catalog/order fixtures are written but await Linux CI; Windows vault protection was not relaxed. Current browser/package/independent review gates remain pending. No live provider operation, charge, customer mail, SSH, deployment or release occurred. Next: inspect exact branch native matrix and fix any failures, then root integrates with other parallel branches and performs combined acceptance/review. Published 1.24.0 remains unchanged.
+

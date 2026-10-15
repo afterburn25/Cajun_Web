@@ -4,6 +4,7 @@ declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/hosting/order_link_views.php';
 require_once CWP_CODE_ROOT.'/includes/layout/hosting_fulfillment.php';
+require_once CWP_CODE_ROOT.'/includes/layout/provider_plan_catalog.php';
 
 function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $assessment):void {
     $ctx=hosting_order_links_context($order->data()['id'],$order->data()['client_id'],!$owner);$p=$ctx['progress'];
@@ -32,6 +33,7 @@ function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $
         service_plans_confirmation('Prepare local hosting history for this accepted order.',true);echo '<button class="btn gold">Prepare hosting history</button></form></section>';return;
     }
     if(!$assessment||!$assessment['eligible']){echo '<p>Complete the commercial review before creating this order’s hosting record.</p></section>';return;}
+    provider_plan_catalog_order_ui($order);
     $action='service_plans_order_map_service';
     echo '<p>Record the package and location reviewed in your provider account. This prepares a local service record; provider availability, defaults and setup authorization still require verification.</p><p>Check package defaults such as Website Turbo, welcome email, application installation and SSH keys in My20i. A package type can apply these automatically.</p><form method="post">';service_orders_ui_fields($action,$order->data()['agreement']['id'],$order);
     foreach(['order_hash'=>$order->fingerprint(),'account_id'=>bin2hex(random_bytes(16)),'profile_id'=>$profile['id'],'profile_revision'=>(string)$profile['revision']] as $key=>$value)echo '<input type="hidden" name="'.esc($key).'" value="'.esc(service_orders_ui_value($action,$key,$value,64)).'">';
