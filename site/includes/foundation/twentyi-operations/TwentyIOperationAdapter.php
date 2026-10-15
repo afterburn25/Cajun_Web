@@ -84,9 +84,15 @@ final class TwentyIOperationAdapter implements ProviderAdapter
             if ($secret === '' || strlen($secret) > self::MAX_KEY_BYTES || preg_match('/[\x00-\x1f\x7f]/', $secret)) {
                 return OperationResult::failed($operation->name, 'The stored credential is unusable.', 'invalid_credential');
             }
+            // The fixed transport requires this exact header order:
+            // Authorization first, then the documented JSON headers.
             $request = new \CajunWebPro\Foundation\Provider\TransportRequest(
                 $request->method, $request->url,
-                $request->headers + ['Authorization' => 'Bearer ' . base64_encode($secret)],
+                [
+                    'Authorization' => 'Bearer ' . base64_encode($secret),
+                    'Accept' => $request->headers['Accept'],
+                    'Content-Type' => $request->headers['Content-Type'],
+                ],
                 $request->body, $request->timeoutSeconds
             );
         } finally {

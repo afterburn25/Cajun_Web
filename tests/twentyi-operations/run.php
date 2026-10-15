@@ -67,7 +67,7 @@ $request=$builder->build(new ProviderOperation('packages.create','idem-1',[
 ]));
 check($request instanceof TransportRequest,'valid create builds a transport request');
 check($request->method==='POST'&&$request->url==='https://api.20i.com/reseller/*/addWeb','create posts to the documented self-alias path');
-check($request->timeoutSeconds===30.0,'bounded write timeout');
+check($request->timeoutSeconds===15.0,'bounded write timeout');
 $body=json_decode((string)$request->body,true);
 check(is_array($body)&&!isset($body['resellerId'])&&$body['domain_name']==='client-site.example'&&count($body)===7,'body contains allowlisted fields only, slot consumed');
 check(!isset($request->headers['Authorization'])&&!isset($request->headers['authorization']),'request never carries an Authorization header');

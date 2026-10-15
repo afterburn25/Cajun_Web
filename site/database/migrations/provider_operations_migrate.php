@@ -85,8 +85,12 @@ function provider_operations_migrate(#[\SensitiveParameter] string $password): v
         foreach(provider_operations_schema(config()['db']['prefix']) as $name=>$sql) {
             if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))db()->exec($sql);
         }
-        if($version==='1')provider_operations_upgrade_v2();
-        if(in_array($version,['1','2'],true))provider_operations_upgrade_v3();
+        // Upgrades are column-driven, not version-driven: the two
+        // recorded '2' states (ledger-v2 with profile_revision only,
+        // execution-v2 with the request columns only) each converge by
+        // adding whichever columns are missing.
+        provider_operations_upgrade_v2();
+        provider_operations_upgrade_v3();
         foreach(provider_operations_schema(config()['db']['prefix']) as $name=>$sql)provider_operations_validate_schema($name,$sql);
         staff_transaction(function()use($actor,$version):void {
             if(!provider_operations_ready()) {
