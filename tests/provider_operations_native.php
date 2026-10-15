@@ -72,6 +72,12 @@ try {
     save_setting('provider_operations_schema_version','2');provider_operations_migrate($password);
     po_ok('Populated ledger-v2 storage gains approval-request columns',provider_operations_ready()&&(one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operation_grants','scope_params'])!==null));
     db()->exec('ALTER TABLE '.table('provider_operations').' ADD INDEX unexpected(status)');po_deny('Extra index refused without change',fn()=>provider_operations_migrate($password));db()->exec('ALTER TABLE '.table('provider_operations').' DROP INDEX unexpected');
+    // A valid auto-increment marker cannot admit unrelated Extra behavior.
+    $beforeInvisible=all('SELECT * FROM '.table('provider_operation_grants').' ORDER BY id');
+    db()->exec('ALTER TABLE '.table('provider_operation_grants').' MODIFY seq BIGINT UNSIGNED NOT NULL AUTO_INCREMENT INVISIBLE');
+    try{po_deny('Unexpected invisible auto-increment sequence is refused',fn()=>provider_operations_migrate($password));}
+    finally{db()->exec('ALTER TABLE '.table('provider_operation_grants').' MODIFY seq BIGINT UNSIGNED NOT NULL AUTO_INCREMENT');}
+    po_ok('Rejected invisible sequence preserves original rows and ordering',$beforeInvisible===all('SELECT * FROM '.table('provider_operation_grants').' ORDER BY id'));
 
     // ---- ledger claim/record semantics ----
     $ledger=new ProviderOperationLedger();$now=time();$fp=hash('sha256','synthetic-request-1');

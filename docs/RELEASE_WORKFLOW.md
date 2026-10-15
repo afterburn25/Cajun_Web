@@ -1,5 +1,9 @@
 # GitHub testing, incremental releases and agent continuity
 
+## Current candidate and ownership — 2026-10-15
+
+Codex owns the complete20i P0 takeover; earlier Devin-only/non-20i allocation below is historical and superseded. PR126 is preparing1.24.0, not published. Verified1.23.0 remains the latest release. The new candidate includes inventory/ownership/operation recovery and adds the immutable1.23 baseline to every supported update path. Full candidate/main and downloaded release gates remain required; checkpoint_only workflow results are explicitly insufficient for publication.
+
 ## Latest verified publication — 1.23.0
 
 [Version 1.23.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0) is published and freshly downloaded/verified at immutable source/tag `4fdb56266c77f6e6bf7b58e966d24696e1eaefc8`, through [PR #85](https://github.com/afterburn25/Cajun_Web/pull/85). Client account edits reject stale forms and retain escaped unsaved details for review. Client changes/invitations recheck current authority, serialize writes and audit atomically; invitation activation is single-use and unexpired. Client administration is refused during support sessions. [Owner guide](CLIENT_ACCOUNT_SAFEGUARDS.md).

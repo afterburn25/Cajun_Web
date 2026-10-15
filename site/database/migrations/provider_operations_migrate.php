@@ -13,7 +13,7 @@ function provider_operations_validate_schema(string $name,string $sql): void {
     catalog_validate_schema($name,$sql,$unique);
     foreach(all('SHOW FULL COLUMNS FROM '.table($name)) as $column) {
         $sequence=$column['Field']==='seq'&&$name==='provider_operation_grants';
-        if(($column['Extra']!=='')!==$sequence || ($column['Default']!==null&&!$sequence)) throw new RuntimeException('Incompatible provider operation columns. Existing data was preserved.');
+        if($column['Extra']!==($sequence?'auto_increment':'') || $column['Default']!==null) throw new RuntimeException('Incompatible provider operation columns. Existing data was preserved.');
         $expected=match($column['Field']) {
             'idempotency_key','fingerprint','operation','status','provider_code','external_id','id','profile_id','scope_fingerprint','consumed_key','reconciled_outcome'=>'ascii_bin',
             'result_message','scope_params'=>'utf8mb4_unicode_ci',

@@ -1,5 +1,15 @@
 # Project status
 
+## 1.24.0 candidate — 20i inventory, ownership and operation recovery
+
+This is an unreleased candidate on codex/twentyi-complete / PR126, starting from6d9391a. Published1.23.0 and main68e4d41 remain unchanged. The first increment provides protected package refresh, explicit package/domain client links, moved-domain and credential-context isolation, populated inventory upgrades, typed package-label approvals, durable operation history and read-only reconciliation. It retains inherited hosting lifecycle/recovery foundations. It does not complete commercial provisioning, native hosting controls, domains, VPS/cloud or SSH; those remain the active P0 roadmap after this increment.
+
+Review corrections776cab39 pass1,372 inspected named executions: four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 jobs (90 ledger/recovery +104 execution assertions each) and four default/no-ini contract reports (149 each). The exact-package checkpoint38691215693 is running at6d9391a; that source has completed external review with no new inline findings observed. Candidate release acceptance has not run yet. The older b1 full run38688509276 retains its browser fixture failure and ongoing Apache evidence.
+
+Candidate changes add exact Extra/default validation for operation columns, with an invisible auto-increment regression that preserves populated rows. Version labels advance together. The immutable published1.23 COMPLETE archive is checksum-verified (057a58c42e847fe68454c1a7dac47afad10c8c05f46de4301842654b356f7228); all2,566 member hashes and original compatibility-shim hashes are registered for updates. Native filesystem and both Apache modes add1.23 as the first baseline while retaining every older baseline. Existing populated drafts, submission fences, mail/provider keys and other records retain their original preservation checks.
+
+Next gates: inspect the current packaged checkpoint/screenshots, correct any failure, verify the stricter schema case on every supported database/runtime, then run exact1.24 candidate full acceptance and independent review. Only afterward merge normally, test exact main, and verify all draft/downloaded release assets before publication. No release, live provider request, payment, message or deployment is claimed. Continue the remaining complete20i scope after the first release.
+
 ## Review corrections and preserved acceptance — 2026-10-15
 
 Starting from b1b0e84, independent review of PR126 reported two P1 defects: generic approval could bypass commercial/message consent, and a missing stamped operation table could be recreated empty, forgetting request history. Both are corrected in this checkpoint. Generic approval and execution allow only the explicit package-label subset; chargeable, destructive, mail and plan requests require their dedicated workflows. An old high-risk grant is refused before consumption, DNS or ledger access. The admin screen now uses package-ID/label fields and hides sending controls on ineligible historical approvals.
