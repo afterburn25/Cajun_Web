@@ -86,6 +86,28 @@ def run_browser(env,browser):
 
     r=op_post('provider_operations_reconcile',idempotency_key='packaged-create-1')
     check('Only uncertain operations can be reconciled','uncertain' in r.text.lower())
+
+    # Reused key: a second grant consumed by the same key before the ledger
+    # conflict leaves ambiguous consumed history — reconcile refuses.
+    grant('packages.create',json.dumps({'resellerId':'*','type':'synthetic','domain_name':'packaged-ambig-a.example'}))
+    ga=db('SELECT id FROM ci_provider_operation_grants WHERE consumed_key IS NULL ORDER BY seq DESC')[0]['id']
+    grant('packages.create',json.dumps({'resellerId':'*','type':'synthetic','domain_name':'packaged-ambig-b.example'}))
+    gb=db('SELECT id FROM ci_provider_operation_grants WHERE consumed_key IS NULL ORDER BY seq DESC')[0]['id']
+    posts=len(provider_server.posts)
+    op_post('provider_operations_run',grant_id=ga,idempotency_key='packaged-ambig-1')
+    op_post('provider_operations_run',grant_id=gb,idempotency_key='packaged-ambig-1')
+    amb=db('SELECT status FROM ci_provider_operations WHERE idempotency_key=?',['packaged-ambig-1'])[0]
+    check('A conflicting second grant sends nothing and the row stays uncertain',amb['status']=='uncertain' and len(provider_server.posts)==posts+1)
+    r=op_post('provider_operations_reconcile',idempotency_key='packaged-ambig-1')
+    check('Ambiguous consumed history refuses reconciliation','ambiguous' in r.text.lower())
+
+    # A credential-context change after the write refuses reconciliation.
+    grant('packages.create',json.dumps({'resellerId':'*','type':'synthetic','domain_name':'packaged-ctx.example'}))
+    gc=db('SELECT id FROM ci_provider_operation_grants WHERE consumed_key IS NULL ORDER BY seq DESC')[0]['id']
+    op_post('provider_operations_run',grant_id=gc,idempotency_key='packaged-ctx-1')
+    db('UPDATE ci_provider_profiles SET revision=revision+1 WHERE id=?',[pid])
+    r=op_post('provider_operations_reconcile',idempotency_key='packaged-ctx-1')
+    check('A changed approved context refuses reconciliation','approved context' in r.text.lower())
     provider_server.write_mode='success'
 
     grant('packages.create',json.dumps({'resellerId':'*','type':'synthetic','domain_name':'packaged-five.example'}))
