@@ -1,5 +1,9 @@
 # Changelog
 
+## Current 20i review results — 2026-10-14
+
+Verify 302 review assertions across PHP 8.2/8.4: 254 controls pass, 48 expectations fail. Clear missing-field approval; retain seven earlier behavior findings and add the production write timeout/header mismatch. Product and supplied tests remain unchanged; all corrections stay with Devin. Confirm all22 terms workflows pass.
+
 ## Verification records — 2026-10-14
 
 Record separate recurring terms PR 118: both downloaded PHP 8.2/8.4 default/no-ini matrices verify 2,976 named executions, canonical context/date/epoch behavior and unchanged shipping/calendar bytes. Independent review/native consent/lifecycle/unique invoices remain required. Preserve live notification full acceptance and complete Devin 20i ownership.
