@@ -1,5 +1,13 @@
 # Project status
 
+## Current-source 20i regression review passed — 2026-10-14
+
+Independent [run38668175555](https://github.com/afterburn25/Cajun_Web/actions/runs/38668175555), harness `c241247db227eeaffcf8431727b8b8fb13cd4d20`, verifies Devin source `8e068cf705b7cb352eb8c786d92e230ed150b86e` (implementation9eaf8ff). All14 downloaded reports/full logs pass: **346 named executions**, including120 independent checks and226 supplied checks, across PHP8.2/8.4/MariaDB. No PHP diagnostics or unexpected fixture failures. Product/foundation and supplied native fixtures are byte-identical to Devin's source.
+
+Both remaining findings clear at this source: populated preceding-v2 migration becomes ready while preserving all34 fixture rows; conflicting same-key consumed grants refuse reconciliation instead of choosing the wrong domain. Earlier current-authority/view/account-identity/send-boundary/unknown-coverage/audit/transport protections remain green. Supplied49 ledger and64 execution/reconciliation checks now finish on each runtime. This is scoped native/contract review, not full20i or live-provider/application/upgrade/SSH acceptance. Complete implementation remains Devin-owned.
+
+The four preserved independent probes carried a static report-source label for the previous0a44625 review. Actual tested source is established independently from run commit and Git product equality. This follow-up corrects only that annotation to8e068cf; every test expectation and product byte is unchanged. The original passing reports are retained; the corrected-label matrix will run again. Next: verify that matrix and report scoped clearance on PR115, then continue full application acceptance and the remaining end-to-end20i milestones. Codex recurring121/abaa200 full38668021580 and exact Windows packages remain separate and in progress; published1.23/main68e4d41 is unchanged.
+
 ## Review of Devin 115 corrections — isolated verification pending
 
 The user retains complete20i implementation with Devin. This review branch starts from exact source `8e068cf705b7cb352eb8c786d92e230ed150b86e` (implementation `9eaf8ff`). Devin reports correction of populated prior-v2 migration column positions and ambiguous consumed-grant reconciliation, plus supplied fixture adaptations. Source inspection confirms those changes exist; the previous independent findings are not cleared until behavioral verification finishes.

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased review — scoped20i regression acceptance
+
+- Verified346 named checks on8e068cf; the populated migration and ambiguous reconciliation findings clear, with earlier controls intact. Corrected the preserved probes' static source annotation without changing expectations or product code. Full20i/application/live acceptance remains pending.
+
 ## Unreleased review — Devin115 current corrections
 
 - Preserve the independent execution/reconciliation/identity/transport probes unchanged against Devin8e068cf and its corrected supplied fixtures. Verification pending; product bytes unchanged and no live provider call.

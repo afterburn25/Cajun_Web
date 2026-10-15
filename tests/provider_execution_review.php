@@ -140,6 +140,6 @@ try {
     fwrite(STDERR,$e->__toString().PHP_EOL);
 }
 $passed = !array_filter($checks,static fn($c)=>!$c['passed']);
-file_put_contents(__DIR__.'/../qa/provider-execution-review-results.json',json_encode(['passed'=>$passed,'source'=>'0a4462581ac43d14eea316d180164a0fcd9e99b5','php'=>PHP_VERSION,'scope'=>'Independent native MariaDB and actual PHP view review with real gateway/adapter/ledger over scripted transport. No DNS, provider call or real credentials. Failed behavioral checks are review findings, not acceptance.','checks'=>$checks,'observations'=>$observations],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
+file_put_contents(__DIR__.'/../qa/provider-execution-review-results.json',json_encode(['passed'=>$passed,'source'=>'8e068cf705b7cb352eb8c786d92e230ed150b86e','php'=>PHP_VERSION,'scope'=>'Independent native MariaDB and actual PHP view review with real gateway/adapter/ledger over scripted transport. No DNS, provider call or real credentials. Failed behavioral checks are review findings, not acceptance.','checks'=>$checks,'observations'=>$observations],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
 echo ($passed?'PASS':'FINDINGS').': '.count($checks).' independent execution checks'.PHP_EOL;
 exit($passed?0:1);

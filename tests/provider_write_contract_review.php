@@ -66,6 +66,6 @@ try {
 $passed=!array_filter($checks,static fn($c)=>!$c['passed']);
 $mode=in_array('--no-ini',$argv,true)?'no-ini':'default';
 @mkdir(__DIR__.'/../qa',0700,true);
-file_put_contents(__DIR__.'/../qa/provider-write-contract-review-'.$mode.'.json',json_encode(['passed'=>$passed,'source'=>'0a4462581ac43d14eea316d180164a0fcd9e99b5','php'=>PHP_VERSION,'scope'=>'Real registered builder and adapter against the production fixed transport validator; a throwing authorization guard prevents every DNS/cURL/provider call. Negative findings are not acceptance.','checks'=>$checks,'observations'=>$observations],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
+file_put_contents(__DIR__.'/../qa/provider-write-contract-review-'.$mode.'.json',json_encode(['passed'=>$passed,'source'=>'8e068cf705b7cb352eb8c786d92e230ed150b86e','php'=>PHP_VERSION,'scope'=>'Real registered builder and adapter against the production fixed transport validator; a throwing authorization guard prevents every DNS/cURL/provider call. Negative findings are not acceptance.','checks'=>$checks,'observations'=>$observations],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
 echo ($passed?'PASS':'FINDINGS').': '.count($checks).' write-contract review checks'.PHP_EOL;
 exit($passed?0:1);
