@@ -163,7 +163,7 @@ function setup_expected_files(): array { return [
     'database/migrations/mail_templates_migrate.php'=>'3b961653cf7ed61188572f32428147c487231696b8f641cb6b9abb537b03912c',
     'database/migrations/notifications_migrate.php'=>'8e14d0831ce6c63c92a18c74b41a555a7a7bb5d358c873d1e0b1540e1e823d74',
     'database/migrations/payments_migrate.php'=>'6a85ee49f9cf21e82acb0c65830b0597d8b4eb61b686c4d4337e402019e8d877',
-    'database/migrations/provider_operations_migrate.php'=>'c79c0ba8459659dee9bc1d87e448d139b726a6cadf5172240e9c73f97dda45b2',
+    'database/migrations/provider_operations_migrate.php'=>'7acb0dc4de8a73aae2d9c8fc9ca331dd8d14a3bfb09a8456da145f760441aa75',
     'database/migrations/provider_settings_migrate.php'=>'684673dd648a7bbeb71e09bd9d55aaeeb8e5c863d1298abd844eca1050db489d',
     'database/migrations/reviews_migrate.php'=>'fab14a5aca1545e28936d465046b938bf111e5ac536ba365a23574c797b18e7d',
     'database/migrations/staff_migrate.php'=>'82f168f347443b19c2a687426e680cb7a85c0372b3f3cea48cec20ab589b0a10',
