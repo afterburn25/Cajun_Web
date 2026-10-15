@@ -1,5 +1,11 @@
 # Changelog
 
+## Reject unsupported service promises in plan names — 2026-10-15
+
+Starting from agreement recovery `7ce1ef70c76eea83f4ccc76f163fae74228bd7d2`, address independent review4281174598 on an isolated correction branch while its full acceptance remains running. Reproduce the bypass with seven unsupported plan names: the original validator scanned inclusions/exclusions/support text but omitted the prominently displayed name. Include the name in that same validation, retaining existing bounds and all other terms. Seven regression cases fail before the change and pass afterward in PHP default/no-ini modes. Add native refusal/no-record-change and actual owner-form preservation assertions. Refresh the canonical deployment mirror and installer hashes.
+
+Native/package/HTTP checks and independent review of this correction remain required before integration. Original agreement recovery evidence stays bound to its own source. This correction belongs to the necessary 20i commercial dependency; the separate 1.24 inventory release is unaffected. Codex retains P0 ownership; no charge, provider action or deployment occurred.
+
 ## Reuse retained agreement recovery and correct roadmap status — 2026-10-15
 
 Starting from PR #130 `20b3620553e19466c0756978ad9c7d8b26d69d8a`, normally merge preserved agreement-release #101 `588f3329bac4b0b7ff0985d6991ec8f0d38e223a` on `codex/twentyi-order-recovery`. Keep both source parents and current Codex P0 ownership. Reuse original 1.23-to-candidate agreement consent/activation recovery fixtures and isolated owner-throttle fixtures; retain full Apache protections and version-specific mail-fence labels. Preserve both session histories. No deployed runtime changed from20b; current missing-table protection remains. The inherited development version is not a release assignment.
