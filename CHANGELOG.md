@@ -2,7 +2,7 @@
 
 ## Unreleased coordination — complete 20i ownership and recurring acceptance
 
-- Keep complete 20i implementation/fixes with Devin; report the new #115 replay fixture counter failure and record unreviewed #122.
+- Keep complete 20i implementation/fixes with Devin. Review #122/b6aad59 storage readiness and upgrade coverage; verify failed native reports and assign the remaining corrections. Preserve #115 replay-counter finding; new head44391f6 does not contain that correction.
 - Verify #123 frozen source with 11,901 full-application executions, all 28 workflows, four inspected new activity views and byte-identical Windows/Linux packages. Finish all 96 changed inherited visual comparisons; independent review remains pending.
 - Retain all 94 parent #121 inspections; verify the ticket-footer correction through #124 and classify the older planning truncation as incomplete historical capture evidence. Preserve the inherited narrow payment-table limitation.
 - Verify test-only #124/e29c1c1 packaged browser checkpoint: 9,781 named executions, all parent assertions retained and six fully inspected complete ticket views. Final application reports and archives remain pending.
