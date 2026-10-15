@@ -2,7 +2,7 @@
 /** Actual database refresh/link orchestration with synthetic resolver/transport; no provider API. */
 declare(strict_types=1);
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
-define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/app/providers/inventory.php';
+define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/admin/controllers/providers.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,TransportException,TransportRequest,TransportResponse};
 use CajunWebPro\Foundation\TwentyIInventory\{InventoryProjector,InventoryRead,InventorySnapshot};
 use CajunWebPro\Foundation\TwentyIInventoryReader\InventoryReader;
@@ -215,7 +215,9 @@ try {
     $code=$cloudRefresh(function()use($id){query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');return InventorySnapshot::unavailable('transport_unknown',time(),'twenty-i|'.$id.'|cloudservers.list');});
     query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');pi_actor();
     pi_ok('Revoked owner cloud result is discarded',$code==='access_changed'&&pi_count('provider_observation_cloud')===$before);pi_cool();
+    $tablesBeforeView=all('SHOW TABLES');$settingsBeforeView=all('SELECT * FROM '.table('settings').' ORDER BY name');
     require_once CWP_CODE_ROOT.'/includes/layout/admin.php';ob_start();require CWP_CODE_ROOT.'/admin/views/providers.php';$cloudHtml=ob_get_clean();
+    pi_ok('Normal controller loads the unprepared search panel without schema-changing GET',str_contains($cloudHtml,'Prepare domain search')&&!provider_domain_search_ready()&&all('SHOW TABLES')===$tablesBeforeView&&all('SELECT * FROM '.table('settings').' ORDER BY name')===$settingsBeforeView);
     pi_ok('Owner cloud screen renders sanitized facts and honest coverage',str_contains($cloudHtml,'cloud.synthetic.invalid')&&str_contains($cloudHtml,'Memory (MB)')&&str_contains($cloudHtml,'2048')&&str_contains($cloudHtml,'coverage is unknown')&&!str_contains($cloudHtml,'CLOUD_PRIVATE_MARKER'));
     provider_settings_save($id,6,'Cloud context changed',true,'',$password);ob_start();require CWP_CODE_ROOT.'/admin/views/providers.php';$cloudHtml=ob_get_clean();
     pi_ok('Cloud screen hides metadata under changed saved settings',str_contains($cloudHtml,'earlier provider settings')&&!str_contains($cloudHtml,'cloud.synthetic.invalid'));

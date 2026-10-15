@@ -1690,3 +1690,14 @@ Python syntax compilation passes for all three changed drivers; the new native/c
 Continue from `codex/twentyi-domain-search`: inspect current native and full application jobs, fix any product/fixture failure, inspect actual images/reports, then coordinate reviewed integration. Current main c42dd6d7 and released1.24 source7190b582 remain unchanged. Cloud1.25 still needs final artifact inspection, and billing35a564a1 retains its separate full run38750019637. Client/public domain search, periods/pricing, purchase/transfer and wider hosting/VPS/support/SSH remain unfinished. Local writes and shell artifact downloads remain restricted; review-request comments and PR metadata edits were blocked by approval policy. No production call or deployment occurred.
 
 Commit: Exercise domain search through packaged browser and concurrent owners. Parent3366f51985d61b27626b2328a2f2361924496f81; enclosing Git history identifies current SHA.
+
+
+## Domain search retained-view fixture repair — 2026-10-15
+
+From099aa2e8 on #136, actual inventory job116492616664 showed an undefined domain-search function while directly rendering the combined provider page. The production router already loads the provider controller. Both retained inventory/upgrade fixtures now use that controller; all earlier cases remain and new assertions prove a combined-page GET creates no tables or settings and leaves populated legacy facts unchanged. Runtime shipping bytes are unchanged.
+
+Native domain search at099 passed54 named cases on all four database/runtime combinations (216 executions), including real concurrent owners. Full099 run38755410755 failed native and skipped browser; its remaining recovery evidence is preserved. Application concurrency now groups by source SHA as well as branch/checkpoint to avoid canceling an earlier candidate when a corrective commit arrives. This descendant's CI is pending, and the packaged domain browser scenarios have not passed yet.
+
+Separate billing35a full38750019637 succeeded (HTTP1,513; recovery275; Apache1,527). Current artifacts/review still remain. Main/release1.24 unchanged; complete20i unfinished. No live provider action or deployment occurred.
+
+Commit: Load the normal provider controller in retained native fixtures. Parent099aa2e8cef128d340f634b9cbebe2c46c2fa2cf. See current status/handoff for external restrictions and next steps.

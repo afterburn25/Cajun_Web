@@ -15,7 +15,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: application-${{ github.ref }}-${{ inputs.checkpoint_only && 'checkpoint' || 'full' }}
+  # Preserve in-flight acceptance for earlier commits; deduplicate only the same source.
+  group: application-${{ github.ref }}-${{ github.sha }}-${{ inputs.checkpoint_only && 'checkpoint' || 'full' }}
   cancel-in-progress: true
 jobs:
   native-and-browser:

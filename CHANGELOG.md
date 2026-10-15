@@ -1,5 +1,13 @@
 # Changelog
 
+## Domain search retained-view fixture repair — 2026-10-15
+
+From099aa2e8 on #136, actual inventory job116492616664 showed an undefined domain-search function while directly rendering the combined provider page. The production router already loads the provider controller. Both retained inventory/upgrade fixtures now use that controller; all earlier cases remain and new assertions prove a combined-page GET creates no tables or settings and leaves populated legacy facts unchanged. Runtime shipping bytes are unchanged.
+
+Native domain search at099 passed54 named cases on all four database/runtime combinations (216 executions), including real concurrent owners. Full099 run38755410755 failed native and skipped browser; its remaining recovery evidence is preserved. Application concurrency now groups by source SHA as well as branch/checkpoint to avoid canceling an earlier candidate when a corrective commit arrives. This descendant's CI is pending, and the packaged domain browser scenarios have not passed yet.
+
+Separate billing35a full38750019637 succeeded (HTTP1,513; recovery275; Apache1,527). Current artifacts/review still remain. Main/release1.24 unchanged; complete20i unfinished. No live provider action or deployment occurred.
+
 ## Domain search browser/concurrency checkpoint — 2026-10-15
 
 Parent `3366f51985d61b27626b2328a2f2361924496f81` passed [native domain search workflow38753822132](https://github.com/afterburn25/Cajun_Web/actions/runs/38753822132). All four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 jobs passed **53 named assertions each (212 executions)**, verified by parsing each job's actual named JSON report from its log. Deployment mirror/inventory and documentation checks passed in every job. This is native persistence and actual PHP view rendering, not browser or live-provider acceptance.

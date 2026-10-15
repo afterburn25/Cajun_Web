@@ -1,13 +1,31 @@
 # Session handoff — continue complete 20i P0
 
-## Domain search browser/concurrency checkpoint — 2026-10-15
+Codex owns implementation through release. Published baseline remains [v1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0), source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`; main remains `c42dd6d70fe57276d75835419db9d6e8e51aaa7f`. Full 20i remains unfinished. No production action or deployment occurred.
 
-Parent `3366f51985d61b27626b2328a2f2361924496f81` passed [native domain search workflow38753822132](https://github.com/afterburn25/Cajun_Web/actions/runs/38753822132). All four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 jobs passed **53 named assertions each (212 executions)**, verified by parsing each job's actual named JSON report from its log. Deployment mirror/inventory and documentation checks passed in every job. This is native persistence and actual PHP view rendering, not browser or live-provider acceptance.
+## Domain search — PR #136
 
-This descendant adds an actual extracted-package HTTP/Chromium domain-search suite with the existing loopback HTTPS server, covering explicit preparation, owner configuration, offered suffixes, captured/stale forms, permissions/CSRF, query escaping, canonical requests, checked versus partial results, rate limiting, history, direct-path denial and desktop/mobile captures. It adds two concurrent PHP owner processes sharing the real database/lock and expects one read to proceed. Rejected configuration and query forms now preserve their original profile/policy revisions, requiring a fresh GET after stale context rather than silently rebinding the retry. The corresponding installer hash is regenerated.
+[PR #136](https://github.com/afterburn25/Cajun_Web/pull/136) extends cloud #127 on `codex/twentyi-domain-search`. At `099aa2e8cef128d340f634b9cbebe2c46c2fa2cf`, [native domain workflow38755410653](https://github.com/afterburn25/Cajun_Web/actions/runs/38755410653) passed **54 named assertions on each of four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 combinations**, including two concurrent owners sharing one provider-read allowance. Actual named JSON results were parsed from all four logs.
 
-Python syntax compilation passes for all three changed drivers; the new native/concurrency/browser cases have **not yet run**. The existing full application workflow is enabled on this feature branch and now includes the native domain test. No long-running billing job was canceled or restarted. Full P0 remains active; these cases cannot substitute for current screenshot inspection, package comparison, independent review, exact-main acceptance and downloaded-release verification.
+The broader [inventory workflow38755469853](https://github.com/afterburn25/Cajun_Web/actions/runs/38755469853) failed because two older native fixtures rendered the combined provider view without its controller, leaving `provider_domain_search_ready` undefined. [Full application run38755410755](https://github.com/afterburn25/Cajun_Web/actions/runs/38755410755) failed native acceptance and skipped browser execution; its remaining recovery checks are retained. This checkpoint repairs both test fixtures to load the same controller as the real admin route, retains all original assertions, and adds checks that the unprepared combined page changes neither table inventory nor settings. It does not hide a failing feature or change runtime behavior.
 
-Continue from `codex/twentyi-domain-search`: inspect current native and full application jobs, fix any product/fixture failure, inspect actual images/reports, then coordinate reviewed integration. Current main c42dd6d7 and released1.24 source7190b582 remain unchanged. Cloud1.25 still needs final artifact inspection, and billing35a564a1 retains its separate full run38750019637. Client/public domain search, periods/pricing, purchase/transfer and wider hosting/VPS/support/SSH remain unfinished. Local writes and shell artifact downloads remain restricted; review-request comments and PR metadata edits were blocked by approval policy. No production call or deployment occurred.
+Full application concurrency now distinguishes source commits so a necessary fix does not cancel an earlier candidate's running recovery evidence. Duplicate runs of the same source still share a group. **The corrected fixtures and packaged browser cases await new CI.** No screenshot/artifact or release acceptance is claimed for this descendant.
 
-This checkpoint is committed through the GitHub connector. Local domain files remain at the earlier three dirty parser changes; fetch/reconcile when write access returns without discarding them. The original full API source was requested once and remains pending; continue independent implementation.
+## Other integration candidates
+
+- Cloud #127, source `1d9e372cac7ff9739d339b2544c7c9cfbcee3e33`: full run38719850550 succeeded using merge source97b0b869 with identical tree24330be9; current screenshots and package comparison remain pending before1.25 integration/release.
+- Billing recovery #135, source `35a564a1a2f6660258ff0e0f2fcf057cb24a07f3`: [full run38750019637](https://github.com/afterburn25/Cajun_Web/actions/runs/38750019637) succeeded, including1,513 HTTP/browser,275 recovery and1,527 Apache checks. Current artifacts/package comparison and independent review remain pending. Preserve #130/#133/#135 ancestry.
+- Client/public domain search, verified pricing/periods, registration/transfer, native hosting controls, VPS/cloud lifecycle, support/SSH and the complete order-to-service journey remain unfinished.
+
+Local writes and shell artifact downloads are restricted. Review-request comments and PR metadata updates were rejected by the approval policy; source commits and PR creation work through the GitHub connector. The complete owner API source remains a previously requested input. Continue independent P0 implementation; no missing implementation is classified as owner-gated.
+
+
+## Exact continuation
+
+This checkpoint's parent is099aa2e8cef128d340f634b9cbebe2c46c2fa2cf; its commit message is “Load the normal provider controller in retained native fixtures.” The enclosing Git history supplies the resulting SHA.
+
+1. Inspect the new provider-inventory and full application jobs on #136. Confirm both retained native fixtures and the new no-schema-changing-GET cases pass, then exercise the extracted-package domain HTTP/Chromium driver. Fix any real product/fixture failure without dropping assertions.
+2. Preserve original099 acceptance38755410755 and its failed native evidence. Inspect current actual screenshots and reports where access permits; do not use parent results to certify this descendant.
+3. Complete cloud1.25 current artifact/package/review gates and reviewed billing integration. Do not bypass protections or turn a passing component into a full20i completion claim.
+4. Continue native hosting/domain/commercial/VPS/support/SSH implementation, using exact primary API evidence. Do not repeat the pending request for the original complete reference.
+
+Remote source is authoritative for new domain/native/browser work. Local `work/Cajun_Web-twentyi-domain-search` remains on1d9e372c with the original three dirty parser/transport files; reconcile without discarding them when filesystem writes return. Local billing recovery remains on an earlier source with dirty files; remote35a564a1 includes the corrected FK-safe synthetic fixture. No local source was overwritten.
