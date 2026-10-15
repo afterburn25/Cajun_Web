@@ -17,7 +17,7 @@ Format 1 has exactly these fields, in the canonical order below. Missing/extra f
 | `format` | Integer 1 |
 | `id` | Exactly 32 lowercase hexadecimal characters; permanent schedule identity |
 | `client_id`, `project_id` | Integers 1–2147483647 |
-| `source_subscription` | Exactly `id` (32 lowercase hex), `revision` (integer 1–512), `sha256` (64 lowercase hex); a retained accepted source revision, not a mutable latest pointer |
+| `source_subscription` | Exactly `id` (32 lowercase hex), `revision` (integer 1–256), `sha256` (64 lowercase hex); a retained accepted source revision, not a mutable latest pointer |
 | `title` | Nonblank UTF-8 string, at most 120 bytes |
 | `terms` | Nonblank literal UTF-8 string, at most 16,384 bytes; no control bytes except LF/TAB |
 | `currency` | Exactly `USD` |

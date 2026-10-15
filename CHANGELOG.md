@@ -2,7 +2,7 @@
 
 ## Unreleased — recurring invoice terms contract
 
-Record the immutable schedule/source/timezone/due-rule contract before implementation; no deployed behavior changes.
+Match the retained subscription revision limit to the existing native 256-event bound. Record the immutable schedule/source/timezone/due-rule contract before implementation; no deployed behavior changes.
 
 ## Unreleased — recurring billing calendar
 

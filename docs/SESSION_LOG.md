@@ -1616,3 +1616,7 @@ Request: continue roadmap without overlapping Devin20i. Starting contract31fe0dd
 ## 2026-10-14 — Recurring invoice terms contract
 
 Request: continue complete roadmap. Starting frozen117/8f8ea1c on new codex/recurring-billing-terms. Inspected existing native service agreement documents/current client authority and approved recurring invoice scope. Defined pure canonical terms and deterministic period facts: exact source revision/client/project, USD amount, anchor/alignment, explicit IANA timezone and due offset; no implied entitlement, debt or recurring-payment consent. Calendar focused1624/all22 verified; native review/integration remains required. Notification full38654568775 stays live and preserved. Docs only; no source/schema/installer/provider changes. Next: implement strict terms/facts with named date/context/canonicalization/timezone/epoch tests and focused CI, then independent review and an exact native storage/invoice contract. Published1.23 unchanged; Devin owns all20i corrections.
+
+## 2026-10-14 — Match retained subscription revision bounds before code
+
+Starting bdd4b46, source inspection of ServiceSubscriptionDocument::MAX_EVENTS and revision() confirms the retained source history limit is 256. Correct the new recurring terms contract from 512 to 256 before implementation. No application behavior changes. Next: implement and test that exact contract. Devin complete-20i acknowledgment remains confirmed in issue 2 comment 6171594708.
