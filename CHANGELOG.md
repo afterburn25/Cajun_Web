@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased test correction — complete ticket screenshots
+
+- Wait for the actual authenticated activity bell and fonts before ticket screenshots; assert PNG dimensions and footer bounds for client/conflict/staff desktop/mobile captures.
+- Verify the 64 px asynchronous layout mechanism with actual PHP/MariaDB/Edge; preserve every original behavior assertion and all application bytes. Local 15-case/six-view evidence passes; packaged acceptance remains pending.
+
 ## Unreleased — recurring billing notifications
 
 - Show retained offers and decisions to the authorized client or financial staff in workspace activity and the existing bell, with independent personal reads.

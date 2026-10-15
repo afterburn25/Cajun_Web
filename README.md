@@ -1,5 +1,9 @@
 # CajunWebPro — project source of truth
 
+## Ticket screenshot acceptance follow-up
+
+A test-only follow-up waits for the real activity bell before capturing ticket views and verifies full PNG/footer bounds. Fifteen local HTTP/Edge checks and all six complete views pass; packaged acceptance and independent review remain pending. Application and published v1.23.0 bytes are unchanged. See [current handoff](SESSION_HANDOFF.md). Devin retains complete 20i implementation.
+
 ## Latest development
 
 Recurring offers and decisions now appear in the existing activity center and personal bell, with exact retained-history links. [Usage and scope](docs/RECURRING_BILLING_ACTIVITY.md). Local184 recurring/254 financial/76 default and no-ini forms/70 HTTP-browser checks pass; four new complete views are inspected. Focused CI, packaged acceptance and review remain pending. Parent121 has11,780 verified full checks and identical packages; published1.23 is unchanged. Devin continues the complete20i integration. Older checkpoints below remain historical.
