@@ -1,5 +1,9 @@
 # Changelog
 
+## Verification records — complete 20i ownership and final notifications
+
+Confirm Devin ownership; current-source review clears seven prior defects and retains migration plus conflicting-scope reconciliation findings. Preserve failed initial fixture evidence and unchanged product bytes. Verify separate financial notification candidate:11,404 named checks/all25 workflows,117 matching final images and identical Windows/Linux archives. Review/integration remain pending; publication stays1.23.0.
+
 ## Independent review fixture correction
 
 Set the isolated identity fixture document root so the actual private-vault boundary can validate its existing synthetic storage. Preserve initial failed evidence and all product/supplied-test bytes.
