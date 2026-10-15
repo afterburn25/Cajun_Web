@@ -1,5 +1,17 @@
 # Changelog
 
+## Nameserver delta implementation — 2026-10-15
+
+Continue complete20i P0 on `codex/twentyi-nameserver-controls` from inspected main `0b96f3d5812927640274d285b0180f3025624980`. Main advanced by two documentation-only commits recording the owner's approved client-portal design; their history and exact [design baseline](docs/APPROVED_CLIENT_PORTAL_DESIGN.md) are retained. Published runtime remains1.24/7190b582.
+
+The owner supplied the exact POST `/package/{packageId}/domain/{domainId}/nameservers` fields `ns` and `old-ns`. The existing request builder now accepts those typed arrays, rejects overlap/duplicates/no-op or malformed targets, and retains fixed routing and request bounds. A canonical helper compares known original and desired DNS hostname sets and emits only additions/removals. It does not send overlapping full replacement lists. The generic approval menu remains restricted to package labels; completing a request shape does not grant execution or domain ownership. Unverified response bodies remain uncertain.
+
+Added isolated positive/negative tests for canonicalization, unchanged names, add/remove-only changes, list/hostname bounds, invalid IDs, no-op/overlap rejection, unknown fields, no credentials and denied generic admission. Existing operation cases remain, with the former nameserver “shape missing” expectations replaced by documented typed validation. Canonical shipping mirrors and the installer inventory are regenerated. This checkpoint's new tests have not run yet; the branch workflow will run default/no-ini PHP8.2/8.4 with network disabled and preserve named reports.
+
+The native nameserver screen, fresh authorized observation, per-domain consent, durable dispatch and operation-specific reconciliation remain to implement. This is a request component, not a finished control or release. No provider call, DNS change, charge, mail, SSH or deployment occurred.
+
+Domain-search #136 source9ab6dc58 separately passes all four inventory/upgrade combinations and22 focused workflows; full38757561159 has passed build/native and is running HTTP/Chromium. Earlier099 full38755410755 retains its failed fixture evidence and continues recovery/Apache. Billing35a full38750019637 succeeded; cloud and billing artifact/review/integration gates remain. Preserve all independent branches and running evidence.
+
 ## Synchronize release entry points after review — 2026-10-15
 
 Review4281622110 on4cbc2375 reproduced stale pending1.24 headers in README, agent coordination, release workflow and inventory owner guide. Update every listed entry point plus current migration instructions to the actual immutable publication, archive earlier coordination and mark historical1.23 sections clearly. No runtime or package bytes change. Starting parent4cbc23758674b29899d235b511b40f0a18cf8503 is “Record verified1.24 publication and current20i continuation”; correctiondf57d0ce is “Synchronize published1.24 across current entry-point guides.” Actual local documentation check passed161 Markdown files/1,330 local links and canonical dependency checks; git diff whitespace check passed. These checks cover documentation/source consistency only, not runtime acceptance, which remains the separately published7190 evidence. Known failure: initial review4281622110 found stale headers and was corrected. Follow-up review4281670745 requested this explicit validation record. Renewed review is pending; continue cloud/commercial20i work.

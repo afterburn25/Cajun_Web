@@ -9,6 +9,8 @@ use CajunWebPro\Foundation\Provider\ProviderOperation;
 use CajunWebPro\Foundation\Provider\TransportRequest;
 use InvalidArgumentException;
 
+require_once __DIR__.'/NameserverChange.php';
+
 /**
  * Translates a validated ProviderOperation into one bounded provider
  * write request, or refuses by throwing InvalidArgumentException.
@@ -47,7 +49,7 @@ final class TwentyIRequestBuilder
             throw new InvalidArgumentException('Operation ' . $operation->name . ' is not in the documented write catalog.');
         }
         if (!$spec->shapeComplete) {
-            throw new InvalidArgumentException('Operation ' . $operation->name . ' is documented without body fields; refusing to invent them.');
+            throw new InvalidArgumentException('Operation ' . $operation->name . ' requires typed request validation that is not yet implemented.');
         }
 
         $params = $operation->params;
@@ -85,6 +87,10 @@ final class TwentyIRequestBuilder
                     }
                 }
             }
+        }
+
+        if ($operation->name === 'domains.nameservers') {
+            $body = NameserverChange::delta($body['ns'], $body['old-ns']);
         }
 
         $json = json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
