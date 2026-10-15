@@ -8,6 +8,7 @@ function service_orders_validate_schema(string $name,string $sql): void {
         'service_orders'=>['agreement_id'=>['agreement_id'],'invoice_id'=>['invoice_id']],
         'service_order_events'=>['order_revision'=>['order_id','revision']],
         'hosting_order_links'=>['account_id'=>['account_id']],
+        'hosting_fulfillments'=>[],
         default=>throw new LogicException('Unknown service-order storage.'),
     };
     catalog_validate_schema($name,$sql,$unique);
@@ -26,6 +27,7 @@ function service_orders_validate_schema(string $name,string $sql): void {
         'service_orders'=>['client_id'=>['client_id'],'created_by'=>['created_by']],
         'service_order_events'=>['actor_staff_id'=>['actor_staff_id'],'actor_client_id'=>['actor_client_id']],
         'hosting_order_links'=>['client_id'=>['client_id'],'created_by'=>['created_by'],'profile_id'=>['profile_id']],
+        'hosting_fulfillments'=>['order_id'=>['order_id'],'account_id'=>['account_id'],'actor_id'=>['actor_id']],
     };
     foreach($other as $key=>$columns)$expected[$key]=[1,$columns];
     $actual=[];
@@ -41,6 +43,7 @@ function service_orders_validate_schema(string $name,string $sql): void {
         'service_orders'=>['agreement_id'=>['service_subscriptions','id'],'invoice_id'=>['studio_invoices','id'],'client_id'=>['studio_clients','id'],'created_by'=>['users','id']],
         'service_order_events'=>['order_id'=>['service_orders','id'],'actor_staff_id'=>['users','id'],'actor_client_id'=>['studio_clients','id']],
         'hosting_order_links'=>['id'=>['service_orders','id'],'account_id'=>['hosting_records','id'],'client_id'=>['studio_clients','id'],'created_by'=>['users','id'],'profile_id'=>['provider_profiles','id']],
+        'hosting_fulfillments'=>['id'=>['hosting_dispatches','id'],'order_id'=>['hosting_order_links','id'],'account_id'=>['hosting_records','id'],'actor_id'=>['users','id']],
     };
     $relations=all('SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL',[config()['db']['prefix'].$name]);
     if(count($relations)!==count($expected))throw new RuntimeException('Incompatible service-order relationships. Existing data was preserved.');

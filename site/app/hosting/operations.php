@@ -159,14 +159,22 @@ function hosting_operations_claim_event(string $id,int $client,int $revision,str
         $prior=one('SELECT profile_id FROM '.table('hosting_dispatches').' WHERE account_id=? ORDER BY revision LIMIT 1',[$id]);
         if($prior && $prior['profile_id']!==$profileId)throw new RuntimeException('Hosting provider reassignment requires a separate verified migration.');
         if($retryDeletion)hosting_operations_deprovision_retryable($journal,(int)$actor['id']);
-        $next=hosting_records_append_locked($row,$request,$retryDeletion?'retry_deprovision':$commands[0],$arguments,(int)$actor['id']);
-        $event=json_decode($next->json(),true)['events'][$revision];
-        $dispatch=['id'=>$request,'account_id'=>$id,'profile_id'=>$profileId,'profile_revision'=>$profileRevision,'actor_id'=>(int)$actor['id'],'revision'=>$revision+1,'operation'=>$operation,'attempt_ref'=>$next->account()->pendingAttempt(),'started_epoch'=>$event['at'],'input_json'=>$input];
-        $binding=hosting_operations_binding($row,$next,$dispatch);$bytes=hosting_records_json($binding);
-        query('INSERT INTO '.table('hosting_dispatches').' (id,account_id,profile_id,profile_revision,actor_id,revision,operation,attempt_ref,started_epoch,input_json,binding_json) VALUES (?,?,?,?,?,?,?,?,?,?,?)',[...array_values($dispatch),$bytes]);
-        hosting_records_audit((int)$actor['id'],'dispatch_fenced','Account '.$id.' dispatch '.$request.' '.$operation);
-        return ['binding'=>$binding,'fingerprint'=>hash('sha256',$bytes)];
+        return hosting_operations_fence_locked($row,$request,$operation,$arguments,$profileId,$profileRevision,(int)$actor['id'],$retryDeletion);
     }));
+}
+/** Shared persistence only: the owning transaction must first establish operation-specific authority. */
+function hosting_operations_fence_locked(array $row,string $request,string $operation,array $arguments,string $profileId,int $profileRevision,int $actor,bool $retryDeletion=false):array {
+    if(!db()->inTransaction())throw new LogicException('A hosting dispatch fence needs its owning authorization transaction.');
+    $journal=hosting_operations_validate($row);$revision=$journal->revision();$commands=hosting_operations_commands($operation);
+    if($journal->account()->pendingAttempt()!==null||$journal->account()->awaitingReconciliation())throw new RuntimeException('An existing hosting operation must be resolved first.');
+    $input=hosting_operations_input($revision,$operation,$arguments,$profileId,$profileRevision,$retryDeletion);
+    $next=hosting_records_append_locked($row,$request,$retryDeletion?'retry_deprovision':$commands[0],$arguments,$actor);
+    $event=json_decode($next->json(),true)['events'][$revision];
+    $dispatch=['id'=>$request,'account_id'=>$row['id'],'profile_id'=>$profileId,'profile_revision'=>$profileRevision,'actor_id'=>$actor,'revision'=>$revision+1,'operation'=>$operation,'attempt_ref'=>$next->account()->pendingAttempt(),'started_epoch'=>$event['at'],'input_json'=>$input];
+    $binding=hosting_operations_binding($row,$next,$dispatch);$bytes=hosting_records_json($binding);
+    query('INSERT INTO '.table('hosting_dispatches').' (id,account_id,profile_id,profile_revision,actor_id,revision,operation,attempt_ref,started_epoch,input_json,binding_json) VALUES (?,?,?,?,?,?,?,?,?,?,?)',[...array_values($dispatch),$bytes]);
+    hosting_records_audit($actor,'dispatch_fenced','Account '.$row['id'].' dispatch '.$request.' '.$operation);
+    return ['binding'=>$binding,'fingerprint'=>hash('sha256',$bytes)];
 }
 /** Trusted internal finalizer, never an HTTP callback. Preserve reality despite later access loss. */
 function hosting_operations_record(string $dispatchId,string $fingerprint,OperationResult $result):void {

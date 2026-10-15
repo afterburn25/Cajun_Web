@@ -1,5 +1,7 @@
 # Complete 20i requirements and evidence
 
+Current dedicated order execution is [implementing](TWENTYI_ORDER_FULFILLMENT.md): existing engine reuse, immutable order approval, current payment/context rechecks and native fixture coverage. New native/UI/catalog/recovery acceptance is not yet complete.
+
 Current PR138 preparation/progress checkpoint: [current status](../PROJECT_STATUS.md) and [order/service evidence](TWENTYI_ORDER_SERVICE_LINKS.md). Dated parent results below are historical and do not certify new UI or provider provisioning.
 
 Current integration work is on `codex/twentyi-fulfillment`, preserving domain9ab/cloud1d9, billing35a and nameserverf865 with main0b96's approved portal design. [Ancestry, named evidence and remaining gates](TWENTYI_FULFILLMENT_INTEGRATION.md). Component/parent success does not certify the combined tree. Nameserver deltas are request-tested only; no native control is complete. Order-to-service fulfillment remains unfinished. Native payment-evidence assessment is branch-tested at423dd598 across all four PHP/database combinations; its staff invoice projection awaits full acceptance. Subsequent hosting-table/marker recovery guards are implementing with current-head CI pending; it does not grant fulfillment. First combined full38761131563 failed its Apache cache precondition after native/browser/recovery passed; preserve that result and inspect the corrected candidate. Publication remains1.24; no live acceptance is added.

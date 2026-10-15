@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — dedicated hosting order execution service
+
+- Bind explicit owner fulfillment approval, current client consent and payment/manual evidence to the existing hosting attempt and provider gateway/ledger. Recheck authority at credential/send boundaries and retain accepted IDs as pending.
+- Add native concurrency, replay, reversal, revocation, rollback and recovery cases. No route enables this internal service yet; native approval UI, automated provider configuration verification and exact-result recovery remain required. Exact descendant native and packaged acceptance is pending.
+
 ## Unreleased — verified pending provisioning storage
 
 - Verify pending acknowledgement, exact-ID confirmation, replay, rollback and original-history recovery on all four supported PHP/database combinations. Current packaged descendant acceptance remains pending; published version stays1.24.

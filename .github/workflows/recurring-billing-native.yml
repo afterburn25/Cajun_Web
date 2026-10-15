@@ -2,9 +2,9 @@ name: Native recurring agreement and period invoice checks
 on:
   push:
     branches: [main, codex/recurring-billing-records, codex/twentyi-recurring-eligibility, codex/twentyi-recurring-ui, codex/twentyi-service-orders]
-    paths: ['site/app/billing/**', 'site/app/hosting/order*.php', 'site/includes/layout/service_orders.php', 'tests/service_orders_*.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
+    paths: ['site/app/billing/**', 'site/app/hosting/order*.php', 'site/app/hosting/fulfillment.php', 'site/app/hosting/operations.php', 'site/app/hosting/storage.php', 'tests/hosting_fulfillment_native_cases.php', 'site/includes/layout/service_orders.php', 'tests/service_orders_*.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
   pull_request:
-    paths: ['site/app/billing/**', 'site/app/hosting/order*.php', 'site/includes/layout/service_orders.php', 'tests/service_orders_*.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
+    paths: ['site/app/billing/**', 'site/app/hosting/order*.php', 'site/app/hosting/fulfillment.php', 'site/app/hosting/operations.php', 'site/app/hosting/storage.php', 'tests/hosting_fulfillment_native_cases.php', 'site/includes/layout/service_orders.php', 'tests/service_orders_*.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -58,7 +58,7 @@ jobs:
           docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-recurring-test sh -ec '
-              for source in site/app/billing/recurring_billing*.php site/database/schema/recurring_billing_schema.php site/database/migrations/recurring_billing_migrate.php tests/recurring_billing_*.php tests/ledger_*.php site/app/billing/ledger_fulfillment.php site/app/hosting/order*.php site/includes/layout/service_orders.php site/includes/layout/hosting_order_links.php site/database/schema/service_orders_schema.php site/database/migrations/service_orders_migrate.php site/database/schema/hosting_order_links_schema.php site/database/migrations/hosting_order_links_migrate.php tests/service_orders_*.php; do php -l "$source"; done
+              for source in site/app/billing/recurring_billing*.php site/database/schema/recurring_billing_schema.php site/database/migrations/recurring_billing_migrate.php tests/recurring_billing_*.php tests/ledger_*.php site/app/billing/ledger_fulfillment.php site/app/hosting/order*.php site/includes/layout/service_orders.php site/includes/layout/hosting_order_links.php site/database/schema/service_orders_schema.php site/database/migrations/service_orders_migrate.php site/database/schema/hosting_order_links_schema.php site/database/migrations/hosting_order_links_migrate.php site/app/hosting/fulfillment.php site/database/schema/hosting_fulfillment_schema.php site/database/migrations/hosting_fulfillment_migrate.php tests/hosting_fulfillment_native_cases.php tests/service_orders_*.php; do php -l "$source"; done
               cmp foundation/billing-calendar/BillingCalendar.php site/includes/foundation/billing-calendar/BillingCalendar.php
               cmp foundation/recurring-billing/RecurringBillingTerms.php site/includes/foundation/recurring-billing/RecurringBillingTerms.php
               cmp foundation/recurring-billing/RecurringBillingSchedule.php site/includes/foundation/recurring-billing/RecurringBillingSchedule.php
@@ -66,6 +66,7 @@ jobs:
               cat qa/service-orders-native-results.json
               cat qa/service-orders-links-native-results.json
               cat qa/service-orders-link-views-native-results.json
+              cat qa/hosting-fulfillment-native-results.json
               cat qa/recurring-billing-native-results.json
               php tests/recurring_billing_legacy_ledger.php
               cat qa/ledger-native-results.json
@@ -75,7 +76,7 @@ jobs:
       - name: Print retained native order and recurring reports
         if: always()
         run: |
-          for report in qa/service-orders-native-results.json qa/service-orders-links-native-results.json qa/service-orders-link-views-native-results.json qa/recurring-billing-native-results.json; do
+          for report in qa/service-orders-native-results.json qa/service-orders-links-native-results.json qa/service-orders-link-views-native-results.json qa/hosting-fulfillment-native-results.json qa/recurring-billing-native-results.json; do
             if test -f "$report"; then cat "$report"; printf '\n'; fi
           done
       - name: Preserve actual named evidence
@@ -88,6 +89,7 @@ jobs:
             qa/service-orders-native-results.json
             qa/service-orders-links-native-results.json
             qa/service-orders-link-views-native-results.json
+            qa/hosting-fulfillment-native-results.json
             qa/ledger-native-results.json
             qa/recurring-billing-forms-default.json
             qa/recurring-billing-forms-noini.json

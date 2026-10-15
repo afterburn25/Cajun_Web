@@ -9,6 +9,7 @@ function hosting_storage_family(string $module):array {
         'operations'=>['hosting_operations_schema_version',['hosting_dispatches','hosting_operation_results','hosting_resources'],'hosting_records.operations_setup'],
         'reconciliation'=>['hosting_reconciliation_schema_version',['hosting_observations','hosting_reconciliations'],'hosting_records.reconciliation_setup'],
         'order_links'=>['hosting_order_links_schema_version',['hosting_order_links'],'hosting_records.order_links_setup'],
+        'fulfillment'=>['hosting_fulfillment_schema_version',['hosting_fulfillments'],'hosting_records.fulfillment_setup'],
         default=>throw new LogicException('Unknown hosting storage family.'),
     };
 }

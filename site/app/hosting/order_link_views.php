@@ -4,6 +4,7 @@ declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/hosting/order_links.php';
 require_once CWP_CODE_ROOT.'/app/hosting/operations.php';
+require_once CWP_CODE_ROOT.'/app/hosting/fulfillment.php';
 require_once CWP_CODE_ROOT.'/app/plans/forms.php';
 
 /** GET never prepares storage. Missing established history is not an empty setup state. */
@@ -26,7 +27,12 @@ function hosting_order_links_context(string $orderId,int $client,bool $asClient=
         if($row){
             $saved=hosting_order_links_validate($row,$order);$journal=$saved['journal'];$b=$saved['binding'];
             // Later lifecycle states must also retain their exact dispatch/result evidence.
-            if($journal->revision()>0){hosting_operations_require_ready();$journal=hosting_operations_validate(hosting_records_row($row['account_id'],$client));}
+            if($journal->revision()>0){
+                hosting_operations_require_ready();$journal=hosting_operations_validate(hosting_records_row($row['account_id'],$client));
+                if(one('SELECT id FROM '.table('hosting_dispatches').' WHERE account_id=? LIMIT 1',[$row['account_id']])){
+                    hosting_storage_require('fulfillment');hosting_fulfillment_history($order,$row);
+                }
+            }
             $progress=['account_id'=>$row['account_id'],'created_at'=>$b['created_at'],'status'=>$journal->account()->status(),'order_cancelled'=>$order->state()['phase']==='cancelled'];
             if(!$asClient){
                 $progress['package']=$b['package'];$progress['reseller_id']=$b['request']['params']['resellerId'];
