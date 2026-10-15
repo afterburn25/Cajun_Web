@@ -14,6 +14,11 @@ function provider_cloud_sites_history_ready(): void {
     $requests=(int)query('SELECT COUNT(*) FROM '.table('provider_operation_grants').' WHERE operation=?',[CloudWebsiteCreate::OPERATION])->fetchColumn();
     $audits=(int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE action=?',['provider.cloudsite_started'])->fetchColumn();
     if($requests!==$audits)throw new RuntimeException('Cloud website approval history is incomplete. Restore the original records before submitting another request.');
+    // Approval + its start audit can be lost together. The shared ledger and
+    // independent result audit remain witnesses; equal counts cannot erase them.
+    $orphan=one('SELECT p.id FROM '.table('provider_operations').' p LEFT JOIN '.table('provider_operation_grants').' g ON g.consumed_key=p.idempotency_key AND g.operation=? WHERE (p.operation=? OR (p.status=? AND p.idempotency_key LIKE ?)) AND g.id IS NULL LIMIT 1',[CloudWebsiteCreate::OPERATION,CloudWebsiteCreate::OPERATION,'claimed','cloudsite:%']);
+    $auditOrphan=one('SELECT a.id FROM '.table('audit').' a WHERE a.action IN (?,?) AND NOT EXISTS (SELECT 1 FROM '.table('provider_operation_grants').' g WHERE g.operation=? AND a.detail LIKE CONCAT(?,g.id,?)) LIMIT 1',['provider.cloudsite_started','provider.cloudsite_result',CloudWebsiteCreate::OPERATION,'Cloud website request ',' %']);
+    if($orphan||$auditOrphan)throw new RuntimeException('Cloud website execution history has lost its original approval. Restore the original records before submitting another request.');
 }
 
 /** Current owner, exact assignment, latest complete fresh attempt and original account. */

@@ -1,3 +1,7 @@
+## Unreleased cloud recovery correction
+
+Refuse cloud request replay after paired approval/audit loss when the shared ledger or result audit survives. Refuse operation re-preparation after a lost marker with retained history. New native regressions are pending CI.
+
 ## Unreleased cloud verification
 
 Add native two-process request replay coverage and isolated-branch application acceptance. Runtime unchanged from7e742c3b; CI results remain pending.
