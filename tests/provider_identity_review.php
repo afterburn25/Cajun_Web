@@ -6,7 +6,8 @@ define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';requir
 use CajunWebPro\Foundation\Provider\{ProviderOperation,OperationResult,TransportException};
 $private=realpath(__DIR__.'/../test-runtime/provider-execution-private');if(!$private)throw new RuntimeException('Run supplied fixtures first.');
 $GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/existing','storage'=>$private,'key'=>str_repeat('synthetic-exec-key-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'pex_']];
-$_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];start_session();
+$_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];
+$_SERVER['DOCUMENT_ROOT']=realpath(__DIR__.'/../site');start_session();
 $owner=one('SELECT * FROM '.table('users').' WHERE id=1');$_SESSION=['uid'=>1,'auth_version'=>$owner['auth_version'],'login_at'=>time(),'last_activity'=>time()];
 $checks=[];$observations=[];$calls=0;
 function ir_check(string $name,bool $ok):void {global $checks;$checks[]=['name'=>$name,'passed'=>$ok];}

@@ -1,5 +1,11 @@
 # Session handoff — read before continuing
 
+## Review fixture correction after retained initial run — 2026-10-14
+
+Independent run [38661381122](https://github.com/afterburn25/Cajun_Web/actions/runs/38661381122), harness `2922bc3`, retained all 14 reports against unchanged Devin source `0a44625`. Both runtimes reproduce populated preceding-v2 migration refusal and a new conflicting-consumed-grant reconciliation case. Existing view, context replay, revocation, absence-coverage, replacement-account, audit-atomicity and write-contract checks now pass. The supplied ledger fixture itself stops at migration, and its execution fixture stops at the already reported replacement-context assertion; their failures remain visible.
+
+The new independent production-identity fixture omitted DOCUMENT_ROOT, so private-vault validation correctly refused before its intended checks. This change sets the same actual site document root used by the other fixtures; it does not change vault checks or product code. The initial failed reports are retained. Rerun the independent matrix to finish that narrow probe before claiming current-source identity acceptance. All provider implementation and corrections remain Devin-owned. No live provider call occurs.
+
 ## Independent review of corrected 20i execution/reconciliation — 2026-10-14
 
 Codex reviews current Devin115 source `0a4462581ac43d14eea316d180164a0fcd9e99b5` (product implementation `438badc`) on `codex/review-twentyi-438badc`. All product bytes and supplied tests are preserved. Corrections include production credential-context identity, send-boundary grant checks, view import, additive prior-v2 migration, conservative absent-target reconciliation, same-generation reads and atomic audit/observation writes. Source inspection is not clearance; current native regression CI is next.

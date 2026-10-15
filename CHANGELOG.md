@@ -1,5 +1,9 @@
 # Changelog
 
+## Independent review fixture correction
+
+Set the isolated identity fixture document root so the actual private-vault boundary can validate its existing synthetic storage. Preserve initial failed evidence and all product/supplied-test bytes.
+
 ## Corrected 20i independent review
 
 Preserve negative controls while adapting review fixtures to the credential generation contract. Add actual production-helper identity and conflicting-grant reconciliation probes. Local production write validation now passes24executions; native CI remains pending. No product changes.
