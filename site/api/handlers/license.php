@@ -43,17 +43,19 @@ if (!is_array($input)) {
 $licenseKey = $input['license_key'] ?? '';
 $domain = $input['domain'] ?? '';
 
-if (!is_string($licenseKey) || strlen($licenseKey) < 8) {
+if (!is_string($licenseKey) || strlen($licenseKey) < 8 || strlen($licenseKey) > 255) {
     license_response(false, 'Invalid license key format');
 }
 
-if (!is_string($domain) || strlen($domain) < 4 || !str_contains($domain, '.')) {
+if (!is_string($domain) || strlen($domain) < 4 || strlen($domain) > 253 || !str_contains($domain, '.')) {
     license_response(false, 'Invalid domain format');
 }
 
+$domain = strtolower(trim($domain));
+
 try {
     // Log the validation attempt for security audit
-    $auditData = json_encode(['license_key' => substr($licenseKey, 0, 8) . '...', 'domain' => $domain, 'ip' => $ip]);
+    $auditData = substr((string)json_encode(['license_key' => substr($licenseKey, 0, 8) . '...', 'domain' => $domain, 'ip' => $ip]), 0, 400);
     query('INSERT INTO ' . table('audit') . ' (user_id, action, detail, created_at) VALUES (0, ?, ?, ?)',
         ['license.validate', $auditData, gmdate('Y-m-d H:i:s')]);
 
