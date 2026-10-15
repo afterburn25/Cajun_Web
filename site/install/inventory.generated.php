@@ -56,7 +56,7 @@ function setup_expected_files(): array { return [
     'admin/views/projects.php'=>'47c96947c2d0bf8f31b1e2013ea33ece1f6712f1e26428e6c773fcf8cb12131b',
     'admin/views/provider_cloud.php'=>'476357c57995668121cbbd6e9d88cc4646577b5ea5c41c4d9aefd26e4b0e09f4',
     'admin/views/provider_cloud_links.php'=>'d0b0cb5488cd9a720051c78eaf948e543bf3a8097c1684862a294822899e99ca',
-    'admin/views/provider_domain_search.php'=>'b13c26e55fda80d5c0b2780cb125d21935ba8b0c97f1bb0436b59a2e41cf6b14',
+    'admin/views/provider_domain_search.php'=>'7a2d816e1eeae72c15eb6390ec4d09d744178bc0721f33d1ab2a9b1a3204136e',
     'admin/views/providers.php'=>'236757ccf9e383328fe24b5091f203e1afe2a9890d99542ea0bf787de8a55233',
     'admin/views/reviews.php'=>'126793965131eaadf598853c8074e6fc82f6d9f28c8527f486b577b2a9bdfd00',
     'admin/views/security.php'=>'a9c7808c9ae9b7349dc2f5adc98d1727764322cf710c55fe756fef03c3f939bc',

@@ -1,5 +1,17 @@
 # Native domain search — implementation in progress
 
+## Domain search browser/concurrency checkpoint — 2026-10-15
+
+Parent `3366f51985d61b27626b2328a2f2361924496f81` passed [native domain search workflow38753822132](https://github.com/afterburn25/Cajun_Web/actions/runs/38753822132). All four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 jobs passed **53 named assertions each (212 executions)**, verified by parsing each job's actual named JSON report from its log. Deployment mirror/inventory and documentation checks passed in every job. This is native persistence and actual PHP view rendering, not browser or live-provider acceptance.
+
+This descendant adds an actual extracted-package HTTP/Chromium domain-search suite with the existing loopback HTTPS server, covering explicit preparation, owner configuration, offered suffixes, captured/stale forms, permissions/CSRF, query escaping, canonical requests, checked versus partial results, rate limiting, history, direct-path denial and desktop/mobile captures. It adds two concurrent PHP owner processes sharing the real database/lock and expects one read to proceed. Rejected configuration and query forms now preserve their original profile/policy revisions, requiring a fresh GET after stale context rather than silently rebinding the retry. The corresponding installer hash is regenerated.
+
+Python syntax compilation passes for all three changed drivers; the new native/concurrency/browser cases have **not yet run**. The existing full application workflow is enabled on this feature branch and now includes the native domain test. No long-running billing job was canceled or restarted. Full P0 remains active; these cases cannot substitute for current screenshot inspection, package comparison, independent review, exact-main acceptance and downloaded-release verification.
+
+Continue from `codex/twentyi-domain-search`: inspect current native and full application jobs, fix any product/fixture failure, inspect actual images/reports, then coordinate reviewed integration. Current main c42dd6d7 and released1.24 source7190b582 remain unchanged. Cloud1.25 still needs final artifact inspection, and billing35a564a1 retains its separate full run38750019637. Client/public domain search, periods/pricing, purchase/transfer and wider hosting/VPS/support/SSH remain unfinished. Local writes and shell artifact downloads remain restricted; review-request comments and PR metadata edits were blocked by approval policy. No production call or deployment occurred.
+
+Earlier checkpoints follow as historical evidence; current test claims are limited to the exact source described above.
+
 ## Native domain search checkpoint — 2026-10-15
 
 Continuing complete 20i P0 from `6d3592a9dc9faeffd8bc86563a40c299066bf098` on `codex/twentyi-domain-search`. The reader workflow [38751661767](https://github.com/afterburn25/Cajun_Web/actions/runs/38751661767) passed on PHP 8.2/8.4; its artifacts have not been independently downloaded in this restricted session. Earlier local parser evidence remains 77 named cases per default/no-ini run.

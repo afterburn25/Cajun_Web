@@ -13,6 +13,15 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 try{$searchConfig=provider_domain_search_configuration();}
 catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo '<p class="notice error" role="alert">'.esc($e->getMessage()).'</p></section>';return;}
 $searchTlds=implode("\n",$searchConfig['tlds']);$searchEnabled=$searchConfig['enabled'];
+$searchConfigFormRevision=(int)$searchConfig['revision'];$searchRunRevision=$searchConfigFormRevision;
+$searchConfigProfileRevision=(int)$record['revision'];$searchRunProfileRevision=$searchConfigProfileRevision;
+// Retain the exact configuration context on rejected POSTs; a new GET is required after a stale form.
+$postedSearchRevision=$_POST['search_revision']??null;$postedProfileRevision=$_POST['revision']??null;
+$validRevisions=is_string($postedSearchRevision)&&preg_match('/\A(?:0|[1-9][0-9]{0,9})\z/',$postedSearchRevision)===1&&(int)$postedSearchRevision<=2147483647
+    &&is_string($postedProfileRevision)&&preg_match('/\A[1-9][0-9]{0,9}\z/',$postedProfileRevision)===1&&(int)$postedProfileRevision<=2147483647
+    &&($_POST['profile_id']??null)===$record['id'];
+if($validRevisions&&($_POST['action']??'')==='provider_inventory_domain_search_configure'){$searchConfigFormRevision=(int)$postedSearchRevision;$searchConfigProfileRevision=(int)$postedProfileRevision;}
+if($validRevisions&&($_POST['action']??'')==='provider_inventory_domain_search_run'){$searchRunRevision=(int)$postedSearchRevision;$searchRunProfileRevision=(int)$postedProfileRevision;}
 if(($_POST['action']??'')==='provider_inventory_domain_search_configure'){
     if(is_string($_POST['search_tlds']??null))$searchTlds=substr($_POST['search_tlds'],0,4096);
     $searchEnabled=($_POST['search_enabled']??'')==='1';
@@ -22,7 +31,7 @@ if(($_POST['action']??'')==='provider_inventory_domain_search_configure'){
 <p>Choose the extensions you offer. This filters searches and suggestions locally; it does not confirm 20i pricing, registration periods or account eligibility.</p>
 <form method="post" data-domain-search-settings>
 <?php admin_action('provider_inventory_domain_search_configure'); ?>
-<input type="hidden" name="profile_id" value="<?=esc($record['id'])?>"><input type="hidden" name="revision" value="<?=(int)$record['revision']?>"><input type="hidden" name="search_revision" value="<?=(int)$searchConfig['revision']?>">
+<input type="hidden" name="profile_id" value="<?=esc($record['id'])?>"><input type="hidden" name="revision" value="<?=$searchConfigProfileRevision?>"><input type="hidden" name="search_revision" value="<?=$searchConfigFormRevision?>">
 <label for="search_tlds">Extensions, one per line (for example com or co.uk)</label>
 <textarea id="search_tlds" name="search_tlds" rows="5" maxlength="4096"><?=esc($searchTlds)?></textarea>
 <?php admin_check('search_enabled','Allow owners to request live domain lookups',$searchEnabled);admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?>
@@ -33,7 +42,7 @@ if(($_POST['action']??'')==='provider_inventory_domain_search_configure'){
 <h3>Check a domain</h3>
 <form method="post" data-domain-search-form>
 <?php admin_action('provider_inventory_domain_search_run'); ?>
-<input type="hidden" name="profile_id" value="<?=esc($record['id'])?>"><input type="hidden" name="revision" value="<?=(int)$record['revision']?>"><input type="hidden" name="search_revision" value="<?=(int)$searchConfig['revision']?>">
+<input type="hidden" name="profile_id" value="<?=esc($record['id'])?>"><input type="hidden" name="revision" value="<?=$searchRunProfileRevision?>"><input type="hidden" name="search_revision" value="<?=$searchRunRevision?>">
 <?php $searchQuery=is_string($_POST['domain_query']??null)?substr($_POST['domain_query'],0,1000):'';admin_input('domain_query','Complete domain name',$searchQuery,'text','required maxlength="253" autocapitalize="none" spellcheck="false"'); ?>
 <button class="btn gold">Check availability</button>
 </form>

@@ -43,6 +43,15 @@ function ds_run(string $id,int $profileRevision=1,int $configRevision=1,?callabl
     return provider_domain_search_run($id,$profileRevision,$configRevision,'EXAMPLE.invalid',$resolver??'ds_dns',$transport??'ds_read');
 }
 function ds_render():string {$record=provider_settings_profile();ob_start();require __DIR__.'/../site/admin/views/provider_domain_search.php';return ob_get_clean();}
+if(($argv[1]??'')==='concurrent-search') {
+    ds_actor((int)$argv[3]);
+    $response=new TransportResponse(200,[],'{"header":{"names":["example.invalid"]}}'."\n".'{"name":"example.invalid","can":"register"}');
+    echo "ready\n";fflush(STDOUT);stream_set_timeout(STDIN,15);
+    if(trim((string)fgets(STDIN))!=='start')exit(2);
+    try{$request=ds_run($argv[2],1,6);echo json_encode(['state'=>'recorded','sent'=>$sent,'id'=>$request]);}
+    catch(RuntimeException $e){if($e instanceof PDOException)throw $e;echo json_encode(['state'=>'refused','sent'=>$sent]);}
+    exit;
+}
 try {
     foreach(schema_statements('pds_') as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
     save_setting('studio_schema_version','2');foreach(default_settings() as $key=>$value)save_setting($key,$value);
@@ -121,7 +130,24 @@ try {
     ds_native_deny('Unexpected schema defaults are refused',fn()=>provider_domain_search_migrate($password));
     db()->exec('ALTER TABLE '.table('provider_domain_search_results').' ALTER reason DROP DEFAULT');
     provider_domain_search_migrate($password);
-    ds_cool();$original=$intent;
+    ds_age();$workers=[];
+    foreach([1,3] as $actorId) {
+        $process=proc_open([PHP_BINARY,__FILE__,'concurrent-search',$id,(string)$actorId],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);
+        if(!is_resource($process))throw new RuntimeException('Cannot start concurrent lookup fixture.');
+        stream_set_timeout($pipes[1],20);stream_set_timeout($pipes[2],20);
+        if(trim((string)fgets($pipes[1]))!=='ready')throw new RuntimeException('Concurrent lookup fixture did not reach its barrier.');
+        $workers[]=[$process,$pipes];
+    }
+    foreach($workers as [$process,$pipes]){fwrite($pipes[0],"start\n");fflush($pipes[0]);fclose($pipes[0]);}
+    $outcomes=[];
+    foreach($workers as [$process,$pipes]) {
+        $stdout=stream_get_contents($pipes[1]);$stderr=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);
+        if(proc_close($process)!==0||$stderr!=='')throw new RuntimeException('Concurrent lookup worker failed: '.$stderr);
+        $outcomes[]=json_decode($stdout,true,8,JSON_THROW_ON_ERROR);
+    }
+    ds_native_ok('Separate owner processes serialize intent and permit one provider read',count(array_filter($outcomes,fn($r)=>$r['state']==='recorded'))===1&&count(array_filter($outcomes,fn($r)=>$r['state']==='refused'))===1&&array_sum(array_column($outcomes,'sent'))===1);
+    ds_cool();
+
     for($i=0;$i<20;$i++)query('INSERT INTO '.table('provider_domain_searches').' (id,profile_id,profile_revision,config_revision,actor_id,query_name,tlds,started_at,started_epoch) VALUES (?,?,?,?,?,?,?,?,?)',[bin2hex(random_bytes(16)),$id,1,6,$i%2===0?1:3,'example.invalid','["invalid"]',gmdate('Y-m-d H:i:s',time()-60),time()-60]);
     ds_native_deny('Shared hourly limit counts incomplete attempts across owners',fn()=>ds_run($id,1,6));ds_age();
     provider_settings_save($id,1,'Changed connection',true,'',$password);
