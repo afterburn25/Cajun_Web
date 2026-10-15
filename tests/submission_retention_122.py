@@ -1,4 +1,4 @@
-"""Actual published1.22 records through update/recovery; synthetic persisted results only."""
+"""Actual published1.22 and1.23 records through update/recovery; synthetic persisted results only."""
 from bs4 import BeautifulSoup
 
 
@@ -7,6 +7,7 @@ def run(env):
     session, records, action = (env[k] for k in ['session', 'records', 'action'])
     private, password, token = (env[k] for k in ['private', 'password', 'token'])
     saved, drafts = env['prior_submissions'], env['prior_drafts']
+    version = env['version']
     library = url + '/admin/index.php?view=mail-submissions'
 
     def retained():
@@ -36,17 +37,17 @@ def run(env):
             check(label + ' ' + stage + ' explicit original request replay creates no new send ' + row['id'],
                   response.status_code == 200 and 'mail-submission&' in response.url and retained())
 
-    check(label + ' original1.22 nonempty submission records survive initial update recovery and reapplication',
+    check(label + ' original'+version+' nonempty submission records survive initial update recovery and reapplication',
           len(saved['intents']) == 4 and len(saved['dispatches']) == 3
           and sorted(x['status'] for x in saved['results']) == ['accepted', 'unknown']
           and len(drafts['drafts']) == 6 and retained())
     history('updated')
     r = action('recover')
-    check(label + ' file recovery retains original1.22 submission fences bodies and keys',
+    check(label + ' file recovery retains original'+version+' submission fences bodies and keys',
           '<h2>Rolled-back</h2>' in r.text and retained())
-    history('recovered1.22')
+    history('recovered'+version)
     r = action('apply')
-    check(label + ' reapplication retains original1.22 submission fences bodies and keys',
+    check(label + ' reapplication retains original'+version+' submission fences bodies and keys',
           '<h2>Complete</h2>' in r.text and retained())
     history('reapplied')
     account = env['prior_accounts']['accounts'][0]
@@ -57,7 +58,7 @@ def run(env):
         **{k: account[k] for k in ['label', 'address', 'imap_host', 'imap_port', 'imap_encryption',
                                   'imap_username', 'smtp_host', 'smtp_port', 'smtp_encryption',
                                   'smtp_username', 'enabled']}, 'imap_password': '', 'smtp_password': ''})
-    check(label + ' original1.22 mail key still decrypts without replacing submission history',
+    check(label + ' original'+version+' mail key still decrypts without replacing submission history',
           'Email settings saved' in r.text
           and records('mail-accounts')['accounts'][0]['revision'] == account['revision'] + 1
           and records('submissions') == saved and records('drafts') == drafts

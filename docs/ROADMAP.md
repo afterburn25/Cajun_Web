@@ -540,6 +540,8 @@ Use the same tokenized Authorize.net payment service, transaction records, verif
 
 ### P-04 — Maintenance/service plans
 
+**Implemented integration candidate, not a published service/payment workflow:** [PR #130](https://github.com/afterburn25/Cajun_Web/pull/130) preserves #90–#92's immutable published plans, owner offers, explicit current-client acceptance/decline, local activation/pause/resume/end and owner/client agreement screens. Missing established agreement storage now requires original database recovery. Exact20b36205 native acceptance passes 136 checks in each PHP8.2/8.4 × MariaDB10.11/MySQL8.4 combination; pure named reports total828. The preserved #101 recovery fixtures are being integrated and require new combined acceptance. Source consent records alone do not prove payment, a recurring-payment mandate, hosting fulfillment or provider lifecycle state. Order/payment eligibility, recurring invoices and 20i fulfillment remain incomplete; general service-desk development remains paused under the [P0 takeover](TWENTYI_CODEX_TAKEOVER.md). [Commercial dependency guide](TWENTYI_COMMERCIAL_ELIGIBILITY.md).
+
 Owner-defined inclusions, exclusions, limits, support expectations and request workflow. Acceptance: agreed prices and terms, explicit recurring-payment consent where applicable, genuine service status, and no invented 'unlimited support' promise.
 
 ### P-05 — Web-design project progress and delivery workspace

@@ -1,5 +1,11 @@
 # Project status
 
+## Reuse retained agreement recovery and correct roadmap status — 2026-10-15
+
+Starting from PR #130 `20b3620553e19466c0756978ad9c7d8b26d69d8a`, normally merge preserved agreement-release #101 `588f3329bac4b0b7ff0985d6991ec8f0d38e223a` on `codex/twentyi-order-recovery`. Keep both source parents and current Codex P0 ownership. Reuse original 1.23-to-candidate agreement consent/activation recovery fixtures and isolated owner-throttle fixtures; retain full Apache protections and version-specific mail-fence labels. Preserve both session histories. No deployed runtime changed from20b; current missing-table protection remains. The inherited development version is not a release assignment.
+
+Address independent review4281000759: P-04 now records implemented plan/storage/screens and explicitly pending order/payment/provider boundaries. Twenty-i eligibility remains a necessary dependency, not a parallel finance rewrite: inspect/reuse existing recurring calendar/terms/lifecycle/native invoice work before adding missing interfaces. Exact20b native matrix passes544 and pure named reports828; browser checkpoint38708094942 succeeds and is being downloaded/inspected. This merged descendant requires fresh recovery and independent review; prior source counts do not certify it. Continue complete20i after the separate first release. No live payment, provider request, customer mail, SSH or deployment.
+
 ## Necessary 20i agreement dependency and recovery correction — 2026-10-15
 
 Codex retains complete 20i P0 ownership. This isolated `codex/twentyi-order-eligibility` branch starts from the accepted fresh-owner candidate `5fa5998dab9c727b9b2f29c1ff3e162187364280` and normally merges the preserved #90–#92 service-plan descendant `76a1537c7dfde1148339bba1d3595175afb55243`. The normal merge retains original Devin model history and existing application adapters. Current provider routes, operation/history protections and every retained recovery baseline are preserved in shared routing/build/test conflicts. Current main `8b44a7ad5e568481d8b016713e7d3958d19e41f3` has the same source as 5fa and is undergoing separate release acceptance; this branch cannot alter its evidence.

@@ -1595,3 +1595,111 @@ The complete owner upload is still being located; the selected repository summar
 Next: inspect native matrix artifacts; fix any failures; run the stable combined packaged/browser/Apache candidate and obtain independent review. Then publish a verified incremental release and continue the remaining20i scope. Do not resume mail or other unrelated feature work.
 
 2026-10-15 CI dispatch correction: GitHub refused manual dispatch of the new workflow because it is absent from main. No run was started or cancelled by that refusal. The existing application workflow now accepts an explicitly named checkpoint_only option; default full acceptance remains unchanged. The short-lived separate workflow is removed. Shipping/runtime/test bytes are unchanged from776cab39; provider matrices38691085578 and38691088191 remain running on that exact source.
+
+
+## Preserved agreement recovery branch history — superseded allocation
+
+The following dated entries are retained from 588f3329. Current Codex P0 ownership supersedes any former allocation.
+
+## 2026-10-14 — explicit fenced deletion retry
+
+The owner requested continuous roadmap progress. Starting combined PR85/a9beb6e, `codex/hosting-deprovision-retry` adds a current-owner/password retry boundary only for retained definite deletion failures marked safe to retry. The original second approver and retention approval are required; original client/provider/resource bindings remain fixed. Its fresh canonical attempt, immutable dispatch fence and strict audit commit together. Exact replay grants no new claim; unknown outcomes remain blocked. No route, worker, provider call, schema activation or version change. See HOSTING_DEPROVISION_RETRY under docs.
+
+Prepared native PHP8.2/8.4 MariaDB coverage includes concurrent requests, access loss while waiting, strict audit rollback, replay/action separation, late results, retained resource ownership and missing/tampered proof. Existing hosting suites remain. Only local syntax is checked at this checkpoint; native CI and independent review are pending. Parent85 has clear combined review6167231488 and client review6166706518; its full application38554890744 remains live after verified native/browser/recovery stages. Published1.22.0/e3b434f and publication documentation4fb0c83 are unchanged; these1.22 development labels are not publishable replacements.
+
+Codex retains hosting persistence/reconciliation/coordinator/UI and release integration. Devin's new read-only20i inventory contract is assigned in issue2 comment6167449082, with no receipt/running inference. Next: verify focused deletion-retry evidence and review, finish parent acceptance and reconcile main publication docs, then continue verified provider reconciliation/dispatch and client controls. Full roadmap active.
+
+
+Source and focused/full workflow fixtures change with installer inventory refresh; canonical foundation bytes, schema, routes and shipped version remain unchanged. Starting parenta9beb6e, commit message `Fence explicit deletion retries under retained current approval`; enclosing Git history identifies the resulting source. Local syntax only at this entry, native/database and independent review pending.
+
+## 2026-10-14 — correct deletion-retry native fixture
+
+Starting ec5f7e9931cee4928c9da8bf02dd1a6fa8419dab, change only the invalid second-provider setup and continuity documentation.
+
+At ec5f7e9, push38559629380 PHP8.2 passed all94 record,79 operation and44 provisioning-retry checks plus51 named deletion-retry checks, then the new fixture failed when it attempted to create a second20i profile. The production settings API intentionally permits only one. Preserve that refusal: replace the impossible setup with an unknown-profile request and explicitly verify unchanged journal/fence/result/audit state. Runtime operations and installer bytes are unchanged. The failed report and complete job115837210320 log are retained; no full deletion-retry pass is claimed. Replacement PHP8.2/8.4 acceptance remains required.
+
+Local syntax, full installer refresh,134Markdown/1171links and all2565 exact committed dependency hashes passed for ec5; review6167717491 remains pending. Published1.22.0 and live combined85 acceptance38554890744 are unchanged. Next: verify replacement focused matrix and review before integration.
+
+## Preserved earlier branch checkpoint
+
+## 2026-10-14 — preserve reviewed service-plan work for application integration
+
+Owner requested continuous roadmap progress and checked integration of separate Devin work. Start21ebe69 and merge388b80d, union three Markdown conflicts, preserve reviewed e7a283b classes/tests, add private mirrors/build drift guards and deployment-path controls. Parent1.23 full8,360 verified; model review clear, new combined acceptance pending. Next verify local/native/import proof and implement owner-authored durable terms and exact client consent before any recurring billing.
+
+Local import verification before the enclosing merge commit:236 supplied/canonical/deployed assertion executions pass across PHP8.4 default/no-ini; no diagnostics. Two mirrors exactly match Devin388 and reviewed correction. Documentation137Markdown/1216links and clean diff pass. Focused native PHP8.2/8.4/import review remain pending.
+
+## 2026-10-14 — persist exact service terms and client agreement
+
+Owner requested continued roadmap implementation. Start preserved service-plan import148606f on separate codex/service-plan-records; implement documents, additive four-table schema/setup and owner/client authority with immutable event/audit transactions. Add current-auth and concurrent MariaDB fixtures plus bounded document checks, CI and private Apache paths. Published1.22, candidate85 and original Devin work stay unchanged. Local67 default/no-ini document checks and87 native checks pass; initial pure fixture count error is recorded in the contract. GitHub matrices, combined acceptance and independent review remain pending. Next verify current CI, then implement owner/client forms and actual browser flows; automatic payments and external operations remain gated. The enclosing commit records this exact source.
+
+## 2026-10-14 — agree owner/client service-plan screen boundary
+
+Start storage71d7efe on separate codex/service-plan-screens. Commit SERVICE_PLAN_SCREENS contract before dependent route/UI work; source, schema, installer and release remain unchanged. Parent native/model matrices are downloaded and verified. Next implement bounded current-authorized lists, strict forms, escaped owner/client views and real browser acceptance. No screen or production activation is claimed.
+
+## 2026-10-14 — prepare exact service-agreement form and rendering components
+
+Start committed screen contractb98fdf1 over storage71d7efe. Add bounded scalar/price/terms/intent/confirmation parsing and shared escaped form/terms/history helpers with77 checks per PHP8.4 default/no-ini mode. Preserve password exclusion, old failed request versions and unchecked confirmations. Prepare focused CI, full-suite invocation and private Apache denial paths. Parent storage stays unchanged with914 verified model/native executions per push/PR pair, full application38574289104 still running. No current-authorized list/controller/route/nav activation or browser acceptance yet. Next implement that layer and verify actual packaged flows before review/integration; no release or deployment.
+
+## 2026-10-14 — connect current-authorized service-agreement screens
+
+Codex continues PR92 on `codex/service-plan-screens` from30a486b, preserving storage91/71d7efe and import90/148606f. Owner setup, bounded plan/agreement lists, draft authoring, publication/retirement and exact-client offers now connect to the existing admin routes. Clients can review their pinned terms, explicitly agree, decline a pending offer or end an eligible agreement in their portal. Owner activation/pause/resume/end controls never create client consent. Current authority, shared locking, session CSRF, exact revisions/hashes, empty passwords, unchecked confirmations and support exclusion remain enforced. Stale draft text remains escaped and visible even if another session has published the plan; changing published terms requires a new plan.
+
+Local PHP8.4 default/no-ini each pass98 named form/rendering checks. Native MariaDB10.11.16 passes124 checks, retaining all87 storage cases and adding bounded projections, client isolation, delegated/support exclusion, stale session and revocation-while-waiting tests. New packaged HTTP/Chromium workflows and actual desktop/mobile screenshots are prepared but not yet run. All2579 shipping files are inventoried with exact canonical vendor mirrors. Current remote matrices, full application acceptance, independent review and release gates remain pending; these screens are not published.
+
+Parent91 application38574289104 reports success and its artifact/log are downloaded; full independent artifact/visual verification is next. Separate hosting89 application38567952137 is terminal cancelled because its75-minute job deadline expired during Apache; final source verification was skipped, so it is not accepted. This branch increases the full-suite allowance to105 minutes while retaining every test. Import90 full8465/all18 and candidate85 full8360/all21 remain verified at their own commits; review gates remain. Published1.22.0/e3b434f is unchanged.
+
+Devin is assigned the20i inventory/provider lane in [issue2 comment6170260528](https://github.com/afterburn25/Cajun_Web/issues/2#issuecomment-6170260528); acknowledgement/start remains unconfirmed. Codex retains application storage, permissions, screens and integration/releases. Next verify these actual packaged screens, inspect their images, resolve any failures and obtain the bounded review. No new release, live provider call, charge, customer mail, SSH or deployment.
+
+## 2026-10-14 — Confirm Devin 20i delivery and preserve screen polish
+
+Owner request: assign Devin to 20i integration while continuing separate roadmap work. Starting main observed `4fb0c83`; screen-polish parent `06aafaa`. GitHub issue #2 now records delivery of #93/#94. Independently exported exact #93 `aeb8fc0` source: 93 supplied checks plus six corrected-regression checks pass per PHP 8.4 default/no-ini mode. Numeric unknown-key TypeError, public constructor bypass, mutable array references and unsupported complete-coverage construction remain reproduced; review 6171175612 requests corrections. The review harness initially treated the suite's normal stderr summary as failure; after inspecting that summary, named results and exit status verified both modes. No product fix was inferred from that harness correction.
+
+Preserved the existing isolated polish to the portal footer, installer inventory and browser fixture; updated current continuity files and changelog. Local synthetic real HTTP/Edge/MariaDB workflow passes 13 named checks, source comparison covers 2,579 shipping files, and all four desktop/mobile captures were visually inspected. This is not the final CI/package result. Earlier local setup/readiness failures are retained separately and not counted as passes. Parent #92 source remains frozen for run 38579641962, hosting #89 for 38580190394; neither was cancelled or restarted. Reviews #87–#92 were read and scoped to their exact deltas; #85's additive review remains requested. Next complete the existing full runs, advance #92 to the polish with fresh acceptance, and review Devin fixes. No merge, release or live operation.
+
+## Preserved hosting branch checkpoint
+
+## 2026-10-14 — reconcile deletion retry with parent1.23 candidate
+
+Starting e6a6a547888e808a2441015eca796d9dab198ef1, merge21ebe6928ecd4c4dcbda2c8b27333583e5b2d5fa. Preserve exact operations.php and native deletion cases, combine documentation/workflow histories, regenerate inventory and fix the prior extra EOF blank line. e6 native568 per matrix is verified; new merge checks/review remain pending. Keep original failed51-check fixture evidence and independent review6167717491 request. No merge into parent85/main, release or operation activation.
+
+## 2026-10-14 — separate observed reconciliation from another dispatch
+
+Starting bd0e46e803901a51f2859d03767d637f2153c397, add the distinct canonical method/journal command and95 named controls, retain all360 original controls and legacy semantics, extend focused default/no-ini PHP8.2/8.4 workflow and mirror/inventory. Local clean modes pass after fixing a fixture notice; current CI/independent review pending. Durable observations, exact evidence binding and application retry integration remain next work, with no activation. Parent1.23 acceptance continues unchanged.
+
+## 2026-10-14 — durable reconciliation increment on a preserved branch
+
+Owner requested continued roadmap work. Start b597559 on codex/hosting-reconciliation-storage, retain parent88 unchanged. Implement closed observation schema, strict additive migration, internal transactional finalizer, original-prefix validation and current-authorized retry adaptation. Add native synthetic race/audit/tamper/history cases and retain old suites/private-path coverage. Canonical1,820 and parentbd568 verified; current1.23 browser6,840 and Windows packages verified, fullApache/reviews pending. Windows native stopped at the existing0600 key guard before new assertions; no permission change. Linux native execution and additive review are next.
+
+## 2026-10-14 — verify native reconciliation and bound unknown history
+
+At48b9d85, download all10 reports from38566812922:131 new plus284 retained per PHP8.2/8.4,830 total, clean diagnostics. Current1.23/21 full8,360/all21 and package/image/recovery checks also verified; review remains pending. Add32-unknown bound with reserved conclusive resolution and eight boundary/local-bypass cases. Existing assertions remain. Next verify current matrix and additive independent review, then full application acceptance.
+
+## 2026-10-14 — preserve full matrix after confirmed75-minute timeout
+
+Application38567952137 at0f7bbb0 is terminal cancelled: GitHub reports that its75-minute job allowance expired during Apache. Final shipping-source verification was skipped. Downloaded partial artifacts/logs are preserved; no complete application acceptance is claimed. This correction raises only the job allowance to105 minutes, retaining every test, supported baseline and fail-fast assertion. No site, foundation, test or packaging bytes change.
+
+Start0f7bbb0 on `codex/hosting-reconciliation-storage`/PR89. Its verified846 focused native executions per matrix and7046 browser checkpoint remain scoped to that source. Replacement full acceptance and independent review remain required. Published1.22.0 and candidate85 remain unchanged. Codex separately continues service-agreement screens92/06aafaa; Devin has the20i assignment in issue2/comment6170260528. Next run the corrected exact branch once and inspect its final artifact, packages and actual images. No production activation or new release.
+
+## 2026-10-14 — combine service agreements and preserved hosting groundwork
+
+Continue the roadmap with Devin owning all 20i implementation. Reuse the clean screen worktree on new `codex/service-agreements-release` from verified `76a1537`; normal merge `37924f9` retains main `68e4d41` and merge `f4fcdbb` retains hosting `1c92e6b`. Merge conflicts preserve both documentation histories, all native suites and the union of Apache private-path cases. Canonical inventory refresh and PHP/JavaScript checks pass; merge documentation check passed 144 Markdown files/1,284 local links. Parent application evidence remains scoped: #92 8,847, #89 8,578 assertions.
+
+Reserve unused 1.24 labels without a tag/release. Independently recheck the downloaded 1.23 COMPLETE/UPDATE hashes and manifest/shims, append the immutable baseline, keep all 25 older baselines and extend latest submission retention/replay. Add synthetic real-HTTP owner authoring/offers, actual client consent and activation retention across old-file recovery/reapplication, with raw read-only database snapshots. Python compile and fixture PHP lint pass. Current combined runtime/browser/Apache acceptance and bounded independent review remain pending. Latest Devin refresh `0ead711` only adds history/stale-link display; the two independently reproduced binding findings remain open under review6172775622. No provider operation, customer message, payment, SSH or deployment occurred. Next: finish exact candidate validation, start/retain full acceptance and ask Devin for the bounded combined delta review.
+
+Precommit validation: 1,476 local PHP 8.4 default/no-ini assertion executions pass without diagnostics, plus 29 exact-source/lint checks. All 25 previous catalog entries are unchanged; all 2,581 installer dependencies match. Current docs pass 145 Markdown/1,300 local links. New real-HTTP upgrade/recovery fixtures are syntaxchecked only until Linux application acceptance completes.
+
+## 2026-10-14 — preserve the updater limit in extended agreement recovery coverage
+
+Request: continue the full roadmap with all 20i implementation assigned to Devin. Starting candidate `45947ad4e61d39325f7b108f70b88cc054ed5074`, PR101. Reconfirmed Devin's full assignment and acknowledgement 6171594708; no duplicate assignment or provider implementation was added.
+
+Downloaded the final application38597882728 evidence and independently checked all result JSON and package members. Browser checkpoint7,481 and structure275 pass; inspected nine actual desktop/mobile screenshots and pixel-identical public homepage against published1.23. Apache315 contains one failure: activated-agreement recovery, following ten prior updater authentication attempts. Its 10/900-second guard accounts for the blocked eleventh request. No subsequent Apache/no-rewrite acceptance is claimed. COMPLETE/FULL archives match Windows exactly; the sole UPDATE member difference decodes to the recorded source commit only, with tested merge tree identical to45947ad.
+
+Changes: tests/organized_update_fixture.php adds CLI/test-root/database-restricted control over only the localhost structure-owner limiter's adjacent windows. tests/service_plan_upgrade_cases.py adds a real HTTP exhaustion rejection and exact journal/business/private-data preservation assertion, then resets only those synthetic buckets before the original recovery checks. Production limit and all shipping files stay unchanged. Updated status/handoff/coordination/roadmap/changelog; current full acceptance remains pending. PHP syntax, Python compile and documentation validation pass before commit. Evidence retained locally under work/qa-agreements-124-full-45947ad and work/qa-agreements-124-browser-45947ad, with exact artifact hashes and named results; these are synthetic CI data.
+
+Next: run the corrected full acceptance, inspect both Apache modes' new throttle and all retained-consent assertions, obtain the pending bounded independent review, then exact-main acceptance before publishing. Non-20i service-desk foundation import is preserved separately at fb9be6e on codex/service-desk-integration; no ticket UI or persistence is claimed. Published1.23 remains immutable; no target-host deployment or live provider operation occurred.
+
+## Reuse retained agreement recovery and correct roadmap status — 2026-10-15
+
+Starting from PR #130 `20b3620553e19466c0756978ad9c7d8b26d69d8a`, normally merge preserved agreement-release #101 `588f3329bac4b0b7ff0985d6991ec8f0d38e223a` on `codex/twentyi-order-recovery`. Keep both source parents and current Codex P0 ownership. Reuse original 1.23-to-candidate agreement consent/activation recovery fixtures and isolated owner-throttle fixtures; retain full Apache protections and version-specific mail-fence labels. Preserve both session histories. No deployed runtime changed from20b; current missing-table protection remains. The inherited development version is not a release assignment.
+
+Address independent review4281000759: P-04 now records implemented plan/storage/screens and explicitly pending order/payment/provider boundaries. Twenty-i eligibility remains a necessary dependency, not a parallel finance rewrite: inspect/reuse existing recurring calendar/terms/lifecycle/native invoice work before adding missing interfaces. Exact20b native matrix passes544 and pure named reports828; browser checkpoint38708094942 succeeds and is being downloaded/inspected. This merged descendant requires fresh recovery and independent review; prior source counts do not certify it. Continue complete20i after the separate first release. No live payment, provider request, customer mail, SSH or deployment.

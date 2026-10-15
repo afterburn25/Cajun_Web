@@ -15,3 +15,7 @@ Owners offer immutable exact USD service terms to an existing active client. Tha
 - Renewal/cancellation must preserve commercial records, explicit recurring policies, client ownership and original attempt history. Agreement activation alone is not a paid order or live server.
 
 These interfaces are unfinished engineering, not external owner gates. Merchant and feature-specific real account acceptance remain separate after implementation. No production request, charge or deployment is enabled by this checkpoint.
+
+## Preserved recovery dependency
+
+The commercial integration normally merges service-agreement release #101 at588f3329 after original plan screens #92 at76a1537. This brings its actual 1.23 agreement consent/activation recovery/reapplication fixture and explicit version labels into the combined branch; its original full acceptance remains historical evidence. New combined recovery, independent review and later versioning remain required. Existing recurring billing #117–#123 is the source to audit/reuse for invoice and renewal eligibility; no replacement finance engine is authorized.
