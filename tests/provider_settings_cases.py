@@ -73,3 +73,30 @@ def run_browser(env,browser):
     check('Provider owner page fits 320px viewport',page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
     check('Provider browser has no script errors',not errors);context.close()
     check('Provider fixture verified exact request and original TLS hostname',not provider_server.errors and provider_server.names and all(n=='api.20i.com' for n in provider_server.names))
+
+    # Domain ownership links over a seeded observed package.
+    provider_server.packages.append({'id':910,'typeRef':1,'name':'client-pack.example','names':['linked-domain.example','shared.example'],'enabled':True,'created':'2000-01-01T00:00:00Z'})
+    r=owner.post(url,data={'csrf':token(owner.get(url)),'action':'provider_inventory_prepare','current_password':OWNER})
+    check('Packaged inventory storage prepares with domain link tables',db('SHOW TABLES LIKE "ci_provider_domain_links"')!=[] and db('SELECT value FROM ci_settings WHERE name="provider_inventory_schema_version"')==[{'value':'3'}])
+    def inv_post(action_name,**values):
+        current=db('SELECT revision FROM ci_provider_profiles')[0]['revision']
+        return owner.post(url,data={'csrf':token(owner.get(url)),'action':action_name,'profile_id':pid,'revision':str(current),'current_password':OWNER,**values})
+    inv_post('provider_inventory_refresh')
+    check('Packaged refresh records a complete observation',db('SELECT r.state FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id ORDER BY f.seq DESC LIMIT 1')[0]['state']=='complete' and db('SELECT COUNT(*) AS n FROM ci_provider_observation_packages')[0]['n']==1)
+    alice_id=db('SELECT id FROM ci_studio_clients WHERE email=?',['alice@example.invalid'])[0]['id']
+    r=inv_post('provider_inventory_domain_link',package_id='910',domain='linked-domain.example',client_id=str(alice_id),current_password='wrong')
+    check('Packaged domain link requires owner password','current password' in r.text.lower() and not db('SELECT * FROM ci_provider_domain_links'))
+    r=inv_post('provider_inventory_domain_link',package_id='910',domain='unseen.example',client_id=str(alice_id))
+    check('An unobserved domain cannot be linked',not db('SELECT * FROM ci_provider_domain_links'))
+    r=inv_post('provider_inventory_domain_link',package_id='910',domain='linked-domain.example',client_id=str(alice_id))
+    links=db('SELECT * FROM ci_provider_domain_links')
+    check('Owner links an observed domain exactly once',len(links)==1 and links[0]['domain']=='linked-domain.example' and 'linked' in owner.get(url).text.lower())
+    alice=requests.Session();submit(alice,BASE+'/existing/portal/index.php','login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
+    r=alice.get(BASE+'/existing/portal/index.php?services=1')
+    check('Client portal shows the owner-linked domain','linked-domain.example' in r.text and 'client-pack.example' in r.text)
+    bob=requests.Session();submit(bob,BASE+'/existing/portal/index.php','login',{'email':'bob@example.invalid','password':'Synthetic client passphrase 2026'})
+    check('Other client portal hides the linked domain','linked-domain.example' not in bob.get(BASE+'/existing/portal/index.php?services=1').text)
+    r=inv_post('provider_inventory_domain_unlink',link_id=links[0]['id'])
+    check('Domain unlink removes the mapping and records the event',not db('SELECT * FROM ci_provider_domain_links') and db('SELECT event FROM ci_provider_domain_link_events')[0]['event']=='unlink')
+    check('Unlinked domain leaves the client view','linked-domain.example' not in alice.get(BASE+'/existing/portal/index.php?services=1').text)
+    check('Provider fixture stays clean after inventory reads',not provider_server.errors)

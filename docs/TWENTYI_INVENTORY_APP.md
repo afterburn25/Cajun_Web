@@ -19,10 +19,12 @@ Not included: provider mutations, plan-type/balance/detail projections (undocume
 | `provider_observation_packages` | Verbatim validated package rows keyed `(refresh_id, package_id)`. Rows hang off the intent so a later failure can never erase a prior observation. |
 | `provider_package_links` | Explicit owner-approved mapping `(profile_id, package_id) → studio_clients.id`, unique per target, with `linked_by`/`linked_at`, plus the **approved binding context**: `key_fingerprint` of the credential that produced the observation and the `profile_revision` approved at link time. |
 | `provider_package_link_events` | Ordered audit trail of `link`/`relink`/`unlink` events (auto-increment id; insertion-stable ordering). |
+| `provider_domain_links` | Explicit owner-approved mapping `(profile_id, domain) → studio_clients.id` for one observed package domain, carrying the carrying `package_id`, `linked_by`/`linked_at`, and the same `key_fingerprint`/`profile_revision` binding context. |
+| `provider_domain_link_events` | Ordered audit trail of domain `link`/`relink`/`unlink` events. |
 
 `provider_refresh_results.key_fingerprint` is `hash_hmac('sha256', secret, vault_key)` computed at unseal time — an installation-bound fingerprint that identifies the **credential context** an observation was made under without storing key material. Refreshes that never reach the credential record `''`.
 
-Fresh installs create empty ready tables via `schema_statements` and record `provider_inventory_schema_version=2`. Existing installs run `provider_inventory_migrate($password)` — owner password + staff mutex, strict validation of any pre-existing tables, never rebuilds or truncates. Version-1 tables gain the binding columns through appended `ALTER TABLE` statements; pre-existing links get empty fingerprints/revision `0`, which treats them as unverified until re-approved.
+Fresh installs create empty ready tables via `schema_statements` and record `provider_inventory_schema_version=3`. Existing installs run `provider_inventory_migrate($password)` — owner password + staff mutex, strict validation of any pre-existing tables, never rebuilds or truncates. Version-1 tables gain the binding columns through appended `ALTER TABLE` statements; version-3 adds the two domain-link tables without touching existing rows; pre-existing links get empty fingerprints/revision `0`, which treats them as unverified until re-approved.
 
 ## Refresh protocol
 
@@ -48,12 +50,16 @@ Return codes: `complete | partial | unavailable | refused | access_changed`. Pac
 
 **Context binding (why replacement keys cannot reuse old mappings):** every save — label, state or credential — advances `profile.revision`, and a credential change also changes the fingerprint. The application cannot prove two different keys belong to the same provider account, so ordinary same-account key rotation and an account change take the same path: the mapping is suspended until the owner re-approves it under a fresh current-revision observation. Client service reads and link management enforce both bindings: `link.profile_revision` must equal the profile's current revision, and the served observation's fingerprint must equal the approved one. A changed or unverified context suppresses the package data entirely — the client sees a pending-review marker, never another context's data.
 
+## Domain linking
+
+`provider_inventory_domain_link($profileId, $packageId, $domain, $clientId, $revision, $password)` assigns **one observed domain** to a client independently of the hosting package that carries it — a reseller commonly hosts several clients' domains on one package. The gate mirrors package linking: owner password + exact current revision inside the staff mutex; the `(package_id, domain)` pair must appear in the `names` of a package row in the last good observation recorded under that same revision; the domain is normalized to lowercase and shape-validated; the client must be active; duplicate `(profile, domain)` links are refused. `provider_inventory_domain_relink` re-approves after a context change only while the domain still appears on the same package under a current-revision observation; `provider_inventory_domain_unlink` removes the mapping. Both record `link`/`relink`/`unlink` events and settings audits.
+
 Links are never inferred from provider fields (names, domains, stack users), and identical package ids across contexts never carry authority by themselves. Support sessions and non-owner staff cannot link, unlink, refresh or read inventory (`provider_settings_manager`/`provider_checks_authority` enforce owner role + `staff.manage` + no support context).
 
 ## Views
 
 - **Admin provider settings** (`site/admin/views/providers.php`): prepare/refresh forms (password-confirmed), latest refresh badge/reason, observed package cards (type, enabled state, names, labels, stack users) with owner link/unlink controls, a "linked services not in the latest observation" section so stale mappings remain visible and unlinkable, ordered link history, and paginated refresh history.
-- **Portal `?services`** (`site/includes/layout/provider_services.php`): shows only packages explicitly linked to the signed-in client whose approved context still matches the current profile, with the last good observed state or an honest absent marker — absence never implies deletion/suspension. Context-changed mappings show a pending-review message instead of package data. Stack-user identities and unmapped keys are not exposed to clients.
+- **Portal `?services`** (`site/includes/layout/provider_services.php`): shows only packages explicitly linked to the signed-in client whose approved context still matches the current profile, with the last good observed state or an honest absent marker — absence never implies deletion/suspension. Context-changed mappings show a pending-review message instead of package data. Owner-linked domains appear the same way, carrying their observed host package name while present. Stack-user identities and unmapped keys are not exposed to clients.
 
 ## Failure model
 

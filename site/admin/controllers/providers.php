@@ -42,6 +42,17 @@ function provider_inventory_admin_action(string $action):void {
     if($action==='provider_inventory_relink'){
         provider_inventory_relink(posted('link_id',32),(int)$revision,$password);flash('Service link re-approved under the current provider settings.');redirect(admin_url('provider-settings'));
     }
+    if($action==='provider_inventory_domain_link'){
+        $revision=posted('revision',10);if(!ctype_digit($revision))throw new InvalidArgumentException('Reload the current 20i form.');
+        provider_inventory_domain_link($id,(int)posted('package_id',20),posted('domain',253),(int)posted('client_id',10),(int)$revision,$password);flash('Domain linked to the client.');redirect(admin_url('provider-settings'));
+    }
+    if($action==='provider_inventory_domain_unlink'){
+        provider_inventory_domain_unlink(posted('link_id',32),$password);flash('Domain link removed.');redirect(admin_url('provider-settings'));
+    }
+    if($action==='provider_inventory_domain_relink'){
+        $revision=posted('revision',10);if(!ctype_digit($revision))throw new InvalidArgumentException('Reload the current 20i form.');
+        provider_inventory_domain_relink(posted('link_id',32),(int)$revision,$password);flash('Domain link re-approved under the current provider settings.');redirect(admin_url('provider-settings'));
+    }
     throw new InvalidArgumentException('Unknown provider inventory action.');
 }
 

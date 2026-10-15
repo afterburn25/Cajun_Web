@@ -1482,3 +1482,11 @@ The owner API reference documents `POST /reseller/{resellerId}/renewDomain` with
 Files: `foundation/twentyi-operations/TwentyIOperationRegister.php`, `foundation/twentyi/FixedHttpTransport.php`, mirrors under `site/includes/foundation/`, `tests/twentyi-operations/run.php` (+17 checks), `tests/provider_http_server.py`, `tests/provider_operations_cases.py` (+3 packaged checks), `docs/TWENTYI_OPERATIONS_CONTRACT.md`, `.github/workflows/twentyi-operations.yml` (push trigger covers -exec/-rec).
 
 Tests: synthetic write-boundary suite **109/109** in default and `php -n` modes locally; native/packaged lanes pending CI on this head.
+
+## 2026-10-16 — Devin: owner-approved domain ownership links (schema v3)
+
+Domain-level client ownership on `devin/twentyi-domain-links` (stacked on `devin/twentyi-reconcile`): `provider_domain_links`/`provider_domain_link_events` mirror the package-link model — owner password + exact current profile revision, the `(package_id, domain)` pair must appear in the last good observation's `names`, fingerprint+revision context binding, `link`/`relink`/`unlink` events. Links assign one observed domain to a client independently of the carrying package (multi-client reseller case). Admin provider-settings page renders per-domain link/unlink/re-approve controls plus a stale-domain section; portal `?services` shows linked domains with observed/honest-absent markers. Schema v3 is additive — existing v1/v2 installs gain the tables through the same validated migration; fresh installs stamp 3. Native suite gains 16 domain-link assertions (refusals, normalization, absence honesty, rebind, client isolation); packaged suite gains refresh→link→portal→unlink coverage against the HTTPS fixture.
+
+Files: `site/database/schema/provider_inventory_schema.php`, `site/database/migrations/provider_inventory_migrate.php`, `site/app/providers/inventory.php`, `site/admin/controllers/providers.php`, `site/admin/views/providers.php`, `site/includes/layout/provider_services.php`, `site/install/actions/deploy.php`, `tests/provider_inventory_native.php`, `tests/provider_settings_cases.py`, `docs/TWENTYI_INVENTORY_APP.md`.
+
+Tests: PHP lint clean on all touched files; native MariaDB + packaged lanes pending CI.

@@ -225,6 +225,78 @@ function provider_inventory_relink(string $linkId,int $revision,#[\SensitivePara
     }));
 }
 
+function provider_inventory_domain_links(string $profileId): array {
+    provider_settings_manager();
+    return all('SELECT l.*,p.revision AS current_revision,c.name AS client_name,c.email AS client_email,u.name AS linked_by_name FROM '.table('provider_domain_links').' l JOIN '.table('studio_clients').' c ON c.id=l.client_id JOIN '.table('provider_profiles').' p ON p.id=l.profile_id LEFT JOIN '.table('users').' u ON u.id=l.linked_by WHERE l.profile_id=? ORDER BY l.domain',[$profileId]);
+}
+
+function provider_inventory_domain_link_events(string $profileId,int $page=1): array {
+    provider_settings_manager();$page=max(1,min($page,100000));
+    return all('SELECT e.*,u.name AS actor_name,c.name AS client_name FROM '.table('provider_domain_link_events').' e LEFT JOIN '.table('users').' u ON u.id=e.actor_id LEFT JOIN '.table('studio_clients') .' c ON c.id=e.client_id WHERE e.profile_id=? ORDER BY e.recorded_at DESC,e.id DESC LIMIT 21 OFFSET '.(($page-1)*20),[$profileId]);
+}
+
+/**
+ * Explicit owner-approved mapping of one observed domain to one active
+ * client account, separate from the hosting package that carries it — a
+ * reseller can host several clients' domains on one package. The domain
+ * must appear in the observed names of a package row in the profile's
+ * last good observation under the exact current profile revision; nothing
+ * is inferred from registration, WHOIS or address fields. The mapping is
+ * bound to the credential context like a package link.
+ */
+function provider_inventory_domain_link(string $profileId,int $packageId,string $domain,int $clientId,int $revision,#[\SensitiveParameter] string $password): void {
+    staff_locked(fn()=>staff_transaction(function()use($profileId,$packageId,$domain,$clientId,$revision,$password):void {
+        [$actor]=provider_inventory_authority($profileId,$revision,$password);
+        $domain=strtolower(trim($domain));
+        if($packageId<=0)throw new InvalidArgumentException('Provider package identity unavailable.');
+        if($domain===''||strlen($domain)>253||!preg_match('/^[a-z0-9](?:[a-z0-9.-]{0,251}[a-z0-9])?$/D',$domain)||str_contains($domain,'..'))throw new InvalidArgumentException('Enter a valid observed domain name.');
+        $observation=provider_inventory_observation($profileId);
+        if(!$observation||(int)$observation['profile_revision']!==$revision)throw new RuntimeException('The saved observation is from an earlier provider configuration. Refresh under the current settings before linking.');
+        $package=one('SELECT names FROM '.table('provider_observation_packages').' WHERE refresh_id=? AND package_id=?',[$observation['id'],$packageId]);
+        if(!$package||!in_array($domain,array_map('strtolower',array_map('strval',json_decode($package['names'],true)?:[])),true))throw new RuntimeException('That domain is not in the last good observation for this package. Refresh first.');
+        if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$clientId]))throw new InvalidArgumentException('Active client account not found.');
+        if(one('SELECT id FROM '.table('provider_domain_links').' WHERE profile_id=? AND domain=?',[$profileId,$domain]))throw new RuntimeException('That domain is already linked. Unlink it first.');
+        query('INSERT INTO '.table('provider_domain_links').' (id,profile_id,package_id,domain,client_id,linked_by,linked_at,key_fingerprint,profile_revision) VALUES (?,?,?,?,?,?,?,?,?)',[bin2hex(random_bytes(16)),$profileId,$packageId,$domain,$clientId,(int)$actor['id'],gmdate('Y-m-d H:i:s'),$observation['key_fingerprint'],$revision]);
+        query('INSERT INTO '.table('provider_domain_link_events').' (profile_id,package_id,domain,client_id,event,actor_id,recorded_at) VALUES (?,?,?,?,?,?,?)',[$profileId,$packageId,$domain,$clientId,'link',(int)$actor['id'],gmdate('Y-m-d H:i:s')]);
+        provider_settings_audit((int)$actor['id'],'domain_linked','Profile '.$profileId.' domain '.$domain.' client '.$clientId);
+    }));
+}
+
+/** Explicit owner domain unlink; the mapping is removed and an event is recorded. */
+function provider_inventory_domain_unlink(string $linkId,#[\SensitiveParameter] string $password): void {
+    staff_locked(fn()=>staff_transaction(function()use($linkId,$password):void {
+        [$actor]=provider_inventory_authority_args($password);
+        $link=one('SELECT * FROM '.table('provider_domain_links').' WHERE id=?',[$linkId]);
+        if(!$link)throw new InvalidArgumentException('Link not found.');
+        query('DELETE FROM '.table('provider_domain_links').' WHERE id=?',[$linkId]);
+        query('INSERT INTO '.table('provider_domain_link_events').' (profile_id,package_id,domain,client_id,event,actor_id,recorded_at) VALUES (?,?,?,?,?,?,?)',[$link['profile_id'],$link['package_id'],$link['domain'],$link['client_id'],'unlink',(int)$actor['id'],gmdate('Y-m-d H:i:s')]);
+        provider_settings_audit((int)$actor['id'],'domain_unlinked','Domain link '.$linkId.' profile '.$link['profile_id'].' domain '.$link['domain']);
+    }));
+}
+
+/**
+ * Explicit owner re-approval of a domain mapping after the provider
+ * configuration or credential context changed. Requires a current-revision
+ * good observation that still lists the domain on the same package; a
+ * domain absent under the new context can only be unlinked.
+ */
+function provider_inventory_domain_relink(string $linkId,int $revision,#[\SensitiveParameter] string $password): void {
+    staff_locked(fn()=>staff_transaction(function()use($linkId,$revision,$password):void {
+        [$actor]=provider_inventory_authority_args($password);
+        $link=one('SELECT * FROM '.table('provider_domain_links').' WHERE id=?',[$linkId]);
+        if(!$link)throw new InvalidArgumentException('Link not found.');
+        $row=provider_settings_load($link['profile_id']);
+        if(!$row||(int)$row['revision']!==$revision)throw new RuntimeException('This provider profile changed. Reload before re-approving.');
+        $observation=provider_inventory_observation($link['profile_id']);
+        if(!$observation||(int)$observation['profile_revision']!==$revision)throw new RuntimeException('Refresh the inventory under the current provider settings before re-approving this link.');
+        $package=one('SELECT names FROM '.table('provider_observation_packages').' WHERE refresh_id=? AND package_id=?',[$observation['id'],$link['package_id']]);
+        if(!$package||!in_array($link['domain'],array_map('strtolower',array_map('strval',json_decode($package['names'],true)?:[])),true))throw new RuntimeException('That domain is not in the current observation for this package. Remove the link instead.');
+        query('UPDATE '.table('provider_domain_links').' SET key_fingerprint=?,profile_revision=? WHERE id=?',[$observation['key_fingerprint'],$revision,$linkId]);
+        query('INSERT INTO '.table('provider_domain_link_events').' (profile_id,package_id,domain,client_id,event,actor_id,recorded_at) VALUES (?,?,?,?,?,?,?)',[$link['profile_id'],$link['package_id'],$link['domain'],$link['client_id'],'relink',(int)$actor['id'],gmdate('Y-m-d H:i:s')]);
+        provider_settings_audit((int)$actor['id'],'domain_relinked','Domain link '.$linkId.' profile '.$link['profile_id'].' domain '.$link['domain'].' revision '.$revision);
+    }));
+}
+
 function provider_inventory_authority_args(#[\SensitiveParameter] string $password): array {
     $actor=provider_settings_owner($password);
     if(!provider_inventory_ready())throw new RuntimeException('Prepare 20i inventory storage first.');
@@ -251,6 +323,27 @@ function provider_inventory_client_services(int $clientId): array {
         $package=$observation?one('SELECT * FROM '.table('provider_observation_packages').' WHERE refresh_id=? AND package_id=?',[$observation['refresh_id'],$link['package_id']]):null;
         if($package){$package['names']=json_decode($package['names'],true);$package['package_labels']=json_decode($package['package_labels'],true);unset($package['stack_users'],$package['unmapped_keys']);}
         $out[]=['link'=>$link,'package'=>$package,'observed_at'=>$observation['started_at']??null,'observation'=>$observation===null?null:'present','present'=>$package!==null,'context_changed'=>!$current];
+    }
+    return $out;
+}
+
+/**
+ * Client-facing view of domains explicitly linked to the account. Each
+ * row carries the last good observed package that carried the domain or
+ * an honest absent marker — absence from an incomplete or unknown
+ * observation never implies the domain was removed.
+ */
+function provider_inventory_client_domains(int $clientId): array {
+    $links=all('SELECT l.* FROM '.table('provider_domain_links').' l WHERE l.client_id=? ORDER BY l.domain',[$clientId]);
+    $out=[];
+    foreach($links as $link) {
+        $profile=one('SELECT revision FROM '.table('provider_profiles').' WHERE id=?',[$link['profile_id']]);
+        $current=$profile!==null&&(int)$profile['revision']===(int)$link['profile_revision'];
+        $observation=$current?one('SELECT r.id AS refresh_id,f.started_at FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id WHERE f.profile_id=? AND r.state IN (\'complete\',\'partial\') AND r.key_fingerprint=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$link['profile_id'],$link['key_fingerprint']]):null;
+        $package=$observation?one('SELECT package_id,name,names,enabled FROM '.table('provider_observation_packages').' WHERE refresh_id=? AND package_id=?',[$observation['refresh_id'],$link['package_id']]):null;
+        $present=false;
+        if($package){$names=array_map('strtolower',array_map('strval',json_decode($package['names'],true)?:[]));$present=in_array($link['domain'],$names,true);unset($package['names']);}
+        $out[]=['link'=>$link,'package'=>$package,'domain'=>$link['domain'],'observed_at'=>$observation['started_at']??null,'present'=>$present,'context_changed'=>!$current];
     }
     return $out;
 }

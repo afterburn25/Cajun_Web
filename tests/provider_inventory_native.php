@@ -54,17 +54,19 @@ try {
     staff_seed_owner(1);foreach([2=>'administrator',3=>'owner'] as $id=>$role)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode(array_keys(staff_permissions()))]);
     foreach([[1,'Client One','one@example.invalid'],[2,'Client Two','two@example.invalid']] as $c)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',[$c[1],$c[2],bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     pi_actor();provider_settings_migrate($password);$id=provider_settings_save('',0,'20i fixture',true,$secret,$password);
-    provider_inventory_migrate($password);pi_ok('Inventory storage prepared','2'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??''));
+    provider_inventory_migrate($password);pi_ok('Inventory storage prepared','3'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??''));
     // Version-1 storage upgrades in place; the new columns are appended.
     db()->exec('ALTER TABLE '.table('provider_refresh_results').' DROP COLUMN key_fingerprint');
     db()->exec('ALTER TABLE '.table('provider_package_links').' DROP COLUMN key_fingerprint, DROP COLUMN profile_revision');
+    db()->exec('DROP TABLE '.table('provider_domain_link_events'));
+    db()->exec('DROP TABLE '.table('provider_domain_links'));
     query('INSERT INTO '.table('provider_package_links').' (id,profile_id,package_id,client_id,linked_by,linked_at) VALUES (?,?,?,?,?,?)',[bin2hex(random_bytes(16)),$id,777,1,1,gmdate('Y-m-d H:i:s')]);
     save_setting('provider_inventory_schema_version','1');
-    provider_inventory_migrate($password);pi_ok('Version-1 storage upgrades in place','2'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??''));
+    provider_inventory_migrate($password);pi_ok('Version-1 storage upgrades in place','3'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'')&&pi_count('provider_domain_links')===0&&pi_count('provider_domain_link_events')===0);
     $services=provider_inventory_client_services(1);
     pi_ok('Pre-upgrade mappings load unverified and stay suppressed',count($services)===1&&$services[0]['context_changed']===true&&!$services[0]['present']);
     query('DELETE FROM '.table('provider_package_links').' WHERE package_id=777');
-    save_setting('provider_inventory_schema_version','99');pi_deny('Unsupported inventory storage version refused',fn()=>provider_inventory_migrate($password));save_setting('provider_inventory_schema_version','2');
+    save_setting('provider_inventory_schema_version','99');pi_deny('Unsupported inventory storage version refused',fn()=>provider_inventory_migrate($password));save_setting('provider_inventory_schema_version','3');
     pi_deny('Wrong current password prevents DNS and refresh intent',fn()=>provider_inventory_refresh($id,1,'wrong','pi_resolve','pi_read'));
     pi_deny('Stale revision prevents DNS and refresh intent',fn()=>pi_refresh($id,null,null,2));
     pi_actor(2);pi_deny('Administrator cannot refresh provider inventory',fn()=>pi_refresh($id));pi_deny('Administrator cannot read inventory',fn()=>provider_inventory_latest($id));pi_actor();
@@ -102,12 +104,38 @@ try {
     $link=provider_inventory_links($id)[0];pi_deny('Unlink requires owner password',fn()=>provider_inventory_unlink($link['id'],'wrong'));
     provider_inventory_unlink($link['id'],$password);pi_ok('Unlink removes mapping and records event',provider_inventory_links($id)===[]&&count(provider_inventory_link_events($id))===2&&provider_inventory_link_events($id)[0]['event']==='unlink');
     pi_ok('Unlinked package absent from client view',provider_inventory_client_services(1)===[]);
+    // Domain linking: explicit owner approval of one observed name,
+    // independent of which client owns the carrying package.
+    pi_deny('Domain link without password refused',fn()=>provider_inventory_domain_link($id,201,'c.example',2,1,'wrong'));
+    pi_actor(2);pi_deny('Administrator cannot link a domain',fn()=>provider_inventory_domain_link($id,201,'c.example',2,1,$password));pi_actor();
+    pi_deny('Stale revision cannot link a domain',fn()=>provider_inventory_domain_link($id,201,'c.example',2,2,$password));
+    pi_deny('Unobserved domain cannot link',fn()=>provider_inventory_domain_link($id,201,'unseen.example',2,1,$password));
+    pi_deny('Domain on an unobserved package cannot link',fn()=>provider_inventory_domain_link($id,9999,'c.example',2,1,$password));
+    pi_deny('Malformed domain refused',fn()=>provider_inventory_domain_link($id,201,'bad..name',2,1,$password));
+    query('UPDATE '.table('studio_clients').' SET active=0 WHERE id=2');pi_deny('Inactive client cannot receive a domain link',fn()=>provider_inventory_domain_link($id,201,'c.example',2,1,$password));query('UPDATE '.table('studio_clients').' SET active=1 WHERE id=2');
+    provider_inventory_domain_link($id,201,'C.EXAMPLE',2,1,$password);
+    $dlink=provider_inventory_domain_links($id)[0];
+    pi_ok('Domain link persisted normalized with event',$dlink['domain']==='c.example'&&(int)$dlink['client_id']===2&&count(provider_inventory_domain_link_events($id))===1);
+    pi_deny('Duplicate domain link refused',fn()=>provider_inventory_domain_link($id,201,'c.example',1,1,$password));
+    $clientDomains=provider_inventory_client_domains(2);
+    pi_ok('Client sees the linked observed domain',count($clientDomains)===1&&$clientDomains[0]['domain']==='c.example'&&$clientDomains[0]['present']&&!$clientDomains[0]['context_changed']);
+    pi_ok('Other client sees no linked domains',provider_inventory_client_domains(1)===[]);
+    $scripted=[new TransportResponse(200,[],json_encode([pi_item(301,'d.example')]))];pi_refresh($id);pi_cool();
+    $clientDomains=provider_inventory_client_domains(2);
+    pi_ok('Domain absent from the last good read stays honest',count($clientDomains)===1&&!$clientDomains[0]['present']);
+    pi_deny('Re-approval requires the domain to reappear on the package',fn()=>provider_inventory_domain_relink($dlink['id'],1,$password));
+    $scripted=[new TransportResponse(200,[],json_encode([pi_item(201,'c.example')]))];pi_refresh($id);pi_cool();
+    provider_inventory_domain_relink($dlink['id'],1,$password);
+    pi_ok('Domain re-approval rebinds under the current observation',provider_inventory_domain_link_events($id)[0]['event']==='relink'&&provider_inventory_client_domains(2)[0]['present']);
+    pi_deny('Domain unlink requires owner password',fn()=>provider_inventory_domain_unlink($dlink['id'],'wrong'));
+    provider_inventory_domain_unlink($dlink['id'],$password);
+    pi_ok('Domain unlink removes mapping and records event',provider_inventory_domain_links($id)===[]&&provider_inventory_domain_link_events($id)[0]['event']==='unlink'&&provider_inventory_client_domains(2)===[]);
     // Mid-flight races.
     $worker=pi_worker('pause-dns',$id);pi_ok('Refresh worker commits intent before blocking DNS',trim(fgets($worker[1][1]))==='resolving'&&pi_count('provider_refreshes')>pi_count('provider_refresh_results'));
     $row=provider_settings_profile();provider_settings_state($id,1,'disable',$password);fwrite($worker[1][0],"continue\n");fflush($worker[1][0]);pi_ok('Profile change during DNS prevents credential transport',pi_finish($worker)==='access_changed:0');provider_settings_state($id,2,'enable',$password);pi_cool();
     $worker=pi_worker('pause-dns',$id,3);pi_ok('Race worker reaches DNS',trim(fgets($worker[1][1]))==='resolving');query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');fwrite($worker[1][0],"continue\n");fflush($worker[1][0]);pi_ok('Owner revocation during DNS prevents credential transport',pi_finish($worker)==='access_changed:0');query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');pi_actor();pi_cool();
     $code=provider_inventory_refresh($id,3,$password,'pi_resolve',function($row,$secret,$address,$authorize){query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');return InventorySnapshot::unavailable('transport_unknown',time(),'twenty-i|x|packages.list');});
-    pi_ok('Owner revocation before result discards the read',$code==='access_changed'&&pi_count('provider_observation_packages')===4);query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');pi_actor();pi_cool();
+    pi_ok('Owner revocation before result discards the read',$code==='access_changed'&&pi_count('provider_observation_packages')===6);query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');pi_actor();pi_cool();
     $before=pi_count('provider_refresh_results');pi_ok('Terminal audit failure leaves an incomplete retained intent',pi_audit_failure('refresh_finished',fn()=>pi_refresh($id,null,null,3))&&pi_count('provider_refresh_results')===$before);pi_cool();
     $scripted=[new TransportResponse(200,[],json_encode([pi_item(201,'c.example')]))];
     $code=provider_inventory_refresh($id,3,$password,'pi_resolve',function($row,$secret,$address,$authorize)use($id):InventorySnapshot {
@@ -151,7 +179,7 @@ try {
     pi_ok('A settings-only change still suspends the mapping',count($services)===1&&$services[0]['context_changed']===true&&!$services[0]['present']);
     pi_deny('Re-approval without a current-revision observation is refused',fn()=>provider_inventory_relink($link['id'],6,$password));
     provider_inventory_unlink($link['id'],$password);pi_ok('A context-stale mapping can still be removed',provider_inventory_links($id)===[]&&provider_inventory_client_services(1)===[]);
-    $durable=json_encode([all('SELECT * FROM '.table('provider_refreshes')),all('SELECT * FROM '.table('provider_refresh_results')),all('SELECT * FROM '.table('provider_observation_packages')),all('SELECT * FROM '.table('provider_package_links')),all('SELECT * FROM '.table('provider_package_link_events')),all('SELECT * FROM '.table('audit'))]);
+    $durable=json_encode([all('SELECT * FROM '.table('provider_refreshes')),all('SELECT * FROM '.table('provider_refresh_results')),all('SELECT * FROM '.table('provider_observation_packages')),all('SELECT * FROM '.table('provider_package_links')),all('SELECT * FROM '.table('provider_package_link_events')),all('SELECT * FROM '.table('provider_domain_links')),all('SELECT * FROM '.table('provider_domain_link_events')),all('SELECT * FROM '.table('audit'))]);
     pi_ok('No durable row contains the secret or auth material',!str_contains($durable,$secret)&&!str_contains($durable,base64_encode($secret))&&!str_contains($durable,'Bearer')&&!str_contains($durable,'Authorization'));
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
 $ok=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/provider-inventory-native-results.json',json_encode(['passed'=>$ok,'scope'=>'Native database refresh/observation/link orchestration with synthetic DNS and transport; no real 20i API or UI acceptance','checks'=>$checks],JSON_PRETTY_PRINT));echo ($ok?'PASS':'FAIL').': '.count($checks).' native provider inventory assertions'.PHP_EOL;exit($ok?0:1);
