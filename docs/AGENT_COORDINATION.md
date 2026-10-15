@@ -1,3 +1,15 @@
+# Current checkpoint — preserve main16f07e49 in20i integration
+
+Codex owns PR139/current normal integration. Preserve both20i and incoming licensing histories; repair only the reproduced replacement rollback defect needed for safe integration. Local database checks pass; new combined acceptance/review remains pending. Do not execute Website_Core or resume unrelated feature development. [Current handoff](../SESSION_HANDOFF.md).
+
+# Current checkpoint — PR139 native verified
+
+Codex owns complete20i and client-search PR139 at1fbeb, with four native combinations and exact Windows packages verified. The current test-only correction grants its new synthetic client explicit support permission through the real owner form before checking search refusal. Full browser acceptance and review remain pending; keep all earlier runs and PR138 intact. [Handoff](../SESSION_HANDOFF.md).
+
+# Current ownership — client domain-search branch
+
+Codex owns `codex/twentyi-client-domain-search`, parent5bec4fb2, above PR138. Scope: provider domain reader adapters/shared limits, additive client policy/history, owner configuration and actual portal routes/forms, related migrations/tests/workflows/docs. No other agent is claimed active. Preserve PR138 and current main6ec7a749 licensing history; integrate sequentially after acceptance. [Current handoff](../SESSION_HANDOFF.md).
+
 # Agent coordination — complete20i P0
 
 Current162c35fb preparation flow now passes1652 actual HTTP/Chromium checks. Fresh11997794227 artifact/hash, all55 named-check reports and actual desktop/mobile screenshots inspected; submit saves exactly1 association/service with no alert. Native38/42/82 within319 plus108 ledger ×4 and24 focused workflows pass. Full38785450426 recovery/Apache continue. Codex moves on to selected provider configuration and existing-engine fulfillment; original fixture failure is resolved. [Current handoff](../SESSION_HANDOFF.md).

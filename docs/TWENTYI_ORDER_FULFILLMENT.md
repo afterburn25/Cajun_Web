@@ -127,3 +127,29 @@ Actual pending-owner mobile, active-owner desktop and active-client mobile scree
 ### Next independent capability
 
 The [official provisioning guide](https://docs.20i.com/api/provision-hosting-package-api) confirms that the selected type references a package-type ID. The [official API-documentation guide](https://docs.20i.com/api/20i-api-documentation) directs users to the signed-in reference. Fresh research on 2026-10-15 and the available browser-tab inventory did not establish the full package-type configuration response. Keep that exact gap open; do not invent field names/default semantics or repeat the prior request for the owner's upload. Client domain search can continue independently using the already documented and implemented bounded reader, with explicit client availability, attribution, isolation and shared provider limits.
+
+
+## Verified parent5bec native matrix — 2026-10-15
+
+Source `5bec4fb2cd0826386617098972ae3eb3a6fff0e1`, [run38807146247](https://github.com/afterburn25/Cajun_Web/actions/runs/38807146247): all four actual artifacts downloaded; SHA256/ZIP CRC and every named report pass. Each combination has465 combined recurring/order checks (subsets82 order/42 links/38 preparation/76 fulfillment/38 confirmation/32 forms are not additive),108 ledger and68 forms in each mode. This verifies parent hosting, not the new client-domain-search descendant.
+
+| Artifact | Combination | SHA256 |
+|---|---|---|
+|12007570714|PHP8.2/MariaDB10.11|`fd65a1c255f07766f1b77faa217cd1bc22a63fec3ee553ffc4585b10e8a24986`|
+|12006976999|PHP8.4/MySQL8.4|`8b8a14c396395688774211f2532acd1b8f4418aa932cc149c3bc8741ac925525`|
+|12006693688|PHP8.2/MySQL8.4|`d2221d7f701974204a13fd3f3c003da2edf7662a9a938a5c8fd8313c04a3a4a5`|
+|12005934484|PHP8.4/MariaDB10.11|`ded3fa807fe4cb72d4c26174d9bb178677f04be946b1bd967f124df3e71b7321`|
+
+Local proof: `work/20i-5bec-native-verification.json`; original downloaded ZIPs retained beside it. Full5bec38807153582 is in browser, earlier e37538805429786 in Apache at this checkpoint.
+
+
+## Accepted-order wording browser verification — 2026-10-15
+
+Source5bec4fb2 and testmergefe1f8684056e47cab2def5c4526704d508625e20 share tree6af747dc5b9857453de8176e881b656e1b484c98. Full run38807153582 browser artifact12007782227 downloaded/CRC/SHA256 verified: `793db721ef6a79f048b5b8d8793f5b361c363298c53e2eb77487b22b3d47bd7e`.1738 named HTTP/Chromium checks pass; unexpected browser and PHP diagnostics are empty. Actual owner active desktop and client active mobile screenshots were inspected; accepted-request wording no longer contradicts active hosting. Proof `work/20i-5bec-browser-verification.json`. Full recovery/Apache and newer client-search acceptance remain separate.
+
+
+## Full merged hosting acceptance verified — 2026-10-15
+
+[e375 full run38805429786](https://github.com/afterburn25/Cajun_Web/actions/runs/38805429786) completed successfully. Sourcee37517facecaeb1b91cf5aaad44d03b3fd6428a2/testmerge15746f7fd716ecd752d5f6f0e448e24df3274ff4 share treea561f58b7e014a100aee6d28567c69bbd761d1de. Actual final artifact12008047599 (99,542,646 bytes), SHA256 `275ef98dbe59118e7f1b3df45efba35b1f9bb36eb404ac6e9dea703752167a7b`, was downloaded and ZIP CRC/hash checked.61 named-check reports pass, including1737 HTTP/Chromium,289 recovery,1787 Apache; overlapping native/component subsets are not summed. Unexpected browser/PHP diagnostics are empty.
+
+All11 package checksums, member hashes/directories, exact source and update payload verify: FULL5406/COMPLETE2654/UPDATE2641. Windows/Linux FULL and COMPLETE are byte-identical (SHA256 `abcd1aa801a7d01a94a19a42e0f00a97b463162720f8d96d36590af82aa9a07e` and `cb5292d9d00c082588843a3c0895c7aec5c62d8ae097f93e91f90510832e7f7b`). UPDATE differs only in its source/test-merge identifier. Retained proofs `work/20i-e375-full-verification.json`, `work/20i-e375-linux-verification.json`, `work/20i-e375-windows-linux-comparison.json`. Newer5bec wording/client-search/latest-main changes still require their own current-head acceptance and review; no release is claimed.

@@ -43,11 +43,38 @@ try{
     lic_deny('Third active domain denied (2-instance cap)',fn()=>license_register_domain($licId,'third.example.com'));
     lic_ok('Cap leaves exactly two domain rows',count(license_domains($licId))===2);
 
+    // www canonicalizes to apex — www.example.com is the same site, not a third instance
+    license_register_domain($licId,'WWW.EXAMPLE.COM');
+    $domains=license_domains($licId);
+    lic_ok('www canonicalizes to apex row',count($domains)===2&&(int)array_column($domains,'is_active','domain')['example.com']===1);
+
     // Re-registering reactivates instead of duplicating
     license_deactivate_domain($licId,'example.com');
     license_register_domain($licId,'example.com');
     $domains=license_domains($licId);
     lic_ok('Re-register reactivates without duplicating',count($domains)===2&&(int)array_column($domains,'is_active','domain')['example.com']===1);
+
+    // --- atomic domain replace (customer "change website") ---------------------
+    license_replace_domain($licId,'test.example.com','NEW-SITE.example.com');
+    $domains=license_domains($licId);$active=array_column($domains,'is_active','domain');
+    lic_ok('Replace deactivates old domain',(int)$active['test.example.com']===0);
+    lic_ok('Replace registers new domain canonicalized',(int)$active['new-site.example.com']===1);
+    lic_ok('Replace keeps the other active domain',(int)$active['example.com']===1);
+    lic_deny('Replace to same domain rejected',fn()=>license_replace_domain($licId,'example.com','example.com'));
+    lic_deny('Replace of inactive domain rejected',fn()=>license_replace_domain($licId,'ghost.example.com','other.example.com'));
+    $before=all('SELECT * FROM '.table('license_domains').' ORDER BY id');
+    lic_deny('Invalid replacement domain is rejected',fn()=>license_replace_domain($licId,'example.com','not a domain'));
+    lic_ok('Invalid replacement preserves all original rows',all('SELECT * FROM '.table('license_domains').' ORDER BY id')===$before&&!db()->inTransaction());
+    db()->exec('CREATE TRIGGER licenseci_replace_fail BEFORE INSERT ON '.table('license_domains')." FOR EACH ROW BEGIN IF NEW.domain='rejected.example.com' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic replacement storage failure'; END IF; END");
+    try {
+        $failed=false;try{license_replace_domain($licId,'example.com','rejected.example.com');}catch(PDOException){$failed=true;}
+        lic_ok('Failed replacement insert restores every original domain', $failed&&all('SELECT * FROM '.table('license_domains').' ORDER BY id')===$before&&!db()->inTransaction());
+    } finally {db()->exec('DROP TRIGGER licenseci_replace_fail');}
+    db()->beginTransaction();
+    try {
+        $refused=false;try{license_replace_domain($licId,'example.com','next.example.com');}catch(LogicException){$refused=true;}
+        lic_ok('Replacement preserves an existing caller transaction', $refused&&db()->inTransaction()&&all('SELECT * FROM '.table('license_domains').' ORDER BY id')===$before);
+    } finally {if(db()->inTransaction())db()->rollBack();}
 
     // --- deactivation --------------------------------------------------------
     license_deactivate_domain($licId,'test.example.com');
@@ -80,7 +107,13 @@ try{
     license_bundle_store((int)license_get($key2)['id'],'/tmp/fake-bundle.zip','Test bundle');
     $bundles=all('SELECT * FROM '.table('license_bundles').' WHERE license_id=?',[(int)license_get($key2)['id']]);
     lic_ok('Bundle record stored',count($bundles)===1&&$bundles[0]['title']==='Test bundle');
-}catch(Throwable $e){fwrite(STDERR,'SETUP '.get_class($e).': '.$e->getMessage());exit(1);}
+}catch(Throwable $e){
+    $report=['checks'=>$checks,'passed'=>false,'error'=>get_class($e).': '.$e->getMessage()];
+    file_put_contents(__DIR__.'/../qa/license-native-results.json',json_encode($report,JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
+    fwrite(STDERR,'SETUP '.get_class($e).': '.$e->getMessage());exit(1);
+}
 $failed=array_filter($checks,fn($c)=>!$c['passed']);
-echo json_encode(['checks'=>$checks,'passed'=>count($checks)-count($failed),'failed'=>count($failed)],JSON_THROW_ON_ERROR);
+$report=['checks'=>$checks,'passed'=>count($checks)-count($failed),'failed'=>count($failed)];
+file_put_contents(__DIR__.'/../qa/license-native-results.json',json_encode($report,JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
+echo json_encode($report,JSON_THROW_ON_ERROR);
 exit($failed?1:0);

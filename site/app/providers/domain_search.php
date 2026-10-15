@@ -36,7 +36,10 @@ function provider_domain_search_offered(string $name,array $tlds): bool {
     return false;
 }
 function provider_domain_search_configuration(): array {
-    provider_settings_manager();
+    provider_settings_manager();return provider_domain_search_configuration_record();
+}
+/** Internal configuration parser; callers establish owner or client policy authority. */
+function provider_domain_search_configuration_record(): array {
     $raw=one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_domain_search_configuration'])['value']??'';
     if($raw==='')return ['revision'=>0,'enabled'=>false,'profile_id'=>'','profile_revision'=>0,'tlds'=>[]];
     try{$v=json_decode($raw,true,8,JSON_THROW_ON_ERROR);}catch(JsonException){throw new RuntimeException('Domain search settings need recovery.');}
@@ -90,19 +93,25 @@ function provider_domain_search_run(string $id,int $profileRevision,int $configR
     $intent=staff_locked(fn()=>staff_transaction(function()use($id,$profileRevision,$configRevision,$query):array {
         [$actor,,$cfg]=provider_domain_search_authority($id,$profileRevision,$configRevision);$now=time();
         if(!provider_domain_search_offered($query,$cfg['tlds']))throw new InvalidArgumentException('That extension is not in your configured offering.');
-        if(one('SELECT id FROM '.table('provider_domain_searches').' WHERE profile_id=? AND started_epoch>? LIMIT 1',[$id,$now-30]))throw new RuntimeException('Wait 30 seconds between domain lookups.');
-        if((int)query('SELECT COUNT(*) FROM '.table('provider_domain_searches').' WHERE profile_id=? AND started_epoch>?',[$id,$now-3600])->fetchColumn()>=20)throw new RuntimeException('The shared limit of 20 domain lookups per hour has been reached.');
-        if(one('SELECT r.id FROM '.table('provider_domain_search_results').' r JOIN '.table('provider_domain_searches').' s ON s.id=r.id WHERE s.profile_id=? AND r.reason=? AND r.finished_epoch>? LIMIT 1',[$id,'rate_limited',$now-86400]))throw new RuntimeException('20i limited a recent lookup. Domain searches are paused for 24 hours from that response.');
+        provider_domain_search_limits($id,$now);
         $intent=['id'=>bin2hex(random_bytes(16)),'profile_id'=>$id,'profile_revision'=>$profileRevision,'config_revision'=>$configRevision,'actor_id'=>(int)$actor['id'],'query_name'=>$query,'tlds'=>json_encode($cfg['tlds'],JSON_THROW_ON_ERROR),'started_at'=>gmdate('Y-m-d H:i:s',$now),'started_epoch'=>$now];
         query('INSERT INTO '.table('provider_domain_searches').' (id,profile_id,profile_revision,config_revision,actor_id,query_name,tlds,started_at,started_epoch) VALUES (?,?,?,?,?,?,?,?,?)',array_values($intent));
         provider_settings_audit((int)$actor['id'],'domain_search_started','Search '.$intent['id'].' profile '.$id.' revision '.$profileRevision);return $intent;
     }));
+    $authority=static function()use($intent):array {
+        $a=provider_domain_search_authority($intent['profile_id'],$intent['profile_revision'],$intent['config_revision']);
+        if((int)$a[0]['id']!==$intent['actor_id'])throw new RuntimeException('Actor changed.');return $a;
+    };
+    return provider_domain_search_execute($intent,$authority,'provider_domain_search_record',$resolver,$transport);
+}
+/** One shared transport/persistence pipeline. Callbacks are internal authority and storage adapters. */
+function provider_domain_search_execute(array $intent,callable $authority,callable $record,?callable $resolver=null,?callable $transport=null):string {
     $begin=hrtime(true);$address='';$reason='';
     try{$address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];}
     catch(Throwable $e){if($e instanceof PDOException)throw $e;$reason='destination_unavailable';}
-    return staff_locked(function()use($intent,$address,$reason,$begin,$transport):string {
-        $authorize=static function()use($intent):array {
-            try{$a=provider_domain_search_authority($intent['profile_id'],$intent['profile_revision'],$intent['config_revision']);if((int)$a[0]['id']!==$intent['actor_id'])throw new RuntimeException('Actor changed.');return $a;}
+    return staff_locked(function()use($intent,$authority,$record,$address,$reason,$begin,$transport):string {
+        $authorize=static function()use($authority):array {
+            try{return $authority();}
             catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;throw new ProviderDomainSearchAccessChanged('Domain search access changed.');}
         };
         $elapsed=static fn():int=>(int)((hrtime(true)-$begin)/1e6);
@@ -125,7 +134,7 @@ function provider_domain_search_run(string $id,int $profileRevision,int $configR
             }
         }
         try{$authorize();}catch(ProviderDomainSearchAccessChanged){$state='access_changed';$reason='access_changed';$result=null;$fingerprint='';}
-        provider_domain_search_record($intent,$state,$reason,$result,$fingerprint,$elapsed());
+        $record($intent,$state,$reason,$result,$fingerprint,$elapsed());
         return $intent['id'];
     });
 }
@@ -135,3 +144,17 @@ function provider_domain_search_history(string $id,int $page=1): array {
     $page=max(1,min($page,100000));
     return all('SELECT s.*,r.state,r.reason,r.result,r.finished_at,r.elapsed_ms,u.name AS actor_name FROM '.table('provider_domain_searches').' s LEFT JOIN '.table('provider_domain_search_results').' r ON r.id=s.id LEFT JOIN '.table('users').' u ON u.id=s.actor_id WHERE s.profile_id=? ORDER BY s.started_epoch DESC,s.id DESC LIMIT 21 OFFSET '.(($page-1)*20),[$id]);
 }
+
+/** Staff and client requests consume the same durable provider budget, including incomplete attempts. */
+function provider_domain_search_limits(string $profile,int $now):void {
+    $sources=[['provider_domain_searches','provider_domain_search_results']];
+    if(provider_domain_client_family())$sources[]=['provider_domain_client_searches','provider_domain_client_results'];
+    $count=0;
+    foreach($sources as [$requests,$results]){
+        if(one('SELECT id FROM '.table($requests).' WHERE profile_id=? AND started_epoch>? LIMIT 1',[$profile,$now-30]))throw new RuntimeException('Wait 30 seconds between domain lookups.');
+        $count+=(int)query('SELECT COUNT(*) FROM '.table($requests).' WHERE profile_id=? AND started_epoch>?',[$profile,$now-3600])->fetchColumn();
+        if(one('SELECT r.id FROM '.table($results).' r JOIN '.table($requests).' s ON s.id=r.id WHERE s.profile_id=? AND r.reason=? AND r.finished_epoch>? LIMIT 1',[$profile,'rate_limited',$now-86400]))throw new RuntimeException('20i limited a recent lookup. Domain searches are paused for 24 hours from that response.');
+    }
+    if($count>=20)throw new RuntimeException('The shared limit of 20 domain lookups per hour has been reached.');
+}
+require_once CWP_CODE_ROOT.'/app/providers/domain_search_clients.php';

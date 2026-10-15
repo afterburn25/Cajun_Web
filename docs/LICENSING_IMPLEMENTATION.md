@@ -21,15 +21,22 @@ Implements `POST /api/validate.php` — the endpoint that Website Core calls to 
 
 **Response:**
 ```json
-{"authorized": true}
-// or
-{"authorized": false, "error": "License key not found"}
+HTTP 200 {"authorized": true}
+// or — explicit denial (takes the site offline at next validation):
+HTTP 200 {"authorized": false, "error": "License key not found"}
 ```
 
+**Transient conditions use non-200 status codes** — this is contractually
+required. `200 + authorized:false` is the only definitive denial verdict;
+Website Core treats any non-200 (429 rate limit, 400 malformed request,
+5xx server error) as inconclusive and retries rather than deactivating
+the site.
+
 **Features:**
-- Rate limiting: 10 requests per minute per IP
+- Rate limiting: 10 requests per minute per IP (HTTP 429)
 - Audit logging: all validation attempts logged to `audit` table
 - Multiple domain support: allows test + public sites on same license key, capped at 2 active domains per license — a third requires deactivating one first, which takes that site offline at its next validation
+- www/apex equivalence: `www.example.com` and `example.com` name the same site — registration canonicalizes `www.` to the apex and validation accepts either form, so the pair never consumes two slots
 - Active check: deactivated licenses are rejected
 
 ### 2. Database schema
@@ -52,6 +59,9 @@ Functions:
 - `license_create($customerId, $productId)` — creates a new license
 - `license_get($key)` — retrieves license by key
 - `license_register_domain($licenseId, $domain)` — registers a domain
+- `license_replace_domain($licenseId, $oldDomain, $newDomain)` — atomic
+  "change website": deactivates the old domain (old install goes offline
+  at its next validation) and registers the new one in the freed slot
 - `license_deactivate_domain($licenseId, $domain)` — deactivates a domain
 - `license_deactivate($licenseId)` — deactivates entire license
 - `license_domains($licenseId)` — gets all domains for a license
@@ -75,6 +85,8 @@ Adds "Website licenses" to the Studio admin section with:
 Adds license management to the customer workspace:
 - View active licenses with domains
 - Register new domains
+- Replace a domain in one step (old site auto-deactivates — goes offline
+  at its next validation)
 - Deactivate existing domains
 
 ### 6. Module bundling
@@ -111,11 +123,13 @@ Adds license management to the customer workspace:
 - Both hooks run AFTER the transaction commits — fulfilment failure never rolls back a recorded payment
 - Bundle generation requires a Website Core source checkout: `license_core_source_dir()` checks sibling dirs and `config()['license_core_dir']`; if unavailable the license is still created and the bundle can be generated later from admin
 - Payment reversal does NOT deactivate licenses — deactivation stays a manual admin action
+- Customer receives a best-effort email with the license key and portal link on fulfilment (`send_message()`); failure is logged, not fatal
 
-### 9. Remaining
+### 9. Customer email notification
 
-- Email notification to customer with license key + download link
-- Optional: list catalog products in the admin create-license form
+On fulfilment the customer is emailed their license key plus a link to the
+portal workspace where bundles can be downloaded and domains registered.
+Best-effort: a mail failure is logged but does not block license creation.
 
 ## Integration points
 
@@ -128,17 +142,44 @@ Adds license management to the customer workspace:
 
 ```sql
 website_licenses (
-  id, license_key (unique), customer_id, product_id, is_active,
-  created_at, updated_at
+  id, license_key (unique), customer_id, product_id (VARCHAR(60) SKU),
+  is_active, created_at, updated_at
 )
 
 license_domains (
   id, license_id, domain, is_active, registered_at, deactivated_at
 )
+
+license_bundles (
+  id, license_id, title, path (private storage), created_at
+)
 ```
+
+## Test coverage
+
+- `tests/license_native.php` — service-layer checks (key generation,
+  domain normalization, multi-domain, 2-active cap, deactivation, SKU
+  mapping, bundle guards); runs in CI on MariaDB.
+- `tests/license_bundle_functional.php` — builds a real bundle from the
+  Website_Core checkout and verifies the extracted layout
+  (`site/install.php` + `site/modules/industries/*/addon.json` with
+  embedded `license_key`) matches the Website Core installer's
+  expectations. 14 checks, all passing.
+- Website Core side: `LicenseApiContractTest` spawns a real `php -S`
+  mock of this API and verifies the HTTP wire contract including the
+  200-vs-non-200 denial/transient semantics.
 
 ## Next steps
 
-1. Implement module bundling tool (creates downloadable ZIPs)
-2. Integrate with purchase flow (auto-generate license key on sale)
-3. Test the complete flow end-to-end
+1. Configure `license_core_dir` on production pointing to a Website Core
+   checkout so fulfilment can generate bundles automatically.
+2. Run a live end-to-end cycle: purchase → fulfilment → portal download →
+   Website Core install → periodic validation → domain change → old-site
+   deactivation. None of this has been run against a live environment.
+
+
+## Integration correction — preserve the original site when replacement fails
+
+The20i integration branch normally preserves main16f07e49. Actual local MariaDB reproduction found `license_replace_domain()` deactivated the old domain before validating/inserting the new domain: both invalid input and an injected database failure left the original inactive. The integration correction locks the original active domain in a new transaction and commits deactivation/registration together. Any exception rolls back; an existing caller transaction is refused without mutation or rollback. This fixes replacement atomicity; it does not claim to redesign all licensing concurrency or permissions.
+
+Actual local temporary-table repro/fix reports retain2 original failures and4 corrected cases. The merged native suite passes35 named cases with an isolated prefix/config (application functions unchanged), including invalid replacement preservation, injected insertion failure and caller-transaction preservation. CI now retains `qa/license-native-results.json`. Combined browser/current-head Linux and independent review remain pending. No Website_Core checkout was modified or executed; no live purchase, license change or customer message occurred.

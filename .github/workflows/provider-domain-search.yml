@@ -1,15 +1,15 @@
 name: Native domain search checks
 on:
   push:
-    branches: [main, codex/twentyi-domain-search]
-    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_domain_search_native.php', '.github/workflows/provider-domain-search.yml']
+    branches: [main, codex/twentyi-domain-search, codex/twentyi-client-domain-search]
+    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_domain_search_native.php', 'tests/provider_domain_client_cases.php', '.github/workflows/provider-domain-search.yml']
   pull_request:
-    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_domain_search_native.php', '.github/workflows/provider-domain-search.yml']
+    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_domain_search_native.php', 'tests/provider_domain_client_cases.php', '.github/workflows/provider-domain-search.yml']
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: provider-domain-search-${{ github.ref }}
+  group: provider-domain-search-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 jobs:
   native-domain-search:
@@ -72,7 +72,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: provider-domain-search-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
-          path: qa/provider-domain-search-native-results.json
+          path: |
+            qa/provider-domain-search-native-results.json
+            qa/provider-domain-client-native-results.json
           if-no-files-found: warn
           retention-days: 14
       - name: Record verification scope

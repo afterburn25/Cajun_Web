@@ -90,4 +90,6 @@ def run_browser(env,browser):
     config(search_enabled='0');r=owner.post(url,data=forged)
     check('Disabled search refuses captured forms and keeps history',provider_server.calls==calls+1 and all(db('SELECT * FROM ci_'+t+' ORDER BY id')==rows for t,rows in saved.items()) and soup(r).select_one('[data-domain-search-form]') is None)
     check('Domain search preserves original inventory and provider writes',provider_server.posts==start_posts and db('SELECT * FROM ci_provider_refreshes ORDER BY id')==before_inventory and not provider_server.errors)
+    from provider_domain_client_cases import run_browser as client_domain_browser
+    client_domain_browser(env,browser,owner,url,config)
     owner.close();member.close();visitor.close();client.close()

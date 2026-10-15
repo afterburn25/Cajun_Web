@@ -72,6 +72,13 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <input type="hidden" name="domain" value="<?= esc($d['domain']) ?>">
 <button class="btn outline" type="submit">Deactivate</button>
 </form>
+<form method="post" style="display:inline">
+<?php admin_action('studio_domain_replace'); ?>
+<input type="hidden" name="license_id" value="<?= esc($lic['id']) ?>">
+<input type="hidden" name="old_domain" value="<?= esc($d['domain']) ?>">
+<input type="text" name="new_domain" placeholder="new-domain.com" style="width:13em" required>
+<button class="btn outline" type="submit">Replace</button>
+</form>
 <?php else: ?>
 <span style="color:red">Deactivated</span>
 <?php endif; ?>

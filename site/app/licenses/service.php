@@ -24,13 +24,24 @@ function license_generate_key(): string {
  * Create a new license for a customer.
  */
 function license_create(int $customerId, string $productId): string {
-    $key = license_generate_key();
     $now = gmdate('Y-m-d H:i:s');
-    query(
-        'INSERT INTO ' . table('website_licenses') . ' (license_key, customer_id, product_id, is_active, created_at, updated_at) VALUES (?, ?, ?, 1, ?, ?)',
-        [$key, $customerId, $productId, $now, $now]
-    );
-    return $key;
+    // license_key is UNIQUE — 128-bit random keys make collisions essentially
+    // impossible, but retry rather than fail outright if one ever occurs.
+    for ($attempt = 0; $attempt < 3; $attempt++) {
+        $key = license_generate_key();
+        try {
+            query(
+                'INSERT INTO ' . table('website_licenses') . ' (license_key, customer_id, product_id, is_active, created_at, updated_at) VALUES (?, ?, ?, 1, ?, ?)',
+                [$key, $customerId, $productId, $now, $now]
+            );
+            return $key;
+        } catch (PDOException $e) {
+            if ($attempt === 2 || (int) ($e->errorInfo[1] ?? 0) !== 1062) {
+                throw $e; // not a duplicate, or retries exhausted
+            }
+        }
+    }
+    throw new RuntimeException('Could not allocate a unique license key.');
 }
 
 /**
@@ -46,6 +57,11 @@ function license_get(string $key): ?array {
  */
 function license_register_domain(int $licenseId, string $domain): void {
     $domain = strtolower(trim($domain));
+    // Canonicalize www. to the apex — validation treats the www/apex pair
+    // as the same site, so storing apex keeps one slot per real site.
+    if (str_starts_with($domain, 'www.')) {
+        $domain = substr($domain, 4);
+    }
     if (strlen($domain) > 253 || !preg_match('/^[a-z0-9][a-z0-9\-\.]*\.[a-z]{2,}$/D', $domain)) {
         throw new InvalidArgumentException('Invalid domain format.');
     }
@@ -68,6 +84,42 @@ function license_register_domain(int $licenseId, string $domain): void {
          ON DUPLICATE KEY UPDATE is_active = 1, deactivated_at = NULL, registered_at = ?',
         [$licenseId, $domain, $now, $now]
     );
+}
+
+/**
+ * Replace one registered domain with another in a single step — the
+ * customer's "change website" action. The old domain is deactivated at
+ * once, so its install goes offline at its next validation; the new
+ * domain registers in the freed slot.
+ */
+function license_replace_domain(int $licenseId, string $oldDomain, string $newDomain): void {
+    $oldDomain = strtolower(trim($oldDomain));
+    if (str_starts_with($oldDomain, 'www.')) {
+        $oldDomain = substr($oldDomain, 4);
+    }
+    $newDomain = strtolower(trim($newDomain));
+    if (str_starts_with($newDomain, 'www.')) {
+        $newDomain = substr($newDomain, 4);
+    }
+    if ($oldDomain === $newDomain) {
+        throw new InvalidArgumentException('The new domain is the same as the current one.');
+    }
+    if (db()->inTransaction()) {
+        throw new LogicException('Domain replacement requires its own transaction.');
+    }
+    db()->beginTransaction();
+    try {
+        $existing = one('SELECT id FROM ' . table('license_domains') . ' WHERE license_id = ? AND domain = ? AND is_active = 1 FOR UPDATE', [$licenseId, $oldDomain]);
+        if (!$existing) {
+            throw new InvalidArgumentException('Current domain is not active on this license.');
+        }
+        license_deactivate_domain($licenseId, $oldDomain);
+        license_register_domain($licenseId, $newDomain);
+        db()->commit();
+    } catch (Throwable $e) {
+        if (db()->inTransaction()) db()->rollBack();
+        throw $e;
+    }
 }
 
 /**

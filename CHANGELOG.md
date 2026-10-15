@@ -1,3 +1,15 @@
+# Integration checkpoint — current main and domain replacement rollback
+
+Normally merge main16f07e49 into the20i client-search branch. Preserve licensing/domain controls and fix failed replacement leaving the original domain disabled. Local4 rollback cases and35 native licensing checks pass; combined acceptance/review pending. Earlier e375 full application artifacts/packages are now verified. Published1.24 remains unchanged.
+
+# Verification checkpoint — client domain search
+
+Native1fbeb passes106 combined checks including50 client checks in each of four PHP/database combinations; exact Windows packages verified. Correct the browser fixture to grant support access before asserting that real support sessions cannot search. No runtime authorization change. Browser/recovery/review acceptance remains pending. [Evidence](docs/TWENTYI_CLIENT_DOMAIN_SEARCH.md).
+
+# Development checkpoint — private client domain search
+
+Add explicit owner enablement, a native client search form and private history through the existing authenticated 20i reader. Share owner/client rate limits, preserve independent client identity, recheck current access and prevent request replay. Add missing-history recovery and native/browser regression coverage. Local syntax passes; new runtime acceptance and release remain pending. [Scope](docs/TWENTYI_CLIENT_DOMAIN_SEARCH.md).
+
 # Development checkpoint — accepted order and active service wording
 
 Parent `e37517fa` merges tested hosting confirmation with newer main. Four native database/PHP combinations and independent exact Windows package verification pass. Parent `4d059a5b` browser evidence passes 1,737 checks; actual screenshots exposed an accepted-order sentence incorrectly saying setup was pending after activation. Correct the sentence and add owner/client browser regression coverage while retaining the pre-activation assertion. New current-head packaged acceptance, review and release remain pending. Published 1.24.0 is unchanged.
@@ -902,3 +914,7 @@ Parent5728c2df, PR138: add one native order/service association with exact comme
 
 
 Current follow-up:8adf passed all four native combinations, including42 new association checks within277 combined checks. A reproduced future-pause/end timing defect is corrected with four additional effective-boundary cases; exact descendant validation remains pending. See [details](docs/TWENTYI_ORDER_SERVICE_LINKS.md).
+
+### Unreleased verification checkpoint — 2026-10-15
+
+- Verified parent client-search HTTP/Chromium and actual desktop/mobile screens, merged-head native matrices, and exact Windows packages. Full combined acceptance and independent review remain pending; published1.24 is unchanged.
