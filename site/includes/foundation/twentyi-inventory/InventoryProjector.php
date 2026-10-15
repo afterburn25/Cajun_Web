@@ -72,6 +72,22 @@ final class InventoryProjector
         );
     }
 
+    /** Cloud metadata never implies active service, a retail offering or client ownership. */
+    public static function cloudServersList(TransportResponse $response, int $observedAt, string $scope = ''): InventorySnapshot
+    {
+        $decoded = self::listBody($response, $observedAt, $scope, self::MAX_RESOURCES);
+        if ($decoded instanceof InventorySnapshot) return $decoded;
+        $servers = []; $skipped = 0; $reasons = [];
+        foreach ($decoded as $item) {
+            try { $server = InventoryCloudServer::fromItem($item); }
+            catch (\InvalidArgumentException $e) { self::skip($skipped, $reasons, $e->getMessage()); continue; }
+            if (isset($servers[$server->id])) { self::skip($skipped, $reasons, 'Duplicate cloud server id in response.'); continue; }
+            $servers[$server->id] = $server;
+        }
+        return new InventorySnapshot($skipped > 0 ? InventorySnapshot::PARTIAL : InventorySnapshot::COMPLETE,
+            array_values($servers), $observedAt, $skipped, $reasons, '', $scope, InventorySnapshot::COVERAGE_UNKNOWN);
+    }
+
     /**
      * Identity-only projection for list endpoints whose response schema
      * is not documented (vps.list, managedvps.list, domains.list,

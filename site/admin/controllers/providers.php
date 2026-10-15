@@ -25,12 +25,17 @@ function provider_inventory_admin_action(string $action):void {
         provider_inventory_migrate($password);flash('20i inventory storage is ready.');redirect(admin_url('provider-settings'));
     }
     provider_settings_manager();$id=posted('profile_id',32);
-    if($action==='provider_inventory_refresh'||$action==='provider_inventory_link'||$action==='provider_inventory_relink'){
+    if($action==='provider_inventory_refresh'||$action==='provider_inventory_cloud_refresh'||$action==='provider_inventory_link'||$action==='provider_inventory_relink'){
         $revision=posted('revision',10);if(!ctype_digit($revision))throw new InvalidArgumentException('Reload the current 20i form.');
     }
     if($action==='provider_inventory_refresh'){
         $code=provider_inventory_refresh($id,(int)$revision,$password);
         flash(provider_inventory_message($code),$code==='complete'?'success':'error');redirect(admin_url('provider-settings'));
+    }
+    if($action==='provider_inventory_cloud_refresh'){
+        $code=provider_inventory_refresh($id,(int)$revision,$password,null,null,\CajunWebPro\Foundation\TwentyIInventory\InventoryRead::CLOUD_SERVERS_LIST);
+        $message=match($code){'complete'=>'The observed cloud server list was saved.','partial'=>'A partial cloud observation was saved; some returned servers could not be validated.',default=>provider_inventory_message($code)};
+        flash($message,$code==='complete'?'success':'error');redirect(admin_url('provider-settings'));
     }
     if($action==='provider_inventory_link'){
         $client=(int)posted('client_id',10);$package=(int)posted('package_id',20);

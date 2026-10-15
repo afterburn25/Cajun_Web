@@ -61,6 +61,11 @@ final class InventoryRegister
                 InventoryCapability::RISK_SENSITIVE_READ, InventoryCapability::EVIDENCE_DOCUMENTED, false,
                 'Service-change requests, IDs and statuses for reconciliation (owner-upload L50-56). Schema undocumented; identity-only projection retains ids.'
             ),
+            InventoryRead::CLOUD_SERVERS_LIST => new InventoryCapability(
+                InventoryRead::CLOUD_SERVERS_LIST, 'GET', '/cloud_server',
+                InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, true,
+                'Public Cloud Hosting API guide shows a list with allocated ID, name, location, configuration and package IDs. Bounded metadata projection; ambiguous flags/count are omitted. No authenticated cloud read is claimed.'
+            ),
         ];
     }
 
@@ -89,10 +94,10 @@ final class InventoryRegister
         ];
     }
 
-    /** The only operation whose response shape has evidence enough to project fully. */
+    /** Operations with implemented allowlist projections of documented metadata. */
     public static function projectable(string $operation): bool
     {
-        return $operation === InventoryRead::PACKAGES_LIST;
+        return in_array($operation, [InventoryRead::PACKAGES_LIST, InventoryRead::CLOUD_SERVERS_LIST], true);
     }
 
     /** Operations whose list responses support the identity-only projection. */

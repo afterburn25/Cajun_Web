@@ -1,5 +1,15 @@
 # Session handoff
 
+## Cloud inventory implementation — 2026-10-15
+
+This development branch `codex/twentyi-cloud-inventory` starts at the stable 1.24 candidate `906df7278ba9c3ae9d8f51ae49e480f686f91cee`. It is separate from [PR #126](https://github.com/afterburn25/Cajun_Web/pull/126), whose exact full application run [38694814738](https://github.com/afterburn25/Cajun_Web/actions/runs/38694814738) is continuing through recovery/Apache. That candidate's corrected browser checkpoint passes 1,371 named assertions and its independent review found no major issues. No 1.24 publication is claimed, and this development branch does not replace or restart its acceptance.
+
+The next implemented path extends the existing InventoryReader, fixed transport, durable refresh engine and owner screen with GET /cloud_server. It retains bounded documented metadata and original CPU/memory/disk units, drops unknown response values, separates cloud/package histories and rejects mismatched account/operation snapshots. Inventory v4 adds nullable intent operation (old null intents mean package reads) and a cloud observation table without rewriting original rows. Missing stamped tables require original database recovery. Cloud observations grant no client ownership and cannot displace package data. Current owner authorization, shared cooldown, immutable results, credential-context fencing and audit rollback remain in the existing engine.
+
+Local PHP 8.4 default/no-ini passes 82 cloud reader/transport cases each; the existing 139 inventory and 28 package-reader cases also pass. Native PHP/database cases and real packaged HTTP/Chromium cloud scenarios are implemented but not yet run. They cover populated v1/v2/v3 upgrades, interruption/repeat, retained package/client isolation, mixed and failed cloud reads, consent/rate limits and desktop/mobile screens. The new owner UI, persistence and migrations remain unverified until those runs pass. No live cloud read, provider write, purchase, mail, SSH or deployment has occurred.
+
+Next: refresh generated shipping mirrors, push this checkpoint, run the reader and native inventory matrices, inspect failures, then run the bounded packaged/browser checkpoint and independent review. Add explicit cloud/client ownership, remaining discovery and native control workflows after the underlying path is verified. Continue first-increment release acceptance on the stable branch; exact-main and downloaded-release verification remain required. The full owner API-reference source/link is still pending, while primary public documentation supports this specific read.
+
 ## 1.24 candidate: packaged checkpoint verified — 2026-10-15
 
 Codex owns the complete 20i integration as P0. The active branch is `codex/twentyi-complete`, [PR #126](https://github.com/afterburn25/Cajun_Web/pull/126), from main `68e4d411acedd9f73cf048018ba570ace9b673be`. Published [v1.23.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0) remains unchanged. This checkpoint starts at `438a3122d3a23bdbd58825ee2da2daec902f351f`; the enclosing commit identifies the corrected candidate. No merge, release or deployment is claimed.

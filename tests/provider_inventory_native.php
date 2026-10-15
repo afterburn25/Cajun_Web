@@ -21,11 +21,11 @@ final class PiTransport implements HttpTransport {
     public function send(TransportRequest $request):TransportResponse {global $transportCalls;$transportCalls++;$this->sent[]=$request;($this->authorize)();$next=array_shift($this->script)??new TransportResponse(500,[],'no fixture');if($next instanceof Throwable)throw $next;return $next;}
 }
 function pi_item(int $id,string $name='pkg.example'):array {return ['id'=>$id,'typeRef'=>9,'enabled'=>true,'name'=>$name,'names'=>[$name],'created'=>'2024-01-02T03:04:05Z','packageTypeName'=>'Web','packageLabels'=>['LBL'],'stackUsers'=>[],'productSpec'=>new stdClass(),'extra'=>'dropped'];}
-function pi_read(array $row,#[SensitiveParameter] string $key,string $address,callable $authorize):InventorySnapshot {
+function pi_read(array $row,#[SensitiveParameter] string $key,string $address,callable $authorize,string $operation=InventoryRead::PACKAGES_LIST):InventorySnapshot {
     global $secret,$scripted;if(db()->inTransaction()||$key!==$secret||$address!=='8.8.8.8')throw new LogicException('Invalid credential/network boundary');
     $transport=new PiTransport($scripted);$transport->authorize=$authorize;
     $credential=new ProviderCredential('twenty-i',$row['id'],static function()use($key,$authorize):string{$authorize();return $key;});
-    return InventoryReader::read($transport,$credential,InventoryRead::PACKAGES_LIST,0,time());
+    return InventoryReader::read($transport,$credential,$operation,0,time());
 }
 function pi_refresh(string $id,?callable $resolver=null,?callable $transport=null,int $revision=1):string {global $password;return provider_inventory_refresh($id,$revision,$password,$resolver??'pi_resolve',$transport??'pi_read');}
 function pi_cool():void {query('UPDATE '.table('provider_refreshes').' SET started_epoch=started_epoch-120 WHERE started_epoch>?',[time()-30]);}
@@ -54,9 +54,9 @@ try {
     staff_seed_owner(1);foreach([2=>'administrator',3=>'owner'] as $id=>$role)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode(array_keys(staff_permissions()))]);
     foreach([[1,'Client One','one@example.invalid'],[2,'Client Two','two@example.invalid']] as $c)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',[$c[1],$c[2],bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     pi_actor();provider_settings_migrate($password);$id=provider_settings_save('',0,'20i fixture',true,$secret,$password);
-    provider_inventory_migrate($password);pi_ok('Inventory storage prepared at v3','3'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'')&&pi_count('provider_domain_links')===0&&pi_count('provider_domain_link_events')===0);
+    provider_inventory_migrate($password);pi_ok('Inventory storage prepared at v4','4'===(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'')&&pi_count('provider_domain_links')===0&&pi_count('provider_domain_link_events')===0);
     // Populated v1/v2, interrupted migration and legacy suppression run in provider_inventory_upgrade_native.php.
-    save_setting('provider_inventory_schema_version','99');pi_deny('Unsupported inventory storage version refused',fn()=>provider_inventory_migrate($password));save_setting('provider_inventory_schema_version','3');
+    save_setting('provider_inventory_schema_version','99');pi_deny('Unsupported inventory storage version refused',fn()=>provider_inventory_migrate($password));save_setting('provider_inventory_schema_version','4');
     pi_deny('Wrong current password prevents DNS and refresh intent',fn()=>provider_inventory_refresh($id,1,'wrong','pi_resolve','pi_read'));
     pi_deny('Stale revision prevents DNS and refresh intent',fn()=>pi_refresh($id,null,null,2));
     pi_actor(2);pi_deny('Administrator cannot refresh provider inventory',fn()=>pi_refresh($id));pi_deny('Administrator cannot read inventory',fn()=>provider_inventory_latest($id));pi_actor();
@@ -185,7 +185,41 @@ try {
     pi_ok('A settings-only change still suspends the mapping',count($services)===1&&$services[0]['context_changed']===true&&!$services[0]['present']);
     pi_deny('Re-approval without a current-revision observation is refused',fn()=>provider_inventory_relink($link['id'],6,$password));
     provider_inventory_unlink($link['id'],$password);pi_ok('A context-stale mapping can still be removed',provider_inventory_links($id)===[]&&provider_inventory_client_services(1)===[]);
-    $durable=json_encode([all('SELECT * FROM '.table('provider_refreshes')),all('SELECT * FROM '.table('provider_refresh_results')),all('SELECT * FROM '.table('provider_observation_packages')),all('SELECT * FROM '.table('provider_package_links')),all('SELECT * FROM '.table('provider_package_link_events')),all('SELECT * FROM '.table('provider_domain_links')),all('SELECT * FROM '.table('provider_domain_link_events')),all('SELECT * FROM '.table('audit'))]);
+    pi_aged();
+    $cloudItem=['id'=>1201,'name'=>'cloud.synthetic.invalid','configuration'=>['CpuCores'=>2,'RamMb'=>2048,'OsDiskSizeGb'=>40,'DataDiskSizeGb'=>0],'packageIds'=>[201],'unknown'=>['secret'=>'CLOUD_PRIVATE_MARKER']];
+    $scripted=[new TransportResponse(200,[],json_encode([pi_item(201,'package-before-cloud.example')]))];
+    pi_ok('Package observation before cloud refresh is retained',pi_refresh($id,null,null,6)==='complete');pi_cool();
+    provider_inventory_link($id,201,1,6,$password);
+    $packageBefore=provider_inventory_observation($id);$clientBefore=provider_inventory_client_services(1);$packagesBefore=all('SELECT * FROM '.table('provider_observation_packages'));
+    $cloudRefresh=fn($transport=null,$revision=6)=>provider_inventory_refresh($id,$revision,$password,'pi_resolve',$transport??'pi_read',InventoryRead::CLOUD_SERVERS_LIST);
+    $scripted=[new TransportResponse(200,[],json_encode([$cloudItem]))];
+    pi_ok('Cloud read uses the existing durable refresh engine',$cloudRefresh()==='complete');pi_cool();
+    $cloud=provider_inventory_observation($id,InventoryRead::CLOUD_SERVERS_LIST);$cloudRows=provider_inventory_cloud_servers($cloud['id']);
+    pi_ok('Cloud intent and result retain operation account revision and fingerprint',one('SELECT operation FROM '.table('provider_refreshes').' WHERE id=?',[$cloud['id']])['operation']===InventoryRead::CLOUD_SERVERS_LIST&&$cloud['scope']==='twenty-i|'.$id.'|cloudservers.list'&&(int)$cloud['profile_revision']===6&&$cloud['key_fingerprint']===$packageBefore['key_fingerprint']);
+    pi_ok('Only sanitized cloud metadata is saved',count($cloudRows)===1&&$cloudRows[0]['server']->configuration['RamMb']===2048&&(int)$cloudRows[0]['server_id']===1201&&!str_contains(json_encode(all('SELECT * FROM '.table('provider_observation_cloud'))),'CLOUD_PRIVATE_MARKER'));
+    pi_ok('Cloud cannot replace package observation or client service data',provider_inventory_observation($id)===$packageBefore&&provider_inventory_client_services(1)===$clientBefore&&all('SELECT * FROM '.table('provider_observation_packages'))===$packagesBefore&&provider_inventory_client_services(2)===[]);
+    pi_ok('Package refresh cannot be projected as cloud metadata',provider_inventory_cloud_servers($packageBefore['id'])===[]);
+    $scripted=[new TransportResponse(200,[],json_encode([$cloudItem,['id'=>false]]))];
+    pi_ok('Mixed cloud response preserves validated entries with partial state',$cloudRefresh()==='partial');pi_cool();
+    $partial=provider_inventory_observation($id,InventoryRead::CLOUD_SERVERS_LIST);
+    pi_ok('Partial cloud counts identify the skipped row',(int)$partial['skipped']===1&&(int)$partial['package_count']===1&&count(provider_inventory_cloud_servers($partial['id']))===1);
+    foreach([new TransportResponse(401,[],'[]'),new TransportResponse(200,[],'{}'),new TransportException('timeout')] as $n=>$response){$scripted=[$response];pi_ok('Cloud failure retains last valid cloud and package observation '.$n,$cloudRefresh()==='unavailable'&&provider_inventory_observation($id,InventoryRead::CLOUD_SERVERS_LIST)===$partial&&provider_inventory_observation($id)===$packageBefore);pi_cool();}
+    pi_ok('Cloud history is separated from package history',count(provider_inventory_history($id,1,InventoryRead::CLOUD_SERVERS_LIST))===5&&provider_inventory_latest($id)['id']===$packageBefore['id']);
+    $before=pi_count('provider_observation_cloud');$scripted=[new TransportResponse(200,[],json_encode([$cloudItem]))];
+    pi_ok('Cloud result audit failure rolls back observations',pi_audit_failure('refresh_finished',fn()=>$cloudRefresh())&&pi_count('provider_observation_cloud')===$before&&provider_inventory_observation($id,InventoryRead::CLOUD_SERVERS_LIST)===$partial);pi_cool();
+    $beforeDns=$dnsCalls;$beforeTransport=$transportCalls;$beforeIntent=pi_count('provider_refreshes');
+    pi_deny('Unknown reader cannot persist intent or use credentials',fn()=>provider_inventory_refresh($id,6,$password,'pi_resolve','pi_read','cloudservers.delete'));
+    pi_deny('Cloud refresh requires current owner password',fn()=>provider_inventory_refresh($id,6,'wrong','pi_resolve','pi_read',InventoryRead::CLOUD_SERVERS_LIST));
+    pi_ok('Refused cloud actions have no provider or storage effect',$dnsCalls===$beforeDns&&$transportCalls===$beforeTransport&&pi_count('provider_refreshes')===$beforeIntent);
+    pi_ok('Mislabeled cloud snapshot is refused before persistence',$cloudRefresh(fn()=>InventorySnapshot::unavailable('transport_unknown',time(),'twenty-i|wrong-account|cloudservers.list'))==='refused'&&pi_count('provider_observation_cloud')===$before);pi_cool();
+    $code=$cloudRefresh(function()use($id){query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');return InventorySnapshot::unavailable('transport_unknown',time(),'twenty-i|'.$id.'|cloudservers.list');});
+    query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');pi_actor();
+    pi_ok('Revoked owner cloud result is discarded',$code==='access_changed'&&pi_count('provider_observation_cloud')===$before);pi_cool();
+    require_once CWP_CODE_ROOT.'/includes/layout/admin.php';ob_start();require CWP_CODE_ROOT.'/admin/views/providers.php';$cloudHtml=ob_get_clean();
+    pi_ok('Owner cloud screen renders sanitized facts and honest coverage',str_contains($cloudHtml,'cloud.synthetic.invalid')&&str_contains($cloudHtml,'Memory (MB)')&&str_contains($cloudHtml,'2048')&&str_contains($cloudHtml,'coverage is unknown')&&!str_contains($cloudHtml,'CLOUD_PRIVATE_MARKER'));
+    provider_settings_save($id,6,'Cloud context changed',true,'',$password);ob_start();require CWP_CODE_ROOT.'/admin/views/providers.php';$cloudHtml=ob_get_clean();
+    pi_ok('Cloud screen hides metadata under changed saved settings',str_contains($cloudHtml,'earlier provider settings')&&!str_contains($cloudHtml,'cloud.synthetic.invalid'));
+    $durable=json_encode([all('SELECT * FROM '.table('provider_refreshes')),all('SELECT * FROM '.table('provider_refresh_results')),all('SELECT * FROM '.table('provider_observation_cloud')),all('SELECT * FROM '.table('provider_observation_packages')),all('SELECT * FROM '.table('provider_package_links')),all('SELECT * FROM '.table('provider_package_link_events')),all('SELECT * FROM '.table('provider_domain_links')),all('SELECT * FROM '.table('provider_domain_link_events')),all('SELECT * FROM '.table('audit'))]);
     pi_ok('No durable row contains the secret or auth material',!str_contains($durable,$secret)&&!str_contains($durable,base64_encode($secret))&&!str_contains($durable,'Bearer')&&!str_contains($durable,'Authorization'));
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
 $ok=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/provider-inventory-native-results.json',json_encode(['passed'=>$ok,'scope'=>'Native database refresh/observation/link orchestration with synthetic DNS and transport; no real 20i API or UI acceptance','checks'=>$checks],JSON_PRETTY_PRINT));echo ($ok?'PASS':'FAIL').': '.count($checks).' native provider inventory assertions'.PHP_EOL;exit($ok?0:1);

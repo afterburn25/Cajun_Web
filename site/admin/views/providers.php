@@ -136,5 +136,6 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <nav aria-label="Refresh history pages"><?php if($refreshPage>1): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['refresh_page'=>$refreshPage-1]))?>">Newer refreshes</a><?php endif; ?><?php if(count($history)>20): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['refresh_page'=>$refreshPage+1]))?>">Older refreshes</a><?php endif; ?></nav>
 <?php endif; ?>
 <?php endif; ?></section>
+<?php require CWP_CODE_ROOT.'/admin/views/provider_cloud.php'; ?>
 <section class="workspace-card"><h2>Service capabilities</h2><p>These capabilities remain unverified and unavailable, including after a successful connection check.</p>
-<ul><li>Hosting inventory, plan types and account balance</li><li>Hosting creation, changes and deletion</li><li>Domain search, registration, renewals and transfers</li><li>VPS inventory, ordering and power controls</li><li>Backup restoration and SSH access</li></ul></section>
+<ul><li>Hosting plan types and account balance</li><li>Hosting creation, plan changes and deletion</li><li>Domain search, registration, renewals and transfers</li><li>VPS ordering and power controls</li><li>Backup restoration and SSH access</li></ul></section>

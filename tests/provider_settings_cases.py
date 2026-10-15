@@ -77,7 +77,7 @@ def run_browser(env,browser):
     # Domain ownership links over a seeded observed package.
     provider_server.packages.append({'id':910,'typeRef':1,'name':'client-pack.example','names':['client-pack.example','linked-domain.example','shared.example'],'enabled':True,'created':'2000-01-01T00:00:00Z'})
     r=owner.post(url,data={'csrf':token(owner.get(url)),'action':'provider_inventory_prepare','current_password':OWNER})
-    check('Packaged inventory storage prepares with domain link tables',db('SHOW TABLES LIKE "ci_provider_domain_links"')!=[] and db('SELECT value FROM ci_settings WHERE name="provider_inventory_schema_version"')==[{'value':'3'}])
+    check('Packaged inventory storage prepares with domain link tables',db('SHOW TABLES LIKE "ci_provider_domain_links"')!=[] and db('SELECT value FROM ci_settings WHERE name="provider_inventory_schema_version"')==[{'value':'4'}])
     def inv_post(action_name,**values):
         current=db('SELECT revision FROM ci_provider_profiles')[0]['revision']
         return owner.post(url,data={'csrf':token(owner.get(url)),'action':action_name,'profile_id':pid,'revision':str(current),'current_password':OWNER,**values})
@@ -97,6 +97,9 @@ def run_browser(env,browser):
         for table in ['provider_domain_links','provider_domain_link_events']:
             assert not db('SELECT * FROM ci_'+table), 'Only empty isolated fixture tables may be replaced'
             db('DROP TABLE ci_'+table)
+        assert not db('SELECT * FROM ci_provider_observation_cloud')
+        db('DROP TABLE ci_provider_observation_cloud')
+        db('ALTER TABLE ci_provider_refreshes DROP COLUMN operation')
         if old_version=='1':
             db('ALTER TABLE ci_provider_refresh_results DROP COLUMN key_fingerprint')
             db('ALTER TABLE ci_provider_package_links DROP COLUMN key_fingerprint, DROP COLUMN profile_revision')
@@ -112,7 +115,7 @@ def run_browser(env,browser):
         r=inv_post('provider_inventory_prepare')
         after=snapshot()
         projected={t:[{k:row[k] for k in before[t][i]} for i,row in enumerate(rows)] for t,rows in after.items()}
-        check('Populated v'+old_version+' HTTP upgrade preserves every original record and binding',r.status_code==200 and projected==before and db('SELECT value FROM ci_settings WHERE name="provider_inventory_schema_version"')==[{'value':'3'}])
+        check('Populated v'+old_version+' HTTP upgrade preserves every original record and binding',r.status_code==200 and projected==before and db('SELECT value FROM ci_settings WHERE name="provider_inventory_schema_version"')==[{'value':'4'}])
         if old_version=='1':
             client_page=alice.get(services_url)
             check('Legacy v1 client link stays suppressed after upgrade','client-pack.example' not in client_page.text and 'Details are hidden' in client_page.text)
@@ -165,3 +168,38 @@ def run_browser(env,browser):
     check('Domain unlink removes the mapping and records the event',not db('SELECT * FROM ci_provider_domain_links') and db('SELECT event FROM ci_provider_domain_link_events ORDER BY id DESC')[0]['event']=='unlink')
     check('Unlinked domain leaves the client view','linked-domain.example' not in alice.get(BASE+'/existing/portal/index.php?services=1').text)
     check('Provider fixture stays clean after inventory reads',not provider_server.errors)
+
+    # Real packaged cloud GET over the same isolated TLS fixture and transport.
+    cloud_item={'id':1201,'name':'cloud.browser.invalid','location':'dc_location-uk','productSpec':'cloud-20i','configuration':{'CpuCores':2,'RamMb':2048,'OsDiskSizeGb':40,'DataDiskSizeGb':0,'Provider':'20i','Zone':'20i','Country':'GB','VpsOsId':1,'spec':'synthetic'},'packageIds':[911],'cpanelInfo':{'password':'CLOUD_BROWSER_PRIVATE'}}
+    provider_server.cloud_servers=[cloud_item]
+    before_calls=provider_server.calls;before_refreshes=db('SELECT * FROM ci_provider_refreshes ORDER BY seq')
+    r=inv_post('provider_inventory_cloud_refresh',csrf='bad')
+    check('Cloud refresh rejects invalid CSRF before network or intent','session expired' in r.text.lower() and provider_server.calls==before_calls and db('SELECT * FROM ci_provider_refreshes ORDER BY seq')==before_refreshes)
+    r=inv_post('provider_inventory_cloud_refresh',current_password='wrong')
+    check('Cloud refresh rejects wrong password before network or intent','current password' in r.text and provider_server.calls==before_calls and db('SELECT * FROM ci_provider_refreshes ORDER BY seq')==before_refreshes)
+    packages_before=db('SELECT * FROM ci_provider_observation_packages ORDER BY id')
+    db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-7200')
+    r=inv_post('provider_inventory_cloud_refresh')
+    check('Packaged cloud refresh reaches only the documented fixed GET',provider_server.calls==before_calls+1 and provider_server.get_paths[-1]=='/cloud_server' and 'observed cloud server list was saved' in r.text)
+    cloud_rows=db('SELECT * FROM ci_provider_observation_cloud')
+    check('Packaged cloud metadata retains units and excludes unknown secret values',len(cloud_rows)==1 and json.loads(cloud_rows[0]['metadata'])['configuration']['RamMb']==2048 and 'CLOUD_BROWSER_PRIVATE' not in json.dumps(cloud_rows) and 'CLOUD_BROWSER_PRIVATE' not in r.text)
+    check('Cloud refresh cannot change package rows or expose servers to clients',db('SELECT * FROM ci_provider_observation_packages ORDER BY id')==packages_before and 'cloud.browser.invalid' not in alice.get(services_url).text and 'cloud.browser.invalid' not in bob.get(services_url).text)
+    check('Cloud observation is bound to its saved operation',db('SELECT operation FROM ci_provider_refreshes WHERE id=?',[cloud_rows[0]['refresh_id']])==[{'operation':'cloudservers.list'}])
+    calls=provider_server.calls;inv_post('provider_inventory_cloud_refresh')
+    check('Cloud duplicate submission observes shared cooldown',provider_server.calls==calls)
+    provider_server.cloud_servers=[cloud_item,{'id':False}];db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-120')
+    r=inv_post('provider_inventory_cloud_refresh')
+    check('Partial cloud response records skipped entries honestly','partial cloud observation' in r.text and db('SELECT r.state,r.skipped FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id WHERE f.operation="cloudservers.list" ORDER BY f.seq DESC LIMIT 1')==[{'state':'partial','skipped':1}])
+    retained_cloud=db('SELECT * FROM ci_provider_observation_cloud ORDER BY id')
+    provider_server.cloud_mode='authentication';db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-120')
+    r=inv_post('provider_inventory_cloud_refresh')
+    check('Cloud authentication failure preserves prior observation','cloud.browser.invalid' in r.text and 'No usable inventory was returned' in r.text and db('SELECT * FROM ci_provider_observation_cloud ORDER BY id')==retained_cloud and 'private synthetic response' not in r.text)
+    provider_server.cloud_mode='success'
+    capture=browser.new_context(viewport={'width':1440,'height':1050});capture.add_cookies([{'name':c.name,'value':c.value,'domain':c.domain,'path':c.path} for c in owner.cookies]);rendered=capture.new_page();cloud_errors=[];rendered.on('pageerror',lambda e:cloud_errors.append(str(e)))
+    for width,height,label in [(1440,1050,'Desktop'),(320,740,'Mobile')]:
+        rendered.set_viewport_size({'width':width,'height':height});rendered.goto(url);rendered.evaluate('document.fonts.ready')
+        expect(rendered.locator('[data-provider-cloud]')).to_contain_text('cloud.browser.invalid')
+        rendered.locator('[data-provider-cloud]').screenshot(path=str(QA/('Provider-Cloud-'+label+'.png')))
+        check('Cloud screen '+label+' fits viewport',rendered.evaluate('document.documentElement.scrollWidth <= innerWidth'))
+    check('Cloud screen has no browser errors',not cloud_errors);capture.close()
+    check('Provider fixture stays clean after cloud reads',not provider_server.errors)

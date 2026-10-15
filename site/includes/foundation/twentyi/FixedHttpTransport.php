@@ -41,7 +41,7 @@ final class FixedHttpTransport implements HttpTransport
             throw new \InvalidArgumentException('Unsupported provider request.');
         }
         if ($request->method === 'GET') {
-            if ($request->url !== TwentyIAdapter::URL || $request->body !== null
+            if (!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server'], true) || $request->body !== null
                 || array_keys($request->headers) !== ['Authorization','Accept']
                 || $request->headers['Accept'] !== 'application/json') {
                 throw new \InvalidArgumentException('Unsupported provider probe request.');

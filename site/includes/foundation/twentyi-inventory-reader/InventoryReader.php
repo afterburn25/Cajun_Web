@@ -22,11 +22,10 @@ use Throwable;
  * one bounded request per call and returns the exact
  * account/operation-bound sanitized snapshot.
  *
- * Only operations with both documented schema evidence and an
- * authenticated-read history are executable; documented-only or
- * sensitive/credential-bearing descriptors are refused before any
- * secret is resolved or any transport call is made. Refused reads
- * produce no observation — a refusal is not an unavailable read.
+ * Only operations with implemented bounded projections are executable.
+ * Implementation is distinct from account-specific live acceptance and
+ * permission to make a call: the application owns those gates. Sensitive
+ * or unsupported descriptors are refused before credentials or transport.
  *
  * The secret is resolved once at the read boundary, attached to the
  * request, and never retained on this component, the snapshot, or
@@ -45,12 +44,10 @@ final class InventoryReader
     private const MAX_SCOPE_BYTES = 190;
 
     /**
-     * Operations executable today: a documented schema plus the
-     * authenticated-read evidence of issue #65. Everything else —
-     * documented-only, schema-unknown, sensitive or credential-bearing —
-     * is refused. Descriptor registration alone never authorizes a call.
+     * Documented list reads with bounded projections. Descriptor registration
+     * alone never authorizes a call or demonstrates live account entitlement.
      */
-    private const EXECUTABLE = [InventoryRead::PACKAGES_LIST];
+    private const EXECUTABLE = [InventoryRead::PACKAGES_LIST, InventoryRead::CLOUD_SERVERS_LIST];
 
     /** True only for operations with evidence enough to execute. */
     public static function supports(string $operation): bool
@@ -125,6 +122,9 @@ final class InventoryReader
             return InventorySnapshot::unavailable('transport_unknown', $observedAt, $scope);
         }
         unset($authorized);
-        return InventoryProjector::packagesList($response, $observedAt, $scope);
+        return match ($operation) {
+            InventoryRead::PACKAGES_LIST => InventoryProjector::packagesList($response, $observedAt, $scope),
+            InventoryRead::CLOUD_SERVERS_LIST => InventoryProjector::cloudServersList($response, $observedAt, $scope),
+        };
     }
 }

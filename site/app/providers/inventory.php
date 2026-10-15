@@ -16,6 +16,7 @@ use CajunWebPro\Foundation\Provider\ProviderCredential;
 use CajunWebPro\Foundation\Provider\TransportException;
 use CajunWebPro\Foundation\TwentyI\FixedHttpTransport;
 use CajunWebPro\Foundation\TwentyIInventory\InventoryPackage;
+use CajunWebPro\Foundation\TwentyIInventory\InventoryCloudServer;
 use CajunWebPro\Foundation\TwentyIInventory\InventoryRead;
 use CajunWebPro\Foundation\TwentyIInventory\InventorySnapshot;
 use CajunWebPro\Foundation\TwentyIInventoryReader\InventoryReader;
@@ -25,16 +26,19 @@ require_once CWP_CODE_ROOT.'/app/providers/checks.php';
 require_once CWP_CODE_ROOT.'/database/migrations/provider_inventory_migrate.php';
 foreach(['ProviderCredential','TransportRequest','TransportResponse','TransportException','HttpTransport'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/provider/'.$class.'.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/twentyi/FixedHttpTransport.php';
-foreach(['InventoryRead','InventoryPackage','InventorySnapshot','InventoryProjector'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory/'.$class.'.php';
+foreach(['InventoryRead','InventoryPackage','InventoryCloudServer','InventorySnapshot','InventoryProjector'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory/'.$class.'.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory-reader/InventoryReader.php';
 
 final class ProviderInventoryAccessChanged extends RuntimeException {}
 
 function provider_inventory_ready(): bool {
     $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'');
-    // Both admin and portal inventory screens include the v3 domain tables.
+    // Version 4 adds operation-scoped history and cloud observations.
     // Older installations must retain the explicit owner preparation action.
-    return $version==='3';
+    if($version!=='4')return false;
+    $prefix=config()['db']['prefix'];$names=array_map(fn($name)=>$prefix.$name,array_keys(provider_inventory_schema($prefix)));
+    if((int)query('SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name IN ('.implode(',',array_fill(0,count($names),'?')).')',$names)->fetchColumn()!==count($names))return false;
+    return one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[$prefix.'provider_refreshes','operation'])!==null;
 }
 
 /** A credential fingerprint fences a context; it does not establish account identity. */
@@ -61,9 +65,9 @@ function provider_inventory_authority(string $id,int $revision,#[\SensitiveParam
  * Internal only. Builds the credential with an access-gated resolver and
  * performs one bounded authenticated read over the injected transport.
  */
-function provider_inventory_read(array $row,#[\SensitiveParameter] string $secret,string $address,callable $authorize): InventorySnapshot {
+function provider_inventory_read(array $row,#[\SensitiveParameter] string $secret,string $address,callable $authorize,string $operation=InventoryRead::PACKAGES_LIST): InventorySnapshot {
     $credential=new ProviderCredential('twenty-i',$row['id'],static function()use($secret,$authorize):string{$authorize();return $secret;});
-    return InventoryReader::read(new FixedHttpTransport($address,$authorize),$credential,InventoryRead::PACKAGES_LIST,0,time());
+    return InventoryReader::read(new FixedHttpTransport($address,$authorize),$credential,$operation,0,time());
 }
 
 /** Result states that carry package observations. */
@@ -75,6 +79,12 @@ function provider_inventory_record(array $started,string $state,string $reason,s
             [$started['id'],$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,gmdate('Y-m-d H:i:s'),max(0,min($elapsed,2147483647)),$fingerprint]);
         if($snapshot!==null&&provider_inventory_observed($state)) {
             foreach($snapshot->packages as $package) {
+                if(($started['operation']??InventoryRead::PACKAGES_LIST)===InventoryRead::CLOUD_SERVERS_LIST) {
+                    if(!$package instanceof InventoryCloudServer)throw new LogicException('Only validated cloud records persist for cloud reads.');
+                    $metadata=['id'=>$package->id,'name'=>$package->name,'location'=>$package->location,'productSpec'=>$package->productSpec,'configuration'=>$package->configuration,'packageIds'=>$package->packageIds];
+                    query('INSERT INTO '.table('provider_observation_cloud').' (id,refresh_id,server_id,metadata,unmapped_count) VALUES (?,?,?,?,?)',[bin2hex(random_bytes(16)),$started['id'],$package->id,json_encode($metadata,JSON_THROW_ON_ERROR),$package->unmappedCount]);
+                    continue;
+                }
                 if(!$package instanceof InventoryPackage)throw new LogicException('Only validated package records persist.');
                 query('INSERT INTO '.table('provider_observation_packages').' (id,refresh_id,package_id,name,names,enabled,created_at,created_epoch,type_ref,package_type_name,stack_users,package_labels,has_spec,unmapped_keys,unmapped_count) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                     [bin2hex(random_bytes(16)),$started['id'],$package->id,$package->name,json_encode(array_values($package->names)),$package->enabled?1:0,$package->createdAt,$package->createdEpoch,$package->typeRef,$package->packageTypeName,json_encode(array_values($package->stackUsers)),json_encode(array_values($package->packageLabels)),$package->hasProductSpec?1:0,json_encode(array_values($package->unmappedKeys)),$package->unmappedCount]);
@@ -89,14 +99,15 @@ function provider_inventory_record(array $started,string $state,string $reason,s
  * state code: complete|partial|unavailable|refused|access_changed.
  * Resolver/transport are internal test seams, never HTTP input.
  */
-function provider_inventory_refresh(string $id,int $revision,#[\SensitiveParameter] string $password,?callable $resolver=null,?callable $transport=null): string {
+function provider_inventory_refresh(string $id,int $revision,#[\SensitiveParameter] string $password,?callable $resolver=null,?callable $transport=null,string $operation=InventoryRead::PACKAGES_LIST): string {
+    if(!InventoryReader::supports($operation))throw new InvalidArgumentException('This inventory reader is not available.');
     if(db()->inTransaction())throw new LogicException('Provider refreshes cannot run inside a transaction.');
-    $started=staff_locked(fn()=>staff_transaction(function()use($id,$revision,$password):array {
+    $started=staff_locked(fn()=>staff_transaction(function()use($id,$revision,$password,$operation):array {
         [$actor]=provider_inventory_authority($id,$revision,$password);$now=time();
         if(one('SELECT id FROM '.table('provider_refreshes').' WHERE profile_id=? AND started_epoch>? LIMIT 1',[$id,$now-30]))throw new RuntimeException('Wait 30 seconds between refreshes of this profile.');
         if((int)query('SELECT COUNT(*) FROM '.table('provider_refreshes').' WHERE actor_id=? AND started_epoch>?',[$actor['id'],$now-3600])->fetchColumn()>=20)throw new RuntimeException('Inventory refresh limit reached. Try again later.');
-        $started=['id'=>bin2hex(random_bytes(16)),'profile_id'=>$id,'profile_revision'=>$revision,'actor_id'=>(int)$actor['id'],'started_at'=>gmdate('Y-m-d H:i:s',$now),'started_epoch'=>$now];
-        query('INSERT INTO '.table('provider_refreshes').' (id,profile_id,profile_revision,actor_id,started_at,started_epoch) VALUES (?,?,?,?,?,?)',array_values($started));
+        $started=['id'=>bin2hex(random_bytes(16)),'profile_id'=>$id,'profile_revision'=>$revision,'actor_id'=>(int)$actor['id'],'started_at'=>gmdate('Y-m-d H:i:s',$now),'started_epoch'=>$now,'operation'=>$operation];
+        query('INSERT INTO '.table('provider_refreshes').' (id,profile_id,profile_revision,actor_id,started_at,started_epoch,operation) VALUES (?,?,?,?,?,?,?)',array_values($started));
         provider_settings_audit((int)$actor['id'],'refresh_started','Refresh '.$started['id'].' profile '.$id.' revision '.$revision);return $started;
     }));
     $begin=hrtime(true);$code=null;$address='';
@@ -117,8 +128,9 @@ function provider_inventory_refresh(string $id,int $revision,#[\SensitiveParamet
             catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;$code='credential';}
             if($code===null) {
                 try{
-                    $snapshot=($transport??'provider_inventory_read')($row,$secret,$address,$authorize);
+                    $snapshot=($transport??'provider_inventory_read')($row,$secret,$address,$authorize,$started['operation']);
                     if(!$snapshot instanceof InventorySnapshot)throw new LogicException('Reader returned no snapshot.');
+                    if($snapshot->scope!=='twenty-i|'.$started['profile_id'].'|'.$started['operation'])throw new LogicException('Reader scope does not match its intent.');
                     $code=$snapshot->state;
                 }catch(ProviderInventoryAccessChanged){$code='access_changed';}
                 catch(TransportException){$code='unavailable';}
@@ -143,15 +155,17 @@ function provider_inventory_refresh(string $id,int $revision,#[\SensitiveParamet
 }
 
 /** Latest finished refresh of any state — the freshness display. */
-function provider_inventory_latest(string $profileId): ?array {
+function provider_inventory_latest(string $profileId,string $operation=InventoryRead::PACKAGES_LIST): ?array {
     provider_settings_manager();
-    return one('SELECT r.*,f.profile_id,f.profile_revision,f.actor_id,f.started_at,f.started_epoch,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$profileId]);
+    if(!InventoryReader::supports($operation))throw new InvalidArgumentException('Unknown inventory operation.');
+    return one('SELECT r.*,f.profile_id,f.profile_revision,f.actor_id,f.started_at,f.started_epoch,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? AND COALESCE(f.operation,\'packages.list\')=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$profileId,$operation]);
 }
 
 /** Last good observation: the newest refresh that actually carried packages. */
-function provider_inventory_observation(string $profileId): ?array {
+function provider_inventory_observation(string $profileId,string $operation=InventoryRead::PACKAGES_LIST): ?array {
     provider_settings_manager();
-    return one('SELECT r.*,f.profile_id,f.profile_revision,f.actor_id,f.started_at,f.started_epoch,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? AND r.state IN (\'complete\',\'partial\') ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$profileId]);
+    if(!InventoryReader::supports($operation))throw new InvalidArgumentException('Unknown inventory operation.');
+    return one('SELECT r.*,f.profile_id,f.profile_revision,f.actor_id,f.started_at,f.started_epoch,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? AND COALESCE(f.operation,\'packages.list\')=? AND r.state IN (\'complete\',\'partial\') ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$profileId,$operation]);
 }
 
 /** Validated package rows of one recorded observation. */
@@ -168,9 +182,9 @@ function provider_inventory_links(string $profileId): array {
 }
 
 /** Bounded refresh history for one profile — every recorded result, newest first. */
-function provider_inventory_history(string $profileId,int $page=1): array {
+function provider_inventory_history(string $profileId,int $page=1,string $operation=InventoryRead::PACKAGES_LIST): array {
     provider_settings_manager();$page=max(1,min($page,100000));
-    return all('SELECT f.id,f.started_at,f.started_epoch,f.profile_revision,r.state,r.reason,r.scope,r.coverage,r.package_count,r.skipped,r.finished_at,r.elapsed_ms,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 21 OFFSET '.(($page-1)*20),[$profileId]);
+    return all('SELECT f.id,f.started_at,f.started_epoch,f.profile_revision,r.state,r.reason,r.scope,r.coverage,r.package_count,r.skipped,r.finished_at,r.elapsed_ms,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? AND COALESCE(f.operation,\'packages.list\')=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 21 OFFSET '.(($page-1)*20),[$profileId,$operation]);
 }
 
 function provider_inventory_link_events(string $profileId,int $page=1): array {
@@ -331,7 +345,7 @@ function provider_inventory_client_services(int $clientId): array {
     foreach($links as $link) {
         $profile=one('SELECT revision FROM '.table('provider_profiles').' WHERE id=?',[$link['profile_id']]);
         $current=$profile!==null&&(int)$profile['revision']===(int)$link['profile_revision'];
-        $observation=$current?one('SELECT r.id AS refresh_id,r.state,r.coverage,f.started_at FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id WHERE f.profile_id=? AND r.state IN (\'complete\',\'partial\') AND r.key_fingerprint=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$link['profile_id'],$link['key_fingerprint']]):null;
+        $observation=$current?one('SELECT r.id AS refresh_id,r.state,r.coverage,f.started_at FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id WHERE f.profile_id=? AND COALESCE(f.operation,\'packages.list\')=\'packages.list\' AND r.state IN (\'complete\',\'partial\') AND r.key_fingerprint=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$link['profile_id'],$link['key_fingerprint']]):null;
         $package=$observation?one('SELECT * FROM '.table('provider_observation_packages').' WHERE refresh_id=? AND package_id=?',[$observation['refresh_id'],$link['package_id']]):null;
         if($package){$package['names']=json_decode($package['names'],true);$package['package_labels']=json_decode($package['package_labels'],true);unset($package['stack_users'],$package['unmapped_keys']);}
         $out[]=['link'=>$link,'package'=>$package,'observed_at'=>$observation['started_at']??null,'observation'=>$observation===null?null:'present','present'=>$package!==null,'context_changed'=>!$current];
@@ -352,7 +366,7 @@ function provider_inventory_client_domains(int $clientId): array {
     foreach($links as $link) {
         $profile=one('SELECT revision FROM '.table('provider_profiles').' WHERE id=?',[$link['profile_id']]);
         $current=$profile!==null&&(int)$profile['revision']===(int)$link['profile_revision'];
-        $observation=$current?one('SELECT r.id AS refresh_id,f.started_at FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id WHERE f.profile_id=? AND r.state IN (\'complete\',\'partial\') AND r.key_fingerprint=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$link['profile_id'],$link['key_fingerprint']]):null;
+        $observation=$current?one('SELECT r.id AS refresh_id,f.started_at FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id WHERE f.profile_id=? AND COALESCE(f.operation,\'packages.list\')=\'packages.list\' AND r.state IN (\'complete\',\'partial\') AND r.key_fingerprint=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$link['profile_id'],$link['key_fingerprint']]):null;
         $package=$observation?one('SELECT package_id,names,enabled FROM '.table('provider_observation_packages').' WHERE refresh_id=? AND package_id=?',[$observation['refresh_id'],$link['package_id']]):null;
         $present=false;
         if($package){$names=array_map('strtolower',array_map('strval',json_decode($package['names'],true)?:[]));$present=in_array($link['domain'],$names,true);unset($package['names']);}
@@ -366,4 +380,13 @@ function provider_inventory_client_domains(int $clientId): array {
 function provider_inventory_clients(): array {
     provider_settings_manager();
     return all('SELECT id,name,email FROM '.table('studio_clients').' WHERE active=1 ORDER BY name,id');
+}
+
+/** Sanitized cloud records for an owner-visible, explicitly cloud-scoped read. */
+function provider_inventory_cloud_servers(string $refreshId): array {
+    provider_settings_manager();
+    if(!provider_inventory_ready())return [];
+    $rows=all('SELECT c.* FROM '.table('provider_observation_cloud').' c JOIN '.table('provider_refreshes').' f ON f.id=c.refresh_id WHERE c.refresh_id=? AND f.operation=? ORDER BY c.server_id',[$refreshId,InventoryRead::CLOUD_SERVERS_LIST]);
+    foreach($rows as &$row){$row['server']=InventoryCloudServer::fromItem(json_decode($row['metadata'],false,16,JSON_THROW_ON_ERROR));if($row['server']->id!==(int)$row['server_id'])throw new RuntimeException('Cloud observation identity is inconsistent. Restore the original database.');unset($row['metadata']);}unset($row);
+    return $rows;
 }
