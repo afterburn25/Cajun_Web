@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased — accepted hosting provisioning
+
+- Retain the provider's assigned hosting ID as pending, separate from an active service. Preserve the original attempt/result; block duplicate dispatch and refuse absent or different-resource reconciliation.
+- Confirm only the exact assigned ID through existing journal/persistence, with regression cases for atomic rollback, replay and missing original history. Local35 pending checks pass in both PHP configurations; native and packaged descendant acceptance remains pending. No provider dispatch or release is enabled.
+
 ## Unreleased — verified hosting preparation browser journey
 
 - Corrected provider fixture now passes1652 actual HTTP/Chromium checks; saved order/service identity, private client progress, replay, cancellation and restoration remain verified. Four native combinations pass38 preparation checks within319 combined, plus108 ledger. Exact Windows packages verified. Current full recovery/Apache, independent review and integration/release remain pending; published version stays1.24.
