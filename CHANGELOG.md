@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — preparation submission diagnosis
+
+- Preserve the failed Chromium submit assertion and add actual response/screenshot evidence plus native rendered-form roundtrip coverage. Direct native cases pass; the end-to-end form failure is unresolved at this checkpoint. No runtime workaround or publication.
+
 ## Unreleased — native hosting preparation and client progress
 
 - Add owner forms to prepare accepted hosting orders with reviewed package/location/numeric limits and current password/confirmation.

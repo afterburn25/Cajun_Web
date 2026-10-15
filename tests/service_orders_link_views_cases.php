@@ -2,6 +2,8 @@
 /** Real native form adapter/projections; HTTP/CSRF and visual checks live in the browser suite. */
 declare(strict_types=1);
 require_once __DIR__.'/../site/app/hosting/order_views.php';
+require_once __DIR__.'/../site/includes/layout/plans.php';
+require_once __DIR__.'/../site/includes/layout/service_orders.php';
 $viewCheckStart=count($checks);
 try{
     rb_staff();$viewOrder=sol_manual(sol_accepted(42000),42012);$viewAgreement=$viewOrder->data()['agreement']['id'];
@@ -20,9 +22,14 @@ try{
     foreach([['confirm'=>''],['mapping_only'=>''],['agreement_id'=>rb_id(99999)],['order_hash'=>str_repeat('a',64)],['profile_revision'=>'1'],['current_password'=>'wrong']] as $i=>$bad){$_POST=array_replace($input,$bad);rb_deny('Preparation form refuses stale or unconfirmed intent '.$i,fn()=>service_orders_form_action('service_plans_order_map_service',$viewAgreement,1,true));}
     rb_ok('Rejected mapping forms preserve native history',sol_snapshot()===$before);
     rb_staff(2);$_POST=$input;rb_deny('Financial staff cannot submit order mapping form',fn()=>service_orders_form_action('service_plans_order_map_service',$viewAgreement,1,true));rb_staff();
-    $_POST=$input;service_orders_form_action('service_plans_order_map_service',$viewAgreement,1,true);
+    // Exercise the actual server-rendered hidden intent, not just a hand-assembled POST.
+    $_POST=[];$_SERVER['REQUEST_METHOD']='GET';ob_start();hosting_order_links_ui($viewOrder,true,['eligible'=>true]);$rendered=ob_get_clean();
+    preg_match_all('/<input\b[^>]*type="hidden"[^>]*>/',$rendered,$tags);$hidden=[];
+    foreach($tags[0] as $tag){if(preg_match('/name="([^"]+)"/',$tag,$name)&&preg_match('/value="([^"]*)"/',$tag,$value))$hidden[html_entity_decode($name[1],ENT_QUOTES,'UTF-8')]=html_entity_decode($value[1],ENT_QUOTES,'UTF-8');}
+    rb_ok('Rendered preparation form retains exact order and provider context',($hidden['order_hash']??null)===$viewOrder->fingerprint()&&($hidden['order_revision']??null)===(string)$viewOrder->revision()&&($hidden['profile_id']??null)===$solProfile&&($hidden['profile_revision']??null)==='2'&&($hidden['agreement_id']??null)===$viewAgreement);
+    $input=array_replace($input,$hidden);$viewAccount=$input['account_id'];$_POST=$input;service_orders_form_action('service_plans_order_map_service',$viewAgreement,1,true);
     $before=sol_snapshot();service_orders_form_action('service_plans_order_map_service',$viewAgreement,1,true);
-    rb_ok('Real form adapter creates one order service and exact replay is inert',sol_snapshot()===$before&&one('SELECT account_id FROM '.table('hosting_order_links').' WHERE id=?',[$viewOrder->data()['id']])['account_id']===rb_id(42100));
+    rb_ok('Real form adapter creates one order service and exact replay is inert',sol_snapshot()===$before&&one('SELECT account_id FROM '.table('hosting_order_links').' WHERE id=?',[$viewOrder->data()['id']])['account_id']===$viewAccount);
     $ownerView=hosting_order_links_context($viewOrder->data()['id'],1);
     rb_ok('Owner sees reviewed mapping and current connection',$ownerView['progress']['package']['label']==='Reviewed <package>'&&$ownerView['progress']['profile_current']);
     rb_client();$clientView=hosting_order_links_context($viewOrder->data()['id'],1,true);

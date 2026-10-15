@@ -342,6 +342,8 @@ def run_browser(env, browser):
     for key in ['reseller_id','package_type','package_label','package_region','package_websites','package_disk_mb','current_password']:
         form.locator('[name='+key+']').fill(mapping[key])
     form.locator('[name=mapping_only]').check();form.locator('[name=confirm]').check();form.locator('button').click();page.wait_for_load_state('networkidle')
+    (QA/'hosting-preparation-submit.json').write_text(json.dumps({'alerts':page.locator('.notice.error').all_text_contents(),'saved_associations':db('SELECT id,account_id,client_id FROM ci_hosting_order_links'),'saved_service_count':len(db('SELECT id FROM ci_hosting_records'))},indent=2))
+    page.screenshot(path=str(QA/'recurring-staff-hosting-preparation-submit.png'),full_page=True)
     check('Real Chromium mapping submits and displays prepared pending service','Hosting record prepared' in page.content() and 'provider setup has not started' in page.content().lower())
     context.close()
     mapped = db('SELECT * FROM ci_hosting_order_links WHERE id=?',[order_row['id']])[0]
