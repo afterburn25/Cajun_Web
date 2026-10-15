@@ -202,6 +202,8 @@ try:
         provider_operations_browser(globals(),browser)
         from provider_domain_search_cases import run_browser as domain_search_browser
         domain_search_browser(globals(),browser)
+        from provider_registrar_cases import run_browser as registrar_browser
+        registrar_browser(globals(),browser)
         from mail_drafts_cases import run_browser as drafts_browser
         drafts_browser(globals(),browser)
         from mail_submissions_cases import run_browser as submissions_browser

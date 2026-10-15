@@ -1,3 +1,7 @@
+## Unreleased - registered-domain browser coverage
+
+- Prepared actual packaged owner/client browser flows, freshness/recovery checks and screenshots. Services explicitly send private cache/referrer headers; long domain headings wrap. Current browser acceptance remains pending.
+
 ## Unreleased - registered-domain inventory
 
 - Explicit owner refresh of bounded registered-domain identities and distinct client assignments; native owner/client views keep hosting links separate.

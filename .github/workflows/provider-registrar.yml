@@ -85,4 +85,3 @@ jobs:
         if: always()
         run: |
           echo 'Native registered-domain identity reads, explicit client assignments, latest-attempt freshness, isolation, missing-history recovery and actual PHP form rendering. Disposable MariaDB/MySQL and synthetic provider only; no real API, browser or deployment.' >> "$GITHUB_STEP_SUMMARY"
-
