@@ -86,12 +86,22 @@ Adds license management to the customer workspace:
 
 **Database:** `license_bundles` table stores bundle records
 
-### 7. What still needs to be implemented
+### 7. Bundle downloads
+
+**File:** `site/api/bundle-download.php`
+
+- Authenticated endpoint — requires customer session
+- Verifies customer owns the license
+- Logs download to audit table
+- Serves ZIP from private storage
+
+**Portal UI:** `site/portal/views/workspace.php` — shows "Downloads" section with bundle links per license
+
+### 8. What still needs to be implemented
 
 **Purchase flow integration:**
 - Auto-generate license key when customer buys a product
 - Auto-create bundled ZIP on purchase
-- Store bundle for download in customer portal
 - Email license key + download link to customer
 
 ## Integration points
