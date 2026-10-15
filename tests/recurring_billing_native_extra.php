@@ -8,6 +8,15 @@ $_GET['support']='synthetic';rb_deny('Staff support parameter refuses invoices',
 query('UPDATE '.table('studio_jobs').' SET client_id=2 WHERE id=1');rb_deny('Changed project owner refuses recurring agreement reads',fn()=>rb_read(300));rb_deny('Changed project owner refuses existing invoice balance',fn()=>ledger_balance(ledger_invoice($issued['invoice_id'])));query('UPDATE '.table('studio_jobs').' SET client_id=1 WHERE id=1');
 $saved=one('SELECT * FROM '.table('recurring_billing_events').' WHERE id=?',[rb_id(301)]);query('UPDATE '.table('recurring_billing_events').' SET actor_staff_id=1 WHERE id=?',[rb_id(301)]);rb_deny('Ambiguous retained client consent attribution refuses invoice balance',fn()=>ledger_balance(ledger_invoice($issued['invoice_id'])));query('UPDATE '.table('recurring_billing_events').' SET actor_staff_id=NULL WHERE id=?',[rb_id(301)]);
 db()->beginTransaction();query('DELETE FROM '.table('recurring_billing_invoices').' WHERE id=?',[rb_id(400)]);rb_deny('Missing permanent mapping refuses recurring invoice balance',fn()=>ledger_balance(ledger_invoice($issued['invoice_id'])));db()->rollBack();
+// Independently reproduce lost-row recovery even when the editable reference changes.
+$beforeLostBinding=rb_snapshot();
+db()->beginTransaction();
+try {
+    query('DELETE FROM '.table('recurring_billing_invoices').' WHERE id=?',[rb_id(400)]);
+    query('UPDATE '.table('studio_invoices').' SET reference=? WHERE id=?',['Changed legacy reference',$issued['invoice_id']]);
+    rb_deny('Lost mapping plus changed reference cannot bypass retained recurring origin',fn()=>ledger_balance(ledger_invoice($issued['invoice_id'])));
+} finally {db()->rollBack();}
+rb_ok('Restoring lost binding restores original invoice and audit exactly',rb_snapshot()===$beforeLostBinding&&ledger_balance(ledger_invoice($issued['invoice_id']))['due_cents']===1001);
 $schedule=recurring_billing_row(rb_id(300));query('UPDATE '.table('recurring_billing_schedules').' SET journal_json=? WHERE id=?',[str_repeat('x',RecurringBillingSchedule::MAX_BYTES+1),rb_id(300)]);rb_deny('Oversized retained agreement refuses before parsing',fn()=>rb_read(300));query('UPDATE '.table('recurring_billing_schedules').' SET journal_json=? WHERE id=?',[$schedule['journal_json'],rb_id(300)]);
 $source=service_plans_row(rb_id(200),true);query('UPDATE '.table('service_subscriptions').' SET journal_sha256=? WHERE id=?',[str_repeat('f',64),rb_id(200)]);rb_deny('Corrupt current source refuses historical invoice use',fn()=>ledger_balance(ledger_invoice($issued['invoice_id'])));query('UPDATE '.table('service_subscriptions').' SET journal_sha256=? WHERE id=?',[$source['journal_sha256'],rb_id(200)]);
 rb_deny('Negative invoice period refuses',fn()=>rb_issue(300,900,-1));rb_deny('Unrepresentable invoice period refuses',fn()=>rb_issue(300,900,120000));rb_deny('Future invoice period refuses',fn()=>rb_issue(300,900,1000));
