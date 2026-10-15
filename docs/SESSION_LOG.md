@@ -963,8 +963,7 @@ Local documentation validation also traversed retained generated test-runtime ve
 
 ## 2026-10-14 — PR #72 merged at 22a2969; queue refreshed onto mail-notices head
 
-Codex merged [PR #72](https://github.com/afterburn25/Cajun_Web/pull/72) at `22a2969` — recent email notices are on main; exact-main acceptance run 38504271899 in progress. Devin refreshed all 29 branches onto the merge (26 clean-merge, 14 guarded-union docs resolutions; `devin/build-utf8` still worktree-held). One hiccup: a Windows unlink failure mid-merge on `devin/mail-transport` left staged adds deleted on disk — restored via `git restore`, union-resolved CHANGELOG, pushed. A second error: provider-foundation's own merge committed conflict markers in three docs files before resolution — caught by post-commit marker scan, resolved properly and amended (`6939f86`); force-push touched only my own seconds-old merge commit. Verified: all branches contain `22a2969`, zero `<<<<<<<`/`>>>>>>>` markers anywhere. Re-runs: PR #57's Composer flake cleared green; fresh acceptance runs queued for #52/#36 on their refreshed heads. Next: watch exact-main acceptance → v1.19.0 publication → independent byte verification.
-
+Codex merged [PR #72](https://github.com/afterburn25/Cajun_Web/pull/72) at `22a2969` — recent email notices are on main; exact-main acceptance run 38504271899 in progress. Devin refreshed all 29 branches onto the merge (26 clean-merge, 14 guarded-union docs resolutions; `devin/build-utf8` still worktree-held). One hiccup: a Windows unlink failure mid-merge on `devin/mail-transport` left staged adds deleted on disk — restored via `git restore`, union-resolved CHANGELOG, pushed. A second error: provider-foundation's own merge committed conflict markers in three docs files before resolution — caught by post-commit marker scan, resolved properly and amended (`6939f86`); force-push touched only my own seconds-old merge commit. Verified: all branches contain `22a2969`, zero `
 ## 2026-10-14 — PR #73 owner 20i API reference intake reviewed
 
 Codex opened docs-only PR #73 (`docs/twentyi-owner-api-reference`, head `c5115ab`): a line-referenced contract map of the owner-supplied 20i Reseller API text (195,457 bytes, SHA-256 recorded, 324 example method/path pairs). Devin review posted — no blocking findings: provenance is precise; risk register correctly excludes GET-labelled mutations from read allowlists, treats `Pre` suffixes as non-quote evidence, and flags credential-bearing reads (authCode, VNC, FTP, DKIM); ambiguity preserved (empty ≠ failure, NDJSON ordering, mismatch-not-relink semantics match `ExternalResource`); proposed sequence is consistent with the reviewed non-idempotent/UNCERTAIN design — GET-labelled mutations already structurally impossible via pinned `probe()`. Noted PR #43 head moved to `30a0c55`. Exact-main acceptance 38504271899 on `22a2969` reached the extended recovery/Apache matrix.
@@ -1281,3 +1280,66 @@ Also retained completed #89/1c92e6b acceptance 38580190394 (8,578 assertions, 18
 Update current publication/installation/status/roadmap records, owner guide, report and Devin handoff while preserving older histories. These changes are Markdown only relative to the published source. The optional documentation-branch application run at cc7ee81 is superseded by this documentation update; runtime equality to fully accepted release4f is independently checked. Its incomplete run is not counted as a pass. Current documentation checks remain required before merging these records. Next: integrate ready preserved follow-ons into a new version with combined acceptance, continue non-20i work, and review Devin's end-to-end delivery. Full roadmap active.
 
 Publication-record validation: 139 Markdown files and 1,259 local links pass; pinned receiving/submission vendor checks and whitespace checks pass. Runtime, foundation, tests, tools and workflow bytes remain identical to released4f. No application assertions are attributed to this documentation commit.
+
+## 2026-10-15 — Devin: closed 20i write-boundary component (descriptive, not executable)
+
+Request: continue the complete 20i integration. Starting main `68e4d41` on new branch `devin/twentyi-operations`. Added `foundation/twentyi-operations/` (Four classes: `TwentyIOperation`, `TwentyIOperationRegister`, `TwentyIRequestBuilder`, `TwentyIResultClassifier`), canonical mirrors under `site/includes/foundation/twentyi-operations/`, `tools/build.py` area registration, regenerated `site/install/inventory.generated.php`, contract `docs/TWENTYI_OPERATIONS_CONTRACT.md`, workflow `.github/workflows/twentyi-operations.yml`, and synthetic suite `tests/twentyi-operations/run.php`.
+
+Scope: the register catalogs exactly the four documented package-lifecycle writes from `docs/TWENTYI_OWNER_API_REFERENCE.md` §1 — `packages.create` (addWeb), `packages.update` (updatePackage) shape-complete with literal field allowlists and billing/destructive/email risk flags; `packages.userstatus` and `packages.delete` catalogued shape-incomplete (reference names the endpoint without body fields) so the builder refuses them rather than inventing fields. `exclusions()` names the refused write surfaces (StackCP users/grants, domains, VPS, SSH, email, billing) with reasons. The builder produces a bounded TransportRequest (positive-id or `*` slots, allowlisted keys, canonical JSON <=8 KiB, 30 s timeout, fixed host, no Authorization header). The classifier is write-conservative: 2xx succeeded, 4xx failed, 3xx/429/5xx uncertain, provably-pre-send transport failures failed, post-send ambiguity uncertain.
+
+Tests: **81 named synthetic checks pass** on local PHP (default and `php -n` modes); the suite asserts the adapter still refuses every operation — register membership is not execution authority. No HTTP transport, credential, database or provider call. Docker-based CI lanes added for PHP 8.2/8.4 with named JSON artifacts.
+
+Known limits: no execution wiring (ProviderGateway ledger/grant flow), no response schemas beyond documented id fields, no live verification of any documented example. Next: Codex review of this boundary; application grant/ledger wiring and operation-specific acceptance gates before any transport execution.
+## 2026-10-15 — Devin: durable provider operation ledger and owner grants
+
+Request: continue the complete 20i integration. Starting main `68e4d41` on new branch `devin/twentyi-ledger`. Added `site/database/schema/provider_operations_schema.php` (provider_operations ledger + provider_operation_grants approvals), `site/database/migrations/provider_operations_migrate.php` (strict schema validation, owner-password migration, version-1 marker), `site/app/providers/operations.php` (`ProviderOperationLedger` implementing the shared `OperationLedger` contract plus owner grant/revoke/active-check functions and canonical scope fingerprints), fresh-install wiring in `schema_statements`/`deploy.php`, `docs/PROVIDER_OPERATIONS.md`, native suite `tests/provider_operations_native.php` and workflow `.github/workflows/provider-operations.yml`.
+
+Semantics: atomic INSERT claims an idempotency key; resolved rows replay recorded results; foreign fingerprints conflict; stale claims classify uncertain. Grants are owner-password, expiry-bound, revocable approvals bound to an exact canonical scope; the newest matching grant decides. No credential, request, transport or provider call exists in this layer.
+
+Tests: native MariaDB suite covering schema refusals, claim/replay/conflict/uncertain/record races, gateway at-most-once through a synthetic adapter, a real cross-process claim race, and grant lifecycle including audit. CI lane on PHP 8.2/8.4 + MariaDB 10.11 with named JSON results. Next: Codex review; execution-path wiring (grant check + gateway + adapter execute) remains gated on the write-boundary contract and operation acceptance.
+
+## 2026-10-16 — Devin: 20i execution path (grant → gateway → adapter)
+
+Request: continue the complete 20i assignment — wire the documented write surface through owner-grant authority, the durable ledger and the closed request builder.
+
+Starting commit: `588ef07` (merge of `devin/twentyi-operations` + `devin/twentyi-ledger` into `devin/twentyi-execution`).
+
+Files/actions: `foundation/twentyi-operations/TwentyIOperationAdapter.php` (new ProviderAdapter: supports() only for shape-complete ops, builds via TwentyIRequestBuilder, attaches Authorization at send boundary only, classifies via TwentyIResultClassifier; packages.update reported idempotent, create one-attempt); `site/app/providers/operations.php` (`provider_operations_execute` — owner password + current revision + active exact-scope grant before any credential/address work, endpoint resolve outside lock, perform over real gateway+ledger+FixedHttpTransport with send-time and post-call reauthorization, access-change → uncertain); `tests/provider_operations_execute_native.php` (native MariaDB suite, scripted transport only); `provider-operations.yml` runs both native suites on PHP 8.2/8.4; docs updated; mirror + installer inventory refreshed via build.py.
+
+Tests: `php -l` clean on all touched files; contract suite 81/81 still green on the merged tree; **native suites green in CI — 38 ledger/grant + 28 execution assertions on PHP 8.2 and 8.4** (runs 38633904468/38633892500 and siblings) at `143e4a6`. One CI iteration fixed a test-ordering issue: an ungranted scope refuses `no_grant` before observing key state, so the conflict assertion now grants both scopes first.
+
+Known failures/blockers: live provider sends remain unexecuted and gated on operation-specific acceptance; only packages.create/packages.update are shape-complete. Next: CI green, Codex review, then admin grant/manage UI and reconciliation surface for uncertain results.
+
+## 2026-10-16 — Devin: grant-carried approvals + owner operations page
+
+Request: continue the complete 20i assignment — make approved operations reachable by the owner through a bounded admin surface.
+
+Files/actions: `provider_operation_grants` v2 — `scope_params` (canonical JSON of the approved request), `consumed_key`, `consumed_at`; a grant is now the complete approved request and is consumed atomically at approval time (one grant, one request, one key). `provider_operations_execute` takes `grantId + idempotencyKey` — stored scope must reconstruct its fingerprint before any credential/address work. `provider_operation_grant` validates the operation is registered+shape-complete and bounds the stored scope (≤4096). New `provider-operations` Studio page (`staff.manage` view; owner password per action): approve/run/revoke forms, approval states, operation ledger history with uncertain-reconciliation notice. Migration `provider_operations_schema_version` → '2' with v1 ALTER upgrade. Native suites updated for the grant-id interface + v1→v2 ALTER coverage.
+
+Tests: `php -l` clean; **native suites green — 39 ledger/grant + 34 execution assertions on PHP 8.2 and 8.4** at `f3cf6dd`. CI iterations fixed: canonical-JSON key ordering in the body assertion; a colliding key correctly consumes its grant (approval is spent at approval time); the second-profile test replaced by foreign-profile refusal since only one provider profile exists. Next: Codex review of #111, then reconciliation workflow polish and documented-shape write acceptance.
+
+## 2026-10-16 — Devin: grant binding corrections from independent review
+
+Codex review 6177728792 reproduced three approval-boundary gaps at `318471e`. Fixes on `devin/twentyi-ledger` (`6ca730f`):
+
+1. **Revision/account binding** — `provider_operation_grants.profile_revision` (schema v2, ALTER upgrade for v1) records the approved profile revision; `provider_operation_grant_active` now requires an enabled profile at that exact revision. Key replacement or any settings save changes the revision and suspends the grant; disable/enable cycles never revive it. Granting also requires an enabled profile.
+2. **UTF-8 scope keys** — `provider_operations_canonical` refuses map keys whose `json_encode` fails, matching gateway canonicalization.
+3. **Newest-same-scope** — `grant_active` queries the indexed exact scope for its newest row instead of scanning the latest 64 grants.
+
+Tests: native suite extended to cover the v1→v2 ALTER upgrade, revision invalidation on settings save and disable/enable, invalid UTF-8 scope keys, and same-scope lookup beyond 64 other grants.
+
+## 2026-10-16 — Devin: merge review corrections into execution branch
+
+Codex review 6177258236 on #107 (`5f624a2`) reproduced two write-boundary gaps, fixed on `devin/twentyi-operations` (`d7006c5`): HTTP 202 and other non-terminal 2xx classify `uncertain` (accepted ≠ completed, RFC9110 §15.3.3); the 256-node request bound now counts every visited value including scalar leaves (a 384-leaf body under 8KiB previously built). Suite now 90 named checks incl. exact-boundary/over-boundary/nested fixtures and the 202-vs-201/204 distinction.
+
+Merged `origin/devin/twentyi-operations` (`d7006c5`) and `origin/devin/twentyi-ledger` (`6ca730f`) into `devin/twentyi-execution` with normal merges. Schema reconciled to v3: v2 adds `profile_revision` (approved-revision binding), v3 adds `scope_params`/`consumed_key`/`consumed_at` (single-use executed grants). `provider_operations_execute` also refuses grants whose approved revision is stale. Union-resolved schema/migration/test/log conflicts; `php -l` clean. Native suites re-run pending CI.
+
+
+## 2026-10-16 — Devin: hostname-list children join the shared node budget
+
+Codex follow-up review on `d7006c5` verified both original corrections but found `hostname_list` children bypassed the 256-node bound (counted 4 containers + 64 uncounted hostnames + 189 map values = 257 values accepted). `TwentyIRequestBuilder::bounded` now increments the shared node budget per hostname-list child. Added Codex's exact mixed fixtures: 64 `extra_domain_names` + 188 `documentRoots` = 256 builds; +189 = 257 refuses. 92/92 synthetic checks on default and no-ini modes.
+
+
+## 2026-10-16 — Devin: write transport branch closes a false-uncertain defect
+
+Inspection found `FixedHttpTransport::validate` refused every non-GET request as "Unsupported provider probe request"; the exception escaped the adapter's `TransportException` catch and surfaced through the generic handler as `uncertain` — a request that provably never sent would sit in the reconcile queue forever. `send()` now supports a strict write branch: POST only, URL must be `https://api.20i.com/` + bounded path charset, JSON body ≤8KiB, Authorization+Accept+Content-Type headers only — identical TLS/resolve/no-redirect/proxy-refusal socket discipline and credential-echo refusal as the probe. The adapter catches `InvalidArgumentException` from send as provable pre-send `failed` (code `refused`). Credential resolution, authorize callbacks and header attachment remain at the send boundary. Synthetic ops suite 92/92; native execution suite gains a transport-refusal assertion (pending MariaDB lane).
