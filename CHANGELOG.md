@@ -1,5 +1,9 @@
 # Changelog
 
+## Verification records — recurring lifecycle
+
+Verify separate PR119 whole-period consent/lifecycle:2,568 focused executions on PHP8.2/8.4 default/no-ini, exact source and unchanged shipping/terms/calendar. Native authority, authenticated consent, unique invoices, interfaces and independent review remain required. Preserve running notification acceptance and Devin correction ownership.
+
 ## Current 20i review results — 2026-10-14
 
 Verify 302 review assertions across PHP 8.2/8.4: 254 controls pass, 48 expectations fail. Clear missing-field approval; retain seven earlier behavior findings and add the production write timeout/header mismatch. Product and supplied tests remain unchanged; all corrections stay with Devin. Confirm all22 terms workflows pass.
