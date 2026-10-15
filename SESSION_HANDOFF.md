@@ -1,3 +1,7 @@
+# Nameserver read contract investigated - 2026-10-15
+
+Parallel follow-up `codex/twentyi-nameserver-observations` starts at preserved725573f0; the original registrar branch remains unchanged. Provider-authored source confirms GET `/domain/{id}/nameservers` and access to `result`, but does not establish the precise element schema or empty/partial response semantics. No reader or assumed fixture was added. [Exact evidence, missing contract and next implementation](docs/TWENTYI_NAMESERVER_READ_CONTRACT.md). Root owns current combined acceptance/integration; older entries below retain their original checkpoint scope. No runtime, installer, version or release change.
+
 # Registrar integration candidate — verified native and browser checkpoint
 
 Parent `8b4a101ae9289c4d96599d2f383ea69269df9dc7`, branch `codex/twentyi-domain-controls`, draft PR142. Current shipping code passes63 native and64/64 reader cases across all four PHP/database combinations. Parent2fe7e2ff actual extracted-package run passes1,810 HTTP/Chromium checks (36 registrar),62 named reports, empty PHP/unexpected browser diagnostics and exact downloaded package/source verification. Owner desktop and both client screenshots are clear; owner mobile capture caught a sidebar transition/sticky-header overlay. This final test-only checkpoint corrects capture navigation/settling/full-page framing without hiding UI; root must inspect the resulting screenshot in combined acceptance. No new runtime behavior or release. [Exact artifacts, screenshots and limits](docs/TWENTYI_REGISTRAR_INVENTORY.md).

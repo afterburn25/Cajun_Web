@@ -1,3 +1,7 @@
+# Nameserver read contract investigated - 2026-10-15
+
+Parallel follow-up `codex/twentyi-nameserver-observations` starts at preserved725573f0; the original registrar branch remains unchanged. Provider-authored source confirms GET `/domain/{id}/nameservers` and access to `result`, but does not establish the precise element schema or empty/partial response semantics. No reader or assumed fixture was added. [Exact evidence, missing contract and next implementation](TWENTYI_NAMESERVER_READ_CONTRACT.md). Root owns current combined acceptance/integration; older entries below retain their original checkpoint scope. No runtime, installer, version or release change.
+
 # Parallel 20i increment - registered domains
 
 2026-10-15: user authorized simultaneous agents. The domain agent owns `codex/twentyi-domain-controls` from `0ebc46237fce565005b581fe5a96a2691b9840b5`; root owns integration/releases. Adds sanitized registrar identity reads through existing inventory, distinct explicit client assignments, latest-attempt freshness, owner/client PHP views and recovery/tests. Hosted-domain links never become registrar authority. Local PHP8.4 synthetic checks pass64 registrar plus139 inventory/28 reader/82 cloud cases per mode; native CI and browser acceptance are pending. Nameserver writes remain disabled pending verified response/authority contracts. No provider operation or release. [Scope, provenance and next steps](TWENTYI_REGISTRAR_INVENTORY.md).

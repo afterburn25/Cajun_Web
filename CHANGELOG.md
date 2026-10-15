@@ -1,3 +1,7 @@
+## Documentation - nameserver read contract
+
+- Record the verified registrar GET route/result property and precise missing response semantics. No nameserver reader, runtime capability, installer or release changes. [Evidence](docs/TWENTYI_NAMESERVER_READ_CONTRACT.md).
+
 ## Unreleased - registered-domain browser coverage
 
 - Prepared actual packaged owner/client browser flows, freshness/recovery checks and screenshots. Services explicitly send private cache/referrer headers; long domain headings wrap. Current browser acceptance remains pending.

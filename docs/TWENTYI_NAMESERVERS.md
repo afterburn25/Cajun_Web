@@ -1,3 +1,7 @@
+# Nameserver read contract investigated - 2026-10-15
+
+Parallel follow-up `codex/twentyi-nameserver-observations` starts at preserved725573f0; the original registrar branch remains unchanged. Provider-authored source confirms GET `/domain/{id}/nameservers` and access to `result`, but does not establish the precise element schema or empty/partial response semantics. No reader or assumed fixture was added. [Exact evidence, missing contract and next implementation](TWENTYI_NAMESERVER_READ_CONTRACT.md). Root owns current combined acceptance/integration; older entries below retain their original checkpoint scope. No runtime, installer, version or release change.
+
 # Registrar prerequisite - 2026-10-15
 
 Parallel `codex/twentyi-domain-controls` implements distinct registered-domain inventory and explicit local client assignment through the existing reader. Current complete id/name observations are separate from hosted names; latest failure/partial/unfinished/stale reads cannot be overridden by older success. This establishes the native assignment prerequisite only. Nameserver observation/consent/write response/reconciliation remain unfinished; no mutation is enabled. [Provenance and verification](TWENTYI_REGISTRAR_INVENTORY.md).
