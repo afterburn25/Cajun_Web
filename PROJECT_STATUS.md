@@ -1,5 +1,9 @@
 # Project status
 
+## Fresh installer version correction — 2026-10-15
+
+Independent review of cloud checkpoint 86660e34 identified that the fresh installer still stamped inventory version 3 after creating version 4 tables ([finding](https://github.com/afterburn25/Cajun_Web/pull/127#discussion_r4280167474)). This correction updates the installer stamp and adds actual fresh-package assertions for version/table/column agreement and the owner's provider page without redundant preparation. Generated inventory is refreshed. The earlier cloud native matrix passes 660 and reader matrix 996 named executions; those do not prove this new fresh-install correction. The running old browser checkpoint is preserved; its reports will be inspected before a corrected checkpoint is dispatched. No release or live operation is claimed.
+
 ## Cloud inventory implementation — 2026-10-15
 
 This development branch `codex/twentyi-cloud-inventory` starts at the stable 1.24 candidate `906df7278ba9c3ae9d8f51ae49e480f686f91cee`. It is separate from [PR #126](https://github.com/afterburn25/Cajun_Web/pull/126), whose exact full application run [38694814738](https://github.com/afterburn25/Cajun_Web/actions/runs/38694814738) is continuing through recovery/Apache. That candidate's corrected browser checkpoint passes 1,371 named assertions and its independent review found no major issues. No 1.24 publication is claimed, and this development branch does not replace or restart its acceptance.
