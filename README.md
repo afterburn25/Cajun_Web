@@ -2,7 +2,7 @@
 
 ## Current non-20i development
 
-[Reply and Forward](docs/MAIL_REPLY_FORWARD.md) is in preparation on a separate branch. The first isolated conversation-identifier checks pass; application controls and delivery integration remain pending. Devin owns all 20i implementation and fixes. Published v1.23.0 is unchanged.
+[Reply and Forward](docs/MAIL_REPLY_FORWARD.md) is in preparation on a separate branch. Conversation identifiers have928 verified focused executions. Maintained parsing and editable quoted content have120 local executions; new remote/no-DOM checks and application authorization/storage/UI/delivery integration remain pending. Devin owns all 20i implementation and fixes. Published v1.23.0 is unchanged.
 
 ## Ticket screenshot acceptance follow-up
 

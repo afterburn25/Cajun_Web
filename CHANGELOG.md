@@ -2,9 +2,11 @@
 
 ## Unreleased preparation — admin mail replies and forwarding
 
+- Parse bounded received Reply-To/From and thread identifiers with the maintained stack plus strict raw-input guards; construct editable reply/forward content with honest omission notices, without hidden recipients or attachments. All60 new cases pass in each local default/minimal-with-mbstring mode.
+- Verify928 focused initial-source executions; actual new-source no-DOM and application integration remain pending.
 - Add an immutable bounded conversation-identifier component and 45 named tests in each default/no-ini mode, outside deployment.
 - Extend the existing PHP8.2/8.4 mail-compose matrix without removing original cases.
-- Keep parser, draft persistence, MIME threading and UI integration explicitly pending; no shipping source, version, provider implementation or release changed.
+- Keep current-authorized draft persistence, MIME threading and UI integration explicitly pending; no shipping source, version, provider implementation or release changed.
 
 ## Unreleased test correction — complete ticket screenshots
 
