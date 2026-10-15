@@ -2,7 +2,7 @@
 
 ## Latest coordination checkpoint
 
-Devin retains the [complete 20i integration](https://github.com/afterburn25/Cajun_Web/issues/2), including all application screens and fixes. Codex notification [draft #123](https://github.com/afterburn25/Cajun_Web/pull/123) has 2,636 verified focused executions, 9,775 passing browser-checkpoint executions, four inspected new views and exact Windows packages. Full recovery/Apache/Linux-package acceptance is running. Parent #121 has 11,780 verified full executions and identical Windows/Linux packages. Independent reviews and applicable inherited-image review remain pending. Published v1.23.0 is unchanged. See the current [handoff](SESSION_HANDOFF.md); earlier sections are historical.
+Devin retains the [complete 20i integration](https://github.com/afterburn25/Cajun_Web/issues/2), including all application screens and fixes. Codex notification [draft #123](https://github.com/afterburn25/Cajun_Web/pull/123) has 11,901 verified full-application executions, all 28 workflows, four inspected new views and byte-identical Windows/Linux packages. [Final evidence](https://github.com/afterburn25/Cajun_Web/pull/123#issuecomment-6183688964) retains distinct visual and independent-review requirements. Test-only [#124](https://github.com/afterburn25/Cajun_Web/pull/124) has six locally verified complete ticket captures; its packaged run continues. Parent #121 has 11,780 verified full executions and identical Windows/Linux packages. Independent reviews and applicable inherited-image review remain pending. Published v1.23.0 is unchanged. See the current [handoff](SESSION_HANDOFF.md); earlier sections are historical.
 
 ## Owner allocation override — 2026-10-14
 
