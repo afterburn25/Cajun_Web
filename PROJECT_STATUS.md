@@ -1,5 +1,11 @@
 # Project status
 
+## Close marker-loss and project-card recovery gaps — 2026-10-15
+
+Parentf52525f3 (“Preserve recurring invoice origin and recover original billing history”) fixes the reproduced individual-map bypass; exact native38718106923 passes and full38718106575 remains running unchanged. Follow-up review4281719561 found the empty version-marker path still skipped original history, and4281719571 found raw project invoice cards rendered before ledger checks. Check retained mapping/issuance origin before admitting legacy invoices even without the setting, and validate each recurring invoice before printing any card fields. Suppress unavailable debt/instructions with a clear client notice.
+
+Add five genuine native marker-loss/restoration cases and four HTTP marker/card cases, retaining all original tests. PHP syntax and Python compile pass; generated installer inventory and documentation checks are next. Fresh native/browser evidence and renewed review remain required; f525 evidence does not certify this descendant. No known current verification failure is hidden; new assertions have not yet executed in a native database. Continue full20i without changing published1.24 or the running acceptance head.
+
 ## Preserve recurring origin after individual binding loss — 2026-10-15
 
 Starting from f28c1f44, normally merge reviewed #132 (5d2785cf) at29ecc28f. Reproductiona01933cc / native run38716949510 fails the exact changed-reference/lost-map regression on all four supported PHP/database combinations. Reuse the existing append-only recurring issuance audit as an independent invoice origin. Every invoice binding must match one original actor/schedule/period entry; lost bindings cannot become legacy invoices through reference edits or allow a second invoice for the same period. Missing/ambiguous origin requires original database restoration. Preserve atomic invoice/map/audit writes and legacy behavior; no new ledger, schema or provider engine.

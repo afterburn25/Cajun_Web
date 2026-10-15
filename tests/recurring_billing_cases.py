@@ -139,10 +139,10 @@ def run_browser(env, browser):
     receipt.update({'amount': '1.00', 'method': 'bank', 'reference': 'Synthetic lost mapping receipt',
                     'received_on': datetime.datetime.now(datetime.timezone.utc).date().isoformat(), 'confirm': '1'})
     original_binding = db('SELECT * FROM ci_recurring_billing_invoices WHERE invoice_id=?', [invoice])[0]
-    original_reference = db('SELECT reference FROM ci_studio_invoices WHERE id=?', [invoice])[0]['reference']
+    original_invoice = db('SELECT reference,title,instructions FROM ci_studio_invoices WHERE id=?', [invoice])[0]
     before_origin_loss = saved_records()
     db('DELETE FROM ci_recurring_billing_invoices WHERE invoice_id=?', [invoice])
-    db('UPDATE ci_studio_invoices SET reference=? WHERE id=?', ['Changed legacy reference', invoice])
+    db('UPDATE ci_studio_invoices SET reference=?,title=?,instructions=? WHERE id=?', ['Changed legacy reference', 'UNTRUSTED_RECURRING_TITLE', 'UNTRUSTED_RECURRING_PAYMENT_INSTRUCTIONS', invoice])
     try:
         response = owner.get(owner_invoice)
         check('Lost recurring row and changed reference hide owner receipt controls',
@@ -151,6 +151,11 @@ def run_browser(env, browser):
         response = client.get(portal+'?invoice='+invoice)
         check('Lost recurring row and changed reference hide client invoice balance',
               response.status_code==404 and 'Payment record unavailable' in response.text and 'Outstanding balance' not in response.text)
+        project_response = client.get(portal+'?job='+str(job))
+        check('Client project suppresses corrupted recurring title and payment instructions',
+              'Invoice details are unavailable' in project_response.text
+              and 'UNTRUSTED_RECURRING_TITLE' not in project_response.text
+              and 'UNTRUSTED_RECURRING_PAYMENT_INSTRUCTIONS' not in project_response.text)
         owner.post(owner_invoice, data=receipt)
         owner.post(history_url, data={**issue, 'confirm': '1'})
         after_origin_loss = saved_records()
@@ -160,11 +165,26 @@ def run_browser(env, browser):
               and len(after_origin_loss['studio_invoices'])==len(before_origin_loss['studio_invoices'])
               and len(after_origin_loss['recurring_billing_invoices'])==len(before_origin_loss['recurring_billing_invoices'])-1)
     finally:
-        db('UPDATE ci_studio_invoices SET reference=? WHERE id=?', [original_reference, invoice])
+        db('UPDATE ci_studio_invoices SET reference=?,title=?,instructions=? WHERE id=?', [original_invoice['reference'], original_invoice['title'], original_invoice['instructions'], invoice])
         columns = list(original_binding)
         db('INSERT INTO ci_recurring_billing_invoices (`'+'`,`'.join(columns)+'`) VALUES ('+','.join('?' for _ in columns)+')', [original_binding[c] for c in columns])
     check('Original recurring row restoration recovers exact invoice consent and audit',
           saved_records()==before_origin_loss and '25.00' in client.get(portal+'?invoice='+invoice).text)
+    db('DELETE FROM ci_settings WHERE name=?', ['recurring_billing_schema_version'])
+    db('UPDATE ci_studio_invoices SET reference=?,title=?,instructions=? WHERE id=?', ['Changed legacy reference', 'UNTRUSTED_RECURRING_TITLE', 'UNTRUSTED_RECURRING_PAYMENT_INSTRUCTIONS', invoice])
+    try:
+        response = owner.get(owner_invoice)
+        check('Lost recurring version marker hides owner receipt controls despite changed reference',
+              'Restore the original database' in response.text and soup(response).select_one('[name=action][value=payments_ledger_receive]') is None)
+        response = client.get(portal+'?job='+str(job))
+        check('Lost recurring version marker suppresses corrupted client project payment details',
+              'Invoice details are unavailable' in response.text
+              and 'UNTRUSTED_RECURRING_TITLE' not in response.text
+              and 'UNTRUSTED_RECURRING_PAYMENT_INSTRUCTIONS' not in response.text)
+    finally:
+        db('INSERT INTO ci_settings (name,value) VALUES (?,?)', ['recurring_billing_schema_version', '1'])
+        db('UPDATE ci_studio_invoices SET reference=?,title=?,instructions=? WHERE id=?', [original_invoice['reference'], original_invoice['title'], original_invoice['instructions'], invoice])
+    check('Restoring recurring version marker recovers original invoice history', saved_records()==before_origin_loss)
     before_missing = saved_records()
     for table in tables:
         retained = 'ci_retained_'+table
