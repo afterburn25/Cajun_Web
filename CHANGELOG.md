@@ -1,5 +1,9 @@
 # Changelog
 
+## Current 20i review results — 2026-10-14
+
+Verify 302 review assertions across PHP 8.2/8.4: 254 controls pass, 48 expectations fail. Clear missing-field approval; retain seven earlier behavior findings and add the production write timeout/header mismatch. Product and supplied tests remain unchanged; all corrections stay with Devin. Confirm all22 terms workflows pass.
+
 ## Independent current 20i review — 2026-10-14
 
 Add exact-source execution/reconciliation regression checks and a real builder/adapter/fixed-transport contract probe. Local probes reproduce blocked writes from timeout/header-order mismatch without any network. Native PHP 8.2/8.4 regression CI is pending. No product source changes.
