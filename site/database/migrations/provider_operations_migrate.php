@@ -92,6 +92,7 @@ function provider_operations_upgrade_v4(): void {
 }
 
 function provider_operations_migrate(#[\SensitiveParameter] string $password): void {
+    if(db()->inTransaction())throw new LogicException('Provider operation preparation requires its own transaction boundary.');
     staff_locked(function()use($password):void {
         $actor=provider_settings_owner($password,false);
         $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']??'');

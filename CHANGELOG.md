@@ -935,3 +935,7 @@ Current follow-up:8adf passed all four native combinations, including42 new asso
 
 - Add exact mailbox creation validation to the existing provider execution path, requiring a dedicated protected-secret resolver and refusing generic approval. Preserve safe password handling and at-most-once dispatch after unknown outcomes.
 - Native mailbox management screens and authorization/persistence are still being implemented; this checkpoint does not activate mailbox creation.
+
+2026-10-15 cloud preparation review correction, starting `2febba4eef5f658a46de33b9b905108d41cb47d6`: `provider_operations_migrate()` now rejects an inherited database transaction before acquiring the staff lock or performing DDL. The native cloud fixture checks fresh preparation creates no table/marker and preserves rollback of an unrelated sentinel write. This closes the implicit-commit risk without changing storage versions or recovery records. Changed PHP syntax and documentation checks pass; installer refresh is included. Corrected-head Linux acceptance remains required. Next: verify the new native and packaged reports, then integrate through the parent branch.
+
+The recovery query at2febba4e failed native MySQL8.4/PHP8.2 run38820482050, job116715582421, with an illegal mixed-collation CONCAT. The enclosing correction casts all audit-prefix/ID/suffix operands to binary, retaining exact request-ID matching on both database engines. The failed report is preserved; later acceptance must verify this compatibility correction.

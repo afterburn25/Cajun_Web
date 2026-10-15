@@ -45,7 +45,10 @@ try{
     foreach([1,2] as $i)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Cloud staff '.$i,'cloud'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (2,?,1,?)',['administrator',json_encode(array_keys(staff_permissions()))]);
     foreach([1,2] as $i)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Cloud client '.$i,'cloud-client'.$i.'@example.invalid',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
-    cw_owner();provider_settings_migrate($password);$profileId=provider_settings_save('',0,'Cloud fixture',true,$secret,$password);provider_inventory_migrate($password);provider_operations_migrate($password);
+    cw_owner();provider_settings_migrate($password);$profileId=provider_settings_save('',0,'Cloud fixture',true,$secret,$password);provider_inventory_migrate($password);
+    $beforePreparation=all('SHOW TABLES');db()->beginTransaction();save_setting('cloud_preparation_transaction_sentinel','pending');$refusedTransaction=false;
+    try{try{provider_operations_migrate($password);}catch(LogicException){$refusedTransaction=true;}cw_ok('Fresh preparation refuses caller transaction before any table or marker change',$refusedTransaction&&db()->inTransaction()&&all('SHOW TABLES')===$beforePreparation&&!one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version']));}finally{if(db()->inTransaction())db()->rollBack();}
+    cw_ok('Refused preparation preserves caller rollback of unrelated writes',!one('SELECT value FROM '.table('settings').' WHERE name=?',['cloud_preparation_transaction_sentinel']));provider_operations_migrate($password);
     cw_ok('Native complete cloud observation',provider_inventory_refresh($profileId,1,$password,'cw_dns','cw_read',InventoryRead::CLOUD_SERVERS_LIST)==='complete');
     $refresh=provider_inventory_observation($profileId,InventoryRead::CLOUD_SERVERS_LIST)['id'];provider_cloud_link($profileId,1201,1,1,$refresh,$password);$link=provider_cloud_links($profileId)[0];$dnsCalls=0;
     cw_deny('Wrong password refuses cloud request',fn()=>cw_create('wrong.example','',null,'wrong'));
