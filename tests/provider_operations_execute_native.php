@@ -168,9 +168,10 @@ try {
     }
     try{$transport->send(new TransportRequest('POST','https://api.20i.com/unknown/path',['Authorization'=>'Bearer '.base64_encode('SYNTHETIC_PRIVATE_GENERAL_KEY'),'Accept'=>'application/json','Content-Type'=>'application/json'],'{}',15));pe_ok('Undocumented transport paths still refuse',false);}
     catch(InvalidArgumentException $e){pe_ok('Undocumented transport paths still refuse',true);}
+    $rev=(int)one('SELECT revision FROM '.table('provider_profiles').' WHERE id=?',[$profile])['revision'];
     $grant9=provider_operation_grant($profile,'packages.create',$scope,$password);
-    pe_deny('A grant refuses to execute against another profile',fn()=>pe_exec(str_repeat('f',32),1,$grant9,'idem-cross-1',$password));
-    $r=pe_exec($profile,1,$grant9,'idem-cross-1',$password);
+    pe_deny('A grant refuses to execute against another profile',fn()=>pe_exec(str_repeat('f',32),$rev,$grant9,'idem-cross-1',$password));
+    $r=pe_exec($profile,$rev,$grant9,'idem-cross-1',$password);
     pe_ok('The grant still executes on its own profile','succeeded'===$r->status);
     $durable=json_encode([all('SELECT * FROM '.table('provider_operations')),all('SELECT * FROM '.table('provider_operation_grants')),all('SELECT * FROM '.table('audit'))]);
     pe_ok('No durable row contains secret or auth material',!str_contains($durable,$secret)&&!str_contains($durable,'Bearer'));
