@@ -2,6 +2,8 @@
 
 ## Unreleased — initial shared-hosting order intake
 
+- Run unchanged complete acceptance for PRs into the isolated 20i integration branch as well as main.
+
 - Add owner-selected agreement/invoice offers and client domain confirmation on existing agreement screens.
 - Preserve unique initial obligations, receipt/reversal evidence, expiring manual fulfillment policy, audit history and cancellation without billing/provider side effects.
 - Add native matrix cases; first native run caught a recurring-state adapter mismatch, now corrected; corrected source passed72 new native order cases in all four combinations. Further malformed-history/concurrency and browser acceptance is pending. Provider dispatch remains unfinished.

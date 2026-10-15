@@ -1762,3 +1762,8 @@ Parent146090fd, commit `Honor running billing state in hosting orders and exerci
 ### Stable order acceptance candidate
 
 Parent226f7cb, commit `Preserve order recovery controls and test competing initial offers`. Source226f7cb passed native run38771029583 on PHP8.2/8.4 × MariaDB10.11/MySQL8.4. Actual JSON parsed from all four job logs: 72 new order cases within229 retained recurring/order cases, plus108 separate ledger cases, all passed. Browser driver syntax parsed in memory; real order browser execution still pending. This follow-up adds controlled malformed-journal recovery, read-without-write and concurrent initial-order tests; rerun the exact descendant. Added private-path denial entries and retained browser journey. Parent423dd598 full38765096283 succeeded; logs/artifact metadata retained in order guide, no artifact-byte inspection claim. No production effects or release.
+
+
+### Enable full acceptance for PR138's integration target
+
+Parent3f895130, commit `Run full application acceptance for the 20i integration target`. PR138 targets `codex/twentyi-fulfillment`; existing full workflow only allowed main-target PRs. Add the exact integration branch to that trigger without removing tests or changing execution/permissions. Source3f PHP8.2/MariaDB named reports passed75 order/232 combined recurring-order/108 ledger checks. Full candidate test pending. Removed only the already-merged PR18 chat attachment after the app's100-attachment limit, then attached138; no GitHub PR/branch was deleted. Other source candidates and evidence preserved.

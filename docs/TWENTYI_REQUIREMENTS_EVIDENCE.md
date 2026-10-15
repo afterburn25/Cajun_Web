@@ -61,3 +61,8 @@ See [takeover provenance](TWENTYI_CODEX_TAKEOVER.md), [full request](TWENTYI_COD
 ### Combined inheritance and response semantics checkpoint
 
 Inherited resources40ad600 and hosting1c92e6b are now retained in normal merges5b115f0/08b90c8; combined acceptance is pending. The earlier inventory fixes have544 verified named native executions at962cc3e. Current acknowledgement/replay semantics, corrected ID-array request boundaries, and name-match reconciliation repair pass278 local pure operation executions; current native matrices are pending. Package acknowledgements remain accepted_pending, never automatically active. Complex per-package request fields are only bounded at their outer documented shape; typed native forms and their inner semantics remain required. Original API-reference intake still needs an accessible complete source. This is implementation progress, not platform completion or release evidence.
+
+
+## Initial commercial order intake — PR138 (implementing)
+
+Owner and real client can offer/confirm a domain with exact accepted service agreement and original invoice, decline/cancel, and separately allow/revoke expiring manual fulfillment. Unique invoice/agreement consumption and exact receipt/reversal history are retained. Native226f matrix38771029583 passed72 new named order cases in all four combinations; descendant3f adds concurrency/malformed-history cases (75 order checks passed PHP8.2/MariaDB so far). Browser cases are written; exact full candidate acceptance pending. Package mapping, provider purchase authorization, dispatch and resulting client-service ownership are still missing implementation, not owner-gated. See [order scope](TWENTYI_SERVICE_ORDERS.md).
