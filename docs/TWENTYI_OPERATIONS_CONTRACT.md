@@ -30,7 +30,8 @@ Nine documented operations, literal method/path from the reference:
 The builder throws `InvalidArgumentException` for shape-incomplete
 operations rather than inventing fields. `exclusions()` names the
 write surfaces deliberately not catalogued — StackCP users/grants,
-VPS create/renew/power/VNC, SSH access, email, direct billing — each
+VPS create/renew/power/reboot/rebuild/stop/start/lockVnc/unlockVNC,
+cloud ordering/product-data lookups, SSH access, email, direct billing — each
 with its refusal reason. A renewal is not observable through the
 package list, so `domains.renew` uncertainty reconciles `refused`
 (the row keeps its provider-truthful status; the owner verifies in
