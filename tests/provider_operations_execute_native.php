@@ -231,9 +231,17 @@ try {
     $scriptedReads=[pe_snapshot([pe_package(77,['still.example']),pe_package(42,['u.example'])])];
     $r=pe_reconcile($profile,$rev,'idem-rec-del',$password);
     pe_ok('Still-present target reconciles not_observed','not_observed'===$r['outcome']);
-    // A field-only update cannot be observed: inconclusive, no read sent.
-    $readCount=0;
+    // idem-upd-1 was approved under the earlier credential context — its
+    // grant's approved revision no longer matches, so it refuses.
     $r=pe_reconcile($profile,$rev,'idem-upd-1',$password);
+    pe_ok('A stale-context update refuses reconciliation','refused'===$r['outcome']);
+    // A field-only update approved under the current context reconciles
+    // inconclusive without a read — the effect is unobservable.
+    $grantU=provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>42,'labels'=>['a'=>'b']],$password);
+    $scripted=[new TransportResponse(503,[],'')];
+    pe_exec($profile,$rev,$grantU,'idem-upd-cur',$password);
+    $readCount=0;
+    $r=pe_reconcile($profile,$rev,'idem-upd-cur',$password);
     pe_ok('Field-only update reconciles inconclusive without a read','inconclusive'===$r['outcome']&&0===$readCount);
     // Read failures keep the row uncertain without a conclusion.
     $scriptedReads=[new TransportException('timeout')];
