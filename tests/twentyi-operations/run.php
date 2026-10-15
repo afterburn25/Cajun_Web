@@ -18,15 +18,20 @@ $register=new TwentyIOperationRegister();
 $builder=new TwentyIRequestBuilder($register);
 
 // ---- catalog shape ----
-check($register->names()===['packages.create','packages.update','packages.userstatus','packages.delete'],'closed catalog is exactly four documented operations');
-check($register->buildableNames()===['packages.create','packages.update'],'only shape-complete operations are buildable');
+check($register->names()===['packages.create','packages.update','domains.renew','domains.register','domains.transfer','domains.nameservers','domains.dns','packages.userstatus','packages.delete'],'closed catalog is exactly the nine documented operations');
+check($register->buildableNames()===['packages.create','packages.update','domains.renew'],'only shape-complete operations are buildable');
 check($register->get('packages.create')->mayTriggerEmail&&$register->get('packages.create')->mayChargeBilling,'create flags email and billing risk');
 check($register->get('packages.update')->destructive&&$register->get('packages.update')->mayChargeBilling,'update flags mixed delete and billing');
+check($register->get('domains.renew')->mayChargeBilling&&!$register->get('domains.renew')->destructive,'domain renew flags billing only');
 check(!$register->get('packages.delete')->shapeComplete&&$register->get('packages.delete')->destructive,'delete documented but shape-incomplete');
+foreach(['domains.register','domains.transfer','domains.nameservers','domains.dns'] as $name){
+    check(!$register->get($name)->shapeComplete,'domain operation documented but shape-incomplete '.$name);
+    check(refused(static fn()=>$builder->build(new ProviderOperation($name,'k',['resellerId'=>'*','packageId'=>1,'domainId'=>1,'name'=>'a.example','years'=>1]))),'shape-incomplete domain operation refuses to build '.$name);
+}
 check(count($register->exclusions())>=10,'exclusion register covers credential, transfer, billing and access surfaces');
 
 // ---- build refusal: unknown / shape-incomplete operations ----
-foreach(['packages.list','domains.register','vps.power','resellers.users','x',''] as $i=>$name){
+foreach(['packages.list','domains.transferx','vps.power','resellers.users','x',''] as $i=>$name){
     if($name===''||!preg_match('/^[a-z0-9]+(\.[a-z0-9]+)*$/',$name))continue;
     check(refused(static fn()=>$builder->build(new ProviderOperation($name,'k-'.$i))),'unregistered operation refused '.$name);
 }
@@ -78,6 +83,18 @@ check($numeric->url==='https://api.20i.com/reseller/7001/addWeb','allocated rese
 
 $update=$builder->build(new ProviderOperation('packages.update','idem-3',['resellerId'=>'*','id'=>42,'labels'=>['env'=>'prod'],'delete-id'=>7]));
 check(str_contains($update->url,'/reseller/*/updatePackage')&&str_contains((string)$update->body,'"delete-id":7'),'update carries documented mixed fields');
+
+// ---- domains.renew: documented bounded billing write ----
+$renew=$builder->build(new ProviderOperation('domains.renew','idem-4',['resellerId'=>'*','name'=>'client-site.example','years'=>2,'renewPrivacy'=>true]));
+check($renew->url==='https://api.20i.com/reseller/*/renewDomain','renew posts to the documented reseller path');
+$rbody=json_decode((string)$renew->body,true);
+check($rbody===['name'=>'client-site.example','years'=>2,'renewPrivacy'=>true],'renew body carries only the three documented fields');
+check(refused(static fn()=>$builder->build(new ProviderOperation('domains.renew','k',['resellerId'=>'*','years'=>1]))),'renew without a domain name refused');
+check(refused(static fn()=>$builder->build(new ProviderOperation('domains.renew','k',['resellerId'=>'*','name'=>'a.example']))),'renew without a years period refused');
+check(refused(static fn()=>$builder->build(new ProviderOperation('domains.renew','k',['resellerId'=>'*','name'=>'a.example','years'=>0]))),'renew years must be positive');
+check(refused(static fn()=>$builder->build(new ProviderOperation('domains.renew','k',['resellerId'=>'*','name'=>'not a host','years'=>1]))),'renew name must be a hostname');
+check(refused(static fn()=>$builder->build(new ProviderOperation('domains.renew','k',['resellerId'=>'*','name'=>'a.example','years'=>1,'undeclared'=>1]))),'undeclared renew field refused');
+check(refused(static fn()=>$builder->build(new ProviderOperation('domains.renew','k',['resellerId'=>'*','name'=>'a.example','years'=>1,'renewPrivacy'=>'yes']))),'renewPrivacy must be boolean');
 
 // ---- structural node bound counts every visited value ----
 // labels json: 4 sub-arrays of 64+64+64+58 leaves => root 1 + 4 + 250 leaves = 255 nodes + id field = 256 (exact bound).

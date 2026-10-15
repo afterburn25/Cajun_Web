@@ -1474,3 +1474,11 @@ Request: continue the 20i assignment; address Codex's blocking findings on the e
 Files: `site/app/providers/reconcile.php`, `docs/TWENTYI_OPERATIONS_CONTRACT.md`, `tests/provider_operations_execute_native.php` (+replacement-context refusal, corrected absence expectation, live-revision reads), `site/install/inventory.generated.php` (refreshed).
 
 Tests: pending CI — native MariaDB (ledger + execution) and packaged application lanes on the new head. Prior runs: 53 execute/reconcile assertions at the pre-correction head.
+
+## 2026-10-16 — Devin: catalogued domain operations; `domains.renew` joins the buildable set
+
+The owner API reference documents `POST /reseller/{resellerId}/renewDomain` with a complete three-field shape (`name`, `years`, `renewPrivacy`, L239-249) — catalogued buildable with `mayChargeBilling` (balance-funded). `addDomain`/`transferDomain`/`nameservers`/`dns` are catalogued shape-incomplete: the reference names purposes or partial field lists but not complete request shapes (registrant/contact/registry inputs; added/removed ns field names; dns `new`/`delete` record shapes), so the builder refuses them rather than inventing fields. The fixed POST transport allowlist and the packaged HTTPS fixture each gained exactly `renewDomain`. Reconciliation has no observation check for renewals — an uncertain renewal refuses with panel-verification guidance. Packaged suite gained a real renew POST case plus ambiguous consumed-history and changed-context reconcile refusals.
+
+Files: `foundation/twentyi-operations/TwentyIOperationRegister.php`, `foundation/twentyi/FixedHttpTransport.php`, mirrors under `site/includes/foundation/`, `tests/twentyi-operations/run.php` (+17 checks), `tests/provider_http_server.py`, `tests/provider_operations_cases.py` (+3 packaged checks), `docs/TWENTYI_OPERATIONS_CONTRACT.md`, `.github/workflows/twentyi-operations.yml` (push trigger covers -exec/-rec).
+
+Tests: synthetic write-boundary suite **109/109** in default and `php -n` modes locally; native/packaged lanes pending CI on this head.

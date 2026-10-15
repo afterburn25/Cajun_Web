@@ -12,12 +12,17 @@ returns `supports() === false` for every operation; nothing is wired.
 
 ## Register (`TwentyIOperationRegister`)
 
-Four documented operations, literal method/path from the reference:
+Nine documented operations, literal method/path from the reference:
 
 | Operation | Endpoint | Shape | Risk flags |
 |---|---|---|---|
 | `packages.create` | `POST /reseller/{resellerId}/addWeb` | complete (7 fields) | billing, welcome email via `stackUser` |
 | `packages.update` | `POST /reseller/{resellerId}/updatePackage` | complete (7 fields incl. `delete-id`) | destructive, billing |
+| `domains.renew` | `POST /reseller/{resellerId}/renewDomain` | complete (3 fields: `name`, `years`, `renewPrivacy`) | billing (balance-funded) |
+| `domains.register` | `POST /reseller/{resellerId}/addDomain` | **incomplete** — registrant/contact/registry inputs described by purpose, not field names | billing; refused by builder |
+| `domains.transfer` | `POST /reseller/{resellerId}/transferDomain` | **incomplete** — field names listed, contact/limits sub-shapes unspecified | billing; refused by builder |
+| `domains.nameservers` | `POST /package/{packageId}/domain/{domainId}/nameservers` | **incomplete** — added/removed described, exact field names not given | refused by builder |
+| `domains.dns` | `POST /package/{packageId}/domain/{domainId}/dns` | **incomplete** — `conflictPolicy`/`insertPolicy` named, `new`/`delete` record shapes undocumented | refused by builder |
 | `packages.userstatus` | `POST /package/{packageId}/userStatus` | **incomplete** — body fields not shown | refused by builder |
 | `packages.delete` | `POST /reseller/{resellerId}/deleteWeb` | **incomplete** — body fields not shown | destructive; refused by builder |
 
@@ -25,9 +30,11 @@ Four documented operations, literal method/path from the reference:
 The builder throws `InvalidArgumentException` for shape-incomplete
 operations rather than inventing fields. `exclusions()` names the
 write surfaces deliberately not catalogued — StackCP users/grants,
-domain register/transfer/renew/nameservers/DNS, VPS create/renew/
-power/VNC, SSH access, email, direct billing — each with its refusal
-reason.
+VPS create/renew/power/VNC, SSH access, email, direct billing — each
+with its refusal reason. A renewal is not observable through the
+package list, so `domains.renew` uncertainty reconciles `refused`
+(the row keeps its provider-truthful status; the owner verifies in
+the 20i panel).
 
 ## Request builder (`TwentyIRequestBuilder`)
 
@@ -43,7 +50,7 @@ reason.
   refuse before a request object exists;
 - serialized body is canonical JSON bounded to 8 KiB;
 - `Content-Type: application/json`, `Accept: application/json`,
-  30 s timeout, fixed host `https://api.20i.com`;
+  15 s bounded timeout, fixed host `https://api.20i.com`;
 - **no `Authorization` header ever** — credential attachment is an
   execution-boundary concern for a future gateway path, not this layer.
 

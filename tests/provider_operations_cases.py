@@ -59,6 +59,12 @@ def run_browser(env,browser):
     check('The write classifies succeeded against the fixture',len(ops)==1 and ops[0]['status']=='succeeded' and ops[0]['operation']=='packages.create')
     check('The grant is consumed by its single run',db('SELECT consumed_key FROM ci_provider_operation_grants WHERE id=?',[gid])[0]['consumed_key']=='packaged-create-1')
 
+    grant('domains.renew',json.dumps({'resellerId':'*','name':'packaged-renew.example','years':1}))
+    gdr=db('SELECT id FROM ci_provider_operation_grants WHERE consumed_key IS NULL ORDER BY seq DESC')[0]['id']
+    op_post('provider_operations_run',grant_id=gdr,idempotency_key='packaged-renew-1')
+    check('A bounded domain renewal sends the documented POST once',provider_server.posts[-1]['path']=='/reseller/*/renewDomain' and provider_server.posts[-1]['body']=={'name':'packaged-renew.example','years':1})
+    check('The renewal classifies succeeded against the fixture',db('SELECT status FROM ci_provider_operations WHERE idempotency_key=?',['packaged-renew-1'])[0]['status']=='succeeded')
+
     grant('packages.create',json.dumps({'resellerId':'*','type':'synthetic','domain_name':'packaged-two.example'}))
     gid2=db('SELECT id FROM ci_provider_operation_grants WHERE consumed_key IS NULL ORDER BY seq DESC')[0]['id']
     r=op_post('provider_operations_run',grant_id=gid2,idempotency_key='packaged-create-1')

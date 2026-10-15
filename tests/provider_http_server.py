@@ -31,7 +31,7 @@ class ProviderServer:
                 length=int(self.headers.get('Content-Length') or '0')
                 raw=self.rfile.read(length) if 0<length<=8192 else b''
                 import re
-                if not re.fullmatch(r'/reseller/[A-Za-z0-9_.*-]+/(addWeb|updatePackage)',self.path or '') or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Content-Type')!='application/json' or self.headers.get('Accept')!='application/json':
+                if not re.fullmatch(r'/reseller/[A-Za-z0-9_.*-]+/(addWeb|updatePackage|renewDomain)',self.path or '') or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Content-Type')!='application/json' or self.headers.get('Accept')!='application/json':
                     fixture.errors.append('Unexpected write request '+str(self.path))
                 try:payload=json.loads(raw)
                 except Exception:payload=None;fixture.errors.append('Unparseable write body')

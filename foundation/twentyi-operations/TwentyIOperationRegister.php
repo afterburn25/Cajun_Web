@@ -63,6 +63,48 @@ final class TwentyIOperationRegister
                 mayChargeBilling: true, // billing field changes subscription billing
             ),
             new TwentyIOperation(
+                'domains.renew', 'POST', '/reseller/{resellerId}/renewDomain',
+                ['resellerId'],
+                [
+                    'name' => 'hostname',
+                    'years' => 'int',
+                    'renewPrivacy' => 'bool',
+                ],
+                ['name', 'years'],
+                shapeComplete: true, // owner reference L239-249 lists the complete field set
+                mayChargeBilling: true, // balance-funded renewal
+            ),
+            new TwentyIOperation(
+                'domains.register', 'POST', '/reseller/{resellerId}/addDomain',
+                ['resellerId'],
+                [],
+                [],
+                shapeComplete: false, // registrant/contact/registry-specific inputs are described by purpose, not field names
+                mayChargeBilling: true,
+            ),
+            new TwentyIOperation(
+                'domains.transfer', 'POST', '/reseller/{resellerId}/transferDomain',
+                ['resellerId'],
+                [],
+                [],
+                shapeComplete: false, // field names listed but contact/otherContacts/limits sub-shapes are not specified
+                mayChargeBilling: true,
+            ),
+            new TwentyIOperation(
+                'domains.nameservers', 'POST', '/package/{packageId}/domain/{domainId}/nameservers',
+                ['packageId', 'domainId'],
+                [],
+                [],
+                shapeComplete: false, // "added ns / removed old-ns" described but exact field names are not given
+            ),
+            new TwentyIOperation(
+                'domains.dns', 'POST', '/package/{packageId}/domain/{domainId}/dns',
+                ['packageId', 'domainId'],
+                [],
+                [],
+                shapeComplete: false, // conflictPolicy/insertPolicy named; new/delete record shapes undocumented
+            ),
+            new TwentyIOperation(
                 'packages.userstatus', 'POST', '/package/{packageId}/userStatus',
                 ['packageId'],
                 [],
