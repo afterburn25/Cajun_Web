@@ -1,3 +1,7 @@
+## Owner catalog readiness — 2026-10-15
+
+Implementing bounded plan-list readiness, precise local invalidation reasons and immutable selected-review evidence on `codex/twentyi-catalog-readiness` from combined38bb69cc. Automatic provider discovery remains unavailable; this uses verified local mapping/order contracts and changes no execution gate. [Scope and pending native/browser evidence](TWENTYI_CATALOG_READINESS.md).
+
 # Active 20i parallel work
 
 Root integrates native mailbox creation, provider plan mappings, registrar ownership/client links and existing cloud-server website creation from three parallel agent branches. [Bounded assignments and acceptance status](TWENTYI_PARALLEL_WORK.md). Mailbox334 passes87 native cases in each supported combination; the new sequence-order recovery cases and combined runtime/browser/recovery/Apache acceptance remain pending. Full mail/domain/VPS controls, automatic catalog discovery and support/SSH remain unfinished. No completion estimate advances solely from source presence. Checkpoints below are historical; current status and the requirements checklist govern remaining work.

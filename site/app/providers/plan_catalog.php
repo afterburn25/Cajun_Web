@@ -8,6 +8,11 @@ require_once CWP_CODE_ROOT.'/app/billing/recurring_billing.php';
 require_once CWP_CODE_ROOT.'/database/schema/provider_plan_catalog_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/service_orders_migrate.php';
 
+/** Closed local readiness reasons; never expose arbitrary storage/provider errors. */
+final class ProviderPlanCatalogNotReady extends RuntimeException {
+    public function __construct(public readonly string $reason,string $message){parent::__construct($message);}
+}
+
 function provider_plan_catalog_state():array {
     $version=one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_plan_catalog_version'])['value']??'';
     $exists=(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'provider_plan_catalog']);
@@ -60,13 +65,24 @@ function provider_plan_catalog_current(string $plan):?array {$history=provider_p
 /** Caller holds the shared owner guard. No credentials are decrypted or provider calls made. */
 function provider_plan_catalog_eligible(array $d,int $now):void {
     $current=provider_plan_catalog_current($d['plan_id']);
-    if(!$current||$current['id']!==$d['id']||$current['sha256']!==$d['sha256']||!$d['enabled']||$now<$d['created_at']||$now>=$d['expires_at'])throw new RuntimeException('Review a current enabled provider mapping before using it.');
+    if(!$current||$current['id']!==$d['id']||$current['sha256']!==$d['sha256'])throw new ProviderPlanCatalogNotReady('superseded','This mapping was replaced. Review the latest mapping.');
+    if(!$d['enabled'])throw new ProviderPlanCatalogNotReady('withdrawn','This mapping was withdrawn from new hosting preparation.');
+    if($now<$d['created_at'])throw new ProviderPlanCatalogNotReady('future','This review is dated in the future. Check the server clock before reviewing it again.');
+    if($now>=$d['expires_at'])throw new ProviderPlanCatalogNotReady('expired','This provider review expired. Review the account and save a new mapping version.');
     $plan=service_plans_validate(service_plans_row($d['plan_id']));
-    if($plan->revision()!==$d['plan_revision']||$plan->fingerprint()!==$d['plan_sha256']||$plan->model()->status()!=='active')throw new RuntimeException('The retail plan changed or was retired.');
+    if($plan->model()->status()!=='active')throw new ProviderPlanCatalogNotReady('retail_inactive','This retail plan is no longer published for new preparation. Existing agreements remain unchanged.');
+    if($plan->revision()!==$d['plan_revision']||$plan->fingerprint()!==$d['plan_sha256'])throw new ProviderPlanCatalogNotReady('retail_changed','The retail plan version changed. Review the mapping against its current terms.');
+    provider_settings_manager();
+    try{$profile=provider_settings_load($d['profile_id']);}
+    catch(InvalidArgumentException){throw new ProviderPlanCatalogNotReady('connection_missing','The reviewed provider connection is unavailable. Review provider settings.');}
+    if((int)$profile['revision']!==$d['profile_revision'])throw new ProviderPlanCatalogNotReady('connection_changed','The provider connection version changed. Review its current settings and save a new mapping.');
+    if((int)$profile['enabled']!==1)throw new ProviderPlanCatalogNotReady('connection_disabled','The provider connection is disabled. Review provider settings.');
+    if($profile['credentials']==='')throw new ProviderPlanCatalogNotReady('credentials_missing','The provider connection has no saved key. Review provider settings.');
+    // Keep the shared provider authority gate authoritative after classifying its known local refusals.
     [, $profile]=provider_checks_authority($d['profile_id'],$d['profile_revision']);
-    if(hash('sha256',$profile['credentials'])!==$d['credential_sha256'])throw new RuntimeException('The provider connection changed. Review the mapping again.');
+    if(hash('sha256',$profile['credentials'])!==$d['credential_sha256'])throw new ProviderPlanCatalogNotReady('credentials_changed','The saved provider key changed. Review the mapping again.');
     $owner=one('SELECT * FROM '.table('users').' WHERE id=?',[$d['created_by']]);$staff=$owner?staff_profile($owner):null;
-    if(!$staff||$staff['role']!=='owner'||!hash_equals($d['owner_auth'],$staff['auth_version']))throw new RuntimeException('The mapping owner authorization changed. Review the mapping again.');
+    if(!$staff||$staff['role']!=='owner'||!hash_equals($d['owner_auth'],$staff['auth_version']))throw new ProviderPlanCatalogNotReady('reviewer_changed','The original reviewer’s owner access or credentials changed. A current owner must review this mapping again.');
 }
 function provider_plan_catalog_save(string $id,string $planId,int $planRevision,string $planHash,?string $previous,string $profileId,int $profileRevision,array $configuration,int $days,bool $enabled,#[\SensitiveParameter] string $password):array {
     service_plans_id($id);$configuration=provider_plan_catalog_config($configuration);
@@ -89,11 +105,34 @@ function provider_plan_catalog_save(string $id,string $planId,int $planRevision,
         query('INSERT INTO '.table('provider_plan_catalog').' (id,plan_id,revision,created_by,created_epoch,binding_json,binding_sha256) VALUES (?,?,?,?,?,?,?)',array_values($row));provider_plan_catalog_audit((int)$actor['id'],'saved',provider_plan_catalog_detail($row));save_setting('provider_plan_catalog_latest_'.$planId,$id.':'.$sha);provider_plan_catalog_history($planId);return $d+['sha256'=>$sha];
     });
 }
-function provider_plan_catalog_context(string $plan):array {
-    return recurring_billing_locked(function()use($plan):array {
-        service_plans_owner();provider_settings_manager();$state=provider_plan_catalog_state();$history=provider_plan_catalog_history($plan);$current=$history?end($history):null;$eligible=false;
-        if($current)try{provider_plan_catalog_eligible($current,time());$eligible=true;}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;}
-        return ['ready'=>$state['ready'],'history'=>$history,'current'=>$current,'eligible'=>$eligible,'profile'=>provider_settings_profile()];
+/** Internal projection under the shared owner lock/transaction. History corruption is never a readiness state. */
+function provider_plan_catalog_projection(string $plan,?int $revision=null):array {
+    service_plans_owner();provider_settings_manager(false);service_plans_id($plan);
+    if($revision!==null&&($revision<1||$revision>128))throw new InvalidArgumentException('Choose an available mapping review.');
+    $state=provider_plan_catalog_state();$configured=provider_settings_ready();
+    if(!$configured&&$state['ready'])throw new RuntimeException('Original provider settings are unavailable. Restore the original database before reviewing mappings.');
+    $history=provider_plan_catalog_history($plan);$current=$history?end($history):null;$eligible=false;
+    $reason=$configured?($state['ready']?'missing_review':'storage_setup'):'connection_setup';
+    $message=match($reason){'missing_review'=>'No provider mapping has been reviewed for this retail plan.','storage_setup'=>'Prepare provider mapping history before saving the first review.',default=>'Prepare the provider connection before reviewing a mapping.'};
+    if($current)try{provider_plan_catalog_eligible($current,time());$eligible=true;$reason='ready';$message='Ready for local preparation. Provider entitlement and setup still require their separate review.';}
+    catch(ProviderPlanCatalogNotReady $e){$reason=$e->reason;$message=$e->getMessage();}
+    $selected=$revision===null?$current:null;
+    if($revision!==null){foreach($history as $entry)if($entry['revision']===$revision)$selected=$entry;if(!$selected)throw new InvalidArgumentException('The requested mapping review is unavailable for this retail plan.');}
+    // The selected-review display excludes credential/auth fingerprints; existing internal history remains separate.
+    $review=$selected?array_intersect_key($selected,array_flip(['revision','plan_revision','created_by','created_at','expires_at','enabled','configuration'])):null;
+    if($review)$review['current']=$selected['id']===$current['id'];
+    return ['ready'=>$state['ready'],'history'=>$history,'current'=>$current,'eligible'=>$eligible,'profile'=>$configured?provider_settings_profile():null,'readiness'=>['code'=>$reason,'message'=>$message],'selected'=>$review];
+}
+function provider_plan_catalog_context(string $plan,?int $revision=null):array {
+    return recurring_billing_locked(fn()=>provider_plan_catalog_projection($plan,$revision));
+}
+/** Bounded owner-only summaries for the existing ten-plan page; never expose private cost or auth evidence. */
+function provider_plan_catalog_summaries(array $plans):array {
+    if(count($plans)>10||!array_is_list($plans))throw new InvalidArgumentException('Choose one page of retail plans.');
+    return recurring_billing_locked(function()use($plans):array {
+        service_plans_owner();provider_settings_manager(false);$result=[];
+        foreach($plans as $plan){if(!is_string($plan))throw new InvalidArgumentException('Choose an available retail plan.');service_plans_id($plan);service_plans_validate(service_plans_row($plan));$ctx=provider_plan_catalog_projection($plan);$result[$plan]=$ctx['readiness']+['eligible'=>$ctx['eligible'],'revision'=>$ctx['current']['revision']??null];}
+        return $result;
     });
 }
 /** Use the exact plan accepted for this order, never an unrelated current offer. */

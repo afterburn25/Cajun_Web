@@ -1,3 +1,7 @@
+## Catalog readiness continuation — 2026-10-15
+
+New isolated `codex/twentyi-catalog-readiness` starts at combined candidate `38bb69ccd1c1fc45f479022fe11748ca78b756d2`, preserving the tested catalog branch and PR144 documentation. Owner plan lists/details now explain local mapping invalidation and show immutable selected-review limits/cost evidence, including after plan retirement. Existing authority/history/fulfillment gates remain. [Scope and current checks](docs/TWENTYI_CATALOG_READINESS.md). Local PHP syntax and 51 pure checks per mode pass; exact native/browser acceptance is pending. Root's frozen candidate and publication remain separate.
+
 # CajunWebPro handoff — 2026-10-15
 
 Continue the complete 20i P0 scope in [the owner takeover](docs/TWENTYI_CODEX_TAKEOVER_REQUEST.md) and [requirements checklist](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md). The goal is active. Published v1.24.0 is unchanged; the prior turn made implementation and verified-evidence progress.

@@ -1,3 +1,7 @@
+# Catalog readiness ownership — 2026-10-15
+
+Agent `twentyi_catalog` owns isolated `codex/twentyi-catalog-readiness` from combined38bb69cc. Files: provider catalog module/layout, admin plan view, focused catalog native/browser fixtures, installer inventory and documentation. No schema, operation gateway, mailbox, registrar or cloud-control edits. Root remains frozen for its own acceptance and owns integration/release. Original8f controls and PR144 discovery documentation branches are preserved. [Current scope](TWENTYI_CATALOG_READINESS.md).
+
 # Current ownership — parallel 20i workers
 
 The owner explicitly requested parallel agents. Root and three additional agents work on separate branches/worktrees from0ebc4623. [Bounded assignments and shared integration rules](TWENTYI_PARALLEL_WORK.md). Root owns mailbox work and integration/releases; the others own catalog mappings, registrar inventory/client links and existing cloud-server website creation. Registrar725573f0 is preserved by normal mergec1585199, catalog8f7028 by merge577b279b, and cloud33a2a2b0 is now combined with both with final combined acceptance still required. Domain agent reviewed shared routing/protection and the bounded correction for the retained mailbox334 browser failure. Cloud agent verified exactce8d browser evidence and reviews shared cloud glue; catalog agent reviews the combined operation/schema/fixture integration. All checkpoints below are historical, with their then-current acceptance state.

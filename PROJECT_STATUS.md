@@ -1,3 +1,7 @@
+## Catalog readiness continuation — 2026-10-15
+
+New isolated `codex/twentyi-catalog-readiness` starts at combined candidate `38bb69ccd1c1fc45f479022fe11748ca78b756d2`, preserving the tested catalog branch and PR144 documentation. Owner plan lists/details now explain local mapping invalidation and show immutable selected-review limits/cost evidence, including after plan retirement. Existing authority/history/fulfillment gates remain. [Scope and current checks](docs/TWENTYI_CATALOG_READINESS.md). Local PHP syntax and 51 pure checks per mode pass; exact native/browser acceptance is pending. Root's frozen candidate and publication remain separate.
+
 # CajunWebPro current status — 2026-10-15
 
 Published version: [v1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0), immutable source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`. Release assets were downloaded and verified. The complete 20i integration remains the active P0; unrelated feature development is paused.

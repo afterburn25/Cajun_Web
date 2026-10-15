@@ -48,8 +48,11 @@ def run_browser(env, browser):
     for changes,label in [({'csrf':'bad'},'CSRF'),({'mailbox_policy':'f'*32},'forged policy'),({'mailbox_password_confirm':'different'},'password mismatch'),({'mailbox_confirm':'0'},'confirmation')]:
         result=client.post(url,data={**original,**values,**changes})
         check('Mailbox request refuses '+label,not db('SELECT * FROM ci_provider_mailbox_requests') and provider.calls==calls and password not in result.text)
-    result=foreign.post(url,data={**original,**values,'csrf':env['token'](foreign.get(url))})
-    check('Foreign client cannot use captured mailbox permission',not db('SELECT * FROM ci_provider_mailbox_requests') and provider.calls==calls)
+    # This client's mailbox page correctly has no creation form or CSRF field.
+    # Use its real workspace session token so this POST reaches ownership checks.
+    foreign_csrf=form_data(form_for(foreign.get(portal),'logout'))['csrf']
+    result=foreign.post(url,data={**original,**values,'csrf':foreign_csrf})
+    check('Foreign client cannot use captured mailbox permission',result.status_code==200 and 'Mailbox permissions changed or expired.' in result.text and password not in result.text and not db('SELECT * FROM ci_provider_mailbox_requests') and provider.calls==calls)
     context=browser.new_context(viewport={'width':1440,'height':1000});context.add_cookies([{'name':c.name,'value':c.value,'url':base} for c in client.cookies]);page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)));page.goto(url)
     form=page.locator('form').filter(has=page.locator('[name=action][value='+create+']'))
     form.locator('[name=mailbox_policy]').select_option(original['mailbox_policy'])

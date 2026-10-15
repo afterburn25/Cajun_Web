@@ -1,3 +1,8 @@
+## Unreleased — owner mapping readiness and historical evidence
+
+- Explain local mapping review requirements on the owner's plan list/detail and link to protected review screens.
+- Display original limits and private cost evidence for selected immutable review versions, preserving history after retirement and keeping edit forms on the latest mapping.
+
 ## Integration checkpoint — latest main evidence
 
 Preserve the latest main acceptance record alongside the combined20i source. No additional runtime behavior or release version changes in this final merge.
