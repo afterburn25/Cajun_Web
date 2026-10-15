@@ -1,9 +1,11 @@
 # CajunWebPro — project source of truth
 
 
-## Current ownership and candidate — 2026-10-15
+## Current release and ownership — 2026-10-15
 
-Codex owns the complete 20i integration as P0, superseding the historical Devin allocation below. Unrelated development is paused and preserved. The unreleased 1.24 candidate is [PR #126](https://github.com/afterburn25/Cajun_Web/pull/126); v1.23 remains the published baseline. See [current status](PROJECT_STATUS.md), [takeover](docs/TWENTYI_CODEX_TAKEOVER.md) and [requirements](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md). The stable inventory/ownership/operation increment is entering full acceptance; native controls, commercial service journeys, domains, VPS/cloud and SSH continue afterward. Repository releases do not imply live deployment or provider activation.
+Codex owns the complete 20i P0 integration. [Version1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly download-verified at immutable source7190b582. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38711850732) passes9,134 named executions and30 gates; all16 assets, tag, manifests and ZIP contents match accepted source. Previous1.23 assets remain unchanged. [Current status](PROJECT_STATUS.md), [release evidence](docs/TEST_REPORT_1.24.0.md) and [requirements](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md) define current scope. Complete20i remains unfinished; unrelated work stays paused. No live deployment is claimed.
+
+Next: cloud1.25/#127 with actual1.24 upgrade baseline and minimum commercial eligibility #130/#133. Native hosting/domain/VPS controls, complete fulfillment, scoped support and SSH remain active work. All status below this point is historical unless explicitly dated after publication.
 
 ## Historical owner allocation — 2026-10-14 (superseded)
 
@@ -13,7 +15,7 @@ Devin uses `devin/twentyi-complete` plus bounded feature branches. [#95](https:/
 
 Preserve current main, reviewed Codex hosting branches and existing Devin components. Coordinate minimal shared router/navigation/build wiring; do not change active acceptance heads. The latest published release is 1.23.0, immutable source `4fdb562`; these documentation records do not alter its released bytes. Existing specific live-operation/production gates remain. Read older status below as dated evidence; its task allocation is superseded by this owner instruction.
 
-## Latest verified publication — 1.23.0
+## Historical publication — 1.23.0
 
 [Version 1.23.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0) is published and freshly downloaded/verified at immutable source/tag `4fdb56266c77f6e6bf7b58e966d24696e1eaefc8`, through [PR #85](https://github.com/afterburn25/Cajun_Web/pull/85). Client account edits reject stale forms and retain escaped unsaved details for review. Client changes/invitations recheck current authority, serialize writes and audit atomically; invitation activation is single-use and unexpired. Client administration is refused during support sessions. [Owner guide](docs/CLIENT_ACCOUNT_SAFEGUARDS.md).
 

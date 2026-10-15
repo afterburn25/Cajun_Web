@@ -2,7 +2,7 @@
 
 ## Current package instructions — 1.24.0
 
-These instructions describe the 1.24.0 candidate's actual staging path and supported starting packages. Publication remains gated on final acceptance, normal merge, exact-main verification and downloaded release checks. The last immutable published baseline is [1.23.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0), source `4fdb56266c77f6e6bf7b58e966d24696e1eaefc8`; its [report](TEST_REPORT_1.23.0.md) remains historical evidence.
+These instructions describe published1.24.0 and its verified staging path and supported starting packages. [Publication and download evidence](TEST_REPORT_1.24.0.md). The preceding immutable published baseline is [1.23.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0), source `4fdb56266c77f6e6bf7b58e966d24696e1eaefc8`; its [report](TEST_REPORT_1.23.0.md) remains historical evidence.
 
 Codex owns the complete 20i integration under the owner's P0 [takeover](TWENTYI_CODEX_TAKEOVER.md), superseding the earlier Devin allocation. This increment integrates protected package observations, explicit client package/domain links, moved-domain and account-context isolation, populated inventory migrations, typed label approvals and retained operation/reconciliation history. It does not complete orders, native controls, domain commerce, cloud/VPS or interactive SSH. Follow the [inventory owner guide](TWENTYI_INVENTORY_OWNER_GUIDE.md) and [requirements/evidence register](TWENTYI_REQUIREMENTS_EVIDENCE.md).
 
