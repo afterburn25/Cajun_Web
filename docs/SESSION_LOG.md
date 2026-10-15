@@ -1,5 +1,9 @@
 # Session log
 
+## Cloud setup message correction — 2026-10-15
+
+Starting at1b6ede97, independent review [4280333908](https://github.com/afterburn25/Cajun_Web/pull/127#discussion_r4280333908) and the actual packaged checkpoint38699874602 found a fresh-owner setup message defect: no saved profile was incorrectly described as unprepared inventory. The cloud view now tells a fresh owner to save the connection, reserving preparation guidance for existing profiles with old/incomplete storage. The fresh-owner assertion also requires the correct message. The failed run is preserved; lint/docs/generated checks and a corrected browser checkpoint are required. Separate cloud assignments remain unfinished. No live request or release is claimed.
+
 ## Fresh installer version correction — 2026-10-15
 
 Independent review of cloud checkpoint 86660e34 identified that the fresh installer still stamped inventory version 3 after creating version 4 tables ([finding](https://github.com/afterburn25/Cajun_Web/pull/127#discussion_r4280167474)). This correction updates the installer stamp and adds actual fresh-package assertions for version/table/column agreement and the owner's provider page without redundant preparation. Generated inventory is refreshed. The earlier cloud native matrix passes 660 and reader matrix 996 named executions; those do not prove this new fresh-install correction. The running old browser checkpoint is preserved; its reports will be inspected before a corrected checkpoint is dispatched. No release or live operation is claimed.

@@ -5,7 +5,9 @@ use CajunWebPro\Foundation\TwentyIInventory\InventoryRead;
 ?>
 <section class="workspace-card" data-provider-cloud><h2>Cloud server inventory</h2>
 <p>Refresh the cloud server list from your saved 20i account. This makes one live read when you submit the form. Observed specifications do not establish service health, prices or client ownership.</p>
-<?php if(!$record||!provider_inventory_ready()): ?>
+<?php if(!$record): ?>
+<p>Save your 20i connection above before reading cloud servers.</p>
+<?php elseif(!provider_inventory_ready()): ?>
 <p>Prepare inventory storage above before reading cloud servers. Existing package records and links are preserved.</p>
 <?php else:
 $cloudLatest=provider_inventory_latest($profileId,InventoryRead::CLOUD_SERVERS_LIST);
