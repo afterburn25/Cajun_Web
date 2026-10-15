@@ -79,6 +79,32 @@ function license_register_domain(int $licenseId, string $domain): void {
 }
 
 /**
+ * Replace one registered domain with another in a single step — the
+ * customer's "change website" action. The old domain is deactivated at
+ * once, so its install goes offline at its next validation; the new
+ * domain registers in the freed slot.
+ */
+function license_replace_domain(int $licenseId, string $oldDomain, string $newDomain): void {
+    $oldDomain = strtolower(trim($oldDomain));
+    if (str_starts_with($oldDomain, 'www.')) {
+        $oldDomain = substr($oldDomain, 4);
+    }
+    $newDomain = strtolower(trim($newDomain));
+    if (str_starts_with($newDomain, 'www.')) {
+        $newDomain = substr($newDomain, 4);
+    }
+    if ($oldDomain === $newDomain) {
+        throw new InvalidArgumentException('The new domain is the same as the current one.');
+    }
+    $existing = one('SELECT id FROM ' . table('license_domains') . ' WHERE license_id = ? AND domain = ? AND is_active = 1', [$licenseId, $oldDomain]);
+    if (!$existing) {
+        throw new InvalidArgumentException('Current domain is not active on this license.');
+    }
+    license_deactivate_domain($licenseId, $oldDomain);
+    license_register_domain($licenseId, $newDomain);
+}
+
+/**
  * Deactivate a domain for a license.
  */
 function license_deactivate_domain(int $licenseId, string $domain): void {

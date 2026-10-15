@@ -54,6 +54,15 @@ try{
     $domains=license_domains($licId);
     lic_ok('Re-register reactivates without duplicating',count($domains)===2&&(int)array_column($domains,'is_active','domain')['example.com']===1);
 
+    // --- atomic domain replace (customer "change website") ---------------------
+    license_replace_domain($licId,'test.example.com','NEW-SITE.example.com');
+    $domains=license_domains($licId);$active=array_column($domains,'is_active','domain');
+    lic_ok('Replace deactivates old domain',(int)$active['test.example.com']===0);
+    lic_ok('Replace registers new domain canonicalized',(int)$active['new-site.example.com']===1);
+    lic_ok('Replace keeps the other active domain',(int)$active['example.com']===1);
+    lic_deny('Replace to same domain rejected',fn()=>license_replace_domain($licId,'example.com','example.com'));
+    lic_deny('Replace of inactive domain rejected',fn()=>license_replace_domain($licId,'ghost.example.com','other.example.com'));
+
     // --- deactivation --------------------------------------------------------
     license_deactivate_domain($licId,'test.example.com');
     $domains=license_domains($licId);

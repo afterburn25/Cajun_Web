@@ -18,7 +18,8 @@ if($licenses):?>
 <ul>
 <?php foreach($domains as $d):?>
 <li><?=esc($d['domain'])?> <span style="color:green">Active</span>
-<form method="post" style="display:inline"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_deactivate"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><input type="hidden" name="domain" value="<?=esc($d['domain'])?>"><button class="btn outline">Deactivate</button></form></li>
+<form method="post" style="display:inline"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_deactivate"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><input type="hidden" name="domain" value="<?=esc($d['domain'])?>"><button class="btn outline">Deactivate</button></form>
+<form method="post" style="display:inline"><?=support_csrf_field()?><input type="hidden" name="action" value="license_domain_replace"><input type="hidden" name="license_id" value="<?=esc($lic['id'])?>"><input type="hidden" name="old_domain" value="<?=esc($d['domain'])?>"><input type="text" name="new_domain" placeholder="new-domain.com" style="width:14em" required><button class="btn outline">Replace</button></form></li>
 <?php endforeach;?>
 </ul>
 <?php else:?><p class="muted">No domains registered yet.</p><?php endif;?>

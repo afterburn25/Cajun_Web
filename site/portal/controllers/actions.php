@@ -22,6 +22,10 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   if(!consume_rate(ip_key('client-license'),20,3600))throw new RuntimeException('Please wait before making more license changes.');
   if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=?',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
   license_deactivate_domain($licenseId,$domain);flash('Domain deactivated.');redirect(studio_url());}
+ elseif($action==='license_domain_replace'){$licenseId=gint($_POST,'license_id',1,2147483647);$old=posted('old_domain',255);$new=posted('new_domain',255);require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+  if(!consume_rate(ip_key('client-license'),20,3600))throw new RuntimeException('Please wait before making more license changes.');
+  if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=?',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
+  license_replace_domain($licenseId,$old,$new);flash('Domain replaced — the old site goes offline at its next license check.');redirect(studio_url());}
  $job=studio_job($jobId,(int)$client['id']);
  if($action==='message'){$body=posted('body',5000);if(strlen($body)<2)throw new InvalidArgumentException('Write a message.');if(!consume_rate(ip_key('client-message'),30,3600))throw new RuntimeException('Please wait before sending more messages.');query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,?,?,?,?)',[$jobId,'client',$client['id'],$body,gmdate('Y-m-d H:i:s')]);flash('Message saved.');}
  elseif($action==='decision'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm the decision for this version.');$version=(int)posted('version',12);if(!one('SELECT id FROM '.table('studio_versions').' WHERE id=? AND job_id=?',[$version,$jobId]))throw new InvalidArgumentException('Review not found.');studio_decide((int)$client['id'],$version,posted('choice',20),posted('feedback',5000));flash('Your decision was recorded against that version.');}
