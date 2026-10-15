@@ -1,5 +1,11 @@
 # Changelog
 
+## Correct 1.24 download and recovery instructions — 2026-10-15
+
+Starting from normally merged `8b44a7ad5e568481d8b016713e7d3958d19e41f3`, correct START-HERE's obsolete 1.23 folder and migration guide's obsolete 1.18 paths. Both now name the actual `cwp-update-1.24.0` staging directory, `structure-1.24.0` recovery journal and retained starting packages through 1.23.0. The shared `structure-1.11.0/mutex.php` remains unchanged. Current Codex 20i ownership supersedes the guide's old Devin allocation. No application, migration, build, fixture or workflow code changes.
+
+The exact 5fa5998d runtime candidate has 9,134 named full-application assertions and clear independent review; its tree-identical merged 8b44a7ad main has 29 verified focused workflows (158 reports / 17,034 executions), clean Windows packages and inspected browser evidence. Full main run [38707126756](https://github.com/afterburn25/Cajun_Web/actions/runs/38707126756) continues without cancellation. This documentation correction still requires independent review and exact final-source package/instruction verification. Before publication, verify the final main and downloaded assets; previous main evidence must retain its original SHA. Nothing is published or deployed by this correction. Cloud #127 and commercial dependencies #130 remain separate P0 work; all other development remains paused.
+
 ## Fresh owner inventory correction before 1.24 publication — 2026-10-15
 
 Codex retains complete 20i P0 ownership. Starting from normally merged main `5dd2a3e1a7ddb3b63bf9bf98c4da3ac1e13edafc`, this branch fixes a fresh-owner provider page warning discovered by cloud #127 checkpoint [38701151657](https://github.com/afterburn25/Cajun_Web/actions/runs/38701151657). The exact diagnostic was an array-offset-on-null warning in `admin/views/providers.php:71`: fresh installation prepares inventory storage but has no saved provider profile. The shared package view read the missing profile's enabled field. This defect also exists on current main, so 1.24 publication is withheld even though the earlier candidate passed.
