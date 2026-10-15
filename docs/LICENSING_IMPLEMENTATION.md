@@ -32,7 +32,7 @@ the site.
 
 **Features:**
 - Rate limiting: 10 requests per minute per IP (HTTP 429)
-- Audit logging: all validation attempts logged to `audit` table
+- Audit logging: all validation attempts logged to `audit` table — and every license mutation (`license.create`, `license.domain.register`, `license.domain.deactivate`, `license.domain.replace`, `license.deactivate`) records the acting staff/client id (0 for system paths like fulfilment), so a domain change is never an unexplained state
 - Multiple domain support: allows test + public sites on same license key, capped at 2 active domains per license — a third requires deactivating one first, which takes that site offline at its next validation
 - www/apex equivalence: `www.example.com` and `example.com` name the same site — registration canonicalizes `www.` to the apex and validation accepts either form, so the pair never consumes two slots
 - Active check: deactivated licenses are rejected
