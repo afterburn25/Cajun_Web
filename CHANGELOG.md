@@ -1,3 +1,7 @@
+# Development checkpoint — accepted order and active service wording
+
+Parent `e37517fa` merges tested hosting confirmation with newer main. Four native database/PHP combinations and independent exact Windows package verification pass. Parent `4d059a5b` browser evidence passes 1,737 checks; actual screenshots exposed an accepted-order sentence incorrectly saying setup was pending after activation. Correct the sentence and add owner/client browser regression coverage while retaining the pre-activation assertion. New current-head packaged acceptance, review and release remain pending. Published 1.24.0 is unchanged.
+
 # Changelog
 
 ## Unreleased — verified confirmation and current-main integration

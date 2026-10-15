@@ -47,7 +47,7 @@ function service_orders_ui(ServiceSubscriptionDocument $agreement,bool $owner):v
     if($state['domain_name'])echo '<p><strong>Hosting domain:</strong> '.esc($state['domain_name']).'</p>';
     if($ctx['warning'])echo '<p class="notice warning">'.esc($ctx['warning']).'</p>';
     if($phase==='accepted'){
-        echo '<p>Setup is pending studio fulfillment. A hosting request is separate from an active hosting service.</p>';
+        echo '<p>Your hosting request is accepted. Service activation is tracked separately.</p>';
         if($owner&&$ctx['assessment']){
             $a=$ctx['assessment'];echo '<p>'.($a['eligible']?'Commercial review is ready. Provider mapping and setup authorization must still be verified.':'Commercial review needs attention: '.esc(implode(', ',array_map(fn($s)=>str_replace('-',' ',$s),$a['blockers'])))).'</p>';
             if($a['manual'])echo '<p>Manual fulfillment policy expires '.esc(gmdate('Y-m-d H:i:s',$a['manual']['expires_at'])).' UTC. Reason: '.esc($a['manual']['reason']).'</p>';

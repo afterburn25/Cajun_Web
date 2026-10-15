@@ -300,7 +300,7 @@ def run_browser(env, browser):
     with page.expect_navigation():
         form.get_by_role('button',name='Confirm hosting request',exact=True).click()
     page.wait_for_load_state('networkidle')
-    check('Real Chromium form confirms domain and displays pending setup', 'client.example' in page.content() and 'Setup is pending studio fulfillment.' in page.content())
+    check('Real Chromium form confirms domain without claiming active service', 'client.example' in page.content() and 'Hosting request accepted' in page.content() and 'Hosting service active' not in page.content())
     context.close()
     accepted_order = db('SELECT * FROM ci_service_orders WHERE id=?', [order_row['id']])[0]
     check('Browser acceptance retains actual client attribution and exact invoice', accepted_order['revision']==1 and db('SELECT actor_client_id FROM ci_service_order_events WHERE order_id=?', [order_row['id']])==[{'actor_client_id':cid}])

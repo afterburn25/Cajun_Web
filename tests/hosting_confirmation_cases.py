@@ -62,6 +62,8 @@ def run_browser(env, browser, owner, client, foreign, pending, unknown, capture)
     check('Original confirmed form replay cannot read again or change history',history()==before and provider.calls==calls and len(provider.posts)==posts)
     client_text=client.get(pending['client']).text
     check('Client sees active service without provider proof or owner controls','Hosting service active' in client_text and action not in client_text and 'Provider package number' not in client_text and refresh not in client_text)
+    owner_text=owner.get(pending['owner']).text
+    check('Accepted order cards do not contradict confirmed active service',all('Hosting request accepted' in text and 'Hosting service active' in text and 'Setup is pending studio fulfillment' not in text for text in [owner_text,client_text]))
     capture(owner,pending['owner'],'staff-confirmation-active');capture(client,pending['client'],'client-confirmation-active')
     db('RENAME TABLE ci_provider_observation_packages TO ci_confirmation_saved_packages')
     try:

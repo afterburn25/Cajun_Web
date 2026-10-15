@@ -1,6 +1,6 @@
 # Dedicated hosting order fulfillment
 
-Status: authenticated exact-ID confirmation is branch-tested at4d059a5b across all four native combinations, with exact Windows packages verified. Its full browser/recovery/Apache acceptance and the newer-main13f9662d combined tree remain pending on `codex/twentyi-service-orders` / [PR138](https://github.com/afterburn25/Cajun_Web/pull/138). Automated catalog/configuration verification and the rest of complete20i remain unfinished. Published1.24 unchanged; no live verification is claimed.
+Status: authenticated exact-ID confirmation and newer-main merge are native-tested at `e37517fa` across all four combinations, with exact Windows packages verified. Parent `4d059a5b` passes 1,737 actual HTTP/Chromium checks. Current descendant fixes a screenshot-discovered stale pending sentence; its browser regression and the full merged browser/recovery/Apache run remain pending on `codex/twentyi-service-orders` / [PR 138](https://github.com/afterburn25/Cajun_Web/pull/138). Automatic catalog/configuration verification and the rest of complete 20i remain unfinished. Published 1.24 is unchanged; no live verification is claimed.
 
 ## Authenticated service confirmation
 
@@ -105,3 +105,25 @@ Source4d059a5b6a8c0985cfecef245475c5247052b4de, treef0fa66952f978c02cc424cce7011
 - Artifact12004619718: `4c0ddcb5aea2badc1cec0f551cf8f2474d4d18550b260df38fc844f44b0af2b3`.
 
 The clean4d059 Windows build was independently verified and retained:11 checksummed files, FULL5403/COMPLETE2653/UPDATE2640 members, exact Git source, all directory lists and update payload. These development1.25 labels do not publish a release. Full38803596849/job116658626115 passed packaging and was in native integration at inspection. Parent evidence does not certify this normal merge with main13f9662d597ecd1bcac090361f40c112d5bfa2e5. Preserve both source histories; optional licensing readiness and owner-only administration guards remain. The incoming licensing module and paid-invoice hooks need their combined regression run; no Website_Core execution or live operation was performed.
+
+
+## Verified newer-main merge and browser findings
+
+Normal merge `e37517facecaeb1b91cf5aaad44d03b3fd6428a2`, tree `a561f58b7e014a100aee6d28567c69bbd761d1de`, preserves `4d059a5b` and main `13f9662d`. [Native run 38805419687](https://github.com/afterburn25/Cajun_Web/actions/runs/38805419687) passes PHP 8.2/8.4 with MariaDB 10.11/MySQL 8.4. Each downloaded, hash/CRC-verified artifact passes all named reports: 38 confirmation, 32 owner-form and 76 fulfillment cases within 465 combined recurring checks, order/link/preparation subsets 82/42/38, ledger 108 and forms 68 per mode. Subsets are not additive.
+
+| Artifact | Combination | SHA-256 |
+|---|---|---|
+| 12006526708 | PHP 8.2 / MariaDB 10.11 | `223128957b0d8529968cef9b054a983ca7f016330a7b78956e22b253e86177f9` |
+| 12006201896 | PHP 8.2 / MySQL 8.4 | `c7a6c934d6746269322be4689088292ca099045780a29cf0f4d47c73413abc44` |
+| 12005579961 | PHP 8.4 / MySQL 8.4 | `cd7dc1c0bf334329a503ec23dcaeb97055b273ae7c677d249e0a1d1843273173` |
+| 12005119387 | PHP 8.4 / MariaDB 10.11 | `0fbfe86e92558286893dcb0b1c03522566990bafe7a6b369911f2d762c3bb214` |
+
+The exact e375 Windows build completed and independent verification passes all 11 checksums, every member hash/directory list, exact Git source and update payload: FULL 5406, COMPLETE 2654, UPDATE 2641. Retained copies and proof are `work/20i-merged-e375-windows-dist` and `work/20i-merged-e375-windows-verification.json` outside the checkout. The development 1.25 labels do not constitute publication. [Merged full application run 38805429786](https://github.com/afterburn25/Cajun_Web/actions/runs/38805429786) passed packaging and native integration and was in HTTP/Chromium workflows when inspected.
+
+[Parent application run 38803596849](https://github.com/afterburn25/Cajun_Web/actions/runs/38803596849) now passes 1,737 named HTTP/Chromium checks and continues recovery/Apache. Browser artifact `12006597030` is 81,578,689 bytes, SHA-256 `ee8d36619563c48779f5a7bc2db4a5449f5e45d6720be18fee7864cbf6b1d9a7`. Downloaded CRC/hash and every named check pass; unexpected browser/PHP diagnostics are empty. Its test merge `7247836cc68e89fef9c2bac0e2c75f3e65b9ff1f` shares tree `f0fa66952f978c02cc424cce7011c8de8caa9723` with `4d059a5b`. This is parent evidence, not e375 combined browser acceptance.
+
+Actual pending-owner mobile, active-owner desktop and active-client mobile screenshots were inspected. The accepted-order card incorrectly retained “Setup is pending studio fulfillment” after confirmation. The current descendant makes the card describe acceptance without making a service-state claim. The initial Chromium acceptance test still rejects premature active status; a new actual owner/client page check rejects the stale pending statement after confirmation. New descendant browser acceptance is pending. No approval, purchase, confirmation, ownership or lifecycle behavior is relaxed.
+
+### Next independent capability
+
+The [official provisioning guide](https://docs.20i.com/api/provision-hosting-package-api) confirms that the selected type references a package-type ID. The [official API-documentation guide](https://docs.20i.com/api/20i-api-documentation) directs users to the signed-in reference. Fresh research on 2026-10-15 and the available browser-tab inventory did not establish the full package-type configuration response. Keep that exact gap open; do not invent field names/default semantics or repeat the prior request for the owner's upload. Client domain search can continue independently using the already documented and implemented bounded reader, with explicit client availability, attribution, isolation and shared provider limits.
