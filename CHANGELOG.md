@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — exact fulfillment packaging correction
+
+- Verify49 new native fulfillment cases across all four supported combinations. Regenerate the installer hash from the exact committed LF service bytes after full packaging correctly rejected local CRLF drift. No release is certified by native checks alone.
+
 ## Unreleased — dedicated hosting order execution service
 
 - Bind explicit owner fulfillment approval, current client consent and payment/manual evidence to the existing hosting attempt and provider gateway/ledger. Recheck authority at credential/send boundaries and retain accepted IDs as pending.

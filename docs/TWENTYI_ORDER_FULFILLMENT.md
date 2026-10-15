@@ -27,3 +27,16 @@ A failure recording the hosting result can leave the original provider acknowled
 New native cases extend the existing recurring/order suite. They use real MariaDB/MySQL persistence and the real provider gateway, adapter, classifier and ledger with an isolated transport; no network or customer operation occurs. Cases cover owner/client isolation, typed consent, atomic approval/fence rollback, exact request bytes, verified receipts versus manual policy, payment reversal and revocation before credential/send boundaries, session revocation after acknowledgement, replay, competing processes, definite failure and explicit retry, false success responses, unknown outcomes, result-audit failure, lost history, repeated preparation and cancellation preservation.
 
 PHP syntax, the retained pure hosting suites in both local PHP8.4 modes, Apache-driver syntax, deployment mirrors and installer inventory are checked locally. New native and packaged descendant acceptance is pending. Parent f6c has all24 focused workflows passing and its full38790555173 has passed native/browser/recovery and is running Apache; its browser artifact still needs inspection. Parent results do not certify this increment. [Prior mapping/pending evidence](TWENTYI_ORDER_SERVICE_LINKS.md).
+
+## Native execution evidence and packaging correction
+
+Source ab0ec30b7fe8c7bd9ab5a7580bab0db59372efb5, tree d6500f4cc1c8635b28a9bef8e37bef87839d0f92, passed [native run38795163945](https://github.com/afterburn25/Cajun_Web/actions/runs/38795163945) on PHP8.2/8.4 with MariaDB10.11/MySQL8.4. All four downloaded archives match their SHA256 and CRCs; each contains49 named fulfillment cases within368 combined recurring/order checks, plus82 order/42 association/38 preparation,108 ledger and68 form checks per mode. Subset counts are not additive.
+
+- Artifact 12002226544: SHA256 `20d0da0cb92b2f8ea5bbcbc8037c29315e05c0ee34e5fe2e2f3e5905bb895ab6`.
+- Artifact 12002026872: SHA256 `6009cd289ed08fd5ed7f76c4948639bb62321fcab9b91fedc2a0fbae17585d2c`.
+- Artifact 12001378025: SHA256 `94f9baa693bbf6619b404601019d0bb025434fd1f77ff752e96bc75bbd94bf1a`.
+- Artifact 12000709401: SHA256 `01f3f585182298a3c11cc143be37335e164485f2e583adb72c9b3359502982ed`.
+
+Full38795172503 and domain38795172355 failed before application execution because the new fulfillment.php was locally CRLF while Git correctly retained LF; its installer inventory had hashed the local CRLF bytes. The clean Windows build also refused that exact working/source mismatch. This checkpoint normalizes the working file to its already committed LF bytes and regenerates the canonical installer hash. No runtime semantics or failing assertions are changed. Corrected-source full acceptance remains required; no package from ab0 is certified or published.
+
+Parentf6c browser artifact11999264877 was downloaded and hash/CRC checked: SHA2561ef9c1be512eee34d89cea6cac8866889e5ae53b7e50fc72e29b7c23e9b829f1. Actual1652 HTTP checks pass, with empty PHP diagnostics and no unexpected browser/network errors. The actual320px admin/client order screenshots retain readable navy/gold progress cards. Its full38790555173 was still running Apache at inspection. This is parent evidence only.
