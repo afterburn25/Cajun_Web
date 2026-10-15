@@ -933,3 +933,7 @@ Current follow-up:8adf passed all four native combinations, including42 new asso
 
 - Add exact mailbox creation validation to the existing provider execution path, requiring a dedicated protected-secret resolver and refusing generic approval. Preserve safe password handling and at-most-once dispatch after unknown outcomes.
 - Native mailbox management screens and authorization/persistence are still being implemented; this checkpoint does not activate mailbox creation.
+
+## 2026-10-15 — registrar preparation safeguard and verified native matrix
+
+Parent2fe7e2ff, PR142: all four downloaded native artifacts verify60 cases plus64 registrar reader cases per PHP mode. Adds early transaction refusal before registrar DDL and three rollback/no-table regression checks; syntax passes, new native execution pending. Browser38819247971 is preserved and running; root retains combined acceptance/integration/releases. [Details and artifact hashes](docs/TWENTYI_REGISTRAR_INVENTORY.md). No provider operation or release.

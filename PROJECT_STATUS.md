@@ -1,3 +1,7 @@
+# Registered-domain native matrix verified; browser checkpoint running
+
+Starting source `2fe7e2ff6dfe41cce2d7dde94f43456762793464`, draft PR142. Downloaded all four native artifacts from run38819248043: each verifies60 database cases and64 registrar reader cases in each PHP mode. This descendant adds an early caller-transaction refusal before registrar DDL and three focused rollback checks; the added checks still need Linux execution. Browser checkpoint38819247971 remains running and is preserved; it intentionally omits the extended recovery/Apache matrix. Root owns integration/releases. [Exact evidence and boundaries](docs/TWENTYI_REGISTRAR_INVENTORY.md).
+
 # Registered-domain browser coverage prepared
 
 PR142 parentb6388 passes the downloaded PHP8.2/MySQL8.4 native report (60 cases) and64 reader cases per mode. This descendant adds actual HTTP/Chromium workflows and desktop/mobile screenshots; execution and other native combinations are pending. Root retains integration/releases. [Exact scope and evidence](docs/TWENTYI_REGISTRAR_INVENTORY.md).

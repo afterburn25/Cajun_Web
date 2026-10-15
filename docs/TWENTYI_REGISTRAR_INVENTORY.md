@@ -31,3 +31,18 @@ PR142 parent `b6388e5f0698db5885b35e8c11cbe409521b6dda` passes the first native 
 This descendant adds real extracted-package HTTP/Chromium coverage for owner preparation/refresh/CSRF/password/role gates, an actual browser assignment, two clients, newer failed/partial/stale observations, recovery, desktop/mobile screenshots and protected internal paths. Adds explicit private cache/referrer headers to the services response and wraps long domain headings. Python/PHP syntax passes; browser cases have not run yet. The existing Apache list covers added files across root/subfolder and rewrite modes; this is prepared coverage, not a passing Apache claim. Shared synthetic provider fixture retains original endpoints and adds only /domain.
 
 Independent source review of root mailbox delta0ebc..81eb487 identified missing orphan grant/ledger reconciliation after a partial restore; root confirmed and owns that correction. No other confirmed mailbox issue in the inspected permission/replay/storage path; runtime and UI evidence remain independent. PR142 attachment was attempted and refused by the existing100-attachment limit. No metadata/comment bypass, merge, release or real provider operation. Next inspect all native reports, run browser checkpoint, correct failures and pass root the exact integration state.
+
+## 2026-10-15 — verified native matrix and preparation transaction safeguard
+
+Parent `2fe7e2ff6dfe41cce2d7dde94f43456762793464`, branch `codex/twentyi-domain-controls`, [draft PR142](https://github.com/afterburn25/Cajun_Web/pull/142). [Run38819248043](https://github.com/afterburn25/Cajun_Web/actions/runs/38819248043) passes all four PHP8.2/8.4 × MySQL8.4/MariaDB10.11 combinations. Each actual downloaded artifact matches the GitHub digest, passes ZIP CRC and contains passing named reports:60 native cases and64 registrar reader cases in default and no-INI modes. Parentb6388 also passed all four combinations in run38818599203; no evidence was replaced.
+
+| PHP | Database | Artifact | SHA256 |
+| --- | --- | --- | --- |
+| 8.2 | MySQL8.4 | 12011953537 | `ab74cddef1d8bfb8fd9cdc4935c9706a724c7368657281a8edccbd8f22430062` |
+| 8.4 | MySQL8.4 | 12011883511 | `83048e69e8f5c7ababecb275d90e404433f2bdb9e861118e8ff8909a5ab8c7e2` |
+| 8.2 | MariaDB10.11 | 12011817954 | `263d4045ccc8fcdfaccd332e4bac2553a5aca73cab2bac5c5dc48abff69db4c3` |
+| 8.4 | MariaDB10.11 | 12011339195 | `aab5b0cd66db0d11f96cbbf8759f1e4cb6ece5c7d3d99163284eef662f099ee4` |
+
+A subsequent source review applied the same early caller-transaction guard used by the mailbox preparation fix: refuse before any registrar DDL so an unrelated caller transaction cannot be implicitly committed. The native fixture adds three checks for refusal, unchanged active transaction/no tables, and rollback of caller data without audit. Changed PHP syntax passes; the descendant's native checks remain pending. The current extracted-package HTTP/Chromium checkpoint [38819247971](https://github.com/afterburn25/Cajun_Web/actions/runs/38819247971) is still executing and must be preserved; it intentionally excludes extended recovery/Apache and cannot establish release acceptance. Root must combine branch work and run those full checks.
+
+Independent review confirmed root48e65a50 fixes the surviving mailbox grant/result orphan checks; also reported the related missing-family/marker/audit/grant case where a ledger witness must prevent preparation itself. Root owns its correction and regression. No parent worktree edits, real provider calls, mail, SSH, deployment, merge or release occurred. Next inspect browser reports/screenshots, verify this descendant's native cases, and hand back exact evidence to root.

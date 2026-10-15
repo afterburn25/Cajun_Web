@@ -31,6 +31,12 @@ try{
     foreach([1,2] as $i)query('INSERT INTO '.table('studio_clients').' (name,email,auth_version,created_at) VALUES (?,?,?,?)',['Client '.$i,'client'.$i.'@example.invalid',bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     reg_actor();provider_settings_migrate($password);$id=provider_settings_save('',0,'Registrar fixture',true,$secret,$password);provider_inventory_migrate($password);
     reg_ok('Fresh registrar GET is unprepared without DDL',!provider_registrar_ready()&&!array_filter(provider_registrar_tables()));
+    db()->beginTransaction();try{
+        query('INSERT INTO '.table('settings').' (name,value) VALUES (?,?)',['registrar_caller_probe','uncommitted']);
+        try{provider_registrar_prepare($password);reg_ok('Preparation refuses caller transaction',false);}catch(LogicException){reg_ok('Preparation refuses caller transaction',true);}
+        reg_ok('Preparation preserves caller transaction without registrar DDL',db()->inTransaction()&&!array_filter(provider_registrar_tables()));
+    }finally{if(db()->inTransaction())db()->rollBack();}
+    reg_ok('Caller data rolls back after refused registrar preparation',!one('SELECT name FROM '.table('settings').' WHERE name=?',['registrar_caller_probe'])&&!one('SELECT id FROM '.table('audit').' WHERE action=?',['provider.registrar_prepared']));
     reg_deny('Registrar refresh needs its own prepared storage',fn()=>reg_refresh($id));reg_deny('Prepare requires current owner password',fn()=>provider_registrar_prepare('wrong'));
     reg_actor(2);reg_deny('Administrator cannot prepare registrar storage',fn()=>provider_registrar_prepare($password));reg_actor();
     reg_ok('Preparation audit failure leaves only empty resumable tables',reg_fault('registrar_prepared',fn()=>provider_registrar_prepare($password))&&!provider_registrar_ready()&&reg_count('provider_registrar_links')===0);

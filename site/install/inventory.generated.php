@@ -165,7 +165,7 @@ function setup_expected_files(): array { return [
     'app/providers/operations.php'=>'676e7b54353c5eaff97bdd76b9e8ab48c70eec945cd32248c20c99c97eb9af4d',
     'app/providers/reconcile.php'=>'a56a37d3364d7cb890112a612dde442ee239b42a3de9a239cc4de0852f78121a',
     'app/providers/registrar.php'=>'1a75ca3a0a4bbd613c58c64e4cb7fd21796c7982ce945de56083fb4d349bf31b',
-    'app/providers/registrar_storage.php'=>'b9bfa582f80d6e8fdc3455eef0e6d0c33366bf51386301bd2c5440ac823ba926',
+    'app/providers/registrar_storage.php'=>'93eb17e8ccb7500210554541496e03a808dc25747b82fb280c8f5ab0e2518215',
     'app/providers/settings.php'=>'15e47fc5b5b9bbe39ae398e1789eb38627cffdb86e8f8de65e20b61bb2127871',
     'app/settings/revisions.php'=>'edcf7ba63bea26eeb964e0b44379d78ae93dd00535754d2375e07bfd5fcdc1bb',
     'app/settings/store.php'=>'f2c9eeba756c02f3b31b5cee3f93866f6fd22cc6f3e1f3e3bc6a5aa0108af564',

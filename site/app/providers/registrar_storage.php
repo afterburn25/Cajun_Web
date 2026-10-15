@@ -43,6 +43,7 @@ function provider_registrar_validate(string $name,string $sql):void {
     foreach($relations as $r){$target=$expected[$r['COLUMN_NAME']]??null;if(!$target||isset($seen[$r['COLUMN_NAME']])||$r['REFERENCED_TABLE_NAME']!==config()['db']['prefix'].$target||$r['REFERENCED_COLUMN_NAME']!=='id'||!in_array($r['DELETE_RULE'],['RESTRICT','NO ACTION'],true)||!in_array($r['UPDATE_RULE'],['RESTRICT','NO ACTION'],true))throw new RuntimeException('Incompatible registered-domain relationships.');$seen[$r['COLUMN_NAME']]=true;}
 }
 function provider_registrar_prepare(#[SensitiveParameter] string $password):void {
+    if(db()->inTransaction())throw new LogicException('Registered-domain preparation cannot run inside a transaction.');
     staff_locked(function()use($password):void{
         $actor=provider_settings_owner($password);if(!provider_inventory_ready())throw new RuntimeException('Prepare hosting inventory first.');
         $version=one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_registrar_schema_version'])['value']??'';
