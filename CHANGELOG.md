@@ -4,7 +4,7 @@
 
 - Add owner-selected agreement/invoice offers and client domain confirmation on existing agreement screens.
 - Preserve unique initial obligations, receipt/reversal evidence, expiring manual fulfillment policy, audit history and cancellation without billing/provider side effects.
-- Add native matrix cases; testing is pending at this source checkpoint. Provider dispatch remains unfinished.
+- Add native matrix cases; first native run caught a recurring-state adapter mismatch, now corrected; updated testing is pending. Provider dispatch remains unfinished.
 
 ## Unreleased — preserve missing hosting history
 

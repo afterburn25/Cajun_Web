@@ -256,3 +256,87 @@ def run_browser(env, browser):
           len(db('SELECT id FROM ci_invoice_payments WHERE invoice_id=?', [invoice])) == 2
           and 'Verified external receipts: $0.00 USD' in owner.get(history_url).text
           and 'Verified receipts do not yet cover this invoice.' in owner.get(history_url).text)
+
+
+    # Initial hosting request uses the real historical first invoice and current client session.
+    hosting_owner = admin+'?view=service-agreement&record='+historical['source_id']
+    hosting_client = portal+'?agreement='+historical['source_id']
+    hosting_setup = form_data(form_for(owner.get(hosting_owner), 'service_plans_order_setup'))
+    check('Hosting order GET does not prepare storage', not db("SELECT value FROM ci_settings WHERE name='service_orders_schema_version'"))
+    for values, label in [({'csrf': 'bad', 'confirm': '1', 'current_password': OWNER}, 'CSRF'),
+                          ({'confirm': '1', 'current_password': 'wrong'}, 'owner password'),
+                          ({'current_password': OWNER}, 'confirmation')]:
+        response = owner.post(hosting_owner, data={**hosting_setup, **values})
+        check('Hosting order setup enforces '+label, not db("SELECT value FROM ci_settings WHERE name='service_orders_schema_version'") and OWNER not in response.text)
+    owner.post(hosting_owner, data={**hosting_setup, 'confirm': '1', 'current_password': OWNER})
+    check('Actual hosting setup creates additive empty order history', db("SELECT value FROM ci_settings WHERE name='service_orders_schema_version'")==[{'value': '1'}] and not db('SELECT id FROM ci_service_orders'))
+    offer_response = owner.get(hosting_owner)
+    offer_form = form_for(offer_response, 'service_plans_order_offer')
+    hosting_offer = form_data(offer_form)
+    options = [o for o in offer_form.select('[name=invoice_choice] option') if o.get('value', '').startswith(invoice+':')]
+    check('Owner sees original first recurring invoice as initial hosting choice', len(options)==1)
+    hosting_offer.update({'invoice_choice': options[0]['value'], 'confirm': '1', 'current_password': OWNER})
+    response = owner.post(hosting_owner, data=hosting_offer)
+    order_row = db('SELECT * FROM ci_service_orders WHERE agreement_id=?', [historical['source_id']])[0]
+    check('Actual owner offer pins existing client agreement invoice and original price',
+          order_row['client_id']==cid and str(order_row['invoice_id'])==invoice and json.loads(order_row['journal_json'])['invoice']['amount_cents']==2500)
+    owner.post(hosting_owner, data=hosting_offer)
+    check('Exact HTTP hosting offer retry retains one order', len(db('SELECT id FROM ci_service_orders WHERE agreement_id=?', [historical['source_id']]))==1)
+    hosting_accept = form_data(form_for(client.get(hosting_client), 'service_agreements_order_accept'))
+    before_order = db('SELECT * FROM ci_service_orders WHERE id=?', [order_row['id']])
+    foreign.post(hosting_client, data={**hosting_accept, 'domain_name': 'stolen.example', 'confirm': '1'})
+    check('Foreign client cannot see or accept another hosting order', 'Confirm hosting request' not in foreign.get(hosting_client).text and db('SELECT * FROM ci_service_orders WHERE id=?', [order_row['id']])==before_order)
+    for values, label in [({'csrf': 'bad', 'confirm': '1', 'domain_name': 'client.example'}, 'CSRF'),
+                          ({'confirm': '1', 'domain_name': 'https://client.example'}, 'invalid domain'),
+                          ({'domain_name': 'client.example'}, 'confirmation')]:
+        response = client.post(hosting_client, data={**hosting_accept, **values})
+        check('Client hosting acceptance rejects '+label, db('SELECT * FROM ci_service_orders WHERE id=?', [order_row['id']])==before_order)
+    context=browser.new_context(viewport={'width':1440,'height':1000})
+    context.add_cookies([{'name':c.name,'value':c.value,'url':BASE} for c in client.cookies])
+    page=context.new_page();page.goto(hosting_client)
+    form=page.locator('form').filter(has=page.locator('input[name=action][value=service_agreements_order_accept]'))
+    form.locator('[name=domain_name]').fill('Client.Example.')
+    form.locator('[name=confirm]').check()
+    with page.expect_navigation():
+        form.get_by_role('button',name='Confirm hosting request',exact=True).click()
+    page.wait_for_load_state('networkidle')
+    check('Real Chromium form confirms domain and displays pending setup', 'client.example' in page.content() and 'Setup is pending studio fulfillment.' in page.content())
+    context.close()
+    accepted_order = db('SELECT * FROM ci_service_orders WHERE id=?', [order_row['id']])[0]
+    check('Browser acceptance retains actual client attribution and exact invoice', accepted_order['revision']==1 and db('SELECT actor_client_id FROM ci_service_order_events WHERE order_id=?', [order_row['id']])==[{'actor_client_id':cid}])
+    client.post(hosting_client, data={**hosting_accept, 'domain_name': 'Client.Example.', 'confirm': '1'})
+    check('Browser form replay cannot duplicate hosting acceptance', len(db('SELECT id FROM ci_service_order_events WHERE order_id=?', [order_row['id']]))==1)
+    before_manual = db('SELECT * FROM ci_invoice_payments WHERE invoice_id=? ORDER BY id', [invoice])
+    policy = form_data(form_for(owner.get(hosting_owner), 'service_plans_order_allow_manual'))
+    policy.update({'reason':'Synthetic private temporary hosting permission','confirm':'1','current_password':OWNER})
+    owner.post(hosting_owner, data=policy)
+    check('Actual manual fulfillment form preserves unpaid invoice and receipts',
+          'Commercial review is ready.' in owner.get(hosting_owner).text and db('SELECT * FROM ci_invoice_payments WHERE invoice_id=? ORDER BY id',[invoice])==before_manual)
+    check('Client hosting screen hides private manual policy and receipt reference',
+          policy['reason'] not in client.get(hosting_client).text and 'Synthetic service setup receipt' not in client.get(hosting_client).text)
+    capture(owner, hosting_owner, 'staff-hosting-order')
+    capture(client, hosting_client, 'client-hosting-order')
+    revoke = form_data(form_for(owner.get(hosting_owner), 'service_plans_order_revoke_manual'))
+    owner.post(hosting_owner, data={**revoke,'reason':'Revoke this temporary policy','confirm':'1','current_password':OWNER})
+    check('Actual policy revocation restores unpaid commercial blocker', 'verified payment incomplete' in owner.get(hosting_owner).text)
+    cancel = form_data(form_for(client.get(hosting_client), 'service_agreements_order_cancel'))
+    client.post(hosting_client, data={**cancel,'reason':'Cancel this synthetic hosting request','confirm':'1'})
+    final_order = json.loads(db('SELECT journal_json FROM ci_service_orders WHERE id=?',[order_row['id']])[0]['journal_json'])
+    check('Client cancels actual hosting request without deleting billing history',
+          final_order['events'][-1]['command']=='cancel'
+          and 'Hosting request cancelled' in client.get(hosting_client).text
+          and db('SELECT * FROM ci_invoice_payments WHERE invoice_id=? ORDER BY id',[invoice])==before_manual)
+    orders_before_restore = db('SELECT * FROM ci_service_orders ORDER BY id')
+    order_events_before_restore = db('SELECT * FROM ci_service_order_events ORDER BY id')
+    for name in ['service_orders','service_order_events']:
+        retained='ci_retained_'+name
+        db('RENAME TABLE ci_'+name+' TO '+retained)
+        try:
+            for session, url in [(owner,hosting_owner),(client,hosting_client)]:
+                response=session.get(url)
+                check('Missing '+name+' displays hosting restoration state', 'Restore the original database' in response.text and 'Fatal error' not in response.text)
+            owner.post(hosting_owner,data={**hosting_setup,'confirm':'1','current_password':OWNER})
+            check('Stale hosting setup cannot recreate '+name, not db('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['ci_'+name]))
+        finally:
+            db('RENAME TABLE '+retained+' TO ci_'+name)
+        check('Restored '+name+' preserves exact hosting history', db('SELECT * FROM ci_service_orders ORDER BY id')==orders_before_restore and db('SELECT * FROM ci_service_order_events ORDER BY id')==order_events_before_restore)

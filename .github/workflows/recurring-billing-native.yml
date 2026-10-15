@@ -70,6 +70,12 @@ jobs:
               php tests/recurring-billing/forms.php qa/recurring-billing-forms-default.json
               php -n tests/recurring-billing/forms.php qa/recurring-billing-forms-noini.json
             '
+      - name: Print retained native order and recurring reports
+        if: always()
+        run: |
+          for report in qa/service-orders-native-results.json qa/recurring-billing-native-results.json; do
+            if test -f "$report"; then cat "$report"; printf '\n'; fi
+          done
       - name: Preserve actual named evidence
         if: always()
         uses: actions/upload-artifact@v4

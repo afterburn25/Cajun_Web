@@ -1752,3 +1752,8 @@ Payment423 passed all32 focused gates. Run38765096311 yielded four parsed JSON r
 ## 2026-10-15 — Initial shared-hosting order intake
 
 Parent `7038cb50`; commit `Add native initial hosting order intake and consent`. New branch `codex/twentyi-service-orders` preserves PR137's in-flight full evidence. Added canonical order/event storage, strict owner preparation, exact agreement/invoice selection, client confirmation/decline/cancel cards and manual policy/evidence review. Reused original clients, plans, recurring invoice validation and receipt ledger. Added native cases without removing retained coverage, regenerated installer inventory. New code is not yet runtime-verified; inspect the new four-combination CI next. Parent matrix38767511429 passed all four jobs, 484 actual named checks each. Full7038 run38767510944 remains in progress. Package mapping, provider execution linkage, browser journey, visual review, release and full20i remain outstanding. No live provider or payment action. See `docs/TWENTYI_SERVICE_ORDERS.md`.
+
+
+### Order adapter correction and browser coverage
+
+Parent146090fd, commit `Honor running billing state in hosting orders and exercise portal journey`. Run38770517159 failed all four combinations at the valid recurring order because the new adapter used `active` instead of the established `running` phase. Corrected product logic to require `running` and eligible first period; retained the original case. Added paused/inactive source checks, explicit missing-history UI for owner/client, and HTTP/Chromium hosting forms in the existing recurring browser driver. Tests added but corrected results pending; no new release or production action.

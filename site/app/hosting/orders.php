@@ -57,7 +57,7 @@ function service_orders_invoice(ServiceSubscriptionDocument $source,int $invoice
         $row=recurring_billing_row($map['schedule_id']);$family=recurring_billing_family($d['id']);
         if($row['subscription_id']!==$d['id']||(int)$row['client_id']!==$d['client_id']||($active&&($family['row']['id']??null)!==$row['id']))throw new RuntimeException('This invoice belongs to a different or replaced billing agreement.');
         $billing=recurring_billing_validate($row,$family['source']);recurring_billing_invoice_validate($map,$billing);
-        if($active&&$billing->phase()!=='active')throw new RuntimeException('Activate the accepted billing schedule before offering initial hosting.');
+        if($active&&($billing->phase()!=='running'||!$billing->assessment(0,time())['eligible']))throw new RuntimeException('Activate the accepted billing schedule before offering initial hosting.');
         $basis='initial-recurring-period';$schedule=$map['schedule_id'];$period=0;
     }
     return ['id'=>$invoice,'project_id'=>(int)$i['job_id'],'sha256'=>ledger_invoice_hash($i),'amount_cents'=>(int)$i['amount_cents'],'currency'=>$i['currency'],'basis'=>$basis,'schedule_id'=>$schedule,'period_index'=>$period];

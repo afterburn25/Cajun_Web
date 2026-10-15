@@ -72,6 +72,13 @@ try{
     $manual=service_orders_change(rb_id(9100),1,1,rb_id(9112),'allow_manual',$policy,$password);$a=so_assess($manual);
     rb_ok('Explicit manual policy is separate from unpaid invoice',$a['eligible']&&$a['basis']==='owner-manual-policy'&&$a['payment']['due_cents']===2500&&service_plans_json(all('SELECT * FROM '.table('invoice_payments').' ORDER BY id'))===$paymentsBefore);
     rb_ok('Manual policy expires exactly at its deadline',!so_assess($manual,$policy['expires_at'])['eligible']);
+    query('UPDATE '.table('studio_clients').' SET active=0 WHERE id=1');
+    rb_ok('Manual policy cannot bypass an inactive client',!so_assess($manual)['eligible']);query('UPDATE '.table('studio_clients').' SET active=1 WHERE id=1');
+    $paused=service_plans_subscription_change($source->data()['id'],1,$source->revision(),rb_id(9120),'pause',[],$password);
+    rb_ok('Manual policy cannot bypass a paused source agreement',!so_assess($manual)['eligible']);
+    $source=service_plans_subscription_change($source->data()['id'],1,$paused->revision(),rb_id(9121),'resume',[],$password);
+    rb_ok('Order retains original accepted prefix after an authorized resume',so_assess($manual)['eligible']);
+
     rb_client();$clientCtx=service_orders_context($source->data()['id'],1,true);
     rb_ok('Client payment assessment omits staff policy and receipt details',array_keys($clientCtx['assessment'])===['eligible','blockers','basis']);
     ob_start();service_orders_ui($source,false);$html=ob_get_clean();

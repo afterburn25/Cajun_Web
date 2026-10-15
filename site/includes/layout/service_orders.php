@@ -14,6 +14,10 @@ function service_orders_ui_fields(string $action,string $agreement,?ServiceOrder
 function service_orders_ui(ServiceSubscriptionDocument $agreement,bool $owner):void {
     $source=$agreement->data();$id=$source['id'];$client=$source['client_id'];$prefix=$owner?'service_plans_order_':'service_agreements_order_';
     if(!service_orders_ready()){
+        $storage=service_orders_storage();
+        if($storage['version']!==''||one('SELECT id FROM '.table('audit').' WHERE action=? LIMIT 1',['service_orders.setup'])){
+            echo '<section class="workspace-card"><h2>Hosting orders unavailable</h2><p>Established hosting order history is missing. Restore the original database before continuing.</p></section>';return;
+        }
         if(!$owner)return;
         echo '<section class="workspace-card"><h2>Hosting orders</h2><p>Connect this client’s accepted service agreement to its initial invoice and hosting domain.</p><form method="post">';
         service_orders_ui_fields($prefix.'setup',$id);service_plans_confirmation('Prepare hosting order history while preserving existing agreements and invoices.',true);
