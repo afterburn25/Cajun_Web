@@ -61,9 +61,9 @@ try {
     po_ok('Version-1 storage gains revision binding and approval-request columns',provider_operations_ready()&&(one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operation_grants','profile_revision'])!==null)&&(one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operation_grants','scope_params'])!==null));
     // Simulate the preceding execution-v2 shape: request columns present, no revision binding, populated.
     db()->exec('ALTER TABLE '.table('provider_operation_grants').' DROP COLUMN profile_revision');
-    query('INSERT INTO '.table('provider_operation_grants').' (id,profile_id,operation,scope_fingerprint,scope_params,granted_by,granted_at,expires_epoch) VALUES (?,?,?,?,?,?,?,?)',['v2populated00000000000000000000000',$profile,'packages.create','fp','{}',1,gmdate('Y-m-d H:i:s'),time()+60]);
+    query('INSERT INTO '.table('provider_operation_grants').' (id,profile_id,operation,scope_fingerprint,scope_params,granted_by,granted_at,expires_epoch) VALUES (?,?,?,?,?,?,?,?)',['v2populated000000000000000000000',$profile,'packages.create','fp','{}',1,gmdate('Y-m-d H:i:s'),time()+60]);
     save_setting('provider_operations_schema_version','2');provider_operations_migrate($password);
-    po_ok('Populated execution-v2 storage gains revision binding',provider_operations_ready()&&(int)one('SELECT COUNT(*) AS n FROM '.table('provider_operation_grants')." WHERE id='v2populated00000000000000000000000'")['n']===1);
+    po_ok('Populated execution-v2 storage gains revision binding',provider_operations_ready()&&(int)one('SELECT COUNT(*) AS n FROM '.table('provider_operation_grants')." WHERE id='v2populated000000000000000000000'")['n']===1);
     // Simulate the preceding ledger-v2 shape: revision binding present, no request columns.
     db()->exec('ALTER TABLE '.table('provider_operation_grants').' DROP COLUMN scope_params, DROP COLUMN consumed_key, DROP COLUMN consumed_at');
     save_setting('provider_operations_schema_version','2');provider_operations_migrate($password);
