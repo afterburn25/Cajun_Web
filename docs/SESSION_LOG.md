@@ -1,5 +1,11 @@
 # Session log
 
+## Browser diagnostic correction — 2026-10-15
+
+Candidate2d2892c9 remains unreleased. Prior checkpoint6d9391a completed independent review with no major findings ([review6185823734](https://github.com/afterburn25/Cajun_Web/pull/126#issuecomment-6185823734)). Its native/build stages passed, but browser run38691215693 stopped after1,127 passing named assertions at a test diagnostic NameError: json was not imported. This checkpoint adds the missing import; no shipping code is changed. The failed report is retained and is not browser acceptance. The stricter candidate schema matrix38692254706 is still running.
+
+The earlier b1 full run38688509276 finished with1,271 Apache and261 filesystem-recovery assertions passing. Its browser fixture failure remains recorded. These older results cannot certify1.24. Next: rerun the bounded candidate browser checkpoint, inspect actual upgrade/moved-domain/operation screenshots and reports, resolve any finding, then exact candidate full acceptance and final review before main/release verification. All remaining20i platform work stays active.
+
 ## 1.24.0 candidate — 20i inventory, ownership and operation recovery
 
 This is an unreleased candidate on codex/twentyi-complete / PR126, starting from6d9391a. Published1.23.0 and main68e4d41 remain unchanged. The first increment provides protected package refresh, explicit package/domain client links, moved-domain and credential-context isolation, populated inventory upgrades, typed package-label approvals, durable operation history and read-only reconciliation. It retains inherited hosting lifecycle/recovery foundations. It does not complete commercial provisioning, native hosting controls, domains, VPS/cloud or SSH; those remain the active P0 roadmap after this increment.
