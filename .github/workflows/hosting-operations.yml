@@ -1,7 +1,7 @@
 name: Hosting operation storage checks
 on:
   push:
-    branches: [main, codex/hosting-operations, codex/hosting-provision-retry]
+    branches: [main, codex/hosting-operations, codex/hosting-provision-retry, codex/hosting-deprovision-retry, codex/hosting-reconciliation, codex/hosting-reconciliation-storage]
     paths: ['site/app/hosting/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/hosting/**', 'site/includes/foundation/hosting/**', 'tests/hosting_*native.php', '.github/workflows/hosting-operations.yml']
   pull_request:
   workflow_dispatch:
@@ -53,6 +53,8 @@ jobs:
               php tests/hosting_records_native.php
               php tests/hosting_operations_native.php
               php tests/hosting_retry_native.php
+              php tests/hosting_delete_retry_native.php
+              php tests/hosting_reconciliation_native.php
             '
       - name: Preserve named storage evidence
         if: always()
@@ -63,5 +65,7 @@ jobs:
             qa/hosting-records-native-results.json
             qa/hosting-operations-native-results.json
             qa/hosting-retry-native-results.json
+            qa/hosting-delete-retry-native-results.json
+            qa/hosting-reconciliation-native-results.json
           if-no-files-found: warn
           retention-days: 14

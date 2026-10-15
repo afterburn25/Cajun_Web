@@ -128,7 +128,7 @@ final readonly class HostingJournal
         $keys=match($event['command']){
             'begin_provisioning','retry_provision','open_dispute','close_dispute','resume','cancel_order','request_cancellation','retry_deprovision'=>[],
             'record_provision','record_suspend','record_resume','record_deprovision'=>['result'],
-            'reconcile'=>['applied_remotely','resource_ref','evidence','attempt_ref'],
+            'reconcile','reconcile_without_dispatch'=>['applied_remotely','resource_ref','evidence','attempt_ref'],
             'link_domain'=>['domain'],'set_grace'=>['until'],'suspend'=>['reason'],'approve_deprovision'=>['retention_confirmed'],
             default=>throw new InvalidArgumentException('Unknown hosting journal command.'),
         };
@@ -155,6 +155,7 @@ final readonly class HostingJournal
                 'record_provision'=>$account->provisionResult(self::result($args['result'],$document['created_at'],$at),$actor,$at),
                 'retry_provision'=>$account->retry($actor,$at),
                 'reconcile'=>$account->reconcileTimeout($actor,$at,$args['applied_remotely'],$args['resource_ref'],$args['evidence'],$args['attempt_ref']),
+                'reconcile_without_dispatch'=>$account->reconcileWithoutDispatch($actor,$at,$args['applied_remotely'],$args['resource_ref'],$args['evidence'],$args['attempt_ref']),
                 'link_domain'=>$account->linkDomain($args['domain'],$actor,$at),
                 'set_grace'=>$account->setGraceUntil($args['until'],$actor,$at),
                 'open_dispute'=>$account->openDispute($actor,$at),'close_dispute'=>$account->closeDispute($actor,$at),
