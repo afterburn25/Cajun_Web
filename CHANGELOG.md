@@ -1,5 +1,9 @@
 # Changelog
 
+## Independent current 20i review — 2026-10-14
+
+Add exact-source execution/reconciliation regression checks and a real builder/adapter/fixed-transport contract probe. Local probes reproduce blocked writes from timeout/header-order mismatch without any network. Native PHP 8.2/8.4 regression CI is pending. No product source changes.
+
 ## Unreleased — 20i write execution path (devin/twentyi-execution, devin/twentyi-reconcile)
 
 - `provider_operations_execute` performs one owner-approved provider write: owner password + current profile revision + active exact-scope grant required before any credential is opened or an endpoint address resolved; undocumented or shape-incomplete operations refuse before any ledger claim; missing grants refuse `no_grant` and are audited.
