@@ -1,7 +1,7 @@
 name: Native recurring agreement and period invoice checks
 on:
   push:
-    branches: [main, codex/recurring-billing-records, codex/twentyi-recurring-eligibility]
+    branches: [main, codex/recurring-billing-records, codex/twentyi-recurring-eligibility, codex/twentyi-recurring-ui]
     paths: ['site/app/billing/**', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', '.github/workflows/recurring-billing-native.yml']
   pull_request:
     paths: ['site/app/billing/**', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', '.github/workflows/recurring-billing-native.yml']
@@ -64,6 +64,8 @@ jobs:
               cmp foundation/recurring-billing/RecurringBillingSchedule.php site/includes/foundation/recurring-billing/RecurringBillingSchedule.php
               php -d memory_limit=128M tests/recurring_billing_native.php
               php tests/recurring_billing_legacy_ledger.php
+              php tests/recurring-billing/forms.php qa/recurring-billing-forms-default.json
+              php -n tests/recurring-billing/forms.php qa/recurring-billing-forms-noini.json
             '
       - name: Preserve actual named evidence
         if: always()
@@ -73,6 +75,8 @@ jobs:
           path: |
             qa/recurring-billing-native-results.json
             qa/ledger-native-results.json
+            qa/recurring-billing-forms-default.json
+            qa/recurring-billing-forms-noini.json
           if-no-files-found: error
           retention-days: 14
       - name: Scope

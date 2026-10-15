@@ -87,13 +87,101 @@
       "path": "tests/recurring_billing_legacy_ledger.php",
       "source_path": "tests/design_payments_legacy_ledger.php",
       "source_sha256": "33ce12f12a1da3564231e377697eba47141be89732ef1028258d84fdf556425e"
+    },
+    {
+      "path": "site/app/billing/recurring_billing_forms.php",
+      "source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+      "source_sha256": "ad51b7dbf354b1badd341e51f8f29b5489a239ba56752125ea228e6d94e4cc62"
+    },
+    {
+      "path": "site/app/billing/recurring_billing_views.php",
+      "source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+      "source_sha256": "f825aa0547671ebcaed487ea9e311d1cd6fd33c5b5ed9f140d3e85f1f295801c"
+    },
+    {
+      "path": "site/app/billing/recurring_billing_actions.php",
+      "source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+      "source_sha256": "5922c6a2e88345899a5fd394dcac7db03d034bb8865519d164dfd412eb6c4125"
+    },
+    {
+      "path": "site/includes/layout/recurring_billing.php",
+      "source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+      "source_sha256": "0114d142a7eb5673fd6df4eba27e27c8f15ab35ecc36d65d97061ab8b8426361"
+    },
+    {
+      "path": "site/admin/controllers/recurring_billing.php",
+      "source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+      "source_sha256": "a00bbce082a94ae6b6ead44860b04bda18e044871e24e42b08c13b46be1d86bb"
+    },
+    {
+      "path": "site/portal/controllers/recurring_billing.php",
+      "source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+      "source_sha256": "de5ff5859d54d2424c8ea13c4150df4f80886cc63051d97a5030941b8e49f748"
+    },
+    {
+      "path": "tests/recurring-billing/forms.php",
+      "source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+      "source_sha256": "164bb051ab8d6fc955f6082df1fa391978d1e72c820979189b250e13ad0af72e"
+    },
+    {
+      "path": "tests/recurring_billing_interface_cases.php",
+      "source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+      "source_sha256": "2ac9c163902fff1b948608d294c9cb38e55639f753979c96a3c602ca1db6f582"
+    },
+    {
+      "path": "tests/recurring_billing_browser_fixture.php",
+      "source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+      "source_sha256": "5820fa69103d2de95d726b4bca7e6d9f68d918cb9647a6614fa90e0edcb0684e"
+    },
+    {
+      "path": "tests/recurring_billing_cases.py",
+      "source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+      "source_sha256": "81c5b25a0e51b1e3f281e299700a5fb1bb0229e30896b99cbec52433528b4dd3"
+    },
+    {
+      "path": "tests/recurring_billing_upgrade_cases.py",
+      "source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+      "source_sha256": "edd55415c997a5ab3292649bb0dfe93c74b3047e11392f6c87f8502b4bc47cf6"
+    },
+    {
+      "path": "docs/RECURRING_BILLING.md",
+      "source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+      "source_sha256": "d3b11e70157bb6dd2fc1e4ecbd6584a76dcc590159dd501aea29359ec9f07209"
+    },
+    {
+      "path": "docs/RECURRING_BILLING_INTERFACE_CONTRACT.md",
+      "source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+      "source_sha256": "dcad5f219af5399efcab552e5143325697067f8ad6c6d4459ad1ce069cdad620"
     }
   ],
   "adaptations": [
     "Replace unrelated project-history dependency with the same staff mutex/transaction, existing service-plan client authority and bounded project ownership lookup.",
     "Retain missing established recurring history; do not recreate empty tables.",
     "Use the existing ledger without importing unrelated design-stage invoices.",
-    "Isolated existing-ledger wrapper keeps its original behavior under a recurring-specific private fixture path."
+    "Isolated existing-ledger wrapper keeps its original behavior under a recurring-specific private fixture path.",
+    "Reuse existing recurring UI/forms/fixtures with recurring-local wrappers around the same staff locks, client/project authorization and unchanged read-only session-touch protection."
   ],
-  "excluded": "Project tracking, design payment stages, financial activity and unrelated #117\u2013#123 ancestors remain preserved on their original branches."
+  "excluded": "Project tracking, design payment stages, financial activity and unrelated #117\u2013#123 ancestors remain preserved on their original branches.",
+  "ui_source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+  "ui_source_pr": 121,
+  "supporting_source": [
+    {
+      "path": "site/assets/css/growth.css",
+      "source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+      "source_sha256": "fa9f365dc334939f5e54ead903d593b8ce57cf6204f10f118a25fbae3c923972",
+      "scope": "Only recurring form/grid/fact/navigation rules; renamed selectors scope them to this interface."
+    },
+    {
+      "path": "tests/service_plan_upgrade_cases.py",
+      "source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+      "source_sha256": "45988fa5b5fe2a97ac0b5ea8b5fb3164e9dddeca97a0bfe589c13be90f79f506",
+      "scope": "Only its final return of the existing client, fields and submit helpers."
+    },
+    {
+      "path": "tests/organized_update_fixture.php",
+      "source_commit": "abaa20081870ede3bae9a606f71d730972792d6d",
+      "source_sha256": "97be3915db7c9b16077f3d73450f259d2347f155a636292051c027ac0c560f61",
+      "scope": "Only the CLI synthetic recurring record snapshot."
+    }
+  ]
 }

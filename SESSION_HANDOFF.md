@@ -1,5 +1,13 @@
 # Session handoff
 
+## Reuse recurring staff/client screens and retained recovery — 2026-10-15
+
+Starting from native dependency `26be6d2bcc874d83ba543f8b9979a5c829e4bb3d`, reuse the existing #121 forms, owner/client screens, native projections, browser fixtures and retained 1.23 recovery at `abaa20081870ede3bae9a606f71d730972792d6d`. All original source paths/hashes are recorded in the [source manifest](docs/TWENTYI_RECURRING_SOURCE.json). Wire current staff/payment/client permissions and protected portal routes; support sessions cannot view or consent. Reuse only the necessary responsive billing styles, scoped to recurring forms. Unrelated project tracking, design finance and financial-activity features stay on their preserved branches.
+
+Ready storage must include all original recurring tables. Missing established consent/invoice history produces restore guidance without a setup action; stale setup cannot recreate it. Four native projection checks and sixteen actual HTTP missing-history cases supplement existing tests. Retain original-calendar consent, invoice/payment distinctions, current authority, stale forms, exact replay, original keys and existing ledger invoice uniqueness through update/recovery. The retained agreement fixture returns its original client/session helpers to the recurring fixture; no unrelated recovery modules are imported.
+
+Exact native26be reports are downloaded and verified: 724 native/legacy-ledger executions across four PHP/database combinations, plus 812 calendar, 1,488 terms and 1,284 lifecycle executions. Current UI form/render checks pass 68 each in local default/no-ini modes. This UI descendant needs its own native, packaged browser, recovery, independent review and later version release gates. The plan-name correction #132 must also be integrated after its checks. Orders/payment eligibility, provider fulfillment, cloud/native controls and the rest of complete 20i remain active P0 work. No production request, payment, mail, SSH or deployment occurred.
+
 ## Reuse recurring consent and invoices for 20i eligibility — 2026-10-15
 
 Starting from agreement recovery `7ce1ef70c76eea83f4ccc76f163fae74228bd7d2`, branch `codex/twentyi-recurring-eligibility` reuses the existing calendar, immutable billing terms, lifecycle and native invoice records from #117–#120, exact source `66f7760b686c91ca88b8395d350e083cd1ef2516`. Original branches/history remain preserved. The [source manifest](docs/TWENTYI_RECURRING_SOURCE.json) records every original file/hash and adaptations. A whole descendant merge would also enable unrelated project tracking and design-stage finance, so only necessary dependencies are selected. There is no second invoice ledger or provider engine.

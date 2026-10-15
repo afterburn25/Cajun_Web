@@ -15,6 +15,11 @@ function recurring_billing_locked(callable $work):mixed {
     if(db()->inTransaction())throw new LogicException('Recurring billing cannot inherit a transaction.');
     return staff_locked(fn()=>staff_transaction($work));
 }
+/** Read-only projections must not keep an idle session alive indefinitely. */
+function recurring_billing_touch(callable $work,bool $touch):mixed {
+    $saved=array_intersect_key($_SESSION,array_flip(['last_activity','client_last']));
+    try{return $work();}finally{if(!$touch)foreach(['last_activity','client_last'] as $key){if(array_key_exists($key,$saved))$_SESSION[$key]=$saved[$key];else unset($_SESSION[$key]);}}
+}
 /** Existing project ownership only; unrelated project-history features are not required. */
 function recurring_billing_job(int $id,?int $client=null):array {
     service_plans_actor($id);$row=one('SELECT * FROM '.table('studio_jobs').' WHERE id=? FOR UPDATE',[$id]);

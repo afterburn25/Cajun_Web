@@ -76,12 +76,14 @@ try {
     rb_staff(2);query('UPDATE '.table('staff_profiles')." SET permissions='[]' WHERE user_id=2");rb_deny('Revoked staff permissions refuse saved agreement',fn()=>rb_read(300));rb_staff();
     recurring_billing_migrate($password);rb_ok('Populated repeated migration preserves agreements and invoices',rb_count('recurring_billing_schedules')===3&&rb_count('recurring_billing_invoices')===3);save_setting('recurring_billing_schema_version','future');rb_deny('Unknown version refuses setup',fn()=>recurring_billing_migrate($password));save_setting('recurring_billing_schema_version','1');
     require __DIR__.'/recurring_billing_native_extra.php';
+    require __DIR__.'/recurring_billing_interface_cases.php';
     // A retained schema stamp may never silently replace lost consent or invoice history.
     rb_staff();$beforeMissing=rb_snapshot();
     foreach(array_keys(recurring_billing_schema(config()['db']['prefix'])) as $missing){
         $saved='rbill_retained_'.$missing;db()->exec('RENAME TABLE '.table($missing).' TO `'.$saved.'`');
         try{
             rb_ok('Missing established '.$missing.' disables readiness',!recurring_billing_ready());
+            rb_deny('Missing '.$missing.' refuses native UI projection before storage queries',fn()=>recurring_ui_context(recurring_ui_query(['view'=>'recurring-billing'],true)));
             $restoreRefused=false;
             try{recurring_billing_migrate($password);}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;$restoreRefused=str_contains($e->getMessage(),'Restore the original database');}
             rb_ok('Missing established '.$missing.' requires restore without empty recreation',$restoreRefused&&!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$missing])&&(one('SELECT value FROM '.table('settings').' WHERE name=?',['recurring_billing_schema_version'])['value']??'')==='1');
