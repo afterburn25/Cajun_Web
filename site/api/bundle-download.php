@@ -43,12 +43,15 @@ if (!$bundle) {
 }
 
 $path = $bundle['file_path'];
-if (!is_file($path) || !str_starts_with($path, config()['storage'])) {
+$real = is_string($path) ? realpath($path) : false;
+$storage = realpath(config()['storage'] ?? '');
+if ($real === false || $storage === false || !str_starts_with(str_replace('\\', '/', $real), str_replace('\\', '/', $storage) . '/')) {
     http_response_code(404);
     header('Content-Type: application/json');
     echo json_encode(['error' => 'Bundle file is unavailable']);
     exit;
 }
+$path = $real;
 
 // Log the download
 query(
