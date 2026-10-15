@@ -1774,3 +1774,8 @@ Parent3f895130, commit `Run full application acceptance for the 20i integration 
 Parentc05c51d0, commit `Check effective billing periods before hosting eligibility`. Source inspection found that the schedule phase may describe a future resume; the order adapter previously checked only phase and original period zero. Reuse periodAt plus current-period assessment, retain the original eligibility rule, and add synthetic canonical pause/future-resume boundary cases. No baseline runtime reproduction claimed; post-fix native/full evidence pending. Existing in-flight full acceptance is preserved by source SHA, no jobs canceled. No provider execution or live financial changes.
 
 Repository continuity run38771842240 exposed six links whose targets were still relative to the former root location after archiving7038 status/handoff. Their targets now resolve from docs/archive; the original archived content and document check are retained.
+
+
+## 2026-10-15 — order-to-service association
+
+Parent5728c2df, PR138: add one native order/service association with exact commercial and provider-request context, atomic audit/replay and missing-history guards; preserve existing hosting/provider engines. Parent actual browser artifact and four order screenshots are now inspected. New runtime validation is pending Linux CI after the local Windows key-permission refusal; no protection was relaxed. Mapping does not verify provider entitlement or authorize dispatch. [Exact scope, evidence, limitations and continuation](TWENTYI_ORDER_SERVICE_LINKS.md).

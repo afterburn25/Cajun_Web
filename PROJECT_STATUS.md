@@ -1,9 +1,9 @@
-# Current development: initial hosting orders
+# Current development: order-derived hosting identity
 
-P0 20i remains Codex-owned and unfinished. [PR #138](https://github.com/afterburn25/Cajun_Web/pull/138), `codex/twentyi-service-orders`, begins from `7038cb50` in draft PR #137. Native owner/client order cards, exact agreement/invoice binding, receipt review and expiring manual policy are implemented for testing. Provider package mapping and dispatch are not yet connected. See [current order scope and evidence](docs/TWENTYI_SERVICE_ORDERS.md).
+Codex owns the complete20i P0 integration. Published version remains [1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0); main remains0b96f3d5. No new release or live deployment is claimed.
 
-Published baseline remains v1.24.0; no main merge, release or live deployment is made by this checkpoint. First order run38770517159 failed at the recurring-state adapter (`active` versus existing `running`); this follow-up repairs that check and retains the assertion. Corrected source226f7cb passed all four native combinations with72 actual new order cases. This follow-up adds malformed-journal and concurrent-order checks and a stable browser candidate; exact descendant acceptance remains pending. Parent hosting-recovery native matrix passed; its full acceptance remains in progress.
+[PR138](https://github.com/afterburn25/Cajun_Web/pull/138) now adds an atomic association between an accepted commercially eligible order and one local hosting journal, preserving the exact reviewed package/request/profile context. Mapping is internal preparation, not provider entitlement or dispatch authority. Generic hosting dispatch cannot bypass order-specific authorization. [Implementation, evidence and next work](docs/TWENTYI_ORDER_SERVICE_LINKS.md).
 
-Previous candidate details are preserved in [the 7038 checkpoint](docs/archive/2026-10-15-PROJECT_STATUS-7038cb50.md).
+Parent5728 passed78 order cases in all four native combinations and1,623 actual HTTP/Chromium checks; its downloaded browser ZIP/checksum and four order screenshots are inspected. Recovery passed and Apache was still running. New association tests await Linux CI; the local Windows run stopped at existing provider-key0600 protection, which remains intact. Required catalog/dispatch/reconciliation/portal workflows, independent review, exact-main acceptance and release work continue.
 
-Current source also checks the effective billing period, so a scheduled future resume cannot permit setup while service is paused today. The new boundary cases require exact-descendant validation.
+[Previous checkpoint](docs/archive/2026-10-15-PROJECT_STATUS-5728c2df.md). No provider write, payment, customer mail, SSH or deployment occurred.

@@ -7,14 +7,15 @@ function service_orders_validate_schema(string $name,string $sql): void {
     $unique=match($name) {
         'service_orders'=>['agreement_id'=>['agreement_id'],'invoice_id'=>['invoice_id']],
         'service_order_events'=>['order_revision'=>['order_id','revision']],
+        'hosting_order_links'=>['account_id'=>['account_id']],
         default=>throw new LogicException('Unknown service-order storage.'),
     };
     catalog_validate_schema($name,$sql,$unique);
     foreach(all('SHOW FULL COLUMNS FROM '.table($name)) as $column) {
         if($column['Extra']!=='' || $column['Default']!==null) throw new RuntimeException('Incompatible service-order columns. Existing data was preserved.');
         $expected=match($column['Field']) {
-            'id','agreement_id','order_id','journal_sha256','before_sha256','after_sha256'=>'ascii_bin',
-            'initial_json','journal_json','input_json'=>'utf8mb4_bin',
+            'id','agreement_id','order_id','account_id','profile_id','binding_sha256','journal_sha256','before_sha256','after_sha256'=>'ascii_bin',
+            'initial_json','journal_json','input_json','binding_json'=>'utf8mb4_bin',
             default=>null,
         };
         if($column['Collation']!==$expected) throw new RuntimeException('Incompatible service-order identifier or text storage. Existing data was preserved.');
@@ -24,6 +25,7 @@ function service_orders_validate_schema(string $name,string $sql): void {
     $other=match($name) {
         'service_orders'=>['client_id'=>['client_id'],'created_by'=>['created_by']],
         'service_order_events'=>['actor_staff_id'=>['actor_staff_id'],'actor_client_id'=>['actor_client_id']],
+        'hosting_order_links'=>['client_id'=>['client_id'],'created_by'=>['created_by'],'profile_id'=>['profile_id']],
     };
     foreach($other as $key=>$columns)$expected[$key]=[1,$columns];
     $actual=[];
@@ -38,6 +40,7 @@ function service_orders_validate_schema(string $name,string $sql): void {
     $expected=match($name) {
         'service_orders'=>['agreement_id'=>['service_subscriptions','id'],'invoice_id'=>['studio_invoices','id'],'client_id'=>['studio_clients','id'],'created_by'=>['users','id']],
         'service_order_events'=>['order_id'=>['service_orders','id'],'actor_staff_id'=>['users','id'],'actor_client_id'=>['studio_clients','id']],
+        'hosting_order_links'=>['id'=>['service_orders','id'],'account_id'=>['hosting_records','id'],'client_id'=>['studio_clients','id'],'created_by'=>['users','id'],'profile_id'=>['provider_profiles','id']],
     };
     $relations=all('SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL',[config()['db']['prefix'].$name]);
     if(count($relations)!==count($expected))throw new RuntimeException('Incompatible service-order relationships. Existing data was preserved.');

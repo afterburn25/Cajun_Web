@@ -66,3 +66,8 @@ Inherited resources40ad600 and hosting1c92e6b are now retained in normal merges5
 ## Initial commercial order intake — PR138 (implementing)
 
 Owner and real client can offer/confirm a domain with exact accepted service agreement and original invoice, decline/cancel, and separately allow/revoke expiring manual fulfillment. Unique invoice/agreement consumption and exact receipt/reversal history are retained. Native226f matrix38771029583 passed72 new named order cases in all four combinations; descendant3f adds concurrency/malformed-history cases (75 order checks passed PHP8.2/MariaDB so far). Browser cases are written; exact full candidate acceptance pending. Package mapping, provider purchase authorization, dispatch and resulting client-service ownership are still missing implementation, not owner-gated. See [order scope](TWENTYI_SERVICE_ORDERS.md).
+
+
+## Order-to-service dependency — implementing
+
+Parent5728c2df, PR138: add one native order/service association with exact commercial and provider-request context, atomic audit/replay and missing-history guards; preserve existing hosting/provider engines. Parent actual browser artifact and four order screenshots are now inspected. New runtime validation is pending Linux CI after the local Windows key-permission refusal; no protection was relaxed. Mapping does not verify provider entitlement or authorize dispatch. [Exact scope, evidence, limitations and continuation](TWENTYI_ORDER_SERVICE_LINKS.md).

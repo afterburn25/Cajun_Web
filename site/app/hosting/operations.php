@@ -7,6 +7,7 @@ require_once CWP_CODE_ROOT.'/app/providers/settings.php';
 require_once CWP_CODE_ROOT.'/database/schema/hosting_operations_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/hosting_operations_migrate.php';
 require_once CWP_CODE_ROOT.'/app/hosting/reconciliation.php';
+require_once CWP_CODE_ROOT.'/app/hosting/order_links.php';
 use CajunWebPro\Foundation\Hosting\{HostingJournal,OperationResult};
 
 function hosting_operations_ready():bool {
@@ -141,6 +142,7 @@ function hosting_operations_claim_event(string $id,int $client,int $revision,str
     return staff_locked(fn()=>staff_transaction(function()use($id,$client,$revision,$request,$operation,$arguments,$profileId,$profileRevision,$password,$retryDeletion):?array {
         $actor=hosting_records_password($password);hosting_operations_require_ready();hosting_records_client($client,true);hosting_records_id($request);hosting_records_id($profileId);
         $commands=hosting_operations_commands($operation);
+        hosting_order_links_require_unlinked($id);
         if($revision<0 || $revision>=HostingJournal::MAX_EVENTS || $profileRevision<1)throw new InvalidArgumentException('Invalid hosting operation revision.');
         $row=hosting_records_row($id,$client,true);$journal=hosting_operations_validate($row);
         $input=hosting_operations_input($revision,$operation,$arguments,$profileId,$profileRevision,$retryDeletion);

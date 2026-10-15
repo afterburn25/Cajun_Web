@@ -41,3 +41,8 @@ Native tests retain all previous cases and add each missing records/dispatch/res
 ## Initial hosting order branch — 2026-10-15
 
 Codex owns `codex/twentyi-service-orders`, [PR138](https://github.com/afterburn25/Cajun_Web/pull/138) into `codex/twentyi-fulfillment` (#137). Scope: exact initial invoice/order/consent, native admin/client cards, commercial evidence and expiring manual policy, native/browser recovery tests. It retains7038 ancestry and all existing provider engines. Provider package mapping/dispatch linkage is next and remains unimplemented. Source226f passed four native combinations; source3f adds concurrency/malformed recovery and awaits full acceptance. Do not merge/release based on parent tests or treat this as complete20i. No other agent was dispatched or messaged by this checkpoint.
+
+
+## Current continuation — atomic order/service association
+
+Parent5728c2df, PR138: add one native order/service association with exact commercial and provider-request context, atomic audit/replay and missing-history guards; preserve existing hosting/provider engines. Parent actual browser artifact and four order screenshots are now inspected. New runtime validation is pending Linux CI after the local Windows key-permission refusal; no protection was relaxed. Mapping does not verify provider entitlement or authorize dispatch. [Exact scope, evidence, limitations and continuation](TWENTYI_ORDER_SERVICE_LINKS.md).
