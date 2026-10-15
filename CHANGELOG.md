@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased review — Devin115 current corrections
+
+- Preserve the independent execution/reconciliation/identity/transport probes unchanged against Devin8e068cf and its corrected supplied fixtures. Verification pending; product bytes unchanged and no live provider call.
+
 ## Unreleased — 20i write execution path (devin/twentyi-execution, devin/twentyi-reconcile)
 
 - `provider_operations_execute` performs one owner-approved provider write: owner password + current profile revision + active exact-scope grant required before any credential is opened or an endpoint address resolved; undocumented or shape-incomplete operations refuse before any ledger claim; missing grants refuse `no_grant` and are audited.

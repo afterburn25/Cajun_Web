@@ -1474,3 +1474,11 @@ Request: continue the 20i assignment; address Codex's blocking findings on the e
 Files: `site/app/providers/reconcile.php`, `docs/TWENTYI_OPERATIONS_CONTRACT.md`, `tests/provider_operations_execute_native.php` (+replacement-context refusal, corrected absence expectation, live-revision reads), `site/install/inventory.generated.php` (refreshed).
 
 Tests: pending CI — native MariaDB (ledger + execution) and packaged application lanes on the new head. Prior runs: 53 execute/reconcile assertions at the pre-correction head.
+
+## 2026-10-14 — independent current-source 20i re-review
+
+The user retains complete20i implementation with Devin. This review branch starts from exact source `8e068cf705b7cb352eb8c786d92e230ed150b86e` (implementation `9eaf8ff`). Devin reports correction of populated prior-v2 migration column positions and ambiguous consumed-grant reconciliation, plus supplied fixture adaptations. Source inspection confirms those changes exist; the previous independent findings are not cleared until behavioral verification finishes.
+
+The four independent regression probes are byte-preserved from harness `32531468c098f513e3622031614b767d7ff70a99`; only their dedicated workflow branch trigger changes. They run after the unchanged supplied ledger/execution fixtures on PHP8.2/8.4 with MariaDB, including real production-helper identity and actual fixed-write transport contracts. Product/foundation files, installer inventory and supplied native tests remain byte-identical to Devin's source. All provider responses are scripted and transport probes stop before network access. No live provider operation is authorized or performed.
+
+Next: push this review harness, download and inspect every named report and full log, then report exactly which findings clear and which remain to Devin on PR115. All implementation fixes remain Devin-owned. Codex's recurring UI121 is separately preserved at `abaa200` with full application run38668021580 and Windows package build in progress; parent interfacee9ee051 has1280 focused checks/all29 workflows. Published1.23/main68e4d41 is unchanged. Older sections are historical.
