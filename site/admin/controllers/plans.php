@@ -3,9 +3,15 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/plans/views.php';
 require_once CWP_CODE_ROOT.'/includes/layout/plans.php';
+require_once CWP_CODE_ROOT.'/includes/layout/service_orders.php';
 
 function service_plans_admin_action(string $action):void {
     if($_SERVER['REQUEST_METHOD']!=='POST')throw new InvalidArgumentException('Submit the reviewed form to continue.');
+    if(str_starts_with($action,'service_plans_order_')){
+        $id=service_plans_form_id($_GET,'record');$item=service_plans_owner_agreement($id);
+        service_orders_form_action($action,$id,$item['document']->data()['client_id'],true);
+        flash('Hosting order updated.');redirect(admin_url('service-agreement',['record'=>$id]));
+    }
     if($action==='service_plans_setup'){service_plans_migrate(posted('current_password',200));flash('Service agreements are ready.');redirect(admin_url('service-plans'));}
     service_plans_owner();$password=posted('current_password',200);
     if($action==='service_plans_create'){

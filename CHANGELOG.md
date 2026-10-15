@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — initial shared-hosting order intake
+
+- Add owner-selected agreement/invoice offers and client domain confirmation on existing agreement screens.
+- Preserve unique initial obligations, receipt/reversal evidence, expiring manual fulfillment policy, audit history and cancellation without billing/provider side effects.
+- Add native matrix cases; testing is pending at this source checkpoint. Provider dispatch remains unfinished.
+
 ## Unreleased — preserve missing hosting history
 
 - Check every established hosting storage table before reads/setup; lost tables or setup markers with original audit require database restoration instead of empty recreation.

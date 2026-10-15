@@ -3,9 +3,15 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/plans/views.php';
 require_once CWP_CODE_ROOT.'/includes/layout/plans.php';
+require_once CWP_CODE_ROOT.'/includes/layout/service_orders.php';
 
 function service_plans_portal_action(string $action,array $client):never {
     if($_SERVER['REQUEST_METHOD']!=='POST')throw new InvalidArgumentException('Submit the reviewed form to continue.');
+    if(str_starts_with($action,'service_agreements_order_')){
+        $id=service_plans_form_id($_GET,'agreement');
+        service_orders_form_action($action,$id,(int)$client['id'],false);
+        flash('Your hosting request was updated.');redirect(studio_url(['agreement'=>$id]));
+    }
     $intent=service_plans_form_intent($_POST);service_plans_form_confirm($_POST);
     if(!is_string($_GET['agreement']??null) || $_GET['agreement']!==$intent['record_id'])throw new InvalidArgumentException('Reload the agreement you intend to change.');
     $command=match($action){'service_agreements_consent'=>'consent','service_agreements_cancel'=>'cancel','service_agreements_abandon'=>'abandon',default=>throw new InvalidArgumentException('Unknown agreement action.')};
