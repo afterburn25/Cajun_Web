@@ -97,12 +97,23 @@ Adds license management to the customer workspace:
 
 **Portal UI:** `site/portal/views/workspace.php` — shows "Downloads" section with bundle links per license
 
-### 8. What still needs to be implemented
+### 8. Purchase flow integration
 
-**Purchase flow integration:**
-- Auto-generate license key when customer buys a product
-- Auto-create bundled ZIP on purchase
-- Email license key + download link to customer
+**File:** `site/app/licenses/fulfill.php`
+
+- `license_fulfill_invoice($invoiceId)` — idempotent; creates license + bundle when a catalog invoice becomes `paid`
+- Product mapping: SKU `WEBSITE-{INDUSTRY}` → module `industry-{industry}` (e.g., `WEBSITE-RESTAURANT` → restaurant module)
+- Hooked into both payment paths:
+  - `catalog_transition()` — non-ledger path, fires after invoice marked paid
+  - `ledger_receive()` — ledger path, fires after full-balance receipt marks invoice paid
+- Both hooks run AFTER the transaction commits — fulfilment failure never rolls back a recorded payment
+- Bundle generation requires a Website Core source checkout: `license_core_source_dir()` checks sibling dirs and `config()['license_core_dir']`; if unavailable the license is still created and the bundle can be generated later from admin
+- Payment reversal does NOT deactivate licenses — deactivation stays a manual admin action
+
+### 9. Remaining
+
+- Email notification to customer with license key + download link
+- Optional: list catalog products in the admin create-license form
 
 ## Integration points
 
