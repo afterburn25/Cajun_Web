@@ -41,26 +41,47 @@ Creates two tables:
 
 **File:** `site/database/schema/base.php` — updated to include `license_schema($prefix)`
 
-### 3. What still needs to be implemented
+### 3. License service
 
-**License key generation:**
-- Create a service that generates unique license keys per purchase
-- Store keys in `website_licenses` table
-- Associate with customer (studio_clients) and product
+**File:** `site/app/licenses/service.php`
 
-**Admin UI:**
-- License management page (create, view, deactivate licenses)
-- Domain management (register, change, deactivate domains per license)
+Functions:
+- `license_generate_key()` — generates unique license keys (XXXX-XXXX-XXXX-XXXX)
+- `license_create($customerId, $productId)` — creates a new license
+- `license_get($key)` — retrieves license by key
+- `license_register_domain($licenseId, $domain)` — registers a domain
+- `license_deactivate_domain($licenseId, $domain)` — deactivates a domain
+- `license_deactivate($licenseId)` — deactivates entire license
+- `license_domains($licenseId)` — gets all domains for a license
 
-**Customer portal:**
-- Domain registration UI — customer enters their website domain
-- Domain change workflow — deactivates old domain, activates new one
-- License key display — shows customer their license key
+### 4. Admin UI
+
+**File:** `site/admin/views/studio/licenses.php`
+**File:** `site/admin/controllers/studio.php` (updated)
+
+Adds "Website licenses" to the Studio admin section with:
+- Create license (customer + product selection)
+- List all licenses with customer, product, status
+- Add/remove domains per license
+- Deactivate entire license
+
+### 5. Customer portal UI
+
+**File:** `site/portal/views/workspace.php` (updated)
+**File:** `site/portal/controllers/actions.php` (updated)
+
+Adds license management to the customer workspace:
+- View active licenses with domains
+- Register new domains
+- Deactivate existing domains
+
+### 6. What still needs to be implemented
 
 **Module bundling:**
 - Tool that creates bundled ZIPs (core + industry module + license_key)
 - Calls Website Core build tool: `php tools/build-packages.php bundle <industry> <license_key>`
 - Stores bundle for download in customer portal
+- Integration with purchase flow (when customer buys a product, generate key + create bundle)
 
 ## Integration points
 
@@ -84,7 +105,6 @@ license_domains (
 
 ## Next steps
 
-1. Implement license key generation service
-2. Create admin UI for license management
-3. Create customer portal UI for domain registration
-4. Implement module bundling tool
+1. Implement module bundling tool (creates downloadable ZIPs)
+2. Integrate with purchase flow (auto-generate license key on sale)
+3. Test the complete flow end-to-end
