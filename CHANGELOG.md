@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased — immutable recurring invoice terms
+
+Add a pure canonical terms document with exact source/client/project bindings, USD amount, explicit timezone/calendar/due rules and stable period facts. Add 372 named local checks per PHP mode and isolated PHP 8.2/8.4 CI. No application or invoice activation; native consent/lifecycle/unique invoices and independent review remain required.
+
+## Unreleased — recurring invoice terms contract
+
+Match the retained subscription revision limit to the existing native 256-event bound. Record the immutable schedule/source/timezone/due-rule contract before implementation; no deployed behavior changes.
+
 ## Unreleased — recurring billing calendar
 
 Add a pure immutable calendar for monthly, quarterly and annual periods, explicit original-day/month-end rules, direct date lookup and bounded windows. Local 203 checks pass in each default/no-ini PHP mode; committed CI and independent review remain next. No deployed billing or invoice behavior changes.

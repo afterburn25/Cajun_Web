@@ -1,5 +1,7 @@
 # Approved roadmap and acceptance criteria
 
+HC-06/P-03/P-04: [exact recurring invoice terms](RECURRING_BILLING_TERMS_CONTRACT.md) is implemented outside deployment with 372 local checks per default/no-ini mode. Focused committed CI and independent review are next; native authority/consent, lifecycle, unique invoices, actual interfaces and recurring-payment acceptance remain pending.
+
 HC-06/P-03/P-04: the separate [recurring billing calendar](BILLING_CALENDAR_CONTRACT.md) is implemented with 203 local checks per default/no-ini mode. Focused committed CI/review, native schedule consent/invoices and actual recurring-payment acceptance remain pending. Existing financial notification acceptance continues on frozen PR 116.
 
 HC-11/P-05/P-07: [financial agreement activity](DESIGN_FINANCIAL_ACTIVITY.md) is implemented and locally verified on a separate branch from frozen a9a5f40.254 native and76 HTTP/Edge checks pass; focused/full current acceptance and independent review remain pending. Existing financial forms acceptance continues on its unchanged source; checkout remains incomplete.

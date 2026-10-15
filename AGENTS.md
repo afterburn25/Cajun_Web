@@ -1,5 +1,13 @@
 # Working agreement for CajunWebPro
 
+## Current work — recurring invoice terms implemented
+
+Following contracts `bdd4b46` and `8bae286`, `codex/recurring-billing-terms` implements an immutable canonical document for the exact client/project/source-subscription revision, USD amount, original billing calendar, explicit IANA timezone and due-date rule. It returns stable schedule/period identities and proposed period facts without asserting consent, billability or an issued invoice. [Contract and scope](docs/RECURRING_BILLING_TERMS_CONTRACT.md).
+
+Local PHP 8.4 default/no-ini each pass **372 named checks** (744 executions), with identical reports and empty runtime diagnostics. Literal JSON, strict context/type/byte limits, duplicate keys, immutable copies, Gregorian/century/due dates, local midnight, spring/fall DST, date-line transitions, epoch overflow and default-timezone independence are covered. Focused committed PHP 8.2/8.4 CI and independent calendar/terms review are next. This module remains outside deployment; native current-authority validation, explicit billing consent, schedule lifecycle, unique invoices and actual screens are still required.
+
+Parent calendar PR 117/`8f8ea1c` stays frozen with 1,624 verified focused executions/all 22 workflows. Notification PR 116/`f053dac` has 9,370 verified checkpoint checks and accepted visual evidence; original full run 38654568775 has advanced to Apache protection after recovery. Parent PR 114 has 11,326 full checks and identical Windows/Linux packages. Published 1.23/main `68e4d41` is unchanged. Devin has acknowledged complete 20i ownership, including all interfaces and the eight outstanding execution/reconciliation corrections; Codex retains non-20i work and independent review/integration. Earlier sections are dated checkpoints.
+
 ## Current work — recurring billing calendar implemented
 
 Following contract `31fe0dd`, `codex/billing-calendar` adds an immutable pure calendar for monthly, quarterly and annual maintenance billing. It preserves the original anchor and explicit original-day/month-end alignment, calculates exact half-open periods, performs direct date lookup and bounds requested windows. Local PHP 8.4 default and no-ini modes each pass **203 named checks** (406 executions), including independent Gregorian oracle comparisons, century/leap boundaries, original-day recovery after a short month, strict malformed inputs, range limits, immutable results and timezone independence. [Contract and evidence](docs/BILLING_CALENDAR_CONTRACT.md).
