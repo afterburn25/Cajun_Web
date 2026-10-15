@@ -126,9 +126,13 @@ single evidence-backed observation of the package list (the only read
 with authenticated evidence), authorized before and after the read and
 bound to the grant's approved `profile_revision` so a changed credential
 context cannot reconcile an earlier context's operation.
-`packages.create` reconciles on the approved `domain_name` appearing in
-observed package names; `packages.update` with `delete-id` reconciles
-`not_observed` when the target is still present, but its absence stays
+The consumed grant must identify the claimed scope unambiguously —
+a reused key that consumed a second grant before the ledger conflict is
+refused as ambiguous history rather than evaluated against the wrong
+approved scope. `packages.create` reconciles on the approved
+`domain_name` appearing in observed package names; `packages.update`
+with `delete-id` reconciles `not_observed` when the target is still
+present, but its absence stays
 `inconclusive` — the observed list never claims account-wide coverage,
 so absence cannot prove a deletion landed. Field-only updates are
 `inconclusive` with no read sent. The outcome and its audit entry commit

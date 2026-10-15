@@ -105,14 +105,23 @@ function provider_operations_reconcile(string $profileId,int $revision,string $i
         };
         $op=one('SELECT * FROM '.table('provider_operations').' WHERE idempotency_key=?',[$idempotencyKey]);
         if($op===null||$op['status']!=='uncertain')return $refuse('Only a recorded uncertain operation can be reconciled.',$actor);
-        $grant=one('SELECT operation,scope_params,profile_revision FROM '.table('provider_operation_grants').' WHERE consumed_key=? AND profile_id=?',[$idempotencyKey,$profileId]);
-        $params=$grant===null?null:json_decode((string)$grant['scope_params'],true);
-        if($grant===null||!is_array($params))return $refuse('No approved scope record exists for this request.',$actor);
+        // A reused key may have consumed a second grant before the ledger
+        // rejected its differing scope as a conflict — only exactly one
+        // same-operation grant identifies the originally claimed scope.
+        // Ambiguous or mismatched history refuses rather than evaluating
+        // against the wrong approved scope.
+        $matching=[];
+        foreach(all('SELECT operation,scope_params,profile_revision FROM '.table('provider_operation_grants').' WHERE consumed_key=? AND profile_id=?',[$idempotencyKey,$profileId]) as $consumed)
+            if((string)$consumed['operation']===(string)$op['operation'])$matching[]=$consumed;
+        if($matching===[])return $refuse('No approved scope record exists for this request.',$actor);
+        if(count($matching)!==1)return $refuse('The approved-scope history for this request is ambiguous. Verify the result in the 20i panel.',$actor);
+        $grant=$matching[0];
+        $params=json_decode((string)$grant['scope_params'],true);
+        if(!is_array($params))return $refuse('No approved scope record exists for this request.',$actor);
         // The observation must run against the same approved credential
         // generation — a settings change or replacement account cannot
         // reconcile another context's operation.
         if((int)$grant['profile_revision']!==$revision)return $refuse('The approved context changed since this request; verify the result in the 20i panel.',$actor);
-        if((string)$grant['operation']!==(string)$op['operation'])return $refuse('The recorded operation does not match its approved scope.',$actor);
         $target=provider_operations_reconcile_target((string)$op['operation'],$params);
         if($target===null)return $refuse('This operation has no observation check. Verify the result in the 20i panel.',$actor);
         return ['actor'=>(int)$actor['id'],'operation'=>(string)$op['operation'],'target'=>$target,'refused'=>null];

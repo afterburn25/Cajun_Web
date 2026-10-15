@@ -250,6 +250,19 @@ try {
     $scriptedReads=[new InventorySnapshot('unavailable',[],time(),0,[],'authentication')];
     $r=pe_reconcile($profile,$rev,'idem-rec-gone',$password);
     pe_ok('A refused observation reconciles unavailable','unavailable'===$r['outcome']);
+    // Reused keys: a second grant consumed by the same key before the
+    // ledger conflict must leave the scope history ambiguous — reconcile
+    // refuses rather than evaluating the wrong approved scope.
+    $grantX=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'orig.example'],$password);
+    $grantY=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'other.example'],$password);
+    $scripted=[new TransportResponse(503,[],'')];
+    pe_exec($profile,$rev,$grantX,'idem-reuse-1',$password);
+    $sent=count($sentRequests);
+    $r=pe_exec($profile,$rev,$grantY,'idem-reuse-1',$password);
+    pe_ok('A reused key conflicts without a second send','conflict'===$r->status&&count($sentRequests)===$sent);
+    $scriptedReads=[pe_snapshot([pe_package(95,['other.example'])])];
+    $r=pe_reconcile($profile,$rev,'idem-reuse-1',$password);
+    pe_ok('Ambiguous consumed history refuses reconciliation','refused'===$r['outcome']);
     // A changed approved context (any settings save bumps the revision)
     // cannot reconcile an earlier context's uncertain operation.
     provider_settings_save($profile,$rev,'20i fixture',true,$secret,$password);
