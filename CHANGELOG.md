@@ -2,7 +2,7 @@
 
 ## Verification records — native recurring agreements and invoices
 
-Record separate draft120/66f7760:628 verified focused native/legacy ledger executions, exact2641-file installer metadata and unchanged canonical components. Preserve one remaining hosting CI job, independent review and real recurring interface requirements. No product runtime copied to this review branch or new release published.
+Record separate draft120/66f7760:628 verified focused native/legacy ledger executions, exact2641-file installer metadata and unchanged canonical components. All26 exact-source workflows passed; preserve independent review and real recurring interface requirements. No product runtime copied to this review branch or new release published.
 
 ## Verification records — complete 20i ownership and final notifications
 
