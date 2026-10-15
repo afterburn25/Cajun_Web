@@ -1,3 +1,7 @@
+# Development checkpoint — private client domain search
+
+Add explicit owner enablement, a native client search form and private history through the existing authenticated 20i reader. Share owner/client rate limits, preserve independent client identity, recheck current access and prevent request replay. Add missing-history recovery and native/browser regression coverage. Local syntax passes; new runtime acceptance and release remain pending. [Scope](docs/TWENTYI_CLIENT_DOMAIN_SEARCH.md).
+
 # Development checkpoint — accepted order and active service wording
 
 Parent `e37517fa` merges tested hosting confirmation with newer main. Four native database/PHP combinations and independent exact Windows package verification pass. Parent `4d059a5b` browser evidence passes 1,737 checks; actual screenshots exposed an accepted-order sentence incorrectly saying setup was pending after activation. Correct the sentence and add owner/client browser regression coverage while retaining the pre-activation assertion. New current-head packaged acceptance, review and release remain pending. Published 1.24.0 is unchanged.

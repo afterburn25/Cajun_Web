@@ -127,3 +127,17 @@ Actual pending-owner mobile, active-owner desktop and active-client mobile scree
 ### Next independent capability
 
 The [official provisioning guide](https://docs.20i.com/api/provision-hosting-package-api) confirms that the selected type references a package-type ID. The [official API-documentation guide](https://docs.20i.com/api/20i-api-documentation) directs users to the signed-in reference. Fresh research on 2026-10-15 and the available browser-tab inventory did not establish the full package-type configuration response. Keep that exact gap open; do not invent field names/default semantics or repeat the prior request for the owner's upload. Client domain search can continue independently using the already documented and implemented bounded reader, with explicit client availability, attribution, isolation and shared provider limits.
+
+
+## Verified parent5bec native matrix — 2026-10-15
+
+Source `5bec4fb2cd0826386617098972ae3eb3a6fff0e1`, [run38807146247](https://github.com/afterburn25/Cajun_Web/actions/runs/38807146247): all four actual artifacts downloaded; SHA256/ZIP CRC and every named report pass. Each combination has465 combined recurring/order checks (subsets82 order/42 links/38 preparation/76 fulfillment/38 confirmation/32 forms are not additive),108 ledger and68 forms in each mode. This verifies parent hosting, not the new client-domain-search descendant.
+
+| Artifact | Combination | SHA256 |
+|---|---|---|
+|12007570714|PHP8.2/MariaDB10.11|`fd65a1c255f07766f1b77faa217cd1bc22a63fec3ee553ffc4585b10e8a24986`|
+|12006976999|PHP8.4/MySQL8.4|`8b8a14c396395688774211f2532acd1b8f4418aa932cc149c3bc8741ac925525`|
+|12006693688|PHP8.2/MySQL8.4|`d2221d7f701974204a13fd3f3c003da2edf7662a9a938a5c8fd8313c04a3a4a5`|
+|12005934484|PHP8.4/MariaDB10.11|`ded3fa807fe4cb72d4c26174d9bb178677f04be946b1bd967f124df3e71b7321`|
+
+Local proof: `work/20i-5bec-native-verification.json`; original downloaded ZIPs retained beside it. Full5bec38807153582 is in browser, earlier e37538805429786 in Apache at this checkpoint.

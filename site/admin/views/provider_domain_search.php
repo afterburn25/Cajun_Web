@@ -70,3 +70,5 @@ $searchAvailable=is_array($searchResult)&&$searchAttempt['state']==='checked'&&(
 <nav aria-label="Domain search history pages"><?php if($searchPage>1): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['domain_search_page'=>$searchPage-1]))?>">Newer searches</a><?php endif; ?><?php if(count($searchHistory)>20): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['domain_search_page'=>$searchPage+1]))?>">Older searches</a><?php endif; ?></nav></div>
 <?php endif; ?>
 </section>
+
+<?php require CWP_CODE_ROOT.'/admin/views/provider_domain_clients.php'; ?>

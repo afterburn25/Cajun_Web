@@ -179,6 +179,15 @@ function provider_domain_search_admin_action(string $action): void {
         if(!is_string($raw)||preg_match('/\A(?:0|[1-9][0-9]{0,9})\z/',$raw)!==1||(int)$raw>2147483647||(!$zero&&(int)$raw===0))throw new InvalidArgumentException('Reload the current domain search form.');
         return (int)$raw;
     };
+    if($action==='provider_inventory_domain_search_client_prepare'){
+        provider_domain_client_prepare(posted('current_password',200));flash('Client domain search history is ready.');redirect(admin_url('provider-settings'));
+    }
+    if($action==='provider_inventory_domain_search_client_configure'){
+        $enabled=$_POST['client_search_enabled']??'0';
+        if(!is_string($enabled)||!in_array($enabled,['0','1'],true))throw new InvalidArgumentException('Reload the current client search form.');
+        provider_domain_client_configure($number('client_search_revision',true),$enabled==='1',posted('current_password',200));
+        flash('Client domain search settings saved.');redirect(admin_url('provider-settings'));
+    }
     $id=posted('profile_id',32);$profileRevision=$number('revision');$configRevision=$number('search_revision',true);
     if($action==='provider_inventory_domain_search_configure') {
         $enabled=$_POST['search_enabled']??'0';

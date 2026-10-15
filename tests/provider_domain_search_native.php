@@ -43,6 +43,16 @@ function ds_run(string $id,int $profileRevision=1,int $configRevision=1,?callabl
     return provider_domain_search_run($id,$profileRevision,$configRevision,'EXAMPLE.invalid',$resolver??'ds_dns',$transport??'ds_read');
 }
 function ds_render():string {$record=provider_settings_profile();ob_start();require __DIR__.'/../site/admin/views/provider_domain_search.php';return ob_get_clean();}
+require __DIR__.'/provider_domain_client_cases.php';
+if(($argv[1]??'')==='concurrent-client-search'){
+    $clientId=(int)$argv[2];dsc_login($clientId);
+    $response=new TransportResponse(200,[],'{"header":{"names":["example.invalid"]}}'."\n".'{"name":"example.invalid","can":"register"}');
+    echo "ready\n";fflush(STDOUT);stream_set_timeout(STDIN,15);
+    if(trim((string)fgets(STDIN))!=='start')exit(2);
+    try{provider_domain_client_run($clientId,$argv[3],bin2hex(random_bytes(16)),'example.invalid','ds_dns','ds_read');echo json_encode(['state'=>'recorded','sent'=>$sent]);}
+    catch(RuntimeException $e){if($e instanceof PDOException)throw $e;echo json_encode(['state'=>'refused','sent'=>$sent]);}
+    exit;
+}
 if(($argv[1]??'')==='concurrent-search') {
     ds_actor((int)$argv[3]);
     $response=new TransportResponse(200,[],'{"header":{"names":["example.invalid"]}}'."\n".'{"name":"example.invalid","can":"register"}');
@@ -124,6 +134,10 @@ try {
     db()->exec('RENAME TABLE '.table('provider_domain_search_results').' TO pds_saved_search_results');
     ds_native_ok('Missing stamped history disables lookup readiness',!provider_domain_search_ready());
     ds_native_deny('Missing stamped history cannot be silently recreated',fn()=>provider_domain_search_migrate($password));
+    save_setting('provider_domain_search_schema_version','');
+    ds_native_deny('Lost owner marker and result history cannot cause partial DDL',fn()=>provider_domain_search_migrate($password));
+    ds_native_ok('Preflight preserves missing owner result table for exact recovery',!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['pds_provider_domain_search_results']));
+    save_setting('provider_domain_search_schema_version','1');
     db()->exec('RENAME TABLE pds_saved_search_results TO '.table('provider_domain_search_results'));
     ds_native_ok('Restoring original history restores readiness',provider_domain_search_ready()&&$results===all('SELECT * FROM '.table('provider_domain_search_results').' ORDER BY id'));
     db()->exec('ALTER TABLE '.table('provider_domain_search_results')." MODIFY reason VARCHAR(40) CHARACTER SET ascii COLLATE ascii_bin NOT NULL DEFAULT 'unexpected'");
@@ -154,6 +168,7 @@ try {
     ds_native_deny('Connection changes require explicit new search policy approval',fn()=>ds_run($id,2,6));
     ds_native_ok('Old observations remain marked as earlier settings',str_contains(ds_render(),'Earlier settings')&&str_contains(ds_render(),'Changing the connection requires'));
     ds_native_ok('Search history never creates registrar ownership or commercial operations',!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['pds_provider_domain_links']));
+    ds_client_cases($id);
     $report=['passed'=>true,'checks'=>$checks,'scope'=>'Native isolated MariaDB/MySQL, synthetic provider, actual PHP form rendering. HTTP/browser and live provider acceptance remain separate.'];
     file_put_contents(__DIR__.'/../qa/provider-domain-search-native-results.json',json_encode($report,JSON_PRETTY_PRINT)."\n");echo json_encode($report,JSON_PRETTY_PRINT),"\n";
 }catch(Throwable $e){

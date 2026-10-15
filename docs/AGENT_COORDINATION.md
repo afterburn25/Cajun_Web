@@ -1,3 +1,7 @@
+# Current ownership — client domain-search branch
+
+Codex owns `codex/twentyi-client-domain-search`, parent5bec4fb2, above PR138. Scope: provider domain reader adapters/shared limits, additive client policy/history, owner configuration and actual portal routes/forms, related migrations/tests/workflows/docs. No other agent is claimed active. Preserve PR138 and current main6ec7a749 licensing history; integrate sequentially after acceptance. [Current handoff](../SESSION_HANDOFF.md).
+
 # Agent coordination — complete20i P0
 
 Current162c35fb preparation flow now passes1652 actual HTTP/Chromium checks. Fresh11997794227 artifact/hash, all55 named-check reports and actual desktop/mobile screenshots inspected; submit saves exactly1 association/service with no alert. Native38/42/82 within319 plus108 ledger ×4 and24 focused workflows pass. Full38785450426 recovery/Apache continue. Codex moves on to selected provider configuration and existing-engine fulfillment; original fixture failure is resolved. [Current handoff](../SESSION_HANDOFF.md).

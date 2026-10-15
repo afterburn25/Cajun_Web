@@ -5,14 +5,16 @@ require_once CWP_CODE_ROOT.'/database/schema/catalog_validate_schema.php';
 require_once CWP_CODE_ROOT.'/database/schema/provider_domain_search_schema.php';
 
 function provider_domain_search_validate_schema(string $name,string $sql): void {
-    if(!in_array($name,['provider_domain_searches','provider_domain_search_results'],true))throw new LogicException('Unknown domain search storage.');
+    if(!in_array($name,['provider_domain_searches','provider_domain_search_results','provider_domain_client_policies','provider_domain_client_searches','provider_domain_client_results'],true))throw new LogicException('Unknown domain search storage.');
     catalog_validate_schema($name,$sql,[]);
     foreach(all('SHOW FULL COLUMNS FROM '.table($name)) as $column) {
-        $expected=in_array($column['Field'],['id','profile_id','query_name','tlds','state','reason','result','key_fingerprint'],true)?'ascii_bin':null;
+        $expected=in_array($column['Field'],['id','profile_id','query_name','tlds','state','reason','result','key_fingerprint','policy_id','client_auth_version','document','sha256'],true)?'ascii_bin':null;
         if($column['Extra']!=='' || $column['Default']!==null || $column['Collation']!==$expected)throw new RuntimeException('Incompatible domain search columns. Existing data was preserved.');
     }
     $expected=['PRIMARY'=>[0,['id']]];
     if($name==='provider_domain_searches')$expected+=['profile_searches'=>[1,['profile_id','started_epoch']],'search_actor'=>[1,['actor_id']]];
+    if($name==='provider_domain_client_policies')$expected+=['policy_revision'=>[0,['revision']],'policy_owner'=>[1,['owner_id']]];
+    if($name==='provider_domain_client_searches')$expected+=['profile_searches'=>[1,['profile_id','started_epoch']],'client_searches'=>[1,['client_id','started_epoch']],'search_policy'=>[1,['policy_id']]];
     $actual=[];
     foreach(all('SHOW INDEX FROM '.table($name)) as $index) {
         if($index['Sub_part']!==null || $index['Index_type']!=='BTREE')throw new RuntimeException('Incompatible domain search indexes. Existing data was preserved.');
@@ -23,6 +25,9 @@ function provider_domain_search_validate_schema(string $name,string $sql): void 
     ksort($actual);ksort($expected);
     if($actual!==$expected)throw new RuntimeException('Incompatible domain search indexes. Existing data was preserved.');
     $expected=$name==='provider_domain_searches'?['profile_id'=>['provider_profiles','id'],'actor_id'=>['users','id']]:['id'=>['provider_domain_searches','id']];
+    if($name==='provider_domain_client_policies')$expected=['owner_id'=>['users','id']];
+    if($name==='provider_domain_client_searches')$expected=['profile_id'=>['provider_profiles','id'],'client_id'=>['studio_clients','id'],'policy_id'=>['provider_domain_client_policies','id']];
+    if($name==='provider_domain_client_results')$expected=['id'=>['provider_domain_client_searches','id']];
     $relations=all('SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL',[config()['db']['prefix'].$name]);
     if(count($relations)!==count($expected))throw new RuntimeException('Incompatible domain search relationships. Existing data was preserved.');
     $seen=[];
@@ -37,6 +42,14 @@ function provider_domain_search_migrate(#[\SensitiveParameter] string $password)
         $actor=provider_settings_owner($password);
         $version=one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_domain_search_schema_version'])['value']??'';
         if(!in_array($version,['','1'],true))throw new RuntimeException('Unsupported domain search storage. Existing data was preserved.');
+        // Preflight the whole family before any DDL, including loss of its version marker.
+        $schema=provider_domain_search_schema(config()['db']['prefix']);
+        if($version===''&&one('SELECT id FROM '.table('audit').' WHERE action=? LIMIT 1',['provider.domain_search_prepared']))throw new RuntimeException('Domain search history is missing. Restore the original database before preparing.');
+        foreach($schema as $name=>$sql){
+            $exists=one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]);
+            if(!$exists&&$version==='1')throw new RuntimeException('Domain search history is missing. Restore the original database before preparing.');
+            if($exists){provider_domain_search_validate_schema($name,$sql);if($version===''&&(int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn())throw new RuntimeException('Unrecognized domain search history. Restore its original database and version marker.');}
+        }
         foreach(provider_domain_search_schema(config()['db']['prefix']) as $name=>$sql) {
             if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name])) {
                 if($version==='1')throw new RuntimeException('Domain search history is missing. Restore the original database before preparing.');

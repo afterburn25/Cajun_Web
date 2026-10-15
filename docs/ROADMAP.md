@@ -1,3 +1,7 @@
+# Active 20i increment — client domain availability
+
+Private client domain search is implemented above PR138 with explicit owner enablement, shared provider limits and separate client history. Local syntax passes; new native/browser acceptance, screenshots, review and release remain pending. Full20i scope is unchanged. [Client-search scope](TWENTYI_CLIENT_DOMAIN_SEARCH.md).
+
 # Approved roadmap and acceptance criteria
 
 PR 138 connects accepted orders to provider setup and native approval/recovery/confirmation. The newer-main merge `e37517fa` passes all four native combinations and exact Windows package verification. Parent confirmation passes 1,737 HTTP/Chromium checks. A screenshot-discovered stale pending statement is corrected in the current descendant; its browser regression and full merged acceptance remain pending. Continue client domain search, automatic catalog/configuration discovery and all remaining native controls. [Current implementation/evidence](TWENTYI_ORDER_FULFILLMENT.md). Published 1.24 remains unchanged.
