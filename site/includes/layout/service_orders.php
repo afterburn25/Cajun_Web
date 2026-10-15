@@ -3,6 +3,7 @@
 declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/hosting/order_views.php';
+require_once CWP_CODE_ROOT.'/includes/layout/hosting_order_links.php';
 function service_orders_ui_value(string $action,string $key,string $fallback='',int $limit=500):string {
     if(($_SERVER['REQUEST_METHOD']??'GET')!=='POST'||($_POST['action']??null)!==$action)return $fallback;
     $v=$_POST[$key]??'';return is_string($v)&&strlen($v)<=$limit&&preg_match('//u',$v)&&!str_contains($v,"\0")?$v:'';
@@ -53,6 +54,7 @@ function service_orders_ui(ServiceSubscriptionDocument $agreement,bool $owner):v
         }
     }
     echo '<p class="hint">This records an initial hosting request. It does not register the domain, authorize automatic payment, or delete existing services. Ending the request preserves invoices and history.</p></section>';
+    hosting_order_links_ui($doc,$owner,$ctx['assessment']);
     $commands=match($phase){'offered'=>$owner?['withdraw'=>'Withdraw hosting offer']:['accept'=>'Confirm hosting request','decline'=>'Decline hosting offer'],'accepted'=>$owner?['allow_manual'=>'Permit manual fulfillment','revoke_manual'=>'Revoke manual permission','cancel'=>'Cancel hosting request']:['cancel'=>'Cancel hosting request'],default=>[]};
     if($state['manual']===null)unset($commands['revoke_manual']);
     foreach($commands as $command=>$label){

@@ -314,6 +314,43 @@ def run_browser(env, browser):
           'Commercial review is ready.' in owner.get(hosting_owner).text and db('SELECT * FROM ci_invoice_payments WHERE invoice_id=? ORDER BY id',[invoice])==before_manual)
     check('Client hosting screen hides private manual policy and receipt reference',
           policy['reason'] not in client.get(hosting_client).text and 'Synthetic service setup receipt' not in client.get(hosting_client).text)
+    # Use the real owner/client forms in the extracted application; no provider call is needed.
+    provider_posts_before = len(env['provider_server'].posts)
+    provider_calls_before = env['provider_server'].calls
+    provider_attempts_before = db('SELECT * FROM ci_provider_operations ORDER BY id')
+    service_setup = form_data(form_for(owner.get(hosting_owner), 'service_plans_order_prepare_service'))
+    check('Hosting service preparation GET performs no schema change', not db("SELECT value FROM ci_settings WHERE name='hosting_order_links_schema_version'"))
+    check('Clients do not receive provider preparation forms', 'name="package_type"' not in client.get(hosting_client).text)
+    for delta, label in [({'csrf':'bad','confirm':'1','current_password':OWNER},'CSRF'),
+                         ({'confirm':'1','current_password':'wrong'},'owner password'),
+                         ({'current_password':OWNER},'confirmation')]:
+        response = owner.post(hosting_owner, data={**service_setup, **delta})
+        check('Hosting history preparation requires '+label, not db("SELECT value FROM ci_settings WHERE name='hosting_order_links_schema_version'") and OWNER not in response.text)
+    owner.post(hosting_owner, data={**service_setup,'confirm':'1','current_password':OWNER})
+    check('Actual hosting preparation creates both native storage families', db("SELECT name,value FROM ci_settings WHERE name IN ('hosting_order_links_schema_version','hosting_records_schema_version') ORDER BY name")==[{'name':'hosting_order_links_schema_version','value':'1'},{'name':'hosting_records_schema_version','value':'1'}])
+    mapping = form_data(form_for(owner.get(hosting_owner), 'service_plans_order_map_service'))
+    mapping.update({'reseller_id':'42','package_type':'811','package_label':'Synthetic <reviewed package>','package_region':'Synthetic location','package_websites':'1','package_disk_mb':'0','mapping_only':'1','confirm':'1','current_password':OWNER})
+    for delta,label in [({'csrf':'bad'},'CSRF'),({'current_password':'wrong'},'owner password'),({'confirm':''},'confirmation'),({'mapping_only':''},'local mapping review'),({'package_websites':'-1'},'negative limit'),({'profile_revision':'0'},'stale connection'),({'order_hash':'a'*64},'stale order')]:
+        response = owner.post(hosting_owner,data={**mapping,**delta})
+        check('Actual hosting mapping rejects '+label, not db('SELECT id FROM ci_hosting_order_links') and not db('SELECT id FROM ci_hosting_records') and OWNER not in response.text)
+    check('Failed mapping retains reviewed package text with HTML escaping', 'Synthetic &lt;reviewed package&gt;' in response.text and 'value="'+mapping['order_hash']+'"' not in response.text)
+    foreign.post(hosting_client,data={**mapping,'action':'service_agreements_order_map_service'})
+    check('Forged client mapping action cannot create a service', not db('SELECT id FROM ci_hosting_order_links'))
+    capture(owner,hosting_owner,'staff-hosting-preparation')
+    context=browser.new_context(viewport={'width':1440,'height':1000});context.add_cookies([{'name':c.name,'value':c.value,'url':BASE} for c in owner.cookies]);page=context.new_page();page.goto(hosting_owner)
+    form=page.locator('form').filter(has=page.locator('[name=action][value=service_plans_order_map_service]'))
+    for key in ['reseller_id','package_type','package_label','package_region','package_websites','package_disk_mb','current_password']:
+        form.locator('[name='+key+']').fill(mapping[key])
+    form.locator('[name=mapping_only]').check();form.locator('[name=confirm]').check();form.locator('button').click();page.wait_for_load_state('networkidle')
+    check('Real Chromium mapping submits and displays prepared pending service','Hosting record prepared' in page.content() and 'provider setup has not started' in page.content().lower())
+    context.close()
+    mapped = db('SELECT * FROM ci_hosting_order_links WHERE id=?',[order_row['id']])[0]
+    account = db('SELECT * FROM ci_hosting_records WHERE id=?',[mapped['account_id']])[0]
+    check('Saved HTTP service mapping retains exact client domain request and known limits', mapped['client_id']==cid and account['client_id']==cid and json.loads(mapped['binding_json'])['request']['params']['domain_name']=='client.example' and json.loads(account['initial_json'])['package']['limits']=={'websites':1,'disk_mb':0})
+    client_progress=client.get(hosting_client)
+    check('Client sees prepared service without private provider configuration','Hosting record prepared' in client_progress.text and mapped['account_id'] in client_progress.text and 'Synthetic location' not in client_progress.text and 'Synthetic &lt;reviewed package&gt;' not in client_progress.text and policy['reason'] not in client_progress.text)
+    check('Foreign client cannot see the service reference',mapped['account_id'] not in foreign.get(hosting_client).text)
+    check('Preparation performs no provider reads writes or ledger attempt',len(env['provider_server'].posts)==provider_posts_before and env['provider_server'].calls==provider_calls_before and db('SELECT * FROM ci_provider_operations ORDER BY id')==provider_attempts_before)
     capture(owner, hosting_owner, 'staff-hosting-order')
     capture(client, hosting_client, 'client-hosting-order')
     revoke = form_data(form_for(owner.get(hosting_owner), 'service_plans_order_revoke_manual'))
@@ -326,6 +363,17 @@ def run_browser(env, browser):
           final_order['events'][-1]['command']=='cancel'
           and 'Hosting request cancelled' in client.get(hosting_client).text
           and db('SELECT * FROM ci_invoice_payments WHERE invoice_id=? ORDER BY id',[invoice])==before_manual)
+    check('Actual client cancellation retains mapped service and shows honest progress',db('SELECT * FROM ci_hosting_order_links WHERE id=?',[order_row['id']])==[mapped] and db('SELECT * FROM ci_hosting_records WHERE id=?',[mapped['account_id']])==[account] and 'service record and invoice history are retained' in client.get(hosting_client).text)
+    db('RENAME TABLE ci_hosting_order_links TO ci_retained_ui_hosting_order_links')
+    try:
+        for session,url in [(owner,hosting_owner),(client,hosting_client)]:
+            response=session.get(url)
+            check('Missing hosting association displays restoration without SQL/runtime error','Restore the original database' in response.text and 'Fatal error' not in response.text and 'SQLSTATE' not in response.text)
+        owner.post(hosting_owner,data={**service_setup,'confirm':'1','current_password':OWNER})
+        check('Stale preparation cannot recreate missing service history',not db('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['ci_hosting_order_links']))
+    finally:
+        db('RENAME TABLE ci_retained_ui_hosting_order_links TO ci_hosting_order_links')
+    check('Exact service restoration preserves client progress and original mapping',db('SELECT * FROM ci_hosting_order_links WHERE id=?',[order_row['id']])==[mapped] and 'Hosting record prepared' in client.get(hosting_client).text)
     orders_before_restore = db('SELECT * FROM ci_service_orders ORDER BY id')
     order_events_before_restore = db('SELECT * FROM ci_service_order_events ORDER BY id')
     for name in ['service_orders','service_order_events']:

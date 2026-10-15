@@ -3,6 +3,7 @@ declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/hosting/orders.php';
 require_once CWP_CODE_ROOT.'/app/plans/forms.php';
+require_once CWP_CODE_ROOT.'/app/hosting/order_link_views.php';
 
 /** Current authority is rechecked inside the same native guard used for actions. */
 function service_orders_context(string $agreement,int $client,bool $asClient=false):array {
@@ -50,6 +51,9 @@ function service_orders_form_action(string $action,string $agreement,int $client
     // Bind route and order before the native action; native authority is rechecked there.
     $context=service_orders_context($agreement,$client,!$owner);
     if(!$context['document']||$context['document']->data()['id']!==$id)throw new RuntimeException('Hosting order unavailable.');
+    if($owner&&in_array($command,['prepare_service','map_service'],true)){
+        hosting_order_links_form_action($command,$context['document'],$client,$password);return;
+    }
     $revision=service_plans_form_number($_POST,'order_revision',127);$event=service_plans_form_id($_POST,'event_id');
     $args=match($command){
         'accept'=>['domain_name'=>service_orders_domain(service_plans_form_text($_POST,'domain_name',254,true)),'review_sha256'=>service_plans_form_hash($_POST,'review_sha256')],

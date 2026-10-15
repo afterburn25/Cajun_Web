@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — native hosting preparation and client progress
+
+- Add owner forms to prepare accepted hosting orders with reviewed package/location/numeric limits and current password/confirmation.
+- Show client-safe local service progress and retain its history after order cancellation; refuse missing established associations before querying unavailable tables.
+- Keep mapping separate from verified provider entitlement and dispatch; document package-type automatic defaults. Add native and extracted-package browser coverage, pending exact-head CI. Parent26ec native timing and association tests passed all4 combinations.
+
 ## Unreleased — initial shared-hosting order intake
 
 - Recheck the actual current billing period before initial hosting eligibility, including a paused service with a future scheduled resume.

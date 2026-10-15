@@ -11,7 +11,7 @@ use CajunWebPro\Foundation\Hosting\{HostingJournal,HostingPackage};
 use CajunWebPro\Foundation\Provider\ProviderOperation;
 use CajunWebPro\Foundation\TwentyI\Operations\{TwentyIRequestBuilder,TwentyIOperationRegister};
 
-/** Only an exact addWeb request for the accepted primary domain; no welcome mail or unrelated extras. */
+/** Exact addWeb fields only. Provider package defaults can still trigger mail, apps or paid options. */
 function hosting_order_links_request(ServiceOrderDocument $order,HostingPackage $package,int $reseller):array {
     if($order->state()['phase']!=='accepted'||$reseller<1)throw new InvalidArgumentException('Choose an accepted order and explicit reseller identity.');
     // This also applies the existing bounded package contract; no invented quotas or prices.

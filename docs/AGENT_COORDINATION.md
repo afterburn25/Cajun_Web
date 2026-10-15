@@ -1,5 +1,7 @@
 # Agent coordination — complete20i P0
 
+Current PR138, parent26ec4a7e: Codex owns native hosting preparation and client progress, including form/projection tests and agreement-route wiring. Parent native82/42/281 plus108 ledger passed all4 combinations; new descendant acceptance pending. Existing full runs are preserved. [Current source/evidence/next work](TWENTYI_ORDER_SERVICE_LINKS.md). Older “current” subsections below are dated historical records; no external agent is claimed running.
+
 Codex continues the complete20i P0 priority. This is an implementation/integration branch, not a released or live-verified platform. Published version remains [1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) at7190b582; inspected main0b96f3d5 adds only the approved portal-design records to c42dd6d7.
 
 The combined `codex/twentyi-fulfillment` source preserves these exact parents:

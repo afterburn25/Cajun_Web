@@ -1,5 +1,7 @@
 # Approved roadmap and acceptance criteria
 
+PR138 now connects accepted orders to local hosting records and implements native owner preparation/client progress. Provider catalog/configuration verification and actual dispatch/reconciliation remain required, with full native controls afterward. [Current evidence](TWENTYI_ORDER_SERVICE_LINKS.md). No new release or live activation is claimed.
+
 Current20i P0 checkpoint:1.24 inventory/ownership/label-operation recovery is published and download-verified. Full platform remains unfinished. [Current requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) and [release evidence](TEST_REPORT_1.24.0.md) supersede older status notes. Cloud1.25 and necessary commercial eligibility continue.
 
 ## 20i approval and recovery correction — 2026-10-15
