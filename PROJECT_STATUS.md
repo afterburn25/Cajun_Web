@@ -1,5 +1,11 @@
 # Project status
 
+## Current work — admin mail replies and forwarding
+
+Codex is developing Reply/Forward on `codex/mail-replies-forwards` from frozen `e29c1c1fb81fd221980fd383d358635b8ebd8ec0`. The initial conversation-identifier component is outside deployment, with 45 named local checks passing in each PHP8.4 default/no-ini mode. Receiving/recipient parsing, current-authorized draft creation, compatible persistence/MIME threading, UI and native/browser/recovery acceptance remain to implement. [Scope and evidence](docs/MAIL_REPLY_FORWARD.md). This does not enable Reply, Forward or automatic sending. Complete 20i implementation/fixes stay with Devin; the latest independent findings are [on #122](https://github.com/afterburn25/Cajun_Web/pull/122#issuecomment-6184136824).
+
+Parent #124 now has [verified final acceptance](https://github.com/afterburn25/Cajun_Web/pull/124#issuecomment-6184342786): 11,907 named executions, all 21 observed workflow runs, 129 final images matching the verified checkpoint, and byte-identical Windows/Linux packages. All six complete ticket captures are visually inspected. #123/121 completed visual reviews and exact-source evidence stay preserved; do not repeat them. Ordered independent review starts with #101 before integration/release. Published v1.23.0 remains unchanged. Older sections below describe historical checkpoints.
+
 ## Ticket screenshot readiness — test-only follow-up
 
 The recurring acceptance review found client/conflict ticket PNGs ending 64 px before the footer bottom. A real PHP/MariaDB/Edge probe on exact `a671f83` reproduced the layout change: the authenticated activity response adds a 64 px bell row after initial layout. Capturing the old measured height after that response clips the bottom; waiting for the response gives the complete footer. This establishes the capture mechanism, not a missing product footer or an interception inside the original Playwright call.

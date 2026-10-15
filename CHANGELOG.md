@@ -1,9 +1,15 @@
 # Changelog
 
+## Unreleased preparation — admin mail replies and forwarding
+
+- Add an immutable bounded conversation-identifier component and 45 named tests in each default/no-ini mode, outside deployment.
+- Extend the existing PHP8.2/8.4 mail-compose matrix without removing original cases.
+- Keep parser, draft persistence, MIME threading and UI integration explicitly pending; no shipping source, version, provider implementation or release changed.
+
 ## Unreleased test correction — complete ticket screenshots
 
 - Wait for the actual authenticated activity bell and fonts before ticket screenshots; assert PNG dimensions and footer bounds for client/conflict/staff desktop/mobile captures.
-- Verify the 64 px asynchronous layout mechanism with actual PHP/MariaDB/Edge; preserve every original behavior assertion and all application bytes. Local 15-case/six-view evidence passes; packaged acceptance remains pending.
+- Verify the 64 px asynchronous layout mechanism with actual PHP/MariaDB/Edge; preserve every original behavior assertion and all application bytes. Local 15-case/six-view evidence and [final 11,907-execution acceptance](https://github.com/afterburn25/Cajun_Web/pull/124#issuecomment-6184342786) pass; Windows/Linux packages match and independent review remains pending.
 
 ## Unreleased — recurring billing notifications
 

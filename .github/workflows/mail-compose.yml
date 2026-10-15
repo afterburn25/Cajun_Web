@@ -1,7 +1,7 @@
 name: Mail draft content checks
 on:
   push:
-    branches: [main, codex/mail-drafts]
+    branches: [main, codex/mail-drafts, codex/mail-replies-forwards]
     paths: ['foundation/mail-compose/**', 'foundation/email-templates/**', 'tests/mail-compose/**', '.github/workflows/mail-compose.yml']
   pull_request:
     paths: ['foundation/mail-compose/**', 'foundation/email-templates/**', 'tests/mail-compose/**', '.github/workflows/mail-compose.yml']
@@ -31,6 +31,8 @@ jobs:
             for source in foundation/mail-compose/*.php tests/mail-compose/*.php; do php -l "$source"; done
             php tests/mail-compose/run.php qa/mail-drafts-default-results.json
             php -n tests/mail-compose/run.php qa/mail-drafts-no-ini-results.json
+            php tests/mail-compose/thread.php > qa/mail-thread-default-results.json
+            php -n tests/mail-compose/thread.php > qa/mail-thread-no-ini-results.json
           '
       - name: Preserve named content results
         if: always()
