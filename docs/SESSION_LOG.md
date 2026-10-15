@@ -1645,3 +1645,59 @@ The next implemented path extends the existing InventoryReader, fixed transport,
 Local PHP 8.4 default/no-ini passes 82 cloud reader/transport cases each; the existing 139 inventory and 28 package-reader cases also pass. Native PHP/database cases and real packaged HTTP/Chromium cloud scenarios are implemented but not yet run. They cover populated v1/v2/v3 upgrades, interruption/repeat, retained package/client isolation, mixed and failed cloud reads, consent/rate limits and desktop/mobile screens. The new owner UI, persistence and migrations remain unverified until those runs pass. No live cloud read, provider write, purchase, mail, SSH or deployment has occurred.
 
 Next: refresh generated shipping mirrors, push this checkpoint, run the reader and native inventory matrices, inspect failures, then run the bounded packaged/browser checkpoint and independent review. Add explicit cloud/client ownership, remaining discovery and native control workflows after the underlying path is verified. Continue first-increment release acceptance on the stable branch; exact-main and downloaded-release verification remain required. The full owner API-reference source/link is still pending, while primary public documentation supports this specific read.
+
+
+## Domain search implementation checkpoint — 2026-10-15
+
+Codex owns complete 20i P0. Branch `codex/twentyi-domain-search` starts from cloud candidate `1d9e372cac7ff9739d339b2544c7c9cfbcee3e33`; it preserves all existing history. Current main remains `c42dd6d70fe57276d75835419db9d6e8e51aaa7f`, and immutable published 1.24 remains source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`.
+
+Implemented the bounded exact-name domain search reader and narrow allowlist in the existing fixed HTTPS transport. The reader accepts documented NDJSON packets in either order and the official console's JSON array example. Only an exact query result with `can: register` and a matching header confirms observed availability. Other names remain unverified suggestions. Invalid, incomplete, conflicting, oversized, unauthorized, rate-limited and failed responses cannot become availability. Secrets and remote error text are excluded from results; no retry, price, reservation or entitlement is inferred. Shipping mirrors and installer inventory accompany the source.
+
+Actual local evidence before this session became read-only: 77 named synthetic assertions pass with PHP's default configuration and again with `-n` (154 executions). The workflow now runs these cases on PHP 8.2 and 8.4. Current remote checks have not yet been observed. There is no native search screen, durable throttle/history, sold-TLD configuration, pricing or checkout in this checkpoint; those remain implementation work. This component is not a completed domain workflow or release.
+
+Cloud #127 candidate full run [38719850550](https://github.com/afterburn25/Cajun_Web/actions/runs/38719850550) passed at synthetic merge `97b0b869a72c527d350c8aa63262dfa01ff23854`, whose tree `24330be901adebc9ae1ab1379ed2312663b03901` equals source 1d9e372c. Its actual current screenshots and Linux/Windows package comparison remain unverified. Preserve 29 focused gates (162 reports / 17,666 named executions) and independent clear review 6189930717. These are cloud evidence, not domain-search tests.
+
+Billing correction #135 is remotely committed at `35a564a1a2f6660258ff0e0f2fcf057cb24a07f3`; 21 focused workflows pass and full acceptance [38750019637](https://github.com/afterburn25/Cajun_Web/actions/runs/38750019637) is running. Its local earlier dirty edits remain preserved and need reconciliation with that remote commit. Review-request comments and PR metadata updates were rejected because this session cannot request approval. Shell filesystem is read-only and its network is restricted; a local artifact-download attempt was denied. No release gate is waived.
+
+Next: finish typed native domain search, durable shared throttling/429 backoff, account/revision-bound history, local sold-TLD filtering and actual native/HTTP tests; then continue domain pricing and purchase eligibility. Verify current cloud images/packages before normal merge and exact-main 1.25 acceptance/publication. Finish current billing acceptance and independent review before integrating dependencies. The owner's complete API reference is still a previously requested external input; do not ask again or stop independent implementation. No provider call, charge, customer mail, SSH or production deployment occurred.
+
+Source parent: 1d9e372cac7ff9739d339b2544c7c9cfbcee3e33. Commit: Add bounded domain availability reader and synthetic checks. The enclosing Git history identifies the checkpoint SHA.
+
+
+## Native domain search checkpoint — 2026-10-15
+
+Continuing complete 20i P0 from `6d3592a9dc9faeffd8bc86563a40c299066bf098` on `codex/twentyi-domain-search`. The reader workflow [38751661767](https://github.com/afterburn25/Cajun_Web/actions/runs/38751661767) passed on PHP 8.2/8.4; its artifacts have not been independently downloaded in this restricted session. Earlier local parser evidence remains 77 named cases per default/no-ini run.
+
+Added typed owner configuration and lookup forms on the existing 20i page, locally configured extension filtering, immutable request/outcome history, a profile-wide 30-second cooldown and 20/hour limit, and a durable 24-hour pause after a 429 response. Configuration is explicitly enabled by an owner with their current password and bound to the saved connection revision. Routine lookup uses current owner permission and the existing fixed transport; there is no separate execution engine. Stale/revoked access is checked before credentials and after results. Additive schema preparation refuses missing stamped history or unexplained populated tables; preparing or viewing never contacts 20i.
+
+Native MariaDB/MySQL tests and real PHP view rendering cover permissions, stale forms, filtering, failed/partial responses, revocation around networking, audit rollback, incomplete intents, shared limits, backoff and history recovery. The new workflow runs PHP 8.2/8.4 with MariaDB 10.11/MySQL 8.4 and checks deployment hashes/documentation. **This new code has not yet been executed; CI is the next gate.** There are no current HTTP/Chromium, concurrency-worker, independent-review or live-account acceptance claims. Client/public search, periods, verified pricing and purchase/transfer workflows remain unfinished.
+
+This remote checkpoint preserves local work unchanged while filesystem writes and shell networking remain unavailable. Current main c42dd6d7 and published1.24/7190b582 are unchanged. Cloud #127 still needs current screenshots and package comparison before exact-main1.25 release gates. Billing #135 full run38750019637 has passed native, browser and recovery steps and is still running Apache checks; retain its source35a564a1. Review-request comments and PR metadata updates remain blocked by approval policy. The complete owner API source remains a previously requested input.
+
+Next: inspect/fix native domain-search CI, add packaged HTTP/Chromium and concurrent-worker cases, then independent review and integration with cloud/billing. Keep P0 scope active and continue commercial/domain/native hosting/VPS/support/SSH workflows. No production call, charge, mail, SSH or deployment occurred.
+
+Commit message: Add native domain lookup policy history and owner forms. Parent: 6d3592a9dc9faeffd8bc86563a40c299066bf098. The enclosing commit identifies this checkpoint.
+
+
+## Domain search browser/concurrency checkpoint — 2026-10-15
+
+Parent `3366f51985d61b27626b2328a2f2361924496f81` passed [native domain search workflow38753822132](https://github.com/afterburn25/Cajun_Web/actions/runs/38753822132). All four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 jobs passed **53 named assertions each (212 executions)**, verified by parsing each job's actual named JSON report from its log. Deployment mirror/inventory and documentation checks passed in every job. This is native persistence and actual PHP view rendering, not browser or live-provider acceptance.
+
+This descendant adds an actual extracted-package HTTP/Chromium domain-search suite with the existing loopback HTTPS server, covering explicit preparation, owner configuration, offered suffixes, captured/stale forms, permissions/CSRF, query escaping, canonical requests, checked versus partial results, rate limiting, history, direct-path denial and desktop/mobile captures. It adds two concurrent PHP owner processes sharing the real database/lock and expects one read to proceed. Rejected configuration and query forms now preserve their original profile/policy revisions, requiring a fresh GET after stale context rather than silently rebinding the retry. The corresponding installer hash is regenerated.
+
+Python syntax compilation passes for all three changed drivers; the new native/concurrency/browser cases have **not yet run**. The existing full application workflow is enabled on this feature branch and now includes the native domain test. No long-running billing job was canceled or restarted. Full P0 remains active; these cases cannot substitute for current screenshot inspection, package comparison, independent review, exact-main acceptance and downloaded-release verification.
+
+Continue from `codex/twentyi-domain-search`: inspect current native and full application jobs, fix any product/fixture failure, inspect actual images/reports, then coordinate reviewed integration. Current main c42dd6d7 and released1.24 source7190b582 remain unchanged. Cloud1.25 still needs final artifact inspection, and billing35a564a1 retains its separate full run38750019637. Client/public domain search, periods/pricing, purchase/transfer and wider hosting/VPS/support/SSH remain unfinished. Local writes and shell artifact downloads remain restricted; review-request comments and PR metadata edits were blocked by approval policy. No production call or deployment occurred.
+
+Commit: Exercise domain search through packaged browser and concurrent owners. Parent3366f51985d61b27626b2328a2f2361924496f81; enclosing Git history identifies current SHA.
+
+
+## Domain search retained-view fixture repair — 2026-10-15
+
+From099aa2e8 on #136, actual inventory job116492616664 showed an undefined domain-search function while directly rendering the combined provider page. The production router already loads the provider controller. Both retained inventory/upgrade fixtures now use that controller; all earlier cases remain and new assertions prove a combined-page GET creates no tables or settings and leaves populated legacy facts unchanged. Runtime shipping bytes are unchanged.
+
+Native domain search at099 passed54 named cases on all four database/runtime combinations (216 executions), including real concurrent owners. Full099 run38755410755 failed native and skipped browser; its remaining recovery evidence is preserved. Application concurrency now groups by source SHA as well as branch/checkpoint to avoid canceling an earlier candidate when a corrective commit arrives. This descendant's CI is pending, and the packaged domain browser scenarios have not passed yet.
+
+Separate billing35a full38750019637 succeeded (HTTP1,513; recovery275; Apache1,527). Current artifacts/review still remain. Main/release1.24 unchanged; complete20i unfinished. No live provider action or deployment occurred.
+
+Commit: Load the normal provider controller in retained native fixtures. Parent099aa2e8cef128d340f634b9cbebe2c46c2fa2cf. See current status/handoff for external restrictions and next steps.
