@@ -141,3 +141,5 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_cloud.php'; ?>
 <section class="workspace-card"><h2>Service capabilities</h2><p>These capabilities remain unverified and unavailable, including after a successful connection check.</p>
 <ul><li>Hosting plan types and account balance</li><li>Hosting creation, plan changes and deletion</li><li>Domain search, registration, renewals and transfers</li><li>VPS ordering and power controls</li><li>Backup restoration and SSH access</li></ul></section>
+
+<?php require CWP_CODE_ROOT.'/admin/views/provider_domain_search.php'; ?>

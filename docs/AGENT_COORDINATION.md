@@ -7,3 +7,5 @@ Cloud #127 remains on`codex/twentyi-cloud-inventory`; #128 is normally merged th
 No document proves another external agent has stopped or begun work. Missing full owner API upload was requested once; keep independent implementation moving. [Takeover](TWENTYI_CODEX_TAKEOVER.md) and [previous checkpoint](archive/2026-10-15-pre-1.24-AGENT_COORDINATION.md).
 
 Domain-search implementation is on `codex/twentyi-domain-search`, based on cloud 1d9e372c. Preserve its parent #127 and separate billing #130/#133/#135 histories. Only the bounded reader is implemented at this checkpoint; native workflows remain required. No external agent dispatch or live provider operation occurred.
+
+Follow-on domain-search checkpoint adds native owner forms/history/policy and a dedicated four-runtime database workflow; these new paths are untested until current CI succeeds. Reader workflow38751661767 passed at6d3592a9. Do not merge this lane into cloud1.25 before its independent acceptance and release scope are selected.

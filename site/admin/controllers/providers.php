@@ -5,6 +5,7 @@ require_once CWP_CODE_ROOT.'/app/providers/checks.php';
 require_once CWP_CODE_ROOT.'/app/providers/operations.php';
 require_once CWP_CODE_ROOT.'/app/providers/inventory.php';
 require_once CWP_CODE_ROOT.'/app/providers/reconcile.php';
+require_once CWP_CODE_ROOT.'/app/providers/domain_search.php';
 use CajunWebPro\Foundation\Provider\OperationResult;
 use CajunWebPro\Foundation\TwentyI\Operations\TwentyIOperationRegister;
 
@@ -20,6 +21,7 @@ function provider_inventory_message(?string $code):string {
 }
 
 function provider_inventory_admin_action(string $action):void {
+    if(str_starts_with($action,'provider_inventory_domain_search_')){provider_domain_search_admin_action($action);return;}
     $password=posted('current_password',200);
     if($action==='provider_inventory_prepare'){
         provider_inventory_migrate($password);flash('20i inventory storage is ready.');redirect(admin_url('provider-settings'));
@@ -165,4 +167,28 @@ function provider_operations_admin_render(string $error):void {
         admin_action('provider_operations_setup');admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"');echo '<button class="btn gold">Prepare operation records</button></form></section>';admin_foot();exit;
     }
     require CWP_CODE_ROOT.'/admin/views/operations.php';admin_foot();exit;
+}
+
+function provider_domain_search_admin_action(string $action): void {
+    provider_settings_manager();
+    if($action==='provider_inventory_domain_search_prepare') {
+        provider_domain_search_migrate(posted('current_password',200));flash('Domain search history is ready.');redirect(admin_url('provider-settings'));
+    }
+    $number=static function(string $key,bool $zero=false):int {
+        $raw=$_POST[$key]??null;
+        if(!is_string($raw)||preg_match('/\A(?:0|[1-9][0-9]{0,9})\z/',$raw)!==1||(int)$raw>2147483647||(!$zero&&(int)$raw===0))throw new InvalidArgumentException('Reload the current domain search form.');
+        return (int)$raw;
+    };
+    $id=posted('profile_id',32);$profileRevision=$number('revision');$configRevision=$number('search_revision',true);
+    if($action==='provider_inventory_domain_search_configure') {
+        $enabled=$_POST['search_enabled']??'0';
+        if(!is_string($enabled)||!in_array($enabled,['0','1'],true))throw new InvalidArgumentException('Reload the current domain search form.');
+        provider_domain_search_configure($id,$profileRevision,$configRevision,$enabled==='1',$_POST['search_tlds']??'',posted('current_password',200));
+        flash('Domain search settings saved. No lookup or purchase was made.');redirect(admin_url('provider-settings'));
+    }
+    if($action==='provider_inventory_domain_search_run') {
+        provider_domain_search_run($id,$profileRevision,$configRevision,$_POST['domain_query']??null);
+        flash('The lookup outcome is recorded in Domain search history. Availability is an observation, not a reservation.');redirect(admin_url('provider-settings'));
+    }
+    throw new InvalidArgumentException('Unknown domain search action.');
 }
