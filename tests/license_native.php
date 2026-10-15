@@ -25,6 +25,7 @@ try{
     $key=license_create(1,'WEBSITE-RESTAURANT');
     lic_ok('License persisted with customer and product',($r=license_get($key))&&(int)$r['customer_id']===1&&$r['product_id']==='WEBSITE-RESTAURANT'&&(int)$r['is_active']===1);
     lic_ok('Unknown key returns null',license_get('AAAA-BBBB-CCCC-DDDD')===null);
+    lic_ok('License creation audited',(bool)one('SELECT id FROM '.table('audit')." WHERE action='license.create'"));
 
     // --- domain registration ------------------------------------------------
     $lic=license_get($key);$licId=(int)$lic['id'];
@@ -62,6 +63,8 @@ try{
     lic_ok('Replace keeps the other active domain',(int)$active['example.com']===1);
     lic_deny('Replace to same domain rejected',fn()=>license_replace_domain($licId,'example.com','example.com'));
     lic_deny('Replace of inactive domain rejected',fn()=>license_replace_domain($licId,'ghost.example.com','other.example.com'));
+    lic_ok('Domain mutations audited',(bool)one('SELECT id FROM '.table('audit')." WHERE action='license.domain.replace'")
+        &&(bool)one('SELECT id FROM '.table('audit')." WHERE action='license.domain.register'"));
 
     // --- deactivation --------------------------------------------------------
     license_deactivate_domain($licId,'test.example.com');
