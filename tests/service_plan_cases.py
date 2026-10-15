@@ -56,6 +56,8 @@ def run_browser(env, browser):
     creation = data(owner, new, 'service_plans_create')
     r = owner.post(new, data=dict(creation, **terms, csrf='bad'))
     check('Draft create requires session CSRF and preserves escaped unsaved fields', not db('SELECT * FROM ci_service_plans') and soup(r).select_one('[name=name]')['value']==terms['name'] and '<review>' not in r.text)
+    r = owner.post(new, data=dict(creation, **dict(terms, name='Unlimited support')))
+    check('Owner cannot publish unsupported promises through a plan name', not db('SELECT * FROM ci_service_plans') and 'Terms cannot promise unbounded or guaranteed service' in r.text and soup(r).select_one('[name=name]')['value']=='Unlimited support')
     r = owner.post(new, data=dict(creation, **terms))
     plan_id = parse_qs(urlparse(r.url).query)['record'][0]
     detail = admin+'?view=service-plan&record='+plan_id
