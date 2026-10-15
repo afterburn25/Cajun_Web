@@ -28,10 +28,18 @@ try{
     hr_ok('Exact pending resource confirmation creates one client-bound active service',$active->account()->status()==='active'&&$active->account()->providerRef()==='866239'&&one('SELECT resource_ref FROM '.table('hosting_resources').' WHERE account_id=?',[$pendingAccount])['resource_ref']==='866239');
     hr_ok('Confirmed pending service keeps original provider acknowledgement',json_decode(one('SELECT result_json FROM '.table('hosting_operation_results').' WHERE id=?',[$pb['id']])['result_json'],true)['outcome']==='accepted_pending'&&count($active->account()->operations())===1);
     $before=hr_full();hr_ok('Pending confirmation replay is inert',!hr_observe($pendingClaim,8107,$confirmed)&&hr_full()===$before);
-    $original=one('SELECT * FROM '.table('hosting_operation_results').' WHERE id=?',[$pb['id']]);query('DELETE FROM '.table('hosting_operation_results').' WHERE id=?',[$pb['id']]);
-    try{hr_deny('Lost pending acknowledgement cannot be reconstructed from active state',fn()=>hr_load($pendingAccount));}
+    $original=one('SELECT * FROM '.table('hosting_operation_results').' WHERE id=?',[$pb['id']]);
+    // Disposable restore-corruption fixture only. Keep the real foreign key and
+    // re-enable its checks before exercising application validation.
+    hr_ok('Pending restore fixture starts with foreign keys enforced',(int)query('SELECT @@SESSION.foreign_key_checks')->fetchColumn()===1);
+    try{db()->exec('SET SESSION FOREIGN_KEY_CHECKS=0');query('DELETE FROM '.table('hosting_operation_results').' WHERE id=?',[$pb['id']]);}
+    finally{db()->exec('SET SESSION FOREIGN_KEY_CHECKS=1');}
+    try{
+        hr_ok('Pending restore refusal runs with foreign keys enforced',(int)query('SELECT @@SESSION.foreign_key_checks')->fetchColumn()===1);
+        hr_deny('Lost pending acknowledgement cannot be reconstructed from active state',fn()=>hr_load($pendingAccount));
+    }
     finally{query('INSERT INTO '.table('hosting_operation_results').' ('.implode(',',array_keys($original)).') VALUES ('.implode(',',array_fill(0,count($original),'?')).')',array_values($original));}
-    hr_ok('Restoring original pending response preserves exact confirmed journal',hr_load($pendingAccount)->json()===$active->json());
+    hr_ok('Restoring original pending response preserves exact journal and all saved rows',hr_load($pendingAccount)->json()===$active->json()&&hr_full()===$before);
 }catch(Throwable $e){
     $checks[]=['name'=>'Unexpected pending persistence failure: '.$e->getMessage(),'passed'=>false];throw $e;
 }finally{

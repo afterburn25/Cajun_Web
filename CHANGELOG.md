@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased — pending-history recovery fixture
+
+- Simulate a damaged database restore only within the disposable test, restoring foreign-key enforcement before validating refusal and exact recovery. Keep the real application constraints and original missing-history assertion. First native failure is retained; corrected descendant acceptance is pending.
+
 ## Unreleased — accepted hosting provisioning
 
 - Retain the provider's assigned hosting ID as pending, separate from an active service. Preserve the original attempt/result; block duplicate dispatch and refuse absent or different-resource reconciliation.
