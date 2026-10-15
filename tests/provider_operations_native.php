@@ -135,7 +135,7 @@ try {
     $grantId=provider_operation_grant($profile,'packages.create',$scope,$password);
     po_ok('Grant under the re-approved configuration is active',provider_operation_grant_active($profile,'packages.create',$active));
     // The newest grant for THIS scope decides even after many other-scope grants.
-    for($i=0;$i<70;$i++)provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>1000+$i],$password);
+    for($i=0;$i<70;$i++)provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>[1000+$i]],$password);
     po_ok('Newest same-scope grant found beyond 64 other rows',provider_operation_grant_active($profile,'packages.create',$active));
     query('UPDATE '.table('provider_operation_grants').' SET expires_epoch=? WHERE id=?',[time()-1,$grantId]);
     po_ok('Expired grant is inactive',!provider_operation_grant_active($profile,'packages.create',$active));

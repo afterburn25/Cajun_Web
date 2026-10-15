@@ -48,3 +48,7 @@ Status values: not started, implementing, branch-tested, integrated, released, l
 | Request and outcome contract gaps | Review full reference, scalar/mixed updates, 2xx/false/null/async outcomes | Open implementation/review task; no whole-lane clearance |
 
 See [takeover provenance](TWENTYI_CODEX_TAKEOVER.md), [full request](TWENTYI_CODEX_TAKEOVER_REQUEST.md) and [dependency gates](DEPENDENCY_GATES.md). Missing engineering is not classified as an external-owner gate.
+
+### Combined inheritance and response semantics checkpoint
+
+Inherited resources40ad600 and hosting1c92e6b are now retained in normal merges5b115f0/08b90c8; combined acceptance is pending. The earlier inventory fixes have544 verified named native executions at962cc3e. Current acknowledgement/replay semantics, corrected ID-array request boundaries, and name-match reconciliation repair pass278 local pure operation executions; current native matrices are pending. Package acknowledgements remain accepted_pending, never automatically active. Complex per-package request fields are only bounded at their outer documented shape; typed native forms and their inner semantics remain required. Original API-reference intake still needs an accessible complete source. This is implementation progress, not platform completion or release evidence.

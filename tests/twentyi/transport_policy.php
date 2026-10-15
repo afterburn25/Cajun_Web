@@ -37,6 +37,17 @@ foreach([
 ] as $i=>$args)refuses(fn()=>$transport->send(new TransportRequest(...$args)),'invalid request stops before authorization/network '.$i);
 check($authorized===0,'all request rejections avoid credential authority callback and network');
 try{$transport->send(new TransportRequest('GET',TwentyIAdapter::URL,$headers));}catch(LogicException){check($authorized===1,'current authority can stop valid request before network');}
+$writeHeaders=$headers+['Content-Type'=>'application/json'];
+foreach(['addWeb','updatePackage','deleteWeb','renewDomain'] as $endpoint){
+    $before=$authorized;
+    try{$transport->send(new TransportRequest('POST','https://api.20i.com/reseller/*/'.$endpoint,$writeHeaders,'{"delete-id":[42]}'));check(false,'write authorization gate '.$endpoint);}
+    catch(LogicException){check($authorized===$before+1,'current authority stops catalogued write before network '.$endpoint);}
+}
+foreach(['../7','0','self','12.3','123?x=1','*/*','foo-bar'] as $id){
+    $before=$authorized;
+    refuses(fn()=>$transport->send(new TransportRequest('POST','https://api.20i.com/reseller/'.$id.'/deleteWeb',$writeHeaders,'{"delete-id":[42]}')),'invalid write reseller path '.$id);
+    check($authorized===$before,'bad write path never reaches authority/network '.$id);
+}
 if(!function_exists('curl_init')){
     $transport=new FixedHttpTransport('8.8.8.8',static fn()=>null);
     try{$transport->send(new TransportRequest('GET',TwentyIAdapter::URL,$headers));check(false,'missing extension refuses');}

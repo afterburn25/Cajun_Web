@@ -35,7 +35,7 @@ use CajunWebPro\Foundation\MailTransport\EndpointPolicy;
  */
 final class ProviderOperationLedger implements OperationLedger
 {
-    private const FINAL_STATES = ['succeeded','failed','unsupported','uncertain','conflict','in_progress','retryable'];
+    private const FINAL_STATES = ['succeeded','accepted_pending','failed','unsupported','uncertain','conflict','in_progress','retryable'];
 
     public function claim(string $idempotencyKey, string $fingerprint, int $now): LedgerClaim
     {
@@ -67,6 +67,7 @@ final class ProviderOperationLedger implements OperationLedger
         $operation=(string)($row['operation']??'provider.operation');
         $result=match((string)$row['status']) {
             'succeeded'=>OperationResult::succeeded($operation,(string)$row['result_message'],$row['external_id'],$row['provider_code']),
+            'accepted_pending'=>OperationResult::acceptedPending($operation,$row['external_id']),
             'failed'=>OperationResult::failed($operation,(string)$row['result_message'],$row['provider_code']),
             'retryable'=>OperationResult::retryable($operation,(string)$row['result_message'],$row['provider_code']),
             'uncertain'=>OperationResult::uncertain($operation,$row['provider_code']),
@@ -240,6 +241,9 @@ function provider_operations_execute(string $profileId,int $revision,string $gra
             return $out('no_grant',null,$actor);
         $spec=$register->get((string)$grant['operation']);
         if($spec===null||!$spec->shapeComplete)return $out('unbuildable',(string)$grant['operation'],$actor);
+        // A saved older approval must still satisfy the current request contract.
+        try{(new TwentyIRequestBuilder($register))->build(new ProviderOperation((string)$grant['operation'],'dispatch-validation',$params));}
+        catch(InvalidArgumentException){return $out('unbuildable',(string)$grant['operation'],$actor);}
         // Atomically consume the approval: one grant, one request, one key.
         $consumed=query('UPDATE '.table('provider_operation_grants').' SET consumed_key=?,consumed_at=? WHERE id=? AND consumed_key IS NULL AND revoked_at IS NULL',
             [$idempotencyKey,gmdate('Y-m-d H:i:s'),$grant['id']]);

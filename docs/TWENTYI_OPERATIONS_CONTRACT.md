@@ -1,148 +1,44 @@
-# 20i write-boundary contract — `foundation/twentyi-operations`
+# 20i write boundary and response semantics
 
-Scope: the documented **package-lifecycle write surface** from
-`docs/TWENTYI_OWNER_API_REFERENCE.md` (§1, owner upload hash
-`f7c738e746c2aebb9e1d047a555f3874a0766255795ed80edeebe8e599b9ec4d`),
-represented as closed descriptors plus a request builder and outcome
-classifier. This component is **descriptive, not executable**: it
-constructs and classifies bounded requests. It never resolves a
-credential, attaches `Authorization`, opens a socket, or records a
-result. The live adapter (`foundation/twentyi/TwentyIAdapter`) still
-returns `supports() === false` for every operation; nothing is wired.
+Codex owns the complete [20i takeover](TWENTYI_CODEX_TAKEOVER.md). The existing adapter, protected transport, owner grants and durable gateway/ledger are retained. This boundary is executable through the owner operation workflow; it is not the completed first-party hosting platform. No current synthetic test proves live provider behavior.
 
-## Register (`TwentyIOperationRegister`)
+## Request contracts
 
-Nine documented operations, literal method/path from the reference:
+| Operation | Method/path | Current implementation and evidence |
+|---|---|---|
+| packages.create | POST /reseller/{resellerId}/addWeb | Existing bounded type/domain/extra names/label/document roots/StackUser/template fields. [Official creation guide](https://docs.20i.com/api/provision-hosting-package-api) supplies the result-ID response. |
+| packages.update | POST /reseller/{resellerId}/updatePackage | Owner complete-reference clarification: id/delete-id arrays; billing, labels, limit, limit-set, packageBundleTypes are per-package maps. Outer shape and target isolation implemented; inner-field semantics still require full-reference intake and typed forms. |
+| packages.delete | POST /reseller/{resellerId}/deleteWeb | Owner clarification: nonempty delete-id array. Destructive, separately approved request; never an automatic cancellation effect. |
+| domains.renew | POST /reseller/{resellerId}/renewDomain | Existing name/years/renewPrivacy request. This is not proof of TLD eligibility, a verified quote, completed renewal or registrar entitlement. |
+| packages.userstatus | POST /package/{packageId}/userStatus | Owner supplied includeRepeated/subservices; value-domain implementation remains pending. |
+| domains.nameservers | POST /package/{packageId}/domain/{domainId}/nameservers | Owner supplied ns/old-ns arrays and actual add/remove semantics; implementation remains pending. |
+| domains.dns | POST /package/{packageId}/domain/{domainId}/dns | Owner supplied conflictPolicy/insertPolicy/new/delete structures; record validation remains pending. |
+| domains.register / domains.transfer | POST /reseller/{resellerId}/addDomain or transferDomain | Owner supplied contact/otherContacts examples. Full-source intake and individual registry validation remain pending; blanket claims that provider documentation lacks these fields are superseded. |
 
-| Operation | Endpoint | Shape | Risk flags |
-|---|---|---|---|
-| `packages.create` | `POST /reseller/{resellerId}/addWeb` | complete (7 fields) | billing, welcome email via `stackUser` |
-| `packages.update` | `POST /reseller/{resellerId}/updatePackage` | complete (7 fields incl. `delete-id`) | destructive, billing |
-| `domains.renew` | `POST /reseller/{resellerId}/renewDomain` | complete (3 fields: `name`, `years`, `renewPrivacy`) | billing (balance-funded) |
-| `domains.register` | `POST /reseller/{resellerId}/addDomain` | **incomplete** — registrant/contact/registry inputs described by purpose, not field names | billing; refused by builder |
-| `domains.transfer` | `POST /reseller/{resellerId}/transferDomain` | **incomplete** — field names listed, contact/limits sub-shapes unspecified | billing; refused by builder |
-| `domains.nameservers` | `POST /package/{packageId}/domain/{domainId}/nameservers` | **incomplete** — added/removed described, exact field names not given | refused by builder |
-| `domains.dns` | `POST /package/{packageId}/domain/{domainId}/dns` | **incomplete** — `conflictPolicy`/`insertPolicy` named, `new`/`delete` record shapes undocumented | refused by builder |
-| `packages.userstatus` | `POST /package/{packageId}/userStatus` | **incomplete** — body fields not shown | refused by builder |
-| `packages.delete` | `POST /reseller/{resellerId}/deleteWeb` | **incomplete** — body fields not shown | destructive; refused by builder |
+The selected [repository reference](TWENTYI_OWNER_API_REFERENCE.md) is not the complete upload. Its omissions cannot establish absent provider documentation. Current unimplemented entries remain unbuildable until their supported typed contract is implemented; this is an engineering backlog, not an owner-permission excuse.
 
-`shapeComplete` separates "endpoint named" from "request buildable".
-The builder throws `InvalidArgumentException` for shape-incomplete
-operations rather than inventing fields. `exclusions()` names the
-write surfaces deliberately not catalogued — StackCP users/grants,
-VPS create/renew/power/reboot/rebuild/stop/start/lockVnc/unlockVNC,
-cloud ordering/product-data lookups, SSH access, email, direct billing — each
-with its refusal reason. A renewal is not observable through the
-package list, so `domains.renew` uncertainty reconciles `refused`
-(the row keeps its provider-truthful status; the owner verifies in
-the 20i panel).
+Allocated reseller IDs or the documented self alias are accepted. Requests use the fixed verified HTTPS host, exact path allowlist, bounded JSON (8 KiB, depth8,256 visited nodes), and allowlisted body fields. ID lists contain1–64 distinct positive integers. updatePackage maps are restricted to explicitly approved update IDs; a package cannot appear in both update and delete lists. No existing scalar approval is silently converted. Old grants must pass the current builder before consumption and DNS/dispatch.
 
-## Request builder (`TwentyIRequestBuilder`)
+## Acknowledgement versus completion
 
-`build(ProviderOperation) → TransportRequest`, all-or-nothing:
-
-- operation must be registered **and** shape-complete;
-- `resellerId` slot accepts a positive allocated id or the documented
-  `*` self alias; `packageId` accepts a positive integer only — nothing
-  else reaches the URL path;
-- body keys are exactly the documented allowlist; unknown keys,
-  missing required fields, wrong types, control bytes, oversized
-  strings (>1024), lists >64, map/json beyond depth 8 / 256 nodes counting every visited value including scalar leaves all
-  refuse before a request object exists;
-- serialized body is canonical JSON bounded to 8 KiB;
-- `Content-Type: application/json`, `Accept: application/json`,
-  15 s bounded timeout, fixed host `https://api.20i.com`;
-- **no `Authorization` header ever** — credential attachment is an
-  execution-boundary concern for a future gateway path, not this layer.
-
-## Result classification (`TwentyIResultClassifier`)
-
-Conservative write semantics; a request that may have reached the
-provider is never classified as a clean failure:
-
-| Outcome | Classification |
+| Observed response | Durable result |
 |---|---|
-| 200/201/204 | `succeeded` — status is authoritative even if the body is unreadable |
-| other 2xx, incl. 202 | `uncertain` — accepted/queued is not a completed write; reconcile before retrying |
-| 401/403 | `failed` `authentication` (bounded message, no body echo) |
-| other 4xx | `failed` `http_{status}` — provably rejected |
-| 3xx, 429, 5xx | `uncertain` — received; reconcile before any retry |
-| connect/TLS/unavailable transport | `failed` — provably pre-send |
-| timeout/protocol/unknown transport | `uncertain` — may have landed |
+| addWeb200/201/202 with exactly the documented result integer | accepted_pending; retain allocated ID, verify service separately |
+| Empty/malformed/oversized body, false/null, arbitrary boolean, unverified ID, per-resource failure map, mixed error envelope | uncertain; no automatic retry or business success |
+|401/403 | failed/authentication, without raw response disclosure |
+| Other4xx except408/409/425/429 | rejected request; bounded failed result |
+|408/409/425/429, redirects,5xx, other unevidenced2xx | uncertain |
+| Transport known to fail before sending | failed; no completed effect claimed |
+| Timeout/protocol/unknown transport | uncertain |
 
-`externalId` is populated only from a caller-named documented id field;
-the current descriptors document none, so it stays `null` rather than
-guessing a response schema.
+No write is blanket retry-safe. updatePackage can contain billing and deletion; its generic capability is explicitly non-idempotent. Local duplicate suppression is not proof of exactly-once provider effects. accepted_pending is terminal for automatic dispatch but requires reconciliation; replay retains the ID and attempts. Historical succeeded results are preserved rather than rewritten under the new classifier.
 
-## Execution gate
+## Authorization, reconciliation and limits
 
-`TwentyIOperationAdapter` (`foundation/twentyi-operations/`) implements
-`ProviderAdapter` over this catalog: `supports()` is true only for
-shape-complete operations; `execute()` builds the bounded request,
-resolves the credential and attaches `Authorization` at this boundary
-only, sends once through the injected transport, and classifies with
-`TwentyIResultClassifier` — ambiguous post-send outcomes are
-`uncertain`, never silently retried. `packages.update` is the only
-operation reported idempotent (re-sending the same body is
-state-setting); `packages.create` gets exactly one attempt.
+The owner must approve an exact bounded scope and separately execute it with current password, current settings revision and a live single-use grant. The credential context is fenced at dispatch. Rejected stale/expired/revoked grants never become authority for a new context. The gateway records before returning and never automatically repeats an uncertain purchase/delete/renewal.
 
-Constructing and sending a request is still not authorization to run
-it. `provider_operations_execute()` in `site/app/providers/operations.php`
-requires, in order: owner password + current profile revision under the
-staff lock, a shape-complete registered operation, and an active
-unexpired grant for that exact operation+scope — all before any
-credential is opened or address resolved. Execution then runs through
-`ProviderGateway` over the durable `ProviderOperationLedger`
-(at-most-once claim, replay/conflict/uncertain semantics) and the
-`EndpointPolicy`-bounded `FixedHttpTransport`. Owner access is
-re-verified at credential attach time and after the call; access that
-changed around a possibly-landed write reports `uncertain` for
-reconciliation rather than a false clean verdict.
-
-Idempotency keys come from the caller; no client route can reach the
-executor — it is an application-layer function that itself demands
-staff-owner authority. Live provider operation remains gated on
-operation-specific acceptance; this component changes what is
-*buildable and authorized*, not what the business has approved sending.
+Reconciliation observes a provider-issued package ID when one was retained. A matching domain name alone is inconclusive about creation. An incomplete list cannot prove deletion. Observing a package does not certify service readiness, order fulfillment or registrar rights. Original attempt/result fields remain retained; current observation summaries and append-only audit events record checks. Structured operation-specific reconciliation history and native service workflows remain required platform work.
 
 ## Verification
 
-`tests/twentyi-operations/run.php` — 81 named synthetic checks:
-catalog closure and flags, refusal of unregistered and shape-incomplete
-operations, slot injection/traversal refusal, field allowlist and
-required-field enforcement, bounded values, header/body shape of a
-valid build, and the full status classification table. No HTTP
-transport, credential, database, or provider call.
-
-`tests/provider_operations_execute_native.php` — native MariaDB suite
-over the real gateway + durable ledger + adapter with a scripted
-transport only: owner/administrator/stale-revision refusal, grant
-missing/changed-scope/revoked refusal, unsupported and shape-incomplete
-refusal before any claim, a granted create executing exactly once with
-the documented path, allowlisted body and send-time `Authorization`,
-key replay and foreign-fingerprint conflict without re-sending,
-5xx/timeout → `uncertain` persisted and replayed, pre-send connect →
-`failed`, mid-send access change → `uncertain` while the durable row
-keeps the provider-truthful result, and a durable-storage secret scan.
-No provider call is made.
-
-## Reconciliation
-
-`uncertain` results reconcile through
-`provider_operations_reconcile` — an owner-password, revision-bound,
-single evidence-backed observation of the package list (the only read
-with authenticated evidence), authorized before and after the read and
-bound to the grant's approved `profile_revision` so a changed credential
-context cannot reconcile an earlier context's operation.
-The consumed grant must identify the claimed scope unambiguously —
-a reused key that consumed a second grant before the ledger conflict is
-refused as ambiguous history rather than evaluated against the wrong
-approved scope. `packages.create` reconciles on the approved
-`domain_name` appearing in observed package names; `packages.update`
-with `delete-id` reconciles `not_observed` when the target is still
-present, but its absence stays
-`inconclusive` — the observed list never claims account-wide coverage,
-so absence cannot prove a deletion landed. Field-only updates are
-`inconclusive` with no read sent. The outcome and its audit entry commit
-atomically on the ledger row (`reconciled_outcome`) without rewriting
-the provider-truthful result. A reconcile never re-sends the request.
+The current local pure boundary suite passes139 named cases with default PHP and with no ini;50 transport-policy cases stop before any network. Native PHP8.2/8.4 × MariaDB10.11/MySQL8.4 operation/hosting matrices and packaged acceptance are dispatched on the containing checkpoint and must be verified from their actual reports. Tests cover allocated IDs, pending replay, false/null/mixed responses, authorization/context races and absence/name ambiguity. The earlier544 native inventory executions at962cc3e cover that earlier head only. Release, provider and target-host acceptance remain separate.

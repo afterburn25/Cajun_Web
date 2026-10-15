@@ -31,7 +31,7 @@ class ProviderServer:
                 length=int(self.headers.get('Content-Length') or '0')
                 raw=self.rfile.read(length) if 0<length<=8192 else b''
                 import re
-                if not re.fullmatch(r'/reseller/[A-Za-z0-9_.*-]+/(addWeb|updatePackage|renewDomain)',self.path or '') or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Content-Type')!='application/json' or self.headers.get('Accept')!='application/json':
+                if not re.fullmatch(r'/reseller/[A-Za-z0-9_.*-]+/(addWeb|updatePackage|deleteWeb|renewDomain)',self.path or '') or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Content-Type')!='application/json' or self.headers.get('Accept')!='application/json':
                     fixture.errors.append('Unexpected write request '+str(self.path))
                 try:payload=json.loads(raw)
                 except Exception:payload=None;fixture.errors.append('Unparseable write body')
@@ -40,7 +40,7 @@ class ProviderServer:
                     status=200 if fixture.write_mode=='success' else 202;result={'id':100+len(fixture.packages)}
                     if self.path.endswith('/addWeb') and isinstance(payload,dict) and isinstance(payload.get('domain_name'),str):
                         name=payload['domain_name'];fixture.packages.append({'id':result['id'],'typeRef':1,'name':name,'names':[name]+(payload.get('extra_domain_names') or []),'enabled':True,'created':'2000-01-01T00:00:00Z'})
-                    body=json.dumps(result).encode()
+                    body=json.dumps({'result':result['id']} if fixture.write_mode=='success' and self.path.endswith('/addWeb') else result).encode()
                 else:
                     status,body={'uncertain':(202,b'{"status":"accepted"}'),'failure':(400,b'{"error":"refused"}'),'authentication':(401,b'private synthetic response'),'echo':(200,b'"SYNTHETIC_RAW_GENERAL_KEY"')}[fixture.write_mode]
                 self.send_response(status);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(body)));self.send_header('Connection','close');self.end_headers();self.wfile.write(body)

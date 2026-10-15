@@ -56,14 +56,14 @@ def run_browser(env,browser):
     r=op_post('provider_operations_run',grant_id=gid,idempotency_key='packaged-create-1')
     ops=db('SELECT * FROM ci_provider_operations WHERE idempotency_key=?',['packaged-create-1'])
     check('Approved run sends exactly one bounded POST',provider_server.calls==calls+1 and len(provider_server.posts)==1 and provider_server.posts[0]['path']=='/reseller/*/addWeb' and provider_server.posts[0]['body'].get('domain_name')=='packaged-one.example')
-    check('The write classifies succeeded against the fixture',len(ops)==1 and ops[0]['status']=='succeeded' and ops[0]['operation']=='packages.create')
+    check('The write retains a provider ID pending service confirmation',len(ops)==1 and ops[0]['status']=='accepted_pending' and ops[0]['external_id'] is not None and ops[0]['operation']=='packages.create')
     check('The grant is consumed by its single run',db('SELECT consumed_key FROM ci_provider_operation_grants WHERE id=?',[gid])[0]['consumed_key']=='packaged-create-1')
 
     grant('domains.renew',json.dumps({'resellerId':'*','name':'packaged-renew.example','years':1}))
     gdr=db('SELECT id FROM ci_provider_operation_grants WHERE consumed_key IS NULL ORDER BY seq DESC')[0]['id']
     op_post('provider_operations_run',grant_id=gdr,idempotency_key='packaged-renew-1')
     check('A bounded domain renewal sends the documented POST once',provider_server.posts[-1]['path']=='/reseller/*/renewDomain' and provider_server.posts[-1]['body']=={'name':'packaged-renew.example','years':1})
-    check('The renewal classifies succeeded against the fixture',db('SELECT status FROM ci_provider_operations WHERE idempotency_key=?',['packaged-renew-1'])[0]['status']=='succeeded')
+    check('An unverified renewal acknowledgement remains uncertain',db('SELECT status FROM ci_provider_operations WHERE idempotency_key=?',['packaged-renew-1'])[0]['status']=='uncertain')
 
     grant('packages.create',json.dumps({'resellerId':'*','type':'synthetic','domain_name':'packaged-two.example'}))
     gid2=db('SELECT id FROM ci_provider_operation_grants WHERE consumed_key IS NULL ORDER BY seq DESC')[0]['id']
@@ -89,10 +89,10 @@ def run_browser(env,browser):
     op_post('provider_operations_run',grant_id=gid4,idempotency_key='packaged-create-4')
     r=op_post('provider_operations_reconcile',idempotency_key='packaged-create-4')
     row4=db('SELECT status,reconciled_outcome FROM ci_provider_operations WHERE idempotency_key=?',['packaged-create-4'])[0]
-    check('Reconcile observes a landed create without rewriting the result',row4['status']=='uncertain' and row4['reconciled_outcome']=='observed')
+    check('A domain match cannot prove which request created a package',row4['status']=='uncertain' and row4['reconciled_outcome']=='inconclusive')
 
     r=op_post('provider_operations_reconcile',idempotency_key='packaged-create-1')
-    check('Only uncertain operations can be reconciled','uncertain' in r.text.lower())
+    check('An accepted row with ambiguous reused scope refuses reconciliation','ambiguous' in r.text.lower())
 
     # Reused key: a second grant consumed by the same key before the ledger
     # conflict leaves ambiguous consumed history — reconcile refuses.

@@ -21,9 +21,9 @@ function pu_snapshot():array {
     $out=[];foreach(['provider_profiles','provider_revisions','provider_refreshes','provider_refresh_results','provider_observation_packages','provider_package_links','provider_package_link_events'] as $name)$out[$name]=all('SELECT * FROM '.table($name).' ORDER BY id');return $out;
 }
 function pu_old_fields(array $rows,array $before):array {foreach($rows as $name=>&$table)foreach($table as $i=>&$row)$row=array_intersect_key($row,$before[$name][$i]);unset($table,$row);return $rows;}
-function pu_audit_failure(callable $fn):void {
+function pu_audit_failure(int $version,callable $fn):void {
     $trigger=config()['db']['prefix'].'audit_fail';db()->exec('CREATE TRIGGER `'.$trigger.'` BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='provider.inventory_prepared' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic migration audit failure'; END IF; END");
-    try{$fn();pu_ok('Migration audit failure is surfaced',false);}catch(PDOException){pu_ok('Migration audit failure is surfaced',true);}finally{db()->exec('DROP TRIGGER `'.$trigger.'`');}
+    try{$fn();pu_ok('Migration audit failure is surfaced from v'.$version,false);}catch(PDOException){pu_ok('Migration audit failure is surfaced from v'.$version,true);}finally{db()->exec('DROP TRIGGER `'.$trigger.'`');}
 }
 try {
     pu_ok('Isolated prefix is unused',(int)query('SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(table_name,?)=?',[strlen($prefix),$prefix])->fetchColumn()===0);
@@ -52,7 +52,7 @@ try {
     pu_ok('Populated v1 owner view retains preparation without querying missing domain tables',str_contains(pu_render(),'Prepare inventory storage'));
     pu_deny('Populated v1 preparation requires current owner password',fn()=>provider_inventory_migrate('wrong'));
     pu_ok('Denied v1 preparation preserves schema version and records',pu_version()==='1'&&pu_snapshot()===$before);
-    pu_audit_failure(fn()=>provider_inventory_migrate($password));
+    pu_audit_failure(1,fn()=>provider_inventory_migrate($password));
     pu_ok('Interrupted v1 preparation never stamps ready or rewrites retained facts',pu_version()==='1'&&!provider_inventory_ready()&&pu_old_fields(pu_snapshot(),$before)===$before);
     provider_inventory_migrate($password);
     pu_ok('Version-1 storage upgrades in place',pu_version()==='3'&&provider_inventory_ready()&&pu_old_fields(pu_snapshot(),$before)===$before);
@@ -78,7 +78,7 @@ try {
     db()->exec('ALTER TABLE '.table('provider_observation_packages').' DROP COLUMN package_type_name, ADD COLUMN package_type_name VARCHAR(120) NULL AFTER type_ref');
     foreach($v2['provider_observation_packages'] as $row)query('UPDATE '.table('provider_observation_packages').' SET package_type_name=? WHERE id=?',[$row['package_type_name'],$row['id']]);
     pu_ok('Fixture repair restores every original v2 fact',pu_snapshot()===$v2);
-    pu_audit_failure(fn()=>provider_inventory_migrate($password));
+    pu_audit_failure(2,fn()=>provider_inventory_migrate($password));
     pu_ok('Interrupted v2 upgrade retains old stamp and all original records',pu_version()==='2'&&pu_snapshot()===$v2&&!provider_inventory_ready());
     provider_inventory_migrate($password);
     pu_ok('Populated v2 upgrades with identical bindings revisions and history',pu_version()==='3'&&pu_snapshot()===$v2);

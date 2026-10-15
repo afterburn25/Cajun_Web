@@ -51,7 +51,7 @@ final class TwentyIOperationAdapter implements ProviderAdapter
             $spec = $this->register->get($name);
             if ($spec === null) continue;
             $capabilities[] = $spec->shapeComplete
-                ? ProviderCapability::supported($name, 'Documented write; requires an active owner grant and durable ledger claim.', $name === 'packages.update')
+                ? ProviderCapability::supported($name, 'Documented write; requires an active owner grant and durable ledger claim.', false)
                 : ProviderCapability::unverified($name, 'Endpoint documented without body fields; request shape unverified.');
         }
         return $capabilities;

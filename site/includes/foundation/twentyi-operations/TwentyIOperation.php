@@ -58,7 +58,7 @@ final readonly class TwentyIOperation
         }
         foreach ($fields as $field => $type) {
             if (!is_string($field) || $field === '' || strlen($field) > 64
-                || !in_array($type, ['int', 'bool', 'string', 'hostname', 'hostname_list', 'map', 'json'], true)) {
+                || !in_array($type, ['int', 'id_list', 'package_map', 'bool', 'string', 'hostname', 'hostname_list', 'map', 'json'], true)) {
                 throw new InvalidArgumentException('Field declarations need a name and a known type.');
             }
         }

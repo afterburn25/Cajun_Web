@@ -51,7 +51,7 @@ final class FixedHttpTransport implements HttpTransport
             // a fixed-host URL on the catalogued reseller paths, a
             // bounded JSON body and three fixed headers.
             $path = str_starts_with($request->url, self::URL_BASE) ? substr($request->url, strlen(self::URL_BASE)) : '';
-            if (!preg_match('/^reseller\/[A-Za-z0-9_.*-]{1,80}\/(addWeb|updatePackage|renewDomain)$/D', $path)
+            if (!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb|renewDomain)$/D', $path)
                 || !is_string($request->body) || $request->body === ''
                 || strlen($request->body) > self::REQUEST_BODY_LIMIT
                 || array_keys($request->headers) !== ['Authorization','Accept','Content-Type']

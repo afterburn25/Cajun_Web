@@ -203,3 +203,7 @@ Use cURL for fixed HTTPS rather than implementing an HTTP parser. Reject entire 
 ## 2026-10-14 — Complete 20i implementation assigned to Devin
 
 Owner instruction: “let devin do the complete 20i integration.” Devin's prior isolated-component scope is expanded to end-to-end provider/application work, including data, ownership, native UI, controls/lifecycle, domains, VPS and support/SSH integration. Codex keeps non-20i work and final review/merge/release coordination. Shared router/build wiring may be implemented narrowly by Devin with documented coordination; it is not reserved so broadly that application work cannot proceed. Existing branch history, immutable releases and operation-specific production gates stay in force. [Complete handoff](DEVIN_COMPLETE_20I_HANDOFF.md).
+
+## 2026-10-15 — Preserve provider acknowledgements separately from completion
+
+Retain the existing gateway/ledger, extending its bounded result with accepted_pending and the provider-issued package ID. A valid documented addWeb acknowledgement proves acceptance, not activation; generic2xx, false/null or mixed envelopes cannot prove business success. Recorded legacy results are preserved. Name-only matches never adopt resources. Current ID-array contracts invalidate old scalar approvals rather than silently translating them. No mixed updatePackage request receives a blanket idempotent capability. Full inner request schemas, first-party order/hosting controls and release acceptance remain required.

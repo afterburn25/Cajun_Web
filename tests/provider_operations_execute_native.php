@@ -25,7 +25,7 @@ final class PeTransport implements HttpTransport {
         global $sentRequests,$scripted,$onSend;
         $sentRequests[]=$request;
         if($onSend!==null){$hook=$onSend;$onSend=null;$hook();}
-        $next=array_shift($scripted)??new TransportResponse(200,[],'{"id":7}');
+        $next=array_shift($scripted)??new TransportResponse(200,[],'{"result":7}');
         if($next instanceof Throwable)throw $next;
         return $next;
     }
@@ -67,6 +67,9 @@ try {
     $scope=['resellerId'=>'*','type'=>'synthetic','domain_name'=>'client.example'];
     $deadGrant=str_repeat('0',32);
 
+    $adapter=new TwentyIOperationAdapter();
+    foreach($adapter->capabilities() as $capability)pe_ok('Write is not blanket retry-safe '.$capability->operation,!$capability->idempotent);
+
     // ---- authority gates ----
     pe_deny('Execution requires owner password',fn()=>pe_exec($profile,1,$deadGrant,'k1','wrong'));
     pe_actor(2);pe_deny('Administrator cannot execute',fn()=>pe_exec($profile,1,$deadGrant,'k1',$password));pe_actor();
@@ -88,9 +91,9 @@ try {
     // ---- granted execution over the real adapter+gateway+ledger ----
     $grant1=provider_operation_grant($profile,'packages.create',$scope,$password);
     pe_ok('Grant stores the bounded approved scope',1===(int)query("SELECT COUNT(*) FROM ".table('provider_operation_grants')." WHERE id=? AND scope_params IS NOT NULL AND scope_fingerprint<>''",[$grant1])->fetchColumn());
-    $scripted=[new TransportResponse(200,[],'{}')];
+    $scripted=[new TransportResponse(200,[],'{"result":7}')];
     $r=pe_exec($profile,1,$grant1,'idem-create-1',$password);
-    pe_ok('Granted operation executes once','succeeded'===$r->status&&$r->operation==='packages.create'&&count($sentRequests)===1);
+    pe_ok('Granted operation executes once','accepted_pending'===$r->status&&$r->operation==='packages.create'&&count($sentRequests)===1);
     $request=$sentRequests[0];
     pe_ok('Write posts to the documented path','POST'===$request->method&&str_contains($request->url,'/reseller/*/addWeb'));
     pe_ok('Authorization attaches only at send time','Bearer '.base64_encode($secret)===$request->headers['Authorization']);
@@ -102,7 +105,7 @@ try {
     pe_ok('A consumed grant cannot execute again','no_grant'===$r->providerCode&&count($sentRequests)===1);
     $grant1b=provider_operation_grant($profile,'packages.create',$scope,$password);
     $r=pe_exec($profile,1,$grant1b,'idem-create-1',$password);
-    pe_ok('Same key under a fresh grant replays from the ledger','succeeded'===$r->status&&$r->replayed&&count($sentRequests)===1);
+    pe_ok('Same key under a fresh grant replays from the ledger','accepted_pending'===$r->status&&$r->replayed&&count($sentRequests)===1);
 
     // ---- key conflicts under another grant ----
     $grant2=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'other.example'],$password);
@@ -110,16 +113,16 @@ try {
     pe_ok('Granted-but-foreign fingerprint on a used key conflicts','conflict'===$r->status&&count($sentRequests)===1);
     pe_ok('The colliding attempt consumed its approval','used'===one('SELECT CASE WHEN consumed_key IS NOT NULL THEN \'used\' ELSE \'open\' END s FROM '.table('provider_operation_grants').' WHERE id=?',[$grant2])['s']);
     $grant2b=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'other.example'],$password);
-    $scripted=[new TransportResponse(200,[],'{}')];
+    $scripted=[new TransportResponse(200,[],'{"result":7}')];
     $r=pe_exec($profile,1,$grant2b,'idem-create-other',$password);
-    pe_ok('A fresh grant executes its own key','succeeded'===$r->status&&count($sentRequests)===2);
+    pe_ok('A fresh grant executes its own key','accepted_pending'===$r->status&&count($sentRequests)===2);
 
     // ---- conservative classification ----
-    $grant3=provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>42,'labels'=>['a'=>'b']],$password);
+    $grant3=provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>[42],'labels'=>[42=>'b']],$password);
     $scripted=[new TransportResponse(503,[],'')];
     $r=pe_exec($profile,1,$grant3,'idem-upd-1',$password);
     pe_ok('5xx after send classifies uncertain','uncertain'===$r->status&&$r->needsReconciliation());
-    $grant3b=provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>42,'labels'=>['a'=>'b']],$password);
+    $grant3b=provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>[42],'labels'=>[42=>'b']],$password);
     $r=pe_exec($profile,1,$grant3b,'idem-upd-1',$password);
     pe_ok('Uncertain result replays without re-sending','uncertain'===$r->status&&$r->replayed&&count($sentRequests)===3);
     $grant4=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d2.example'],$password);
@@ -144,7 +147,7 @@ try {
     query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');pe_actor();
     $grant6b=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d3.example'],$password);
     $r=pe_exec($profile,1,$grant6b,'idem-create-6',$password);
-    pe_ok('Ledger replays the provider-truthful recorded result','succeeded'===$r->status&&$r->replayed);
+    pe_ok('Ledger replays the provider-truthful recorded result','accepted_pending'===$r->status&&$r->replayed);
 
     // ---- revocation and expiry ----
     $grant7=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'d4.example'],$password);
@@ -167,7 +170,7 @@ try {
     // ---- credential-context binding ----
     $grantA=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'acct-a.example'],$password);
     $r=pe_exec($profile,1,$grantA,'idem-acct-1',$password);
-    pe_ok('First account write succeeds','succeeded'===$r->status);
+    pe_ok('First account write succeeds','accepted_pending'===$r->status);
     provider_settings_save($profile,1,'20i fixture',true,'SYNTHETIC_REPLACEMENT_KEY',$password); // revision 2, replacement credential context
     $grantB=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'acct-a.example'],$password);
     $sent=count($sentRequests);
@@ -176,13 +179,13 @@ try {
     provider_settings_save($profile,2,'20i fixture',true,$secret,$password); // restore fixture secret at revision 3
     $grantC=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'acct-c.example'],$password);
     $r=pe_exec($profile,3,$grantC,'idem-acct-c',$password);
-    pe_ok('Restored context executes normally','succeeded'===$r->status);
+    pe_ok('Restored context executes normally','accepted_pending'===$r->status);
 
     // ---- real fixed-transport request validation ----
     $transport=new FixedHttpTransport('8.8.8.8',function():void{throw new RuntimeException('authorize marker reached');});
     $credential=new ProviderCredential('twenty-i','fixture-identity',static fn():string=>'SYNTHETIC_PRIVATE_GENERAL_KEY');
     $adapter=new TwentyIOperationAdapter();
-    foreach([['packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'w1.example']],['packages.update',['resellerId'=>'*','id'=>42,'labels'=>['a'=>'b']]]] as $i=>[$name,$params]){
+    foreach([['packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'w1.example']],['packages.update',['resellerId'=>'*','id'=>[42],'labels'=>[42=>'b']]]] as $i=>[$name,$params]){
         try{$adapter->execute($transport,$credential,new ProviderOperation($name,'itx-'.$i,$params));pe_ok('Real transport accepts the '.$name.' request to the send boundary',false);}
         catch(RuntimeException $e){pe_ok('Real transport accepts the '.$name.' request to the send boundary',$e->getMessage()==='authorize marker reached');}
     }
@@ -192,14 +195,37 @@ try {
     $grant9=provider_operation_grant($profile,'packages.create',$scope,$password);
     pe_deny('A grant refuses to execute against another profile',fn()=>pe_exec(str_repeat('f',32),$rev,$grant9,'idem-cross-1',$password));
     $r=pe_exec($profile,$rev,$grant9,'idem-cross-1',$password);
-    pe_ok('The grant still executes on its own profile','succeeded'===$r->status);
+    pe_ok('The grant still executes on its own profile','accepted_pending'===$r->status);
+
+    // New acknowledgements retain IDs, replay without a send, and do not adopt by name.
+    $rev=(int)one('SELECT revision FROM '.table('provider_profiles').' WHERE id=?',[$profile])['revision'];
+    $acceptedScope=['resellerId'=>'*','type'=>'synthetic','domain_name'=>'accepted.example'];
+    $g=provider_operation_grant($profile,'packages.create',$acceptedScope,$password);
+    $scripted=[new TransportResponse(200,[],'{"result":707}')];
+    $r=pe_exec($profile,$rev,$g,'idem-accepted',$password);
+    pe_ok('Acknowledged ID is durable and pending',$r->status==='accepted_pending' && $r->externalId==='707' && one('SELECT external_id FROM '.table('provider_operations').' WHERE idempotency_key=?',['idem-accepted'])['external_id']==='707');
+    $scriptedReads=[pe_snapshot([pe_package(708,['accepted.example'])])];
+    $r=pe_reconcile($profile,$rev,'idem-accepted',$password);
+    pe_ok('Different package with the same name cannot satisfy the acknowledged ID',$r['outcome']==='inconclusive');
+    $scriptedReads=[pe_snapshot([pe_package(707,['accepted.example'])])];
+    $r=pe_reconcile($profile,$rev,'idem-accepted',$password);
+    pe_ok('Exact acknowledged package is observed without changing original result',$r['outcome']==='observed' && one('SELECT status FROM '.table('provider_operations').' WHERE idempotency_key=?',['idem-accepted'])['status']==='accepted_pending');
+    $g=provider_operation_grant($profile,'packages.create',$acceptedScope,$password);$before=count($sentRequests);
+    $r=pe_exec($profile,$rev,$g,'idem-accepted',$password);
+    pe_ok('Pending acknowledgement replays its ID and one attempt without transport',$r->replayed && $r->status==='accepted_pending' && $r->externalId==='707' && $r->attempts===1 && count($sentRequests)===$before);
+    foreach(['false','null','{"result":{"42":true,"77":false}}'] as $i=>$body){
+        $g=provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>[42],'delete-id'=>[77]],$password);
+        $scripted=[new TransportResponse(200,[],$body)];$before=count($sentRequests);
+        $r=pe_exec($profile,$rev,$g,'idem-mixed-'.$i,$password);
+        pe_ok('Mixed update response stays uncertain with no retry '.$i,$r->status==='uncertain' && $r->attempts===1 && count($sentRequests)===$before+1);
+    }
 
     // ---- reconciliation of uncertain results over the scripted read ----
     $rev=(int)one('SELECT revision FROM '.table('provider_profiles').' WHERE id=?',[$profile])['revision'];
     $grantR=provider_operation_grant($profile,'packages.create',['resellerId'=>'*','type'=>'synthetic','domain_name'=>'gone.example'],$password);
     $scripted=[new TransportResponse(503,[],'')];
     pe_exec($profile,$rev,$grantR,'idem-rec-gone',$password);
-    $grantR2=provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>42,'delete-id'=>77],$password);
+    $grantR2=provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>[42],'delete-id'=>[77]],$password);
     $scripted=[new TransportResponse(503,[],'')];
     pe_exec($profile,$rev,$grantR2,'idem-rec-del',$password);
     pe_ok('Two uncertain rows exist for reconciliation',2<=(int)query("SELECT COUNT(*) FROM ".table('provider_operations')." WHERE status='uncertain'")->fetchColumn());
@@ -207,7 +233,7 @@ try {
     pe_deny('Reconcile refuses a stale revision',fn()=>pe_reconcile($profile,9,'idem-rec-gone',$password));
     pe_actor(2);pe_deny('Administrator cannot reconcile',fn()=>pe_reconcile($profile,$rev,'idem-rec-gone',$password));pe_actor();
     $r=pe_reconcile($profile,$rev,'idem-create-1',$password);
-    pe_ok('Resolved rows cannot be reconciled','refused'===$r['outcome']);
+    pe_ok('Earlier approved context cannot be reconciled','refused'===$r['outcome']);
     $r=pe_reconcile($profile,$rev,'no-such-key',$password);
     pe_ok('Unknown keys refuse reconciliation','refused'===$r['outcome']);
     query('INSERT INTO '.table('provider_operations').' (id,idempotency_key,fingerprint,operation,status,result_message,attempts,claimed_at,claimed_epoch) VALUES (?,?,?,?,?,?,?,?,?)',[bin2hex(random_bytes(16)),'idem-orphan',hash('sha256','orphan'),'packages.create','uncertain','',0,gmdate('Y-m-d H:i:s'),time()]);
@@ -223,7 +249,7 @@ try {
     // A fresh observation showing the domain updates the reconcile marker.
     $scriptedReads=[pe_snapshot([pe_package(91,['gone.example'])])];
     $r=pe_reconcile($profile,$rev,'idem-rec-gone',$password);
-    pe_ok('Observed effect reconciles','observed'===$r['outcome']);
+    pe_ok('A matching domain alone cannot confirm creation','inconclusive'===$r['outcome']);
     // packages.update with delete-id: target absent = removal is visible.
     $scriptedReads=[pe_snapshot([pe_package(42,['u.example'])])];
     $r=pe_reconcile($profile,$rev,'idem-rec-del',$password);
@@ -237,7 +263,7 @@ try {
     pe_ok('A stale-context update refuses reconciliation','refused'===$r['outcome']);
     // A field-only update approved under the current context reconciles
     // inconclusive without a read — the effect is unobservable.
-    $grantU=provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>42,'labels'=>['a'=>'b']],$password);
+    $grantU=provider_operation_grant($profile,'packages.update',['resellerId'=>'*','id'=>[42],'labels'=>[42=>'b']],$password);
     $scripted=[new TransportResponse(503,[],'')];
     pe_exec($profile,$rev,$grantU,'idem-upd-cur',$password);
     $readCount=0;

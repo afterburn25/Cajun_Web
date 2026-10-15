@@ -3,7 +3,7 @@
 Durable substrate the provider write path requires before anything may
 execute against a real provider. This layer contains **no credential
 resolution, request construction, transport or provider call** — it is
-the at-most-once ledger plus the owner approval records an execution
+the local duplicate-suppression ledger plus the owner approval records an execution
 path must satisfy first.
 
 ## Ledger (`ProviderOperationLedger` → `provider_operations`)
@@ -67,7 +67,7 @@ owner-password migration recording `provider_operations_schema_version
 
 `tests/provider_operations_native.php` — native MariaDB suite covering
 schema validation/refusals, claim/in-progress/conflict/stale-uncertain/
-replay semantics, record-after-resolve refusal, gateway at-most-once
+replay semantics, record-after-resolve refusal, gateway local duplicate-suppression
 behavior through a synthetic adapter (replay does not re-execute;
 unsupported operations never reach the ledger), a real cross-process
 claim race via a worker fixture, grant issue/verify/expiry/revoke/audit,
@@ -102,9 +102,7 @@ scope fingerprint, and is consumed atomically when executed
    record yields `uncertain`.
 5. `TwentyIOperationAdapter` builds the closed bounded request and
    attaches `Authorization` only at send; `TwentyIResultClassifier`
-   maps outcomes conservatively (2xx succeeded, ordinary 4xx failed,
-   3xx/429/5xx uncertain, provably pre-send transport failures failed,
-   anything else uncertain).
+   retains documented creation IDs as accepted_pending and requires service confirmation. Unverified2xx bodies, mixed results and408/409/425 remain uncertain; other rejection/transport classifications follow the [current contract](TWENTYI_OPERATIONS_CONTRACT.md).
 6. Owner access is re-verified before and after the call. Access that
    changed around a possibly-landed write returns `uncertain` for
    reconciliation — never a false clean verdict.
@@ -115,7 +113,7 @@ execution capability is not business authorization.
 
 `tests/provider_operations_execute_native.php` exercises the full path
 on real MariaDB with a scripted transport: authority gates, grant
-scope/expiry/revocation, exactly-once send, replay and conflict without
+scope/expiry/revocation, single-send claim, replay and conflict without
 re-sending, uncertain propagation, mid-call access change, and a
 durable-storage secret scan.
 
@@ -158,3 +156,6 @@ The outcome is stored on the ledger row (`reconciled_outcome` /
 (`provider.operation_reconcile`); the recorded provider result is
 immutable. Owner access is re-verified at the send boundary and after
 the read — a mid-observation access change yields `unavailable`.
+
+
+Current correction: accepted_pending is stored in the existing bounded status column and replayed with its allocated ID. Old scalar update grants fail current request validation before consumption. Name-only creation matches remain inconclusive. The [current contract](TWENTYI_OPERATIONS_CONTRACT.md) supersedes earlier blanket success/retry descriptions. Combined native/package acceptance is pending on the new checkpoint.

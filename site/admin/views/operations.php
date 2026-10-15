@@ -9,7 +9,7 @@ $history=provider_operations_history();
 ?>
 <section class="workspace-card"><h2>Approved 20i operations</h2>
 <p>An approval records the exact documented request — operation and every field — for one run. Running it needs your password again plus a fresh idempotency key you choose; the approved fields cannot be widened at send time. Each approval is used once, expires, and can be revoked.</p>
-<p>Only operations with a fully documented request shape can be approved. Requests are claimed before sending so the same key can never execute twice; ambiguous outcomes are recorded as <strong>uncertain</strong> for reconciliation, never silently retried.</p>
+<p>Requests are checked against the supported field contract. Requests are claimed before sending to suppress duplicate local submissions; ambiguous outcomes are recorded as <strong>uncertain</strong> for reconciliation, never silently retried. An accepted request with a provider-issued ID remains <strong>accepted pending</strong> until its service is verified.</p>
 <?php if($record&&(int)$record['enabled']===1&&$record['has_credentials']&&$buildable): ?>
 <form method="post" data-provider-grant>
 <?php admin_action('provider_operations_grant'); ?>
@@ -49,9 +49,9 @@ $history=provider_operations_history();
 <article><h3><?=esc((string)($row['operation']??'provider.operation'))?> · <?=badge($row['status'])?></h3>
 <p><code><?=esc($row['idempotency_key'])?></code> · claimed <?=esc($row['claimed_at'])?> UTC · <?=(int)($row['attempts']??0)?> attempt(s)<?=$row['provider_code']!==null?' · '.esc($row['provider_code']):''?><?=$row['external_id']!==null?' · provider ref '.esc($row['external_id']):''?></p>
 <?php if($row['result_message']!==''): ?><p><?=esc($row['result_message'])?></p><?php endif; ?>
-<?php if($row['status']==='uncertain'): ?>
+<?php if(in_array($row['status'],['uncertain','accepted_pending'],true)): ?>
 <?php if($row['reconciled_outcome']!==null): ?><p>Reconciled <?=esc(gmdate('Y-m-d H:i:s',(int)$row['reconciled_epoch']))?> UTC · <?=badge($row['reconciled_outcome'])?></p><?php endif; ?>
-<p class="hint">This write may have reached 20i. The request is never retried automatically — an owner check performs one fresh, evidence-backed observation of the package list and reports whether the approved effect is visible.</p>
+<p class="hint">This write may have reached 20i. The request is never retried automatically — an owner check performs one fresh, evidence-backed observation of the package list and reports the available evidence. A domain-name match does not prove which request created a resource.</p>
 <?php if($record&&(int)$record['enabled']===1&&$record['has_credentials']): ?>
 <form method="post"><?=csrf_field()?>
 <input type="hidden" name="profile_id" value="<?=esc($profileId)?>"><input type="hidden" name="revision" value="<?=$revision?>"><input type="hidden" name="idempotency_key" value="<?=esc($row['idempotency_key'])?>">

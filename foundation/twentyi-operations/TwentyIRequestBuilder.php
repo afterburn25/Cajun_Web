@@ -72,6 +72,21 @@ final class TwentyIRequestBuilder
             }
         }
 
+        if ($operation->name === 'packages.update') {
+            $ids = $body['id'] ?? [];
+            $deleted = $body['delete-id'] ?? [];
+            if (($ids === [] && $deleted === []) || array_intersect($ids, $deleted)) {
+                throw new InvalidArgumentException('Update and deletion require distinct explicit package IDs.');
+            }
+            foreach (['billing','labels','limit','limit-set','packageBundleTypes'] as $field) {
+                foreach (array_keys($body[$field] ?? []) as $id) {
+                    if (!in_array((int)$id, $ids, true)) {
+                        throw new InvalidArgumentException('Per-package fields must belong to the approved update IDs.');
+                    }
+                }
+            }
+        }
+
         $json = json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         if ($json === false || strlen($json) > self::MAX_BODY_BYTES) {
             throw new InvalidArgumentException('Serialized request body exceeds the bounded size.');
@@ -105,6 +120,29 @@ final class TwentyIRequestBuilder
             throw new InvalidArgumentException('Field ' . $field . ' exceeds structural bounds.');
         }
         switch ($type) {
+            case 'id_list':
+                if (!is_array($value) || !array_is_list($value) || !$value || count($value) > self::MAX_LIST) {
+                    throw new InvalidArgumentException('Field '.$field.' requires a bounded nonempty list of package IDs.');
+                }
+                $out = [];
+                foreach ($value as $item) {
+                    $id = self::bounded('int', $field, $item, $depth + 1, $nodes);
+                    if (in_array($id, $out, true)) throw new InvalidArgumentException('Duplicate package IDs are refused.');
+                    $out[] = $id;
+                }
+                return $out;
+            case 'package_map':
+                if (!is_array($value) || !$value || count($value) > self::MAX_LIST) {
+                    throw new InvalidArgumentException('Field '.$field.' requires a bounded per-package map.');
+                }
+                $out = [];
+                foreach ($value as $key => $item) {
+                    if (!preg_match('/\A[1-9][0-9]{0,17}\z/', (string)$key)) {
+                        throw new InvalidArgumentException('Per-package map keys must be allocated package IDs.');
+                    }
+                    $out[$key] = self::bounded('json', $field, $item, $depth + 1, $nodes);
+                }
+                return $out;
             case 'int':
                 if (!is_int($value) || $value <= 0) {
                     throw new InvalidArgumentException('Field ' . $field . ' requires a positive integer.');

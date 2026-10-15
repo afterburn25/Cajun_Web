@@ -50,4 +50,4 @@ jobs:
       - name: Record verification scope
         if: always()
         run: |
-          echo 'Synthetic descriptor/request-builder/classifier checks only. Docker --network none; no HTTP transport, credential, database, application or provider call. Being in the register is not execution authority: the adapter still refuses every operation.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Synthetic descriptor/request-builder/classifier checks only. Docker --network none; no HTTP transport, credential, database, application or provider call. Execution requires the separately tested owner grant and durable ledger; this job does not exercise them.' >> "$GITHUB_STEP_SUMMARY"

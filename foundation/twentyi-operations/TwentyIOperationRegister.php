@@ -9,15 +9,11 @@ if (PHP_SAPI !== 'cli' && !defined('CWP_BOOT')) { http_response_code(404); exit;
  * The closed catalog of documented package-lifecycle writes.
  *
  * Every entry is taken literally from docs/TWENTYI_OWNER_API_REFERENCE.md
- * (§1, owner upload hash f7c738e7…). The reference shows complete body
- * fields for addWeb and updatePackage only; userStatus and deleteWeb
- * name their endpoints without body fields, so they are catalogued
- * shape-incomplete and the request builder refuses them until the real
- * field set is verified.
+ * (§1, owner upload hash f7c738e7…). The owner complete-reference clarification corrects updatePackage and
+ * deleteWeb to ID arrays with scoped per-package maps. Registry-specific
+ * contact/DNS schemas and userStatus value domains still need intake.
  *
- * Being in this register is not execution authority. The adapter still
- * reports supports() === false and no application path calls these
- * operations; a future wiring must run through ProviderGateway with a
+ * Being in this register is not execution authority. Execution runs through ProviderGateway with a
  * durable OperationLedger and operation-specific acceptance.
  */
 final class TwentyIOperationRegister
@@ -49,15 +45,15 @@ final class TwentyIOperationRegister
                 'packages.update', 'POST', '/reseller/{resellerId}/updatePackage',
                 ['resellerId'],
                 [
-                    'id' => 'int',
-                    'billing' => 'json',
-                    'delete-id' => 'int',
-                    'labels' => 'json',
-                    'limit' => 'json',
-                    'limit-set' => 'json',
-                    'packageBundleTypes' => 'json',
+                    'id' => 'id_list',
+                    'billing' => 'package_map',
+                    'delete-id' => 'id_list',
+                    'labels' => 'package_map',
+                    'limit' => 'package_map',
+                    'limit-set' => 'package_map',
+                    'packageBundleTypes' => 'package_map',
                 ],
-                ['id'],
+                [], // At least one bounded update/delete ID list is required below.
                 shapeComplete: true,
                 destructive: true,      // mixed update/delete interface via delete-id
                 mayChargeBilling: true, // billing field changes subscription billing
@@ -79,7 +75,7 @@ final class TwentyIOperationRegister
                 ['resellerId'],
                 [],
                 [],
-                shapeComplete: false, // registrant/contact/registry-specific inputs are described by purpose, not field names
+                shapeComplete: false, // owner supplied contact structures; typed registry validation pending
                 mayChargeBilling: true,
             ),
             new TwentyIOperation(
@@ -87,7 +83,7 @@ final class TwentyIOperationRegister
                 ['resellerId'],
                 [],
                 [],
-                shapeComplete: false, // field names listed but contact/otherContacts/limits sub-shapes are not specified
+                shapeComplete: false, // owner supplied contact structures; full-source intake pending
                 mayChargeBilling: true,
             ),
             new TwentyIOperation(
@@ -95,28 +91,28 @@ final class TwentyIOperationRegister
                 ['packageId', 'domainId'],
                 [],
                 [],
-                shapeComplete: false, // "added ns / removed old-ns" described but exact field names are not given
+                shapeComplete: false, // owner supplied ns/old-ns arrays; actual delta implementation pending
             ),
             new TwentyIOperation(
                 'domains.dns', 'POST', '/package/{packageId}/domain/{domainId}/dns',
                 ['packageId', 'domainId'],
                 [],
                 [],
-                shapeComplete: false, // conflictPolicy/insertPolicy named; new/delete record shapes undocumented
+                shapeComplete: false, // owner supplied examples; supported record validation pending
             ),
             new TwentyIOperation(
                 'packages.userstatus', 'POST', '/package/{packageId}/userStatus',
                 ['packageId'],
                 [],
                 [],
-                shapeComplete: false, // endpoint documented; body fields not shown
+                shapeComplete: false, // owner supplied fields; value-domain implementation pending
             ),
             new TwentyIOperation(
                 'packages.delete', 'POST', '/reseller/{resellerId}/deleteWeb',
                 ['resellerId'],
-                [],
-                [],
-                shapeComplete: false, // endpoint documented; body fields not shown
+                ['delete-id' => 'id_list'],
+                ['delete-id'],
+                shapeComplete: true, // Owner complete-reference clarification: array of IDs.
                 destructive: true,
             ),
         ];
