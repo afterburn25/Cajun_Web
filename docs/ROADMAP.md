@@ -1,5 +1,7 @@
 # Approved roadmap and acceptance criteria
 
+Current20i P0 checkpoint:1.24 inventory/ownership/label-operation recovery is published and download-verified. Full platform remains unfinished. [Current requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) and [release evidence](TEST_REPORT_1.24.0.md) supersede older status notes. Cloud1.25 and necessary commercial eligibility continue.
+
 ## 20i approval and recovery correction — 2026-10-15
 
 The generic request console is narrowed to a typed package-label workflow. Dedicated verified order/quote/payment/message/destructive consent workflows remain required engineering, not completed purchase capability. Historical requests remain available for read-only recovery. See PROJECT_STATUS.md and the complete requirements table for current evidence and remaining release gates.

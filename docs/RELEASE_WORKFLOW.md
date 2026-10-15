@@ -1,10 +1,12 @@
 # GitHub testing, incremental releases and agent continuity
 
-## Current candidate and ownership — 2026-10-15
+## Current publication — 2026-10-15
 
-Codex owns the complete20i P0 takeover; earlier Devin-only/non-20i allocation below is historical and superseded. PR126 is preparing1.24.0, not published. Verified1.23.0 remains the latest release. The new candidate includes inventory/ownership/operation recovery and adds the immutable1.23 baseline to every supported update path. Full candidate/main and downloaded release gates remain required; checkpoint_only workflow results are explicitly insufficient for publication.
+Codex owns the complete 20i P0 integration. [Version1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly download-verified at immutable source7190b582. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38711850732) passes9,134 named executions and30 gates; all16 assets, tag, manifests and ZIP contents match accepted source. Previous1.23 assets remain unchanged. [Current status](../PROJECT_STATUS.md), [release evidence](TEST_REPORT_1.24.0.md) and [requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) define current scope. Complete20i remains unfinished; unrelated work stays paused. No live deployment is claimed.
 
-## Latest verified publication — 1.23.0
+The procedure below applies to the next candidate. Prior release entries are historical evidence, not pending1.24 gates. Browser-only checkpoints cannot certify a release; retain full candidate, independent review, normal merge, exact-main and fresh downloaded-asset checks.
+
+## Historical publication — 1.23.0
 
 [Version 1.23.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0) is published and freshly downloaded/verified at immutable source/tag `4fdb56266c77f6e6bf7b58e966d24696e1eaefc8`, through [PR #85](https://github.com/afterburn25/Cajun_Web/pull/85). Client account edits reject stale forms and retain escaped unsaved details for review. Client changes/invitations recheck current authority, serialize writes and audit atomically; invitation activation is single-use and unexpired. Client administration is refused during support sessions. [Owner guide](CLIENT_ACCOUNT_SAFEGUARDS.md).
 

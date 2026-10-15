@@ -1,6 +1,6 @@
 # 20i inventory and operation recovery
 
-This guide describes the unreleased1.24 candidate. Published1.23 remains unchanged.
+This guide describes published1.24.0, verified at7190b582. [Release evidence](TEST_REPORT_1.24.0.md). Earlier1.23 assets remain unchanged; complete20i workflows beyond this increment are still in progress.
 
 ## Refresh and client ownership
 
