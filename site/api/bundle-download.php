@@ -12,7 +12,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 boot();
 
 $client = studio_client();
-if (!$client) {
+if (!$client || support_current()) {
     http_response_code(403);
     header('Content-Type: application/json');
     echo json_encode(['error' => 'Authentication required']);
