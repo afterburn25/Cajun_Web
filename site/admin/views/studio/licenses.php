@@ -86,6 +86,16 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <button class="btn outline">Add domain</button>
 </form>
 
+<?php $bundles=all('SELECT * FROM '.table('license_bundles').' WHERE license_id=? ORDER BY created_at DESC',[(int)$lic['id']]); ?>
+<?php if($bundles): ?>
+<h3>Generated bundles</h3>
+<ul>
+<?php foreach($bundles as $b): ?>
+<li><?= esc($b['title']) ?> — <code><?= esc(basename($b['file_path'])) ?></code> <small><?= esc($b['created_at']) ?></small></li>
+<?php endforeach; ?>
+</ul>
+<?php endif; ?>
+
 <?php if($lic['is_active']): ?>
 <form method="post">
 <?php admin_action('studio_license_bundle'); ?>
