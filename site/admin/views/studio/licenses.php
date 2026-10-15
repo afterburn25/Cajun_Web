@@ -5,7 +5,10 @@ require_once CWP_CODE_ROOT.'/app/licenses/service.php';
 
 $licenses = all('SELECT l.*, c.name as customer_name FROM '.table('website_licenses').' l LEFT JOIN '.table('studio_clients').' c ON l.customer_id=c.id ORDER BY l.created_at DESC LIMIT 100');
 $customers = array_column(all('SELECT id,name FROM '.table('studio_clients').' ORDER BY name'),'name','id');
-$products = ['restaurant'=>'Restaurant Website','salon'=>'Salon Website','generic'=>'Generic Business'];
+// Catalog products whose SKU follows the WEBSITE-{INDUSTRY} convention, plus manual product keys
+$products = [];
+try { foreach(all('SELECT sku,title FROM '.table('catalog_products')." WHERE sku LIKE 'WEBSITE-%' ORDER BY title") as $p) $products[$p['sku']]=$p['title'].' ('.$p['sku'].')'; } catch (Throwable) {}
+$products += ['restaurant'=>'Restaurant Website','salon'=>'Salon Website','generic'=>'Generic Business'];
 
 if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">License key created (displayed once): <code>'.esc($_SESSION['license_key_created']).'</code></div>';unset($_SESSION['license_key_created']);}
 ?>
