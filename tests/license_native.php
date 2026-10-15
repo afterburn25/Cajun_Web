@@ -25,6 +25,7 @@ try{
     $key=license_create(1,'WEBSITE-RESTAURANT');
     lic_ok('License persisted with customer and product',($r=license_get($key))&&(int)$r['customer_id']===1&&$r['product_id']==='WEBSITE-RESTAURANT'&&(int)$r['is_active']===1);
     lic_ok('Unknown key returns null',license_get('AAAA-BBBB-CCCC-DDDD')===null);
+    lic_ok('License creation audited',(bool)one('SELECT id FROM '.table('audit')." WHERE action='license.create'"));
 
     // --- domain registration ------------------------------------------------
     $lic=license_get($key);$licId=(int)$lic['id'];
@@ -55,7 +56,7 @@ try{
     lic_ok('Re-register reactivates without duplicating',count($domains)===2&&(int)array_column($domains,'is_active','domain')['example.com']===1);
 
     // --- atomic domain replace (customer "change website") ---------------------
-    license_replace_domain($licId,'test.example.com','NEW-SITE.example.com');
+    license_replace_domain($licId,'test.example.com','NEW-SITE.example.com',72);
     $domains=license_domains($licId);$active=array_column($domains,'is_active','domain');
     lic_ok('Replace deactivates old domain',(int)$active['test.example.com']===0);
     lic_ok('Replace registers new domain canonicalized',(int)$active['new-site.example.com']===1);
@@ -63,18 +64,28 @@ try{
     lic_deny('Replace to same domain rejected',fn()=>license_replace_domain($licId,'example.com','example.com'));
     lic_deny('Replace of inactive domain rejected',fn()=>license_replace_domain($licId,'ghost.example.com','other.example.com'));
     $before=all('SELECT * FROM '.table('license_domains').' ORDER BY id');
+    $auditBefore=all('SELECT * FROM '.table('audit').' ORDER BY id');
     lic_deny('Invalid replacement domain is rejected',fn()=>license_replace_domain($licId,'example.com','not a domain'));
     lic_ok('Invalid replacement preserves all original rows',all('SELECT * FROM '.table('license_domains').' ORDER BY id')===$before&&!db()->inTransaction());
+    lic_ok('Invalid replacement rolls back intermediate audit events',all('SELECT * FROM '.table('audit').' ORDER BY id')===$auditBefore);
     db()->exec('CREATE TRIGGER licenseci_replace_fail BEFORE INSERT ON '.table('license_domains')." FOR EACH ROW BEGIN IF NEW.domain='rejected.example.com' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic replacement storage failure'; END IF; END");
     try {
         $failed=false;try{license_replace_domain($licId,'example.com','rejected.example.com');}catch(PDOException){$failed=true;}
         lic_ok('Failed replacement insert restores every original domain', $failed&&all('SELECT * FROM '.table('license_domains').' ORDER BY id')===$before&&!db()->inTransaction());
     } finally {db()->exec('DROP TRIGGER licenseci_replace_fail');}
+    db()->exec('CREATE TRIGGER licenseci_replace_audit_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='license.domain.replace' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic replacement audit failure'; END IF; END");
+    try {
+        $failed=false;try{license_replace_domain($licId,'example.com','audited.example.com',72);}catch(PDOException){$failed=true;}
+        lic_ok('Replacement audit failure restores original domains and audit events',$failed&&all('SELECT * FROM '.table('license_domains').' ORDER BY id')===$before&&all('SELECT * FROM '.table('audit').' ORDER BY id')===$auditBefore&&!db()->inTransaction());
+    }finally{db()->exec('DROP TRIGGER licenseci_replace_audit_fail');}
     db()->beginTransaction();
     try {
         $refused=false;try{license_replace_domain($licId,'example.com','next.example.com');}catch(LogicException){$refused=true;}
         lic_ok('Replacement preserves an existing caller transaction', $refused&&db()->inTransaction()&&all('SELECT * FROM '.table('license_domains').' ORDER BY id')===$before);
     } finally {if(db()->inTransaction())db()->rollBack();}
+    lic_ok('Domain mutations audited',(bool)one('SELECT id FROM '.table('audit')." WHERE action='license.domain.replace'")
+        &&(bool)one('SELECT id FROM '.table('audit')." WHERE action='license.domain.register'"));
+    lic_ok('Replacement records the same actor on all three mutation events',(int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE user_id=? AND action IN (?,?,?)',[72,'license.domain.deactivate','license.domain.register','license.domain.replace'])->fetchColumn()===3);
 
     // --- deactivation --------------------------------------------------------
     license_deactivate_domain($licId,'test.example.com');

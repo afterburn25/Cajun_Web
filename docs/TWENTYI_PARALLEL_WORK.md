@@ -1,5 +1,9 @@
 # Parallel 20i work — 2026-10-15
 
+## Current-main integration
+
+Root2448e9db now normally integrates maina1e64f81, retaining licensing audits and the HTTP error-response guard. Conflict resolution keeps domain replacement's row lock and owned transaction and propagates actor identity to deactivate/register/replace audit rows inside it.40 isolated native PHP8.4/MariaDB checks pass, including original-domain/audit rollback after an injected final audit failure. Independent catalog-agent review found no further merge defect; this is not combined release acceptance. Preserve mailbox334 full38820312445 while validating the descendant. Registrar8b4a now has agent-verified63 native and64 reader cases per PHP mode in all four combinations; browser inspection remains pending. Cloudce8d4e89 adds reviewed shared-preparation transaction refusal and binary audit matching after a retained MySQL collation failure; current native/full evidence remains pending.
+
 ## Verified mailbox checkpoint334c390c
 
 All four native combinations in run38820306755 pass87 named outcomes each. Root downloaded every artifact, matched published SHA256, verified ZIP CRC and read every named JSON outcome. This is actual PHP/database application testing with synthetic provider transport, not live provider or browser acceptance. Full application38820312445 remains in progress. Installer refresh19827 completed successfully and is closed. Root source remains onPR140; this follow-up checkpoint changes documentation only.

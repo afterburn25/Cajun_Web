@@ -1,5 +1,7 @@
 # Unreleased — native 20i mailbox creation
 
+Preserve current main's licensing mutation audits and error-response guard during20i integration. Domain replacement keeps its transaction and records the acting identity on all three events; failed audit insertion restores original domains and audit history.40 isolated native checks pass; combined acceptance pending.
+
 Native mailbox runtime334c390c passes87 named checks in each of four PHP/database combinations. Browser and integrated release acceptance remain pending; published1.24.0 is unchanged.
 
 Refuse mailbox storage recreation when only the original shared operation ledger survives. Keep native rendering variables isolated so recovery tests retain the original successful request identity. Current acceptance is pending.
