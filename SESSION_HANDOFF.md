@@ -1,5 +1,11 @@
 # Session handoff — continue 20i P0
 
+## Website licensing/DRM (Devin, on main) — 2026-10-15
+
+Complete purchase-to-install DRM landed on `main` (~25 commits through `544336af`): validation API (`api/validate.php`, status-coded denial-vs-transient contract, audited, rate-limited), `website_licenses`/`license_domains`/`license_bundles` schema, license service (2-active-domain cap for public+test), bundle builder (`license_key` embedded in module manifest), auto-fulfillment on paid invoices, admin `studio-licenses` UI, portal domain management + owner-only bundle downloads, native + functional tests. Companion work on Website_Core `devin/website-core`: install-time validation, license table, periodic `license.validate` job (hourly while deactivated, 24h otherwise), explicit-denial-only deactivation, 503 public gate, bundled-module install+enable, HTTP contract tests.
+
+Not live-verified: production needs `license_core_dir` pointing at a Website_Core checkout; no real purchase/bundle/install/validation cycle has run. Full details in [LICENSING_IMPLEMENTATION.md](docs/LICENSING_IMPLEMENTATION.md). This workstream is separate from 20i P0 below.
+
 ## Owner-approved client portal design — 2026-10-15
 
 The owner approved the immediately preceding navy/blue/metallic-gold client-portal concept: **“make this the approved design.”** Follow [Approved client portal design](docs/APPROVED_CLIENT_PORTAL_DESIGN.md) for the exact reference identity, locked layout, styling, responsive requirements and data/capability boundaries. Approval record committed at `fd2001e90a54e9936e0c3aebf2714e05a2916a82` from inspected main `c42dd6d70fe57276d75835419db9d6e8e51aaa7f`.

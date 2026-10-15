@@ -1582,3 +1582,18 @@ Next: inspect native matrix artifacts; fix any failures; run the stable combined
 Starting from normally merged `8b44a7ad5e568481d8b016713e7d3958d19e41f3`, correct START-HERE's obsolete 1.23 folder and migration guide's obsolete 1.18 paths. Both now name the actual `cwp-update-1.24.0` staging directory, `structure-1.24.0` recovery journal and retained starting packages through 1.23.0. The shared `structure-1.11.0/mutex.php` remains unchanged. Current Codex 20i ownership supersedes the guide's old Devin allocation. No application, migration, build, fixture or workflow code changes.
 
 The exact 5fa5998d runtime candidate has 9,134 named full-application assertions and clear independent review; its tree-identical merged 8b44a7ad main has 29 verified focused workflows (158 reports / 17,034 executions), clean Windows packages and inspected browser evidence. Full main run [38707126756](https://github.com/afterburn25/Cajun_Web/actions/runs/38707126756) continues without cancellation. This documentation correction still requires independent review and exact final-source package/instruction verification. Before publication, verify the final main and downloaded assets; previous main evidence must retain its original SHA. Nothing is published or deployed by this correction. Cloud #127 and commercial dependencies #130 remain separate P0 work; all other development remains paused.
+
+## Website licensing/DRM workstream (Devin) — 2026-10-15
+
+Owner direction: full purchase-to-install DRM for Website Core bundles sold through cajunwebpro.com. Implemented on `main`:
+
+- `site/api/validate.php` + `api/handlers/license.php` — JSON validation endpoint (`{license_key, domain}` -> `{authorized}`), rate-limited 10/min/IP, audited. `.htaccess` rewrite for clean `/api/validate`. Contract: only `200 + authorized:false` is a definitive denial; 429/400/5xx are transient (matching Website Core change — transient conditions must never take customer sites offline).
+- `site/database/schema/license_schema.php` — `website_licenses` (unique key, customer FK, `product_id` VARCHAR(60) SKU), `license_domains` (unique license+domain, max 2 active = public+test), `license_bundles`.
+- `site/app/licenses/service.php` — key generation (128-bit, 1062-dup retry), domain register/deactivate with 2-active cap.
+- `site/app/licenses/bundle.php` — builds Website_Core + industry module ZIP with `license_key` injected into `addon.json`; ZipArchive and malformed-manifest guards; secrets/storage excluded.
+- `site/app/licenses/fulfill.php` — `license_fulfill_invoice()` post-transaction hook in both `catalog_transition` and `ledger_receive` paid paths; idempotent per customer+product; failure never rolls back payment; SKU convention `WEBSITE-{INDUSTRY}`; private-storage bundles only; best-effort customer email with license key + portal link.
+- Admin UI `studio-licenses` (create/deactivate/domains/bundle list+regenerate); portal domain management + owner-only `api/bundle-download.php` (realpath-contained, support sessions rejected, audited).
+- `tests/license_native.php` (30+ assertions, CI/MariaDB) + `tests/license_bundle_functional.php` (14 checks, real Website_Core checkout, extraction verified: `site/install.php` + module manifest with embedded key).
+- Fixed: leftover `<<<<<<< HEAD` merge marker in `schema/base.php` shipped broken until build caught it; installer inventory refreshed via `python tools/build.py --refresh` (required after every site/ change).
+
+Remaining (no live environment here): production `license_core_dir` config, real purchase->bundle->install->validation cycle, live-domain change deactivation.
