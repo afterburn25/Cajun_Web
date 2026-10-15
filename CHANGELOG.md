@@ -2,6 +2,7 @@
 
 ## Unreleased preparation — recurring billing activity
 
+- Recorded PR121 browser checkpoint verification:9,664 named executions, eight complete new recurring images and unchanged public homepage pixels. Final application/package acceptance and independent review remain pending. Reconfirmed complete20i ownership with Devin; its latest domain-renewal delta is unreviewed.
 - Defined the contract for current-authorized recurring offer/decision notifications and exact history links through the existing workspace center and bell. Implementation pending; native mutations and shipping bytes unchanged.
 
 ## Unreleased — recurring billing recovery verification
