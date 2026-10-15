@@ -2,14 +2,14 @@ name: Native recurring agreement and period invoice checks
 on:
   push:
     branches: [main, codex/recurring-billing-records, codex/twentyi-recurring-eligibility, codex/twentyi-recurring-ui]
-    paths: ['site/app/billing/**', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', '.github/workflows/recurring-billing-native.yml']
+    paths: ['site/app/billing/**', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
   pull_request:
-    paths: ['site/app/billing/**', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', '.github/workflows/recurring-billing-native.yml']
+    paths: ['site/app/billing/**', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/ledger_*.php', '.github/workflows/recurring-billing-native.yml']
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: recurring-billing-native-${{ github.ref }}
+  group: recurring-billing-native-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 jobs:
   native-recurring:
@@ -58,12 +58,13 @@ jobs:
           docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-recurring-test sh -ec '
-              for source in site/app/billing/recurring_billing*.php site/database/schema/recurring_billing_schema.php site/database/migrations/recurring_billing_migrate.php tests/recurring_billing_*.php; do php -l "$source"; done
+              for source in site/app/billing/recurring_billing*.php site/database/schema/recurring_billing_schema.php site/database/migrations/recurring_billing_migrate.php tests/recurring_billing_*.php tests/ledger_*.php site/app/billing/ledger_fulfillment.php; do php -l "$source"; done
               cmp foundation/billing-calendar/BillingCalendar.php site/includes/foundation/billing-calendar/BillingCalendar.php
               cmp foundation/recurring-billing/RecurringBillingTerms.php site/includes/foundation/recurring-billing/RecurringBillingTerms.php
               cmp foundation/recurring-billing/RecurringBillingSchedule.php site/includes/foundation/recurring-billing/RecurringBillingSchedule.php
               php -d memory_limit=128M tests/recurring_billing_native.php
               php tests/recurring_billing_legacy_ledger.php
+              cat qa/ledger-native-results.json
               php tests/recurring-billing/forms.php qa/recurring-billing-forms-default.json
               php -n tests/recurring-billing/forms.php qa/recurring-billing-forms-noini.json
             '

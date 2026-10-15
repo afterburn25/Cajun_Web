@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — native payment evidence and combined recovery
+
+- Add exact existing-ledger receipt evidence with immutable origin, reversal, client/project/invoice binding and bounded history checks. Keep legacy credits, zero/void totals and sandbox observations separate from verified payment.
+- Show authorized staff payment evidence on recurring invoice cards; retain client history and extend native and real receipt/correction browser cases.
+- Preserve the first combined Apache cache failure; add full cache diagnostics/capacity to the multi-release fixture while retaining every cache, upgrade and reapplication assertion. Exact-head CI is pending; no release, provider write or deployment.
+
+
 ## Combined20i integration checkpoint — 2026-10-15
 
 Preserve domain/cloud9ab6dc58, commercial/recurring recovery35a564a1 and nameserver deltasf8654252 as merge parents. Keep the newly approved client-portal design from main0b96f3d5. Combine all native/browser/recovery/Apache cases, add internal-path denial for new20i files, and regenerate the shipping inventory. No provider execution permission is widened. Combined CI, review, artifact inspection, order fulfillment and the remaining native controls are pending; this is not a release. [Integration/evidence](docs/TWENTYI_FULFILLMENT_INTEGRATION.md) includes original sources and exact test scope. Billing changelog/history remains in the preserved [35a parent](https://github.com/afterburn25/Cajun_Web/blob/35a564a1a2f6660258ff0e0f2fcf057cb24a07f3/CHANGELOG.md).

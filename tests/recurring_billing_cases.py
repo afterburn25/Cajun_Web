@@ -223,3 +223,36 @@ def run_browser(env, browser):
         finally:
             db('RENAME TABLE '+retained+' TO ci_'+table)
         check('Restoring '+table+' preserves exact consent invoices and audit', saved_records()==before_missing)
+
+    # Real receipt forms distinguish payment evidence from a provider order.
+    before_review = saved_records()
+    page_text = owner.get(history_url).text
+    check('Staff sees incomplete verified payment evidence on its bound recurring invoice',
+          'Payment evidence for service setup' in page_text
+          and 'Verified external receipts: $0.00 USD' in page_text
+          and 'Verified receipts do not yet cover this invoice.' in page_text)
+    check('Payment evidence GET leaves invoices receipts and audit unchanged', saved_records() == before_review)
+    check('Client invoice history excludes staff fulfillment review',
+          'Payment evidence for service setup' not in client.get(history_client).text)
+    actual_receipt = form_data(form_for(owner.get(owner_invoice), 'payments_ledger_receive'))
+    actual_receipt.update({'amount': '25.00', 'method': 'bank', 'reference': 'Synthetic service setup receipt',
+                          'received_on': datetime.datetime.now(datetime.timezone.utc).date().isoformat(), 'confirm': '1'})
+    owner.post(owner_invoice, data=actual_receipt)
+    paid_rows = db("SELECT id,amount_cents FROM ci_invoice_payments WHERE invoice_id=? AND kind='manual'", [invoice])
+    check('Actual existing receipt form records exact synthetic service invoice payment',
+          len(paid_rows) == 1 and paid_rows[0]['amount_cents'] == 2500)
+    page_text = owner.get(history_url).text
+    check('Staff review reflects verified receipt while retaining separate order requirement',
+          'Verified external receipts: $25.00 USD' in page_text
+          and 'An approved service order is still required before setup.' in page_text)
+    check('Client sees its actual paid balance without private receipt reference',
+          'Recorded payments: $25.00 USD' in client.get(history_client).text
+          and 'Synthetic service setup receipt' not in client.get(history_client).text)
+    capture(owner, history_url, 'staff-payment-evidence')
+    reverse = form_data(form_for(owner.get(owner_invoice), 'payments_ledger_reverse'))
+    reverse.update({'reason': 'Synthetic recorded payment was corrected', 'owner_password': OWNER, 'confirm': '1'})
+    owner.post(owner_invoice, data=reverse)
+    check('Actual reversal form retains the original receipt and blocks setup evidence',
+          len(db('SELECT id FROM ci_invoice_payments WHERE invoice_id=?', [invoice])) == 2
+          and 'Verified external receipts: $0.00 USD' in owner.get(history_url).text
+          and 'Verified receipts do not yet cover this invoice.' in owner.get(history_url).text)

@@ -4,6 +4,7 @@ declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/billing/recurring_billing_invoices.php';
 require_once CWP_CODE_ROOT.'/app/billing/recurring_billing_forms.php';
+require_once CWP_CODE_ROOT.'/app/billing/ledger_fulfillment.php';
 use CajunWebPro\Foundation\RecurringBilling\{RecurringBillingTerms,RecurringBillingSchedule};
 
 function recurring_ui_mode():bool {
@@ -27,9 +28,10 @@ function recurring_ui_source_view(ServiceSubscriptionDocument $doc):array {
         'title'=>$model->plan->name,'state'=>$model->state(),'amount_cents'=>$model->agreedPrice,
         'currency'=>$model->plan->currency,'cadence'=>$model->plan->cadence,'plan'=>ServicePlanDocument::fromJson(service_plans_json($data['plan']))];
 }
-function recurring_ui_invoice(array $map,RecurringBillingSchedule $doc):array {
+function recurring_ui_invoice(array $map,RecurringBillingSchedule $doc,bool $paymentReview=false):array {
     $invoice=recurring_billing_invoice_validate($map,$doc);$balance=ledger_balance(ledger_invoice((int)$invoice['id']));
-    return ['id'=>(int)$invoice['id'],'reference'=>$invoice['reference'],'period'=>json_decode($map['snapshot_json'],true,8,JSON_THROW_ON_ERROR)['period'],
+    $review=$paymentReview?ledger_fulfillment_evidence((int)$invoice['id'],$doc->data()['terms']['client_id']):null;
+    return ['payment_review'=>$review===null?null:array_intersect_key($review,array_flip(['verified_cents','legacy_cents','payment_evidence_ready','blockers'])),'id'=>(int)$invoice['id'],'reference'=>$invoice['reference'],'period'=>json_decode($map['snapshot_json'],true,8,JSON_THROW_ON_ERROR)['period'],
         'paid_cents'=>$balance['paid_cents'],'due_cents'=>$balance['due_cents'],'status'=>$invoice['status']];
 }
 function recurring_ui_context(array $q,?int $client=null):array {
@@ -57,11 +59,11 @@ function recurring_ui_context(array $q,?int $client=null):array {
             $current=$terms->periodAt(time());$selected=$q['period_date']===''?($current['index']??0):recurring_ui_period($terms,$q['period_date']);
             $assessment=$doc->assessment($selected,time());$next=recurring_ui_next_dates($doc,time());
             $maps=all('SELECT * FROM '.table('recurring_billing_invoices').' WHERE schedule_id=? ORDER BY period_index DESC LIMIT 21 OFFSET '.($q['invoices_page']*20),[$q['schedule']]);
-            $invoices=recurring_ui_slice($maps,$q['invoices_page']);$invoices['items']=array_map(fn($m)=>recurring_ui_invoice($m,$doc),$invoices['items']);
+            $invoices=recurring_ui_slice($maps,$q['invoices_page']);$invoices['items']=array_map(fn($m)=>recurring_ui_invoice($m,$doc,$client===null),$invoices['items']);
             $map=one('SELECT * FROM '.table('recurring_billing_invoices').' WHERE schedule_id=? AND period_index=?',[$q['schedule'],$selected]);
             $history=recurring_ui_slice(array_slice(array_reverse($data['events']),$q['history_page']*10,11),$q['history_page'],10);
             return $out+['document'=>$doc,'source'=>recurring_ui_source_view($family['source']),'current'=>$family['row']['id']===$row['id'],
-                'history'=>$history,'invoices'=>$invoices,'assessment'=>$assessment,'selected_invoice'=>$map?recurring_ui_invoice($map,$doc):null]+$next;
+                'history'=>$history,'invoices'=>$invoices,'assessment'=>$assessment,'selected_invoice'=>$map?recurring_ui_invoice($map,$doc,$client===null):null]+$next;
         }
         $sources=[];
         if($client===null){

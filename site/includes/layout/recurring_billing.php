@@ -78,7 +78,19 @@ function recurring_ui_command_form(array $a,bool $retained=false):void {
     echo '<button class="btn gold">'.esc($label).'</button></form></section>';
 }
 function recurring_ui_invoice_card(array $invoice,bool $staff):void {
-    echo '<article class="workspace-version"><h3>'.esc($invoice['reference']).'</h3><p>Period '.esc($invoice['period']['start']).' to '.esc($invoice['period']['end']).' (end exclusive) · Due '.esc($invoice['period']['due']).' · '.esc($invoice['period']['timezone']).'</p><p>Recorded payments: '.esc(recurring_ui_money($invoice['paid_cents'])).' · Invoice balance: '.esc(recurring_ui_money($invoice['due_cents'])).'</p><a href="'.esc($staff?admin_url('invoice-payments',['invoice_id'=>$invoice['id']]):studio_url(['invoice'=>$invoice['id']])).'">View invoice and payment history</a></article>';
+    echo '<article class="workspace-version"><h3>'.esc($invoice['reference']).'</h3><p>Period '.esc($invoice['period']['start']).' to '.esc($invoice['period']['end']).' (end exclusive) · Due '.esc($invoice['period']['due']).' · '.esc($invoice['period']['timezone']).'</p><p>Recorded payments: '.esc(recurring_ui_money($invoice['paid_cents'])).' · Invoice balance: '.esc(recurring_ui_money($invoice['due_cents'])).'</p><a href="'.esc($staff?admin_url('invoice-payments',['invoice_id'=>$invoice['id']]):studio_url(['invoice'=>$invoice['id']])).'">View invoice and payment history</a>';
+    if($staff&&isset($invoice['payment_review'])){
+        $r=$invoice['payment_review'];echo '<div class="recurring-payment-review"><h4>Payment evidence for service setup</h4><p>Verified external receipts: '.esc(recurring_ui_money($r['verified_cents'])).' · Historical credited balance: '.esc(recurring_ui_money($r['legacy_cents'])).'</p>';
+        if($r['payment_evidence_ready'])echo '<p>Verified receipts cover this invoice. An approved service order is still required before setup.</p>';
+        else{
+            echo '<ul>';foreach($r['blockers'] as $reason)echo '<li>'.esc(match($reason){
+                'client-inactive'=>'This client account is inactive.','invoice-void'=>'This invoice is void.',
+                'no-charge-policy-required'=>'A no-charge service requires an explicit fulfillment policy.',
+                'payment-review-required'=>'An unresolved payment trial requires review.',
+                'unverified-legacy-balance'=>'Imported balances do not verify a new payment.',
+                default=>'Verified receipts do not yet cover this invoice.'}).'</li>';echo '</ul>';
+        }echo '</div>';
+    }echo '</article>';
 }
 function recurring_ui_detail(array $v):void {
     $staff=$v['staff'];$doc=$v['document'];$data=$doc->data();$t=$data['terms'];$terms=RecurringBillingTerms::fromArray($t);$params=['job'=>$v['project']['id'],'schedule'=>$t['id']];

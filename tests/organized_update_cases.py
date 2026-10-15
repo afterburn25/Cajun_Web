@@ -73,8 +73,11 @@ def run(web,base,check,qa,php,label,prefix,version):
               and len(original_inventory['provider_operations'])==1)
     check(label+' retained schema contains meaningful client project and invoice records',all(before[n]['count']>0 for n in before))
     session.get(url+'/admin/index.php?view=login')
-    probe=root/'cache-probe.php';probe.write_text("<?php echo json_encode(['enabled'=>opcache_get_status(false)['opcache_enabled']??false,'timestamps'=>ini_get('opcache.validate_timestamps'),'cached'=>opcache_is_script_cached(__DIR__.'/config/defaults.php')]);")
+    probe=root/'cache-probe.php';probe.write_text("<?php $s=opcache_get_status(false); echo json_encode(['enabled'=>$s['opcache_enabled']??false,'timestamps'=>ini_get('opcache.validate_timestamps'),'cached'=>opcache_is_script_cached(__DIR__.'/config/defaults.php'),'capacity_mib'=>ini_get('opcache.memory_consumption'),'status'=>$s]);")
     cache=session.get(url+'/cache-probe.php').json();probe.unlink()
+    (qa/('organized-'+label+'-cache-before.json')).write_text(json.dumps(cache,indent=2)+'\n')
+    if not (cache['enabled'] and cache['timestamps']=='0' and cache['cached']):
+        print('Original release cache evidence:',json.dumps(cache),flush=True)
     check(label+' prior organized version actually cached without timestamp checks',cache['enabled'] and cache['timestamps']=='0' and cache['cached'])
     with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(root)
     owner=url+'/'+STAGE+'/owner-update.php';r=session.get(owner)

@@ -26,3 +26,7 @@ The combined branch supplies hosting/cloud ownership, bounded owner domain searc
 Real writes stay disabled until their operation-specific account, ownership, consent and acceptance gates are met. No provider call, DNS change, charge, customer mail, SSH or deployment occurred. The complete owner API reference was requested once; continue independent work while it remains unavailable. Local filesystem writes and shell artifact downloads are restricted. GitHub review-request comments and PR metadata edits were rejected by the approval policy; source commits/branch/PR creation are available.
 
 The combined branch owns the forthcoming fulfillment connection and interaction repairs. Preserve separate #127/#130/#133/#135/#136 branches and their stable test evidence. No document or GitHub event proves an external agent has stopped. The complete takeover supersedes earlier Devin allocations; Codex implements remaining work. [Integration record](TWENTYI_FULFILLMENT_INTEGRATION.md).
+
+## Current continuation — payment evidence
+
+Codex continues PR137 from8ed80fd9 with native invoice/receipt evidence and staff projection. The first combined full run38761131563 failed its Apache1.14 cache precondition after build/native/browser/recovery passed; preserve its evidence and rerun after the fixture correction. All original histories and tests remain. Order/provider fulfillment is still unfinished; payment readiness is not a grant. Local writes and review-request/metadata edits remain restricted, so current implementation checkpoints are GitHub source commits.
