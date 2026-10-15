@@ -718,7 +718,7 @@ Owner-controlled creation/invitation, role and mailbox grants, reset and deactiv
 
 ### A-06 — Multi-account admin webmail and setup
 
-Current non-20i development: [Reply/Forward preparation](MAIL_REPLY_FORWARD.md) on `codex/mail-replies-forwards`. Conversation identifiers have928 verified focused executions; maintained metadata/recipient parsing and quoted content have120 local executions. New-source remote/no-DOM evidence, application permissions/storage/MIME/UI and end-to-end acceptance remain pending. This does not complete A-06 or enable a new mail action.
+Current non-20i development: [Reply/Forward preparation](MAIL_REPLY_FORWARD.md) on `codex/mail-replies-forwards`. Conversation identifiers have928 verified focused executions; maintained metadata/recipient parsing and quoted content have120 local executions. [New source d2b4ffd](https://github.com/afterburn25/Cajun_Web/pull/125#issuecomment-6184606426) has1,412 verified remote executions including actual no-DOM cases. Application permissions/storage/MIME/UI and end-to-end acceptance remain pending. This does not complete A-06 or enable a new mail action.
 
 Verified 1.13.0 delivers bounded profile/password/assignment preparation and the administrative UI. [Guide and acceptance](ADMIN_EMAIL_ACCOUNTS.md). No real connection, inbox or sending is included; full A-06 remains incomplete.
 
