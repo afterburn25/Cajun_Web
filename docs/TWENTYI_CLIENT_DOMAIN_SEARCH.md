@@ -1,6 +1,6 @@
 # Client domain availability search
 
-Status: native-tested at `1fbebcac` on `codex/twentyi-client-domain-search`, [draft PR139](https://github.com/afterburn25/Cajun_Web/pull/139). Actual HTTP/Chromium acceptance and independent review remain pending. This is unreleased development above hosting PR 138, not a live-enabled service.
+Status: native-tested at `b09b7927` on `codex/twentyi-client-domain-search`, [draft PR139](https://github.com/afterburn25/Cajun_Web/pull/139). Parent `f86c745c` has verified actual HTTP/Chromium acceptance and inspected client desktop/mobile screenshots. Combined b09b full acceptance and independent review remain pending. This is unreleased development above hosting PR 138, not a live-enabled service.
 
 ## Owner setup
 
@@ -43,3 +43,18 @@ Source `1fbebcac0992cc7f3d71c91b33e4c97d047f4a4b`, [PR139](https://github.com/af
 Proof retained locally as `work/20i-1fbeb-client-native-verification.json`. Actual browser acceptance remains pending. Source inspection found that the new browser fixture client lacked a support-access policy: the follow-up fixture uses the real owner policy form before opening support, retaining the production refusal assertion. No runtime authorization rule is relaxed.
 
 Exact1fbeb Windows artifacts independently verify11 checksums and all source/member/directory/update bytes: FULL5416, COMPLETE2659, UPDATE2646. Stored under `work/20i-client-1fbeb-windows-dist` with verification JSON. This is development package evidence, not a published release.
+
+## Verified browser and merged-head native checkpoint — 2026-10-15
+
+Parent source `f86c745c982ae1daedc1a7210bcf91052e4f9c49` and GitHub test merge `22c090fbb56ff1ac815d7256af5281f447b68740` share verified tree `a8c5a8231a112644ba72367925e61aa0d05a375c`. [Application run38811407918](https://github.com/afterburn25/Cajun_Web/actions/runs/38811407918) browser artifact12009795846 SHA256 `bd50a74b1ad4474344c85406c095afd56480fff421a632fc6927a53c729bab56` was downloaded and verified: all1,774 named HTTP/Chromium checks pass and unexpected browser/PHP diagnostics are empty. Actual Client-Domain-Search desktop/mobile screenshots were inspected: forms, private result history and suggestions remain readable without horizontal clipping. Synthetic `.invalid` results are not live availability evidence. Recovery/Apache acceptance remains in progress.
+
+Merged source `b09b79278d1a459e4235f9a9431031f53abf6334` [native run38812919607](https://github.com/afterburn25/Cajun_Web/actions/runs/38812919607) passes all four combinations. Each downloaded artifact contains106 combined checks including50 client checks, not additive.
+
+| Artifact | SHA256 |
+|---|---|
+|12009312326|`172a878a01fb25838b011cd4ee77bb871f9e89b1339d02530c38bb667c78b812`|
+|12009297315|`de080dfd87aa02272e734fd07de177cd964e1f98dbe241137482b4978be765b1`|
+|12009047634|`2612ecfd6848d134788c15534366afb38c5bb33bd67307da5f348ec0572dc693`|
+|12008684072|`f2e9fb23662deb1f464422c42f612c1102209f6f22c3c8029ffed69fff0e2dc7`|
+
+Exact b09b Windows build86750 completed and independently verifies11 checksums, exact Git source, archive members/directories and update bytes: FULL5417, COMPLETE2659, UPDATE2646. Proofs are retained locally under `work/20i-client-b09b-windows-*`, `work/20i-b09b-client-native-verification.json`, and `work/20i-f86-client-browser-verification.json`. Do not rerun the non-idempotent Windows copying verifier. Current combined application38812924437/job116690370817 has completed package checks and is executing native integration. Preserve the same live run. These results do not certify the remaining full20i scope or a published1.25 release.

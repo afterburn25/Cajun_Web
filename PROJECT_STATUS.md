@@ -1,3 +1,9 @@
+# Current checkpoint — verified client-search browser and merged Windows packages
+
+Starting source `b09b79278d1a459e4235f9a9431031f53abf6334`, draft PR139. Parent f86 actual browser artifact12009795846 verifies1,774 named checks, empty unexpected diagnostics and inspected desktop/mobile client screens. Current b09b four native artifacts verify106 combined checks including50 client cases each. Exact b09b Windows build86750 is complete and independently verified:11 checksums, FULL5417/COMPLETE2659/UPDATE2646 exact source/member bytes. [Detailed evidence](docs/TWENTYI_CLIENT_DOMAIN_SEARCH.md).
+
+Current combined application38812924437/job116690370817 remains live in native integration; parent f86 application38811407918/job116685268807 remains live in recovery. Preserve both. Independent review remains required and earlier write rejections must not be bypassed. Published1.24 is unchanged. Continue native hosting controls using the existing provider gateway/ledger and documented mailbox creation contract; no live provider operation is authorized by this checkpoint.
+
 # Current development: combine client domain search with latest main
 
 Codex retains complete20i P0 ownership. [Draft PR139](https://github.com/afterburn25/Cajun_Web/pull/139) / `codex/twentyi-client-domain-search` now normally merges client-search parent `f86c745c982ae1daedc1a7210bcf91052e4f9c49` with current main `16f07e493bd21b5b0570880cfa4faa5782db4c5e`. Both histories and original20i ownership are preserved. Published [v1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is unchanged; no release/deployment is claimed.

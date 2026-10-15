@@ -914,3 +914,7 @@ Parent5728c2df, PR138: add one native order/service association with exact comme
 
 
 Current follow-up:8adf passed all four native combinations, including42 new association checks within277 combined checks. A reproduced future-pause/end timing defect is corrected with four additional effective-boundary cases; exact descendant validation remains pending. See [details](docs/TWENTYI_ORDER_SERVICE_LINKS.md).
+
+### Unreleased verification checkpoint — 2026-10-15
+
+- Verified parent client-search HTTP/Chromium and actual desktop/mobile screens, merged-head native matrices, and exact Windows packages. Full combined acceptance and independent review remain pending; published1.24 is unchanged.
