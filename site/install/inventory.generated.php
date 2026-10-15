@@ -166,7 +166,7 @@ function setup_expected_files(): array { return [
     'database/migrations/notifications_migrate.php'=>'8e14d0831ce6c63c92a18c74b41a555a7a7bb5d358c873d1e0b1540e1e823d74',
     'database/migrations/payments_migrate.php'=>'6a85ee49f9cf21e82acb0c65830b0597d8b4eb61b686c4d4337e402019e8d877',
     'database/migrations/provider_inventory_migrate.php'=>'d7df314aa70983aa01a189e115c3bec7502f7e80640c175c2b1badd4a70790ed',
-    'database/migrations/provider_operations_migrate.php'=>'a8f170ffaa04ba9a00dcbab1ed7e2e4a0c3adc3b9c34277dc2896e0c88fd9423',
+    'database/migrations/provider_operations_migrate.php'=>'a3e03ff98f746cc8cb729490f89dcc0e3e02a12a89fcb87e0d7beceaf5b3b082',
     'database/migrations/provider_settings_migrate.php'=>'684673dd648a7bbeb71e09bd9d55aaeeb8e5c863d1298abd844eca1050db489d',
     'database/migrations/reviews_migrate.php'=>'fab14a5aca1545e28936d465046b938bf111e5ac536ba365a23574c797b18e7d',
     'database/migrations/staff_migrate.php'=>'82f168f347443b19c2a687426e680cb7a85c0372b3f3cea48cec20ab589b0a10',

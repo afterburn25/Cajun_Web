@@ -65,25 +65,27 @@ function provider_operations_ready(): bool {
  *       on the ledger; the recorded provider outcome stays immutable.
  */
 function provider_operations_upgrade_v2(): void {
-    $add=function(string $column,string $definition):void {
-        if(!one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operation_grants',$column]))db()->exec('ALTER TABLE '.table('provider_operation_grants').' ADD COLUMN '.$column.' '.$definition);
+    // AFTER keeps re-added columns at their canonical position — the
+    // validator compares column order against the schema statements.
+    $add=function(string $column,string $definition,string $after):void {
+        if(!one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operation_grants',$column]))db()->exec('ALTER TABLE '.table('provider_operation_grants').' ADD COLUMN '.$column.' '.$definition.' AFTER '.$after);
     };
-    $add('profile_revision','INT UNSIGNED NOT NULL');
+    $add('profile_revision','INT UNSIGNED NOT NULL','revoked_by');
 }
 function provider_operations_upgrade_v3(): void {
-    $add=function(string $column,string $definition):void {
-        if(!one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operation_grants',$column]))db()->exec('ALTER TABLE '.table('provider_operation_grants').' ADD COLUMN '.$column.' '.$definition);
+    $add=function(string $column,string $definition,string $after):void {
+        if(!one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operation_grants',$column]))db()->exec('ALTER TABLE '.table('provider_operation_grants').' ADD COLUMN '.$column.' '.$definition.' AFTER '.$after);
     };
-    $add('scope_params','VARCHAR(4096) NULL');
-    $add('consumed_key','VARCHAR(190) CHARACTER SET ascii COLLATE ascii_bin NULL');
-    $add('consumed_at','DATETIME NULL');
+    $add('scope_params','VARCHAR(4096) NULL','profile_revision');
+    $add('consumed_key','VARCHAR(190) CHARACTER SET ascii COLLATE ascii_bin NULL','scope_params');
+    $add('consumed_at','DATETIME NULL','consumed_key');
 }
 function provider_operations_upgrade_v4(): void {
-    $add=function(string $column,string $definition):void {
-        if(!one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operations',$column]))db()->exec('ALTER TABLE '.table('provider_operations').' ADD COLUMN '.$column.' '.$definition);
+    $add=function(string $column,string $definition,string $after):void {
+        if(!one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_operations',$column]))db()->exec('ALTER TABLE '.table('provider_operations').' ADD COLUMN '.$column.' '.$definition.' AFTER '.$after);
     };
-    $add('reconciled_outcome','VARCHAR(20) CHARACTER SET ascii COLLATE ascii_bin NULL');
-    $add('reconciled_epoch','BIGINT UNSIGNED NULL');
+    $add('reconciled_outcome','VARCHAR(20) CHARACTER SET ascii COLLATE ascii_bin NULL','resolved_epoch');
+    $add('reconciled_epoch','BIGINT UNSIGNED NULL','reconciled_outcome');
 }
 
 function provider_operations_migrate(#[\SensitiveParameter] string $password): void {
