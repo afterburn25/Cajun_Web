@@ -33,9 +33,9 @@ final class ProviderInventoryAccessChanged extends RuntimeException {}
 
 function provider_inventory_ready(): bool {
     $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'');
-    // Version 4 adds operation-scoped history and cloud observations.
+    // Version 5 adds explicit cloud ownership and immutable approval history.
     // Older installations must retain the explicit owner preparation action.
-    if($version!=='4')return false;
+    if($version!=='5')return false;
     $prefix=config()['db']['prefix'];$names=array_map(fn($name)=>$prefix.$name,array_keys(provider_inventory_schema($prefix)));
     if((int)query('SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name IN ('.implode(',',array_fill(0,count($names),'?')).')',$names)->fetchColumn()!==count($names))return false;
     return one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[$prefix.'provider_refreshes','operation'])!==null;
@@ -390,3 +390,5 @@ function provider_inventory_cloud_servers(string $refreshId): array {
     foreach($rows as &$row){$row['server']=InventoryCloudServer::fromItem(json_decode($row['metadata'],false,16,JSON_THROW_ON_ERROR));if($row['server']->id!==(int)$row['server_id'])throw new RuntimeException('Cloud observation identity is inconsistent. Restore the original database.');unset($row['metadata']);}unset($row);
     return $rows;
 }
+
+require_once CWP_CODE_ROOT.'/app/providers/cloud_links.php';

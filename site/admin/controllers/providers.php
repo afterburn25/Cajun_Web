@@ -58,6 +58,13 @@ function provider_inventory_admin_action(string $action):void {
         $revision=posted('revision',10);if(!ctype_digit($revision))throw new InvalidArgumentException('Reload the current 20i form.');
         provider_inventory_domain_relink(posted('link_id',32),(int)$revision,$password);flash('Domain link re-approved under the current provider settings.');redirect(admin_url('provider-settings'));
     }
+    if(in_array($action,['provider_inventory_cloud_link','provider_inventory_cloud_relink','provider_inventory_cloud_unlink'],true)){
+        $number=static function(string $name,int $max=4294967295):int {$value=posted($name,18);if(!preg_match('/^[1-9][0-9]{0,17}$/D',$value)||(int)$value>$max)throw new InvalidArgumentException('Reload the current cloud assignment form.');return (int)$value;};
+        if($action==='provider_inventory_cloud_link')provider_cloud_link($id,$number('server_id',999999999999999999),$number('client_id'),$number('revision'),posted('refresh_id',32),$password);
+        elseif($action==='provider_inventory_cloud_relink')provider_cloud_relink(posted('link_id',32),$number('link_revision'),$number('revision'),posted('refresh_id',32),$password);
+        else provider_cloud_unlink(posted('link_id',32),$number('link_revision'),$password);
+        flash(match($action){'provider_inventory_cloud_link'=>'Cloud server linked to the client.','provider_inventory_cloud_relink'=>'Cloud assignment re-approved under the current settings.',default=>'Cloud assignment removed. The server and billing records are unchanged.'});redirect(admin_url('provider-settings'));
+    }
     throw new InvalidArgumentException('Unknown provider inventory action.');
 }
 

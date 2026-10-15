@@ -31,9 +31,10 @@ if($cloudLatest): ?><p>Last cloud refresh: <?=badge($cloudLatest['state'])?> · 
 <dl><?php foreach(['CpuCores'=>'CPU cores','RamMb'=>'Memory (MB)','OsDiskSizeGb'=>'OS disk (GB)','DataDiskSizeGb'=>'Data disk (GB)','Provider'=>'Infrastructure provider','Zone'=>'Zone','Country'=>'Country','VpsOsId'=>'OS reference','spec'=>'Size reference'] as $field=>$label): ?><dt><?=esc($label)?></dt><dd><?=esc($facts[$field]===null?'Not reported':(string)$facts[$field])?></dd><?php endforeach; ?></dl>
 <?php else: ?><p>Configuration was not reported.</p><?php endif; ?>
 <p>Hosted package IDs: <?=esc($server->packageIds===null?'Not reported':($server->packageIds?implode(', ',$server->packageIds):'None in this observation'))?>.</p>
-<p class="hint">Client assignment, service health and management controls require their own verified workflows. Unmapped provider fields: <?=(int)$cloudRow['unmapped_count']?>.</p>
+<p class="hint">Client assignments are managed below. Service health and management controls are not established by this read. Unmapped provider fields: <?=(int)$cloudRow['unmapped_count']?>.</p>
 </article><?php endforeach; ?>
 <?php endif; ?>
+<?php require CWP_CODE_ROOT.'/admin/views/provider_cloud_links.php'; ?>
 <?php $cloudHistory=provider_inventory_history($profileId,1,InventoryRead::CLOUD_SERVERS_LIST);if($cloudHistory): ?><h3>Cloud refresh history</h3>
 <?php foreach(array_slice($cloudHistory,0,20) as $row): ?><p><?=esc($row['started_at'])?> UTC · <?=badge($row['state'])?> · <?=(int)$row['package_count']?> server records · <?=(int)$row['skipped']?> skipped · saved version <?=(int)$row['profile_revision']?></p><?php endforeach; ?>
 <?php endif; ?>

@@ -38,7 +38,7 @@ try {
     $schema=provider_inventory_schema($prefix);
     // Historical v1 lacks both context-binding columns and both v3 domain tables.
     foreach($schema as $name=>$sql) {
-        if(str_starts_with($name,'provider_domain_')||$name==='provider_observation_cloud')continue;
+        if(str_starts_with($name,'provider_domain_')||str_starts_with($name,'provider_cloud_')||$name==='provider_observation_cloud')continue;
         $sql=str_replace(',operation VARCHAR(32) CHARACTER SET ascii COLLATE ascii_bin NULL','',$sql);
         $sql=str_replace([',key_fingerprint CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL',',profile_revision INT UNSIGNED NOT NULL,UNIQUE KEY link_target'],['',',UNIQUE KEY link_target'],$sql);db()->exec($sql);
     }
@@ -56,15 +56,16 @@ try {
     pu_audit_failure(1,fn()=>provider_inventory_migrate($password));
     pu_ok('Interrupted v1 preparation never stamps ready or rewrites retained facts',pu_version()==='1'&&!provider_inventory_ready()&&pu_old_fields(pu_snapshot(),$before)===$before);
     provider_inventory_migrate($password);
-    pu_ok('Version-1 storage upgrades in place',pu_version()==='4'&&provider_inventory_ready()&&pu_old_fields(pu_snapshot(),$before)===$before);
+    pu_ok('Version-1 storage upgrades in place',pu_version()==='5'&&provider_inventory_ready()&&pu_old_fields(pu_snapshot(),$before)===$before);
     $services=provider_inventory_client_services(1);
     pu_ok('Pre-upgrade mappings load unverified and stay suppressed',count($services)===1&&$services[0]['context_changed']&&!$services[0]['present']&&$services[0]['package']===null);
     pu_ok('Legacy link does not inherit a credential fingerprint or revision',$services[0]['link']['key_fingerprint']===''&&(int)$services[0]['link']['profile_revision']===0);
     pu_ok('Legacy link never leaks to another client',provider_inventory_client_services(2)===[]);
     $upgraded=pu_snapshot();provider_inventory_migrate($password);
-    pu_ok('Repeated v1 preparation preserves original rows revisions fingerprints and history',pu_snapshot()===$upgraded&&pu_version()==='4');
+    pu_ok('Repeated v1 preparation preserves original rows revisions fingerprints and history',pu_snapshot()===$upgraded&&pu_version()==='5');
     pu_ok('Prepared v1 owner view renders without a setup form',!str_contains(pu_render(),'Prepare inventory storage'));
     // Build a genuinely populated v2 database, with verified original bindings and no domain tables.
+    foreach(['provider_cloud_links','provider_cloud_link_events'] as $name)db()->exec('DROP TABLE '.table($name));
     db()->exec('DROP TABLE '.table('provider_observation_cloud'));db()->exec('ALTER TABLE '.table('provider_refreshes').' DROP COLUMN operation');
     foreach(['provider_domain_link_events','provider_domain_links'] as $name){pu_ok('Only empty isolated domain table removed for v2 fixture '.$name,(int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn()===0);db()->exec('DROP TABLE '.table($name));}
     query('UPDATE '.table('provider_refresh_results').' SET key_fingerprint=?',[$fp]);query('UPDATE '.table('provider_package_links').' SET key_fingerprint=?,profile_revision=7',[$fp]);
@@ -83,7 +84,7 @@ try {
     pu_audit_failure(2,fn()=>provider_inventory_migrate($password));
     pu_ok('Interrupted v2 upgrade retains old stamp and all original records',pu_version()==='2'&&pu_old_fields(pu_snapshot(),$v2)===$v2&&!provider_inventory_ready());
     provider_inventory_migrate($password);
-    pu_ok('Populated v2 upgrades with identical bindings revisions and history',pu_version()==='4'&&pu_old_fields(pu_snapshot(),$v2)===$v2);
+    pu_ok('Populated v2 upgrades with identical bindings revisions and history',pu_version()==='5'&&pu_old_fields(pu_snapshot(),$v2)===$v2);
     foreach([1=>777,2=>888] as $client=>$package){$services=provider_inventory_client_services($client);pu_ok('Upgraded v2 client '.$client.' sees only its original approved service',count($services)===1&&$services[0]['present']&&(int)$services[0]['package']['package_id']===$package&&$services[0]['link']['key_fingerprint']===$fp);}
     provider_inventory_migrate($password);pu_ok('Repeated v2 preparation preserves every record and domain history',pu_old_fields(pu_snapshot(),$v2)===$v2&&all('SELECT * FROM '.table('provider_domain_link_events'))===[]);
     pu_ok('V2 owner page renders current inventory after migration',!str_contains(pu_render(),'Prepare inventory storage')&&str_contains(pu_render(),'private-777.example'));
@@ -105,6 +106,7 @@ try {
     $contextLink=['profile_revision'=>7,'key_fingerprint'=>$fp];$contextProfile=['revision'=>7];
     pu_ok('Approval presentation requires matching observation revision and credential context',provider_inventory_link_context_matches($contextLink,$contextProfile,['profile_revision'=>7,'key_fingerprint'=>$fp])&&!provider_inventory_link_context_matches($contextLink,$contextProfile,['profile_revision'=>6,'key_fingerprint'=>$fp])&&!provider_inventory_link_context_matches($contextLink,$contextProfile,['profile_revision'=>7,'key_fingerprint'=>str_repeat('e',64)])&&!provider_inventory_link_context_matches($contextLink,$contextProfile,null));
     // Genuine populated v3 schema: domain links/history exist, no cloud table or operation column.
+    foreach(['provider_cloud_links','provider_cloud_link_events'] as $name)db()->exec('DROP TABLE '.table($name));
     db()->exec('DROP TABLE '.table('provider_observation_cloud'));db()->exec('ALTER TABLE '.table('provider_refreshes').' DROP COLUMN operation');save_setting('provider_inventory_schema_version','3');
     $v3=pu_snapshot();$domainBefore=all('SELECT * FROM '.table('provider_domain_links'));$domainEventsBefore=all('SELECT * FROM '.table('provider_domain_link_events'));
     pu_ok('Populated v3 routes retain explicit owner upgrade and safe client state',!provider_inventory_ready()&&str_contains(pu_render(),'Prepare inventory storage')&&provider_inventory_client_services(1)===[]&&provider_inventory_client_domains(2)===[]&&pu_snapshot()===$v3);
@@ -112,18 +114,38 @@ try {
     pu_audit_failure(3,fn()=>provider_inventory_migrate($password));
     pu_ok('Interrupted v3 upgrade keeps original stamp and facts',pu_version()==='3'&&!provider_inventory_ready()&&pu_old_fields(pu_snapshot(),$v3)===$v3);
     provider_inventory_migrate($password);
-    pu_ok('Populated v3 upgrade preserves original package and domain histories',pu_version()==='4'&&provider_inventory_ready()&&pu_old_fields(pu_snapshot(),$v3)===$v3&&all('SELECT * FROM '.table('provider_domain_links'))===$domainBefore&&all('SELECT * FROM '.table('provider_domain_link_events'))===$domainEventsBefore);
+    pu_ok('Populated v3 upgrade preserves original package and domain histories',pu_version()==='5'&&provider_inventory_ready()&&pu_old_fields(pu_snapshot(),$v3)===$v3&&all('SELECT * FROM '.table('provider_domain_links'))===$domainBefore&&all('SELECT * FROM '.table('provider_domain_link_events'))===$domainEventsBefore);
     pu_ok('Historical intents are package reads without rewriting rows',(int)one('SELECT COUNT(*) AS n FROM '.table('provider_refreshes').' WHERE operation IS NOT NULL')['n']===0&&provider_inventory_observation($profile)!==null&&provider_inventory_observation($profile,\CajunWebPro\Foundation\TwentyIInventory\InventoryRead::CLOUD_SERVERS_LIST)===null);
-    $v4=pu_snapshot();provider_inventory_migrate($password);pu_ok('Repeated v4 preparation changes no retained fact',pu_snapshot()===$v4);
+    // Genuine v4 has cloud observations/operation history but no client cloud assignments.
+    foreach(['provider_cloud_links','provider_cloud_link_events'] as $name)db()->exec('DROP TABLE '.table($name));
+    save_setting('provider_inventory_schema_version','4');$cloudRefresh=str_repeat('6',32);
+    query('INSERT INTO '.table('provider_refreshes').' (id,profile_id,profile_revision,actor_id,started_at,started_epoch,operation) VALUES (?,?,7,1,?,?,?)',[$cloudRefresh,$profile,'2026-01-01 00:03:00',1767225780,'cloudservers.list']);
+    query('INSERT INTO '.table('provider_refresh_results').' (id,state,reason,scope,coverage,package_count,skipped,skip_reasons,finished_at,elapsed_ms,key_fingerprint) VALUES (?,?,?,?,?,1,0,?,?,1,?)',[$cloudRefresh,'complete','','twenty-i|'.$profile.'|cloudservers.list','unknown','[]','2026-01-01 00:03:01',$fp]);
+    query('INSERT INTO '.table('provider_observation_cloud').' (id,refresh_id,server_id,metadata,unmapped_count) VALUES (?,?,4501,?,0)',[str_repeat('5',32),$cloudRefresh,json_encode(['id'=>4501,'name'=>'original-cloud.invalid'])]);
+    $v4=pu_snapshot();$cloudBefore=all('SELECT * FROM '.table('provider_observation_cloud'));
+    pu_ok('Populated v4 routes offer preparation without creating cloud links',!provider_inventory_ready()&&str_contains(pu_render(),'Prepare inventory storage')&&provider_cloud_client_services(1)===[]&&pu_snapshot()===$v4);
+    pu_deny('Populated v4 upgrade requires current owner password',fn()=>provider_inventory_migrate('wrong'));
+    pu_audit_failure(4,fn()=>provider_inventory_migrate($password));
+    pu_ok('Interrupted v4 upgrade retains cloud observations and original stamp',pu_version()==='4'&&!provider_inventory_ready()&&pu_snapshot()===$v4&&all('SELECT * FROM '.table('provider_observation_cloud'))===$cloudBefore);
+    provider_inventory_migrate($password);
+    pu_ok('Populated v4 upgrades add empty cloud assignments without inferred ownership',pu_version()==='5'&&provider_inventory_ready()&&provider_cloud_client_services(1)===[]&&all('SELECT * FROM '.table('provider_cloud_links'))===[]&&all('SELECT * FROM '.table('provider_cloud_link_events'))===[]&&pu_snapshot()===$v4&&all('SELECT * FROM '.table('provider_observation_cloud'))===$cloudBefore);
+    provider_inventory_migrate($password);pu_ok('Repeated v5 preparation changes no retained fact',pu_snapshot()===$v4&&all('SELECT * FROM '.table('provider_observation_cloud'))===$cloudBefore);
+    foreach(['provider_cloud_links','provider_cloud_link_events'] as $name){
+        db()->exec('RENAME TABLE '.table($name).' TO `'.$prefix.'retained_new`');
+        pu_ok('Missing stamped cloud ownership storage remains gated '.$name,!provider_inventory_ready()&&provider_cloud_client_services(1)===[]);
+        pu_deny('Missing stamped cloud ownership storage requires recovery '.$name,fn()=>provider_inventory_migrate($password));
+        db()->exec('RENAME TABLE `'.$prefix.'retained_new` TO '.table($name));
+    }
+
     db()->exec('RENAME TABLE '.table('provider_observation_cloud').' TO `'.$prefix.'retained_cloud`');
     pu_ok('Missing stamped cloud table keeps GET preparation safe',!provider_inventory_ready()&&str_contains(pu_render(),'Prepare inventory storage'));
     pu_deny('Missing stamped cloud table requires original database recovery',fn()=>provider_inventory_migrate($password));
     db()->exec('RENAME TABLE `'.$prefix.'retained_cloud` TO '.table('provider_observation_cloud'));
     // A current stamp cannot authorize reconstruction of a missing established table.
     db()->exec('RENAME TABLE '.table('provider_domain_link_events').' TO `'.$prefix.'retained_domain_events`');
-    pu_deny('Missing established v4 storage requires original database recovery',fn()=>provider_inventory_migrate($password));
+    pu_deny('Missing established v5 storage requires original database recovery',fn()=>provider_inventory_migrate($password));
     db()->exec('RENAME TABLE `'.$prefix.'retained_domain_events` TO '.table('provider_domain_link_events'));
-    save_setting('provider_inventory_schema_version','99');pu_deny('Future schema remains refused',fn()=>provider_inventory_migrate($password));save_setting('provider_inventory_schema_version','4');
+    save_setting('provider_inventory_schema_version','99');pu_deny('Future schema remains refused',fn()=>provider_inventory_migrate($password));save_setting('provider_inventory_schema_version','5');
     pu_ok('No credential or provider operation was needed',one('SELECT credentials FROM '.table('provider_profiles'))['credentials']===''&&!is_file($private.'/provider-master.key'));
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
 $ok=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/provider-inventory-upgrade-results.json',json_encode(['passed'=>$ok,'scope'=>'Native MySQL/MariaDB populated v1/v2/v3 upgrades and actual PHP owner view rendering with synthetic records; no network or browser','checks'=>$checks],JSON_PRETTY_PRINT));echo ($ok?'PASS':'FAIL').': '.count($checks).' native inventory upgrade assertions'.PHP_EOL;exit($ok?0:1);
