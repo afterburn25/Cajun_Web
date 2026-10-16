@@ -1,6 +1,6 @@
 ## Unreleased — saved WordPress installation indication
 
-Implement a distinct owner-triggered WordPress installation observation and separately permitted saved client view on an isolated branch. Keep reported true, reported false and unavailable distinct, with current assignment/credential/history guards. This is an indication only, without version, health, absence or installation-action claims. Local pure and actual synthetic-handler checks pass; shared integration and native/browser acceptance remain pending. Preserve the reviewed correction to the initially misrouted synthetic test response.
+Implement a distinct owner-triggered WordPress installation observation and separately permitted saved client view on an isolated branch. Keep reported true, reported false and unavailable distinct, with current assignment/credential/history guards. This is an indication only, without version, health, absence or installation-action claims. The exact four-way native matrix and all14 downloaded reports are independently verified; combined application/browser acceptance remains pending. Preserve the reviewed correction to the initially misrouted synthetic test response.
 
 ## Unreleased — catalog test response-parser correction
 

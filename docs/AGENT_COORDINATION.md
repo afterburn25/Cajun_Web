@@ -1,6 +1,6 @@
 # Current CajunWebPro agent coordination
 
-Isolated lane update,2026-10-16: VPS owns `codex/twentyi-wordpress-installed` from111808e2, dedicated WordPress observation modules/tests and externally proposed shared glue. Catalog independently reviewed all14 runtime files; Domains independently reviewed native/browser fixtures. Root reviews shared/workflow application and owns sequential integration. WordPress context12/14 follows directory11/13. Controls/docs89325 remain frozen. No CI or live action is authorized by source review alone. [WordPress scope](TWENTYI_WORDPRESS_INSTALLATION_OBSERVATIONS.md).
+Isolated lane update,2026-10-16: VPS froze `codex/twentyi-wordpress-installed` at3f8adaa from111808e2. Original38873107762 passes all four environments and all14 actual reports are independently verified by Domains. Catalog/runtime, Domains/fixtures and root/shared/workflow reviews remain exact. Root now owns normal integration and combined acceptance, preserving its ForceSSL POST/renewal seams and WordPress context12/14. The final descendant is documentation only; controls/docs89325 remain frozen. [Scope and evidence](TWENTYI_WORDPRESS_INSTALLATION_OBSERVATIONS.md).
 
 Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for complete20i P0, separate branches, sequential integration and verified incremental GitHub releases. Devin owns software-product licensing for other products. These assignments are ownership records, not proof of an active Devin session.
 
