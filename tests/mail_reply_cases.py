@@ -109,6 +109,11 @@ def run_browser(env, browser):
     target = urljoin(send_page, f.get('action') or send_page)
     data = form_data(f)
     r = owner.post(target, data={**data, 'confirm_send': '1'}, timeout=30)
+    if 'Server accepted' not in r.text or submission_server.connections != smtp_before + 1:
+        outcome = db("SELECT r.status,r.phase,r.reason,r.smtp_code FROM ci_mail_submission_results r JOIN ci_mail_submissions s ON s.id=r.submission_id WHERE s.draft_id=? ORDER BY r.finished_epoch DESC LIMIT 1", [draft])
+        dispatches = db("SELECT d.id FROM ci_mail_submission_dispatches d JOIN ci_mail_submissions s ON s.id=d.submission_id WHERE s.draft_id=?", [draft])
+        h2 = soup(r).select_one('h2')
+        print('reply-send-diagnostic outcome=%s dispatches=%s connections=%s->%s title=%s' % (outcome, dispatches, smtp_before, submission_server.connections, h2.get_text(strip=True) if h2 else 'none'))
     check('Reviewed reply send records server acceptance', 'Server accepted' in r.text and submission_server.connections == smtp_before + 1)
     sid = parse_qs(urlparse(r.url).query)['submission_id'][0]
     saved = db('SELECT * FROM ci_mail_submissions WHERE id=?', [sid])[0]
