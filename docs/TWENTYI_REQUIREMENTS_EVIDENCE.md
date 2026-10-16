@@ -1,7 +1,7 @@
 # Complete 20i requirements and evidence
 
 
-Codex owns the complete 20i P0 integration. [CajunWebPro 1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly downloaded/verified at immutable source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`. All16 assets, checksums, ZIP members and the tag agree with accepted source; previous1.23 assets are unchanged. This is a GitHub release, not live-site deployment. Full20i is unfinished; unrelated roadmap work remains paused. See [verified release report](TEST_REPORT_1.24.0.md). Older checkpoints below are historical; current capability rows are authoritative.
+Codex owns the complete 20i P0 integration. [CajunWebPro 1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly downloaded/verified at immutable source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`. All16 assets, checksums, ZIP members and the tag agree with accepted source; previous1.23 assets are unchanged. This is a GitHub release, not live-site deployment. Full 20i remains unfinished. Codex stays focused on 20i; Devin continues the remaining non-20i site work under the current owner allocation. See [verified release report](TEST_REPORT_1.24.0.md). The [current branch checkpoint](TWENTYI_CURRENT_CHECKPOINT.md) records unreleased work and its exact evidence. Rows below retain the released 1.24 and earlier branch scope; they do not certify the newer candidate.
 
 Status values: not started, implementing, branch-tested, integrated, released, live-verified, awaiting a named external input. A row describes its named scope only. Development, release and live acceptance are independent. This is the complete priority, not a declaration that an initial component finishes it.
 

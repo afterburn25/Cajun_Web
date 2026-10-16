@@ -1,3 +1,9 @@
+## Current PR159 review - 2026-10-16 15:15 UTC
+
+Exact head e3d627701f14d4d44acc02be49f4bbd20cb2b389 remains unmerged. [Actionable source/CI review](https://github.com/afterburn25/Cajun_Web/pull/159#issuecomment-6218434878) identifies unsafe sole-candidate NULL-invoice association and missing supported populated unmarked pre-master adoption. The new native fixture expects an unrelated revoked admin license to be consumed and stamps marker2 before its upgrade case; those cases do not prove the requested behavior. Original CI38912600662 stopped at stale installer hashes before native/HTTP execution. Master-customer exclusions and unknown-marker refusal are present in source; actual endpoint/native acceptance remains pending.
+
+Retained proof299bf71e6aeac3070f362b946f3b6448f3670785ab301776050887bd8b40e0b8 includes84 source/hash/CI checks and15 unique exact-function synthetic cases per PHP mode. This does not establish native migration or endpoint acceptance. Devin received fixes in issue157 comment6218437910. Preserve root physical-storage/support exclusions, shared setup-form ordering, provider inventory marker5 and billing invoice-purpose guards during eventual integration. No licensing runtime was imported into2a or changed by this documentation update.
+
 ## Devin non20i-licensing resolution — 2026-10-16 UTC
 
 Branch `devin/non20i-licensing` (from `origin/main` `80ce8b19`) resolves the four findings in source. Schema marker advances to `4`:
@@ -8,6 +14,8 @@ Branch `devin/non20i-licensing` (from `origin/main` `80ce8b19`) resolves the fou
 4. **Unknown/future markers** — the marker is read before any DDL; versions 1–4 migrate, empty adopts only known-empty tables, anything else throws before touching schema or the marker.
 
 `license_ready()` is strict `=== '4'` so an unmigrated install degrades to the preparation prompt instead of SQL errors on the new column. New native cases exercise the populated upgrade, idempotent repeat, marker refusals, portal/bundle/download master exclusion, revoked-bundle denial, legacy claim/reuse, ambiguous-candidate refusal and second-purchase mint. Native MariaDB execution is pending in CI; no database run is claimed here yet.
+
+## Earlier immutable review history
 
 ## Current main79d9 documentation delta and preflight — 2026-10-16 UTC
 
