@@ -1,3 +1,7 @@
+## Catalog readiness branch verification
+
+Enable existing full/native workflows directly for the isolated readiness branch because documentation conflicts prevent PR145 merge-ref testing. No application or test change.
+
 ## Unreleased — owner mapping readiness and historical evidence
 
 - Explain local mapping review requirements on the owner's plan list/detail and link to protected review screens.
