@@ -136,11 +136,11 @@ Adds license management to the customer workspace:
 **File:** `site/app/licenses/bundle.php`
 
 - `license_bundle($licenseKey, $industry, $coreDir, $outputDir)` — creates bundled ZIP (core + industry module with embedded license_key)
-- `license_bundle_store($licenseId, $zipPath, $title)` — stores bundle record for download tracking
+- `license_bundle_store($licenseId, $zipPath, $title)` — stores bundle record with the ZIP's SHA-256 for download integrity
 
 **Admin UI:** `site/admin/views/studio/licenses.php` — "Generate bundle" button creates downloadable ZIP
 
-**Database:** `license_bundles` table stores bundle records
+**Database:** `license_bundles` table stores bundle records (schema v3 adds `sha256 CHAR(64) NULL`; `license_migrate` applies the additive column on v1/v2 adoptions)
 
 ### 7. Bundle downloads
 
@@ -148,6 +148,8 @@ Adds license management to the customer workspace:
 
 - Authenticated endpoint — requires customer session
 - Verifies customer owns the license
+- Realpath-containment check keeps served files inside private storage
+- **Integrity check:** when a SHA-256 was recorded, the bytes on disk must match or the download is refused (404 + `bundle.download.integrity_failed` audit) — a corrupted or tampered bundle is never served. NULL checksums (pre-v3 records) download without the check
 - Logs download to audit table
 - Serves ZIP from private storage
 
