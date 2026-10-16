@@ -22,6 +22,10 @@ The new reference contains neither `/contract` nor `renewalDate`. The approved d
 
 Codex and three agents retain20i ownership; Devin retains software-product licensing. Root integrates shared executor, storage, route and installer changes sequentially. Every new read stays behind the existing fixed transport, credential protection, durable intent/result records, current authority and explicit user-facing refresh flow. [Current requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) and [coordination](AGENT_COORDINATION.md) record completion separately from documentation intake.
 
+## Additional effect classification
+
+Lines899–905 explicitly state that retrieving a domain transfer auth code can generate and set a fresh code at the registry. Despite the GET method, it has possible side effects and must not be enabled as scheduled/read-only inventory. It requires a dedicated owner/client operation and its own verified effect/access handling. Nameserver GET1343 and DNS GET1374 still do not provide exact raw response examples; their existence is not proof of an executable response schema. No example was called.
+
 ## SDK example index
 
 Line numbers refer to the retained text, whose line positions match the original attachment. A method shown here is the SDK method in the example, not a decision to enable that operation.

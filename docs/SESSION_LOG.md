@@ -1,3 +1,9 @@
+## 2026-10-15 — preserve exact4f build and current review findings
+
+Starting4f683f88, verify the remote PR head and retain32 original CI run handles; all31 focused workflows succeed and full38839969235 is active. Initial Windows build3504 refused the missing explicit --commit after source checks. Corrected98832 targets exact4f; all11 outputs/source/member/directories/update payloads verify and are preserved. Documentation follow-up only; no shipping changes or new acceptance claim.
+
+Independent main35dd review confirms missing pre-master upgrade and customer master-bundle exposure, plus exact existing-schema/repeated-setup refusal because the reused validator omits TINYINT. Record exact pure regex6/8 and5/6 results for Devin. Record newly verified API effect: authCode GET may rotate the registry code and is not a scheduled read. Root verifies cloud-provider source corrections for paired history loss, bounded history queries and retained sequence identity (core0adcb607/storage6c971d2d); native acceptance remains separate. Continue original combined/domain runs and reviewed reader integration;1.25 remains unreleased.
+
 ## 2026-10-15 — combine reviewed scheduler and verify history1759
 
 Starting4b33d606, normally merge scheduler2b9 under **Merge reviewed scheduled inventory refresh into the integration queue**. Resolve branch-trigger/controller/documentation overlaps, retain exact198 private paths,59 distinct native file invocations and the final browser scheduler hook. Inventory auto-merges the reviewed5fb recorder extraction. Root refresh62186 passes; exact source verifier passes5,288 parent-union files,2,722 installer hashes and15/33/42 pure cases per mode. Domain agent independently verifies24 source/wiring conditions; all modified PHP syntax and documentation checks precede commit. Both ready normal commits publish together for combined CI; no prior run is cancelled.

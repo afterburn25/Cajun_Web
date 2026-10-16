@@ -1,3 +1,7 @@
+## Unreleased — combined build and source-review continuity
+
+Preserve exact4f Windows build verification and original combined CI handles. Document independent licensing setup/migration/master-delivery findings and the owner API reference's auth-code side effect. Documentation only; no runtime or published release change.
+
 ## Unreleased integration queue — owner-approved scheduled inventory
 
 Normally integrate reviewed scheduled hosting reads with forwarding requests, client service history and cloud recovery. Preserve explicit schedule approval, durable leases/backoff, exact authority and the shared guarded recorder. Regenerate combined installer and retain native/browser/private-route coverage. Combined acceptance and publication remain pending.

@@ -1,3 +1,9 @@
+## Independent current-schema setup finding — 2026-10-15
+
+Independent review of exact main35ddbbff confirms both earlier findings and identifies another repeatability blocker. `license_migrate.php:20` reuses `catalog_validate_schema.php:7`, whose column regex recognizes INT/BIGINT, CHAR/VARCHAR, DATETIME and text, but not TINYINT. The current website_licenses schema has8 declared columns; only6 are matched because is_active and is_master are TINYINT. The license_domains schema has6 columns;5 are matched. Existing current tables therefore fail the column-count check, including empty tables and repeated setup after initial preparation.
+
+The independent pure PHP regex diagnostic confirms these counts using the exact source schema. Fix the licensing schema validation and test existing current tables, repeated preparation, interrupted preparation and a populated pre-master migration. Retain exact key/index/relationship validation when correcting the type handling. This finding is not a database execution claim. Evidence: `work/domain-agent-main35dd-licensing-review.json`, with10 source hashes and line excerpts. Both master delivery and populated-upgrade findings below remain open; Devin retains implementation ownership.
+
 ## Latest main follow-up — 2026-10-15
 
 Read-only review now includes `35ddbbff8d64383f52fb867c510c73be05ce7648`, runtime `780761a6`, afterb8c. The new owner-password setup action and entry-point readiness guards are useful additions, but the two required corrections below remain open.
