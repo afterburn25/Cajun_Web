@@ -1,3 +1,8 @@
+
+## Isolated registered-domain date observations — 2026-10-15
+
+Domain agent starts `codex/twentyi-domain-contracts` at175930618ab349246020602e634ce55ee49f176b; PR149 remains frozen. Implements a dedicated typed date reader, exact current registrar/client/account binding, shared refresh intents/results with recovery witnesses, and native owner/client dated observations. Read-only wire contract is the retained20i SDK1.0.6 example, not live account acceptance. New owner reference34e713c3 is inspected and kept distinct from old source. Local pure checks pass; native/browser/package acceptance remains pending. Root owns integration/releases; no live provider call, domain change, payment, mail, SSH, licensing edit or deployment. [Scope, shared interfaces, provenance and required evidence](docs/TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).
+
 # CajunWebPro integration queue handoff — 2026-10-15
 
 Root owns `codex/twentyi-next-integration` in `work/20i-next-integration`. This queue normally merges reviewed hosting-history `bff198cca9ea06973088e33d5a164b17d0c16d13` onto cloud-recovery correction `a9637f2bb2000196312f72e10f39f614980c98c7`. It preserves the separate release candidate/checkouts and their active tests. The new history slice is not added to the frozen a963 acceptance run, and this queue has not passed combined acceptance.

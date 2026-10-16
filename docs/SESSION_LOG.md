@@ -1,3 +1,8 @@
+
+## Isolated registered-domain date observations — 2026-10-15
+
+Domain agent starts `codex/twentyi-domain-contracts` at175930618ab349246020602e634ce55ee49f176b; PR149 remains frozen. Implements a dedicated typed date reader, exact current registrar/client/account binding, shared refresh intents/results with recovery witnesses, and native owner/client dated observations. Read-only wire contract is the retained20i SDK1.0.6 example, not live account acceptance. New owner reference34e713c3 is inspected and kept distinct from old source. Local pure checks pass; native/browser/package acceptance remains pending. Root owns integration/releases; no live provider call, domain change, payment, mail, SSH, licensing edit or deployment. [Scope, shared interfaces, provenance and required evidence](TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).
+
 ## 2026-10-15 — preserve latest main and publish the combined test candidate
 
 Starting25cdc25a, normally merge latest mainc3b1a69c. Its only delta from the already retained a1e64f81 is the licensing/error-page acceptance record in SESSION_HANDOFF; preserve that attributed evidence with the concise current handoff. Shipping files remain byte-identical to the reviewed combined cloud/catalog/registrar/mailbox source. Final canonical refresh81543 passed; prior64575,88009 and86317 are complete. Changed PHP/Python syntax, exact dependency mirrors, documentation and whitespace checks pass. All original agent branches remain intact. This final merge enables fresh combined CI after the intermediate local merges intentionally skipped duplicated automatic runs. No new release or live action. Next: inspect new native/full runs, repair actual failures and verify exact artifacts before main/release acceptance.

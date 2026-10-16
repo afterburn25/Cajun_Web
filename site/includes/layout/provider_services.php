@@ -22,7 +22,7 @@ function provider_services_portal_render(): never {
         echo '<p>Your services will appear here once the studio enables hosting inventory.</p></div></section>';site_foot(false);exit;
     }
     if(function_exists('provider_mailbox_client_navigation')&&!support_current()&&provider_mailbox_client_navigation((int)$client['id']))echo '<a class="btn outline" href="'.esc(studio_url(['hosting_mail'=>1])).'">Hosting mailboxes</a>';
-    if(!support_current())echo '<a class="btn outline" href="'.esc(studio_url(['domain_renewals'=>1])).'">Domain renewal requests</a><a class="btn outline" href="'.esc(studio_url(['service_history'=>1])).'">Service history</a>';
+    if(!support_current())echo '<a class="btn outline" href="'.esc(studio_url(['domain_dates'=>1])).'">Renewal dates</a> <a class="btn outline" href="'.esc(studio_url(['domain_renewals'=>1])).'">Domain renewal requests</a><a class="btn outline" href="'.esc(studio_url(['service_history'=>1])).'">Service history</a>';
     $services=provider_inventory_client_services((int)$client['id']);
     $domains=provider_inventory_client_domains((int)$client['id']);
     $cloudServices=provider_cloud_client_services((int)$client['id']);

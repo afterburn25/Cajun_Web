@@ -224,6 +224,8 @@ try:
         service_plan_browser(globals(),browser)
         from recurring_billing_cases import run_browser as recurring_browser
         recurring_browser(globals(),browser)
+        from domain_contracts_cases import run_browser as domain_contracts_browser
+        domain_contracts_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)

@@ -1,3 +1,7 @@
+## Unreleased — explicit domain renewal-date observations
+
+Adds saved date-only provider observations and history for exact current registered-domain assignments, explicit owner refresh and private client display. Current native/browser acceptance remains pending. No renewal or registry-expiry claim.
+
 ## Unreleased integration queue — client hosting history
 
 Normally combine reviewed owner-approved client observation history with the cloud recovery correction on a separate integration branch. Preserve both original sources and evidence; retain all documentation history and regenerate combined installer hashes. Fresh combined acceptance is required. The separate release candidate and published assets are unchanged.
