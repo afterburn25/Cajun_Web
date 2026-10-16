@@ -4,11 +4,11 @@ Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for
 
 | Owner | Current branch/checkpoint | Scope and next evidence |
 |---|---|---|
-| Root | Local normal directoryacbf merge over33fee; frozenc174 original38863417123 preserved | Staged parity and independent source review clear; commit the local normal merge and await the original c174 browser outcome before choosing the next stable candidate. |
-| Domains | Isolated domain-renewal-agreements fromc174 | Approved immutable renewal binding to existing one-time USD agreements; dedicated implementation, shared proposals external. |
-| VPS | Isolated Force SSL controls fromc174 | Single gateway/ledger, terminal ownership/readback boundaries independently reviewed; dedicated modules underway, recovery requirement explicit. |
-| Catalog | Directory3bd/acbf native accepted in all four environments | Actual archives and root merge review complete; independently review dedicated Force SSL change runtime next. |
-| Devin | Software-product licensing; main ee97 reviewed | Invoice uniqueness/marker2/serialized helpers must be preserved; populated upgrade, master delivery and legacy invoice handling remain under review. |
+| Root | Local directory727 plus catalog parser correction; PR151 | Preserve actual c174 browser failure; freeze one new combined candidate after independent correction review. |
+| Domains | Isolated renewal-agreement bindings fromc174 | Corrected indexed-identity readiness guard under re-review; dedicated native/shared proposals pending. |
+| VPS | Isolated Force SSL controls fromc174 | Runtime/shared source clear; real contention/persistence-failure fixtures under review; operator crash recovery still required. |
+| Catalog | Independent reviews | Parser entry boundary, amended ForceSSL native fixtures and corrected renewal runtime. |
+| Devin | Software-product licensing; main33ef reviewed | Preserve bundle filtering, invoice uniqueness/marker2/serialized helpers; populated upgrade, master delivery and legacy invoice findings remain. |
 
 Original427 is terminal failure at the preserved setup check: final125 reports,2,107 HTTP passes plus one failure,289 recovery/2,211 Apache passes and exact Git/Windows packages are verified. No further polling or repeated acceptance is needed. See [handoff](../SESSION_HANDOFF.md) for exact current sources, evidence and next actions.
 

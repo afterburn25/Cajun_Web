@@ -1,3 +1,7 @@
+## Unreleased — catalog test response-parser correction
+
+Correct the synthetic privacy regression helper to parse raw markup internally while retaining response-object parsing for actual HTTP pages. Preserve all13 privacy cases and the exact public-reference/private-value checks. Downloaded originalc174 browser failure is retained; corrected combined browser acceptance remains pending. No application behavior changes.
+
 ## Unreleased — saved directory-listing settings
 
 Integrate owner-triggered observations of the directory-listing setting with independent client sharing, immutable history and current hosting authority. False and unavailable remain distinct. The setting is informational and does not test file exposure. Four-way focused native evidence is verified; combined browser/package acceptance remains pending.

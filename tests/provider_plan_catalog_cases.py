@@ -2,6 +2,7 @@
 import json
 import re
 from copy import deepcopy
+from bs4 import BeautifulSoup
 from release_cases import db
 from staff_cases import OWNER
 
@@ -23,12 +24,12 @@ def catalog_progress_privacy(progress, account_id, cost, provider_type, catalog_
             'provider_type_absent': provider_type not in str(remainder)}
 
 
-def catalog_progress_privacy_regressions(soup):
+def catalog_progress_privacy_regressions():
     account = '534f6811451c047dc2b50c8cfd80b8a1'  # Public reference in the retained failed-run screenshot.
     catalog = 'c' * 32
     reference = '<span class="hosting-service-reference">' + account + '</span>'
     def result(body):
-        progress = soup('<section data-hosting-progress>' + body + '</section>').select_one('[data-hosting-progress]') if body is not None else None
+        progress = BeautifulSoup('<section data-hosting-progress>' + body + '</section>', 'html.parser').select_one('[data-hosting-progress]') if body is not None else None
         evidence = catalog_progress_privacy(progress, account, '12.5000', '811', catalog)
         return all(evidence[k] for k in ['progress_present', 'reference_matches', 'cost_absent', 'catalog_id_absent', 'provider_type_absent'])
     cases = [('public reference containing provider digits', reference, True),
@@ -49,7 +50,7 @@ def catalog_progress_privacy_regressions(soup):
 def prepare(env, browser, owner, client, source_id, staff_url, client_url, capture):
     base, qa = env['BASE'], env['QA']
     check, form_for, form_data, soup = (env[k] for k in ['check', 'form_for', 'form_data', 'soup'])
-    for label, passed in catalog_progress_privacy_regressions(soup):
+    for label, passed in catalog_progress_privacy_regressions():
         check(label, passed)
     plan = db('SELECT plan_id FROM ci_service_subscriptions WHERE id=?', [source_id])[0]['plan_id']
     url = base+'/existing/admin/index.php?view=service-plan&record='+plan
