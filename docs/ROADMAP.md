@@ -1,3 +1,7 @@
+## Directory listing setting increment — 2026-10-16
+
+Implement the documented assigned-package read with saved owner/client settings and independent sharing/recovery. This is an isolated runtime increment with local pure/source evidence, with reviewed shared integration applied and actual native/browser acceptance pending. It does not implement the setter, DNS editing, file access or complete hosting controls. [Scope and evidence](TWENTYI_DIRECTORY_LISTING_OBSERVATIONS.md).
+
 ## Website-folder observations increment — 2026-10-16
 
 Owner-triggered document-root map storage and explicit client sharing are implemented on isolated catalog application branch, with no filesystem use or provider write. Pure/source checks pass; native/browser/installer and combined release acceptance remain pending. This does not complete DNS editing, file delivery or the full20i roadmap. [Scope](TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md).

@@ -1,3 +1,7 @@
+## Unreleased — saved directory listing setting
+
+Add isolated owner-triggered saved directory listing observations and separate client sharing. Reported true/false and unavailable are distinct; immutable history and current authority guard the saved setting. Pure/source checks pass; native/browser/package acceptance and root integration remain pending. [Scope and evidence](docs/TWENTYI_DIRECTORY_LISTING_OBSERVATIONS.md).
+
 ## Unreleased — saved Force SSL flag observations
 
 Add explicit owner refresh and separately approved client sharing of dated Force SSL boolean observations, with independent history recovery and current assignment/account checks. False remains distinct from unavailable; this does not verify certificates or HTTPS health. Source/pure checks pass; native/browser/package acceptance is pending. [Scope](docs/TWENTYI_PACKAGE_FORCE_SSL_OBSERVATIONS.md).

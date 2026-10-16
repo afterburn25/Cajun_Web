@@ -1,3 +1,9 @@
+## Isolated directory listing setting increment — 2026-10-16
+
+Catalog owns `codex/twentyi-directory-listing-observations` from frozen Force SSL `b5c2e8738a405ee7817ce7dc882ff751592439a5`. The documented assigned-package directory-indexing GET is implemented as a saved boolean observation with independent owner preparation/refresh, client sharing/revocation and immutable history recovery. Reported enabled/disabled remain distinct from unavailable; no setter or current visitor-file exposure claim is added. Local157 pure cases pass each PHP8.4 mode; independent dedicated-runtime source review is clear. Root cleared and applied exact shared glue; local157 contract,24 transport,165 Force SSL and24 roots-transport cases pass each mode. Installer refresh13763 and exact2,805 staged shipping files/2,804 generated hashes pass. Native/browser execution and root integration are pending. [Scope and evidence](TWENTYI_DIRECTORY_LISTING_OBSERVATIONS.md).
+
+Root and independent reviewers cleared exact runtime/shared/fixture bytes and authorize one focused four-way native matrix after installer/Git parity. No standalone full/browser/PR dispatch. Preserve accepted roots57e72, Force SSLb5c2, the original03b catalog browser failure and all previous evidence. Root owns combined acceptance and releases; Devin retains licensing.1.24.0 remains published;1.25.0 and full20i are unfinished.
+
 ## Catalog application lane — 2026-10-16
 
 Catalog owns new `codex/twentyi-document-roots-observations` from pure0ddd + normal expiry18d merge83851011. Owned roots modules/schema/admin/client views and tests; reviewed minimal shared inventory/transport/routes/build union adds named read9/refresh11 after expiry. Runtime is stable for root/domain review while tests/docs/package preparation finish. No CI until root reviews exact source/fixtures; no changes to frozen root or licensing. [Scope](TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md).

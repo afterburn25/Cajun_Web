@@ -16,7 +16,7 @@ class ProviderServer:
         (runtime/'ca.pem').write_bytes(cac.public_bytes(serialization.Encoding.PEM))
         (runtime/'server.pem').write_bytes(certificate.public_bytes(serialization.Encoding.PEM))
         (runtime/'server.key').write_bytes(key.private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.PKCS8,serialization.NoEncryption()))
-        self.mode='success';self.write_mode='success';self.calls=0;self.errors=[];self.names=[];self.packages=[];self.posts=[];self.cloud_servers=[];self.cloud_mode='success';self.get_paths=[];self.domain_mode='success';self.registrar_mode='success';self.registrar_domains=[];self.cloud_providers=[];self.cloud_providers_mode='success';self.contract_dates={};self.contract_mode='success';self.expiry_dates={};self.expiry_mode='success';self.php_version='php82';self.php_version_mode='success';self.document_roots={};self.document_roots_mode='success';self.force_ssl=True;self.force_ssl_mode='success';fixture=self
+        self.mode='success';self.write_mode='success';self.calls=0;self.errors=[];self.names=[];self.packages=[];self.posts=[];self.cloud_servers=[];self.cloud_mode='success';self.get_paths=[];self.domain_mode='success';self.registrar_mode='success';self.registrar_domains=[];self.cloud_providers=[];self.cloud_providers_mode='success';self.contract_dates={};self.contract_mode='success';self.expiry_dates={};self.expiry_mode='success';self.php_version='php82';self.php_version_mode='success';self.document_roots={};self.document_roots_mode='success';self.force_ssl=True;self.force_ssl_mode='success';self.directory_indexing=True;self.directory_indexing_mode='success';fixture=self
         self.period_mode='success';self.period_map={'.invalid':[1,3],'.co.uk':[1,2],'.com':[1,5]}
         class Handler(BaseHTTPRequestHandler):
             def do_GET(self):
@@ -27,7 +27,8 @@ class ProviderServer:
                 php_version_path=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/phpVersion',self.path or '')
                 document_roots_path=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/documentRoots',self.path or '')
                 force_ssl_path=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/forceSSL',self.path or '')
-                if (not contract and not expiry and not php_version_path and not document_roots_path and not force_ssl_path and self.path not in ['/package','/cloud_server','/domain-search/example.invalid','/domain','/domain-period','/reseller/*/cloudProviders']) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Accept')!='application/json':
+                directory_indexing_path=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/directoryIndexing',self.path or '')
+                if (not contract and not expiry and not php_version_path and not document_roots_path and not force_ssl_path and not directory_indexing_path and self.path not in ['/package','/cloud_server','/domain-search/example.invalid','/domain','/domain-period','/reseller/*/cloudProviders']) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Accept')!='application/json':
                     fixture.errors.append('Unexpected fixed request')
                 mode=fixture.registrar_mode if self.path=='/domain' else (fixture.cloud_mode if self.path=='/cloud_server' else fixture.mode)
                 status=401 if mode=='authentication' else 200
@@ -61,6 +62,9 @@ class ProviderServer:
                 if force_ssl_path:
                     status=401 if fixture.force_ssl_mode=='authentication' else 200
                     body={'success':json.dumps(fixture.force_ssl).encode(),'null':b'null','object':b'{"value":true}','authentication':b'private synthetic Force SSL response'}.get(fixture.force_ssl_mode,b'null')
+                if directory_indexing_path:
+                    status=401 if fixture.directory_indexing_mode=='authentication' else 200
+                    body={'success':json.dumps(fixture.directory_indexing).encode(),'null':b'null','object':b'{"value":true}','authentication':b'private synthetic Directory listing response'}.get(fixture.directory_indexing_mode,b'null')
                 self.send_response(status);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(body)));self.send_header('Connection','close');self.end_headers();self.wfile.write(body)
             def do_POST(self):
                 fixture.calls+=1

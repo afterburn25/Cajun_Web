@@ -1,3 +1,7 @@
+## Directory listing setting source and scope — 2026-10-16
+
+Owner reference34e713 lines2515–2521 documents GET /package/{packageId}/web/directoryIndexing, whether Options +Indexes is enabled, and null on incomplete requests. Strict bare booleans are a defensive accepted subset; no full wire schema, current account entitlement or visitor file exposure is claimed. Dedicated saved observation authority/sharing/history is implemented; reviewed shared wiring is applied while native/browser acceptance remains pending. [Scope and evidence](TWENTYI_DIRECTORY_LISTING_OBSERVATIONS.md).
+
 ## Combined domain and PHP observation candidate — 2026-10-16 UTC
 
 The owner's complete20i request continues through a normal merge of domain integration4b78a59b and frozen PHPcfc6ecd0. Exact a132 domain shipping remains; cfc6 PHP scalar observation, current hosting authority, order/credential defenses, explicit client sharing, storage and forms join the candidate. Shared seven-file preview is root/catalog reviewed, preserving positional domainContext read6/refresh8, named packageContext read7/refresh9, exclusive typed writers, all period/cloud/date hooks and scheduler guard. Automatic navigation/router merges are separately checked; transport mirror and installer inventory are regenerated.
