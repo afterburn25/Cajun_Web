@@ -1,6 +1,6 @@
 ## Unreleased isolated component — registrar expiry contract
 
-Add only a pure exact-name GET descriptor, operation-bound immutable registrar document and bounded timestamp projection with139 normal/minimal synthetic checks per mode. Document retained SDK evidence and unverified full schema; preserve unknown/null semantics, redacted failures and future authority/credential prerequisites. Independent source review is clear; narrow cross-version evidence is pending. This is outside the1.25 release queue and adds no shipping UI, storage, provider execution or installer change. [Contract](docs/TWENTYI_DOMAIN_EXPIRY_CONTRACT.md).
+Add only a pure exact-name GET descriptor, operation-bound immutable registrar document and bounded timestamp projection with139 normal/minimal synthetic checks per mode. Document retained SDK evidence and unverified full schema; preserve unknown/null semantics, redacted failures and future authority/credential prerequisites. Independent source review is clear; exact b1e7609e now passes both downloaded PHP8.2/8.4 pure artifacts with139 named checks in each default/minimal mode. This is outside the1.25 release queue and adds no shipping UI, storage, provider execution or installer change. [Contract](docs/TWENTYI_DOMAIN_EXPIRY_CONTRACT.md).
 
 ## Unreleased — client domain renewal-date observations
 
