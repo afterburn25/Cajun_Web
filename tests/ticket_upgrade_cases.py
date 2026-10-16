@@ -58,6 +58,10 @@ def run(env):
     client_password = 'Synthetic retained ticket client passphrase'
     submit(client, invitation, 'activate', {'password': client_password, 'confirm_password': client_password})
     submit(client, portal, 'login', {'email': 'organized-client@example.invalid', 'password': client_password})
+    # Invitation and activation legitimately rewrite the seeded studio_clients row
+    # (invite_hash, auth_version, password_hash). The retention baseline must be the
+    # activated state so ticket and recovery checks do not compare against it.
+    baseline = records()
     new = portal+'?ticket_new=1'
     opening = dict(fields(client, new, 'client_tickets_create'), subject='Retained website support', body='Retained client ticket opening', related_project='1')
     response = client.post(new, data=opening)
@@ -89,15 +93,16 @@ def run(env):
 
     def retained(expected):
         return (records('tickets')==expected and all(records(name)==data for name, data in earlier.items())
-                and all(records()[name]==original[name] for name in ['studio_clients', 'studio_jobs', 'studio_invoices'])
+                and all(records()[name]==baseline[name] for name in ['studio_clients', 'studio_jobs', 'studio_invoices'])
                 and all((private/name).read_bytes()==data for name, data in keys.items()))
 
     journal = private/RECOVERY/'journal.php'
     journal_before = journal.read_bytes()
     records('owner-rate-exhaust')
     response = action('recover')
-    check(label+' throttled recovery cannot change populated tickets or private records',
-          'Please wait before another owner authentication attempt.' in response.text and journal.read_bytes()==journal_before and retained(saved))
+    check(label+' throttled recovery refuses owner authentication and leaves the journal',
+          'Please wait before another owner authentication attempt.' in response.text and journal.read_bytes()==journal_before)
+    check(label+' throttled recovery cannot change populated tickets or private records', retained(saved))
     records('owner-rate-reset')
     response = action('recover')
     old = client.get(target)
