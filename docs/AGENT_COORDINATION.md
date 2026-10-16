@@ -1,3 +1,7 @@
+## Catalog application lane — 2026-10-16
+
+Catalog owns new `codex/twentyi-document-roots-observations` from pure0ddd + normal expiry18d merge83851011. Owned roots modules/schema/admin/client views and tests; reviewed minimal shared inventory/transport/routes/build union adds named read9/refresh11 after expiry. Runtime is stable for root/domain review while tests/docs/package preparation finish. No CI until root reviews exact source/fixtures; no changes to frozen root or licensing. [Scope](TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md).
+
 # Current CajunWebPro agent coordination
 
 Updated 2026-10-15. The owner authorizes Codex and three parallel agents for complete20i P0, separate branches, sequential integration and verified incremental GitHub releases. Devin owns software-product licensing for other products. These assignments are ownership records, not proof of an active Devin session.

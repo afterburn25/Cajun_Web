@@ -1,5 +1,7 @@
 # Package document-root observations
 
+The separate [application increment](TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md) now implements owner-triggered storage and explicit client sharing; its native/browser/package evidence is pending. The original pure evidence and response contract below remain scoped to their immutable source.
+
 This separate pure-component branch, `codex/twentyi-document-roots-contract`, starts at frozen `427e3a233706f22cd39918d8b97256a7fb2b1e90`. It implements a fixed read and bounded parser with synthetic transport tests outside the deployed application. It does not expose routes, save database records, resolve observed paths or operate on files. The current release candidate and accepted DNS proposal branch remain unchanged.
 
 ## Exact evidence

@@ -1,5 +1,12 @@
 # CajunWebPro current status
 
+## Isolated website-folder application increment — 2026-10-16
+
+Catalog owns `codex/twentyi-document-roots-observations`, normal parent merge83851011 (accepted pure0ddd + reviewed expiry18d296b7). New owner-triggered saved document-root maps have independent current authority, immutable recovery/sharing and a private client projection. Shared context appends read9/refresh11 after expiry; no provider writes or path execution. Runtime has independent source review; local143 pure+24 transport cases pass each mode. Native/browser fixtures are prepared, not executed. Root reviewed the corrected exact fixtures and approved one focused matrix. Installer refresh and2,783/2,782 staged source/hash parity pass; native/browser/package acceptance and integration remain pending. [Current scope and evidence](docs/TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md).
+
+This branch is outside the frozen release candidate.1.24.0 remains the published baseline;1.25.0 and full20i remain unfinished. Preserve original pure source, earlier run evidence and Devin licensing ownership. The status below is inherited parent context, not acceptance of this increment.
+
+
 ## Reviewed expiry browser fixture correction - 2026-10-16
 
 From frozen9e33, correct only the expiry browser setup comparison to account explicitly for authorized-login `last_login`, then retain exact complete post-login authority through the workflow. Combined427 failed at the corresponding period fixture; expiry execution remains pending. Runtime/native/workflow/installer bytes stay exactf42. Root source review and AST/whitespace pass; root coordinates corrected packaged acceptance without a separate manual dispatch. [Correction and retained evidence](docs/TWENTYI_DOMAIN_EXPIRY_CONTRACT.md).

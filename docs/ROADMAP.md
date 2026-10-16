@@ -1,3 +1,7 @@
+## Website-folder observations increment — 2026-10-16
+
+Owner-triggered document-root map storage and explicit client sharing are implemented on isolated catalog application branch, with no filesystem use or provider write. Pure/source checks pass; native/browser/installer and combined release acceptance remain pending. This does not complete DNS editing, file delivery or the full20i roadmap. [Scope](TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md).
+
 ## Registrar expiry observation increment - 2026-10-16
 
 The separate domains branch implements a bounded registrar expiry reader, durable timestamp/history and native owner/client flow from retained provider-authored evidence. Root reviewed shared/current-authority boundaries; local pure139+reader54 pass per PHP mode. Exact f42 focused38855352194 passes all four native environments with actual archives verified; packaged browser verification remains pending. This does not implement expiry eligibility, domain commerce or provider writes. [Current scope and source limits](TWENTYI_DOMAIN_EXPIRY_CONTRACT.md). Frozen427 acceptance and Devin licensing remain separate.
