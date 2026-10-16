@@ -27,6 +27,7 @@ Main retains existing licensing and the four unresolved [integration findings](d
 - `devin/non20i-proposals-foundation` (PR #164) ports the proposal contract layer — `Proposal`/`ProposalVersion`/`ApprovalDecision` immutable versions with deliberate approval states.
 - `devin/non20i-notifications-foundation` (PR #165) ports the P-07 notification contract layer — `Notification`/`NotificationFeed`/`NotificationPreferences`/`DeliveryAttempt`/`MetricSample` with bounded delivery and honest stale/absent metrics.
 - `devin/non20i-revisions-foundation` ports the A-02 content-revision contract layer — `ContentDocument`/`ContentRevision`/`RevisionDiff`/`ApprovalContext` versioned content with diff/restore/approval states.
+- `devin/non20i-revisions-runtime` integrates `RevisionDiff` into `Admin → Content history` — line-level added/removed rendering over the existing `studio_revisions` rows.
 
 All are local/CI validation only — no live deployment, mail, provider or customer action.
 
