@@ -1,6 +1,34 @@
+## Current browser checkpoint and reader corrections - 2026-10-15
+
+## Incoming PHP-version observation lane — 2026-10-15
+
+VPS owns `codex/twentyi-package-php-version` from `9112cb8c`: exact assigned-package scalar GET, durable evidence and separate owner-approved client sharing. This isolated implementation is pending native/browser acceptance; root integrates the shared executor/router/installer sequentially. No PHP setter, available-version enumeration, schedule or live request. [Contract and scope](TWENTYI_PACKAGE_PHP_VERSION.md). Frozen cloud-provider evidence and Devin licensing remain separate.
+
+Combined4f/PR151 passes packaged HTTP/Chromium with downloaded2,065 passing executions (2,054 distinct labels),75 reports and11 clean diagnostics. Actual forwarding/history/scheduler views are inspected within recorded limits; full Apache/final-artifact acceptance remains pending. Domains owns corrected6ba dates, catalog owns corrected ee3 registration periods (all four native archives pass80+62+62), and VPS owns corrected6eee cloud identifiers. Root integrates only accepted sources and keeps scheduler browser last. Latest main794 fixes the licensing parser in source; migration/master-delivery findings remain separate under Devin. [Exact evidence and handles](TWENTYI_COMBINED_4F_EVIDENCE.md); [authoritative handoff](../SESSION_HANDOFF.md). Earlier entries retain their historical scope.
+
+## Current combined queue — 2026-10-15
+
+Normal forwarding merge4b33d606 is followed by reviewed scheduler2b9 in [PR151](https://github.com/afterburn25/Cajun_Web/pull/151). Installer refresh and exact parent-union checks pass; independent24-check shared-code review is clear; scheduler browser runs last. Fresh combined acceptance remains required. History1759 browser/native artifacts are downloaded and verified; recovery passed and Apache is active. [Current handoff](../SESSION_HANDOFF.md) is authoritative over earlier checkpoints.
+
+Domains owns07817109/PR152 renewal-date observation, with all four native archives verified and full acceptance active. Catalog owns registration periods, independently reviewed by domains. VPS owns cloud-provider identifiers and is correcting root's paired-history-loss/bounded-query findings. Root integrates shared files sequentially. New full reference34e713 is retained; Devin licensing main35dd remains separate with the updated migration/internal-key findings.
+
+## Current forwarding integration and reference intake — 2026-10-15
+
+Root normally merges forwarding1992 into history1759 in [PR151](https://github.com/afterburn25/Cajun_Web/pull/151), preserving cloud recovery and both original histories. Exact local parent-union, regenerated installer, route/native union and independent glue checks pass; combined runtime acceptance remains required. Frozen a963 full acceptance and final packages are now verified. Scheduler2b9 retains successful corrected554 browser evidence and is next to integrate; the original5fb full remains failed. [Current handoff](../SESSION_HANDOFF.md), [a963 proof](TWENTYI_A963_ACCEPTANCE.md).
+
+The new complete owner API reference34e713 is preserved/indexed separately from oldf7c738. Domains implements a separately sourced date-only contract observation; catalog implements registration-year options; VPS implements cloud-provider identifiers. Their isolated branches share the established executor/recorder under sequential root review. Devin owns licensing. [Source intake](TWENTYI_OWNER_API_REFERENCE_INTAKE.md). Older entries below retain their original checkpoint scope.
+
+## Current history integration evidence — 2026-10-15
+
+The separate a963+bff queue preserves the frozen cloud recovery candidate. Combined installer refresh and independent route/schema/permission review pass; fresh combined acceptance is required. Root independently verifies all four a963 cloud archives and exact Windows packages. [Source, review, evidence and next actions](TWENTYI_HISTORY_INTEGRATION.md). Scheduler554 is a reviewed test-only reload correction over5fb shipping with new checkpoint38836183578 active; forwarding remains separate. Domains keeps history frozen and investigates the next documented discovery reader without shipping edits. Devin retains licensing ownership. Older entries below retain their original evidence scope.
+
 ## Current parallel implementation and combined acceptance — 2026-10-15
 
 Frozen3bbc42bd includes reviewed catalog readiness, renewal intake and cloud confirmation; all have native and browser proof on their own sources. Windows packages and all20 focused matrix archives verify; full combined38829910791 passed package/native/browser and passed unprivileged recovery and is running Apache protection checks. Corrected parent2239 full acceptance and final packages now verify. [Exact evidence](TWENTYI_COMBINED_3BBC_EVIDENCE.md). New isolated lanes implement scheduled inventory refresh, client hosting observation history and forwarding request/review; scheduler recovery corrections remain in progress. Full lifecycle/discovery/native controls/SSH and release gates remain unfinished. [Current handoff](../SESSION_HANDOFF.md). Older entries below retain their original source scope.
+
+## Forwarding intake candidate — 2026-10-15
+
+Implemented locally with verified four-way native and42 packaged browser cases; full isolated recovery/Apache/packages also pass, while root integration/combined acceptance remains pending: separate owner permission; client single-address request/cancel; owner message/decline; immutable local history. Provider forwarding submission/readback and active-delivery confirmation remain incomplete because exact response semantics are unverified. [Contract and acceptance](TWENTYI_FORWARDING_REQUESTS.md).
 
 ## Client domain renewal requests — integrated candidate, 2026-10-15
 
@@ -706,3 +734,24 @@ Owner continued complete20i work with parallel agents. New isolated `codex/twent
 ## 2026-10-15 owner allocation — software-product licensing
 
 Devin owns license generation and installation licensing for other software products sold by this site. Codex and its three agents continue the complete20i P0. This is ownership, not completion or running-agent evidence. Preserve the current licensing module and merge shared billing/portal/schema changes with reviewed tests. [Coordination](AGENT_COORDINATION.md).
+
+## 2026-10-15 — Hosting observation history
+
+From3bbc42bd on codex/twentyi-service-observations, implement owner-approved client history from retained package snapshots, exact assignment/account visibility anchors, latest-intent states and immutable permission recovery. No new provider contract or persistence hook. Local PHP syntax/Python AST and33pure cases per mode pass; native/browser checks and installer refresh pending at this entry. Root integrates after independent review and exact evidence. No release/deployment. [Contract and next actions](TWENTYI_SERVICE_OBSERVATIONS.md).
+
+
+## 2026-10-16 — Hosting history acceptance checkpoint
+
+The bounded owner-approved client history flow is implemented on shipping e5c8aba8, corrected test65725ad. Downloaded exact-source native run38832431406 verifies 71 native and 33 pure checks per mode in all four combinations. Actual packaged checkpoint38832527134 verifies 1,989 HTTP checks, including 44 history cases, and four inspected full owner/client desktop/mobile captures. Two auxiliary mobile element crops remain documented as capture artifacts. Root integration and combined full recovery/Apache/package acceptance remain required. This is saved provider observation history, not live uptime or completed provisioning. [Contract, source and evidence](TWENTYI_SERVICE_OBSERVATIONS.md).
+
+## 2026-10-15 — Separate hosting-history integration queue
+
+Root normally integrates historybff on codex/twentyi-next-integration from a963, preserving both parent histories. Owner/client visibility remains anchored to current assignment/account context and the approved observation sequence. All four a963 cloud matrices are independently verified at45 creation/87 confirmation each; history parent71native/33pure/1989HTTP evidence remains separate. Combined queue acceptance and publication remain pending. Scheduler/forwarding and Devin licensing remain separate lanes. [Current state](../PROJECT_STATUS.md).
+
+### Scheduled hosting inventory checkpoint - 2026-10-15
+
+HC-13/owner requirement 7: isolated 82302571 descendant adds a real bounded GET/package cron path, owner-bound approval, original credential protection, immutable intent/outcome evidence, concurrent-worker exclusion, backoff and reviewed recovery. Local source/pure verification passes; native/browser and combined release acceptance remain pending. Other inventory schedules and commercial automation remain unfinished. [Implementation/evidence](TWENTYI_SCHEDULED_REFRESH.md).
+
+### Assigned-package PHP observation acceptance — 2026-10-16
+
+Frozen cfc6 passes verified four-way native and terminal full38850899573 acceptance, including explicit sharing, recovery/refusal cases and six actual owner/client/historical views. The bounded scalar GET is ready for root combined acceptance; PHP mutation, available-version discovery and live account verification remain outside this slice. [Evidence](TWENTYI_PACKAGE_PHP_VERSION.md#completed-original-acceptance--2026-10-16).

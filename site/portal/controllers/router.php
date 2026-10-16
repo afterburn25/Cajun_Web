@@ -4,6 +4,12 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }boot();require CWP_C
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_search.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/mailboxes.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_renewals.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/service_observations.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/package_php.php';
+if(array_key_exists('php_version',$_GET))header('Cache-Control: no-store, private');
+if(array_key_exists('service_history',$_GET))header('Cache-Control: no-store, private');
+require_once CWP_CODE_ROOT.'/portal/controllers/forwarding.php';
+if(array_key_exists('forwarding',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'forwarding_')))header('Cache-Control: no-store, private');
 if(array_key_exists('domain_renewals',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'domain_renewal_')))header('Cache-Control: no-store, private');
 if(array_key_exists('hosting_mail',$_GET)||($_POST['action']??null)==='client_mailbox_create')header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/portal/controllers/plans.php';
@@ -30,6 +36,9 @@ require CWP_CODE_ROOT.'/portal/views/auth.php';
 if(array_key_exists('domains',$_GET))provider_domain_client_render($client,$error);
 if(array_key_exists('hosting_mail',$_GET))provider_mailbox_client_render($client,$error);
 if(array_key_exists('domain_renewals',$_GET))domain_renewals_client_render($client,$error);
+if(array_key_exists('service_history',$_GET))service_observations_client_render($client);
+if(array_key_exists('php_version',$_GET))provider_php_client_render($client);
+if(array_key_exists('forwarding',$_GET))provider_forwarding_client_render($client,$error);
 if(array_key_exists('recurring',$_GET))recurring_billing_portal_render($client,$error);
 if(array_key_exists('agreements',$_GET) || array_key_exists('agreement',$_GET))service_plans_portal_render($client,$error);
 if($jobId){try{$job=studio_job($jobId,(int)$client['id']);}catch(InvalidArgumentException){if(support_current())support_record('portal.view','project',(string)$jobId,'denied');fail_page('Project not found or access denied.',404);}}

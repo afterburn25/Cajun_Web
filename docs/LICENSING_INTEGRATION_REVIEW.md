@@ -1,3 +1,26 @@
+## Latest main source correction - 2026-10-15
+
+Exact main `79434bb87cf3535c61ccd6182a88aa08dea7919c` corrects the schema parser to recognize TINYINT and normalize its display width. Root's pure PHP diagnostic now matches all8 website_licenses columns, all6 license_domains columns and all5 license_bundles columns; tinyint/int/bigint display-width normalization is also verified. Validator SHA256 is `4cbaf88d46cf9f09e627055866faa59f9a50de44b76d09d1eb7d95b3e639f17f`. The parser finding below is resolved in source; actual existing-schema/repeated-setup database acceptance is not claimed by this diagnostic.
+
+The migration, licensing service, bundle generator, direct download and customer workspace are byte-identical to previously reviewed35dd. Therefore the populated pre-master upgrade and internal-master customer delivery findings remain open. This review makes no new database, bundle or production execution claim. Local proof: `work/main-794-licensing-source-review.json`. Devin retains implementation ownership; newer main remains outside the20i integration queue pending the remaining corrections and combined acceptance.
+
+## Historical parser finding before79434bb8
+
+## Independent current-schema setup finding — 2026-10-15
+
+Independent review of exact main35ddbbff confirms both earlier findings and identifies another repeatability blocker. `license_migrate.php:20` reuses `catalog_validate_schema.php:7`, whose column regex recognizes INT/BIGINT, CHAR/VARCHAR, DATETIME and text, but not TINYINT. The current website_licenses schema has8 declared columns; only6 are matched because is_active and is_master are TINYINT. The license_domains schema has6 columns;5 are matched. Existing current tables therefore fail the column-count check, including empty tables and repeated setup after initial preparation.
+
+The independent pure PHP regex diagnostic confirms these counts using the exact source schema. Fix the licensing schema validation and test existing current tables, repeated preparation, interrupted preparation and a populated pre-master migration. Retain exact key/index/relationship validation when correcting the type handling. This finding is not a database execution claim. Evidence: `work/domain-agent-main35dd-licensing-review.json`, with10 source hashes and line excerpts. Both master delivery and populated-upgrade findings below remain open; Devin retains implementation ownership.
+
+## Latest main follow-up — 2026-10-15
+
+Read-only review now includes `35ddbbff8d64383f52fb867c510c73be05ce7648`, runtime `780761a6`, afterb8c. The new owner-password setup action and entry-point readiness guards are useful additions, but the two required corrections below remain open.
+
+`site/database/migrations/license_migrate.php` calls `catalog_validate_schema()` on an existing table before doing anything else. It contains no ALTER adding `is_master`, so a pre-master table is refused instead of upgraded. Even an exact current populated schema without the new marker is refused by the explicit nonempty-table check. This is fresh additive preparation, not a supported populated upgrade. The added native checks only toggle the marker and do not exercise the migration. Preserve records while testing the actual pre-master upgrade and retry path.
+
+The customer workspace still selects active customer licenses without `is_master=0`; direct bundle download adds only `license_ready()`, and bundle generation has no master exclusion. Existing customer-associated master bundles remain downloadable. Enforce the internal-key boundary in both generation and direct download, including bundles created before the correction. This is source review, not reproduced database/HTTP acceptance. New main remains outside the20i queue pending these fixes and combined verification.
+
+
 # Licensing integration review for Devin
 
 The owner assigns Devin software-product license generation and installation licensing for products sold by CajunWebPro. Codex retains 20i implementation and combined release coordination. Preserve the existing licensing implementation and keep CajunWebPro's own installer one-page and keyless.

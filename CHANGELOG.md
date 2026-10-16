@@ -1,3 +1,65 @@
+## Unreleased — Verified isolated PHP observation acceptance
+
+Recorded exact cfc6 four-way native and terminal full acceptance, actual owner/client/historical views, package hashes and retained original failures. Documentation only; runtime and installer are unchanged. Combined root acceptance and release remain separate.
+
+## Unreleased — PHP retry fixture comparison
+
+## PHP native rollback-fixture correction — 2026-10-15
+
+Starting source `c1b9eb5f2e4a8660f43d368ad26e4abbc7ee8833`, [PR155](https://github.com/afterburn25/Cajun_Web/pull/155). Actual preserved e6ce native run38848617278 now reached45 passing checks, then failed with `Account transaction must not be nested.` Artifact12024733543 (PHP8.4/MySQL8.4; SHA256 `2c04dce04b8c5b027e235f0a12c2b6f3d0e8d65c8b1161934726b55569984948`) and artifact12024608741 (PHP8.2/MariaDB10.11; SHA256 `6bcd5212d48a5ebdaa0b8802619f60fbfa0691ae00e505e6cf930cf9513fd2c9`) are downloaded and verified against exact source/run, digest, size, safe unique members and CRC. Each contains the same46-entry native report with one failure and passing87/87 pure reports.
+
+The actual stack identifies a fixture call to the normal transaction-opening projection helper while the paired-history-loss test already holds a rollback transaction. The corrected assertion calls the internal projection under the staff lock in that existing transaction. Exact recovery reason, no-DNS/request counters, stale-value assertion and finally rollback remain; the normal helper and production transaction guard are unchanged. Only the native fixture and continuity docs change from c1b9. Shipping, installer, authority and credential-echo protection remain byte-identical.
+
+PHP syntax and whitespace checks pass. Actual corrected native/full acceptance is pending. Preserve c1b9 focused38850218141/full38850218170, e6ce and all earlier originals without retry/cancellation; root retains integration/release ownership. Root independently cleared the exact one-expression correction at native fixture SHA256 `d19fb38ab0654c062d61262d47bf7e736ffd001fcd9716c90abc5e397a3fa342`. Next: fresh exact-source four-way native/full evidence. No live action occurred.
+
+
+## PHP-version credential-echo safeguard — 2026-10-15
+
+Starting source `e6ce001b448af85674cf90af076b1ab26dc3759f`, [PR155](https://github.com/afterburn25/Cajun_Web/pull/155). An offline scripted transport with a synthetic credential reproduced a bounded issue: a valid HTTP 200 JSON scalar containing the raw credential or its Base64 authorization form was accepted as a complete PHP-version value. No real credential, provider request or persistent database was involved in that reproduction.
+
+The credential-owning typed read now checks the decoded scalar before returning it. A raw or Base64 credential substring, including surrounding text or JSON escapes, becomes the existing `unavailable` / `invalid_value` outcome with no value. Reasons, labels, stored results and logs receive no credential material. Other reader types, accepted ordinary version strings, shared signatures, authority and the complete-state label are unchanged; this review makes no claim about unassessed readers or other encodings.
+
+Local verification passes99 named pure checks in each default and no-INI mode, PHP syntax and exact canonical/shipping mirror comparison. The original synthetic reproduction remains preserved separately; the same corrected cases return unavailable with no echoed value. A new native regression uses the actual executor, a synthetic response and the real cooldown, checking one request, no new saved value row, a redacted unavailable result, unchanged historical client value, and no raw/Base64 credential in persisted outcome/audit/value/permission data. Actual four-way native and packaged browser acceptance remain pending on the corrected descendant; the fixture itself is not execution evidence.
+
+Original e6ce focused38848617278/full38848617330, cd38 focused38848350192/full38848350248, c7f0 focused38847342463/full38847316629, and 1c500 focused38846465351/full38846467235 are retained without retry or cancellation. The original installer failure and hydrated-object test-identity failure remain documented separately. Root and catalog independently cleared the exact reader/mirror63905d05, purede9c5e8b and native6d5a8ca8 delta. Normalized installer refresh passes; all2,733 inventory hashes match2,734 staged shipping files, with only the typed reader mirror and generated inventory changed in shipping. Next: fresh native/full acceptance on the frozen descendant. Root owns integration and release; no live action occurred.
+
+
+Compare persisted permission values and unchanged audit/row counts across an exact retry. Preserve the original native failure; runtime and installer remain unchanged.
+
+## Unreleased — PHP hosting-history order safeguard
+
+Refuse disagreement between package inventory sequence and its exact retained start-audit order so later failed/unfinished intent damage cannot revive an earlier PHP observation. Add focused restoration/no-request regressions; actual corrected native/browser acceptance remains pending.
+
+## Unreleased — PHP-version installer hash correction
+
+Correct six installer metadata hashes to the exact committed LF shipping bytes. Preserve the original pre-native CI failures; no runtime logic change.
+
+## Unreleased — assigned-package PHP-version observations
+
+Add one fixed scalar read, dated immutable observations and separate owner-controlled client sharing for explicitly assigned hosting packages. Preserve exact account/key/link/history authority, no implicit setup, no browser-side provider requests, and no PHP change operation. Native/browser acceptance remains pending on the isolated branch.
+
+## Unreleased - combined browser verification and reader corrections
+
+Follow-up records corrected cloud-provider four-way native acceptance and the independent64-check incoming shared-boundary review. Runtime remains unchanged.
+
+Record actual combined4f browser/native/package evidence and scoped desktop/mobile visual review. Preserve failed child runs and exact domain-date, registration-period and cloud-provider corrections; record the latest licensing parser source fix and remaining findings. Documentation only; no new runtime or release in this checkpoint.
+
+## Unreleased — combined build and source-review continuity
+
+Preserve exact4f Windows build verification and original combined CI handles. Document independent licensing setup/migration/master-delivery findings and the owner API reference's auth-code side effect. Documentation only; no runtime or published release change.
+
+## Unreleased integration queue — owner-approved scheduled inventory
+
+Normally integrate reviewed scheduled hosting reads with forwarding requests, client service history and cloud recovery. Preserve explicit schedule approval, durable leases/backoff, exact authority and the shared guarded recorder. Regenerate combined installer and retain native/browser/private-route coverage. Combined acceptance and publication remain pending.
+
+## Unreleased integration queue — forwarding and owner API reference
+
+Normally integrate client single-address forwarding requests, cancellation and owner review/decline with client hosting history and the cloud recovery correction. Preserve separate forwarding permission and local-review-only behavior; provider forwarding dispatch/readback remains unfinished. Retain/index the new complete owner API reference for the parallel registration-period, cloud-provider and renewal-date readers. Document verified a963 full/package evidence and ready scheduler checkpoint. Combined acceptance and release remain pending.
+
+## Unreleased integration queue — client hosting history
+
+Normally combine reviewed owner-approved client observation history with the cloud recovery correction on a separate integration branch. Preserve both original sources and evidence; retain all documentation history and regenerate combined installer hashes. Fresh combined acceptance is required. The separate release candidate and published assets are unchanged.
+
 ## Unreleased — cloud assignment recovery correction
 
 Refuse cloud confirmation/current-assignment claims when retained package-link events disagree with independent link/relink/unlink audits. Preserve historical ordinal pairing, immutable confirmations and provider outcomes; add native history-loss/restoration regressions. Fresh corrected acceptance remains pending. Document incoming master-license migration/delivery findings for Devin and terminal catalog/hosting-history evidence. No release or live action.
@@ -9,6 +71,14 @@ Record the owner's Devin licensing allocation while Codex continues20i. Verify40
 ## Unreleased — combined native evidence and parallel source review
 
 Verify20 archives from all five combined3bbc focused matrices and final corrected2239 full acceptance/packages. Record concrete hosting-history/forwarding review fixes and the scheduler MariaDB correction under their separate agent branches. Documentation only; 3bbc packaged browser checkpoint now verifies1945HTTP with actual screenshot review; full recovery/Apache and exact-main release gates remain pending.
+
+## Unreleased — explicitly shared hosting history
+
+Owners can enable saved hosting observation history for an exact current client/package assignment. Clients see only observations from the approved sequence onward, with stale, failed and unfinished latest reads clearly identified. Revocation, current account context and retained permission/history recovery are enforced. No live monitoring or provider operation is added. Corrected checkpoint65725ad passes all four native combinations (71 native and 33 pure checks per mode), plus 1,989 actual HTTP/Chromium checks including 44 hosting-history cases. Full owner/client desktop/mobile screens are inspected; auxiliary mobile capture defects are retained and documented. Combined full acceptance remains required. The initial standalone native fixture failure is preserved and corrected by loading the existing owner layout; shipping is unchanged by that test correction.
+
+## Unreleased — local forwarding requests
+
+Add separate owner permission and client forwarding request/review history. Clients can request or cancel; owners can save review messages or decline. Signed immutable records and exact current domain/account checks fence stale, foreign and replayed actions. Offline request shape follows the verified 20i browser-console example; no forwarding dispatch or activation is enabled. Four-way native, actual packaged owner/client browser, recovery, Apache and exact-source final archive acceptance are verified on isolateda02; root integration/combined acceptance remains separate.
 
 ## Domain renewal request integration — candidate, unreleased
 
@@ -28,6 +98,26 @@ Normally integrate reviewed/native-verified cloud package confirmation after cat
 
 
 Normally merge reviewed/native-verified renewal ed4d1cad: clients request renewal review or withdraw; owners save a review message or decline. Current registrar assignment, immutable request/events and a retained request-count witness protect history. Monotonic event timestamps survive clock rollback. This local intake does not place or complete provider renewals. Combined inventory refresh and syntax pass; new combined application acceptance remains required.
+
+## Unreleased - verified scheduled refresh checkpoint
+
+Record successful corrected packaged/browser checkpoint38836183578, four inspected scheduler captures and preserved four-way native/Windows evidence. The original5fb browser failure remains retained with successful recovery/Apache results. This documentation checkpoint changes no runtime, tests, workflow or installer inventory; combined integration acceptance remains required.
+
+## Unreleased - scheduled refresh browser navigation fixture
+
+Refresh the existing browser document after a separate HTTP session changes scheduler state. Retain all network, persisted outcome, backoff and revoked-approval assertions. Application behavior and installer bytes are unchanged; corrected packaged/browser evidence is required.
+
+## Unreleased - scheduled inventory recovery witnesses
+
+Refuse scheduled work and history when original package rows or inventory audit witnesses are missing. Validate exact audit action bytes and preserve the original worker actor when another owner reviews interruption. Restoration retains the original schedule without replay; fresh native and packaged acceptance are required.
+
+## Unreleased - scheduled inventory packaging correction
+
+Regenerate installer hashes against exact committed LF source. Scheduler runtime is unchanged. All four native combinations are independently verified; the earlier full package failure and pending recovery hardening remain recorded.
+
+## Unreleased - owner-approved scheduled hosting inventory
+
+Add one shared-host PHP scheduled task for bounded read-only hosting inventory, disabled until explicit owner approval. Persist immutable attempts and outcomes, enforce current owner/profile/key bindings, serialize concurrent workers, back off incomplete reads and require reviewed recovery after interruption. Owner setup, status, history and recovery controls are included. Native/browser acceptance is pending; no provider write, purchase, release or deployment is included.
 
 ## Catalog readiness integration — candidate, unreleased
 

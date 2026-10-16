@@ -1,3 +1,7 @@
+## 2026-10-15 — preserve new source identity and coordinate discovery readers
+
+Retain the newly supplied complete reference34e713 with line positions and two bearer-example redactions; never relabel it as the earlier missingf7c738 upload. Documentation establishes specific wire contracts, not feature completion or live execution. Add registration periods and cloud-provider identifiers through typed list observations in the existing inventory executor; domain renewalDate remains a distinct typed scalar result with exact assignment/source binding. Preserve the scheduler recorder transaction/mutex guard. Root integrates the three shared changes sequentially; no duplicate journal or generic endpoint runner. [Intake](TWENTYI_OWNER_API_REFERENCE_INTAKE.md).
+
 # Decision record
 
 ## 2026-10-15 — parallel workers and transient mailbox passwords
@@ -235,3 +239,7 @@ The bounded cloud management increment uses the existing provider approval and o
 ## 2026-10-15 — owner assigns software-product licensing to Devin
 
 The owner will have Devin implement licensing for software products offered by CajunWebPro, including generated licenses for installing other products. Codex retains complete20i P0 and integration/release coordination. Preserve inherited licensing rather than implementing a competing module. Keep shared billing/portal/schema/installer changes on isolated branches and merge reviewed source sequentially with combined checks. This allocation does not add a license requirement to CajunWebPro's one-page keyless installer or establish live product installation acceptance. [Current ownership](AGENT_COORDINATION.md).
+
+## 2026-10-15 — forwarding request permission is independent
+
+Forwarding redirects future delivery, so mailbox-create permission never grants forwarding request permission. Local review does not create a provider operation/result. Use a dedicated signed append-only history with separate count/head and audit witnesses, and retain current exact domain-link event identity to fence same-second reapproval. A cancelled/declined request remains historical; there is no active/completed forwarding status until documented acknowledgement/readback is implemented. [Verified contract and omissions](TWENTYI_FORWARDING_REQUESTS.md).

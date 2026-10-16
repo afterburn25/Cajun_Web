@@ -9,6 +9,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   if($action==='message')support_message($supportId,$jobId,posted('body',5000));else support_upload($supportId,$jobId);
   flash('Saved as Studio support.');redirect(studio_url(['job'=>$jobId]));
  }
+ elseif(str_starts_with($action,'forwarding_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_forwarding_client_action($action,$client);}
  elseif(str_starts_with($action,'domain_renewal_')){if(!$client)throw new RuntimeException('Sign in to continue.');domain_renewals_client_action($action,$client);}
  elseif($action==='client_mailbox_create'){if(!$client)throw new RuntimeException('Sign in to continue.');provider_mailbox_client_action($client);}
  elseif($action==='client_domain_search'){if(!$client)throw new RuntimeException('Sign in to continue.');provider_domain_client_action($client);}
