@@ -1,5 +1,7 @@
 # Assigned-package Force SSL observation contract
 
+Application follow-up is isolated and pending review; see [saved Force SSL observations](TWENTYI_PACKAGE_FORCE_SSL_OBSERVATIONS.md). The accepted pure source and evidence below remain unchanged.
+
 This isolated lane starts at `427e3a233706f22cd39918d8b97256a7fb2b1e90` on `codex/twentyi-package-force-ssl`. It adds a pure typed read contract and synthetic tests only. No application transport permission, dispatch, storage, client sharing, UI, scheduler, POST descriptor or provider operation is added. The frozen1.25 candidate and Devin licensing allocation remain unchanged.
 
 ## Source and interpretation

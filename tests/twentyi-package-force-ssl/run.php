@@ -109,9 +109,11 @@ $t=new ForceSslTransport(new RuntimeException('synthetic-force-ssl-key'));$r=Pac
 $throws=new ProviderCredential('twenty-i',str_repeat('a',32),fn():string=>throw new RuntimeException('private-key-detail'));
 try{PackageForceSsl::read($t,$throws,$binding,0);ok('Credential resolver reason redacted',false);}catch(InvalidArgumentException $e){ok('Credential resolver reason redacted',$e->getMessage()==='Provider credentials are unavailable.'&&$e->getPrevious()===null);}
 
-// This pure lane must not accidentally authorize the application transport or any POST.
+// Application integration admits only the exact flag GET; validation below opens no socket.
 $fixed=new FixedHttpTransport('8.8.8.8',fn()=>null);$validate=new ReflectionMethod($fixed,'validate');$headers=['Authorization'=>'Bearer '.base64_encode('synthetic-key'),'Accept'=>'application/json'];
-rejects('Existing application transport still refuses Force SSL GET',fn()=>$validate->invoke($fixed,new TransportRequest('GET',$descriptor->url,$headers)));
+$validate->invoke($fixed,new TransportRequest('GET',$descriptor->url,$headers));ok('Application transport admits the exact Force SSL GET without sending',true);
+foreach(['https://api.20i.com/package/0/web/forceSSL','https://api.20i.com/package/0123/web/forceSSL','https://api.20i.com/package/123/web/forceSSL?value=true','https://api.20i.com/package/123/web/forcessl','https://other.invalid/package/123/web/forceSSL'] as $url)rejects('Force SSL transport rejects path or host override '.$url,fn()=>$validate->invoke($fixed,new TransportRequest('GET',$url,$headers)));
+rejects('Force SSL GET body remains refused',fn()=>$validate->invoke($fixed,new TransportRequest('GET',$descriptor->url,$headers,'{}')));
 rejects('Existing application transport still refuses Force SSL POST',fn()=>$validate->invoke($fixed,new TransportRequest('POST',$descriptor->url,$headers+['Content-Type'=>'application/json'],'{"value":true}')));
 $labels=array_column($checks,'name');ok('All recorded check labels are unique',count($labels)===count(array_unique($labels)));
 $failed=count(array_filter($checks,fn($r)=>!$r['passed']));echo json_encode(['passed'=>$failed===0,'scope'=>'Pure supplied binding, strict reported boolean and synthetic injected transport; no application dispatch, database authority, sharing, TLS health or live provider evidence.','checks'=>$checks],JSON_PRETTY_PRINT),"\n";fwrite(STDERR,count($checks)." checks; $failed failed\n");exit($failed?1:0);

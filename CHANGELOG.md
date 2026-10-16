@@ -1,3 +1,7 @@
+## Unreleased — saved Force SSL flag observations
+
+Add explicit owner refresh and separately approved client sharing of dated Force SSL boolean observations, with independent history recovery and current assignment/account checks. False remains distinct from unavailable; this does not verify certificates or HTTPS health. Source/pure checks pass; native/browser/package acceptance is pending. [Scope](docs/TWENTYI_PACKAGE_FORCE_SSL_OBSERVATIONS.md).
+
 ## Unreleased — saved website-folder observations
 
 Add explicit owner preparation/refresh and separately approved client sharing of saved hosting name/folder maps, with current package authority, credential refusal and immutable history/recovery. Preserve documented empty/error distinctions and display paths only as escaped text. Native/browser/package acceptance remains pending. [Scope](docs/TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md).

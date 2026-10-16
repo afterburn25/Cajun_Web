@@ -808,3 +808,7 @@ ForceSSL b2033 pure contract now has verified run38857815866 acceptance:159 dist
 ## 2026-10-16 — pure package document-root observations
 
 Catalog starts a separate branch from frozen427 while preserving accepted DNS proposal96f/23c. Owner reference34e713 lines371–377 supports fixed GET/package documentRoots with a direct name→subdirectory map and [] on error. New pure types/parser retain exact observed strings, reject duplicate decoded names/credential echoes, explicitly distinguish {} from [] and keep every assignment witness under a dedicated operation.143 local tests pass each mode; exact1e8ee567/run38856621132 also passes143+143 on both PHP8.2/8.4, with both archives verified. No path confinement, DNS authority, current hosting state or native application completion is inferred; shared wiring remains a later reviewed increment. [Contract, source and validation limits](TWENTYI_DOCUMENT_ROOTS_CONTRACT.md).
+
+## Saved Force SSL observations — 2026-10-16
+
+Dedicated owner refresh, durable reported-boolean evidence and separate client sharing are implemented in an isolated branch with reviewed shared wiring. Source review and local165-case contract/admission checks pass each mode. Native/browser acceptance, root integration and release remain pending; no setter, TLS-health or certificate assurance. [Application scope](TWENTYI_PACKAGE_FORCE_SSL_OBSERVATIONS.md).

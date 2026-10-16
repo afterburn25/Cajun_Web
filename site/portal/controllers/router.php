@@ -11,6 +11,8 @@ if(array_key_exists('domain_dates',$_GET))header('Cache-Control: no-store, priva
 require_once CWP_CODE_ROOT.'/portal/controllers/service_observations.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/package_php.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/document_roots.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/package_force_ssl.php';
+if(array_key_exists('force_ssl',$_GET))header('Cache-Control: no-store, private');
 if(array_key_exists('document_roots',$_GET))header('Cache-Control: no-store, private');
 if(array_key_exists('php_version',$_GET))header('Cache-Control: no-store, private');
 if(array_key_exists('service_history',$_GET))header('Cache-Control: no-store, private');
@@ -47,6 +49,7 @@ if(array_key_exists('domain_renewals',$_GET))domain_renewals_client_render($clie
 if(array_key_exists('service_history',$_GET))service_observations_client_render($client);
 if(array_key_exists('php_version',$_GET))provider_php_client_render($client);
 if(array_key_exists('document_roots',$_GET))provider_document_roots_client_render($client);
+if(array_key_exists('force_ssl',$_GET))provider_force_ssl_client_render($client);
 if(array_key_exists('forwarding',$_GET))provider_forwarding_client_render($client,$error);
 if(array_key_exists('recurring',$_GET))recurring_billing_portal_render($client,$error);
 if(array_key_exists('agreements',$_GET) || array_key_exists('agreement',$_GET))service_plans_portal_render($client,$error);
