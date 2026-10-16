@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-if (!defined('CWP_BOOT')) { http_response_code(404); exit; }boot();require CWP_CODE_ROOT.'/includes/layout/public.php';require CWP_CODE_ROOT.'/app/marketing/growth.php';require CWP_CODE_ROOT.'/app/clients/workspace.php';require CWP_CODE_ROOT.'/includes/layout/admin.php';require CWP_CODE_ROOT.'/admin/controllers/support.php';require CWP_CODE_ROOT.'/includes/layout/ledger.php';require CWP_CODE_ROOT.'/includes/layout/deliveries.php';require CWP_CODE_ROOT.'/includes/layout/activity.php';require_once CWP_CODE_ROOT.'/includes/layout/provider_services.php';require_once CWP_CODE_ROOT.'/includes/layout/project_progress.php';header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }boot();header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');
 $error='';$supportRequested=array_key_exists('support',$_GET);$supportId=is_string($_GET['support']??null)?$_GET['support']:'';
 if($supportRequested){
  if($_SERVER['REQUEST_METHOD']==='POST'&&($_POST['action']??null)==='support_end'){
@@ -17,6 +17,8 @@ if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403)
 if(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();
 if(isset($_GET['services']))provider_services_portal_render();
 if(array_key_exists('job',$_GET)){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
+if(array_key_exists('agreements',$_GET) || array_key_exists('agreement',$_GET) || (is_string($_POST['action']??null) && str_starts_with($_POST['action'],'service_agreements_')))header('Cache-Control: no-store, private');
+if(array_key_exists('agreements',$_GET) || array_key_exists('agreement',$_GET))service_plans_portal_render($client,$error);
 require CWP_CODE_ROOT.'/portal/views/auth.php';
 if($jobId){try{$job=studio_job($jobId,(int)$client['id']);}catch(InvalidArgumentException){if(support_current())support_record('portal.view','project',(string)$jobId,'denied');fail_page('Project not found or access denied.',404);}}
 if(support_current())support_record('portal.view',$jobId?'project':'client',(string)($jobId?:$client['id']));

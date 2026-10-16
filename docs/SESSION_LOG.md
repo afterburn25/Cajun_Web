@@ -13,6 +13,29 @@ Tests/verification (local): `php -l` clean on all touched PHP; `tests/project-pr
 Known limits: fresh installs keep history off until the owner enables it (by design — unprepared editing still works); `project_progress_native.php` and browser/upgrade suites pending CI on this branch.
 
 Next: commit/push this increment, open bounded PR, continue remaining non-20i items (mail Reply/Forward, payment schedules).
+## Port service plans runtime — 2026-10-16
+
+Request: continue the non-20i roadmap (issue #157 item 4 — maintenance plans). Recurring billing requires `service_plans_*` helpers, so the runtime slice precedes it.
+
+Starting commit: `devin/non20i-service-plans-foundation` tip — the preserved canonical `ServicePlan`/`PlanSubscription` classes are byte-identical (zero diff vs `codex/service-plan-screens`), so this stacks cleanly.
+
+Files/actions: extracted `site/app/plans/{records,documents,forms,views}.php`, `site/database/{schema,migrations}/service_plans_{schema,migrate}.php`, `site/includes/layout/plans.php`, `site/{admin,portal}/{controllers,views}/plans.php`, `tests/service-plans/*` + `service_plans_native.php` + `service_plan_cases.py`, `.github/workflows/service-plan{,-records}s.yml`, `docs/SERVICE_PLAN_{RECORDS,SCREENS}.md` (ownership updated). Wired: `admin/controllers/router.php` (require + 4 views + no-store + render), `admin/controllers/actions.php` (`service_plans_` dispatch), `app/staff/accounts.php` (view + action → `staff.manage`), `includes/layout/admin.php` (Service agreements nav), `portal/controllers/router.php` (require + `agreements`/`agreement` render + no-store), `portal/controllers/actions.php` (`service_agreements_` dispatch), `portal/views/workspace.php` (Service agreements button), `tools/build.py` sync list, `tests/apache_acceptance.py` integrity list, `tests/browser_acceptance.py` case call. Provider/hosting hunks in the preserved diffs intentionally skipped — Codex's lane.
+
+Tests/verification (local): `php -l` clean; `tests/service-plans/run.php` 76 checks pass on PHP 8.4; `python tools/build.py --refresh` passes — `site/includes/foundation/service-plans/` mirror generated, inventory clean. Native MariaDB + browser lanes are CI-wired.
+
+Next: commit, push, PR targeting the foundation branch, #157 update; then recurring-billing stack.
+
+## Port P-04 service-plan contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-service-plans-foundation`.
+
+Actions: extracted the preserved `devin/service-plans` slice — `ServicePlan`/`PlanSubscription`, `tests/service-plans/run.php`, `service-plans.yml`, `docs/SERVICE_PLANS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters; corrected ownership wording. `devin/service-desk` is already delivered inside the tickets branch's desk foundation, so no separate port is needed.
+
+Tests: `php -l` clean; `php tests/service-plans/run.php` → 76/76 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
+
+## Synchronize release entry points after review — 2026-10-15
 
 Review4281622110 on4cbc2375 reproduced stale pending1.24 headers in README, agent coordination, release workflow and inventory owner guide. Update every listed entry point plus current migration instructions to the actual immutable publication, archive earlier coordination and mark historical1.23 sections clearly. No runtime or package bytes change. Starting parent4cbc23758674b29899d235b511b40f0a18cf8503 is “Record verified1.24 publication and current20i continuation”; correctiondf57d0ce is “Synchronize published1.24 across current entry-point guides.” Actual local documentation check passed161 Markdown files/1,330 local links and canonical dependency checks; git diff whitespace check passed. These checks cover documentation/source consistency only, not runtime acceptance, which remains the separately published7190 evidence. Known failure: initial review4281622110 found stale headers and was corrected. Follow-up review4281670745 requested this explicit validation record. Renewed review is pending; continue cloud/commercial20i work.
 
@@ -1655,3 +1678,15 @@ Continue the owner-authorized roadmap from main documentation parent80ce8b19 whi
 Refresh main's status/handoff to the current separate-source checkpoint, preserving prior complete documents through immutable80ce links. Devin's published non20i assignment remains intact. Actual full browser/recovery/Apache/visual/Linux/exact-main/release acceptance remains pending. Next: follow original tests, finish fixture reviews and integrate bounded changes sequentially; no production action.
 
 Actual documentation validation:167 Markdown files,1363 local links and14 heading links pass, including canonical mail dependencies/mirrors. Exact staged non-Markdown comparison, whitespace and remote fast-forward checks precede publication. This is documentation/source-consistency evidence, not application acceptance. Commit: Record verified registration checks and current20i acceptance.
+
+## 2026-10-16 14:41 UTC - document corrected StackCP and preserved original runs
+
+Continue the owner-authorized roadmap from main documentation parent `155db254e8e3d0c018200abf6a9325d04c3578ca`. Prepare the documentation-only checkpoint for corrected source `819c3ea39b4ebbef8f37280dc5ede59cf06fd01c` on `codex/twentyi-stackcp-access-observations`; update status, actionable handoff, current checkpoint, Devin's active pointer, roadmap/coordination and current allocation wording. The original four-way focused run 38915851687 and all four actual archives are independently verified (9ad9a502/b8c1d8bc): 18 reports and 2,045 passing named executions per environment, including 103 native access checks, totaling 8,180 executions. Windows proof 41423159 verifies exact packages with no shipping change from 13879. The first full run 38917429508 was dispatched once on exact 819c via workflow_dispatch with checkpoint_only false and remains in progress. Full/browser acceptance is not inferred from focused or documentation checks.
+
+Preserve all four original 13879 fixture failures (proof a7569ec), the exact sibling-lookup correction, and terminal failed 9538 full evidence (8cb797e8). Original 9779 full 38909577278 remains active in HTTP/Chromium; its native step succeeded and build/recovery/Apache proofs 36dad952/4a26f05b/70905cc1 are scoped verified partitions. Cloud v2 remains external: root reproduced the active-client precheck race after the earlier fallback review. The callback-entry recheck is source-reviewed (acf9c069/a32cc83f) with 34 passing synthetic cases per mode; its five additional native assertions, final union and actual native/HTTP acceptance remain pending. Devin issue 157 and all four licensing findings remain current; no runtime import or external-session acknowledgement is assumed.
+
+Validation: external proposed Markdown/local links and exact base-byte preservation are checked before root review; this is documentation/source validation only. Root must recheck remote main before applying or pushing. Record the enclosing change as Document corrected StackCP checkpoint and preserved acceptance evidence. No checkout mutation, commit, push, workflow dispatch, provider call, charge, customer message or deployment is performed by this proposal. Next: retain both original full runs, inspect their actual artifacts/screens, then finish sequential integration and final release gates. Published 1.24.0 is unchanged; 1.25.0 and full 20i are not released.
+
+## 2026-10-16 - Confirm Devin delivery and preserve legacy-upgrade failure
+
+Fresh issue157 comments6217621738/6217865863 acknowledge non20i work. Open heads: licensing159 e3d627701f14d4d44acc02be49f4bbd20cb2b389; tickets158 3ca4bbb780e155d56914ba834d1e811eebb91d1f; progress160 433c60942aa7e4d72c0576c391d41718f793675c. Licensing proposes fixes to the four findings; independent review is underway, not accepted or merged. Prior unconfirmed-acknowledgement wording is corrected. Full819c native failed at a genuine old-schema owner GET; preserve original run and fix on the next source, without weakening its fixture. Documentation-only descendant of481aff27; no runtime, installer, release or live change.

@@ -1,3 +1,11 @@
+## Port P-04 service-plan contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-service-plans-foundation` from main `595ac9c3`, continuing preserved `devin/service-plans`. Adds `foundation/service-plans/` — `ServicePlan`, `PlanSubscription` — plan-terms and consent rules for maintenance/service plans, 76 pure checks in `tests/service-plans/run.php`, PHP 8.2/8.4 workflow lane. No billing capture, plan UI or request workflow — integration remains future work. No release or deployment.
+
+## Documentation - corrected StackCP source and preserved acceptance evidence
+
+Record corrected source 819c3ea3, its independently verified original focused archives and Windows packages, first full 819c run in progress and the preserved original 9779 full acceptance. Preserve the failed 13879 fixture run and terminal failed 9538 browser run, with their separate evidence scopes. Update active source pointers and remove conflicting current pause wording for Devin. Published 1.24.0 and all runtime, installer, version, assets and live installations remain unchanged.
+
 ## Documentation - current20i acceptance and parallel handoff
 
 Publish source9779879b, independently verified focused registration/Windows evidence and the first full acceptance38909577278. Retain original failures and the separate cloud/StackCP review scope. Refresh status/handoff with immutable links to the complete prior licensing history. No application, installer, version, release or deployment change.
@@ -15,6 +23,9 @@ Add a root start-here guide, complete owner-approved assignment and existing lic
 - Portal: owning client sees a dated "Project history" timeline inside the existing project detail; scoped support sessions read it with real staff attribution but cannot write.
 - Activity: `progress:<32hex>` items join the existing projection with stable `sort_sequence` ordering, `focus_progress` deep links, and unchanged per-person read cursors; tracking baselines create no notifications.
 - `docs/`: [usage](docs/PROJECT_HISTORY.md), [contract](docs/PROJECT_PROGRESS_CONTRACT.md). Tests: `tests/project-progress/*` (155 record + 50 form checks), `tests/project_progress_native*.php` + `project_progress_screen_native_cases.php`, `tests/project_progress_cases.py` browser, `tests/project_progress_upgrade_cases.py` at the 1.23 baseline. New `project-progress{,-native}.yml` workflows.
+## Unreleased — service plans and client agreements (Devin port)
+
+Ported preserved `codex/service-plan-records` → `service-plan-screens` onto `devin/non20i-service-plans` (stacked on the foundation port). Additive `service_plans`/`service_subscriptions` event-sourced tables behind owner-password setup; admin Service agreements view (create/edit plans, enroll clients); portal `?agreements` views where clients review and sign exact plan terms; `service-plans` added to the canonical mirror list. No provider, hosting or billing dependency introduced. No live deployment or release.
 
 ## Synchronize release entry points after review — 2026-10-15
 
@@ -705,3 +716,7 @@ Connect fresh/additive setup, current-authorized admin compose/list/preview/temp
 - `provider_operation_grant` now requires the approved scope to construct a documented bounded request — undocumented fields refuse at approval, not at send.
 - New packaged HTTP/Chromium suite covers the owner operations surface end-to-end: storage setup, owner-only gates, exact-scope approval, a single bounded POST through the real transport stub, idempotent replay, 202→uncertain classification, reconcile `not_observed`/`observed`, revocation, and internal-file denial.
 - The loopback provider fixture and TLS connector gained a strict POST branch and a package list that reflects recorded creates.
+
+## 2026-10-16 - Confirm Devin delivery and preserve legacy-upgrade failure
+
+Fresh issue157 comments6217621738/6217865863 acknowledge non20i work. Open heads: licensing159 e3d627701f14d4d44acc02be49f4bbd20cb2b389; tickets158 3ca4bbb780e155d56914ba834d1e811eebb91d1f; progress160 433c60942aa7e4d72c0576c391d41718f793675c. Licensing proposes fixes to the four findings; independent review is underway, not accepted or merged. Prior unconfirmed-acknowledgement wording is corrected. Full819c native failed at a genuine old-schema owner GET; preserve original run and fix on the next source, without weakening its fixture. Documentation-only descendant of481aff27; no runtime, installer, release or live change.
