@@ -1,6 +1,8 @@
 ## Unreleased — saved directory listing setting
 
-Add isolated owner-triggered saved directory listing observations and separate client sharing. Reported true/false and unavailable are distinct; immutable history and current authority guard the saved setting. Pure/source checks pass; native/browser/package acceptance and root integration remain pending. [Scope and evidence](docs/TWENTYI_DIRECTORY_LISTING_OBSERVATIONS.md).
+Exact3bdba5eb focused run38864231460 passes all four environments; actual archives and all ten named reports per environment are verified. Browser/package acceptance and root integration remain pending.
+
+Add isolated owner-triggered saved directory listing observations and separate client sharing. Reported true/false and unavailable are distinct; immutable history and current authority guard the saved setting. Pure/source and the four-way native matrix pass; combined browser/package acceptance and root integration remain pending. [Scope and evidence](docs/TWENTYI_DIRECTORY_LISTING_OBSERVATIONS.md).
 
 ## Unreleased — saved Force SSL flag observations
 

@@ -1,6 +1,8 @@
 ## Directory listing setting source and scope — 2026-10-16
 
-Owner reference34e713 lines2515–2521 documents GET /package/{packageId}/web/directoryIndexing, whether Options +Indexes is enabled, and null on incomplete requests. Strict bare booleans are a defensive accepted subset; no full wire schema, current account entitlement or visitor file exposure is claimed. Dedicated saved observation authority/sharing/history is implemented; reviewed shared wiring is applied while native/browser acceptance remains pending. [Scope and evidence](TWENTYI_DIRECTORY_LISTING_OBSERVATIONS.md).
+Exact3bdba5eb focused run38864231460 passes all four environments; actual archives and all ten named reports per environment are verified. Browser/package acceptance and root integration remain pending.
+
+Owner reference34e713 lines2515–2521 documents GET /package/{packageId}/web/directoryIndexing, whether Options +Indexes is enabled, and null on incomplete requests. Strict bare booleans are a defensive accepted subset; no full wire schema, current account entitlement or visitor file exposure is claimed. Dedicated saved observation authority/sharing/history is implemented; reviewed shared wiring and four-way native acceptance are verified while combined browser/package acceptance remains pending. [Scope and evidence](TWENTYI_DIRECTORY_LISTING_OBSERVATIONS.md).
 
 ## Combined domain and PHP observation candidate — 2026-10-16 UTC
 

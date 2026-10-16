@@ -1,6 +1,8 @@
 ## Directory listing setting increment — 2026-10-16
 
-Implement the documented assigned-package read with saved owner/client settings and independent sharing/recovery. This is an isolated runtime increment with local pure/source evidence, with reviewed shared integration applied and actual native/browser acceptance pending. It does not implement the setter, DNS editing, file access or complete hosting controls. [Scope and evidence](TWENTYI_DIRECTORY_LISTING_OBSERVATIONS.md).
+Exact3bdba5eb focused run38864231460 passes all four environments; actual archives and all ten named reports per environment are verified. Browser/package acceptance and root integration remain pending.
+
+Implement the documented assigned-package read with saved owner/client settings and independent sharing/recovery. This is an isolated runtime increment with local pure/source evidence, with reviewed shared integration applied and actual four-way native acceptance verified. Combined browser/package acceptance remains pending. It does not implement the setter, DNS editing, file access or complete hosting controls. [Scope and evidence](TWENTYI_DIRECTORY_LISTING_OBSERVATIONS.md).
 
 ## Website-folder observations increment — 2026-10-16
 
