@@ -136,6 +136,11 @@ jobs:
           php8.3 tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-results.json
           php8.3 -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-no-ini-results.json
           php8.3 tests/provider_package_force_ssl_native.php
+          php8.3 tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-results.json
+          php8.3 -n tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-no-ini-results.json
+          php8.3 tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-results.json
+          php8.3 -n tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-no-ini-results.json
+          php8.3 tests/provider_force_ssl_controls_native.php
           php8.3 tests/provider_domain_search_native.php
           php8.3 tests/provider_mailboxes_native.php
           php8.3 tests/provider_operations_native.php

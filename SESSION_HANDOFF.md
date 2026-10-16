@@ -1,3 +1,7 @@
+## Isolated Force SSL controls handoff — 2026-10-16
+
+Continue `codex/twentyi-force-ssl-controls` from c1743664 in its own checkout. The seven dedicated runtime files and amended real-contention/post-send-failure native fixtures have independent source clearance; the exact reviewed15-file shared proposal and reviewed four-combination workflow are applied. Finish the bounded two-test dependency correction review, original installer refresh and staged Git parity, then commit/push once under root approval and verify all four original focused artifacts. No full/browser/PR dispatch is authorized in this lane. Keep operator interrupted-request recovery explicitly unfinished; never release its fence through a retry or database edits. [Detailed scope](docs/TWENTYI_FORCE_SSL_CONTROLS.md).
+
 # CajunWebPro current handoff
 
 Updated 2026-10-16 UTC. Continue complete20i P0 using the supplied API reference and three parallel agents. **1.24.0 is published; 1.25.0 and full20i are unfinished.** [Status](PROJECT_STATUS.md), [agreement](AGENTS.md), [requirements](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md).

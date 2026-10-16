@@ -1,3 +1,7 @@
+## Isolated Force SSL change controls — 2026-10-16
+
+Branch `codex/twentyi-force-ssl-controls` starts at frozen `c1743664c9ea6d81abb0c2784c20a2fdee4720fd`. Dedicated owner consent, shared-gateway dispatch witnesses and exact new GET readback are implemented locally. Reviewed shared wiring is applied after independent amended native/browser source clearance; the reviewed focused workflow is prepared. Local request/classifier76, transport37, retained ForceSSL165 and roots transport24 checks pass in both normal/minimal modes, with230 operation contract checks; no native, browser or CI execution is claimed. Interrupted requests remain visible and fenced: a separately reviewed operator recovery transition is still required before complete controls acceptance. [Scope and remaining work](docs/TWENTYI_FORCE_SSL_CONTROLS.md). Root's c174 acceptance and Catalog's directory-listing lane remain unchanged.
+
 # CajunWebPro current status
 
 Latest main `18766495dd36b53eb1313cc535ac2a7c8a794d26` changes handoff only; site/tests/workflows remain identical to reviewed94c879. Its reported acceptance run was not independently verified. Prior read-only source review remains applicable: mutation serialization must be preserved, while populated pre-master migration and internal-master customer-delivery findings remain open. Five explicit merge conflicts and one silent setup-form obstruction are mapped; this is source review, not merged/native acceptance.

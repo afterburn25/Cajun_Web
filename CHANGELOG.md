@@ -1,3 +1,7 @@
+## Unreleased isolated work — owner Force SSL change requests
+
+Prepare explicit owner approval against a current saved flag, a single shared-gateway request, immutable dispatch evidence and separate exact GET readback. HTTP200 never acknowledges the effect. Client observation sharing stays separate; pending requests make older observations historical. Reviewed shared wiring is applied; native/browser acceptance is pending, and interrupted-dispatch operator recovery is not yet implemented. No provider action or release is claimed.
+
 ## Unreleased — saved Force SSL flags and catalog privacy test repair
 
 Integrate native-tested owner refresh and separate client sharing of saved Force SSL flags, preserving false versus unavailable and immutable authority-bound history. This flag does not verify HTTPS or certificate health. Correct the browser privacy test to distinguish the exact public service reference from a private provider type, retaining private-value rejection and adding13 regressions with safe diagnostics. Combined package/browser acceptance remains pending.

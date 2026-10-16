@@ -25,6 +25,10 @@ final class TwentyIOperationRegister
     {
         $operations = [
             new TwentyIOperation(
+                'packages.forcessl', 'POST', '/package/{packageId}/web/forceSSL',
+                ['packageId'], ['value'=>'bool'], ['value'], shapeComplete: true,
+            ),
+            new TwentyIOperation(
                 'cloudsites.create', 'POST', '/cloud_server/{cloudServerId}/addWeb',
                 ['cloudServerId'], ['domain_name'=>'hostname','extra_domain_names'=>'hostname_list'],
                 ['domain_name','extra_domain_names'], shapeComplete: true,

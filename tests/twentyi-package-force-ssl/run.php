@@ -5,7 +5,7 @@ use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,TransportR
 use CajunWebPro\Foundation\TwentyIPackageForceSsl\{PackageForceSslBinding,PackageForceSslObservation,PackageForceSsl};
 use CajunWebPro\Foundation\TwentyI\FixedHttpTransport;
 
-foreach(['HttpTransport','ProviderCredential','TransportRequest','TransportResponse','TransportException','ProviderAdapter'] as $class)require __DIR__.'/../../foundation/provider/'.$class.'.php';
+foreach(['HttpTransport','ProviderCredential','TransportRequest','TransportResponse','TransportException','ProviderAdapter','ProviderOperation'] as $class)require __DIR__.'/../../foundation/provider/'.$class.'.php';
 foreach(['PackageForceSslBinding','PackageForceSslObservation','PackageForceSsl'] as $class)require __DIR__.'/../../foundation/twentyi-package-force-ssl/'.$class.'.php';
 require __DIR__.'/../../foundation/mail-transport/EndpointPolicy.php';
 require __DIR__.'/../../foundation/twentyi/TwentyIAdapter.php';
@@ -114,6 +114,6 @@ $fixed=new FixedHttpTransport('8.8.8.8',fn()=>null);$validate=new ReflectionMeth
 $validate->invoke($fixed,new TransportRequest('GET',$descriptor->url,$headers));ok('Application transport admits the exact Force SSL GET without sending',true);
 foreach(['https://api.20i.com/package/0/web/forceSSL','https://api.20i.com/package/0123/web/forceSSL','https://api.20i.com/package/123/web/forceSSL?value=true','https://api.20i.com/package/123/web/forcessl','https://other.invalid/package/123/web/forceSSL'] as $url)rejects('Force SSL transport rejects path or host override '.$url,fn()=>$validate->invoke($fixed,new TransportRequest('GET',$url,$headers)));
 rejects('Force SSL GET body remains refused',fn()=>$validate->invoke($fixed,new TransportRequest('GET',$descriptor->url,$headers,'{}')));
-rejects('Existing application transport still refuses Force SSL POST',fn()=>$validate->invoke($fixed,new TransportRequest('POST',$descriptor->url,$headers+['Content-Type'=>'application/json'],'{"value":true}')));
+$validate->invoke($fixed,new TransportRequest('POST',$descriptor->url,$headers+['Content-Type'=>'application/json'],'{"value":true}'));ok('Dedicated control integration admits exact Force SSL boolean POST without sending',true);
 $labels=array_column($checks,'name');ok('All recorded check labels are unique',count($labels)===count(array_unique($labels)));
 $failed=count(array_filter($checks,fn($r)=>!$r['passed']));echo json_encode(['passed'=>$failed===0,'scope'=>'Pure supplied binding, strict reported boolean and synthetic injected transport; no application dispatch, database authority, sharing, TLS health or live provider evidence.','checks'=>$checks],JSON_PRETTY_PRINT),"\n";fwrite(STDERR,count($checks)." checks; $failed failed\n");exit($failed?1:0);
