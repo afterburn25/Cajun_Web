@@ -4,6 +4,11 @@
 
 # Project status — 20i P0
 
+## Devin non-20i in flight — 2026-10-16
+
+- `devin/non20i-licensing` (`f9668cc4`, `e3d62770`): resolves the four documented licensing findings — populated pre-master upgrades gain `is_master` additively, master keys are excluded from portal/bundle/download surfaces and domain actions, legacy `invoice_id IS NULL` fulfilment retries only claim an exact-one unlinked candidate (ambiguity refused), and unknown/future `license_schema_version` markers are refused before any DDL. Native/functional tests extended; CI pending; PR creation blocked by GitHub API rate limit (branch pushed).
+- `devin/non20i-support-tickets`: ports the preserved `codex/support-ticket-screens` ticket slice onto `main` — owner-prepared ticket storage, `support.tickets` permission, admin queue/detail/create, portal create/reply/status/read, private staff notes, per-viewer read cursors, exact-message activity links. Service-plan slices on that branch are deliberately excluded; subscription links stay document-valid but dormant. Local desk/document/form checks pass (114+ per suite); native/browser/upgrade lanes wired into CI. No live deployment, mail or provider action.
+
 ## Synchronize release entry points after review — 2026-10-15
 
 Review4281622110 on4cbc2375 reproduced stale pending1.24 headers in README, agent coordination, release workflow and inventory owner guide. Update every listed entry point plus current migration instructions to the actual immutable publication, archive earlier coordination and mark historical1.23 sections clearly. No runtime or package bytes change. Starting parent4cbc23758674b29899d235b511b40f0a18cf8503 is “Record verified1.24 publication and current20i continuation”; correctiondf57d0ce is “Synchronize published1.24 across current entry-point guides.” Actual local documentation check passed161 Markdown files/1,330 local links and canonical dependency checks; git diff whitespace check passed. These checks cover documentation/source consistency only, not runtime acceptance, which remains the separately published7190 evidence. Known failure: initial review4281622110 found stale headers and was corrected. Follow-up review4281670745 requested this explicit validation record. Renewed review is pending; continue cloud/commercial20i work.

@@ -2,7 +2,14 @@
 
 **Devin: continue all remaining non-20i site work, including licensing. Codex and its three agents: continue complete20i.** This supersedes older unrelated-work pause statements for Devin. [Start here](DEVIN_START_HERE.md) gives the full assignment, direct licensing code locations, shared-file boundaries and instructions that work without the GitHub API. Licensing is already on main; inspect and repair its documented gaps rather than recreating it. Work on separate feature branches; Codex coordinates final integration/releases. Assignment [#157](https://github.com/afterburn25/Cajun_Web/issues/157) is posted; external-session acknowledgement is not assumed.
 
-# Session handoff — continue 20i P0
+# Session handoff — Devin non-20i work
+
+## Current Devin branches — 2026-10-16
+
+- `devin/non20i-licensing` at `e3d62770` — four licensing-review findings resolved (populated `is_master` upgrade, master-key isolation from portal/bundles/downloads, exact-one legacy invoice replay with ambiguity refusal, unknown/future marker refusal before DDL). Pushed; CI wired via `devin/non20i-*` push trigger in `application-tests.yml`. PR open blocked by GitHub GraphQL rate limit — retry `gh pr create` when it resets.
+- `devin/non20i-support-tickets` — ports the ticket slice of preserved `codex/support-ticket-screens`: storage/migration (`support_tickets` + events + per-viewer reads), `support.tickets` permission, admin + portal screens, private notes, exact-message activity links. Service-plans deps guarded by `function_exists` (dormant). Local PHP checks pass; native/browser/upgrade CI lanes pending. `docs/SUPPORT_TICKETS.md` + `docs/SUPPORT_TICKETS_CONTRACT.md` describe usage and contract.
+
+Shared seams touched by the ticket port (coordinate if Codex's stacked branches land first): `site/app/staff/accounts.php` (permission maps/home), `admin/controllers/{router,actions}.php`, `portal/controllers/{router,actions}.php`, `includes/layout/{admin,public,activity}.php`, `api/handlers/activity.php`, `portal/views/workspace.php`, `tools/build.py` (desk sync list), `foundation/access/PermissionPolicy.php` + mirror.
 
 ## Website licensing/DRM (Devin, on main) — 2026-10-15
 
