@@ -1,3 +1,7 @@
+## Isolated Force SSL dispatch-record recovery — 2026-10-16
+
+Implement the bounded finished-ledger recovery case on a separate exact-faef branch: owner/password-reviewed local witness restoration, no provider request or ledger rewrite, still-uncertain fence until separate current GET. Portable57 checks per mode pass; independent source review and actual native/process/browser acceptance remain required. Missing/claimed and other interrupted cases remain unfinished. [Scope](TWENTYI_FORCE_SSL_FINISHED_RECOVERY.md).
+
 ## Current 20i integration — 2026-10-16
 
 Reviewed Force SSL owner controls and renewal retail agreements are joining the root candidate through normal merges. Both have independently verified four-way native archives. Renewal binds existing one-time USD terms and captured consent; provider quotes, payment and renewal dispatch remain unfinished. ForceSSL effects require separate observation; interrupted dispatch remains fenced. Combined browser/package acceptance is pending. WordPress installation indication3f8adaa/docs65c has verified four-way focused38873107762 evidence and is joining the local root candidate; it is not a version/login/plugin/health feature. [Current source and evidence](../SESSION_HANDOFF.md).

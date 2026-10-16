@@ -122,6 +122,61 @@ function provider_force_ssl_controls_save_check(array $plan,array $receipt):arra
     $o=$r['state']==='complete'?provider_force_ssl_observation($r):null;$state=$o?($o['value']===$request['document']['params']['value']?'observed':'different'):'unavailable';$d=['version'=>1,'request_proof'=>$request['row']['proof'],'terminal_proof'=>$terminal['row']['proof'],'floor'=>$plan['floor'],'receipt_id'=>$r['id'],'receipt_seq'=>(int)$r['seq'],'receipt_sha256'=>provider_force_ssl_row_hash($r),'binding_sha256'=>$b->sha256,'disposition'=>$state,'value'=>$o['value']??null,'observation_proof'=>$o['proof']??null,'recorded_epoch'=>time()];$json=provider_force_ssl_json($d);
     $row=['id'=>$plan['check_id'],'request_id'=>$request['row']['id'],'actor_id'=>(int)$actor['id'],'receipt_id'=>$r['id'],'disposition'=>$state,'document_json'=>$json,'document_sha256'=>hash('sha256',$json)];provider_force_ssl_controls_insert('check',provider_force_ssl_controls_prove('check',$row));return provider_force_ssl_controls_summary($request['row']['id']);
 }
+/** Internal: request/grant/binding proof is validated by the owning caller first. */
+function provider_force_ssl_controls_finished_ledger(array $request,int $now):string {
+    $fail=static function():never {throw new RuntimeException('This request has no eligible durable dispatch completion.');};
+    $row=$request['ledger']??null;
+    if(!is_array($row)||$now<0)$fail();
+    foreach(['id','idempotency_key','fingerprint','operation','status','result_message','provider_code','external_id','attempts','claimed_at','claimed_epoch','resolved_epoch','reconciled_outcome','reconciled_epoch'] as $key)if(!array_key_exists($key,$row))$fail();
+    $number=static function(mixed $value)use($fail):int {
+        if((!is_int($value)&&!is_string($value))||preg_match('/\A(?:0|[1-9][0-9]{0,9})\z/',(string)$value)!==1||(int)$value>2147483647)$fail();
+        return (int)$value;
+    };
+    $attempts=$number($row['attempts']);$claimed=$number($row['claimed_epoch']);$resolved=$number($row['resolved_epoch']);
+    if(!is_string($row['id'])||preg_match('/\A[a-f0-9]{32}\z/',$row['id'])!==1
+        ||$row['idempotency_key']!=='forcessl:'.$request['row']['id']
+        ||$row['idempotency_key']!==$request['grant']['consumed_key']
+        ||$row['operation']!==ForceSslChange::OPERATION||!in_array($row['status'],['failed','uncertain'],true)
+        ||$attempts!==1||$claimed<$request['document']['approved_epoch']||$resolved<$claimed||$resolved>$now+30
+        ||$row['claimed_at']!==gmdate('Y-m-d H:i:s',$claimed)
+        ||$row['external_id']!==null||$row['reconciled_outcome']!==null||$row['reconciled_epoch']!==null)$fail();
+    if(!is_string($row['result_message'])||strlen($row['result_message'])>200||preg_match('//u',$row['result_message'])!==1||preg_match('/[\x00-\x1f\x7f]/',$row['result_message'])
+        ||($row['provider_code']!==null&&(!is_string($row['provider_code'])||strlen($row['provider_code'])>64||preg_match('/[\x00-\x1f\x7f]/',$row['provider_code']))))$fail();
+    $params=ForceSslChange::params($request['document']['params']);
+    $operation=new ProviderOperation(ForceSslChange::OPERATION,$request['grant']['consumed_key'],$params);
+    $b=$request['binding']->data;
+    $fingerprint=ProviderGateway::requestFingerprint('twenty-i',$b['profile_id'].':'.$b['profile_revision'].':'.$b['key_fingerprint'],$operation);
+    if(!is_string($row['fingerprint'])||!hash_equals($fingerprint,$row['fingerprint']))$fail();
+    return provider_force_ssl_controls_ledger_digest($row);
+}
+
+/** Explicit original-owner action; reconstruct only a missing local witness, never a provider result. */
+function provider_force_ssl_controls_recover_finished(string $requestId,string $reviewedLedgerHash,#[SensitiveParameter] string $password):array {
+    if(db()->inTransaction())throw new LogicException('Force SSL dispatch recovery cannot inherit a transaction.');
+    provider_force_ssl_id($requestId);
+    if(preg_match('/\A[a-f0-9]{64}\z/',$reviewedLedgerHash)!==1)throw new InvalidArgumentException('Reload the completed-dispatch recovery form.');
+    return staff_locked(fn()=>staff_transaction(function()use($requestId,$reviewedLedgerHash,$password):array {
+        $actor=provider_settings_owner($password);
+        if(!provider_force_ssl_controls_ready())throw new RuntimeException('Restore the original Force SSL change storage first.');
+        $request=provider_force_ssl_controls_request($requestId);
+        provider_force_ssl_controls_context($request['binding']);
+        if((int)$actor['id']!==(int)$request['row']['actor_id']||!hash_equals($request['document']['actor_auth'],hash('sha256',$actor['auth_version']))||$request['grant']['revoked_at']!==null)
+            throw new RuntimeException('The original Force SSL approval owner or context changed.');
+        // Freeze the finished source row during reconstruction; missing and claimed rows are refused below.
+        one('SELECT id FROM '.table('provider_operations').' WHERE idempotency_key=? FOR UPDATE',[$request['grant']['consumed_key']]);
+        $request=provider_force_ssl_controls_request($requestId);
+        $digest=provider_force_ssl_controls_finished_ledger($request,time());
+        if(!hash_equals($reviewedLedgerHash,$digest))throw new RuntimeException('The reviewed dispatch completion changed. Reload its history.');
+        if(provider_force_ssl_controls_terminal($request)!==null)throw new RuntimeException('This request already has a dispatch record. No recovery is needed.');
+        $document=['version'=>1,'request_proof'=>$request['row']['proof'],'phase'=>'attempted','ended_epoch'=>time(),'ledger_sha256'=>$digest,'recovered_from_ledger'=>true];
+        $json=provider_force_ssl_json($document);
+        $row=['id'=>$requestId,'actor_id'=>(int)$actor['id'],'disposition'=>'attempted','ledger_sha256'=>$digest,'document_json'=>$json,'document_sha256'=>hash('sha256',$json)];
+        provider_force_ssl_controls_insert('terminal',provider_force_ssl_controls_prove('terminal',$row));
+        provider_force_ssl_controls_ready();
+        return provider_force_ssl_controls_summary($requestId);
+    }));
+}
+
 /** No write is retried. This invokes the existing quota-limited GET outside every DB transaction. */
 function provider_force_ssl_controls_verify(string $requestId,#[SensitiveParameter] string $password,?callable $resolver=null,?callable $transport=null):array {
     if(db()->inTransaction())throw new LogicException('Force SSL verification cannot run in a transaction.');provider_force_ssl_id($requestId);
@@ -139,5 +194,7 @@ function provider_force_ssl_controls_summary(string $requestId):array {
     provider_force_ssl_guard();provider_settings_manager();if(!provider_force_ssl_controls_ready())throw new RuntimeException('Prepare Force SSL change storage first.');$request=provider_force_ssl_controls_request($requestId);$terminal=provider_force_ssl_controls_terminal($request);$check=one('SELECT c.* FROM '.table('provider_force_ssl_change_checks').' c JOIN '.table('provider_refreshes').' f ON f.id=c.receipt_id WHERE c.request_id=? ORDER BY f.seq DESC LIMIT 1',[$requestId]);$verified=$check?provider_force_ssl_controls_check_document($check,$request):null;
     $state=$terminal===null?'interrupted':($terminal['row']['disposition']==='not_sent'?'not_sent':'uncertain');if($verified&&$verified['disposition']==='observed')$state='observed';
     $current=false;try{provider_force_ssl_controls_context($request['binding']);$current=true;}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;}
-    return ['id'=>$requestId,'link_id'=>$request['row']['link_id'],'package_id'=>(int)$request['row']['package_id'],'requested_value'=>$request['document']['params']['value'],'before_value'=>$request['document']['before_value'],'requested_epoch'=>$request['document']['approved_epoch'],'status'=>$state,'current_assignment'=>$current,'last_check'=>$verified?['disposition'=>$verified['disposition'],'value'=>$verified['value'],'recorded_epoch'=>$verified['recorded_epoch']]:null];
+    $recovery=null;
+    if($terminal===null&&$current){try{$actor=provider_settings_manager();if((int)$actor['id']===(int)$request['row']['actor_id']&&hash_equals($request['document']['actor_auth'],hash('sha256',$actor['auth_version']))&&$request['grant']['revoked_at']===null)$recovery=provider_force_ssl_controls_finished_ledger($request,time());}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;}}
+    return ['id'=>$requestId,'link_id'=>$request['row']['link_id'],'package_id'=>(int)$request['row']['package_id'],'requested_value'=>$request['document']['params']['value'],'before_value'=>$request['document']['before_value'],'requested_epoch'=>$request['document']['approved_epoch'],'status'=>$state,'current_assignment'=>$current,'recovery_ledger_sha256'=>$recovery,'recovered_dispatch'=>$terminal!==null&&($terminal['document']['recovered_from_ledger']??false)===true,'last_check'=>$verified?['disposition'=>$verified['disposition'],'value'=>$verified['value'],'recorded_epoch'=>$verified['recorded_epoch']]:null];
 }

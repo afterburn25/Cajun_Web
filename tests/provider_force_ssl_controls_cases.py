@@ -141,8 +141,81 @@ def run_browser(env, browser):
     check('Separately shared client sees reported flag without setter or health claim', 'Flag reported set' in response.text and 'Latest saved observation' in response.text and 'does not check its certificate or whether HTTPS works' in response.text and 'Request flag' not in response.text and request['id'] not in response.text)
     capture(owner, 'Force-SSL-Control-Observed-Owner', url, '#force-ssl-changes')
     capture(client, 'Force-SSL-Control-Observed-Client', target, '[data-client-force-ssl]')
+    # Reproduce the precise recoverable window with a real terminal audit rollback
+    # after the synchronous synthetic POST has saved its durable ledger result.
+    db("CREATE TRIGGER ci_force_ssl_recovery_fault BEFORE INSERT ON ci_audit FOR EACH ROW BEGIN IF NEW.action='provider.force_ssl_control_terminal' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic terminal rollback'; END IF; END")
+    before_write_calls = provider.calls
+    try:
+        response = post(action, link_id=link['id'], reviewed='1')
+    finally:
+        db('DROP TRIGGER ci_force_ssl_recovery_fault')
+    interrupted = db('SELECT * FROM ci_provider_force_ssl_changes WHERE link_id=? ORDER BY grant_seq DESC LIMIT 1', [link['id']])[0]
+    interrupted_grant = db('SELECT * FROM ci_provider_operation_grants WHERE id=?', [interrupted['id']])[0]
+    interrupted_ledger = db('SELECT * FROM ci_provider_operations WHERE idempotency_key=?', ['forcessl:' + interrupted['id']])[0]
+    check('Recovery HTTP fixture retains one finished attempt and genuinely absent terminal after rollback',
+          interrupted['id'] != request['id'] and provider.calls == before_write_calls + 1
+          and provider.posts[-1] == {'path': '/package/2101/web/forceSSL', 'body': {'value': False}}
+          and interrupted_ledger['status'] == 'uncertain' and interrupted_ledger['attempts'] == 1
+          and interrupted_ledger['resolved_epoch'] is not None
+          and not db('SELECT id FROM ci_provider_force_ssl_dispatch_ends WHERE id=?', [interrupted['id']]))
+    recovery_action = 'provider_force_ssl_control_recover'
+    calls = provider.calls
+    terminals = db('SELECT * FROM ci_provider_force_ssl_dispatch_ends ORDER BY id')
+    recovery_audits = db('SELECT * FROM ci_audit ORDER BY id')
+    recovery_count = db('SELECT * FROM ci_settings WHERE name=?', ['provider_force_ssl_control_terminal_count'])
+    recovery_page = owner.get(url)
+    recovery_form = soup(recovery_page).select_one('[data-force-ssl-control-recover]')
+    check('Recovery GET offers only a local password-reviewed restore without repairing evidence',
+          recovery_form is not None and 'Restore local dispatch record' in recovery_page.text
+          and provider.calls == calls and db('SELECT * FROM ci_provider_force_ssl_dispatch_ends ORDER BY id') == terminals
+          and db('SELECT * FROM ci_audit ORDER BY id') == recovery_audits)
+    recovery_fields = {n['name']: n.get('value', '') for n in recovery_form.select('input[name]')}
+    recovery_fields.update(current_password=OWNER, reviewed='1')
+    for label, changed, refusal in [('CSRF', {'csrf': 'invalid'}, 'Your session expired. Refresh the page and try again.'),
+                                    ('password', {'current_password': 'wrong'}, 'Your current password is not correct.'),
+                                    ('confirmation', {'reviewed': '0'}, 'Review this local dispatch recovery first.'),
+                                    ('review hash', {'ledger_sha256': 'f' * 64}, 'The reviewed dispatch completion changed. Reload its history.')]:
+        response = owner.post(url, data={**recovery_fields, **changed})
+        check('Recovery HTTP refuses invalid ' + label + ' without a read write or local repair',
+              response.status_code == 200 and refusal in [n.get_text(' ', strip=True) for n in soup(response).select('.notice.error')]
+              and provider.calls == calls and db('SELECT * FROM ci_provider_force_ssl_dispatch_ends ORDER BY id') == terminals
+              and db('SELECT * FROM ci_settings WHERE name=?', ['provider_force_ssl_control_terminal_count']) == recovery_count)
+    check('Client does not receive owner recovery metadata or action', recovery_action not in client.get(target).text
+          and interrupted['id'] not in client.get(target).text and recovery_fields['ledger_sha256'] not in client.get(target).text)
+    capture(owner, 'Force-SSL-Control-Recovery-Owner', url, '[data-force-ssl-control-recover]')
+    response = owner.post(url, data=recovery_fields); evidence('Restore only missing local dispatch record', response)
+    recovered_terminal = db('SELECT * FROM ci_provider_force_ssl_dispatch_ends WHERE id=?', [interrupted['id']])[0]
+    check('Owner HTTP recovery appends attempted witness and keeps uncertainty without provider traffic',
+          provider.calls == calls and recovered_terminal['disposition'] == 'attempted'
+          and json.loads(recovered_terminal['document_json'])['recovered_from_ledger'] is True
+          and 'The effect remains uncertain' in response.text and 'data-force-ssl-control-recovered' in response.text
+          and not soup(response).select_one('[data-force-ssl-control-recover]')
+          and db('SELECT * FROM ci_provider_force_ssl_changes WHERE id=?', [interrupted['id']]) == [interrupted]
+          and db('SELECT * FROM ci_provider_operation_grants WHERE id=?', [interrupted['id']]) == [interrupted_grant]
+          and db('SELECT * FROM ci_provider_operations WHERE id=?', [interrupted_ledger['id']]) == [interrupted_ledger])
+    replay_audits = db('SELECT * FROM ci_audit ORDER BY id')
+    response = owner.post(url, data=recovery_fields)
+    check('Captured recovery form cannot replace witness or append another audit',
+          'already has a dispatch record' in response.text and provider.calls == calls
+          and db('SELECT * FROM ci_provider_force_ssl_dispatch_ends WHERE id=?', [interrupted['id']]) == [recovered_terminal]
+          and db('SELECT * FROM ci_audit ORDER BY id') == replay_audits)
+    interrupted_doc = json.loads(interrupted['document_json'])
+    post(action, request_id='d' * 32, link_id=link['id'], anchor_id=interrupted_doc['anchor_id'],
+         binding_sha256=db('SELECT binding_sha256 FROM ci_provider_force_ssl_reads WHERE id=?', [interrupted_doc['anchor_id']])[0]['binding_sha256'], desired='false', reviewed='1')
+    check('Local restoration alone leaves new writes fenced and client value historical', provider.calls == calls
+          and not db('SELECT id FROM ci_provider_force_ssl_changes WHERE id=?', ['d' * 32])
+          and 'Historical observation' in client.get(target).text)
+    capture(owner, 'Force-SSL-Control-Recovered-Uncertain-Owner', url, '[data-force-ssl-control-history]:has([data-force-ssl-control-recovered])')
+    cool(); provider.force_ssl = False; response = post(verify, request_id=interrupted['id']); evidence('Separate GET after local dispatch recovery', response)
+    check('Only separate actual GET confirms desired flag after recovered request', provider.calls == calls + 1
+          and db('SELECT disposition FROM ci_provider_force_ssl_change_checks WHERE request_id=?', [interrupted['id']]) == [{'disposition': 'observed'}]
+          and db('SELECT * FROM ci_provider_operations WHERE id=?', [interrupted_ledger['id']]) == [interrupted_ledger]
+          and db('SELECT * FROM ci_provider_force_ssl_dispatch_ends WHERE id=?', [interrupted['id']]) == [recovered_terminal])
+    check('Independent client sharing survives local recovery without private evidence',
+          'Flag reported false' in client.get(target).text and 'Latest saved observation' in client.get(target).text
+          and interrupted['id'] not in client.get(target).text and recovery_fields['ledger_sha256'] not in client.get(target).text)
     post(share, link_id=link['id'], sharing='disable')
-    check('Client revocation remains independent after observed change', 'Flag reported set' not in client.get(target).text)
+    check('Client revocation remains independent after observed change', all(label not in client.get(target).text for label in ['Flag reported set', 'Flag reported false']))
     counter = db('SELECT value FROM ci_settings WHERE name=?', ['provider_force_ssl_control_request_count'])[0]['value']; db('DELETE FROM ci_settings WHERE name=?', ['provider_force_ssl_control_request_count'])
     before_recovery_calls = provider.calls
     try:
@@ -152,7 +225,7 @@ def run_browser(env, browser):
         db('INSERT INTO ci_settings (name,value) VALUES (?,?)', ['provider_force_ssl_control_request_count', counter])
     check('Exact control history restoration recovers saved owner evidence', 'Desired flag observed after the request' in owner.get(url).text)
     rows = db('SELECT operation FROM ci_provider_refreshes WHERE actor_id=? ORDER BY seq', [force_ssl_owner['id']])
-    check('Control workflow uses six own reads and one synthetic write', [r['operation'] for r in rows] == ['packages.list', 'packages.list'] + ['package.force-ssl'] * 4 and provider.posts == posts + [{'path': '/package/2101/web/forceSSL', 'body': {'value': True}}] and not provider.errors)
+    check('Control workflow uses seven own reads and two synthetic writes with local-only recovery', [r['operation'] for r in rows] == ['packages.list', 'packages.list'] + ['package.force-ssl'] * 5 and provider.posts == posts + [{'path': '/package/2101/web/forceSSL', 'body': {'value': True}}, {'path': '/package/2101/web/forceSSL', 'body': {'value': False}}] and not provider.errors)
     retained = db('SELECT * FROM ci_provider_refreshes WHERE seq<=? ORDER BY seq', [max((r['seq'] for r in inherited), default=0)])
     retained_audits = db('SELECT * FROM ci_audit WHERE id<=? ORDER BY id', [max((r['id'] for r in inherited_audits), default=0)])
     check('Controls preserve every inherited intent and audit byte', retained == inherited and retained_audits == inherited_audits)

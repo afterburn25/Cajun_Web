@@ -14,7 +14,11 @@ The owner can explicitly perform a new quota-limited GET after a terminal attemp
 
 Client observation sharing remains its own explicit permission. A pending change makes an older saved observation historical. No client write capability or private approval history is exposed. The new projection hook is a no-op only when control storage was genuinely never prepared; surviving evidence with a missing marker, counter, row or matching audit fails closed without GET repairing storage.
 
-## Interrupted dispatch remains unfinished
+## Narrow finished-ledger recovery and remaining interruptions
+
+[Finished-ledger recovery](TWENTYI_FORCE_SSL_FINISHED_RECOVERY.md) is implemented on a separate faef descendant, with native/browser acceptance pending. It can restore only a missing local terminal witness when the exact durable finished shared ledger exists, under the original owner and current context. Recovery performs no provider call and preserves uncertainty until a separate exact GET. Missing or claimed ledgers stay fenced. The earlier broader interruption limitation is retained below as the original controls scope.
+
+### Original controls scope before finished-ledger recovery
 
 A crash before the immutable terminal witness leaves an owner-visible interrupted request. Replaying it never resumes a delayed worker, and neither a timeout nor an expired claim releases its fence. Ordinary Force SSL observations remain available, but this implementation does not reconcile or resend the interrupted change. A separately reviewed operator recovery transition must durably establish that delayed local dispatch is impossible without automatically retrying the provider action. That transition is not implemented; database edits are not an operator workflow. The complete controls capability must not be declared finished before recovery is reviewed and accepted.
 

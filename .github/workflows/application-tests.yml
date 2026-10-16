@@ -148,6 +148,8 @@ jobs:
           php8.3 -n tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-no-ini-results.json
           php8.3 tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-results.json
           php8.3 -n tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-no-ini-results.json
+          php8.3 tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-results.json
+          php8.3 -n tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-no-ini-results.json
           php8.3 tests/provider_force_ssl_controls_native.php
           python -B tests/provider_wordpress_installed_http_contract.py > qa/wordpress-installed-http-handler-results.json
           php8.3 tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-results.json

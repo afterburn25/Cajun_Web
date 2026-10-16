@@ -1,5 +1,12 @@
 # CajunWebPro current status
 
+## Isolated finished-ledger recovery — 2026-10-16
+
+New branch `codex/twentyi-force-ssl-finished-recovery` starts exactly `faef8a6a0fb0a3969a67fe8bc7aabd3b107c1c10`; root and prior evidence stay frozen. Implement owner/password-reviewed reconstruction of only a missing local Force SSL dispatch witness from its exact durable finished ledger. Original request/grant/ledger and independent sharing remain unchanged; recovery performs no provider call, claims no success and keeps the request fenced until a separate exact current GET. Missing/claimed rows and damaged retained history remain blocked. [Scope and trust limits](docs/TWENTYI_FORCE_SSL_FINISHED_RECOVERY.md).
+
+Actual local evidence: production-helper/gateway57 distinct portable checks pass per normal/minimal PHP8.4 mode; changed PHP syntax and browser AST pass. Prepared real-process/native and owner/client browser cases have not executed. Root shared controller/workflow review and independent Catalog source/test review84c0a7f9 are clear. Installer refresh11297 completed exit0, including all shipping PHP and JavaScript checks. Final staged Git/installer parity and one approved original focused four-way run are next; no CI or runtime success is claimed yet.
+
+
 Updated 2026-10-16 UTC. **1.24.0 is published; 1.25.0 and complete 20i remain unfinished.** Codex and three parallel agents own 20i; Devin owns software-product licensing. An ownership assignment is not proof an external session is active. CajunWebPro retains its one-page keyless installer.
 
 ## Current integration
