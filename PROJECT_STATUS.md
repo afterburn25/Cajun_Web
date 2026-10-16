@@ -1,5 +1,10 @@
 # CajunWebPro current status
 
+## Reviewed expiry browser fixture correction - 2026-10-16
+
+From frozen9e33, correct only the expiry browser setup comparison to account explicitly for authorized-login `last_login`, then retain exact complete post-login authority through the workflow. Combined427 failed at the corresponding period fixture; expiry execution remains pending. Runtime/native/workflow/installer bytes stay exactf42. Root source review and AST/whitespace pass; root coordinates corrected packaged acceptance without a separate manual dispatch. [Correction and retained evidence](docs/TWENTYI_DOMAIN_EXPIRY_CONTRACT.md).
+
+
 Updated 2026-10-16 UTC. **1.24.0 is published; 1.25.0 is unreleased. Full20i integration and the broader roadmap are unfinished.**
 
 ## Isolated document-root observation contract
@@ -22,7 +27,7 @@ Codex owns complete20i P0 and integration/releases with three parallel agents. D
 
 | Source | Actual verified evidence | Limits |
 |---|---|---|
-| Domaina132 | All four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 focused38851489059 archives verify98 native+87 normal+87 minimal reader cases. Root/catalog source review clear. Normal merge4b78 preserves its exact shipping tree; installer refresh and staged inventory parity pass. | Latest-authority order fence and synthetic credential-echo defense; no real-key exposure claim. Original f725 full38849384530 retains the known period fixture failure and continues recovery/final evidence. |
+| Domaina132 | All four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 focused38851489059 archives verify98 native+87 normal+87 minimal reader cases. Root/catalog source review clear. Normal merge4b78 preserves its exact shipping tree; installer refresh and staged inventory parity pass. | Latest-authority order fence and synthetic credential-echo defense; no real-key exposure claim. Original f725 full38849384530 is terminal failure at that period fixture; final12027326438 verifies289 recovery/2167 Apache and exact Git packages, without full acceptance. |
 | PHPcfc6 | All four focused38850899544 archives verify99 native executions/98 distinct labels plus99 pure checks per mode. Root/catalog review of shared merge and dedicated owner fixture is clear. | Original full38850899573 continues; focused evidence does not certify combined application behavior. The original-owner quota collision was source-predicted. Dedicated owner execution is still pending. |
 | Original combined25e | Full38846792746 terminal FAILURE; downloaded final12025544003 verifies122 reports,10 diagnostics,2130 HTTP passes plus the retained empty-period failure,289 recovery and2167 Apache passes. All319 earlier checkpoint files/198 images unchanged.11 checksums and exact FULL5593/COMPLETE2749/UPDATE2736 Git/Windows package agreement. | Final source-check step skipped after browser failure. Source/history reconstruct exhausted20/hour owner quota; original inline count/error was not captured. No combined success claimed. |
 | Parent210 | Full38844717543 terminal success; downloaded final12024561896 verifies117 reports/12 diagnostics,2101 HTTP/289 recovery/2095 Apache,192 unchanged images and exact packages. | Parent-only evidence; narrow period failure element capture retains its documented sticky-header framing limitation. |
@@ -31,7 +36,7 @@ Original25e focused dates/periods/cloud/scheduler all16 archives are verified. O
 
 ## Parallel work and integration boundaries
 
-- Domains starts separate registry-expiry application work from a132 and verified pure expiry b3c1cc31 history. Pure38850341309 verifies139 normal+139 minimal cases on both PHP versions. No expiry application enters this candidate.
+- Domains implements separate registrar-expiry observations on `codex/twentyi-domain-expiry-observations` from a132 with normal pureb3c1cc31 and frozen427 history. Root/catalog source review is clear. Exact f42 focused38855352194 verifies all four expiry111/date99/PHP99 executions(98 labels)/scheduler102 plus54+54 reader/139+139 contract. Packaged browser acceptance remains pending, outside frozen427. [Scope, source limits and tests](docs/TWENTYI_DOMAIN_EXPIRY_CONTRACT.md). Root427 date focused38853749575 independently verifies all four98+87+87 archives.
 - Latest inspected mainc0e0870278eaf158499a501954164f9f33ff052a retains licensing migration/master-delivery findings and now shows full customer-associated master keys. Preserve the candidate's support/readiness guards. New main remains separate; [portable Devin review](docs/LICENSING_INTEGRATION_REVIEW.md).
 - Combined installer refresh passes:2,760 shipping files and2,759 exact staged inventory hashes. All added PHP modules match cfc6; automatic routes/views are independently reviewed. Merged domain87, PHP99, cloud85 and period62 synthetic checks pass in each normal/minimal PHP mode. Commit/push this stable candidate and run one exact combined full acceptance; unchanged independent review, current-main reconciliation, exact-main acceptance and immutable release/download verification remain required.
 - VPS investigates evidenced cloud specs/zones/product request contracts; catalog investigates hosting DNS contracts. Missing response schemas stay explicit. Their separate pure components do not enter this frozen application candidate.

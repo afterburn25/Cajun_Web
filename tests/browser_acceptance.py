@@ -234,6 +234,8 @@ try:
         registration_periods_browser(globals(),browser)
         from provider_package_php_cases import run_browser as package_php_browser
         package_php_browser(globals(),browser)
+        from domain_expiry_cases import run_browser as domain_expiry_browser
+        domain_expiry_browser(globals(),browser)
         from provider_schedule_cases import run_browser as schedule_browser
         schedule_browser(globals(),browser)
         browser.close()
