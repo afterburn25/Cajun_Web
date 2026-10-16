@@ -23,6 +23,7 @@ Main retains existing licensing and the four unresolved [integration findings](d
 - `devin/non20i-project-progress` (PR #160) ports the preserved progress slice — owner-prepared `studio_progress_*` storage, hash-linked dated history in `studio_job` saves, portal timeline, `progress:` activity items.
 - `devin/non20i-mail-replies` (PR #161) completes webmail Reply/Forward — opt-in raw retention, message-screen controls, protected copied drafts, `mail_reply_drafts` storage, format-2 submissions with `In-Reply-To`/`References`, source-Read revalidation on every copied-content path.
 - `devin/non20i-backups-foundation` ports the A-03 backup/restore contract layer — `BackupManifest` sealed item scopes with structural secrets exclusion and `RestorePlan` preview→authorize→applied deliberate-restore states; pure model, no filesystem/archive/application integration yet.
+- `devin/non20i-backups-runtime` implements the A-03 file-scope runtime on that foundation — durable `backups` records, private ZIP archives outside the web root, admin create/impact-preview/deliberate-restore/download/prune, owner re-authentication and the exact `RESTORE <id>` phrase for every restore.
 
 All are local/CI validation only — no live deployment, mail, provider or customer action.
 

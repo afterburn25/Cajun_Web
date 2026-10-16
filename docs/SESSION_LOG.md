@@ -1,5 +1,17 @@
 # Session log
 
+## Implement A-03 backup/restore runtime — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). The foundation supplied only the manifest/restore-plan contract; this slice builds the application runtime on it. Starting commit: `devin/non20i-backups-foundation` tip `b1849208`, new branch `devin/non20i-backups-runtime`.
+
+Actions: added `database/schema/backups_schema.php` (durable `backups` rows — id, kind, manifest JSON + recorded `manifest_hash`, item count, archive filename, bytes, exact-request `request_key`/`request_hash`, status, `retain_until`, creator and restore attribution) and `database/migrations/backups_migrate.php` (owner-authorized, additive, refuses unknown populated records). `app/backups/records.php` adds readiness, private-directory verification outside the web root and non-symlinked, manifest reconstruction with recorded-hash verification, and a no-store guarded download. `app/backups/archive.php` collects the deployable tree deterministically applying the manifest's forbidden-path rules (config, keys, env, `storage/`, payment-master, VCS, traversal), writes private ZIP archives inside a transaction that unlinks on rollback, rebuilds live previews through `RestorePlan`, and applies authorized restores atomically per item (tempnam + rename, post-write hash proof). Admin `?view=backups` renders setup/create/impact-preview/restore/download/prune; `staff.manage` gates the section while setup and restore additionally require the current owner password and the exact `RESTORE <id>` phrase; expired backups refuse authorization. Wired router/actions/permissions/nav, Apache direct-deny list, build mirror sync, and workflows (pure `archive_run.php` in the backups lane, `backups_native.php` in the native lane, `backups_cases.py` in the browser suite, private `backups/` retention in organized-update checks).
+
+Tests: `php -l` clean on every touched PHP file; `php tests/backups/archive_run.php` → 21 checks pass locally on PHP 8.4 (secret exclusion, traversal refusal, unauthorized apply, wrong phrase, expired/unsupported formats, truncated and non-ZIP archives, tampered manifests, missing/differs/identical classification, atomic restore, idempotent re-apply); `php tests/backups/run.php` → 33 checks pass. MariaDB native lane and real-HTTP browser case are CI-wired, not yet executed. `python tools/build.py --refresh` clean — canonical `includes/foundation/backups/` mirror byte-identical, installer inventory regenerated.
+
+Known limits: file-scope only — no database dump/restore, scheduling, or provider backup coordination. New files added after a snapshot are left in place on restore (documented in the view).
+
+Next: commit, push, open bounded PR, update issue #157; then notifications/pipeline/revisions/proposals runtime integration.
+
 ## Port A-03 backup/restore contract layer — 2026-10-16
 
 Request: continue the remaining non-20i roadmap (issue #157); backup/recovery is in Devin's scope. Starting commit: main `595ac9c3`, new branch `devin/non20i-backups-foundation`.

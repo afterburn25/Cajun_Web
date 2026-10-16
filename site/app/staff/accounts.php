@@ -137,7 +137,7 @@ function staff_view_permission(string $view): ?string {
     if($view==='consultation-settings')return 'staff.manage';
     if(in_array($view,['consultations','consultation'],true))return 'website.manage';
     if(in_array($view,['login','forgot','reset','staff-setup','security','mailboxes'],true))return null;
-    if(in_array($view,['provider-settings','provider-operations','staff','mail-accounts','mail-account','payment-settings','payment-trials','payment-notifications'],true))return 'staff.manage';
+    if(in_array($view,['provider-settings','provider-operations','staff','mail-accounts','mail-account','payment-settings','payment-trials','payment-notifications','backups'],true))return 'staff.manage';
     if(in_array($view,['payments','invoice-payments'],true))return 'payments.manage';
     if(in_array($view,['mail-templates','mail-template'],true))return 'mail.templates.manage';
     if($view==='support')return 'support.login';
@@ -170,6 +170,7 @@ function staff_action_permission(string $action): ?string {
     if($action==='support_start')return 'support.login';
     if(in_array($action,['payments_migrate','payments_ledger_setup','payments_ledger_reverse','payments_save','payments_clear','payments_verify','payments_trial_setup','payments_trial_submit','payments_trial_verify','payments_notification_setup','payments_notification_configure','payments_notification_verify'],true))return 'staff.manage';
     if(str_starts_with($action,'payments_'))return 'payments.manage';
+    if(str_starts_with($action,'backups_'))return 'staff.manage'; // Restore additionally requires the current owner password and exact phrase.
     if(in_array($action,['delivery_setup','delivery_publish'],true))return 'staff.manage';
     if($action==='activity_setup')return 'staff.manage';
     if($action==='activity_mark')return 'clients.manage';

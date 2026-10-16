@@ -1,3 +1,7 @@
+## Implement A-03 backup/restore runtime — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-backups-runtime` from `devin/non20i-backups-foundation`. Adds `backups` schema + owner-authorized additive migration, `app/backups/records.php` (readiness, private-directory validation, durable manifest/hash records, guarded no-store download) and `app/backups/archive.php` (deterministic collect/hash, ZipArchive writes, live-impact preview, per-item atomic apply, retention pruning). Admin `?view=backups` (staff.manage; restore and setup additionally require the current owner password and the exact `RESTORE <id>` phrase) plus tests: 21-check pure archive adapter suite, MariaDB lane, real-HTTP browser flow and organized-update private-storage retention. No database dump, scheduling, release or deployment.
+
 ## Port A-03 backup/restore contract layer — 2026-10-16
 
 Devin non-20i increment on `devin/non20i-backups-foundation` from main `595ac9c3`, continuing preserved `devin/backups-foundation`. Adds `foundation/backups/BackupManifest.php` (sealed sha256 item scopes; private/secret paths refused at construction; retention never born expired) and `RestorePlan.php` (preview→authorized→applied/abandoned; exact confirmation phrase, named actor, expired backups refused, newer formats rejected) with 33 pure contract checks in `tests/backups/run.php` and a PHP 8.2/8.4 workflow lane. No archive format, filesystem writes, database restore, scheduling or application integration — the adapter and restore drill remain future work. No release or deployment.
