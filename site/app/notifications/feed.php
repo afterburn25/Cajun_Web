@@ -76,9 +76,32 @@ function notification_mark_all(string $audience,int $recipientId): void {
     notification_feed($audience,$recipientId)->markAllRead((string)$recipientId);
     query('UPDATE '.table('notification_feed').' SET read_at=? WHERE audience=? AND recipient_id=? AND read_at IS NULL',[gmdate('Y-m-d H:i:s'),$audience,$recipientId]);
 }
+/**
+ * Scoped maintenance/service announcement to every active client. Each
+ * recipient gets the same unconditional portal notification and an email
+ * copy only if they have not opted out of service events; a per-recipient
+ * failure is recorded and reported, never aborts the rest.
+ */
+function notification_announce(string $title,string $body,array $actor): int {
+    notifications_feed_require();
+    $title=trim($title);$body=trim($body);
+    if(strlen($title)<4||strlen($title)>200||strlen($body)<10||strlen($body)>1000)throw new InvalidArgumentException('Enter a title (4–200 characters) and message (10–1000 characters).');
+    if(!consume_rate('announce-'.$actor['id'],12,3600))throw new RuntimeException('Please wait before sending another announcement.');
+    $clients=all('SELECT id FROM '.table('studio_clients').' WHERE active=1 ORDER BY id');
+    $sent=staff_transaction(function() use($actor,$title,$body,$clients): int {
+        query('INSERT INTO '.table('notification_announcements').' (actor_id,title,body,recipients,created_at) VALUES (?,?,?,?,?)',[(int)$actor['id'],$title,$body,count($clients),gmdate('Y-m-d H:i:s')]);
+        return (int)db()->lastInsertId();
+    });
+    foreach($clients as $c)try{notification_emit(Notification::AUDIENCE_CLIENT,(int)$c['id'],'service-event','announcement:'.$sent,$title,$body);}catch(Throwable $e){report_error($e);}
+    log_event('notifications.announce','Announcement '.$sent.' to '.count($clients).' active clients by '.$actor['email']);
+    return $sent;
+}
+function notification_announcements(int $limit=20): array {
+    return all('SELECT a.*,u.name AS actor_name FROM '.table('notification_announcements').' a LEFT JOIN '.table('users').' u ON u.id=a.actor_id ORDER BY a.id DESC LIMIT '.max(1,min(100,$limit)));
+}
 /** Typed ref → authorized destination. The renderer authorizes before linking. */
 function notification_url(string $audience,string $ref): string {
     if(!preg_match('/^([a-z][a-z0-9-]*):([A-Za-z0-9_-]+)$/',$ref,$m))return '#';
-    if($audience===Notification::AUDIENCE_CLIENT)return match($m[1]){'job'=>studio_url(['job'=>(int)$m[2]]),'release'=>studio_url(['release'=>$m[2]]),'invoice'=>studio_url(['invoice'=>(int)$m[2]]),default=>studio_url()};
-    return match($m[1]){'inquiry'=>admin_url('lead',['id'=>(int)$m[2]]),'job'=>admin_url('studio-job',['id'=>(int)$m[2]]),'invoice'=>admin_url('invoice-payments',['invoice_id'=>(int)$m[2]]),default=>admin_url('notifications')};
+    if($audience===Notification::AUDIENCE_CLIENT)return match($m[1]){'job'=>studio_url(['job'=>(int)$m[2]]),'release'=>studio_url(['release'=>$m[2]]),'invoice'=>studio_url(['invoice'=>(int)$m[2]]),'announcement'=>studio_url(['notifications'=>1]),default=>studio_url()};
+    return match($m[1]){'inquiry'=>admin_url('lead',['id'=>(int)$m[2]]),'job'=>admin_url('studio-job',['id'=>(int)$m[2]]),'invoice'=>admin_url('invoice-payments',['invoice_id'=>(int)$m[2]]),'announcement'=>admin_url('notifications'),default=>admin_url('notifications')};
 }

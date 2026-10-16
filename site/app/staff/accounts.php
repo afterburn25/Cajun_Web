@@ -175,6 +175,7 @@ function staff_action_permission(string $action): ?string {
     if($action==='activity_mark')return 'clients.manage';
     if($action==='delivery_upload')return 'clients.manage';
     if($action==='notifications_setup')return 'staff.manage';
+    if($action==='notification_announce')return 'clients.manage';
     if(in_array($action,['notification_mark','notification_mark_all','notification_prefs'],true))return null; // Recipient-scoped; the feed model enforces actor==recipient.
     if($action==='catalog_migrate')return 'staff.manage';
     if(str_starts_with($action,'catalog_'))return 'catalog.manage';
