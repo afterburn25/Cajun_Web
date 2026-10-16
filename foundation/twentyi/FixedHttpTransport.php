@@ -41,7 +41,7 @@ final class FixedHttpTransport implements HttpTransport
             throw new \InvalidArgumentException('Unsupported provider request.');
         }
         if ($request->method === 'GET') {
-            if ((!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server', 'https://api.20i.com/domain'], true) && !$this->isDomainSearch($request->url)) || $request->body !== null
+            if ((!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server', 'https://api.20i.com/domain', 'https://api.20i.com/domain-period', 'https://api.20i.com/reseller/*/cloudProviders'], true) && !$this->isDomainSearch($request->url) && !$this->isDomainContract($request->url) && !$this->isPackagePhpVersion($request->url) && !$this->isDomainExpiry($request->url) && !$this->isDocumentRoots($request->url) && !$this->isPackageForceSsl($request->url) && !$this->isDirectoryIndexing($request->url) && !$this->isWordpressInstalled($request->url)) || $request->body !== null
                 || array_keys($request->headers) !== ['Authorization','Accept']
                 || $request->headers['Accept'] !== 'application/json') {
                 throw new \InvalidArgumentException('Unsupported provider probe request.');
@@ -51,15 +51,20 @@ final class FixedHttpTransport implements HttpTransport
             // a fixed-host URL on the catalogued reseller paths, a
             // bounded JSON body and three fixed headers.
             $path = str_starts_with($request->url, self::URL_BASE) ? substr($request->url, strlen(self::URL_BASE)) : '';
-            $mailbox = str_starts_with($path, 'package/');
+            $forceSsl = preg_match('~\Apackage/[1-9][0-9]{0,17}/web/forceSSL\z~', $path) === 1;
+            $mailbox = str_starts_with($path, 'package/') && !$forceSsl;
             $cloudWebsite = str_starts_with($path, 'cloud_server/');
-            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb|renewDomain)$/D', $path) && !$mailbox && !$cloudWebsite)
+            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb|renewDomain)$/D', $path) && !$mailbox && !$cloudWebsite && !$forceSsl)
                 || !is_string($request->body) || $request->body === ''
                 || strlen($request->body) > self::REQUEST_BODY_LIMIT
                 || array_keys($request->headers) !== ['Authorization','Accept','Content-Type']
                 || $request->headers['Accept'] !== 'application/json'
                 || $request->headers['Content-Type'] !== 'application/json') {
                 throw new \InvalidArgumentException('Unsupported provider write request.');
+            }
+            if ($forceSsl) {
+                require_once __DIR__.'/../twentyi-operations/ForceSslChange.php';
+                \CajunWebPro\Foundation\TwentyI\Operations\ForceSslChange::wire($request);
             }
             if ($cloudWebsite) {
                 require_once __DIR__.'/../twentyi-operations/CloudWebsiteCreate.php';
@@ -77,6 +82,21 @@ final class FixedHttpTransport implements HttpTransport
         $this->validateAuthorization($request->headers['Authorization'] ?? null);
     }
 
+    private function isDomainExpiry(string $url): bool
+    {
+        require_once __DIR__.'/../twentyi-inventory/InventoryDomain.php';
+        require_once __DIR__.'/../twentyi-domain-expiry/DomainExpiry.php';
+        require_once __DIR__.'/../twentyi-domain-expiry/DomainExpiryReader.php';
+        return \CajunWebPro\Foundation\TwentyIDomainExpiry\DomainExpiryReader::acceptsUrl($url);
+    }
+
+    private function isDomainContract(string $url): bool
+    {
+        require_once __DIR__.'/../twentyi-inventory/InventoryDomain.php';
+        require_once __DIR__.'/../twentyi-domain-contracts/DomainContract.php';
+        return \CajunWebPro\Foundation\TwentyIDomainContracts\DomainContract::acceptsUrl($url);
+    }
+
     private function isDomainSearch(string $url): bool
     {
         require_once __DIR__.'/../twentyi-inventory-reader/DomainSearch.php';
@@ -85,6 +105,35 @@ final class FixedHttpTransport implements HttpTransport
         $name=substr($url,strlen($prefix));
         try { return \CajunWebPro\Foundation\TwentyIInventoryReader\DomainSearch::name($name)===$name; }
         catch (\InvalidArgumentException) { return false; }
+    }
+
+    /** One exact allocated-package scalar read; no package path prefix authority. */
+    private function isPackagePhpVersion(string $url): bool
+    {
+        return preg_match('~\Ahttps://api\.20i\.com/package/[1-9][0-9]{0,17}/web/phpVersion\z~',$url)===1;
+    }
+
+    /** One exact reported-flag GET; the documented setter is not admitted. */
+    private function isPackageForceSsl(string $url): bool
+    {
+        return preg_match('~\Ahttps://api\.20i\.com/package/[1-9][0-9]{0,17}/web/forceSSL\z~',$url)===1;
+    }
+
+    /** One exact directory-listing GET; the documented setter is not admitted. */
+    private function isDirectoryIndexing(string $url): bool
+    {
+        return preg_match('~\Ahttps://api\.20i\.com/package/[1-9][0-9]{0,17}/web/directoryIndexing\z~',$url)===1;
+    }
+
+    private function isWordpressInstalled(string $url): bool
+    {
+        return preg_match('~\Ahttps://api\.20i\.com/package/[1-9][0-9]{0,17}/web/wordpressIsInstalled\z~',$url)===1;
+    }
+
+    /** Only the documented fixed package map read, without a path or domain override. */
+    private function isDocumentRoots(string $url): bool
+    {
+        return preg_match('~\Ahttps://api\.20i\.com/package/[1-9][0-9]{0,17}/web/documentRoots\z~',$url)===1;
     }
 
     private function validateAuthorization(mixed $authorization): void

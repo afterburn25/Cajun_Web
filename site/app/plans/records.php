@@ -73,9 +73,10 @@ function service_plans_create(string $id,array $terms,#[\SensitiveParameter] str
     }));
 }
 /** Caller holds the shared guard, current authority and this record's transaction. */
-function service_plans_append_locked(array $row,int $revision,string $event,string $command,int|string $actor,array $args,bool $subscription=false):ServicePlanDocument|ServiceSubscriptionDocument {
+function service_plans_append_locked(array $row,int $revision,string $event,string $command,int|string $actor,array $args,bool $subscription=false,?string $renewalBinding=null):ServicePlanDocument|ServiceSubscriptionDocument {
     if(!db()->inTransaction())throw new LogicException('Plan event needs its owning transaction.');service_plans_id($event);
     $doc=service_plans_validate($row,$subscription);$table=$subscription?'service_subscription_events':'service_plan_events';$parent=$subscription?'subscription_id':'plan_id';
+    if($subscription){require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_agreements.php';domain_renewal_agreements_guard($doc,$command,(string)$actor,$renewalBinding);}
     if($revision<0 || $revision>=$doc::MAX_EVENTS)throw new InvalidArgumentException('Invalid plan revision.');
     $input=service_plans_json(['revision'=>$revision,'command'=>$command,'arguments'=>$args]);$old=one('SELECT * FROM '.table($table).' WHERE id=?',[$event]);
     if($old){
@@ -118,20 +119,20 @@ function service_plans_offer(string $id,int $client,string $planId,int $planRevi
         service_plans_audit((int)$actor['id'],'offered','Subscription '.$id.' plan '.$planId.' revision '.$planRevision.' client '.$client);return $doc;
     }));
 }
-function service_plans_subscription_change(string $id,int $client,int $revision,string $event,string $command,array $args,#[\SensitiveParameter] string $password):ServiceSubscriptionDocument {
-    return staff_locked(fn()=>staff_transaction(function()use($id,$client,$revision,$event,$command,$args,$password):ServiceSubscriptionDocument {
+function service_plans_subscription_change(string $id,int $client,int $revision,string $event,string $command,array $args,#[\SensitiveParameter] string $password,?string $renewalBinding=null):ServiceSubscriptionDocument {
+    return staff_locked(fn()=>staff_transaction(function()use($id,$client,$revision,$event,$command,$args,$password,$renewalBinding):ServiceSubscriptionDocument {
         $actor=service_plans_password($password);service_plans_client_row($client,!in_array($command,['pause','cancel','abandon'],true));
         if(!in_array($command,['activate','pause','resume','cancel','abandon'],true))throw new InvalidArgumentException('Owners cannot record client consent.');
         $row=service_plans_row($id,true,true);if((int)$row['client_id']!==$client)throw new InvalidArgumentException('Subscription unavailable.');
-        return service_plans_append_locked($row,$revision,$event,$command,'staff:'.$actor['id'],$args,true);
+        return service_plans_append_locked($row,$revision,$event,$command,'staff:'.$actor['id'],$args,true,$renewalBinding);
     }));
 }
-function service_plans_client_change(string $id,int $client,int $revision,string $event,string $command,array $args,bool $confirmed):ServiceSubscriptionDocument {
-    return staff_locked(fn()=>staff_transaction(function()use($id,$client,$revision,$event,$command,$args,$confirmed):ServiceSubscriptionDocument {
+function service_plans_client_change(string $id,int $client,int $revision,string $event,string $command,array $args,bool $confirmed,?string $renewalBinding=null):ServiceSubscriptionDocument {
+    return staff_locked(fn()=>staff_transaction(function()use($id,$client,$revision,$event,$command,$args,$confirmed,$renewalBinding):ServiceSubscriptionDocument {
         service_plans_current_client($client);
         if(!$confirmed || !in_array($command,['consent','cancel','abandon'],true))throw new InvalidArgumentException('Review and explicitly confirm this client action.');
         $row=service_plans_row($id,true,true);if((int)$row['client_id']!==$client)throw new InvalidArgumentException('Subscription unavailable.');
-        return service_plans_append_locked($row,$revision,$event,$command,'client:'.$client,$args,true);
+        return service_plans_append_locked($row,$revision,$event,$command,'client:'.$client,$args,true,$renewalBinding);
     }));
 }
 function service_plans_get(string $id):ServicePlanDocument {

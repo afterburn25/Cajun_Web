@@ -2,6 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/providers/checks.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_schedule.php';
 require_once CWP_CODE_ROOT.'/app/providers/operations.php';
 require_once CWP_CODE_ROOT.'/app/providers/inventory.php';
 require_once CWP_CODE_ROOT.'/app/providers/reconcile.php';
@@ -10,9 +11,22 @@ require_once CWP_CODE_ROOT.'/admin/controllers/provider_mailboxes.php';
 
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_registrar.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/domain_renewals.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/domain_renewal_agreements.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/domain_contracts.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/domain_expiry.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/service_observations.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_package_php.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_document_roots.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_package_force_ssl.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_directory_listing.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_force_ssl_controls.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_package_wordpress_installed.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_forwarding.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_registration_periods.php';
 
 require_once CWP_CODE_ROOT.'/app/providers/cloud_sites.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_cloud_confirmation.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_cloud_providers.php';
 use CajunWebPro\Foundation\Provider\OperationResult;
 use CajunWebPro\Foundation\TwentyI\Operations\TwentyIOperationRegister;
 
@@ -28,8 +42,21 @@ function provider_inventory_message(?string $code):string {
 }
 
 function provider_inventory_admin_action(string $action):void {
+    if(str_starts_with($action,'provider_inventory_contract_'))domain_contracts_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_expiry_'))domain_expiry_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_period_'))provider_registration_period_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_cloud_providers_')){provider_cloud_providers_admin_action($action);return;}
+    if(str_starts_with($action,'provider_inventory_php_'))provider_php_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_document_roots_'))provider_document_roots_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_force_ssl_'))provider_force_ssl_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_directory_indexing_'))provider_directory_indexing_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_wp_installed_'))provider_wp_installed_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_history_'))service_observations_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_forwarding_'))provider_forwarding_admin_action($action);
+    if(in_array($action,['provider_inventory_renewal_agreements_prepare','provider_inventory_renewal_agreement_bind'],true))domain_renewal_agreements_admin_action($action);
     if(str_starts_with($action,'provider_inventory_renewal_'))domain_renewals_admin_action($action);
     if(str_starts_with($action,'provider_inventory_cloud_confirmation_')){provider_cloud_confirmation_admin_action($action);return;}
+    if(str_starts_with($action,'provider_inventory_schedule_')){provider_schedule_admin_action($action);return;}
     if(str_starts_with($action,'provider_inventory_mailbox_'))provider_mailbox_admin_action($action);
 
     if(str_starts_with($action,'provider_inventory_registrar_')){provider_registrar_admin_action($action);return;}

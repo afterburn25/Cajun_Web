@@ -1,0 +1,51 @@
+name: Pure package Force SSL contract
+on:
+  push:
+    branches: [main, codex/twentyi-package-force-ssl]
+    paths: ['foundation/twentyi-package-force-ssl/**', 'tests/twentyi-package-force-ssl/**', '.github/workflows/package-force-ssl-contract.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: package-force-ssl-contract-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  contract:
+    name: Force SSL contract PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Check documentation links
+        run: python -B tools/check_docs.py
+      - name: Prepare official PHP
+        run: docker pull php:${{ matrix.php }}-cli
+      - name: Pure reported boolean contract without network or application
+        run: |
+          mkdir -p qa
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges \
+            --user "$(id -u):$(id -g)" -v "$PWD:/workspace" -w /workspace php:${{ matrix.php }}-cli sh -ec '
+              php -l foundation/twentyi-package-force-ssl/PackageForceSslBinding.php
+              php -l foundation/twentyi-package-force-ssl/PackageForceSslObservation.php
+              php -l foundation/twentyi-package-force-ssl/PackageForceSsl.php
+              php -l tests/twentyi-package-force-ssl/run.php
+              php tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-default.json
+              php -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-minimal.json
+            '
+          git diff --exit-code
+      - name: Preserve named contract evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-force-ssl-contract-${{ matrix.php }}-${{ github.sha }}
+          path: |
+            qa/package-force-ssl-default.json
+            qa/package-force-ssl-minimal.json
+          if-no-files-found: error
+          retention-days: 14

@@ -36,7 +36,7 @@ function service_plans_admin_action(string $action):void {
         }else{
             $command=match($action){'service_plans_activate'=>'activate','service_plans_pause'=>'pause','service_plans_resume'=>'resume','service_plans_cancel'=>'cancel','service_plans_abandon'=>'abandon',default=>throw new InvalidArgumentException('Unknown service-plan action.')};
             $client=service_plans_form_number($_POST,'client_id',2147483647);$args=$command==='cancel'?['reason'=>service_plans_form_text($_POST,'reason',1000,true)]:[];
-            service_plans_subscription_change($id,$client,$revision,$event,$command,$args,$password);
+            service_plans_subscription_change($id,$client,$revision,$event,$command,$args,$password,array_key_exists('renewal_binding',$_POST)?service_plans_form_hash($_POST,'renewal_binding'):null);
             flash('Service agreement updated.');redirect(admin_url('service-agreement',['record'=>$id]));
         }
     }

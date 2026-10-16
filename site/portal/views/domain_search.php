@@ -15,6 +15,11 @@ if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 <p class="hint">Please wait between searches. Lookup limits are shared, so searches may pause temporarily.</p>
 <?php else: ?><p>Domain search is temporarily unavailable. Please contact the studio if you need help choosing a domain.</p><?php endif; ?>
 </section>
+<?php if($searchContext&&($registrationPeriods??null)!==null): ?>
+<section class="workspace-card" data-client-registration-periods><h2>Registration options</h2>
+<?php require_once CWP_CODE_ROOT.'/app/providers/registration_period_views.php';provider_registration_period_rows($registrationPeriods); ?>
+</section>
+<?php endif; ?>
 <section class="workspace-card" data-client-domain-history><h2>Your recent searches</h2>
 <?php if($historyUnavailable): ?><p>Search history is temporarily unavailable.</p>
 <?php elseif(!$searchHistory): ?><p>You have no recorded domain searches.</p><?php endif; ?>

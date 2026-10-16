@@ -138,13 +138,26 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <nav aria-label="Refresh history pages"><?php if($refreshPage>1): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['refresh_page'=>$refreshPage-1]))?>">Newer refreshes</a><?php endif; ?><?php if(count($history)>20): ?><a class="btn outline" href="<?=esc(admin_url('provider-settings',['refresh_page'=>$refreshPage+1]))?>">Older refreshes</a><?php endif; ?></nav>
 <?php endif; ?>
 <?php endif; ?></section>
+<?php require CWP_CODE_ROOT.'/admin/views/provider_schedule.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_cloud.php'; ?>
+<?php require CWP_CODE_ROOT.'/admin/views/provider_cloud_providers.php'; ?>
 <section class="workspace-card"><h2>Service capabilities</h2><p>A successful connection check confirms access to the hosting list. It does not confirm that every service is available or approved for use.</p>
 <h3>Additional services still to be connected</h3><ul><li>Automatic hosting plan discovery and account balance</li><li>Hosting plan changes and deletion</li><li>Domain registration, renewals and transfers</li><li>VPS ordering and power controls</li><li>Backup restoration and SSH access</li></ul></section>
 
 <?php require CWP_CODE_ROOT.'/admin/views/provider_domain_search.php'; ?>
+<?php require CWP_CODE_ROOT.'/admin/views/provider_registration_periods.php'; ?>
 
 <?php require CWP_CODE_ROOT.'/admin/views/provider_mailboxes.php'; ?>
 
 <?php require CWP_CODE_ROOT.'/admin/views/provider_registrar.php'; ?>
+<?php require CWP_CODE_ROOT.'/admin/views/domain_contracts.php'; ?>
+<?php require CWP_CODE_ROOT.'/admin/views/domain_expiry.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/domain_renewals.php'; ?>
+<?php require CWP_CODE_ROOT.'/admin/views/service_observations.php'; ?>
+<?php require CWP_CODE_ROOT.'/admin/views/provider_package_php.php'; ?>
+<?php require CWP_CODE_ROOT.'/admin/views/provider_document_roots.php'; ?>
+<?php require CWP_CODE_ROOT.'/admin/views/provider_package_force_ssl.php'; ?>
+<?php require CWP_CODE_ROOT.'/admin/views/provider_directory_listing.php'; ?>
+<?php provider_force_ssl_controls_admin_render(); ?>
+<?php require CWP_CODE_ROOT.'/admin/views/provider_package_wordpress_installed.php'; ?>
+<?php require CWP_CODE_ROOT.'/admin/views/provider_forwarding.php'; ?>

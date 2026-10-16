@@ -47,7 +47,7 @@ final class InventoryReader
      * Documented list reads with bounded projections. Descriptor registration
      * alone never authorizes a call or demonstrates live account entitlement.
      */
-    private const EXECUTABLE = [InventoryRead::PACKAGES_LIST, InventoryRead::CLOUD_SERVERS_LIST, InventoryRead::DOMAINS_LIST];
+    private const EXECUTABLE = [InventoryRead::PACKAGES_LIST, InventoryRead::CLOUD_SERVERS_LIST, InventoryRead::DOMAINS_LIST, InventoryRead::DOMAIN_REGISTRATION_PERIODS, InventoryRead::CLOUD_PROVIDERS_LIST];
 
     /** True only for operations with evidence enough to execute. */
     public static function supports(string $operation): bool
@@ -125,7 +125,9 @@ final class InventoryReader
         return match ($operation) {
             InventoryRead::PACKAGES_LIST => InventoryProjector::packagesList($response, $observedAt, $scope),
             InventoryRead::CLOUD_SERVERS_LIST => InventoryProjector::cloudServersList($response, $observedAt, $scope),
+            InventoryRead::CLOUD_PROVIDERS_LIST => InventoryProjector::cloudProvidersList($response, $observedAt, $scope),
             InventoryRead::DOMAINS_LIST => InventoryProjector::domainsList($response, $observedAt, $scope),
+            InventoryRead::DOMAIN_REGISTRATION_PERIODS => RegistrationPeriods::project($response, $observedAt, $scope),
         };
     }
 }

@@ -1,3 +1,149 @@
+## Unreleased — scheduler privacy fixture correction
+
+Avoid falsely rejecting unrelated website-folder controls when checking scheduler privacy. Require the exact scheduler section and retain full-page credential checks, with21 positive/negative regressions and independent review. Application code is unchanged; new combined browser acceptance remains pending.
+
+## Unreleased — saved WordPress installation indication
+
+Integrate explicit owner refresh, saved true/false/unavailable indication and independent client sharing. Preserve current hosting authority and observation history. Four-way native evidence is verified; combined browser/package acceptance remains pending. Retain the original scheduler privacy assertion failure for a bounded test correction before the next acceptance run.
+
+## Unreleased — renewal agreement integration
+
+Combine exact one-time USD renewal terms and captured client consent with the reviewed hosting controls. Preserve immutable request/agreement history, current authority, reoffer/end safeguards and generic billing exclusions. Four-way native evidence is verified; merged browser/package acceptance remains pending. Record licensing schema3/checksum compatibility without importing Devin's source.
+## Unreleased — saved WordPress installation indication
+
+Implement a distinct owner-triggered WordPress installation observation and separately permitted saved client view on an isolated branch. Keep reported true, reported false and unavailable distinct, with current assignment/credential/history guards. This is an indication only, without version, health, absence or installation-action claims. The exact four-way native matrix and all14 downloaded reports are independently verified; combined application/browser acceptance remains pending. Preserve the reviewed correction to the initially misrouted synthetic test response.
+
+## Unreleased — catalog test response-parser correction
+
+Correct the synthetic privacy regression helper to parse raw markup internally while retaining response-object parsing for actual HTTP pages. Preserve all13 privacy cases and the exact public-reference/private-value checks. Downloaded originalc174 browser failure is retained; corrected combined browser acceptance remains pending. No application behavior changes.
+
+## Unreleased — saved directory-listing settings
+
+Integrate owner-triggered observations of the directory-listing setting with independent client sharing, immutable history and current hosting authority. False and unavailable remain distinct. The setting is informational and does not test file exposure. Four-way focused native evidence is verified; combined browser/package acceptance remains pending.
+
+## Unreleased — integration evidence and licensing compatibility notes
+
+Document verified c174 Windows packages, the preserved03b failure, current focused acceptance and source review of main's invoice-linked licensing/schema version2. Record remaining upgrade, legacy-invoice retry and internal-key-delivery requirements without changing the tested application candidate.
+## Unreleased isolated work — owner Force SSL change requests
+
+Prepare explicit owner approval against a current saved flag, a single shared-gateway request, immutable dispatch evidence and separate exact GET readback. HTTP200 never acknowledges the effect. Client observation sharing stays separate; pending requests make older observations historical. Reviewed shared wiring is applied; four-way native acceptance now passes atbff7; browser acceptance remains pending, and interrupted-dispatch operator recovery is not yet implemented. The first focused run stopped before native setup on a duplicated test include; change only that include to require_once and retain the original failure. No provider action or release is claimed.
+## Unreleased — verified renewal agreement native acceptance
+
+Verify the corrected renewal agreement workflow in all four PHP/database environments with downloaded named reports, including71 new native+69/+69 pure checks and all existing billing/order regressions. Preserve the original fixture failure. Evidence only; combined browser and release acceptance remain pending.
+
+## Unreleased — renewal interruption fixture correction
+
+Preserve the original four-way native failure and correct its synthetic interruption to occur during result persistence. Require one retained intent, one synthetic request and no result after the exact database fault. Application behavior is unchanged; corrected database and combined browser acceptance remain pending.
+
+## Unreleased — renewal service agreement binding
+
+Allow studio-entered one-time USD service terms to be linked to an exact pending domain-renewal request, with explicit privacy scope, acceptance deadline and retained replacement-offer history. Reuse existing client consent/end actions and prevent generic hosting forms from bypassing the renewal binding. Source-reviewed; native/browser acceptance pending. No automatic provider renewal, charge or invoice generation.
+
+## Unreleased — saved Force SSL flags and catalog privacy test repair
+
+Integrate native-tested owner refresh and separate client sharing of saved Force SSL flags, preserving false versus unavailable and immutable authority-bound history. This flag does not verify HTTPS or certificate health. Correct the browser privacy test to distinguish the exact public service reference from a private provider type, retaining private-value rejection and adding13 regressions with safe diagnostics. Combined package/browser acceptance remains pending.
+
+## Unreleased — integrate saved website-folder mappings
+
+Normally integrate native-tested document-root observations. Owners can explicitly prepare, refresh and share saved folder mappings for a currently assigned hosting package; clients see only permitted current or historical data. Folder paths are escaped text, with independent sharing, credential/current-assignment checks and recoverable immutable history. No file operations or provider mutation. Combined browser/package acceptance remains pending.
+
+## Unreleased — current expiry native and package verification
+
+Record frozen03b and its original acceptance handles, verified four-way expiry reports and exact Windows packages. Close original427 with preserved browser failure, successful recovery/server protection and exact final packages. Document reviewed website-folder and ForceSSL application lanes without claiming pending browser acceptance or a release. Documentation only; shipping source remains03b.
+
+## Unreleased — integrate saved upstream expiry observations
+
+Normally integrate the native-tested upstream-expiry feature with dedicated-owner test corrections. Owners explicitly prepare and refresh saved expiry observations for current assigned domains; clients see only permitted current or historical records. Separate date/expiry authority, immutable history, unavailable results, credential filtering and owner controls remain. No automatic renewal, provider mutation or eligibility claim. Combined packaged browser/recovery acceptance is pending.
+
+## Unreleased — preserve account authority across fixture login
+
+Correct dedicated period/PHP browser fixtures to account for the normal last-login update before preserving the complete account row. All password, authority, role, immutable-history, quota and cooldown assertions remain; add finite setup diagnostics before assertions. Preserve actual427 failed browser evidence and completed main94 source review. Application/installer bytes remain unchanged; corrected combined acceptance and release remain pending.
+
+## Unreleased — frozen candidate verification and parallel handoff
+
+Record all20 exact combined reader matrix artifacts, successful combined packaging/native checks, verified original PHP full acceptance and preserved domain full failure evidence. Record independent integration review, separately native-tested expiry and pure cloud/DNS components; document-root/ForceSSL work remains separate. Update issue2 ownership/status and current-main licensing findings. Documentation only;427 shipping stays fixed,1.25.0 remains unreleased, and no live provider action occurs.
+
+## Unreleased — registration-period browser owner isolation
+
+Correct the combined browser fixture's exhausted shared-owner read budget by creating and activating a dedicated synthetic owner through existing admin forms. Preserve every original account, intent, audit, epoch, production limit and cooldown; retain response/counter diagnostics and exact history checks. Application source and installer are unchanged; actual combined acceptance remains required.
+
+## Unreleased — combined browser evidence and bounded corrections
+
+Record the actual25e browser failure at the period empty-response fixture after2130 passing checks, verified domain/cloud views and all-four f725 recovery matrices. Preserve original full runs and failed reports. Coordinate the separate period-owner fixture, domain credential-echo guard and PHP transaction-fixture correction before one new combined acceptance. Documentation only; published1.24.0 remains unchanged and1.25.0 is unreleased.
+
+## Unreleased — current handoff consolidation
+
+Replace repeated historical status/handoff/ownership blocks with current sources, exact evidence, open findings and next actions. Preserve prior text in immutable75d5c60a and local hash-recorded copies. Original25e full now passes native integration and runs HTTP/Chromium; no shipping or release change.
+
+## Unreleased — parent full acceptance and recovery handoff
+
+Record downloaded210 final packages/reports and Windows parity; retain the screenshot limitation. Record actual red domain recovery evidence and reviewed f725 correction, pending PHP credential-echo repair, and separate pure registry-expiry ownership. Documentation only; no release or shipping change.
+
+## Unreleased — combined discovery native matrix
+
+Record all16 downloaded exact25e date/period/cloud/scheduler archives, each with named native and pure checks across four PHP/database combinations. The original full continues, and separate altered-sequence recovery corrections remain required. Documentation only.
+
+## Unreleased — combined source and package checkpoint
+
+Record pushed25e combined discovery source, exact verified Windows packages and original GitHub acceptance handles. Record terminal incoming date/cloud full acceptance, parent210 browser evidence and the retained element-capture limitation. Preserve the PHP packaging-only correction and new PHP/domain-date source-ordering findings for separate regression work. Documentation only; no runtime or release change.
+
+## Unreleased — client domain renewal-date observations
+
+Normally integrate explicit owner refresh and private client display of saved provider renewal dates with registration options and cloud-provider identifiers. Preserve exact current assignment/account/source binding, typed scalar/list separation, current-versus-historical failures and scheduler authority. Correct a locally caught merge syntax error before publication and regenerate installer hashes. Combined runtime acceptance and release remain pending.
+
+## Unreleased — observed cloud-provider identifiers
+
+Normally integrate explicitly refreshed owner-only cloud-provider observations with registration options, preserving current/historical labels, both typed list readers and the shared guarded recorder. Retain the verified binary SQL witness correction and all original failures. Current combined acceptance and publication remain pending.
+
+## Unreleased — observed registration options
+
+Normally integrate owner-triggered registration-year observations and current-policy client display with the accepted history/forwarding/scheduler queue. Preserve exact read authority, sequence-first failure behavior, current offered suffixes, audit witnesses and scheduler ordering. Correct only failure-mobile screenshot timing and add complete-page context. Record verified incoming native/browser/package evidence and completed parent4f full acceptance; new combined acceptance and release remain pending.
+
+## Unreleased - combined browser verification and reader corrections
+
+Follow-up records corrected cloud-provider four-way native acceptance and the independent64-check incoming shared-boundary review. Runtime remains unchanged.
+
+Record actual combined4f browser/native/package evidence and scoped desktop/mobile visual review. Preserve failed child runs and exact domain-date, registration-period and cloud-provider corrections; record the latest licensing parser source fix and remaining findings. Documentation only; no new runtime or release in this checkpoint.
+
+## Unreleased — combined build and source-review continuity
+
+Preserve exact4f Windows build verification and original combined CI handles. Document independent licensing setup/migration/master-delivery findings and the owner API reference's auth-code side effect. Documentation only; no runtime or published release change.
+
+## Unreleased integration queue — owner-approved scheduled inventory
+
+Normally integrate reviewed scheduled hosting reads with forwarding requests, client service history and cloud recovery. Preserve explicit schedule approval, durable leases/backoff, exact authority and the shared guarded recorder. Regenerate combined installer and retain native/browser/private-route coverage. Combined acceptance and publication remain pending.
+
+## Unreleased integration queue — forwarding and owner API reference
+
+Normally integrate client single-address forwarding requests, cancellation and owner review/decline with client hosting history and the cloud recovery correction. Preserve separate forwarding permission and local-review-only behavior; provider forwarding dispatch/readback remains unfinished. Retain/index the new complete owner API reference for the parallel registration-period, cloud-provider and renewal-date readers. Document verified a963 full/package evidence and ready scheduler checkpoint. Combined acceptance and release remain pending.
+
+## Unreleased — registration-period fixture ordering
+
+Correct the native expected client rows to match the existing sorted offered-extension policy, including exact saved years. Preserve all four failed original reports and exact Windows package evidence. Runtime and generated installer files are unchanged; fresh corrected native/browser evidence is required.
+
+## Unreleased — verified cloud-provider native compatibility
+
+Record corrected6eeeb020 four-way native acceptance and independent artifact verification, while preserving original MariaDB failures and pending full browser/package acceptance. Save a source-backed next PHP-version observation handoff without adding runtime behavior.
+
+## Unreleased — cloud-provider witness SQL compatibility
+
+Use explicit binary concatenation for cloud-provider retained audit witnesses so MariaDB and MySQL compare the same ASCII bytes. Preserve the original partial native failure, add direct SQL/PHP parity coverage and require new exact acceptance.
+
+## Unreleased — observed account cloud providers
+
+Add an explicit owner refresh for documented account cloud-provider identifiers, dated immutable observations and honest current/historical/empty/unavailable displays. Reuse the existing fixed GET reader, credentials, durable intent/result storage and guarded recorder. Refuse incomplete retained history, changed context and reordered refreshes. No server ordering or runtime controls are added. Source-reviewed; native/browser and exact package acceptance pending.
+
+## Unreleased — explicit domain renewal-date observations
+
+- Exact corrected checkpoint6ba now has four verified native combinations and2038 passing HTTP executions, including49 date checks and four inspected desktop/mobile captures. Shipping remains078; the original failed fixture evidence is retained.
+- Test-only renewal-date browser correction preserves all inherited observation timestamps and waits for actual cooldown. Exact078 native matrix passed; its first browser checkpoint failed before new date screens. No shipping behavior changed.
+
+Adds saved date-only provider observations and history for exact current registered-domain assignments, explicit owner refresh and private client display. Corrected exact native and browser acceptance now verifies the saved-date workflow; combined integration and full-run completion remain pending. No renewal or registry-expiry claim.
+
+## Unreleased integration queue — client hosting history
+
+Normally combine reviewed owner-approved client observation history with the cloud recovery correction on a separate integration branch. Preserve both original sources and evidence; retain all documentation history and regenerate combined installer hashes. Fresh combined acceptance is required. The separate release candidate and published assets are unchanged.
+
 ## Unreleased — cloud assignment recovery correction
 
 Refuse cloud confirmation/current-assignment claims when retained package-link events disagree with independent link/relink/unlink audits. Preserve historical ordinal pairing, immutable confirmations and provider outcomes; add native history-loss/restoration regressions. Fresh corrected acceptance remains pending. Document incoming master-license migration/delivery findings for Devin and terminal catalog/hosting-history evidence. No release or live action.
@@ -9,6 +155,14 @@ Record the owner's Devin licensing allocation while Codex continues20i. Verify40
 ## Unreleased — combined native evidence and parallel source review
 
 Verify20 archives from all five combined3bbc focused matrices and final corrected2239 full acceptance/packages. Record concrete hosting-history/forwarding review fixes and the scheduler MariaDB correction under their separate agent branches. Documentation only; 3bbc packaged browser checkpoint now verifies1945HTTP with actual screenshot review; full recovery/Apache and exact-main release gates remain pending.
+
+## Unreleased — explicitly shared hosting history
+
+Owners can enable saved hosting observation history for an exact current client/package assignment. Clients see only observations from the approved sequence onward, with stale, failed and unfinished latest reads clearly identified. Revocation, current account context and retained permission/history recovery are enforced. No live monitoring or provider operation is added. Corrected checkpoint65725ad passes all four native combinations (71 native and 33 pure checks per mode), plus 1,989 actual HTTP/Chromium checks including 44 hosting-history cases. Full owner/client desktop/mobile screens are inspected; auxiliary mobile capture defects are retained and documented. Combined full acceptance remains required. The initial standalone native fixture failure is preserved and corrected by loading the existing owner layout; shipping is unchanged by that test correction.
+
+## Unreleased — local forwarding requests
+
+Add separate owner permission and client forwarding request/review history. Clients can request or cancel; owners can save review messages or decline. Signed immutable records and exact current domain/account checks fence stale, foreign and replayed actions. Offline request shape follows the verified 20i browser-console example; no forwarding dispatch or activation is enabled. Four-way native, actual packaged owner/client browser, recovery, Apache and exact-source final archive acceptance are verified on isolateda02; root integration/combined acceptance remains separate.
 
 ## Domain renewal request integration — candidate, unreleased
 
@@ -28,6 +182,26 @@ Normally integrate reviewed/native-verified cloud package confirmation after cat
 
 
 Normally merge reviewed/native-verified renewal ed4d1cad: clients request renewal review or withdraw; owners save a review message or decline. Current registrar assignment, immutable request/events and a retained request-count witness protect history. Monotonic event timestamps survive clock rollback. This local intake does not place or complete provider renewals. Combined inventory refresh and syntax pass; new combined application acceptance remains required.
+
+## Unreleased - verified scheduled refresh checkpoint
+
+Record successful corrected packaged/browser checkpoint38836183578, four inspected scheduler captures and preserved four-way native/Windows evidence. The original5fb browser failure remains retained with successful recovery/Apache results. This documentation checkpoint changes no runtime, tests, workflow or installer inventory; combined integration acceptance remains required.
+
+## Unreleased - scheduled refresh browser navigation fixture
+
+Refresh the existing browser document after a separate HTTP session changes scheduler state. Retain all network, persisted outcome, backoff and revoked-approval assertions. Application behavior and installer bytes are unchanged; corrected packaged/browser evidence is required.
+
+## Unreleased - scheduled inventory recovery witnesses
+
+Refuse scheduled work and history when original package rows or inventory audit witnesses are missing. Validate exact audit action bytes and preserve the original worker actor when another owner reviews interruption. Restoration retains the original schedule without replay; fresh native and packaged acceptance are required.
+
+## Unreleased - scheduled inventory packaging correction
+
+Regenerate installer hashes against exact committed LF source. Scheduler runtime is unchanged. All four native combinations are independently verified; the earlier full package failure and pending recovery hardening remain recorded.
+
+## Unreleased - owner-approved scheduled hosting inventory
+
+Add one shared-host PHP scheduled task for bounded read-only hosting inventory, disabled until explicit owner approval. Persist immutable attempts and outcomes, enforce current owner/profile/key bindings, serialize concurrent workers, back off incomplete reads and require reviewed recovery after interruption. Owner setup, status, history and recovery controls are included. Native/browser acceptance is pending; no provider write, purchase, release or deployment is included.
 
 ## Catalog readiness integration — candidate, unreleased
 
@@ -1070,3 +1244,32 @@ Parent0ea6e3a8, commit `Stabilize cloud confirmation future-time fixture`. Focus
 Parentc3b2c022, commit `Record cloud confirmation native and combined browser evidence`. Exact focused [38828579877](https://github.com/afterburn25/Cajun_Web/actions/runs/38828579877) completed successfully on c3b2c022336fe55a93e685220352a6b5e8230782. All four independently downloaded artifacts match their published SHA256 and pass ZIP CRC, with45 unique creation and74 unique confirmation named outcomes each. This verifies the corrected future-time refusal, sequence-first authority, original-context integrity, exact link/audit pairing, rollback, concurrent confirmation and later-reapproval historical projection on PHP8.2/8.4 with MariaDB10.11/MySQL8.4. The original fourth-combination timing failure remains retained separately; shipping is byte-identical to0ea6e3a8. Full38827979412 remains in progress, last observed after package success during native integration; no new confirmation browser/recovery/Apache acceptance or release is claimed.
 
 Independently verified root2239 browser checkpoint12015677899 from38826150967: SHA256 `630b6400d8af6bb3725f6d20207f5b8880fad8bf3eb097738ab5c4d62b3f715b`,259 ZIP members with clear CRC,1878 passing named HTTP outcomes including18 cloud website-creation cases. Inspected actual owner/client desktop and320px screenshots: pending status and accurate capability wording are visible, controls stay contained; owner mobile nested fields are narrow but have no overlap. PHP diagnostics and unexpected browser errors are empty. This is original creation UI evidence, separate from the new confirmation UI. Root owns the normal integration and release. Next: inspect original0ea full browser/checkpoint/screenshots and final recovery/Apache packages, preserve prior runs, and verify combined descendant acceptance. No live provider calls, payment, mail, SSH or deployment.
+## Unreleased - observed domain registration periods
+
+Add explicit owner refresh of documented registration-year options and saved observation/history displays. Clients see only currently offered extensions under their current enabled search policy. Preserve complete-empty, failed, pending and changed-setting states; retain independent history witnesses. No renewal eligibility, prices, reservations or purchasing are inferred. Native, browser and package acceptance remain pending.
+
+## Domain recovery and echo guard integrated — 2026-10-16 UTC
+
+The owner's continued20i request is implemented by a normal merge of root0b4c068d and exact a132b5b3, preserving red28b62223 and corrected f725 history. The current-date projection now requires latest registrar/date intent order to agree with the independent common-start audit; decoded credential echoes cannot become saved dates. This checks latest selected authority, not immutable ordering of every older record. Synthetic date-shaped keys establish local defense only, not real provider exposure.
+
+All four focused38851489059 artifacts were downloaded and verified:98 native plus87 normal/87 minimal reader cases each. Root and catalog source reviews are clear. The domain module/reader, native/pure regression cases, generated inventory and feature guide are integrated; root's concise status/handoff and period-owner fixture are preserved. Combined application acceptance remains required.
+
+Original25e full38846792746 is terminal failure from the retained browser quota fixture failure; recovery and Apache pass and final source-check is skipped. Final12025544003 awaits independent archive verification. PHPcfc6 native38850899544 is verified in all four environments; its normal merge and isolated browser owner are next, then one combined full acceptance. Pure expiry38850341309 passes both PHP versions but remains outside the application. Latest mainc0e087027 is under read-only licensing review. No release, live request or deployment occurred.
+
+## Combined domain and PHP observation candidate — 2026-10-16 UTC
+
+The owner's complete20i request continues through a normal merge of domain integration4b78a59b and frozen PHPcfc6ecd0. Exact a132 domain shipping remains; cfc6 PHP scalar observation, current hosting authority, order/credential defenses, explicit client sharing, storage and forms join the candidate. Shared seven-file preview is root/catalog reviewed, preserving positional domainContext read6/refresh8, named packageContext read7/refresh9, exclusive typed writers, all period/cloud/date hooks and scheduler guard. Automatic navigation/router merges are separately checked; transport mirror and installer inventory are regenerated.
+
+Source-focused evidence is complete: domain98+87+87 and PHP99 native executions/98 distinct labels+99+99 in all four PHP/database environments, with actual archives verified. Perioddd116 and PHP85ea7586 dedicated-owner fixtures preserve original authority, every prior intent/audit byte, production20/hour budget and real cooldown. The PHP collision was predicted from source, not observed combined execution. Browser order is dates/cloud/period/PHP/scheduler-last. New combined full acceptance remains mandatory; no additional small-repair standalone full is dispatched.
+
+Original25e full38846792746 is terminal FAILURE and final12025544003 is fully verified:122 reports/10 diagnostics,2130 HTTP passes plus the retained empty-period failure,289 recovery/2167 Apache,all319 earlier files unchanged,11 checksums/exact Git and Windows package agreement. Final source-check was skipped. Original domainf725 browser has the same retained failure; its full and PHPcfc6 full remain preserved through final evidence. Pure expiry139+139 on each PHP version passes separately; domains begins isolated application wiring outside this candidate. Latest mainc0e087 source review retains licensing migration/master-delivery findings and identifies direct full-master-key display; Devin retains ownership. No live call, charge, customer mail, SSH, deployment or publication occurred.
+
+Next: finish exact staged/build checks, commit/push and record one combined full, unchanged independent review, current-main reconciliation and exact-main/download release gates. [Current status](PROJECT_STATUS.md) and [handoff](SESSION_HANDOFF.md) identify authoritative next actions.
+
+## Frozen combined427 acceptance checkpoint — 2026-10-16 UTC
+
+Starting source427e3a233706f22cd39918d8b97256a7fb2b1e90 is pushed in PR151. Its normal domain4b78/PHPcfc6 histories, period/PHP test owners and runtime are frozen. CI merged106dd95 has identical tree925ec3ba. This commit changes continuity documentation only; site/foundation/tests/tools/workflows remain identical to427.
+
+Exact Windows build47263 completed; independent verifier checks all11 checksums, safe case-unique CRC-clean members, directories, Git bytes and decoded update for FULL5612/COMPLETE2760/UPDATE2747. Source-specific distribution and proof are preserved. Actual427 domain/PHP/cloud four-way artifacts are downloaded/verified (98+87+87;99 native executions/98 labels+99+99;98+85+85). Period/scheduler artifacts remain assigned to catalog. Full38853750274/job116820490485 passes packaging and runs native integration;34 of39 workflow gates succeed and5 continue as of05:11UTC. No browser/final success is inferred.
+
+Original PHPcfc6 browser12026415411 verifies2093 HTTP checks,28 PHP-feature cases and six actual inspected views; its full remains in recovery. Original domainf725 retains the known period browser failure and continues Apache. Root25e final failure is fully preserved. Next lanes stay separate: expiry app wiring, pure DNS proposal validation and pure unsent cloud catalog request contract. Their supplied references do not establish missing DNS/cloud response schemas. Latest licensing review remains with Devin. No live operation, release or deployment occurred. Next: finish exact combined acceptance/review, current-main reconciliation and exact-main/download release gates, then continue full20i.

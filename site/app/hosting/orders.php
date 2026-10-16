@@ -96,6 +96,7 @@ function service_orders_offer(string $id,string $agreement,int $client,int $revi
     service_plans_id($id);service_orders_hash($hash);service_orders_hash($invoiceHash);
     return recurring_billing_locked(function()use($id,$agreement,$client,$revision,$hash,$invoice,$invoiceHash,$password):ServiceOrderDocument{
         $actor=service_orders_owner($password);service_plans_client_row($client);
+        require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_agreements.php';domain_renewal_agreements_exclude_hosting($agreement);
         $source=service_orders_agreement($agreement,$client,$revision,$hash);
         $old=one('SELECT * FROM '.table('service_orders').' WHERE id=? FOR UPDATE',[$id]);
         if($old){

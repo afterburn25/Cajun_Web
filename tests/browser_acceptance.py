@@ -204,6 +204,8 @@ try:
         domain_search_browser(globals(),browser)
         from provider_mailbox_cases import run_browser as mailbox_creation_browser
         mailbox_creation_browser(globals(),browser)
+        from provider_forwarding_cases import run_browser as forwarding_browser
+        forwarding_browser(globals(),browser)
 
         from provider_registrar_cases import run_browser as registrar_browser
         registrar_browser(globals(),browser)
@@ -212,6 +214,8 @@ try:
 
         from provider_cloud_sites_cases import run_browser as cloud_sites_browser
         cloud_sites_browser(globals(),browser)
+        from service_observations_cases import run_browser as service_history_browser
+        service_history_browser(globals(),browser)
         from mail_drafts_cases import run_browser as drafts_browser
         drafts_browser(globals(),browser)
         from mail_submissions_cases import run_browser as submissions_browser
@@ -222,6 +226,30 @@ try:
         service_plan_browser(globals(),browser)
         from recurring_billing_cases import run_browser as recurring_browser
         recurring_browser(globals(),browser)
+        from domain_contracts_cases import run_browser as domain_contracts_browser
+        domain_contracts_browser(globals(),browser)
+        from provider_cloud_providers_cases import run_browser as cloud_providers_browser
+        cloud_providers_browser(globals(),browser)
+        from provider_registration_periods_cases import run_browser as registration_periods_browser
+        registration_periods_browser(globals(),browser)
+        from provider_package_php_cases import run_browser as package_php_browser
+        package_php_browser(globals(),browser)
+        from domain_expiry_cases import run_browser as domain_expiry_browser
+        domain_expiry_browser(globals(),browser)
+        from provider_document_roots_cases import run_browser as document_roots_browser
+        document_roots_browser(globals(),browser)
+        from provider_package_force_ssl_cases import run_browser as package_force_ssl_browser
+        package_force_ssl_browser(globals(),browser)
+        from provider_directory_listing_cases import run_browser as directory_listing_browser
+        directory_listing_browser(globals(),browser)
+        from provider_force_ssl_controls_cases import run_browser as force_ssl_controls_browser
+        force_ssl_controls_browser(globals(),browser)
+        from domain_renewal_agreements_cases import run_browser as renewal_agreements_browser
+        renewal_agreements_browser(globals(),browser)
+        from provider_package_wordpress_installed_cases import run_browser as wordpress_installed_browser
+        wordpress_installed_browser(globals(),browser)
+        from provider_schedule_cases import run_browser as schedule_browser
+        schedule_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)

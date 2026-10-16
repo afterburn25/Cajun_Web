@@ -32,6 +32,8 @@ final class InventoryRead
     public const DOMAINS_LIST = 'domains.list';
     public const SERVICE_CHANGES = 'reseller.servicechanges';
     public const CLOUD_SERVERS_LIST = 'cloudservers.list';
+    public const DOMAIN_REGISTRATION_PERIODS = 'domain.registration.periods';
+    public const CLOUD_PROVIDERS_LIST = 'cloud.providers.list';
 
     /** Reseller self alias documented by 20i for the resellerId slot. */
     private const RESELLER_SELF = '*';
@@ -52,7 +54,9 @@ final class InventoryRead
             self::VPS_LIST => '/vps',
             self::MANAGED_VPS_LIST => '/managed_vps',
             self::CLOUD_SERVERS_LIST => '/cloud_server',
+            self::CLOUD_PROVIDERS_LIST => '/reseller/*/cloudProviders',
             self::DOMAINS_LIST => '/domain',
+            self::DOMAIN_REGISTRATION_PERIODS => '/domain-period',
             self::SERVICE_CHANGES => '/reseller/'.self::resellerId($allocatedId).'/serviceChangeData',
             default => throw new InvalidArgumentException('Not a registered 20i inventory read: '.$operation),
         };
@@ -63,7 +67,7 @@ final class InventoryRead
     public static function operations(): array
     {
         return [self::PACKAGES_LIST, self::PACKAGE_DETAIL, self::PACKAGE_TYPES, self::ACCOUNT_BALANCE,
-            self::VPS_LIST, self::MANAGED_VPS_LIST, self::DOMAINS_LIST, self::SERVICE_CHANGES, self::CLOUD_SERVERS_LIST];
+            self::VPS_LIST, self::MANAGED_VPS_LIST, self::DOMAINS_LIST, self::SERVICE_CHANGES, self::CLOUD_SERVERS_LIST, self::DOMAIN_REGISTRATION_PERIODS, self::CLOUD_PROVIDERS_LIST];
     }
 
     private static function allocatedId(int|string $id): int
