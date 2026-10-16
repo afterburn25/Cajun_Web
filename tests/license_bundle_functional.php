@@ -63,9 +63,13 @@ bf_ok('license_key embedded in manifest', ($manifest['license_key'] ?? '') === '
 bf_ok('Manifest is a module manifest', ($manifest['type'] ?? '') === 'industry');
 
 bf_ok('No secrets in bundle', !array_filter($names, fn($n) =>
-    str_contains($n, 'config/config.php') || str_ends_with($n, '.key') || str_ends_with($n, '.pem')
+    str_contains($n, 'config/config.php') || str_ends_with($n, '.key') || str_ends_with($n, '.pem') || str_contains($n, '.env')
 ));
 bf_ok('No runtime storage in bundle', !array_filter($names, fn($n) => str_starts_with($n, 'site/storage/')));
+bf_ok('config/ limited to shipped scaffolding', !array_filter($names, fn($n) =>
+    str_starts_with($n, 'site/config/')
+    && !in_array($n, ['site/config/.htaccess', 'site/config/config.example.php'], true)
+));
 
 // --- guards -----------------------------------------------------------------
 bf_deny('Deactivated license refused', function () {

@@ -43,17 +43,20 @@ function license_bundle(string $licenseKey, string $industry, string $coreDir, s
         new RecursiveDirectoryIterator($coreBase, FilesystemIterator::SKIP_DOTS)
     );
     foreach ($iterator as $file) {
-        if (!$file->isFile()) continue;
+        if ($file->isLink() || !$file->isFile()) continue;
         $path = $file->getPathname();
         $rel = str_replace('\\', '/', substr($path, strlen($coreBase) + 1));
-        // Skip secrets and runtime artifacts
-        if (str_starts_with($rel, 'config/config.php')
-            || str_starts_with($rel, 'config/installed.lock')
-            || str_starts_with($rel, 'config/setup.token')
-            || str_starts_with($rel, 'storage/')
+        // Skip secrets and runtime artifacts. config/ is an allowlist —
+        // only the two shipped scaffolding files may travel, so a future
+        // runtime artifact (config.php, locks, tokens, env files) can never
+        // be bundled accidentally.
+        if (str_starts_with($rel, 'storage/')
             || str_starts_with($rel, 'upload/')
             || str_contains($rel, '.key')
             || str_contains($rel, '.pem')
+            || str_contains($rel, '.env')
+            || (str_starts_with($rel, 'config/')
+                && !in_array($rel, ['config/.htaccess', 'config/config.example.php'], true))
         ) {
             continue;
         }
@@ -66,7 +69,7 @@ function license_bundle(string $licenseKey, string $industry, string $coreDir, s
         new RecursiveDirectoryIterator($moduleBase, FilesystemIterator::SKIP_DOTS)
     );
     foreach ($iterator as $file) {
-        if (!$file->isFile()) continue;
+        if ($file->isLink() || !$file->isFile()) continue;
         $path = $file->getPathname();
         $rel = str_replace('\\', '/', substr($path, strlen($moduleBase) + 1));
         if ($rel === 'addon.json') {
