@@ -4,7 +4,7 @@
   "unchanged_test_sha256": {
     "tests/browser_acceptance.py": "a6c944c1a7a71f84a638306b299d22d2e1cc81321b9adc1e75efc1c6a0db38c1",
     "tests/structure_acceptance.py": "2b89114d669f717c4e936123ae256e9c29394664ee1a7db301411964839e86d0",
-    "tests/apache_acceptance.py": "e918b31928417fc2b19a9d9f25e31d8e247392576db57a3068b55b94e46a6c0c",
+    "tests/apache_acceptance.py": "5238fdb25b8ec4402f0b4cf829cf53be699b37cfdfcddee4f0dc0f510abb7d31",
     "tests/prepare_legacy.py": "00a09c11a78eb124a848d4794f0eab8a2901eb1d090f6e8da7da498c06d623a7"
   },
   "native_commands": [
@@ -140,6 +140,7 @@
     "php8.3 -n tests/stackcp_access_transport.php > qa/stackcp-access-transport-minimal.json",
     "python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json",
     "php8.3 tests/stackcp_access_native.php",
+    "php8.3 tests/stackcp_read_snapshot_native.php",
     "php8.3 tests/provider_domain_search_native.php",
     "php8.3 tests/provider_mailboxes_native.php",
     "php8.3 tests/provider_operations_native.php",
@@ -248,6 +249,15 @@
       "php8.3 -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json",
       "php8.3 tests/provider_cloud_assignment_native.php",
       "python3 -B tests/cloud_assignment_fixture_test.py qa/cloud-assignment-fixture-results.json"
+    ]
+  },
+  "stackcp_snapshot_native_command_baseline": {
+    "source": "5bfd9c695d35103c3bf27e8eaf66b054c59741cf",
+    "count": 147,
+    "sha256": "a4b7a286f28dbbfd8c3d3998f0d0e30aa0b4374c04b3f412c2b590141b8ec4f5",
+    "additions_after": "php8.3 tests/stackcp_access_native.php",
+    "additions": [
+      "php8.3 tests/stackcp_read_snapshot_native.php"
     ]
   }
 }

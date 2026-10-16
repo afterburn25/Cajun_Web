@@ -1,3 +1,7 @@
+## Unreleased - bounded StackCP owner read
+
+Validate complete StackCP setup histories once per protected owner-view snapshot while retaining current package authority, exact forms and fresh validation on every later call. Add actual database HTML/query-count, corruption/recovery and process-lock comparisons. Preserve all predecessor commands, the distro-PHP correction and production gates. Local source/portable/helper checks pass; native and combined acceptance remain pending.
+
 ## Unreleased - minimal PHP fixture compatibility
 
 Load the PDO exception class explicitly alongside tokenizer for the extracted cloud-assignment fixture under Ubuntu PHP 8.3 with no INI. Add a small distro-PHP compatibility job retaining six exact reports and runtime configuration; preserve the existing four-way native matrix and all full application gates. Shipping application behavior is unchanged. Original failures remain retained.

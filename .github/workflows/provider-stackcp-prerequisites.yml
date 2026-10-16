@@ -2,9 +2,9 @@ name: Native StackCP setup prerequisites
 on:
   push:
     branches: [main, codex/twentyi-stackcp-prerequisites]
-    paths: ["foundation/twentyi-support-handoff/**", "site/includes/foundation/twentyi-support-handoff/**", "site/app/providers/**", "site/admin/controllers/providers.php", "site/admin/controllers/provider_stackcp_prerequisites.php", "site/admin/views/providers.php", "site/database/**", "site/app/staff/**", "site/includes/auth/**", "site/includes/security/**", "site/app/support/**", "tests/stackcp_*", "tests/provider_settings_native.php", "tests/provider_inventory_native.php", "tests/provider_checks_native.php", "tools/build.py", ".github/workflows/provider-stackcp-prerequisites.yml"]
+    paths: ["foundation/twentyi-support-handoff/**", "site/includes/foundation/twentyi-support-handoff/**", "site/app/providers/**", "site/admin/controllers/providers.php", "site/admin/controllers/provider_stackcp_prerequisites.php", "site/admin/views/providers.php", "site/database/**", "site/app/staff/**", "site/includes/auth/**", "site/includes/security/**", "site/app/support/**", "tests/stackcp_*", "tests/fixtures/stackcp_read_snapshot_original.json", "tests/provider_settings_native.php", "tests/provider_inventory_native.php", "tests/provider_checks_native.php", "tools/build.py", ".github/workflows/provider-stackcp-prerequisites.yml"]
   pull_request:
-    paths: ["foundation/twentyi-support-handoff/**", "site/includes/foundation/twentyi-support-handoff/**", "site/app/providers/**", "site/admin/controllers/providers.php", "site/admin/controllers/provider_stackcp_prerequisites.php", "site/admin/views/providers.php", "site/database/**", "site/app/staff/**", "site/includes/auth/**", "site/includes/security/**", "site/app/support/**", "tests/stackcp_*", "tests/provider_settings_native.php", "tests/provider_inventory_native.php", "tests/provider_checks_native.php", "tools/build.py", ".github/workflows/provider-stackcp-prerequisites.yml"]
+    paths: ["foundation/twentyi-support-handoff/**", "site/includes/foundation/twentyi-support-handoff/**", "site/app/providers/**", "site/admin/controllers/providers.php", "site/admin/controllers/provider_stackcp_prerequisites.php", "site/admin/views/providers.php", "site/database/**", "site/app/staff/**", "site/includes/auth/**", "site/includes/security/**", "site/app/support/**", "tests/stackcp_*", "tests/fixtures/stackcp_read_snapshot_original.json", "tests/provider_settings_native.php", "tests/provider_inventory_native.php", "tests/provider_checks_native.php", "tools/build.py", ".github/workflows/provider-stackcp-prerequisites.yml"]
   workflow_dispatch:
 permissions:
   contents: read
@@ -74,6 +74,7 @@ jobs:
               php tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json
               php -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json
               php tests/stackcp_prerequisites_native.php
+              php tests/stackcp_read_snapshot_native.php
               php tests/provider_settings_native.php
               php tests/provider_inventory_native.php
               php tests/provider_checks_native.php
@@ -91,6 +92,7 @@ jobs:
             qa/stackcp-prerequisites-views-default.json
             qa/stackcp-prerequisites-views-minimal.json
             qa/stackcp-prerequisites-native-results.json
+            qa/stackcp-read-snapshot-native-results.json
             qa/provider-settings-native-results.json
             qa/provider-inventory-native-results.json
             qa/provider-checks-native-results.json

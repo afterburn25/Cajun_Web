@@ -1,3 +1,9 @@
+## Current StackCP performance increment - 2026-10-16
+
+On `codex/twentyi-stackcp-read-snapshot`, integrate one owner-view snapshot that retains complete global history validation and every selected package's current authority. [Current status](../PROJECT_STATUS.md) and [guide](TWENTYI_STACKCP_READ_SNAPSHOT.md) describe source review and passing local checks. Native SQL/HTML equivalence, real contention/recovery, full-page timing and combined acceptance remain pending. The first corrected cloud focused run [38931463106](https://github.com/afterburn25/Cajun_Web/actions/runs/38931463106) passed all five jobs; original failed full runs remain preserved. No roadmap feature or release is marked complete by modeled performance counts.
+
+Earlier checkpoints below are historical where superseded.
+
 ## Distribution PHP compatibility correction - 2026-10-16 16:18 UTC
 
 Branch `codex/twentyi-cloud-runtime-preflight` continues exact parent [cccf85bf](https://github.com/afterburn25/Cajun_Web/commit/cccf85bf6c3523bca8a0659b5c660915fd67e248). Commit description: **Load PDO for the cloud fixture and verify distro PHP early**. The change loads PDO alongside tokenizer for the one no-INI extracted-function fixture and synchronizes its two acceptance-contract entries. PDO supplies `PDOException`; the fixture opens no database connection and requires no PDO driver. Application shipping files, foundation classes and fixtures are unchanged. Published 1.24.0 remains unchanged; 1.25.0 and full 20i remain unfinished.

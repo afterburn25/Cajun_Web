@@ -10,13 +10,7 @@ function provider_stackcp_actor_current(int $id,string $version): bool {
 }
 /** Internal under-lock context: the injected boundary is trusted code only, never a request parameter. */
 function provider_stackcp_auth_context(string $profileId,ProviderStackCpAuthVault $vault): array {
-    provider_stackcp_guard();$actor=provider_settings_manager();provider_stackcp_hex($profileId);
-    if (!provider_stackcp_ready('auth',$vault)) return ['prepared'=>false,'status'=>'unprepared','login_ready'=>false];
-    $p=provider_settings_load($profileId);$row=provider_stackcp_latest('auth',$profileId);$d=$row?provider_stackcp_row('auth',$row,$vault):null;
-    $review=['profile_id'=>$profileId,'profile_revision'=>(int)$p['revision'],'profile_credentials_sha256'=>hash('sha256',$p['credentials']),'profile_enabled'=>(int)$p['enabled'],'auth_id'=>$d['id']??'','auth_sha256'=>$row['document_sha256']??'','actor_id'=>(int)$actor['id'],'actor_auth_version'=>$actor['auth_version']];
-    $status=$d===null?'not_configured':(!$d['enabled']?'disabled':'configured');
-    if ($d!==null && $d['enabled'] && ($d['profile_revision']!==(int)$p['revision'] || !hash_equals($d['profile_credentials_sha256'],hash('sha256',$p['credentials'])) || (int)$p['enabled']!==1 || $p['credentials']==='' || !provider_stackcp_actor_current($d['actor_id'],$d['actor_auth_version']))) $status='stale';
-    return ['prepared'=>true,'status'=>$status,'login_ready'=>false,'review_sha256'=>provider_stackcp_proof($vault,'auth-review',provider_stackcp_json($review)),'profile'=>$p,'row'=>$row,'document'=>$d,'actor'=>$actor];
+    return ProviderStackCpReadProjection::auth($profileId,$vault);
 }
 function provider_stackcp_auth_safe(array $context): array {
     $out=['prepared'=>$context['prepared'],'status'=>$context['status'],'login_ready'=>false];
@@ -45,9 +39,5 @@ function provider_stackcp_auth_change(string $profileId,string $expectedReview,b
 }
 /** Owner-only bounded metadata history, with no ciphertext, secret-derived digest or raw document projection. */
 function provider_stackcp_auth_history(string $profileId,int $before=0): array {
-    return staff_locked(fn()=>staff_transaction(function()use($profileId,$before):array {
-        provider_settings_manager();provider_stackcp_hex($profileId);$vault=provider_stackcp_vault();if (!provider_stackcp_ready('auth',$vault)) return [];
-        $rows=all('SELECT * FROM '.table('provider_stackcp_auth').' WHERE profile_id=?'.($before>0?' AND ordinal<?':'').' ORDER BY ordinal DESC LIMIT 21',$before>0?[$profileId,$before]:[$profileId]);$out=[];
-        foreach ($rows as $r) {$d=provider_stackcp_row('auth',$r,$vault);$out[]=['id'=>$d['id'],'ordinal'=>$d['ordinal'],'revision'=>$d['revision'],'state'=>$d['enabled']?'configured_unverified':'disabled','actor_id'=>$d['actor_id'],'recorded_epoch'=>$d['recorded_epoch']];}return $out;
-    }));
+    return ProviderStackCpReadProjection::authHistory($profileId,$before);
 }

@@ -260,7 +260,17 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
-    check('All147 native commands retain exact reviewed order and arguments', native_commands==contract['native_commands'])
+    check('All148 native commands retain exact reviewed order and arguments', native_commands==contract['native_commands'])
+    snapshot=contract['stackcp_snapshot_native_command_baseline'];snapshot_additions=snapshot['additions']
+    snapshot_position=native_commands.index(snapshot['additions_after'])+1
+    check('Snapshot native comparison is inserted exactly once after StackCP access',
+          snapshot_additions==['php8.3 tests/stackcp_read_snapshot_native.php']
+          and native_commands[snapshot_position:snapshot_position+1]==snapshot_additions
+          and native_commands.count(snapshot_additions[0])==1)
+    native_commands=[command for command in native_commands if command not in snapshot_additions]
+    check('Snapshot addition retains all147 predecessor native commands exactly',
+          len(native_commands)==snapshot['count']==147
+          and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==snapshot['sha256'])
     cloud=contract['cloud_assignment_native_command_baseline'];cloud_additions=cloud['additions']
     cloud_preserved=[command for command in native_commands if command not in cloud_additions]
     check('All139 pre-cloud-assignment native commands retain exact order and arguments',

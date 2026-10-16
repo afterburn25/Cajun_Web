@@ -8,6 +8,8 @@ require_once CWP_CODE_ROOT.'/database/schema/provider_stackcp_auth_schema.php';
 require_once CWP_CODE_ROOT.'/database/schema/provider_stackcp_assignment_schema.php';
 require_once CWP_CODE_ROOT.'/database/schema/catalog_validate_schema.php';
 
+require_once CWP_CODE_ROOT.'/app/providers/stackcp_read_projection.php';
+
 function provider_stackcp_family(string $kind): array {
     return match($kind) {
         'auth'=>['table'=>'provider_stackcp_auth','setting'=>'provider_stackcp_auth','action'=>'stackcp_auth','label'=>'StackCP authentication'],
@@ -70,39 +72,7 @@ function provider_stackcp_row(string $kind,array $row,ProviderStackCpAuthVault $
 }
 /** No DDL, credential decryption, provider call or history repair. Master-key use is HMAC verification only. */
 function provider_stackcp_ready(string $kind,?ProviderStackCpAuthVault $vault=null): bool {
-    provider_stackcp_guard();$f=provider_stackcp_family($kind);$settings=table('settings');$audit=table('audit');$name=$f['table'];
-    foreach (['settings','audit','provider_profiles','users'] as $required) {
-        $engine=one('SELECT ENGINE FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$required]);
-        if (strtolower($engine['ENGINE']??'')!=='innodb') throw new RuntimeException('StackCP prerequisites require transactional storage.');
-    }
-    $version=one("SELECT value FROM $settings WHERE name=?",[$f['setting'].'_schema_version'])['value']??'';
-    if ($version==='') {
-        $witness=one("SELECT id FROM $audit WHERE BINARY action IN (?,?) LIMIT 1",['provider.'.$f['action'].'_prepared','provider.'.$f['action'].'_version'])!==null || one("SELECT name FROM $settings WHERE name IN (?,?) LIMIT 1",[$f['setting'].'_count',$f['setting'].'_proof'])!==null;
-        if ($witness || (provider_stackcp_exists($kind) && (int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn()>0)) throw new RuntimeException('Restore the original StackCP prerequisite history.');
-        return false;
-    }
-    if ($version!=='1' || !provider_settings_ready() || !provider_stackcp_exists($kind)) throw new RuntimeException('StackCP prerequisite storage needs recovery.');
-    provider_stackcp_schema_validate($kind);$vault??=provider_stackcp_vault();$proof=provider_stackcp_proof($vault,$kind.'-prepared','1');
-    if ($kind==='assignment' && (!provider_inventory_ready() || !provider_stackcp_ready('auth',$vault))) throw new RuntimeException('StackCP assignment prerequisites need recovery.');
-    if (!hash_equals($proof,one("SELECT value FROM $settings WHERE name=?",[$f['setting'].'_proof'])['value']??'')) throw new RuntimeException('StackCP preparation proof needs recovery.');
-    $prepared='provider.'.$f['action'].'_prepared';
-    if ((int)query("SELECT COUNT(*) FROM $audit WHERE BINARY action=?",[$prepared])->fetchColumn()!==1 || (int)query("SELECT COUNT(*) FROM $audit WHERE BINARY action=? AND BINARY detail=?",[$prepared,provider_stackcp_prepared_detail($kind,$proof)])->fetchColumn()!==1) throw new RuntimeException('StackCP preparation audit needs recovery.');
-    $count=provider_stackcp_counter($kind);$table=table($name);$action='provider.'.$f['action'].'_version';
-    if ($count!==(int)query("SELECT COUNT(*) FROM $table")->fetchColumn() || $count!==(int)query("SELECT COUNT(*) FROM $audit WHERE BINARY action=?",[$action])->fetchColumn()) throw new RuntimeException('StackCP history counts disagree.');
-    $seen=0;$chains=[];$lastAudit=0;
-    // At most 10,000 rows and 200 rows per fetch. No per-row database round trips.
-    while ($seen<$count) {
-        $detail="CONCAT(BINARY '".$f['label']." version ',r.id,' ',r.document_sha256,' ',r.proof)";
-        $rows=all("SELECT r.*,(SELECT COUNT(*) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $detail) AS audit_count,(SELECT COUNT(*) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $detail AND a.user_id=r.actor_id) AS actor_count,(SELECT MIN(a.id) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $detail) AS journal_audit_id FROM $table r WHERE r.ordinal>? ORDER BY r.ordinal LIMIT 200",[$action,$action,$action,$seen]);
-        if (!$rows) throw new RuntimeException('StackCP history order needs recovery.');
-        foreach ($rows as $row) {
-            $d=provider_stackcp_row($kind,$row,$vault);$previous=$chains[$d['scope_id']]??null;
-            if ($d['ordinal']!==++$seen || (int)$row['audit_count']!==1 || (int)$row['actor_count']!==1 || (int)$row['journal_audit_id']<=$lastAudit || $d['revision']!==($previous['revision']??0)+1 || $d['previous_sha256']!==($previous['sha256']??str_repeat('0',64)) || $d['recorded_epoch']<($previous['epoch']??0)) throw new RuntimeException('StackCP history chain needs recovery.');
-            $chains[$d['scope_id']]=['revision'=>$d['revision'],'sha256'=>$row['document_sha256'],'epoch'=>$d['recorded_epoch']];$lastAudit=(int)$row['journal_audit_id'];
-        }
-    }
-    if ($kind==='assignment') provider_stackcp_assignment_sources($vault);
-    return true;
+    return ProviderStackCpReadProjection::ready($kind,$vault);
 }
 function provider_stackcp_prepare_family(string $kind,#[SensitiveParameter] string $password): void {
     if (db()->inTransaction()) throw new LogicException('StackCP preparation cannot run in a transaction.');

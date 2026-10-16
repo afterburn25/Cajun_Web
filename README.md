@@ -1,8 +1,8 @@
 # CajunWebPro - project source of truth
 
-Codex and its three agents own complete20i, integration and releases. Devin owns remaining non-20i work, including licensing, under [assignment #157](https://github.com/afterburn25/Cajun_Web/issues/157).
+Codex and its three agents own complete 20i, provider support/SSH, integration and releases. Devin owns remaining non-20i work under [assignment 157](https://github.com/afterburn25/Cajun_Web/issues/157).
 
-The unreleased cloud-assignment candidate adds authenticated owner approval and client sharing boundaries onto frozen StackCP819c. Focused native/full/browser/package acceptance is still required for this descendant. [Current status](PROJECT_STATUS.md), [handoff](SESSION_HANDOFF.md), [cloud guide](docs/TWENTYI_CLOUD_ASSIGNMENT_AUTHORITY.md). Published1.24.0 remains unchanged; complete20i and1.25.0 are unfinished.
+The current unreleased candidate reduces repeated StackCP owner-view history validation while preserving current authority checks. [Current status](PROJECT_STATUS.md), [handoff](SESSION_HANDOFF.md) and [implementation guide](docs/TWENTYI_STACKCP_READ_SNAPSHOT.md) distinguish local evidence, verified predecessor tests and remaining native/combined acceptance. Published 1.24.0 remains unchanged; full 20i and 1.25.0 remain unfinished.
 
 ## Historical release and implementation records
 

@@ -56,22 +56,21 @@ function provider_stackcp_assignment_render(array $view,array $history=[]): void
 function provider_stackcp_admin_render(): void {
     provider_settings_manager();echo '<section class="workspace-card" id="stackcp-prerequisites"><h2>StackCP setup</h2><p>Store the separate authentication key and review local Stack-user assignments. This setup does not create provider sessions or enable one-click access.</p>';
     try {
-        $profile=provider_settings_profile();if (!$profile) {echo '<p>Save your 20i account first.</p></section>';return;}$id=$profile['id'];$auth=provider_stackcp_auth_status($id);
-        if (!$auth['prepared']) {echo '<p>Prepare local protected setup storage first. Back up the database and private provider key together.</p><form method="post">';admin_action('provider_inventory_stackcp_auth_prepare');provider_stackcp_password();echo '<button class="btn gold">Prepare key storage</button></form></section>';return;}
-        provider_stackcp_auth_render($auth,provider_stackcp_auth_history($id));
-        if (!provider_inventory_ready()) {echo '<p>Prepare hosting inventory before creating local assignments.</p></section>';return;}
-        $ready=staff_locked(fn()=>staff_transaction(fn()=>provider_stackcp_ready('assignment')));
-        if (!$ready) {echo '<form method="post">';admin_action('provider_inventory_stackcp_assignment_prepare');provider_stackcp_password();echo '<button class="btn gold">Prepare assignments</button></form></section>';return;}
         $raw=$_GET['stackcp_page']??'1';$page=is_string($raw)&&preg_match('/\A[1-9][0-9]{0,3}\z/',$raw)?min(500,(int)$raw):1;
-        $packages=staff_locked(fn()=>staff_transaction(function()use($id,$page):array {provider_settings_manager();if (!provider_stackcp_ready('assignment')) throw new RuntimeException('Prepare local StackCP assignment storage first.');return all('SELECT package_id FROM '.table('provider_package_links').' WHERE profile_id=? UNION SELECT CAST(JSON_UNQUOTE(JSON_EXTRACT(document_json,\'$.package_id\')) AS UNSIGNED) AS package_id FROM '.table('provider_stackcp_assignments').' WHERE profile_id=? ORDER BY package_id LIMIT 21 OFFSET '.(($page-1)*20),[$id,$id]);}));
-        if (!$packages) echo '<p>Assign a hosting package to a client before reviewing a Stack-user draft.</p>';
-        foreach (array_slice($packages,0,20) as $row) {
-            $package=(int)$row['package_id'];try {
-                $view=staff_locked(fn()=>staff_transaction(function()use($id,$package):array {$c=provider_stackcp_assignment_context($id,$package,provider_stackcp_vault());return provider_stackcp_assignment_safe($c)+['original_link_id'=>$c['document']['link_id']??''];}));
-                provider_stackcp_assignment_render($view,provider_stackcp_assignment_history($id,$package));
-            } catch (InvalidArgumentException|RuntimeException $e) {if($e instanceof PDOException)throw $e;echo '<p class="notice error" role="alert">Package '.$package.': '.esc($e->getMessage()).'</p>';}
+        $snapshot=ProviderStackCpReadProjection::ownerSnapshot($page);$auth=$snapshot['auth'];
+        if ($snapshot['error']!==null && $auth===null) throw new RuntimeException($snapshot['error']);
+        if ($snapshot['state']==='account_missing') {echo '<p>Save your 20i account first.</p></section>';return;}
+        if ($snapshot['state']==='auth_unprepared') {echo '<p>Prepare local protected setup storage first. Back up the database and private provider key together.</p><form method="post">';admin_action('provider_inventory_stackcp_auth_prepare');provider_stackcp_password();echo '<button class="btn gold">Prepare key storage</button></form></section>';return;}
+        if ($auth!==null && $auth['prepared']) provider_stackcp_auth_render($auth,$snapshot['auth_history']);
+        if ($snapshot['error']!==null) throw new RuntimeException($snapshot['error']);
+        if ($snapshot['state']==='inventory_unprepared') {echo '<p>Prepare hosting inventory before creating local assignments.</p></section>';return;}
+        if ($snapshot['state']==='assignment_unprepared') {echo '<form method="post">';admin_action('provider_inventory_stackcp_assignment_prepare');provider_stackcp_password();echo '<button class="btn gold">Prepare assignments</button></form></section>';return;}
+        if (!$snapshot['packages']) echo '<p>Assign a hosting package to a client before reviewing a Stack-user draft.</p>';
+        foreach ($snapshot['packages'] as $row) {
+            if ($row['error']!==null) {echo '<p class="notice error" role="alert">Package '.$row['package_id'].': '.esc($row['error']).'</p>';continue;}
+            provider_stackcp_assignment_render($row['view'],$row['history']);
         }
-        echo '<nav class="button-row" aria-label="Local StackCP assignment pages">';if($page>1)echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['stackcp_page'=>$page-1])).'#stackcp-prerequisites">Previous</a>';if(count($packages)>20&&$page<500)echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['stackcp_page'=>$page+1])).'#stackcp-prerequisites">More assignments</a>';echo '</nav>';
+        echo '<nav class="button-row" aria-label="Local StackCP assignment pages">';if($page>1)echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['stackcp_page'=>$page-1])).'#stackcp-prerequisites">Previous</a>';if($snapshot['has_more']&&$page<500)echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['stackcp_page'=>$page+1])).'#stackcp-prerequisites">More assignments</a>';echo '</nav>';
     } catch (InvalidArgumentException|RuntimeException $e) {if($e instanceof PDOException)throw $e;echo '<p class="notice error" role="alert">'.esc($e->getMessage()).'</p>';}
     echo '</section>';
 }
