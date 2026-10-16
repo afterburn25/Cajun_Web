@@ -27,3 +27,7 @@ Registry-expiry contract evidence is the retained20i SDK696a canonical domain-na
 No routine development/test authorizes live provider purchases, charges, customer email, interactive SSH or deployment. Keep current production gates. [Handoff](../SESSION_HANDOFF.md), [complete requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md), [Devin review](LICENSING_INTEGRATION_REVIEW.md).
 
 Historical allocations remain in [immutable coordination75d5c60a](https://github.com/afterburn25/Cajun_Web/blob/75d5c60a6a3eccfcbcc3d4167bda35779901d888/docs/AGENT_COORDINATION.md); current ownership above supersedes those snapshots.
+
+## Force SSL pure lane — 2026-10-16
+
+VPS owns `codex/twentyi-package-force-ssl` from427: new foundation/twentyi-package-force-ssl files, pure tests and contract docs only. Root reviews stable source before narrow CI or shared application wiring; no shared argument positions reserved. Frozen427, accepted original PHP/cloud evidence and Devin licensing stay separate. [Scope and sources](TWENTYI_PACKAGE_FORCE_SSL.md).

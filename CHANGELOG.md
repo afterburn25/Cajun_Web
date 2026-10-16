@@ -1,3 +1,7 @@
+## Unreleased — Isolated Force SSL read contract
+
+Add pure reported-boolean parsing and immutable supplied-package binding tests. No application or shipping behavior changes; runtime integration remains pending.
+
 ## Unreleased — registration-period browser owner isolation
 
 Correct the combined browser fixture's exhausted shared-owner read budget by creating and activating a dedicated synthetic owner through existing admin forms. Preserve every original account, intent, audit, epoch, production limit and cooldown; retain response/counter diagnostics and exact history checks. Application source and installer are unchanged; actual combined acceptance remains required.

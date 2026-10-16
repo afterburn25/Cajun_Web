@@ -790,3 +790,7 @@ Root normally integrates historybff on codex/twentyi-next-integration from a963,
 HC-13/owner requirement 7: isolated 82302571 descendant adds a real bounded GET/package cron path, owner-bound approval, original credential protection, immutable intent/outcome evidence, concurrent-worker exclusion, backoff and reviewed recovery. Local source/pure verification passes; native/browser and combined release acceptance remain pending. Other inventory schedules and commercial automation remain unfinished. [Implementation/evidence](TWENTYI_SCHEDULED_REFRESH.md).
 
 Registration-period discovery is implementing on isolated`codex/twentyi-registration-periods`: precise new owner reference supports a TLD-to-integer-registration-year map. Explicit owner read, immutable observations and current-policy client planning projection are present with62 pure cases per mode; native/browser/package verification remains required. Pricing, renewal-year eligibility and purchase/fulfillment remain separate incomplete work. [Scope and evidence](TWENTYI_REGISTRATION_PERIODS.md).
+
+### Force SSL reported-flag contract — 2026-10-16
+
+Pure assigned-package GET/strict-boolean contract and159-case local checks are implemented in an isolated427 descendant. Actual saved observations, independent sharing, UI and native/browser evidence remain pending. No certificate/HTTPS-health or write capability is claimed. [Contract](TWENTYI_PACKAGE_FORCE_SSL.md).
