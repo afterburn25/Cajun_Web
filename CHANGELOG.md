@@ -1,3 +1,7 @@
+## Unreleased - scheduled inventory packaging correction
+
+Regenerate installer hashes against exact committed LF source. Scheduler runtime is unchanged. All four native combinations are independently verified; the earlier full package failure and pending recovery hardening remain recorded.
+
 ## Unreleased - owner-approved scheduled hosting inventory
 
 Add one shared-host PHP scheduled task for bounded read-only hosting inventory, disabled until explicit owner approval. Persist immutable attempts and outcomes, enforce current owner/profile/key bindings, serialize concurrent workers, back off incomplete reads and require reviewed recovery after interruption. Owner setup, status, history and recovery controls are included. Native/browser acceptance is pending; no provider write, purchase, release or deployment is included.

@@ -1,3 +1,5 @@
+Scheduler exact e597 native run38832382087 is verified across PHP8.2/8.4 and MariaDB10.11/MySQL8.4: each archive has70 native,42 default and42 minimal named passing cases. Full38832382079 failed before browser at stale installer hashes: five local CRLF files were correctly stored as LF in Git. Restore those files to exact committed bytes and regenerate only installer inventory; runtime is unchanged. Failed artifacts are retained. Independent review additionally identified missing retained observation-count/inventory-audit validation; that separate hardening is next, followed by fresh full acceptance.
+
 Scheduler follow-up: initial60f95 matrix38831603128 passed both MySQL variants (65 native cases each) and exposed a MariaDB collation mismatch. All4 archives are downloaded/verified and retained. Exact-byte comparisons, current staff-marker revocation and historical header checks are corrected; fresh four-way/native and actual browser evidence are required.
 
 ## Scheduled hosting refresh - isolated implementation checkpoint, 2026-10-15
