@@ -4,6 +4,16 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 # Session log
 
+## Licensing PR159 corrections — fixture count + resolution documentation — 2026-10-16
+
+Request: continue #157 non-20i roadmap. The owner review of `devin/non20i-licensing` head `e3d62770` had three findings; `b27e264c` already applied the source corrections, and this pass fixes the one remaining CI failure plus records the corrected state.
+
+Actions: `tests/license_native.php` — the pre-migration fixture now holds five licenses (fulfilment mints an invoice-scoped row instead of capturing the unrelated revoked NULL-invoice license), so the preserved-count assertion moved 4→5. `docs/LICENSING_INTEGRATION_REVIEW.md` — the resolution section now documents the corrected head: strict per-invoice fulfilment (`UNIQUE(invoice_id)` race collapse), explicit `license_link_invoice` owner reconciliation for genuine legacy NULL links (active non-master license + paid invoice + customer/product match + no existing link, `invoice_id IS NULL` guard), populated unmarked adoption via `license_legacy_columns` + canonical-table gate + in-place ALTERs, unknown/future marker refusal before DDL, and refreshed installer inventory.
+
+Tests: `php -l` clean on the touched test; build refresh clean (40 locked packages, pinned bundles byte-identical). The two failing `native-and-browser` lanes re-run in CI against the corrected head; no database run is claimed locally.
+
+Next: await CI on the corrected licensing head; continue non-20i items (HTML composition, OAuth, other-folder sync remain unscheduled).
+
 ## Licensing v4 fixes on `devin/non20i-licensing` (Devin) — 2026-10-16
 
 Request: issue #157 assignment — resolve the four licensing findings in `docs/LICENSING_INTEGRATION_REVIEW.md`, then continue the non-20i roadmap. Starting commit: `origin/main` `80ce8b19`; branch `devin/non20i-licensing`.
