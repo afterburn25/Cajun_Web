@@ -1,3 +1,7 @@
+## Unreleased — combined source and package checkpoint
+
+Record pushed25e combined discovery source, exact verified Windows packages and original GitHub acceptance handles. Record terminal incoming date/cloud full acceptance, parent210 browser evidence and the retained element-capture limitation. Preserve the PHP packaging-only correction and new PHP/domain-date source-ordering findings for separate regression work. Documentation only; no runtime or release change.
+
 ## Unreleased — client domain renewal-date observations
 
 Normally integrate explicit owner refresh and private client display of saved provider renewal dates with registration options and cloud-provider identifiers. Preserve exact current assignment/account/source binding, typed scalar/list separation, current-versus-historical failures and scheduler authority. Correct a locally caught merge syntax error before publication and regenerate installer hashes. Combined runtime acceptance and release remain pending.

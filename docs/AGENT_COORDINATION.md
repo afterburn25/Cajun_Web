@@ -1,3 +1,7 @@
+## Combined discovery verification and recovery corrections — 2026-10-15
+
+Root retains exact25e shipping and original combined full38846792746, with Windows packages verified. Domains owns a separate25e descendant fixing registrar/date altered-sequence recovery, while preserving original domain/root matrix evidence. VPS owns the PHP-version descendant, its packaging correction and analogous hosting-order guard; it is not merged yet. Catalog owns independent domain correction review and combined registration/scheduler artifacts. Root verifies cloud artifacts and integrates shared files sequentially after review. Devin retains licensing. [Current exact source/evidence/known findings](TWENTYI_DISCOVERY_INTEGRATION.md).
+
 ## Current combined discovery integration — 2026-10-15
 
 Root combines registration options, owner-only cloud identifiers and exact client-domain renewal-date observations through sequential normal merges, preserving scheduler guards and all original evidence. Both cloud/date commits are pushed together for fresh combined acceptance. PHP-version1c500566/PR155 remains separate under GitHub native/browser testing; Devin retains licensing. [Authoritative source/evidence/next-action guide](TWENTYI_DISCOVERY_INTEGRATION.md). Full20i and1.25.0 remain unfinished.

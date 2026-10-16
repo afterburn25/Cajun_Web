@@ -1,3 +1,7 @@
+## Current main reactivation follow-up — 2026-10-15
+
+Exact main `1aa421e57d36d6c47d3623f7dadad2967a907d1b` adds license reactivation after794, with an admin action/view and native cases. Exact source comparison verifies the previous licensing service is unchanged after removing only the new reactivation function/comment. The schema validator, migration, bundle generator, direct-download handler and customer workspace are byte-identical to794. Both populated pre-master migration and internal-master customer-delivery findings below therefore remain open; the parser correction remains retained. This is source comparison only, not new database/HTTP execution. Proof `work/main-1aa-licensing-source-review.json`. Devin keeps ownership; these newer changes are not imported into the20i candidate.
+
 ## Latest main source correction - 2026-10-15
 
 Exact main `79434bb87cf3535c61ccd6182a88aa08dea7919c` corrects the schema parser to recognize TINYINT and normalize its display width. Root's pure PHP diagnostic now matches all8 website_licenses columns, all6 license_domains columns and all5 license_bundles columns; tinyint/int/bigint display-width normalization is also verified. Validator SHA256 is `4cbaf88d46cf9f09e627055866faa59f9a50de44b76d09d1eb7d95b3e639f17f`. The parser finding below is resolved in source; actual existing-schema/repeated-setup database acceptance is not claimed by this diagnostic.
