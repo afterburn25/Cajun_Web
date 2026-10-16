@@ -1,6 +1,6 @@
 ## Isolated Force SSL controls — 2026-10-16
 
-Owner Force SSL changes are implementing on `codex/twentyi-force-ssl-controls` from c1743664. The bounded request/readback workflow uses exact current authority and existing gateway/ledger, with independent client sharing and no certificate/HTTPS-health inference. Source review and local pure checks do not complete native/browser acceptance. Interrupted dispatch remains fenced pending a separately reviewed operator recovery transition; this lane cannot be marked complete before that transition. [Guide](TWENTYI_FORCE_SSL_CONTROLS.md).
+Owner Force SSL changes are implementing on `codex/twentyi-force-ssl-controls` from c1743664. The bounded request/readback workflow uses exact current authority and existing gateway/ledger, with independent client sharing and no certificate/HTTPS-health inference. Exactbff7 four-way native artifacts now pass82 control cases plus inherited reports; combined browser/package acceptance remains pending. Interrupted dispatch remains fenced pending a separately reviewed operator recovery transition; this lane cannot be marked complete before that transition. [Guide](TWENTYI_FORCE_SSL_CONTROLS.md).
 
 ## Combined website-folder and Force SSL observations — 2026-10-16
 
