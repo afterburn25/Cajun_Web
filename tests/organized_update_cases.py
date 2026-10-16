@@ -299,3 +299,7 @@ def run(web,base,check,qa,php,label,prefix,version):
         planning_upgrade({**locals(),'token':token})
         from design_financial_upgrade_cases import run as financial_upgrade
         financial_upgrade({**locals(),'token':token})
+        from service_plan_upgrade_cases import run as plans_upgrade
+        plans_context=plans_upgrade({**locals(),'token':token})
+        from recurring_billing_upgrade_cases import run as recurring_upgrade
+        recurring_upgrade({**locals(),**plans_context})

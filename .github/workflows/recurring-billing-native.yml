@@ -1,0 +1,76 @@
+name: Native recurring agreement and period invoice checks
+on:
+  push:
+    branches: [main, codex/recurring-billing-records, codex/recurring-billing-screens, codex/recurring-billing-activity]
+    paths: ['site/app/billing/**', 'site/app/activity/**', 'site/includes/layout/activity.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/recurring-billing/forms.php', 'site/includes/layout/recurring_billing.php', 'site/admin/controllers/recurring_billing.php', 'site/portal/controllers/recurring_billing.php', '.github/workflows/recurring-billing-native.yml']
+  pull_request:
+    paths: ['site/app/billing/**', 'site/app/activity/**', 'site/includes/layout/activity.php', 'site/app/plans/**', 'site/app/staff/**', 'site/app/clients/**', 'site/database/**', 'foundation/recurring-billing/**', 'foundation/billing-calendar/**', 'site/includes/foundation/recurring-billing/**', 'site/includes/foundation/billing-calendar/**', 'tests/recurring_billing_*.php', 'tests/recurring-billing/forms.php', 'site/includes/layout/recurring_billing.php', 'site/admin/controllers/recurring_billing.php', 'site/portal/controllers/recurring_billing.php', '.github/workflows/recurring-billing-native.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: recurring-billing-native-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-recurring:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    services:
+      database:
+        image: mariadb:10.11
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Prepare official PHP with PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-recurring-test -f tests/invitations/Dockerfile tests/invitations
+      - name: Native consent and unique period invoices
+        run: |
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-recurring-test sh -ec '
+              for source in site/app/billing/recurring_billing*.php site/database/schema/recurring_billing_schema.php site/database/migrations/recurring_billing_migrate.php tests/recurring_billing_*.php; do php -l "$source"; done
+              cmp foundation/billing-calendar/BillingCalendar.php site/includes/foundation/billing-calendar/BillingCalendar.php
+              cmp foundation/recurring-billing/RecurringBillingTerms.php site/includes/foundation/recurring-billing/RecurringBillingTerms.php
+              cmp foundation/recurring-billing/RecurringBillingSchedule.php site/includes/foundation/recurring-billing/RecurringBillingSchedule.php
+              php -d memory_limit=128M tests/recurring_billing_native.php
+              php tests/design_payments_legacy_ledger.php
+              php -d memory_limit=128M tests/design_payments_native.php
+              php tests/recurring-billing/forms.php qa/recurring-billing-forms-default.json
+              php -n tests/recurring-billing/forms.php qa/recurring-billing-forms-noini.json
+            '
+      - name: Preserve actual named evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: recurring-billing-native-${{ matrix.php }}-${{ github.sha }}
+          path: |
+            qa/recurring-billing-native-results.json
+            qa/ledger-native-results.json
+            qa/design-payments-native-results.json
+            qa/recurring-billing-forms-default.json
+            qa/recurring-billing-forms-noini.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Scope
+        if: always()
+        run: echo 'Native MariaDB agreement/consent/history, current-authorized UI projections, original-calendar form/render checks and unique invoices. Historical fixtures are synthetic. Real HTTP/browser acceptance runs separately; no scheduler, merchant or provider acceptance.' >> "$GITHUB_STEP_SUMMARY"

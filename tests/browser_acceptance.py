@@ -198,6 +198,8 @@ try:
         notices_browser(globals(),browser)
         from provider_settings_cases import run_browser as provider_browser
         provider_browser(globals(),browser)
+        from service_plan_cases import run_browser as service_plan_browser
+        service_plan_browser(globals(),browser)
         from provider_operations_cases import run_browser as provider_operations_browser
         provider_operations_browser(globals(),browser)
         from mail_drafts_cases import run_browser as drafts_browser
@@ -212,6 +214,8 @@ try:
         planning_browser(globals(),browser)
         from design_financial_cases import run_browser as financial_browser
         financial_browser(globals(),browser)
+        from recurring_billing_cases import run_browser as recurring_browser
+        recurring_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)
