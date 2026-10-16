@@ -1,3 +1,7 @@
+## Unreleased - StackCP candidate and Devin handoff checkpoint
+
+Document published3fa72d7b StackCP performance integration and its first focused native run, verified5bfd distro/native success, and classified original cccf/2a/9779 failures. Put concrete158/159/161 repairs and stacked work through175 in Devin's start-here assignment. Main runtime, release versions and assets are unchanged.
+
 ## Documentation - corrected acceptance source and coordinated repairs
 
 Record reviewedcccf85bf, its first full38927120383, preserved2a/9779 failure evidence and scoped package/recovery passes. Publish actionable licensing/mail feedback and distinguish Devin foundations from usable features. Main remains documentation-only; no release or deployment.

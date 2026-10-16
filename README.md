@@ -1,4 +1,4 @@
-Current checkpoint, 2026-10-16: [corrected acceptance source cccf85bf and preserved parent evidence](docs/TWENTYI_CURRENT_CHECKPOINT.md). The first full corrected run38927120383 is active. Parent2a focused/package/recovery results pass within their scope; complete20i and1.25.0 remain unfinished. Devin has actionable159/161 fixes and the existing non-20i queue. Published1.24.0 is unchanged. Earlier status below is historical where superseded.
+Current checkpoint, 2026-10-16: [StackCP performance candidate3fa72d7b and exact test evidence](docs/TWENTYI_CURRENT_CHECKPOINT.md). First focused38933590118 is active; parent5bfd cloud compatibility/native run passed all5jobs. Original full failures remain preserved. Devin has actionable158/159/161 repairs and published work through175. Full20i/1.25.0 remain unfinished; published1.24.0 is unchanged. Earlier status below is historical where superseded.
 
 ## Current owner allocation - 2026-10-16
 
