@@ -51,6 +51,15 @@ Creates three tables:
 
 **File:** `site/database/schema/base.php` — updated to include `license_schema($prefix)`
 
+**File:** `site/database/migrations/license_migrate.php` — owner-gated
+adoption for existing installs (`studio_license_setup` in admin). Fresh
+deploys set `license_schema_version='1'` automatically; upgraded installs
+prepare storage once via Studio → Website licenses with the administrator
+password. All license entry points (admin actions, portal actions/view,
+`api/validate.php`, `api/bundle-download.php`, invoice fulfilment) check
+`license_ready()` first — unprepared installs never touch license tables
+and the API answers inconclusive 500, never a false denial.
+
 ### 3. License service
 
 **File:** `site/app/licenses/service.php`
