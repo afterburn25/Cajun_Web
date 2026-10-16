@@ -167,6 +167,16 @@ function license_deactivate(int $licenseId, int $actor = 0): void {
 }
 
 /**
+ * Reactivate a deactivated license — recovery for an accidental or
+ * temporary deactivation. Previously-registered domains resume as-is.
+ */
+function license_reactivate(int $licenseId, int $actor = 0): void {
+    query('UPDATE ' . table('website_licenses') . ' SET is_active = 1, updated_at = ? WHERE id = ?',
+        [gmdate('Y-m-d H:i:s'), $licenseId]);
+    license_audit($actor, 'reactivate', 'License ' . $licenseId . ' reactivated');
+}
+
+/**
  * Get all domains for a license.
  */
 function license_domains(int $licenseId): array {

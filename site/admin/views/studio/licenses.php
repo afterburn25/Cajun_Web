@@ -127,6 +127,12 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <input type="hidden" name="id" value="<?= esc($lic['id']) ?>">
 <button class="btn outline" type="submit">Deactivate license</button>
 </form>
+<?php else: ?>
+<form method="post">
+<?php admin_action('studio_license_reactivate'); ?>
+<input type="hidden" name="id" value="<?= esc($lic['id']) ?>">
+<button class="btn outline" type="submit">Reactivate license</button>
+</form>
 <?php endif; ?>
 </section>
 <?php endforeach; ?>

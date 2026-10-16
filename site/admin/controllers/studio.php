@@ -55,7 +55,7 @@ function studio_admin_action(string $action,array $user): never {
     }elseif($action==='studio_license_setup'){
         require_once CWP_CODE_ROOT.'/database/migrations/license_migrate.php';
         license_migrate(posted('current_password',200));flash('Website licensing storage prepared.');redirect(admin_url('studio-licenses'));
-    }elseif(in_array($action,['studio_license_create','studio_license_deactivate','studio_domain_add','studio_domain_deactivate','studio_domain_replace','studio_license_bundle'],true)&&!license_ready()){
+    }elseif(in_array($action,['studio_license_create','studio_license_deactivate','studio_license_reactivate','studio_domain_add','studio_domain_deactivate','studio_domain_replace','studio_license_bundle'],true)&&!license_ready()){
         throw new RuntimeException('Prepare licensing storage first.');
     }elseif($action==='studio_license_create'){
         $customerId=gint($_POST,'customer_id',1,2147483647);$productId=posted('product_id',50);
@@ -66,6 +66,10 @@ function studio_admin_action(string $action,array $user): never {
         $id=gint($_POST,'id',1,2147483647);if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=?',[$id]))throw new InvalidArgumentException('License not found.');
         require_once CWP_CODE_ROOT.'/app/licenses/service.php';
         license_deactivate($id,(int)$user['id']);$target='studio-licenses';
+    }elseif($action==='studio_license_reactivate'){
+        $id=gint($_POST,'id',1,2147483647);if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=?',[$id]))throw new InvalidArgumentException('License not found.');
+        require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+        license_reactivate($id,(int)$user['id']);flash('License reactivated — its registered sites come back online at their next validation.');$target='studio-licenses';
     }elseif($action==='studio_domain_add'){
         $licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);
         if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=?',[$licenseId]))throw new InvalidArgumentException('License not found.');

@@ -79,6 +79,12 @@ try{
     license_deactivate($licId);
     lic_ok('License deactivation marks inactive',(int)license_get($key)['is_active']===0);
 
+    license_reactivate($licId);
+    lic_ok('License reactivation restores active',(int)license_get($key)['is_active']===1);
+    lic_ok('Reactivation audited',(bool)one('SELECT id FROM '.table('audit')." WHERE action='license.reactivate'"));
+    license_deactivate($licId);
+    lic_ok('License deactivates again for bundle-guard checks',(int)license_get($key)['is_active']===0);
+
     // --- second license is independent ---------------------------------------
     $key2=license_create(2,'WEBSITE-SALON');
     lic_ok('Second license independent',(int)license_get($key2)['is_active']===1);
