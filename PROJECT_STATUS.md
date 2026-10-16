@@ -26,6 +26,7 @@ Main retains existing licensing and the four unresolved [integration findings](d
 - `devin/non20i-pipeline-foundation` (PR #163) ports the lead-pipeline contract layer — `PipelineBoard`/`PipelineStage`/`LeadRecord` ordered stages with validated transitions and non-drag control parity.
 - `devin/non20i-proposals-foundation` (PR #164) ports the proposal contract layer — `Proposal`/`ProposalVersion`/`ApprovalDecision` immutable versions with deliberate approval states.
 - `devin/non20i-notifications-foundation` ports the P-07 notification contract layer — `Notification`/`NotificationFeed`/`NotificationPreferences`/`DeliveryAttempt`/`MetricSample` with bounded delivery and honest stale/absent metric handling.
+- `devin/non20i-notifications-runtime` builds on it — directed per-recipient feed storage (`notification_feed`/`notification_prefs`/`notification_deliveries`, distinct from payment webhooks), owner-password setup migration, private admin/portal feeds, recipient-only read state, per-kind email opt-outs, honest `sent`/`failed` delivery records, and emit hooks for inquiries, project messages, review decisions, delivery publication and invoice-paid events.
 
 All are local/CI validation only — no live deployment, mail, provider or customer action.
 

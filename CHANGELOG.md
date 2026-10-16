@@ -1,3 +1,7 @@
+## Integrate P-07 per-recipient notification feed runtime — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-notifications-runtime` from the notifications-foundation branch. Adds `ci_notification_feed`/`ci_notification_prefs`/`ci_notification_deliveries` storage (distinct from the payment-webhook `notifications` tables), an owner-password setup migration, the `app/notifications/feed.php` service mapping persistence onto the foundation models, private staff and client feed screens with recipient-only read/unread mutation and per-kind email opt-outs, read-only support-session viewing, and emit hooks on lead submission, admin/client project messages, review decisions, delivery publication and invoice-paid transitions. Portal delivery is unconditional; email copies attempt synchronously after commit and record honest `sent`/`failed` states — no daemon, no retry-forever. Native MariaDB and HTTP/Chromium suites cover isolation, preferences, retries, CSRF and access boundaries. No live mail, deployment or customer action.
+
 ## Port P-07 notification contract layer — 2026-10-16
 
 Devin non-20i increment on `devin/non20i-notifications-foundation` from main `595ac9c3`, continuing preserved `devin/notifications`. Adds `foundation/notifications/` — `Notification`, `NotificationFeed`, `NotificationPreferences`, `DeliveryAttempt`, `MetricSample` — with 65 pure checks in `tests/notifications/run.php` and a PHP 8.2/8.4 offline workflow lane. No persistence, delivery transport or UI — integration remains future work. No release or deployment.

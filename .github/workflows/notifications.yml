@@ -2,10 +2,10 @@ name: Notification contract checks
 
 on:
   pull_request:
-    paths: ['foundation/notifications/**', 'tests/notifications/**', '.github/workflows/notifications.yml']
+    paths: ['foundation/notifications/**', 'tests/notifications/**', 'site/app/notifications/**', 'site/includes/layout/notifications.php', 'site/database/schema/notification_feed_schema.php', 'site/database/migrations/notification_feed_migrate.php', 'tests/notification_feed_*', '.github/workflows/notifications.yml']
   push:
     branches: [main, 'devin/non20i-*']
-    paths: ['foundation/notifications/**', 'tests/notifications/**', '.github/workflows/notifications.yml']
+    paths: ['foundation/notifications/**', 'tests/notifications/**', 'site/app/notifications/**', 'site/includes/layout/notifications.php', 'site/database/schema/notification_feed_schema.php', 'site/database/migrations/notification_feed_migrate.php', 'tests/notification_feed_*', '.github/workflows/notifications.yml']
   workflow_dispatch:
 
 permissions:
