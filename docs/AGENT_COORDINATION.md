@@ -4,8 +4,8 @@ Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for
 
 | Owner | Current branch/checkpoint | Scope and next evidence |
 |---|---|---|
-| Root | PR151, test/docs descendant of0ff93d22/frozen427 | Preserve actual427 setup failure/final evidence; review corrected period/PHP fixtures, normally integrate expiry, then one new combined full check. |
-| Domains | Expiry f42 native accepted; fixture/docs correction pending commit | Correct expected login timestamp handling without weakening authority/history; root reviews and imports. Main94 read-only merge map complete. |
+| Root | PR151, test/docs descendant of0ff93d22/frozen427 | Preserve actual427 setup failure/final evidence; normal expiry18 integration and reviewed period/PHP repair659 now require exact combined acceptance. |
+| Domains | Expiry f42 native accepted; fixture/docs correction pending commit | Reviewed fixture correction18d296b7 imported with unchanged f42 runtime; final shared-source review next. Main94 read-only merge map complete. |
 | VPS | PHPcfc6/docs8b257538; cloud36c2/docs9f46; ForceSSL staged | Root fixture review, then one pure ForceSSL matrix after accepted reference-detachment correction. No app wiring/live call. |
 | Catalog | Document-roots1e8ee567/docs0ddd5101; DNS96f/docsfb2f19d2 | Both pure matrices/artifacts accepted; prepare document-root application contract before shared edits. ForceSSL independent source review clear. |
 | Devin | Software-product licensing; main94 reviewed | Populated upgrade/internal-master customer-delivery findings remain. Preserve serialized mutation helpers and keyless installer. Active session status remains unconfirmed. |

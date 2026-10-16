@@ -1,3 +1,7 @@
+## Unreleased — integrate saved upstream expiry observations
+
+Normally integrate the native-tested upstream-expiry feature with dedicated-owner test corrections. Owners explicitly prepare and refresh saved expiry observations for current assigned domains; clients see only permitted current or historical records. Separate date/expiry authority, immutable history, unavailable results, credential filtering and owner controls remain. No automatic renewal, provider mutation or eligibility claim. Combined packaged browser/recovery acceptance is pending.
+
 ## Unreleased — preserve account authority across fixture login
 
 Correct dedicated period/PHP browser fixtures to account for the normal last-login update before preserving the complete account row. All password, authority, role, immutable-history, quota and cooldown assertions remain; add finite setup diagnostics before assertions. Preserve actual427 failed browser evidence and completed main94 source review. Application/installer bytes remain unchanged; corrected combined acceptance and release remain pending.

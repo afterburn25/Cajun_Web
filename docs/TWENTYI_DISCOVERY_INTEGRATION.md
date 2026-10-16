@@ -1,3 +1,9 @@
+# Next combined expiry candidate — 2026-10-16 UTC
+
+Normal merge parents659376cd7f538a64c62a9b31276116658bfb929a and18d296b714adc24fa967926ffeadc28616ac6915 combine the reviewed period/PHP setup correction with expiry f42 runtime and its reviewed setup repair. Only five continuity documents conflicted; root current status and both appended session histories are retained. Shipping/foundation source matches accepted expiry; original427 remains separately failed/preserved. New combined acceptance is pending. Browser order stays dates→cloud→period→PHP→expiry→scheduler, with separate real owner budgets and cooldown.
+
+Expiry uses a distinct read8/refresh10 context and separate readiness, current domain/profile/credential authority, typed storage and explicit client sharing. Focused38855352194 already verifies all four environments; actual combined browser/screens/recovery/Apache/package acceptance remains required. See [expiry contract](TWENTYI_DOMAIN_EXPIRY_CONTRACT.md) and [handoff](../SESSION_HANDOFF.md).
+
 # Actual427 browser failure and setup correction — 2026-10-16 UTC
 
 Original full38853750274 passes packaging/native but browser fails after2107 passing checks at the dedicated period-owner activation/account-preservation assertion. Actual checkpoint12027447378:142974844 bytes, SHA256 a95a190bc3d6caf07a09be2b1cc949da30a7428881d3d572b79f210cb9f4cc84,316 safe members/CRC,86 named reports,10 available clean diagnostics,192 images. `work/20i-root427-browser-failure-verification.json` preserves the exact failed check; later period/PHP/scheduler browser cases were not reached. Original recovery succeeds; Apache/final continues as of05:46UTC. No combined success is claimed.
