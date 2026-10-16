@@ -1,3 +1,7 @@
+## Unreleased — registration-period fixture ordering
+
+Correct the native expected client rows to match the existing sorted offered-extension policy, including exact saved years. Preserve all four failed original reports and exact Windows package evidence. Runtime and generated installer files are unchanged; fresh corrected native/browser evidence is required.
+
 ## Unreleased integration queue — client hosting history
 
 Normally combine reviewed owner-approved client observation history with the cloud recovery correction on a separate integration branch. Preserve both original sources and evidence; retain all documentation history and regenerate combined installer hashes. Fresh combined acceptance is required. The separate release candidate and published assets are unchanged.
