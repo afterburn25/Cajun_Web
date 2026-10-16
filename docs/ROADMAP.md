@@ -1,6 +1,6 @@
 ## Isolated Force SSL dispatch-record recovery — 2026-10-16
 
-Implement the bounded finished-ledger recovery case on a separate exact-faef branch: owner/password-reviewed local witness restoration, no provider request or ledger rewrite, still-uncertain fence until separate current GET. Portable57 checks per mode pass; independent source review and actual native/process/browser acceptance remain required. Missing/claimed and other interrupted cases remain unfinished. [Scope](TWENTYI_FORCE_SSL_FINISHED_RECOVERY.md).
+Implement the bounded finished-ledger recovery case on a separate exact-faef branch: owner/password-reviewed local witness restoration, no provider request or ledger rewrite, still-uncertain fence until separate current GET. Source34f35547 has independently verified four-way native/process acceptance, including137 controls cases and57 recovery portable cases per mode; combined browser/package acceptance remains required. Missing/claimed and other interrupted cases remain unfinished. [Scope](TWENTYI_FORCE_SSL_FINISHED_RECOVERY.md).
 
 ## Current 20i integration — 2026-10-16
 

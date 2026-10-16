@@ -6,7 +6,7 @@ Updated 2026-10-16 UTC. Codex and three parallel agents own complete20i P0; Devi
 |---|---|---|
 | Root | Local combinedbaa0 plus reviewed scheduler fixture835ba72e; PR151 | Push one frozen combined candidate, verify exact Windows packages and track its original acceptance. |
 | Domains | Renewal4f accepted; WordPress3f four-archive independent review clear | Review actual root WordPress source/staged parity; preserve original failed and accepted evidence. |
-| VPS | Isolated exact-faef branch codex/twentyi-force-ssl-finished-recovery | Own bounded finished-ledger local recovery, owner UI and native/process/browser fixtures. Root/Catalog source review precedes any focused CI; preserve original branches/evidence. |
+| VPS | Frozen recovery34f35547; original38881177088 all four verified | Docs-only handoff preserves shipping/tests/workflows. Root independently verified14 reports per archive; normal integration and combined browser/package evidence remain pending. |
 | Catalog | Frozen948 original38867932452 browser failure; ten directory views inspected | Preserve original final follow-through; scheduler correction is independently reviewed and applied only to later source. |
 | Devin | Software-product licensing; main68a source reviewed | Preserve schema3/checksum/invoice/serialization changes; upgrade, master delivery and legacy invoice findings remain open. |
 

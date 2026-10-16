@@ -16,7 +16,7 @@ Client observation sharing remains its own explicit permission. A pending change
 
 ## Narrow finished-ledger recovery and remaining interruptions
 
-[Finished-ledger recovery](TWENTYI_FORCE_SSL_FINISHED_RECOVERY.md) is implemented on a separate faef descendant, with native/browser acceptance pending. It can restore only a missing local terminal witness when the exact durable finished shared ledger exists, under the original owner and current context. Recovery performs no provider call and preserves uncertainty until a separate exact GET. Missing or claimed ledgers stay fenced. The earlier broader interruption limitation is retained below as the original controls scope.
+[Finished-ledger recovery](TWENTYI_FORCE_SSL_FINISHED_RECOVERY.md) is implemented on a separate faef descendant, with all four native/process environments verified and combined browser/package acceptance pending. It can restore only a missing local terminal witness when the exact durable finished shared ledger exists, under the original owner and current context. Recovery performs no provider call and preserves uncertainty until a separate exact GET. Missing or claimed ledgers stay fenced. The earlier broader interruption limitation is retained below as the original controls scope.
 
 ### Original controls scope before finished-ledger recovery
 
