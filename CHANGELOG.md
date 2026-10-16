@@ -1,3 +1,7 @@
+## Repair tickets.css asset registration from review — 2026-10-16
+
+Review correction on `devin/non20i-support-tickets` (PR #158). `tickets.css` was referenced unconditionally by the shared admin and portal layouts but was not registered in the closed `asset()` map, throwing `Unknown public asset` on the ordinary dashboard and portal before any ticket feature ran. Registers `tickets.css => assets/css/tickets.css`, adds `tests/asset_registry.php` — a static regression asserting every literal `asset('name')` in shipping PHP resolves through the map and maps to an existing file (plus whole-map disk checks and the audited `image_url` allowlist) — wired into application-tests in default and no-INI modes. Installer inventory refreshed; 45 local checks pass in both modes. Original failed run 38915585801 is preserved; fresh HTTP/Apache acceptance runs in CI.
+
 ## 2026-10-16 — publish the concrete release freeze and branch
 
 Documentation-only descendant of35d8 records owner release-first override, published normal merge b98b96eb, frozen scope/map, actual source/focused evidence and remaining gates. Runtime, installer, version, published assets and production remain unchanged. Continue release corrections, authentic1.24 upgrade coverage, complete supported runtime acceptance, review, exact-main and publication/download verification before new20i capabilities. Coordination is posted in issue2 comment6220729910 and issue157 comment6220730195. Documentation validation is required before commit; no application acceptance is claimed.

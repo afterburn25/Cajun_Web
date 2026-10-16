@@ -4,6 +4,16 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 # Session log
 
+## Repair tickets.css asset registration from review — 2026-10-16
+
+Request: continue #157; independent review of PR #158 head `3ca4bbb7` found a blocking defect — `tickets.css` was used in shared admin/portal layouts without a closed-map registration, breaking dashboard/portal renders (`urls.php` `Unknown public asset`, corroborated by run 38915585801 dashboard 500).
+
+Actions: registered `tickets.css => assets/css/tickets.css` in `site/includes/urls.php`; added `tests/asset_registry.php` (scans all shipping PHP for literal `asset()` calls, asserts map resolution + on-disk existence, audits the one dynamic `image_url` allowlist, checks every registered entry exists); wired default + no-INI runs into `application-tests.yml`; `tools/build.py --refresh` regenerated the installer inventory.
+
+Tests: `php -l` clean; `php tests/asset_registry.php` → 45/45 in default and `-n` modes; build refresh clean (2,201 runtime files byte-identical). HTTP/Apache acceptance reruns in CI on this commit.
+
+Next: push, reply on PR #158, then apply the three PR #161 review findings.
+
 ## Port client support tickets onto main — 2026-10-16
 
 Request: continue the non-20i roadmap after licensing; the assignment's next item is client support tickets/private staff notes, reusing preserved PRs instead of rebuilding.
