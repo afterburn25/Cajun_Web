@@ -4,6 +4,16 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 # Session log
 
+## Restore service-agreements guide link — 2026-10-16
+
+Request: continue #157; PR #174 `Documentation continuity and links` failed with `Missing link target: docs/RECURRING_BILLING.md: SERVICE_AGREEMENTS.md` — the owner-facing service-agreements guide existed on the preserved source branch but was not extracted.
+
+Actions: added `docs/SERVICE_AGREEMENTS.md` from preserved `codex/recurring-billing-screens`, adjusting the stale candidate version line (1.24.0 remains published) and the ownership line (20i is Codex's separate assignment). No runtime or test files changed.
+
+Tests: `python tools/check_docs.py` → 12 required documents, 194 Markdown files, 1399 local links — clean.
+
+Next: fresh docs CI on PR #174; other lanes were already green.
+
 ## Port recurring billing — 2026-10-16
 
 Request: continue the non-20i roadmap (issue #157, item 4 — maintenance plans/recurring billing).
