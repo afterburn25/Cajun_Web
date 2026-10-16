@@ -24,6 +24,12 @@
     "domain-renewal-agreements-document-default.json",
     "domain-renewal-agreements-document-minimal.json",
     "domain-renewal-agreements-native-results.json",
+    "domain-renewal-dispatch-document-default.json",
+    "domain-renewal-dispatch-document-minimal.json",
+    "domain-renewal-dispatch-handler-results.json",
+    "domain-renewal-dispatch-native-results.json",
+    "domain-renewal-dispatch-transport-default.json",
+    "domain-renewal-dispatch-transport-minimal.json",
     "domain-renewals-native-results.json",
     "estimator-adapter-results.json",
     "force-ssl-control-contract-no-ini-results.json",
@@ -147,6 +153,12 @@
     "domain-renewal-agreements-document-default.json",
     "domain-renewal-agreements-document-minimal.json",
     "domain-renewal-agreements-native-results.json",
+    "domain-renewal-dispatch-document-default.json",
+    "domain-renewal-dispatch-document-minimal.json",
+    "domain-renewal-dispatch-handler-results.json",
+    "domain-renewal-dispatch-native-results.json",
+    "domain-renewal-dispatch-transport-default.json",
+    "domain-renewal-dispatch-transport-minimal.json",
     "domain-renewals-native-results.json",
     "estimator-adapter-results.json",
     "force-ssl-control-contract-no-ini-results.json",
@@ -277,7 +289,10 @@
     "implementation_base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
     "additions": [
       "two recovery portable reports already invoked by base",
-      "parallel-helper-tests.json is the new offline transfer regression report"
-    ]
+      "parallel-helper-tests.json is the new offline transfer regression report",
+      "six paid domain renewal dispatch document, transport, handler and native reports"
+    ],
+    "renewal_source": "b221eb4be95ec1509458d916f1ffd10d65e71e64",
+    "root_before_renewal": "5560635bb2117556de289f0d24c5b170d48e9c77"
   }
 }

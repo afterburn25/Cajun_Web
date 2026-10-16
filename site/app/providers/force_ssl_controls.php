@@ -47,6 +47,26 @@ function provider_force_ssl_controls_context(PackageForceSslBinding $original,?s
     $current=provider_force_ssl_binding($original->data['link_id']);[, $profile]=provider_checks_authority($current->data['profile_id'],$current->data['profile_revision']);
     return [$actor,$profile,$current];
 }
+/** Authenticate every retained index before it can hide a resource or release a pending fence.
+ * Keyset pages bound PHP memory; no history is repaired or cached by a read. */
+function provider_force_ssl_controls_authenticated_history():void {
+    foreach(provider_force_ssl_controls_tables() as $kind=>$tableName){
+        $after=null;$seen=0;
+        do{
+            // The first page includes even an empty/space-trimmed corrupt CHAR identifier.
+            $rows=$after===null?all('SELECT * FROM '.table($tableName).' ORDER BY BINARY id LIMIT 64')
+                :all('SELECT * FROM '.table($tableName).' WHERE BINARY id>BINARY ? ORDER BY BINARY id LIMIT 64',[$after]);
+            foreach($rows as $row){
+                ++$seen;
+                if($kind==='request')provider_force_ssl_controls_request($row['id']);
+                elseif($kind==='terminal')provider_force_ssl_controls_terminal(provider_force_ssl_controls_request($row['id']));
+                else provider_force_ssl_controls_check_document($row,provider_force_ssl_controls_request($row['request_id']));
+                $after=$row['id'];
+            }
+        }while(count($rows)===64);
+        if($seen!==provider_force_ssl_controls_counter($kind))throw new RuntimeException('Force SSL change history counts disagree.');
+    }
+}
 /** Every unresolved approval fences the resource, even after client or key changes. */
 function provider_force_ssl_controls_pending(string $profileId,int $packageId):?array {
     $q=table('provider_force_ssl_changes');$t=table('provider_force_ssl_dispatch_ends');$c=table('provider_force_ssl_change_checks');

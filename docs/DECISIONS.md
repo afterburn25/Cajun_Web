@@ -1,5 +1,9 @@
 ## 2026-10-16 — reuse agreements for renewal retail terms
 
+## Renewal payments must have an original purpose before receipt — 2026-10-16
+
+An unrelated paid invoice is not renewal authority. Reserve an existing unpaid one-time USD invoice permanently to exact accepted domain/years/privacy terms before any payment activity; use the original receipt ledger and require a separate owner approval for the 20i balance charge. Retain unknown/false attempt fences and one existing execution journal. No new invoice generator, waiver, quote engine or inferred eligibility. [Contract and recovery](TWENTYI_DOMAIN_RENEWAL_DISPATCH.md).
+
 The supplied provider reference does not establish an executable premium/standard renewal quote response schema. Use studio-entered one-time USD terms through the existing immutable service-plan/subscription journals. Append a bounded immutable request-to-agreement binding; retain globally unique agreements and multiple historical offers per request after explicit existing abandon/cancel actions. Do not create a parallel quote event engine, invoice generator, currency model or provider purchase promise. Exact current registrar authority and a captured binding fingerprint gate acceptance; original invoice origins and shared-hosting-only order documents remain unchanged. [Contract and lifecycle](TWENTYI_DOMAIN_RENEWAL_AGREEMENTS.md).
 
 ## 2026-10-15 — preserve new source identity and coordinate discovery readers

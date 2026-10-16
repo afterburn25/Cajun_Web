@@ -3,6 +3,7 @@ declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/providers/domain_renewals.php';
 require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_agreements.php';
+require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_dispatch_routes.php';
 function domain_renewals_privacy(?bool $value):string {return $value===null?'Ask the studio':($value?'Request privacy renewal':'Do not request privacy renewal');}
 function domain_renewals_render_history(array $doc,bool $admin):void {
     $d=$doc['request'];$state=match($doc['state']){'declined'=>'Declined','withdrawn'=>'Withdrawn',default=>'Pending studio review'};
@@ -11,6 +12,8 @@ function domain_renewals_render_history(array $doc,bool $admin):void {
     foreach($doc['events'] as $e){echo '<div class="workspace-message"><small>'.esc($e['actor_kind']==='staff'?'Studio review':'Client withdrawal').' · '.esc(gmdate('Y-m-d H:i:s',$e['recorded_epoch'])).' UTC</small><p>'.esc($e['note']!==''?$e['note']:'Request withdrawn.').'</p></div>';}
     if($admin)echo '<p><a class="btn outline" href="'.esc(admin_url('domain-renewal-agreements',['request'=>$d['id']])).'">Review renewal service offers</a></p>';
     foreach(domain_renewal_agreements_request_links($d['id'],$d['client_id'],!$admin) as $offer){$url=$admin?admin_url('service-agreement',['record'=>$offer['agreement_id']]):studio_url(['agreement'=>$offer['agreement_id']]);echo '<p><a href="'.esc($url).'">Renewal offer '.esc((string)$offer['revision']).' · USD '.esc(number_format($offer['price_minor']/100,2)).' · review terms and history</a></p>';}
+    if($admin)echo '<p><a class="btn outline" href="'.esc(admin_url('domain-renewal-dispatch',['request'=>$d['id']])).'">Review renewal invoice and submission</a></p>';
+    foreach(domain_renewal_dispatch_request_cards($d['id'],$d['client_id'],!$admin) as $purpose){domain_renewal_dispatch_card($purpose);$invoiceUrl=$admin?admin_url('invoice-payments',['invoice_id'=>$purpose['invoice_id']]):studio_url(['invoice'=>$purpose['invoice_id']]);echo '<p><a href="'.esc($invoiceUrl).'">View reserved invoice and payment history</a></p>';}
     if($doc['state']==='pending_review'){
         $retry=isset($_POST['request_id'])&&is_string($_POST['request_id'])&&$_POST['request_id']===$d['id'];
         $revision=$retry&&is_string($_POST['request_revision']??null)?substr($_POST['request_revision'],0,10):(string)$doc['revision'];$event=$retry&&is_string($_POST['event_id']??null)?substr($_POST['event_id'],0,32):bin2hex(random_bytes(16));

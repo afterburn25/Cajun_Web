@@ -47,6 +47,35 @@ function fc_perform(array $row,string $key,string $address,callable $authorize,\
 function fc_change(?string $id=null,?bool $desired=null,?callable $resolver=null,?callable $perform=null):array {global $link,$password;$b=provider_force_ssl_binding($link['id']);$r=provider_force_ssl_latest($link['id']);$o=provider_force_ssl_observation($r);return provider_force_ssl_controls_change($id??bin2hex(random_bytes(16)),$link['id'],$r['id'],$b->sha256,$desired??!$o['value'],true,$password,$resolver??'fc_dns',$perform??'fc_perform');}
 function fc_summary(string $id):array{return staff_locked(fn()=>staff_transaction(fn()=>provider_force_ssl_controls_summary($id)));}
 function fc_control_damage(string $name,callable $mutate):void {db()->beginTransaction();try{$mutate();fc_deny($name,fn()=>provider_force_ssl_controls_ready());}finally{db()->rollBack();}fc_ok($name.' exact restoration',provider_force_ssl_controls_ready());}
+/** Mutate actual indexed columns and their unkeyed audit outside a caller transaction.
+ * The retained keyed proof, grant and counters deliberately stay byte-exact. */
+function fc_keyed_index_damage(string $case,string $kind,array $row,array $changes):void {
+    global $dns,$writes,$sent;
+    $tableName=provider_force_ssl_controls_tables()[$kind];
+    foreach(array_keys($changes) as $column)if(!in_array($column,['id','package_id','disposition'],true))throw new LogicException('Unexpected fixture column.');
+    $changedId=array_key_exists('id',$changes)?rtrim($changes['id'],' '):$row['id'];
+    $set=implode(',',array_map(static fn($column)=>$column.'=?',array_keys($changes)));
+    $restore=array_map(static fn($column)=>$row[$column],array_keys($changes));
+    $detail='Force SSL change '.$kind.' '.$row['id'].' '.provider_force_ssl_digest(provider_force_ssl_controls_values($kind,$row));
+    $audit=one('SELECT * FROM '.table('audit').' WHERE action=? AND detail=?',['provider.force_ssl_control_'.$kind,$detail]);
+    $before=[$dns,$writes,$sent,fc_count('provider_force_ssl_changes'),fc_count('provider_operation_grants'),fc_count('provider_operations'),fc_count('audit')];
+    $counts=array_map('provider_force_ssl_controls_counter',['request','terminal','check']);
+    try{
+        fc_ok('Actual indexed '.$case.' row mutation occurs',query('UPDATE '.table($tableName).' SET '.$set.' WHERE id=?',[...array_values($changes),$row['id']])->rowCount()===1);
+        $changed=one('SELECT * FROM '.table($tableName).' WHERE id=?',[$changedId]);
+        fc_ok('Intended '.$case.' stored identity and indexed values changed',$changed!==null&&$changed['id']===$changedId&&(!isset($changes['disposition'])||$changed['disposition']===$changes['disposition']));
+        $changedDetail='Force SSL change '.$kind.' '.$changed['id'].' '.provider_force_ssl_digest(provider_force_ssl_controls_values($kind,$changed));
+        fc_ok('Actual unkeyed '.$case.' audit is recomputed',query('UPDATE '.table('audit').' SET detail=? WHERE id=?',[$changedDetail,$audit['id']])->rowCount()===1);
+        fc_ok('Original keyed '.$case.' proof and counts remain untouched',$changed['proof']===$row['proof']&&array_map('provider_force_ssl_controls_counter',['request','terminal','check'])===$counts);
+        fc_deny_message('Keyed '.$case.' index tamper cannot admit a new approval',fn()=>fc_change(),'Force SSL change proof needs recovery.');
+        fc_deny_message('Keyed '.$case.' index tamper cannot release current projection',fn()=>fc_view(),'Force SSL change proof needs recovery.');
+        fc_ok('Keyed '.$case.' refusal creates no grant audit DNS read or write',[$dns,$writes,$sent,fc_count('provider_force_ssl_changes'),fc_count('provider_operation_grants'),fc_count('provider_operations'),fc_count('audit')]===$before);
+    }finally{
+        query('UPDATE '.table($tableName).' SET '.$set.' WHERE id=?',[...$restore,$changedId]);
+        query('UPDATE '.table('audit').' SET detail=? WHERE id=?',[$audit['detail'],$audit['id']]);
+    }
+    fc_ok('Exact '.$case.' restoration preserves source and readiness',one('SELECT * FROM '.table($tableName).' WHERE id=?',[$row['id']])===$row&&one('SELECT * FROM '.table('audit').' WHERE id=?',[$audit['id']])===$audit&&provider_force_ssl_controls_ready());
+}
 /** Test-only same transaction boundaries as verify(), with a newly seeded synthetic GET receipt. */
 function fc_check_plan(string $id):array {return staff_locked(fn()=>staff_transaction(function()use($id){$actor=provider_settings_manager();$q=provider_force_ssl_controls_request($id);[,,$b]=provider_force_ssl_controls_context($q['binding']);$t=provider_force_ssl_controls_terminal($q);return ['request_id'=>$id,'check_id'=>bin2hex(random_bytes(16)),'actor_id'=>(int)$actor['id'],'actor_auth'=>hash('sha256',$actor['auth_version']),'binding'=>$b,'terminal_proof'=>$t['row']['proof'],'floor'=>(int)query('SELECT MAX(seq) FROM '.table('provider_refreshes'))->fetchColumn()];}));}
 function fc_seed_check(array $plan,string $response):array {$id=fc_seed_response($plan['binding'],$response);return ['id'=>$id,'state'=>provider_force_ssl_source($id)['state']];}
@@ -75,6 +104,7 @@ try{
     $requestId=bin2hex(random_bytes(16));$duringWrite=function()use($requestId,$password):void{global $sent;fc_deny_message('Claimed worker cannot reconcile while dispatch is active',fn()=>provider_force_ssl_controls_verify($requestId,$password,'fc_dns','fc_read'),'This interrupted request needs an operator recovery transition. Dispatch and reconciliation remain blocked.');fc_ok('Active worker reconciliation sends no GET',$sent===0);fc_contender();};
     $preDns=function()use($requestId,$password):string{global $sent;fc_ok('Pre-DNS admission has no ledger claim yet',!one('SELECT id FROM '.table('provider_operations').' WHERE idempotency_key=?',['forcessl:'.$requestId]));fc_deny_message('Active pre-DNS worker cannot be reconciled',fn()=>provider_force_ssl_controls_verify($requestId,$password,'fc_dns','fc_read'),'This interrupted request needs an operator recovery transition. Dispatch and reconciliation remain blocked.');fc_ok('Pre-DNS reconciliation did not issue GET',$sent===0);return fc_dns();};
     $view=fc_change($requestId,resolver:$preDns);$duringWrite=null;$originalLedger=one('SELECT * FROM '.table('provider_operations').' WHERE idempotency_key=?',['forcessl:'.$requestId]);fc_ok('Single gateway dispatch remains uncertain after HTTP 200 true',$writes===1&&$view['status']==='uncertain'&&$originalLedger['status']==='uncertain'&&(int)$originalLedger['attempts']===1&&fc_count('provider_force_ssl_dispatch_ends')===1);
+    fc_keyed_index_damage('request package','request',one('SELECT * FROM '.table('provider_force_ssl_changes').' WHERE id=?',[$requestId]),['package_id'=>702]);
     fc_deny('Completed dispatch captured authorization cannot run later',$capturedAuthorize);$counts=[$dns,$writes,fc_count('audit')];$replay=provider_force_ssl_controls_change($requestId,$link['id'],$anchor,$binding->sha256,true,true,$password,'fc_dns','fc_perform');fc_ok('Exact request replay returns history without dispatch or new audit',$replay['status']==='uncertain'&&[$dns,$writes,fc_count('audit')]===$counts);
     fc_deny_message('New nonce cannot repeat uncertain effect',fn()=>fc_change(),'A previous Force SSL change is unresolved. It cannot be sent again.');fc_ok('Request approval creates no client sharing',fc_count('provider_force_ssl_permissions')===0);fc_client(1);fc_ok('Client receives no private request or inherited observation',provider_force_ssl_client(1,$link['id'])['rows']===[]);fc_actor();
     fc_ok('Pending request fences prior observation current status',staff_locked(fn()=>staff_transaction(fn()=>!provider_force_ssl_controls_current($link['id']))));
@@ -87,6 +117,8 @@ try{
     $writeStatus=403;$second=fc_change();$secondId=$second['id'];fc_ok('HTTP 403 is still an attempted uncertain effect',$second['status']==='uncertain'&&$writes===2&&one('SELECT status FROM '.table('provider_operations').' WHERE idempotency_key=?',['forcessl:'.$secondId])['status']==='failed');
     fc_deny_message('HTTP rejection cannot reopen a fresh nonce',fn()=>fc_change(),'A previous Force SSL change is unresolved. It cannot be sent again.');
     $plan=fc_check_plan($secondId);$receipt=fc_seed_check($plan,'true');$different=fc_save_check($plan,$receipt);fc_ok('Different fresh flag keeps request unresolved',$different['status']==='uncertain'&&$different['last_check']['disposition']==='different');
+    fc_keyed_index_damage('check disposition','check',one('SELECT * FROM '.table('provider_force_ssl_change_checks').' WHERE request_id=? AND disposition=?',[$secondId,'different']),['disposition'=>'observed']);
+    foreach(['empty'=>'','space-trimmed'=>'   '] as $label=>$emptyId)fc_keyed_index_damage('check '.$label.' identity','check',one('SELECT * FROM '.table('provider_force_ssl_change_checks').' WHERE request_id=? AND disposition=?',[$secondId,'different']),['id'=>$emptyId,'disposition'=>'observed']);
     $plan=fc_check_plan($secondId);$receipt=fc_seed_check($plan,'null');$unknown=fc_save_check($plan,$receipt);fc_ok('Null follow-up is saved as unavailable not false',$unknown['status']==='uncertain'&&$unknown['last_check']['value']===null&&$unknown['last_check']['disposition']==='unavailable');
     foreach(['unavailable',null] as $state){$plan=fc_check_plan($secondId);$receipt=fc_seed_check($plan,'false');$later=fc_seed_force_ssl($plan['binding'],$state,time()-40,3);$before=fc_count('provider_force_ssl_change_checks');fc_deny_message('Later '.($state??'unfinished').' read supersedes captured matching receipt',fn()=>fc_save_check($plan,$receipt),'The exact Force SSL verification read is no longer current.');fc_ok('Superseded receipt appends no confirmation '.($state??'unfinished'),fc_count('provider_force_ssl_change_checks')===$before);}
     $plan=fc_check_plan($secondId);$receipt=fc_seed_check($plan,'false');fc_ok('Readback audit failure rolls back check and count',fc_fault('force_ssl_control_check',fn()=>fc_save_check($plan,$receipt))&&provider_force_ssl_controls_ready());$confirmed=fc_save_check($plan,$receipt);fc_ok('Exact retained receipt succeeds after rollback without another POST',$confirmed['status']==='observed'&&$confirmed['last_check']['value']===false&&$writes===2);

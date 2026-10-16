@@ -1,5 +1,13 @@
 ## Acceptance job-output correction — 2026-10-16
 
+## Force SSL retained-history correction — 2026-10-16
+
+The current renewal union additionally authenticates all retained Force SSL change documents before indexed admission. Independent source review and PHP syntax pass; four actual storage-tampering cases are added, with native matrix and combined acceptance pending. [Scope and exact evidence](docs/TWENTYI_FORCE_SSL_KEYED_HISTORY_REVIEW.md). The original556 full remains preserved and has reached browser testing; its38 Apache reports are independently verified.
+
+## Unreleased integration: paid renewal dispatch
+
+Normally combine556+b221: permanent prepayment invoice purpose, original client consent, verified receipts and one owner-approved provider submission, with canonical-domain uncertainty fences. All four focused native environments pass; combined browser/release acceptance remains pending. Preserve105 existing native commands plus six additions,121/160 report sets and111 offline helper checks.
+
 Fix the first parallel run rejecting its own sha256 output name. Add nine actual output/entry-point checks (109 total passing locally) and preserve the failed original plus the older105-minute timeout. Application behavior is unchanged; new full acceptance is pending.
 
 ## Unreleased — WordPress admin buttons fit narrow cards
@@ -27,6 +35,10 @@ Read immutable Git blobs through one binary batch process when packaging, preser
 Add a current-owner local recovery action for the exact crash window after durable shared-ledger completion but before the dispatch witness. Preserve uncertainty, no-retry fences, original history and separate client sharing; only a subsequent exact GET can observe the desired flag. All four focused native/process environments and portable reports pass with independently verified archives; combined browser/package acceptance remains pending.
 
 ## Unreleased — scheduler privacy fixture correction
+
+## Unreleased — paid renewal dispatch source under review
+
+Add permanent unpaid-invoice purpose allocation for accepted one-time USD renewal terms, original receipt verification, saved client purpose/outcome views and owner-approved single submission through the existing operation ledger. Unknown/failed attempts remain domain-fenced; payment/consent alone cannot authorize renewal. Corrected index-proof, optional-family and captured-selector boundaries are source-reviewed. Native, browser and release acceptance remain pending. See [scope and evidence](docs/TWENTYI_DOMAIN_RENEWAL_DISPATCH.md).
 
 Avoid falsely rejecting unrelated website-folder controls when checking scheduler privacy. Require the exact scheduler section and retain full-page credential checks, with21 positive/negative regressions and independent review. Application code is unchanged; new combined browser acceptance remains pending.
 

@@ -1,16 +1,16 @@
 # Current CajunWebPro agent coordination
 
-Updated2026-10-16UTC. Codex and three agents own complete20i P0; Devin owns product licensing. No direct Devin session is implied. Work uses isolated branches and sequential root-reviewed shared changes.
+Updated 2026-10-16 UTC. Codex and three agents own complete20i P0; Devin owns product licensing. Work uses isolated branches and sequential root-reviewed shared changes. No direct Devin session is implied.
 
-| Owner | Current checkpoint | Next evidence |
+| Owner | Current checkpoint | Next action |
 |---|---|---|
-| Root | Corrects5a first-run output-name failure;109 local helper checks pass | Commit reviewed correction, one new exact full run, Windows/Linux and actual screenshot evidence. |
-| Domains | Clean/pushedbbf43f8a; sole focused38888746617 active | Verify all four23-report archives, preserve failures; no standalone full dispatch. |
-| VPS | Output fix independently reviewed af689e22; failed5a verifier draft preserved | Rebind helpers in a new corrected-source directory after root supplies source/run. |
-| Catalog | Renewal tests/cross-client wiring and separate six-missing timeout supplement reviewed | Review new parallel helpers; root verified retainedfaef evidence44b1e4bf without full acceptance. |
-| Devin | Main79d9 docs-only over reviewed e619, still unmerged | Prior populated upgrade/internal-master/legacy-invoice/schema-marker findings remain open. |
+| Root | Normal556+b221 renewal integration; original556 full remains active | Include reviewed Force SSL history correction, freeze source, run focused matrix and combined full. |
+| Domains | All four b221 focused archives accepted, root proof526a49e0 | Review directory fixture wording and provider support contract; Force SSL source review passed. |
+| VPS | Directory controls on isolated branch from556 | Submit exact shared patch; retain current authority, unknown outcomes and separate fresh GET evidence. |
+| Catalog | Renewal contract/report union reviewed; helper111 passes | Pure support contract308 checks per PHP mode, under review; native prerequisites designed, no sender yet. |
+| Devin | Latest reviewed main79d9 remains outside candidate | Resolve documented populated upgrade/master exposure/legacy invoice/schema-marker findings. |
 
-Originalfaef timed out during Apache at105minutes; no full acceptance. Original5a parallel run failed at output emission before children; its truthful incomplete aggregate is verified. Parent/focused evidence does not certify the corrected descendant. [Current handoff](../SESSION_HANDOFF.md).
+Renewal b221 has23 reports/2,179 named executions in each of four environments; browser and combined acceptance remain pending. The current union preserves105 predecessor commands plus six additions and121/160 report sets. Original556 build/recovery/Apache jobs have succeeded; native/browser and final evidence remain pending. [Handoff](../SESSION_HANDOFF.md).
 
 ## Integration rules
 

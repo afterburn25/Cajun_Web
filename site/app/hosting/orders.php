@@ -49,6 +49,7 @@ function service_orders_billing_eligible(\CajunWebPro\Foundation\RecurringBillin
 /** Inspect a specific existing invoice; matching amounts alone never create an order. */
 function service_orders_invoice(ServiceSubscriptionDocument $source,int $invoice,bool $active=true):array {
     if(!db()->inTransaction())throw new LogicException('Invoice binding needs its owning transaction.');
+    require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_dispatch.php';domain_renewal_dispatch_exclude_invoice($invoice);
     $d=$source->data();$m=$source->model();
     $i=one('SELECT i.*,j.client_id FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id WHERE i.id=? FOR UPDATE',[$invoice]);
     if(!$i||(int)$i['client_id']!==$d['client_id']||!in_array($i['status'],['issued','paid'],true)||(int)$i['amount_cents']!==$m->agreedPrice||$i['currency']!==$m->plan->currency||catalog_snapshot($invoice)!==null)throw new RuntimeException('Select this client’s separate invoice for the exact agreed hosting price.');
