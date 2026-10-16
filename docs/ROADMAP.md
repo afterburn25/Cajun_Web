@@ -1,3 +1,7 @@
+## Current verification correction - 2026-10-16
+
+First StackCP focused run failed at a fixture-only nonexistent-column lookup. The corrected test uses validated assignment status and preserves the security assertion;14 extracted cases per PHP mode pass. Current native/full acceptance remains pending. [Status](../PROJECT_STATUS.md).
+
 ## Current20i increment - StackCP access observations,2026-10-16
 
 Membership and whole-user grants reads are integrated onto9779 for first native acceptance. These are authenticated saved observations, not provider login/session permission. Pure/renderer/transport/Handler and169 helper checks pass; native/browser/screenshots/release gates remain pending. Frozen9779 has verified focused registration, Windows/Linux packages and recovery; original full is active. Cloud authority remains separate. Full lifecycle, commerce, VPS/cloud, provider support and SSH remain unfinished. [Status](../PROJECT_STATUS.md), [feature scope](TWENTYI_STACKCP_ACCESS_OBSERVATIONS.md).

@@ -1,3 +1,7 @@
+## Unreleased - correct StackCP native sibling lookup
+
+Fix the test fixture to select the actual protected sibling assignment and assert its exact identity before the unchanged tamper test. Preserve original four-way failure evidence. Shipping code is unchanged; corrected native acceptance remains pending.
+
 ## Unreleased - owner StackCP access observations
 
 Add owner membership and whole-user grants reads with fixed GET transport, current authority, authenticated history and finite safe states. Preserve registration/all earlier test contracts. Local source/pure/synthetic checks pass; native, HTTP/browser and release acceptance remain pending. No provider login/session or SSH is enabled.
