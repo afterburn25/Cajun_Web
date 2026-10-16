@@ -18,6 +18,8 @@ Acceptance evidence: [run 38817902722](https://github.com/afterburn25/Cajun_Web/
 
 `cbba2383` makes **bundle files immutable per build** — `license_bundle` previously used `ZipArchive::OVERWRITE` on a key-derived filename, so regenerating a bundle overwrote bytes an earlier record's stored SHA-256 verifies against, permanently breaking that download. Each build now writes a unique `bundle-{key}-{timestamp}-{rand}.zip`; records always point at unchanged files. Functional test asserts regeneration produces a distinct path (24 checks). [Acceptance run 38875975914](https://github.com/afterburn25/Cajun_Web/actions/runs/38875975914) passes all 15 steps on `cbba2383` — twelve consecutive green acceptance runs.
 
+`e6192a08` bounds `license_audit` detail to the VARCHAR(400) column — previously unbounded, so an overlong audit string would have thrown inside `license_transaction()` and rolled back the license mutation it was only recording. [Acceptance run 38881661033](https://github.com/afterburn25/Cajun_Web/actions/runs/38881661033) passes all 15 steps on `e6192a08` — thirteen consecutive green acceptance runs.
+
 Not live-verified: production needs `license_core_dir` pointing at a Website_Core checkout; no real purchase/bundle/install/validation cycle has run. Full details in [LICENSING_IMPLEMENTATION.md](docs/LICENSING_IMPLEMENTATION.md). This workstream is separate from 20i P0 below.
 
 ## Owner-approved client portal design — 2026-10-15
