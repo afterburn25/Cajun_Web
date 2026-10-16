@@ -1,14 +1,18 @@
-## Wire support-ticket events into the P-07 notification feed — 2026-10-16
+## 2026-10-16 — publish the concrete release freeze and branch
 
-Devin non-20i increment on `devin/non20i-ticket-notifications`, merging `devin/non20i-notifications-runtime` into the tickets branch. `notification_emit` gains a deterministic dedupe key (stable `sha256`-derived ids + `INSERT IGNORE`) so request replays never duplicate rows. Ticket emits run after the ticket transaction releases: staff-created conversations and public staff `reply`/`status` events notify the owning client; client opens/replies/status changes notify every enabled staff member holding `support.tickets`. Private staff `note`/`assign` events and support-session replies emit nothing, and `notification_url` maps `ticket:` refs to the audience-specific ticket screen. Native MariaDB and browser assertions cover recipient sets, privacy and replay dedupe. No live mail, deployment or customer action.
+Documentation-only descendant of35d8 records owner release-first override, published normal merge b98b96eb, frozen scope/map, actual source/focused evidence and remaining gates. Runtime, installer, version, published assets and production remain unchanged. Continue release corrections, authentic1.24 upgrade coverage, complete supported runtime acceptance, review, exact-main and publication/download verification before new20i capabilities. Coordination is posted in issue2 comment6220729910 and issue157 comment6220730195. Documentation validation is required before commit; no application acceptance is claimed.
 
-## Integrate P-07 per-recipient notification feed runtime — 2026-10-16
+## Unreleased - StackCP candidate and Devin handoff checkpoint
 
-Devin non-20i increment on `devin/non20i-notifications-runtime` from the notifications-foundation branch. Adds `ci_notification_feed`/`ci_notification_prefs`/`ci_notification_deliveries` storage (distinct from the payment-webhook `notifications` tables), an owner-password setup migration, the `app/notifications/feed.php` service mapping persistence onto the foundation models, private staff and client feed screens with recipient-only read/unread mutation and per-kind email opt-outs, read-only support-session viewing, and emit hooks on lead submission, admin/client project messages, review decisions, delivery publication and invoice-paid transitions. Portal delivery is unconditional; email copies attempt synchronously after commit and record honest `sent`/`failed` states — no daemon, no retry-forever. Native MariaDB and HTTP/Chromium suites cover isolation, preferences, retries, CSRF and access boundaries. No live mail, deployment or customer action.
+Document published3fa72d7b StackCP performance integration and its first focused native run, verified5bfd distro/native success, and classified original cccf/2a/9779 failures. Put concrete158/159/161 repairs and stacked work through175 in Devin's start-here assignment. Main runtime, release versions and assets are unchanged.
 
-## Port P-07 notification contract layer — 2026-10-16
+## Documentation - corrected acceptance source and coordinated repairs
 
-Devin non-20i increment on `devin/non20i-notifications-foundation` from main `595ac9c3`, continuing preserved `devin/notifications`. Adds `foundation/notifications/` — `Notification`, `NotificationFeed`, `NotificationPreferences`, `DeliveryAttempt`, `MetricSample` — with 65 pure checks in `tests/notifications/run.php` and a PHP 8.2/8.4 offline workflow lane. No persistence, delivery transport or UI — integration remains future work. No release or deployment.
+Record reviewedcccf85bf, its first full38927120383, preserved2a/9779 failure evidence and scoped package/recovery passes. Publish actionable licensing/mail feedback and distinguish Devin foundations from usable features. Main remains documentation-only; no release or deployment.
+
+## Documentation - scoped cloud passes, preserved full-run failure and Devin priorities
+
+Record exact2a focused3,020 checks, matching Windows/Linux packages and289 recovery checks alongside the original full run's tokenizer test-dependency failure and skipped HTTP. Preserve819c's terminal failure/99 missing reports and9779's newly canceled native-and-browser job with failed aggregate, pending diagnosis. Update current entry points and the159/161 correction priority; PRs163–170 are unaccepted proposals/foundations. This documentation-only descendant of82667afb imports no runtime and changes no installer, version, release or deployment.
 
 ## Documentation - corrected StackCP source and preserved acceptance evidence
 
@@ -23,12 +27,6 @@ Publish source9779879b, independently verified focused registration/Windows evid
 Add a root start-here guide, complete owner-approved assignment and existing licensing source/review links. Supersede the earlier unrelated-work pause for Devin while Codex retains20i and final integration. This changes no application, schema, installer, version, release or deployment.
 
 # Changelog
-
-## Unreleased — client support tickets and private staff notes (Devin port)
-
-- Port the preserved `codex/support-ticket-screens` slice onto `main` under the 2026-10-16 allocation: immutable journal + hash-linked event storage (`support_tickets`, `support_ticket_events`, staff/client read cursors), owner-gated `tickets_setup` migration, `support.tickets` permission, admin queue/detail/new-conversation screens, portal create/reply/status/read flows, private staff notes and assignments invisible to the client projection, exact-message activity links, and per-viewer explicit read controls.
-- Compose ticket unread facts into the existing workspace activity bell (`workspace_activity_summary`) without merging the two read models; ticket-only staff can use the activity center without project-administration access.
-- `docs/`: [usage](docs/SUPPORT_TICKETS.md), [contract](docs/SUPPORT_TICKETS_CONTRACT.md), [desk foundation](docs/DESK_FOUNDATION.md). Tests: `tests/desk/*` (114 model checks, default/no-ini), `tests/support_tickets_native.php` + `tests/support_ticket_screen_native_cases.php` (native MariaDB), `tests/ticket_cases.py` (HTTP/Chromium), `tests/ticket_upgrade_cases.py` (1.23 retained-upgrade replay). New `desk.yml` workflow; `application-tests.yml`/`access-policy.yml` cover `devin/non20i-*` pushes.
 
 ## Synchronize release entry points after review — 2026-10-15
 
@@ -723,3 +721,7 @@ Connect fresh/additive setup, current-authorized admin compose/list/preview/temp
 ## 2026-10-16 - Confirm Devin delivery and preserve legacy-upgrade failure
 
 Fresh issue157 comments6217621738/6217865863 acknowledge non20i work. Open heads: licensing159 e3d627701f14d4d44acc02be49f4bbd20cb2b389; tickets158 3ca4bbb780e155d56914ba834d1e811eebb91d1f; progress160 433c60942aa7e4d72c0576c391d41718f793675c. Licensing proposes fixes to the four findings; independent review is underway, not accepted or merged. Prior unconfirmed-acknowledgement wording is corrected. Full819c native failed at a genuine old-schema owner GET; preserve original run and fix on the next source, without weakening its fixture. Documentation-only descendant of481aff27; no runtime, installer, release or live change.
+
+## 2026-10-16 15:15 UTC - Publish cloud candidate and actionable licensing review
+
++Owner goal: continue complete20i and coordinate Devin non-20i work. Documentation parent595ac9c3; commit "Document cloud assignment candidate and licensing review" records exact source2a86704f/tree32f1058c/parent819c, original focused run38921917647 attempt1 and pending Windows build. Local/source/staged checks passed; native/full/browser/package/main/release acceptance remains pending. Original819c upgrade failure is preserved and corrected on2a; original9779 browser remains active. Licensing159 review299bf71e produced comments6218434878/6218437910 with two behavior gaps and stale inventory failure. All changed files are Markdown; no runtime, installer, version, release, live provider or customer action. Next: actual focused archives, full combined evidence and sequential integration.
