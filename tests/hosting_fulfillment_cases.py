@@ -24,7 +24,7 @@ def run_browser(env, browser, owner, client, foreign, cid, job, command, capture
         if env.get('seed_recurring_history'):
             historical = env['seed_recurring_history'](cid, job)
         else:
-            result = subprocess.run(['php', str(Path(__file__).with_name('recurring_billing_browser_fixture.php')), str(web/'existing'), str(cid), str(job)], text=True, capture_output=True, env={**os.environ, 'CWP_TEST_DATABASE': 'cwp_test'})
+            result = subprocess.run([os.environ.get('PHP_BINARY','php'), str(Path(__file__).with_name('recurring_billing_browser_fixture.php')), str(web/'existing'), str(cid), str(job)], text=True, capture_output=True, env={**os.environ, 'CWP_TEST_DATABASE': 'cwp_test'})
             if result.returncode:
                 raise RuntimeError(result.stdout+result.stderr)
             historical = json.loads(result.stdout)

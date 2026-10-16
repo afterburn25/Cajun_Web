@@ -53,7 +53,7 @@ from provider_http_server import ProviderServer
 provider_server=ProviderServer(ROOT)
 from mail_submission_server import SubmissionServer
 submission_server=SubmissionServer(ROOT)
-php=shutil.which('php8.3') or shutil.which('php');log=open(QA/'http-server.log','w');proc=subprocess.Popen([php,'-d','auto_prepend_file='+str(ROOT/'tests/mail_inbox_http_connector.php'),'-d','sendmail_path=python3 '+str(ROOT/'tests/mail_capture.py'),'-S','127.0.0.1:8091','-t',str(WEB)],stdout=log,stderr=log)
+php=os.environ.get('PHP_BINARY') or shutil.which('php8.3') or shutil.which('php');log=open(QA/'http-server.log','w');proc=subprocess.Popen([php,'-d','auto_prepend_file='+str(ROOT/'tests/mail_inbox_http_connector.php'),'-d','sendmail_path=python3 '+str(ROOT/'tests/mail_capture.py'),'-S','127.0.0.1:8091','-t',str(WEB)],stdout=log,stderr=log)
 error=None
 try:
     for _ in range(60):
@@ -154,7 +154,13 @@ try:
         page.go_back();expect(page.locator('.project-card:not([hidden])')).to_have_count(3);check('Browser back restores full portfolio',page.locator('.project-card:not([hidden])').count()==3)
         from motion_cases import run as motion_checks
         motion_checks(globals(),browser)
-        page.goto(BASE+'/existing/portal/index.php');page.locator('[name=email]').fill('alice@example.invalid');page.locator('[name=password]').fill('Synthetic client passphrase 2026');page.locator('button[type=submit],form button').first.click();page.wait_for_url('**/portal/index.php');page.goto(BASE+'/existing/portal/index.php?job=1');page.screenshot(path=str(QA/'Client-Workspace-Desktop.png'),full_page=True)
+        page.goto(BASE+'/existing/portal/index.php');page.locator('[name=email]').fill('alice@example.invalid');page.locator('[name=password]').fill('Synthetic client passphrase 2026');page.locator('button[type=submit],form button').first.click();page.wait_for_url('**/portal/index.php')
+        expect(page.locator('h1')).to_contain_text('Welcome,')
+        for width,height,label in [(1440,1000,'Desktop'),(390,844,'Mobile')]:
+            page.set_viewport_size({'width':width,'height':height})
+            check('Client project list '+label+' fits viewport',page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
+            page.screenshot(path=str(QA/('Client-Projects-'+label+'.png')),full_page=True)
+        page.set_viewport_size({'width':1440,'height':1000});page.goto(BASE+'/existing/portal/index.php?job=1');page.screenshot(path=str(QA/'Client-Workspace-Desktop.png'),full_page=True)
         check('Browser private project renders','HTTP manual invoice' in page.content());check('No uncaught browser errors',not errors)
         with page.expect_download() as download:page.locator('a[href*="portal/index.php?file="]').first.click()
         check('Browser authorized download matches stored file',Path(download.value.path()).read_bytes()==(ROOT/'site/images/icons/favicon.png').read_bytes())
@@ -260,6 +266,8 @@ try:
         stackcp_access_browser(globals(),browser)
         from provider_cloud_assignment_cases import run_browser as cloud_assignment_browser
         cloud_assignment_browser(globals(),browser)
+        from license_release_cases import run_browser as license_release_browser
+        license_release_browser(globals(),browser)
         from provider_schedule_cases import run_browser as schedule_browser
         schedule_browser(globals(),browser)
         browser.close()

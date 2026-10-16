@@ -3,7 +3,7 @@ from pathlib import Path
 from release_version import VERSION,STAGE,RECOVERY,LOCK_RECOVERY
 import hashlib,json,os,shutil,subprocess,zipfile
 ROOT=Path(__file__).resolve().parents[1];QA=ROOT/'qa';RUNTIME=ROOT/'test-runtime/structure';checks=[]
-PHP=shutil.which('php8.3') or shutil.which('php')
+PHP=os.environ.get('PHP_BINARY') or shutil.which('php8.3') or shutil.which('php')
 def check(name,value):
     checks.append({'name':name,'passed':bool(value)})
     if not value:raise AssertionError(name)

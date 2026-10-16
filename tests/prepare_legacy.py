@@ -1,6 +1,6 @@
 """Verify and extract the retained historical fixture, never a deployment source."""
 from pathlib import Path, PurePosixPath
-import hashlib, zipfile, subprocess, shutil, re, json, base64
+import os,hashlib, zipfile, subprocess, shutil, re, json, base64
 from urllib.request import urlopen
 root=Path(__file__).resolve().parents[1]
 archive=root/'tests/fixtures/CajunWebPro-1.0.8-COMPLETE-UPLOAD.zip'
@@ -15,7 +15,7 @@ with zipfile.ZipFile(archive) as z:
         assert path.name not in {'config.php','.installed.php','proxy-config.php'}
     z.extractall(destination)
 print('PASS: retained 1.0.8 fixture checksum, archive paths and extraction')
-php=shutil.which('php8.3') or shutil.which('php')
+php=os.environ.get('PHP_BINARY') or shutil.which('php8.3') or shutil.which('php')
 code="define('CWP_BOOT',true);require $argv[1];echo json_encode(['schema'=>schema_statements('ci_'),'settings'=>default_settings()],JSON_THROW_ON_ERROR);"
 result=subprocess.run([php,'-r',code,str(destination/'app/schema.php')],check=True,capture_output=True)
 (root/'test-runtime/legacy-schema.json').write_bytes(result.stdout)

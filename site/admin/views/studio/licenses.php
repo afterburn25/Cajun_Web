@@ -2,10 +2,10 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/licenses/service.php';
-$ready = license_ready();
+$ready = license_ready() && license_invoice_cutover_ready();
 ?>
 <?php if(!$ready): ?>
-<section class="workspace-card"><h2>Prepare website licensing</h2><p>Create the license, domain and bundle tables before managing website licenses. This step contacts no external service and preserves all existing data.</p>
+<section class="workspace-card"><h2>Prepare website licensing</h2><p>Prepare or upgrade licensing storage and preserve the boundary for older invoice reviews. Existing licenses, domains and bundles are retained. No external service is contacted.</p>
 <form method="post"><?php admin_action('studio_license_setup'); ?><?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn gold">Prepare licensing storage</button></form></section>
 <?php return; endif; ?>
 <?php
@@ -43,7 +43,9 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <option value="<?= esc($key) ?>"><?= esc($name) ?></option>
 <?php endforeach; ?>
 </select>
+<?php if(staff_can('staff.manage')): ?>
 <label><input type="checkbox" name="master" value="1"> Master key — validates on any domain (internal testing only, keep private)</label>
+<?php endif; ?>
 <button class="btn gold">Generate license key</button>
 </form>
 </section>
@@ -117,6 +119,7 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <?php endif; ?>
 
 <?php if($lic['is_active']): ?>
+<?php if(!(int)($lic['is_master']??0)): ?>
 <form method="post">
 <?php admin_action('studio_license_bundle'); ?>
 <input type="hidden" name="id" value="<?= esc($lic['id']) ?>">
@@ -129,6 +132,7 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 </select>
 <button class="btn gold" type="submit">Generate bundle</button>
 </form>
+<?php endif; ?>
 <form method="post">
 <?php admin_action('studio_license_deactivate'); ?>
 <input type="hidden" name="id" value="<?= esc($lic['id']) ?>">
@@ -146,4 +150,14 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 </div>
 <?php if(!$licenses): ?>
 <p class="muted">No licenses created yet.</p>
+<?php endif; ?>
+
+<?php if(staff_can('staff.manage')): ?>
+<section class="workspace-card"><h2>Review an older website invoice</h2><p>Use the original purchase records to decide whether this paid invoice already received a license. Matching customer or product names alone do not establish that history.</p>
+<form method="post"><?php admin_action('studio_license_legacy_review'); ?>
+<?php admin_input('invoice_id','Original paid invoice ID','','number','required min="1"'); ?>
+<?php admin_input('license_id','Existing license ID, or 0 to deliberately create a new license','0','number','required min="0"'); ?>
+<?php admin_input('evidence','Purchase record or reason for this exact decision','','text','required minlength="10" maxlength="200"'); ?>
+<?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?>
+<label class="check"><input type="checkbox" name="confirm" value="1" required>I verified this exact invoice and license decision against the original purchase records. Linking an existing license preserves its active or revoked status.</label><button class="btn gold">Record invoice review</button></form><p>No download is built, license reactivated, payment changed or email sent by this review.</p></section>
 <?php endif; ?>

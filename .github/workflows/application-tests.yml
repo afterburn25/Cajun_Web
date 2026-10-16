@@ -8,6 +8,16 @@ on:
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   workflow_dispatch:
     inputs:
+      php_version:
+        description: 'Complete acceptance PHP runtime; 8.3 retains the distro baseline'
+        type: choice
+        options: ['8.3', '8.2', '8.4']
+        default: '8.3'
+      database:
+        description: 'Complete acceptance database server'
+        type: choice
+        options: ['mariadb-10.11', 'mysql-8.4']
+        default: 'mariadb-10.11'
       checkpoint_only:
         description: 'Build, native database and browser checkpoint only; not release acceptance'
         type: boolean
@@ -16,9 +26,11 @@ permissions:
   contents: read
 concurrency:
   # Preserve every running acceptance, including repeated invocations of one source.
-  group: application-${{ github.ref }}-${{ github.sha }}-${{ inputs.checkpoint_only && 'checkpoint' || 'full' }}
+  group: application-${{ github.ref }}-${{ github.sha }}-${{ inputs.checkpoint_only && 'checkpoint' || 'full' }}-${{ inputs.php_version || '8.3' }}-${{ inputs.database || 'mariadb-10.11' }}
   cancel-in-progress: false
 env:
+  CWP_PHP_VERSION: ${{ inputs.php_version || '8.3' }}
+  CWP_DATABASE: ${{ inputs.database || 'mariadb-10.11' }}
   CWP_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 jobs:
   build:
@@ -34,14 +46,24 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Select supported PHP for the explicit release combination
+        if: env.CWP_PHP_VERSION != '8.3'
+        uses: shivammathur/setup-php@d52fc211a0436f8839a587b3b5b8efddab4744ea
+        with:
+          php-version: ${{ env.CWP_PHP_VERSION }}
+          extensions: pdo_mysql, gd, zip, curl, dom, mbstring, openssl, tokenizer
+          coverage: none
       - name: Prepare isolated runtime and evidence directory
         id: setup
         run: |
           mkdir -p qa
           sudo apt-get update -qq
-          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring
-          php8.3 -v
-          php8.3 -m
+          sudo apt-get install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
+          export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
+          printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
+          "$PHP_BINARY" -v
+          "$PHP_BINARY" -m
+          python3 tests/acceptance_environment.py --lane build
       - name: Offline transfer, provenance and failure regressions
         id: helpers
         run: python3 tests/acceptance_artifacts_test.py --report qa/parallel-helper-tests.json
@@ -106,15 +128,19 @@ jobs:
       checkpoint_digest: ${{ steps.checkpoint_upload.outputs.artifact-digest }}
     services:
       mariadb:
-        image: mariadb:10.11
+        image: ${{ inputs.database == 'mysql-8.4' && 'mysql:8.4' || 'mariadb:10.11' }}
         env:
           MARIADB_ROOT_PASSWORD: isolated-ci-root-only
           MARIADB_DATABASE: cwp_test
           MARIADB_USER: cwp_test
           MARIADB_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: isolated-ci-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
         ports: ['3306']
         options: >-
-          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-cmd="mysqladmin ping --silent"
           --health-interval=5s --health-timeout=5s --health-retries=20
     env:
       CWP_TEST_DATABASE: cwp_test
@@ -127,6 +153,13 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Select supported PHP for the explicit release combination
+        if: env.CWP_PHP_VERSION != '8.3'
+        uses: shivammathur/setup-php@d52fc211a0436f8839a587b3b5b8efddab4744ea
+        with:
+          php-version: ${{ env.CWP_PHP_VERSION }}
+          extensions: pdo_mysql, gd, zip, curl, dom, mbstring, openssl, tokenizer
+          coverage: none
       - name: Prepare isolated runtime and evidence directory
         id: setup
         env:
@@ -134,13 +167,20 @@ jobs:
         run: |
           mkdir -p qa
           printf 'CWP_TEST_PORT=%s\n' "$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
+          export CWP_TEST_PORT="$CWP_ASSIGNED_PORT"
           sudo apt-get update -qq
-          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring
-          php8.3 -v
-          php8.3 -m
+          sudo apt-get install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
+          export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
+          printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
+          "$PHP_BINARY" -v
+          "$PHP_BINARY" -m
+          if [ "$CWP_DATABASE" = "mysql-8.4" ]; then
+            docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+          fi
           python3 -m venv .ci-venv
           .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
           .ci-venv/bin/python -m playwright install --with-deps chromium
+          python3 tests/acceptance_environment.py --lane native
       - name: Download this attempt's immutable build input
         id: download
         if: needs.build.outputs.inputs_id != ''
@@ -155,154 +195,154 @@ jobs:
       - name: Native database, upgrade and authorization integration
         id: native
         run: |
-          php8.3 tests/service-plans/forms.php > qa/service-plans-forms-results.json
-          php8.3 tests/service-plans/documents.php > qa/service-plans-documents-results.json
-          php8.3 tests/service-plans/run.php > qa/service-plans-supplied-default.txt
-          php8.3 tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-results.json
-          php8.3 tests/twentyi-operations/run.php qa/twentyi-operations-integrated-results.json
-          php8.3 tests/twentyi-operations/mailboxes.php qa/twentyi-mailboxes-integrated-results.json
-          php8.3 tests/twentyi-operations/cloud-sites.php qa/twentyi-cloud-sites-integrated-results.json
-          php8.3 tests/estimator_adapter.php
-          php8.3 tests/native.php
-          php8.3 tests/staff_native.php
-          php8.3 tests/support_native.php
-          php8.3 tests/catalog_native.php
-          php8.3 tests/payments_native.php
-          php8.3 tests/attempts_native.php
-          php8.3 tests/notifications_native.php
-          php8.3 tests/ledger_native.php
-          php8.3 tests/delivery_archive.php
-          php8.3 tests/delivery_native.php
-          php8.3 tests/activity_native.php
-          php8.3 tests/mail_templates_native.php
-          php8.3 tests/mail_accounts_native.php
-          php8.3 tests/reviews_native.php
-          php8.3 tests/appointments_native.php
-          php8.3 tests/mail_connections_native.php
-          php8.3 tests/mail_inbox_native.php
-          php8.3 tests/mail_message_native.php
-          php8.3 tests/mail_notices_native.php
-          php8.3 tests/mail_drafts_native.php
-          php8.3 tests/mail_drafts_form.php
+          "$PHP_BINARY" tests/service-plans/forms.php > qa/service-plans-forms-results.json
+          "$PHP_BINARY" tests/service-plans/documents.php > qa/service-plans-documents-results.json
+          "$PHP_BINARY" tests/service-plans/run.php > qa/service-plans-supplied-default.txt
+          "$PHP_BINARY" tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-results.json
+          "$PHP_BINARY" tests/twentyi-operations/run.php qa/twentyi-operations-integrated-results.json
+          "$PHP_BINARY" tests/twentyi-operations/mailboxes.php qa/twentyi-mailboxes-integrated-results.json
+          "$PHP_BINARY" tests/twentyi-operations/cloud-sites.php qa/twentyi-cloud-sites-integrated-results.json
+          "$PHP_BINARY" tests/estimator_adapter.php
+          "$PHP_BINARY" tests/native.php
+          "$PHP_BINARY" tests/staff_native.php
+          "$PHP_BINARY" tests/support_native.php
+          "$PHP_BINARY" tests/catalog_native.php
+          "$PHP_BINARY" tests/payments_native.php
+          "$PHP_BINARY" tests/attempts_native.php
+          "$PHP_BINARY" tests/notifications_native.php
+          "$PHP_BINARY" tests/ledger_native.php
+          "$PHP_BINARY" tests/delivery_archive.php
+          "$PHP_BINARY" tests/delivery_native.php
+          "$PHP_BINARY" tests/activity_native.php
+          "$PHP_BINARY" tests/mail_templates_native.php
+          "$PHP_BINARY" tests/mail_accounts_native.php
+          "$PHP_BINARY" tests/reviews_native.php
+          "$PHP_BINARY" tests/appointments_native.php
+          "$PHP_BINARY" tests/mail_connections_native.php
+          "$PHP_BINARY" tests/mail_inbox_native.php
+          "$PHP_BINARY" tests/mail_message_native.php
+          "$PHP_BINARY" tests/mail_notices_native.php
+          "$PHP_BINARY" tests/mail_drafts_native.php
+          "$PHP_BINARY" tests/mail_drafts_form.php
           cp qa/mail-drafts-form-results.json qa/mail-drafts-form-default-results.json
-          php8.3 -n tests/mail_drafts_form.php
-          php8.3 tests/mail_submissions_native.php
-          php8.3 tests/mail_submission_dispatch_native.php
-          php8.3 tests/mail_submission_forms.php
+          "$PHP_BINARY" -n tests/mail_drafts_form.php
+          "$PHP_BINARY" tests/mail_submissions_native.php
+          "$PHP_BINARY" tests/mail_submission_dispatch_native.php
+          "$PHP_BINARY" tests/mail_submission_forms.php
           cp qa/mail-submission-forms-results.json qa/mail-submission-forms-default-results.json
-          php8.3 -n tests/mail_submission_forms.php
+          "$PHP_BINARY" -n tests/mail_submission_forms.php
           .ci-venv/bin/python tests/mail_submission_combined.py
-          php8.3 tests/provider_settings_native.php
-          php8.3 tests/provider_checks_native.php
-          php8.3 tests/provider_schedule_document.php
-          php8.3 -n tests/provider_schedule_document.php
-          php8.3 tests/provider_schedule_native.php
-          php8.3 tests/provider_inventory_native.php
-          php8.3 tests/provider_cloud_sites_native.php
-          php8.3 tests/provider_cloud_confirmation_native.php
-          php8.3 tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json
-          php8.3 -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json
-          php8.3 tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json
-          php8.3 -n -d extension=tokenizer -d extension=pdo tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json
-          php8.3 tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json
-          php8.3 -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json
-          php8.3 tests/provider_cloud_assignment_native.php
+          "$PHP_BINARY" tests/provider_settings_native.php
+          "$PHP_BINARY" tests/provider_checks_native.php
+          "$PHP_BINARY" tests/provider_schedule_document.php
+          "$PHP_BINARY" -n tests/provider_schedule_document.php
+          "$PHP_BINARY" tests/provider_schedule_native.php
+          "$PHP_BINARY" tests/provider_inventory_native.php
+          "$PHP_BINARY" tests/provider_cloud_sites_native.php
+          "$PHP_BINARY" tests/provider_cloud_confirmation_native.php
+          "$PHP_BINARY" tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json
+          "$PHP_BINARY" -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json
+          "$PHP_BINARY" tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json
+          "$PHP_BINARY" -n -d extension=tokenizer -d extension=pdo tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json
+          "$PHP_BINARY" tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json
+          "$PHP_BINARY" -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json
+          "$PHP_BINARY" tests/provider_cloud_assignment_native.php
           python3 -B tests/cloud_assignment_fixture_test.py qa/cloud-assignment-fixture-results.json
-          php8.3 tests/provider_forwarding_contract.php
-          php8.3 tests/provider_forwarding_native.php
-          php8.3 tests/provider_cloud_providers_native.php
-          php8.3 tests/twentyi-inventory-reader/cloud-providers.php > qa/cloud-provider-reader-default.json
-          php8.3 -n tests/twentyi-inventory-reader/cloud-providers.php > qa/cloud-provider-reader-noini.json
-          php8.3 tests/provider_inventory_upgrade_native.php
-          php8.3 tests/provider_registrar_native.php
-          php8.3 tests/provider_registration_periods_native.php
-          php8.3 tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-results.json
-          php8.3 -n tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-no-ini-results.json
-          php8.3 tests/domain_renewals_native.php
-          php8.3 tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-default.json
-          php8.3 -n tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-minimal.json
-          php8.3 tests/domain_renewal_agreements_native.php
-          php8.3 tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-default.json
-          php8.3 -n tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-minimal.json
-          php8.3 tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-default.json
-          php8.3 -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json
+          "$PHP_BINARY" tests/provider_forwarding_contract.php
+          "$PHP_BINARY" tests/provider_forwarding_native.php
+          "$PHP_BINARY" tests/provider_cloud_providers_native.php
+          "$PHP_BINARY" tests/twentyi-inventory-reader/cloud-providers.php > qa/cloud-provider-reader-default.json
+          "$PHP_BINARY" -n tests/twentyi-inventory-reader/cloud-providers.php > qa/cloud-provider-reader-noini.json
+          "$PHP_BINARY" tests/provider_inventory_upgrade_native.php
+          "$PHP_BINARY" tests/provider_registrar_native.php
+          "$PHP_BINARY" tests/provider_registration_periods_native.php
+          "$PHP_BINARY" tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-results.json
+          "$PHP_BINARY" -n tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-no-ini-results.json
+          "$PHP_BINARY" tests/domain_renewals_native.php
+          "$PHP_BINARY" tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-default.json
+          "$PHP_BINARY" -n tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-minimal.json
+          "$PHP_BINARY" tests/domain_renewal_agreements_native.php
+          "$PHP_BINARY" tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-default.json
+          "$PHP_BINARY" -n tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-minimal.json
+          "$PHP_BINARY" tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-default.json
+          "$PHP_BINARY" -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json
           python -B tests/domain_renewal_dispatch_http_contract.py > qa/domain-renewal-dispatch-handler-results.json
-          php8.3 tests/domain_renewal_dispatch_native.php
-          php8.3 tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-default.json
-          php8.3 -n tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-minimal.json
-          php8.3 tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-default.json
-          php8.3 -n tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-minimal.json
-          php8.3 tests/domain_registration_drafts_native.php
-          php8.3 tests/service_observations_native.php
-          php8.3 tests/domain_contracts_reader.php > qa/domain-contract-reader-integrated-results.json
-          php8.3 tests/domain_contracts_native.php
-          php8.3 tests/domain_expiry_contract.php > qa/domain-expiry-contract-integrated-results.json
-          php8.3 tests/domain_expiry_reader.php > qa/domain-expiry-reader-integrated-results.json
-          php8.3 tests/domain_expiry_native.php
-          php8.3 tests/twentyi-package-php/run.php > qa/package-php-document-results.json
-          php8.3 -n tests/twentyi-package-php/run.php > qa/package-php-document-no-ini-results.json
-          php8.3 tests/provider_package_php_native.php
-          php8.3 tests/document_roots_contract.php > qa/document-roots-contract-integrated-results.json
-          php8.3 tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json
-          php8.3 tests/provider_document_roots_native.php
-          php8.3 tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-results.json
-          php8.3 -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-no-ini-results.json
-          php8.3 tests/provider_package_force_ssl_native.php
-          php8.3 tests/directory_listing_contract.php > qa/directory-listing-document-results.json
-          php8.3 -n tests/directory_listing_contract.php > qa/directory-listing-document-no-ini-results.json
-          php8.3 tests/directory_listing_transport.php > qa/directory-listing-transport-results.json
-          php8.3 -n tests/directory_listing_transport.php > qa/directory-listing-transport-no-ini-results.json
-          php8.3 tests/provider_directory_listing_native.php
-          php8.3 tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-results.json
-          php8.3 -n tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-no-ini-results.json
-          php8.3 tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-results.json
-          php8.3 -n tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-no-ini-results.json
-          php8.3 tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-results.json
-          php8.3 -n tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-no-ini-results.json
-          php8.3 tests/provider_force_ssl_controls_native.php
-          php8.3 tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-results.json
-          php8.3 -n tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-no-ini-results.json
-          php8.3 tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-results.json
-          php8.3 -n tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-no-ini-results.json
-          php8.3 tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-results.json
-          php8.3 -n tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-no-ini-results.json
-          php8.3 tests/provider_directory_listing_controls_native.php
+          "$PHP_BINARY" tests/domain_renewal_dispatch_native.php
+          "$PHP_BINARY" tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-default.json
+          "$PHP_BINARY" -n tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-minimal.json
+          "$PHP_BINARY" tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-default.json
+          "$PHP_BINARY" -n tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-minimal.json
+          "$PHP_BINARY" tests/domain_registration_drafts_native.php
+          "$PHP_BINARY" tests/service_observations_native.php
+          "$PHP_BINARY" tests/domain_contracts_reader.php > qa/domain-contract-reader-integrated-results.json
+          "$PHP_BINARY" tests/domain_contracts_native.php
+          "$PHP_BINARY" tests/domain_expiry_contract.php > qa/domain-expiry-contract-integrated-results.json
+          "$PHP_BINARY" tests/domain_expiry_reader.php > qa/domain-expiry-reader-integrated-results.json
+          "$PHP_BINARY" tests/domain_expiry_native.php
+          "$PHP_BINARY" tests/twentyi-package-php/run.php > qa/package-php-document-results.json
+          "$PHP_BINARY" -n tests/twentyi-package-php/run.php > qa/package-php-document-no-ini-results.json
+          "$PHP_BINARY" tests/provider_package_php_native.php
+          "$PHP_BINARY" tests/document_roots_contract.php > qa/document-roots-contract-integrated-results.json
+          "$PHP_BINARY" tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json
+          "$PHP_BINARY" tests/provider_document_roots_native.php
+          "$PHP_BINARY" tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-results.json
+          "$PHP_BINARY" -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-no-ini-results.json
+          "$PHP_BINARY" tests/provider_package_force_ssl_native.php
+          "$PHP_BINARY" tests/directory_listing_contract.php > qa/directory-listing-document-results.json
+          "$PHP_BINARY" -n tests/directory_listing_contract.php > qa/directory-listing-document-no-ini-results.json
+          "$PHP_BINARY" tests/directory_listing_transport.php > qa/directory-listing-transport-results.json
+          "$PHP_BINARY" -n tests/directory_listing_transport.php > qa/directory-listing-transport-no-ini-results.json
+          "$PHP_BINARY" tests/provider_directory_listing_native.php
+          "$PHP_BINARY" tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-results.json
+          "$PHP_BINARY" -n tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-no-ini-results.json
+          "$PHP_BINARY" tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-results.json
+          "$PHP_BINARY" -n tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-no-ini-results.json
+          "$PHP_BINARY" tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-results.json
+          "$PHP_BINARY" -n tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-no-ini-results.json
+          "$PHP_BINARY" tests/provider_force_ssl_controls_native.php
+          "$PHP_BINARY" tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-results.json
+          "$PHP_BINARY" -n tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-no-ini-results.json
+          "$PHP_BINARY" tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-results.json
+          "$PHP_BINARY" -n tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-no-ini-results.json
+          "$PHP_BINARY" tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-results.json
+          "$PHP_BINARY" -n tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-no-ini-results.json
+          "$PHP_BINARY" tests/provider_directory_listing_controls_native.php
           python -B tests/provider_directory_controls_http_contract.py > qa/directory-listing-controls-http-handler-results.json
           python -B tests/provider_wordpress_installed_http_contract.py > qa/wordpress-installed-http-handler-results.json
-          php8.3 tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-results.json
-          php8.3 -n tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-no-ini-results.json
-          php8.3 tests/provider_package_wordpress_installed_native.php
-          php8.3 tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-default.json
-          php8.3 -n tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-minimal.json
-          php8.3 tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-default.json
-          php8.3 -n tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-minimal.json
-          php8.3 tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json
-          php8.3 -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json
-          php8.3 tests/stackcp_prerequisites_native.php
-          php8.3 tests/stackcp_access_contract.php > qa/stackcp-access-contract-default.json
-          php8.3 -n tests/stackcp_access_contract.php > qa/stackcp-access-contract-minimal.json
-          php8.3 tests/stackcp_access_views.php qa/stackcp-access-views-default.json
-          php8.3 -n tests/stackcp_access_views.php qa/stackcp-access-views-minimal.json
-          php8.3 tests/stackcp_access_transport.php > qa/stackcp-access-transport-default.json
-          php8.3 -n tests/stackcp_access_transport.php > qa/stackcp-access-transport-minimal.json
+          "$PHP_BINARY" tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-results.json
+          "$PHP_BINARY" -n tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-no-ini-results.json
+          "$PHP_BINARY" tests/provider_package_wordpress_installed_native.php
+          "$PHP_BINARY" tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-default.json
+          "$PHP_BINARY" -n tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-minimal.json
+          "$PHP_BINARY" tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-default.json
+          "$PHP_BINARY" -n tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-minimal.json
+          "$PHP_BINARY" tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json
+          "$PHP_BINARY" -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json
+          "$PHP_BINARY" tests/stackcp_prerequisites_native.php
+          "$PHP_BINARY" tests/stackcp_access_contract.php > qa/stackcp-access-contract-default.json
+          "$PHP_BINARY" -n tests/stackcp_access_contract.php > qa/stackcp-access-contract-minimal.json
+          "$PHP_BINARY" tests/stackcp_access_views.php qa/stackcp-access-views-default.json
+          "$PHP_BINARY" -n tests/stackcp_access_views.php qa/stackcp-access-views-minimal.json
+          "$PHP_BINARY" tests/stackcp_access_transport.php > qa/stackcp-access-transport-default.json
+          "$PHP_BINARY" -n tests/stackcp_access_transport.php > qa/stackcp-access-transport-minimal.json
           python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json
-          php8.3 tests/stackcp_access_native.php
-          php8.3 tests/stackcp_read_snapshot_native.php
-          php8.3 tests/provider_domain_search_native.php
-          php8.3 tests/provider_mailboxes_native.php
-          php8.3 tests/provider_operations_native.php
-          php8.3 tests/provider_operations_execute_native.php
-          php8.3 tests/service_plans_native.php
-          php8.3 tests/recurring_billing_native.php
-          php8.3 tests/recurring-billing/forms.php qa/recurring-billing-forms-results.json
-          php8.3 -n tests/recurring-billing/forms.php qa/recurring-billing-forms-default-results.json
-          php8.3 tests/hosting_records_native.php
-          php8.3 tests/hosting_operations_native.php
-          php8.3 tests/hosting_retry_native.php
-          php8.3 tests/hosting_delete_retry_native.php
-          php8.3 tests/hosting_reconciliation_native.php
-          php8.3 tests/client_authority_native.php
-          php8.3 tests/license_native.php
+          "$PHP_BINARY" tests/stackcp_access_native.php
+          "$PHP_BINARY" tests/stackcp_read_snapshot_native.php
+          "$PHP_BINARY" tests/provider_domain_search_native.php
+          "$PHP_BINARY" tests/provider_mailboxes_native.php
+          "$PHP_BINARY" tests/provider_operations_native.php
+          "$PHP_BINARY" tests/provider_operations_execute_native.php
+          "$PHP_BINARY" tests/service_plans_native.php
+          "$PHP_BINARY" tests/recurring_billing_native.php
+          "$PHP_BINARY" tests/recurring-billing/forms.php qa/recurring-billing-forms-results.json
+          "$PHP_BINARY" -n tests/recurring-billing/forms.php qa/recurring-billing-forms-default-results.json
+          "$PHP_BINARY" tests/hosting_records_native.php
+          "$PHP_BINARY" tests/hosting_operations_native.php
+          "$PHP_BINARY" tests/hosting_retry_native.php
+          "$PHP_BINARY" tests/hosting_delete_retry_native.php
+          "$PHP_BINARY" tests/hosting_reconciliation_native.php
+          "$PHP_BINARY" tests/client_authority_native.php
+          "$PHP_BINARY" tests/license_native.php
       - name: Real HTTP and Chromium application workflows
         id: browser
         run: .ci-venv/bin/python tests/browser_acceptance.py
@@ -354,15 +394,25 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Select supported PHP for the explicit release combination
+        if: env.CWP_PHP_VERSION != '8.3'
+        uses: shivammathur/setup-php@d52fc211a0436f8839a587b3b5b8efddab4744ea
+        with:
+          php-version: ${{ env.CWP_PHP_VERSION }}
+          extensions: pdo_mysql, gd, zip, curl, dom, mbstring, openssl, tokenizer
+          coverage: none
       - name: Prepare isolated runtime and evidence directory
         id: setup
         run: |
           mkdir -p qa
           sudo apt-get update -qq
-          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring
-          php8.3 -v
-          php8.3 -m
+          sudo apt-get install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
+          export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
+          printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
+          "$PHP_BINARY" -v
+          "$PHP_BINARY" -m
           python3 -m venv .ci-venv
+          python3 tests/acceptance_environment.py --lane recovery
       - name: Download this attempt's immutable build input
         id: download
         if: needs.build.outputs.inputs_id != ''
@@ -410,15 +460,19 @@ jobs:
       sha256: ${{ steps.seal.outputs.sha256 }}
     services:
       mariadb:
-        image: mariadb:10.11
+        image: ${{ inputs.database == 'mysql-8.4' && 'mysql:8.4' || 'mariadb:10.11' }}
         env:
           MARIADB_ROOT_PASSWORD: isolated-ci-root-only
           MARIADB_DATABASE: cwp_test
           MARIADB_USER: cwp_test
           MARIADB_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: isolated-ci-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
         ports: ['3306']
         options: >-
-          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-cmd="mysqladmin ping --silent"
           --health-interval=5s --health-timeout=5s --health-retries=20
     env:
       CWP_TEST_DATABASE: cwp_test
@@ -431,6 +485,13 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Select supported PHP for the explicit release combination
+        if: env.CWP_PHP_VERSION != '8.3'
+        uses: shivammathur/setup-php@d52fc211a0436f8839a587b3b5b8efddab4744ea
+        with:
+          php-version: ${{ env.CWP_PHP_VERSION }}
+          extensions: pdo_mysql, gd, zip, curl, dom, mbstring, openssl, tokenizer
+          coverage: none
       - name: Prepare isolated runtime and evidence directory
         id: setup
         env:
@@ -438,12 +499,20 @@ jobs:
         run: |
           mkdir -p qa
           printf 'CWP_TEST_PORT=%s\n' "$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
+          export CWP_TEST_PORT="$CWP_ASSIGNED_PORT"
           sudo apt-get update -qq
-          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring apache2-bin libapache2-mod-php8.3
-          php8.3 -v
-          php8.3 -m
+          sudo apt-get install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring" apache2-bin "libapache2-mod-php${CWP_PHP_VERSION}"
+          export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
+          printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
+          "$PHP_BINARY" -v
+          "$PHP_BINARY" -m
+          if [ "$CWP_DATABASE" = "mysql-8.4" ]; then
+            docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+          fi
           python3 -m venv .ci-venv
-          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1
+          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
+          .ci-venv/bin/python -m playwright install --with-deps chromium
+          python3 tests/acceptance_environment.py --lane apache
       - name: Download this attempt's immutable build input
         id: download
         if: needs.build.outputs.inputs_id != ''
@@ -457,7 +526,11 @@ jobs:
         run: python3 tools/acceptance_artifacts.py receive --lane apache
       - name: Apache protection with and without rewriting
         id: test
-        run: .ci-venv/bin/python tests/apache_acceptance.py
+        run: |
+          .ci-venv/bin/python tests/apache_acceptance.py
+          .ci-venv/bin/python tests/release_125_upgrade_guards.py qa/apache-release125-guards-results.json
+          .ci-venv/bin/python tests/release_125_upgrade_input_guards.py --report qa/apache-release125-input-guards-results.json
+          .ci-venv/bin/python tests/release_125_upgrade_acceptance.py
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation

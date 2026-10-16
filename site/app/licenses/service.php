@@ -36,6 +36,17 @@ function license_ready(): bool {
     return (one('SELECT value FROM ' . table('settings') . ' WHERE name = ?', ['license_schema_version'])['value'] ?? '') === '3';
 }
 
+/** Pre-upgrade invoice boundary, recorded once by explicit preparation. */
+function license_invoice_cutover_ready(): bool {
+    $value=one('SELECT value FROM '.table('settings').' WHERE name=?',['license_invoice_cutover'])['value']??null;
+    return is_string($value)&&preg_match('/^(0|[1-9][0-9]{0,9})$/D',$value)===1&&(float)$value<=4294967295;
+}
+function license_invoice_cutover(): int {
+    $value=one('SELECT value FROM '.table('settings').' WHERE name=?',['license_invoice_cutover'])['value']??null;
+    if(!is_string($value)||preg_match('/^(0|[1-9][0-9]{0,9})$/D',$value)!==1||(float)$value>4294967295)throw new RuntimeException('Prepare licensing history before fulfilling this invoice.');
+    return (int)$value;
+}
+
 /**
  * Generate a unique license key.
  * Format: XXXX-XXXX-XXXX-XXXX (32 hex characters)

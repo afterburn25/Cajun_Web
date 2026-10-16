@@ -1,3 +1,7 @@
+## Release acceptance correction checkpoint — 2026-10-16
+
+Canonical `codex/release-1.25.0` parent85f0b489 retains main35d8/d715 and mature3fa through normal merges. Root applied complete supported-runtime selection, authentic published1.24 upgrade fixtures, reviewed licensing repairs and narrow existing-layout capture/copy changes. Local208helper/69build-guard/28retention/19actual-ZIP checks pass; the independently reviewed licensing audit-history recovery correction is applied. All native/HTTP/visual/full-candidate/exact-main/publication gates remain pending. See [current acceptance report](TEST_REPORT_1.25.0.md) and [precise owner update instructions](MIGRATION-INSTRUCTIONS-1.25.0.md). Stable1.24 and main runtime remain unchanged; no1.25 release or live deployment. Frozen scope and held roadmap remain in force.
+
 ## Current PR159 review - 2026-10-16 15:15 UTC
 
 Exact head e3d627701f14d4d44acc02be49f4bbd20cb2b389 remains unmerged. [Actionable source/CI review](https://github.com/afterburn25/Cajun_Web/pull/159#issuecomment-6218434878) identifies unsafe sole-candidate NULL-invoice association and missing supported populated unmarked pre-master adoption. The new native fixture expects an unrelated revoked admin license to be consumed and stamps marker2 before its upgrade case; those cases do not prove the requested behavior. Original CI38912600662 stopped at stale installer hashes before native/HTTP execution. Master-customer exclusions and unknown-marker refusal are present in source; actual endpoint/native acceptance remains pending.

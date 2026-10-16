@@ -23,6 +23,12 @@ try:
     commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
     long_name='site/includes/foundation/mail-receiving/vendor/zbateson/mail-mime-parser/src/Header/Consumer/QuotedStringMimeLiteralPartTokenSplitPatternTrait.php'
     check('Builder reads the exact long dependency Git blob without filesystem path ambiguity',build.source_bytes(commit,long_name)==(ROOT/long_name).read_bytes())
+    version_root=WORK/'version-check';version_root.mkdir();(version_root/'VERSION').write_text((ROOT/'VERSION').read_text())
+    check('Root VERSION runtime and installer agree',build.release_version(version_root,build.SITE)==(ROOT/'VERSION').read_text().strip())
+    (version_root/'VERSION').write_text('0.0.0\n')
+    rejects('Builder rejects mismatched root VERSION',lambda:build.release_version(version_root,build.SITE))
+    (version_root/'VERSION').unlink()
+    rejects('Builder rejects missing root VERSION',lambda:build.release_version(version_root,build.SITE))
     check('Builder accepts exact organized scaffold inventory',len(build.inventory())>100)
     check('Installer inventory uses portable case-sensitive path order',list(build.inventory())==sorted(build.inventory()))
     temporary('storage/client.zip',b'customer bytes','Builder rejects runtime storage contents')

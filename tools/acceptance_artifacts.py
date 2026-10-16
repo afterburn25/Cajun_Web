@@ -22,10 +22,14 @@ LANES = ('build', 'native-browser', 'recovery', 'apache')
 STEP_KEYS = {'build': {'setup', 'helpers', 'build', 'fixtures', 'inputs', 'mutation'},
              'native-browser': {'setup', 'input', 'native', 'browser', 'mutation'},
              'recovery': {'setup', 'input', 'test', 'mutation'}, 'apache': {'setup', 'input', 'test', 'mutation'}}
-BUILD_QA = {'build-results.txt', 'build-guards-results.json', 'parallel-helper-tests.json', 'legacy-preparation.txt'}
+BUILD_QA = {'build-results.txt', 'build-guards-results.json', 'parallel-helper-tests.json', 'legacy-preparation.txt', 'build-environment-results.json'}
 VERSIONS = ('1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0', '1.10.0', '1.11.0', '1.11.1', '1.11.2', '1.12.0', '1.13.0', '1.14.0', '1.15.0', '1.16.0', '1.17.0', '1.18.0', '1.19.0', '1.20.0', '1.21.0', '1.22.0', '1.23.0', '1.24.0')
 FIXTURES = {'legacy', *('released-' + v for v in VERSIONS)}
 FIXTURE_JSON = {'legacy-schema.json', 'organized-shims.json'}
+# One immutable public release archive; this is not a general ZIP input permission.
+PUBLISHED_BASELINE = 'CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip'
+PUBLISHED_BASELINE_SHA256 = 'aa7a84b4c0d1201a4eddf2fe68340b90d4860117ceff4d959d165e6feafa731e'
+PUBLISHED_BASELINE_MEMBERS = 2591
 MAX_FILES = 500_000
 MAX_BYTES = 8 * 1024**3  # Local transfer safeguards, not a provider/application limit.
 
@@ -83,7 +87,9 @@ def identity(root=ROOT):
     require(re.fullmatch('[1-9][0-9]*', run) and re.fullmatch('[1-9][0-9]*', attempt), 'Exact run and attempt required')
     git = lambda *args: subprocess.check_output(['git', *args], cwd=root, text=True).strip()
     require(git('rev-parse', 'HEAD') == ci, 'Checkout is not the exact CI commit')
-    return {'schema': 1, 'repository': os.environ['GITHUB_REPOSITORY'], 'run_id': run, 'attempt': attempt,
+    php=os.environ.get('CWP_PHP_VERSION','8.3');database=os.environ.get('CWP_DATABASE','mariadb-10.11')
+    require(php in {'8.2','8.3','8.4'} and database in {'mariadb-10.11','mysql-8.4'}, 'Unsupported acceptance environment')
+    return {'schema': 1, 'environment': {'php':php,'database':database}, 'repository': os.environ['GITHUB_REPOSITORY'], 'run_id': run, 'attempt': attempt,
             'ci_sha': ci, 'source_sha': source, 'tree': git('rev-parse', 'HEAD^{tree}'),
             'workflow_sha256': digest(root / '.github/workflows/application-tests.yml'),
             'helper_sha256': digest(root / 'tools/acceptance_artifacts.py'),
@@ -105,7 +111,7 @@ def input_allowed(name):
     if len(parts) == 2 and parts[0] == 'qa' and parts[1] in BUILD_QA:
         return True
     return len(parts) >= 2 and parts[0] == 'test-runtime' and (
-        (parts[1] in FIXTURES and len(parts) >= 3) or (parts[1] in FIXTURE_JSON and len(parts) == 2))
+        (parts[1] in FIXTURES and len(parts) >= 3) or (parts[1] in FIXTURE_JSON | {PUBLISHED_BASELINE} and len(parts) == 2))
 
 
 def collect(root, paths):
@@ -194,12 +200,24 @@ def dist_valid(root, expected_ci):
         inspect_archive(archive, members)
 
 
+def validate_published_baseline(root, files):
+    path = root / 'test-runtime' / PUBLISHED_BASELINE
+    require(path.is_file() and not path.is_symlink(), 'Published baseline must be a regular file')
+    require(digest(path) == PUBLISHED_BASELINE_SHA256, 'Published1.24 archive digest mismatch')
+    prefix = 'test-runtime/released-1.24.0/'
+    expected = {name[len(prefix):]: facts for name, facts in files.items() if name.startswith(prefix)}
+    require(len(expected) == PUBLISHED_BASELINE_MEMBERS, 'Published1.24 member set is incomplete')
+    # This independently checks canonical paths, modes, unique names, CRC, size and every member hash.
+    inspect_archive(path, expected)
+
+
 def create_inputs(root, context, out):
     dist_valid(root, context['ci_sha'])
-    paths = [root / 'dist'] + [root / 'test-runtime' / n for n in sorted(FIXTURES | FIXTURE_JSON)]
+    paths = [root / 'dist'] + [root / 'test-runtime' / n for n in sorted(FIXTURES | FIXTURE_JSON | {PUBLISHED_BASELINE})]
     paths += [root / 'qa' / n for n in sorted(BUILD_QA)]
     require(all(p.exists() for p in paths), 'Pristine input is missing')
     files = collect(root, paths); require(all(input_allowed(n) for n in files), 'Unapproved pristine input')
+    validate_published_baseline(root, files)
     archive = out / 'inputs.zip'; facts = pack(root, files, archive)
     inspect_archive(archive, files)
     manifest = {'kind': 'inputs', 'identity': context, 'archive': facts, 'files': files}
@@ -223,10 +241,11 @@ def receive_inputs(folder, root, context, expected_digest, lane):
     require(lane in LANES[1:], 'Unknown input consumer')
     obj = verify_bundle(folder, 'inputs', context, expected_digest)
     require(all(input_allowed(n) for n in obj['files']), 'Unapproved pristine input')
-    required = {'test-runtime/' + n for n in FIXTURE_JSON}
+    required = {'test-runtime/' + n for n in FIXTURE_JSON | {PUBLISHED_BASELINE}}
     require(required <= obj['files'].keys() and all(any(n.startswith('test-runtime/' + f + '/') for n in obj['files']) for f in FIXTURES), 'Missing fixture family')
     extract(folder / 'inputs.zip', obj['files'], root, lambda n: lane == 'native-browser' or not n.startswith('qa/'))
     dist_valid(root, context['ci_sha'])
+    validate_published_baseline(root, obj['files'])
     write(root / '.acceptance/input-receipt.json', {'identity': context, 'input_sha256': expected_digest, 'lane': lane})
 
 
@@ -241,6 +260,8 @@ def evidence_allowed(name, lane):
     if lane == 'build' and len(parts) == 2 and parts[0] == 'dist': return True
     if len(parts) != 2 or parts[0] != 'qa': return False
     filename = parts[1]
+    environment_owner={'native-environment-results.json':'native-browser','recovery-environment-results.json':'recovery','apache-environment-results.json':'apache'}
+    if filename in environment_owner:return lane==environment_owner[filename]
     if lane == 'build': return filename in BUILD_QA
     if lane == 'recovery': return filename == 'structure-results.json'
     if lane == 'apache': return filename.startswith(('apache-', 'organized-'))

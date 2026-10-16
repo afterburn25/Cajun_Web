@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Three deterministic, sanitized artifacts from one clean recorded commit."""
 from pathlib import Path, PurePosixPath
-import argparse,hashlib,json,re,subprocess,zipfile,shutil,tempfile
+import os,argparse,hashlib,json,re,subprocess,zipfile,shutil,tempfile
 from contextlib import contextmanager
 ROOT=Path(__file__).resolve().parents[1];SITE=ROOT/'site'
 MAP=json.loads((ROOT/'tools/directory-map.json').read_text(encoding="utf-8"))
@@ -165,14 +165,20 @@ def archive(out,name,files,commit,version):
     write(out/(prefix+'.directories.txt'),'\n'.join(directories)+'\n')
     return manifest
 
+def release_version(root,site):
+    runtime=re.search(r"const CWP_VERSION = '([^']+)'",(site/'config/defaults.php').read_text(encoding='utf-8')).group(1)
+    if not re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+',runtime):raise RuntimeError('Invalid release version')
+    if (root/'VERSION').read_text(encoding='utf-8')!=runtime+'\n':raise RuntimeError('Root VERSION mismatch')
+    if "const CWP_INSTALLER_BUILD = '"+runtime+"'" not in (site/'install.php').read_text(encoding='utf-8'):raise RuntimeError('Installer version mismatch')
+    return runtime
+
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('--refresh',action='store_true');ap.add_argument('--commit');args=ap.parse_args()
     inv=generated(args.refresh)
-    version=re.search(r"const CWP_VERSION = '([^']+)'",(SITE/'config/defaults.php').read_text(encoding="utf-8")).group(1)
-    if "const CWP_INSTALLER_BUILD = '"+version+"'" not in (SITE/'install.php').read_text(encoding="utf-8"):raise RuntimeError('Installer version mismatch')
+    version=release_version(ROOT,SITE)
     view=(SITE/'install/views/form.php').read_text(encoding="utf-8")
     if view.count('id="install-form"')!=1 or 'data-back=' in view or 'Unlock your installation.' in view:raise RuntimeError('One-page installation contract broken')
-    php=shutil.which('php8.3') or shutil.which('php')
+    php=os.environ.get('PHP_BINARY') or shutil.which('php8.3') or shutil.which('php')
     for path in SITE.rglob('*.php'):
         p=subprocess.run([php,'-l',str(path)],capture_output=True,text=True)
         if p.returncode:raise RuntimeError(p.stdout+p.stderr)

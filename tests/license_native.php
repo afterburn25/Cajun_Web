@@ -18,7 +18,7 @@ try{
 
     // --- storage readiness (fresh deploy marks license_schema_version) -------
     lic_ok('Storage not ready before version mark',!license_ready());
-    save_setting('license_schema_version','3');
+    save_setting('license_schema_version','3');save_setting('license_invoice_cutover','0');
     lic_ok('Storage ready after version mark',license_ready());
 
     // --- key generation ----------------------------------------------------
@@ -170,6 +170,18 @@ try{
     lic_ok('Bundle record stored',count($bundles)===1&&$bundles[0]['title']==='Test bundle');
     lic_ok('Bundle SHA-256 recorded for download integrity',$bundles[0]['sha256']===hash_file('sha256',$bundleFile));
     @unlink($bundleFile);
+    $bundleBefore=all('SELECT * FROM '.table('license_bundles').' ORDER BY id');
+    try{license_bundle_store((int)$lic3['id'],'/synthetic/not-read.zip','Master delivery');lic_ok('Master bundle storage refusal',false);}catch(InvalidArgumentException $e){lic_ok('Master bundle storage refusal',$e->getMessage()==='Master license keys cannot be bundled for delivery.'&&all('SELECT * FROM '.table('license_bundles').' ORDER BY id')===$bundleBefore);}
+    // Execute the exact production endpoint query, not a copied security predicate.
+    $downloadSource=file_get_contents(CWP_CODE_ROOT.'/api/bundle-download.php');
+    if(preg_match('/\$bundle = one\(\s*(.*?),\s*\[\(int\)\$bundleId/s',$downloadSource,$sqlMatch)!==1)throw new RuntimeException('Cannot extract exact download query');
+    $downloadSql=eval('return '.$sqlMatch[1].';');
+    query('INSERT INTO '.table('license_bundles').' (license_id,file_path,title,sha256,created_at) VALUES (?,?,?,?,?)',[$lic3['id'],'/synthetic/old-master.zip','Existing master',null,gmdate('Y-m-d H:i:s')]);$masterBundle=(int)db()->lastInsertId();
+    lic_ok('Exact endpoint SQL refuses an already-created customer master bundle',one($downloadSql,[$masterBundle,2])===null);
+    lic_ok('Exact endpoint SQL retains ordinary owner access',one($downloadSql,[(int)$bundles[0]['id'],2])!==null);
+    lic_ok('Exact endpoint SQL excludes a foreign ordinary client',one($downloadSql,[(int)$bundles[0]['id'],1])===null);
+    require __DIR__.'/license_upgrade_cases.php';
+
 }catch(Throwable $e){
     $report=['checks'=>$checks,'passed'=>false,'error'=>get_class($e).': '.$e->getMessage()];
     file_put_contents(__DIR__.'/../qa/license-native-results.json',json_encode($report,JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));

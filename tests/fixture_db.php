@@ -103,6 +103,7 @@ if (in_array($request['operation']??'', ['seed-upgrade','seed-staff-upgrade','se
     require_once CWP_CODE_ROOT.'/database/schema/license_schema.php';
     $created=[];
     foreach(license_schema('ci_') as $name=>$sql)if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['ci_'.$name])){db()->exec($sql);$created[]=$name;}
+    save_setting('license_schema_version','3');save_setting('license_invoice_cutover','0');
     echo json_encode(['created'=>$created],JSON_THROW_ON_ERROR);
 } elseif (($request['operation']??'') === 'remove-recurring-schedule') {
     // Model an incomplete restore only in the explicitly disposable CI database.

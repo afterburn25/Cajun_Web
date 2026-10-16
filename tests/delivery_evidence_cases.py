@@ -69,8 +69,8 @@ def run(a, root, tmp, check, deny, context, fixtures, outcomes):
           all(sealed['files'][n] == {'size': len(b), 'sha256': hashlib.sha256(b).hexdigest()} for n, b in content.items()))
     check('Immutable browser checkpoint preserves actual extracted public bytes',
           all((roots['native-browser']/'.acceptance/checkpoint'/n).read_bytes() == b for n, b in content.items()))
-    expected = {'browser': ['build-guards-results.json', 'parallel-helper-tests.json', 'http-results.json'],
-                'final': ['build-guards-results.json', 'parallel-helper-tests.json', 'http-results.json', 'structure-results.json', 'apache-results.json']}
+    expected = {'browser': ['build-guards-results.json', 'parallel-helper-tests.json', 'http-results.json', 'build-environment-results.json'],
+                'final': ['build-guards-results.json', 'parallel-helper-tests.json', 'http-results.json', 'structure-results.json', 'apache-results.json', 'build-environment-results.json']}
     final = tmp/'final'; result = a.aggregate(final, ctx, incoming, bindings, expected)
     check('Actual four-lane aggregation retains exact public delivery bytes and named reports',
           result['complete'] and result['full_partition_checks_passed']

@@ -100,7 +100,7 @@ def run_browser(env, browser):
     fixture=env.get('seed_recurring_history')
     if fixture:historical=fixture(cid,job)
     else:
-        result=subprocess.run(['php',str(Path(__file__).with_name('recurring_billing_browser_fixture.php')),str(env['WEB']/'existing'),str(cid),str(job)],text=True,capture_output=True,env={**os.environ,'CWP_TEST_DATABASE':'cwp_test'})
+        result=subprocess.run([os.environ.get('PHP_BINARY','php'),str(Path(__file__).with_name('recurring_billing_browser_fixture.php')),str(env['WEB']/'existing'),str(cid),str(job)],text=True,capture_output=True,env={**os.environ,'CWP_TEST_DATABASE':'cwp_test'})
         if result.returncode:raise RuntimeError(result.stdout+result.stderr)
         historical=json.loads(result.stdout)
     history_url=project+'&schedule='+historical['schedule_id']+'&period_date=2020-02-01'
@@ -410,9 +410,9 @@ def run_browser(env, browser):
     missing=[name for name in license_names if not db('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['ci_'+name])]
     check('Legacy hosting fixture starts without optional licensing storage',missing==license_names)
     response=client.get(portal);owner_response=owner.get(admin+'?view=studio-licenses')
-    check('Legacy client hosting workspace works before optional licensing preparation',response.status_code==200 and 'Recurring browser project' in response.text and 'SQLSTATE' not in response.text and owner_response.status_code==200 and 'Website license storage is unavailable' in owner_response.text)
+    check('Legacy client hosting workspace works before optional licensing preparation',response.status_code==200 and 'Recurring browser project' in response.text and 'SQLSTATE' not in response.text and owner_response.status_code==200 and 'Prepare website licensing' in owner_response.text and soup(owner_response).select_one('form input[name=action][value=studio_license_setup]') is not None)
     check('Legacy portal GET leaves optional license storage absent',all(not db('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['ci_'+name]) for name in license_names))
-    check('Disposable fixture explicitly prepares optional tables for loss restoration tests',fixture_command({'operation':'prepare-optional-license-storage'})=={'created':license_names})
+    check('Disposable fixture explicitly prepares optional tables for loss restoration tests',fixture_command({'operation':'prepare-optional-license-storage'})=={'created':license_names} and db("SELECT name,value FROM ci_settings WHERE name IN ('license_schema_version','license_invoice_cutover') ORDER BY name")==[{'name':'license_invoice_cutover','value':'0'},{'name':'license_schema_version','value':'3'}])
     licensing_before={name:db('SELECT * FROM ci_'+name+' ORDER BY id') for name in license_names}
     retained_orders=db('SELECT * FROM ci_service_orders ORDER BY id')
     for name in licensing_before:

@@ -3,6 +3,7 @@ import argparse
 import copy
 import hashlib
 import importlib.util
+import io
 import json
 import re
 from pathlib import Path
@@ -35,7 +36,7 @@ def blob(path, data=b'public synthetic bytes'):
 
 
 def context():
-    return {'schema': 1, 'repository': 'synthetic/repository', 'run_id': '123', 'attempt': '1',
+    return {'schema': 1, 'environment': {'php':'8.3','database':'mariadb-10.11'}, 'repository': 'synthetic/repository', 'run_id': '123', 'attempt': '1',
             'ci_sha': 'a' * 40, 'source_sha': 'b' * 40, 'tree': 'c' * 40,
             'workflow_sha256': 'd' * 64, 'helper_sha256': 'e' * 64, 'reports_sha256': 'f' * 64, 'contract_sha256': '1' * 64}
 
@@ -59,12 +60,22 @@ def named(path, passed=True):
     a.write(path, {'passed': passed, 'checks': [{'name': 'Synthetic exact check', 'passed': passed}]})
 
 
+def synthetic_baseline():
+    # Unit protocol bytes only. Actual upgrade acceptance uses the pinned published asset.
+    stream = io.BytesIO()
+    with zipfile.ZipFile(stream, 'w') as archive:
+        for name, body in {'.htaccess': b'Deny public listing', 'includes/public.php': b'public synthetic bytes'}.items():
+            archive.writestr(zipfile.ZipInfo(name, date_time=(2026, 10, 12, 0, 0, 0)), body)
+    return stream.getvalue()
+
+
 def fixtures(root, ctx):
     packages(root, ctx)
     for n in a.FIXTURES:
         blob(root / 'test-runtime' / n / '.htaccess', b'Deny public listing')
         blob(root / 'test-runtime' / n / 'includes/public.php')
     for n in a.FIXTURE_JSON: a.write(root / 'test-runtime' / n, {'public': True})
+    blob(root / 'test-runtime' / a.PUBLISHED_BASELINE, synthetic_baseline())
     for n in a.BUILD_QA:
         if n.endswith('.json'): named(root / 'qa' / n)
         else: blob(root / 'qa' / n)
@@ -121,6 +132,9 @@ def run(tmp):
     for field, value in [('attempt', '2'), ('run_id', '124'), ('ci_sha', '1' * 40), ('source_sha', '2' * 40), ('tree', '3' * 40), ('repository', 'foreign/repo'), ('workflow_sha256', '4' * 64), ('reports_sha256', '5' * 64)]:
         changed = {**ctx, field: value}
         deny('Input refuses mismatched ' + field, lambda c=changed: a.verify_bundle(transfer, 'inputs', c, input_sha))
+    for environment in ({'php':'8.2','database':'mariadb-10.11'},{'php':'8.3','database':'mysql-8.4'}):
+        changed={**ctx,'environment':environment}
+        deny('Input refuses mismatched runtime '+json.dumps(environment,sort_keys=True),lambda c=changed:a.verify_bundle(transfer,'inputs',c,input_sha))
     deny('Input refuses missing expected digest', lambda: a.verify_bundle(transfer, 'inputs', ctx, ''))
     deny('Input refuses changed manifest bytes', lambda: a.verify_bundle(transfer, 'inputs', ctx, '0' * 64))
     broken = tmp / 'broken'; shutil.copytree(transfer, broken)
@@ -171,8 +185,8 @@ def run(tmp):
         else: named(root / 'qa/apache-results.json')
         d = a.seal(root,ctx,incoming/lane,lane,outcomes(lane),input_sha)
         bindings[lane] = {'result':'success','artifact_id':str(i+1),'sha256':d,**({'input_sha256':input_sha} if lane=='build' else {}),**({'checkpoint_id':'9','checkpoint_digest':'6'*64} if lane=='native-browser' else {})}
-    expected = {'browser':['build-guards-results.json','parallel-helper-tests.json','http-results.json'],
-                'final':['build-guards-results.json','parallel-helper-tests.json','http-results.json','structure-results.json','apache-results.json']}
+    expected = {'browser':['build-guards-results.json','parallel-helper-tests.json','http-results.json','build-environment-results.json'],
+                'final':['build-guards-results.json','parallel-helper-tests.json','http-results.json','structure-results.json','apache-results.json','build-environment-results.json']}
     count = 0
     def combined(b=bindings, inc=incoming, cp=False, exp=expected):
         nonlocal count
@@ -253,6 +267,8 @@ def run(tmp):
         check('Evidence ownership refuses '+lane+' '+name, not a.evidence_allowed(name,lane))
     from delivery_evidence_cases import run as delivery_evidence_cases
     delivery_evidence_cases(a, ROOT, tmp/'delivery-evidence', check, deny, context, fixtures, outcomes)
+    from acceptance_environment_test import run as environment_checks
+    environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
     contract=a.load(ROOT/'tools/acceptance-contract.json')
     for path,expected_hash in contract['unchanged_test_sha256'].items():
@@ -260,7 +276,10 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
-    check('All148 native commands retain exact reviewed order and arguments', native_commands==contract['native_commands'])
+    check('All148 native commands retain exact selected-runtime order and arguments', native_commands==contract['native_commands'])
+    predecessor=contract['release_environment_predecessor']
+    native_commands=['php8.3 '+command[len('"$PHP_BINARY" '):] if command.startswith('"$PHP_BINARY" ') else command for command in native_commands]
+    check('Only explicit executable selection changes all148 predecessor commands',len(native_commands)==predecessor['count']==148 and native_commands==predecessor['commands'] and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==predecessor['sha256'])
     snapshot=contract['stackcp_snapshot_native_command_baseline'];snapshot_additions=snapshot['additions']
     snapshot_position=native_commands.index(snapshot['additions_after'])+1
     check('Snapshot native comparison is inserted exactly once after StackCP access',
@@ -329,7 +348,10 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('--report',type=Path,required=True);args=parser.parse_args()
     error=None
     try:
-        with tempfile.TemporaryDirectory(prefix='cwp-artifact-tests-') as temp:run(Path(temp))
+        # Scoped constants describe this suite's two-file synthetic protocol fixture only.
+        # The separate published-baseline guards execute with the unchanged production constants.
+        with patch.object(a, 'PUBLISHED_BASELINE_SHA256', hashlib.sha256(synthetic_baseline()).hexdigest()), patch.object(a, 'PUBLISHED_BASELINE_MEMBERS', 2):
+            with tempfile.TemporaryDirectory(prefix='cwp-artifact-tests-') as temp:run(Path(temp))
     except Exception as exc:error=exc
     report={'passed':error is None,'scope':'Offline synthetic temporary files and exact transfer helpers; no application, provider, database or CI execution.', 'checks':checks}
     if error:report['error']=type(error).__name__+': '+str(error)
