@@ -30,10 +30,22 @@ surfaces, real mail senders, polling) is a separate gate.
 
 ## Not included (separate gates)
 
-- Persistence schema, portal/admin routes, bell UI, polling endpoints.
 - Real mail transport and provider delivery.
 - The sources that produce metrics — this component only models the
   honest freshness contract they must satisfy.
+
+## Runtime integration — `devin/non20i-notifications-runtime`
+
+The first persistence/UI slice now exists on the runtime branch:
+`ci_notification_feed`, `ci_notification_prefs` and
+`ci_notification_deliveries` (separate from the payment-webhook
+`notifications` tables), an owner-password setup migration,
+`app/notifications/feed.php` adapters, private admin and portal feed
+screens, recipient-only read state, per-kind email opt-outs, read-only
+support-session viewing, and emit hooks on inquiry, message, decision,
+delivery and invoice-paid events. Email copies attempt synchronously
+after the domain write commits — no daemon. Polling endpoints and
+`MetricSample` producers remain future gates.
 
 ## Tests
 
