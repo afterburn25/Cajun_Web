@@ -32,7 +32,10 @@ function mail_submissions_list(string $account,int $page=1):array {
         $result=[];
         foreach($rows as $row) {
             $message=mail_submissions_message($row);$status=mail_submissions_status($row['result_status']===null?null:['status'=>$row['result_status'],'reason'=>$row['result_reason']],$row['dispatch_started']===null?null:['started_at'=>$row['dispatch_started']]);
-            $result[]=['id'=>$row['id'],'draft_id'=>$row['draft_id'],'draft_revision'=>(int)$row['draft_revision'],'created_at'=>$row['created_at'],'subject'=>$message->snapshot->content->subject,'status'=>$status];
+            // Copied content needs current origin Read; a revoked grant masks the subject rather than dropping history.
+            $subject=$message->snapshot->content->subject;
+            if($message->snapshot->thread!==null){try{mail_submissions_origin($row,$message,$actor);}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;$subject='Copied message unavailable';}}
+            $result[]=['id'=>$row['id'],'draft_id'=>$row['draft_id'],'draft_revision'=>(int)$row['draft_revision'],'created_at'=>$row['created_at'],'subject'=>$subject,'status'=>$status];
         }
         return $result;
     });

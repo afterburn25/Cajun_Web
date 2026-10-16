@@ -48,10 +48,17 @@ function mail_submissions_message(array $row):PreparedMime {
         return $mime;
     }catch(Throwable $e){if($e instanceof PDOException)throw $e;throw new RuntimeException('Saved submission content is damaged or unsupported. Existing data was preserved.');}
 }
+/** Stored copied content stays private only while current origin Read authority holds. */
+function mail_submissions_origin(array $row,PreparedMime $mime,array $actor):void {
+    if($mime->snapshot->thread===null)return;
+    if(!mail_replies_ready())throw new RuntimeException('Copied-message storage is unavailable. Existing data was preserved.');
+    $loaded=mail_reply_drafts_for_submission($row['draft_id'],$actor);
+    if(!hash_equals($loaded['origin_fingerprint'],(string)$mime->snapshot->originFingerprint)||$loaded['thread']->toArray()!==$mime->snapshot->thread->toArray())throw new RuntimeException('The copied draft origin changed. Existing data was preserved.');
+}
 function mail_submissions_get(string $id):array {
     return staff_locked(function()use($id):array {
         $actor=mail_submissions_actor();$row=mail_submissions_row($id,(int)$actor['id']);mail_drafts_account($row['account_id']);
-        $message=mail_submissions_message($row);
+        $message=mail_submissions_message($row);mail_submissions_origin($row,$message,$actor);
         return ['id'=>$row['id'],'draft_id'=>$row['draft_id'],'draft_revision'=>(int)$row['draft_revision'],'account_id'=>$row['account_id'],'account_revision'=>(int)$row['account_revision'],'created_at'=>$row['created_at'],
             'content'=>$message->snapshot->privatePayload(),'dispatch'=>one('SELECT started_at FROM '.table('mail_submission_dispatches').' WHERE submission_id=?',[$id]),
             'result'=>one('SELECT scope,status,phase,reason,smtp_code,finished_at FROM '.table('mail_submission_results').' WHERE submission_id=?',[$id])];
@@ -72,7 +79,7 @@ function mail_submissions_prepare_intent(string $id,string $draft,int $draftRevi
         $existing=one('SELECT * FROM '.table('mail_submissions').' WHERE id=?',[$id]);
         if($existing) {
             if((int)$existing['owner_id']!==(int)$actor['id'] || $existing['draft_id']!==$draft || (int)$existing['draft_revision']!==$draftRevision || (int)$existing['account_revision']!==$accountRevision)throw new InvalidArgumentException('Submission identity was already used.');
-            mail_drafts_account($existing['account_id']);mail_submissions_message($existing);return ['id'=>$id,'created'=>false];
+            mail_drafts_account($existing['account_id']);mail_submissions_origin($existing,mail_submissions_message($existing),$actor);return ['id'=>$id,'created'=>false];
         }
         $saved=mail_drafts_row($draft,(int)$actor['id'],true);$account=mail_drafts_account($saved['account_id'],$accountRevision);
         $thread=null;$originFingerprint=null;$content=null;
@@ -89,7 +96,7 @@ function mail_submissions_prepare_intent(string $id,string $draft,int $draftRevi
         $existing=one('SELECT * FROM '.table('mail_submissions').' WHERE draft_id=? AND draft_revision=?',[$draft,$draftRevision]);
         if($existing) {
             if((int)$existing['owner_id']!==(int)$actor['id'] || $existing['account_id']!==$account['id'] || (int)$existing['account_revision']!==$accountRevision)throw new RuntimeException('Saved submission identity is inconsistent. Existing data was preserved.');
-            mail_submissions_message($existing);return ['id'=>$existing['id'],'created'=>false];
+            mail_submissions_origin($existing,mail_submissions_message($existing),$actor);return ['id'=>$existing['id'],'created'=>false];
         }
         mail_submissions_prior_attempt($draft);
         $profile=mail_accounts_load($account['id']);EndpointPolicy::host($profile['smtp_host']);EndpointPolicy::port('smtp',(int)$profile['smtp_port'],$profile['smtp_encryption']);

@@ -120,6 +120,25 @@ function mail_reply_drafts_list(string $account,string $status='draft',int $page
         return $result;
     });
 }
+/** One stable merged page over ordinary and copied drafts; copied subjects resolve only under current origin Read. */
+function mail_drafts_combined_list(string $account,string $status='draft',int $page=1):array{
+    return staff_locked(function()use($account,$status,$page):array{
+        $actor=mail_reply_drafts_actor();mail_drafts_account($account);
+        if(!in_array($status,['draft','discarded'],true))throw new InvalidArgumentException('Unknown draft filter.');$page=max(1,min($page,100000));
+        // Ordinary rows keep their own status; copied placeholders carry 'source' and
+        // follow their protected status instead, so each draft appears exactly once.
+        $rows=all('SELECT d.id,d.revision,d.account_id,d.account_revision,d.subject,d.updated_at,(r.id IS NOT NULL) AS copied FROM '.table('mail_drafts').' d LEFT JOIN '.table('mail_reply_drafts').' r ON r.id=d.id WHERE d.owner_id=? AND d.account_id=? AND ((r.id IS NULL AND d.status=?) OR r.status=?) ORDER BY d.updated_at DESC,d.id DESC LIMIT 21 OFFSET '.(($page-1)*20),[$actor['id'],$account,$status,$status]);
+        $result=[];
+        foreach($rows as $row){
+            $item=['id'=>$row['id'],'revision'=>(int)$row['revision'],'account_id'=>$row['account_id'],'account_revision'=>(int)$row['account_revision'],'status'=>$status,'subject'=>$row['subject'],'updated_at'=>$row['updated_at']];
+            if(!$row['copied']){$result[]=$item;continue;}
+            try{$loaded=mail_reply_drafts_load($row['id'],$actor);$item['subject']=$loaded['content']->subject;$item['unavailable']=false;}
+            catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;$item['subject']='Copied message draft unavailable';$item['unavailable']=true;}
+            $result[]=$item+['copied'=>true];
+        }
+        return $result;
+    });
+}
 /** Locked, integrity-verified view for submission preparation and reauthorization. */
 function mail_reply_drafts_for_submission(string $id,array $actor,bool $lock=false):array{
     $loaded=mail_reply_drafts_load($id,$actor,$lock);

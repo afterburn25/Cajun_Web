@@ -141,6 +141,12 @@ def run_browser(env, browser):
     smtp_before = submission_server.connections
     r = owner.post(send_page, data={'csrf': token(owner.get(send_page)), 'action': 'mail_submissions_send', 'submission_id': uuid.uuid4().hex, 'draft_id': forward, 'draft_revision': '2', 'account_revision': '1', 'confirm_send': '1'}, timeout=30)
     check('Revoked source Read blocks copied send before SMTP', submission_server.connections == smtp_before and 'inbox is unavailable' in r.text and len(db('SELECT * FROM ci_mail_submissions WHERE draft_id=?', [forward])) == 1)
+    r = owner.get(root + '?view=mail-submission&submission_id=' + sid)
+    check('Revoked source Read hides saved copied submission detail', 'inbox is unavailable' in r.text and 'SYNTHETIC PRIVATE' not in r.text)
+    r = owner.get(root + '?view=mail-submissions&account_id=' + sender)
+    check('Revoked source Read masks copied subjects in submission history', 'Copied message unavailable' in r.text and 'SYNTHETIC PRIVATE' not in r.text)
+    r = owner.post(root + '?view=mail-send&draft_id=' + draft, data={'csrf': token(owner.get(draft_url + '&draft_id=' + draft)), 'action': 'mail_submissions_send', 'submission_id': sid, 'draft_id': draft, 'draft_revision': '1', 'account_revision': '1', 'confirm_send': '1'}, timeout=30)
+    check('Revoked source Read refuses existing-id copied replay before SMTP', submission_server.connections == smtp_before and 'inbox is unavailable' in r.text)
     db('UPDATE ci_mail_account_grants SET can_read=1 WHERE account_id=? AND user_id=?', [aid, oid])
 
     context = browser.new_context(viewport={'width': 1440, 'height': 1050})

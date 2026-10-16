@@ -106,12 +106,9 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
         elseif($accounts)$account=array_key_first($accounts);
         $page=max(1,min((int)($_GET['p']??1),100000));$status=is_string($_GET['status']??null)?$_GET['status']:'draft';
         if($view==='mail-drafts') {
-            $rows=$account!==''?mail_drafts_list($account,$status,$page):[];
-            if($account!==''&&mail_replies_ready()) {
-                foreach(mail_reply_drafts_list($account,$status,$page) as $copied)$rows[]=$copied+['status'=>$status,'copied'=>true];
-                usort($rows,static fn(array $a,array $b):int=>[$b['updated_at'],$b['id']]<=>[$a['updated_at'],$a['id']]);
-                $rows=array_slice($rows,0,21);
-            }
+            // One stable ordering applies the page boundary across both draft kinds;
+            // per-kind offsets would drop records between merged pages.
+            $rows=$account===''?[]:(mail_replies_ready()?mail_drafts_combined_list($account,$status,$page):mail_drafts_list($account,$status,$page));
             return compact('actor','accounts','account','accountPage','moreAccounts','page','status')+['rows'=>$rows];
         }
         $values=['to'=>'','cc'=>'','bcc'=>'','subject'=>'','body'=>''];$revision=0;

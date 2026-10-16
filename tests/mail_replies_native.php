@@ -17,7 +17,7 @@ function rp_deny(string $name,callable $fn):void{try{$fn();}catch(InvalidArgumen
 function rp_actor(int $id=2):void{$u=one('SELECT * FROM '.table('users').' WHERE id=?',[$id]);$_SESSION=['uid'=>$id,'auth_version'=>$u['auth_version'],'login_at'=>time(),'last_activity'=>time()];}
 function rp_raw(string $subject='PRIVATE_COPIED_SUBJECT'):string{return "From: Source <source@example.invalid>\r\nSubject: ".$subject."\r\nMessage-ID: <source@example.invalid>\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\nPRIVATE_COPIED_BODY\n</textarea><script>literal()</script>";}
 function rp_prepared(string $mode='reply'):ReplyDraft{return ReplyDraft::prepare($mode,rp_raw());}
-function rp_account(string $label):string{global $password;return mail_accounts_save('',0,['label'=>$label,'address'=>'sender@example.invalid','imap_host'=>'imap.example.invalid','imap_port'=>'993','imap_encryption'=>'ssl','imap_username'=>'synthetic','smtp_host'=>'smtp.example.invalid','smtp_port'=>'587','smtp_encryption'=>'starttls','smtp_username'=>'synthetic'],true,['imap_password'=>'Synthetic incoming','smtp_password'=>'Synthetic outgoing'],$password);}
+function rp_account(string $label):string{global $password;return mail_accounts_save('',0,['label'=>$label,'address'=>'sender@example.invalid','imap_host'=>'imap.example.net','imap_port'=>'993','imap_encryption'=>'ssl','imap_username'=>'synthetic','smtp_host'=>'smtp.example.net','smtp_port'=>'587','smtp_encryption'=>'starttls','smtp_username'=>'synthetic'],true,['imap_password'=>'Synthetic incoming','smtp_password'=>'Synthetic outgoing'],$password);}
 function rp_grant(string $account,int $user,bool $read,bool $send):void{global $password;$g=one('SELECT revision FROM '.table('mail_account_grants').' WHERE account_id=? AND user_id=?',[$account,$user]);mail_accounts_grant($account,$user,(int)($g['revision']??0),$read,$send,true,0,$password);}
 function rp_read(string $account,string $uid='44',int $actor=2):array{
     $id=bin2hex(random_bytes(16));$now=gmdate('Y-m-d H:i:s');
@@ -81,12 +81,17 @@ try{
     rp_deny('Revoked source Read refuses edits',fn()=>mail_reply_drafts_save($id,1,$sender,1,new DraftContent([],[],[],'Edited','Body')));
     rp_deny('Revoked source Read refuses discard',fn()=>mail_reply_drafts_discard($id,1));
     rp_deny('Revoked source Read refuses copied submission preparation',fn()=>mail_submissions_prepare(bin2hex(random_bytes(16)),$id,1,1));
+    rp_deny('Revoked source Read refuses copied submission detail',fn()=>mail_submissions_get($intent));
+    rp_deny('Revoked source Read refuses existing-id submission replay',fn()=>mail_submissions_prepare($intent,$id,1,1));
+    $hiddenSubs=mail_submissions_list($sender);rp_ok('Copied submission history masks its subject while source Read is revoked',array_column($hiddenSubs,'subject','id')[$intent]==='Copied message unavailable'&&!str_contains(json_encode($hiddenSubs),'PRIVATE_COPIED'));
     $hidden=mail_reply_drafts_list($sender);rp_ok('Send-only list retains a content-free unavailable entry',$hidden[0]['unavailable']&&$hidden[0]['subject']==='Copied message draft unavailable'&&!str_contains(json_encode($hidden),'PRIVATE_COPIED'));
     rp_ok('Older getter remains content-free after Read revocation',mail_drafts_get($id)['body']===''&&!str_contains(json_encode(mail_drafts_get($id)),'PRIVATE_COPIED'));
     query('UPDATE '.table('mail_account_grants').' SET can_read=1 WHERE account_id=? AND user_id=2',[$source]);
-    query('UPDATE '.table('mail_accounts').' SET revision=2 WHERE id=?',[$source]);rp_deny('Source revision change cannot silently rebind copied content',fn()=>mail_reply_drafts_get($id));query('UPDATE '.table('mail_accounts').' SET revision=1 WHERE id=?',[$source]);
-    query('UPDATE '.table('mail_account_grants').' SET can_send=0 WHERE account_id=? AND user_id=2',[$sender]);rp_deny('Current sender Send is independently required',fn()=>mail_reply_drafts_get($id));query('UPDATE '.table('mail_account_grants').' SET can_send=1 WHERE account_id=? AND user_id=2',[$sender]);
-    query('UPDATE '.table('staff_profiles').' SET permissions=? WHERE user_id=2',[json_encode(['mail.send'])]);rp_deny('Mailbox Read grant cannot replace global Read',fn()=>mail_reply_drafts_get($id));query('UPDATE '.table('staff_profiles').' SET permissions=? WHERE user_id=2',[json_encode(['mail.read','mail.send','mail.templates.manage'])]);
+    rp_ok('Restored source Read returns copied submission detail',mail_submissions_get($intent)['content']['subject']==='Re: PRIVATE_COPIED_SUBJECT');
+    rp_ok('Restored source Read replays the committed intent',mail_submissions_prepare($intent,$id,1,1)===$intent);
+    query('UPDATE '.table('mail_accounts').' SET revision=2 WHERE id=?',[$source]);rp_deny('Source revision change cannot silently rebind copied content',fn()=>mail_reply_drafts_get($id));rp_deny('Source revision change refuses copied submission detail',fn()=>mail_submissions_get($intent));query('UPDATE '.table('mail_accounts').' SET revision=1 WHERE id=?',[$source]);
+    query('UPDATE '.table('mail_account_grants').' SET can_send=0 WHERE account_id=? AND user_id=2',[$sender]);rp_deny('Current sender Send is independently required',fn()=>mail_reply_drafts_get($id));rp_deny('Sender Send loss also refuses copied submission detail',fn()=>mail_submissions_get($intent));query('UPDATE '.table('mail_account_grants').' SET can_send=1 WHERE account_id=? AND user_id=2',[$sender]);
+    query('UPDATE '.table('staff_profiles').' SET permissions=? WHERE user_id=2',[json_encode(['mail.send'])]);rp_deny('Mailbox Read grant cannot replace global Read',fn()=>mail_reply_drafts_get($id));rp_deny('Global mail.read loss refuses copied submission detail',fn()=>mail_submissions_get($intent));query('UPDATE '.table('staff_profiles').' SET permissions=? WHERE user_id=2',[json_encode(['mail.read','mail.send','mail.templates.manage'])]);
     $_SESSION['auth_version']='stale';rp_deny('Revoked staff session cannot read copied content',fn()=>mail_reply_drafts_get($id));rp_actor();$_SESSION['last_activity']=time()-1801;rp_deny('Expired session cannot read copied content',fn()=>mail_reply_drafts_get($id));rp_actor();
     $_GET['support']='synthetic';rp_deny('Support context cannot read private copied drafts',fn()=>mail_reply_drafts_get($id));unset($_GET['support']);
     $edit=new DraftContent(['client@example.invalid'],[],[],'Edited subject','Edited body');
@@ -120,6 +125,17 @@ try{
     rp_ok('Forward submission is format 2 with no inherited reply headers',mail_submissions_get($forwardIntent)['content']['format']===2&&mail_submissions_get($forwardIntent)['content']['thread']===['in_reply_to'=>null,'references'=>[]]);
     $forwardMime=mail_submissions_message(one('SELECT * FROM '.table('mail_submissions').' WHERE id=?',[$forwardIntent]));
     rp_ok('Forward MIME carries no reply threading headers',!str_contains($forwardMime->bytes,'In-Reply-To:')&&!str_contains($forwardMime->bytes,'References:'));
+    // One stable merged page boundary over ordinary and copied drafts.
+    for($i=0;$i<21;$i++){mail_drafts_save(bin2hex(random_bytes(16)),0,$sender,1,new DraftContent(['p'.$i.'@example.invalid'],[],[],'Paged ordinary '.$i,'Body '.$i));}
+    for($i=0;$i<21;$i++){mail_reply_drafts_create(bin2hex(random_bytes(16)),$sender,1,rp_read($source,(string)(100+$i)),rp_prepared());}
+    $seen=[];$pages=0;
+    for($p=1;$p<=4;$p++){$list=mail_drafts_combined_list($sender,'draft',$p);foreach(array_slice($list,0,20) as $r)$seen[$r['id']]=($seen[$r['id']]??0)+1;$pages++;if(count($list)<=20)break;}
+    rp_ok('Merged pagination returns every draft exactly once',$pages===3&&count($seen)===44&&max($seen)===1);
+    rp_actor(3);mail_drafts_save(bin2hex(random_bytes(16)),0,$sender,1,new DraftContent(['x@example.invalid'],[],[],'Foreign','B'));rp_actor();
+    rp_ok('Merged list stays owner-scoped',!in_array('Foreign',array_column(mail_drafts_combined_list($sender),'subject'),true));
+    query('UPDATE '.table('mail_drafts').' SET updated_at=? WHERE owner_id=?',['2026-01-01 00:00:00',2]);
+    $pageOne=array_column(array_slice(mail_drafts_combined_list($sender,'draft',1),0,20),'id');$pageTwo=array_column(array_slice(mail_drafts_combined_list($sender,'draft',2),0,20),'id');
+    rp_ok('Equal timestamps keep a stable disjoint page boundary',count($pageOne)===20&&count($pageTwo)===20&&array_intersect($pageOne,$pageTwo)===[]);
     $before=rp_snapshot();rp_actor(1);mail_replies_migrate($password);rp_actor();rp_ok('Repeated setup preserves populated copied content and ordinary drafts',mail_reply_drafts_get($forward)['origin']===$f['origin']&&mail_drafts_get($ordinary)['body']==='Ordinary body');
     $metadata=json_encode([all('SELECT * FROM '.table('mail_draft_revisions')),all('SELECT * FROM '.table('audit'))]);rp_ok('Metadata history and audit never retain copied subject body or recipients',!str_contains($metadata,'PRIVATE_COPIED')&&!str_contains($metadata,'source@example.invalid')&&!str_contains($metadata,'Edited body'));
     rp_ok('Original mailbox encryption key remains unchanged',file_get_contents($private.'/mail-master.key')===$key);

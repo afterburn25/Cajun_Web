@@ -4,6 +4,16 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 # Session log
 
+## Repair copied-submission authorization and draft pagination — 2026-10-16
+
+Request: continue #157; independent review of PR #161 head `1d45798b` found a P1 authorization gap and two P2 defects.
+
+Actions: added `mail_submissions_origin` (current origin Read + immutable origin/thread fingerprint revalidation) and applied it to `mail_submissions_get`, both `mail_submissions_prepare_intent` existing-record replays, and `mail_submissions_list` (subject masking on revoked Read); replaced independent per-kind draft offsets with `mail_drafts_combined_list` (single union ordering + page boundary); fixed the fixture SMTP hostname to `smtp.example.net`. Native + HTTP coverage added for revocation/detail/replay/history and multi-page mixed pagination.
+
+Tests: `php -l` clean on all touched PHP; Python case compiles; build refresh clean. Native/browser lanes run in CI on this commit — not yet claimed.
+
+Next: push, reply on PR #161, continue remaining repair items.
+
 ## Complete webmail Reply/Forward end-to-end — 2026-10-16
 
 Request: continue the remaining non-20i roadmap (assignment `DEVIN_START_HERE.md`, coordination issue #157); Devin owns non-20i including licensing, Codex owns complete 20i. Starting commit: main `155db254`, new branch `devin/non20i-mail-replies`.
