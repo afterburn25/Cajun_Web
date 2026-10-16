@@ -74,8 +74,24 @@ function provider_inventory_read(array $row,#[\SensitiveParameter] string $secre
 /** Result states that carry package observations. */
 function provider_inventory_observed(string $state): bool {return in_array($state,['complete','partial'],true);}
 
+/** The public wrapper retains its original transaction behavior for existing callers. */
 function provider_inventory_record(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,?InventorySnapshot $snapshot,string $fingerprint=''): void {
-    staff_transaction(function()use($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint):void {
+    ProviderInventoryRecorder::record($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint);
+}
+/** Internal scheduled-job commit path. The caller owns both guards and the surrounding transaction. */
+function provider_inventory_record_transaction(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,?InventorySnapshot $snapshot,string $fingerprint=''): void {
+    ProviderInventoryRecorder::withinTransaction($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint);
+}
+final class ProviderInventoryRecorder {
+    public static function record(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,?InventorySnapshot $snapshot,string $fingerprint=''): void {
+        staff_transaction(fn()=>self::write($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint));
+    }
+    public static function withinTransaction(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,?InventorySnapshot $snapshot,string $fingerprint=''): void {
+        $key='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
+        if(!db()->inTransaction()||(int)query('SELECT IS_USED_LOCK(?)=CONNECTION_ID()',[$key])->fetchColumn()!==1)throw new LogicException('Inventory persistence requires the owning account transaction and mutex.');
+        self::write($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint);
+    }
+    private static function write(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,?InventorySnapshot $snapshot,string $fingerprint=''): void {
         query('INSERT INTO '.table('provider_refresh_results').' (id,state,reason,scope,coverage,package_count,skipped,skip_reasons,finished_at,elapsed_ms,key_fingerprint) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
             [$started['id'],$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,gmdate('Y-m-d H:i:s'),max(0,min($elapsed,2147483647)),$fingerprint]);
         if($snapshot!==null&&provider_inventory_observed($state)) {
@@ -97,7 +113,7 @@ function provider_inventory_record(array $started,string $state,string $reason,s
             }
         }
         provider_settings_audit((int)$started['actor_id'],'refresh_finished','Refresh '.$started['id'].' '.$state.($reason!==''?' '.$reason:''));
-    });
+    }
 }
 
 /**

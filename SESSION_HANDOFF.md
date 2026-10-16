@@ -1,3 +1,9 @@
+## Scheduled hosting refresh - isolated implementation checkpoint, 2026-10-15
+
+Branch `codex/twentyi-scheduled-refresh` starts at `82302571dfbcda649f4cebfce79c86faf63662f8`. It implements one owner-approved scheduled `GET /package` through the existing typed reader and protected credentials. A shared-host PHP entry, explicit owner controls, immutable history, leases, connection locks, backoff and reviewed recovery are present. Current owner/authentication, exact profile/revision/key and canonical installation/document-root bindings are rechecked before dispatch. Existing client assignments are unchanged.
+
+This is unreleased source. Local syntax and 42 pure document cases pass in each PHP mode. Native four-way and actual browser acceptance remain pending; no live 20i call or deployment occurred. Root review requested stronger retained-history validation; fixed-query byte hashes and original approval/start/intent/result bindings now refuse inconsistent recovery before network. [Scope and next checks](docs/TWENTYI_SCHEDULED_REFRESH.md). Root owns integration/releases. Preserve catalog 872 and full run 38826955926: browser/recovery passed, Apache continues; its prior Windows/native/browser evidence remains retained.
+
 # CajunWebPro handoff — 2026-10-15
 
 Continue the complete20i P0 [owner request](docs/TWENTYI_CODEX_TAKEOVER_REQUEST.md) and [requirements](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md). Goal remains active. Published v1.24.0 is unchanged. This turn diagnosed the actual combined browser failure, corrected its fixture and normally preserved newer main. Three independent feature slices continue.

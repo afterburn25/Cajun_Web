@@ -1,3 +1,7 @@
+## Unreleased - owner-approved scheduled hosting inventory
+
+Add one shared-host PHP scheduled task for bounded read-only hosting inventory, disabled until explicit owner approval. Persist immutable attempts and outcomes, enforce current owner/profile/key bindings, serialize concurrent workers, back off incomplete reads and require reviewed recovery after interruption. Owner setup, status, history and recovery controls are included. Native/browser acceptance is pending; no provider write, purchase, release or deployment is included.
+
 ## Catalog readiness integration — candidate, unreleased
 
 Normally merge reviewed catalog872aec34: owner plan summaries explain local readiness, distinguish zero from unknown costs/limits, and show selected immutable mapping reviews without changing current edit or execution authority. All four focused native combinations are verified; actual browser and combined application acceptance remain pending.

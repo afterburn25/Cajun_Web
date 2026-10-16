@@ -1,3 +1,7 @@
+# Scheduled inventory ownership - 2026-10-15
+
+Catalog agent owns isolated `codex/twentyi-scheduled-refresh` from 82302571: schedule modules/schema, protected PHP entry, owner schedule controller/view, focused tests and docs. Shared files are the root-reviewed inventory persistence extraction, provider controller/view includes, workflow/browser/Apache wiring and generated installer inventory. Domain hosting-history uses existing observations and needs no write hook. Root owns integration/releases. Prior catalog/readiness/discovery branches and evidence stay preserved.
+
 # Current catalog integration — 2026-10-15
 
 Root normally merges reviewed/native-verified catalog872aec34 from [PR145](https://github.com/afterburn25/Cajun_Web/pull/145) into the integration branch. Its exact full38826955926 and Windows31645 continue under the catalog agent, which also independently reviews domain-renewal repairs. Domain/cloud authors retain their isolated slices. Preserve full2239 and38bb runs; complete new combined acceptance after ready reviewed increments are integrated. [Current evidence](../SESSION_HANDOFF.md).

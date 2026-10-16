@@ -1,0 +1,120 @@
+<?php
+/** Real PDO/storage/locks with the real typed reader over synthetic transport. No provider API. */
+declare(strict_types=1);
+if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
+define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/admin/controllers/providers.php';
+use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,TransportRequest,TransportResponse};
+use CajunWebPro\Foundation\TwentyIInventory\{InventoryRead,InventorySnapshot};
+use CajunWebPro\Foundation\TwentyIInventoryReader\InventoryReader;
+$private=__DIR__.'/../test-runtime/provider-schedule-private';@mkdir($private,0700,true);@mkdir(__DIR__.'/../qa',0700,true);
+$GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/existing','storage'=>realpath($private),'key'=>str_repeat('synthetic-schedule-key-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'psch_']];
+$_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=realpath(__DIR__.'/../site');start_session();
+$checks=[];$password='Synthetic scheduler owner passphrase';$secret='SYNTHETIC_SCHEDULE_PRIVATE_KEY';$dns=0;$calls=0;$mode='complete';$baseline=[];
+function ps_ok(string $name,bool $ok):void{global $checks;$checks[]=['name'=>$name,'passed'=>$ok];if(!$ok)throw new RuntimeException($name);}
+function ps_deny(string $name,callable $fn):void{try{$fn();}catch(InvalidArgumentException|RuntimeException|LogicException $e){if($e instanceof PDOException)throw $e;ps_ok($name,true);return;}ps_ok($name,false);}
+function ps_actor(int $id=1):void{$u=one('SELECT * FROM '.table('users').' WHERE id=?',[$id]);$_SESSION=['uid'=>$id,'auth_version'=>$u['auth_version'],'login_at'=>time(),'last_activity'=>time()];}
+function ps_ctx():array{return staff_locked(fn()=>provider_schedule_state());}
+function ps_count(string $table):int{return (int)query('SELECT COUNT(*) FROM '.table($table))->fetchColumn();}
+function ps_resolve():string{global $dns;$dns++;if(db()->inTransaction())throw new LogicException('DNS inherited a transaction.');return '8.8.8.8';}
+final class PsTransport implements HttpTransport {
+    public function __construct(private $authorize){}
+    public function send(TransportRequest $request):TransportResponse{
+        global $calls,$mode;$calls++;($this->authorize)();if($request->method!=='GET'||parse_url($request->url,PHP_URL_PATH)!=='/package')throw new LogicException('Unexpected reader operation.');
+        if($mode==='throw')throw new RuntimeException('SYNTHETIC_SCHEDULE_PRIVATE_KEY upstream detail');
+        if($mode==='unavailable')return new TransportResponse(503,[],'private provider text');
+        $item=['id'=>910,'typeRef'=>1,'name'=>'schedule.example','names'=>['schedule.example'],'enabled'=>true,'created'=>'2024-01-02T03:04:05Z'];
+        return new TransportResponse(200,[],json_encode($mode==='partial'?[$item,['unknown'=>'refused']]:[$item]));
+    }
+}
+function ps_read(array $row,#[SensitiveParameter] string $key,string $address,callable $authorize,string $operation):InventorySnapshot{
+    global $secret;if(db()->inTransaction()||$key!==$secret||$address!=='8.8.8.8'||$operation!==InventoryRead::PACKAGES_LIST)throw new LogicException('Invalid scheduled network boundary.');
+    $credential=new ProviderCredential('twenty-i',$row['id'],static function()use($key,$authorize):string{$authorize();return $key;});
+    return InventoryReader::read(new PsTransport($authorize),$credential,$operation,0,time());
+}
+function ps_run(?callable $resolver=null):string{return provider_schedule_run($resolver??'ps_resolve','ps_read');}
+function ps_capture():array{$r=[];foreach(['settings','audit','provider_schedule_events','provider_refreshes','provider_refresh_results','provider_observation_packages'] as $t)$r[$t]=all('SELECT * FROM '.table($t));return $r;}
+/** Explicit isolated-fixture restoration between independent scenarios; never used by the application. */
+function ps_reset():void{
+    global $baseline,$dns,$calls,$mode;
+    foreach(['provider_observation_packages','provider_refresh_results','provider_schedule_events','provider_refreshes','audit','settings'] as $t)query('DELETE FROM '.table($t));
+    foreach(['settings','audit','provider_refreshes','provider_refresh_results','provider_observation_packages','provider_schedule_events'] as $t)foreach($baseline[$t] as $r)query('INSERT INTO '.table($t).' (`'.implode('`,`',array_keys($r)).'`) VALUES ('.implode(',',array_fill(0,count($r),'?')).')',array_values($r));
+    $dns=$calls=0;$mode='complete';ps_actor();
+}
+function ps_audit_fail(callable $fn):bool{
+    db()->exec('CREATE TRIGGER psch_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='provider.schedule_event' AND NEW.detail LIKE '% finish sha256 %' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic schedule outcome audit failure'; END IF; END");
+    try{$fn();return false;}catch(PDOException){return true;}finally{db()->exec('DROP TRIGGER psch_fail');}
+}
+function ps_worker(string $mode):array{$p=proc_open([PHP_BINARY,__FILE__,$mode],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);if(!is_resource($p))throw new RuntimeException('Fixture worker unavailable.');foreach([1,2] as $s)stream_set_timeout($pipes[$s],25);return [$p,$pipes];}
+function ps_finish(array $worker):string{[$p,$pipes]=$worker;fclose($pipes[0]);$out=stream_get_contents($pipes[1]);$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);if(proc_close($p)!==0||$err!=='')throw new RuntimeException('Fixture worker failed.');return $out;}
+if(($argv[1]??'')==='worker'){
+    $_SESSION=[];$result=ps_run(function():string{echo "resolving\n";fflush(STDOUT);stream_set_timeout(STDIN,20);if(trim((string)fgets(STDIN))!=='continue')throw new RuntimeException('Fixture synchronization');return ps_resolve();});echo $result.':'.$calls;exit;
+}
+/** Create a valid historical approval fixture, then a durable start with an already expired lease. */
+function ps_expired():array {
+    $rows=all('SELECT * FROM '.table('provider_schedule_events').' ORDER BY sequence');$previous=str_repeat('0',64);
+    foreach($rows as $row){$d=provider_schedule_document($row['document_json']);$d['at']-=400;$d['previous']=$previous;if($d['state']['next'])$d['state']['next']-=400;$bytes=provider_schedule_json($d);provider_schedule_document($bytes);$sha=hash('sha256',$bytes);
+        query('UPDATE '.table('provider_schedule_events').' SET created_epoch=?,previous_sha256=?,document_json=?,document_sha256=? WHERE id=?',[$d['at'],$previous,$bytes,$sha,$row['id']]);query('UPDATE '.table('audit').' SET detail=?,created_at=? WHERE action=? AND detail=?',['Schedule event '.$row['id'].' '.$row['kind'].' sha256 '.$sha,gmdate('Y-m-d H:i:s',$d['at']),'provider.schedule_event','Schedule event '.$row['id'].' '.$row['kind'].' sha256 '.$row['document_sha256']]);$previous=$sha;
+    }save_setting('provider_schedule_head',count($rows).':'.$previous);
+    return staff_locked(fn()=>staff_transaction(function():array{$ctx=provider_schedule_state();return provider_schedule_start($ctx,provider_schedule_approval($ctx),time()-180);}));
+}
+/** Reconstruct internally hashed but inconsistent restored fixture references, to exercise relational checks. */
+function ps_reseal(callable $change):void {
+    $rows=all('SELECT * FROM '.table('provider_schedule_events').' ORDER BY sequence');$previous=str_repeat('0',64);
+    foreach($rows as $row){$d=provider_schedule_document($row['document_json']);$d=$change($d);$d['previous']=$previous;$bytes=provider_schedule_json($d);provider_schedule_document($bytes);$sha=hash('sha256',$bytes);
+        query('UPDATE '.table('provider_schedule_events').' SET previous_sha256=?,document_json=?,document_sha256=? WHERE id=?',[$previous,$bytes,$sha,$row['id']]);query('UPDATE '.table('audit').' SET detail=? WHERE action=? AND detail=?',['Schedule event '.$row['id'].' '.$row['kind'].' sha256 '.$sha,'provider.schedule_event','Schedule event '.$row['id'].' '.$row['kind'].' sha256 '.$row['document_sha256']]);$previous=$sha;
+    }save_setting('provider_schedule_head',count($rows).':'.$previous);
+}
+try{
+    foreach(schema_statements('psch_') as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);save_setting('studio_schema_version','2');foreach(default_settings() as $k=>$v)save_setting($k,$v);
+    foreach([1,2,3] as $i)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Schedule staff '.$i,'schedule'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
+    staff_seed_owner(1);foreach([2=>'administrator',3=>'owner'] as $id=>$role)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode(array_keys(staff_permissions()))]);
+    ps_actor();provider_settings_migrate($password);$profile=provider_settings_save('',0,'Scheduled provider fixture',true,$secret,$password);provider_inventory_migrate($password);
+    ps_ok('Schedule GET state does not create storage',!provider_schedule_context()['ready']&&!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',['psch_provider_schedule_events']));
+    ps_deny('Preparation rejects wrong password',fn()=>provider_schedule_prepare('wrong'));ps_actor(2);ps_deny('Administrator cannot prepare schedule',fn()=>provider_schedule_prepare($password));ps_actor();
+    db()->beginTransaction();ps_deny('Preparation refuses inherited transaction before DDL',fn()=>provider_schedule_prepare($password));ps_ok('Preparation leaves inherited transaction open',db()->inTransaction());db()->rollBack();
+    provider_schedule_prepare($password);$ctx=ps_ctx();ps_ok('Preparation is disabled and makes no request',$ctx['ready']&&$ctx['state']['paused']&&$ctx['state']['approval']===null&&$dns===0&&$calls===0);
+    $before=ps_capture();provider_schedule_prepare($password);ps_ok('Repeated preparation preserves original journal and audit',ps_capture()===$before);
+    ps_deny('Unchecked approval rejected',fn()=>provider_schedule_configure($ctx['last']['sequence'],$profile,1,900,false,$password));ps_deny('Unsupported frequent schedule rejected',fn()=>provider_schedule_configure($ctx['last']['sequence'],$profile,1,30,true,$password));ps_deny('Stale profile approval rejected',fn()=>provider_schedule_configure($ctx['last']['sequence'],$profile,99,900,true,$password));
+    $originalRoot=$_SERVER['DOCUMENT_ROOT'];$_SERVER['DOCUMENT_ROOT']=$private;ps_deny('Private directory cannot replace actual document root at approval',fn()=>provider_schedule_configure($ctx['last']['sequence'],$profile,1,900,true,$password));$_SERVER['DOCUMENT_ROOT']=$originalRoot;
+    provider_schedule_configure($ctx['last']['sequence'],$profile,1,900,true,$password);$ctx=ps_ctx();ps_ok('Explicit owner approval binds exact account key auth and paths',!$ctx['state']['paused']&&provider_schedule_approval($ctx)['data']['credential_sha256']===hash('sha256',provider_settings_load($profile)['credentials'])&&provider_schedule_approval($ctx)['data']['document_root']===$originalRoot&&$calls===0);
+    $baseline=ps_capture();ps_actor(2);ps_deny('Administrator cannot see schedule or history',fn()=>provider_schedule_context());ps_actor();$_GET['support']='fixture';ps_deny('Owner support context cannot see schedule',fn()=>provider_schedule_context());unset($_GET['support']);
+    $_SESSION=[];ps_ok('Worker runs with no interactive identity',ps_run()==='complete'&&$dns===1&&$calls===1&&$_SESSION===[]);ps_actor();$ctx=ps_ctx();
+    ps_ok('Successful scheduled observation commits once with next due time',$ctx['state']['pending']===null&&$ctx['state']['next']>=time()+895&&$ctx['state']['failures']===0&&ps_count('provider_refreshes')===1&&ps_count('provider_refresh_results')===1&&ps_count('provider_observation_packages')===1);
+    ps_ok('Fresh schedule cannot duplicate a completed read',ps_run()==='not_due'&&$calls===1);ps_ok('Client assignment tables remain untouched',ps_count('provider_package_links')===0&&ps_count('provider_domain_links')===0&&ps_count('provider_cloud_links')===0);
+    $view=provider_schedule_context();$encoded=json_encode($view);ps_ok('Owner projection contains no credentials auth fingerprints or private paths',!str_contains($encoded,$secret)&&!str_contains($encoded,$private)&&!str_contains($encoded,'owner_auth_sha256')&&!str_contains($encoded,'credential_sha256'));
+    ps_reset();$mode='partial';ps_ok('Partial typed observation is retained and backs off',ps_run()==='partial'&&ps_ctx()['state']['failures']===1&&ps_ctx()['state']['next']>=time()+1795&&ps_count('provider_observation_packages')===1);
+    foreach(['unavailable','throw'] as $kind){ps_reset();$mode=$kind;ps_ok('Failed read records finite outcome and backoff '.$kind,ps_run()==='unavailable'&&ps_ctx()['state']['failures']===1&&ps_count('provider_observation_packages')===0);ps_ok('Failed read omits raw provider diagnostics '.$kind,!str_contains(json_encode(ps_capture()),$secret)&&!str_contains(json_encode(ps_capture()),'private provider text'));}
+    ps_reset();ps_ok('Private DNS address never reaches transport',ps_run(fn()=>'127.0.0.1')==='unavailable'&&$calls===0);
+    ps_reset();ps_ok('Outcome audit failure rolls back result observation and finish together',ps_audit_fail(fn()=>ps_run())&&ps_count('provider_refreshes')===1&&ps_count('provider_refresh_results')===0&&ps_count('provider_observation_packages')===0&&ps_ctx()['state']['pending']!==null);
+    ps_ok('Uncertain retained attempt is never automatically retried',ps_run()==='needs_recovery'&&$calls===1);$ctx=ps_ctx();ps_deny('Owner cannot recover a still live lease',fn()=>provider_schedule_recover($ctx['last']['sequence'],$ctx['state']['pending'],$password));
+    ps_reset();$owner=one('SELECT * FROM '.table('users').' WHERE id=1');
+    foreach(['auth'=>'UPDATE '.table('users')." SET auth_version='changed' WHERE id=1",'role'=>'UPDATE '.table('staff_profiles')." SET role='administrator' WHERE user_id=1",'disabled'=>'UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1','password'=>'UPDATE '.table('users')." SET password_hash='' WHERE id=1"] as $label=>$sql){query($sql);ps_ok('Approval revocation stops before DNS '.$label,ps_run()==='approval_required'&&$dns===0&&$calls===0&&ps_count('provider_refreshes')===0);query('UPDATE '.table('users').' SET auth_version=?,password_hash=? WHERE id=1',[$owner['auth_version'],$owner['password_hash']]);query('UPDATE '.table('staff_profiles')." SET role='owner',enabled=1 WHERE user_id=1");}
+    $saved=provider_settings_load($profile);foreach(['revision'=>'revision=2','enabled'=>'enabled=0','ciphertext'=>"credentials='different'"] as $label=>$change){query('UPDATE '.table('provider_profiles').' SET '.$change.' WHERE id=?',[$profile]);ps_ok('Exact profile binding stops before DNS '.$label,ps_run()==='approval_required'&&$dns===0&&$calls===0);query('UPDATE '.table('provider_profiles').' SET revision=?,enabled=?,credentials=? WHERE id=?',[$saved['revision'],$saved['enabled'],$saved['credentials'],$profile]);}
+    ps_reset();provider_schedule_disable(ps_ctx()['last']['sequence'],$password);ps_ok('Owner disabling retains history and prevents background calls',ps_run()==='disabled'&&$dns===0&&ps_count('provider_schedule_events')===3);
+    ps_reset();$worker=ps_worker('worker');ps_ok('Independent worker commits intent before DNS',trim((string)fgets($worker[1][1]))==='resolving'&&ps_count('provider_refreshes')===1);ps_ok('Concurrent second invocation cannot claim work',ps_run()==='busy'&&$dns===0&&$calls===0);
+    provider_schedule_disable(ps_ctx()['last']['sequence'],$password);fwrite($worker[1][0],"continue\n");fflush($worker[1][0]);ps_ok('Disable during DNS revokes before credential transport',ps_finish($worker)==='access_changed:0'&&ps_count('provider_refresh_results')===1&&ps_count('provider_observation_packages')===0&&ps_ctx()['state']['paused']);
+    ps_reset();$receipt=ps_expired();$ctx=ps_ctx();ps_ok('Expired lease alone does not replay work',ps_run()==='needs_recovery'&&$dns===0&&$calls===0);ps_deny('Recovery requires current owner password',fn()=>provider_schedule_recover($ctx['last']['sequence'],$ctx['state']['pending'],'wrong'));
+    ps_ok('Owner recovery retains interruption and requires fresh approval',provider_schedule_recover($ctx['last']['sequence'],$ctx['state']['pending'],$password)==='refused'&&ps_ctx()['state']['paused']&&ps_ctx()['state']['pending']===null&&ps_count('provider_refresh_results')===1&&provider_schedule_context()['history'][0]['recovered']);
+    ps_ok('Recovered attempt cannot automatically restart',ps_run()==='disabled'&&$calls===0);
+    provider_schedule_configure(ps_ctx()['last']['sequence'],$profile,1,900,true,$password);ps_ok('Fresh owner approval after reviewed recovery permits one new attempt',ps_run()==='complete'&&ps_count('provider_refresh_results')===2);
+    $results=all('SELECT r.* FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id ORDER BY f.seq');$beforeCalls=$calls;$beforeDns=$dns;
+    ps_ok('SQL and PHP canonical result hashes agree for all retained outcomes',!one('SELECT o.id FROM '.table('provider_refresh_results').' o WHERE '.provider_schedule_result_sql_hash().'<>? AND o.id=?',[provider_schedule_result_hash($results[0]['id']),$results[0]['id']])&&!one('SELECT o.id FROM '.table('provider_refresh_results').' o WHERE '.provider_schedule_result_sql_hash().'<>? AND o.id=?',[provider_schedule_result_hash($results[1]['id']),$results[1]['id']]));
+    foreach($results as $i=>$result){query('UPDATE '.table('provider_refresh_results').' SET elapsed_ms=elapsed_ms+1 WHERE id=?',[$result['id']]);ps_deny('Changed retained '.($i?'latest':'older').' result stops background work',fn()=>ps_run());ps_ok('Corrupt retained result makes no DNS or transport '.$i,$dns===$beforeDns&&$calls===$beforeCalls);query('UPDATE '.table('provider_refresh_results').' SET elapsed_ms=? WHERE id=?',[$result['elapsed_ms'],$result['id']]);}
+    $first=one('SELECT * FROM '.table('provider_refreshes').' WHERE id=?',[$results[0]['id']]);query('UPDATE '.table('provider_refreshes').' SET profile_revision=profile_revision+1 WHERE id=?',[$first['id']]);ps_deny('Changed original intent profile revision stops background work',fn()=>ps_run());query('UPDATE '.table('provider_refreshes').' SET profile_revision=? WHERE id=?',[$first['profile_revision'],$first['id']]);
+    $alternate=str_repeat('9',32);query('INSERT INTO '.table('provider_profiles').' (id,provider_code,environment,revision,label,credentials,enabled,updated_by,updated_at) VALUES (?,?,?,?,?,?,?,?,?)',[$alternate,'synthetic-other','live',1,'Fixture alternate','',0,1,gmdate('Y-m-d H:i:s')]);query('UPDATE '.table('provider_refreshes').' SET profile_id=? WHERE id=?',[$alternate,$first['id']]);ps_deny('Changed original intent profile identity stops background work',fn()=>ps_run());query('UPDATE '.table('provider_refreshes').' SET profile_id=? WHERE id=?',[$first['profile_id'],$first['id']]);query('DELETE FROM '.table('provider_profiles').' WHERE id=?',[$alternate]);
+    $earlier=one('SELECT * FROM '.table('provider_schedule_events').' WHERE sequence=1');query('UPDATE '.table('provider_schedule_events')." SET document_json='[]' WHERE id=?",[$earlier['id']]);ps_deny('Corrupt earlier event bytes stop worker even outside history page',fn()=>ps_run());query('UPDATE '.table('provider_schedule_events').' SET document_json=? WHERE id=?',[$earlier['document_json'],$earlier['id']]);
+    ps_reseal(static function(array $d):array{if($d['kind']==='finish')$d['data']['start_id']=str_repeat('8',32);return $d;});ps_deny('Internally hashed mismatched retained finish reference is refused',fn()=>ps_run());
+    ps_reset();$receipt=ps_expired();ps_reseal(static function(array $d):array{if($d['kind']==='start'){$d['data']['approval_id']=str_repeat('8',32);$d['state']['approval']=str_repeat('8',32);}return $d;});ps_deny('Internally hashed missing original start approval is refused',fn()=>ps_run());
+    ps_reset();$receipt=ps_expired();$ctx=ps_ctx();$pending=$ctx['state']['pending'];query('DELETE FROM '.table('provider_refreshes').' WHERE id=?',[$pending]);query('DELETE FROM '.table('audit').' WHERE action=? AND detail LIKE ?',['provider.refresh_started','Refresh '.$pending.'%']);ps_deny('Lost pending inventory intent and audit pair fail closed',fn()=>ps_run());
+    ps_reset();query('DELETE FROM '.table('provider_schedule_events').' WHERE sequence=2');query('DELETE FROM '.table('audit')." WHERE action='provider.schedule_event' AND detail LIKE '% approval sha256 %'");ps_deny('Lost latest approval plus audit is caught by independent head',fn()=>ps_run());
+    ps_reset();query('DELETE FROM '.table('settings').' WHERE name=?',['provider_schedule_head']);ps_deny('Missing independent head is not silently recreated',fn()=>provider_schedule_prepare($password));
+    ps_reset();query('DELETE FROM '.table('provider_schedule_events'));query('DELETE FROM '.table('audit').' WHERE action=?',['provider.schedule_event']);query('DELETE FROM '.table('settings').' WHERE name=?',['provider_schedule_version']);ps_deny('Retained head catches entire family and marker loss',fn()=>provider_schedule_prepare($password));
+    ps_reset();query('UPDATE '.table('provider_schedule_events')." SET document_json='[]' WHERE sequence=2");ps_deny('Malformed latest journal stops before transport',fn()=>ps_run());
+    ps_reset();db()->exec('ALTER TABLE '.table('provider_schedule_events').' ADD unexpected INT NULL');ps_deny('Changed schema refuses scheduling without repair',fn()=>ps_run());db()->exec('ALTER TABLE '.table('provider_schedule_events').' DROP COLUMN unexpected');
+    ps_reset();$ctx=ps_ctx();$start=staff_locked(fn()=>staff_transaction(fn()=>provider_schedule_start($ctx,provider_schedule_approval($ctx),time())));$before=ps_count('audit');
+    ps_deny('Internal inventory commit refuses missing transaction',fn()=>staff_locked(fn()=>provider_inventory_record_transaction($start['inventory'],'refused','test','','unknown',0,0,'[]',0,null)));
+    db()->beginTransaction();ps_deny('Internal inventory commit refuses transaction without owning mutex',fn()=>provider_inventory_record_transaction($start['inventory'],'refused','test','','unknown',0,0,'[]',0,null));db()->rollBack();ps_ok('Rejected internal commits leave zero outcomes and audits',ps_count('provider_refresh_results')===0&&ps_count('audit')===$before);
+    provider_inventory_record($start['inventory'],'refused','test','','unknown',0,0,'[]',0,null);ps_ok('Original public inventory wrapper still works without new lock precondition',ps_count('provider_refresh_results')===1&&ps_count('audit')===$before+1);
+    ps_reset();ps_ok('Complete fixture leaves no external API request capability in test seam',$dns===0&&$calls===0);
+}catch(Throwable $e){$checks[]=['name'=>'Schedule native failure: '.$e->getMessage(),'passed'=>false];}
+file_put_contents(__DIR__.'/../qa/provider-schedule-native-results.json',json_encode(['checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));$failed=array_filter($checks,fn($c)=>!$c['passed']);echo count($checks).' scheduled refresh native checks '.($failed?'failed':'passed').PHP_EOL;exit($failed?1:0);
