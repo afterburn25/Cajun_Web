@@ -1,3 +1,7 @@
+## Unreleased — isolated parallel acceptance workflow
+
+Prepare one immutable build for separate test jobs, preserve sequential native/browser state, validate exact same-attempt evidence and retain honest partial failures. Existing assertions and application behavior are unchanged; source review and actual combined execution are pending.
+
 ## Unreleased — integrate finished-ledger recovery and faster packaging
 
 Combine the four-way native-tested Force SSL witness recovery with batched Git packaging and the verified dynamic database port correction. Recovery makes no provider request and retains the effect as uncertain until separate readback. Preserve original failures and exact parent evidence; combined browser/package acceptance for this integration remains pending.

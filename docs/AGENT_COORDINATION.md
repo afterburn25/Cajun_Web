@@ -6,7 +6,7 @@ Updated 2026-10-16 UTC. Codex and three parallel agents own complete20i P0; Devi
 |---|---|---|
 | Root | Local recovery/build union4b73+d72cef; frozenfaef PR151 remains separate | Verify local merge/installer parity; preserve faef original full38875935651,45 focused successes and exact Windows packages. Current integration still needs combined acceptance. |
 | Domains | New codex/twentyi-domain-renewal-dispatch fromfaef | Implement permanent prepayment invoice purpose and exact paid single-send renewal; shared seams reviewed before application. Keep licensing untouched. |
-| VPS | Recovery34f original38881177088 accepted; docsd72cef pushed | Implement reviewed parallel acceptance on a separate branch from the new root union; preserve native→browser state, exact attempt provenance and old runs. |
+| VPS | Isolated parallel acceptance from exact e1cd8e44; 100 offline checks pass | Catalog3f086572 and root source review are clear; root independently reran all 100 offline cases. Normal integration and one separately authorized combined run remain. Preserve all original runs and accepted recovery d72cef. |
 | Catalog | Recovery source/renewal proposal/build-port independent reviews clear | Review actual shared integration and later workflow/renewal patches with source-bound evidence. |
 | Devin | Software-product licensing; main9f3b21fd source reviewed | Preserve licensing changes; upgrade, internal-master delivery, legacy-invoice retry and version-marker findings remain open. |
 

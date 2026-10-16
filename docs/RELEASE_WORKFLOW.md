@@ -6,6 +6,8 @@ Codex owns the complete 20i P0 integration. [Version1.24.0](https://github.com/a
 
 The procedure below applies to the next candidate. Prior release entries are historical evidence, not pending1.24 gates. Browser-only checkpoints cannot certify a release; retain full candidate, independent review, normal merge, exact-main and fresh downloaded-asset checks.
 
+The isolated [parallel acceptance workflow](PARALLEL_APPLICATION_ACCEPTANCE.md) preserves one exact build and all existing tests while separating native/browser, filesystem recovery and Apache jobs. It requires exact same-attempt input/evidence partitions, successful final aggregation, independent report/visual review and unchanged Windows/package comparison gates. Source review and 100 offline helper checks do not establish actual GitHub acceptance; keep original serial runs and their verifiers unchanged. No release gate is waived by the proposed split.
+
 ## Historical publication — 1.23.0
 
 [Version 1.23.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0) is published and freshly downloaded/verified at immutable source/tag `4fdb56266c77f6e6bf7b58e966d24696e1eaefc8`, through [PR #85](https://github.com/afterburn25/Cajun_Web/pull/85). Client account edits reject stale forms and retain escaped unsaved details for review. Client changes/invitations recheck current authority, serialize writes and audit atomically; invitation activation is single-use and unexpired. Client administration is refused during support sessions. [Owner guide](CLIENT_ACCOUNT_SAFEGUARDS.md).

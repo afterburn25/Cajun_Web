@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## Isolated parallel acceptance implementation — 2026-10-16
+
+From exact e1cd8e44, implement one verified build/public-fixture transfer with separate native→browser, filesystem recovery and Apache jobs. Keep all existing application/tests and original faef evidence unchanged. Catalog source review3f086572 is clear, and root independently executed all 100 offline helper checks and cleared the implementation. This source-reviewed branch is ready for normal integration; actual combined GitHub acceptance remains pending. No manual CI dispatch or PR is included. [Scope](docs/PARALLEL_APPLICATION_ACCEPTANCE.md).
+
 ## Current local integration — 2026-10-16
 
 Root combines verified packaging/CI source `4b73d7ae8b23dfee8c98a3ed6b793febb7c296aa` with recovery handoff `d72cef991bd3406facfab3be63d819b4d569a5a8` under **Merge verified Force SSL recovery with package build improvements**, on `codex/twentyi-recovery-integration`. Runtime and installer shipping files equal accepted recovery source `34f35547b2168f617306941b0c00a03129c57ab5`; builder and hosting-storage port workflow equal 4b73. Only continuity documents need conflict resolution. This local integration still requires its own combined package/browser acceptance.
