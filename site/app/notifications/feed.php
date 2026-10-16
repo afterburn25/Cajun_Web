@@ -44,13 +44,17 @@ function notification_persist_delivery(string $notificationId,DeliveryAttempt $a
  * when outbound mail is configured and the recipient has not opted out of the
  * kind. Synchronous send — maxAttempts 1, failures record honestly (no daemon).
  */
-function notification_emit(string $audience,int $recipientId,string $kind,string $link,string $title,string $body): void {
+function notification_emit(string $audience,int $recipientId,string $kind,string $link,string $title,string $body,?string $dedupe=null): void {
     if(!notifications_feed_ready())return;
-    $notification=new Notification(bin2hex(random_bytes(16)),$audience,(string)$recipientId,$kind,substr($title,0,200),substr($body,0,1000),$link,time());
-    staff_transaction(function() use($notification,$audience,$recipientId,$kind,$link): void {
-        query('INSERT INTO '.table('notification_feed').' (id,audience,recipient_id,kind,ref,title,body,created_at) VALUES (?,?,?,?,?,?,?,?)',[$notification->id,$audience,$recipientId,$kind,$link,$notification->title,$notification->body,gmdate('Y-m-d H:i:s',$notification->createdAt)]);
-        $portal=new DeliveryAttempt($notification->id,DeliveryAttempt::CHANNEL_PORTAL,1);$portal->recordSent($notification->createdAt);notification_persist_delivery($notification->id,$portal);
+    $id=$dedupe===null?bin2hex(random_bytes(16)):substr(hash('sha256','cwp-notification|'.$dedupe),0,32);
+    $notification=new Notification($id,$audience,(string)$recipientId,$kind,substr($title,0,200),substr($body,0,1000),$link,time());
+    $fresh=staff_transaction(function() use($notification,$audience,$recipientId,$kind,$link,$dedupe): bool {
+        $insert='INSERT '.($dedupe===null?'':'IGNORE ').'INTO '.table('notification_feed').' (id,audience,recipient_id,kind,ref,title,body,created_at) VALUES (?,?,?,?,?,?,?,?)';
+        $written=query($insert,[$notification->id,$audience,$recipientId,$kind,$link,$notification->title,$notification->body,gmdate('Y-m-d H:i:s',$notification->createdAt)])->rowCount()===1;
+        if($written){$portal=new DeliveryAttempt($notification->id,DeliveryAttempt::CHANNEL_PORTAL,1);$portal->recordSent($notification->createdAt);notification_persist_delivery($notification->id,$portal);}
+        return $written;
     });
+    if(!$fresh)return;
     if(!notification_prefs_for($audience,$recipientId)->emailEnabled($kind)||setting('email_mode','disabled')==='disabled')return;
     $email=notification_recipient_email($audience,$recipientId);if($email===null)return;
     require_once CWP_CODE_ROOT.'/app/mail/transport.php';
@@ -79,6 +83,6 @@ function notification_mark_all(string $audience,int $recipientId): void {
 /** Typed ref → authorized destination. The renderer authorizes before linking. */
 function notification_url(string $audience,string $ref): string {
     if(!preg_match('/^([a-z][a-z0-9-]*):([A-Za-z0-9_-]+)$/',$ref,$m))return '#';
-    if($audience===Notification::AUDIENCE_CLIENT)return match($m[1]){'job'=>studio_url(['job'=>(int)$m[2]]),'release'=>studio_url(['release'=>$m[2]]),'invoice'=>studio_url(['invoice'=>(int)$m[2]]),default=>studio_url()};
-    return match($m[1]){'inquiry'=>admin_url('lead',['id'=>(int)$m[2]]),'job'=>admin_url('studio-job',['id'=>(int)$m[2]]),'invoice'=>admin_url('invoice-payments',['invoice_id'=>(int)$m[2]]),default=>admin_url('notifications')};
+    if($audience===Notification::AUDIENCE_CLIENT)return match($m[1]){'job'=>studio_url(['job'=>(int)$m[2]]),'release'=>studio_url(['release'=>$m[2]]),'invoice'=>studio_url(['invoice'=>(int)$m[2]]),'ticket'=>studio_url(['ticket'=>$m[2]]),default=>studio_url()};
+    return match($m[1]){'inquiry'=>admin_url('lead',['id'=>(int)$m[2]]),'job'=>admin_url('studio-job',['id'=>(int)$m[2]]),'invoice'=>admin_url('invoice-payments',['invoice_id'=>(int)$m[2]]),'ticket'=>admin_url('ticket',['ticket'=>$m[2]]),default=>admin_url('notifications')};
 }
