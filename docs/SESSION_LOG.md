@@ -2466,6 +2466,42 @@ Local159 named checks pass in both default/minimal PHP modes, with syntax checks
 
 Starting b2033, retain the single successful run38857815866 and both verified PHP8.2/8.4 artifacts12027687956/12027364829. Each archive contains159 distinct passing default and minimal checks, verified source/digest/size/safe paths/CRC. Root/catalog independently cleared the restored-reference snapshot correction. Only seven continuity Markdown files change; pure source, tests, workflow, shipping and tools remain frozen. [Exact evidence](TWENTYI_PACKAGE_FORCE_SSL.md#exact-pure-acceptance--2026-10-16). No app integration, live provider request, native/full run, deployment or licensing work. Next: root decides a separately reviewed runtime slice; keep this accepted pure lane and all earlier evidence intact.
 
+## Frozen combined427 acceptance checkpoint — 2026-10-16 UTC
+
+Starting source427e3a233706f22cd39918d8b97256a7fb2b1e90 is pushed in PR151. Its normal domain4b78/PHPcfc6 histories, period/PHP test owners and runtime are frozen. CI merged106dd95 has identical tree925ec3ba. This commit changes continuity documentation only; site/foundation/tests/tools/workflows remain identical to427.
+
+Exact Windows build47263 completed; independent verifier checks all11 checksums, safe case-unique CRC-clean members, directories, Git bytes and decoded update for FULL5612/COMPLETE2760/UPDATE2747. Source-specific distribution and proof are preserved. Actual427 domain/PHP/cloud four-way artifacts are downloaded/verified (98+87+87;99 native executions/98 labels+99+99;98+85+85). Period/scheduler artifacts remain assigned to catalog. Full38853750274/job116820490485 passes packaging and runs native integration;34 of39 workflow gates succeed and5 continue as of05:11UTC. No browser/final success is inferred.
+
+Original PHPcfc6 browser12026415411 verifies2093 HTTP checks,28 PHP-feature cases and six actual inspected views; its full remains in recovery. Original domainf725 retains the known period browser failure and continues Apache. Root25e final failure is fully preserved. Next lanes stay separate: expiry app wiring, pure DNS proposal validation and pure unsent cloud catalog request contract. Their supplied references do not establish missing DNS/cloud response schemas. Latest licensing review remains with Devin. No live operation, release or deployment occurred. Next: finish exact combined acceptance/review, current-main reconciliation and exact-main/download release gates, then continue full20i.
+
+## 2026-10-16 — frozen427 evidence and parallel implementation
+
+Owner request: continue complete20i P0 using the full supplied reference and three parallel agents, preserving Devin licensing and incremental release discipline. Started root docs head d66dcc41 over frozen427. This checkpoint changes continuity documents only; all shipping/foundation/tests/workflows/tools remain427.
+
+All38 focused workflows now succeed; actual20 date/PHP/cloud/period/scheduler matrix archives are verified. Full38853750274 passes packaging/native and runs browser as of05:31UTC. Independent non-owned domain/date/period/scheduler/shared-interface review is clear at work/vps-agent-root427-review-source-proof.json. Browser/final verifier scripts are prepared with list-shaped diagnostic/history checks, syntax only; no427 browser artifact accepted yet.
+
+Original PHPcfc6 full38850899573/final12026887934 is verified success (117 reports,2093 HTTP/289 recovery/2107 Apache,11 checksums/exact source packages,192 unchanged images). Original f725 full38849384530/final12027326438 preserves the known period browser failure (122 reports,289 recovery/2167 Apache,exact packages,319 unchanged checkpoint files; source check skipped). Original evidence ownership is complete.
+
+Expiry f42ce633/docs9e33d600 passes all four111 expiry/99 date/99 PHP executions/102 scheduler native environments plus54 reader and139 contract checks per mode.2772 shipping/2771 inventory parity and independent source reviews pass; packaged browser remains pending. Pure cloud36c2/docs9f46 and DNS96f/docs23cba narrow matrices/artifacts pass; neither enables missing provider responses or DNS execution. Catalog proceeds with the documented document-root map; VPS proceeds with strict reported ForceSSL boolean observations. Domains prepares a read-only ancestry/merge map.
+
+Main2796fa48 is documentation-only afterc0; licensing migration/internal-master delivery/full-key findings remain unchanged. Root did not modify/import licensing. Issue2 title/body now reflects Codex ownership, current frozen candidate, release state and integration findings, preserving required scope/history; freshly fetched body agrees after GitHub CRLF normalization. No direct Devin session/message is claimed.
+
+Next: preserve/follow original427 acceptance and inspect actual archives/screens; reconcile ready main with root portal/invoice guards, then exact-main release/download gates. Separate next increments stay outside frozen427.1.24 remains immutable;1.25 and full20i remain unfinished. No live call, charge, customer mail, SSH or deployment.
+
+After that review, remote main advanced to94c879ebab28fe94e71690b870f4104e002d3515. Domains is inspecting the new runtime delta and exact merge conflicts; no new-main acceptance or inherited-finding resolution is inferred.
+
+## 2026-10-16 — preserve427 failure and correct test-login bookkeeping
+
+Owner request remains complete20i with parallel agents, preserving Devin licensing. Starting root0ff93d2252ff7877f8489e9798c265a3a2df3ddc. Downloaded427 browser12027447378 is verified against exact source/CI metadata/digest/size/CRC:316 members,86 reports,10 available clean diagnostics,192 images,2107 HTTP passes then the dedicated period-owner compound assertion fails. Logs show successful login/create/invite/activation. Per-term database values were not captured. Source and independent domains review identify full account equality across normal last_login mutation. Original recovery succeeds; Apache/final continues as of05:46UTC. No cancellation, duplicate run or full success claim.
+
+Changed only period/PHP test fixtures and continuity docs. Compare all non-login user fields/profile across successful setup login, then retain the entire post-login account. Preserve pre-login intent/audit snapshots, all prior checks, real account creation/activation, quotas/cooldown and production source. Add redacted setup status/route/changed-field/boolean diagnostics before assertions. Syntax/whitespace checked; actual corrected browser execution remains pending. Domains corrects analogous expiry fixture; root will normally integrate native-verified expiry into one new acceptance candidate after review.
+
+Main94 read-only review completed: preserve transaction/row-lock mutation helpers; five explicit conflicts and silent admin setup-form obstruction mapped. Prior migration/internal-master delivery findings remain by exact file/function equality. No licensing modification/import or new native claim. User's Devin-session status question remains pending while independent20i work continues.
+
+Document-root pure38856621132 now verifies143 normal+143 minimal checks per PHP version (572 executions), docs0ddd5101; application contract preparation follows. ForceSSL restored-reference detachment is independently clear at staged hashes8867/f4da/027c/db3f,159 local checks per mode; one pure matrix is authorized after final source review. No live provider operation, charge, customer mail, SSH or deployment. Published1.24 stays immutable;1.25 and full20i remain unfinished.
+
+Before commit, independent VPS source review and19 offline actual-predicate cases per fixture pass; this reproduces old timestamp rejection and preserves credential/authority/key-set/activation rejection without importing fixtures or accessing a database. Documentation checks pass231 Markdown/1601 local links/21 heading links.
+
 
 ## 2026-10-16 - bounded registrar expiry application implementation
 
@@ -2490,3 +2526,11 @@ Original f725 evidence closeout,2026-10-16: full38849384530 is terminal failure 
 ## 2026-10-16 - expiry fixture login bookkeeping correction
 
 Root requested independent inspection of combined427 browser failure12027447378. Source confirms period snapshots the original user before successful login updates last_login; expiry has the same unexecuted source pattern. Starting9e33d600, only tests/domain_expiry_cases.py and continuity docs change: validate successful setup login with all non-login-time user fields/profile exact, then retain the complete post-login baseline for activation/final checks and safe setup diagnostics. Prior intent/audit bytes, provider-read sequence, actual cooldown and activation assertions remain. Source proof qa/expiry-owner-login-fixture-review.json records retained failure/log hashes and source limitations. Root source review, Python AST and whitespace pass; no DB/browser run or shipping/runtime/installer change. Root authorizes the test/docs-only descendant; no manual workflow dispatch. Next: coordinated combined packaged acceptance, preserving original427 failure and exactf42 native evidence.
+
+## 2026-10-16 — normal integration of saved expiry and owner-fixture repairs
+
+Starting root659376cd7f538a64c62a9b31276116658bfb929a normally merges expiry18d296b714adc24fa967926ffeadc28616ac6915; original427 is retained. Five continuity-only conflicts resolved using root current checkpoint plus exact incoming appended session history. No shared-source conflict. Expiry runtime remains focused-accepted f42; period/PHP fixtures retain independent VPS review19 synthetic predicate cases each, and expiry setup fixture b854 was root-reviewed. Separate native expiry111/date99/PHP99/scheduler102 per environment and contract/reader evidence stay scope-labeled; new combined browser is pending.
+
+Next: verify staged shipping/foundation agreement with expiry, root corrected-fixture agreement, shared context/order union and exact installer hashes; then one new automatic combined full acceptance. Original427 Apache/final remains separate and must be preserved. No licensing modification, live provider call, charge, mail, SSH or deployment;1.25 remains unreleased.
+
+Before merge commit: exact staged2e83 proof confirms2772 shipping/2771 inventory hashes and full site/foundation equality to18; root corrected fixtures equal659, expiry fixture equal18. No newline correction needed. Independent domains review clears shared contexts/authority/typed writers, all three setup patterns, browser order and247 private paths. Changed28 PHP/four Python files pass syntax. Own18 automatic focused38857786208 reports GitHub success only; acceptedf42 archives were not redundantly rechecked.

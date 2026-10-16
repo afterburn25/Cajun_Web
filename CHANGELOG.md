@@ -6,13 +6,18 @@ Record exact b2033 two-version/default-minimal acceptance and downloaded artifac
 
 Add pure reported-boolean parsing and immutable supplied-package binding tests. No application or shipping behavior changes; runtime integration remains pending.
 
-## Unreleased - expiry browser login bookkeeping
 
-Correct the source-only expiry fixture to verify the expected authorized-login bookkeeping before exact post-login account checks. Preserve authority, audit/read history and real cooldown; add redacted setup diagnostics. Shipping code remains unchanged and actual packaged acceptance is pending.
+## Unreleased — integrate saved upstream expiry observations
 
-## Unreleased - assigned registrar expiry observations
+Normally integrate the native-tested upstream-expiry feature with dedicated-owner test corrections. Owners explicitly prepare and refresh saved expiry observations for current assigned domains; clients see only permitted current or historical records. Separate date/expiry authority, immutable history, unavailable results, credential filtering and owner controls remain. No automatic renewal, provider mutation or eligibility claim. Combined packaged browser/recovery acceptance is pending.
 
-Add explicit owner refresh and private saved-client observations of a registered domain's bounded upstream-expiry timestamp, with exact current assignment/account authority, independent history recovery, latest-intent order checks and credential-echo refusal. Keep renewal dates and renewal review separate. Root/catalog source review and all four exact f42 focused native/compatibility archives pass; packaged browser acceptance remains pending. No live provider call or release. [Contract and evidence](docs/TWENTYI_DOMAIN_EXPIRY_CONTRACT.md).
+## Unreleased — preserve account authority across fixture login
+
+Correct dedicated period/PHP browser fixtures to account for the normal last-login update before preserving the complete account row. All password, authority, role, immutable-history, quota and cooldown assertions remain; add finite setup diagnostics before assertions. Preserve actual427 failed browser evidence and completed main94 source review. Application/installer bytes remain unchanged; corrected combined acceptance and release remain pending.
+
+## Unreleased — frozen candidate verification and parallel handoff
+
+Record all20 exact combined reader matrix artifacts, successful combined packaging/native checks, verified original PHP full acceptance and preserved domain full failure evidence. Record independent integration review, separately native-tested expiry and pure cloud/DNS components; document-root/ForceSSL work remains separate. Update issue2 ownership/status and current-main licensing findings. Documentation only;427 shipping stays fixed,1.25.0 remains unreleased, and no live provider action occurs.
 
 ## Unreleased — registration-period browser owner isolation
 
@@ -37,10 +42,6 @@ Record all16 downloaded exact25e date/period/cloud/scheduler archives, each with
 ## Unreleased — combined source and package checkpoint
 
 Record pushed25e combined discovery source, exact verified Windows packages and original GitHub acceptance handles. Record terminal incoming date/cloud full acceptance, parent210 browser evidence and the retained element-capture limitation. Preserve the PHP packaging-only correction and new PHP/domain-date source-ordering findings for separate regression work. Documentation only; no runtime or release change.
-
-## Unreleased isolated component — registrar expiry contract
-
-Add only a pure exact-name GET descriptor, operation-bound immutable registrar document and bounded timestamp projection with139 normal/minimal synthetic checks per mode. Document retained SDK evidence and unverified full schema; preserve unknown/null semantics, redacted failures and future authority/credential prerequisites. Independent source review is clear; exact b1e7609e now passes both downloaded PHP8.2/8.4 pure artifacts with139 named checks in each default/minimal mode. This is outside the1.25 release queue and adds no shipping UI, storage, provider execution or installer change. [Contract](docs/TWENTYI_DOMAIN_EXPIRY_CONTRACT.md).
 
 ## Unreleased — client domain renewal-date observations
 
@@ -1220,3 +1221,11 @@ Source-focused evidence is complete: domain98+87+87 and PHP99 native executions/
 Original25e full38846792746 is terminal FAILURE and final12025544003 is fully verified:122 reports/10 diagnostics,2130 HTTP passes plus the retained empty-period failure,289 recovery/2167 Apache,all319 earlier files unchanged,11 checksums/exact Git and Windows package agreement. Final source-check was skipped. Original domainf725 browser has the same retained failure; its full and PHPcfc6 full remain preserved through final evidence. Pure expiry139+139 on each PHP version passes separately; domains begins isolated application wiring outside this candidate. Latest mainc0e087 source review retains licensing migration/master-delivery findings and identifies direct full-master-key display; Devin retains ownership. No live call, charge, customer mail, SSH, deployment or publication occurred.
 
 Next: finish exact staged/build checks, commit/push and record one combined full, unchanged independent review, current-main reconciliation and exact-main/download release gates. [Current status](PROJECT_STATUS.md) and [handoff](SESSION_HANDOFF.md) identify authoritative next actions.
+
+## Frozen combined427 acceptance checkpoint — 2026-10-16 UTC
+
+Starting source427e3a233706f22cd39918d8b97256a7fb2b1e90 is pushed in PR151. Its normal domain4b78/PHPcfc6 histories, period/PHP test owners and runtime are frozen. CI merged106dd95 has identical tree925ec3ba. This commit changes continuity documentation only; site/foundation/tests/tools/workflows remain identical to427.
+
+Exact Windows build47263 completed; independent verifier checks all11 checksums, safe case-unique CRC-clean members, directories, Git bytes and decoded update for FULL5612/COMPLETE2760/UPDATE2747. Source-specific distribution and proof are preserved. Actual427 domain/PHP/cloud four-way artifacts are downloaded/verified (98+87+87;99 native executions/98 labels+99+99;98+85+85). Period/scheduler artifacts remain assigned to catalog. Full38853750274/job116820490485 passes packaging and runs native integration;34 of39 workflow gates succeed and5 continue as of05:11UTC. No browser/final success is inferred.
+
+Original PHPcfc6 browser12026415411 verifies2093 HTTP checks,28 PHP-feature cases and six actual inspected views; its full remains in recovery. Original domainf725 retains the known period browser failure and continues Apache. Root25e final failure is fully preserved. Next lanes stay separate: expiry app wiring, pure DNS proposal validation and pure unsent cloud catalog request contract. Their supplied references do not establish missing DNS/cloud response schemas. Latest licensing review remains with Devin. No live operation, release or deployment occurred. Next: finish exact combined acceptance/review, current-main reconciliation and exact-main/download release gates, then continue full20i.

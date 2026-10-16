@@ -1,16 +1,16 @@
 # Current CajunWebPro agent coordination
 
-Updated 2026-10-15. The owner authorizes Codex and three parallel agents for complete20i P0, separate branches, sequential integration and verified incremental GitHub releases. Devin owns software-product licensing for other products. These assignments are ownership records, not proof of an active Devin session.
+Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for complete20i P0, separate branches, sequential integration and verified incremental GitHub releases. Devin owns software-product licensing for other products. These assignments are ownership records, not proof of an active Devin session.
 
 | Owner | Current branch/checkpoint | Scope and next evidence |
 |---|---|---|
-| Root | `codex/twentyi-next-integration`, PR151; normal domain4b78 plus enclosing PHPcfc6 merge | Complete stable candidate/staged installer checks, push and record one exact combined full; then review/exact-main/release gates. Original25e final failure fully verified. |
-| Domains | `codex/twentyi-domain-expiry-observations`, frozen f42ce633 | All four focused38855352194 archives verified: expiry111/date99/PHP99 executions(98 labels)/scheduler102, reader54+54/contract139+139. Browser source-reviewed; root coordinates actual packaged acceptance. Own original f725 final evidence. |
-| VPS | Frozen `codex/twentyi-package-php-version`, PR155, cfc6 | All four focused99 native executions/98 labels+99+99 verified. Own original full38850899573 and failures. Shared preview and dedicated PHP owner85ea reviewed; normal root integration. |
-| Catalog | Pure expiry b3c1cc31; independent integration review; next isolated DNS contract | Both pure PHP versions139+139 verified; original25e final12025544003 verified while preserving failure. Actual PHP shared/automatic glue and owner fixture independently clear. DNS contract/source investigation stays outside current candidate. |
-| Devin | Licensing lane; latest inspected mainc0e087027 | Own software-product licenses; populated migration/internal-master delivery/full-key display findings remain open. Preserve one-page keyless CajunWebPro installer. |
+| Root | PR151, test/docs descendant of0ff93d22/frozen427 | Preserve actual427 setup failure/final evidence; normal expiry18 integration and reviewed period/PHP repair659 now require exact combined acceptance. |
+| Domains | Expiry f42 native accepted; fixture/docs correction pending commit | Reviewed fixture correction18d296b7 imported with unchanged f42 runtime; final shared-source review next. Main94 read-only merge map complete. |
+| VPS | PHPcfc6/docs8b257538; cloud36c2/docs9f46; ForceSSL staged | Root fixture review, then one pure ForceSSL matrix after accepted reference-detachment correction. No app wiring/live call. |
+| Catalog | Document-roots1e8ee567/docs0ddd5101; DNS96f/docsfb2f19d2 | Both pure matrices/artifacts accepted; prepare document-root application contract before shared edits. ForceSSL independent source review clear. |
+| Devin | Software-product licensing; main94 reviewed | Populated upgrade/internal-master customer-delivery findings remain. Preserve serialized mutation helpers and keyless installer. Active session status remains unconfirmed. |
 
-Root/catalog-reviewed domain recovery33fa34b6/4bcf1e11 now has all-four exact native execution. Catalog completed all eight combined period/scheduler artifacts and parent210 visual review; domains completed all four combined date artifacts and root all four cloud artifacts. The later25e browser failure is a separate combined fixture budget problem, not evidence that those focused matrices failed. [Current evidence and known limitations](TWENTYI_DISCOVERY_INTEGRATION.md).
+Original427 browser fails at setup after2107 HTTP passes; separate runtime matrices pass. Original recovery succeeds and Apache/final continues. Keep actual failed evidence and all prior immutable releases. See [handoff](../SESSION_HANDOFF.md) for exact sources and next actions.
 
 ## Integration rules
 
