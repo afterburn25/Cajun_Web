@@ -1,3 +1,11 @@
+## PHP-version packaging correction — 2026-10-15
+
+The first exact PHP source `1c5005663bb892e3c5569914547f154be4620ffc` is retained in [PR155](https://github.com/afterburn25/Cajun_Web/pull/155). Focused run38846465351 and full38846467235 remain intact, along with PR runs38846423585/38846423574. The first focused job116798016213 stopped at installer inventory verification before PHP/native execution; it emitted no native report.
+
+Git-archive comparison reproduced six stale installer hash entries: Windows working files used CRLF while committed shipping bytes used LF. The affected provider controller/view, shared inventory module, PHP observation core, service-link view and portal router have no logical change. Their working bytes were restored exactly from `1c500566` blobs, then installer metadata regenerated. The correction is verified against staged Git tree bytes, not just the working checkout. Original source-review hashes are retained with the LF identities in local evidence; no credential/authorization/parser/schema logic is altered. This is a packaging failure, not a failed native runtime assertion.
+
+Local87/87 pure, reader28, scheduler42, syntax and docs results remain accurately scoped. Actual four-way native and packaged owner/client/browser acceptance must run on the corrected descendant; root integration and release remain separate. No live action occurred.
+
 ## Assigned-package PHP version — isolated implementation, 2026-10-15
 
 The VPS agent started `codex/twentyi-package-php-version` at `9112cb8c71e31ab761be52a9d1ee2f92d708cc15`. This development base has parent evidence; it is not release clearance. The new fixed GET reads one explicitly assigned package's reported PHP-version scalar, saves immutable dated evidence, and requires a separate owner approval before exposing that observation to its current client. No PHP change operation, version-choice list, schedule or live provider request is added. [Contract, authority and verification scope](docs/TWENTYI_PACKAGE_PHP_VERSION.md).

@@ -1,3 +1,7 @@
+## Unreleased — PHP-version installer hash correction
+
+Correct six installer metadata hashes to the exact committed LF shipping bytes. Preserve the original pre-native CI failures; no runtime logic change.
+
 ## Unreleased — assigned-package PHP-version observations
 
 Add one fixed scalar read, dated immutable observations and separate owner-controlled client sharing for explicitly assigned hosting packages. Preserve exact account/key/link/history authority, no implicit setup, no browser-side provider requests, and no PHP change operation. Native/browser acceptance remains pending on the isolated branch.
