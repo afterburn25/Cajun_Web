@@ -2437,3 +2437,11 @@ Changed one Python fixture plus status/handoff/changelog/this log and the focuse
 ## 2026-10-15 — normal period fixture integration
 
 From root8d2a0b2e, normally merge reviewed dd116b89. Preserve current concise root status/handoff and both incoming/root changelog/session records. Only executable delta is the exact reviewed period fixture16267cd6; full site/foundation/workflows/tools and installer remain byte-identical. Python AST, documentation links, whitespace, staged Git parent comparison and history checks are required. Actual browser acceptance awaits the combined domain/PHP corrections; no standalone full dispatch, shipping change or release. Original25e recovery passes and Apache continues. Next finish focused runtime evidence and normal shared-file integration.
+
+## Domain recovery and echo guard integrated — 2026-10-16 UTC
+
+The owner's continued20i request is implemented by a normal merge of root0b4c068d and exact a132b5b3, preserving red28b62223 and corrected f725 history. The current-date projection now requires latest registrar/date intent order to agree with the independent common-start audit; decoded credential echoes cannot become saved dates. This checks latest selected authority, not immutable ordering of every older record. Synthetic date-shaped keys establish local defense only, not real provider exposure.
+
+All four focused38851489059 artifacts were downloaded and verified:98 native plus87 normal/87 minimal reader cases each. Root and catalog source reviews are clear. The domain module/reader, native/pure regression cases, generated inventory and feature guide are integrated; root's concise status/handoff and period-owner fixture are preserved. Combined application acceptance remains required.
+
+Original25e full38846792746 is terminal failure from the retained browser quota fixture failure; recovery and Apache pass and final source-check is skipped. Final12025544003 awaits independent archive verification. PHPcfc6 native38850899544 is verified in all four environments; its normal merge and isolated browser owner are next, then one combined full acceptance. Pure expiry38850341309 passes both PHP versions but remains outside the application. Latest mainc0e087027 is under read-only licensing review. No release, live request or deployment occurred.

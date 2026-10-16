@@ -1182,3 +1182,11 @@ Independently verified root2239 browser checkpoint12015677899 from38826150967: S
 ## Unreleased - observed domain registration periods
 
 Add explicit owner refresh of documented registration-year options and saved observation/history displays. Clients see only currently offered extensions under their current enabled search policy. Preserve complete-empty, failed, pending and changed-setting states; retain independent history witnesses. No renewal eligibility, prices, reservations or purchasing are inferred. Native, browser and package acceptance remain pending.
+
+## Domain recovery and echo guard integrated — 2026-10-16 UTC
+
+The owner's continued20i request is implemented by a normal merge of root0b4c068d and exact a132b5b3, preserving red28b62223 and corrected f725 history. The current-date projection now requires latest registrar/date intent order to agree with the independent common-start audit; decoded credential echoes cannot become saved dates. This checks latest selected authority, not immutable ordering of every older record. Synthetic date-shaped keys establish local defense only, not real provider exposure.
+
+All four focused38851489059 artifacts were downloaded and verified:98 native plus87 normal/87 minimal reader cases each. Root and catalog source reviews are clear. The domain module/reader, native/pure regression cases, generated inventory and feature guide are integrated; root's concise status/handoff and period-owner fixture are preserved. Combined application acceptance remains required.
+
+Original25e full38846792746 is terminal failure from the retained browser quota fixture failure; recovery and Apache pass and final source-check is skipped. Final12025544003 awaits independent archive verification. PHPcfc6 native38850899544 is verified in all four environments; its normal merge and isolated browser owner are next, then one combined full acceptance. Pure expiry38850341309 passes both PHP versions but remains outside the application. Latest mainc0e087027 is under read-only licensing review. No release, live request or deployment occurred.

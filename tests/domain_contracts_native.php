@@ -39,6 +39,37 @@ final class ContractNativeTransport implements HttpTransport {
 }
 function dc_read(array $row,#[SensitiveParameter] string $key,string $address,callable $authorize,string $operation,DomainContractBinding $binding):DomainContractObservation {global $secret;if(db()->inTransaction()||$key!==$secret||$address!=='8.8.8.8'||$operation!==DomainContract::OPERATION)throw new LogicException('Wrong domain credential boundary');return DomainContract::read(new ContractNativeTransport($authorize,$binding),new ProviderCredential('twenty-i',$row['id'],function()use($authorize,$key):string{$authorize();return $key;}),$binding,time());}
 function dc_refresh(array $l):array {global $password;dc_cooldown();$source=provider_registrar_latest($l['profile_id']);return domain_contracts_refresh($l['id'],(int)$l['revision'],(int)$l['profile_revision'],$source['id'],$password,'dc_resolve','dc_read');}
+/** Collect every altered-history result before failing the bounded regression group. */
+function dc_recovery_check(string $name,bool $ok,?string $observed=null):void {global $checks;$checks[]=['name'=>$name,'passed'=>$ok,'observed'=>$observed];}
+function dc_recovery_reason(callable $fn):?string {try{$fn();return null;}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;return $e->getMessage();}}
+function dc_later_intent(DomainContractBinding $binding,string $kind,?string $state):array {
+    return staff_locked(fn()=>staff_transaction(function()use($binding,$kind,$state):array{
+        $r=['id'=>bin2hex(random_bytes(16)),'profile_id'=>$binding->data['profile_id'],'profile_revision'=>$binding->data['profile_revision'],'actor_id'=>2,'started_at'=>gmdate('Y-m-d H:i:s',time()-60),'started_epoch'=>time()-60,'operation'=>$kind==='registrar'?InventoryRead::DOMAINS_LIST:DomainContract::OPERATION];
+        query('INSERT INTO '.table('provider_refreshes').' (id,profile_id,profile_revision,actor_id,started_at,started_epoch,operation) VALUES (?,?,?,?,?,?,?)',array_values($r));provider_settings_audit(2,'refresh_started','Refresh '.$r['id'].' profile '.$r['profile_id'].' revision '.$r['profile_revision']);
+        if($kind==='date')domain_contracts_start($r,$binding);
+        if($state!==null)provider_inventory_record_transaction($r,$state,'unavailable','','unknown',0,0,'[]',0,null);
+        return $r;
+    }));
+}
+function dc_altered_sequence(array $link,array $source,array $later,string $kind,?string $state):void {
+    global $dns,$contractSent,$password;
+    $label=$kind.' '.($state??'unfinished');$expected=$kind==='registrar'?'Registrar observation intent order needs recovery.':'Renewal date intent order needs recovery.';
+    $seq=one('SELECT seq FROM '.table('provider_refreshes').' WHERE id=?',[$later['id']])['seq'];
+    $beforeDns=$dns;$beforeSent=$contractSent;$beforeIntents=reg_count('provider_refreshes');$beforeDates=reg_count('domain_contract_dates');
+    try{
+        query('UPDATE '.table('provider_refreshes').' SET seq=0 WHERE id=?',[$later['id']]);
+        $projection=null;$reason=dc_recovery_reason(function()use($link,&$projection):void{$projection=domain_contracts_project($link['id'],(int)$link['revision']);});
+        dc_recovery_check('Altered '.$label.' sequence refuses projection for exact order reason',$reason===$expected,$reason??json_encode($projection));
+        reg_client(1);$client=dc_client_projection(1);dc_recovery_check('Altered '.$label.' sequence hides current client date',count($client)===1&&$client[0]['date']===null&&$client[0]['status']==='unavailable',json_encode($client));reg_actor(2);
+        // Deliberately no caller transaction or cooldown helper: the exact recovery reason must win.
+        $reason=dc_recovery_reason(fn()=>domain_contracts_refresh($link['id'],(int)$link['revision'],(int)$link['profile_revision'],$source['id'],$password,'dc_resolve','dc_read'));
+        dc_recovery_check('Altered '.$label.' sequence refuses refresh for exact order reason',$reason===$expected,$reason??'no refusal');
+        dc_recovery_check('Altered '.$label.' sequence refuses before DNS send and intent',$dns===$beforeDns&&$contractSent===$beforeSent&&reg_count('provider_refreshes')===$beforeIntents&&reg_count('domain_contract_dates')===$beforeDates);
+    }finally{query('UPDATE '.table('provider_refreshes').' SET seq=? WHERE id=?',[$seq,$later['id']]);}
+    dc_recovery_check('Exact '.$label.' sequence restoration preserves original value',one('SELECT seq FROM '.table('provider_refreshes').' WHERE id=?',[$later['id']])['seq']===$seq);
+    $projection=null;$reason=dc_recovery_reason(function()use($link,&$projection):void{$projection=domain_contracts_project($link['id'],(int)$link['revision']);});
+    dc_recovery_check('Exact '.$label.' restoration retains latest refusal',$kind==='registrar'?$reason==='Refresh registered domains and confirm this assignment first.':($reason===null&&$projection['date']===null&&$projection['status']===($state??'unfinished')),$reason??json_encode($projection));
+}
 function dc_owner_render():string {ob_start();domain_contracts_admin_render();return ob_get_clean();}
 function dc_client_projection(int $id):array {return domain_contracts_client($id);}
 if(($argv[1]??'')==='read-worker'){reg_actor();$l=one('SELECT * FROM '.table('provider_registrar_links').' WHERE client_id=1');$r=provider_registrar_latest($l['profile_id']);try{$result=domain_contracts_refresh($l['id'],(int)$l['revision'],(int)$l['profile_revision'],$r['id'],$password,'dc_resolve','dc_read');echo $result['state'];}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;echo 'refused';}exit;}
@@ -66,6 +97,14 @@ try{
     reg_client(1);$p=dc_client_projection(1);reg_ok('Client sees only own observed date',count($p)===1&&$p[0]['domain']==='one.synthetic.invalid'&&$p[0]['date']==='2028-02-29');reg_deny('Client cannot fetch sibling projection',fn()=>dc_client_projection(2));$_GET['support']='fixture';reg_deny('Support session cannot view dates',fn()=>dc_client_projection(1));unset($_GET['support']);reg_client(2);$p=dc_client_projection(2);reg_ok('Sibling sees no first-client date',$p[0]['date']===null&&$p[0]['domain']==='two.synthetic.invalid');reg_actor();
     reg_deny('Shared cooldown refuses duplicate immediate read',fn()=>domain_contracts_refresh($link['id'],1,1,$read['id'],$password,'dc_resolve','dc_read'));
     dc_cooldown();$workers=[];for($i=0;$i<2;$i++){$proc=proc_open([PHP_BINARY,__FILE__,'read-worker'],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);if(!is_resource($proc))throw new RuntimeException('Cannot create domain read worker');$workers[]=[$proc,$pipes];}$out=[];foreach($workers as [$proc,$pipes]){fclose($pipes[0]);$out[]=stream_get_contents($pipes[1]);$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);reg_ok('Concurrent read worker exits cleanly '.count($out),proc_close($proc)===0&&$err==='');}sort($out);reg_ok('Shared mutex and cooldown permit one concurrent domain read',$out===['complete','refused']);
+    // Real SQL history damage: later failed/unfinished registrar and scalar intents keep their original audits.
+    query('UPDATE '.table('staff_profiles').' SET role=? WHERE user_id=2',['owner']);reg_actor(2);
+    foreach(['registrar','date'] as $kind)foreach(['unavailable',null] as $state){
+        $read=reg_refresh($id);$baseline=dc_refresh($link);reg_ok('Recovery baseline observed '.$kind.' '.($state??'unfinished'),$baseline['state']==='complete'&&domain_contracts_project($link['id'],1)['date']==='2028-02-29');
+        $binding=domain_contracts_binding($link['id'],1);$later=dc_later_intent($binding,$kind,$state);dc_altered_sequence($link,$read,$later,$kind,$state);
+    }
+    reg_ok('All four altered-sequence recovery cases pass',!array_filter($checks,fn($c)=>!$c['passed']));
+    $read=reg_refresh($id);$baseline=dc_refresh($link);reg_ok('Complete baseline after recovery cases preserves original failure history assertion',$baseline['state']==='complete'&&domain_contracts_project($link['id'],1)['date']==='2028-02-29');dc_cooldown();query('UPDATE '.table('staff_profiles').' SET role=? WHERE user_id=2',['administrator']);reg_actor();
     $contractStatus=403;$failed=dc_refresh($link);reg_ok('Latest failed read retains old date only as history',domain_contracts_project($link['id'],1)['date']===null&&domain_contracts_project($link['id'],1)['status']==='unavailable'&&domain_contracts_project($link['id'],1)['history'][1]['date']==='2028-02-29');
     query('UPDATE '.table('provider_refreshes').' SET started_epoch=? WHERE id=?',[time()-600,$failed['id']]);query('UPDATE '.table('domain_contract_bindings').' SET started_epoch=? WHERE id=?',[time()-600,$failed['id']]);reg_ok('Latest sequence wins over earlier clock',domain_contracts_project($link['id'],1)['status']==='unavailable');$contractStatus=200;
     foreach(['binding','intent','date','date_audit','start_audit','finish_audit','binding_audit','counter'] as $damage){db()->exec('SET FOREIGN_KEY_CHECKS=0');db()->beginTransaction();try{
@@ -92,6 +131,20 @@ try{
     db()->beginTransaction();try{query('DELETE FROM '.table('settings').' WHERE name=?',['domain_contracts_schema_version']);reg_deny('Lost marker cannot reset original history',fn()=>domain_contracts_ready());}finally{db()->rollBack();}
     db()->exec('SET FOREIGN_KEY_CHECKS=0');db()->beginTransaction();try{query('DELETE FROM '.table('domain_contract_dates'));query('DELETE FROM '.table('domain_contract_bindings'));query('DELETE FROM '.table('audit').' WHERE action LIKE ?',['domain_contracts.%']);query('DELETE FROM '.table('settings').' WHERE name=?',['domain_contracts_schema_version']);reg_deny('Surviving shared intents and counters fence family plus audit loss',fn()=>domain_contracts_ready());}finally{db()->rollBack();db()->exec('SET FOREIGN_KEY_CHECKS=1');}
     reg_ok('Original domain storage restores exactly',domain_contracts_ready()&&domain_contracts_read_row($new['id'])['date']==='2028-02-29');
+    // A locally accepted synthetic date-shaped credential must not become a provider observation.
+    $originalSecret=$secret;$originalBody=$body;$originalContractBody=$contractBody;$originalProfile=provider_settings_load($id);$originalRevisions=reg_count('provider_revisions');$echoCredentialSaved=false;
+    try{
+        $secret='2028-01-01';reg_ok('Date-shaped fixture passes the actual local credential validator',provider_settings_key_value($secret)===$secret);
+        reg_ok('Echo fixture retains two actual owner request-budget slots',(int)query('SELECT COUNT(*) FROM '.table('provider_refreshes').' WHERE actor_id=? AND started_epoch>?',[1,time()-3600])->fetchColumn()<=18);
+        $echoProfile=provider_settings_save($id,(int)$originalProfile['revision'],'Credential echo fixture',true,$secret,$password);$echoCredentialSaved=true;$echoRevision=(int)provider_settings_load($echoProfile)['revision'];$body='[{"id":703,"name":"echo.synthetic.invalid"}]';$echoSource=reg_refresh($echoProfile,$echoRevision);dc_cooldown();provider_registrar_link($echoProfile,703,1,$echoRevision,$echoSource['id'],$password);$echoLink=one('SELECT * FROM '.table('provider_registrar_links').' WHERE profile_id=? AND domain_id=703',[$echoProfile]);
+        $contractBody='{"renewalDate":"\\u0032\\u0030\\u0032\\u0038-01-01"}';$beforeDns=$dns;$beforeSent=$contractSent;$beforeDates=reg_count('domain_contract_dates');$beforeIntents=reg_count('provider_refreshes');$echoRead=dc_refresh($echoLink);$echoResult=one('SELECT * FROM '.table('provider_refresh_results').' WHERE id=?',[$echoRead['id']]);
+        reg_ok('Credential echo crosses exactly one real shared executor request',$dns===$beforeDns+1&&$contractSent===$beforeSent+1&&reg_count('provider_refreshes')===$beforeIntents+1);
+        reg_ok('Credential echo persists unavailable reason and no date',$echoRead['state']==='unavailable'&&$echoResult['reason']==='date_invalid'&&reg_count('domain_contract_dates')===$beforeDates&&domain_contracts_read_row($echoRead['id'])['date']===null);
+        $echoHistory=json_encode([$echoResult,one('SELECT * FROM '.table('domain_contract_bindings').' WHERE id=?',[$echoRead['id']]),all('SELECT * FROM '.table('audit').' WHERE detail LIKE ?',['%'.$echoRead['id'].'%'])]);reg_ok('Credential echo is absent from retained binding result and audits',!str_contains($echoHistory,$secret)&&!str_contains($echoHistory,base64_encode($secret)));
+        reg_client(1);$echoView=dc_client_projection(1);reg_ok('Credential echo produces only unavailable client observation',count($echoView)===1&&$echoView[0]['domain']==='echo.synthetic.invalid'&&$echoView[0]['status']==='unavailable'&&$echoView[0]['date']===null&&!str_contains(json_encode($echoView),$secret));reg_actor();
+        reg_ok('Owner rendering does not expose echoed credential',!str_contains(dc_owner_render(),$secret));
+    }finally{$secret=$originalSecret;$body=$originalBody;$contractBody=$originalContractBody;reg_actor();if($echoCredentialSaved)provider_settings_save($id,(int)provider_settings_load($id)['revision'],$originalProfile['label'],(bool)$originalProfile['enabled'],$originalSecret,$password);}
+    reg_ok('Supported credential restoration retains profile and observation history',(int)provider_settings_load($id)['revision']===(int)$originalProfile['revision']+2&&reg_count('provider_revisions')===$originalRevisions+2&&domain_contracts_read_row($new['id'])['date']==='2028-02-29');
     $saved=json_encode([all('SELECT * FROM '.table('domain_contract_bindings')),all('SELECT * FROM '.table('domain_contract_dates'))]);reg_ok('Retained history excludes credential and raw private fields',!str_contains($saved,$secret)&&!str_contains($saved,base64_encode($secret))&&!str_contains($saved,'PRIVATE_MARKER'));
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
 $ok=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/domain-contracts-native-results.json',json_encode(['passed'=>$ok,'scope'=>'Native renewal-date shared reads, exact registrar/account authority, isolation, immutable history/recovery and PHP forms; synthetic provider only','checks'=>$checks],JSON_PRETTY_PRINT));echo ($ok?'PASS':'FAIL').': '.count($checks).' domain contract native assertions'.PHP_EOL;exit($ok?0:1);
