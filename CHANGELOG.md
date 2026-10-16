@@ -28,6 +28,14 @@ Add a root start-here guide, complete owner-approved assignment and existing lic
 
 # Changelog
 
+## Unreleased — dated project history and client progress timeline (Devin port)
+
+- Port the preserved `codex/project-progress-screens` slice onto `main` under the 2026-10-16 allocation: `foundation/projects/{ProjectSnapshot,ProjectProgressEvent}` canonical classes with deployment mirrors, additive `studio_progress_{events,requests,heads}` storage behind owner-gated `project_progress_setup`, and immutable hash-linked dated history for existing `studio_job` create/edit forms.
+- Admin: progress editor + bounded timeline on `studio-job`, create-project editor on `studio-clients`, setup form under Version & database; `studio-job`/`studio-upgrade` get private no-store headers and `studio-job` joins the support-session block list.
+- Portal: owning client sees a dated "Project history" timeline inside the existing project detail; scoped support sessions read it with real staff attribution but cannot write.
+- Activity: `progress:<32hex>` items join the existing projection with stable `sort_sequence` ordering, `focus_progress` deep links, and unchanged per-person read cursors; tracking baselines create no notifications.
+- `docs/`: [usage](docs/PROJECT_HISTORY.md), [contract](docs/PROJECT_PROGRESS_CONTRACT.md). Tests: `tests/project-progress/*` (155 record + 50 form checks), `tests/project_progress_native*.php` + `project_progress_screen_native_cases.php`, `tests/project_progress_cases.py` browser, `tests/project_progress_upgrade_cases.py` at the 1.23 baseline. New `project-progress{,-native}.yml` workflows.
+
 ## Synchronize release entry points after review — 2026-10-15
 
 Review4281622110 on4cbc2375 reproduced stale pending1.24 headers in README, agent coordination, release workflow and inventory owner guide. Update every listed entry point plus current migration instructions to the actual immutable publication, archive earlier coordination and mark historical1.23 sections clearly. No runtime or package bytes change. Starting parent4cbc23758674b29899d235b511b40f0a18cf8503 is “Record verified1.24 publication and current20i continuation”; correctiondf57d0ce is “Synchronize published1.24 across current entry-point guides.” Actual local documentation check passed161 Markdown files/1,330 local links and canonical dependency checks; git diff whitespace check passed. These checks cover documentation/source consistency only, not runtime acceptance, which remains the separately published7190 evidence. Known failure: initial review4281622110 found stale headers and was corrected. Follow-up review4281670745 requested this explicit validation record. Renewed review is pending; continue cloud/commercial20i work.

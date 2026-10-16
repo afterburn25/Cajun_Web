@@ -291,3 +291,7 @@ def run(web,base,check,qa,php,label,prefix,version):
     if version in ['1.22.0','1.23.0']:
         from submission_retention_122 import run as submission_retention
         submission_retention({**locals(),'token':token})
+
+    if version=='1.23.0':
+        from project_progress_upgrade_cases import run as progress_upgrade
+        progress_upgrade({**locals(),'token':token})
