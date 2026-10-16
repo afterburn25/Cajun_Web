@@ -16,6 +16,19 @@ The [current 20i checkpoint](docs/TWENTYI_CURRENT_CHECKPOINT.md) records exact e
 
 Main retains existing licensing and the four unresolved [integration findings](docs/LICENSING_INTEGRATION_REVIEW.md), assigned to Devin. Its runtime has not been imported into the separate 20i candidate. Preserve both histories and billing, support-session, storage and invoice-purpose guards during later integration.
 
+## Devin non-20i branches — 2026-10-16
+
+- `devin/non20i-licensing` (PR #159) resolves all four findings: populated pre-master upgrades gain `is_master` additively, master keys are excluded from portal/bundle/download surfaces, legacy `invoice_id IS NULL` fulfilment retries claim only exact-one candidates, and unknown/future schema markers are refused before DDL.
+- `devin/non20i-support-tickets` (PR #158) ports the preserved ticket slice — owner-prepared storage, `support.tickets` permission, admin queue/detail/create, portal flows, private notes, per-viewer read cursors, exact-message activity links.
+- `devin/non20i-project-progress` (PR #160) ports the preserved progress slice — owner-prepared `studio_progress_*` storage, hash-linked dated history in `studio_job` saves, portal timeline, `progress:` activity items.
+- `devin/non20i-mail-replies` (PR #161) completes webmail Reply/Forward — opt-in raw retention, message-screen controls, protected copied drafts, `mail_reply_drafts` storage, format-2 submissions with `In-Reply-To`/`References`, source-Read revalidation on every copied-content path.
+- `devin/non20i-backups-foundation` (PR #162) ports the A-03 contract layer — `BackupManifest` sealed item scopes with structural secrets exclusion, `RestorePlan` deliberate preview→authorize→applied states.
+- `devin/non20i-pipeline-foundation` (PR #163) ports the lead-pipeline contract layer — `PipelineBoard`/`PipelineStage`/`LeadRecord` ordered stages with validated transitions and non-drag control parity.
+- `devin/non20i-proposals-foundation` (PR #164) ports the proposal contract layer — `Proposal`/`ProposalVersion`/`ApprovalDecision` immutable versions with deliberate approval states.
+- `devin/non20i-notifications-foundation` ports the P-07 notification contract layer — `Notification`/`NotificationFeed`/`NotificationPreferences`/`DeliveryAttempt`/`MetricSample` with bounded delivery and honest stale/absent metric handling.
+
+All are local/CI validation only — no live deployment, mail, provider or customer action.
+
 ## Continuity
 
 The [previous checkpoint at 155db254](https://github.com/afterburn25/Cajun_Web/blob/155db254e8e3d0c018200abf6a9325d04c3578ca/docs/TWENTYI_CURRENT_CHECKPOINT.md), [published 1.24 report](docs/TEST_REPORT_1.24.0.md), [roadmap](docs/ROADMAP.md) and [coordination](docs/AGENT_COORDINATION.md) preserve earlier evidence. This main checkpoint changes documentation only; it changes no runtime, installer, version, asset or live installation.
