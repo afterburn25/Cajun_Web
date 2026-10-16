@@ -1,3 +1,7 @@
+## Documentation - current20i acceptance and parallel handoff
+
+Publish source9779879b, independently verified focused registration/Windows evidence and the first full acceptance38909577278. Retain original failures and the separate cloud/StackCP review scope. Refresh status/handoff with immutable links to the complete prior licensing history. No application, installer, version, release or deployment change.
+
 ## Documentation - Devin non20i assignment discoverable on main
 
 Add a root start-here guide, complete owner-approved assignment and existing licensing source/review links. Supersede the earlier unrelated-work pause for Devin while Codex retains20i and final integration. This changes no application, schema, installer, version, release or deployment.

@@ -1,3 +1,5 @@
+Current20i source and acceptance checkpoint, 2026-10-16 13:47 UTC: [9779879b and full run38909577278](TWENTYI_CURRENT_CHECKPOINT.md). Main contains the documentation handoff; the20i runtime stays on its separate branch. Earlier current-state paragraphs below are historical where they conflict with this checkpoint.
+
 ## Current owner allocation - 2026-10-16
 
 **Devin: continue all remaining non-20i site work, including licensing. Codex and its three agents: continue complete20i.** This supersedes older unrelated-work pause statements for Devin. [Start here](../DEVIN_START_HERE.md) gives the full assignment, direct licensing code locations, shared-file boundaries and instructions that work without the GitHub API. Licensing is already on main; inspect and repair its documented gaps rather than recreating it. Work on separate feature branches; Codex coordinates final integration/releases. Assignment [#157](https://github.com/afterburn25/Cajun_Web/issues/157) is posted; external-session acknowledgement is not assumed.
