@@ -18,7 +18,7 @@ try{
 
     // --- storage readiness (fresh deploy marks license_schema_version) -------
     lic_ok('Storage not ready before version mark',!license_ready());
-    save_setting('license_schema_version','1');
+    save_setting('license_schema_version','2');
     lic_ok('Storage ready after version mark',license_ready());
 
     // --- key generation ----------------------------------------------------
@@ -109,6 +109,32 @@ try{
     lic_ok('Non-website SKU does not map',license_product_industry(['sku'=>'MAINTENANCE-PLAN'])===null);
     lic_ok('Unknown industry does not map',license_product_industry(['sku'=>'WEBSITE-UNKNOWN'])===null);
     lic_ok('Missing SKU does not map',license_product_industry([])===null);
+
+    // --- fulfilment: one license per paid invoice -------------------------------
+    // A second purchase of the same product must mint a NEW license — the
+    // pre-invoice_id check keyed on customer+product wrongly returned the
+    // existing license. UNIQUE(invoice_id) also collapses concurrent runs.
+    save_setting('staff_schema_version','1');save_setting('studio_schema_version','2');save_setting('catalog_schema_version','1');
+    $now=gmdate('Y-m-d H:i:s');
+    query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?)',[1,'License fixture job','Fixture','[]',$now,$now]);
+    $jobId=(int)db()->lastInsertId();
+    $mkInvoice=function(string $ref) use($jobId,$now): int {
+        query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,currency,status,instructions,created_at,paid_at) VALUES (?,?,?,?,?,?,?,?,?)',[$jobId,$ref,'Website',50000,'USD','paid','',$now,$now]);
+        $inv=(int)db()->lastInsertId();
+        query('INSERT INTO '.table('catalog_invoice_snapshots').' (invoice_id,job_id,client_id,actor_id,request_key,request_hash,product_id,revision,quantity,snapshot,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)',[$inv,$jobId,1,1,hash('sha256',$ref),hash('sha256','hash'.$ref),1,1,1,json_encode(['sku'=>'WEBSITE-RESTAURANT','title'=>'Restaurant Website','total_cents'=>50000]),$now]);
+        return $inv;
+    };
+    $inv1=$mkInvoice('LIC-FIXTURE-1');
+    $f1=license_fulfill_invoice($inv1);
+    lic_ok('Fulfilment creates license linked to invoice',(bool)$f1&&(int)$f1['invoice_id']===$inv1);
+    lic_ok('Repeat fulfilment returns same license',license_fulfill_invoice($inv1)['license_key']===$f1['license_key']);
+    $inv2=$mkInvoice('LIC-FIXTURE-2');
+    $f2=license_fulfill_invoice($inv2);
+    lic_ok('Second paid invoice mints a second license',(bool)$f2&&$f2['license_key']!==$f1['license_key']&&(int)$f2['invoice_id']===$inv2);
+    lic_ok('Admin-created license has no invoice link',license_get($key)['invoice_id']===null);
+    $dupRejected=false;
+    try{license_create(1,'WEBSITE-RESTAURANT',0,false,$inv1);}catch(PDOException $e){$dupRejected=(int)($e->errorInfo[1]??0)===1062;}
+    lic_ok('Duplicate invoice_id rejected by unique index',$dupRejected);
 
     // --- bundle builder guards ------------------------------------------------
     require_once CWP_CODE_ROOT.'/app/licenses/bundle.php';

@@ -23,7 +23,9 @@ function license_product_industry(array $product): ?string {
 
 /**
  * Fulfil a paid invoice: create license + generate bundle if the product
- * is a licensed website. Idempotent — returns existing license if already fulfilled.
+ * is a licensed website. Idempotent per invoice — the UNIQUE invoice_id
+ * index means a re-run or concurrent call returns the same license, while
+ * a SECOND purchase of the same product correctly mints a new license.
  *
  * Call this from catalog_transition() after marking invoice 'paid',
  * or manually from the admin license page.
@@ -47,15 +49,25 @@ function license_fulfill_invoice(int $invoiceId): ?array {
     $clientId = (int)$invoice['client_id'];
     $productKey = (string)($snapshot['sku'] ?? '');
 
-    // Idempotent: return existing license for this client+product
+    // Idempotent per invoice: return the license this invoice already produced.
+    // (Not customer+product — a second purchase must mint a second license.)
     $existing = one(
-        'SELECT * FROM '.table('website_licenses').' WHERE customer_id=? AND product_id=?',
-        [$clientId, $productKey]
+        'SELECT * FROM '.table('website_licenses').' WHERE invoice_id=?',
+        [$invoiceId]
     );
     if ($existing) return $existing;
 
-    // Create license
-    $key = license_create($clientId, $productKey);
+    // Create license — UNIQUE(invoice_id) collapses a concurrent fulfilment
+    // race: the loser reads the winner's row instead of minting a duplicate.
+    try {
+        $key = license_create($clientId, $productKey, 0, false, $invoiceId);
+    } catch (PDOException $e) {
+        if ((int)($e->errorInfo[1] ?? 0) === 1062) {
+            $existing = one('SELECT * FROM '.table('website_licenses').' WHERE invoice_id=?',[$invoiceId]);
+            if ($existing) return $existing;
+        }
+        throw $e;
+    }
     $license = one('SELECT * FROM '.table('website_licenses').' WHERE license_key=?', [$key]);
     if (!$license) return null;
 

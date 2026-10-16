@@ -22,7 +22,7 @@ function license_audit(int $actor, string $action, string $detail): void {
  * API, fulfilment) check this before touching license tables.
  */
 function license_ready(): bool {
-    return (one('SELECT value FROM ' . table('settings') . ' WHERE name = ?', ['license_schema_version'])['value'] ?? '') === '1';
+    return (one('SELECT value FROM ' . table('settings') . ' WHERE name = ?', ['license_schema_version'])['value'] ?? '') === '2';
 }
 
 /**
@@ -35,24 +35,29 @@ function license_generate_key(): string {
 }
 
 /**
- * Create a new license for a customer.
+ * Create a new license for a customer. $invoiceId links the license to the
+ * paid invoice that produced it — UNIQUE, so concurrent fulfilment of the
+ * same invoice can never mint a second license. NULL for admin-created and
+ * master keys (multiple NULLs are allowed by the unique index).
  */
-function license_create(int $customerId, string $productId, int $actor = 0, bool $master = false): string {
+function license_create(int $customerId, string $productId, int $actor = 0, bool $master = false, ?int $invoiceId = null): string {
     $now = gmdate('Y-m-d H:i:s');
     // license_key is UNIQUE — 128-bit random keys make collisions essentially
-    // impossible, but retry rather than fail outright if one ever occurs.
+    // impossible, but retry rather than fail outright if one ever occurs. A
+    // duplicate on a different unique index (invoice_lookup) is a real
+    // conflict, not a key collision — it must propagate.
     for ($attempt = 0; $attempt < 3; $attempt++) {
         $key = license_generate_key();
         try {
             query(
-                'INSERT INTO ' . table('website_licenses') . ' (license_key, customer_id, product_id, is_active, is_master, created_at, updated_at) VALUES (?, ?, ?, 1, ?, ?, ?)',
-                [$key, $customerId, $productId, $master ? 1 : 0, $now, $now]
+                'INSERT INTO ' . table('website_licenses') . ' (license_key, customer_id, product_id, invoice_id, is_active, is_master, created_at, updated_at) VALUES (?, ?, ?, ?, 1, ?, ?, ?)',
+                [$key, $customerId, $productId, $invoiceId, $master ? 1 : 0, $now, $now]
             );
             license_audit($actor, 'create', 'License ' . substr($key, 0, 8) . '… customer ' . $customerId . ' product ' . $productId . ($master ? ' (master)' : ''));
             return $key;
         } catch (PDOException $e) {
-            if ($attempt === 2 || (int) ($e->errorInfo[1] ?? 0) !== 1062) {
-                throw $e; // not a duplicate, or retries exhausted
+            if ($attempt === 2 || (int) ($e->errorInfo[1] ?? 0) !== 1062 || !str_contains($e->getMessage(), 'license_key')) {
+                throw $e; // not a key collision, or retries exhausted
             }
         }
     }
