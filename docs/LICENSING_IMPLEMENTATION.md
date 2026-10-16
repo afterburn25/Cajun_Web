@@ -107,7 +107,9 @@ creation like normal keys — keep them private.
 **File:** `site/portal/controllers/actions.php` (updated)
 
 Adds license management to the customer workspace:
-- View active licenses with domains
+- View active licenses with the **full license key** — self-service
+  recovery when the fulfilment email is lost (the key is the customer's
+  own; the portal only exposes it to the authenticated owner)
 - Register new domains
 - Replace a domain in one step (old site auto-deactivates — goes offline
   at its next validation)
