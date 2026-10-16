@@ -16,6 +16,7 @@ Main retains the existing licensing implementation and four unresolved [integrat
 
 - `devin/non20i-licensing` (PR #159) resolves all four findings: populated pre-master upgrades gain `is_master` additively, master keys are excluded from portal/bundle/download surfaces, legacy `invoice_id IS NULL` fulfilment retries claim only exact-one candidates, and unknown/future schema markers are refused before DDL.
 - `devin/non20i-support-tickets` (PR #158) ports the preserved ticket slice — owner-prepared storage, `support.tickets` permission, admin queue/detail/create, portal flows, private notes, per-viewer read cursors, exact-message activity links.
+- `devin/non20i-project-planning` (stacked on the progress branch) ports the preserved `codex/project-planning*` stack — owner-prepared `studio_plan_*` storage, `ProjectPlan`/`ProjectPlanEvent` canonical contracts, staff editor + client dashboard, milestone dependencies, `planning:` activity items, and populated-upgrade retention.
 - `devin/non20i-project-progress` ports the preserved progress slice — owner-prepared `studio_progress_*` storage, hash-linked dated history in `studio_job` saves, portal timeline, `progress:` activity items. Local pure-model checks pass; native/browser/upgrade lanes wired into CI.
 
 All are local/CI validation only — no live deployment, mail, provider or customer action.
