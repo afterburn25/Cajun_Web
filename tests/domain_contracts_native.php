@@ -39,6 +39,37 @@ final class ContractNativeTransport implements HttpTransport {
 }
 function dc_read(array $row,#[SensitiveParameter] string $key,string $address,callable $authorize,string $operation,DomainContractBinding $binding):DomainContractObservation {global $secret;if(db()->inTransaction()||$key!==$secret||$address!=='8.8.8.8'||$operation!==DomainContract::OPERATION)throw new LogicException('Wrong domain credential boundary');return DomainContract::read(new ContractNativeTransport($authorize,$binding),new ProviderCredential('twenty-i',$row['id'],function()use($authorize,$key):string{$authorize();return $key;}),$binding,time());}
 function dc_refresh(array $l):array {global $password;dc_cooldown();$source=provider_registrar_latest($l['profile_id']);return domain_contracts_refresh($l['id'],(int)$l['revision'],(int)$l['profile_revision'],$source['id'],$password,'dc_resolve','dc_read');}
+/** Collect every altered-history result before failing the bounded regression group. */
+function dc_recovery_check(string $name,bool $ok,?string $observed=null):void {global $checks;$checks[]=['name'=>$name,'passed'=>$ok,'observed'=>$observed];}
+function dc_recovery_reason(callable $fn):?string {try{$fn();return null;}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;return $e->getMessage();}}
+function dc_later_intent(DomainContractBinding $binding,string $kind,?string $state):array {
+    return staff_locked(fn()=>staff_transaction(function()use($binding,$kind,$state):array{
+        $r=['id'=>bin2hex(random_bytes(16)),'profile_id'=>$binding->data['profile_id'],'profile_revision'=>$binding->data['profile_revision'],'actor_id'=>2,'started_at'=>gmdate('Y-m-d H:i:s',time()-60),'started_epoch'=>time()-60,'operation'=>$kind==='registrar'?InventoryRead::DOMAINS_LIST:DomainContract::OPERATION];
+        query('INSERT INTO '.table('provider_refreshes').' (id,profile_id,profile_revision,actor_id,started_at,started_epoch,operation) VALUES (?,?,?,?,?,?,?)',array_values($r));provider_settings_audit(2,'refresh_started','Refresh '.$r['id'].' profile '.$r['profile_id'].' revision '.$r['profile_revision']);
+        if($kind==='date')domain_contracts_start($r,$binding);
+        if($state!==null)provider_inventory_record_transaction($r,$state,'unavailable','','unknown',0,0,'[]',0,null);
+        return $r;
+    }));
+}
+function dc_altered_sequence(array $link,array $source,array $later,string $kind,?string $state):void {
+    global $dns,$contractSent,$password;
+    $label=$kind.' '.($state??'unfinished');$expected=$kind==='registrar'?'Registrar observation intent order needs recovery.':'Renewal date intent order needs recovery.';
+    $seq=one('SELECT seq FROM '.table('provider_refreshes').' WHERE id=?',[$later['id']])['seq'];
+    $beforeDns=$dns;$beforeSent=$contractSent;$beforeIntents=reg_count('provider_refreshes');$beforeDates=reg_count('domain_contract_dates');
+    try{
+        query('UPDATE '.table('provider_refreshes').' SET seq=0 WHERE id=?',[$later['id']]);
+        $projection=null;$reason=dc_recovery_reason(function()use($link,&$projection):void{$projection=domain_contracts_project($link['id'],(int)$link['revision']);});
+        dc_recovery_check('Altered '.$label.' sequence refuses projection for exact order reason',$reason===$expected,$reason??json_encode($projection));
+        reg_client(1);$client=dc_client_projection(1);dc_recovery_check('Altered '.$label.' sequence hides current client date',count($client)===1&&$client[0]['date']===null&&$client[0]['status']==='unavailable',json_encode($client));reg_actor(2);
+        // Deliberately no caller transaction or cooldown helper: the exact recovery reason must win.
+        $reason=dc_recovery_reason(fn()=>domain_contracts_refresh($link['id'],(int)$link['revision'],(int)$link['profile_revision'],$source['id'],$password,'dc_resolve','dc_read'));
+        dc_recovery_check('Altered '.$label.' sequence refuses refresh for exact order reason',$reason===$expected,$reason??'no refusal');
+        dc_recovery_check('Altered '.$label.' sequence refuses before DNS send and intent',$dns===$beforeDns&&$contractSent===$beforeSent&&reg_count('provider_refreshes')===$beforeIntents&&reg_count('domain_contract_dates')===$beforeDates);
+    }finally{query('UPDATE '.table('provider_refreshes').' SET seq=? WHERE id=?',[$seq,$later['id']]);}
+    dc_recovery_check('Exact '.$label.' sequence restoration preserves original value',one('SELECT seq FROM '.table('provider_refreshes').' WHERE id=?',[$later['id']])['seq']===$seq);
+    $projection=null;$reason=dc_recovery_reason(function()use($link,&$projection):void{$projection=domain_contracts_project($link['id'],(int)$link['revision']);});
+    dc_recovery_check('Exact '.$label.' restoration retains latest refusal',$kind==='registrar'?$reason==='Refresh registered domains and confirm this assignment first.':($reason===null&&$projection['date']===null&&$projection['status']===($state??'unfinished')),$reason??json_encode($projection));
+}
 function dc_owner_render():string {ob_start();domain_contracts_admin_render();return ob_get_clean();}
 function dc_client_projection(int $id):array {return domain_contracts_client($id);}
 if(($argv[1]??'')==='read-worker'){reg_actor();$l=one('SELECT * FROM '.table('provider_registrar_links').' WHERE client_id=1');$r=provider_registrar_latest($l['profile_id']);try{$result=domain_contracts_refresh($l['id'],(int)$l['revision'],(int)$l['profile_revision'],$r['id'],$password,'dc_resolve','dc_read');echo $result['state'];}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;echo 'refused';}exit;}
@@ -66,6 +97,14 @@ try{
     reg_client(1);$p=dc_client_projection(1);reg_ok('Client sees only own observed date',count($p)===1&&$p[0]['domain']==='one.synthetic.invalid'&&$p[0]['date']==='2028-02-29');reg_deny('Client cannot fetch sibling projection',fn()=>dc_client_projection(2));$_GET['support']='fixture';reg_deny('Support session cannot view dates',fn()=>dc_client_projection(1));unset($_GET['support']);reg_client(2);$p=dc_client_projection(2);reg_ok('Sibling sees no first-client date',$p[0]['date']===null&&$p[0]['domain']==='two.synthetic.invalid');reg_actor();
     reg_deny('Shared cooldown refuses duplicate immediate read',fn()=>domain_contracts_refresh($link['id'],1,1,$read['id'],$password,'dc_resolve','dc_read'));
     dc_cooldown();$workers=[];for($i=0;$i<2;$i++){$proc=proc_open([PHP_BINARY,__FILE__,'read-worker'],[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);if(!is_resource($proc))throw new RuntimeException('Cannot create domain read worker');$workers[]=[$proc,$pipes];}$out=[];foreach($workers as [$proc,$pipes]){fclose($pipes[0]);$out[]=stream_get_contents($pipes[1]);$err=stream_get_contents($pipes[2]);fclose($pipes[1]);fclose($pipes[2]);reg_ok('Concurrent read worker exits cleanly '.count($out),proc_close($proc)===0&&$err==='');}sort($out);reg_ok('Shared mutex and cooldown permit one concurrent domain read',$out===['complete','refused']);
+    // Real SQL history damage: later failed/unfinished registrar and scalar intents keep their original audits.
+    query('UPDATE '.table('staff_profiles').' SET role=? WHERE user_id=2',['owner']);reg_actor(2);
+    foreach(['registrar','date'] as $kind)foreach(['unavailable',null] as $state){
+        $read=reg_refresh($id);$baseline=dc_refresh($link);reg_ok('Recovery baseline observed '.$kind.' '.($state??'unfinished'),$baseline['state']==='complete'&&domain_contracts_project($link['id'],1)['date']==='2028-02-29');
+        $binding=domain_contracts_binding($link['id'],1);$later=dc_later_intent($binding,$kind,$state);dc_altered_sequence($link,$read,$later,$kind,$state);
+    }
+    reg_ok('All four altered-sequence recovery cases pass',!array_filter($checks,fn($c)=>!$c['passed']));
+    $read=reg_refresh($id);dc_cooldown();query('UPDATE '.table('staff_profiles').' SET role=? WHERE user_id=2',['administrator']);reg_actor();
     $contractStatus=403;$failed=dc_refresh($link);reg_ok('Latest failed read retains old date only as history',domain_contracts_project($link['id'],1)['date']===null&&domain_contracts_project($link['id'],1)['status']==='unavailable'&&domain_contracts_project($link['id'],1)['history'][1]['date']==='2028-02-29');
     query('UPDATE '.table('provider_refreshes').' SET started_epoch=? WHERE id=?',[time()-600,$failed['id']]);query('UPDATE '.table('domain_contract_bindings').' SET started_epoch=? WHERE id=?',[time()-600,$failed['id']]);reg_ok('Latest sequence wins over earlier clock',domain_contracts_project($link['id'],1)['status']==='unavailable');$contractStatus=200;
     foreach(['binding','intent','date','date_audit','start_audit','finish_audit','binding_audit','counter'] as $damage){db()->exec('SET FOREIGN_KEY_CHECKS=0');db()->beginTransaction();try{

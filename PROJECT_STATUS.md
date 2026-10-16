@@ -1,3 +1,7 @@
+## Domain-date altered-sequence regression checkpoint — 2026-10-15
+
+Separate `codex/twentyi-domain-date-recovery` starts from frozen combined `25e0de3b2b468d155c3bd51fb81bfaefda741c76`. This checkpoint adds four native recovery regressions for later failed/unfinished registrar and date intents whose retained sequence is lowered while audits survive. Exact refusal, client hiding, no DNS/send/intent, and finally restoration are asserted outside caller transactions. Shipping bytes are unchanged; these cases are expected to expose the source-reviewed gap. Only the focused native workflow will run before the bounded module correction. Original 25e and 6ba evidence remains intact; no live provider access or deployment.
+
 ## Current combined discovery integration — 2026-10-15
 
 Root normally integrates reviewed cloud-provider identifiers as1e2ba841, then date-reader5b into the existing registration-option queue. Owners can refresh these saved observations; clients see only their own domain dates and currently offered registration options. Shared context, history, transaction guards and scheduler-last test order are preserved. Incoming native/browser evidence and actual views are verified; source/local checks pass after correcting an independently caught merge syntax error. Fresh combined runtime acceptance remains required.
