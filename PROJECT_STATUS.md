@@ -1,5 +1,7 @@
 # CajunWebPro current status
 
+Build-tool PR [156](https://github.com/afterburn25/Cajun_Web/pull/156), branch `codex/build-git-blob-batch`, starts at frozen `faef8a6a0fb0a3969a67fe8bc7aabd3b107c1c10`. Exact source `5a5539607eb613aceffc13f153289fc7bc01740e` passed all 66 Windows builder guards and one independently verified full Windows package build: FULL 5,746 files, COMPLETE 2,829, UPDATE 2,816, with all 11 checksums verified. COMPLETE equals faef; UPDATE differs only in validated source metadata. Original GitHub checks finished with 42 successful jobs and one infrastructure failure: PHP 8.2 hosting storage could not start MariaDB because fixed host port 33306 was occupied. The sibling PHP 8.4 job passed. The enclosing follow-up replaces that fixed port with Docker's assigned port and supplies it to the existing test step. New-head CI remains pending; the 5a Windows build is evidence for 5a, not this descendant. Shipping and installer bytes remain unchanged. Preserve the original failed run and frozen faef acceptance.
+
 Updated 2026-10-16 UTC. **1.24.0 is published; 1.25.0 and complete 20i remain unfinished.** Codex and three parallel agents own 20i; Devin owns software-product licensing. An ownership assignment is not proof an external session is active. CajunWebPro retains its one-page keyless installer.
 
 ## Current integration

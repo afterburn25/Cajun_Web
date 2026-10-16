@@ -27,14 +27,13 @@ jobs:
           MARIADB_USER: cwp_test
           MARIADB_PASSWORD: local-ci-only
           MARIADB_ROOT_PASSWORD: synthetic-root-only
-        ports: ['33306:3306']
+        ports: ['3306/tcp']
         options: >-
           --health-cmd="healthcheck.sh --connect --innodb_initialized"
           --health-interval=5s --health-timeout=5s --health-retries=20
     env:
       CWP_TEST_DATABASE: cwp_test
       CWP_TEST_HOST: 127.0.0.1
-      CWP_TEST_PORT: '33306'
       CWP_TEST_USER: cwp_test
       CWP_TEST_PASSWORD: local-ci-only
     steps:
@@ -44,6 +43,8 @@ jobs:
       - name: Prepare official PHP with PDO MySQL
         run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-hosting-test -f tests/invitations/Dockerfile tests/invitations
       - name: Native owner records and competing process tests
+        env:
+          CWP_TEST_PORT: ${{ job.services.database.ports['3306'] }}
         run: |
           docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \

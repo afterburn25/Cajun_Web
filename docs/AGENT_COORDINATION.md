@@ -5,7 +5,7 @@ Updated 2026-10-16 UTC. Codex and three parallel agents own complete20i P0; Devi
 | Owner | Current checkpoint | Scope and next evidence |
 |---|---|---|
 | Root | Local combinedbaa0 plus reviewed scheduler fixture835ba72e; PR151 | Push one frozen combined candidate, verify exact Windows packages and track its original acceptance. |
-| Domains | Renewal4f accepted; WordPress3f four-archive independent review clear | Review actual root WordPress source/staged parity; preserve original failed and accepted evidence. |
+| Root (build tool); Domains (renewal proposal) | PR156 at verified 5a553960, with a workflow-only port-collision follow-up | Root owns the build checkout and new-head CI. Preserve 66 passing Windows guards, exact 5a packages, 42 passing original jobs and the PHP8.2 container-start failure. Domains continues the external renewal funding proposal. No duplicate full run. |
 | VPS | WordPress3f8adaa/docs65c accepted original38873107762 | Review merged transport/actual Handler and bounded offline tests, preserving ForceSSL POST. |
 | Catalog | Frozen948 original38867932452 browser failure; ten directory views inspected | Preserve original final follow-through; scheduler correction is independently reviewed and applied only to later source. |
 | Devin | Software-product licensing; main68a source reviewed | Preserve schema3/checksum/invoice/serialization changes; upgrade, master delivery and legacy invoice findings remain open. |

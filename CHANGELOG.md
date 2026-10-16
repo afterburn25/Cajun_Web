@@ -1,3 +1,11 @@
+## Unreleased — avoid hosting-test database port collisions
+
+Let Docker assign an available host port for the hosting storage CI database and pass the actual port to the existing native tests. Preserve original run 38879885470, whose PHP 8.2 job stopped before tests because fixed port 33306 was occupied. Current-head execution remains required. Application and installer files are unchanged.
+
+## Unreleased — batched release source reads
+
+Read immutable Git blobs through one binary batch process when packaging, preserving all existing build checks and deterministic archive behavior. Add 45 portable source/protocol/child-cleanup cases after the original 21 builder guards; all 66 pass locally on Windows. Shipping and installer files are unchanged. Current-source CI, full packaging and release acceptance remain required after integration.
+
 ## Unreleased — scheduler privacy fixture correction
 
 Avoid falsely rejecting unrelated website-folder controls when checking scheduler privacy. Require the exact scheduler section and retain full-page credential checks, with21 positive/negative regressions and independent review. Application code is unchanged; new combined browser acceptance remains pending.

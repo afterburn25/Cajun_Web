@@ -173,6 +173,8 @@ Owner direction recorded 2026-10-12: use GitHub for testing, deliver incremental
 
 ## Current implementation
 
+The build tool resolves an immutable Git tree and reads raw blob objects through one binary batch process. It checks framing, exact object identity and content, and closes/reaps the child on refusal. Existing clean-checkout, source normalization, symlink/path, installer, full PHP/JavaScript lint and archive checks remain unchanged; batching does not skip them. The [portable blob tests](../tests/build_git_blob_batch.py) use a small temporary Git repository and run inside the existing [builder guard report](../tests/build_guards.py), preserving its original 21 checks. Local source-read timing is not full-build or release acceptance.
+
 - [Repository checks](../.github/workflows/repository-checks.yml) runs on pull requests, pushes to `main` and manual dispatch. It uses read-only repository permissions and no production credentials.
 - [Documentation checker](../tools/check_docs.py) verifies required continuity files and inline relative Markdown links, including heading targets. Use `python tools/check_docs.py` locally. External URLs, reference-style links, HTML links and application behavior are outside this check's scope.
 - [Application acceptance](../.github/workflows/application-tests.yml) verifies exact source/package bytes, native MariaDB and actual HTTP/Chromium workflows, plus fresh/update package behavior. It retains reports and screenshots. Final combined-main acceptance and downloaded release verification are required; documentation checks alone are insufficient.
@@ -243,3 +245,7 @@ Append an entry to [SESSION_LOG.md](SESSION_LOG.md), update [CHANGELOG.md](../CH
 Reviewed 2026-10-12: [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax), [managing releases](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository), and [source-code archives](https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives).
 
 The [estimator workflow](../.github/workflows/estimator.yml) verifies only standalone decisions on PHP 8.2/8.4. It does not test the current estimator form, quantity pricing, database or notification delivery; the component remains excluded from deployment.
+
+## Hosting storage CI database ports
+
+The hosting storage workflow exposes container port3306 without fixing a host port. Its native test step passes `job.services.database.ports['3306']` as CWP_TEST_PORT into the existing host-network PHP container. This follows [GitHub's service-container port mapping](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idservices) and avoids the actual port33306 collision in original run38879885470. Preserve that failed attempt and its skipped PHP8.2 execution. A new source revision must pass its own original job; a corrected configuration is not itself test evidence.
