@@ -1,8 +1,16 @@
-## Release acceptance correction checkpoint — 2026-10-16
+## Release 1.25.0 scope and evidence
+
+Release 1.25.0 contains the bounded INCLUDE scope in [RELEASE_SCOPE_1.25.0.md](RELEASE_SCOPE_1.25.0.md). The HOLD rows and complete20i roadmap remain unfinished. The [versioned acceptance report](TEST_REPORT_1.25.0.md) records source-specific results and the final release receipts identify publication. Development, release acceptance and live deployment are separate events.
+
+## Historical source checkpoints
+
+The dated blocks and branch-status rows below retain their original evidence and scope; they do not certify later sources or define the current release state.
+
+### Historical checkpoint: Release acceptance correction checkpoint — 2026-10-16
 
 Canonical `codex/release-1.25.0` parent85f0b489 retains main35d8/d715 and mature3fa through normal merges. Root applied complete supported-runtime selection, authentic published1.24 upgrade fixtures, reviewed licensing repairs and narrow existing-layout capture/copy changes. Local208helper/69build-guard/28retention/19actual-ZIP checks pass; the independently reviewed licensing audit-history recovery correction is applied. All native/HTTP/visual/full-candidate/exact-main/publication gates remain pending. See [current acceptance report](TEST_REPORT_1.25.0.md) and [precise owner update instructions](MIGRATION-INSTRUCTIONS-1.25.0.md). Stable1.24 and main runtime remain unchanged; no1.25 release or live deployment. Frozen scope and held roadmap remain in force.
 
-## 2026-10-16 — freeze and consolidate release 1.25.0
+### Historical checkpoint: 2026-10-16 — freeze and consolidate release 1.25.0
 
 Owner request: publish the mature increment without waiting for complete20i. Start canonical `codex/release-1.25.0` from main `35d8fb7efc94f6f851399d0755fa93097f1fce66`, then normally merge exact mature `3fa72d7b3b447fa3d281cc981ed861c508f850f2`. Fresh ancestry finds all mature capability heads already included, so no duplicate cherry-pick/branch stack is imported. Adopt the26-row scope/dependency map and9 held groups. Resolve shared licensing/deploy/workspace/tests intentionally and preserve both parents' historical records. Generated installer is rebuilt from final source.
 

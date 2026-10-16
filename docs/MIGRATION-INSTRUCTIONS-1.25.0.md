@@ -1,6 +1,6 @@
 # Updating CajunWebPro 1.24.0 to 1.25.0
 
-Release-candidate instructions. Publication and download verification are still pending. Use these instructions with the final verified `CajunWebPro-1.25.0-UPDATE.zip`; a development ZIP or successful parent test run does not establish release acceptance.
+Use these instructions with `CajunWebPro-1.25.0-UPDATE.zip` and `SHA256SUMS.txt` from the same verified GitHub Release. Confirm the archive checksum before upload. Development ZIPs and passing tests for a different source are not release evidence.
 
 The update preserves the existing installation and uses the owner update page. It does not run a fresh installer, reset the database, enable paid provider operations or deploy itself to your server. The [frozen scope](RELEASE_SCOPE_1.25.0.md) identifies the included increment and unfinished features.
 

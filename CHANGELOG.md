@@ -1,3 +1,17 @@
+## 1.25.0 — bounded mature increment
+
+Includes the hosting/domain/cloud observations, explicit assignments, reviewed commercial workflows, bounded settings controls and local StackCP prerequisites listed in [release scope](docs/RELEASE_SCOPE_1.25.0.md). Includes the reviewed licensing migration/master-isolation/older-invoice/history corrections, complete supported-runtime acceptance wiring and authentic1.24 update/recovery fixtures. Held capabilities remain incomplete; provider-issued login and SSH are not included. Existing public/portal layouts are retained.
+
+The [acceptance report](docs/TEST_REPORT_1.25.0.md) records source-specific results and limits. This source change entry does not assert publication or live deployment. The release assets and verification receipts establish those later outcomes.
+
+## 2026-10-16 — actual upgrade fixture correction and focused diagnostic
+
+Correct the release-only CLI fixture to use the actual Apache public root, preserving its historical defaults and production vault boundary. Add an exact-source published1.24 upgrade diagnostic for faster failure investigation; every complete candidate/main gate remains required. Align fixture source hashes and clarify historical versus current release documentation. Parent e713 focused probe and four-environment ForceSSL checks pass their bounded scopes; corrected real upgrade execution remains required. No new feature or shipping-runtime change.
+
+## Historical development checkpoints
+
+The entries below retain their original sources, failures and pending gates; their dated status is historical.
+
 ## 2026-10-16 — deterministic client-observation privacy assertions
 
 Release-only correction after06140894: replace four blanket JSON substring assertions with exact allowed client shapes and values. Valid opaque IDs/timestamps no longer create false privacy failures; unexpected fields, values, dates and sibling data remain rejected. Preserve all existing named assertions and record only safe mismatch booleans.200 controlled extracted-code checks and four lints pass; corrected native/full release acceptance remains required. No application or feature-scope change. Original failed evidence is retained.

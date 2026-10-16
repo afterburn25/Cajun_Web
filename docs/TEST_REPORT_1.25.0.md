@@ -1,6 +1,6 @@
 # CajunWebPro 1.25.0 release acceptance
 
-Status: release consolidation in progress. No 1.25.0 publication or production deployment is claimed. [Scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md) and [owner upgrade instructions](MIGRATION-INSTRUCTIONS-1.25.0.md) define this increment.
+This tracked report records source-specific candidate evidence available at its documentation cutoff. It does not certify a future commit or publication. [Scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md) and [owner upgrade instructions](MIGRATION-INSTRUCTIONS-1.25.0.md) define the increment. Complete exact-main outcomes and publication verification are recorded in the external final release report/receipts once those events occur; versioned and compatibility final report assets must contain identical bytes.
 
 ## Recorded source
 
@@ -8,7 +8,7 @@ The canonical branch is `codex/release-1.25.0`. It started from main `35d8fb7efc
 
 The following acceptance correction commit has parent `85f0b489`. Its enclosing Git history identifies the exact source; it is not accepted merely because this report is present. New 20i capabilities and nonessential refactors remain frozen.
 
-## Completed bounded checks
+## Historical bounded checks at the integration checkpoint
 
 | Evidence | Actual scope and result |
 |---|---|
@@ -23,7 +23,7 @@ The following acceptance correction commit has parent `85f0b489`. Its enclosing 
 
 The final evidence archive must contain the retained reports and source/run bindings, not just these counts. Later fixture checks and actual CI results must be appended with their exact source and scope.
 
-## Frozen candidate CI checkpoint — 2026-10-16
+## Historical frozen candidate CI checkpoint — 2026-10-16
 
 Candidate `13a7b08cc8f8ac1cf2a5e1ea6b4027a28cf2a597` (tree `62eeed74de3fa89347589ec5fce5be1ebdd069b5`) is pushed on `codex/release-1.25.0` in [draft PR #180](https://github.com/afterburn25/Cajun_Web/pull/180). The four original full runs `38941882420`, `38941894576`, `38941906749` and `38941919998` failed during runner setup: selected PHP8.2/8.4 apt packages were unavailable after the cached runtime setup. Application/native/browser/upgrade tests did not run in those attempts. All eight original artifacts, metadata and failure logs remain retained; repair provisioning before starting corrected full runs. No gate or existing test is removed.
 
@@ -33,7 +33,7 @@ The default PHP8.3 PR run `38942023179` builds the separate merge-preview SHA `8
 
 The correction commit following13a changes only the full-run provisioning workflow, the stale probe fixture and continuity documentation. PHP8.2/8.4 CLI/extensions/Apache now use the same signed Ubuntu Noble package repository; PHP8.3 keeps its distribution path. Every148 native recipe, runtime probe, report, timeout and remaining workflow step is retained. The integrated transfer/provenance helper still passes208 checks. These source/local checks require fresh complete CI at the correction commit.
 
-## Observation-fixture correction checkpoint — 2026-10-16
+## Historical observation-fixture correction checkpoint — 2026-10-16
 
 Canonical `codex/release-1.25.0` remains in [draft PR #180](https://github.com/afterburn25/Cajun_Web/pull/180). This correction starts from `0614089482073e8779f7b130b0c8306f7d1f6c6f`; its enclosing commit records the new exact candidate. Frozen included/held features are unchanged. Only four native observation fixtures and continuity documentation change; application, schema, installer, workflows and named test sequences remain unchanged.
 
@@ -45,21 +45,35 @@ Parent061 Windows packages pass exact source, member/directory/checksum, install
 
 Parent061 original full runs38943147018/38943159324/38943171219/38943182554 and maintained38943195376 stay preserved; they cannot certify this new source. Next: push the corrected candidate, rebuild exact packages, dispatch its original complete four-environment matrix and maintained lane, verify all actual results/captures and review the exact source. Then normal-merge, repeat complete exact-main acceptance, publish and download-verify every asset. Main remains `d7153b07`; stable1.24/tag/assets remain unchanged. No1.25 release or live deployment exists.
 
+## 2026-10-16 — actual upgrade fixture correction and focused diagnostic
+
+The correction starts from `e713623cb93c98642ca8fd1dd61f66a9b72112e2` on `codex/release-1.25.0`; the enclosing Git history identifies the corrected source. The original13a full run [38942023179](https://github.com/afterburn25/Cajun_Web/actions/runs/38942023179), Apache job117113081566, passed its prior Apache checks but stopped after five actual1.24 upgrade checks during original mail-account seeding. Failure proof `ab76032d` retains the source/preview tree, artifact digest,116-member partition and explicit exception. No upgrade scope or new upgrade capture completed.
+
+Root applied the independently reviewed three-file document-root correction (`dc7072d1`, root proof `3d2c62d5`), aligned its three acceptance-contract source hashes and added one supplementary PHP8.3/MariaDB10.11 diagnostic workflow (`059dee57`, review `7ad08c6c`, root application `7d02f281`). The legacy CLI fixture now receives the actual validated Apache public root. Its old callers retain their defaults. All production privacy checks and complete148-command acceptance workflow remain intact. The diagnostic builds its exact source, uses only the pinned published1.24 package, exercises all four layout/rewrite scopes and preserves bounded evidence after success or failure. It cannot replace complete candidate/main acceptance.
+
+Actual e713 focused [probe38946655478](https://github.com/afterburn25/Cajun_Web/actions/runs/38946655478) passed both PHP versions: seven reports and1,063 named executions each, verified proof `84a92ff2`. Actual e713 focused [ForceSSL38946655205](https://github.com/afterburn25/Cajun_Web/actions/runs/38946655205) passed all four PHP/database environments: seven reports and876 named executions each, verified proof `6553f1dd`. These results certify their focused source only. Original failures and earlier cancelled partial evidence remain preserved.
+
+Local correction evidence is limited to28 portable path/guard cases,47 diagnostic YAML/AST/source/evidence cases,664 documentation proposal checks, syntax and source review. The subsequent original1.24 form audit (`7549afae`) found no further concrete mismatch on inspection; it is not HTTP execution. Next run the first corrected-source focused upgrade diagnostic, resolve any concrete failure, then run the complete original four-environment matrix and maintained lane on the frozen corrected source. Inspect actual images and packages before normal merge; repeat complete exact-main acceptance before publication and fresh all-asset verification. At this source cutoff main remains `d7153b076e91b524ff2f99a9a7aa5c910551fc5e`,1.25 is unpublished and no live deployment occurred.
+
+## Additional historical failure — original13a Apache upgrade seed
+
+At the 2026-10-16 documentation preparation checkpoint, the original13a PR merge-preview Apache job (checkout `8d6c90287d9417e073aa4178d33ebac4fa6cc51b`, branch source `13a7b08cc8f8ac1cf2a5e1ea6b4027a28cf2a597`) failed while seeding the actual1.24 root-rewrite upgrade. `tests/organized_update_fixture.php` assigned `DOCUMENT_ROOT=dirname($root)`, which incorrectly put the intended private sibling inside the declared public root. The mail credential guard correctly refused it. Root reviewed and applied the three-file explicit-document-root fixture correction (source manifest `dc7072d1`, application proof `3d2c62d5`): the opted-in historical helper accepts the validated actual web root and preserves its prior default. Twenty-eight portable cases plus PHP/Python syntax and diff checks pass; actual corrected native/HTTP/Apache/browser acceptance remains required. A focused upgrade diagnostic is separate from the complete release gates. Retain the original failure. The runtime private-storage guard is unchanged.
+
 ## Required candidate and exact-main gates
 
-| Gate | Current state |
+| Gate | Required evidence / retained historical result |
 |---|---|
-| Complete PHP 8.2 + MariaDB 10.11 | Original13a failed runner provisioning before application tests; corrected exact source execution pending |
-| Complete PHP 8.2 + MySQL 8.4 | Original13a failed runner provisioning before application tests; corrected exact source execution pending |
-| Complete PHP 8.4 + MariaDB 10.11 | Original13a failed runner provisioning before application tests; corrected exact source execution pending |
-| Complete PHP 8.4 + MySQL 8.4 | Original13a failed runner provisioning before application tests; corrected exact source execution pending |
-| Maintained distribution/minimal-PHP lane | Preserved; exact candidate execution pending |
+| Complete PHP 8.2 + MariaDB 10.11 | Complete exact-source terminal evidence required; original13a failed runner provisioning before application tests |
+| Complete PHP 8.2 + MySQL 8.4 | Complete exact-source terminal evidence required; original13a failed runner provisioning before application tests |
+| Complete PHP 8.4 + MariaDB 10.11 | Complete exact-source terminal evidence required; original13a failed runner provisioning before application tests |
+| Complete PHP 8.4 + MySQL 8.4 | Complete exact-source terminal evidence required; original13a failed runner provisioning before application tests |
+| Maintained distribution/minimal-PHP lane | Exact-source maintained/minimal runtime evidence required |
 | Actual published 1.24 COMPLETE → UPDATE | Additive populated upgrade fixtures prepared; root/subfolder, rewrite on/off, interruption, repeat, recovery and reapplication must execute |
-| Extracted HTTP/Chromium and visual inspection | Pending exact candidate captures, named results and actual desktop/mobile inspection |
+| Extracted HTTP/Chromium and visual inspection | Exact candidate captures, named results and actual desktop/mobile inspection required |
 | Independent exact candidate review | Exact13a bounded migration/authority/upgrade review clear; final corrected source review still required |
 | Windows/Linux package agreement | Exact13a Windows packages verified; exact corrected source and Linux agreement remain required |
-| Normal merge and complete exact-main rerun | Pending accepted candidate |
-| Immutable tag, release assets and fresh downloaded-byte verification | Pending exact-main acceptance |
+| Normal merge and complete exact-main rerun | Normal merge follows accepted candidate evidence |
+| Immutable tag, release assets and fresh downloaded-byte verification | Publication follows complete exact-main acceptance |
 
 Each complete environment uses its own same-attempt build, input receipt, native/browser, recovery, Apache and final aggregation. Actual CLI, database and Apache runtime versions are checked. A focused suite, green parent, successful partial job or browser-only checkpoint cannot substitute for the complete run. Preserve all existing tests and required reports.
 

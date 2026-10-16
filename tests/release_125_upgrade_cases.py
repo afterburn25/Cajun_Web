@@ -66,9 +66,12 @@ def fields(response, action, selector=None, field='action'):
     return matches[0]
 
 
-def run(repo, installed, base, prefix, php, check, qa, browser=None):
+def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document_root):
     """Apache already serves installed (at / or /subfolder); DB prefix must be unused."""
     repo, installed, qa = Path(repo), Path(installed), Path(qa)
+    document_root = Path(document_root).resolve()
+    assert document_root in (installed.resolve(), installed.resolve().parent)
+    assert document_root.is_relative_to((repo / 'test-runtime').resolve())
     assert os.environ.get('CWP_TEST_DATABASE') == 'cwp_test'
     assert installed.is_relative_to(repo / 'test-runtime')
     baseline = repo / 'test-runtime/CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip'
@@ -82,7 +85,10 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None):
         check(prefix + ' ' + name, value)
 
     def command(helper, mode):
-        result = subprocess.run([php, str(repo / 'tests' / helper), str(installed), mode],
+        arguments = [php, str(repo / 'tests' / helper), str(installed), mode]
+        if helper == 'organized_update_fixture.php':
+            arguments.append(str(document_root))
+        result = subprocess.run(arguments,
                                 capture_output=True, text=True, timeout=120)
         assert result.returncode == 0, ('Release fixture failed', helper, mode, result.stderr)
         return json.loads(result.stdout)
@@ -126,7 +132,7 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None):
     result = response.json()
     ok('Actual published1.24 installer succeeds', response.status_code == 200 and result.get('ok'))
     private = Path(result['storage'])
-    ok('Original private store is outside the served document root', not private.is_relative_to(installed.parent if base.endswith('/subfolder') else installed))
+    ok('Original private store is outside the served document root', not private.is_relative_to(document_root))
     ok('Original installed code reports1.24', identity()['version'] == '1.24.0')
     old_records('seed')
     owner = login('organized@example.invalid', OWNER)

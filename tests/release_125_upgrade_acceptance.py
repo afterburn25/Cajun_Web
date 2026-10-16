@@ -106,7 +106,7 @@ def main():
                                 apache_http[label] = body
                             finally:
                                 probe.unlink()
-                            result = run(ROOT, installed, base, prefix, php, check, QA, browser)
+                            result = run(ROOT, installed, base, prefix, php, check, QA, browser, document_root=web)
                             scopes.append({'scope': label, 'prefix': prefix, 'passed': True, 'checks': len(result)})
                         finally:
                             proc.terminate()

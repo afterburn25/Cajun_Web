@@ -1,3 +1,11 @@
+## Release 1.25.0 source distinction
+
+The integrated release source contains separately reviewed bounded corrections for the historical migration/master-isolation/older-invoice/incompatible-history findings below, including surviving-audit refusal when setup markers and tables are lost. Source review and actual native evidence are recorded in the [versioned acceptance report](TEST_REPORT_1.25.0.md); complete release acceptance remains a separate gate. This does not accept PR159 or erase its original source/CI findings. Preserve main serialization/checksums and all current provider/support/invoice-purpose guards.
+
+## Historical source and PR reviews
+
+Current/pending wording below describes the named source at its recorded date, not a later integrated release.
+
 ## Release acceptance correction checkpoint — 2026-10-16
 
 Canonical `codex/release-1.25.0` parent85f0b489 retains main35d8/d715 and mature3fa through normal merges. Root applied complete supported-runtime selection, authentic published1.24 upgrade fixtures, reviewed licensing repairs and narrow existing-layout capture/copy changes. Local208helper/69build-guard/28retention/19actual-ZIP checks pass; the independently reviewed licensing audit-history recovery correction is applied. All native/HTTP/visual/full-candidate/exact-main/publication gates remain pending. See [current acceptance report](TEST_REPORT_1.25.0.md) and [precise owner update instructions](MIGRATION-INSTRUCTIONS-1.25.0.md). Stable1.24 and main runtime remain unchanged; no1.25 release or live deployment. Frozen scope and held roadmap remain in force.

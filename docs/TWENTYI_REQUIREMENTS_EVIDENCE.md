@@ -1,8 +1,16 @@
-## Release acceptance correction checkpoint — 2026-10-16
+## Release 1.25.0 scope and evidence
+
+Release 1.25.0 contains the bounded INCLUDE scope in [RELEASE_SCOPE_1.25.0.md](RELEASE_SCOPE_1.25.0.md). The HOLD rows and complete20i roadmap remain unfinished. The [versioned acceptance report](TEST_REPORT_1.25.0.md) records source-specific results and the final release receipts identify publication. Development, release acceptance and live deployment are separate events.
+
+## Historical source checkpoints
+
+The dated blocks and branch-status rows below retain their original evidence and scope; they do not certify later sources or define the current release state.
+
+### Historical checkpoint: Release acceptance correction checkpoint — 2026-10-16
 
 Canonical `codex/release-1.25.0` parent85f0b489 retains main35d8/d715 and mature3fa through normal merges. Root applied complete supported-runtime selection, authentic published1.24 upgrade fixtures, reviewed licensing repairs and narrow existing-layout capture/copy changes. Local208helper/69build-guard/28retention/19actual-ZIP checks pass; the independently reviewed licensing audit-history recovery correction is applied. All native/HTTP/visual/full-candidate/exact-main/publication gates remain pending. See [current acceptance report](TEST_REPORT_1.25.0.md) and [precise owner update instructions](MIGRATION-INSTRUCTIONS-1.25.0.md). Stable1.24 and main runtime remain unchanged; no1.25 release or live deployment. Frozen scope and held roadmap remain in force.
 
-## Release priority checkpoint — 2026-10-16
+### Historical checkpoint: Release priority checkpoint — 2026-10-16
 
 Canonical `codex/release-1.25.0` starts from main35d8 and normally integrates mature3fa. New20i capabilities are frozen until publication and download verification. [Frozen scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md), [current status](../PROJECT_STATUS.md) and [handoff](../SESSION_HANDOFF.md) supersede older current labels below. Source3fa focused38933590118 and Windows packages pass their bounded scopes; the combined release still needs licensing corrections, supported runtime/full browser/actual1.24 upgrade gates, independent review, exact-main acceptance and all-asset verification. Published1.24 remains unchanged; no1.25 release or live deployment exists yet.
 

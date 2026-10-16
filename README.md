@@ -2,11 +2,11 @@
 
 ## Owner release priority — 2026-10-16
 
-Freeze new 20i capabilities and nonessential refactors until CajunWebPro 1.25.0 is published and every downloaded release asset is verified. The owner explicitly requires the mature increment now, without waiting for complete20i. Codex root owns `codex/release-1.25.0`, started from main `35d8fb7e`, and one normal merge of the mature `3fa72d7b` history. [Frozen scope](docs/RELEASE_SCOPE_1.25.0.md) and [integration map](docs/RELEASE_1.25_INTEGRATION_MAP.md) distinguish included capabilities, dependencies and held work.
+Freeze new 20i capabilities and nonessential refactors until CajunWebPro 1.25.0 is published and every downloaded release asset is verified. The owner explicitly requires the mature increment now, without waiting for complete20i. Codex root owns `codex/release-1.25.0`; the original main `35d8fb7e` and mature `3fa72d7b` histories are already preserved by normal merges. [Frozen scope](docs/RELEASE_SCOPE_1.25.0.md) and [integration map](docs/RELEASE_1.25_INTEGRATION_MAP.md) distinguish included capabilities, dependencies and held work.
 
 Only integration, release-blocking corrections, migrations, authorization, tests, browser fixes, packaging and release documentation proceed in this lane. Preserve unfinished branches and original failed evidence. Devin's remaining non-20i assignment continues on separate branches; do not import unaccepted proposals opportunistically. Root coordinates shared seams and release acceptance. Published 1.24.0 stays immutable. No live deployment is authorized. Resume remaining20i after the verified incremental release.
 
-See [current status](PROJECT_STATUS.md), [handoff](SESSION_HANDOFF.md) and [Devin assignment](DEVIN_START_HERE.md). The release branch is under integration; no 1.25.0 release exists yet.
+See [current status](PROJECT_STATUS.md), [handoff](SESSION_HANDOFF.md) and [Devin assignment](DEVIN_START_HERE.md). The versioned acceptance report and final release receipts identify actual source, acceptance and publication outcomes; these are separate stages.
 
 ## Historical release and implementation records
 

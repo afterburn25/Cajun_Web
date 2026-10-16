@@ -1,8 +1,18 @@
-## Release acceptance correction checkpoint — 2026-10-16
+## Release 1.25.0 evidence and publication boundary
+
+The bounded increment is defined by [scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md), [acceptance report](TEST_REPORT_1.25.0.md) and [migration instructions](MIGRATION-INSTRUCTIONS-1.25.0.md). The original main/mature20i histories are already normally merged. Preserve every existing acceptance and publication gate; current source integration does not itself publish or deploy the application.
+
+Record complete exact-main outcomes and publication only from their actual receipts. Final release notes/report assets may add those facts after accepted source is frozen. Do not rewrite an accepted commit to claim a future result, and do not replace an immutable released asset with a later source. A publication is verified only after every asset is freshly downloaded and compared with its prepared source-bound bytes.
+
+## Historical source checkpoints
+
+The following dated checkpoints and earlier releases preserve their original status. Their pending-work statements are not current instructions.
+
+### Historical checkpoint: Release acceptance correction checkpoint — 2026-10-16
 
 Canonical `codex/release-1.25.0` parent85f0b489 retains main35d8/d715 and mature3fa through normal merges. Root applied complete supported-runtime selection, authentic published1.24 upgrade fixtures, reviewed licensing repairs and narrow existing-layout capture/copy changes. Local208helper/69build-guard/28retention/19actual-ZIP checks pass; the independently reviewed licensing audit-history recovery correction is applied. All native/HTTP/visual/full-candidate/exact-main/publication gates remain pending. See [current acceptance report](TEST_REPORT_1.25.0.md) and [precise owner update instructions](MIGRATION-INSTRUCTIONS-1.25.0.md). Stable1.24 and main runtime remain unchanged; no1.25 release or live deployment. Frozen scope and held roadmap remain in force.
 
-## Release priority checkpoint — 2026-10-16
+### Historical checkpoint: Release priority checkpoint — 2026-10-16
 
 Canonical `codex/release-1.25.0` starts from main35d8 and normally integrates mature3fa. New20i capabilities are frozen until publication and download verification. [Frozen scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md), [current status](../PROJECT_STATUS.md) and [handoff](../SESSION_HANDOFF.md) supersede older current labels below. Source3fa focused38933590118 and Windows packages pass their bounded scopes; the combined release still needs licensing corrections, supported runtime/full browser/actual1.24 upgrade gates, independent review, exact-main acceptance and all-asset verification. Published1.24 remains unchanged; no1.25 release or live deployment exists yet.
 
@@ -10,7 +20,7 @@ Canonical `codex/release-1.25.0` starts from main35d8 and normally integrates ma
 
 # GitHub testing, incremental releases and agent continuity
 
-## Current publication — 2026-10-15
+## Historical publication checkpoint — 2026-10-15
 
 Codex owns the complete 20i P0 integration. [Version1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly download-verified at immutable source7190b582. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38711850732) passes9,134 named executions and30 gates; all16 assets, tag, manifests and ZIP contents match accepted source. Previous1.23 assets remain unchanged. [Current status](../PROJECT_STATUS.md), [release evidence](TEST_REPORT_1.24.0.md) and [requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) define current scope. Complete20i remains unfinished; unrelated work stays paused. No live deployment is claimed.
 

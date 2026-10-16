@@ -1,4 +1,30 @@
-## Observation-fixture correction checkpoint — 2026-10-16
+# CajunWebPro 1.25.0 scope and release status
+
+Release 1.25.0 contains the bounded mature 20i increment in the [frozen scope](docs/RELEASE_SCOPE_1.25.0.md). Its original main35d8 and mature3fa histories are already preserved through normal merges; the [integration map](docs/RELEASE_1.25_INTEGRATION_MAP.md) records their ancestry. Complete20i and the HOLD capabilities remain unfinished.
+
+The integrated source includes the separately reviewed release-only licensing corrections: internal master isolation, recognized populated legacy adoption, explicit older-invoice review and incompatible/missing-history refusal. This does not accept PR159 or other unmerged Devin proposals. The source-bound [acceptance report](docs/TEST_REPORT_1.25.0.md) distinguishes actual native evidence, complete candidate/main acceptance and publication receipts.
+
+New 20i capabilities and nonessential refactors remain frozen until 1.25.0 is published and every downloaded asset is verified. Root owns integration and release. Candidate acceptance, normal main merge, complete exact-main acceptance, immutable publication and fresh asset verification are separate required steps. Their results must identify their actual source and attempt; a successful parent or partial job cannot certify a later source.
+
+Use the [migration instructions](docs/MIGRATION-INSTRUCTIONS-1.25.0.md) with the verified UPDATE package. The original1.24 tag/assets remain immutable. The existing public/portal layout is retained; the separate approved dashboard concept is not claimed as implemented. No live provider operation, charge, mail, SSH or production deployment is established by synthetic acceptance.
+
+Devin continues the [non-20i assignment](DEVIN_START_HERE.md) on separate branches. Unaccepted proposals stay outside the frozen scope unless a reviewed release blocker requires a narrow correction.
+
+## 2026-10-16 — actual upgrade fixture correction and focused diagnostic
+
+The correction starts from `e713623cb93c98642ca8fd1dd61f66a9b72112e2` on `codex/release-1.25.0`; the enclosing Git history identifies the corrected source. The original13a full run [38942023179](https://github.com/afterburn25/Cajun_Web/actions/runs/38942023179), Apache job117113081566, passed its prior Apache checks but stopped after five actual1.24 upgrade checks during original mail-account seeding. Failure proof `ab76032d` retains the source/preview tree, artifact digest,116-member partition and explicit exception. No upgrade scope or new upgrade capture completed.
+
+Root applied the independently reviewed three-file document-root correction (`dc7072d1`, root proof `3d2c62d5`), aligned its three acceptance-contract source hashes and added one supplementary PHP8.3/MariaDB10.11 diagnostic workflow (`059dee57`, review `7ad08c6c`, root application `7d02f281`). The legacy CLI fixture now receives the actual validated Apache public root. Its old callers retain their defaults. All production privacy checks and complete148-command acceptance workflow remain intact. The diagnostic builds its exact source, uses only the pinned published1.24 package, exercises all four layout/rewrite scopes and preserves bounded evidence after success or failure. It cannot replace complete candidate/main acceptance.
+
+Actual e713 focused [probe38946655478](https://github.com/afterburn25/Cajun_Web/actions/runs/38946655478) passed both PHP versions: seven reports and1,063 named executions each, verified proof `84a92ff2`. Actual e713 focused [ForceSSL38946655205](https://github.com/afterburn25/Cajun_Web/actions/runs/38946655205) passed all four PHP/database environments: seven reports and876 named executions each, verified proof `6553f1dd`. These results certify their focused source only. Original failures and earlier cancelled partial evidence remain preserved.
+
+Local correction evidence is limited to28 portable path/guard cases,47 diagnostic YAML/AST/source/evidence cases,664 documentation proposal checks, syntax and source review. The subsequent original1.24 form audit (`7549afae`) found no further concrete mismatch on inspection; it is not HTTP execution. Next run the first corrected-source focused upgrade diagnostic, resolve any concrete failure, then run the complete original four-environment matrix and maintained lane on the frozen corrected source. Inspect actual images and packages before normal merge; repeat complete exact-main acceptance before publication and fresh all-asset verification. At this source cutoff main remains `d7153b076e91b524ff2f99a9a7aa5c910551fc5e`,1.25 is unpublished and no live deployment occurred.
+
+## Historical source checkpoints
+
+The dated records below preserve their original source, result and pending work. They are not the current release state; use the versioned acceptance record and final release receipts above.
+
+### Historical checkpoint: Observation-fixture correction checkpoint — 2026-10-16
 
 Canonical `codex/release-1.25.0` remains in [draft PR #180](https://github.com/afterburn25/Cajun_Web/pull/180). This correction starts from `0614089482073e8779f7b130b0c8306f7d1f6c6f`; its enclosing commit records the new exact candidate. Frozen included/held features are unchanged. Only four native observation fixtures and continuity documentation change; application, schema, installer, workflows and named test sequences remain unchanged.
 
@@ -10,7 +36,7 @@ Parent061 Windows packages pass exact source, member/directory/checksum, install
 
 Parent061 original full runs38943147018/38943159324/38943171219/38943182554 and maintained38943195376 stay preserved; they cannot certify this new source. Next: push the corrected candidate, rebuild exact packages, dispatch its original complete four-environment matrix and maintained lane, verify all actual results/captures and review the exact source. Then normal-merge, repeat complete exact-main acceptance, publish and download-verify every asset. Main remains `d7153b07`; stable1.24/tag/assets remain unchanged. No1.25 release or live deployment exists.
 
-## Frozen candidate CI checkpoint — 2026-10-16
+### Historical checkpoint: Frozen candidate CI checkpoint — 2026-10-16
 
 Candidate `13a7b08cc8f8ac1cf2a5e1ea6b4027a28cf2a597` (tree `62eeed74de3fa89347589ec5fce5be1ebdd069b5`) is pushed on `codex/release-1.25.0` in [draft PR #180](https://github.com/afterburn25/Cajun_Web/pull/180). The four original full runs `38941882420`, `38941894576`, `38941906749` and `38941919998` failed during runner setup: selected PHP8.2/8.4 apt packages were unavailable after the cached runtime setup. Application/native/browser/upgrade tests did not run in those attempts. All eight original artifacts, metadata and failure logs remain retained; repair provisioning before starting corrected full runs. No gate or existing test is removed.
 
@@ -20,7 +46,7 @@ The default PHP8.3 PR run `38942023179` builds the separate merge-preview SHA `8
 
 The correction commit following13a changes only the full-run provisioning workflow, the stale probe fixture and continuity documentation. PHP8.2/8.4 CLI/extensions/Apache now use the same signed Ubuntu Noble package repository; PHP8.3 keeps its distribution path. Every148 native recipe, runtime probe, report, timeout and remaining workflow step is retained. The integrated transfer/provenance helper still passes208 checks. These source/local checks require fresh complete CI at the correction commit.
 
-# CajunWebPro current status
+### Historical checkpoint: CajunWebPro current status
 
 The owner has prioritized publishing the mature 20i increment as **1.25.0**. New capabilities and nonessential refactors are frozen. Published [1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0), source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`, is unchanged. No 1.25.0 release or live deployment has occurred.
 
