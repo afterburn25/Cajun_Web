@@ -1,5 +1,12 @@
 # CajunWebPro current handoff
 
+## StackCP support handoff contract — 2026-10-16
+
+Isolated `codex/twentyi-provider-support-handoff` starts from exact `5560635bb2117556de289f0d24c5b170d48e9c77`. Three pure owned classes plus `tests/stackcp_handoff_contract.php` implement a detached owner review document, non-executable SDK exchange descriptions and ephemeral strict-subset response handling. The retained20i-authored SDK supports a Stack-user sign-in chain with a distinct OAuth client key; it does not establish package-only scope, remote session expiry or revocation. Whole-user access is explicit. Local default/minimal PHP each pass315 named synthetic checks; four PHP syntax checks pass. Independent root/source review and Domains proof `86e76191da5bbd7cab267fd2ab667908c98038ac7ce7909f7fcb47f227b0e2bb` are clear for this pure scope; the original303/308 evidence is retained. No shipping, shared, installer, workflow, native database, browser, live request or CI change/acceptance is claimed.
+
+[Exact source/limits](docs/TWENTYI_STACKCP_HANDOFF_CONTRACT.md) and [next native prerequisite design](docs/TWENTYI_STACKCP_NATIVE_PREREQUISITES.md) are ready for independent review. The next step is reviewed separate protected auth-key configuration and explicit Stack-user/resource association; no sender or shared wiring proceeds without root review. Provider support and A-10/SSH remain incomplete; accepted556 and all prior evidence remain unchanged.
+
+
 Updated2026-10-16UTC. Continue complete20i P0. Published1.24 remains immutable at7190b582;1.25/full20i unfinished. Codex and three agents own20i; Devin owns licensing. Preserve one-page keyless setup, existing data and every original attempt. No routine test authorizes live operations.
 
 ## Root correction and immediate next actions
