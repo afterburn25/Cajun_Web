@@ -42,7 +42,8 @@ function notification_persist_delivery(string $notificationId,DeliveryAttempt $a
  * Record a directed notification for one recipient: the portal feed row is the
  * unconditional channel; an email delivery attempt is recorded and tried only
  * when outbound mail is configured and the recipient has not opted out of the
- * kind. Synchronous send — maxAttempts 1, failures record honestly (no daemon).
+ * kind. The first send attempt runs inline after commit; failures persist as
+ * bounded-retry records for notification_outbox_pump (no daemon, no retry-forever).
  */
 function notification_emit(string $audience,int $recipientId,string $kind,string $link,string $title,string $body): void {
     if(!notifications_feed_ready())return;
