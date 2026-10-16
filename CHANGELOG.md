@@ -1,3 +1,7 @@
+## Unreleased — protected StackCP setup integration
+
+Add owner-only explicit separate authentication-key configuration and unverified resource assignments with current-password/review checks, encrypted append-only history, missing-key restoration protection and no credential decryption on status pages. Original focused matrix passes all four environments. Combine with directory controls, paid renewals and exact synthetic delivery evidence correction; new combined UI/package acceptance is still required. No provider session/login or remote revoke guarantee is enabled.
+
 ## Unreleased — exact synthetic delivery evidence
 
 Retain the three generated public website-delivery files in native/browser evidence without widening other paths or lanes. Add51 actual offline seal/aggregation/boundary regressions while preserving all112 existing cases. Original556 failure and a63/4791 runs remain unchanged; shipping application bytes are untouched and fresh combined acceptance remains required.

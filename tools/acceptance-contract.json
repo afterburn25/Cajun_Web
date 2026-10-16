@@ -2,9 +2,9 @@
   "base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
   "base_workflow_sha256": "7aef2d8f6df74f4c65091960191a4748b21b8258f111d8a23967abe13bddafe5",
   "unchanged_test_sha256": {
-    "tests/browser_acceptance.py": "5552d125b0880bbbef2b1acc9f2c329fc0f60de8bf95ebb1abe3ffa97ab6e6a9",
+    "tests/browser_acceptance.py": "cf964c77274d791312028f5cd2129f070a0f940e850b9d054219c703e00476d2",
     "tests/structure_acceptance.py": "2b89114d669f717c4e936123ae256e9c29394664ee1a7db301411964839e86d0",
-    "tests/apache_acceptance.py": "efc8392db0c7a565fda8364357c5b024cd0dbf806aec7e601b9bae62daa30fdc",
+    "tests/apache_acceptance.py": "2e460b9c477c47117514a33dc335344af2ad743971814da6e52031a067cefb03",
     "tests/prepare_legacy.py": "00a09c11a78eb124a848d4794f0eab8a2901eb1d090f6e8da7da498c06d623a7"
   },
   "native_commands": [
@@ -112,6 +112,13 @@
     "php8.3 tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-results.json",
     "php8.3 -n tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-no-ini-results.json",
     "php8.3 tests/provider_package_wordpress_installed_native.php",
+    "php8.3 tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-default.json",
+    "php8.3 -n tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-minimal.json",
+    "php8.3 tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-default.json",
+    "php8.3 -n tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-minimal.json",
+    "php8.3 tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json",
+    "php8.3 -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json",
+    "php8.3 tests/stackcp_prerequisites_native.php",
     "php8.3 tests/provider_domain_search_native.php",
     "php8.3 tests/provider_mailboxes_native.php",
     "php8.3 tests/provider_operations_native.php",
@@ -158,6 +165,21 @@
       "php8.3 -n tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-no-ini-results.json",
       "php8.3 tests/provider_directory_listing_controls_native.php",
       "python -B tests/provider_directory_controls_http_contract.py > qa/directory-listing-controls-http-handler-results.json"
+    ]
+  },
+  "stackcp_native_command_baseline": {
+    "source": "1d026026d711a602df5705aa10cf9492574b1108",
+    "count": 119,
+    "sha256": "a961751ed338491835cc7620044d2a61c31696bf5f5b46b80d9453971c909ba2",
+    "additions_after": "php8.3 tests/provider_package_wordpress_installed_native.php",
+    "additions": [
+      "php8.3 tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-default.json",
+      "php8.3 -n tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-minimal.json",
+      "php8.3 tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-default.json",
+      "php8.3 -n tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-minimal.json",
+      "php8.3 tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json",
+      "php8.3 -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json",
+      "php8.3 tests/stackcp_prerequisites_native.php"
     ]
   }
 }

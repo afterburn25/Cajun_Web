@@ -1,6 +1,6 @@
-## Current complete20i roadmap — 2026-10-16
+## Current complete20i roadmap —2026-10-16
 
-Frozen4791 combines directory controls, paid renewal and authenticated Force SSL history. Current descendant corrects the exact three synthetic delivery files rejected by original556 evidence sealing. Native/browser steps succeeded but full556 failed; a63/4791 original runs remain preserved with the same known helper defect. All163 offline helper checks pass; shipping bytes and119 commands/129 browser/168 final reports are unchanged. Cleared StackCP prerequisites and private registration drafts progress separately; no login/SSH/registration sender is established. Published1.24 remains immutable,1.25/full20i unfinished. [Current status](../PROJECT_STATUS.md), [handoff](../SESSION_HANDOFF.md), [cause and correction](TWENTYI_DELIVERY_EVIDENCE_CORRECTION.md).
+Normally integrate native-tested StackCP auth-key/unverified-assignment setupfbaa with evidence-corrected directory/renewal1d026. Root verifies exact shared union and installer; the next combined full must cover126 commands,136/175 reports and actual290 captures. No provider login/session or registration purchase sender is enabled. Private registration drafts progress separately. Original failed/ongoing runs remain preserved. Published1.24 stays immutable;1.25 and complete20i remain unfinished. [Status](../PROJECT_STATUS.md), [handoff](../SESSION_HANDOFF.md).
 
 ## Historical implementation checkpoints
 

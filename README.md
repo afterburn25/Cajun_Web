@@ -1,10 +1,8 @@
 # CajunWebPro — project source of truth
 
-## Evidence-packaging correction — 2026-10-16
+## Current20i integration —2026-10-16
 
-The current candidate adds an exact three-file synthetic delivery evidence exception after original556 failed sealing despite successful native/browser steps. All163 offline helper checks pass; original112 are retained. Every shipping byte and existing application driver remains exact4791. Originala63/4791 attempts remain preserved with the same known seal defect. Cleared support prerequisites will join sequentially before the next combined full. This is not release/full20i acceptance. [Status](PROJECT_STATUS.md), [handoff](SESSION_HANDOFF.md).
-
-
+Protected owner StackCP setup now joins the directory/paid-renewal candidate with the exact synthetic-delivery evidence correction. All four original focused StackCP environments pass; current combined browser/package acceptance remains pending. Actual556 WordPress mobile labels are visually corrected while that original full remains failed at sealing. No provider login, registration purchase or full20i completion is claimed. [Status](PROJECT_STATUS.md), [handoff](SESSION_HANDOFF.md).
 
 ## Current release and ownership — 2026-10-15
 

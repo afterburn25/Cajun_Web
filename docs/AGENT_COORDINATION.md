@@ -1,16 +1,16 @@
 # Current CajunWebPro agent coordination
 
-Updated 2026-10-16 UTC. Codex and three agents own complete20i P0; Devin owns product licensing. Isolated branches and sequential root-reviewed shared changes remain required.
+Updated2026-10-16 UTC. Codex and three agents own complete20i P0; Devin owns software-product licensing.
 
 | Owner | Current work | Next action |
 |---|---|---|
-| Root | New descendant of4791 repairs exact synthetic delivery evidence packaging | Verify parent artifacts, integrate cleared support work, run exact combined acceptance. |
-| Domains | Reviewed pure registration2e86 and native private-draft proposal4552abd3 | Implement owned encrypted drafts and fixtures; propose shared wiring before application. |
-| VPS | Directory evidence extension209c3a93 and seal correction independent reviewbe46dd38 | New external exact-path verifier, fresh source binding and independent integration review. |
-| Catalog | Source-reviewed separate StackCP auth key and unverified assignments | Freeze current owned source and verify original four-way focused matrix; no provider login. |
-| Devin | Licensing main79d9 remains outside candidate | Resolve four recorded integration findings. |
+| Root | Normal1d026+fbaa directory/renewal/StackCP union | Canonical source/package checks and one combined full; preserve original runs. |
+| Domains | Reviewed encrypted private registration drafts from2e86 | Owned runtime/fixtures, then external shared wiring review. |
+| VPS | Scoped556 failure verification and new combined evidence extension | Root-reviewed source/run binding; no failed-run success claim. |
+| Catalog | StackCP original focused38900009435 all4 passed | Preserve exact source/evidence and support independent combined review. |
+| Devin | Licensing main79d9 outside candidate | Resolve four recorded integration findings. |
 
-Original556 full failed sealing after successful native/browser steps; a63/4791 attempts remain preserved. No unchanged-source rerun/cancellation or full pass is claimed. [Handoff](../SESSION_HANDOFF.md).
+Root proof7457e928 independently verifies StackCP's ten reports/1391 outcomes per environment. Current merged browser, packages and release gates remain pending. [Handoff](../SESSION_HANDOFF.md).
 
 ## Integration rules
 

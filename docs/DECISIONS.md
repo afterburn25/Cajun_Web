@@ -255,3 +255,7 @@ Forwarding redirects future delivery, so mailbox-create permission never grants 
 ## 2026-10-16 — WordPress installation is a saved indication
 
 Use only the documented exact package `wordpressIsInstalled` GET. A strict true reports installed; strict false is retained as reported false without claiming absence; null and unexpected shapes remain unavailable. Keep a distinct immutable package context and explicit owner-approved sharing, with no inherited PHP/ForceSSL permissions. There is no WordPress write, admin access or health/version claim. Application transport admission and evidence use the existing executor and recorder. [Scope](TWENTYI_WORDPRESS_INSTALLATION_OBSERVATIONS.md).
+
+## 2026-10-16 — StackCP access scope and separate authentication credential
+
+The retained provider-authored SDK supports a distinct auth-client-key exchange and whole-Stack-user session, not an atomic package-only session. Use a dedicated pure operation and initially owner-only local policy; never inherit website support permissions or the existing pure StackCpGrant read/manage labels. A recorded single-package grant snapshot is only an admission observation. Local expiry/revocation cannot claim to end a provider session. Preserve exact default HTTPS destination limits and keep the undocumented custom-brand response/native execution boundary explicit. [Contract](TWENTYI_STACKCP_HANDOFF_CONTRACT.md); [native prerequisites](TWENTYI_STACKCP_NATIVE_PREREQUISITES.md).

@@ -260,10 +260,18 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
-    check('All119 native commands retain exact reviewed order and arguments', native_commands==contract['native_commands'])
+    check('All126 native commands retain exact reviewed order and arguments', native_commands==contract['native_commands'])
+    stackcp=contract['stackcp_native_command_baseline'];stackcp_additions=stackcp['additions']
+    stackcp_preserved=[command for command in native_commands if command not in stackcp_additions]
+    check('All119 pre-StackCP native commands retain exact order and arguments',
+          len(stackcp_preserved)==stackcp['count']==119 and hashlib.sha256(json.dumps(stackcp_preserved,separators=(',',':')).encode()).hexdigest()==stackcp['sha256'])
+    stackcp_position=native_commands.index(stackcp['additions_after'])+1
+    check('Seven StackCP reports cover pure handoff prerequisites views and native once',
+          len(stackcp_additions)==len(set(stackcp_additions))==7 and native_commands[stackcp_position:stackcp_position+7]==stackcp_additions
+          and all(native_commands.count(command)==1 for command in stackcp_additions))
     baseline=contract['native_command_baseline'];additions=baseline['additions']
     directory_baseline=contract['directory_control_command_baseline'];directory_additions=directory_baseline['additions']
-    preserved=[command for command in native_commands if command not in additions and command not in directory_additions]
+    preserved=[command for command in stackcp_preserved if command not in additions and command not in directory_additions]
     check('All105 predecessor native commands retain exact order and arguments',
           len(preserved)==baseline['count']==105 and hashlib.sha256(json.dumps(preserved,separators=(',',':')).encode()).hexdigest()==baseline['sha256'])
     position=native_commands.index(baseline['additions_after'])+1
