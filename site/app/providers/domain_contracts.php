@@ -33,11 +33,25 @@ function domain_contracts_source(string $refreshId,int $domainId):array {
     if(!$domain)throw new RuntimeException('Original registered domain is missing.');
     $safe=['id'=>$r['id'],'seq'=>(int)$r['seq'],'profile_id'=>$r['profile_id'],'profile_revision'=>(int)$r['profile_revision'],'actor_id'=>(int)$r['actor_id'],'started_at'=>$r['started_at'],'started_epoch'=>(int)$r['started_epoch'],'key_fingerprint'=>$r['key_fingerprint'],'domain_id'=>(int)$domain['domain_id'],'domain'=>$domain['domain'],'unmapped_count'=>(int)$domain['unmapped_count'],'package_count'=>count($rows),'start_audit'=>$start,'finish_audit'=>$finish];return $safe;
 }
+/** Independent common-start audit order must agree before any retained latest intent is authority. */
+function domain_contracts_intent_order(string $profileId,string $linkId):void {
+    $f=table('provider_refreshes');$a=table('audit');$b=table('domain_contract_bindings');
+    $intents=(int)query("SELECT COUNT(*) FROM $f WHERE BINARY profile_id=?",[$profileId])->fetchColumn();$audits=(int)query("SELECT COUNT(*) FROM $a WHERE BINARY action='provider.refresh_started' AND BINARY detail LIKE ?",['Refresh % profile '.$profileId.' revision %'])->fetchColumn();
+    if($intents!==$audits)throw new RuntimeException('Provider observation intent history needs recovery.');
+    $detail="CONCAT(BINARY 'Refresh ',f.id,BINARY ' profile ',f.profile_id,BINARY ' revision ',f.profile_revision)";
+    if(one("SELECT f.id FROM $f f WHERE BINARY f.profile_id=? AND ((SELECT COUNT(*) FROM $a a WHERE BINARY a.action='provider.refresh_started' AND BINARY a.detail=BINARY $detail AND a.user_id=f.actor_id)<>1 OR (SELECT COUNT(*) FROM $a a WHERE BINARY a.action='provider.refresh_started' AND BINARY a.detail=BINARY $detail)<>1) LIMIT 1",[$profileId]))throw new RuntimeException('Provider observation intent correspondence needs recovery.');
+    $paired="JOIN $a a ON a.user_id=f.actor_id AND BINARY a.action='provider.refresh_started' AND BINARY a.detail=BINARY $detail";
+    $registrar="BINARY f.profile_id=? AND BINARY f.operation='domains.list'";
+    $bySequence=one("SELECT f.id FROM $f f WHERE $registrar ORDER BY f.seq DESC LIMIT 1",[$profileId]);$byAudit=one("SELECT f.id FROM $f f $paired WHERE $registrar ORDER BY a.id DESC LIMIT 1",[$profileId]);
+    if(($bySequence['id']??null)!==($byAudit['id']??null))throw new RuntimeException('Registrar observation intent order needs recovery.');
+    $date="JOIN $b b ON b.id=f.id WHERE BINARY f.profile_id=? AND BINARY f.operation='domain.contract' AND BINARY b.link_id=?";
+    $bySequence=one("SELECT f.id FROM $f f $date ORDER BY f.seq DESC LIMIT 1",[$profileId,$linkId]);$byAudit=one("SELECT f.id FROM $f f $paired $date ORDER BY a.id DESC LIMIT 1",[$profileId,$linkId]);
+    if(($bySequence['id']??null)!==($byAudit['id']??null))throw new RuntimeException('Renewal date intent order needs recovery.');
+}
 /** Current assignment/account/identity, with an exact complete fresh registrar read. */
 function domain_contracts_binding(string $linkId,int $linkRevision):DomainContractBinding {
-    domain_contracts_id($linkId);if(!domain_contracts_ready())throw new RuntimeException('Enable renewal date observations first.');[$l,$event,$audit]=domain_contracts_link($linkId,$linkRevision);$profile=provider_settings_load($l['profile_id']);$latest=provider_registrar_latest($l['profile_id']);
+    domain_contracts_id($linkId);if(!domain_contracts_ready())throw new RuntimeException('Enable renewal date observations first.');[$l,$event,$audit]=domain_contracts_link($linkId,$linkRevision);domain_contracts_intent_order($l['profile_id'],$linkId);$profile=provider_settings_load($l['profile_id']);$latest=provider_registrar_latest($l['profile_id']);
     if(!provider_registrar_fresh($profile,$latest)||!provider_inventory_link_context_matches($l,$profile,$latest)||!one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$l['client_id']]))throw new RuntimeException('Refresh registered domains and confirm this assignment first.');
-    $intents=(int)query('SELECT COUNT(*) FROM '.table('provider_refreshes').' WHERE profile_id=?',[$l['profile_id']])->fetchColumn();$audits=(int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE BINARY action=? AND detail LIKE ?',['provider.refresh_started','Refresh % profile '.$l['profile_id'].' revision %'])->fetchColumn();if($intents!==$audits)throw new RuntimeException('Provider observation intent history needs recovery.');
     $source=domain_contracts_source($latest['id'],(int)$l['domain_id']);if($source['domain']!==$l['domain'])throw new RuntimeException('Registered-domain identity changed.');
     return new DomainContractBinding(['profile_id'=>$l['profile_id'],'profile_revision'=>(int)$profile['revision'],'key_fingerprint'=>$l['key_fingerprint'],'domain_id'=>(int)$l['domain_id'],'domain'=>$l['domain'],'link_id'=>$l['id'],'link_revision'=>(int)$l['revision'],'client_id'=>(int)$l['client_id'],'link_event_id'=>$event['id'],'link_event_sha256'=>hash('sha256',domain_contracts_json($event)),'link_audit_id'=>$audit['id'],'link_audit_sha256'=>hash('sha256',domain_contracts_json($audit)),'source_refresh_id'=>$source['id'],'source_seq'=>$source['seq'],'source_sha256'=>hash('sha256',domain_contracts_json($source))]);
 }

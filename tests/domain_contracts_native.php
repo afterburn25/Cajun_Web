@@ -104,7 +104,7 @@ try{
         $binding=domain_contracts_binding($link['id'],1);$later=dc_later_intent($binding,$kind,$state);dc_altered_sequence($link,$read,$later,$kind,$state);
     }
     reg_ok('All four altered-sequence recovery cases pass',!array_filter($checks,fn($c)=>!$c['passed']));
-    $read=reg_refresh($id);dc_cooldown();query('UPDATE '.table('staff_profiles').' SET role=? WHERE user_id=2',['administrator']);reg_actor();
+    $read=reg_refresh($id);$baseline=dc_refresh($link);reg_ok('Complete baseline after recovery cases preserves original failure history assertion',$baseline['state']==='complete'&&domain_contracts_project($link['id'],1)['date']==='2028-02-29');dc_cooldown();query('UPDATE '.table('staff_profiles').' SET role=? WHERE user_id=2',['administrator']);reg_actor();
     $contractStatus=403;$failed=dc_refresh($link);reg_ok('Latest failed read retains old date only as history',domain_contracts_project($link['id'],1)['date']===null&&domain_contracts_project($link['id'],1)['status']==='unavailable'&&domain_contracts_project($link['id'],1)['history'][1]['date']==='2028-02-29');
     query('UPDATE '.table('provider_refreshes').' SET started_epoch=? WHERE id=?',[time()-600,$failed['id']]);query('UPDATE '.table('domain_contract_bindings').' SET started_epoch=? WHERE id=?',[time()-600,$failed['id']]);reg_ok('Latest sequence wins over earlier clock',domain_contracts_project($link['id'],1)['status']==='unavailable');$contractStatus=200;
     foreach(['binding','intent','date','date_audit','start_audit','finish_audit','binding_audit','counter'] as $damage){db()->exec('SET FOREIGN_KEY_CHECKS=0');db()->beginTransaction();try{

@@ -1,3 +1,7 @@
+## Domain-date recovery correction — 2026-10-15
+
+The isolated descendant now checks exact common-start correspondence and independent latest-audit order before trusting registrar or per-link date authority. Parent and catalog source reviews clear the bounded change. Local PHP syntax,79/79 reader checks and installer refresh pass. The first two actual MariaDB archives from focused red run38848617958 confirm all four old-source revival paths; both MySQL jobs remain queued. Repaired native and full acceptance remain required. [Precise scope and retained evidence](docs/TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md#altered-intent-sequence-recovery--2026-10-15). Root25e and original PR152 remain frozen.
+
 ## Domain-date altered-sequence regression checkpoint — 2026-10-15
 
 Separate `codex/twentyi-domain-date-recovery` starts from frozen combined `25e0de3b2b468d155c3bd51fb81bfaefda741c76`. This checkpoint adds four native recovery regressions for later failed/unfinished registrar and date intents whose retained sequence is lowered while audits survive. Exact refusal, client hiding, no DNS/send/intent, and finally restoration are asserted outside caller transactions. Shipping bytes are unchanged; these cases are expected to expose the source-reviewed gap. Only the focused native workflow will run before the bounded module correction. Original 25e and 6ba evidence remains intact; no live provider access or deployment.
