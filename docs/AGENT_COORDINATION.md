@@ -1,3 +1,9 @@
+## Isolated registrar expiry component — 2026-10-15
+
+Catalog owns `codex/twentyi-domain-expiry-contract` from frozen `25e0de3b2b468d155c3bd51fb81bfaefda741c76`, outside the current1.25 release queue. New pure descriptor/binding/response projection reuses exact registrar authority and a documented defensive timestamp subset from retained SDK696a evidence. It does not borrow the distinct package endpoint's null/transfer meanings. Local PHP8.4 passes139 unique checks in each normal/minimal mode; root and domain-agent source review are clear. A narrow PHP8.2/8.4 pure workflow is prepared; its actual evidence is pending. No shipping route, shared inventory/transport, schema, installer, licensing or live operation changes.
+
+Next: freeze/push the pure branch and verify actual exact-source matrix artifacts. Later application wiring requires root approval, the reviewed domain sequence/audit recovery correction, credential-owned echo redaction, current authority before/after transport, native history/recovery checks and packaged browser evidence. [Exact source contract, files and limits](TWENTYI_DOMAIN_EXPIRY_CONTRACT.md). Full20i remains unfinished; older candidate entries below retain their historical context.
+
 ## Current combined discovery integration — 2026-10-15
 
 Root combines registration options, owner-only cloud identifiers and exact client-domain renewal-date observations through sequential normal merges, preserving scheduler guards and all original evidence. Both cloud/date commits are pushed together for fresh combined acceptance. PHP-version1c500566/PR155 remains separate under GitHub native/browser testing; Devin retains licensing. [Authoritative source/evidence/next-action guide](TWENTYI_DISCOVERY_INTEGRATION.md). Full20i and1.25.0 remain unfinished.

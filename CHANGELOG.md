@@ -1,3 +1,7 @@
+## Unreleased isolated component — registrar expiry contract
+
+Add only a pure exact-name GET descriptor, operation-bound immutable registrar document and bounded timestamp projection with139 normal/minimal synthetic checks per mode. Document retained SDK evidence and unverified full schema; preserve unknown/null semantics, redacted failures and future authority/credential prerequisites. Independent source review is clear; narrow cross-version evidence is pending. This is outside the1.25 release queue and adds no shipping UI, storage, provider execution or installer change. [Contract](docs/TWENTYI_DOMAIN_EXPIRY_CONTRACT.md).
+
 ## Unreleased — client domain renewal-date observations
 
 Normally integrate explicit owner refresh and private client display of saved provider renewal dates with registration options and cloud-provider identifiers. Preserve exact current assignment/account/source binding, typed scalar/list separation, current-versus-historical failures and scheduler authority. Correct a locally caught merge syntax error before publication and regenerate installer hashes. Combined runtime acceptance and release remain pending.
