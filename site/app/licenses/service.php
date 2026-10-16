@@ -11,8 +11,11 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
  * paths (fulfilment, api).
  */
 function license_audit(int $actor, string $action, string $detail): void {
+    // detail is VARCHAR(400) — truncate so an overlong audit string can
+    // never throw inside license_transaction and roll back the mutation
+    // it was only meant to record.
     query('INSERT INTO ' . table('audit') . ' (user_id, action, detail, created_at) VALUES (?, ?, ?, ?)',
-        [$actor, 'license.' . $action, $detail, gmdate('Y-m-d H:i:s')]);
+        [$actor, 'license.' . $action, substr($detail, 0, 400), gmdate('Y-m-d H:i:s')]);
 }
 
 /**
