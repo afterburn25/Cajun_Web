@@ -1,6 +1,6 @@
 ## Unreleased — pure cloud catalog request contract
 
-Add an immutable supplied-provider-list binding and an unsent fixed specs/zones lookup description, with141 named local contract cases per PHP mode. Preserve exact provider identity and reject altered or stale context. No response envelope, account authorization, usable catalog, transport admission or server purchase is inferred. Root source review clear; focused acceptance pending; shipping and published releases remain unchanged.
+Add an immutable supplied-provider-list binding and an unsent fixed specs/zones lookup description, with141 named local contract cases per PHP mode. Preserve exact provider identity and reject altered or stale context. No response envelope, account authorization, usable catalog, transport admission or server purchase is inferred. Root source review clear; exact36c2 workflow38854877221 passes141 cases per mode on PHP8.2/8.4 with both archives independently verified; shipping and published releases remain unchanged.
 
 ## Unreleased — registration-period browser owner isolation
 

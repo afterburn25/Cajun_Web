@@ -1,6 +1,6 @@
 ## Cloud catalog contract groundwork — 2026-10-16
 
-Isolated427 descendant adds only a pure exact provider-list binding and unsent specs/zones POST description with141 local checks per PHP mode. Full response schemas, native catalog, prices/entitlements and purchases remain unfinished. Root source review is clear; focused acceptance is pending; no shipping change enters frozen427. [Contract, evidence and limitations](TWENTYI_CLOUD_CATALOG_CONTRACT.md).
+Isolated427 descendant adds only a pure exact provider-list binding and unsent specs/zones POST description with141 local checks per PHP mode. Full response schemas, native catalog, prices/entitlements and purchases remain unfinished. Root source review is clear; exact36c2 workflow38854877221 verifies141 cases per mode on PHP8.2/8.4; no shipping change enters frozen427. [Contract, evidence and limitations](TWENTYI_CLOUD_CATALOG_CONTRACT.md).
 
 ## Combined domain and PHP observation candidate — 2026-10-16 UTC
 
