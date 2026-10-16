@@ -17,6 +17,7 @@ require_once CWP_CODE_ROOT.'/admin/controllers/provider_registration_periods.php
 
 require_once CWP_CODE_ROOT.'/app/providers/cloud_sites.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_cloud_confirmation.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_cloud_providers.php';
 use CajunWebPro\Foundation\Provider\OperationResult;
 use CajunWebPro\Foundation\TwentyI\Operations\TwentyIOperationRegister;
 
@@ -33,6 +34,7 @@ function provider_inventory_message(?string $code):string {
 
 function provider_inventory_admin_action(string $action):void {
     if(str_starts_with($action,'provider_inventory_period_'))provider_registration_period_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_cloud_providers_')){provider_cloud_providers_admin_action($action);return;}
     if(str_starts_with($action,'provider_inventory_history_'))service_observations_admin_action($action);
     if(str_starts_with($action,'provider_inventory_forwarding_'))provider_forwarding_admin_action($action);
     if(str_starts_with($action,'provider_inventory_renewal_'))domain_renewals_admin_action($action);

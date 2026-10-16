@@ -71,6 +71,11 @@ final class InventoryRegister
                 InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, true,
                 'Owner full reference34e713c3 lines1233-1237 defines dotted TLD keys and integer registration-year arrays. Only observed registration options; no prices, renewal eligibility or live account acceptance.'
             ),
+            InventoryRead::CLOUD_PROVIDERS_LIST => new InventoryCapability(
+                InventoryRead::CLOUD_PROVIDERS_LIST, 'GET', '/reseller/*/cloudProviders',
+                InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, true,
+                'Owner reference SHA25634e713c3, lines2666-2672 documents account-available provider identifiers. Exact list projection only; no specifications, pricing or authenticated read is claimed.'
+            ),
         ];
     }
 
@@ -102,7 +107,7 @@ final class InventoryRegister
     /** Operations with implemented allowlist projections of documented metadata. */
     public static function projectable(string $operation): bool
     {
-        return in_array($operation, [InventoryRead::PACKAGES_LIST, InventoryRead::CLOUD_SERVERS_LIST, InventoryRead::DOMAINS_LIST, InventoryRead::DOMAIN_REGISTRATION_PERIODS], true);
+        return in_array($operation, [InventoryRead::PACKAGES_LIST, InventoryRead::CLOUD_SERVERS_LIST, InventoryRead::DOMAINS_LIST, InventoryRead::DOMAIN_REGISTRATION_PERIODS, InventoryRead::CLOUD_PROVIDERS_LIST], true);
     }
 
     /** Operations whose list responses support the identity-only projection. */

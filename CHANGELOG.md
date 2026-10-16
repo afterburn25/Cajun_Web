@@ -1,3 +1,7 @@
+## Unreleased — observed cloud-provider identifiers
+
+Normally integrate explicitly refreshed owner-only cloud-provider observations with registration options, preserving current/historical labels, both typed list readers and the shared guarded recorder. Retain the verified binary SQL witness correction and all original failures. Current combined acceptance and publication remain pending.
+
 ## Unreleased — observed registration options
 
 Normally integrate owner-triggered registration-year observations and current-policy client display with the accepted history/forwarding/scheduler queue. Preserve exact read authority, sequence-first failure behavior, current offered suffixes, audit witnesses and scheduler ordering. Correct only failure-mobile screenshot timing and add complete-page context. Record verified incoming native/browser/package evidence and completed parent4f full acceptance; new combined acceptance and release remain pending.
@@ -23,6 +27,18 @@ Normally integrate client single-address forwarding requests, cancellation and o
 ## Unreleased — registration-period fixture ordering
 
 Correct the native expected client rows to match the existing sorted offered-extension policy, including exact saved years. Preserve all four failed original reports and exact Windows package evidence. Runtime and generated installer files are unchanged; fresh corrected native/browser evidence is required.
+
+## Unreleased — verified cloud-provider native compatibility
+
+Record corrected6eeeb020 four-way native acceptance and independent artifact verification, while preserving original MariaDB failures and pending full browser/package acceptance. Save a source-backed next PHP-version observation handoff without adding runtime behavior.
+
+## Unreleased — cloud-provider witness SQL compatibility
+
+Use explicit binary concatenation for cloud-provider retained audit witnesses so MariaDB and MySQL compare the same ASCII bytes. Preserve the original partial native failure, add direct SQL/PHP parity coverage and require new exact acceptance.
+
+## Unreleased — observed account cloud providers
+
+Add an explicit owner refresh for documented account cloud-provider identifiers, dated immutable observations and honest current/historical/empty/unavailable displays. Reuse the existing fixed GET reader, credentials, durable intent/result storage and guarded recorder. Refuse incomplete retained history, changed context and reordered refreshes. No server ordering or runtime controls are added. Source-reviewed; native/browser and exact package acceptance pending.
 
 ## Unreleased integration queue — client hosting history
 

@@ -1,3 +1,9 @@
+## Current cloud-provider integration — 2026-10-15
+
+Root normally merges reviewed cloud-provider observations e006/6eee into the registration-period queue210. The existing period reader and scheduled package reads are preserved; owner-only cloud identifiers remain distinct from specifications, prices or purchase. Incoming native/browser evidence and actual desktop/mobile views are verified. Local combined source, installer, route, pure and syntax checks pass; fresh combined application acceptance remains required. [Exact integration and evidence](docs/TWENTYI_CLOUD_PROVIDERS.md#root-cloud-provider-integration--2026-10-15).
+
+Parent210 exact Windows packages are verified/preserved and its original full38844717543 continues. Reviewed domain-date5b is next for a normal merge; PHP-version runtime corrections remain isolated under native regression work. Devin owns licensing. Published1.24.0 is unchanged;1.25.0 and full20i remain unfinished. Earlier entries below retain historical scope.
+
 ## Current registration-period integration — 2026-10-15
 
 Root normally merges verified registration-period reader ee3 into9112 in [PR151](https://github.com/afterburn25/Cajun_Web/pull/151). Owners explicitly save registration-year options; enabled clients see only currently offered suffixes. Four native combinations and the packaged checkpoint pass with downloaded evidence. Four owner/client captures are clear; the fifth failure-mobile framing limitation is preserved and corrected only in the browser fixture. Fresh combined execution must verify that correction.
@@ -13,6 +19,24 @@ Follow-up: corrected cloud6eee native38841913897 now passes98 native plus85/85 p
 Registration-period checkpoint `3d0ec9d` retains a fixture-only native failure: all four combinations passed 15 checks before an assertion expected offered suffixes in input order instead of the existing canonical sorted order. The correction asserts both exact sorted rows and their saved years, preserving profile/key non-disclosure checks; shipping source and installer hashes are unchanged. All four failed archives are downloaded and SHA256/CRC/report verified, with 62 pure cases passing per PHP mode. Exact Windows packages also verify all 11 checksums, source members and UPDATE payload and are preserved. Original runs 38840929063 and 38840945414 remain intact; the corrected test head requires fresh native and packaged/browser evidence.
 
 Isolated next slice: `codex/twentyi-registration-periods` from17593061 implements owner-triggered observed registration options from the newly supplied full-reference map. Current-policy clients see only offered suffixes and saved options; no price/renewal/purchase inference. New parser passes62 checks in each PHP mode; independent source review is clear, native/browser/package acceptance remains pending. [Scope, provenance and gates](docs/TWENTYI_REGISTRATION_PERIODS.md). Parent queue and scheduler evidence remain preserved; root owns integration.
+
+## Cloud-provider corrected native acceptance — 2026-10-15
+
+Frozen source6eeeb020 in draft PR154 passes exact four-way focused38841913897. All four downloaded archives independently verify98 native and85 pure passes per mode, including SQL/PHP byte parity and retained-history recovery. Catalog independently rechecks these exact bytes and fresh GitHub metadata. Full38841913938 remains in native integration after package checks; actual browser/recovery/Apache/final acceptance is pending. Original0e2 failures and full runs remain preserved. This checkpoint changes documentation only; no runtime or release. [Exact artifacts and boundaries](docs/TWENTYI_CLOUD_PROVIDERS.md).
+
+## Cloud-provider native compatibility correction — 2026-10-15
+
+Draft PR154 source0e2cab2b has exact focused evidence: both MySQL8.4 jobs pass97 native and85/85 pure cases; MariaDB10.11 fails after8 passes at a SQL CONCAT collation boundary. All four source-bound archives are verified and preserved. A bounded explicit-binary witness correction is prepared, with a new named SQL/PHP parity case; new four-way and full acceptance remain required. Original full38841123460 is retained. [Exact artifacts and correction](docs/TWENTYI_CLOUD_PROVIDERS.md).
+
+## Isolated cloud-provider discovery — 2026-10-15
+
+Cloud agent owns `codex/twentyi-cloud-providers` from `175930618ab349246020602e634ce55ee49f176b`. The supplied complete API reference establishes the fixed account cloud-provider identifier list. Explicit owner preparation/refresh now uses the single shared inventory executor and retains dated, exact profile/revision/key-bound observations. No specifications, prices, provisioning selector, power control, console or SSH capability is inferred. Forwarding `1992e3769c5d017a16a68718451524e5ed74b734` and all parent evidence remain frozen separately.
+
+Independent root source review identified and then cleared paired-history-loss, unbounded PHP history loading and insertion-sequence tampering gaps. Transactional independent counts, exact common/dedicated audit correspondence and SQL-verifiable witnesses now protect sequence-selected observations; each complete list, including an empty list, gets an immutable HMAC-bound document. No read-path repair. The scheduler recorder extraction is preserved; domain-contract and registration-period shared edits require a normal union at root integration.
+
+Local validation passes 85 dedicated synthetic cases in both PHP modes, existing 139 inventory/28 reader/82 cloud-reader checks, touched PHP/Python syntax and whitespace. Native four-way SQL/PHP parity, actual packaged browser screens and final package acceptance are pending. No live provider call, deployment or release. [Contract, boundaries and evidence](docs/TWENTYI_CLOUD_PROVIDERS.md).
+
+# CajunWebPro integration queue — 2026-10-15
 
 Root owns `codex/twentyi-next-integration` in `work/20i-next-integration`. This queue normally merges reviewed hosting-history `bff198cca9ea06973088e33d5a164b17d0c16d13` onto cloud-recovery correction `a9637f2bb2000196312f72e10f39f614980c98c7`. It preserves the separate release candidate/checkouts and their active tests. The new history slice is not added to the frozen a963 acceptance run, and this queue has not passed combined acceptance.
 

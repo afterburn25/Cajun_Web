@@ -1,3 +1,7 @@
+## Current cloud-provider integration — 2026-10-15
+
+Root combines accepted owner-only cloud identifier observations with registration periods and the scheduler queue through a normal210+e006 merge. Reviewed date-reader5b is next; push both normal merges together for fresh combined acceptance. Parent210 packages are verified, original full runs remain intact, and the PHP-version lane stays separate under regression work. [Precise source, evidence and remaining gates](TWENTYI_CLOUD_PROVIDERS.md#root-cloud-provider-integration--2026-10-15). Devin owns licensing; full20i remains active.
+
 ## Current registration-period integration — 2026-10-15
 
 Verified ee3 registration options join the root queue through a normal merge with9112. Original4f now has downloaded full acceptance; the new combined source needs fresh execution. Root preserves a test-only mobile capture correction, all original failures and exact packages. Domains retains date-reader evidence, VPS retains cloud-provider evidence and implements a separate PHP-version observation lane from9112; Devin owns licensing. [Current scope, sources and next actions](TWENTYI_REGISTRATION_INTEGRATION.md). Published1.24.0 remains unchanged; full20i is unfinished.
@@ -17,6 +21,10 @@ Domains owns07817109/PR152 renewal-date observation, with all four native archiv
 Root normally merges forwarding1992 into history1759 in [PR151](https://github.com/afterburn25/Cajun_Web/pull/151), preserving cloud recovery and both original histories. Exact local parent-union, regenerated installer, route/native union and independent glue checks pass; combined runtime acceptance remains required. Frozen a963 full acceptance and final packages are now verified. Scheduler2b9 retains successful corrected554 browser evidence and is next to integrate; the original5fb full remains failed. [Current handoff](../SESSION_HANDOFF.md), [a963 proof](TWENTYI_A963_ACCEPTANCE.md).
 
 The new complete owner API reference34e713 is preserved/indexed separately from oldf7c738. Domains implements a separately sourced date-only contract observation; catalog implements registration-year options; VPS implements cloud-provider identifiers. Their isolated branches share the established executor/recorder under sequential root review. Devin owns licensing. [Source intake](TWENTYI_OWNER_API_REFERENCE_INTAKE.md). Older entries below retain their original checkpoint scope.
+
+## Cloud-provider discovery ownership — 2026-10-15
+
+Cloud agent owns `codex/twentyi-cloud-providers` from17593061, new cloud-provider parser/storage/UI/tests and minimal shared inventory/controller/view wiring. Preserve the exact reviewed scheduler writer extraction and normal-merge domain optional binding/result union plus registration-period typed records. Cloud browser cases use real cooldowns near the end of the fixture; root scheduler remains last. Root cleared bounded source-recovery corrections; actual native/browser evidence is pending. Frozen forwarding1992 and earlier source/runs remain separate. [Scope](TWENTYI_CLOUD_PROVIDERS.md).
 
 ## Current history integration evidence — 2026-10-15
 

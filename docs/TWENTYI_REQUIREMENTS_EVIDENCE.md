@@ -1,4 +1,12 @@
+## New account cloud-provider discovery — 2026-10-15
+
+`codex/twentyi-cloud-providers` implements the newly supplied reference's exact account provider identifier array through the existing owner refresh executor. 85 pure cases pass per PHP mode and root source review clears retained-history corrections. Actual native/database/browser/package acceptance is pending; no live entitlement or cloud-order capability is established. [Exact evidence and limitations](TWENTYI_CLOUD_PROVIDERS.md). Older capability table labels below retain their earlier source scope.
+
 # Complete 20i requirements and evidence
+
+## Current cloud-provider integration — 2026-10-15
+
+Root combines accepted owner-only cloud identifier observations with registration periods and the scheduler queue through a normal210+e006 merge. Reviewed date-reader5b is next; push both normal merges together for fresh combined acceptance. Parent210 packages are verified, original full runs remain intact, and the PHP-version lane stays separate under regression work. [Precise source, evidence and remaining gates](TWENTYI_CLOUD_PROVIDERS.md#root-cloud-provider-integration--2026-10-15). Devin owns licensing; full20i remains active.
 
 ## Current registration-period integration — 2026-10-15
 

@@ -100,6 +100,9 @@ final class ProviderInventoryRecorder {
         if(($started['operation']??'')===InventoryRead::DOMAIN_REGISTRATION_PERIODS){
             require_once CWP_CODE_ROOT.'/app/providers/registration_periods.php';
             provider_registration_period_record($started,$state,$snapshot);
+        }elseif(($started['operation']??'')===InventoryRead::CLOUD_PROVIDERS_LIST){
+            require_once CWP_CODE_ROOT.'/app/providers/cloud_providers.php';
+            provider_cloud_providers_record($started,$snapshot,$fingerprint);
         }elseif($snapshot!==null&&provider_inventory_observed($state)) {
             foreach($snapshot->packages as $package) {
                 if(($started['operation']??'')===InventoryRead::DOMAINS_LIST) {
@@ -134,6 +137,7 @@ function provider_inventory_refresh(string $id,int $revision,#[\SensitiveParamet
 function provider_inventory_refresh_attempt(string $id,int $revision,#[\SensitiveParameter] string $password,?callable $resolver=null,?callable $transport=null,string $operation=InventoryRead::PACKAGES_LIST,?callable $scopeAuthority=null):array {
     if(!InventoryReader::supports($operation))throw new InvalidArgumentException('This inventory reader is not available.');
     if($operation===InventoryRead::DOMAIN_REGISTRATION_PERIODS)require_once CWP_CODE_ROOT.'/app/providers/registration_periods.php';
+    if($operation===InventoryRead::CLOUD_PROVIDERS_LIST){require_once CWP_CODE_ROOT.'/app/providers/cloud_providers.php';if(!provider_cloud_providers_ready())throw new RuntimeException('Prepare cloud provider storage first.');}
     if($operation===InventoryRead::DOMAINS_LIST){require_once CWP_CODE_ROOT.'/app/providers/registrar.php';if(!provider_registrar_ready())throw new RuntimeException('Prepare registered-domain storage first.');}
     if(db()->inTransaction())throw new LogicException('Provider refreshes cannot run inside a transaction.');
     $started=staff_locked(fn()=>staff_transaction(function()use($id,$revision,$password,$operation,$scopeAuthority):array {
@@ -143,10 +147,12 @@ function provider_inventory_refresh_attempt(string $id,int $revision,#[\Sensitiv
         if(one('SELECT id FROM '.table('provider_refreshes').' WHERE profile_id=? AND started_epoch>? LIMIT 1',[$id,$now-30]))throw new RuntimeException('Wait 30 seconds between refreshes of this profile.');
         if((int)query('SELECT COUNT(*) FROM '.table('provider_refreshes').' WHERE actor_id=? AND started_epoch>?',[$actor['id'],$now-3600])->fetchColumn()>=20)throw new RuntimeException('Inventory refresh limit reached. Try again later.');
         if($operation===InventoryRead::DOMAINS_LIST&&!provider_registrar_ready())throw new RuntimeException('Registered-domain storage is unavailable.');
+        if($operation===InventoryRead::CLOUD_PROVIDERS_LIST&&!provider_cloud_providers_ready())throw new RuntimeException('Cloud provider storage is unavailable.');
         $started=['id'=>bin2hex(random_bytes(16)),'profile_id'=>$id,'profile_revision'=>$revision,'actor_id'=>(int)$actor['id'],'started_at'=>gmdate('Y-m-d H:i:s',$now),'started_epoch'=>$now,'operation'=>$operation];
         query('INSERT INTO '.table('provider_refreshes').' (id,profile_id,profile_revision,actor_id,started_at,started_epoch,operation) VALUES (?,?,?,?,?,?,?)',array_values($started));
         provider_settings_audit((int)$actor['id'],'refresh_started','Refresh '.$started['id'].' profile '.$id.' revision '.$revision);
         if($operation===InventoryRead::DOMAIN_REGISTRATION_PERIODS)provider_registration_period_start($started);
+        if($operation===InventoryRead::CLOUD_PROVIDERS_LIST)provider_cloud_providers_started($started);
         return $started;
     }));
     $begin=hrtime(true);$code=null;$address='';
@@ -154,7 +160,7 @@ function provider_inventory_refresh_attempt(string $id,int $revision,#[\Sensitiv
     catch(Throwable $e){if($e instanceof PDOException)throw $e;$code='unavailable';}
     $state=staff_locked(function()use($started,$password,$address,$code,$begin,$transport,$scopeAuthority):string {
         $authorize=static function()use($started,$scopeAuthority):void {
-            try{if($scopeAuthority)$scopeAuthority();if($started['operation']===InventoryRead::DOMAIN_REGISTRATION_PERIODS)provider_registration_period_intent_authority($started);[$actor]=provider_inventory_authority($started['profile_id'],$started['profile_revision']);if((int)$actor['id']!==$started['actor_id'])throw new RuntimeException('Changed actor.');}
+            try{if($scopeAuthority)$scopeAuthority();if($started['operation']===InventoryRead::DOMAIN_REGISTRATION_PERIODS)provider_registration_period_intent_authority($started);if($started['operation']===InventoryRead::CLOUD_PROVIDERS_LIST&&!provider_cloud_providers_ready())throw new RuntimeException('Cloud provider history unavailable.');[$actor]=provider_inventory_authority($started['profile_id'],$started['profile_revision']);if((int)$actor['id']!==$started['actor_id'])throw new RuntimeException('Changed actor.');}
             catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;throw new ProviderInventoryAccessChanged('Current provider access changed.');}
         };
         $elapsed=static fn():int=>(int)((hrtime(true)-$begin)/1e6);
