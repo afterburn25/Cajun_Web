@@ -2,6 +2,32 @@
 
 Documentation-only descendant of35d8 records owner release-first override, published normal merge b98b96eb, frozen scope/map, actual source/focused evidence and remaining gates. Runtime, installer, version, published assets and production remain unchanged. Continue release corrections, authentic1.24 upgrade coverage, complete supported runtime acceptance, review, exact-main and publication/download verification before new20i capabilities. Coordination is posted in issue2 comment6220729910 and issue157 comment6220730195. Documentation validation is required before commit; no application acceptance is claimed.
 
+# Session log
+
+## Repair tickets.css asset registration from review — 2026-10-16
+
+Request: continue #157; independent review of PR #158 head `3ca4bbb7` found a blocking defect — `tickets.css` was used in shared admin/portal layouts without a closed-map registration, breaking dashboard/portal renders (`urls.php` `Unknown public asset`, corroborated by run 38915585801 dashboard 500).
+
+Actions: registered `tickets.css => assets/css/tickets.css` in `site/includes/urls.php`; added `tests/asset_registry.php` (scans all shipping PHP for literal `asset()` calls, asserts map resolution + on-disk existence, audits the one dynamic `image_url` allowlist, checks every registered entry exists); wired default + no-INI runs into `application-tests.yml`; `tools/build.py --refresh` regenerated the installer inventory.
+
+Tests: `php -l` clean; `php tests/asset_registry.php` → 45/45 in default and `-n` modes; build refresh clean (2,201 runtime files byte-identical). HTTP/Apache acceptance reruns in CI on this commit.
+
+Next: push, reply on PR #158, then apply the three PR #161 review findings.
+
+## Port client support tickets onto main — 2026-10-16
+
+Request: continue the non-20i roadmap after licensing; the assignment's next item is client support tickets/private staff notes, reusing preserved PRs instead of rebuilding.
+
+Starting commit: `origin/main` `80ce8b19`; source port from preserved `origin/codex/support-ticket-screens` (ticket files only — the service-plan/agreement and hosting slices on that branch are intentionally excluded).
+
+Files/actions: extracted the ticket implementation — `foundation/desk/` (5 classes, canonical), `site/includes/foundation/desk/` (deployment mirror, synced via new `desk` entry in `tools/build.py`), `site/app/support/ticket_*.php` + `tickets.php`, `site/database/{schema,migrations}/support_tickets_*`, admin+portal controllers/views, `includes/layout/tickets.php` + `ticket_activity.php`, `assets/css/tickets.css`, `docs/SUPPORT_TICKETS{,_CONTRACT}.md`, `docs/DESK_FOUNDATION.md`. Wired shared seams: `support.tickets` permission (`staff_permissions`, `PermissionPolicy`, view/action maps, `staff_home`), admin router/actions/views dispatch, portal router/actions dispatch (including the support-session path), `tickets.css` registration, admin nav entry, activity center ticket feed + `workspace_activity_summary` JSON bell. Adapted the only missing dependency — `app/plans/records.php` — by guarding `service_plans_ready()`/`service_plans_validate()` behind `function_exists` so subscription links stay document-valid and resolve when a plans module exists. `tests/ticket_upgrade_cases.py` was decoupled from `service_plan_upgrade_cases.py` (self-contained form helpers and its own seeded-client invite/activate flow); `organized_update_fixture.php` gained `tickets` and `owner-rate-*` record modes; the upgrade case is wired into `organized_update_cases.py` at the 1.23 baseline.
+
+Tests/verification so far (local): `php -l` clean on all touched PHP; `python tools/build.py --refresh` passes (canonical/mirror byte parity incl. desk, installer inventory regenerated); `tests/desk/run.php` 114 checks pass; `tests/desk/review_controls.php --deployment`, `tests/desk/ticket_documents.php`, `tests/desk/forms.php` all pass on PHP 8.4. Native MariaDB (`support_tickets_native.php` ~170 assertions on the preserved suite), HTTP/Chromium (`ticket_cases.py` ~65 checks) and packaged 1.23 upgrade cases are wired into `.github/workflows/application-tests.yml` (+`devin/non20i-*` push trigger) and new `.github/workflows/desk.yml`; they have not run on this branch yet — no local MariaDB here. No live deployment, mail or provider calls.
+
+Known limits: service-agreement link resolution is dormant until a plans module exists; licensing branch `devin/non20i-licensing` is a separate increment and its PR remains blocked by GitHub API rate limits.
+
+Next: push branch, open bounded PR when the API recovers, watch CI for the native/browser/upgrade lanes, then continue the next non-20i item (web-design project progress or mail Reply/Forward per the assignment order).
+
 ## Port P-07 notification contract layer — 2026-10-16
 
 Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-notifications-foundation`.

@@ -93,6 +93,10 @@ jobs:
           php8.3 tests/mail_drafts_form.php
           cp qa/mail-drafts-form-results.json qa/mail-drafts-form-default-results.json
           php8.3 -n tests/mail_drafts_form.php
+          php8.3 tests/asset_registry.php
+          cp qa/asset-registry-results.json qa/asset-registry-default-results.json
+          php8.3 -n tests/asset_registry.php
+          mv qa/asset-registry-results.json qa/asset-registry-no-ini-results.json
           php8.3 tests/mail_submissions_native.php
           php8.3 tests/mail_submission_dispatch_native.php
           php8.3 tests/mail_submission_forms.php
