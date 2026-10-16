@@ -11,3 +11,7 @@ Merge checkpoint passes canonical installer generation, all shipping PHP/JavaScr
 This main checkpoint changes documentation only; runtime remains35d8. Follow the release branch for implementation and acceptance. Earlier current-status labels below are historical where superseded.
 
 Previous checkpoint: https://github.com/afterburn25/Cajun_Web/blob/35d8fb7efc94f6f851399d0755fa93097f1fce66/PROJECT_STATUS.md
+
+## Devin non-20i licensing branch — carried forward
+
+`devin/non20i-licensing` (PR #159) holds Devin's response to the four findings plus the actionable PR review corrections in `docs/LICENSING_INTEGRATION_REVIEW.md`: invoice-fulfilment no longer infers ownership from a sole NULL-invoice candidate, and populated unmarked pre-master installations gain a narrowly validated adoption path. Native MariaDB and packaged lanes run in CI.

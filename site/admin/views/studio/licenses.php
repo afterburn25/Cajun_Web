@@ -36,7 +36,9 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <option value="<?= esc($key) ?>"><?= esc($name) ?></option>
 <?php endforeach; ?>
 </select>
+<?php if(staff_can('staff.manage')): ?>
 <label><input type="checkbox" name="master" value="1"> Master key — validates on any domain (internal testing only, keep private)</label>
+<?php endif; ?>
 <button class="btn gold">Generate license key</button>
 </form>
 </section>
@@ -57,7 +59,20 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <dd><?= $lic['is_active'] ? '<span style="color:green">Active</span>' : '<span style="color:red">Inactive</span>' ?><?= (int)($lic['is_master']??0) ? ' <span style="color:#b8860b">MASTER — any domain</span>' : '' ?></dd>
 <dt><strong>Created</strong></dt>
 <dd><?= esc($lic['created_at']) ?></dd>
+<dt><strong>Invoice</strong></dt>
+<dd><?= $lic['invoice_id']!==null ? 'Linked · #'.esc($lic['invoice_id']) : 'Unlinked' ?></dd>
 </dl>
+
+<?php if($lic['invoice_id']===null && $lic['is_active'] && !(int)($lic['is_master']??0) && staff_can('staff.manage')): ?>
+<form method="post">
+<?php admin_action('studio_license_reconcile'); ?>
+<input type="hidden" name="license_id" value="<?= esc($lic['id']) ?>">
+<label for="invoice_<?= esc($lic['id']) ?>">Link to paid invoice</label>
+<input type="number" name="invoice_id" id="invoice_<?= esc($lic['id']) ?>" min="1" placeholder="Invoice ID" required>
+<button class="btn outline" type="submit">Reconcile</button>
+</form>
+<p class="hint">Only link a license you created before invoice tracking existed to the paid invoice that produced it — this is permanent.</p>
+<?php endif; ?>
 
 <h3>Registered domains</h3>
 <?php $domains = license_domains((int)$lic['id']); ?>
@@ -110,6 +125,7 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <?php endif; ?>
 
 <?php if($lic['is_active']): ?>
+<?php if(!(int)($lic['is_master']??0)): ?>
 <form method="post">
 <?php admin_action('studio_license_bundle'); ?>
 <input type="hidden" name="id" value="<?= esc($lic['id']) ?>">
@@ -122,6 +138,7 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 </select>
 <button class="btn gold" type="submit">Generate bundle</button>
 </form>
+<?php endif; ?>
 <form method="post">
 <?php admin_action('studio_license_deactivate'); ?>
 <input type="hidden" name="id" value="<?= esc($lic['id']) ?>">

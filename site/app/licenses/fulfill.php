@@ -57,6 +57,12 @@ function license_fulfill_invoice(int $invoiceId): ?array {
     );
     if ($existing) return $existing;
 
+    // Legacy licenses created before the invoice_id column carry NULL. A
+    // customer+product match is never provenance — an unrelated, revoked or
+    // admin-created license must not be captured for this invoice. Genuine
+    // legacy links come only from an explicit owner reconciliation
+    // (license_link_invoice); until then each paid invoice mints its own
+    // entitlement, so a real purchase is never absorbed into an old record.
     // Create license — UNIQUE(invoice_id) collapses a concurrent fulfilment
     // race: the loser reads the winner's row instead of minting a duplicate.
     try {
