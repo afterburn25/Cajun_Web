@@ -84,6 +84,16 @@ Functions:
   stay deactivated)
 - `license_domains($licenseId)` — gets all domains for a license
 
+**Mutation serialization:** every license mutation runs inside
+`license_transaction()` and first takes the license row `FOR UPDATE`
+(`license_lock`). Domain changes to the same license serialize — the
+2-active cap cannot be bypassed by concurrent registrations — while
+changes to different licenses stay concurrent. `license_replace_domain`
+runs its deactivate + register in one transaction, so a failed new-domain
+registration rolls back the old domain's deactivation too (replace is
+atomic, never half-applied). All domain paths canonicalize www to apex
+before touching storage.
+
 ### 4. Admin UI
 
 **File:** `site/admin/views/studio/licenses.php`
