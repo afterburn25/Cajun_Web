@@ -37,3 +37,6 @@ def run_browser(env,browser):
     bob=requests.Session();submit(bob,portal,'login',{'email':'bob@example.invalid','password':'Synthetic client passphrase 2026'})
     r=bob.post(portal,data={'action':'notification_client_mark','id':feed[0]['id'],'read':'0','csrf':token(bob.get(portal))});check('Another client cannot alter foreign read state',db('SELECT read_at FROM ci_notification_feed WHERE id=?',[feed[0]['id']])[0]['read_at'] is not None)
     r=alice.get(portal+'?notifications=1');check('Client sees only own notifications','New project inquiry' not in r.text)
+    r=admin.get(root+'?view=health')
+    check('Health page renders honest freshness metrics','Operational freshness' in r.text and 'notification.deliveries' in r.text and 'absent' in r.text)
+    check('Client session cannot open staff health metrics',alice.get(root+'?view=health').status_code==403)
