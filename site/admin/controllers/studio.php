@@ -31,7 +31,7 @@ function studio_admin_action(string $action,array $user): never {
         if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=?',[$client])||$title===''||!isset(studio_stages()[$stage]))throw new InvalidArgumentException('Choose a client, title and valid stage.');
         $summary=posted('summary',10000);$milestones=posted('milestones',15000);$now=gmdate('Y-m-d H:i:s');
         if($id){$old=studio_job($id);if((int)$old['client_id']!==$client)throw new InvalidArgumentException('Project ownership cannot be transferred through this form. Create a separate project.');query('UPDATE '.table('studio_jobs').' SET title=?,summary=?,stage=?,milestones=?,updated_at=? WHERE id=?',[$title,$summary,$stage,$milestones,$now,$id]);}
-        else{query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,stage,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?)',[$client,$title,$summary,$stage,$milestones,$now,$now]);$id=(int)db()->lastInsertId();}
+        else{query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,stage,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?,?)',[$client,$title,$summary,$stage,$milestones,$now,$now]);$id=(int)db()->lastInsertId();}
         log_event($action,'Project '.$id);return $id;
         }));
         flash('Project saved. History tracking is not enabled yet.');redirect(admin_url('studio-job',['id'=>$id]));

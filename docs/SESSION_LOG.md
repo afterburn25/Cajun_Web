@@ -4,6 +4,18 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 # Session log
 
+## Repair legacy project-create placeholder — 2026-10-16
+
+Request: continue #157; PR #160 `native-and-browser` run 38954972960 failed browser acceptance with `IndexError('list index out of range')` after `Upgraded site never reruns fresh setup`.
+
+Investigation: `qa/http-server.log` showed `PDOException code=21S01` (column/value count mismatch) on `POST /existing/admin/index.php?view=studio-clients` — the legacy `studio_job` create. The branch's transplanted INSERT carried `VALUES (?,?,?,?,?,?)` — six placeholders for seven bound parameters — so the job was never persisted and `release_cases.run_http` hit `db(...)[0]` on the empty result. No schema, migration, or authority semantics were involved.
+
+Actions: restored the seventh placeholder in `site/admin/controllers/studio.php` (byte-identical to the proven main-line statement); `python tools/build.py --refresh` regenerated `site/install/inventory.generated.php`.
+
+Tests: `php -l` clean; `tests/project-progress/records.php` and `forms.php` pure suites pass. HTTP/browser and Apache acceptance rerun in CI on this commit; original run 38954972960 failure preserved as evidence.
+
+Next: push, confirm fresh `native-and-browser` reaches the browser project-history checks, then continue the stacked PRs.
+
 ## Port dated project history onto main — 2026-10-16
 
 Request: continue the non-20i roadmap — assignment item "web-design project progress, updates, approvals, previews", reusing preserved PRs instead of rebuilding.
