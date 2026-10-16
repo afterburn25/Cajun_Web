@@ -26,6 +26,7 @@ function hs_boundary_deny(string $name,callable $fn):void{try{$fn();}catch(Runti
 function hs_project(array $link):array{return service_observations_project($link['id']);}
 function hs_render(array $h,string $id):string{ob_start();service_observations_render($h,$id);return ob_get_clean();}
 require_once CWP_CODE_ROOT.'/app/providers/service_observations_views.php';
+require_once CWP_CODE_ROOT.'/includes/layout/admin.php';
 if(($argv[1]??'')==='share-worker'){reg_actor();try{service_observations_change($argv[2],$argv[3],$argv[4],true,$argv[5],$password);echo 'saved';}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;echo 'refused';}exit;}
 try{
     foreach(schema_statements('sobs_') as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);save_setting('studio_schema_version','2');foreach(default_settings() as $k=>$v)save_setting($k,$v);

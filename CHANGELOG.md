@@ -1,6 +1,6 @@
 ## Unreleased — explicitly shared hosting history
 
-Owners can enable saved hosting observation history for an exact current client/package assignment. Clients see only observations from the approved sequence onward, with stale, failed and unfinished latest reads clearly identified. Revocation, current account context and retained permission/history recovery are enforced. No live monitoring or provider operation is added; native/browser acceptance remains pending.
+Owners can enable saved hosting observation history for an exact current client/package assignment. Clients see only observations from the approved sequence onward, with stale, failed and unfinished latest reads clearly identified. Revocation, current account context and retained permission/history recovery are enforced. No live monitoring or provider operation is added; native/browser acceptance remains pending. Correct the standalone native fixture to load the existing owner layout before rendering its actual form.
 
 ## Domain renewal request integration — candidate, unreleased
 
