@@ -51,6 +51,11 @@ try{
     n_ok('Client feed is audience-isolated',notification_feed('client',1)->unreadCount()===0);
     notification_emit('client',1,'download-ready','release:'.str_repeat('a',32),'Website download published','v1.0.0');
     n_ok('Client notification lands on the owning feed',notification_feed('client',1)->unreadCount()===1);
+    require_once CWP_CODE_ROOT.'/app/projects/reviews.php';
+    studio_publish(1,'design','Homepage draft','Design body','');
+    $cf=notification_feed('client',1);n_ok('Publishing a pending version notifies the owning client',$cf->unreadCount()===2);
+    $top=$cf->page()[0];n_ok('Version notice links to the authorized job',$top->kind==='approval-request'&&$top->ref==='job:1'&&str_contains($top->body,'Homepage draft'));
+    n_ok('Staff feeds never receive the client version notice',notification_feed('staff',2)->unreadCount()===1);
     $GLOBALS['cwp_support']=['session'=>['id'=>'synthetic'],'actor'=>['id'=>1]];
     n_deny('Support sessions cannot run feed setup',fn()=>notification_feed_migrate($password));unset($GLOBALS['cwp_support']);
     $kept=all('SELECT * FROM '.table('notification_feed'));notification_feed_migrate($password);n_ok('Re-running setup preserves every notification',all('SELECT * FROM '.table('notification_feed'))===$kept);

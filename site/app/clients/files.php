@@ -21,6 +21,7 @@ function studio_upload(int $jobId,string $actor): void {
   write_private_file($path,CWP_GUARD.$bytes);$written=true;
   query('INSERT INTO '.table('studio_files').' (id,job_id,author_type,original_name,stored_name,mime,bytes,sha256,created_at) VALUES (?,?,?,?,?,?,?,?,?)',[$id,$jobId,$actor,$name,basename($path),$mime,$size,hash('sha256',$bytes),gmdate('Y-m-d H:i:s')]);if(support_current())support_record('file.upload','file',$id);db()->commit();
  }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();if($written)@unlink($path);throw $e;}
+ require_once CWP_CODE_ROOT.'/app/notifications/feed.php';try{$job=studio_job($jobId);if($actor==='admin'){if(!support_current())notification_emit('client',(int)$job['client_id'],'project-update','job:'.$jobId,'New private file on '.$job['title'],$name.' was shared with you.');}else{foreach(notification_staff_ids('clients.manage') as $sid)notification_emit('staff',$sid,'project-update','job:'.$jobId,'Client file on '.$job['title'],'A client shared '.$name.'.');}}catch(Throwable $e){report_error($e);}
 }
 
 function studio_download(string $id,?int $clientId): never {
