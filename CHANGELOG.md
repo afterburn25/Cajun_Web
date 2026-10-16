@@ -1,3 +1,7 @@
+## Unreleased — combined discovery native matrix
+
+Record all16 downloaded exact25e date/period/cloud/scheduler archives, each with named native and pure checks across four PHP/database combinations. The original full continues, and separate altered-sequence recovery corrections remain required. Documentation only.
+
 ## Unreleased — combined source and package checkpoint
 
 Record pushed25e combined discovery source, exact verified Windows packages and original GitHub acceptance handles. Record terminal incoming date/cloud full acceptance, parent210 browser evidence and the retained element-capture limitation. Preserve the PHP packaging-only correction and new PHP/domain-date source-ordering findings for separate regression work. Documentation only; no runtime or release change.
