@@ -19,8 +19,11 @@ final readonly class DomainExpiryBinding
     public string $sha256;
     public string $scope;
 
-    public function __construct(DomainContractBinding $registrar)
+    public function __construct(DomainContractBinding $registrar, public string $credentialSha256)
     {
+        if (preg_match('/\A[a-f0-9]{64}\z/', $credentialSha256) !== 1) {
+            throw new \InvalidArgumentException('Invalid registrar credential context.');
+        }
         // Rebuild the validated scalar document rather than trusting derived
         // fields of a possibly restored object or retaining caller references.
         $validated = new DomainContractBinding($registrar->data);
@@ -31,7 +34,8 @@ final readonly class DomainExpiryBinding
         }
         $this->registrar = $validated;
         $this->json = json_encode(
-            ['operation' => DomainExpiry::OPERATION, 'registrar' => $validated->data],
+            ['operation' => DomainExpiry::OPERATION, 'registrar' => $validated->data,
+                'credential_sha256' => $credentialSha256],
             JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES,
         );
         $this->sha256 = hash('sha256', $this->json);

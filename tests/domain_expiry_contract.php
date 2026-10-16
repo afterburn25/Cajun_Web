@@ -42,7 +42,7 @@ function de_fixture(): array
     ];
 }
 $registrar = new DomainContractBinding(de_fixture());
-$binding = new DomainExpiryBinding($registrar);
+$binding = new DomainExpiryBinding($registrar,str_repeat('1',64));
 $at = 1700000000;
 function de_project(string $body, int $status = 200): DomainExpiryObservation
 {
@@ -174,12 +174,12 @@ $changes = [
 ];
 foreach ($changes as $key => $value) {
     $data = de_fixture(); $data[$key] = $value;
-    $other = new DomainExpiryBinding(new DomainContractBinding($data));
+    $other = new DomainExpiryBinding(new DomainContractBinding($data),str_repeat('1',64));
     de_ok('Exact authority change invalidates operation scope ' . $key,
         $other->scope !== $binding->scope && $other->sha256 !== $binding->sha256);
 }
 $name = 'owned.synthetic.invalid'; $data = de_fixture(); $data['domain'] = &$name;
-$detached = new DomainExpiryBinding(new DomainContractBinding($data)); $name = 'changed.synthetic.invalid';
+$detached = new DomainExpiryBinding(new DomainContractBinding($data),str_repeat('1',64)); $name = 'changed.synthetic.invalid';
 de_ok('Caller reference cannot change bound request name',
     $detached->registrar->data['domain'] === 'owned.synthetic.invalid'
     && DomainExpiry::request($detached)->url === 'https://api.20i.com/domain/owned.synthetic.invalid/upstreamExpiryDate');
@@ -192,7 +192,7 @@ foreach (['json', 'sha256', 'scope'] as $field) {
             $restored, $key === $field ? 'PRIVATE_MARKER' : $value,
         );
     }
-    de_reject('Inconsistent restored registrar document rejected ' . $field, fn() => new DomainExpiryBinding($restored));
+    de_reject('Inconsistent restored registrar document rejected ' . $field, fn() => new DomainExpiryBinding($restored,str_repeat('1',64)));
 }
 
 $request = DomainExpiry::request($binding);
@@ -206,12 +206,12 @@ foreach (['701', 'UPPER.invalid', 'owned.invalid.', 'owned.invalid/contract', 'o
     "owned.invalid\r\nX-Private: PRIVATE_MARKER", '-owned.invalid', 'owned-.invalid'] as $index => $invalidName) {
     $data = de_fixture(); $data['domain'] = $invalidName;
     de_reject('No arbitrary path or noncanonical registered name ' . $index,
-        fn() => DomainExpiry::request(new DomainExpiryBinding(new DomainContractBinding($data))));
+        fn() => DomainExpiry::request(new DomainExpiryBinding(new DomainContractBinding($data),str_repeat('1',64))));
 }
 foreach (['xn--bcher-kva.invalid', 'registered.co.invalid'] as $canonicalName) {
     $data = de_fixture(); $data['domain'] = $canonicalName;
     de_ok('Canonical registered ASCII name preserved ' . $canonicalName,
-        DomainExpiry::request(new DomainExpiryBinding(new DomainContractBinding($data)))->url
+        DomainExpiry::request(new DomainExpiryBinding(new DomainContractBinding($data),str_repeat('1',64)))->url
         === 'https://api.20i.com/domain/' . $canonicalName . '/upstreamExpiryDate');
 }
 de_ok('Pure component exposes no network dispatch or credential resolver',

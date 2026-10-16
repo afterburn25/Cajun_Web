@@ -12,6 +12,7 @@ require_once CWP_CODE_ROOT.'/admin/controllers/provider_mailboxes.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_registrar.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/domain_renewals.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/domain_contracts.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/domain_expiry.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/service_observations.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_package_php.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_forwarding.php';
@@ -36,6 +37,7 @@ function provider_inventory_message(?string $code):string {
 
 function provider_inventory_admin_action(string $action):void {
     if(str_starts_with($action,'provider_inventory_contract_'))domain_contracts_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_expiry_'))domain_expiry_admin_action($action);
     if(str_starts_with($action,'provider_inventory_period_'))provider_registration_period_admin_action($action);
     if(str_starts_with($action,'provider_inventory_cloud_providers_')){provider_cloud_providers_admin_action($action);return;}
     if(str_starts_with($action,'provider_inventory_php_'))provider_php_admin_action($action);

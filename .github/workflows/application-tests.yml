@@ -124,6 +124,9 @@ jobs:
           php8.3 tests/service_observations_native.php
           php8.3 tests/domain_contracts_reader.php > qa/domain-contract-reader-integrated-results.json
           php8.3 tests/domain_contracts_native.php
+          php8.3 tests/domain_expiry_contract.php > qa/domain-expiry-contract-integrated-results.json
+          php8.3 tests/domain_expiry_reader.php > qa/domain-expiry-reader-integrated-results.json
+          php8.3 tests/domain_expiry_native.php
           php8.3 tests/twentyi-package-php/run.php > qa/package-php-document-results.json
           php8.3 -n tests/twentyi-package-php/run.php > qa/package-php-document-no-ini-results.json
           php8.3 tests/provider_package_php_native.php

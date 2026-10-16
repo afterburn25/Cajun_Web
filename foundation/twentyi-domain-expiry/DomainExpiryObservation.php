@@ -12,6 +12,8 @@ final readonly class DomainExpiryObservation
         'authentication', 'rate_limited', 'remote_error', 'unexpected_status',
         'response_limit', 'malformed_body', 'timestamp_null', 'timestamp_type',
         'timestamp_unsupported',
+        'transport_connect', 'transport_timeout', 'transport_tls',
+        'transport_protocol', 'transport_unavailable', 'transport_unknown',
     ];
 
     public string $scope;

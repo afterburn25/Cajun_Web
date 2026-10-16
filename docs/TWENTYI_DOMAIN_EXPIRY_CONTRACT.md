@@ -1,6 +1,38 @@
 # Registrar expiry component: retained contract and local parser
 
-## Isolated scope — 2026-10-15
+## Current application increment - 2026-10-16
+
+`codex/twentyi-domain-expiry-observations` starts at frozen a132b5b3 and normally merges pure b3c1cc31 at2856904e, then combined427e3a23 at869c5ed9. Root's acceptance candidate remains frozen separately. The application adds an explicit owner expiry refresh and a private saved-observation client page. This is implemented source under verification, not released or current-account acceptance.
+
+The original route and decoded scalar evidence below remain authoritative, with the same2018 redistribution and missing full timestamp/null-contract limits. Only the documented registrar GET is admitted. The local timestamp grammar is unchanged; the exact supported decoded timestamp is shown with its separate observation time. It never determines current expiry status, renewal eligibility, a charge, an eligible period, fulfillment or any renewal action. The client's renewal-date and renewal-review links remain separate.
+
+### One execution and authority path
+
+The owner prepares expiry storage locally and submits the current owner password to refresh an explicitly assigned registrar domain. `DomainExpiryBinding` composes the existing exact registrar document and the SHA256 of the current sealed credential bytes. This additional digest complements the current profile/revision and raw-key fingerprint. The immutable context binds allocated registrar ID, canonical name, client/link revision, original link event and audit, exact registrar source and operation. Posted fields are hints revalidated against this current local context.
+
+The shared reader appends named `expiryContext` at argument8; refresh appends it at argument10. Existing DomainContractBinding-only `domainContext` stays read6/refresh8 and `packageContext` stays read7/refresh9. Operation/context mismatch is refused before credentials; the exact GET path rejects query, encoding and unrelated suffixes. The same durable intent/result transactions, staff mutex, cooldown and actor limit are reused. No transaction spans network. Authority is checked before the secret/send and after the response. The private writer uses an exclusive typed scalar branch and validates expiry readiness before inserting the common result; scheduler guards and list branches remain intact.
+
+The credential-owning reader rejects complete decoded values containing the raw secret or its exact Base64 encoding and returns the existing finite `timestamp_unsupported` reason. Pure tests include a binary reader-only encoded-substring input; that input is not claimed to pass the settings Unicode validator. Native fixtures use a locally accepted synthetic timestamp-shaped credential through supported profile save/current revision and restore it through supported save. No actual20i key disclosure is claimed.
+
+### Independent storage and client projection
+
+New `domain_expiry_bindings` and `domain_expiry_timestamps` families have independent preparation, counters and paired audits. Timestamp storage is bounded ASCII VARCHAR32. Exact original binding/source/actor audits, scalar hashes and common intent/result witnesses detect partial family loss. The latest registrar and per-link expiry intent selected by sequence must equal the latest exact paired start-audit insertion order. This prevents a later failed/unfinished intent from being moved below an older success to revive current authority; it does not claim every older historical sequence is immutable.
+
+The latest failed, unfinished, stale, changed-account or changed-assignment observation suppresses the current timestamp. Same-context earlier successful values remain explicitly observed history. Reapproval and sealed-credential change hide old-context history. A client must sign in directly to the active assigned account; support and sibling identities cannot use this page. A client GET performs no secret resolution or provider request. Expiry reuses registrar authority helpers without preparing renewal-date storage; dates remain independently usable without expiry preparation.
+
+### Owned files and shared integration
+
+Owned application files are `site/app/providers/domain_expiry{,_storage,_views}.php`, `site/database/schema/domain_expiry_schema.php`, dedicated admin/portal controller and view files, four canonical foundation classes plus exact shipping mirrors, and pure/native/browser fixtures. Shared edits are limited to the current inventory reader/executor/recorder, exact transport admission and mirror, provider admin includes/actions, portal routing, service navigation and test/workflow/private-path unions. No licensing or provider write code changes.
+
+Source review by root clears current shared and owned runtime boundaries; catalog independently clears final native c4a7ab89 and browser1d83fc6d fixture source. Local normal/minimal PHP reports each pass139 pure contract and54 credential-reader/fixed-transport cases. Native fixture covers current authority, different clients, preparation independence, actual supported credential rotation/restoration, null/malformed/unsupported scalar persistence, exact failed/unfinished order-recovery denial before DNS outside caller transactions, original evidence restoration, mixed scalar/list rollback and audit/family loss. Existing date native adds an explicit no-expiry-preparation assertion. The focused four-way workflow runs expiry, dates, package PHP and scheduler as separate processes and independent schema prefixes. Native execution is pending; local syntax/source review does not certify database behavior.
+
+Packaged HTTP/Chromium coverage is prepared with a dedicated synthetic owner created and activated through real staff forms, genuine shared cooldown waits, and preservation of every inherited intent/audit byte. It exercises owner/client desktop/mobile views, exact timestamp preservation, failed/null latest state, assignment reapproval, sibling isolation, private headers and12 private paths at root/subfolder installations. Browser order is dates/cloud/periods/PHP/expiry/scheduler-last. No standalone full dispatch is authorized for this branch yet; root coordinates combined acceptance after source and focused evidence. Actual screenshots remain pending.
+
+The separate root427 domain-date run38853749575 has all four actual archives verified:98 native,87 default and87 minimal cases each. Original f725 full38849384530 retains its period-browser failure while recovery/Apache final evidence continues; all49 date browser checks and four actual date views were reviewed. These are existing date evidence, not expiry acceptance.
+
+Installer refresh completes successfully; all2,772 shipping files match staged Git bytes and2,771 generated inventory hashes. Thirty-nine local syntax/AST/mirror/pure checks and1,615 local documentation links pass. Next: push the frozen source and verify the single automatic focused matrix, preserving original failures. Root reviews and normally integrates ready source before actual combined package/browser/recovery/Apache, exact-main and release gates. Full20i and1.25.0 remain unfinished. No live provider request, charge, mail, SSH, deployment or publication occurs in this increment.
+
+## Historical pure scope — 2026-10-15
 
 Branch `codex/twentyi-domain-expiry-contract` starts at frozen combined source `25e0de3b2b468d155c3bd51fb81bfaefda741c76`. Root assigned only a pure typed request, response projection and binding component while the separate 1.25 candidate and domain/PHP corrections continue. This component is outside that release queue. It has no shipping mirror, route, database schema, shared inventory or transport registration, installer change, credential lookup, dispatch method or background activation. It cannot perform a provider request by itself.
 
