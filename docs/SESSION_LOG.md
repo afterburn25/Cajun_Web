@@ -4,6 +4,8 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 # Session log
 
+# Session log
+
 ## Port C-01 comparison-facts contract layer — 2026-10-16
 
 Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-comparisons-foundation`.
