@@ -47,4 +47,6 @@ def run_browser(env,browser):
             check(title+' '+label+' fits viewport',page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
         check(title+' has no script errors',not errors);context.close()
     check('Cloud website provider fixture contains no invalid requests',not provider_server.errors)
+    from provider_cloud_confirmation_cases import run_browser as confirmation_browser
+    confirmation_browser(env,browser,owner,client,other,profile)
     provider_server.cloud_servers=before_fixture;provider_server.packages=before_packages

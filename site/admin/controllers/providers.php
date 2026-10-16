@@ -11,6 +11,7 @@ require_once CWP_CODE_ROOT.'/admin/controllers/provider_mailboxes.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_registrar.php';
 
 require_once CWP_CODE_ROOT.'/app/providers/cloud_sites.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_cloud_confirmation.php';
 use CajunWebPro\Foundation\Provider\OperationResult;
 use CajunWebPro\Foundation\TwentyI\Operations\TwentyIOperationRegister;
 
@@ -26,6 +27,7 @@ function provider_inventory_message(?string $code):string {
 }
 
 function provider_inventory_admin_action(string $action):void {
+    if(str_starts_with($action,'provider_inventory_cloud_confirmation_')){provider_cloud_confirmation_admin_action($action);return;}
     if(str_starts_with($action,'provider_inventory_mailbox_'))provider_mailbox_admin_action($action);
 
     if(str_starts_with($action,'provider_inventory_registrar_')){provider_registrar_admin_action($action);return;}

@@ -1009,3 +1009,7 @@ The recovery query at2febba4e failed native MySQL8.4/PHP8.2 run38820482050, job1
 ## 2026-10-15 — Cloud website native acceptance and handoff
 
 Startingce8d4e89, record41 corrected native checks per PHP8.2/8.4 and MariaDB10.11/MySQL8.4 combination in run38821117816, verified from all four downloaded artifacts. Root review found no further source issue. Installer refresh15011, changed PHP syntax, all2,662 indexed hashes and documentation checks passed. Earlier4aa browser checkpoint verifies1,792 HTTP checks including18 cloud checks and four inspected screenshots. Exact corrected full38821117748 passed native and remains in browser; complete application/release acceptance remains pending. No runtime edit, provider call, deployment or release in this documentation checkpoint. Next: root sequential integration, combined installer generation and exact combined acceptance. See cloud evidence for retained failures, hashes and limitations.
+
+## Unreleased — Cloud allocated-package confirmation
+
+Owner-reviewed exact package observation and explicit original client assignment with atomic immutable history and recovery guards. Provider acknowledgement stays pending; no current server membership, health or billing activation claim. Native/browser acceptance pending. [Guide](docs/TWENTYI_CLOUD_CONFIRMATION.md).

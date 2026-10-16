@@ -26,8 +26,12 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 </form>
 <?php endforeach; ?>
 <p class="hint">Creation forms require an active client assignment and a complete cloud refresh from the last 15 minutes.</p>
+<?php if(!provider_cloud_confirmation_ready()): ?>
+<form method="post" class="workspace-card" data-cloud-confirmation-prepare><h4>Prepare website confirmation history</h4><p>Retain reviewed hosting observations and explicit client assignments. Back up the database before adding this storage.</p>
+<?php admin_action('provider_inventory_cloud_confirmation_prepare');admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"'); ?><button class="btn">Prepare confirmation history</button></form>
+<?php endif; ?>
 <?php $cloudRequests=provider_cloud_sites_history($profileId);if($cloudRequests): ?>
 <h4>Recent cloud website requests</h4>
-<?php foreach($cloudRequests as $request): ?><article class="workspace-card"><strong><?=esc($request['domain'])?></strong><p>Server #<?=(int)$request['server_id']?> · Client #<?=(int)$request['client_id']?> · <?=esc($request['created_at'])?> UTC · <?=badge($request['status'])?></p>
-<?php if($request['package_id']!==null): ?><p>Returned package #<?=esc($request['package_id'])?>. Refresh hosting inventory, verify this exact package, then explicitly link it to the correct client. Acceptance alone does not establish an active service.</p><?php else: ?><p>Uncertain or interrupted requests require investigation before another attempt. They are never resubmitted automatically.</p><?php endif; ?></article><?php endforeach; ?>
+<?php foreach($cloudRequests as $request): ?><article class="workspace-card"><strong><?=esc($request['domain'])?></strong><p>Requested server #<?=(int)$request['server_id']?> · Client #<?=(int)$request['client_id']?> · <?=esc($request['created_at'])?> UTC · <?=badge($request['status'])?></p>
+<?php if($request['package_id']!==null): ?><p>Returned package #<?=esc($request['package_id'])?>. Refresh hosting inventory, verify this exact package, then explicitly link it to the correct client. Acceptance alone does not establish an active service.</p><?php require CWP_CODE_ROOT.'/admin/views/provider_cloud_confirmation.php'; ?><?php else: ?><p>Uncertain or interrupted requests require investigation before another attempt. They are never resubmitted automatically.</p><?php endif; ?></article><?php endforeach; ?>
 <?php endif; endif; ?></section>

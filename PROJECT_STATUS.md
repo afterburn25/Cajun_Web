@@ -18,3 +18,7 @@ Canonical refresh81543 and independent shared reviews passed. Next: push this co
 Automatic capability/catalog discovery, full hosting lifecycle and controls, domain commerce/management, VPS lifecycle, provider support/SSH and commercial automation remain unfinished. See the [full requirements and evidence](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md), [parallel evidence](docs/TWENTYI_PARALLEL_WORK.md) and [current handoff](SESSION_HANDOFF.md). No new release or live deployment is claimed.
 
 [Archived prior status](docs/archive/2026-10-15-a894de58-PROJECT_STATUS.md) retains earlier checkpoints; its “current” statements are historical.
+
+## Cloud confirmation branch checkpoint — 2026-10-15
+
+Isolated `codex/twentyi-cloud-confirmation` starts from candidate38bb69cc, preserving original33a2 and root. Exact-ID/name observation and explicit assignment are implemented; source syntax is checked, native/full acceptance pending. See [scope, ownership, tests and original full evidence](docs/TWENTYI_CLOUD_CONFIRMATION.md). Only the mailbox browser fixture is imported from root2239. Originalce8d full38821117748 is downloaded and verified; combined38bb browser failure stays distinct. Next: installer refresh, bounded commit, Linux focused/full checks and independent review, then root integration. No release/deployment/live operation.
