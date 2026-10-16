@@ -4,6 +4,16 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 # Session log
 
+## Receive-side mail attachments — 2026-10-16
+
+Request: continue #157 non-20i roadmap; the message view declared "attachments unavailable." Starting commit: `devin/non20i-mail-replies` tip `c99370a6`, new branch `devin/non20i-mail-attachments`.
+
+Actions: added `foundation/mail-receiving/AttachmentIndex.php` (mirrored to `site/includes/`) — parses the already-fetched bounded raw via the maintained MIME parser, lists attachment-disposition or named parts with sanitized display names (no path separators, quotes, control or non-ASCII bytes; `attachment-N.bin` fallback), declared-type metadata and decoded sizes capped at 256 KiB; `mail_message_content` now includes `attachments` metadata in successful reads while `source` stays transient under `retainSource`; `mail_message_attachment` performs a second fully recorded exact-message read and extracts the indexed part; the admin controller streams it as `application/octet-stream` with `nosniff` and a sanitized `Content-Disposition` filename; the view lists each attachment as an explicit POST download and keeps the 256 KiB whole-message disclaimer; `staff_action_permission` maps the action to grant-internal authorization; Apache denial inventory updated.
+
+Tests: `php -l` clean on all touched PHP; `tests/mail-receiving/attachment_test.php` 14/14 pass (pure decoder/index, no sockets); `body_test.php` 35/35 unchanged-pass; native suite extended with a synthetic `quote.pdf` fixture asserting metadata-without-source, byte-exact extract, pre-read index refusal, truthful recorded out-of-range read, and revoked-grant bounded failure; `mail_message_cases.py` extended with HTTP assertions for listing, octet-stream byte-exact download, pre/post-read index refusal, stale identity refusal and denied staff; `apache_acceptance.py` lists the new foundation file. Build refresh clean; installer inventory regenerated. No real mailbox, provider or deployment acceptance is claimed.
+
+Next: push, open stacked PR on `devin/non20i-mail-replies`, update #157.
+
 ## Repair copied-submission authorization and draft pagination — 2026-10-16
 
 Request: continue #157; independent review of PR #161 head `1d45798b` found a P1 authorization gap and two P2 defects.
