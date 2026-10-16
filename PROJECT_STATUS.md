@@ -1,3 +1,11 @@
+## PHP native rollback-fixture correction — 2026-10-15
+
+Starting source `c1b9eb5f2e4a8660f43d368ad26e4abbc7ee8833`, [PR155](https://github.com/afterburn25/Cajun_Web/pull/155). Actual preserved e6ce native run38848617278 now reached45 passing checks, then failed with `Account transaction must not be nested.` Artifact12024733543 (PHP8.4/MySQL8.4; SHA256 `2c04dce04b8c5b027e235f0a12c2b6f3d0e8d65c8b1161934726b55569984948`) and artifact12024608741 (PHP8.2/MariaDB10.11; SHA256 `6bcd5212d48a5ebdaa0b8802619f60fbfa0691ae00e505e6cf930cf9513fd2c9`) are downloaded and verified against exact source/run, digest, size, safe unique members and CRC. Each contains the same46-entry native report with one failure and passing87/87 pure reports.
+
+The actual stack identifies a fixture call to the normal transaction-opening projection helper while the paired-history-loss test already holds a rollback transaction. The corrected assertion calls the internal projection under the staff lock in that existing transaction. Exact recovery reason, no-DNS/request counters, stale-value assertion and finally rollback remain; the normal helper and production transaction guard are unchanged. Only the native fixture and continuity docs change from c1b9. Shipping, installer, authority and credential-echo protection remain byte-identical.
+
+PHP syntax and whitespace checks pass. Actual corrected native/full acceptance is pending. Preserve c1b9 focused38850218141/full38850218170, e6ce and all earlier originals without retry/cancellation; root retains integration/release ownership. Root independently cleared the exact one-expression correction at native fixture SHA256 `d19fb38ab0654c062d61262d47bf7e736ffd001fcd9716c90abc5e397a3fa342`. Next: fresh exact-source four-way native/full evidence. No live action occurred.
+
 ## PHP-version credential-echo safeguard — 2026-10-15
 
 Starting source `e6ce001b448af85674cf90af076b1ab26dc3759f`, [PR155](https://github.com/afterburn25/Cajun_Web/pull/155). An offline scripted transport with a synthetic credential reproduced a bounded issue: a valid HTTP 200 JSON scalar containing the raw credential or its Base64 authorization form was accepted as a complete PHP-version value. No real credential, provider request or persistent database was involved in that reproduction.
