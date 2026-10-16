@@ -153,4 +153,5 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <?php require CWP_CODE_ROOT.'/admin/views/domain_contracts.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/domain_renewals.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/service_observations.php'; ?>
+<?php require CWP_CODE_ROOT.'/admin/views/provider_package_php.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_forwarding.php'; ?>
