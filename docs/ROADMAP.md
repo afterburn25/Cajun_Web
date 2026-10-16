@@ -568,6 +568,8 @@ Portal bell/timeline and configured email updates for project work, approval req
 
 Extend existing inquiries with stages such as New, Consultation, Proposal Sent, Won, and Not Proceeding; configurable where appropriate. Link briefs, notes, quotes, follow-up dates, source, reviews and client projects. Acceptance: authorized edits, validated transitions, useful search/filtering/export, audit events, and reliable saved state. Dragging cards must not be the only accessible control.
 
+Status 2026-10-16: contract layer on `devin/non20i-pipeline-foundation`; runtime on `devin/non20i-pipeline-runtime` routes every `lead`/`studio_pipeline` status write through `PipelineBoard::canTransition`, restricts each stage control to configured moves, and adds opt-in owner-enabled append-only `lead_stage_history` with actor attribution rendered on the inquiry detail screen.
+
 ### A-02 — Content revision history
 
 Save meaningful versions, compare changes, restore as draft, and retain approval context separately. Acceptance: permissions, no silent overwrite of later edits, explicit restore action, and recorded author/time.

@@ -30,3 +30,7 @@ When integrated, the adapter: persists leads/transitions durably; enforces staff
 ## Verification
 
 `tests/pipeline/run.php` — 31 synthetic checks under official PHP 8.2/8.4 images with `--network none` (`.github/workflows/pipeline.yml`). Scope: the board/lead contract only.
+
+## Runtime integration (devin/non20i-pipeline-runtime)
+
+`app/marketing/pipeline.php` defines the canonical `pipeline_board()` over the existing seven inquiry stages (`new → contacted → qualified → proposal → won`; `closed`/`spam` reopen to `new`; `won` is terminal) and `pipeline_transition()` routes both the pipeline card save and the inquiry detail save through `canTransition`. Stage controls render `pipeline_choices()` so forbidden moves are not even offered. `database/migrations/pipeline_migrate.php` enables the append-only `lead_stage_history` table (owner-authorized); once enabled, every real transition records from/to stage, actor and time and is shown on the inquiry detail screen. Transitions remain legal before history is enabled — the board validation is unconditional; only durable per-lead history waits for setup.

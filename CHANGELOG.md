@@ -1,3 +1,7 @@
+## Apply A-01 pipeline transition rules and stage history — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-pipeline-runtime` from `devin/non20i-pipeline-foundation`. Every inquiry status write (`studio_pipeline` card and `lead_save` detail editor) now routes through `PipelineBoard::canTransition` — `new → contacted → qualified → proposal → won`, `closed`/`spam` reopen to `new`, `won` is terminal. Stage controls render only configured moves. `database/migrations/pipeline_migrate.php` enables append-only `lead_stage_history` (owner-authorized, additive, refuses unknown populated records); enabled moves record from/to stage, actor and time and render on the inquiry detail screen. MariaDB native lane, real-HTTP browser case; existing pipeline test call sites updated to legal transitions. No release or deployment.
+
 ## Port lead-pipeline contract layer — 2026-10-16
 
 Devin non-20i increment on `devin/non20i-pipeline-foundation` from main `595ac9c3`, continuing preserved `devin/pipeline-foundation`. Adds `foundation/pipeline/PipelineBoard.php` (ordered stages, validated transitions, duplicate/dangling build errors, non-drag control parity), `PipelineStage.php` and `LeadRecord.php` with 31 pure checks in `tests/pipeline/run.php` and a PHP 8.2/8.4 workflow lane. No persistence, permissions, notifications, search or board UI — integration remains future work. No release or deployment.

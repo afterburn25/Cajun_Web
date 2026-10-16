@@ -24,6 +24,7 @@ Main retains existing licensing and the four unresolved [integration findings](d
 - `devin/non20i-mail-replies` (PR #161) completes webmail Reply/Forward — opt-in raw retention, message-screen controls, protected copied drafts, `mail_reply_drafts` storage, format-2 submissions with `In-Reply-To`/`References`, source-Read revalidation on every copied-content path.
 - `devin/non20i-backups-foundation` (PR #162) ports the A-03 contract layer — `BackupManifest` sealed item scopes with structural secrets exclusion, `RestorePlan` deliberate preview→authorize→applied states.
 - `devin/non20i-pipeline-foundation` ports the lead-pipeline contract layer — `PipelineBoard`/`PipelineStage`/`LeadRecord` ordered stages with validated transitions and non-drag control support.
+- `devin/non20i-pipeline-runtime` applies the A-01 transition rules — every inquiry status write routes through `PipelineBoard::canTransition`, stage controls offer only configured moves, and owner-enabled append-only `lead_stage_history` records actor+time per move.
 
 All are local/CI validation only — no live deployment, mail, provider or customer action.
 
