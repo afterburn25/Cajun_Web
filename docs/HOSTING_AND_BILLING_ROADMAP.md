@@ -159,6 +159,8 @@ Sell unmanaged/managed VPS only if 20i account product access, API endpoints, pr
 
 The owner explicitly wants payment forms for web-design services as well as infrastructure checkout. Deliver a standalone design-payment flow in the approved navy/gold theme using the same Authorize.net settings and payment engine. It must work with 20i disabled and no hosting/domain/VPS purchase. Do not delay design payments until domain provisioning is available. This is a planned requirement; inspect current 1.1.0 source before determining the implementation gap.
 
+**Status 2026-10-16 (Devin):** `devin/non20i-design-payments` (stacked on the project-planning port) implements the agreement/schedule/invoice core — proposal-bound quotes, deposit/installment schedules with cent-exact allocation, explicit client consent frozen to the offered fingerprint, one immutable invoice per accepted stage, ledger balance guards and `financial:` workspace-activity notices. [Contracts](DESIGN_PAYMENT_SCHEDULES_CONTRACT.md). Card checkout itself is not activated; HC-11 remains partial until gateway acceptance and full application CI merge.
+
 ### Payment options and customer form
 
 - Full payment for a real fixed-price web-design service published by admin.

@@ -16,3 +16,49 @@
 
 /* Dated client-visible project history. */
 .project-progress{margin:2rem 0;min-width:0}.progress-event{margin:1rem 0;scroll-margin-top:6rem}.progress-event:target{outline:2px solid var(--gold,#d9b66b);outline-offset:3px}.progress-event h3,.progress-editor p{overflow-wrap:anywhere}.progress-fields{margin:1rem 0;display:grid;grid-template-columns:minmax(6rem,.3fr) minmax(0,1fr);gap:.5rem 1rem}.progress-fields dt{font-weight:700}.progress-fields dd{margin:0;white-space:normal;overflow-wrap:anywhere;min-width:0}.progress-pages{display:flex;flex-wrap:wrap;align-items:center;gap:1rem}.progress-editor input,.progress-editor textarea,.progress-editor select{max-width:100%;box-sizing:border-box}.progress-editor textarea{white-space:pre-wrap}.progress-pages .btn{white-space:normal;text-align:center;max-width:100%}@media(max-width:600px){.progress-fields{grid-template-columns:minmax(0,1fr);gap:.25rem}.progress-fields dd{margin-bottom:.75rem}.progress-pages{align-items:stretch;flex-direction:column}.progress-event{padding:1rem}}
+
+/* Structured planning stays within the existing private workspace. */
+.project-planning{margin:1.5rem 0;min-width:0;overflow-wrap:anywhere}
+.planning-facts{display:grid;grid-template-columns:minmax(8rem,1fr) minmax(0,3fr);gap:.75rem 1rem}
+.planning-facts dt{font-weight:700;color:var(--gold,#e9c777)}
+.planning-facts dd{margin:0;white-space:normal}
+.planning-milestones{padding-left:1.4rem}
+.planning-milestones>li{padding:1rem 0;border-bottom:1px solid #ffffff24}
+.planning-milestone-heading{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+.planning-meta{font-size:.9rem;color:#c5d3e1}
+.planning-editor-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:1.25rem}
+.planning-editor-grid>div{min-width:0}
+.planning-choice-list{list-style:none;margin:0 0 1rem;padding:0;display:grid;gap:.5rem}
+.planning-choice{display:block;width:100%;padding:.7rem;text-align:left;background:#091a30;color:#e9edf4;border:1px solid #61748b;border-radius:.4rem;cursor:pointer;overflow-wrap:anywhere}
+.planning-choice[aria-pressed=true]{border-color:#e9c777;background:#162b46}
+.project-planning fieldset{min-width:0;margin:1rem 0;padding:1rem;border:1px solid #61748b;border-radius:.5rem}
+.project-planning legend{padding:0 .4rem;font-weight:700}
+.planning-dependencies label{display:flex;align-items:start;gap:.65rem;margin:.6rem 0}
+.planning-dependencies input[type=checkbox]{width:1.15rem;min-width:1.15rem;margin-top:.2rem}
+.planning-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem}
+.project-planning details{margin-top:1rem}
+.project-planning summary{cursor:pointer;font-weight:700;padding:.4rem 0}
+.project-planning :focus-visible{outline:2px solid #f1d69b;outline-offset:3px}
+.project-planning [hidden]{display:none!important}
+@media(max-width:600px){.planning-editor-grid,.planning-facts{grid-template-columns:minmax(0,1fr)}.planning-facts dd{margin-bottom:.6rem}.project-planning fieldset{padding:.65rem}.planning-actions .btn{width:100%}}
+
+/* Financial agreements on existing project pages. */
+.financial-agreement{min-width:0;overflow-wrap:anywhere}
+.financial-agreement h3,.financial-agreement h4{margin-top:1.4rem}
+.financial-agreement summary{cursor:pointer;font-weight:700;padding:.8rem 0}
+.financial-text{white-space:pre-wrap;overflow-wrap:anywhere}
+.financial-items,.financial-stages{padding-left:1.4rem}
+.financial-items>li,.financial-stages>li{padding:.8rem 0;border-bottom:1px solid var(--line,rgba(255,255,255,.16))}
+.financial-facts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.4rem 1rem}
+.financial-facts dt{font-weight:600}.financial-facts dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.financial-total{font-weight:700;padding:1rem 0}
+.financial-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem 1rem}
+.financial-grid>div,.financial-row{min-width:0}
+.financial-row{border:1px solid var(--line,rgba(255,255,255,.16));padding:1rem;margin:1rem 0;border-radius:10px}
+.financial-row legend{max-width:100%;font-weight:700;padding:0 .35rem}
+.financial-agreement input,.financial-agreement select,.financial-agreement textarea{box-sizing:border-box;max-width:100%;min-width:0}
+.financial-row-actions,.financial-command,.financial-preview{margin-top:1rem}
+.financial-agreement .btn{white-space:normal;text-align:center;overflow-wrap:anywhere}
+.financial-agreement button:disabled{opacity:.55;cursor:not-allowed}
+.financial-agreement :focus-visible{outline:3px solid #e2bd63;outline-offset:3px}
+@media(max-width:520px){.financial-grid{grid-template-columns:1fr}.financial-row{padding:.65rem}.financial-facts{gap:.4rem}.financial-row-actions{display:flex;flex-wrap:wrap}.financial-agreement .button-row{flex-wrap:wrap}.financial-agreement .btn{max-width:100%}}

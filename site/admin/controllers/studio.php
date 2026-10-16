@@ -5,6 +5,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function studio_admin_views(): array {return ['studio-clients'=>'Client workspace','studio-job'=>'Client project','studio-pipeline'=>'Sales pipeline','studio-content'=>'Sales content','studio-prices'=>'Estimator prices','studio-portfolio'=>'Portfolio previews','studio-history'=>'Content history','studio-upgrade'=>'Version & database','studio-licenses'=>'Website licenses'];}
 require_once CWP_CODE_ROOT.'/app/settings/revisions.php';
 require_once CWP_CODE_ROOT.'/includes/layout/project_progress.php';
+require_once CWP_CODE_ROOT.'/includes/layout/project_planning.php';
 function studio_admin_action(string $action,array $user): never {
     require_admin();check_csrf();$target='studio-clients';
     require_once CWP_CODE_ROOT.'/app/licenses/service.php';

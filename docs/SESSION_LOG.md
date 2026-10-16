@@ -1,5 +1,29 @@
 # Session log
 
+## Port design payment schedules and financial activity — 2026-10-16
+
+Request: continue the non-20i roadmap (issue #157, item 4 — "proposals/deposits/installments"), continuing the preserved `codex/design-payment-schedules` → `design-financial-activity` stack.
+
+Starting commit: `devin/non20i-project-planning` — the financial slice genuinely reuses the progress service layer (`project_progress_*`) and planning milestone binding (`project_planning_validate` for milestone-linked installments), so this branch is stacked; its PR targets the planning branch.
+
+Files/actions: extracted `foundation/design-payments/DesignPaymentSchedule.php` (+ mirror via new `design-payments` entry in `tools/build.py`), `site/app/billing/design_payment_{,s}{_actions,_activity,_forms,_invoices}.php` set, `site/database/{schema,migrations}/design_payment{s,s_invoices}_*`, `site/includes/layout/design_financial{,_editor}.php`, growth.css financial block, `tests/design-payments/*`, `tests/design_payments_{native,native_extra,native_limits,invoice_native,forms_native,activity_native,legacy_ledger}.php`, `tests/design_financial_{,activity_,upgrade_}cases.py`, `.github/workflows/design-payment{schedule,-payments-native}s`-style lanes (`design-payment-schedules.yml`, `design-payments-native.yml`), `docs/DESIGN_*` (ownership wording updated). Wired shared seams: `app/activity/events.php` (`financial` kind + `financial-event` destination + validation calls), `includes/layout/activity.php` (`financial` label + heading text), `app/staff/accounts.php` (`design_financial_setup` → `staff.manage`, `design_financial_*` → `payments.manage`), `app/billing/{attempts,ledger}.php` (invoice-binding guards), `admin/controllers/{actions,router}.php`, `admin/views/studio/job.php` (`design_financial_section`), `portal/controllers/{actions,router}.php` (`financial_decide`), `portal/views/workspace.php`. `design_financial_upgrade_cases.py` made self-contained (own form helpers + reuses the client the progress case activated); fixture gained a `financial` records mode; Apache integrity list + browser suite extended (`design_financial_cases` invokes `design_financial_activity_cases`).
+
+Tests/verification (local): `php -l` clean on all touched PHP; `tests/design-payments/records.php` and `forms.php` all pure checks pass on PHP 8.4; `python tools/build.py --refresh` passes with the `design-payments` mirror byte-identical and inventory regenerated (10 entries). Native MariaDB, HTTP/Chromium and packaged 1.23 upgrade lanes are CI-wired; no local database here. No card checkout is activated.
+
+Next: commit, push, open PR targeting the planning branch, update #157.
+
+## Port structured project planning — 2026-10-16
+
+Request: continue the non-20i roadmap (issue #157, item 2 — "web-design project timelines and milestones"), continuing the preserved `codex/project-planning*` stack.
+
+Starting commit: `devin/non20i-project-progress` `433c6094` — planning is genuinely built on the progress service layer (`project_progress_staff/json/locked/job/client_row/touch`), so this branch is stacked; the PR targets the progress branch to keep the diff planning-only.
+
+Files/actions: extracted `foundation/project-planning/{ProjectPlan,ProjectPlanEvent}.php` (+ deployment mirrors via new `project-planning` entry in `tools/build.py`), `site/app/projects/{planning,planning_activity,planning_forms,planning_history}.php`, `site/database/{schema,migrations}/project_planning_*`, `site/includes/layout/project_planning{,_editor}.php`, `site/assets/js/project-planning.js`, planning CSS block in `growth.css`, `tests/project-planning/*`, `tests/project_planning_{native,native_concurrency,native_integrity,native_limits,screen_native_cases,cases.py,upgrade_cases.py}`, `.github/workflows/project-planning{,-native}.yml`, `docs/PROJECT_PLANNING{,_CONTRACT,_SCREENS_CONTRACT,_STORAGE_CONTRACT}.md` (ownership wording updated to current allocation). Wired shared seams (planning-only hunks): `app/activity/events.php` (`planning` feed kind + `focus_plan` destination + validation calls), `includes/layout/activity.php` (`planning` label), `app/staff/accounts.php` (`project_planning_setup` → `staff.manage`, `project_planning_save` → `clients.manage`), `admin/controllers/{studio,actions}.php`, `admin/views/studio/{job,upgrade}.php`, `portal/controllers/router.php`, `portal/views/workspace.php`. `project_planning_upgrade_cases.py` made self-contained (own form helpers + reuses the client the progress case activated); fixture gained a `planning` records mode; upgrade wired at the 1.23 baseline after progress; Apache integrity list + browser suite extended.
+
+Tests/verification (local): `php -l` clean on all touched PHP; `tests/project-planning/records.php` and `forms.php` all checks pass on PHP 8.4; `python tools/build.py --refresh` passes with `foundation/project-planning` mirrored byte-for-byte and inventory regenerated (7 planning entries). Native MariaDB, HTTP/Chromium and packaged 1.23 upgrade lanes are CI-wired; no local database here.
+
+Next: commit, push, open PR targeting the progress branch, update #157.
+
 ## Port dated project history onto main — 2026-10-16
 
 Request: continue the non-20i roadmap — assignment item "web-design project progress, updates, approvals, previews", reusing preserved PRs instead of rebuilding.

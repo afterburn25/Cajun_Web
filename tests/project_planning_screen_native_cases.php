@@ -1,0 +1,30 @@
+<?php
+declare(strict_types=1);
+if(PHP_SAPI!=='cli'||!defined('CWP_BOOT'))exit(2);
+require_once CWP_CODE_ROOT.'/includes/layout/project_planning.php';
+use CajunWebPro\Foundation\ProjectPlanning\{ProjectPlan,ProjectPlanEvent};
+pl_staff();activity_migrate($password);pl_client(2);
+pl_ok('First saved plan creates real personal activity',activity_source('client','planning:'.pl_id(20))['kind']==='planning');
+pl_staff();$state=project_planning_validate(project_progress_job(2));$head=$state['head'];$bytes=$state['bytes'];$at=$head->data()['occurred_at'];$ids=['planning:'.pl_id(20)];
+// Exact same-second fixture with descending opaque IDs exercises revision ordering.
+db()->beginTransaction();for($i=1;$i<=34;$i++){$fields=pl_fields('Activity plan '.$i);$expected=$head->fingerprint();$plan=ProjectPlan::fromArray($fields);$head=$head->update(pl_id(6000-$i),1,$at,$expected,$plan);$input=project_planning_input(2,2,1,$expected,$plan);project_planning_append($head,$input);$bytes+=strlen($head->json())+strlen($input);$ids[]='planning:'.$head->data()['id'];}project_planning_store_head($head,$bytes,true);db()->commit();
+$newest=array_reverse($ids);$key=$newest[0];pl_client(2);$feed=activity_feed('client');$older=activity_feed('client',false,$feed['next']);
+pl_ok('Planning revisions order same-second events ahead of opaque identity',array_column($feed['rows'],'event_key')===array_slice($newest,0,30));
+pl_ok('Planning cursor reaches older events once including creation',array_column($older['rows'],'event_key')===array_slice($newest,30)&&$older['next']==='');
+pl_ok('Personal planning notices omit plan contents and attribution',!str_contains(project_progress_json($feed),'Activity plan')&&!str_contains(project_progress_json($feed),'staff_id')&&!str_contains(project_progress_json($feed),'expected'));
+$before=all('SELECT * FROM '.table('activity_reads'));$destination=activity_destination('client',$key);
+pl_ok('Planning link selects exact event and its actual history page',str_contains($destination,'job=2')&&str_contains($destination,'focus_plan='.substr($key,9))&&str_ends_with($destination,'#planning-'.substr($key,9))&&project_planning_client_get(2,2,0,substr($key,9))['page']===4);
+pl_ok('Opening a planning update preserves personal read status',all('SELECT * FROM '.table('activity_reads'))===$before);
+$idle=time()-120;$_SESSION['client_last']=$idle;pl_ok('Planning bell preserves passive idle expiry',activity_passive_count('client')===35&&$_SESSION['client_last']===$idle);
+activity_mark('client',[$key],true);activity_mark('client',[$key],true);pl_ok('Explicit personal planning read is idempotent',activity_count('client')===34&&count(all('SELECT * FROM '.table('activity_reads')))==1);
+activity_mark('client',[$key],false);pl_ok('Explicit planning unread affects only selected event',activity_count('client')===35);
+pl_ok('Read audit failure rolls back planning read state',pl_fail(fn()=>activity_mark('client',[$key],true))&&all('SELECT * FROM '.table('activity_reads'))===$before);
+pl_client(1);pl_deny('Another client cannot resolve a planning update',fn()=>activity_source('client',$key));pl_deny('Another client cannot mark a planning update',fn()=>activity_mark('client',[$key],true));
+pl_staff();pl_deny('Author cannot receive their own planning update',fn()=>activity_source('admin',$key));pl_staff(2);pl_ok('Other current project managers receive planning changes',activity_source('admin',$key)['job_id']==2);
+query('UPDATE '.table('staff_profiles')." SET permissions='[]' WHERE user_id=2");pl_deny('Revoked manager cannot resolve planning notice',fn()=>activity_source('admin',$key));pl_deny('Revoked manager cannot mark planning notice',fn()=>activity_mark('admin',[$key],true));query('UPDATE '.table('staff_profiles').' SET permissions=? WHERE user_id=2',[json_encode(['clients.manage'])]);
+pl_client(2);query('UPDATE '.table('studio_clients').' SET active=0 WHERE id=2');pl_deny('Inactive client cannot read planning activity',fn()=>activity_feed('client'));query('UPDATE '.table('studio_clients').' SET active=1 WHERE id=2');pl_client(2);
+$hash=one('SELECT plan_sha256 FROM '.table('studio_plan_heads').' WHERE id=2')['plan_sha256'];query('UPDATE '.table('studio_plan_heads').' SET plan_sha256=? WHERE id=2',[str_repeat('0',64)]);
+pl_deny('Planning feed validates retained current-plan anchor',fn()=>activity_feed('client'));pl_deny('Planning unread bell validates retained history',fn()=>activity_count('client'));pl_deny('Planning cursor validates retained history',fn()=>activity_feed('client',false,$key));pl_deny('Planning read mutation validates retained history',fn()=>activity_mark('client',[$key],true));pl_ok('Corrupt planning history leaves personal reads unchanged',all('SELECT * FROM '.table('activity_reads'))===$before);query('UPDATE '.table('studio_plan_heads').' SET plan_sha256=? WHERE id=2',[$hash]);
+pl_staff();pl_ok('Prepared planning mode is explicit',project_planning_mode());save_setting('project_planning_schema_version','');pl_deny('Missing planning marker cannot bypass retained data',fn()=>project_planning_mode());save_setting('project_planning_schema_version','99');pl_deny('Unknown planning marker refuses the editor',fn()=>project_planning_mode());save_setting('project_planning_schema_version','1');
+support_migrate($password);support_policy(2,true,$password);pl_staff(3);$planSupport=support_start(2);$_GET['support']=$planSupport;pl_deny('Scoped support cannot impersonate planning read status',fn()=>activity_mark('client',[$key],true));pl_deny('Scoped support cannot open staff planning activity',fn()=>activity_feed('admin'));unset($_GET['support']);pl_staff();
+pl_ok('Planning screen permissions separate owner preparation and editing',staff_action_permission('project_planning_setup')==='staff.manage'&&staff_action_permission('project_planning_save')==='clients.manage');

@@ -4,6 +4,8 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/database/schema/activity_schema.php';
 require_once CWP_CODE_ROOT.'/app/projects/progress_activity.php';
+require_once CWP_CODE_ROOT.'/app/projects/planning_activity.php';
+require_once CWP_CODE_ROOT.'/app/billing/design_payment_activity.php';
 function activity_ready(): bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['activity_schema_version'])['value']??'')==='1';}
 function activity_audit(array $actor,string $action,string $detail): void {query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[$actor['type']==='admin'?$actor['id']:0,'activity.'.$action,$actor['type'].' '.$actor['id'].'; '.$detail,gmdate('Y-m-d H:i:s')]);}
 require_once CWP_CODE_ROOT.'/database/migrations/activity_migrate.php';
@@ -31,16 +33,18 @@ function activity_projection(array $actor): array {
         if(delivery_ready())$add('website_releases','release','s.published_at',"CONCAT(s.version,' · ',s.title)","s.status='published' AND s.published_at IS NOT NULL AND s.client_id=j.client_id");
     }else $add('studio_versions','decision','s.decided_at',"CONCAT(s.kind,' v',s.version_no,' · ',s.decision,' · ',s.title)","s.decision IN ('approved','changes') AND s.decided_at IS NOT NULL AND s.decided_by=j.client_id");
     if(project_progress_ready())$add('studio_progress_events','progress','s.created_at',"'Project details updated'","s.kind='updated' AND s.client_id=j.client_id".($client?'':' AND s.staff_id<>'.(int)$actor['id']),'s.id','s.revision');
+    if(project_planning_ready())$add('studio_plan_events','planning','s.created_at',"CASE WHEN s.kind='plan_started' THEN 'Project plan created' ELSE 'Project plan updated' END","s.kind IN ('plan_started','plan_updated') AND s.client_id=j.client_id".($client?'':' AND s.staff_id<>'.(int)$actor['id']),'s.id','s.revision');
+    if(design_payment_activity_available($actor))$add('design_payment_events','financial','s.created_at',"CASE s.kind WHEN 'offered' THEN 'Financial agreement offered' WHEN 'withdrawn' THEN 'Financial agreement withdrawn' WHEN 'accepted' THEN 'Client accepted financial terms' ELSE 'Client declined financial terms' END","s.client_id=j.client_id AND ".($client?"s.kind IN ('offered','withdrawn')":"(s.kind IN ('accepted','declined') OR (s.kind IN ('offered','withdrawn') AND s.staff_id<>".(int)$actor['id']."))"),'s.id','s.sequence');
     return [implode(' UNION ALL ',$parts),$args];
 }
-function activity_key(string $key): void {if(!preg_match('/^(?:(?:message|review|invoice|payment|decision):[1-9][0-9]{0,19}|(?:file|release|progress):[a-f0-9]{32})$/D',$key))throw new InvalidArgumentException('Activity item unavailable.');}
+function activity_key(string $key): void {if(!preg_match('/^(?:(?:message|review|invoice|payment|decision):[1-9][0-9]{0,19}|(?:file|release|progress|planning|financial):[a-f0-9]{32})$/D',$key))throw new InvalidArgumentException('Activity item unavailable.');}
 function activity_source(string $audience,string $key): array {
     activity_key($key);[$sql,$args]=activity_projection(activity_actor($audience));
-    $row=one('SELECT * FROM ('.$sql.') events WHERE event_key=?',[...$args,$key]);if(!$row)throw new InvalidArgumentException('Activity item unavailable.');project_progress_activity_validate($audience,[$row]);return $row;
+    $row=one('SELECT * FROM ('.$sql.') events WHERE event_key=?',[...$args,$key]);if(!$row)throw new InvalidArgumentException('Activity item unavailable.');project_progress_activity_validate($audience,[$row]);project_planning_activity_validate($audience,[$row]);design_payment_activity_validate($audience,[$row]);return $row;
 }
 function activity_count(string $audience): int {
     $actor=activity_actor($audience);[$sql,$args]=activity_projection($actor);
-    $rows=all('SELECT e.* FROM ('.$sql.') e LEFT JOIN '.table('activity_reads').' r ON r.actor_type=? AND r.actor_id=? AND r.event_key=e.event_key WHERE r.id IS NULL LIMIT 100',[...$args,$actor['type'],$actor['id']]);project_progress_activity_validate($audience,$rows);return count($rows);
+    $rows=all('SELECT e.* FROM ('.$sql.') e LEFT JOIN '.table('activity_reads').' r ON r.actor_type=? AND r.actor_id=? AND r.event_key=e.event_key WHERE r.id IS NULL LIMIT 100',[...$args,$actor['type'],$actor['id']]);project_progress_activity_validate($audience,$rows);project_planning_activity_validate($audience,$rows);design_payment_activity_validate($audience,$rows);return count($rows);
 }
 function activity_passive_count(string $audience): int {
     $last=array_intersect_key($_SESSION,array_flip(['last_activity','client_last']));
@@ -51,7 +55,7 @@ function activity_feed(string $audience,bool $unread=false,string $before=''): a
     $actor=activity_actor($audience);[$sql,$args]=activity_projection($actor);$where=$unread?'r.id IS NULL':'1=1';$params=[...$args,$actor['type'],$actor['id']];
     if($before!==''){$cursor=activity_source($audience,$before);$where.=' AND (e.occurred_at<? OR (e.occurred_at=? AND (e.sort_sequence<? OR (e.sort_sequence=? AND e.event_key<?))))';array_push($params,$cursor['occurred_at'],$cursor['occurred_at'],$cursor['sort_sequence'],$cursor['sort_sequence'],$before);}
     $rows=all('SELECT e.*,r.read_at FROM ('.$sql.') e LEFT JOIN '.table('activity_reads').' r ON r.actor_type=? AND r.actor_id=? AND r.event_key=e.event_key WHERE '.$where.' ORDER BY e.occurred_at DESC,e.sort_sequence DESC,e.event_key DESC LIMIT 31',$params);
-    project_progress_activity_validate($audience,$rows);$more=count($rows)>30;if($more)array_pop($rows);return ['rows'=>$rows,'next'=>$more?$rows[count($rows)-1]['event_key']:''];
+    project_progress_activity_validate($audience,$rows);project_planning_activity_validate($audience,$rows);design_payment_activity_validate($audience,$rows);$more=count($rows)>30;if($more)array_pop($rows);return ['rows'=>$rows,'next'=>$more?$rows[count($rows)-1]['event_key']:''];
 }
 /** Only the reviewed keys are changed. A new arrival cannot be silently marked read. */
 function activity_mark(string $audience,array $keys,bool $read): void {
@@ -61,7 +65,7 @@ function activity_mark(string $audience,array $keys,bool $read): void {
         $actor=activity_actor($audience);[$sql,$args]=activity_projection($actor);$marks=implode(',',array_fill(0,count($keys),'?'));
         $rows=all('SELECT * FROM ('.$sql.') e WHERE event_key IN ('.$marks.')',[...$args,...$keys]);
         if(count($rows)!==count($keys))throw new RuntimeException('Activity changed or is unavailable. Refresh before trying again.');
-        project_progress_activity_validate($audience,$rows);foreach($keys as $key){
+        project_progress_activity_validate($audience,$rows);project_planning_activity_validate($audience,$rows);design_payment_activity_validate($audience,$rows);foreach($keys as $key){
             if($read)query('INSERT INTO '.table('activity_reads').' (actor_type,actor_id,event_key,read_at) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE read_at=read_at',[$actor['type'],$actor['id'],$key,gmdate('Y-m-d H:i:s')]);
             else query('DELETE FROM '.table('activity_reads').' WHERE actor_type=? AND actor_id=? AND event_key=?',[$actor['type'],$actor['id'],$key]);
         }
@@ -74,6 +78,8 @@ function activity_destination(string $audience,string $key): string {
     if($audience==='client'&&$kind==='release')return studio_url(['release'=>$id]);
     if($audience==='client'&&$kind==='payment')return studio_url(['invoice'=>$r['target_id'],'before_entry'=>(int)$id+1]).'#payment-'.$id;
     $anchor=$kind==='decision'?'review':$kind;$params=[$audience==='admin'?'id':'job'=>$r['job_id']];
+    if($anchor==='financial'){$params['financial_page']=intdiv((int)$r['sort_sequence'],10)+1;$anchor='financial-event';}
+    if($anchor==='planning')$params['focus_plan']=$id;
     if(in_array($anchor,['message','review','progress'],true))$params['focus_'.$anchor]=$id;
     return ($audience==='admin'?admin_url('studio-job',$params):studio_url($params)).'#'.$anchor.'-'.$id;
 }

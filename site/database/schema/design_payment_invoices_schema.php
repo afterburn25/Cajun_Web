@@ -1,0 +1,8 @@
+<?php
+declare(strict_types=1);
+if(!defined('CWP_BOOT')){http_response_code(404);exit;}
+function design_payment_invoices_schema(string $prefix):array {
+    if(!preg_match('/\A[a-zA-Z][a-zA-Z0-9_]{1,19}\z/',$prefix))throw new InvalidArgumentException('Invalid prefix.');
+    $id='CHAR(32) CHARACTER SET ascii COLLATE ascii_bin';$hash='CHAR(64) CHARACTER SET ascii COLLATE ascii_bin';
+    return ['design_payment_invoices'=>'CREATE TABLE `'.$prefix.'design_payment_invoices` (id '.$id.' PRIMARY KEY,job_id INT UNSIGNED NOT NULL,client_id INT UNSIGNED NOT NULL,staff_id INT UNSIGNED NOT NULL,schedule_id '.$id.' NOT NULL,schedule_sha256 '.$hash.' NOT NULL,stage_id '.$id.' NOT NULL,consent_id '.$id.' NOT NULL,invoice_id INT UNSIGNED NOT NULL,invoice_sha256 '.$hash.' NOT NULL,request_sha256 '.$hash.' NOT NULL,UNIQUE KEY obligation(schedule_id,stage_id),UNIQUE KEY invoice_id(invoice_id),INDEX job_id(job_id),INDEX client_id(client_id),INDEX staff_id(staff_id),INDEX consent_id(consent_id),FOREIGN KEY (id) REFERENCES `'.$prefix.'design_payment_events` (id) ON DELETE RESTRICT,FOREIGN KEY (schedule_id) REFERENCES `'.$prefix.'design_payment_events` (id) ON DELETE RESTRICT,FOREIGN KEY (consent_id) REFERENCES `'.$prefix.'design_payment_events` (id) ON DELETE RESTRICT,FOREIGN KEY (job_id) REFERENCES `'.$prefix.'studio_jobs` (id) ON DELETE RESTRICT,FOREIGN KEY (client_id) REFERENCES `'.$prefix.'studio_clients` (id) ON DELETE RESTRICT,FOREIGN KEY (staff_id) REFERENCES `'.$prefix.'users` (id) ON DELETE RESTRICT,FOREIGN KEY (invoice_id) REFERENCES `'.$prefix.'studio_invoices` (id) ON DELETE RESTRICT) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'];
+}

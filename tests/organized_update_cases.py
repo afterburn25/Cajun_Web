@@ -295,3 +295,7 @@ def run(web,base,check,qa,php,label,prefix,version):
     if version=='1.23.0':
         from project_progress_upgrade_cases import run as progress_upgrade
         progress_upgrade({**locals(),'token':token})
+        from project_planning_upgrade_cases import run as planning_upgrade
+        planning_upgrade({**locals(),'token':token})
+        from design_financial_upgrade_cases import run as financial_upgrade
+        financial_upgrade({**locals(),'token':token})

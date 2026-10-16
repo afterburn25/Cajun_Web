@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-if (!defined('CWP_BOOT')) { http_response_code(404); exit; }boot();header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');
+if (!defined('CWP_BOOT')) { http_response_code(404); exit; }boot();require CWP_CODE_ROOT.'/includes/layout/public.php';require CWP_CODE_ROOT.'/app/marketing/growth.php';require CWP_CODE_ROOT.'/app/clients/workspace.php';require CWP_CODE_ROOT.'/includes/layout/admin.php';require CWP_CODE_ROOT.'/admin/controllers/support.php';require CWP_CODE_ROOT.'/includes/layout/ledger.php';require CWP_CODE_ROOT.'/includes/layout/deliveries.php';require CWP_CODE_ROOT.'/includes/layout/activity.php';require_once CWP_CODE_ROOT.'/includes/layout/provider_services.php';require_once CWP_CODE_ROOT.'/includes/layout/project_progress.php';require_once CWP_CODE_ROOT.'/includes/layout/project_planning.php';require_once CWP_CODE_ROOT.'/includes/layout/design_financial.php';require_once CWP_CODE_ROOT.'/portal/controllers/plans.php';header('X-Robots-Tag: noindex, nofollow');header('Referrer-Policy: no-referrer');
 $error='';$supportRequested=array_key_exists('support',$_GET);$supportId=is_string($_GET['support']??null)?$_GET['support']:'';
 if($supportRequested){
  if($_SERVER['REQUEST_METHOD']==='POST'&&($_POST['action']??null)==='support_end'){
