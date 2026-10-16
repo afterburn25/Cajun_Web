@@ -23,6 +23,7 @@ use CajunWebPro\Foundation\TwentyIInventory\InventoryRead;
 use CajunWebPro\Foundation\TwentyIInventory\InventorySnapshot;
 use CajunWebPro\Foundation\TwentyIInventoryReader\InventoryReader;
 use CajunWebPro\Foundation\TwentyIDomainContracts\{DomainContractBinding,DomainContractObservation,DomainContract};
+use CajunWebPro\Foundation\TwentyIDomainExpiry\{DomainExpiryBinding,DomainExpiryObservation,DomainExpiry,DomainExpiryReader};
 use CajunWebPro\Foundation\TwentyIPackagePhp\{PackagePhpVersionBinding,PackagePhpVersionObservation,PackagePhpVersion};
 
 require_once CWP_CODE_ROOT.'/app/providers/settings.php';
@@ -34,6 +35,7 @@ foreach(['InventoryRead','InventoryPackage','InventoryCloudServer','InventoryDom
 require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory-reader/RegistrationPeriods.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory-reader/InventoryReader.php';
 foreach(['DomainContractBinding','DomainContractObservation','DomainContract'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-domain-contracts/'.$class.'.php';
+foreach(['DomainExpiryBinding','DomainExpiryObservation','DomainExpiry','DomainExpiryReader'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-domain-expiry/'.$class.'.php';
 foreach(['PackagePhpVersionBinding','PackagePhpVersionObservation','PackagePhpVersion'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-package-php/'.$class.'.php';
 
 final class ProviderInventoryAccessChanged extends RuntimeException {}
@@ -72,12 +74,14 @@ function provider_inventory_authority(string $id,int $revision,#[\SensitiveParam
  * Internal only. Builds the credential with an access-gated resolver and
  * performs one bounded authenticated read over the injected transport.
  */
-function provider_inventory_read(array $row,#[\SensitiveParameter] string $secret,string $address,callable $authorize,string $operation=InventoryRead::PACKAGES_LIST,?DomainContractBinding $domainContext=null,?PackagePhpVersionBinding $packageContext=null): InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation {
+function provider_inventory_read(array $row,#[\SensitiveParameter] string $secret,string $address,callable $authorize,string $operation=InventoryRead::PACKAGES_LIST,?DomainContractBinding $domainContext=null,?PackagePhpVersionBinding $packageContext=null,?DomainExpiryBinding $expiryContext=null): InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|DomainExpiryObservation {
     if($domainContext!==null&&$operation!==DomainContract::OPERATION)throw new LogicException('Unexpected domain read binding.');
     if($packageContext!==null&&$operation!==PackagePhpVersion::OPERATION)throw new LogicException('Package context belongs only to the PHP observation operation.');
+    if($expiryContext!==null&&$operation!==DomainExpiry::OPERATION)throw new LogicException('Expiry context belongs only to the registrar expiry operation.');
     $credential=new ProviderCredential('twenty-i',$row['id'],static function()use($secret,$authorize):string{$authorize();return $secret;});
     if($operation===DomainContract::OPERATION){if(!$domainContext)throw new LogicException('Domain read binding is required.');return DomainContract::read(new FixedHttpTransport($address,$authorize),$credential,$domainContext,time());}
     if($operation===PackagePhpVersion::OPERATION){if(!$packageContext)throw new LogicException('PHP observation requires an exact package context.');return PackagePhpVersion::read(new FixedHttpTransport($address,$authorize),$credential,$packageContext,time());}
+    if($operation===DomainExpiry::OPERATION){if(!$expiryContext)throw new LogicException('Expiry observation requires an exact registrar context.');return DomainExpiryReader::read(new FixedHttpTransport($address,$authorize),$credential,$expiryContext,time());}
     return InventoryReader::read(new FixedHttpTransport($address,$authorize),$credential,$operation,0,time());
 }
 
@@ -85,30 +89,35 @@ function provider_inventory_read(array $row,#[\SensitiveParameter] string $secre
 function provider_inventory_observed(string $state): bool {return in_array($state,['complete','partial'],true);}
 
 /** The public wrapper retains its original transaction behavior for existing callers. */
-function provider_inventory_record(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|null $snapshot,string $fingerprint=''): void {
+function provider_inventory_record(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|DomainExpiryObservation|null $snapshot,string $fingerprint=''): void {
     ProviderInventoryRecorder::record($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint);
 }
 /** Internal scheduled-job commit path. The caller owns both guards and the surrounding transaction. */
-function provider_inventory_record_transaction(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|null $snapshot,string $fingerprint=''): void {
+function provider_inventory_record_transaction(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|DomainExpiryObservation|null $snapshot,string $fingerprint=''): void {
     ProviderInventoryRecorder::withinTransaction($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint);
 }
 final class ProviderInventoryRecorder {
-    public static function record(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|null $snapshot,string $fingerprint=''): void {
+    public static function record(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|DomainExpiryObservation|null $snapshot,string $fingerprint=''): void {
         staff_transaction(fn()=>self::write($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint));
     }
-    public static function withinTransaction(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|null $snapshot,string $fingerprint=''): void {
+    public static function withinTransaction(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|DomainExpiryObservation|null $snapshot,string $fingerprint=''): void {
         $key='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
         if(!db()->inTransaction()||(int)query('SELECT IS_USED_LOCK(?)=CONNECTION_ID()',[$key])->fetchColumn()!==1)throw new LogicException('Inventory persistence requires the owning account transaction and mutex.');
         self::write($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint);
     }
-    private static function write(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|null $snapshot,string $fingerprint=''): void {
+    private static function write(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|DomainExpiryObservation|null $snapshot,string $fingerprint=''): void {
         if(($started['operation']??'')===InventoryRead::DOMAIN_REGISTRATION_PERIODS){require_once CWP_CODE_ROOT.'/app/providers/registration_periods.php';if(!provider_registration_period_ready())throw new RuntimeException('Restore registration period history before recording a result.');}
+        if(($started['operation']??'')===DomainExpiry::OPERATION){require_once CWP_CODE_ROOT.'/app/providers/domain_expiry.php';if(!domain_expiry_ready())throw new RuntimeException('Restore registrar expiry history before recording a result.');}
         query('INSERT INTO '.table('provider_refresh_results').' (id,state,reason,scope,coverage,package_count,skipped,skip_reasons,finished_at,elapsed_ms,key_fingerprint) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
             [$started['id'],$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,gmdate('Y-m-d H:i:s'),max(0,min($elapsed,2147483647)),$fingerprint]);
         if(($started['operation']??'')===DomainContract::OPERATION){
             require_once CWP_CODE_ROOT.'/app/providers/domain_contracts.php';
             if($snapshot!==null&&!$snapshot instanceof DomainContractObservation)throw new LogicException('Only the exact typed domain result may persist.');
             domain_contracts_record($started,$state,$snapshot,$fingerprint);
+        }elseif(($started['operation']??'')===DomainExpiry::OPERATION){
+            require_once CWP_CODE_ROOT.'/app/providers/domain_expiry.php';
+            if($snapshot!==null&&!$snapshot instanceof DomainExpiryObservation)throw new LogicException('Only an exact typed expiry observation may persist.');
+            domain_expiry_record($started,$state,$snapshot,$fingerprint);
         }elseif(($started['operation']??'')===PackagePhpVersion::OPERATION){
             require_once CWP_CODE_ROOT.'/app/providers/package_php.php';
             if($snapshot!==null&&!$snapshot instanceof PackagePhpVersionObservation)throw new LogicException('Only an exact typed PHP observation may persist.');
@@ -151,19 +160,21 @@ function provider_inventory_refresh(string $id,int $revision,#[\SensitiveParamet
     return provider_inventory_refresh_attempt($id,$revision,$password,$resolver,$transport,$operation)['state'];
 }
 /** Internal receipt exposes the exact durable refresh, never a latest-row guess. */
-function provider_inventory_refresh_attempt(string $id,int $revision,#[\SensitiveParameter] string $password,?callable $resolver=null,?callable $transport=null,string $operation=InventoryRead::PACKAGES_LIST,?callable $scopeAuthority=null,?DomainContractBinding $domainContext=null,?PackagePhpVersionBinding $packageContext=null):array {
-    $isDomain=$operation===DomainContract::OPERATION;$isPhp=$operation===PackagePhpVersion::OPERATION;
+function provider_inventory_refresh_attempt(string $id,int $revision,#[\SensitiveParameter] string $password,?callable $resolver=null,?callable $transport=null,string $operation=InventoryRead::PACKAGES_LIST,?callable $scopeAuthority=null,?DomainContractBinding $domainContext=null,?PackagePhpVersionBinding $packageContext=null,?DomainExpiryBinding $expiryContext=null):array {
+    $isDomain=$operation===DomainContract::OPERATION;$isPhp=$operation===PackagePhpVersion::OPERATION;$isExpiry=$operation===DomainExpiry::OPERATION;
     if($domainContext!==null&&!$isDomain)throw new InvalidArgumentException('This inventory reader is not available.');
     if($packageContext!==null&&!$isPhp)throw new InvalidArgumentException('Package context belongs only to the PHP observation operation.');
+    if($expiryContext!==null&&!$isExpiry)throw new InvalidArgumentException('Expiry context belongs only to the registrar expiry operation.');
+    if($isExpiry){require_once CWP_CODE_ROOT.'/app/providers/domain_expiry.php';if(!$expiryContext||$expiryContext->registrar->data['profile_id']!==$id||$expiryContext->registrar->data['profile_revision']!==$revision)throw new InvalidArgumentException('Expiry observation requires the exact profile context.');}
     if($isDomain){require_once CWP_CODE_ROOT.'/app/providers/domain_contracts.php';if(!$domainContext||$domainContext->data['profile_id']!==$id||$domainContext->data['profile_revision']!==$revision)throw new InvalidArgumentException('Exact domain read binding is required.');}
     if($isPhp){require_once CWP_CODE_ROOT.'/app/providers/package_php.php';if(!$packageContext||$packageContext->data['profile_id']!==$id||$packageContext->data['profile_revision']!==$revision)throw new InvalidArgumentException('PHP observation requires the exact profile context.');provider_php_authority($packageContext);}
-    if(!$isDomain&&!$isPhp&&!InventoryReader::supports($operation))throw new InvalidArgumentException('This inventory reader is not available.');
+    if(!$isDomain&&!$isPhp&&!$isExpiry&&!InventoryReader::supports($operation))throw new InvalidArgumentException('This inventory reader is not available.');
     if($operation===InventoryRead::DOMAIN_REGISTRATION_PERIODS)require_once CWP_CODE_ROOT.'/app/providers/registration_periods.php';
     if($operation===InventoryRead::CLOUD_PROVIDERS_LIST){require_once CWP_CODE_ROOT.'/app/providers/cloud_providers.php';if(!provider_cloud_providers_ready())throw new RuntimeException('Prepare cloud provider storage first.');}
     if($operation===InventoryRead::DOMAINS_LIST){require_once CWP_CODE_ROOT.'/app/providers/registrar.php';if(!provider_registrar_ready())throw new RuntimeException('Prepare registered-domain storage first.');}
     if(db()->inTransaction())throw new LogicException('Provider refreshes cannot run inside a transaction.');
-    $started=staff_locked(fn()=>staff_transaction(function()use($id,$revision,$password,$operation,$scopeAuthority,$domainContext,$packageContext):array {
-        if($domainContext)domain_contracts_authority($domainContext);
+    $started=staff_locked(fn()=>staff_transaction(function()use($id,$revision,$password,$operation,$scopeAuthority,$domainContext,$packageContext,$expiryContext):array {
+        if($domainContext)domain_contracts_authority($domainContext);if($expiryContext)domain_expiry_authority($expiryContext);
         if($scopeAuthority)$scopeAuthority();if($packageContext)provider_php_authority($packageContext);
         if($operation===InventoryRead::DOMAIN_REGISTRATION_PERIODS)provider_registration_period_authority($id,$revision,$password);
         [$actor]=provider_inventory_authority($id,$revision,$password);$now=time();
@@ -177,14 +188,14 @@ function provider_inventory_refresh_attempt(string $id,int $revision,#[\Sensitiv
         if($operation===InventoryRead::DOMAIN_REGISTRATION_PERIODS)provider_registration_period_start($started);
         if($operation===InventoryRead::CLOUD_PROVIDERS_LIST)provider_cloud_providers_started($started);
         if($domainContext)domain_contracts_start($started,$domainContext);
-        if($packageContext)provider_php_started($started,$packageContext);return $started;
+        if($packageContext)provider_php_started($started,$packageContext);if($expiryContext)domain_expiry_start($started,$expiryContext);return $started;
     }));
     $begin=hrtime(true);$code=null;$address='';
     try{$address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];}
     catch(Throwable $e){if($e instanceof PDOException)throw $e;$code='unavailable';}
-    $state=staff_locked(function()use($started,$password,$address,$code,$begin,$transport,$scopeAuthority,$domainContext,$packageContext):string {
-        $authorize=static function()use($started,$scopeAuthority,$domainContext,$packageContext):void {
-            try{if($domainContext)domain_contracts_authority($domainContext);if($scopeAuthority)$scopeAuthority();if($packageContext)provider_php_authority($packageContext);if($started['operation']===InventoryRead::DOMAIN_REGISTRATION_PERIODS)provider_registration_period_intent_authority($started);if($started['operation']===InventoryRead::CLOUD_PROVIDERS_LIST&&!provider_cloud_providers_ready())throw new RuntimeException('Cloud provider history unavailable.');[$actor]=provider_inventory_authority($started['profile_id'],$started['profile_revision']);if((int)$actor['id']!==$started['actor_id'])throw new RuntimeException('Changed actor.');}
+    $state=staff_locked(function()use($started,$password,$address,$code,$begin,$transport,$scopeAuthority,$domainContext,$packageContext,$expiryContext):string {
+        $authorize=static function()use($started,$scopeAuthority,$domainContext,$packageContext,$expiryContext):void {
+            try{if($domainContext)domain_contracts_authority($domainContext);if($expiryContext)domain_expiry_authority($expiryContext);if($scopeAuthority)$scopeAuthority();if($packageContext)provider_php_authority($packageContext);if($started['operation']===InventoryRead::DOMAIN_REGISTRATION_PERIODS)provider_registration_period_intent_authority($started);if($started['operation']===InventoryRead::CLOUD_PROVIDERS_LIST&&!provider_cloud_providers_ready())throw new RuntimeException('Cloud provider history unavailable.');[$actor]=provider_inventory_authority($started['profile_id'],$started['profile_revision']);if((int)$actor['id']!==$started['actor_id'])throw new RuntimeException('Changed actor.');}
             catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;throw new ProviderInventoryAccessChanged('Current provider access changed.');}
         };
         $elapsed=static fn():int=>(int)((hrtime(true)-$begin)/1e6);
@@ -192,19 +203,22 @@ function provider_inventory_refresh_attempt(string $id,int $revision,#[\Sensitiv
         catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;provider_inventory_record($started,'access_changed','access_changed','','unknown',0,0,'[]',$elapsed(),null);return 'access_changed';}
         $snapshot=null;$fingerprint='';
         if($code===null) {
-            try{$authorize();$secret=provider_settings_key_value(provider_settings_unseal($row['id'],$row['environment'],$row['credentials']));$fingerprint=provider_inventory_fingerprint($secret);if($domainContext&&!hash_equals($domainContext->data['key_fingerprint'],$fingerprint)){$code='access_changed';unset($secret);}if($packageContext&&!hash_equals($packageContext->data['key_fingerprint'],$fingerprint))throw new ProviderInventoryAccessChanged('PHP observation credential context changed.');}
+            try{$authorize();$secret=provider_settings_key_value(provider_settings_unseal($row['id'],$row['environment'],$row['credentials']));$fingerprint=provider_inventory_fingerprint($secret);if($domainContext&&!hash_equals($domainContext->data['key_fingerprint'],$fingerprint)){$code='access_changed';unset($secret);}if($packageContext&&!hash_equals($packageContext->data['key_fingerprint'],$fingerprint))throw new ProviderInventoryAccessChanged('PHP observation credential context changed.');if($expiryContext&&!hash_equals($expiryContext->registrar->data['key_fingerprint'],$fingerprint))throw new ProviderInventoryAccessChanged('Expiry observation credential context changed.');}
             catch(ProviderInventoryAccessChanged){$code='access_changed';}
             catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;$code='credential';}
             if($code===null) {
                 try{
                     if($domainContext)$snapshot=($transport??'provider_inventory_read')($row,$secret,$address,$authorize,$started['operation'],$domainContext);
                     elseif($packageContext)$snapshot=($transport??'provider_inventory_read')($row,$secret,$address,$authorize,$started['operation'],packageContext:$packageContext);
+                    elseif($expiryContext)$snapshot=($transport??'provider_inventory_read')($row,$secret,$address,$authorize,$started['operation'],expiryContext:$expiryContext);
                     else $snapshot=($transport??'provider_inventory_read')($row,$secret,$address,$authorize,$started['operation']);
                     if($domainContext){
                         if(!$snapshot instanceof DomainContractObservation||$snapshot->scope!==$domainContext->scope||$snapshot->domainId!==$domainContext->data['domain_id']||$snapshot->domainName!==$domainContext->data['domain']||!hash_equals($snapshot->binding->sha256,$domainContext->sha256))throw new LogicException('Domain reader result does not match its exact intent.');
                         if(!hash_equals($domainContext->data['key_fingerprint'],$fingerprint))throw new ProviderInventoryAccessChanged('Provider credential context changed.');
                     }elseif($packageContext){
                         if(!$snapshot instanceof PackagePhpVersionObservation||!hash_equals($packageContext->sha256,$snapshot->binding->sha256)||$snapshot->scope!==$packageContext->scope)throw new LogicException('PHP reader result does not match its exact intent.');
+                    }elseif($expiryContext){
+                        if(!$snapshot instanceof DomainExpiryObservation||$snapshot->scope!==$expiryContext->scope||$snapshot->domainId!==$expiryContext->registrar->data['domain_id']||$snapshot->domainName!==$expiryContext->registrar->data['domain']||!hash_equals($snapshot->binding->sha256,$expiryContext->sha256))throw new LogicException('Expiry reader result does not match its exact intent.');
                     }elseif(!$snapshot instanceof InventorySnapshot||$snapshot->scope!=='twenty-i|'.$started['profile_id'].'|'.$started['operation'])throw new LogicException('Reader scope does not match its intent.');
                     $code=$snapshot->state;
                 }catch(ProviderInventoryAccessChanged){$code='access_changed';}
@@ -216,6 +230,10 @@ function provider_inventory_refresh_attempt(string $id,int $revision,#[\Sensitiv
         }
         // Even a returned snapshot cannot persist after access changed.
         try{$authorize();}catch(ProviderInventoryAccessChanged){$code='access_changed';}
+        if($expiryContext){
+            $self=$snapshot instanceof DomainExpiryObservation&&$snapshot->state===$code;
+            provider_inventory_record($started,$code,$self?$snapshot->reason:$code,$self?$snapshot->scope:'','unknown',0,0,'[]',$elapsed(),$code==='complete'&&$self?$snapshot:null,$fingerprint);return $code;
+        }
         if($packageContext){
             $self=$snapshot instanceof PackagePhpVersionObservation&&$snapshot->state===$code;
             provider_inventory_record($started,$code,$self?$snapshot->reason:$code,$self?$snapshot->scope:'','unknown',0,0,'[]',$elapsed(),$code==='complete'&&$self?$snapshot:null,$fingerprint);return $code;

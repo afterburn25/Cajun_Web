@@ -6,6 +6,14 @@ Record exact b2033 two-version/default-minimal acceptance and downloaded artifac
 
 Add pure reported-boolean parsing and immutable supplied-package binding tests. No application or shipping behavior changes; runtime integration remains pending.
 
+## Unreleased - expiry browser login bookkeeping
+
+Correct the source-only expiry fixture to verify the expected authorized-login bookkeeping before exact post-login account checks. Preserve authority, audit/read history and real cooldown; add redacted setup diagnostics. Shipping code remains unchanged and actual packaged acceptance is pending.
+
+## Unreleased - assigned registrar expiry observations
+
+Add explicit owner refresh and private saved-client observations of a registered domain's bounded upstream-expiry timestamp, with exact current assignment/account authority, independent history recovery, latest-intent order checks and credential-echo refusal. Keep renewal dates and renewal review separate. Root/catalog source review and all four exact f42 focused native/compatibility archives pass; packaged browser acceptance remains pending. No live provider call or release. [Contract and evidence](docs/TWENTYI_DOMAIN_EXPIRY_CONTRACT.md).
+
 ## Unreleased — registration-period browser owner isolation
 
 Correct the combined browser fixture's exhausted shared-owner read budget by creating and activating a dedicated synthetic owner through existing admin forms. Preserve every original account, intent, audit, epoch, production limit and cooldown; retain response/counter diagnostics and exact history checks. Application source and installer are unchanged; actual combined acceptance remains required.
@@ -29,6 +37,10 @@ Record all16 downloaded exact25e date/period/cloud/scheduler archives, each with
 ## Unreleased — combined source and package checkpoint
 
 Record pushed25e combined discovery source, exact verified Windows packages and original GitHub acceptance handles. Record terminal incoming date/cloud full acceptance, parent210 browser evidence and the retained element-capture limitation. Preserve the PHP packaging-only correction and new PHP/domain-date source-ordering findings for separate regression work. Documentation only; no runtime or release change.
+
+## Unreleased isolated component — registrar expiry contract
+
+Add only a pure exact-name GET descriptor, operation-bound immutable registrar document and bounded timestamp projection with139 normal/minimal synthetic checks per mode. Document retained SDK evidence and unverified full schema; preserve unknown/null semantics, redacted failures and future authority/credential prerequisites. Independent source review is clear; exact b1e7609e now passes both downloaded PHP8.2/8.4 pure artifacts with139 named checks in each default/minimal mode. This is outside the1.25 release queue and adds no shipping UI, storage, provider execution or installer change. [Contract](docs/TWENTYI_DOMAIN_EXPIRY_CONTRACT.md).
 
 ## Unreleased — client domain renewal-date observations
 
