@@ -3,8 +3,9 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/licenses/service.php';
 
-$licenses = all('SELECT l.*, c.name as customer_name FROM '.table('website_licenses').' l LEFT JOIN '.table('studio_clients').' c ON l.customer_id=c.id ORDER BY l.created_at DESC LIMIT 100');
-$customers = array_column(all('SELECT id,name FROM '.table('studio_clients').' ORDER BY name'),'name','id');
+$ready = license_ready();
+$licenses = $ready ? all('SELECT l.*, c.name as customer_name FROM '.table('website_licenses').' l LEFT JOIN '.table('studio_clients').' c ON l.customer_id=c.id ORDER BY l.created_at DESC LIMIT 100') : [];
+$customers = $ready ? array_column(all('SELECT id,name FROM '.table('studio_clients').' ORDER BY name'),'name','id') : [];
 // Catalog products whose SKU follows the WEBSITE-{INDUSTRY} convention, plus manual product keys
 $products = [];
 try { foreach(all('SELECT sku,title FROM '.table('catalog_products')." WHERE sku LIKE 'WEBSITE-%' ORDER BY title") as $p) $products[$p['sku']]=$p['title'].' ('.$p['sku'].')'; } catch (Throwable) {}
@@ -12,6 +13,10 @@ $products += ['restaurant'=>'Restaurant Website','salon'=>'Salon Website','gener
 
 if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">License key created (displayed once): <code>'.esc($_SESSION['license_key_created']).'</code></div>';unset($_SESSION['license_key_created']);}
 ?>
+<?php if(!$ready): ?>
+<section class="workspace-card"><h2>Prepare website licensing</h2><p>Create the license, domain and bundle tables before managing website licenses. This step contacts no external service and preserves all existing data.</p>
+<form method="post"><?php admin_action('studio_license_setup'); ?><?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn gold">Prepare licensing storage</button></form></section>
+<?php return; endif; ?>
 <div class="workspace-grid">
 <section class="workspace-card">
 <h2>Create a license</h2>

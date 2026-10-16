@@ -15,14 +15,17 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
  elseif($action==='logout'){unset($_SESSION['client_id'],$_SESSION['client_auth'],$_SESSION['client_last'],$_SESSION['client_login']);session_regenerate_id(true);redirect(studio_url());}
  else{if(!$client)throw new RuntimeException('Sign in to continue.');
  if($action==='license_domain_add'){$licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+  if(!license_ready())throw new RuntimeException('Licensing storage is not prepared yet.');
   if(!consume_rate(ip_key('client-license'),20,3600))throw new RuntimeException('Please wait before making more license changes.');
   if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=?',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
   license_register_domain($licenseId,$domain,(int)$client['id']);flash('Domain registered.');redirect(studio_url());}
  elseif($action==='license_domain_deactivate'){$licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+  if(!license_ready())throw new RuntimeException('Licensing storage is not prepared yet.');
   if(!consume_rate(ip_key('client-license'),20,3600))throw new RuntimeException('Please wait before making more license changes.');
   if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=?',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
   license_deactivate_domain($licenseId,$domain,(int)$client['id']);flash('Domain deactivated.');redirect(studio_url());}
  elseif($action==='license_domain_replace'){$licenseId=gint($_POST,'license_id',1,2147483647);$old=posted('old_domain',255);$new=posted('new_domain',255);require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+  if(!license_ready())throw new RuntimeException('Licensing storage is not prepared yet.');
   if(!consume_rate(ip_key('client-license'),20,3600))throw new RuntimeException('Please wait before making more license changes.');
   if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=?',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
   license_replace_domain($licenseId,$old,$new,(int)$client['id']);flash('Domain replaced — the old site goes offline at its next license check.');redirect(studio_url());}

@@ -59,6 +59,14 @@ if (!is_string($domain) || strlen($domain) < 4 || strlen($domain) > 253 || !str_
 $domain = strtolower(trim($domain));
 
 try {
+    // License storage must be prepared — an install that has not run
+    // license_migrate() (or fresh deploy) answers 500, which Website Core
+    // treats as inconclusive rather than a denial.
+    require_once CWP_CODE_ROOT . '/app/licenses/service.php';
+    if (!license_ready()) {
+        license_response(false, 'Licensing storage is not prepared', 500);
+    }
+
     // Log the validation attempt for security audit
     $auditData = substr((string)json_encode(['license_key' => substr($licenseKey, 0, 8) . '...', 'domain' => $domain, 'ip' => $ip]), 0, 400);
     query('INSERT INTO ' . table('audit') . ' (user_id, action, detail, created_at) VALUES (0, ?, ?, ?)',

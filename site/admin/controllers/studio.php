@@ -6,6 +6,7 @@ function studio_admin_views(): array {return ['studio-clients'=>'Client workspac
 require_once CWP_CODE_ROOT.'/app/settings/revisions.php';
 function studio_admin_action(string $action,array $user): never {
     require_admin();check_csrf();$target='studio-clients';
+    require_once CWP_CODE_ROOT.'/app/licenses/service.php';
     if($action==='studio_migrate'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you have a backup before updating.');studio_migrate();flash('Database update completed. Existing content was preserved.');redirect(admin_url('studio-upgrade'));}
     if(!studio_ready())throw new RuntimeException('Enable the workspace tables under Version & database first.');
     if($action==='studio_client'){
@@ -51,6 +52,11 @@ function studio_admin_action(string $action,array $user): never {
         $id=gint($_POST,'id',1,2147483647);if(!one('SELECT id FROM '.table('projects').' WHERE id=?',[$id]))throw new InvalidArgumentException('Portfolio project not found.');
         $v=['caption'=>posted('caption',500),'walkthrough'=>safe_url(posted('walkthrough',500),true)];foreach(['desktop','mobile','before'] as $key){$value=posted($key,32);if($value!==''&&(!preg_match('/^[a-f0-9]{32}$/D',$value)||!one('SELECT id FROM '.table('media').' WHERE id=?',[$value])))throw new InvalidArgumentException('Choose an uploaded image from the media library.');$v[$key]=$value;}
         save_setting('growth_portfolio_'.$id,json_encode($v,JSON_THROW_ON_ERROR));$target='studio-portfolio';
+    }elseif($action==='studio_license_setup'){
+        require_once CWP_CODE_ROOT.'/database/migrations/license_migrate.php';
+        license_migrate(posted('current_password',200));flash('Website licensing storage prepared.');redirect(admin_url('studio-licenses'));
+    }elseif(in_array($action,['studio_license_create','studio_license_deactivate','studio_domain_add','studio_domain_deactivate','studio_domain_replace','studio_license_bundle'],true)&&!license_ready()){
+        throw new RuntimeException('Prepare licensing storage first.');
     }elseif($action==='studio_license_create'){
         $customerId=gint($_POST,'customer_id',1,2147483647);$productId=posted('product_id',50);
         if($productId===''||!one('SELECT id FROM '.table('studio_clients').' WHERE id=?',[$customerId]))throw new InvalidArgumentException('Choose a client and product.');

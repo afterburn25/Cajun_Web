@@ -16,6 +16,16 @@ function license_audit(int $actor, string $action, string $detail): void {
 }
 
 /**
+ * Whether license storage has been prepared — either by a fresh install
+ * (which sets license_schema_version during deploy) or by the owner-gated
+ * license_migrate() on an upgraded install. Entry points (admin, portal,
+ * API, fulfilment) check this before touching license tables.
+ */
+function license_ready(): bool {
+    return (one('SELECT value FROM ' . table('settings') . ' WHERE name = ?', ['license_schema_version'])['value'] ?? '') === '1';
+}
+
+/**
  * Generate a unique license key.
  * Format: XXXX-XXXX-XXXX-XXXX (32 hex characters)
  */

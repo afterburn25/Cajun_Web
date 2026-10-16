@@ -20,6 +20,11 @@ if (!$client || support_current()) {
     exit;
 }
 
+if (!license_ready()) {
+    http_response_code(404);
+    exit;
+}
+
 $bundleId = $_GET['id'] ?? '';
 if (!is_string($bundleId) || !preg_match('/^\d+$/D', $bundleId)) {
     http_response_code(404);

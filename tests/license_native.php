@@ -16,6 +16,11 @@ try{
 
     require_once CWP_CODE_ROOT.'/app/licenses/service.php';
 
+    // --- storage readiness (fresh deploy marks license_schema_version) -------
+    lic_ok('Storage not ready before version mark',!license_ready());
+    save_setting('license_schema_version','1');
+    lic_ok('Storage ready after version mark',license_ready());
+
     // --- key generation ----------------------------------------------------
     $k1=license_generate_key();$k2=license_generate_key();
     lic_ok('Key format is XXXX-XXXX-XXXX-XXXX hex',(bool)preg_match('/^[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}$/D',$k1));

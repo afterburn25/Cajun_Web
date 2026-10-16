@@ -29,7 +29,7 @@ function license_product_industry(array $product): ?string {
  * or manually from the admin license page.
  */
 function license_fulfill_invoice(int $invoiceId): ?array {
-    if (!catalog_ready()) return null;
+    if (!catalog_ready() || !license_ready()) return null;
     $snapshot = catalog_snapshot($invoiceId);
     if (!$snapshot) return null; // not a catalog invoice
 

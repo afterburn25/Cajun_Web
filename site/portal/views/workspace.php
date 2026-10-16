@@ -5,7 +5,8 @@ site_head('Your Client Workspace','portal');support_banner();?><section class="p
 if(!support_current()&&support_ready()){ $policy=one('SELECT allowed FROM '.table('support_clients').' WHERE client_id=?',[$client['id']]);echo '<p class="hint">'.((int)($policy['allowed']??0)===1?'Authorized staff may access this portal for support. Staff sessions are audited and their messages are labeled Studio.':'Staff support portal access is restricted for this account.').'</p>'; }
 if(!$jobId){?><div class="workspace-grid"><?php $jobs=all('SELECT * FROM '.table('studio_jobs').' WHERE client_id=? ORDER BY id DESC LIMIT 100',[$client['id']]);foreach($jobs as $j):?><article class="workspace-card"><span class="workspace-status"><?=esc(studio_stages()[$j['stage']]??$j['stage'])?></span><h2><?=esc($j['title'])?></h2><p><?=nl2br(esc($j['summary']))?></p><a class="btn gold" href="<?=esc(studio_url(['job'=>$j['id']]))?>">Open project →</a></article><?php endforeach;if(!$jobs)echo '<p>Your projects will appear here after the studio adds them.</p>';?></div>
 <?php // License management section
-$licenses = all('SELECT * FROM '.table('website_licenses').' WHERE customer_id=? AND is_active=1 ORDER BY created_at DESC',[$client['id']]);
+require_once CWP_CODE_ROOT.'/app/licenses/service.php';
+$licenses = license_ready() ? all('SELECT * FROM '.table('website_licenses').' WHERE customer_id=? AND is_active=1 ORDER BY created_at DESC',[$client['id']]) : [];
 if($licenses):?>
 <h2>Website licenses</h2><div class="workspace-grid">
 <?php foreach($licenses as $lic):?>
