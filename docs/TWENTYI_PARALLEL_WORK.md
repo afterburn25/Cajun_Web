@@ -1,6 +1,6 @@
 ## Current three-agent checkpoint — 2026-10-15
 
-All three agents continue new isolated implementation while root verifies frozen combined3bbc42bd. Exact Windows5494/2697/2684 package members,11 checksum entries and source/manifest/directory inventories pass; full38829910791/job116746050262 is in native integration. Its PR mergea99beac7 has identical tree4481fe21886f5403d31003de728e1301db6e4ae2. All current assignments, parent artifacts, hashes and concrete scheduler review findings are in the handoff. [Current handoff](../SESSION_HANDOFF.md). Older entries below retain their original source scope.
+All three agents continue new isolated implementation while root verifies frozen combined3bbc42bd. Exact Windows5494/2697/2684 package members,11 checksum entries and source/manifest/directory inventories pass; full38829910791/job116746050262 passed package/native/browser and is in unprivileged recovery. All20 focused matrix archives are independently verified; corrected parent2239 full run is terminal SUCCESS with final package proof. [Exact evidence](TWENTYI_COMBINED_3BBC_EVIDENCE.md). Its PR mergea99beac7 has identical tree4481fe21886f5403d31003de728e1301db6e4ae2. All current assignments, parent artifacts, hashes and concrete scheduler review findings are in the handoff. [Current handoff](../SESSION_HANDOFF.md). Older entries below retain their original source scope.
 
 # Current combined checkpoint — 2026-10-15
 

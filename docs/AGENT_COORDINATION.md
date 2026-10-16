@@ -1,6 +1,6 @@
 ## Current active agent assignments — 2026-10-15
 
-Root preserves3bbc42bd full38829910791 and verified Windows packages. Catalog owns codex/twentyi-scheduled-refresh from82302571, including source-review recovery repairs and tests. Domains owns codex/twentyi-service-observations from3bbc with no shared inventory append hook. Cloud owns codex/twentyi-forwarding-requests from3bbc, without provider dispatch until response/readback semantics are verified. Their prior branches/builds/runs remain preserved. Root alone integrates/releases. [Current handoff](../SESSION_HANDOFF.md). Older entries below retain their original source scope.
+Root preserves3bbc42bd full38829910791 and verified Windows packages. Catalog owns codex/twentyi-scheduled-refresh from82302571, including source-review recovery repairs, MariaDB SQL comparison correction and native/browser tests. Hosting-history and forwarding review found assignment-history gaps; their respective authors are applying bounded fixes before integration. [Review details](TWENTYI_COMBINED_3BBC_EVIDENCE.md). Domains owns codex/twentyi-service-observations from3bbc with no shared inventory append hook. Cloud owns codex/twentyi-forwarding-requests from3bbc, without provider dispatch until response/readback semantics are verified. Their prior branches/builds/runs remain preserved. Root alone integrates/releases. [Current handoff](../SESSION_HANDOFF.md). Older entries below retain their original source scope.
 
 # Current combined integration and scheduled-refresh assignment — 2026-10-15
 

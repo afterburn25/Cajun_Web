@@ -1,3 +1,7 @@
+## Unreleased — combined native evidence and parallel source review
+
+Verify20 archives from all five combined3bbc focused matrices and final corrected2239 full acceptance/packages. Record concrete hosting-history/forwarding review fixes and the scheduler MariaDB correction under their separate agent branches. Documentation only; 3bbc packaged browser checkpoint now verifies1945HTTP with actual screenshot review; full recovery/Apache and exact-main release gates remain pending.
+
 ## Domain renewal request integration — candidate, unreleased
 
 ## Unreleased — combined package proof and continuing parallel implementation
