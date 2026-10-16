@@ -54,10 +54,30 @@ function notification_emit(string $audience,int $recipientId,string $kind,string
     if(!notification_prefs_for($audience,$recipientId)->emailEnabled($kind)||setting('email_mode','disabled')==='disabled')return;
     $email=notification_recipient_email($audience,$recipientId);if($email===null)return;
     require_once CWP_CODE_ROOT.'/app/mail/transport.php';
-    $attempt=new DeliveryAttempt($notification->id,DeliveryAttempt::CHANNEL_EMAIL,1);
+    $attempt=new DeliveryAttempt($notification->id,DeliveryAttempt::CHANNEL_EMAIL,3);
     try{if(send_message($email,$title,$body."\n\nOpen your account: ".($audience===Notification::AUDIENCE_CLIENT?site_url('portal/index.php'):admin_url('notifications')))==='accepted')$attempt->recordSent(time());else $attempt->recordFailure(time(),'Outbound mail is not configured.');}
     catch(Throwable $e){$attempt->recordFailure(time(),substr($e->getMessage(),0,300));}
     notification_persist_delivery($notification->id,$attempt);
+}
+/**
+ * Bounded outbox retry — at most $limit due email deliveries are re-attempted
+ * per call. Runs only when an admin explicitly opens the notification center;
+ * there is no daemon, scheduler or hidden provider call. Failed retries follow
+ * the model's bounded exponential backoff and report a terminal failure after
+ * maxAttempts rather than pretending success.
+ */
+function notification_outbox_pump(int $limit=3): void {
+    if(!notifications_feed_ready()||setting('email_mode','disabled')==='disabled')return;
+    $rows=all('SELECT d.*,f.audience,f.recipient_id,f.title,f.body FROM '.table('notification_deliveries').' d JOIN '.table('notification_feed')." f ON f.id=d.notification_id WHERE d.channel='email' AND d.state='retrying' AND d.next_at IS NOT NULL AND d.next_at<=? ORDER BY d.next_at LIMIT ".max(1,min(10,$limit)),[gmdate('Y-m-d H:i:s')]);
+    foreach($rows as $d){
+        try{$attempt=DeliveryAttempt::restore($d['notification_id'],DeliveryAttempt::CHANNEL_EMAIL,3,(int)$d['attempts'],$d['state'],$d['sent_at']!==null?(int)strtotime($d['sent_at'].' UTC'):null,$d['last_error']!==''?$d['last_error']:null,(int)strtotime($d['next_at'].' UTC'));}catch(Throwable $e){query('UPDATE '.table('notification_deliveries')." SET state='failed',last_error=?,next_at=NULL,updated_at=? WHERE notification_id=? AND channel='email'",['Corrupt delivery record refused.',gmdate('Y-m-d H:i:s'),$d['notification_id']]);continue;}
+        $email=notification_recipient_email($d['audience'],(int)$d['recipient_id']);
+        if($email===null){$attempt->recordFailure(time(),'Recipient has no email address.');notification_persist_delivery($d['notification_id'],$attempt);continue;}
+        require_once CWP_CODE_ROOT.'/app/mail/transport.php';
+        try{if(send_message($email,$d['title'],$d['body']."\n\nOpen your account: ".($d['audience']===Notification::AUDIENCE_CLIENT?site_url('portal/index.php'):admin_url('notifications')))==='accepted')$attempt->recordSent(time());else $attempt->recordFailure(time(),'Outbound mail is not configured.');}
+        catch(Throwable $e){$attempt->recordFailure(time(),substr($e->getMessage(),0,300));}
+        notification_persist_delivery($d['notification_id'],$attempt);
+    }
 }
 /** One recipient's feed — construction rejects any foreign or wrong-audience row. */
 function notification_feed(string $audience,int $recipientId,int $limit=100): NotificationFeed {

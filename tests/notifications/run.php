@@ -163,6 +163,21 @@ $portal = new DeliveryAttempt('n-3', DeliveryAttempt::CHANNEL_PORTAL, maxAttempt
 $portal->recordFailure(0, 'write failed');
 check('single-attempt channels fail immediately', $portal->state() === 'failed');
 
+// ── Persisted attempt restore ─────────────────────────────────────
+
+$restored = DeliveryAttempt::restore('n-4', DeliveryAttempt::CHANNEL_EMAIL, 3, 1, 'retrying', null, 'smtp refused', 300);
+check('restored retrying keeps state', $restored->state() === 'retrying' && $restored->attempts() === 1 && $restored->nextAttemptAt() === 300);
+check('restored retry is due at stored time', $restored->due(299) === false && $restored->due(300) === true);
+$restored->recordFailure(400, 'smtp refused again');
+check('restored attempt continues backoff', $restored->attempts() === 2 && $restored->nextAttemptAt() === 520);
+$sent = DeliveryAttempt::restore('n-5', DeliveryAttempt::CHANNEL_EMAIL, 3, 1, 'sent', 100, null, null);
+check('restored sent is terminal', $sent->state() === 'sent' && $sent->sentAt() === 100);
+throws('terminal restore cannot carry a retry time', fn () => DeliveryAttempt::restore('n-6', 'email', 3, 1, 'failed', null, 'done', 500));
+throws('retrying restore needs a next-attempt time', fn () => DeliveryAttempt::restore('n-7', 'email', 3, 1, 'retrying', null, 'e', null));
+throws('sent restore needs its sent time', fn () => DeliveryAttempt::restore('n-8', 'email', 3, 1, 'sent', null, null, null));
+throws('attempts beyond max rejected', fn () => DeliveryAttempt::restore('n-9', 'email', 3, 4, 'retrying', null, 'e', 500));
+throws('unknown persisted state rejected', fn () => DeliveryAttempt::restore('n-10', 'email', 3, 0, 'delivered', null, null, null));
+
 // ── Metric freshness ──────────────────────────────────────────────
 
 $fresh = new MetricSample('disk-usage', '82%', 900);
