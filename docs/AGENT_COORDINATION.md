@@ -1,6 +1,6 @@
 # Isolated hosting-history ownership — 2026-10-15
 
-Domain agent owns `codex/twentyi-service-observations` from root3bbc42bd in work/20i-service-observations. New service_observations modules/schema/UI/tests; minimal admin/portal routing and acceptance glue. No inventory_record hook: catalog scheduler extraction remains separate. Root alone integrates/releases. [Scope and evidence](TWENTYI_SERVICE_OBSERVATIONS.md). Preserve registrar725, nameserver9ea and renewal ed4/f62.
+Domain agent owns `codex/twentyi-service-observations` from root3bbc42bd in work/20i-service-observations. New service_observations modules/schema/UI/tests; minimal admin/portal routing and acceptance glue. No inventory_record hook: catalog scheduler extraction remains separate. Root alone integrates/releases. [Scope and evidence](TWENTYI_SERVICE_OBSERVATIONS.md). Preserve registrar725, nameserver9ea and renewal ed4/f62. Shipping e5c8aba8 and corrected test65725ad are frozen; all four native matrices and the actual browser checkpoint are downloaded and verified. Root receives PR149 with only a final evidence documentation checkpoint; no root merge or further provider behavior is added here.
 
 # Current combined integration and scheduled-refresh assignment — 2026-10-15
 

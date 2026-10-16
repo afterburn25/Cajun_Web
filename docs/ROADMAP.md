@@ -702,3 +702,8 @@ Owner continued complete20i work with parallel agents. New isolated `codex/twent
 ## 2026-10-15 — Hosting observation history
 
 From3bbc42bd on codex/twentyi-service-observations, implement owner-approved client history from retained package snapshots, exact assignment/account visibility anchors, latest-intent states and immutable permission recovery. No new provider contract or persistence hook. Local PHP syntax/Python AST and33pure cases per mode pass; native/browser checks and installer refresh pending at this entry. Root integrates after independent review and exact evidence. No release/deployment. [Contract and next actions](TWENTYI_SERVICE_OBSERVATIONS.md).
+
+
+## 2026-10-16 — Hosting history acceptance checkpoint
+
+The bounded owner-approved client history flow is implemented on shipping e5c8aba8, corrected test65725ad. Downloaded exact-source native run38832431406 verifies 71 native and 33 pure checks per mode in all four combinations. Actual packaged checkpoint38832527134 verifies 1,989 HTTP checks, including 44 history cases, and four inspected full owner/client desktop/mobile captures. Two auxiliary mobile element crops remain documented as capture artifacts. Root integration and combined full recovery/Apache/package acceptance remain required. This is saved provider observation history, not live uptime or completed provisioning. [Contract, source and evidence](TWENTYI_SERVICE_OBSERVATIONS.md).

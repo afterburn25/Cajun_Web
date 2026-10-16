@@ -1,6 +1,6 @@
 ## Unreleased — explicitly shared hosting history
 
-Owners can enable saved hosting observation history for an exact current client/package assignment. Clients see only observations from the approved sequence onward, with stale, failed and unfinished latest reads clearly identified. Revocation, current account context and retained permission/history recovery are enforced. No live monitoring or provider operation is added; native/browser acceptance remains pending. Correct the standalone native fixture to load the existing owner layout before rendering its actual form.
+Owners can enable saved hosting observation history for an exact current client/package assignment. Clients see only observations from the approved sequence onward, with stale, failed and unfinished latest reads clearly identified. Revocation, current account context and retained permission/history recovery are enforced. No live monitoring or provider operation is added. Corrected checkpoint65725ad passes all four native combinations (71 native and 33 pure checks per mode), plus 1,989 actual HTTP/Chromium checks including 44 hosting-history cases. Full owner/client desktop/mobile screens are inspected; auxiliary mobile capture defects are retained and documented. Combined full acceptance remains required. The initial standalone native fixture failure is preserved and corrected by loading the existing owner layout; shipping is unchanged by that test correction.
 
 ## Domain renewal request integration — candidate, unreleased
 
