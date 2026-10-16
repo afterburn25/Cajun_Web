@@ -32,6 +32,10 @@ Add a root start-here guide, complete owner-approved assignment and existing lic
 
 # Changelog
 
+## Unreleased — ticket screenshot readiness (Devin port)
+
+Ported `codex/ticket-screenshot-readiness` onto `devin/non20i-ticket-screenshots` (stacked on `devin/non20i-support-tickets`). New `tests/ticket_screenshot.py` helper waits for the real activity-bell fetch to settle and verifies complete footer bounds before full-page captures; `tests/ticket_cases.py` screenshots assert on it. Test-only; no runtime change.
+
 ## Unreleased — client support tickets and private staff notes (Devin port)
 
 - Port the preserved `codex/support-ticket-screens` slice onto `main` under the 2026-10-16 allocation: immutable journal + hash-linked event storage (`support_tickets`, `support_ticket_events`, staff/client read cursors), owner-gated `tickets_setup` migration, `support.tickets` permission, admin queue/detail/new-conversation screens, portal create/reply/status/read flows, private staff notes and assignments invisible to the client projection, exact-message activity links, and per-viewer explicit read controls.
