@@ -161,3 +161,5 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <?php provider_force_ssl_controls_admin_render(); ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_package_wordpress_installed.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_forwarding.php'; ?>
+
+<?php provider_stackcp_admin_render(); ?>

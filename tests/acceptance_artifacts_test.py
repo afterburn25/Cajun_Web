@@ -251,13 +251,30 @@ def run(tmp):
     check('Integer aggregate with failure detail remains failed',not a.reports(root)['counts.json']['passed'])
     for lane,name in [('apache','qa/http-results.json'),('recovery','qa/apache-results.json'),('native-browser','qa/structure-results.json'),('build','test-runtime/private/key.txt')]:
         check('Evidence ownership refuses '+lane+' '+name, not a.evidence_allowed(name,lane))
-    # Compare only immutable legacy test scripts; no test/assertion/capture has been modified.
+    # Retain reviewed driver bytes and the complete predecessor command sequence.
     contract=a.load(ROOT/'tools/acceptance-contract.json')
     for path,expected_hash in contract['unchanged_test_sha256'].items():
         check('Original test source retained '+path, hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
-    check('All105 native commands retain exact original order and arguments', [line.strip() for line in native.splitlines()]==contract['native_commands'])
+    native_commands=[line.strip() for line in native.splitlines()]
+    check('All118 native commands retain exact reviewed order and arguments', native_commands==contract['native_commands'])
+    stackcp=contract['stackcp_native_command_baseline'];stackcp_additions=stackcp['additions']
+    stackcp_preserved=[command for command in native_commands if command not in stackcp_additions]
+    check('All111 pre-StackCP native commands retain exact order and arguments',
+          len(stackcp_preserved)==stackcp['count']==111 and hashlib.sha256(json.dumps(stackcp_preserved,separators=(',',':')).encode()).hexdigest()==stackcp['sha256'])
+    stackcp_position=native_commands.index(stackcp['additions_after'])+1
+    check('Seven StackCP reports cover pure handoff prerequisites views and native once',
+          len(stackcp_additions)==len(set(stackcp_additions))==7 and native_commands[stackcp_position:stackcp_position+7]==stackcp_additions
+          and all(native_commands.count(command)==1 for command in stackcp_additions))
+    baseline=contract['native_command_baseline'];additions=baseline['additions']
+    preserved=[command for command in stackcp_preserved if command not in additions]
+    check('All105 predecessor native commands retain exact order and arguments',
+          len(preserved)==baseline['count']==105 and hashlib.sha256(json.dumps(preserved,separators=(',',':')).encode()).hexdigest()==baseline['sha256'])
+    position=native_commands.index(baseline['additions_after'])+1
+    check('Six renewal native commands occur once immediately after agreement checks',
+          len(additions)==len(set(additions))==6 and native_commands[position:position+6]==additions
+          and all(native_commands.count(command)==1 for command in additions))
     check('Public fixture preparation runs only once in the build job', workflow.count('python3 tests/prepare_legacy.py')==1)
     check('Only one exact source package build remains', workflow.count('python3 tools/build.py --commit')==1)
     check('Assigned ports use permitted step context and GITHUB_ENV in both DB jobs', valid_port_context(workflow))

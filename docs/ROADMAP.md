@@ -4,7 +4,13 @@ Separate protected key storage and unverified local owner assignments are implem
 
 ## Current complete20i roadmap — 2026-10-16
 
-1.24 remains released;1.25/full20i unfinished. Root fixes the actual first parallel-run sha256 output-name defect from5a402a35;109 local helper checks and independent review pass, with application/shipping/workflow unchanged. Original5a failure and olderfaef105-minute timeout remain retained. Next is one new corrected-source full run, actual partition/diagnostic/package/visual verification and independently accepted renewal integration. Domainsbbf43f8a has its first four-environment focused run38888746617 active. Main79d9 licensing remains separate; current seven-conflict preflight and four prior licensing findings are documented. [Current status](../PROJECT_STATUS.md), [handoff](../SESSION_HANDOFF.md), [full requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md).
+## Current Force SSL correction — 2026-10-16
+
+The current renewal union additionally authenticates all retained Force SSL change documents before indexed admission. Independent source review and PHP syntax pass; four actual storage-tampering cases are added, with native matrix and combined acceptance pending. [Scope and exact evidence](TWENTYI_FORCE_SSL_KEYED_HISTORY_REVIEW.md). The original556 full remains preserved and has reached browser testing; its38 Apache reports are independently verified.
+
+1.24 remains released;1.25/full20i unfinished. Root is normally integrating corrected paid-renewalb221 into556 on codex/twentyi-renewal-integration after independently verifying all four focused archives. The flow reserves the original invoice before payment and requires exact client consent, verified receipts and owner approval for one provider submission. Uncertain or false results remain fenced. Combined browser/package acceptance is pending.
+
+The parallel union retains105 predecessor commands and adds six renewal invocations, with121 browser/160 final reports and111 passing offline helper checks. Original556 full38889625340 remains active: build/recovery/Apache jobs succeeded, native/browser and final evidence pending. Original5a output failure, faef timeout and bbf43 consent failure remain preserved. Directory controls and provider support handoff investigation continue separately; neither is accepted or released. Main licensing remains Devin-owned and unmerged. [Current status](../PROJECT_STATUS.md), [handoff](../SESSION_HANDOFF.md), [full requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md).
 
 ## Historical implementation checkpoints
 

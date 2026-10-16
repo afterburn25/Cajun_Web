@@ -51,16 +51,22 @@ final class FixedHttpTransport implements HttpTransport
             // a fixed-host URL on the catalogued reseller paths, a
             // bounded JSON body and three fixed headers.
             $path = str_starts_with($request->url, self::URL_BASE) ? substr($request->url, strlen(self::URL_BASE)) : '';
+            $domainRenewal = $path === 'reseller/*/renewDomain';
             $forceSsl = preg_match('~\Apackage/[1-9][0-9]{0,17}/web/forceSSL\z~', $path) === 1;
             $mailbox = str_starts_with($path, 'package/') && !$forceSsl;
             $cloudWebsite = str_starts_with($path, 'cloud_server/');
-            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb|renewDomain)$/D', $path) && !$mailbox && !$cloudWebsite && !$forceSsl)
+            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb)$/D', $path) && !$mailbox && !$cloudWebsite && !$forceSsl && !$domainRenewal)
                 || !is_string($request->body) || $request->body === ''
                 || strlen($request->body) > self::REQUEST_BODY_LIMIT
                 || array_keys($request->headers) !== ['Authorization','Accept','Content-Type']
                 || $request->headers['Accept'] !== 'application/json'
                 || $request->headers['Content-Type'] !== 'application/json') {
                 throw new \InvalidArgumentException('Unsupported provider write request.');
+            }
+            if ($domainRenewal) {
+                require_once __DIR__.'/../twentyi-inventory/InventoryDomain.php';
+                require_once __DIR__.'/../twentyi-operations/DomainRenewal.php';
+                \CajunWebPro\Foundation\TwentyI\Operations\DomainRenewal::wire($request);
             }
             if ($forceSsl) {
                 require_once __DIR__.'/../twentyi-operations/ForceSslChange.php';

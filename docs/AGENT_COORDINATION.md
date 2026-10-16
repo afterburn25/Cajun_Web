@@ -2,7 +2,7 @@
 
 ## Isolated StackCP prerequisite lane — 2026-10-16
 
-Catalog owns `codex/twentyi-stackcp-prerequisites` from3189: dedicated auth/assignment/vault/documents/storage/schema, owner controller/renderers and focused fixtures. Runtime/root/VPS source review is clear; pure141/renderer46 per mode pass, native/browser remain pending. Pure315 source stays unchanged. External shared proposal uses a63 (111 native calls) and preserves renewal plus scheduler-last ordering; root composes directory additions and its separate evidence-packaging correction. Package2401 and owner `stackcp-setup-owner@example.invalid` are reserved; directory controls retain2301. No shared files or CI before root approval; no sender/session/client-login code. [Scope](TWENTYI_STACKCP_NATIVE_PREREQUISITES.md).
+Catalog owns `codex/twentyi-stackcp-prerequisites` from3189: dedicated auth/assignment/vault/documents/storage/schema, owner controller/renderers and focused fixtures. Runtime/root/VPS source review is clear; pure141/renderer46 per mode pass, native/browser remain pending. Pure315 source stays unchanged. External shared proposal uses a63 (111 native calls) and preserves renewal plus scheduler-last ordering; root composes directory additions and its separate evidence-packaging correction. Package2401 and owner `stackcp-setup-owner@example.invalid` are reserved; directory controls retain2301. Root approved and this branch applied the exact a63 shared proposal after a normal merge; installer/staged verification precedes the sole focused matrix. No sender/session/client-login code. [Scope](TWENTYI_STACKCP_NATIVE_PREREQUISITES.md).
 
 
 Updated2026-10-16UTC. Codex and three agents own complete20i P0; Devin owns product licensing. No direct Devin session is implied. Work uses isolated branches and sequential root-reviewed shared changes.
@@ -16,6 +16,19 @@ Updated2026-10-16UTC. Codex and three agents own complete20i P0; Devin owns prod
 | Devin | Main79d9 docs-only over reviewed e619, still unmerged | Prior populated upgrade/internal-master/legacy-invoice/schema-marker findings remain open. |
 
 Originalfaef timed out during Apache at105minutes; no full acceptance. Original5a parallel run failed at output emission before children; its truthful incomplete aggregate is verified. Parent/focused evidence does not certify the corrected descendant. [Current handoff](../SESSION_HANDOFF.md).
+
+
+Updated 2026-10-16 UTC. Codex and three agents own complete20i P0; Devin owns product licensing. Work uses isolated branches and sequential root-reviewed shared changes. No direct Devin session is implied.
+
+| Owner | Current checkpoint | Next action |
+|---|---|---|
+| Root | Normal556+b221 renewal integration; original556 full remains active | Include reviewed Force SSL history correction, freeze source, run focused matrix and combined full. |
+| Domains | All four b221 focused archives accepted, root proof526a49e0 | Review directory fixture wording and provider support contract; Force SSL source review passed. |
+| VPS | Directory controls on isolated branch from556 | Submit exact shared patch; retain current authority, unknown outcomes and separate fresh GET evidence. |
+| Catalog | Renewal contract/report union reviewed; helper111 passes | Pure support contract308 checks per PHP mode, under review; native prerequisites designed, no sender yet. |
+| Devin | Latest reviewed main79d9 remains outside candidate | Resolve documented populated upgrade/master exposure/legacy invoice/schema-marker findings. |
+
+Renewal b221 has23 reports/2,179 named executions in each of four environments; browser and combined acceptance remain pending. The current union preserves105 predecessor commands plus six additions and121/160 report sets. Original556 build/recovery/Apache jobs have succeeded; native/browser and final evidence remain pending. [Handoff](../SESSION_HANDOFF.md).
 
 ## Integration rules
 
@@ -32,9 +45,3 @@ Registry-expiry contract evidence is the retained20i SDK696a canonical domain-na
 No routine development/test authorizes live provider purchases, charges, customer email, interactive SSH or deployment. Keep current production gates. [Handoff](../SESSION_HANDOFF.md), [complete requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md), [Devin review](LICENSING_INTEGRATION_REVIEW.md).
 
 Historical allocations remain in [immutable coordination75d5c60a](https://github.com/afterburn25/Cajun_Web/blob/75d5c60a6a3eccfcbcc3d4167bda35779901d888/docs/AGENT_COORDINATION.md); current ownership above supersedes those snapshots.
-
-## StackCP support handoff contract — 2026-10-16
-
-Isolated `codex/twentyi-provider-support-handoff` starts from exact `5560635bb2117556de289f0d24c5b170d48e9c77`. Three pure owned classes plus `tests/stackcp_handoff_contract.php` implement a detached owner review document, non-executable SDK exchange descriptions and ephemeral strict-subset response handling. The retained20i-authored SDK supports a Stack-user sign-in chain with a distinct OAuth client key; it does not establish package-only scope, remote session expiry or revocation. Whole-user access is explicit. Local default/minimal PHP each pass315 named synthetic checks; four PHP syntax checks pass. Independent root/source review and Domains proof `86e76191da5bbd7cab267fd2ab667908c98038ac7ce7909f7fcb47f227b0e2bb` are clear for this pure scope; the original303/308 evidence is retained. No shipping, shared, installer, workflow, native database, browser, live request or CI change/acceptance is claimed.
-
-[Exact source/limits](TWENTYI_STACKCP_HANDOFF_CONTRACT.md) and [next native prerequisite design](TWENTYI_STACKCP_NATIVE_PREREQUISITES.md) are ready for independent review. The next step is reviewed separate protected auth-key configuration and explicit Stack-user/resource association; no sender or shared wiring proceeds without root review. Provider support and A-10/SSH remain incomplete; accepted556 and all prior evidence remain unchanged.

@@ -2,14 +2,22 @@
 
 Add reviewed separate protected auth-client configuration, unverified local Stack-user assignments and owner forms with immutable history, captured authority and no-decrypt status. Pure141 and renderer46 checks pass in both PHP modes; actual native/browser/package acceptance is pending. No provider session or login link is enabled. Shared integration remains an external reviewed proposal.
 
-## Acceptance job-output correction — 2026-10-16
-
 ## StackCP support handoff contract — 2026-10-16
 
 Isolated `codex/twentyi-provider-support-handoff` starts from exact `5560635bb2117556de289f0d24c5b170d48e9c77`. Three pure owned classes plus `tests/stackcp_handoff_contract.php` implement a detached owner review document, non-executable SDK exchange descriptions and ephemeral strict-subset response handling. The retained20i-authored SDK supports a Stack-user sign-in chain with a distinct OAuth client key; it does not establish package-only scope, remote session expiry or revocation. Whole-user access is explicit. Local default/minimal PHP each pass315 named synthetic checks; four PHP syntax checks pass. Independent root/source review and Domains proof `86e76191da5bbd7cab267fd2ab667908c98038ac7ce7909f7fcb47f227b0e2bb` are clear for this pure scope; the original303/308 evidence is retained. No shipping, shared, installer, workflow, native database, browser, live request or CI change/acceptance is claimed.
 
 [Exact source/limits](docs/TWENTYI_STACKCP_HANDOFF_CONTRACT.md) and [next native prerequisite design](docs/TWENTYI_STACKCP_NATIVE_PREREQUISITES.md) are ready for independent review. The next step is reviewed separate protected auth-key configuration and explicit Stack-user/resource association; no sender or shared wiring proceeds without root review. Provider support and A-10/SSH remain incomplete; accepted556 and all prior evidence remain unchanged.
 
+
+## Acceptance job-output correction — 2026-10-16
+
+## Force SSL retained-history correction — 2026-10-16
+
+The current renewal union additionally authenticates all retained Force SSL change documents before indexed admission. Independent source review and PHP syntax pass; four actual storage-tampering cases are added, with native matrix and combined acceptance pending. [Scope and exact evidence](docs/TWENTYI_FORCE_SSL_KEYED_HISTORY_REVIEW.md). The original556 full remains preserved and has reached browser testing; its38 Apache reports are independently verified.
+
+## Unreleased integration: paid renewal dispatch
+
+Normally combine556+b221: permanent prepayment invoice purpose, original client consent, verified receipts and one owner-approved provider submission, with canonical-domain uncertainty fences. All four focused native environments pass; combined browser/release acceptance remains pending. Preserve105 existing native commands plus six additions,121/160 report sets and111 offline helper checks.
 
 Fix the first parallel run rejecting its own sha256 output name. Add nine actual output/entry-point checks (109 total passing locally) and preserve the failed original plus the older105-minute timeout. Application behavior is unchanged; new full acceptance is pending.
 
@@ -38,6 +46,10 @@ Read immutable Git blobs through one binary batch process when packaging, preser
 Add a current-owner local recovery action for the exact crash window after durable shared-ledger completion but before the dispatch witness. Preserve uncertainty, no-retry fences, original history and separate client sharing; only a subsequent exact GET can observe the desired flag. All four focused native/process environments and portable reports pass with independently verified archives; combined browser/package acceptance remains pending.
 
 ## Unreleased — scheduler privacy fixture correction
+
+## Unreleased — paid renewal dispatch source under review
+
+Add permanent unpaid-invoice purpose allocation for accepted one-time USD renewal terms, original receipt verification, saved client purpose/outcome views and owner-approved single submission through the existing operation ledger. Unknown/failed attempts remain domain-fenced; payment/consent alone cannot authorize renewal. Corrected index-proof, optional-family and captured-selector boundaries are source-reviewed. Native, browser and release acceptance remain pending. See [scope and evidence](docs/TWENTYI_DOMAIN_RENEWAL_DISPATCH.md).
 
 Avoid falsely rejecting unrelated website-folder controls when checking scheduler privacy. Require the exact scheduler section and retain full-page credential checks, with21 positive/negative regressions and independent review. Application code is unchanged; new combined browser acceptance remains pending.
 

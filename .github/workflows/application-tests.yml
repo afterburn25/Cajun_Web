@@ -212,6 +212,12 @@ jobs:
           php8.3 tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-default.json
           php8.3 -n tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-minimal.json
           php8.3 tests/domain_renewal_agreements_native.php
+          php8.3 tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-default.json
+          php8.3 -n tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-minimal.json
+          php8.3 tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-default.json
+          php8.3 -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json
+          python -B tests/domain_renewal_dispatch_http_contract.py > qa/domain-renewal-dispatch-handler-results.json
+          php8.3 tests/domain_renewal_dispatch_native.php
           php8.3 tests/service_observations_native.php
           php8.3 tests/domain_contracts_reader.php > qa/domain-contract-reader-integrated-results.json
           php8.3 tests/domain_contracts_native.php
@@ -243,6 +249,13 @@ jobs:
           php8.3 tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-results.json
           php8.3 -n tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-no-ini-results.json
           php8.3 tests/provider_package_wordpress_installed_native.php
+          php8.3 tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-default.json
+          php8.3 -n tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-minimal.json
+          php8.3 tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-default.json
+          php8.3 -n tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-minimal.json
+          php8.3 tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json
+          php8.3 -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json
+          php8.3 tests/stackcp_prerequisites_native.php
           php8.3 tests/provider_domain_search_native.php
           php8.3 tests/provider_mailboxes_native.php
           php8.3 tests/provider_operations_native.php

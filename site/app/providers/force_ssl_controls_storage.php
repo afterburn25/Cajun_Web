@@ -57,6 +57,7 @@ function provider_force_ssl_controls_ready():bool {
     $ledger=provider_force_ssl_controls_ledger_sql();
     if(one("SELECT t.id FROM $t t LEFT JOIN $q q ON q.id=t.id LEFT JOIN $p p ON BINARY p.idempotency_key=BINARY CONCAT(BINARY 'forcessl:',t.id) WHERE q.id IS NULL OR BINARY t.disposition NOT IN ('not_sent','attempted') OR (BINARY t.disposition='not_sent' AND p.id IS NOT NULL) OR BINARY t.ledger_sha256<>BINARY IF(p.id IS NULL,REPEAT('0',64),$ledger) LIMIT 1"))throw new RuntimeException('Force SSL dispatch completion needs recovery.');
     if(one("SELECT c.id FROM $c c LEFT JOIN $q q ON q.id=c.request_id LEFT JOIN $t t ON t.id=q.id LEFT JOIN ".table('provider_refreshes')." f ON f.id=c.receipt_id WHERE q.id IS NULL OR t.id IS NULL OR BINARY t.disposition<>'attempted' OR f.id IS NULL OR BINARY f.operation<>'package.force-ssl' OR BINARY c.disposition NOT IN ('observed','different','unavailable') LIMIT 1"))throw new RuntimeException('Force SSL verification history needs recovery.');
+    provider_force_ssl_controls_authenticated_history();
     return true;
 }
 /** Immutable evidence and independent counter commit with the exact audit. */

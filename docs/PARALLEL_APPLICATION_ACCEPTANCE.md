@@ -1,5 +1,9 @@
 # Parallel application acceptance
 
+## Current renewal integration — 2026-10-16
+
+The normal556+b221 union preserves the complete105-command predecessor sequence and adds six renewal invocations immediately after renewal-agreement checks. Reviewed browser/Apache driver hashes are updated; recovery/preparation drivers and transfer helper remain exact556. Reports now total121 browser/160 final. Root external execution passes111 offline helper cases, including predecessor-order and exact-addition guards. New combined full acceptance remains pending. Original556 run38889625340 continues separately with115/154 expectations; build/recovery/Apache jobs have succeeded, native/browser and final evidence remain pending. Historical implementation details below describe the original split and preserved first failure.
+
 This isolated workflow change starts at `e1cd8e44e4b8f748140618cf152521bb4215bc27`, tree `c67b71baf3ed159cc725576f7e1991f99da86f9a`, on `codex/parallel-application-acceptance`. That base preserves the accepted Force SSL recovery and verified package-builder changes. Application behavior, shipping files, installer inventory and every existing test assertion remain unchanged. The original faef run and its external evidence helpers remain frozen.
 
 The new dependency order is one build and pristine fixture preparation, followed by three independent jobs: native then browser, filesystem recovery, and Apache. Final aggregation waits for all required jobs. There is no measured speedup claim; runner availability, environment setup and artifact transfer affect the result.

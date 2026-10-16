@@ -122,10 +122,12 @@ def run_browser(env, browser):
     # Disabled setup deliberately removes the save form; submit the captured old form directly to verify the server fence.
     page = owner.get(url); response = owner.post(url, data={'action': prefix + 'assignment_save', 'csrf': token(page), 'profile_id': profile['id'], 'package_id': str(package), 'link_id': link['id'], 'review_sha256': before_form, 'stack_identity': identity, 'acknowledged': '1', 'current_password': OWNER})
     evidence('stale captured draft refusal', response, 'authority changed')
-    check('StackCP disabled configuration leaves draft historical and performs no request', db('SELECT * FROM ci_provider_stackcp_assignments ORDER BY ordinal') == draft_rows and provider.calls == calls and 'Local assignment needs owner review' in response.text)
+    selected_page = owner.get(url); selected = next(n for n in soup(selected_page).select('[data-stackcp-assignment]') if n.select_one('h3').get_text(strip=True) == 'Package ' + str(package))
+    check('StackCP disabled configuration leaves exact selected draft historical and performs no request', selected_page.status_code == 200 and db('SELECT * FROM ci_provider_stackcp_assignments ORDER BY ordinal') == draft_rows and provider.calls == calls and selected.select_one('strong').get_text(strip=True) == 'Local assignment needs owner review')
     capture('StackCP-Setup-Stale', own)
     response = post(prefix + 'assignment_revoke'); evidence('revoke local draft', response)
-    check('StackCP explicit revocation is local and cannot claim provider session revocation', json.loads(db('SELECT document_json FROM ci_provider_stackcp_assignments ORDER BY ordinal DESC LIMIT 1')[0]['document_json'])['state'] == 'revoked' and provider.calls == calls and 'does not end a provider session' in response.text)
+    selected_page = owner.get(url); selected = next(n for n in soup(selected_page).select('[data-stackcp-assignment]') if n.select_one('h3').get_text(strip=True) == 'Package ' + str(package))
+    check('StackCP explicit revocation is local and cannot claim provider session revocation', selected_page.status_code == 200 and json.loads(db('SELECT document_json FROM ci_provider_stackcp_assignments ORDER BY ordinal DESC LIMIT 1')[0]['document_json'])['state'] == 'revoked' and provider.calls == calls and selected.select_one('strong').get_text(strip=True) == 'Local draft revoked' and 'does not end a provider session' in selected.get_text(' ', strip=True))
     capture('StackCP-Setup-Revoked', own)
     retained = {}
     for name, rows in inherited.items():

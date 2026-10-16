@@ -2,9 +2,9 @@
   "base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
   "base_workflow_sha256": "7aef2d8f6df74f4c65091960191a4748b21b8258f111d8a23967abe13bddafe5",
   "unchanged_test_sha256": {
-    "tests/browser_acceptance.py": "7230c7ddade23d03ab738ff85fd5e2d32e0236b2df3e8ba059c6c73d41dda541",
+    "tests/browser_acceptance.py": "ecf37b8c2e731098f6c53c99d34f63be0608feb49dec4799925a5e16ff045167",
     "tests/structure_acceptance.py": "2b89114d669f717c4e936123ae256e9c29394664ee1a7db301411964839e86d0",
-    "tests/apache_acceptance.py": "a440f1b7b4358fb25fc175fa7dae1aded0337c00cad5ec171a0d93df9cc38110",
+    "tests/apache_acceptance.py": "79aa337d17fcfd2185108cbd1b4b5361feb0b403a144910872cd15b54163a848",
     "tests/prepare_legacy.py": "00a09c11a78eb124a848d4794f0eab8a2901eb1d090f6e8da7da498c06d623a7"
   },
   "native_commands": [
@@ -67,6 +67,12 @@
     "php8.3 tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-default.json",
     "php8.3 -n tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-minimal.json",
     "php8.3 tests/domain_renewal_agreements_native.php",
+    "php8.3 tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-default.json",
+    "php8.3 -n tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-minimal.json",
+    "php8.3 tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-default.json",
+    "php8.3 -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json",
+    "python -B tests/domain_renewal_dispatch_http_contract.py > qa/domain-renewal-dispatch-handler-results.json",
+    "php8.3 tests/domain_renewal_dispatch_native.php",
     "php8.3 tests/service_observations_native.php",
     "php8.3 tests/domain_contracts_reader.php > qa/domain-contract-reader-integrated-results.json",
     "php8.3 tests/domain_contracts_native.php",
@@ -98,6 +104,13 @@
     "php8.3 tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-results.json",
     "php8.3 -n tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-no-ini-results.json",
     "php8.3 tests/provider_package_wordpress_installed_native.php",
+    "php8.3 tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-default.json",
+    "php8.3 -n tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-minimal.json",
+    "php8.3 tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-default.json",
+    "php8.3 -n tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-minimal.json",
+    "php8.3 tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json",
+    "php8.3 -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json",
+    "php8.3 tests/stackcp_prerequisites_native.php",
     "php8.3 tests/provider_domain_search_native.php",
     "php8.3 tests/provider_mailboxes_native.php",
     "php8.3 tests/provider_operations_native.php",
@@ -113,5 +126,35 @@
     "php8.3 tests/hosting_reconciliation_native.php",
     "php8.3 tests/client_authority_native.php",
     "php8.3 tests/license_native.php"
-  ]
+  ],
+  "native_command_baseline": {
+    "source": "5560635bb2117556de289f0d24c5b170d48e9c77",
+    "count": 105,
+    "sha256": "efdedcd4467b0ff308e7f61f96ceb148448c9bf6df94e38e7721017236e55719",
+    "additions_source": "b221eb4be95ec1509458d916f1ffd10d65e71e64",
+    "additions_after": "php8.3 tests/domain_renewal_agreements_native.php",
+    "additions": [
+      "php8.3 tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-default.json",
+      "php8.3 -n tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-minimal.json",
+      "php8.3 tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-default.json",
+      "php8.3 -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json",
+      "python -B tests/domain_renewal_dispatch_http_contract.py > qa/domain-renewal-dispatch-handler-results.json",
+      "php8.3 tests/domain_renewal_dispatch_native.php"
+    ]
+  },
+  "stackcp_native_command_baseline": {
+    "source": "a63cc18ecfdb6d22ba1c138809c6e7bd01659d1a",
+    "count": 111,
+    "sha256": "bf079f76afd3ed5dd87fcaaa7c6049997c43465904894940cb5ec2aabbae26d9",
+    "additions_after": "php8.3 tests/provider_package_wordpress_installed_native.php",
+    "additions": [
+      "php8.3 tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-default.json",
+      "php8.3 -n tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-minimal.json",
+      "php8.3 tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-default.json",
+      "php8.3 -n tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-minimal.json",
+      "php8.3 tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json",
+      "php8.3 -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json",
+      "php8.3 tests/stackcp_prerequisites_native.php"
+    ]
+  }
 }
