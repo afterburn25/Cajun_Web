@@ -4,6 +4,18 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 # Session log
 
+## Fix PHP 8.2 asset-registry parse and Apache opcache capacity — 2026-10-16
+
+Request: continue #157; after the retention-baseline fix `b4ef8dfa`, fresh Apache run 38979337765 progressed past the ticket case (the baseline repair verified) but surfaced two separate failures: `PHP Parse error: unexpected token "->"` at `tests/asset_registry.php:46` on the PHP 8.2 native lane, and `rewrite 1.16.0 prior organized version actually cached without timestamp checks` in the shared mod_php acceptance lane.
+
+Investigation: the ReflectionFunction constructor-method chain is only valid syntax on PHP 8.4+; the native lane's PHP 8.2 rejects it. For the opcache check, the `rewrite`/`no-rewrite` lanes compile the current package plus ~15 retained baselines into one shared opcache under PHP defaults (`max_accelerated_files=10000`, `memory_consumption=128`); this branch's added ticket files raise cumulative cached scripts past the cap so late baselines can no longer cache `config/defaults.php` — deterministic at 1.16.0 on this branch while `main` passes under the cap.
+
+Actions: `tests/asset_registry.php` wraps the `new ReflectionFunction('asset')` expression in parentheses for PHP 8.2. `tests/apache_acceptance.py` raises headroom in `99-acceptance.ini` (`memory_consumption=512`, `max_accelerated_files=80000`, `interned_strings_buffer=32`) — check semantics unchanged. `tests/organized_update_cases.py` extends the probe to record `num_cached_scripts`/`free_memory`/`cache_full` into `qa/organized-*-cache.json` so any future capacity failure is evidenced in the artifact.
+
+Tests: `php -l` clean; `php tests/asset_registry.php` passes 45 checks (17 names); `python -m py_compile` clean. Apache/native verification reruns in CI on this commit; runs 38979337765/38979345933 preserved as failing evidence.
+
+Next: push and monitor fresh CI for the full branch, then dependent PR #175.
+
 ## Repair ticket-upgrade retention baseline — 2026-10-16
 
 Request: continue #157; after the `tickets.css` registration fix, fresh `native-and-browser` run 38959922023 reached the ticket upgrade case and failed `rewrite 1.23.0 throttled recovery cannot change populated tickets or private records` (`tests/apache_acceptance.py:126` → `organized_update_cases.py:297` → `ticket_upgrade_cases.py:99`).

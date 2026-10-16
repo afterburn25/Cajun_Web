@@ -54,7 +54,7 @@ PHPIniDir /etc/php/8.3/apache2
 </Directory>
 '''
         # Enable the cache at PHP startup, not per request (which PHP forbids).
-        ini=work/'php-conf';ini.mkdir();(ini/'99-acceptance.ini').write_text('opcache.enable=1\nopcache.validate_timestamps=0\nopcache.file_update_protection=0\n')
+        ini=work/'php-conf';ini.mkdir();(ini/'99-acceptance.ini').write_text('opcache.enable=1\nopcache.validate_timestamps=0\nopcache.file_update_protection=0\nopcache.memory_consumption=512\nopcache.max_accelerated_files=80000\nopcache.interned_strings_buffer=32\n')
         env=dict(os.environ,PHP_INI_SCAN_DIR='/etc/php/8.3/apache2/conf.d:'+str(ini))
         config=work/'httpd.conf';config.write_text(conf);proc=subprocess.Popen(['/usr/sbin/apache2','-f',str(config),'-DFOREGROUND'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True,env=env)
         base=f'http://127.0.0.1:{port}'
