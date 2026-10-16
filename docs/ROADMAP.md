@@ -1,3 +1,9 @@
+## Current forwarding integration and reference intake — 2026-10-15
+
+Root normally merges forwarding1992 into history1759 in [PR151](https://github.com/afterburn25/Cajun_Web/pull/151), preserving cloud recovery and both original histories. Exact local parent-union, regenerated installer, route/native union and independent glue checks pass; combined runtime acceptance remains required. Frozen a963 full acceptance and final packages are now verified. Scheduler2b9 retains successful corrected554 browser evidence and is next to integrate; the original5fb full remains failed. [Current handoff](../SESSION_HANDOFF.md), [a963 proof](TWENTYI_A963_ACCEPTANCE.md).
+
+The new complete owner API reference34e713 is preserved/indexed separately from oldf7c738. Domains implements a separately sourced date-only contract observation; catalog implements registration-year options; VPS implements cloud-provider identifiers. Their isolated branches share the established executor/recorder under sequential root review. Devin owns licensing. [Source intake](TWENTYI_OWNER_API_REFERENCE_INTAKE.md). Older entries below retain their original checkpoint scope.
+
 ## Current history integration evidence — 2026-10-15
 
 The separate a963+bff queue preserves the frozen cloud recovery candidate. Combined installer refresh and independent route/schema/permission review pass; fresh combined acceptance is required. Root independently verifies all four a963 cloud archives and exact Windows packages. [Source, review, evidence and next actions](TWENTYI_HISTORY_INTEGRATION.md). Scheduler554 is a reviewed test-only reload correction over5fb shipping with new checkpoint38836183578 active; forwarding remains separate. Domains keeps history frozen and investigates the next documented discovery reader without shipping edits. Devin retains licensing ownership. Older entries below retain their original evidence scope.
@@ -5,6 +11,10 @@ The separate a963+bff queue preserves the frozen cloud recovery candidate. Combi
 ## Current parallel implementation and combined acceptance — 2026-10-15
 
 Frozen3bbc42bd includes reviewed catalog readiness, renewal intake and cloud confirmation; all have native and browser proof on their own sources. Windows packages and all20 focused matrix archives verify; full combined38829910791 passed package/native/browser and passed unprivileged recovery and is running Apache protection checks. Corrected parent2239 full acceptance and final packages now verify. [Exact evidence](TWENTYI_COMBINED_3BBC_EVIDENCE.md). New isolated lanes implement scheduled inventory refresh, client hosting observation history and forwarding request/review; scheduler recovery corrections remain in progress. Full lifecycle/discovery/native controls/SSH and release gates remain unfinished. [Current handoff](../SESSION_HANDOFF.md). Older entries below retain their original source scope.
+
+## Forwarding intake candidate — 2026-10-15
+
+Implemented locally with verified four-way native and42 packaged browser cases; full isolated recovery/Apache/packages also pass, while root integration/combined acceptance remains pending: separate owner permission; client single-address request/cancel; owner message/decline; immutable local history. Provider forwarding submission/readback and active-delivery confirmation remain incomplete because exact response semantics are unverified. [Contract and acceptance](TWENTYI_FORWARDING_REQUESTS.md).
 
 ## Client domain renewal requests — integrated candidate, 2026-10-15
 

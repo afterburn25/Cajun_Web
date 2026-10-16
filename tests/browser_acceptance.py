@@ -204,6 +204,8 @@ try:
         domain_search_browser(globals(),browser)
         from provider_mailbox_cases import run_browser as mailbox_creation_browser
         mailbox_creation_browser(globals(),browser)
+        from provider_forwarding_cases import run_browser as forwarding_browser
+        forwarding_browser(globals(),browser)
 
         from provider_registrar_cases import run_browser as registrar_browser
         registrar_browser(globals(),browser)

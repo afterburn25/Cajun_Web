@@ -38,7 +38,7 @@ Next: push the takeover PR and inspect focused/native evidence; fix failures; in
 
 ## Source, account and external acceptance
 
-The owner's full uploaded API reference is broader than the [selected summary](TWENTYI_OWNER_API_REFERENCE.md). Its retained identity is195,457bytes, SHA256 `f7c738e746c2aebb9e1d047a555f3874a0766255795ed80edeebe8e599b9ec4d`; locating the original upload remains an active intake task. Do not claim it was reread or that missing summary fields are absent from provider documentation. [Official20i guide](https://docs.20i.com/api/20i-api-documentation) was reread2026-10-15; it directs account-specific documentation access through My20i. No uncertain example was executed.
+The owner supplied a new complete reference on2026-10-15:195,404 bytes,3,116 lines, SHA256 `34e713c3c0b4145b6a5e3f5929d0bd470605793f98d2d917c2b28f21814c3e95`. Its line-aligned redacted copy and327-example index are retained in [source intake](TWENTYI_OWNER_API_REFERENCE_INTAKE.md). This distinct source replaces the lack of accessible full documentation as the current intake state; it is not the older195,457-byte f7c738 upload, which remains historically unavailable. Contracts still require operation-specific validation. No example was executed.
 
 GitHub secret metadata confirms `TWENTYI_API_KEY` exists, last updated2026-10-13T19:59:22Z. Its value was not read/displayed. Prior authorized GET/package diagnostic is evidence only for that named read; no new live diagnostic ran in this checkpoint. Actions secrets are not automatically application configuration. Other real reads/writes, payments, access/SSH and deployment remain separate operation-specific acceptance. Missing configuration does not excuse unfinished engineering.
 

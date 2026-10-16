@@ -1,3 +1,9 @@
+## Current forwarding integration and reference intake — 2026-10-15
+
+Root normally merges forwarding1992 into history1759 in [PR151](https://github.com/afterburn25/Cajun_Web/pull/151), preserving cloud recovery and both original histories. Exact local parent-union, regenerated installer, route/native union and independent glue checks pass; combined runtime acceptance remains required. Frozen a963 full acceptance and final packages are now verified. Scheduler2b9 retains successful corrected554 browser evidence and is next to integrate; the original5fb full remains failed. [Current handoff](../SESSION_HANDOFF.md), [a963 proof](TWENTYI_A963_ACCEPTANCE.md).
+
+The new complete owner API reference34e713 is preserved/indexed separately from oldf7c738. Domains implements a separately sourced date-only contract observation; catalog implements registration-year options; VPS implements cloud-provider identifiers. Their isolated branches share the established executor/recorder under sequential root review. Devin owns licensing. [Source intake](TWENTYI_OWNER_API_REFERENCE_INTAKE.md). Older entries below retain their original checkpoint scope.
+
 ## Current history integration evidence — 2026-10-15
 
 The separate a963+bff queue preserves the frozen cloud recovery candidate. Combined installer refresh and independent route/schema/permission review pass; fresh combined acceptance is required. Root independently verifies all four a963 cloud archives and exact Windows packages. [Source, review, evidence and next actions](TWENTYI_HISTORY_INTEGRATION.md). Scheduler554 is a reviewed test-only reload correction over5fb shipping with new checkpoint38836183578 active; forwarding remains separate. Domains keeps history frozen and investigates the next documented discovery reader without shipping edits. Devin retains licensing ownership. Older entries below retain their original evidence scope.
@@ -19,6 +25,12 @@ Root preserves3bbc42bd full38829910791 and verified Windows packages. Catalog ow
 # Isolated hosting-history ownership — 2026-10-15
 
 Domain agent owns `codex/twentyi-service-observations` from root3bbc42bd in work/20i-service-observations. New service_observations modules/schema/UI/tests; minimal admin/portal routing and acceptance glue. No inventory_record hook: catalog scheduler extraction remains separate. Root alone integrates/releases. [Scope and evidence](TWENTYI_SERVICE_OBSERVATIONS.md). Preserve registrar725, nameserver9ea and renewal ed4/f62. Shipping e5c8aba8 and corrected test65725ad are frozen; all four native matrices and the actual browser checkpoint are downloaded and verified. Root receives PR149 with only a final evidence documentation checkpoint; no root merge or further provider behavior is added here.
+
+# Forwarding request ownership — 2026-10-15
+
+Cloud agent owns `work/20i-forwarding-requests`, branch `codex/twentyi-forwarding-requests`, base3bbc42bd. Scope is local forwarding-specific permission/request/review only, with an unregistered offline exact typed request. New helper/schema/owner/client modules and tests; shared edits limited to provider dispatch/view, portal router/actions, services navigation, browser/application workflow and Apache private-path hooks plus generated installer inventory. No changes to transport, provider operation register, scheduled inventory implementation or other worktrees. Root reviews and integrates. [Evidence and limits](TWENTYI_FORWARDING_REQUESTS.md).
+
+Native85/contract15 in four modes and42 actual packaged forwarding cases are independently verified on frozena02. Full38832724941 is terminal SUCCESS; final12018823878 independently verifies exacta02 source/packages and unchanged browser screenshots. Root owns the separately found cloud-confirmation history correction; preserve the frozen forwarding run and integrate sequentially. Devin owns software-product licensing;20i work does not alter its lane.
 
 # Current combined integration and scheduled-refresh assignment — 2026-10-15
 
