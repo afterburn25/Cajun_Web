@@ -1,3 +1,7 @@
+## Unreleased — integrate finished-ledger recovery and faster packaging
+
+Combine the four-way native-tested Force SSL witness recovery with batched Git packaging and the verified dynamic database port correction. Recovery makes no provider request and retains the effect as uncertain until separate readback. Preserve original failures and exact parent evidence; combined browser/package acceptance for this integration remains pending.
+
 ## Unreleased — avoid hosting-test database port collisions
 
 Let Docker assign an available host port for the hosting storage CI database and pass the actual port to the existing native tests. Preserve original run 38879885470, whose PHP 8.2 job stopped before tests because fixed port 33306 was occupied. Current-head execution remains required. Application and installer files are unchanged.
@@ -5,6 +9,10 @@ Let Docker assign an available host port for the hosting storage CI database and
 ## Unreleased — batched release source reads
 
 Read immutable Git blobs through one binary batch process when packaging, preserving all existing build checks and deterministic archive behavior. Add 45 portable source/protocol/child-cleanup cases after the original 21 builder guards; all 66 pass locally on Windows. Shipping and installer files are unchanged. Current-source CI, full packaging and release acceptance remain required after integration.
+
+## Unreleased isolated work — recover finished Force SSL attempts
+
+Add a current-owner local recovery action for the exact crash window after durable shared-ledger completion but before the dispatch witness. Preserve uncertainty, no-retry fences, original history and separate client sharing; only a subsequent exact GET can observe the desired flag. All four focused native/process environments and portable reports pass with independently verified archives; combined browser/package acceptance remains pending.
 
 ## Unreleased — scheduler privacy fixture correction
 

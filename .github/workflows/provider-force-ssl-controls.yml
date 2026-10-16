@@ -1,7 +1,7 @@
 name: Native Force SSL change controls
 on:
   push:
-    branches: [main, codex/twentyi-force-ssl-controls]
+    branches: [main, codex/twentyi-force-ssl-controls, codex/twentyi-force-ssl-finished-recovery]
     paths: ['site/app/providers/**', 'site/admin/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'tests/twentyi-force-ssl-controls/**', 'tests/force_ssl_controls*.php', 'tests/provider_force_ssl_controls*', '.github/workflows/provider-force-ssl-controls.yml']
   pull_request:
     paths: ['site/app/providers/**', 'site/admin/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'tests/twentyi-force-ssl-controls/**', 'tests/force_ssl_controls*.php', 'tests/provider_force_ssl_controls*', '.github/workflows/provider-force-ssl-controls.yml']
@@ -65,11 +65,13 @@ jobs:
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
             -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-inventory-test sh -ec '
-              for source in site/app/providers/force_ssl_controls*.php site/database/schema/provider_force_ssl_controls_schema.php site/admin/controllers/provider_force_ssl_controls.php tests/provider_force_ssl_controls_native.php tests/force_ssl_controls_contender.php; do php -l "$source"; done
+              for source in site/app/providers/force_ssl_controls*.php site/database/schema/provider_force_ssl_controls_schema.php site/admin/controllers/provider_force_ssl_controls.php tests/provider_force_ssl_controls_native.php tests/force_ssl_controls*.php; do php -l "$source"; done
               php tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-results.json
               php -n tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-no-ini-results.json
               php tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-results.json
               php -n tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-no-ini-results.json
+              php tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-results.json
+              php -n tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-no-ini-results.json
               php tests/provider_force_ssl_controls_native.php
               php tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-results.json
               php -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-no-ini-results.json
@@ -89,6 +91,8 @@ jobs:
             qa/force-ssl-control-contract-no-ini-results.json
             qa/force-ssl-control-transport-results.json
             qa/force-ssl-control-transport-no-ini-results.json
+            qa/force-ssl-control-recovery-results.json
+            qa/force-ssl-control-recovery-no-ini-results.json
             qa/provider-force-ssl-controls-native-results.json
             qa/package-force-ssl-document-results.json
             qa/package-force-ssl-document-no-ini-results.json
@@ -102,4 +106,4 @@ jobs:
       - name: Record verification scope
         if: always()
         run: |
-          echo 'Exact owner Force SSL consent, one shared-gateway dispatch, independently witnessed pre-perform refusal, interrupted-request fences and fresh exact readback. Desired flag observed after a request does not prove causality or HTTPS health. Real disposable database contention and synthetic transport only; operator crash recovery is still unimplemented. No live API, browser or deployment.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Exact owner Force SSL consent, one shared-gateway dispatch, pre-perform refusal, narrowly recovered missing dispatch witness from a durable finished ledger, interrupted-request fences and fresh exact readback. Recovery performs no provider call; missing or claimed ledger stays fenced. Desired flag observed after a request does not prove causality or HTTPS health. Disposable database and real process contention with synthetic transport only; no live API, browser or deployment.' >> "$GITHUB_STEP_SUMMARY"

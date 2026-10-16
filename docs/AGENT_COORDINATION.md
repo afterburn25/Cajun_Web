@@ -4,11 +4,11 @@ Updated 2026-10-16 UTC. Codex and three parallel agents own complete20i P0; Devi
 
 | Owner | Current checkpoint | Scope and next evidence |
 |---|---|---|
-| Root | Local combinedbaa0 plus reviewed scheduler fixture835ba72e; PR151 | Push one frozen combined candidate, verify exact Windows packages and track its original acceptance. |
-| Root (build tool); Domains (renewal proposal) | PR156 at verified 5a553960, with a workflow-only port-collision follow-up | Root owns the build checkout and new-head CI. Preserve 66 passing Windows guards, exact 5a packages, 42 passing original jobs and the PHP8.2 container-start failure. Domains continues the external renewal funding proposal. No duplicate full run. |
-| VPS | WordPress3f8adaa/docs65c accepted original38873107762 | Review merged transport/actual Handler and bounded offline tests, preserving ForceSSL POST. |
-| Catalog | Frozen948 original38867932452 browser failure; ten directory views inspected | Preserve original final follow-through; scheduler correction is independently reviewed and applied only to later source. |
-| Devin | Software-product licensing; main68a source reviewed | Preserve schema3/checksum/invoice/serialization changes; upgrade, master delivery and legacy invoice findings remain open. |
+| Root | Local recovery/build union4b73+d72cef; frozenfaef PR151 remains separate | Verify local merge/installer parity; preserve faef original full38875935651,45 focused successes and exact Windows packages. Current integration still needs combined acceptance. |
+| Domains | New codex/twentyi-domain-renewal-dispatch fromfaef | Implement permanent prepayment invoice purpose and exact paid single-send renewal; shared seams reviewed before application. Keep licensing untouched. |
+| VPS | Recovery34f original38881177088 accepted; docsd72cef pushed | Implement reviewed parallel acceptance on a separate branch from the new root union; preserve native→browser state, exact attempt provenance and old runs. |
+| Catalog | Recovery source/renewal proposal/build-port independent reviews clear | Review actual shared integration and later workflow/renewal patches with source-bound evidence. |
+| Devin | Software-product licensing; main9f3b21fd source reviewed | Preserve licensing changes; upgrade, internal-master delivery, legacy-invoice retry and version-marker findings remain open. |
 
 Root original948 acceptance is separate from the newer local controls/renewal merge. No parent/focused evidence establishes the latter's browser/release acceptance. [Handoff](../SESSION_HANDOFF.md) contains exact source, artifact and proof identities.
 
