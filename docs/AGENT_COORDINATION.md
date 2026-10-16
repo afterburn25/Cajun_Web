@@ -1,3 +1,7 @@
+## Current bounded ownership — 2026-10-15
+
+Root owns combined acceptance/releases and shared-file integration;210 final acceptance is verified,25e original full remains active. Domains owns frozen f725 latest-authority recovery correction and red/repaired native/full evidence. VPS owns PHP-version observation, credential-echo repair and preserved exact-source runs. Catalog independently reviewed the domain repair and now owns only the isolated pure registry-expiry contract/tests/docs from25e; no shipping wiring in that assignment. Devin retains licensing. [Current sources, findings and evidence](TWENTYI_DISCOVERY_INTEGRATION.md).
+
 ## Combined discovery verification and recovery corrections — 2026-10-15
 
 Root retains exact25e shipping and original combined full38846792746, with Windows packages verified. Domains owns a separate25e descendant fixing registrar/date altered-sequence recovery, while preserving original domain/root matrix evidence. VPS owns the PHP-version descendant, its packaging correction and analogous hosting-order guard; it is not merged yet. Catalog owns independent domain correction review and combined registration/scheduler artifacts. Root verifies cloud artifacts and integrates shared files sequentially after review. Devin retains licensing. [Current exact source/evidence/known findings](TWENTYI_DISCOVERY_INTEGRATION.md).

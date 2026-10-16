@@ -1,3 +1,7 @@
+## Unreleased — parent full acceptance and recovery handoff
+
+Record downloaded210 final packages/reports and Windows parity; retain the screenshot limitation. Record actual red domain recovery evidence and reviewed f725 correction, pending PHP credential-echo repair, and separate pure registry-expiry ownership. Documentation only; no release or shipping change.
+
 ## Unreleased — combined discovery native matrix
 
 Record all16 downloaded exact25e date/period/cloud/scheduler archives, each with named native and pure checks across four PHP/database combinations. The original full continues, and separate altered-sequence recovery corrections remain required. Documentation only.
