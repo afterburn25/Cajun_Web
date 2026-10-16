@@ -2622,7 +2622,7 @@ function setup_expected_files(): array { return [
     'includes/foundation/scheduling/WeeklyRule.php'=>'224db32aec36d1551dfe0d090b58130230a4a5c424cf597a305504386a1faa8c',
     'includes/foundation/service-plans/PlanSubscription.php'=>'d36a2f69eb88de50097a60bfb013357fa20c9f93194192ac7ef6c8526d8a6b18',
     'includes/foundation/service-plans/ServicePlan.php'=>'400e64634e9b70bd1faf5d639883cdd1a2ee752427e72ded82dc4240261f5304',
-    'includes/foundation/twentyi-domain-contracts/DomainContract.php'=>'f5e781808ef5372ab3fba49c28dd5a4ec69a37b1ebfa54ed68fdcf35ac720d2e',
+    'includes/foundation/twentyi-domain-contracts/DomainContract.php'=>'8ec730e9b2dd0ba43dcb7f566108cd210647ed5a1288c074834d750a993dc87d',
     'includes/foundation/twentyi-domain-contracts/DomainContractBinding.php'=>'9ee0443a8bdaf39488f14071800178a450bf8704de679dbbd2fcd682e337c009',
     'includes/foundation/twentyi-domain-contracts/DomainContractObservation.php'=>'19ebef8f1afd18d9e255518535a22e611d5660edb56d1abbff4e78c77d94f4c4',
     'includes/foundation/twentyi-inventory-reader/DomainSearch.php'=>'82ccf1db9d18e4610129797e0f1436426cb30bfb8186b89b74e143604912e3f3',

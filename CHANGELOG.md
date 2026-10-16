@@ -1,3 +1,7 @@
+## Domain-date credential echo correction — 2026-10-15
+
+The credential-owning reader refuses an echoed raw/encoded key inside a decoded renewal date using the existing unavailable/date_invalid result. Local red/repaired evidence and settings-to-persistence regression cover the bounded correction. Native and packaged acceptance remain pending; no provider contract or UI is expanded.
+
 ## Domain-date recovery correction — 2026-10-15
 
 Saved domain dates now require latest intent sequence to agree with its independently retained exact start audit. This prevents a lowered failed/unfinished registrar or per-link date intent from reviving an older current date. Source and local checks pass; native and packaged acceptance remain pending on the isolated recovery branch.

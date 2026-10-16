@@ -1,3 +1,7 @@
+## Domain-date credential echo correction — 2026-10-15
+
+Separate `codex/twentyi-domain-date-redaction` preserves frozen f725 and its running full acceptance. The credential-owning reader now rejects echoed raw/encoded credentials in an otherwise valid decoded date; pure old-source red cases and corrected87/87 checks are retained. Actual settings/shared-executor persistence coverage is prepared; native/full acceptance is next after source review and installer refresh. Parent f725 all four actual native archives pass90+79/79. [Exact scope and evidence](docs/TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md#credential-owned-date-redaction--2026-10-15). Root retains integration and current consolidated handoff documentation.
+
 ## Domain-date recovery correction — 2026-10-15
 
 The isolated descendant now checks exact common-start correspondence and independent latest-audit order before trusting registrar or per-link date authority. Parent and catalog source reviews clear the bounded change. Local PHP syntax,79/79 reader checks and installer refresh pass. The first two actual MariaDB archives from focused red run38848617958 confirm all four old-source revival paths; both MySQL jobs remain queued. Repaired native and full acceptance remain required. [Precise scope and retained evidence](docs/TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md#altered-intent-sequence-recovery--2026-10-15). Root25e and original PR152 remain frozen.

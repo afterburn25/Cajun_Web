@@ -40,8 +40,13 @@ final class DomainContract
         if($credential->providerId!=='twenty-i'||$credential->accountIdentity!==$binding->data['profile_id']||$at<0)throw new \InvalidArgumentException('Invalid domain read account.');
         try{$secret=$credential->secret();}catch(\Throwable){throw new \InvalidArgumentException('Provider credentials are unavailable.');}
         if($secret===''||strlen($secret)>4096||preg_match('/[\x00-\x1f\x7f]/',$secret))throw new \InvalidArgumentException('Provider credentials are unavailable.');
-        $descriptor=self::request($binding->data['domain']);$request=new TransportRequest('GET',$descriptor->url,['Authorization'=>'Bearer '.base64_encode($secret),'Accept'=>'application/json'],null,15.0);unset($secret,$descriptor);
-        try{$response=$transport->send($request);}catch(TransportException $e){return new DomainContractObservation($binding,'unavailable',null,'transport_'.$e->kind,$at);}catch(\Throwable){return new DomainContractObservation($binding,'unavailable',null,'transport_unknown',$at);}finally{unset($request);}
-        return self::project($response,$binding,$at);
+        $descriptor=self::request($binding->data['domain']);$request=new TransportRequest('GET',$descriptor->url,['Authorization'=>'Bearer '.base64_encode($secret),'Accept'=>'application/json'],null,15.0);unset($descriptor);
+        try{
+            try{$response=$transport->send($request);}catch(TransportException $e){return new DomainContractObservation($binding,'unavailable',null,'transport_'.$e->kind,$at);}catch(\Throwable){return new DomainContractObservation($binding,'unavailable',null,'transport_unknown',$at);}
+            $observation=self::project($response,$binding,$at);
+            // Inspect decoded text while credentials remain local; an echo cannot become a saved date.
+            if($observation->state==='complete'&&(str_contains($observation->renewalDate,$secret)||str_contains($observation->renewalDate,base64_encode($secret))))return new DomainContractObservation($binding,'unavailable',null,'date_invalid',$at);
+            return $observation;
+        }finally{unset($secret,$request);}
     }
 }
