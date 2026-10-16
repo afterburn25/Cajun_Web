@@ -54,9 +54,9 @@ def run_browser(env, browser):
         return {t: db('SELECT * FROM licweb_' + t + ' ORDER BY ' + ('name' if t == 'settings' else 'id'))
                 for t in ['settings', 'website_licenses', 'license_domains', 'license_bundles', 'audit']}
 
-    def raw_post(session, action, **changes):
-        current = session.get(page_url, timeout=25)
-        return session.post(page_url, data={'csrf': token(current), 'action': action, **changes}, timeout=30)
+    def raw_post(session, action, *, address=page_url, **changes):
+        current = session.get(address, timeout=25)
+        return session.post(address, data={'csrf': token(current), 'action': action, **changes}, timeout=30)
 
     owner = requests.Session(); login = submit(owner, admin + '?view=login', 'login', {'email': 'license-owner@example.invalid', 'password': OWNER})
     check('Licensing isolated current owner signs in through the actual login', login.status_code == 200 and urlparse(login.url).query == 'view=dashboard')
@@ -90,9 +90,13 @@ def run_browser(env, browser):
     held = state(); outcome = fixture('old-fulfillment')
     check('Licensing real fulfillment entry refuses pre-cutover replay without minting a duplicate', outcome == {'refused': True, 'reason': 'This older invoice needs an explicit owner licensing review before fulfillment.'} and state() == held)
 
-    staff = requests.Session(); submit(staff, admin + '?view=login', 'login', {'email': 'license-staff@example.invalid', 'password': OWNER})
-    check('Licensing ordinary administrator has no master option or legacy review form', 'name="master"' not in staff.get(page_url).text and 'value="studio_license_legacy_review"' not in staff.get(page_url).text)
-    before = state(); response = raw_post(staff, 'studio_license_create', customer_id='1', product_id='WEBSITE-RESTAURANT', master='1')
+    staff = requests.Session(); staff_login = submit(staff, admin + '?view=login', 'login', {'email': 'license-staff@example.invalid', 'password': OWNER})
+    check('Licensing ordinary administrator signs in through actual login', staff_login.status_code == 200 and urlparse(staff_login.url).query == 'view=dashboard')
+    before = state(); staff_section = staff.get(page_url, timeout=25)
+    check('Licensing ordinary administrator section access is exactly refused without history changes', staff_section.status_code == 403
+          and [n.get_text(' ', strip=True) for n in soup(staff_section).select('.notice.error')] == ['Your account does not have access to this section.'] and state() == before)
+    check('Licensing ordinary administrator has no master option or legacy review form', 'name="master"' not in staff_section.text and 'value="studio_license_legacy_review"' not in staff_section.text)
+    before = state(); response = raw_post(staff, 'studio_license_create', address=admin + '?view=dashboard', customer_id='1', product_id='WEBSITE-RESTAURANT', master='1')
     evidence('ordinary administrator cannot create master', response, ['Your account does not have access to this action.'])
     check('Licensing rejected master creation preserves all license history', state() == before)
     response = submit(owner, page_url, 'studio_license_create', {'customer_id': '1', 'product_id': 'WEBSITE-RESTAURANT', 'master': '1'})
@@ -150,7 +154,7 @@ def run_browser(env, browser):
              ('master license', owner, {'license_id': str(master['id'])}, 'Choose an unlinked ordinary license for this exact client and product.'),
              ('nonowner', staff, {}, 'Your account does not have access to this action.')]
     for label, session, changes, reason in cases:
-        before = state(); response = raw_post(session, 'studio_license_legacy_review', **{**review, **changes})
+        before = state(); response = raw_post(session, 'studio_license_legacy_review', address=admin + '?view=dashboard' if label == 'nonowner' else page_url, **{**review, **changes})
         evidence('legacy review rejects ' + label, response, [reason])
         check('Licensing legacy review denied ' + label + ' preserves all original license history', state() == before)
     capture(owner, 'Licensing-Owner-Invoice-Review', page_url, 'form:has(input[name=action][value=studio_license_legacy_review])')

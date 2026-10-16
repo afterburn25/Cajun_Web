@@ -2,7 +2,25 @@
 
 This tracked report records source-specific candidate evidence available at its documentation cutoff. It does not certify a future commit or publication. [Scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md) and [owner upgrade instructions](MIGRATION-INSTRUCTIONS-1.25.0.md) define the increment. Complete exact-main outcomes and publication verification are recorded in the external final release report/receipts once those events occur; versioned and compatibility final report assets must contain identical bytes.
 
-## 2026-10-16 — licensing fixture and release runtime provisioning
+## 2026-10-16 — licensing page/action fixture correction
+
+Parent is `f77c9fb7f4b1b57d13ce352dd7e4fc51b1330695`; the enclosing commit identifies the correction. Evidence cutoff is **2026-10-16 22:03 UTC**.
+
+| Evidence | Actual result and limit |
+|---|---|
+| Supplemental licensing run38965358937 / receipt `42e41989` | All four native environments pass114 named checks each. HTTP has38 passing checks and one failure; not complete acceptance. |
+| HTTP artifact12076718986 / SHA256 `29b7c64c2f86a082183d3c55ac462d9fe55431dc0709d6b2259a7d3e08507ed6` | Actual PHP8.3.6/MariaDB10.11.19 packaged flow; forbidden staff POST returns403 with the exact section-denial notice. Original responses/log/package and two partial captures retained. |
+| Original old-fulfillment operation | Child exits0 without stderr and returns the intended older-invoice explicit-review refusal. Its previous workspace-loader correction now has actual HTTP evidence. |
+| PHP8.2 builds38965378257 /38965390874 | Build-only receipts `c599fc15` / `68512388` validate actual published1.24 input and Linux/Windows FULL5916, COMPLETE2887, UPDATE2874 payload agreement. No populated-upgrade or native/browser pass implied. |
+| Maintained run38965427737 / `a825bb9d` | Distro/minimal lane passes; the complete maintained matrix remains pending. |
+
+The shared fixture submits to the owner-only licensing view. The action refusal is caught, then the router correctly replaces its presentation with a403 section refusal. The later nonowner legacy-review case shares that mismatch. The correction preserves both guards: explicit staff login and403/no-history-change GET assertions, plus the original strict200/action-denial and history-preservation checks through the accessible dashboard. Production files and workflows are unchanged. The same full and supplemental browser scenario retains twenty response records and six captures, with two additional named assertions. Corrected real execution remains pending; source review is not a runtime pass.
+
+Source review after that runtime cutoff: corrected proposal `ae4c12d4` has40 offline policy/helper checks, independent review `dbbdb5d9` has88 checks, and root application `b01ded52` binds the exact final fixture and single contract-hash replacement. Independent review caught and corrected a proposal text-encoding error before commit or CI; the superseded proposal/application receipts remain preserved. The final three intended changes reverse exactly to the original source bytes; original Unicode/error literals remain intact. These are source and controlled-seam checks, not real HTTP acceptance.
+
+Preserve this failed run and all earlier evidence. First run the corrected focused diagnostic, then fresh complete exact-candidate/maintained acceptance and actual image/package review, normal main merge, complete exact-main acceptance, and immutable publication followed by fresh verification of every asset. No v1.25 release or live deployment at the cutoff.
+
+## Historical checkpoint — licensing fixture and release runtime provisioning
 
 Parent is exact `8f54d36e418ee112ae5c3cb8ac4c63ceb277be32`; the enclosing commit identifies the correction. Parent results below have a fixed **2026-10-16 20:43 UTC** cutoff. Source-review records for this batch are separate from runtime outcomes.
 

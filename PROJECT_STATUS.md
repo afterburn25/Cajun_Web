@@ -10,7 +10,15 @@ Use the [migration instructions](docs/MIGRATION-INSTRUCTIONS-1.25.0.md) with the
 
 Devin continues the [non-20i assignment](DEVIN_START_HERE.md) on separate branches. Unaccepted proposals stay outside the frozen scope unless a reviewed release blocker requires a narrow correction.
 
-## 2026-10-16 — licensing fixture and release runtime provisioning
+## 2026-10-16 — separate licensing page and action refusals
+
+This release-only correction starts from `f77c9fb7f4b1b57d13ce352dd7e4fc51b1330695`; its enclosing commit identifies the descendant. The actual supplemental licensing run [38965358937](https://github.com/afterburn25/Cajun_Web/actions/runs/38965358937) passes all four native environments at 114 named checks each, but HTTP stops at check39. The ordinary administrator correctly receives HTTP403/section denial after posting through the owner-only licensing page; the shared browser fixture incorrectly expects HTTP200/action denial. The later nonowner legacy-review case has the same path mismatch. This is shared by full acceptance, not an isolated diagnostic seed issue.
+
+The narrow fixture correction verifies actual staff login and an exact403/no-history-change page refusal, then submits the two forbidden actions through the permitted dashboard while retaining exact200/action-denial and history-preservation assertions. Shipping permissions, routes, schemas and packages' application payloads are unchanged. Twenty response records and six captures remain required; two additional assertions strengthen the scenario. The corrected real HTTP run remains pending at the **22:03 UTC** evidence cutoff.
+
+Parent build-only receipts `c599fc15` and `68512388` verify both PHP8.2 Linux builds against Windows FULL5916/COMPLETE2887/UPDATE2874 and the actual published1.24 input. The maintained distro lane passes; complete parent acceptance does not. Preserve all original outcomes and artifacts. Run the corrected focused diagnostic before dispatching a fresh complete candidate matrix; then require normal main merge, complete exact-main acceptance and all-asset publication/download verification. Main remains `d7153b07`, 1.25 is unpublished and no live deployment occurred.
+
+## Historical checkpoint — licensing fixture and release runtime provisioning
 
 This release-only batch starts from `8f54d36e418ee112ae5c3cb8ac4c63ceb277be32`; the enclosing commit identifies the descendant. Its ten paths are two workflows, two tests, one acceptance-contract hash and five documentation files. Load the workspace prerequisite in the existing licensing HTTP helper and add a supplemental maintained PHP 8.3/MariaDB job using the entire unchanged licensing browser scenario against the built COMPLETE package. In the four full-workflow setup blocks, select the fixed HTTPS setup-php PPA mirror for PHP 8.2/8.4 only, preserving the original publisher `Signed-By` bytes and checking its current fingerprint. Distro PHP 8.3, shipping code, all existing assertions, APT signature/TLS checks, runtime probes and test gates remain unchanged.
 

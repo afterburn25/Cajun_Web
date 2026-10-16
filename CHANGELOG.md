@@ -4,7 +4,11 @@ Includes the hosting/domain/cloud observations, explicit assignments, reviewed c
 
 The [acceptance report](docs/TEST_REPORT_1.25.0.md) records source-specific results and limits. This source change entry does not assert publication or live deployment. The release assets and verification receipts establish those later outcomes.
 
-## 2026-10-16 — licensing fixture and release runtime provisioning
+## 2026-10-16 — licensing permission-test correction
+
+From f77, distinguish the existing owner-only licensing page refusal from the forbidden-action refusal in the shared HTTP fixture. Verify staff login and exact403/no-history-change page behavior, and exercise both nonowner actions through the accessible dashboard while retaining strict200/action-denial and original-history checks. Align the helper source hash; no production permission, route, schema or workflow change. Preserve original run38965358937's HTTP failure and four native114-check passes. Corrected real HTTP and full descendant/main acceptance remain required before publication.
+
+## Historical checkpoint — licensing fixture and release runtime provisioning
 
 From 8f54, load the licensing fixture's workspace prerequisite and align its contract hash; add a supplemental maintained PHP 8.3/MariaDB HTTP/Chromium job using the unchanged licensing case. Guardedly select the fixed HTTPS setup-php PPA mirror in four PHP 8.2/8.4 setup blocks, retaining original publisher trust, signatures, TLS, strict APT failure behavior and all probes/tests. Distro PHP 8.3 and shipping code stay unchanged. The mirror has 41 offline checks/four shell syntax checks; actual APT and diagnostic execution remain pending. Preserve parent evidence at 20:43 UTC and all previous failures. Complete descendant/maintained and exact-main acceptance, publication and download verification remain required.
 

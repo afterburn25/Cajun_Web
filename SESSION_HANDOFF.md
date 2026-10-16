@@ -8,7 +8,15 @@ Keep all148 native recipes, complete PHP8.2/8.4 × MariaDB10.11/MySQL8.4 environ
 
 The tracked [acceptance report](docs/TEST_REPORT_1.25.0.md) has an explicit source/evidence cutoff. Final exact-main and publication facts belong in the external release report and receipts once those events occur; do not amend an accepted source merely to insert its own future test results. Verify identical versioned/compatibility report asset bytes before publication. No live deployment is authorized. Resume remaining20i only after the release and downloads are verified.
 
-## 2026-10-16 — licensing fixture and release runtime provisioning
+## 2026-10-16 — separate licensing page and action refusals
+
+Start the fixture-only correction from `f77c9fb7f4b1b57d13ce352dd7e4fc51b1330695`. The shared licensing HTTP helper incorrectly expects an action-denial page after posting to an owner-only view. Actual run38965358937 preserves HTTP403 and the section-denial message at check39; all four native114-check jobs pass. Root and independent source review identify the same later nonowner legacy-review mismatch. Production authority remains correct.
+
+Retain the twenty exact response records, six images, all existing history comparisons and strict denial expectations. Add actual staff-login and exact403/no-history-change page checks; route only the two ordinary-staff POSTs through the accessible dashboard. Align the changed helper's acceptance-contract hash. No shipping or workflow change is needed. Intended commit: “Separate licensing page and action refusal checks”. Evidence cutoff is **2026-10-16 22:03 UTC**; corrected real execution is still pending.
+
+Run the corrected packaged licensing diagnostic first, using a temporary diagnostic ref if needed to avoid dispatching a full matrix before the blocker clears. `codex/release-1.25.0` remains the sole release integration branch; use the same reviewed descendant there, not an alternate release source. Then bind and run every required complete candidate/maintained lane, actual visual/package checks, normal merge and complete exact-main acceptance before eighteen-asset publication and fresh download verification. Preserve f77's original failed/partial evidence and any explicitly retired incomplete runs. No production deployment or previous-release modification.
+
+## Historical checkpoint — licensing fixture and release runtime provisioning
 
 Batch the reviewed release-only corrections from exact `8f54d36e418ee112ae5c3cb8ac4c63ceb277be32`: one licensing helper import and contract hash, one supplemental runner/job, four guarded PHP 8.2/8.4 mirror selections, and five continuity records. Intended commit description: “Repair licensing fixture and release runtime provisioning”. Preserve original signing scope/key bytes and current fingerprint, strict APT/TLS/probes and every application assertion. Distro PHP 8.3 stays unchanged. Shipping code is unchanged.
 
