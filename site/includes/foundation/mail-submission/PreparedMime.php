@@ -39,8 +39,15 @@ final readonly class PreparedMime
                 if(array_column($mail->$method(),0)!==$snapshot->content->$field)throw new PreparationFailure('recipient_mismatch');
             }
             $mail->Subject=$mail->literalSubject($snapshot->content->subject);
-            $mail->Body=str_replace("\n","\r\n",$snapshot->content->body);
-            $mail->isHTML(false);
+            if($snapshot->content->html!==null) {
+                // Sanitized formatted alternative plus the exact plain body.
+                $mail->isHTML(true);
+                $mail->Body=str_replace("\n","\r\n",$snapshot->content->html);
+                $mail->AltBody=str_replace("\n","\r\n",$snapshot->content->body);
+            }else {
+                $mail->Body=str_replace("\n","\r\n",$snapshot->content->body);
+                $mail->isHTML(false);
+            }
             // Exact snapshot bytes only; wire names stay the sanitized printable names.
             foreach($snapshot->attachments as $attachment) {
                 if(!$mail->addStringAttachment($attachment->bytes,$attachment->name,$mail::ENCODING_BASE64,$attachment->mime))throw new PreparationFailure('encoding_failed');

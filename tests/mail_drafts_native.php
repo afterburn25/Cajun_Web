@@ -130,6 +130,25 @@ try {
     dr_deny('Discarded draft cannot silently resume through stale save',fn()=>mail_drafts_save($id,8,$a,1,dr_content()));dr_deny('Old create replay cannot revive a discarded draft',fn()=>mail_drafts_save($id,0,$a,1,dr_content()));
     for($i=0;$i<22;$i++)mail_drafts_save(bin2hex(random_bytes(16)),0,$a,1,new DraftContent([],[],[],'Page '.$i,''));
     $first=mail_drafts_list($a);$older=mail_drafts_list($a,'draft',2);dr_ok('Draft pagination has distinct displayed pages and bounded lookahead',count($first)===21&&count($older)===3&&!array_intersect(array_column(array_slice($first,0,20),'id'),array_column($older,'id')));
+    if(extension_loaded('dom')) {
+        $sanitized=mail_drafts_html('<p>SYNTHETIC <strong>formatted</strong> <script>bad()</script></p>');
+        dr_ok('Formatted alternative sanitizes through the service wrapper',$sanitized==='<p>SYNTHETIC <strong>formatted</strong></p>'&&mail_drafts_html('')===null&&mail_drafts_html('<script>x</script>')===null);
+        dr_deny('Oversized formatted alternative is refused before storage',fn()=>mail_drafts_html('<p>'.str_repeat('x',40960).'</p>'));
+        $rich=bin2hex(random_bytes(16));mail_drafts_save($rich,0,$a,1,new DraftContent(['client@example.invalid'],[],[],'Formatted draft','Plain body',$sanitized));
+        $got=mail_drafts_get($rich);
+        dr_ok('Saved formatted alternative persists and round-trips exactly',$got['html']===$sanitized&&one('SELECT body_html FROM '.table('mail_drafts').' WHERE id=?',[$rich])['body_html']===$sanitized);
+        $before=dr_snapshot();dr_ok('Formatted create replay stays a byte-identical no-write',mail_drafts_save($rich,0,$a,1,new DraftContent(['client@example.invalid'],[],[],'Formatted draft','Plain body',$sanitized))===$rich&&dr_snapshot()===$before);
+        dr_deny('Changed formatted alternative cannot replay a create token',fn()=>mail_drafts_save($rich,0,$a,1,new DraftContent(['client@example.invalid'],[],[],'Formatted draft','Plain body','<p>Different</p>')));
+        dr_deny('Unsanitized markup cannot be saved as an alternative',fn()=>mail_drafts_save(bin2hex(random_bytes(16)),0,$a,1,new DraftContent(['client@example.invalid'],[],[],'Bad','Body','<p onclick="x">m</p>')));
+        dr_ok('Removing the alternative clears the retained column',mail_drafts_save($rich,1,$a,1,new DraftContent(['client@example.invalid'],[],[],'Formatted draft','Plain body'))===$rich&&mail_drafts_get($rich)['html']===null&&one('SELECT body_html FROM '.table('mail_drafts').' WHERE id=?',[$rich])['body_html']===null);
+        mail_drafts_discard($rich,2);
+    } else $checks[]=['name'=>'DOM unavailable; formatted-compose checks skipped','passed'=>true];
+    // Version-1 upgrade: populated pre-alternative storage gains the additive column in place.
+    dr_actor();db()->exec('ALTER TABLE '.table('mail_drafts').' DROP COLUMN body_html');save_setting('mail_drafts_schema_version','1');
+    $legacy=bin2hex(random_bytes(16));query('INSERT INTO '.table('mail_drafts')." (id,owner_id,account_id,account_revision,revision,status,create_fingerprint,to_json,cc_json,bcc_json,subject,body,created_at,updated_at) VALUES (?,1,?,1,1,'draft',?,'[]','[]','[]','Legacy','Text',?,?)",[$legacy,$b,str_repeat('0',64),gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);
+    mail_drafts_migrate($password);
+    dr_ok('Version 1 populated storage upgrades additively and preserves records',mail_drafts_ready()&&one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'mail_drafts','body_html'])!==null&&mail_drafts_get($legacy)['subject']==='Legacy'&&mail_drafts_get($legacy)['html']===null);
+    mail_drafts_discard($legacy,1);
     $metadata=json_encode([all('SELECT * FROM '.table('mail_draft_revisions')),all('SELECT * FROM '.table('audit'))]);dr_ok('Audit and draft history exclude subject body and recipients',!str_contains($metadata,'SYNTHETIC_PRIVATE_DRAFT')&&!str_contains($metadata,'private@example.invalid')&&!str_contains($metadata,'client@example.invalid'));
     dr_ok('Draft workflows preserve the original mailbox encryption key',file_get_contents($private.'/mail-master.key')===$key);
     dr_ok('System mail remains disabled and unconfigured',setting('email_mode')==='disabled'&&setting('smtp_host')===''&&setting('smtp_password')==='');

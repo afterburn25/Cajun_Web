@@ -58,7 +58,7 @@ function mail_submissions_review(string $draft,?int $revision=null,?int $account
         mail_submissions_prior_attempt($draft);$account=mail_drafts_account($saved['account_id'],(int)$saved['account_revision']);
         // Same maintained preparation gate as dispatch, including the exact
         // attachment set; the preview identity is never persisted.
-        $content=new \CajunWebPro\Foundation\MailCompose\DraftContent($saved['to'],$saved['cc'],$saved['bcc'],$saved['subject'],$saved['body']);
+        $content=new \CajunWebPro\Foundation\MailCompose\DraftContent($saved['to'],$saved['cc'],$saved['bcc'],$saved['subject'],$saved['body'],$saved['body_html']??($saved['html']??null));
         $files=mail_files_ready()?all('SELECT name,mime,bytes,sha256,data FROM '.table('mail_draft_files').' WHERE draft_id=? ORDER BY slot',[$draft]):[];
         $attachments=[];
         foreach($files as $stored) {

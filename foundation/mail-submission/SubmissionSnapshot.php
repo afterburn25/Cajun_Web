@@ -94,13 +94,19 @@ final readonly class SubmissionSnapshot
             'to'=>$this->content->to,'cc'=>$this->content->cc,'bcc'=>$this->content->bcc,
             'subject'=>$this->content->subject,'body'=>$this->content->body,
         ];
+        // A sanitized formatted alternative sets the html bit; payload formats
+        // are 1 + thread(1) + attachments(2) + html(4), covering 1 through 8.
+        if ($this->content->html!==null) {
+            $payload['format']+=4;
+            $payload['body_html']=$this->content->html;
+        }
         // Format 2 appends origin/thread fields; format-1 bytes stay identical.
         if ($this->thread!==null) {
-            $payload['format']=2;
+            $payload['format']+=1;
             $payload['thread']=$this->thread->toArray();
             $payload['origin_fingerprint']=$this->originFingerprint;
         }
-        // Formats 3/4 mirror 1/2 with ordered attachment descriptors (no bytes).
+        // Attachment-bearing formats append ordered descriptors (no bytes).
         if ($this->attachments!==[]) {
             $payload['format']+=2;
             $payload['attachments']=DraftAttachment::descriptors($this->attachments);

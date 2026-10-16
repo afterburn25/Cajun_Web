@@ -36,9 +36,15 @@ sf_ok('Send form carries saved version and stable submission identity',str_conta
 sf_ok('Send form carries CSRF and explicit POST',str_contains($html,'method="post"')&&str_contains($html,'name="csrf"'));
 sf_ok('Message content is display only and cannot become mutable hidden form data',!preg_match('/name="(body|to|cc|bcc|subject|smtp_host|credentials)"/',$html));
 $row=['id'=>$id,'draft_id'=>$draft,'draft_revision'=>2,'created_at'=>'2026-10-14 00:00:00','content'=>$content,'dispatch'=>['started_at'=>'2026-10-14 00:00:00'],'result'=>['status'=>'unknown','reason'=>'timeout','finished_at'=>'2026-10-14 00:00:01']];
-$html=sf_render('mail-submission',['row'=>$row,'status'=>mail_submissions_status($row['result'],$row['dispatch'])]);
+$html=sf_render('mail-submission',['row'=>$row,'status'=>mail_submissions_status($row['result'],$row['dispatch']),'copy'=>null,'sentFolder'=>'']);
 sf_ok('Recorded message is escaped and read only',!str_contains($html,'<script>')&&str_contains($html,'SYNTHETIC_BODY')&&!str_contains($html,'mail_submissions_send'));
 sf_ok('Uncertain detail warns against resend',str_contains($html,'Do not resend'));
+$GLOBALS['cwp_nonce']=base64_encode(str_repeat('n',18));
+$rich=$row;$rich['content']=$content+['body_html'=>'<p>Formatted <b>alternative</b></p>'];
+$html=sf_render('mail-submission',['row'=>$rich,'status'=>mail_submissions_status($rich['result'],$rich['dispatch']),'copy'=>null,'sentFolder'=>'']);
+sf_ok('Recorded formatted alternative renders inside the sandboxed frame',str_contains($html,'data-mail-submission-formatted')&&str_contains($html,'sandbox="allow-popups allow-popups-to-escape-sandbox"')&&str_contains($html,esc('Formatted <b>alternative</b>'))&&!preg_match('/<script>/',$html));
+$html=sf_render('mail-submission',['row'=>$row,'status'=>mail_submissions_status($row['result'],$row['dispatch']),'copy'=>null,'sentFolder'=>'']);
+sf_ok('Plain recorded message has no formatted frame',!str_contains($html,'data-mail-submission-formatted'));
 $html=sf_render('mail-send',['existing'=>$row]);sf_ok('Existing intent review offers history instead of another send',str_contains($html,'View the existing submission')&&!str_contains($html,'mail_submissions_send'));
 $html=sf_render('mail-submissions',['accounts'=>[$account=>['label'=>'Selected','address'=>'sender@example.invalid']],'account'=>$account,'accountPage'=>1,'moreAccounts'=>false,'page'=>1,'rows'=>[['id'=>$id,'subject'=>$content['subject'],'draft_revision'=>2,'created_at'=>$row['created_at'],'status'=>mail_submissions_status($row['result'],$row['dispatch'])]]]);
 sf_ok('History renders escaped subject without body or recipients',!str_contains($html,'<script>')&&str_contains($html,'SYNTHETIC_SUBJECT')&&!str_contains($html,'SYNTHETIC_BODY')&&!str_contains($html,'private@example.invalid'));

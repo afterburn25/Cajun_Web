@@ -10,7 +10,7 @@ def run_browser(env,browser):
     globals().update({k:env[k] for k in ['ROOT','WEB','BASE','QA','check','soup','token','form_data','submit','inbox_server','provider_server']})
     db('DELETE FROM ci_rate_limits')
     root=BASE+'/existing/admin/index.php';library=root+'?view=mail-drafts';new=root+'?view=mail-draft';accounts=root+'?view=mail-account'
-    check('Fresh installation prepares empty private draft storage',db("SELECT value FROM fresh_settings WHERE name='mail_drafts_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_mail_drafts') and not db('SELECT * FROM fresh_mail_draft_revisions'))
+    check('Fresh installation prepares empty private draft storage',db("SELECT value FROM fresh_settings WHERE name='mail_drafts_schema_version'")==[{'value':'2'}] and not db('SELECT * FROM fresh_mail_drafts') and not db('SELECT * FROM fresh_mail_draft_revisions'))
     owner=requests.Session();submit(owner,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     snapshot=db('SELECT * FROM ci_settings');jobs=db('SELECT * FROM ci_studio_jobs')
     connections=inbox_server.connections;provider_calls=provider_server.calls;capture=(QA/'mail-capture.txt').read_bytes()
@@ -96,6 +96,20 @@ def run_browser(env,browser):
     data=form_data(f);data.update({'action':'mail_drafts_save'});member.post(detail,data=data)
     submit(member,tr.url,'mail_templates_archive')
     check('Saved draft remains independent after source template archive',db('SELECT subject FROM ci_mail_drafts WHERE id=?',[did])==[{'subject':'Hello A client'}])
+    # Formatted alternative: bounded sanitization, persistence, sandboxed preview.
+    edit(member,detail,body_html='<p>SYNTHETIC <strong>formatted</strong> <script>bad()</script><img src=x onerror=bad()></p>')
+    check('Formatted alternative saves sanitized as a new draft version',db('SELECT body_html,revision FROM ci_mail_drafts WHERE id=?',[did])==[{'body_html':'<p>SYNTHETIC <strong>formatted</strong> </p>','revision':6}])
+    r=member.get(detail)
+    check('Saved formatted field exposes only the sanitized fragment',soup(r).select_one('[name=body_html]').text=='<p>SYNTHETIC <strong>formatted</strong> </p>')
+    r=edit(member,detail,'preview')
+    frame=soup(r).select_one('[data-draft-formatted]')
+    check('Formatted preview renders the sanitized fragment inside a sandboxed frame',frame is not None and 'allow-popups' in frame.get('sandbox','') and 'SYNTHETIC <strong>formatted</strong>' in frame.get('srcdoc','') and 'bad()' not in frame.get('srcdoc','') and '<img' not in frame.get('srcdoc',''))
+    r=edit(member,detail,'save',body_html='<p onclick="x">Hostile attribute</p><form><input></form>')
+    check('Hostile markup is reduced to the allowed subset rather than stored raw',db('SELECT body_html,revision FROM ci_mail_drafts WHERE id=?',[did])==[{'body_html':'<p>Hostile attribute</p>','revision':7}])
+    r=edit(member,detail,body_html='<p>'+('x'*40960)+'</p>')
+    check('Oversized formatted alternative is refused before any write','too long' in r.text and db('SELECT revision FROM ci_mail_drafts WHERE id=?',[did])==[{'revision':7}])
+    edit(member,detail,body_html='')
+    check('Clearing the formatted field stores plain text only',db('SELECT body_html,revision FROM ci_mail_drafts WHERE id=?',[did])==[{'body_html':None,'revision':8}])
     r=member.get(detail+'&support=fixture');check('Support mode cannot show staff draft content',r.status_code==403 and 'Hello A client' not in r.text)
     client=requests.Session();submit(client,BASE+'/existing/portal/index.php','login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
     check('Client and anonymous sessions have no staff draft content',all('Hello A client' not in s.get(detail).text and soup(s.get(detail)).select_one('[data-mail-draft-editor]') is None for s in [client,requests.Session()]))
@@ -127,7 +141,7 @@ def run_browser(env,browser):
     check('Concurrent discard preserves escaped unsaved text without restoring or changing the saved record',unsaved is not None and unsaved.select_one('[name=subject]')['value']==discard_race['subject'] and unsaved.select_one('textarea').text==discard_race['body'] and not unsaved.find('script') and soup(r).select_one('[data-mail-draft-editor]') is None and db('SELECT * FROM ci_mail_drafts WHERE id=?',[did])==discarded_before and db('SELECT * FROM ci_mail_draft_revisions')==discard_history)
     metadata=json.dumps(db('SELECT * FROM ci_mail_draft_revisions')+db("SELECT * FROM ci_audit WHERE action LIKE 'mail_drafts.%'"))
     check('Draft audit/history excludes private message and Bcc text',all(x not in metadata for x in [payload['subject'],'SYNTHETIC_PRIVATE_DRAFT_BODY','private-draft@example.invalid']))
-    for path in ['app/mail/drafts.php','admin/controllers/mail_drafts.php','admin/views/mail_drafts.php','database/schema/mail_drafts_schema.php','database/migrations/mail_drafts_migrate.php','includes/foundation/mail-compose/DraftContent.php']:
+    for path in ['app/mail/drafts.php','app/mail/document.php','admin/controllers/mail_drafts.php','admin/views/mail_drafts.php','database/schema/mail_drafts_schema.php','database/migrations/mail_drafts_migrate.php','includes/foundation/mail-compose/DraftContent.php','includes/foundation/mail-compose/ComposeHtml.php']:
         check('HTTP denies direct draft internal '+path,requests.get(BASE+'/existing/'+path).status_code==404)
     check('Every draft workflow performs no mailbox/provider or system-mail delivery',inbox_server.connections==connections and provider_server.calls==provider_calls and (QA/'mail-capture.txt').read_bytes()==capture)
     db('UPDATE ci_staff_profiles SET permissions=? WHERE user_id=?',[original,member_id])

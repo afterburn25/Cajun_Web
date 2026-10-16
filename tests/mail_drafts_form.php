@@ -30,5 +30,14 @@ df_check('Closing textarea and script stay literal in draft form data',mail_draf
 df_check('Over-byte-limit Unicode subject is preserved for correction',mail_drafts_form_values(['subject'=>str_repeat('é',200)])['subject']===str_repeat('é',200));
 df_check('Over-byte-limit Unicode body is preserved for correction',mail_drafts_form_values(['body'=>str_repeat('é',30000)])['body']===str_repeat('é',30000));
 df_check('Error redisplay still bounds malicious oversized input',strlen(mail_drafts_form_values(['body'=>str_repeat('x',200000)])['body'])===160000);
+df_check('Missing formatted field keeps a plain draft',mail_drafts_form_content(['body'=>'B'])->html===null);
+if(extension_loaded('dom')) {
+    df_check('Posted formatted markup is sanitized into the draft alternative',mail_drafts_form_content(['body'=>'B','body_html'=>'<p>Hi <b>x</b><script>bad()</script></p>'])->html==='<p>Hi <b>x</b></p>');
+    df_check('Empty formatted input means plain text only',mail_drafts_form_content(['body'=>'B','body_html'=>'   '])->html===null);
+    df_deny('Formatted input over the raw bound is refused',fn()=>mail_drafts_form_content(['body_html'=>str_repeat('x',65537)]));
+    df_deny('Non-string formatted input is refused',fn()=>mail_drafts_form_content(['body_html'=>[]]));
+    df_deny('Oversized formatted markup is refused',fn()=>mail_drafts_form_content(['body_html'=>'<p>'.str_repeat('x',40960).'</p>']));
+    df_check('Form preserves formatted input for correction',strlen(mail_drafts_form_values(['body_html'=>str_repeat('x',300000)])['body_html'])===262144);
+} else $checks[]=['name'=>'DOM unavailable; formatted form checks skipped','passed'=>true];
 @mkdir(__DIR__.'/../qa',0700,true);file_put_contents(__DIR__.'/../qa/mail-drafts-form-results.json',json_encode(['passed'=>true,'php'=>PHP_VERSION,'ini_loaded'=>php_ini_loaded_file()!==false,'scope'=>'Pure form input boundary only; no database, HTTP rendering or mail transport acceptance','checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n");
 echo 'PASS: '.count($checks)." mail draft form checks\n";
