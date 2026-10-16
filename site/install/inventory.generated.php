@@ -5,11 +5,7 @@ function setup_expected_files(): array { return [
     '.htaccess'=>'35a0a64b4b32da50b037cca5b21770696003cc6501df7ff973f6b45b385aa6ae',
     'admin/controllers/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
     'admin/controllers/account.php'=>'5f9aac3a44e0d64df96936ac0ba43a8f4a42210d884a7216cb33bf718aef3030',
-<<<<<<< HEAD
-    'admin/controllers/actions.php'=>'7443bd70bebc599313bfecac202fcb88ad5b07e701a59b0e9a89811948396cda',
-=======
-    'admin/controllers/actions.php'=>'0959736523dc629fa097bc61019e5b36171f324110fc806f58e88a46f0db5eec',
->>>>>>> devin/non20i-notification-events
+    'admin/controllers/actions.php'=>'083535bf8ed3d6cb63402ad20beb821a9459a0f3e71335eeccceff741c16cdaa',
     'admin/controllers/appointments.php'=>'bd0fb0d0f46e34c0a0851a594379daccf82e810e554529a9fd225dcf42d586f5',
     'admin/controllers/auth.php'=>'1b4d8243821de95a8676cdd0788d5d49eb8e6a553c2af42be5a4917314ec9440',
     'admin/controllers/catalog.php'=>'10da3de6453c515462c7d87611b7d19e459de0e94634d5affcea4f3ec846aa97',
@@ -29,19 +25,11 @@ function setup_expected_files(): array { return [
     'admin/controllers/providers.php'=>'b779f214a0ec456ef6db4058c2c847751655d4f4eec031ce41793f48e3756a84',
     'admin/controllers/recurring_billing.php'=>'a00bbce082a94ae6b6ead44860b04bda18e044871e24e42b08c13b46be1d86bb',
     'admin/controllers/reviews.php'=>'f034ab69a0da4543eba72cd2935ff6d802d0293259e88ca699bbe1f4c1316c31',
-<<<<<<< HEAD
-    'admin/controllers/router.php'=>'d4ca498fd781f3ab1f547d986622c4d32a57c1086ad7c7b0cfadef2bf79dfe1e',
+    'admin/controllers/router.php'=>'88ae1a08f5eb9caf93c3c534917eba9a2661ecbd6943fc23649b2c01c5aa84af',
     'admin/controllers/services.php'=>'b66f7b96ecc50cb5abfa19fd90e8534945cddd8e050cf98de3f1c34d2087c1a8',
     'admin/controllers/settings.php'=>'a47319d99588ac9273c764ec4b8f64059343783b26fb4f809b0e8fb3cb1aa2a9',
     'admin/controllers/staff.php'=>'b996e3b30d339f3ca8b580ae384f150149dcb8f3f76c0474345e1e4c8de70f69',
-    'admin/controllers/studio.php'=>'8bcd38a0d818e1e7136a1b7dd496f65b25923ddab832b315155128700640beba',
-=======
-    'admin/controllers/router.php'=>'16174a36c29978bbfb890afc71197020cb2eed7559c3469729559923b5078fc6',
-    'admin/controllers/services.php'=>'b66f7b96ecc50cb5abfa19fd90e8534945cddd8e050cf98de3f1c34d2087c1a8',
-    'admin/controllers/settings.php'=>'a47319d99588ac9273c764ec4b8f64059343783b26fb4f809b0e8fb3cb1aa2a9',
-    'admin/controllers/staff.php'=>'b996e3b30d339f3ca8b580ae384f150149dcb8f3f76c0474345e1e4c8de70f69',
-    'admin/controllers/studio.php'=>'fb99ed7825c7a88bee8f1c08e53d5c8673cdb74d260998c3dba93106cc9ead92',
->>>>>>> devin/non20i-notification-events
+    'admin/controllers/studio.php'=>'e520d6745ebcbad0b751792b84ed1c633a5c6f71c9995c5df5003c10f876a7a2',
     'admin/controllers/support.php'=>'88f7a55ac44ab724e30f48356de6dd45ebef0961dc30ed0cd278a93679c61433',
     'admin/controllers/testimonials.php'=>'e90f852a6139a12ed6973009a1986a229d2ce7eea0969479b32af3715678b3d8',
     'admin/index.php'=>'027eaabfc6b6430b230e528349bf135ce7910831550e5f352a38f71876a13bde',
@@ -102,24 +90,16 @@ function setup_expected_files(): array { return [
     'api/sitemap.php'=>'44a4331d9b43c85a761e8a7a8b4d716e953e7dad0431306f0fd11a3eccd82256',
     'api/validate.php'=>'19aaad32fc70d8c0a49f14dc454e37cb1453239ac1e5b61acfc0658978af407a',
     'app/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
-<<<<<<< HEAD
     'app/activity/events.php'=>'643ba81acf0bb387a40f9e62bc7b89816f99f158e499d5e764b22efa4455be0e',
-    'app/billing/attempts.php'=>'17619edffffd8c939b8d66e12429d51da01ddfff3b11e05bad5a4556abf09f4b',
+    'app/billing/attempts.php'=>'b55bbb9e3daba5bfdd70d183f2b0e11049dfb9f812cad5d88abcfd83ff2d21f5',
     'app/billing/authorize.php'=>'72ae8bd186180f179f2c7d09f3f9248944ff4eab2227bcca79bf0e430a0641c4',
-    'app/billing/catalog.php'=>'ab4e0aa36dca2e2fb5f4602a3ae9fc229e376f3accb76ea20ac03b7381cdc88b',
+    'app/billing/catalog.php'=>'0d36d39fd14350871654767fd5eab782cfd1e7b171fcf9ae59fef14c7cd7b627',
     'app/billing/design_payment_actions.php'=>'d56bb7fffec135407e84e6f9c83f8579eac131ceaaa0bdf7fd9c994481398036',
     'app/billing/design_payment_activity.php'=>'4031b7bf4f1c7cdc498c374b9594dd98a36c5a31a5c2d6014ca944b3411250ea',
     'app/billing/design_payment_forms.php'=>'00af2a9b2ff16fe6bae1dcb7f9403577b3dcbbc2721dc7e2daa1e78165301f06',
     'app/billing/design_payment_invoices.php'=>'2063b1ffb20a638014c0baed08fcab32001b247576ee8b8735de8bd2d609a38f',
     'app/billing/design_payments.php'=>'521e8031d31dfd494e6e4141269038b17ba958fdeeb2c752d716b58d259448bd',
     'app/billing/ledger.php'=>'d6db204aa28bb77396f1fe58a7ed339f4bb6d4ece57e0773a5151c6e50a4da69',
-=======
-    'app/activity/events.php'=>'b498799c3a09eaacfe286cf9300f21e363690d0c23332fef3be8093d90b94873',
-    'app/billing/attempts.php'=>'ac92882ba569b703d4ec336d77db4d7710b5ec9377647c37a418c973d53b651d',
-    'app/billing/authorize.php'=>'72ae8bd186180f179f2c7d09f3f9248944ff4eab2227bcca79bf0e430a0641c4',
-    'app/billing/catalog.php'=>'0d36d39fd14350871654767fd5eab782cfd1e7b171fcf9ae59fef14c7cd7b627',
-    'app/billing/ledger.php'=>'4283fb6444dcb8868d6f5364effafb2d6cd93bf78b5e7aead6ee3f1abaef235e',
->>>>>>> devin/non20i-notification-events
     'app/billing/notifications.php'=>'069f9ec5056375d224b7dcd735d7db8c399d79045a1b1df655dda820bd717c89',
     'app/billing/payments.php'=>'7d6a06b75458574253827ed7e9d0d9defff564954ccfb88b70ed5f7f8196e09c',
     'app/billing/recurring_billing.php'=>'2afde02566b2209fca1f91cedc7c7348d7865bb7b889bbc27c9137cbd0b4ee7e',
@@ -158,14 +138,15 @@ function setup_expected_files(): array { return [
     'app/marketing/review_content.php'=>'413fcf7ac6f6b47d9f3b20d8cdc4187c82f224e03e34512b5f38c5a76c807388',
     'app/marketing/reviews.php'=>'eae78fd15c95d5adde2e52c819f3bd4166163c4ed6f3b9bdf67c6d7b8d3b735e',
     'app/media/images.php'=>'9262a28d87a1d758bd2c40da67fb05e9501df6f5dc9848e476cf571684263f69',
-<<<<<<< HEAD
+    'app/notifications/feed.php'=>'2b1a658404f84a18f364f0f7b00e2f2c27a3a0e8f30d072da070a8f5eb6ce2e1',
+    'app/notifications/metrics.php'=>'a42dd6ee32dc3d4621562af5a2e3279daf70184c3247fcac59d1b63bf2fe3e15',
     'app/plans/documents.php'=>'975204f8b70387190b3a94d4f3f409c79ac21e26e58132af3670d74c11432edb',
     'app/plans/forms.php'=>'3fb646a0bfe944299b4111d977ca1deb46b630e77ff99423233ece4a08ddcd42',
     'app/plans/records.php'=>'6f1d42aa201edbf82b0920f9c43c4c942cffd28ceee8ba14537303b0a4c901ec',
     'app/plans/views.php'=>'b5dc0ecc18ebaa15105f23dab376dbdeef7f3c9320c0a9b45a52c944aca69429',
     'app/portfolio/browse.php'=>'fa8340a1416e8884a08eb6fe54b055dafb38ec5ae8bb925828e6e06020275d14',
     'app/projects/archive.php'=>'268adf8bec7572fb73db45babc2a3037868d69e6a330552ab6e1d3b428292fdb',
-    'app/projects/deliveries.php'=>'4c60ba2a54a721fdda8446f59d35d70f6650586acccbcf943c437390dfc8fab5',
+    'app/projects/deliveries.php'=>'fcf2ae44dbd71d9b8c389a1821c8b3e2d786e9cd7d645c66c16228b1c4367287',
     'app/projects/planning.php'=>'f19a954f4756f3d7fc9aa513cc3b4bbf48eac5dd297f108ecf43eb242d2465e4',
     'app/projects/planning_activity.php'=>'cd2626b595345940d4549d82d335d1af0b9be4f844fe81bcc21292579186caea',
     'app/projects/planning_forms.php'=>'3fb9c0a5089719b424a39479d27d7eb3ae8b6b71e1b71677abcb9a8bacd0ed7e',
@@ -173,15 +154,7 @@ function setup_expected_files(): array { return [
     'app/projects/progress.php'=>'8f28f09436e8e4b27677b3cedbf19406b7b70d3332d493b8f77d7d0eefc9c196',
     'app/projects/progress_activity.php'=>'3a3ff211b3cb6facd245c54db8fc618880cc8efd0cac67ae7e870ea86e08d9db',
     'app/projects/progress_forms.php'=>'d56be0c0dd368c5bf58d70cf5be8fb41097ffd48cff900707bda74d4348df246',
-    'app/projects/reviews.php'=>'fffd404534c4d73455a37b2e1ac69a4b48ad29c0ba9529a91821cdb18c16d7b1',
-=======
-    'app/notifications/feed.php'=>'2b1a658404f84a18f364f0f7b00e2f2c27a3a0e8f30d072da070a8f5eb6ce2e1',
-    'app/notifications/metrics.php'=>'a42dd6ee32dc3d4621562af5a2e3279daf70184c3247fcac59d1b63bf2fe3e15',
-    'app/portfolio/browse.php'=>'fa8340a1416e8884a08eb6fe54b055dafb38ec5ae8bb925828e6e06020275d14',
-    'app/projects/archive.php'=>'268adf8bec7572fb73db45babc2a3037868d69e6a330552ab6e1d3b428292fdb',
-    'app/projects/deliveries.php'=>'fcf2ae44dbd71d9b8c389a1821c8b3e2d786e9cd7d645c66c16228b1c4367287',
     'app/projects/reviews.php'=>'918ca4dd791b02f1f9528f331811f24833c5e17cff30d062de02db8603674e4c',
->>>>>>> devin/non20i-notification-events
     'app/providers/checks.php'=>'0c4e843fa8734d5645c09379af959718ce384a31482600f80c59f2354b2459e2',
     'app/providers/credentials.php'=>'a25fd07765bf924819dedd6772b32ee11ad5e81fa130735a8869f8666b53b186',
     'app/providers/inventory.php'=>'190050f73659d30720a3ae5a9adc5b76e3816ca4bc66cb5b1de78e06be265b6a',
@@ -190,11 +163,7 @@ function setup_expected_files(): array { return [
     'app/providers/settings.php'=>'15e47fc5b5b9bbe39ae398e1789eb38627cffdb86e8f8de65e20b61bb2127871',
     'app/settings/revisions.php'=>'edcf7ba63bea26eeb964e0b44379d78ae93dd00535754d2375e07bfd5fcdc1bb',
     'app/settings/store.php'=>'f2c9eeba756c02f3b31b5cee3f93866f6fd22cc6f3e1f3e3bc6a5aa0108af564',
-<<<<<<< HEAD
-    'app/staff/accounts.php'=>'3cd1ec526d55faf20f121b01811080952cf517343ecc915826b69b9adc7a65f5',
-=======
-    'app/staff/accounts.php'=>'cb9bdeb4656ec0feeec4917640f5c85167a0aedcacc93aa97b2db69fb8652087',
->>>>>>> devin/non20i-notification-events
+    'app/staff/accounts.php'=>'fcd6eb03f0003b68b201f73b430673a84f63f2f5c9d469271c6b1dafc23f4b1b',
     'app/support/sessions.php'=>'faedce8d00f432dd78ec91ab61e56397b31d9fec778281ea02d515469124512d',
     'app/updates/structure.php'=>'9085455efdb94ccce41cf8006a6e1137ec35d986f432b3259cb6e6194a71b3d6',
     'assets/css/admin.css'=>'3f6bc1cf6d9fc5f771bf814c8bbe6c83476622890f65b067862bb8bb87522175',
@@ -2618,13 +2587,8 @@ function setup_expected_files(): array { return [
     'includes/foundation/webmail/MailboxAssignment.php'=>'a884e5852ff151a04801e038a527f11b255607126181276d4072aa7b55279ce1',
     'includes/foundation/webmail/MailboxProfile.php'=>'cace780aa11733e031004a1f43871840a2c16517d283d86c4190d9152d069223',
     'includes/foundation/webmail/UnifiedInbox.php'=>'8a995a7b28de49b030aec5ff0f6440dd7c9904e71404484774f3bbb3a62d74c9',
-<<<<<<< HEAD
     'includes/layout/activity.php'=>'6fa52a3d5ff5c0f53b899f841df97b726ce96577ab1084e81e45650fe4303654',
-    'includes/layout/admin.php'=>'4e7d59c948e62e93c0d51e7f48975ba52e61bbc7e91ea408ead2df60b87eab06',
-=======
-    'includes/layout/activity.php'=>'35cc13064079a919310fed20acf4337acf97aa7af926b6fc944adb6406790979',
-    'includes/layout/admin.php'=>'9abf600a5ba6d4fbd3d1f22315cde573e3a54d196145e1a6ca2497dfb6f773a1',
->>>>>>> devin/non20i-notification-events
+    'includes/layout/admin.php'=>'27cc4d1735c63d21b89e97d492e4f0437d6f0944af0d37708f83e8d7fded4776',
     'includes/layout/catalog.php'=>'1fe89aa4dda684a65ac66c0b672debcff21401871ef9a176a7e9f1262728306f',
     'includes/layout/deliveries.php'=>'b6ab761e27e9507b82b3a0320a3d0a2158f5764961683b9b5cc8c00dd26ab662',
     'includes/layout/design_financial.php'=>'e2b1f55fa57fd99b23406c5a8562aeaef23b6fb05b4f3250e50093b2bf715ecb',
@@ -2633,14 +2597,11 @@ function setup_expected_files(): array { return [
     'includes/layout/growth_portfolio_view.php'=>'5d78fcd5158e1774d12752641c087ecac62cc727a5734683ea91c3fdec224af1',
     'includes/layout/ledger.php'=>'09ea114027352d07ebc71ffe27ff02f43a271cd08d63ec8f9aea9ea704972f1d',
     'includes/layout/marketing.php'=>'0ac18cfeca4532c5c48fab444ec592cc0fce8d54180068184f5f1f5275b7eb35',
-<<<<<<< HEAD
+    'includes/layout/notifications.php'=>'1ad9403bf485f96d28029164e83f2dd4813eadf228a96a9461cfecb498fbab0b',
     'includes/layout/plans.php'=>'7c05d3d93c75eabd86f67540df9608de006ccbd65be72ac6f13428d41aa7c9d1',
     'includes/layout/project_planning.php'=>'943b85a3cf42d50f9cf2ab5ad84f66fabb13d7589b9a8c8cf70610218c9d6777',
     'includes/layout/project_planning_editor.php'=>'d499b2298c44248f63ddd1814f5853d383351571f6d24ab821d34fdc3b3796b0',
     'includes/layout/project_progress.php'=>'fe73474be920f5f271465054c315d8d1a16b6d67f21a6f008aae625f07e7fcbb',
-=======
-    'includes/layout/notifications.php'=>'1ad9403bf485f96d28029164e83f2dd4813eadf228a96a9461cfecb498fbab0b',
->>>>>>> devin/non20i-notification-events
     'includes/layout/provider_services.php'=>'7e4fd5fc4e4557bd74b1d46c46eed769504931c5d4fbd5ad029a1706459d084e',
     'includes/layout/public.php'=>'964ddf29fe1f67ff201c7ab88ff0ec5e228d54b97d4d22e97354d82d771512f9',
     'includes/layout/recurring_billing.php'=>'8261369e15297fec455c6fdbd5e116413e90955384c310503b104eea56a9fbee',
@@ -2690,24 +2651,15 @@ function setup_expected_files(): array { return [
     'pages/services/industries.php'=>'bb4ff8719ac1479914409d205b4a7ee04719d359c379f04cef0dcc432d792f6a',
     'pages/services/packages.php'=>'973ee673986c1985e0abf8023f80b8da949a250ef4f60ccfb318621c987eb21d',
     'portal/controllers/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
-<<<<<<< HEAD
-    'portal/controllers/actions.php'=>'e0ec2182654b129b5e5bcfe909ed82b603203c16be7efea4dcc96924ac246072',
+    'portal/controllers/actions.php'=>'720e0aeae3415c79bf4de6c5ce68f766cc362be69a36a3a81540a7aa1d5a35cc',
     'portal/controllers/plans.php'=>'af3c5cd826f23db679f04b1d9c54ee7cb4d38e5f1926a14b4e0e226c6d60db65',
     'portal/controllers/recurring_billing.php'=>'de5ff5859d54d2424c8ea13c4150df4f80886cc63051d97a5030941b8e49f748',
-    'portal/controllers/router.php'=>'29e1bc9768e4e92c8d99af937b8ccd5751018dd062038d751e1c569ac1112ed3',
+    'portal/controllers/router.php'=>'c2cdb0b4f51b1b32b3e6a40c574538c8fcb83939b9e3716be48cfa262327e3d2',
     'portal/index.php'=>'2f2c2bdbb10a089c0853ad3b2102f0f9aeef5c9809fcf22e5e5e3f53586521a4',
     'portal/views/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
     'portal/views/auth.php'=>'c23b9baa48681d2b679488761ba5e835eb70bce48a33d0089a457f88591c06bc',
     'portal/views/plans.php'=>'b05ae4c29408d220c46b755ea2093e1038c75a6d3cee342b0c803745de30053e',
-    'portal/views/workspace.php'=>'c45d59d06083069c424065afbfce24853349b562603cb43901efb09cb13cb604',
-=======
-    'portal/controllers/actions.php'=>'5549b2f82ae1b509afadc93ee11a853128289849c30a5e8cb79a77350fc5ffca',
-    'portal/controllers/router.php'=>'628cd4382948ac9a1505783e0b6b486690345552d2147e8df88aeccec7083e95',
-    'portal/index.php'=>'2f2c2bdbb10a089c0853ad3b2102f0f9aeef5c9809fcf22e5e5e3f53586521a4',
-    'portal/views/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
-    'portal/views/auth.php'=>'c23b9baa48681d2b679488761ba5e835eb70bce48a33d0089a457f88591c06bc',
-    'portal/views/workspace.php'=>'b73f8bc6eef59505bb7f7a310d3d33661a6d82dd6fe77a2c26224b213e246241',
->>>>>>> devin/non20i-notification-events
+    'portal/views/workspace.php'=>'08e7607ed44482607badbede6d88026d5f37fe889a347eaea0c9ba3496e51b15',
     'robots.php'=>'643efa6953174e2ccb0f0ca7d282f5d3f67b07f243b1593f47575bfcc960f567',
     'sitemap.php'=>'e73fd55f7d88bc2a4899bdd1305337b6bcf0110aab164d9e9d4cda56f303a3bd',
     'storage/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
