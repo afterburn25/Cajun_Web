@@ -1,16 +1,16 @@
 # Current CajunWebPro agent coordination
 
-Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for complete20i P0, separate branches, sequential integration and verified incremental GitHub releases. Devin owns software-product licensing for other products. These assignments are ownership records, not proof of an active Devin session.
+Updated 2026-10-16 UTC. Codex and three parallel agents own complete20i P0; Devin owns software-product licensing. Work uses separate branches and sequential reviewed shared integration. An allocation is not proof of an active Devin session.
 
-| Owner | Current branch/checkpoint | Scope and next evidence |
+| Owner | Current checkpoint | Scope and next evidence |
 |---|---|---|
-| Root | Frozen948/CIe24c plus local controls merge89325cde; PR151 | Preserve original948 acceptance; verify reviewed controls union before one later candidate. |
-| Domains | Originald5909eac/38870580825 failed; fixtureaff556b9 corrected | Preserve four actual failed archives; corrected focused descendant and later combined browser evidence pending. |
-| VPS | Controls acceptedbff7/docs89325cde; new WordPress indication from111808e2 | Four archives independently verified. Dedicated WordPress bool observation context12/14; shared seams remain external. |
-| Catalog | Source948 parity/helpers and originalc174 final evidence | Prepared100/139-report verifiers; preserve originals and review corrected renewal shared compatibility. |
-| Devin | Software-product licensing; main33ef reviewed | Preserve bundle filtering, invoice uniqueness/marker2/serialized helpers; populated upgrade, master delivery and legacy invoice findings remain. |
+| Root | Locala9b3 controls plus renewal38665bf3 normal merge; PR151 | Finish staged parity, integrate WordPress after focused acceptance and freeze one combined candidate. |
+| Domains | Renewal4f original38871837254 accepted; docs38665bf3 | Four actual13-report archives independently verified; review root merge/source/staged parity. Originald590 failure retained. |
+| VPS | WordPress3f8adaa original38873107762 | Frozen source; own actual four native archives. Earlier controlsbff7 accepted and integrated locally. |
+| Catalog | Frozen948 original38867932452; main68a source review complete | Follow unchanged browser/final evidence using original helpers, inspect directory screenshots. Preserve later-candidate verifier assumptions. |
+| Devin | Software-product licensing; main68a source reviewed | Preserve schema3/checksum/invoice/serialization changes; upgrade, master delivery and legacy invoice findings remain open. |
 
-Original427 is terminal failure at the preserved setup check: final125 reports,2,107 HTTP passes plus one failure,289 recovery/2,211 Apache passes and exact Git/Windows packages are verified. No further polling or repeated acceptance is needed. See [handoff](../SESSION_HANDOFF.md) for exact current sources, evidence and next actions.
+Root original948 acceptance is separate from the newer local controls/renewal merge. No parent/focused evidence establishes the latter's browser/release acceptance. [Handoff](../SESSION_HANDOFF.md) contains exact source, artifact and proof identities.
 
 ## Integration rules
 

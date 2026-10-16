@@ -1,3 +1,7 @@
+## Unreleased — renewal agreement integration
+
+Combine exact one-time USD renewal terms and captured client consent with the reviewed hosting controls. Preserve immutable request/agreement history, current authority, reoffer/end safeguards and generic billing exclusions. Four-way native evidence is verified; merged browser/package acceptance remains pending. Record licensing schema3/checksum compatibility without importing Devin's source.
+
 ## Unreleased — catalog test response-parser correction
 
 Correct the synthetic privacy regression helper to parse raw markup internally while retaining response-object parsing for actual HTTP pages. Preserve all13 privacy cases and the exact public-reference/private-value checks. Downloaded originalc174 browser failure is retained; corrected combined browser acceptance remains pending. No application behavior changes.
@@ -12,6 +16,17 @@ Document verified c174 Windows packages, the preserved03b failure, current focus
 ## Unreleased isolated work — owner Force SSL change requests
 
 Prepare explicit owner approval against a current saved flag, a single shared-gateway request, immutable dispatch evidence and separate exact GET readback. HTTP200 never acknowledges the effect. Client observation sharing stays separate; pending requests make older observations historical. Reviewed shared wiring is applied; four-way native acceptance now passes atbff7; browser acceptance remains pending, and interrupted-dispatch operator recovery is not yet implemented. The first focused run stopped before native setup on a duplicated test include; change only that include to require_once and retain the original failure. No provider action or release is claimed.
+## Unreleased — verified renewal agreement native acceptance
+
+Verify the corrected renewal agreement workflow in all four PHP/database environments with downloaded named reports, including71 new native+69/+69 pure checks and all existing billing/order regressions. Preserve the original fixture failure. Evidence only; combined browser and release acceptance remain pending.
+
+## Unreleased — renewal interruption fixture correction
+
+Preserve the original four-way native failure and correct its synthetic interruption to occur during result persistence. Require one retained intent, one synthetic request and no result after the exact database fault. Application behavior is unchanged; corrected database and combined browser acceptance remain pending.
+
+## Unreleased — renewal service agreement binding
+
+Allow studio-entered one-time USD service terms to be linked to an exact pending domain-renewal request, with explicit privacy scope, acceptance deadline and retained replacement-offer history. Reuse existing client consent/end actions and prevent generic hosting forms from bypassing the renewal binding. Source-reviewed; native/browser acceptance pending. No automatic provider renewal, charge or invoice generation.
 
 ## Unreleased — saved Force SSL flags and catalog privacy test repair
 

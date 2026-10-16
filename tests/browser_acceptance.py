@@ -244,6 +244,8 @@ try:
         directory_listing_browser(globals(),browser)
         from provider_force_ssl_controls_cases import run_browser as force_ssl_controls_browser
         force_ssl_controls_browser(globals(),browser)
+        from domain_renewal_agreements_cases import run_browser as renewal_agreements_browser
+        renewal_agreements_browser(globals(),browser)
         from provider_schedule_cases import run_browser as schedule_browser
         schedule_browser(globals(),browser)
         browser.close()

@@ -1,9 +1,8 @@
-## Directory-listing observations integrated locally — 2026-10-16
+## Current 20i integration — 2026-10-16
 
-Native-tested3bdba5eb/docsacbf00b joins the next local normal root integration. Owners can save and share the reported directory-listing setting through the existing protected executor. All four actual ten-report archives pass; this new merged tree still needs combined browser/package acceptance. Force SSL owner changes and renewal agreement bindings are parallel implementation lanes. [Scope](TWENTYI_DIRECTORY_LISTING_OBSERVATIONS.md) and [current source/evidence](../SESSION_HANDOFF.md).
-## Isolated Force SSL controls — 2026-10-16
+Reviewed Force SSL owner controls and renewal retail agreements are joining the root candidate through normal merges. Both have independently verified four-way native archives. Renewal binds existing one-time USD terms and captured consent; provider quotes, payment and renewal dispatch remain unfinished. ForceSSL effects require separate observation; interrupted dispatch remains fenced. Combined browser/package acceptance is pending. WordPress installation indication3f8adaa is a separate frozen lane under original focused38873107762; it is not a version/login/plugin/health feature. [Current source and evidence](../SESSION_HANDOFF.md).
 
-Owner Force SSL changes are implementing on `codex/twentyi-force-ssl-controls` from c1743664. The bounded request/readback workflow uses exact current authority and existing gateway/ledger, with independent client sharing and no certificate/HTTPS-health inference. Exactbff7 four-way native artifacts now pass82 control cases plus inherited reports; combined browser/package acceptance remains pending. Interrupted dispatch remains fenced pending a separately reviewed operator recovery transition; this lane cannot be marked complete before that transition. [Guide](TWENTYI_FORCE_SSL_CONTROLS.md).
+Original948 directory/parser candidate remains under its unchanged full run. The published release remains1.24.0; full20i and1.25.0 are unfinished. Devin's latest licensing schema3/checksum source is reviewed separately and not imported. Preserve current ownership and [licensing findings](LICENSING_INTEGRATION_REVIEW.md).
 
 ## Combined website-folder and Force SSL observations — 2026-10-16
 

@@ -1,3 +1,7 @@
+## 2026-10-16 — reuse agreements for renewal retail terms
+
+The supplied provider reference does not establish an executable premium/standard renewal quote response schema. Use studio-entered one-time USD terms through the existing immutable service-plan/subscription journals. Append a bounded immutable request-to-agreement binding; retain globally unique agreements and multiple historical offers per request after explicit existing abandon/cancel actions. Do not create a parallel quote event engine, invoice generator, currency model or provider purchase promise. Exact current registrar authority and a captured binding fingerprint gate acceptance; original invoice origins and shared-hosting-only order documents remain unchanged. [Contract and lifecycle](TWENTYI_DOMAIN_RENEWAL_AGREEMENTS.md).
+
 ## 2026-10-15 — preserve new source identity and coordinate discovery readers
 
 Retain the newly supplied complete reference34e713 with line positions and two bearer-example redactions; never relabel it as the earlier missingf7c738 upload. Documentation establishes specific wire contracts, not feature completion or live execution. Add registration periods and cloud-provider identifiers through typed list observations in the existing inventory executor; domain renewalDate remains a distinct typed scalar result with exact assignment/source binding. Preserve the scheduler recorder transaction/mutex guard. Root integrates the three shared changes sequentially; no duplicate journal or generic endpoint runner. [Intake](TWENTYI_OWNER_API_REFERENCE_INTAKE.md).
