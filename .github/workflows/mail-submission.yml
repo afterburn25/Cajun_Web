@@ -34,6 +34,8 @@ jobs:
             php -n tests/mail-submission/run.php qa/submission-no-ini-results.json
             php tests/mail-submission/mime.php qa/submission-mime-default-results.json
             php -n tests/mail-submission/mime.php qa/submission-mime-no-ini-results.json
+            php tests/mail-submission/attachments.php qa/submission-attachments-default-results.json
+            php -n tests/mail-submission/attachments.php qa/submission-attachments-no-ini-results.json
             php tests/mail-submission/transport.php qa/submission-transport-default-results.json
             php -n tests/mail-submission/transport.php qa/submission-transport-no-ini-results.json
             php tests/mail-submission/channel_policy.php qa/submission-channel-policy-results.json
@@ -42,6 +44,8 @@ jobs:
           '
           python3 tests/mail-submission/verify_mime.py "$RUNNER_TEMP/submission-results/submission-mime-default-results.json" "$RUNNER_TEMP/submission-results/submission-mime-parser-default-results.json"
           python3 tests/mail-submission/verify_mime.py "$RUNNER_TEMP/submission-results/submission-mime-no-ini-results.json" "$RUNNER_TEMP/submission-results/submission-mime-parser-no-ini-results.json"
+          python3 tests/mail-submission/verify_attachments.py "$RUNNER_TEMP/submission-results/submission-attachments-default-results.json" "$RUNNER_TEMP/submission-results/submission-attachment-parser-default-results.json"
+          python3 tests/mail-submission/verify_attachments.py "$RUNNER_TEMP/submission-results/submission-attachments-no-ini-results.json" "$RUNNER_TEMP/submission-results/submission-attachment-parser-no-ini-results.json"
       - name: Build isolated TLS test runtime
         run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -f tests/mail-submission/Dockerfile -t cwp-submission-fixture:${{ matrix.php }} tests/mail-submission
       - name: Actual loopback SMTP TLS without external networking

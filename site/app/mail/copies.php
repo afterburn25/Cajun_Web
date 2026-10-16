@@ -3,6 +3,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 use CajunWebPro\Foundation\MailTransport\{EndpointPolicy,EndpointResolver,ProbeFailure};
 use CajunWebPro\Foundation\MailReceiving\{SentCopy,ReceivingFailure};
+use CajunWebPro\Foundation\MailSubmission\PreparedMime;
 require_once CWP_CODE_ROOT.'/includes/foundation/mail-transport/EndpointPolicy.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/mail-transport/EndpointResolver.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/mail-transport/ProbeFailure.php';
@@ -54,7 +55,7 @@ function mail_copy_record(array $started,string $code,int $elapsed): void {
 }
 function mail_copy_transport(array $row,#[\SensitiveParameter] array $secrets,string $address,string $folder,#[\SensitiveParameter] string $mime,callable $authorize): void {
     require_once CWP_CODE_ROOT.'/includes/foundation/mail-receiving/bootstrap.php';
-    SentCopy::append($row['imap_host'],(int)$row['imap_port'],$row['imap_encryption'],$address,$row['imap_username'],$secrets['imap_password'],$folder,$mime,$authorize);
+    SentCopy::append($row['imap_host'],(int)$row['imap_port'],$row['imap_encryption'],$address,$row['imap_username'],$secrets['imap_password'],$folder,$mime,$authorize,PreparedMime::MAX_BYTES);
 }
 /** Copy one own accepted submission into the configured server Sent folder. Every request is recorded. */
 function mail_submission_copy(string $submissionId,?callable $resolver=null,?callable $transport=null): array {

@@ -8,15 +8,15 @@ final class SentCopy
 {
     public static function append(string $host,int $port,string $encryption,string $address,
         #[\SensitiveParameter] string $user,#[\SensitiveParameter] string $password,
-        string $folder,#[\SensitiveParameter] string $message,callable $authorize): void
+        string $folder,#[\SensitiveParameter] string $message,callable $authorize,int $maxBytes=65536): void
     {
         $stream=null;
         try {
             try {$authorize();}catch(\Throwable){throw new ReceivingFailure('access_changed');}
-            AppendSession::folder($folder);AppendSession::message($message);
+            AppendSession::folder($folder);AppendSession::message($message,$maxBytes);
             $stream=new ReceivingStream($host,$port,$encryption,$address,ReadProfile::Append);
             $stream->open($encryption,$host,$port,20);
-            (new AppendSession($stream,$authorize))->append($encryption,$user,$password,$folder,$message);
+            (new AppendSession($stream,$authorize,$maxBytes))->append($encryption,$user,$password,$folder,$message);
         } catch(ReceivingFailure $e) {throw $e;}
         catch(\Throwable) {throw new ReceivingFailure('connection');}
         finally {$stream?->close();}

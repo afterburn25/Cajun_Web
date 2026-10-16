@@ -41,10 +41,13 @@ $draft=$review?$data['draft']['id']:$data['row']['draft_id'];
 <p><strong>From:</strong> <?=esc($content['from'])?></p>
 <p><strong>To:</strong> <?=esc(implode(', ',$content['to']))?></p><p><strong>Cc:</strong> <?=esc(implode(', ',$content['cc']))?></p>
 <section aria-label="Blind copy recipients"><h3>Bcc</h3><p><?=esc($content['bcc']?implode(', ',$content['bcc']):'No blind copy recipients')?></p><p class="hint">Bcc recipients receive the email but are not included in its visible recipient headers.</p></section>
+<?php $files=$review?($data['files']??[]):($content['attachments']??[]); ?>
+<section aria-label="Message attachments" data-mail-submission-files><h3>Attachments</h3>
+<?php if($files): foreach($files as $file): ?><p><strong><?=esc($file['name'])?></strong> · <?=esc($file['mime'])?> · <?=(int)$file['bytes']?> bytes</p><?php endforeach; else: ?><p class="hint">No files are attached to this saved message.</p><?php endif; ?></section>
 <h3><?=esc($content['subject']!==''?$content['subject']:'No subject')?></h3><div class="formatted" data-mail-submission-body><?=nl2br(esc($content['body']))?></div></section>
 <?php if($review): ?><section class="workspace-card"><h2>Send this saved message</h2><form method="post" action="<?=esc(admin_url('mail-send',['draft_id'=>$draft]))?>" data-mail-submission-confirm>
 <?php admin_action('mail_submissions_send'); ?><input type="hidden" name="submission_id" value="<?=esc($data['submission_id'])?>"><input type="hidden" name="draft_id" value="<?=esc($draft)?>"><input type="hidden" name="draft_revision" value="<?=(int)$data['draft']['revision']?>"><input type="hidden" name="account_revision" value="<?=(int)$data['account']['revision']?>">
-<label><input type="checkbox" name="confirm_send" value="1" required> I reviewed the sending account, To/Cc/Bcc recipients and saved message above.</label>
+<label><input type="checkbox" name="confirm_send" value="1" required> I reviewed the sending account, To/Cc/Bcc recipients, attachments and saved message above.</label>
 <p class="hint">Send once, then check the recorded result. A missing confirmation does not mean the message failed.</p><button class="btn gold">Send email</button></form></section><?php endif; ?>
 <p><a class="text-link" href="<?=esc(admin_url('mail-draft',['draft_id'=>$draft]))?>">Open the saved draft</a> · <a class="text-link" href="<?=esc(admin_url('mail-submissions'))?>">My submission history</a></p>
 <?php endif; ?>
