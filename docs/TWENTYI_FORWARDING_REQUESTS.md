@@ -29,3 +29,16 @@ Every permission/request/review/cancel/decline is canonical JSON signed by the i
 Local PHP syntax and15 named offline request-contract assertions pass. New native fixtures cover preparation rollback, separate permission, ownership/support isolation, stale context, original request immutability, audit interruption, history loss, reapproval/revocation and real concurrent processes. Four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 CI modes are required. New packaged browser cases exercise actual owner permission, client request, owner review, cancellation/decline, stale/foreign CSRF requests, private history and direct-file protection, with desktop/mobile screenshots. Those native/browser runs remain pending; source or syntax checks are not acceptance.
 
 Next: finish independent source review, run regenerated exact source through focused native matrix and packaged browser acceptance, download and verify named artifact results and inspect actual screenshots. Provider submission, exact acknowledgement, readback, update/delete and account entitlement remain separate unfinished implementation. No live provider, customer mail, charges, SSH or deployment was attempted.
+
+### Exact focused evidence
+
+Sourcea02bcf0564c40085cee5988fea91b9db451d08bf, PR150, focused run38832725045: all four jobs succeeded. Each downloaded archive contains85 passing uniquely named native cases and15 passing uniquely named offline cases. Digests and ZIP CRC were independently verified. These tests use disposable databases and synthetic inventory; no forwarding transport exists.
+
+| Mode | Artifact | SHA256 |
+|---|---|---|
+| PHP8.2 / MariaDB10.11 | 12018201474 | 22ac4b2cd24b0a0cc8b758de3f8ef9fa653d365ba961b333aa5e9982ffa3f092 |
+| PHP8.4 / MariaDB10.11 | 12017383852 | 011564a629e8623f430510933c78c4c5fb111d7309952305a87f59b629249e29 |
+| PHP8.2 / MySQL8.4 | 12017692887 | 127d911189b35a6d09d2800dfcacd250faf3d5a90d3bb6a40fe57bbbc94c55fe |
+| PHP8.4 / MySQL8.4 | 12017782785 | 127d911189b35a6d09d2800dfcacd250faf3d5a90d3bb6a40fe57bbbc94c55fe |
+
+Exact application run38832724941 remains pending; actual packaged forwarding browser acceptance is not yet claimed. Continued primary-source searches on2026-10-15 found no exact forwarding acknowledgement/readback semantics beyond the request example; keep dispatch disabled. The live forwarding-setup guide now resolves at [email accounts forwarding](https://docs.20i.com/email-hosting-email-accounts/email-forwarding).
