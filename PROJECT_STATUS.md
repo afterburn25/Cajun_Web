@@ -25,6 +25,7 @@ Main retains existing licensing and the four unresolved [integration findings](d
 - `devin/non20i-backups-foundation` (PR #162) ports the A-03 contract layer — `BackupManifest` sealed item scopes with structural secrets exclusion, `RestorePlan` deliberate preview→authorize→applied states.
 - `devin/non20i-pipeline-foundation` (PR #163) ports the lead-pipeline contract layer — `PipelineBoard`/`PipelineStage`/`LeadRecord` ordered stages with validated transitions and non-drag control parity.
 - `devin/non20i-proposals-foundation` ports the proposal contract layer — `Proposal`/`ProposalVersion`/`ApprovalDecision` immutable versions with deliberate approval states.
+- `devin/non20i-proposals-runtime` integrates that contract: additive proposal schema, model-replayed transitions, staff authoring/send/withdraw, and a portal decision surface pinned to the exact version id.
 
 All are local/CI validation only — no live deployment, mail, provider or customer action.
 

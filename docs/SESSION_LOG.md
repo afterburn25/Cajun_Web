@@ -1,5 +1,15 @@
 # Session log
 
+## Proposals runtime integration (P-02) — 2026-10-16
+
+Request: continue all remaining non-20i work (issue #157). Starting commit: `devin/non20i-proposals-foundation` tip `dd3abe81` (contract layer), new branch `devin/non20i-proposals-runtime`.
+
+Actions: implemented the missing proposal runtime — `proposals`/`proposal_versions`/`proposal_events`/`proposal_decisions` additive schema + `proposals_migrate` (owner reauth + backup confirmation, refuses populated unrecognized tables); `site/app/marketing/proposals.php` rebuilding the foundation `Proposal` state machine from the durable record for every transition; request-key replay on create; admin list/detail/create/revise/send/withdraw at `?view=proposals`/`?view=proposal`; portal `?proposal=` review + `proposal_decide` client action pinned to the exact version id; `clients.manage`/`staff.manage` permission mapping, nav, build mirror, Apache direct-access inventory, `proposals.yml` path filters, `application-tests.yml` native lane.
+
+Tests: `php -l` clean on all touched PHP; foundation suite `tests/proposals/run.php` 35/35 on PHP 8.4; `tests/proposals_native.php` (26 checks: setup gating, replay protection, permissions, transitions, version-pinned decisions, ownership denial, support-session denial, atomic rollback, re-migrate retention); `tests/proposals_cases.py` HTTP suite wired into `browser_acceptance.py`. `tools/build.py --refresh` clean; canonical mirror byte-identical. Synthetic lanes only — no live client, mail or payment operation.
+
+Next: PR + #157 update; remaining foundation runtime integrations (notifications feed, support-access formalization) per roadmap order.
+
 ## Port proposal/approval contract layer — 2026-10-16
 
 Request: continue the remaining non-20i roadmap (issue #157); proposal/approval workflow is in Devin's scope. Starting commit: main `595ac9c3`, new branch `devin/non20i-proposals-foundation`.

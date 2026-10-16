@@ -16,6 +16,15 @@ Add a root start-here guide, complete owner-approved assignment and existing lic
 
 # Changelog
 
+## Proposals runtime (P-02) — devin/non20i-proposals-runtime
+
+- Client proposals: additive `proposals`/`proposal_versions`/`proposal_events`/`proposal_decisions` schema behind owner reauthentication and backup confirmation, with request-key replay protection on creation.
+- Staff author drafts with deliverables, exclusions, schedule and priced milestones (`Admin → Client proposals`); edits always create the next numbered version — sent versions are immutable.
+- Lifecycle enforced by the foundation model replayed from the durable record: draft → sent ⇄ changes-requested → approved; staff withdrawal except once approved.
+- Clients review the exact sent version in the portal (`?proposal=`) and approve or request changes pinned to that version id; superseded versions cannot be decided. Support sessions and other clients are denied. Approvals are commercial confirmations, not legal e-signatures or payment authorization.
+- Append-only attributed event history per proposal; synthetic native MariaDB and HTTP lanes cover setup, replay, permissions, transitions, ownership and retention.
+
+
 ## Synchronize release entry points after review — 2026-10-15
 
 Review4281622110 on4cbc2375 reproduced stale pending1.24 headers in README, agent coordination, release workflow and inventory owner guide. Update every listed entry point plus current migration instructions to the actual immutable publication, archive earlier coordination and mark historical1.23 sections clearly. No runtime or package bytes change. Starting parent4cbc23758674b29899d235b511b40f0a18cf8503 is “Record verified1.24 publication and current20i continuation”; correctiondf57d0ce is “Synchronize published1.24 across current entry-point guides.” Actual local documentation check passed161 Markdown files/1,330 local links and canonical dependency checks; git diff whitespace check passed. These checks cover documentation/source consistency only, not runtime acceptance, which remains the separately published7190 evidence. Known failure: initial review4281622110 found stale headers and was corrected. Follow-up review4281670745 requested this explicit validation record. Renewed review is pending; continue cloud/commercial20i work.
