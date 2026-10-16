@@ -1,3 +1,5 @@
+Current 20i source and acceptance checkpoint, 2026-10-16 14:41 UTC: [corrected StackCP 819c3ea3 and preserved registration full acceptance](TWENTYI_CURRENT_CHECKPOINT.md). Main changes documentation only; candidate runtime remains separate. Earlier status paragraphs below are historical where they conflict with this checkpoint.
+
 ## Current owner allocation - 2026-10-16
 
 **Devin: continue all remaining non-20i site work, including licensing. Codex and its three agents: continue complete20i.** This supersedes older unrelated-work pause statements for Devin. [Start here](../DEVIN_START_HERE.md) gives the full assignment, direct licensing code locations, shared-file boundaries and instructions that work without the GitHub API. Licensing is already on main; inspect and repair its documented gaps rather than recreating it. Work on separate feature branches; Codex coordinates final integration/releases. Assignment [#157](https://github.com/afterburn25/Cajun_Web/issues/157) is posted; external-session acknowledgement is not assumed.
@@ -559,6 +561,8 @@ Latest and retained prior website releases with version, notes, date, size, chec
 ### P-07 — Client notification center and real monitoring
 
 Portal bell/timeline and configured email updates for project work, approval requests, new downloads, support, billing and service events. Link to the correct authorized object; record read/unread, preferences and delivery retries. Show actual project progress and verified hosting health/usage/check timestamps; mark stale/absent metrics honestly. Client notifications never include internal admin email or staff-only notes. Full acceptance: [Updates and monitoring](CLIENT_PORTAL_ROADMAP.md#p-07--client-updates-notifications-and-service-monitoring).
+
+**Runtime progress (2026-10-16, `devin/non20i-notifications-runtime`):** directed per-recipient feeds with private admin/portal screens, recipient-only read state, per-kind email opt-outs, honest delivery-attempt records, and emit hooks for inquiries, project messages, review decisions, delivery publication and invoice-paid events — pending acceptance. Still pending: monitored health/usage metrics (`MetricSample` producers), polling/summary surfaces, and real-provider notification sources.
 
 ## Administration and resilience
 

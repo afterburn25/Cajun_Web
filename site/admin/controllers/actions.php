@@ -26,6 +26,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     if(str_starts_with($action,'mail_templates_')){mail_templates_admin_action($action);return;}
     if(str_starts_with($action,'activity_'))activity_post('admin');
     if(str_starts_with($action,'delivery_'))delivery_admin_action($action);
+    if(str_starts_with($action,'notification'))notifications_admin_action($action);
     if(str_starts_with($action,'studio_')){studio_admin_action($action,$user);}
     if($action==='logout'){support_end_browser('admin-logout');log_event('auth.logout');$_SESSION=[];if(ini_get('session.use_cookies')){$p=session_get_cookie_params();setcookie(session_name(),'', ['expires'=>time()-42000,'path'=>$p['path'],'secure'=>$p['secure'],'httponly'=>true,'samesite'=>'Lax']);}session_destroy();redirect(admin_url('login'));}
     require CWP_CODE_ROOT.'/admin/controllers/portfolio.php';

@@ -1,5 +1,16 @@
 # Session log
 
+## Port P-07 notification contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-notifications-foundation`.
+
+Actions: extracted the preserved `devin/notifications` slice — five `foundation/notifications/` classes, `tests/notifications/run.php`, `notifications.yml`, `docs/NOTIFICATIONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters.
+
+Tests: `php -l` clean; `php tests/notifications/run.php` → 65/65 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
+
+## Synchronize release entry points after review — 2026-10-15
 ## Port client support tickets onto main — 2026-10-16
 
 Request: continue the non-20i roadmap after licensing; the assignment's next item is client support tickets/private staff notes, reusing preserved PRs instead of rebuilding.
@@ -1647,3 +1658,29 @@ Still not live-verified: production `license_core_dir`, real purchase→bundle�
 The owner asked Devin to continue the remaining site while Codex handles20i, then reported Devin could not find the assignment under API rate limiting. Starting actual main79d9e8e90d9fd3e8b3c34140814aa90272a2f82b, prepare a documentation-only fast-forward with DEVIN_START_HERE, full issue157 assignment, current licensing review and prominent allocation links in the standard entry points. Existing licensing code is on main under app/licenses, API handlers, schema/migration and native/functional tests; a missing branch name does not establish missing code. Preserve all existing handoff/history and provide fetch/show commands that do not depend on GitHub API access. The current20i candidate9779879b stays separate and unchanged.
 
 Validation: documentation/local-link checks and exact non-Markdown tree comparison against main79d9 precede publication; no application acceptance is inferred from documentation checks. Record the enclosing commit as Publish Devin non20i assignment on main with direct source links. Scope changes no runtime, installer, version, live deployment, provider request, charge or customer message. Next: Devin can fetch main and implement the existing non20i assignment on an owned branch; Codex continues original20i tests and integration. Acknowledgement is pending, not a blocker to the owner's already-authorized work.
+
+## 2026-10-16 13:47 UTC - verify9779 and start original combined acceptance
+
+Continue the owner-authorized roadmap from main documentation parent80ce8b19 while preserving frozen20i source9779879b. Root independently checked all four registration archives and exact Windows source/installer/update packages, then dispatched first full38909577278 with full acceptance requested. Record current states and exact scoped proofs in TWENTYI_CURRENT_CHECKPOINT. Source-review StackCP dedicated/shared files and actual endpoint validation; preserve the initial external-harness missing-includes failure and corrected dependency staging. Cloud legacy/shared v2 independent reviews are retained, while evolving fixture work remains unaccepted.
+
+Refresh main's status/handoff to the current separate-source checkpoint, preserving prior complete documents through immutable80ce links. Devin's published non20i assignment remains intact. Actual full browser/recovery/Apache/visual/Linux/exact-main/release acceptance remains pending. Next: follow original tests, finish fixture reviews and integrate bounded changes sequentially; no production action.
+
+Actual documentation validation:167 Markdown files,1363 local links and14 heading links pass, including canonical mail dependencies/mirrors. Exact staged non-Markdown comparison, whitespace and remote fast-forward checks precede publication. This is documentation/source-consistency evidence, not application acceptance. Commit: Record verified registration checks and current20i acceptance.
+
+## 2026-10-16 14:41 UTC - document corrected StackCP and preserved original runs
+
+Continue the owner-authorized roadmap from main documentation parent `155db254e8e3d0c018200abf6a9325d04c3578ca`. Prepare the documentation-only checkpoint for corrected source `819c3ea39b4ebbef8f37280dc5ede59cf06fd01c` on `codex/twentyi-stackcp-access-observations`; update status, actionable handoff, current checkpoint, Devin's active pointer, roadmap/coordination and current allocation wording. The original four-way focused run 38915851687 and all four actual archives are independently verified (9ad9a502/b8c1d8bc): 18 reports and 2,045 passing named executions per environment, including 103 native access checks, totaling 8,180 executions. Windows proof 41423159 verifies exact packages with no shipping change from 13879. The first full run 38917429508 was dispatched once on exact 819c via workflow_dispatch with checkpoint_only false and remains in progress. Full/browser acceptance is not inferred from focused or documentation checks.
+
+Preserve all four original 13879 fixture failures (proof a7569ec), the exact sibling-lookup correction, and terminal failed 9538 full evidence (8cb797e8). Original 9779 full 38909577278 remains active in HTTP/Chromium; its native step succeeded and build/recovery/Apache proofs 36dad952/4a26f05b/70905cc1 are scoped verified partitions. Cloud v2 remains external: root reproduced the active-client precheck race after the earlier fallback review. The callback-entry recheck is source-reviewed (acf9c069/a32cc83f) with 34 passing synthetic cases per mode; its five additional native assertions, final union and actual native/HTTP acceptance remain pending. Devin issue 157 and all four licensing findings remain current; no runtime import or external-session acknowledgement is assumed.
+
+Validation: external proposed Markdown/local links and exact base-byte preservation are checked before root review; this is documentation/source validation only. Root must recheck remote main before applying or pushing. Record the enclosing change as Document corrected StackCP checkpoint and preserved acceptance evidence. No checkout mutation, commit, push, workflow dispatch, provider call, charge, customer message or deployment is performed by this proposal. Next: retain both original full runs, inspect their actual artifacts/screens, then finish sequential integration and final release gates. Published 1.24.0 is unchanged; 1.25.0 and full 20i are not released.
+
+## 2026-10-16 - Confirm Devin delivery and preserve legacy-upgrade failure
+
+Fresh issue157 comments6217621738/6217865863 acknowledge non20i work. Open heads: licensing159 e3d627701f14d4d44acc02be49f4bbd20cb2b389; tickets158 3ca4bbb780e155d56914ba834d1e811eebb91d1f; progress160 433c60942aa7e4d72c0576c391d41718f793675c. Licensing proposes fixes to the four findings; independent review is underway, not accepted or merged. Prior unconfirmed-acknowledgement wording is corrected. Full819c native failed at a genuine old-schema owner GET; preserve original run and fix on the next source, without weakening its fixture. Documentation-only descendant of481aff27; no runtime, installer, release or live change.
+
+## 2026-10-16 - Devin P-07 notification feed runtime
+
+Request: continue all remaining non-20i site work per issue157; build the notification runtime on the ported contract. Starting from foundation tip `6cf9f405` on `devin/non20i-notifications-runtime`. Changes: new `notification_feed`/`notification_prefs`/`notification_deliveries` schema (distinct from payment-webhook `notifications`), owner-password setup migration with additive/readiness checks, `app/notifications/feed.php` service mapping persistence onto `Notification`/`NotificationFeed`/`NotificationPreferences`/`DeliveryAttempt`, private admin `?view=notifications` and portal `?notifications=1` feeds, recipient-only read/unread mutation, per-kind email opt-outs, read-only support-session viewing, emit hooks on inquiry submission, admin/client project messages, review decisions, delivery publication and invoice-paid transitions. Email copies attempt synchronously after commit; failures record terminal `failed` with the named error — no daemon.
+
+Tests: `php -l` clean on all touched files; `tests/notifications/run.php` 65 pure checks pass; `tests/notification_feed_native.php` (MariaDB isolation/read-state/preferences/retry/rollback/readiness) and `tests/notification_feed_cases.py` (HTTP setup, feeds, marking, opt-outs, cross-recipient denial) added and wired into `application-tests.yml`/`browser_acceptance.py`; Apache direct-denial inventory extended. Native/HTTP execution runs in CI — not executed locally (no MariaDB/browser host here). No live mail, deployment, provider or customer action. Next: push, open stacked PR, then `MetricSample` producers and polling surfaces.

@@ -76,6 +76,7 @@ jobs:
           php8.3 tests/payments_native.php
           php8.3 tests/attempts_native.php
           php8.3 tests/notifications_native.php
+          php8.3 tests/notification_feed_native.php
           php8.3 tests/ledger_native.php
           php8.3 tests/delivery_archive.php
           php8.3 tests/delivery_native.php
