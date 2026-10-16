@@ -1,3 +1,11 @@
+# Actual427 browser failure and setup correction — 2026-10-16 UTC
+
+Original full38853750274 passes packaging/native but browser fails after2107 passing checks at the dedicated period-owner activation/account-preservation assertion. Actual checkpoint12027447378:142974844 bytes, SHA256 a95a190bc3d6caf07a09be2b1cc949da30a7428881d3d572b79f210cb9f4cc84,316 safe members/CRC,86 named reports,10 available clean diagnostics,192 images. `work/20i-root427-browser-failure-verification.json` preserves the exact failed check; later period/PHP/scheduler browser cases were not reached. Original recovery succeeds; Apache/final continues as of05:46UTC. No combined success is claimed.
+
+Source and independent domains review identify full pre-login account equality across login_user's expected last_login update. Per-term database values were not captured, so this is source diagnosis supported by successful redirect logs, not a reconstructed DB dump. Period/PHP fixtures now assert every other user field and exact staff profile across successful setup authentication, then preserve the complete post-login row. Hashes/auth_version/roles and all inherited intents/audits remain strict; production code, quotas and cooldown are unchanged. Redacted setup outcomes are saved before assertions. Corrected actual combined execution remains required. Domains applies the same repair to separate expiry before one new integrated acceptance.
+
+Main94 source/merge review is complete, with prior licensing findings still open; see [handoff](../SESSION_HANDOFF.md). The earlier frozen checkpoints below retain their historical time/source scope.
+
 # Current frozen candidate — 2026-10-16 UTC
 
 Combined427/CI d106 have identical source trees; documentation descendants do not change its shipping source. All38 focused workflows succeed and all20 date/PHP/cloud/period/scheduler archives are downloaded and verified. Full38853750274 passes packaging/native integration and runs HTTP/Chromium as of05:31UTC. Exact Windows FULL5612/COMPLETE2760/UPDATE2747 is verified. Root/catalog shared/fixture reviews and independent VPS non-owned integration review are clear. Final browser/recovery/Apache, main reconciliation and exact-main release acceptance remain required.

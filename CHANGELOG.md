@@ -1,3 +1,7 @@
+## Unreleased — preserve account authority across fixture login
+
+Correct dedicated period/PHP browser fixtures to account for the normal last-login update before preserving the complete account row. All password, authority, role, immutable-history, quota and cooldown assertions remain; add finite setup diagnostics before assertions. Preserve actual427 failed browser evidence and completed main94 source review. Application/installer bytes remain unchanged; corrected combined acceptance and release remain pending.
+
 ## Unreleased — frozen candidate verification and parallel handoff
 
 Record all20 exact combined reader matrix artifacts, successful combined packaging/native checks, verified original PHP full acceptance and preserved domain full failure evidence. Record independent integration review, separately native-tested expiry and pure cloud/DNS components; document-root/ForceSSL work remains separate. Update issue2 ownership/status and current-main licensing findings. Documentation only;427 shipping stays fixed,1.25.0 remains unreleased, and no live provider action occurs.

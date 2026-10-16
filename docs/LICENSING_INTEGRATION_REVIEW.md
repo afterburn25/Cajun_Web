@@ -1,6 +1,12 @@
+## Main94 merge preservation map — 2026-10-16 UTC
+
+Read-only preview against94c879ebab28fe94e71690b870f4104e002d3515 identifies five explicit conflicts and a silent automatic merge that returns on missing physical licensing tables before displaying main's preparation form. Keep the unprepared-marker setup form first, then the root physical-storage guard before queries. Preserve main's transaction/row-lock/internal mutation helpers, root license_storage_ready and the combined workspace guard `!support_current() && license_storage_ready() && license_ready()`. Keep recurring invoice guards,20i navigation, inventory marker5 and licensing marker1; regenerate installer hashes from final bytes.
+
+All nine relevant upgrade/master-delivery files and six reviewed readiness/creation/read functions remain unchanged from2796; the prior populated upgrade and internal-master customer projection/bundle/download findings remain. Exact source/ancestry map and hashes: `work/20i-domain-expiry-observations/qa/main-integration-preview/{resolution-map.md,main94-integration-review-proof.json,source-and-ancestry-proof.json}`. No licensing merge, source edit, database run or direct Devin message occurred.
+
 ## Latest main delta — 2026-10-16 UTC
 
-Newer remote main `94c879ebab28fe94e71690b870f4104e002d3515` was observed after the2796 review and is under read-only delta/merge-preview review; do not treat the prior findings as a completed review of94.
+Read-only review of main `94c879ebab28fe94e71690b870f4104e002d3515` is complete: mutation serialization must be preserved, while populated pre-master migration and internal-master customer-delivery findings remain open. Five explicit merge conflicts and one silent setup-form obstruction are mapped; this is source review, not merged/native acceptance.
 
 Exact main `2796fa48aeba6dd02731945d45fd613c2c5759e9` changes one handoff line afterc0e087027. Its entire site tree remains `ea6e06f4251ba5534e6fb9e65d48a746dd76021a`; licensing migration/service/bundle/download/workspace bytes are unchanged. The findings below remain open. Root427 already retains `!support_current()`, `license_storage_ready()` and `recurring_billing_invoice_guard()` in the shared workspace; preserve them during eventual integration. Read-only delta proof: `work/catalog-agent-main279-licensing-delta-review.json`. No licensing source was modified/imported or database/HTTP acceptance repeated.
 

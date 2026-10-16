@@ -21,7 +21,21 @@ def run_browser(env, browser):
     inherited_audits = db('SELECT * FROM ci_audit ORDER BY id')
     original_owner = db('SELECT * FROM ci_users WHERE email=?', ['owner@example.invalid'])[0]
     original_profile = db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original_owner['id']])[0]
-    setup = requests.Session(); submit(setup, admin + '?view=login', 'login', {'email': 'owner@example.invalid', 'password': OWNER})
+    before_setup_owner = original_owner
+    setup = requests.Session(); login = submit(setup, admin + '?view=login', 'login', {'email': 'owner@example.invalid', 'password': OWNER})
+    # Check authority across the expected login timestamp update, then preserve
+    # the complete post-login account throughout the dedicated-owner workflow.
+    original_owner = db('SELECT * FROM ci_users WHERE id=?', [original_owner['id']])[0]
+    setup_diagnostics = {'login': {'status': login.status_code, 'redirect_statuses': [r.status_code for r in login.history],
+        'dashboard': urlparse(login.url).path == urlparse(admin).path and urlparse(login.url).query == 'view=dashboard',
+        'changed_fields': sorted(k for k in set(before_setup_owner) | set(original_owner) if before_setup_owner.get(k) != original_owner.get(k)),
+        'profile_unchanged': db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original_owner['id']]) == [original_profile]}}
+    (qa / 'package-php-setup-diagnostics.json').write_text(json.dumps(setup_diagnostics, indent=2))
+    check('PHP setup login preserves all account authority and updates only login metadata',
+          login.status_code == 200 and setup_diagnostics['login']['dashboard']
+          and {k: v for k, v in original_owner.items() if k != 'last_login'} == {k: v for k, v in before_setup_owner.items() if k != 'last_login'}
+          and original_owner['last_login'] is not None
+          and setup_diagnostics['login']['profile_unchanged'])
     staff_url = admin + '?view=staff'; php_email = 'php-version-owner@example.invalid'
     check('PHP fixture owner starts absent', not db('SELECT id FROM ci_users WHERE email=?', [php_email]))
     submit(setup, staff_url, 'staff_save', {'id': '0', 'name': 'PHP observation owner', 'email': php_email, 'role': 'owner', 'enabled': '1', 'permissions[]': [], 'owner_password': OWNER})
@@ -29,10 +43,18 @@ def run_browser(env, browser):
     invite = chosen_form(setup, staff_url, 'staff_invite', 'id', php_owner['id'], {'owner_password': OWNER})
     invitation = soup(invite).select_one('[data-staff-invite]')['href']; code = parse_qs(urlparse(invitation).fragment)['token'][0]
     activation = requests.Session(); form = activation.get(invitation)
-    activation.post(admin + '?view=staff-setup', data={'action': 'staff_activate', 'csrf': token(form), 'token': code, 'password': OWNER, 'confirm_password': OWNER})
+    activated = activation.post(admin + '?view=staff-setup', data={'action': 'staff_activate', 'csrf': token(form), 'token': code, 'password': OWNER, 'confirm_password': OWNER})
+    setup_diagnostics['activation'] = {'status': activated.status_code, 'redirect_statuses': [r.status_code for r in activated.history],
+        'login_page': urlparse(activated.url).path == urlparse(admin).path and urlparse(activated.url).query == 'view=login', 'distinct_actor': php_owner['id'] != original_owner['id'],
+        'authorized_owner': db('SELECT role,enabled FROM ci_staff_profiles WHERE user_id=?', [php_owner['id']]) == [{'role': 'owner', 'enabled': 1}],
+        'password_set': db('SELECT password_hash FROM ci_users WHERE id=?', [php_owner['id']])[0]['password_hash'] != '',
+        'original_account_unchanged': db('SELECT * FROM ci_users WHERE id=?', [original_owner['id']]) == [original_owner],
+        'original_profile_unchanged': db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original_owner['id']]) == [original_profile]}
+    (qa / 'package-php-setup-diagnostics.json').write_text(json.dumps(setup_diagnostics, indent=2))
     activation.close(); setup.close()
     check('PHP fixture activates a distinct authorized owner without changing original authority',
-          php_owner['id'] != original_owner['id'] and db('SELECT role,enabled FROM ci_staff_profiles WHERE user_id=?', [php_owner['id']]) == [{'role': 'owner', 'enabled': 1}]
+          activated.status_code == 200 and setup_diagnostics['activation']['login_page']
+          and php_owner['id'] != original_owner['id'] and db('SELECT role,enabled FROM ci_staff_profiles WHERE user_id=?', [php_owner['id']]) == [{'role': 'owner', 'enabled': 1}]
           and db('SELECT password_hash FROM ci_users WHERE id=?', [php_owner['id']])[0]['password_hash'] != ''
           and db('SELECT * FROM ci_users WHERE id=?', [original_owner['id']]) == [original_owner]
           and db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original_owner['id']]) == [original_profile])

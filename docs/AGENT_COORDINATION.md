@@ -4,13 +4,13 @@ Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for
 
 | Owner | Current branch/checkpoint | Scope and next evidence |
 |---|---|---|
-| Root | PR151, frozen427; documentation descendants only | All38 focused workflows and20 downloaded reader matrices pass; exact Windows packages verified. Full38853750274 runs browser after native success. Final/main/release gates pending. |
-| Domains | Expiry f42ce633, docs9e33d600 | Four-way111 expiry/99 date/99 PHP executions/102 scheduler verified; packaged expiry browser pending. Original f725 final known-failure evidence complete. Now prepares read-only main/candidate ancestry and merge-resolution map. |
-| VPS | PHPcfc6, docs8b257538; cloud36c2/docs9f46 | Original PHP full/final verified success. Non-owned root427 integration review clear. Pure cloud141 per mode/version verified. Separate ForceSSL read contract/fixtures next; no shared wiring or live call. |
-| Catalog | DNS96fba852, docs23cba4be; document-roots branch from427 | Pure DNS158 per mode/version verified. Root427 period/scheduler archives and expiry fixture review complete. Document-root pure reader follows the owner map response; no application admission yet. |
-| Devin | Software-product licensing; reviewed2796, newer94c879 under review | Main runtime unchanged afterc0e087. Populated migration/internal-master delivery/full-key display findings remain open. Preserve keyless CajunWebPro installer and root portal/invoice guards. |
+| Root | PR151, test/docs descendant of0ff93d22/frozen427 | Preserve actual427 setup failure/final evidence; review corrected period/PHP fixtures, normally integrate expiry, then one new combined full check. |
+| Domains | Expiry f42 native accepted; fixture/docs correction pending commit | Correct expected login timestamp handling without weakening authority/history; root reviews and imports. Main94 read-only merge map complete. |
+| VPS | PHPcfc6/docs8b257538; cloud36c2/docs9f46; ForceSSL staged | Root fixture review, then one pure ForceSSL matrix after accepted reference-detachment correction. No app wiring/live call. |
+| Catalog | Document-roots1e8ee567/docs0ddd5101; DNS96f/docsfb2f19d2 | Both pure matrices/artifacts accepted; prepare document-root application contract before shared edits. ForceSSL independent source review clear. |
+| Devin | Software-product licensing; main94 reviewed | Populated upgrade/internal-master customer-delivery findings remain. Preserve serialized mutation helpers and keyless installer. Active session status remains unconfirmed. |
 
-Original25e and f725 final browser failures remain recorded separately from passing recovery/Apache/package evidence; PHPcfc6 is now verified full success. All original runs and immutable releases are retained. The [current handoff](../SESSION_HANDOFF.md) carries exact handles, proofs and next actions. Root427 stays fixed for release testing while next increments develop separately.
+Original427 browser fails at setup after2107 HTTP passes; separate runtime matrices pass. Original recovery succeeds and Apache/final continues. Keep actual failed evidence and all prior immutable releases. See [handoff](../SESSION_HANDOFF.md) for exact sources and next actions.
 
 ## Integration rules
 
