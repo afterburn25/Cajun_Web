@@ -35,7 +35,7 @@ function provider_schedule_initial():array {return ['approval'=>null,'approval_s
 function provider_schedule_result_columns():array {return ['id','state','reason','scope','coverage','package_count','skipped','skip_reasons','finished_at','elapsed_ms','key_fingerprint'];}
 function provider_schedule_result_sql_hash():string {
     $parts=[];foreach(provider_schedule_result_columns() as $index=>$column){$parts[]="'".($index===0?'{':',').'"'.$column.'":'."'";$parts[]='JSON_QUOTE(CAST(o.`'.$column.'` AS CHAR))';}$parts[]="'}'";
-    return 'SHA2(CONCAT('.implode(',',$parts).'),256)';
+    return 'CAST(SHA2(CONCAT('.implode(',',$parts).'),256) AS BINARY)';
 }
 /** Fixed-query integrity checks retain independent settings/audit/inventory witnesses. No history is rewritten or adopted. */
 function provider_schedule_state():array {
@@ -49,12 +49,12 @@ function provider_schedule_state():array {
     if($marker!=='1'||!is_string($head)||!$exists||$count<1||$count!==$audits)throw new RuntimeException('Original scheduled refresh history is incomplete. Restore the original database.');
     provider_schedule_schema_validate();
     // Check exact retained bytes in one database query, rather than fetching/replaying an ever-growing history.
-    if(one('SELECT id FROM '.table('provider_schedule_events').' WHERE OCTET_LENGTH(document_json)>16384 OR JSON_VALID(document_json)=0 OR SHA2(document_json,256)<>document_sha256 LIMIT 1'))throw new RuntimeException('Original scheduled refresh journal bytes differ.');
+    if(one('SELECT id FROM '.table('provider_schedule_events').' WHERE OCTET_LENGTH(document_json)>16384 OR JSON_VALID(document_json)=0 OR CAST(SHA2(document_json,256) AS BINARY)<>CAST(document_sha256 AS BINARY) LIMIT 1'))throw new RuntimeException('Original scheduled refresh journal bytes differ.');
     $last=provider_schedule_event(one('SELECT * FROM '.table('provider_schedule_events').' ORDER BY sequence DESC LIMIT 1'));
     if($last['sequence']!==$count||$head!==$count.':'.$last['sha256']||(int)query('SELECT MIN(sequence) FROM '.table('provider_schedule_events'))->fetchColumn()!==1)throw new RuntimeException('Original scheduled refresh head is missing.');
     if(one('SELECT e.id FROM '.table('provider_schedule_events').' e LEFT JOIN '.table('provider_schedule_events').' p ON p.sequence=e.sequence-1 WHERE e.sequence>1 AND (p.id IS NULL OR e.previous_sha256<>p.document_sha256 OR e.created_epoch<p.created_epoch) LIMIT 1'))throw new RuntimeException('Original scheduled refresh chain is incomplete.');
     if((int)query('SELECT COUNT(*) FROM '.table('provider_schedule_events')." WHERE kind='setup'")->fetchColumn()!==1)throw new RuntimeException('Original scheduled refresh setup differs.');
-    $bad=one('SELECT e.id FROM '.table('provider_schedule_events').' e WHERE (SELECT COUNT(*) FROM '.table('audit')." a WHERE a.action='provider.schedule_event' AND a.user_id=e.actor_id AND a.detail=CONCAT('Schedule event ',e.id,' ',e.kind,' sha256 ',e.document_sha256))<>1 LIMIT 1");
+    $bad=one('SELECT e.id FROM '.table('provider_schedule_events').' e WHERE (SELECT COUNT(*) FROM '.table('audit')." a WHERE a.action='provider.schedule_event' AND a.user_id=e.actor_id AND CAST(a.detail AS BINARY)=CAST(CONCAT('Schedule event ',e.id,' ',e.kind,' sha256 ',e.document_sha256) AS BINARY))<>1 LIMIT 1");
     if($bad)throw new RuntimeException('Original scheduled refresh audit is missing.');
     $s=$last['state'];if($last['kind']==='approval')$s['approval_sha256']=$last['sha256'];
     if($s['approval']!==null){$approval=provider_schedule_lookup($s['approval']);if($approval['kind']!=='approval'||$approval['sha256']!==$s['approval_sha256'])throw new RuntimeException('Original scheduled read approval differs.');}
@@ -62,7 +62,10 @@ function provider_schedule_state():array {
     if(count($pending)!==($s['pending']===null?0:1)||($pending&&$pending[0]['subject_id']!==$s['pending']))throw new RuntimeException('Original scheduled attempt history is incomplete.');
     if(one('SELECT f.id FROM '.table('provider_schedule_events')." f LEFT JOIN ".table('provider_schedule_events')." s ON s.kind='start' AND s.subject_id=f.subject_id WHERE f.kind='finish' AND (s.id IS NULL OR f.sequence<=s.sequence) LIMIT 1"))throw new RuntimeException('Original scheduled attempt start is missing.');
     // Historical references must retain their exact original approval/start, even after later reapproval.
-    $j=static fn(string $alias,string $field):string=>"JSON_UNQUOTE(JSON_EXTRACT(".$alias.".document_json,'$.".$field."'))";
+    $j=static fn(string $alias,string $field):string=>"CAST(JSON_UNQUOTE(JSON_EXTRACT(".$alias.".document_json,'$.".$field."')) AS BINARY)";
+    $headers=['id'=>'id','sequence'=>'sequence','kind'=>'kind','subject_id'=>'subject','actor_id'=>'actor','created_epoch'=>'at','previous_sha256'=>'previous'];$different=[];
+    foreach($headers as $column=>$field)$different[]='NOT (CAST(e.`'.$column.'` AS CHAR) <=> '.$j('e',$field).')';
+    if(one('SELECT e.id FROM '.table('provider_schedule_events').' e WHERE '.implode(' OR ',$different).' LIMIT 1'))throw new RuntimeException('Original scheduled event identity differs.');
     if(one('SELECT s.id FROM '.table('provider_schedule_events')." s LEFT JOIN ".table('provider_schedule_events')." a ON a.id=".$j('s','data.approval_id')." AND a.kind='approval' WHERE s.kind='start' AND (a.id IS NULL OR a.sequence>=s.sequence OR NOT (".$j('s','data.approval_sha256')." <=> a.document_sha256) OR NOT (".$j('s','data.profile_id').' <=> '.$j('a','data.profile_id').') OR NOT ('.$j('s','data.profile_revision').' <=> '.$j('a','data.profile_revision').') OR s.actor_id<>a.actor_id) LIMIT 1'))throw new RuntimeException('Original scheduled read approval binding differs.');
     if(one('SELECT f.id FROM '.table('provider_schedule_events')." f JOIN ".table('provider_schedule_events')." s ON s.kind='start' AND s.subject_id=f.subject_id WHERE f.kind='finish' AND (NOT (".$j('f','data.start_id').' <=> s.id) OR NOT ('.$j('f','data.start_sha256').' <=> s.document_sha256)) LIMIT 1'))throw new RuntimeException('Original scheduled result start binding differs.');
     if(provider_inventory_ready()){

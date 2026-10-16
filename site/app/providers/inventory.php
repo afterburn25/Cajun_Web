@@ -6,7 +6,8 @@
  * authority and exact profile revision before credentials open and again
  * before results persist, and never replaces or mutates an earlier
  * observation — failed or ambiguous refreshes cannot erase the last good
- * one. No background or implicit refresh exists.
+ * one. The separate owner-approved scheduler reuses the guarded result
+ * writer; this module's public refresh actions remain explicit.
  */
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }

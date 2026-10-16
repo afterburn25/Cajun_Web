@@ -2,9 +2,9 @@ name: Scheduled provider refresh checks
 on:
   push:
     branches: [main, codex/twentyi-scheduled-refresh]
-    paths: ['site/app/providers/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_schedule*.php', '.github/workflows/provider-schedule.yml']
+    paths: ['site/app/jobs/**', 'site/app/providers/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_schedule*.php', '.github/workflows/provider-schedule.yml']
   pull_request:
-    paths: ['site/app/providers/**', 'site/database/**', 'site/admin/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_schedule*.php', '.github/workflows/provider-schedule.yml']
+    paths: ['site/app/jobs/**', 'site/app/providers/**', 'site/database/**', 'site/admin/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_schedule*.php', '.github/workflows/provider-schedule.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -60,7 +60,7 @@ jobs:
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
             -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-inventory-test sh -ec '
-              for source in site/app/providers/*.php site/database/schema/provider_inventory_schema.php site/database/migrations/provider_inventory_migrate.php site/includes/layout/provider_services.php tests/provider_schedule*.php; do php -l "$source"; done
+              for source in site/app/providers/*.php site/app/jobs/run.php site/admin/controllers/provider_schedule.php site/admin/views/provider_schedule.php site/database/schema/provider_schedule_schema.php site/database/schema/provider_inventory_schema.php site/database/migrations/provider_inventory_migrate.php site/includes/layout/provider_services.php tests/provider_schedule*.php; do php -l "$source"; done
               php tests/provider_schedule_document.php
               php -n tests/provider_schedule_document.php
               php tests/provider_schedule_native.php
@@ -76,4 +76,4 @@ jobs:
       - name: Record verification scope
         if: always()
         run: |
-          echo 'Native scheduled read approval, leases, concurrency, history-loss recovery and rollback: synthetic fixtures against disposable MariaDB/MySQL with PHP view rendering. No real 20i API call, credential, browser or deployment is exercised.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Native scheduled read approval, leases, concurrency, history-loss recovery and rollback: synthetic fixtures against disposable MariaDB/MySQL with owner projections. No real 20i API call, credential, browser or deployment is exercised.' >> "$GITHUB_STEP_SUMMARY"

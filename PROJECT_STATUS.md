@@ -1,3 +1,5 @@
+Scheduler follow-up: initial60f95 matrix38831603128 passed both MySQL variants (65 native cases each) and exposed a MariaDB collation mismatch. All4 archives are downloaded/verified and retained. Exact-byte comparisons, current staff-marker revocation and historical header checks are corrected; fresh four-way/native and actual browser evidence are required.
+
 ## Scheduled hosting refresh - isolated implementation checkpoint, 2026-10-15
 
 Branch `codex/twentyi-scheduled-refresh` starts at `82302571dfbcda649f4cebfce79c86faf63662f8`. It implements one owner-approved scheduled `GET /package` through the existing typed reader and protected credentials. A shared-host PHP entry, explicit owner controls, immutable history, leases, connection locks, backoff and reviewed recovery are present. Current owner/authentication, exact profile/revision/key and canonical installation/document-root bindings are rechecked before dispatch. Existing client assignments are unchanged.

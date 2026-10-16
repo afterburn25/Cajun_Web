@@ -1,5 +1,6 @@
 """Real packaged owner controls and fixed TLS loopback GET/package; no external provider."""
 import json
+import subprocess
 import time
 import requests
 from playwright.sync_api import expect
@@ -26,7 +27,7 @@ def run_browser(env, browser):
     check('Schedule preparation remains disabled without network', len(db('SELECT * FROM ci_provider_schedule_events')) == 1 and 'disabled' in soup(owner.get(url)).select_one('[data-schedule-status]').text and provider.calls == calls)
     fields = form_data(form_for(owner.get(url), prefix+'enable'))
     valid = {'current_password': OWNER, 'schedule_interval': '900', 'schedule_reviewed': '1'}
-    for delta, label in [({'current_password': 'wrong'}, 'password'), ({'csrf': 'bad'}, 'CSRF'), ({'schedule_reviewed': '0'}, 'explicit approval'), ({'revision': '0'}, 'profile version'), ({'schedule_interval': '30'}, 'unsafe frequency'), ({'schedule_interval': ['900', '1']}, 'malformed fields')]:
+    for delta, label in [({'current_password': 'wrong'}, 'password'), ({'csrf': 'bad'}, 'CSRF'), ({'schedule_reviewed': '0'}, 'explicit approval'), ({'revision': '0'}, 'profile version'), ({'schedule_interval': '30'}, 'unsafe frequency'), ({'schedule_interval': [], 'schedule_interval[]': '900'}, 'malformed fields')]:
         rejected = owner.post(url, data={**fields, **valid, **delta})
         check('Schedule approval refuses '+label, rejected.status_code == 200 and len(db('SELECT * FROM ci_provider_schedule_events')) == 1 and provider.calls == calls and OWNER not in rejected.text)
     member = requests.Session()
@@ -104,6 +105,12 @@ def run_browser(env, browser):
     response = submit(owner, url, prefix+'disable', {'current_password': OWNER})
     check('Owner can disable stale approval while retaining history', 'Scheduled refreshes are disabled' in response.text and len(db('SELECT * FROM ci_provider_schedule_events WHERE kind="finish"')) == 2 and provider.calls == calls+2)
     check('All scheduling password inputs are cleared', all(n.get('value', '') == '' for n in soup(response).select('[data-provider-schedule] input[type=password]')))
+    # Invoke the actual installed CLI entry. The test-only connector also refuses any unexpected CLI DNS.
+    command = [env['php'], '-d', 'auto_prepend_file='+str(env['ROOT']/'tests/mail_inbox_http_connector.php'), str(env['WEB']/'existing/app/jobs/run.php')]
+    cli = subprocess.run(command, capture_output=True, text=True, timeout=35)
+    check('Installed shared-host CLI loads configuration without an interactive session', cli.returncode == 0 and cli.stdout.strip() == 'Hosting inventory schedule: disabled' and not cli.stderr and provider.calls == calls+2)
+    bad_cli = subprocess.run(command+['unexpected'], capture_output=True, text=True, timeout=10)
+    check('Installed scheduled entry refuses caller arguments before work', bad_cli.returncode == 2 and 'takes no arguments' in bad_cli.stderr and provider.calls == calls+2)
     for path in ['app/jobs/run.php', 'app/providers/schedule.php', 'app/providers/schedule_storage.php', 'app/providers/schedule_document.php', 'admin/controllers/provider_schedule.php', 'admin/views/provider_schedule.php', 'database/schema/provider_schedule_schema.php']:
         check('Scheduled task internal HTTP denial '+path, requests.get(base+'/existing/'+path).status_code == 404)
     check('Scheduled read browser flow has no script or provider fixture errors', not errors and not provider.errors)

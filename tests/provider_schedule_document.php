@@ -21,5 +21,5 @@ try{
     psd_ok('Reviewed interruption retains bounded outcome',provider_schedule_document(provider_schedule_json($finish))===$finish);
     foreach(['outcome'=>'complete','reason'=>'private provider response','recovered'=>'1','start_sha256'=>'','result_sha256'=>[]] as $k=>$v){$bad=$finish;$bad['data'][$k]=$v;psd_deny('Malformed recovery evidence refused '.$k,provider_schedule_json($bad));}
 }catch(Throwable $e){$checks[]=['name'=>'Schedule document failure: '.$e->getMessage(),'passed'=>false];}
-@mkdir(__DIR__.'/../qa',0700,true);$mode=count(get_loaded_extensions())>15?'default':'minimal';file_put_contents(__DIR__.'/../qa/provider-schedule-document-'.$mode.'-results.json',json_encode(['checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
+@mkdir(__DIR__.'/../qa',0700,true);$mode=php_ini_loaded_file()||php_ini_scanned_files()?'default':'minimal';file_put_contents(__DIR__.'/../qa/provider-schedule-document-'.$mode.'-results.json',json_encode(['checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
 $failed=array_filter($checks,fn($c)=>!$c['passed']);echo count($checks).' schedule document checks '.($failed?'failed':'passed').PHP_EOL;exit($failed?1:0);

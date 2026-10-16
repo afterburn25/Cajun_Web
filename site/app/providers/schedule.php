@@ -22,7 +22,9 @@ function provider_schedule_authority(array $ctx,array $approval,int $now):array 
     provider_schedule_guard();$d=$approval['data'];
     if(!$ctx['ready']||$ctx['state']['paused']||$ctx['state']['approval']!==$approval['id']||$ctx['state']['approval_sha256']!==$approval['sha256']||!$d['enabled'])throw new ProviderScheduleAuthorityChanged('Scheduled reads are disabled.');
     if($now<$approval['at']||$now<($ctx['last']['at']??0))throw new ProviderScheduleAuthorityChanged('Check the server clock before resuming scheduled reads.');
-    if(!staff_ready()||!provider_settings_ready()||!provider_inventory_ready())throw new ProviderScheduleAuthorityChanged('Required account or inventory storage is unavailable.');
+    // A worker can outlive the normal request-local settings cache while DNS is in progress.
+    $staffVersion=one('SELECT value FROM '.table('settings').' WHERE name=?',['staff_schema_version'])['value']??null;
+    if($staffVersion!=='1'||!staff_ready()||!provider_settings_ready()||!provider_inventory_ready())throw new ProviderScheduleAuthorityChanged('Required account or inventory storage is unavailable.');
     $owner=one('SELECT * FROM '.table('users').' WHERE id=?',[$approval['actor']]);$staff=$owner?staff_profile($owner):null;
     if(!$staff||$staff['role']!=='owner'||$staff['password_hash']===''||!hash_equals($d['owner_auth_sha256'],hash('sha256',$staff['auth_version'])))throw new ProviderScheduleAuthorityChanged('The approving owner’s access or password changed. Review and approve the schedule again.');
     try{$row=provider_settings_load($d['profile_id']);}catch(InvalidArgumentException){throw new ProviderScheduleAuthorityChanged('The approved provider connection is unavailable.');}
