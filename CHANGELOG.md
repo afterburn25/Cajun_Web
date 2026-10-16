@@ -1,3 +1,7 @@
+## 2026-10-16 — publish the concrete release freeze and branch
+
+Documentation-only descendant of35d8 records owner release-first override, published normal merge b98b96eb, frozen scope/map, actual source/focused evidence and remaining gates. Runtime, installer, version, published assets and production remain unchanged. Continue release corrections, authentic1.24 upgrade coverage, complete supported runtime acceptance, review, exact-main and publication/download verification before new20i capabilities. Coordination is posted in issue2 comment6220729910 and issue157 comment6220730195. Documentation validation is required before commit; no application acceptance is claimed.
+
 ## Unreleased - StackCP candidate and Devin handoff checkpoint
 
 Document published3fa72d7b StackCP performance integration and its first focused native run, verified5bfd distro/native success, and classified original cccf/2a/9779 failures. Put concrete158/159/161 repairs and stacked work through175 in Devin's start-here assignment. Main runtime, release versions and assets are unchanged.
