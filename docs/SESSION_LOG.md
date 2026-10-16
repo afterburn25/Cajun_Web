@@ -1610,3 +1610,16 @@ Hardening pass on the licensing workstream, all on `main` through `cec31673`:
 - Website_Core side (`devin/website-core`): inconclusive validation preserves the stored verdict (`recordValidation ?bool` — transient outages can't 503 a licensed site); `detectDomain()` reports the canonical `app.url` so a moved site self-denies (HTTP_HOST deliberately untrusted); admin "Validate now"; license-warning only when a license row exists; `disable()` recovery exemption; native CI licensed-bundle leg proves the whole cycle on real MySQL/MariaDB including moved-site denial and reactivation.
 
 Still not live-verified: production `license_core_dir`, real purchase→bundle→install→validation cycle.
+
+## Licensing follow-up: master keys, upgrade adoption, recovery + serialization — 2026-10-15/16
+
+Second hardening round on `main` through `ba650ece`; each code commit carries a green 15-step application-acceptance run:
+
+- **Master keys** (`f0a27fe1`): `website_licenses.is_master`, `license_create(..., $master)`, `license_domain_authorized()` extracted as the single domain-check source for `api/validate.php`. Master keys authorize any well-formed domain without registration or slot consumption; `is_active` still revokes. Admin create form gets an explicit internal-testing checkbox + MASTER badge. Acceptance `38833790651` green.
+- **Owner-gated license storage adoption** (`780761a6`): `license_migrate($password)` (staff_locked + staff_owner + catalog_validate_schema + `license_schema_version` + audit) and `license_ready()` guards on all entry points — portal skips, admin throws, API answers inconclusive 500 (never false denial), bundle download 404s, fulfilment defers. Without this, upgraded installs would have fatal'd on every license touch including the client portal. Fresh deploys set the version in `deploy.php`; Studio shows a "Prepare website licensing" card when unready. Acceptance `38838100840` green.
+- **`catalog_validate_schema` TINYINT fix** (`79434bb8`): the column regex omitted TINYINT and did not normalize `tinyint(1)` — license booleans are TINYINT, so the migrate would have refused correctly-created tables. Acceptance `38841738003` green.
+- **License reactivation** (`ea26011c`): `license_reactivate()` + `studio_license_reactivate` + Reactivate button — deactivation was previously one-way. License-level reactivation does not resurrect domain-level deactivations. Acceptance `38846495062` green.
+- **Portal full license key** (`f55db177`): the authenticated owning client sees the complete key in the workspace — the fulfilment email is best-effort and the previous 8-char prefix left no recovery path. Acceptance `38851570550` (manual dispatch on `c0e08702`) green.
+- **Mutation serialization** (`ba650ece`): every license mutation runs in `license_transaction()` and first locks the license row `FOR UPDATE`, closing a check-then-act race where concurrent registrations could both pass the 2-active cap; `license_replace_domain` runs deactivate + register in one transaction so a failed new-domain registration rolls back the old deactivation; `license_deactivate_domain` canonicalizes www→apex. Acceptance `38855488508` green.
+
+Still not live-verified: production `license_core_dir`, real purchase→bundle→install→validation cycle.
