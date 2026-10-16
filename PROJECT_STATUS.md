@@ -1,3 +1,11 @@
+## Assigned-package PHP version — isolated implementation, 2026-10-15
+
+The VPS agent started `codex/twentyi-package-php-version` at `9112cb8c71e31ab761be52a9d1ee2f92d708cc15`. This development base has parent evidence; it is not release clearance. The new fixed GET reads one explicitly assigned package's reported PHP-version scalar, saves immutable dated evidence, and requires a separate owner approval before exposing that observation to its current client. No PHP change operation, version-choice list, schedule or live provider request is added. [Contract, authority and verification scope](docs/TWENTYI_PACKAGE_PHP_VERSION.md).
+
+Source review corrected missing later hosting-intent reconciliation, scalar/list recorder mismatch rollback and unexpected direct-reader context. The binding also retains the sealed credential identity without opening credentials on client views. Domain review clears those bounded source corrections; actual database and browser acceptance is pending. Local pure validation passes 87 named checks in each default and no-INI mode, with the existing 28 inventory-reader and 42 scheduler-document checks also passing; syntax and fixture compilation are separate checks. New native coverage includes paired later-intent loss/restoration, same-revision credential replacement, SQL/PHP witness parity, permission rollback/revocation, and owner/client isolation. The browser fixture runs before the required-last scheduler fixture with real cooldown waits. Root owns sequential integration and release. Frozen cloud-provider `6eeeb020` and its original runs remain separate.
+
+Next: refresh and verify installer inventory, push the isolated draft, run and retain four database/PHP combinations and exact packaged owner/client Chromium evidence. No release or deployment is claimed.
+
 ## Current combined browser evidence - 2026-10-15
 
 Follow-up: corrected cloud6eee native38841913897 now passes98 native plus85/85 pure cases in all four actual verified archives; browser/full remains pending. Registration ee3 checkpoint has entered HTTP/Chromium. Domains'64-check shared-boundary review records the exact incoming union while preserving package-only scheduling and the shared guarded recorder. [Updated evidence](docs/TWENTYI_COMBINED_4F_EVIDENCE.md).

@@ -1,3 +1,7 @@
+## Unreleased — assigned-package PHP-version observations
+
+Add one fixed scalar read, dated immutable observations and separate owner-controlled client sharing for explicitly assigned hosting packages. Preserve exact account/key/link/history authority, no implicit setup, no browser-side provider requests, and no PHP change operation. Native/browser acceptance remains pending on the isolated branch.
+
 ## Unreleased - combined browser verification and reader corrections
 
 Follow-up records corrected cloud-provider four-way native acceptance and the independent64-check incoming shared-boundary review. Runtime remains unchanged.

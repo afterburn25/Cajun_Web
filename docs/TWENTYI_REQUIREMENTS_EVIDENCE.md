@@ -1,5 +1,9 @@
 # Complete 20i requirements and evidence
 
+## Incoming PHP-version observation lane — 2026-10-15
+
+VPS owns `codex/twentyi-package-php-version` from `9112cb8c`: exact assigned-package scalar GET, durable evidence and separate owner-approved client sharing. This isolated implementation is pending native/browser acceptance; root integrates the shared executor/router/installer sequentially. No PHP setter, available-version enumeration, schedule or live request. [Contract and scope](TWENTYI_PACKAGE_PHP_VERSION.md). Frozen cloud-provider evidence and Devin licensing remain separate.
+
 ## Current combined queue — 2026-10-15
 
 Normal forwarding merge4b33d606 is followed by reviewed scheduler2b9 in [PR151](https://github.com/afterburn25/Cajun_Web/pull/151). Installer refresh and exact parent-union checks pass; independent24-check shared-code review is clear; scheduler browser runs last. Fresh combined acceptance remains required. History1759 browser/native artifacts are downloaded and verified; recovery passed and Apache is active. [Current handoff](../SESSION_HANDOFF.md) is authoritative over earlier checkpoints.
