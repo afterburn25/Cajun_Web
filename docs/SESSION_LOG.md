@@ -2,7 +2,7 @@
 
 Documentation-only descendant of35d8 records owner release-first override, published normal merge b98b96eb, frozen scope/map, actual source/focused evidence and remaining gates. Runtime, installer, version, published assets and production remain unchanged. Continue release corrections, authentic1.24 upgrade coverage, complete supported runtime acceptance, review, exact-main and publication/download verification before new20i capabilities. Coordination is posted in issue2 comment6220729910 and issue157 comment6220730195. Documentation validation is required before commit; no application acceptance is claimed.
 
-# Session log
+
 
 ## Port recurring billing — 2026-10-16
 
@@ -1751,10 +1751,13 @@ Validation: external proposed Markdown/local links and exact base-byte preservat
 
 Fresh issue157 comments6217621738/6217865863 acknowledge non20i work. Open heads: licensing159 e3d627701f14d4d44acc02be49f4bbd20cb2b389; tickets158 3ca4bbb780e155d56914ba834d1e811eebb91d1f; progress160 433c60942aa7e4d72c0576c391d41718f793675c. Licensing proposes fixes to the four findings; independent review is underway, not accepted or merged. Prior unconfirmed-acknowledgement wording is corrected. Full819c native failed at a genuine old-schema owner GET; preserve original run and fix on the next source, without weakening its fixture. Documentation-only descendant of481aff27; no runtime, installer, release or live change.
 
+## 2026-10-16 15:15 UTC - Publish cloud candidate and actionable licensing review
+
++Owner goal: continue complete20i and coordinate Devin non-20i work. Documentation parent595ac9c3; commit "Document cloud assignment candidate and licensing review" records exact source2a86704f/tree32f1058c/parent819c, original focused run38921917647 attempt1 and pending Windows build. Local/source/staged checks passed; native/full/browser/package/main/release acceptance remains pending. Original819c upgrade failure is preserved and corrected on2a; original9779 browser remains active. Licensing159 review299bf71e produced comments6218434878/6218437910 with two behavior gaps and stale inventory failure. All changed files are Markdown; no runtime, installer, version, release, live provider or customer action. Next: actual focused archives, full combined evidence and sequential integration.
+
 ## 2026-10-16 - Devin P-07 notification feed runtime
 
 Request: continue all remaining non-20i site work per issue157; build the notification runtime on the ported contract. Starting from foundation tip `6cf9f405` on `devin/non20i-notifications-runtime`. Changes: new `notification_feed`/`notification_prefs`/`notification_deliveries` schema (distinct from payment-webhook `notifications`), owner-password setup migration with additive/readiness checks, `app/notifications/feed.php` service mapping persistence onto `Notification`/`NotificationFeed`/`NotificationPreferences`/`DeliveryAttempt`, private admin `?view=notifications` and portal `?notifications=1` feeds, recipient-only read/unread mutation, per-kind email opt-outs, read-only support-session viewing, emit hooks on inquiry submission, admin/client project messages, review decisions, delivery publication and invoice-paid transitions. Email copies attempt synchronously after commit; failures record terminal `failed` with the named error — no daemon.
-
 Tests: `php -l` clean on all touched files; `tests/notifications/run.php` 65 pure checks pass; `tests/notification_feed_native.php` (MariaDB isolation/read-state/preferences/retry/rollback/readiness) and `tests/notification_feed_cases.py` (HTTP setup, feeds, marking, opt-outs, cross-recipient denial) added and wired into `application-tests.yml`/`browser_acceptance.py`; Apache direct-denial inventory extended. Native/HTTP execution runs in CI — not executed locally (no MariaDB/browser host here). No live mail, deployment, provider or customer action. Next: push, open stacked PR, then `MetricSample` producers and polling surfaces.
 
 ## 2026-10-16 - Devin P-07 MetricSample producers and health surface
@@ -1768,10 +1771,6 @@ Request: continue remaining non-20i work (issue #157). New branch `devin/non20i-
 ## 2026-10-16 - Devin renewal notification events (merge branch)
 
 Request: continue remaining non-20i work (issue #157). New branch `devin/non20i-renewal-notifications` merges `devin/non20i-recurring-billing` + `devin/non20i-notification-events` (union resolutions across controllers/layout/portal/build/test inventories; docs keep both branches' entries). Adds the last named P-07 emit gap: `recurring_billing_issue` notifies the owning client when a new period invoice is issued — emit runs after the locked issuance transaction, only for non-replayed requests. Native suite extended: feed setup, issuance notification, replay adds no feed row. php -l clean on all touched files; build refresh pending in this commit chain.
-
-## 2026-10-16 15:15 UTC - Publish cloud candidate and actionable licensing review
-
-+Owner goal: continue complete20i and coordinate Devin non-20i work. Documentation parent595ac9c3; commit "Document cloud assignment candidate and licensing review" records exact source2a86704f/tree32f1058c/parent819c, original focused run38921917647 attempt1 and pending Windows build. Local/source/staged checks passed; native/full/browser/package/main/release acceptance remains pending. Original819c upgrade failure is preserved and corrected on2a; original9779 browser remains active. Licensing159 review299bf71e produced comments6218434878/6218437910 with two behavior gaps and stale inventory failure. All changed files are Markdown; no runtime, installer, version, release, live provider or customer action. Next: actual focused archives, full combined evidence and sequential integration.
 
 ## 2026-10-16 - retain scoped cloud passes and diagnose original full-run failure
 
