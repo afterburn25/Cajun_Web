@@ -131,3 +131,7 @@ Root created `codex/release-1.25.0` from exact main `35d8fb7efc94f6f851399d0755f
 Canonical installer refresh and every shipping PHP/JavaScript syntax check pass on the merged source. Documentation check passes261 Markdown files,1712 local links and23 heading links. No combined native database/HTTP/browser acceptance is claimed. Four licensing corrections and the new release-only acceptance coverage remain pending.
 
 Staging check also removed one inherited trailing blank line in `provider-domain-search.yml`; its workflow statements are unchanged.
+
+## Main documentation synchronization
+
+Main documentation checkpoint `d7153b076e91b524ff2f99a9a7aa5c910551fc5e` publishes the same owner release freeze, canonical b98b96eb branch and scope/map to make them discoverable. Its12 Markdown-only changes add no runtime, installer, schema or version delta. The release branch normally merges that checkpoint; its existing release-specific status and all prior histories remain, rather than copying main's pre-integration runtime wording. Both sources agree on frozen capabilities, licensing corrections, complete supported acceptance, published1.24 and no live deployment.

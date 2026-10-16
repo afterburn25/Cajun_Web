@@ -13,3 +13,5 @@ Release blockers: four existing licensing findings; complete supported PHP8.2/8.
 Root owns integration and final release. Catalog prepares complete runtime matrix wiring; Domains prepares authentic 1.24 upgrade coverage; VPS prepares narrow licensing corrections. Devin continues [non-20i work](DEVIN_START_HERE.md) separately. Next: finish reviewed release corrections, regenerate canonical installer hashes, run all exact-candidate gates and retain their evidence. No production provider operation, charge, mail or SSH is performed by these tests.
 
 Merge checkpoint checks: canonical installer refresh and all shipping PHP/JavaScript syntax pass; documentation passes261 Markdown files/1712 local links/23 heading links. These source checks do not clear the release blockers above.
+
+Main now also exposes the frozen scope/map through documentation-only checkpoint `d7153b076e91b524ff2f99a9a7aa5c910551fc5e`; this branch preserves it through a normal merge. No main application integration has occurred yet.
