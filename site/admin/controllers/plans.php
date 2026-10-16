@@ -4,9 +4,13 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/plans/views.php';
 require_once CWP_CODE_ROOT.'/includes/layout/plans.php';
 require_once CWP_CODE_ROOT.'/includes/layout/service_orders.php';
+require_once CWP_CODE_ROOT.'/includes/layout/provider_plan_catalog.php';
 
 function service_plans_admin_action(string $action):void {
     if($_SERVER['REQUEST_METHOD']!=='POST')throw new InvalidArgumentException('Submit the reviewed form to continue.');
+    if(str_starts_with($action,'service_plans_catalog_')){
+        $id=service_plans_form_id($_GET,'record');provider_plan_catalog_form($action,$id);flash('Provider mapping saved.');redirect(admin_url('service-plan',['record'=>$id]));
+    }
     if(str_starts_with($action,'service_plans_order_')){
         $id=service_plans_form_id($_GET,'record');$item=service_plans_owner_agreement($id);
         service_orders_form_action($action,$id,$item['document']->data()['client_id'],true);

@@ -20,7 +20,7 @@ def run_browser(env, browser, owner, client, foreign, cid, job, command, capture
         fields = form_data(form_for(session.get(url), action))
         return session.post(url, data={**fields, **changes})
 
-    def context(name, paid=False):
+    def context(name, paid=False, catalog=False):
         if env.get('seed_recurring_history'):
             historical = env['seed_recurring_history'](cid, job)
         else:
@@ -42,7 +42,11 @@ def run_browser(env, browser, owner, client, foreign, cid, job, command, capture
             post(owner, admin+'?view=invoice-payments&invoice_id='+invoice, 'payments_ledger_receive', {'amount': '25.00', 'method': 'bank', 'reference': 'Synthetic fulfillment receipt '+name, 'received_on': datetime.datetime.now(datetime.timezone.utc).date().isoformat(), 'confirm': '1'})
         else:
             post(owner, staff_url, 'service_plans_order_allow_manual', {'reason': 'Synthetic reviewed fulfillment '+name, 'confirm': '1', 'current_password': OWNER})
-        post(owner, staff_url, 'service_plans_order_map_service', {'reseller_id': '42', 'package_type': '811', 'package_label': 'Reviewed fulfillment package', 'package_region': 'Reviewed fixture location', 'package_websites': '1', 'mapping_only': '1', 'confirm': '1', 'current_password': OWNER})
+        if catalog:
+            from provider_plan_catalog_cases import prepare
+            prepare(env, browser, owner, client, historical['source_id'], staff_url, client_url, capture)
+        else:
+            post(owner, staff_url, 'service_plans_order_map_service', {'reseller_id': '42', 'package_type': '811', 'package_label': 'Reviewed fulfillment package', 'package_region': 'Reviewed fixture location', 'package_websites': '1', 'mapping_only': '1', 'confirm': '1', 'current_password': OWNER})
         order = db('SELECT * FROM ci_service_orders WHERE agreement_id=?', [historical['source_id']])[0]
         link = db('SELECT * FROM ci_hosting_order_links WHERE id=?', [order['id']])[0]
         return {'owner': staff_url, 'client': client_url, 'invoice': invoice, 'order': order, 'link': link, 'domain': domain}
@@ -53,7 +57,7 @@ def run_browser(env, browser, owner, client, foreign, cid, job, command, capture
     def history():
         return {table: db('SELECT * FROM ci_'+table+' ORDER BY id') for table in ['hosting_fulfillments', 'hosting_records', 'hosting_record_events', 'hosting_dispatches', 'hosting_operation_results', 'provider_operations', 'service_orders', 'service_order_events', 'invoice_payments', 'audit']}
 
-    c = context('paid-fulfillment', paid=True)
+    c = context('paid-fulfillment', paid=True, catalog=True)
     setup = form_data(form_for(owner.get(c['owner']), 'service_plans_order_prepare_fulfillment'))
     check('Fulfillment GET does not create approval storage', not db("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='ci_hosting_fulfillments'"))
     calls, posts = provider.calls, len(provider.posts)

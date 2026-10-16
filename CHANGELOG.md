@@ -1,3 +1,120 @@
+## Unreleased — cloud assignment recovery correction
+
+Refuse cloud confirmation/current-assignment claims when retained package-link events disagree with independent link/relink/unlink audits. Preserve historical ordinal pairing, immutable confirmations and provider outcomes; add native history-loss/restoration regressions. Fresh corrected acceptance remains pending. Document incoming master-license migration/delivery findings for Devin and terminal catalog/hosting-history evidence. No release or live action.
+
+## Unreleased — software-product licensing ownership and supporting20i evidence
+
+Record the owner's Devin licensing allocation while Codex continues20i. Verify40 additional combined3bbc matrix archives containing142 named reports; all31 focused workflow gates are successful. Combined recovery passed and Apache remains active. Record corrected scheduler/hosting-history/forwarding native evidence and preserve failed packaging/fixture runs. Documentation only; no runtime, release or live action.
+
+## Unreleased — combined native evidence and parallel source review
+
+Verify20 archives from all five combined3bbc focused matrices and final corrected2239 full acceptance/packages. Record concrete hosting-history/forwarding review fixes and the scheduler MariaDB correction under their separate agent branches. Documentation only; 3bbc packaged browser checkpoint now verifies1945HTTP with actual screenshot review; full recovery/Apache and exact-main release gates remain pending.
+
+## Domain renewal request integration — candidate, unreleased
+
+## Unreleased — combined package proof and continuing parallel implementation
+
+Verify exact3bbc Windows packages and record its running full combined acceptance. Renewal browser/screens now pass oned4; three agents continue scheduled inventory refresh, client observation history and forwarding requests on separate branches. Record concrete scheduler recovery review findings and correct the stale recurring-defect tracker from existing source/browser evidence. Documentation only; no new runtime, release or live action.
+
+
+## Unreleased — preserve current main continuity
+
+Normally preserve mainb8f8528b licensing documentation after combined cloud integrationbdeccc09. Archive the incoming handoff and retain the approved portal design reference. No runtime, test, installer or version change in this documentation merge; fresh combined acceptance remains required.
+
+
+## Unreleased — combined 20i confirmation and parallel scheduler work
+
+Normally integrate reviewed/native-verified cloud package confirmation after catalog readiness and local domain renewal requests. Preserve exact returned-ID/name checks, atomic client assignment/history, sequence-first freshness and existing authorization. Combined installer and full acceptance remain required; published1.24.0 stays unchanged. Catalog browser screens now pass on their own source. Three agents continue independently, including a new bounded scheduled package inventory refresh implementation. No live activation or release is claimed.
+
+
+Normally merge reviewed/native-verified renewal ed4d1cad: clients request renewal review or withdraw; owners save a review message or decline. Current registrar assignment, immutable request/events and a retained request-count witness protect history. Monotonic event timestamps survive clock rollback. This local intake does not place or complete provider renewals. Combined inventory refresh and syntax pass; new combined application acceptance remains required.
+
+## Catalog readiness integration — candidate, unreleased
+
+Normally merge reviewed catalog872aec34: owner plan summaries explain local readiness, distinguish zero from unknown costs/limits, and show selected immutable mapping reviews without changing current edit or execution authority. All four focused native combinations are verified; actual browser and combined application acceptance remain pending.
+
+## Acceptance repair — foreign-client mailbox fixture
+
+Parallel continuation: catalog readiness is in PR145 with exact-head testing; independent domain/cloud review found bounded clock-order and retained-history gaps for their authors to repair before integration. No further root runtime or release change.
+
+Correction2239a156 is pushed and fresh full38826150967 passed package checks and entered native integration. Prior38bb recovery passed; Apache continues. Catalog readiness has independent source review without a concrete blocker, pending native/browser evidence. No further runtime or release change.
+
+Use the foreign client's actual workspace session token to test mailbox ownership refusal. Retain no-request/network assertions and verify the precise authorization error without password echo. Preserve the failed combined browser artifact and newer main test history; fresh descendant acceptance remains pending. No shipping/version/release change.
+
+## Acceptance checkpoint — combined20i38bb
+
+Verified all four mailbox/registrar/catalog/cloud native matrices and exact Windows packages. Full combined browser/recovery/Apache acceptance is still running. Dispatch three further isolated implementation slices while preserving original branches. Documentation only; no runtime, version, release or live deployment change.
+
+## Integration checkpoint — latest main evidence
+
+Preserve the latest main acceptance record alongside the combined20i source. No additional runtime behavior or release version changes in this final merge.
+
+## Unreleased — combined cloud website creation
+
+The admin capability summary now distinguishes the connection check from separate service permissions and no longer lists implemented domain search and hosting creation as unavailable.
+
+Add an owner-reviewed website to an explicitly linked existing cloud server using the shared provider operation history. Preserve returned package IDs as accepted pending independent observation and explicit linking. Combine cloud, registrar, catalog and mailbox workflows with original branch histories and shared recovery guards. Complete combined acceptance remains pending.
+
+## Unreleased — reviewed provider plan mappings
+
+Combine expiring owner-reviewed provider type and cost mappings with existing retail orders and hosting preparation. Preserve exact selection provenance and withdrawal/recovery history. The provider-settings browser check now waits for returned-page content and retains diagnostics on failure; product behavior is unchanged by that test correction. Combined acceptance remains pending.
+
+## Unreleased — combined registrar and mailbox controls
+
+Registered-domain inventory and explicit client assignment are combined with mailbox creation controls. Preserve both workflows and protected paths. Latest mailbox authority follows the original refresh intent sequence even if recovered timestamps are out of order. Four new native regressions and combined acceptance remain pending; published1.24.0 is unchanged.
+
+# Unreleased — native 20i mailbox creation
+
+Preserve current main's licensing mutation audits and error-response guard during20i integration. Domain replacement keeps its transaction and records the acting identity on all three events; failed audit insertion restores original domains and audit history.40 isolated native checks pass; combined acceptance pending.
+
+Native mailbox runtime334c390c passes87 named checks in each of four PHP/database combinations. Browser and integrated release acceptance remain pending; published1.24.0 is unchanged.
+
+Refuse mailbox storage recreation when only the original shared operation ledger survives. Keep native rendering variables isolated so recovery tests retain the original successful request identity. Current acceptance is pending.
+
+Preserve the selected mailbox domain after an invalid form submission and refuse mailbox setup inside a caller-owned transaction. Independent review regressions are included; acceptance remains pending.
+
+Correct the native gateway fingerprint call and refuse partial database recovery that leaves original mailbox grants/results without their request. Native regression cases cover these surviving witnesses; corrected CI remains pending.
+
+Add expiring owner permissions, real owner/client creation forms and safe request history over explicit client domains, using the existing provider gateway/ledger. Passwords stay transient; original request history prevents replay and ambiguous-address retries. New native/database/browser coverage is prepared but acceptance remains pending. Three parallel agents now work on separate catalog/domain/cloud increments; their changes are not integrated in this checkpoint. Published1.24.0 is unchanged.
+
+## Unreleased - registered-domain browser coverage
+
+- Prepared actual packaged owner/client browser flows, freshness/recovery checks and screenshots. Services explicitly send private cache/referrer headers; long domain headings wrap. Current browser acceptance remains pending.
+
+## Unreleased - registered-domain inventory
+
+- Explicit owner refresh of bounded registered-domain identities and distinct client assignments; native owner/client views keep hosting links separate.
+- Current complete observations, exact identity/context and latest-attempt freshness govern assignment and disclosure; failures never fall back through older success.
+- Adds native schema, permissions, atomic audit, concurrent reapproval and recovery fixtures. Native/browser acceptance and nameserver execution remain pending. See [scope](docs/TWENTYI_REGISTRAR_INVENTORY.md).
+
+## Unreleased — preserve catalog withdrawal during recovery
+
+- Retain the exact latest mapping ID/digest independently, preventing a partial restore of review and audit history from reactivating an older withdrawn approval.
+
+## Unreleased — catalog review corrections
+
+- Preserve safe inline rendering after oversized or array catalog form input; validate recovered association shape before reading its format.
+- Add actual HTTP/Chromium catalog form and existing fulfillment preparation coverage, pending execution.
+
+## Unreleased — owner-reviewed 20i plan catalog
+
+- Save versioned provider account/type/limit mappings for exact published retail plans, with expiry, withdrawal and current-owner/connection checks.
+- Keep private provider cost decimal amounts, currencies, periods and tax/allocation evidence separate from client retail prices; no inferred conversion or provider quote.
+- Prepare existing hosting service records from an eligible saved mapping while retaining original order/payment/fulfillment safeguards and immutable provenance.
+- Local pure checks pass; native/browser/packaged acceptance and automatic discovery remain pending. See [scope](docs/TWENTYI_PLAN_CATALOG.md).
+
+## Unreleased cloud recovery correction
+
+Refuse cloud request replay after paired approval/audit loss when the shared ledger or result audit survives. Refuse operation re-preparation after a lost marker with retained history. New native regressions are pending CI.
+
+## Unreleased cloud verification
+
+Add native two-process request replay coverage and isolated-branch application acceptance. Runtime unchanged from7e742c3b; CI results remain pending.
+
+## Unreleased — cloud website creation
+
+Cloud agent owns `codex/twentyi-vps-controls` from0ebc4623: native owner Add website on an explicitly assigned existing server, safe client request summaries, existing gateway/ledger and exact documented addWeb transport. Local synthetic checks pass; native/browser acceptance and root integration remain pending. Server lifecycle/power/console/SSH are still unfinished. See [cloud scope](docs/TWENTYI_CLOUD_WEBSITES.md). No release/live action.
+
 # Integration checkpoint — current main and domain replacement rollback
 
 Normally merge main16f07e49 into the20i client-search branch. Preserve licensing/domain controls and fix failed replacement leaving the original domain disabled. Local4 rollback cases and35 native licensing checks pass; combined acceptance/review pending. Earlier e375 full application artifacts/packages are now verified. Published1.24 remains unchanged.
@@ -918,3 +1035,38 @@ Current follow-up:8adf passed all four native combinations, including42 new asso
 ### Unreleased verification checkpoint — 2026-10-15
 
 - Verified parent client-search HTTP/Chromium and actual desktop/mobile screens, merged-head native matrices, and exact Windows packages. Full combined acceptance and independent review remain pending; published1.24 is unchanged.
+
+### Unreleased20i mailbox implementation — 2026-10-15
+
+- Add exact mailbox creation validation to the existing provider execution path, requiring a dedicated protected-secret resolver and refusing generic approval. Preserve safe password handling and at-most-once dispatch after unknown outcomes.
+- Native mailbox management screens and authorization/persistence are still being implemented; this checkpoint does not activate mailbox creation.
+
+## 2026-10-15 — registrar preparation safeguard and verified native matrix
+
+Parent2fe7e2ff, PR142: all four downloaded native artifacts verify60 cases plus64 registrar reader cases per PHP mode. Adds early transaction refusal before registrar DDL and three rollback/no-table regression checks; syntax passes, new native execution pending. Browser38819247971 is preserved and running; root retains combined acceptance/integration/releases. [Details and artifact hashes](docs/TWENTYI_REGISTRAR_INVENTORY.md). No provider operation or release.
+
+## 2026-10-15 — registrar native/browser evidence and capture handoff
+
+Parent8b4a101a, PR142: four actual artifacts verify63 native +64/64 reader cases each; source2fe7e2ff checkpoint verifies1,810 HTTP/Chromium checks (36 registrar),62 named reports, empty unexpected diagnostics and exact source/package bytes. Owner desktop and client screens inspected. Owner mobile element capture caught sidebar/sticky-header overlays; test-only navigation/settling/full-page correction awaits root combined screenshot inspection. Shipping source unchanged by this final checkpoint. Combined recovery/Apache remains pending; root owns integration/releases. [Exact evidence](docs/TWENTYI_REGISTRAR_INVENTORY.md).
+
+2026-10-15 cloud preparation review correction, starting `2febba4eef5f658a46de33b9b905108d41cb47d6`: `provider_operations_migrate()` now rejects an inherited database transaction before acquiring the staff lock or performing DDL. The native cloud fixture checks fresh preparation creates no table/marker and preserves rollback of an unrelated sentinel write. This closes the implicit-commit risk without changing storage versions or recovery records. Changed PHP syntax and documentation checks pass; installer refresh is included. Corrected-head Linux acceptance remains required. Next: verify the new native and packaged reports, then integrate through the parent branch.
+
+The recovery query at2febba4e failed native MySQL8.4/PHP8.2 run38820482050, job116715582421, with an illegal mixed-collation CONCAT. The enclosing correction casts all audit-prefix/ID/suffix operands to binary, retaining exact request-ID matching on both database engines. The failed report is preserved; later acceptance must verify this compatibility correction.
+
+## 2026-10-15 — Cloud website native acceptance and handoff
+
+Startingce8d4e89, record41 corrected native checks per PHP8.2/8.4 and MariaDB10.11/MySQL8.4 combination in run38821117816, verified from all four downloaded artifacts. Root review found no further source issue. Installer refresh15011, changed PHP syntax, all2,662 indexed hashes and documentation checks passed. Earlier4aa browser checkpoint verifies1,792 HTTP checks including18 cloud checks and four inspected screenshots. Exact corrected full38821117748 passed native and remains in browser; complete application/release acceptance remains pending. No runtime edit, provider call, deployment or release in this documentation checkpoint. Next: root sequential integration, combined installer generation and exact combined acceptance. See cloud evidence for retained failures, hashes and limitations.
+
+## Unreleased — Cloud allocated-package confirmation
+
+Owner-reviewed exact package observation and explicit original client assignment with atomic immutable history and recovery guards. Provider acknowledgement stays pending; no current server membership, health or billing activation claim. Native/browser acceptance pending. [Guide](docs/TWENTYI_CLOUD_CONFIRMATION.md).
+
+## 2026-10-15 — preserve native evidence and stabilize future-time fixture
+
+Parent0ea6e3a8, commit `Stabilize cloud confirmation future-time fixture`. Focused run38827979320 reports45 creation plus74 confirmation named cases passing in PHP8.2/MariaDB10.11, PHP8.4/MariaDB10.11 and PHP8.2/MySQL8.4. Downloaded all four artifacts and independently verified published SHA256, ZIP CRC and exact named outcomes. PHP8.4/MySQL8.4 artifact12015643012, SHA256 `1fff2cf36c61f1c47229deeecc789c83c916f8afeceeb3f7ea46a4acb72ba112`, passes45 creation cases and19 confirmation cases before the future-time assertion fails. Its synthetic timestamp was precomputed at now+31; preceding database work consumed a second, making that input valid at the production now+30 allowance. Change only this fixture input to now+120, preserving the production cutoff and assertion. Shipping files and installer inventory remain unchanged. Preserve the failed report and original full run38827979412. Syntax/documentation/whitespace checks accompany the bounded correction; fresh focused native acceptance is required. No release, live provider, payment, mail, SSH or deployment.
+
+## 2026-10-15 — exact cloud confirmation native acceptance
+
+Parentc3b2c022, commit `Record cloud confirmation native and combined browser evidence`. Exact focused [38828579877](https://github.com/afterburn25/Cajun_Web/actions/runs/38828579877) completed successfully on c3b2c022336fe55a93e685220352a6b5e8230782. All four independently downloaded artifacts match their published SHA256 and pass ZIP CRC, with45 unique creation and74 unique confirmation named outcomes each. This verifies the corrected future-time refusal, sequence-first authority, original-context integrity, exact link/audit pairing, rollback, concurrent confirmation and later-reapproval historical projection on PHP8.2/8.4 with MariaDB10.11/MySQL8.4. The original fourth-combination timing failure remains retained separately; shipping is byte-identical to0ea6e3a8. Full38827979412 remains in progress, last observed after package success during native integration; no new confirmation browser/recovery/Apache acceptance or release is claimed.
+
+Independently verified root2239 browser checkpoint12015677899 from38826150967: SHA256 `630b6400d8af6bb3725f6d20207f5b8880fad8bf3eb097738ab5c4d62b3f715b`,259 ZIP members with clear CRC,1878 passing named HTTP outcomes including18 cloud website-creation cases. Inspected actual owner/client desktop and320px screenshots: pending status and accurate capability wording are visible, controls stay contained; owner mobile nested fields are narrow but have no overlap. PHP diagnostics and unexpected browser errors are empty. This is original creation UI evidence, separate from the new confirmation UI. Root owns the normal integration and release. Next: inspect original0ea full browser/checkpoint/screenshots and final recovery/Apache packages, preserve prior runs, and verify combined descendant acceptance. No live provider calls, payment, mail, SSH or deployment.

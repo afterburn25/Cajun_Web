@@ -4,6 +4,8 @@ Codex owns the complete 20i P0 integration. [CajunWebPro 1.24.0](https://github.
 
 Read [takeover](docs/TWENTYI_CODEX_TAKEOVER.md), [requirements and evidence](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md), current status and handoff first. The priority is implementation through verified incremental releases. Former allocation and stopping points in the [historical agreement](docs/archive/2026-10-15-AGENTS.md) are superseded.
 
+Owner allocation,2026-10-15: Devin owns licensing for software products sold by this site, including generated licenses for installing other products. Codex and its three agents stay focused on20i and preserve the existing licensing lane. Shared billing/portal/schema/installer changes integrate sequentially under root review. CajunWebPro itself retains its one-page keyless installer. See [current coordination](docs/AGENT_COORDINATION.md). This records the owner's assignment, not proof of an active Devin session.
+
 These are the owner's project requirements and the repository continuity procedure. Follow them for work in `afterburn25/Cajun_Web`. Do not treat older chat summaries, screenshots, or ZIP filenames as proof of the current implementation.
 
 ## Begin every session

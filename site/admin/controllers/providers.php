@@ -6,6 +6,13 @@ require_once CWP_CODE_ROOT.'/app/providers/operations.php';
 require_once CWP_CODE_ROOT.'/app/providers/inventory.php';
 require_once CWP_CODE_ROOT.'/app/providers/reconcile.php';
 require_once CWP_CODE_ROOT.'/app/providers/domain_search.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_mailboxes.php';
+
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_registrar.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/domain_renewals.php';
+
+require_once CWP_CODE_ROOT.'/app/providers/cloud_sites.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_cloud_confirmation.php';
 use CajunWebPro\Foundation\Provider\OperationResult;
 use CajunWebPro\Foundation\TwentyI\Operations\TwentyIOperationRegister;
 
@@ -21,8 +28,20 @@ function provider_inventory_message(?string $code):string {
 }
 
 function provider_inventory_admin_action(string $action):void {
+    if(str_starts_with($action,'provider_inventory_renewal_'))domain_renewals_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_cloud_confirmation_')){provider_cloud_confirmation_admin_action($action);return;}
+    if(str_starts_with($action,'provider_inventory_mailbox_'))provider_mailbox_admin_action($action);
+
+    if(str_starts_with($action,'provider_inventory_registrar_')){provider_registrar_admin_action($action);return;}
     if(str_starts_with($action,'provider_inventory_domain_search_')){provider_domain_search_admin_action($action);return;}
     $password=posted('current_password',200);
+    if($action==='provider_inventory_cloudsite_create'){
+        $number=static function(string $name):int {$value=posted($name,10);if(!preg_match('/^[1-9][0-9]{0,9}$/D',$value)||(int)$value>4294967295)throw new InvalidArgumentException('Reload the current cloud website form.');return (int)$value;};
+        $extra=posted('extra_domains',5080);$extra=$extra===''?[]:preg_split('/\r\n|\n|\r/',$extra);
+        $result=provider_cloud_sites_create(posted('request_id',32),posted('link_id',32),$number('link_revision'),$number('revision'),posted('refresh_id',32),posted('domain_name',253),$extra,posted('reviewed',1)==='1',$password);
+        flash($result->message,$result->status==='accepted_pending'?'success':'error');redirect(admin_url('provider-settings'));
+    }
+
     if($action==='provider_inventory_prepare'){
         provider_inventory_migrate($password);flash('20i inventory storage is ready.');redirect(admin_url('provider-settings'));
     }

@@ -1,5 +1,11 @@
 # Decision record
 
+## 2026-10-15 — parallel workers and transient mailbox passwords
+
+The owner explicitly authorized simultaneous agents. Root owns mailbox work and integration/releases; three actual workers own catalog mappings, registrar inventory/client links and cloud website creation in isolated branches from0ebc. [Allocation](TWENTYI_PARALLEL_WORK.md).
+
+Immediate mailbox creation retains no recoverable password, superseding the earlier proposed encrypted payload for this increment. Its request-bound master-key HMAC detects changed-password nonce reuse; the password is used only by the immediate authorized resolver. Interrupted requests cannot resume or resend, so a queued password vault is unnecessary for this workflow. Future queued operations need separate design. Owner request limits are distinct from unverified provider quotas/costs.
+
 ## 2026-10-15 — Reuse service agreements for 20i commercial intent
 
 Retain #90–#92 through a normal merge as the exact client/terms-consent dependency. Agreement acceptance and activation do not establish payment or provisioning eligibility. Add that eligibility using the existing catalog, invoice ledger, hosting and provider journals. Prepared missing agreement tables require restoration; do not recreate empty consent history. Codex owns this work under the 20i P0 override.
@@ -215,3 +221,17 @@ Owner instruction: “let devin do the complete 20i integration.” Devin's prio
 ## 2026-10-15 — Preserve provider acknowledgements separately from completion
 
 Retain the existing gateway/ledger, extending its bounded result with accepted_pending and the provider-issued package ID. A valid documented addWeb acknowledgement proves acceptance, not activation; generic2xx, false/null or mixed envelopes cannot prove business success. Recorded legacy results are preserved. Name-only matches never adopt resources. Current ID-array contracts invalidate old scalar approvals rather than silently translating them. No mixed updatePackage request receives a blanket idempotent capability. Full inner request schemas, first-party order/hosting controls and release acceptance remain required.
+
+## 2026-10-15 — typed owner catalog evidence before automatic discovery
+
+Use immutable, expiring owner-reviewed provider plan mappings to reuse exact package configuration. Preserve exact decimal major currency units and explicit period/tax/allocation evidence separately from USD retail cents. Unknown wholesale cost is null; do not infer conversion, margin, allocation or provider quote. Official public sources do not supply a verified packageTypes response schema, so this increment introduces no invented automatic reader. Catalog selection binds original accepted plan and existing order preparation; dedicated fulfillment review remains required. [Scope and evidence](TWENTYI_PLAN_CATALOG.md).
+
+
+## 2026-10-15 — Reuse cloud creation request authority
+
+The bounded cloud management increment uses the existing provider approval and operation ledger tables. Its typed, installation-keyed approval envelope binds the explicit server/client assignment and current observation; request nonce consumption precedes DNS and sending. Returned cloud addWeb package IDs remain accepted-pending until separately observed and explicitly linked. Server capacity/domain permission are manually reviewed and not falsely reported as API-verified. This delivers the documented existing-server website operation while full server lifecycle, power and SSH contracts remain separate. No new generic operation approval surface or replacement ledger is introduced.
+
+
+## 2026-10-15 — owner assigns software-product licensing to Devin
+
+The owner will have Devin implement licensing for software products offered by CajunWebPro, including generated licenses for installing other products. Codex retains complete20i P0 and integration/release coordination. Preserve inherited licensing rather than implementing a competing module. Keep shared billing/portal/schema/installer changes on isolated branches and merge reviewed source sequentially with combined checks. This allocation does not add a license requirement to CajunWebPro's one-page keyless installer or establish live product installation acceptance. [Current ownership](AGENT_COORDINATION.md).

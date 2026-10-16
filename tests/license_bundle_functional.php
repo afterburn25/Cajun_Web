@@ -79,6 +79,57 @@ bf_deny('Unknown industry refused', fn() => license_bundle('TEST-1234-ABCD-5678'
 license_bundle_store(7, $zipPath, 'Restaurant bundle');
 bf_ok('Bundle record stored', count($GLOBALS['bf_bundles']) === 1 && $GLOBALS['bf_bundles'][0]['file_path'] === $zipPath);
 
+// --- cross-repo install verification ----------------------------------------
+// Prove the artifact WC's installer would receive actually installs: extract
+// the bundled module from the real ZIP, run WC migrations on sqlite, write
+// license + packages rows, run module migrations, enable, and boot the real
+// provider through ModuleRegistry. Mirrors Installer's bundled-module path.
+bf_ok('pdo_sqlite available for WC install check', extension_loaded('pdo_sqlite'));
+bf_ok('WC test bootstrap present', is_file($coreDir . '/tests/bootstrap.php'));
+require $coreDir . '/tests/bootstrap.php';
+
+$instDir = sys_get_temp_dir() . '/bf-inst-' . bin2hex(random_bytes(4));
+for ($i = 0; $i < $zip->numFiles; $i++) {
+    $n = $zip->getNameIndex($i);
+    if (!str_starts_with($n, 'site/modules/industries/')) continue;
+    $rel = substr($n, strlen('site/modules/'));
+    if (str_ends_with($n, '/')) { @mkdir($instDir . '/' . $rel, 0777, true); continue; }
+    @mkdir(dirname($instDir . '/' . $rel), 0777, true);
+    copy('zip://' . $zipPath . '#' . $n, $instDir . '/' . $rel);
+}
+$moduleDir = $instDir . '/industries/industry-restaurant';
+bf_ok('Bundled module extracted from ZIP', is_file($moduleDir . '/addon.json'));
+
+$wcDb = new \Core\Database\Connection(new PDO('sqlite::memory:'), 'wc_');
+(new \Core\Database\Migrator($wcDb, WC_ROOT . '/database/migrations'))->migrate();
+
+$lt = $wcDb->table('license');
+$wcDb->run("INSERT INTO `{$lt}` (license_key, license_domain, license_valid, license_validated_at, created_at) VALUES (?, ?, 1, ?, ?)",
+    ['TEST-1234-ABCD-5678', 'bf.example.com', date('Y-m-d H:i:s'), date('Y-m-d H:i:s')]);
+$pt = $wcDb->table('packages');
+$wcDb->run("INSERT INTO `{$pt}` (package_id, state, version, manifest, updated_at) VALUES (?, 'installed', ?, ?, ?)",
+    [(string) $manifest['id'], (string) ($manifest['version'] ?? ''), json_encode($manifest), date('Y-m-d H:i:s')]);
+$migDir = trim((string) ($manifest['migrations'] ?? ''), '/');
+if ($migDir !== '' && is_dir($moduleDir . '/' . $migDir)) {
+    (new \Core\Database\Migrator($wcDb, $moduleDir . '/' . $migDir))->migrate();
+}
+$wcDb->run("UPDATE `{$pt}` SET state = 'enabled', updated_at = ? WHERE package_id = ?", [date('Y-m-d H:i:s'), (string) $manifest['id']]);
+
+$lic = $wcDb->fetch("SELECT * FROM `{$lt}` LIMIT 1");
+bf_ok('WC license row stored valid', $lic['license_key'] === 'TEST-1234-ABCD-5678' && (int) $lic['license_valid'] === 1);
+bf_ok('WC module migrations ran', $wcDb->tableExists('restaurant_categories') && $wcDb->tableExists('restaurant_items'));
+
+mkdir($instDir . '/addons', 0777, true);
+mkdir($instDir . '/themes', 0777, true);
+$registry = new \Core\Modules\ModuleRegistry($wcDb, $instDir . '/industries', $instDir . '/addons', $instDir . '/themes');
+$registry->discover();
+bf_ok('WC registry sees bundled module enabled', $registry->state('wcref/restaurant') === 'enabled');
+$booted = $registry->bootEnabled(
+    fn (string $p, string $d) => \CoreAutoload::register($p, $d),
+    fn (string $id) => new \Core\Modules\ModuleContext($id, new \Core\Routing\Router(), new \Core\Events\Dispatcher())
+);
+bf_ok('WC boots real bundled provider', $booted === ['wcref/restaurant']);
+
 $zip->close();
 @unlink($zipPath);
 @rmdir($outDir);

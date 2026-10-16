@@ -72,9 +72,19 @@ def run_browser(env,browser):
     page.locator('[data-provider-check] [name=current_password]').fill('wrong');page.get_by_role('button',name='Check saved 20i connection',exact=True).click();expect(page.locator('.notice.error').first).to_contain_text('current password')
     check('Chromium check error clears confirmation password',page.locator('[data-provider-check] [name=current_password]').input_value()=='')
     db('UPDATE ci_provider_checks SET started_epoch=?',[int(time.time())-31]);calls=provider_server.calls
-    page.locator('[data-provider-check] [name=current_password]').fill(OWNER);page.get_by_role('button',name='Check saved 20i connection',exact=True).click();expect(page.locator('[data-provider-history]')).to_contain_text('Read verified')
+    page.locator('[data-provider-check] [name=current_password]').fill(OWNER)
+    with page.expect_navigation(wait_until='domcontentloaded'):
+        page.get_by_role('button',name='Check saved 20i connection',exact=True).click()
+    expect(page.locator('[data-provider-history]')).to_contain_text('Read verified')
     check('Chromium explicit check reaches isolated HTTPS once',provider_server.calls==calls+1)
-    check('Provider UI keeps operation capabilities unverified','remain unverified and unavailable' in page.content())
+    capability=page.get_by_text('A successful connection check confirms access to the hosting list. It does not confirm that every service is available or approved for use.',exact=True)
+    try:
+        expect(capability).to_be_visible()
+    except AssertionError:
+        (QA/'Provider-Capabilities-Failure.html').write_text(page.content(),encoding='utf-8')
+        page.screenshot(path=str(QA/'Provider-Capabilities-Failure.png'),full_page=True)
+        raise
+    check('Provider UI limits connection verification to the hosting list',capability.is_visible())
     page.screenshot(path=str(QA/'Provider-Settings-Desktop.png'),full_page=True);page.set_viewport_size({'width':320,'height':740});expect(page.locator('.admin-sidebar')).not_to_be_in_viewport();page.screenshot(path=str(QA/'Provider-Settings-Mobile.png'),full_page=True)
     check('Provider owner page fits 320px viewport',page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
     check('Provider browser has no script errors',not errors);context.close()

@@ -1,3 +1,9 @@
+## Owner allocation — software-product licensing, 2026-10-15
+
+The owner is assigning Devin licensing for software products offered by CajunWebPro, including generation of licenses used to install other products. Continue the existing licensing implementation; this assignment does not establish that a Devin session is running or that licensing is complete. No new Devin branch/PR has been supplied yet. Previous mainb8f8528b licensing changes are preserved in the20i integration branch. New mainb8c432ca adds master-key runtime; it is inspected but not merged pending the migration and internal-key delivery findings in [the licensing handoff](LICENSING_INTEGRATION_REVIEW.md).
+
+Codex and its three agents continue complete20i P0. Reserve licensing service/validation/schema/bundling implementation for Devin. Shared purchase/invoice fulfillment, portal actions/views, admin routing, base schema and installer inventory require sequential integration preserving both lanes. Root reviews the actual incoming Git diff and combined tests before merging; no branch resets, replacement platform or duplicate licensing rewrite. CajunWebPro's own installer remains the approved one-page, keyless installer; licenses here are for other software products. No direct message was sent to Devin by this allocation record.
+
 # Licensing System Implementation — Cajunwebpro.com
 
 Integration note,2026-10-15: the20i branch now retains main13f9662d and its separate licensing changes. Earlier findings about integer product identifiers, project-bound domain actions and root-relative downloads have been corrected upstream. Our optional-storage portal/admin guards and owner-only licensing permissions remain. Main also introduces paid-invoice fulfillment/mail hooks, native licensing tests and optional external bundle-source configuration. This normal merge still needs combined billing/portal/packaged acceptance; neither this note nor20i confirmation tests certify licensing end to end. No Website_Core checkout was read, changed or executed by this20i work, and no customer mail was sent. Historical implementation claims below describe the inherited module, not newly established live acceptance.
@@ -34,7 +40,7 @@ the site.
 
 **Features:**
 - Rate limiting: 10 requests per minute per IP (HTTP 429)
-- Audit logging: all validation attempts logged to `audit` table
+- Audit logging: all validation attempts logged to `audit` table — and every license mutation (`license.create`, `license.domain.register`, `license.domain.deactivate`, `license.domain.replace`, `license.deactivate`) records the acting staff/client id (0 for system paths like fulfilment), so a domain change is never an unexplained state
 - Multiple domain support: allows test + public sites on same license key, capped at 2 active domains per license — a third requires deactivating one first, which takes that site offline at its next validation
 - www/apex equivalence: `www.example.com` and `example.com` name the same site — registration canonicalizes `www.` to the apex and validation accepts either form, so the pair never consumes two slots
 - Active check: deactivated licenses are rejected
@@ -161,10 +167,13 @@ license_bundles (
   domain normalization, multi-domain, 2-active cap, deactivation, SKU
   mapping, bundle guards); runs in CI on MariaDB.
 - `tests/license_bundle_functional.php` — builds a real bundle from the
-  Website_Core checkout and verifies the extracted layout
+  Website_Core checkout, verifies the extracted layout
   (`site/install.php` + `site/modules/industries/*/addon.json` with
   embedded `license_key`) matches the Website Core installer's
-  expectations. 14 checks, all passing.
+  expectations, and exercises the real WC install path: module
+  extraction from the ZIP → WC + module migrations on sqlite →
+  license/packages rows → enable → real provider boot via
+  `ModuleRegistry`. 21 checks, all passing.
 - Website Core side: `LicenseApiContractTest` spawns a real `php -S`
   mock of this API and verifies the HTTP wire contract including the
   200-vs-non-200 denial/transient semantics.

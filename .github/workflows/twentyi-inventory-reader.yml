@@ -4,7 +4,7 @@ on:
   pull_request:
     paths: ['foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'foundation/provider/**', 'foundation/twentyi/**', 'tests/twentyi-inventory-reader/**', '.github/workflows/twentyi-inventory-reader.yml']
   push:
-    branches: [main, devin/twentyi-complete, devin/twentyi-inventory-reader, codex/twentyi-domain-search]
+    branches: [main, devin/twentyi-complete, devin/twentyi-inventory-reader, codex/twentyi-domain-search, codex/twentyi-domain-controls]
     paths: ['foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'foundation/provider/**', 'foundation/twentyi/**', 'tests/twentyi-inventory-reader/**', '.github/workflows/twentyi-inventory-reader.yml']
   workflow_dispatch:
 
@@ -36,6 +36,8 @@ jobs:
             for source in foundation/twentyi-inventory-reader/*.php foundation/provider/*.php tests/twentyi-inventory-reader/*.php; do php -l "$source"; done
             php tests/twentyi-inventory-reader/domains.php > /qa/domains-results.json
             php -n tests/twentyi-inventory-reader/domains.php > /qa/domains-results-no-ini.json
+            php tests/twentyi-inventory-reader/registrar.php > /qa/registrar-results.json
+            php -n tests/twentyi-inventory-reader/registrar.php > /qa/registrar-results-no-ini.json
             php tests/twentyi-inventory-reader/cloud.php > /qa/cloud-results.json
             php -n tests/twentyi-inventory-reader/cloud.php > /qa/cloud-results-no-ini.json
             php tests/twentyi-inventory-reader/run.php > /qa/reader-results.json

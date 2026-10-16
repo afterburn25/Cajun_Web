@@ -17,6 +17,7 @@ use CajunWebPro\Foundation\Provider\TransportException;
 use CajunWebPro\Foundation\TwentyI\FixedHttpTransport;
 use CajunWebPro\Foundation\TwentyIInventory\InventoryPackage;
 use CajunWebPro\Foundation\TwentyIInventory\InventoryCloudServer;
+use CajunWebPro\Foundation\TwentyIInventory\InventoryDomain;
 use CajunWebPro\Foundation\TwentyIInventory\InventoryRead;
 use CajunWebPro\Foundation\TwentyIInventory\InventorySnapshot;
 use CajunWebPro\Foundation\TwentyIInventoryReader\InventoryReader;
@@ -26,7 +27,7 @@ require_once CWP_CODE_ROOT.'/app/providers/checks.php';
 require_once CWP_CODE_ROOT.'/database/migrations/provider_inventory_migrate.php';
 foreach(['ProviderCredential','TransportRequest','TransportResponse','TransportException','HttpTransport'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/provider/'.$class.'.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/twentyi/FixedHttpTransport.php';
-foreach(['InventoryRead','InventoryPackage','InventoryCloudServer','InventorySnapshot','InventoryProjector'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory/'.$class.'.php';
+foreach(['InventoryRead','InventoryPackage','InventoryCloudServer','InventoryDomain','InventorySnapshot','InventoryProjector'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory/'.$class.'.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory-reader/InventoryReader.php';
 
 final class ProviderInventoryAccessChanged extends RuntimeException {}
@@ -79,6 +80,11 @@ function provider_inventory_record(array $started,string $state,string $reason,s
             [$started['id'],$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,gmdate('Y-m-d H:i:s'),max(0,min($elapsed,2147483647)),$fingerprint]);
         if($snapshot!==null&&provider_inventory_observed($state)) {
             foreach($snapshot->packages as $package) {
+                if(($started['operation']??'')===InventoryRead::DOMAINS_LIST) {
+                    if(!$package instanceof InventoryDomain)throw new LogicException('Only validated registrar identities persist.');
+                    query('INSERT INTO '.table('provider_registrar_observations').' (id,refresh_id,domain_id,domain,unmapped_count) VALUES (?,?,?,?,?)',[bin2hex(random_bytes(16)),$started['id'],$package->id,$package->name,$package->unmappedCount]);
+                    continue;
+                }
                 if(($started['operation']??InventoryRead::PACKAGES_LIST)===InventoryRead::CLOUD_SERVERS_LIST) {
                     if(!$package instanceof InventoryCloudServer)throw new LogicException('Only validated cloud records persist for cloud reads.');
                     $metadata=['id'=>$package->id,'name'=>$package->name,'location'=>$package->location,'productSpec'=>$package->productSpec,'configuration'=>$package->configuration,'packageIds'=>$package->packageIds];
@@ -105,12 +111,14 @@ function provider_inventory_refresh(string $id,int $revision,#[\SensitiveParamet
 /** Internal receipt exposes the exact durable refresh, never a latest-row guess. */
 function provider_inventory_refresh_attempt(string $id,int $revision,#[\SensitiveParameter] string $password,?callable $resolver=null,?callable $transport=null,string $operation=InventoryRead::PACKAGES_LIST,?callable $scopeAuthority=null):array {
     if(!InventoryReader::supports($operation))throw new InvalidArgumentException('This inventory reader is not available.');
+    if($operation===InventoryRead::DOMAINS_LIST){require_once CWP_CODE_ROOT.'/app/providers/registrar.php';if(!provider_registrar_ready())throw new RuntimeException('Prepare registered-domain storage first.');}
     if(db()->inTransaction())throw new LogicException('Provider refreshes cannot run inside a transaction.');
     $started=staff_locked(fn()=>staff_transaction(function()use($id,$revision,$password,$operation,$scopeAuthority):array {
         if($scopeAuthority)$scopeAuthority();
         [$actor]=provider_inventory_authority($id,$revision,$password);$now=time();
         if(one('SELECT id FROM '.table('provider_refreshes').' WHERE profile_id=? AND started_epoch>? LIMIT 1',[$id,$now-30]))throw new RuntimeException('Wait 30 seconds between refreshes of this profile.');
         if((int)query('SELECT COUNT(*) FROM '.table('provider_refreshes').' WHERE actor_id=? AND started_epoch>?',[$actor['id'],$now-3600])->fetchColumn()>=20)throw new RuntimeException('Inventory refresh limit reached. Try again later.');
+        if($operation===InventoryRead::DOMAINS_LIST&&!provider_registrar_ready())throw new RuntimeException('Registered-domain storage is unavailable.');
         $started=['id'=>bin2hex(random_bytes(16)),'profile_id'=>$id,'profile_revision'=>$revision,'actor_id'=>(int)$actor['id'],'started_at'=>gmdate('Y-m-d H:i:s',$now),'started_epoch'=>$now,'operation'=>$operation];
         query('INSERT INTO '.table('provider_refreshes').' (id,profile_id,profile_revision,actor_id,started_at,started_epoch,operation) VALUES (?,?,?,?,?,?,?)',array_values($started));
         provider_settings_audit((int)$actor['id'],'refresh_started','Refresh '.$started['id'].' profile '.$id.' revision '.$revision);return $started;
@@ -209,9 +217,18 @@ function provider_inventory_link_events(string $profileId,int $page=1): array {
  */
 function provider_inventory_link(string $profileId,int $packageId,int $clientId,int $revision,#[\SensitiveParameter] string $password): void {
     staff_locked(fn()=>staff_transaction(function()use($profileId,$packageId,$clientId,$revision,$password):void {
+        provider_inventory_link_in_transaction($profileId,$packageId,$clientId,$revision,$password);
+    }));
+}
+
+/** Internal composition point: the caller owns both the staff mutex and transaction. */
+function provider_inventory_link_in_transaction(string $profileId,int $packageId,int $clientId,int $revision,#[\SensitiveParameter] string $password,?string $expectedRefresh=null): array {
+        $mutex='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
+        if(!db()->inTransaction()||(int)query('SELECT COALESCE(IS_USED_LOCK(?),0)=CONNECTION_ID()',[$mutex])->fetchColumn()!==1)throw new LogicException('Package linking requires the owning staff transaction.');
         [$actor]=provider_inventory_authority($profileId,$revision,$password);
         if($packageId<=0)throw new InvalidArgumentException('Provider package identity unavailable.');
         $observation=provider_inventory_observation($profileId);
+        if($expectedRefresh!==null&&($observation['id']??null)!==$expectedRefresh)throw new RuntimeException('The hosting observation changed. Review the current inventory again.');
         if(!$observation||(int)$observation['profile_revision']!==$revision)throw new RuntimeException('The saved observation is from an earlier provider configuration. Refresh under the current settings before linking.');
         if(!one('SELECT id FROM '.table('provider_observation_packages').' WHERE refresh_id=? AND package_id=?',[$observation['id'],$packageId]))throw new RuntimeException('That package is not in the last good observation for this profile. Refresh first.');
         if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$clientId]))throw new InvalidArgumentException('Active client account not found.');
@@ -219,7 +236,7 @@ function provider_inventory_link(string $profileId,int $packageId,int $clientId,
         query('INSERT INTO '.table('provider_package_links').' (id,profile_id,package_id,client_id,linked_by,linked_at,key_fingerprint,profile_revision) VALUES (?,?,?,?,?,?,?,?)',[bin2hex(random_bytes(16)),$profileId,$packageId,$clientId,(int)$actor['id'],gmdate('Y-m-d H:i:s'),$observation['key_fingerprint'],$revision]);
         query('INSERT INTO '.table('provider_package_link_events').' (profile_id,package_id,client_id,event,actor_id,recorded_at) VALUES (?,?,?,?,?,?)',[$profileId,$packageId,$clientId,'link',(int)$actor['id'],gmdate('Y-m-d H:i:s')]);
         provider_settings_audit((int)$actor['id'],'service_linked','Profile '.$profileId.' package '.$packageId.' client '.$clientId);
-    }));
+        return one('SELECT * FROM '.table('provider_package_links').' WHERE profile_id=? AND package_id=?',[$profileId,$packageId]);
 }
 
 /** Explicit owner unlink; the mapping is removed and an event is recorded. */

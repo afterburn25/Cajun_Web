@@ -1,3 +1,35 @@
+## Current parallel implementation and combined acceptance — 2026-10-15
+
+Frozen3bbc42bd includes reviewed catalog readiness, renewal intake and cloud confirmation; all have native and browser proof on their own sources. Windows packages and all20 focused matrix archives verify; full combined38829910791 passed package/native/browser and passed unprivileged recovery and is running Apache protection checks. Corrected parent2239 full acceptance and final packages now verify. [Exact evidence](TWENTYI_COMBINED_3BBC_EVIDENCE.md). New isolated lanes implement scheduled inventory refresh, client hosting observation history and forwarding request/review; scheduler recovery corrections remain in progress. Full lifecycle/discovery/native controls/SSH and release gates remain unfinished. [Current handoff](../SESSION_HANDOFF.md). Older entries below retain their original source scope.
+
+## Client domain renewal requests — integrated candidate, 2026-10-15
+
+Reviewed/native-verified ed4d1cad is normally merged after the catalog readiness increment. Actual client request/withdrawal and owner review/decline forms retain original registrar assignment and immutable history. Four supported native combinations pass78 request cases plus28 pure cases per mode. Commercial offers, provider renewal execution and completed-renewal verification remain unfinished; combined application acceptance is still required. [Scope](TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).
+
+## Owner catalog readiness — integrated candidate, 2026-10-15
+
+Reviewed catalog872aec34 is normally merged into the integration branch: bounded owner plan summaries, precise local readiness reasons and immutable selected-review details. Four native database/runtime combinations pass with78 catalog cases each; actual browser and new combined acceptance remain pending. Automatic provider catalog discovery remains unfinished. [Scope](TWENTYI_CATALOG_READINESS.md).
+
+# Current20i continuation — 2026-10-15
+
+Combined38bb has four downloaded native matrices and exact Windows packages verified; full38824052505 browser hit a fixture-only token extraction error; its reviewed correction requires fresh descendant acceptance while prior recovery continues. Three next implementation lanes are renewal request/admin review, catalog readiness/history and cloud returned-package observation/explicit client assignment. Complete hosting/domain/VPS lifecycle, discovery and support/SSH remain unfinished. [Current status](../PROJECT_STATUS.md) and [requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) govern scope; older checkpoints below preserve their historical states. No release or live action in this checkpoint.
+
+# Active 20i parallel work
+
+Root integrates native mailbox creation, provider plan mappings, registrar ownership/client links and existing cloud-server website creation from three parallel agent branches. [Bounded assignments and acceptance status](TWENTYI_PARALLEL_WORK.md). Mailbox334 passes87 native cases in each supported combination; the new sequence-order recovery cases and combined runtime/browser/recovery/Apache acceptance remain pending. Full mail/domain/VPS controls, automatic catalog discovery and support/SSH remain unfinished. No completion estimate advances solely from source presence. Checkpoints below are historical; current status and the requirements checklist govern remaining work.
+
+# Parallel 20i increment - registered domains
+
+2026-10-15: user authorized simultaneous agents. The domain agent owns `codex/twentyi-domain-controls` from `0ebc46237fce565005b581fe5a96a2691b9840b5`; root owns integration/releases. Adds sanitized registrar identity reads through existing inventory, distinct explicit client assignments, latest-attempt freshness, owner/client PHP views and recovery/tests. Hosted-domain links never become registrar authority. Local PHP8.4 synthetic checks pass64 registrar plus139 inventory/28 reader/82 cloud cases per mode; native CI and browser acceptance are pending. Nameserver writes remain disabled pending verified response/authority contracts. No provider operation or release. [Scope, provenance and next steps](TWENTYI_REGISTRAR_INVENTORY.md).
+
+## Current 20i catalog increment — 2026-10-15
+
+Implementing [owner-reviewed provider plan catalog](TWENTYI_PLAN_CATALOG.md): reusable account/type/limit mapping, distinct private provider-cost evidence, expiry/withdrawal and existing hosting preparation selection. Local pure checks pass; native/browser/packaged acceptance pending. Automatic packageTypes discovery, cost feeds and provider entitlement remain unfinished. This does not complete the full20i roadmap.
+
+## 2026-10-15 cloud website increment
+
+Cloud agent owns `codex/twentyi-vps-controls` from0ebc4623: native owner Add website on an explicitly assigned existing server, safe client request summaries, existing gateway/ledger and exact documented addWeb transport. Local synthetic checks pass; native/browser acceptance and root integration remain pending. Server lifecycle/power/console/SSH are still unfinished. See [cloud scope](TWENTYI_CLOUD_WEBSITES.md). No release/live action.
+
 # Active 20i increment — client domain availability
 
 Private client domain search is implemented above PR138 with explicit owner enablement, shared provider limits and separate client history. Native1fbeb passes106 combined checks including50 client checks in all four combinations, with exact Windows packages verified. Actual browser acceptance, screenshots, review and release remain pending. Full20i scope is unchanged. [Client-search scope](TWENTYI_CLIENT_DOMAIN_SEARCH.md).
@@ -661,3 +693,16 @@ This increment wires the 20i connection owner page into the existing staff permi
 New packaged HTTP/Chromium fixtures use the existing server-only auto-prepend seam plus an actual loopback HTTPS server. The seam asserts production cURL options before changing only the test destination and CA, and refuses unrecognized DNS. It is outside deployment. Syntax and generated inventory checks are local; combined database/browser/installer acceptance is pending and no screenshots have yet been inspected for this UI. No new release version is reserved, published1.19.0 stays immutable, and no real20i request or secret extraction occurs.
 
 Next: inspect application/native/transport matrices; resolve independent owner-storage and orchestration review; inspect actual desktop/320px screenshots; add latest1.19 upgrade/recovery/private-key retention acceptance before preparing a new release. Continue feasible roadmap work without a release-boundary stop.
+
+### 2026-10-15 —20i hosting mail in implementation
+
+The documented mailbox creation boundary now uses the existing provider gateway, ledger and fixed transport with secret-safe results and replay protection. Native admin/client controls, persistence and acceptance remain required. [Current scope and continuation](TWENTYI_MAILBOX_CONTROLS.md). This does not complete hosting mail or change published1.24.
+
+## 2026-10-15 — Observed cloud package confirmation in development
+
+Owner continued complete20i work with parallel agents. New isolated `codex/twentyi-cloud-confirmation` starts at combined38bb69cc; it preserves original33a2 and frozen root. Implements exact acknowledged-package/approved-name observation plus explicit original client assignment, separate from immutable accepted_pending result, server membership, health or billing. Adds strict additive confirmation storage, immutable evidence/recovery pointer, owner form/controller, safe client projection, and atomic reuse of existing link authority. Native concurrent/rollback/recovery and packaged browser cases are prepared; local PHP/Python syntax checked. Linux native/full acceptance and independent review remain pending. No live calls or deployment. See [contract and evidence](TWENTYI_CLOUD_CONFIRMATION.md), including verified originalce8d full12,067 primary outcomes and separately retained combined mailbox fixture failure. Next: refresh installer, push bounded commit, inspect exact focused/full evidence and review before root integration.
+
+
+## 2026-10-15 owner allocation — software-product licensing
+
+Devin owns license generation and installation licensing for other software products sold by this site. Codex and its three agents continue the complete20i P0. This is ownership, not completion or running-agent evidence. Preserve the current licensing module and merge shared billing/portal/schema changes with reviewed tests. [Coordination](AGENT_COORDINATION.md).

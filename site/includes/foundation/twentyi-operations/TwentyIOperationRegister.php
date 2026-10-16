@@ -25,6 +25,11 @@ final class TwentyIOperationRegister
     {
         $operations = [
             new TwentyIOperation(
+                'cloudsites.create', 'POST', '/cloud_server/{cloudServerId}/addWeb',
+                ['cloudServerId'], ['domain_name'=>'hostname','extra_domain_names'=>'hostname_list'],
+                ['domain_name','extra_domain_names'], shapeComplete: true,
+            ),
+            new TwentyIOperation(
                 'packages.create', 'POST', '/reseller/{resellerId}/addWeb',
                 ['resellerId'],
                 [
@@ -114,6 +119,13 @@ final class TwentyIOperationRegister
                 ['delete-id'],
                 shapeComplete: true, // Owner complete-reference clarification: array of IDs.
                 destructive: true,
+            ),
+            // Official provision-mailbox-api; the dedicated builder resolves a protected
+            // password reference transiently. Generic approval never admits this operation.
+            new TwentyIOperation(
+                'mailboxes.create', 'POST', '/package/{packageId}/email/{domain}',
+                ['packageId', 'domain'],
+                ['new'=>'json'], ['new'], shapeComplete: true,
             ),
         ];
         $this->operations = [];

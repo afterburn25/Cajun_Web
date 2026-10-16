@@ -76,6 +76,11 @@ function hosting_order_links_form_package(ServiceOrderDocument $order,array $inp
 function hosting_order_links_form_action(string $command,ServiceOrderDocument $order,int $client,#[\SensitiveParameter] string $password):void {
     service_plans_form_confirm($_POST);
     if($command==='prepare_service'){hosting_order_links_prepare($password);return;}
+    if($command==='map_catalog'){
+        $id=service_plans_form_id($_POST,'catalog_id');$mapping=recurring_billing_locked(function()use($id,$order):array {service_orders_owner();$m=provider_plan_catalog_lookup($id);provider_plan_catalog_order($m,$order,true);return $m;});
+        if($mapping['sha256']!==service_plans_form_hash($_POST,'catalog_hash'))throw new RuntimeException('Reload the exact provider mapping.');
+        hosting_order_links_create($order->data()['id'],$client,service_plans_form_number($_POST,'order_revision',127),service_plans_form_hash($_POST,'order_hash'),service_plans_form_id($_POST,'account_id'),provider_plan_catalog_package($mapping['configuration'],$order->data()['id']),$mapping['profile_id'],$mapping['profile_revision'],$mapping['configuration']['reseller_id'],$password,$id);return;
+    }
     if($command!=='map_service')throw new InvalidArgumentException('Unknown hosting preparation action.');
     if(($_POST['mapping_only']??null)!=='1')throw new InvalidArgumentException('Confirm this is a reviewed local mapping and does not verify provider entitlement.');
     hosting_order_links_create($order->data()['id'],$client,service_plans_form_number($_POST,'order_revision',127),service_plans_form_hash($_POST,'order_hash'),service_plans_form_id($_POST,'account_id'),hosting_order_links_form_package($order,$_POST),service_plans_form_id($_POST,'profile_id'),service_plans_form_number($_POST,'profile_revision',2147483647),service_plans_form_number($_POST,'reseller_id',2147483647),$password);

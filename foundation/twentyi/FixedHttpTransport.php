@@ -41,7 +41,7 @@ final class FixedHttpTransport implements HttpTransport
             throw new \InvalidArgumentException('Unsupported provider request.');
         }
         if ($request->method === 'GET') {
-            if ((!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server'], true) && !$this->isDomainSearch($request->url)) || $request->body !== null
+            if ((!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server', 'https://api.20i.com/domain'], true) && !$this->isDomainSearch($request->url)) || $request->body !== null
                 || array_keys($request->headers) !== ['Authorization','Accept']
                 || $request->headers['Accept'] !== 'application/json') {
                 throw new \InvalidArgumentException('Unsupported provider probe request.');
@@ -51,13 +51,25 @@ final class FixedHttpTransport implements HttpTransport
             // a fixed-host URL on the catalogued reseller paths, a
             // bounded JSON body and three fixed headers.
             $path = str_starts_with($request->url, self::URL_BASE) ? substr($request->url, strlen(self::URL_BASE)) : '';
-            if (!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb|renewDomain)$/D', $path)
+            $mailbox = str_starts_with($path, 'package/');
+            $cloudWebsite = str_starts_with($path, 'cloud_server/');
+            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb|renewDomain)$/D', $path) && !$mailbox && !$cloudWebsite)
                 || !is_string($request->body) || $request->body === ''
                 || strlen($request->body) > self::REQUEST_BODY_LIMIT
                 || array_keys($request->headers) !== ['Authorization','Accept','Content-Type']
                 || $request->headers['Accept'] !== 'application/json'
                 || $request->headers['Content-Type'] !== 'application/json') {
                 throw new \InvalidArgumentException('Unsupported provider write request.');
+            }
+            if ($cloudWebsite) {
+                require_once __DIR__.'/../twentyi-operations/CloudWebsiteCreate.php';
+                \CajunWebPro\Foundation\TwentyI\Operations\CloudWebsiteCreate::wire($request);
+            }
+            if ($mailbox) {
+                require_once __DIR__.'/../twentyi-operations/MailboxCreate.php';
+                // This validates the exact creation body as well as the package/domain path.
+                // No other package mutation or mail-object action is admitted here.
+                \CajunWebPro\Foundation\TwentyI\Operations\MailboxCreate::wire($request);
             }
         } else {
             throw new \InvalidArgumentException('Unsupported provider request method.');
