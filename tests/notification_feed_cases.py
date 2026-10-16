@@ -39,6 +39,11 @@ def run_browser(env,browser):
     feed=db("SELECT * FROM ci_notification_feed WHERE audience='client' AND recipient_id=? AND kind='project-update' AND ref='job:1' AND title LIKE 'New private file%'",[client_row['id']])
     check('Admin file share notifies the owning client',len(feed)>=1 and 'notify-share.png' in feed[0]['body'])
     r=submit(admin,job,'studio_invoice',{'job_id':'1','title':'Synthetic invoice','amount':'10.00'})
+    cur=db('SELECT stage FROM ci_studio_jobs WHERE id=1')[0]['stage'];nxt='development' if cur!='development' else 'design'
+    r=submit(admin,job,'studio_job',{'id':'1','client_id':str(client_row['id']),'title':'Retained website project','stage':nxt})
+    feed=db("SELECT * FROM ci_notification_feed WHERE audience='client' AND recipient_id=? AND ref='job:1' AND title LIKE 'Project stage updated%'",[client_row['id']])
+    check('Stage change notifies the owning client',len(feed)>=1 and 'Moved to' in feed[0]['body'])
+    r=submit(admin,job,'studio_job',{'id':'1','client_id':str(client_row['id']),'title':'Retained website project','stage':cur})
     feed=db("SELECT * FROM ci_notification_feed WHERE audience='client' AND recipient_id=? AND kind='billing' AND ref LIKE 'invoice:%'",[client_row['id']])
     check('Issuing an invoice notifies the owning client',len(feed)>=1 and 'INV-' in feed[0]['body'])
     with (ROOT/'site/images/icons/favicon.png').open('rb') as f:r=submit(alice,portal+'?job=1','upload',files={'document':('notify-client.png',f,'image/png')})

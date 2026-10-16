@@ -1,6 +1,6 @@
 ## Wire remaining P-07 client-facing notification events — 2026-10-16
 
-Devin non-20i increment on `devin/non20i-notification-events`, stacked on `devin/non20i-notification-metrics`. Emits directed feed notifications on the remaining client-facing studio events: staff publishing a pending design/proposal version (client `approval-request`), private project file shares in both directions (admin share -> client, client share -> clients.manage staff, silent during support sessions), project creation and manual invoice issuance. Every emit runs after the business write commits and failures are recorded via report_error, never rolling back the event. Native + browser assertions extended. No live mail claim.
+Devin non-20i increment on `devin/non20i-notification-events`, stacked on `devin/non20i-notification-metrics`. Emits directed feed notifications on the remaining client-facing studio events: staff publishing a pending design/proposal version (client `approval-request`), private project file shares in both directions (admin share -> client, client share -> clients.manage staff, silent during support sessions), project creation, stage changes and manual invoice issuance. Every emit runs after the business write commits and failures are recorded via report_error, never rolling back the event. Native + browser assertions extended. No live mail claim.
 
 ## Surface honest operational freshness metrics — 2026-10-16
 
