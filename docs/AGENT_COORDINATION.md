@@ -10,7 +10,7 @@ Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for
 |---|---|---|
 | Root | PR151, test/docs descendant of0ff93d22/frozen427 | Preserve actual427 setup failure/final evidence; normal expiry18 integration and reviewed period/PHP repair659 now require exact combined acceptance. |
 | Domains | Expiry f42 native accepted; fixture/docs correction pending commit | Reviewed fixture correction18d296b7 imported with unchanged f42 runtime; final shared-source review next. Main94 read-only merge map complete. |
-| VPS | `codex/twentyi-package-force-ssl-app`, normal prerequisites dbfbfb85 | Dedicated/runtime/shared/fixture reviews clear; local165/24/99 per mode and syntax pass. Installer7408 and2,794/2,793 staged parity pass; root approves one automatic focused matrix. Actual native evidence pending; no full/browser/PR dispatch. [Scope](TWENTYI_PACKAGE_FORCE_SSL_OBSERVATIONS.md). |
+| VPS | `codex/twentyi-package-force-ssl-app`, frozen sourceb5c2e873 | Original38861214363 passes all4; seven actual reports per archive verified, including119 Force SSL native+165/+165. Installer7408 and2,794/2,793 staged parity pass. Docs-only handoff for root normal integration; browser/combined acceptance pending. [Evidence](TWENTYI_PACKAGE_FORCE_SSL_OBSERVATIONS.md#exact-native-acceptance--2026-10-16). |
 | Catalog | Document-roots1e8ee567/docs0ddd5101; DNS96f/docsfb2f19d2 | Both pure matrices/artifacts accepted; prepare document-root application contract before shared edits. ForceSSL independent source review clear. |
 | Devin | Software-product licensing; main94 reviewed | Populated upgrade/internal-master customer-delivery findings remain. Preserve serialized mutation helpers and keyless installer. Active session status remains unconfirmed. |
 

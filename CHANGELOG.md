@@ -1,6 +1,6 @@
 ## Unreleased — saved Force SSL flag observations
 
-Add explicit owner refresh and separately approved client sharing of dated Force SSL boolean observations, with independent history recovery and current assignment/account checks. False remains distinct from unavailable; this does not verify certificates or HTTPS health. Source/pure checks pass; native/browser/package acceptance is pending. [Scope](docs/TWENTYI_PACKAGE_FORCE_SSL_OBSERVATIONS.md).
+Add explicit owner refresh and separately approved client sharing of dated Force SSL boolean observations, with independent history recovery and current assignment/account checks. False remains distinct from unavailable; this does not verify certificates or HTTPS health. Exactb5c2 source passes all four native environments with downloaded reports verified; browser/combined package acceptance remains pending. [Scope](docs/TWENTYI_PACKAGE_FORCE_SSL_OBSERVATIONS.md).
 
 ## Unreleased — saved website-folder observations
 
