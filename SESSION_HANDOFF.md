@@ -1,5 +1,10 @@
 # CajunWebPro current handoff
 
+## Reviewed expiry fixture correction - 2026-10-16
+
+From frozen9e33, correct only the expiry browser setup comparison to account explicitly for authorized-login `last_login`, then retain exact complete post-login authority through the workflow. Combined427 failed at the corresponding period fixture; expiry execution remains pending. Runtime/native/workflow/installer bytes stay exactf42. Root source review and AST/whitespace pass; root coordinates corrected packaged acceptance without a separate manual dispatch. [Correction and retained evidence](docs/TWENTYI_DOMAIN_EXPIRY_CONTRACT.md).
+
+
 Updated 2026-10-16 UTC. Full roadmap remains active with complete20i P0 priority. **1.25.0 is unreleased.** [Status](PROJECT_STATUS.md), [agreement](AGENTS.md), [requirements](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md).
 
 ## Current source

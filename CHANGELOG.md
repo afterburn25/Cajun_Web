@@ -1,3 +1,7 @@
+## Unreleased - expiry browser login bookkeeping
+
+Correct the source-only expiry fixture to verify the expected authorized-login bookkeeping before exact post-login account checks. Preserve authority, audit/read history and real cooldown; add redacted setup diagnostics. Shipping code remains unchanged and actual packaged acceptance is pending.
+
 ## Unreleased - assigned registrar expiry observations
 
 Add explicit owner refresh and private saved-client observations of a registered domain's bounded upstream-expiry timestamp, with exact current assignment/account authority, independent history recovery, latest-intent order checks and credential-echo refusal. Keep renewal dates and renewal review separate. Root/catalog source review and all four exact f42 focused native/compatibility archives pass; packaged browser acceptance remains pending. No live provider call or release. [Contract and evidence](docs/TWENTYI_DOMAIN_EXPIRY_CONTRACT.md).

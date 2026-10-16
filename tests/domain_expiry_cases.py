@@ -15,9 +15,31 @@ def run_browser(env,browser):
     # bytes and use the staff invite/activation flow instead of changing authority.
     inherited_full = db('SELECT * FROM ci_provider_refreshes ORDER BY seq')
     inherited_audits = db('SELECT * FROM ci_audit ORDER BY id')
-    original_owner = db('SELECT * FROM ci_users WHERE email=?', ['owner@example.invalid'])[0]
-    original_profile = db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original_owner['id']])[0]
-    setup = requests.Session(); submit(setup, admin + '?view=login', 'login', {'email': 'owner@example.invalid', 'password': OWNER})
+    original_owner_before_login = db('SELECT * FROM ci_users WHERE email=?', ['owner@example.invalid'])[0]
+    original_profile = db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original_owner_before_login['id']])[0]
+    setup_diagnostics = []
+    def setup_evidence(step, response, **facts):
+        route = urlparse(response.url)
+        outcome = parse_qs(route.query).get('view', [''])[0]
+        setup_diagnostics.append({'step': step, 'status': response.status_code,
+            'redirect_statuses': [r.status_code for r in response.history],
+            'dashboard': route.path == urlparse(admin).path and outcome == 'dashboard',
+            'login': route.path == urlparse(admin).path and outcome == 'login', **facts})
+        # Persist only finite outcomes and field names, never account values,
+        # password hashes, invitation/CSRF tokens, or response HTML.
+        (qa/'domain-expiry-setup-diagnostics.json').write_text(json.dumps(setup_diagnostics, indent=2), encoding='utf-8')
+    setup = requests.Session(); setup_response = submit(setup, admin + '?view=login', 'login', {'email': 'owner@example.invalid', 'password': OWNER})
+    original_owner = db('SELECT * FROM ci_users WHERE id=?', [original_owner_before_login['id']])[0]
+    changed_fields = sorted(key for key in set(original_owner_before_login) | set(original_owner)
+                            if original_owner_before_login.get(key) != original_owner.get(key))
+    setup_evidence('authorized_setup_login', setup_response, changed_user_fields=changed_fields,
+        original_profile_unchanged=db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original_owner['id']]) == [original_profile])
+    check('Expiry setup login changes only permitted login bookkeeping',
+          setup_response.status_code == 200 and setup_diagnostics[-1]['dashboard']
+          and {k:v for k,v in original_owner.items() if k != 'last_login'} == {k:v for k,v in original_owner_before_login.items() if k != 'last_login'}
+          and original_owner['last_login'] is not None and setup_diagnostics[-1]['original_profile_unchanged'])
+    # All later assertions use the full post-login row: even last_login must
+    # stay exact after this explicitly authorized setup authentication.
     staff_url = admin + '?view=staff'; expiry_email = 'expiry-observation-owner@example.invalid'
     check('Expiry fixture owner starts absent', not db('SELECT id FROM ci_users WHERE email=?', [expiry_email]))
     submit(setup, staff_url, 'staff_save', {'id': '0', 'name': 'Expiry observation owner', 'email': expiry_email, 'role': 'owner', 'enabled': '1', 'permissions[]': [], 'owner_password': OWNER})
@@ -25,11 +47,18 @@ def run_browser(env,browser):
     invite = chosen_form(setup, staff_url, 'staff_invite', 'id', expiry_owner['id'], {'owner_password': OWNER})
     invitation = soup(invite).select_one('[data-staff-invite]')['href']; code = parse_qs(urlparse(invitation).fragment)['token'][0]
     activation = requests.Session(); form = activation.get(invitation)
-    activation.post(admin + '?view=staff-setup', data={'action': 'staff_activate', 'csrf': token(form), 'token': code, 'password': OWNER, 'confirm_password': OWNER})
+    activation_response = activation.post(admin + '?view=staff-setup', data={'action': 'staff_activate', 'csrf': token(form), 'token': code, 'password': OWNER, 'confirm_password': OWNER})
     activation.close(); setup.close()
+    expiry_profile = db('SELECT role,enabled FROM ci_staff_profiles WHERE user_id=?', [expiry_owner['id']])
+    expiry_activated = db('SELECT password_hash FROM ci_users WHERE id=?', [expiry_owner['id']])[0]['password_hash'] != ''
+    setup_evidence('dedicated_owner_activation', activation_response,
+        distinct_owner=expiry_owner['id'] != original_owner['id'], owner_role=expiry_profile == [{'role': 'owner', 'enabled': 1}], activated=expiry_activated,
+        original_user_unchanged=db('SELECT * FROM ci_users WHERE id=?', [original_owner['id']]) == [original_owner],
+        original_profile_unchanged=db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original_owner['id']]) == [original_profile])
     check('Expiry fixture activates a distinct authorized owner without changing original authority',
-          expiry_owner['id'] != original_owner['id'] and db('SELECT role,enabled FROM ci_staff_profiles WHERE user_id=?', [expiry_owner['id']]) == [{'role': 'owner', 'enabled': 1}]
-          and db('SELECT password_hash FROM ci_users WHERE id=?', [expiry_owner['id']])[0]['password_hash'] != ''
+          activation_response.status_code == 200 and setup_diagnostics[-1]['login']
+          and expiry_owner['id'] != original_owner['id'] and expiry_profile == [{'role': 'owner', 'enabled': 1}]
+          and expiry_activated
           and db('SELECT * FROM ci_users WHERE id=?', [original_owner['id']]) == [original_owner]
           and db('SELECT * FROM ci_staff_profiles WHERE user_id=?', [original_owner['id']]) == [original_profile])
     owner = requests.Session(); submit(owner, admin + '?view=login', 'login', {'email': expiry_email, 'password': OWNER})
