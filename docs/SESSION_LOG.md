@@ -1,5 +1,17 @@
 # Session log
 
+## Port service plans runtime — 2026-10-16
+
+Request: continue the non-20i roadmap (issue #157 item 4 — maintenance plans). Recurring billing requires `service_plans_*` helpers, so the runtime slice precedes it.
+
+Starting commit: `devin/non20i-service-plans-foundation` tip — the preserved canonical `ServicePlan`/`PlanSubscription` classes are byte-identical (zero diff vs `codex/service-plan-screens`), so this stacks cleanly.
+
+Files/actions: extracted `site/app/plans/{records,documents,forms,views}.php`, `site/database/{schema,migrations}/service_plans_{schema,migrate}.php`, `site/includes/layout/plans.php`, `site/{admin,portal}/{controllers,views}/plans.php`, `tests/service-plans/*` + `service_plans_native.php` + `service_plan_cases.py`, `.github/workflows/service-plan{,-records}s.yml`, `docs/SERVICE_PLAN_{RECORDS,SCREENS}.md` (ownership updated). Wired: `admin/controllers/router.php` (require + 4 views + no-store + render), `admin/controllers/actions.php` (`service_plans_` dispatch), `app/staff/accounts.php` (view + action → `staff.manage`), `includes/layout/admin.php` (Service agreements nav), `portal/controllers/router.php` (require + `agreements`/`agreement` render + no-store), `portal/controllers/actions.php` (`service_agreements_` dispatch), `portal/views/workspace.php` (Service agreements button), `tools/build.py` sync list, `tests/apache_acceptance.py` integrity list, `tests/browser_acceptance.py` case call. Provider/hosting hunks in the preserved diffs intentionally skipped — Codex's lane.
+
+Tests/verification (local): `php -l` clean; `tests/service-plans/run.php` 76 checks pass on PHP 8.4; `python tools/build.py --refresh` passes — `site/includes/foundation/service-plans/` mirror generated, inventory clean. Native MariaDB + browser lanes are CI-wired.
+
+Next: commit, push, PR targeting the foundation branch, #157 update; then recurring-billing stack.
+
 ## Port P-04 service-plan contract layer — 2026-10-16
 
 Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-service-plans-foundation`.
