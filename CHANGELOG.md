@@ -1,3 +1,7 @@
+## Unreleased — isolated hosting DNS proposal contract
+
+Add non-executable pure types for the six documented DNS record field sets, exact local package/zone context, bounded proposal validation and raw/Base64 credential-echo refusal. Preserve opaque package-domain IDs separately from zone names; no URL builder, response parser, write admission or shipping integration is added.158 synthetic checks pass each local PHP8.4 mode. [Contract, missing evidence and integration prerequisites](docs/TWENTYI_HOSTING_DNS_CONTRACT.md).
+
 ## Unreleased — registration-period browser owner isolation
 
 Correct the combined browser fixture's exhausted shared-owner read budget by creating and activating a dedicated synthetic owner through existing admin forms. Preserve every original account, intent, audit, epoch, production limit and cooldown; retain response/counter diagnostics and exact history checks. Application source and installer are unchanged; actual combined acceptance remains required.

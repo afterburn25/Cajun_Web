@@ -2,6 +2,10 @@
 
 Updated 2026-10-16 UTC. **1.24.0 is published; 1.25.0 is unreleased. Full20i integration and the broader roadmap are unfinished.**
 
+## Isolated DNS proposal increment
+
+Catalog branch `codex/twentyi-hosting-dns-contract` starts at frozen427e3a23 outside the release queue. Three pure types validate local A/AAAA/CNAME/MX/TXT/SRV proposals with distinct unverified package-domain identity, immutable package context and bounded credential-echo checks. Root source review is clear and all158 named cases pass local PHP8.4 normal/minimal modes; a narrow no-network PHP8.2/8.4 workflow awaits exact-head evidence. No application routes, transport, schema, installer or DNS operation is added. Exact response/identity/policy/outcome contracts remain required. [Scope and source evidence](docs/TWENTYI_HOSTING_DNS_CONTRACT.md).
+
 ## Product and ownership
 
 CajunWebPro is the web-design company's PHP/MySQL website and client/admin platform. The owner requires web-design payments and project progress/ZIP delivery, multi-account webmail/templates/notices, multiple admins, a first-party billing/service portal, full20i controls and audited support access including VPS SSH. See [project direction](docs/PROJECT_DIRECTION.md), [roadmap](docs/ROADMAP.md) and [20i requirements/evidence](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md).

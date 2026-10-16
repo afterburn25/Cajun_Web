@@ -1,0 +1,72 @@
+name: Pure hosting DNS proposal checks
+
+on:
+  push:
+    branches: [codex/twentyi-hosting-dns-contract]
+    paths: ['foundation/twentyi-hosting-dns/**', 'foundation/twentyi-package-php/PackagePhpVersionBinding.php', 'tests/hosting_dns_contract.php', '.github/workflows/hosting-dns-contract.yml']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hosting-dns-contract-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  pure-contract:
+    name: Pure hosting DNS PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - name: Check out exact isolated source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Record exact source provenance
+        run: |
+          mkdir -p qa
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path('.')
+          paths = sorted(root.glob('foundation/twentyi-hosting-dns/*.php')) + [
+              root / 'foundation/twentyi-package-php/PackagePhpVersionBinding.php',
+              root / 'tests/hosting_dns_contract.php',
+              root / '.github/workflows/hosting-dns-contract.yml',
+          ]
+          evidence = {
+              'source': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+              'tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+              'github_sha': os.environ['GITHUB_SHA'],
+              'requested_php': '${{ matrix.php }}',
+              'scope': 'Pure local proposal only; test container has no network; no DNS request or shipping integration',
+              'sha256': {path.as_posix(): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths},
+          }
+          (root / 'qa/source.json').write_text(json.dumps(evidence, indent=2) + '\n')
+          PY
+      - name: Run normal and minimal PHP without network
+        run: |
+          docker run --rm --network none -v "$PWD:/workspace:ro" -v "$PWD/qa:/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            php --version > /qa/php-version.txt
+            for source in foundation/twentyi-hosting-dns/*.php foundation/twentyi-package-php/PackagePhpVersionBinding.php tests/hosting_dns_contract.php; do php -l "$source"; done
+            php tests/hosting_dns_contract.php > /qa/hosting-dns-default.json
+            php -n tests/hosting_dns_contract.php > /qa/hosting-dns-minimal.json
+          '
+      - name: Preserve exact named proposal evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hosting-dns-contract-${{ matrix.php }}-${{ github.sha }}
+          path: |
+            qa/source.json
+            qa/php-version.txt
+            qa/hosting-dns-default.json
+            qa/hosting-dns-minimal.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record acceptance limit
+        if: always()
+        run: echo 'Pure local proposal validation only. No current authority, DNS request, provider response, native database, browser, package or release acceptance.' >> "$GITHUB_STEP_SUMMARY"
