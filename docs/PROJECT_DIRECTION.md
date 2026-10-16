@@ -70,3 +70,8 @@ Build our own WHMCS from scratch: CajunWebPro owns its storefront, customer/staf
 The client portal must be the home for every purchased service and web-design project: verified native 20i controls, project stages and dated updates, previews/approvals, support, payments and versioned website ZIP downloads with needed authorized content/database exports. Customers need a notification center and genuine progress/service observations. Keep admin email private. [Client portal roadmap](CLIENT_PORTAL_ROADMAP.md) defines capability coverage and release acceptance; StackCP handoffs are identified bridges, not completed native controls.
 
 The owner and explicitly authorized support staff also need one-click access to a selected client's portal and an Open SSH action for their eligible VPS. Preserve staff attribution, visible support-session context and audit without requesting client passwords. VPS terminal access requires separately verified permissions, server authentication and a working supported transport; a portal login alone is not SSH. Implement A-09/A-10 with the client-data boundaries and shared-host-compatible deployment specified in the client-portal roadmap.
+
+
+## 2026-10-15 clarification — licensing sold software products
+
+The owner is assigning Devin licensing for software products offered by CajunWebPro, including generation of licenses for installing other products. Existing licensing development remains preserved; Codex's active20i work stays separate. The requirement does not replace CajunWebPro's one-page keyless installer. [Ownership and shared integration boundaries](AGENT_COORDINATION.md).

@@ -45,7 +45,7 @@ All11 checksums and exact Git-source/package/member/directory/decoded-update inv
 
 ## Remaining combined gates
 
-The exact Windows3bbc package proof remains verified (FULL5494/COMPLETE2697/UPDATE2684;11 checksums). [Combined full38829910791](https://github.com/afterburn25/Cajun_Web/actions/runs/38829910791), job116746050262, passed package/native/browser integration and is running unprivileged recovery. Preserve that handle. Its browser checkpoint is now independently verified as detailed below; recovery/Apache, final archive comparison and exact-main release gates remain pending. Main remainsb8f8528b, already normally preserved. Following documentation-only commits intentionally differ from the frozen FULL package while leaving shipping, tests, workflows and installer inventory unchanged. Published1.24.0 remains unchanged;1.25.0 is unreleased.
+The exact Windows3bbc package proof remains verified (FULL5494/COMPLETE2697/UPDATE2684;11 checksums). [Combined full38829910791](https://github.com/afterburn25/Cajun_Web/actions/runs/38829910791), job116746050262, passed package/native/browser integration and passed unprivileged recovery and is running Apache protection checks. Preserve that handle. Its browser checkpoint is now independently verified as detailed below; recovery/Apache, final archive comparison and exact-main release gates remain pending. Main remainsb8f8528b, already normally preserved. Following documentation-only commits intentionally differ from the frozen FULL package while leaving shipping, tests, workflows and installer inventory unchanged. Published1.24.0 remains unchanged;1.25.0 is unreleased.
 
 ## Three active next branches
 
@@ -63,3 +63,57 @@ Artifact12017850896,105,826,920 bytes, SHA256 `8ba2550bb38c033555ed08ce042381ab4
 Root inspected all four actual catalog history/list desktop/mobile screenshots at original resolution. Historical version1 retains12.5000GBP and one website; the latest withdrawn mapping and editable new review remain distinct at19.2500GBP/two websites/zero disk. Readiness reasons, labels, forms and navigation fit their viewports. Domain/cloud agents inspected all eight exact combined originals and readable owner-section crops. Renewal screens show pending review, literal escaped messages and withdrawal/review/decline controls; long IDs wrap. Cloud screens retain original accepted-pending evidence separately from observed/assigned package evidence and clearly qualify current location, health and billing. No clipping or overlapping controls was found. These are pending/review and post-confirmation captures; no uncaptured intake/pre-submit screen is claimed. Renewal visual proof: work/20i-service-observations/qa/combined3bbc-renewal-screens.json. Archive `work/combined3bbc-browser-12017850896.zip`; proof `work/20i-combined-3bbc-browser-verification.json`; images `work/combined3bbc-browser-review`. Full recovery/Apache/final packages remain pending. No live provider acceptance is inferred.
 
 Cloud parent0ea full38827979412 is separately terminal SUCCESS. Its author downloaded and verified final12017179352 SHA256 `39bba16bb95d9dd2be9180b5ac806fcdb62cfd500712ac8a59853b6265aa5a16`:385 members,107 named-result reports,11 diagnostics,1899HTTP/289recovery/1923Apache,11 checksums and3 nested package/member/directory/source manifests. Proof/archive in `work/20i-forwarding-requests/qa/cloud-0ea-full-verification.json` and `cloud-0ea-full-12017179352.zip`. Parent acceptance remains separate from3bbc and from the newer forwarding implementation.
+
+
+## Remaining focused3bbc gates — downloaded evidence
+
+All31 focused PR workflows on frozen3bbc are terminal SUCCESS; the separate application run38829910791 has passed recovery and remains live in Apache. Root downloaded40 additional archives from15 supporting workflows and verified exact published sizes/SHA256, CRC, safe unique ZIP members and all142 named JSON reports. Together with the prior20 archives/88 reports,60 archives/230 named reports are verified. Reports overlap and repeat across matrices; this is not a unique-case or completion percentage. Eleven remaining focused workflows are console-only and contribute no downloaded named count. Four supplied service-plan text reports are retained separately, without inventing named results.
+
+Proof `work/20i-combined-3bbc-supporting-verification.json` retains all names, hashes and text reports; archives/public metadata in `work/combined3bbc-supporting/`. The earlier exact source/tree proof applies.
+
+| Run | Artifact | SHA256 |
+|---|---|---|
+| 38829910910 | 12016194373 | `123e478875dbc9902525d6bd2ea51fac1f9fc73943cb217eac10ee53ae942d82` |
+| 38829910910 | 12016119496 | `df94ad3f5eb92b5ec0656f064dd9bd689a0fad7cb248f8eaaa02f759b2367c2a` |
+| 38829910950 | 12016896774 | `4a40dd373f89143291b9e5d0753cf1cf6f1d3ca5dff81f15adb47616e8f261ec` |
+| 38829910950 | 12016457933 | `4a40dd373f89143291b9e5d0753cf1cf6f1d3ca5dff81f15adb47616e8f261ec` |
+| 38829910933 | 12016831953 | `9ba0ab5e78ef11ee3ed27aed80f97bc59842945f356e8105e35fb4d577e88b32` |
+| 38829910933 | 12016767327 | `e4729b272a8b583facdd6ea9a9a45d5c60e822c96447e3264416b65c50b236ac` |
+| 38829910915 | 12016896949 | `dd993818ff7cf9807ef4ccfedc8cbf4327fca28d419c68fe8d75e1c2f74b346d` |
+| 38829910915 | 12016876961 | `02ead106ced6b726ac1538c5da7036ebcd7854fd77878b01eaaf0ec2ab9f6df4` |
+| 38829910937 | 12016479280 | `a6cca4a733f3fc8b63947eb9cada6920311d75c3360e51cb09d07b00544f0991` |
+| 38829910937 | 12016464068 | `2324909225df373b3bd02567dd4c15f4c4b2ba2f34a9116c67d4ba8c3d99644e` |
+| 38829910937 | 12016388983 | `9ab7f6d72f42dbe6ea84788b6898b1a10c50b778295ebe8a9bf058ab506fbbe2` |
+| 38829910937 | 12016048709 | `45970ff67ddc1be4e626e942731c880a9c9186731ecbd99388798beb230881c3` |
+| 38829910931 | 12017061088 | `48d8e37d1849bfc6153302149e2a257d1072b30baf981e27bcb6e7defc018e99` |
+| 38829910931 | 12016399454 | `1a28c89808540c9eba947cf799997b64b9710721d733465ec18536b0705fb6ab` |
+| 38829910952 | 12016752842 | `49ae873c23a75070e69fd5a76358a2530adc481fca879b292acf08abfa68d9d0` |
+| 38829910952 | 12016578965 | `5232f0b10b1efb0bf4adee5ef2062f6c3c78e532462dda37bc512e92aa77804e` |
+| 38829910926 | 12017270985 | `b067b0817fe37e47c7d26a9bc19b77f210940b129a5869a2e8ca206232fe0d9e` |
+| 38829910926 | 12017230992 | `5bc7efad2e839b037ea9915a93710d9834c3ef56fd304511fd3ed43fcc2fb6bc` |
+| 38829910988 | 12017056612 | `3258efd84184b4b92a014aaf5d9cc189ba269b2d3b9312a55f168c39fb1bc3a9` |
+| 38829910988 | 12016253378 | `e9952e26aaadbf2e02aba16b1d7100f62dda5f1b28d2ff4e8db49d84287aeef0` |
+| 38829910988 | 12016188078 | `54422aa8c9990d12cf1a2d0d8a2e6a7b67e6a2e6d1362b2985aa72afb4f37833` |
+| 38829910988 | 12016184741 | `bdd0a29620fb12423120969298a0fa6b252a32090b9d887852cb4c388d891f46` |
+| 38829911040 | 12016448253 | `eaa5cea3edf0e1643dc8d389c046f04587e1a9052340aea77c7ea291b6dff674` |
+| 38829911040 | 12016323443 | `2bbdfe2327a5e90b804950a9f79363c01b5c32174031254737d8f1eb72c14acd` |
+| 38829910943 | 12017230865 | `bdf965bf5584d9968b06ab269aa7dd92bfef539440163d625806c2ec258d71b1` |
+| 38829910943 | 12016827696 | `223174d58d57dc9d1901a5a8d94e5f529d942d06d64d3030c9b8bef206d2dba5` |
+| 38829910943 | 12016767357 | `8f9964857a9190c3d09b77070ac718cf1f81a107e8105b2840bc535ed1186220` |
+| 38829910943 | 12016563209 | `7c7ae8b31b4f0019399cbeaa782edd26beaa35165ac941beb450cf556b91d3b6` |
+| 38829911010 | 12016971880 | `26ab6f165bd0232d11e19ae3aa9b3e7a1dbbf93b8f33f0cad260e549737d5ec0` |
+| 38829911010 | 12016967104 | `020348682218312259f373d7a7af4196e8205cdad5ac5f445894bc8de72a8734` |
+| 38829911010 | 12016619040 | `7661d432430e19185135bd9e0878827be9e237b664476ecbd39bb0e639c86d24` |
+| 38829911010 | 12016363239 | `234a05a38f4c2f37d7684991c63614166bd5ec35e4e3f9db14630ae6207f1854` |
+| 38829910787 | 12017250611 | `e0db66d0a775432bd1487023b20082557521b24b5af3841c98d01714382bdde6` |
+| 38829910787 | 12016692286 | `26e665352be1ed1894536092554c88771f1bab07fbe55e744b0beecc8cf9db60` |
+| 38829910828 | 12017016664 | `c8e7b870b6266e11864eeda4d5a97bdb96bdfab37b66df7991c9cc65b64e14ae` |
+| 38829910828 | 12016632501 | `cb47191a0409b9ad6e051dfcd76d27efaf11ce0bdd91c4dc90c3c7ce5a702c5b` |
+| 38829910800 | 12017111392 | `220e8700188673da89d552c0bcdf0129aba6cee658e7bb2fb666d09efceda240` |
+| 38829910800 | 12016961710 | `b5abee953870d6ebd08a137cd0e53fb42d3f331564aeefa7c577622b8d05e2e1` |
+| 38829910800 | 12016308185 | `ea4dd73094410ab1663a90ec0890278cda57444add53e9b2e399a1a08fc15a93` |
+| 38829910800 | 12016188111 | `577ba3a602ebdb82439bfb48f77c3a550824a9ae12c45b5760cec049363af292` |
+
+Console-only successful runs: 38829910955, 38829910966, 38829910977, 38829910942, 38829910967, 38829911048, 38829910793, 38829910810, 38829910803, 38829910784, 38829910815.
+
+Next-branch native evidence is separate: schedulere59770native+42pure per mode across four combinations, hosting-history65771native+33pure per mode across four, forwardinga0285native+15contract across four. Their authors downloaded/digest/CRC/named-verified exact artifacts. Scheduler full failed packaging (CRLF disk inventory versus LF Git blobs) and independent review found missing retained observation/audit recovery witnesses; both corrections remain required. Hosting-history initial68-case fixture failure is preserved, with test-only include correction; shipping remains reviewedf6b. No new branch is integrated or accepted from native-only evidence.

@@ -230,3 +230,8 @@ Use immutable, expiring owner-reviewed provider plan mappings to reuse exact pac
 ## 2026-10-15 — Reuse cloud creation request authority
 
 The bounded cloud management increment uses the existing provider approval and operation ledger tables. Its typed, installation-keyed approval envelope binds the explicit server/client assignment and current observation; request nonce consumption precedes DNS and sending. Returned cloud addWeb package IDs remain accepted-pending until separately observed and explicitly linked. Server capacity/domain permission are manually reviewed and not falsely reported as API-verified. This delivers the documented existing-server website operation while full server lifecycle, power and SSH contracts remain separate. No new generic operation approval surface or replacement ledger is introduced.
+
+
+## 2026-10-15 — owner assigns software-product licensing to Devin
+
+The owner will have Devin implement licensing for software products offered by CajunWebPro, including generated licenses for installing other products. Codex retains complete20i P0 and integration/release coordination. Preserve inherited licensing rather than implementing a competing module. Keep shared billing/portal/schema/installer changes on isolated branches and merge reviewed source sequentially with combined checks. This allocation does not add a license requirement to CajunWebPro's one-page keyless installer or establish live product installation acceptance. [Current ownership](AGENT_COORDINATION.md).

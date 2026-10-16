@@ -1,3 +1,7 @@
+## Unreleased — software-product licensing ownership and supporting20i evidence
+
+Record the owner's Devin licensing allocation while Codex continues20i. Verify40 additional combined3bbc matrix archives containing142 named reports; all31 focused workflow gates are successful. Combined recovery passed and Apache remains active. Record corrected scheduler/hosting-history/forwarding native evidence and preserve failed packaging/fixture runs. Documentation only; no runtime, release or live action.
+
 ## Unreleased — combined native evidence and parallel source review
 
 Verify20 archives from all five combined3bbc focused matrices and final corrected2239 full acceptance/packages. Record concrete hosting-history/forwarding review fixes and the scheduler MariaDB correction under their separate agent branches. Documentation only; 3bbc packaged browser checkpoint now verifies1945HTTP with actual screenshot review; full recovery/Apache and exact-main release gates remain pending.
