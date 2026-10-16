@@ -1,3 +1,7 @@
+## Repair tickets.css asset registration from review — 2026-10-16
+
+Review correction on `devin/non20i-support-tickets` (PR #158). `tickets.css` was referenced unconditionally by the shared admin and portal layouts but was not registered in the closed `asset()` map, throwing `Unknown public asset` on the ordinary dashboard and portal before any ticket feature ran. Registers `tickets.css => assets/css/tickets.css`, adds `tests/asset_registry.php` — a static regression asserting every literal `asset('name')` in shipping PHP resolves through the map and maps to an existing file (plus whole-map disk checks and the audited `image_url` allowlist) — wired into application-tests in default and no-INI modes. Installer inventory refreshed; 45 local checks pass in both modes. Original failed run 38915585801 is preserved; fresh HTTP/Apache acceptance runs in CI.
+
 ## 2026-10-16 — publish the concrete release freeze and branch
 
 Documentation-only descendant of35d8 records owner release-first override, published normal merge b98b96eb, frozen scope/map, actual source/focused evidence and remaining gates. Runtime, installer, version, published assets and production remain unchanged. Continue release corrections, authentic1.24 upgrade coverage, complete supported runtime acceptance, review, exact-main and publication/download verification before new20i capabilities. Coordination is posted in issue2 comment6220729910 and issue157 comment6220730195. Documentation validation is required before commit; no application acceptance is claimed.
@@ -27,6 +31,12 @@ Publish source9779879b, independently verified focused registration/Windows evid
 Add a root start-here guide, complete owner-approved assignment and existing licensing source/review links. Supersede the earlier unrelated-work pause for Devin while Codex retains20i and final integration. This changes no application, schema, installer, version, release or deployment.
 
 # Changelog
+
+## Unreleased — client support tickets and private staff notes (Devin port)
+
+- Port the preserved `codex/support-ticket-screens` slice onto `main` under the 2026-10-16 allocation: immutable journal + hash-linked event storage (`support_tickets`, `support_ticket_events`, staff/client read cursors), owner-gated `tickets_setup` migration, `support.tickets` permission, admin queue/detail/new-conversation screens, portal create/reply/status/read flows, private staff notes and assignments invisible to the client projection, exact-message activity links, and per-viewer explicit read controls.
+- Compose ticket unread facts into the existing workspace activity bell (`workspace_activity_summary`) without merging the two read models; ticket-only staff can use the activity center without project-administration access.
+- `docs/`: [usage](docs/SUPPORT_TICKETS.md), [contract](docs/SUPPORT_TICKETS_CONTRACT.md), [desk foundation](docs/DESK_FOUNDATION.md). Tests: `tests/desk/*` (114 model checks, default/no-ini), `tests/support_tickets_native.php` + `tests/support_ticket_screen_native_cases.php` (native MariaDB), `tests/ticket_cases.py` (HTTP/Chromium), `tests/ticket_upgrade_cases.py` (1.23 retained-upgrade replay). New `desk.yml` workflow; `application-tests.yml`/`access-policy.yml` cover `devin/non20i-*` pushes.
 
 ## Synchronize release entry points after review — 2026-10-15
 
