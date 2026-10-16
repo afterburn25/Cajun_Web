@@ -16,6 +16,10 @@ Add a root start-here guide, complete owner-approved assignment and existing lic
 
 # Changelog
 
+## Unreleased — recurring service billing (Devin port)
+
+Ported preserved `codex/recurring-billing-terms` → `records/lifecycle` → `screens` → `activity` onto `devin/non20i-recurring-billing` (a merge of the project progress → planning → design-payments chain with service-plans runtime and billing-calendar, which the slice genuinely requires). Canonical `RecurringBillingTerms`/`RecurringBillingSchedule` computing whole-period eligibility from immutable anchors; additive owner-prepared `recurring_billing_*` storage; staff offer screen bound to an active client service agreement; explicit client accept/decline/end with feedback; one unique whole-period invoice per eligible period inside the existing ledger with a binding guard; `recurring-offer:`/`recurring-event:` activity notices with exact deep links and independent read state. Invoices are issued but card checkout is not activated; no production billing runs. No live deployment or release.
+
 ## Unreleased — design payment agreements, schedules and bound invoices (Devin port)
 
 Ported the preserved `codex/design-payment-schedules` + `codex/design-financial-activity` stack onto `devin/non20i-design-payments` (stacked on `devin/non20i-project-planning`). Canonical `DesignPaymentSchedule` model with cent-exact deposit/installment allocation; owner-prepared additive `design_payment_*` storage with immutable offered/withdrawn/accepted/declined events; staff financial editor on the client project; explicit client consent bound to the exact offered fingerprint; one bound invoice per accepted stage guarded inside the existing ledger; `financial:` workspace-activity notices resolving to the exact frozen event. No card checkout is activated; publishing an offer records no payment. No live deployment or release.

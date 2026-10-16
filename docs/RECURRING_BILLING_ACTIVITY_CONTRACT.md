@@ -1,6 +1,6 @@
 # Recurring billing activity and exact history links
 
-Codex owns this HC-06/P-04/P-07 increment on `codex/recurring-billing-activity`, starting at recurring interface PR121 source `abaa20081870ede3bae9a606f71d730972792d6d`. Keep that source frozen for its application run38668021580. This contract precedes implementation. Devin retains complete20i implementation; this lane changes no provider code. Existing independent-review and exact-artifact release gates remain required.
+Devin owns this HC-06/P-04/P-07 increment on `devin/non20i-recurring-billing` (continuing preserved `codex/recurring-billing-activity`), starting at recurring interface PR121 source `abaa20081870ede3bae9a606f71d730972792d6d`. Keep that source frozen for its application run38668021580. This contract precedes implementation. Codex retains complete 20i implementation; this lane changes no provider code. Existing independent-review and exact-artifact release gates remain required.
 
 ## Intended behavior
 

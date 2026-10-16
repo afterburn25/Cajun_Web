@@ -1,6 +1,6 @@
 # Recurring billing staff and client interfaces
 
-Codex owns this HC-06/P-03/P-04 interface increment on `codex/recurring-billing-screens`, based on native PR120/`66f7760b686c91ca88b8395d350e083cd1ef2516`. This contract precedes code. Keep the parent's canonical billing rules and native agreement/invoice mutations intact. Devin owns all 20i implementation. Independent component/native/interface review and complete combined/package/exact-main acceptance remain required before merge/publication; draft interface work may proceed while reviews are pending.
+Devin owns this HC-06/P-03/P-04 interface increment on `devin/non20i-recurring-billing` (continuing preserved `codex/recurring-billing-screens`), based on native PR120/`66f7760b686c91ca88b8395d350e083cd1ef2516`. This contract precedes code. Keep the parent's canonical billing rules and native agreement/invoice mutations intact. Devin owns all 20i implementation. Independent component/native/interface review and complete combined/package/exact-main acceptance remain required before merge/publication; draft interface work may proceed while reviews are pending.
 
 ## User workflow
 

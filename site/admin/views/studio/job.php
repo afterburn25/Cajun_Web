@@ -3,6 +3,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 
       $id=gint($_GET,'id',1,2147483647);$j=studio_job($id);echo '<p><a class="btn outline" href="'.esc(admin_url('deliveries',['job_id'=>$id])).'">Website deliveries →</a></p>';
+      if(staff_can('payments.manage')&&staff_can('clients.manage'))echo '<p><a class="btn outline" href="'.esc(recurring_ui_url(true,['job'=>$id])).'">Project recurring billing</a></p>';
       try{
           if(project_progress_mode()){[$page,$focus]=project_progress_query($_GET);$progress=project_progress_staff_get($id,$page,$focus);project_progress_editor($progress);project_progress_timeline($progress,true,$focus);}
           else{echo '<p class="notice info">Dated history is not enabled. An owner can enable it in Version &amp; database.</p>';?><section class="workspace-card"><form method="post"><?php admin_action('studio_job');studio_hidden('id',$id);studio_hidden('client_id',$j['client_id']);admin_input('title','Project title',$j['title']);admin_select('stage','Stage',studio_stages(),$j['stage']);admin_textarea('summary','Summary',$j['summary']);admin_textarea('milestones','Milestones',$j['milestones']);?><button class="btn gold">Save project</button></form></section><?php }

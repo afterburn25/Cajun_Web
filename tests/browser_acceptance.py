@@ -214,6 +214,8 @@ try:
         planning_browser(globals(),browser)
         from design_financial_cases import run_browser as financial_browser
         financial_browser(globals(),browser)
+        from recurring_billing_cases import run_browser as recurring_browser
+        recurring_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)

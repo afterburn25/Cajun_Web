@@ -17,13 +17,14 @@ require_once CWP_CODE_ROOT.'/admin/controllers/mail_submissions.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/reviews.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/appointments.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/plans.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/recurring_billing.php';
 header('X-Robots-Tag: noindex, nofollow');
 if(in_array($_GET['view']??'', ['staff-setup','reset'],true))header('Referrer-Policy: no-referrer');
 $view=is_string($_GET['view']??null)?$_GET['view']:'dashboard';
 $validViews=['login','forgot','reset','dashboard','projects','project','services','service','leads','lead','website-review','consultations','consultation','consultation-settings','testimonials','testimonial','settings','email','security','health'];
-$validViews=array_merge($validViews,['service-plans','service-plan','service-agreements','service-agreement','mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft','provider-settings','provider-operations','mail-notices','mail-message','mail-inbox','mail-accounts','mail-account','mailboxes','mail-templates','mail-template','activity','deliveries','staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],array_keys(studio_admin_views()));
+$validViews=array_merge($validViews,['recurring-billing','service-plans','service-plan','service-agreements','service-agreement','mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft','provider-settings','provider-operations','mail-notices','mail-message','mail-inbox','mail-accounts','mail-account','mailboxes','mail-templates','mail-template','activity','deliveries','staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],array_keys(studio_admin_views()));
 if(!in_array($view,$validViews,true)){$view='dashboard';}
-if(in_array($view,['studio-clients','studio-job','studio-upgrade','service-plans','service-plan','service-agreements','service-agreement'],true) || (is_string($_POST['action']??null) && str_starts_with($_POST['action'],'service_plans_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
+if(in_array($view,['recurring-billing','studio-clients','studio-job','studio-upgrade','service-plans','service-plan','service-agreements','service-agreement'],true) || (is_string($_POST['action']??null) && (str_starts_with($_POST['action'],'service_plans_')||str_starts_with($_POST['action'],'recurring_')))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 $error='';$id=(int)($_GET['id']??0);$inboxResult=null;$messageResult=null;$draftResult=null;
 require CWP_CODE_ROOT.'/admin/controllers/actions.php';
 if($view==='staff-setup')staff_setup_render($error);
@@ -41,6 +42,7 @@ if(in_array($view,['mail-accounts','mail-account','mailboxes'],true))mail_accoun
 if($view==='provider-settings')provider_settings_admin_render($error);
 if($view==='provider-operations')provider_operations_admin_render($error);
 if(in_array($view,['service-plans','service-plan','service-agreements','service-agreement'],true))service_plans_admin_render($view,$error);
+if($view==='recurring-billing')recurring_billing_admin_render($error);
 if($view==='mail-inbox')mail_inbox_admin_render($error,$inboxResult);
 if($view==='mail-message')mail_message_admin_render($error,$messageResult);
 if($view==='mail-notices')mail_notices_admin_render($error);

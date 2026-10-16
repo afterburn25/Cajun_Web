@@ -1,6 +1,6 @@
 # Exact recurring invoice terms
 
-Codex owns this HC-06/P-03/P-04 increment on `codex/recurring-billing-terms`, starting from calendar PR 117 source `8f8ea1c8dad4cdae612da9157494c15bdaf871f4`. Devin retains complete 20i implementation. This contract precedes the pure terms document; all shipping files and live financial acceptance sources stay unchanged.
+Devin owns this HC-06/P-03/P-04 increment on `devin/non20i-recurring-billing` (continuing preserved `codex/recurring-billing-terms`), starting from calendar PR 117 source `8f8ea1c8dad4cdae612da9157494c15bdaf871f4`. Codex retains complete 20i implementation. This contract precedes the pure terms document; all shipping files and live financial acceptance sources stay unchanged.
 
 ## Product purpose and fixed boundaries
 

@@ -15,6 +15,8 @@ function ledger_invoice_hash(array $i): string {return hash('sha256',json_encode
 function ledger_balance(array $i): array {
     require_once CWP_CODE_ROOT.'/app/billing/design_payment_invoices.php';
     design_payment_invoice_guard($i);
+    require_once CWP_CODE_ROOT.'/app/billing/recurring_billing_invoices.php';
+    recurring_billing_invoice_guard($i);
     return ledger_balance_record($i);
 }
 /** Internal balance projection after the caller validates any design-invoice binding. */

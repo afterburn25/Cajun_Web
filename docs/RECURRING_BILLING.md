@@ -26,7 +26,7 @@ The latest recorded decision can describe a future change. Read its effective da
 
 The existing invoice ledger supplies recorded payments and the remaining balance. **View invoice and payment history** opens the established staff or client invoice route. The agreement's eligibility is never treated as evidence of payment. Historical invoices remain valid after legitimate later service cancellation, while new invoices require a current active source.
 
-This increment does not add automatic charging, a renewal scheduler, provider actions or service entitlement changes. Devin retains complete 20i implementation.
+This increment does not add automatic charging, a renewal scheduler, provider actions or service entitlement changes. Codex retains complete 20i implementation.
 
 ## Rejected forms and access
 

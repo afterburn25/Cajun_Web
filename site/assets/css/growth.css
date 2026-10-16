@@ -62,3 +62,5 @@
 .financial-agreement button:disabled{opacity:.55;cursor:not-allowed}
 .financial-agreement :focus-visible{outline:3px solid #e2bd63;outline-offset:3px}
 @media(max-width:520px){.financial-grid{grid-template-columns:1fr}.financial-row{padding:.65rem}.financial-facts{gap:.4rem}.financial-row-actions{display:flex;flex-wrap:wrap}.financial-agreement .button-row{flex-wrap:wrap}.financial-agreement .btn{max-width:100%}}
+
+@media(max-width:520px){.recurring-facts{grid-template-columns:1fr}.recurring-facts dd{text-align:left;margin-bottom:.7rem}}
