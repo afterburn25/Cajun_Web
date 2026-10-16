@@ -217,9 +217,18 @@ function provider_inventory_link_events(string $profileId,int $page=1): array {
  */
 function provider_inventory_link(string $profileId,int $packageId,int $clientId,int $revision,#[\SensitiveParameter] string $password): void {
     staff_locked(fn()=>staff_transaction(function()use($profileId,$packageId,$clientId,$revision,$password):void {
+        provider_inventory_link_in_transaction($profileId,$packageId,$clientId,$revision,$password);
+    }));
+}
+
+/** Internal composition point: the caller owns both the staff mutex and transaction. */
+function provider_inventory_link_in_transaction(string $profileId,int $packageId,int $clientId,int $revision,#[\SensitiveParameter] string $password,?string $expectedRefresh=null): array {
+        $mutex='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
+        if(!db()->inTransaction()||(int)query('SELECT COALESCE(IS_USED_LOCK(?),0)=CONNECTION_ID()',[$mutex])->fetchColumn()!==1)throw new LogicException('Package linking requires the owning staff transaction.');
         [$actor]=provider_inventory_authority($profileId,$revision,$password);
         if($packageId<=0)throw new InvalidArgumentException('Provider package identity unavailable.');
         $observation=provider_inventory_observation($profileId);
+        if($expectedRefresh!==null&&($observation['id']??null)!==$expectedRefresh)throw new RuntimeException('The hosting observation changed. Review the current inventory again.');
         if(!$observation||(int)$observation['profile_revision']!==$revision)throw new RuntimeException('The saved observation is from an earlier provider configuration. Refresh under the current settings before linking.');
         if(!one('SELECT id FROM '.table('provider_observation_packages').' WHERE refresh_id=? AND package_id=?',[$observation['id'],$packageId]))throw new RuntimeException('That package is not in the last good observation for this profile. Refresh first.');
         if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$clientId]))throw new InvalidArgumentException('Active client account not found.');
@@ -227,7 +236,7 @@ function provider_inventory_link(string $profileId,int $packageId,int $clientId,
         query('INSERT INTO '.table('provider_package_links').' (id,profile_id,package_id,client_id,linked_by,linked_at,key_fingerprint,profile_revision) VALUES (?,?,?,?,?,?,?,?)',[bin2hex(random_bytes(16)),$profileId,$packageId,$clientId,(int)$actor['id'],gmdate('Y-m-d H:i:s'),$observation['key_fingerprint'],$revision]);
         query('INSERT INTO '.table('provider_package_link_events').' (profile_id,package_id,client_id,event,actor_id,recorded_at) VALUES (?,?,?,?,?,?)',[$profileId,$packageId,$clientId,'link',(int)$actor['id'],gmdate('Y-m-d H:i:s')]);
         provider_settings_audit((int)$actor['id'],'service_linked','Profile '.$profileId.' package '.$packageId.' client '.$clientId);
-    }));
+        return one('SELECT * FROM '.table('provider_package_links').' WHERE profile_id=? AND package_id=?',[$profileId,$packageId]);
 }
 
 /** Explicit owner unlink; the mapping is removed and an event is recorded. */

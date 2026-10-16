@@ -1,5 +1,10 @@
 ## Domain renewal request integration — candidate, unreleased
 
+## Unreleased — combined 20i confirmation and parallel scheduler work
+
+Normally integrate reviewed/native-verified cloud package confirmation after catalog readiness and local domain renewal requests. Preserve exact returned-ID/name checks, atomic client assignment/history, sequence-first freshness and existing authorization. Combined installer and full acceptance remain required; published1.24.0 stays unchanged. Catalog browser screens now pass on their own source. Three agents continue independently, including a new bounded scheduled package inventory refresh implementation. No live activation or release is claimed.
+
+
 Normally merge reviewed/native-verified renewal ed4d1cad: clients request renewal review or withdraw; owners save a review message or decline. Current registrar assignment, immutable request/events and a retained request-count witness protect history. Monotonic event timestamps survive clock rollback. This local intake does not place or complete provider renewals. Combined inventory refresh and syntax pass; new combined application acceptance remains required.
 
 ## Catalog readiness integration — candidate, unreleased
@@ -1029,3 +1034,17 @@ The recovery query at2febba4e failed native MySQL8.4/PHP8.2 run38820482050, job1
 ## 2026-10-15 — Cloud website native acceptance and handoff
 
 Startingce8d4e89, record41 corrected native checks per PHP8.2/8.4 and MariaDB10.11/MySQL8.4 combination in run38821117816, verified from all four downloaded artifacts. Root review found no further source issue. Installer refresh15011, changed PHP syntax, all2,662 indexed hashes and documentation checks passed. Earlier4aa browser checkpoint verifies1,792 HTTP checks including18 cloud checks and four inspected screenshots. Exact corrected full38821117748 passed native and remains in browser; complete application/release acceptance remains pending. No runtime edit, provider call, deployment or release in this documentation checkpoint. Next: root sequential integration, combined installer generation and exact combined acceptance. See cloud evidence for retained failures, hashes and limitations.
+
+## Unreleased — Cloud allocated-package confirmation
+
+Owner-reviewed exact package observation and explicit original client assignment with atomic immutable history and recovery guards. Provider acknowledgement stays pending; no current server membership, health or billing activation claim. Native/browser acceptance pending. [Guide](docs/TWENTYI_CLOUD_CONFIRMATION.md).
+
+## 2026-10-15 — preserve native evidence and stabilize future-time fixture
+
+Parent0ea6e3a8, commit `Stabilize cloud confirmation future-time fixture`. Focused run38827979320 reports45 creation plus74 confirmation named cases passing in PHP8.2/MariaDB10.11, PHP8.4/MariaDB10.11 and PHP8.2/MySQL8.4. Downloaded all four artifacts and independently verified published SHA256, ZIP CRC and exact named outcomes. PHP8.4/MySQL8.4 artifact12015643012, SHA256 `1fff2cf36c61f1c47229deeecc789c83c916f8afeceeb3f7ea46a4acb72ba112`, passes45 creation cases and19 confirmation cases before the future-time assertion fails. Its synthetic timestamp was precomputed at now+31; preceding database work consumed a second, making that input valid at the production now+30 allowance. Change only this fixture input to now+120, preserving the production cutoff and assertion. Shipping files and installer inventory remain unchanged. Preserve the failed report and original full run38827979412. Syntax/documentation/whitespace checks accompany the bounded correction; fresh focused native acceptance is required. No release, live provider, payment, mail, SSH or deployment.
+
+## 2026-10-15 — exact cloud confirmation native acceptance
+
+Parentc3b2c022, commit `Record cloud confirmation native and combined browser evidence`. Exact focused [38828579877](https://github.com/afterburn25/Cajun_Web/actions/runs/38828579877) completed successfully on c3b2c022336fe55a93e685220352a6b5e8230782. All four independently downloaded artifacts match their published SHA256 and pass ZIP CRC, with45 unique creation and74 unique confirmation named outcomes each. This verifies the corrected future-time refusal, sequence-first authority, original-context integrity, exact link/audit pairing, rollback, concurrent confirmation and later-reapproval historical projection on PHP8.2/8.4 with MariaDB10.11/MySQL8.4. The original fourth-combination timing failure remains retained separately; shipping is byte-identical to0ea6e3a8. Full38827979412 remains in progress, last observed after package success during native integration; no new confirmation browser/recovery/Apache acceptance or release is claimed.
+
+Independently verified root2239 browser checkpoint12015677899 from38826150967: SHA256 `630b6400d8af6bb3725f6d20207f5b8880fad8bf3eb097738ab5c4d62b3f715b`,259 ZIP members with clear CRC,1878 passing named HTTP outcomes including18 cloud website-creation cases. Inspected actual owner/client desktop and320px screenshots: pending status and accurate capability wording are visible, controls stay contained; owner mobile nested fields are narrow but have no overlap. PHP diagnostics and unexpected browser errors are empty. This is original creation UI evidence, separate from the new confirmation UI. Root owns the normal integration and release. Next: inspect original0ea full browser/checkpoint/screenshots and final recovery/Apache packages, preserve prior runs, and verify combined descendant acceptance. No live provider calls, payment, mail, SSH or deployment.

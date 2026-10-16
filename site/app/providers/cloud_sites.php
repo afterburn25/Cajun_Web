@@ -30,7 +30,7 @@ function provider_cloud_sites_context(string $linkId,int $linkRevision,int $prof
     [, $profile]=provider_checks_authority($link['profile_id'],$profileRevision);
     if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$link['client_id']]))throw new RuntimeException('The assigned client is unavailable.');
     // A newer failed or unfinished attempt invalidates eligibility; old good data cannot hide it.
-    $latest=one('SELECT f.id,f.started_epoch,r.state FROM '.table('provider_refreshes').' f LEFT JOIN '.table('provider_refresh_results').' r ON r.id=f.id WHERE f.profile_id=? AND f.operation=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$link['profile_id'],InventoryRead::CLOUD_SERVERS_LIST]);
+    $latest=one('SELECT f.id,f.started_epoch,r.state FROM '.table('provider_refreshes').' f LEFT JOIN '.table('provider_refresh_results').' r ON r.id=f.id WHERE f.profile_id=? AND f.operation=? ORDER BY f.seq DESC LIMIT 1',[$link['profile_id'],InventoryRead::CLOUD_SERVERS_LIST]);
     if(!$latest||$latest['id']!==$refreshId||$latest['state']!=='complete'||(int)$latest['started_epoch']<time()-900||(int)$latest['started_epoch']>time()+30)throw new RuntimeException('Refresh the cloud server list, then review this form again. A complete observation from the last 15 minutes is required.');
     $observation=provider_cloud_link_observation($link['profile_id'],$profileRevision,$refreshId,(int)$link['server_id']);
     if(!provider_inventory_link_context_matches($link,$profile,$observation))throw new RuntimeException('Review and reapprove this server assignment under the current provider settings.');
@@ -117,7 +117,7 @@ function provider_cloud_sites_history(string $profileId): array {
     provider_settings_manager();if(!provider_operations_ready())return [];
     provider_cloud_sites_history_ready();
     $out=[];
-    foreach(all('SELECT * FROM '.table('provider_operation_grants').' WHERE profile_id=? AND operation=? ORDER BY seq DESC LIMIT 40',[$profileId,CloudWebsiteCreate::OPERATION]) as $grant){$doc=provider_cloud_sites_document($grant);$row=provider_cloud_sites_result($grant);$out[]=['id'=>$grant['id'],'server_id'=>$doc['binding']['server_id'],'client_id'=>$doc['binding']['client_id'],'domain'=>$doc['params']['domain_name'],'created_at'=>$grant['granted_at'],'status'=>$row['status']??'uncertain','package_id'=>$row['external_id']??null];}
+    foreach(all('SELECT * FROM '.table('provider_operation_grants').' WHERE profile_id=? AND operation=? ORDER BY seq DESC LIMIT 40',[$profileId,CloudWebsiteCreate::OPERATION]) as $grant){$doc=provider_cloud_sites_document($grant);$row=provider_cloud_sites_result($grant);$out[]=['id'=>$grant['id'],'server_id'=>$doc['binding']['server_id'],'client_id'=>$doc['binding']['client_id'],'domain'=>$doc['params']['domain_name'],'created_at'=>$grant['granted_at'],'status'=>$row['status']??'uncertain','package_id'=>$row['external_id']??null,'confirmation'=>provider_cloud_confirmation_projection($grant['id'])];}
     return $out;
 }
 
@@ -130,11 +130,13 @@ function provider_cloud_sites_client_history(int $serverId): array {
         $profile=provider_settings_load($link['profile_id']);
         foreach(all('SELECT * FROM '.table('provider_operation_grants').' WHERE profile_id=? AND operation=? ORDER BY seq DESC LIMIT 40',[$link['profile_id'],CloudWebsiteCreate::OPERATION]) as $grant){
             $doc=provider_cloud_sites_document($grant);$b=$doc['binding'];
-            if($b['link_id']!==$link['id']||$b['client_id']!==(int)$client['id']||$b['server_id']!==$serverId||$b['profile_revision']!==(int)$profile['revision']||!hash_equals($link['key_fingerprint'],$b['key_fingerprint'])||!hash_equals(hash('sha256',$profile['credentials']),$b['credentials_hash']))continue;
+            if($b['link_id']!==$link['id']||$b['link_revision']!==(int)$link['revision']||$b['client_id']!==(int)$client['id']||$b['server_id']!==$serverId||$b['profile_revision']!==(int)$profile['revision']||!hash_equals($link['key_fingerprint'],$b['key_fingerprint'])||!hash_equals(hash('sha256',$profile['credentials']),$b['credentials_hash']))continue;
             $row=provider_cloud_sites_result($grant);
             $status=match($row['status']??'uncertain'){'accepted_pending'=>'Accepted; website verification pending','failed'=>'Request could not be completed',default=>'The studio is reviewing this request'};
+            $confirmation=provider_cloud_confirmation_projection($grant['id']);if($confirmation!==null)$status=$confirmation['status'].'; website health and current server location are not verified';
             $out[]=['domain'=>$doc['params']['domain_name'],'created_at'=>$grant['granted_at'],'status'=>$status];
         }
     }
     return $out;
 }
+require_once CWP_CODE_ROOT.'/app/providers/cloud_site_confirmation.php';

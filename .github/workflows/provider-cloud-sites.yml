@@ -1,10 +1,10 @@
 name: Native cloud website checks
 on:
   push:
-    branches: [main, codex/twentyi-vps-controls]
-    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-operations/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_cloud_sites_native.php', '.github/workflows/provider-cloud-sites.yml']
+    branches: [main, codex/twentyi-vps-controls, codex/twentyi-cloud-confirmation]
+    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-operations/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_cloud_sites_native.php', 'tests/provider_cloud_confirmation_native.php', '.github/workflows/provider-cloud-sites.yml']
   pull_request:
-    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-operations/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_cloud_sites_native.php', '.github/workflows/provider-cloud-sites.yml']
+    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-operations/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'tests/provider_cloud_sites_native.php', 'tests/provider_cloud_confirmation_native.php', '.github/workflows/provider-cloud-sites.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -66,6 +66,7 @@ jobs:
             cwp-inventory-test sh -ec '
               for source in site/app/providers/*.php site/admin/views/provider_cloud_sites.php site/admin/controllers/providers.php tests/provider_cloud_sites_native.php; do php -l "$source"; done
               php tests/provider_cloud_sites_native.php
+              php tests/provider_cloud_confirmation_native.php
             '
       - name: Preserve named storage evidence
         if: always()
@@ -74,6 +75,7 @@ jobs:
           name: provider-cloud-sites-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
           path: |
             qa/provider-cloud-sites-native-results.json
+            qa/provider-cloud-confirmation-native-results.json
           if-no-files-found: warn
           retention-days: 14
       - name: Record verification scope
