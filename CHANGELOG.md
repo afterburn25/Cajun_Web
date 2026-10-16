@@ -1,14 +1,26 @@
-## Domain-date credential echo correction — 2026-10-15
+## Unreleased — registration-period browser owner isolation
 
-The credential-owning reader refuses an echoed raw/encoded key inside a decoded renewal date using the existing unavailable/date_invalid result. Local red/repaired evidence and settings-to-persistence regression cover the bounded correction. Native and packaged acceptance remain pending; no provider contract or UI is expanded.
+Correct the combined browser fixture's exhausted shared-owner read budget by creating and activating a dedicated synthetic owner through existing admin forms. Preserve every original account, intent, audit, epoch, production limit and cooldown; retain response/counter diagnostics and exact history checks. Application source and installer are unchanged; actual combined acceptance remains required.
 
-## Domain-date recovery correction — 2026-10-15
+## Unreleased — combined browser evidence and bounded corrections
 
-Saved domain dates now require latest intent sequence to agree with its independently retained exact start audit. This prevents a lowered failed/unfinished registrar or per-link date intent from reviving an older current date. Source and local checks pass; native and packaged acceptance remain pending on the isolated recovery branch.
+Record the actual25e browser failure at the period empty-response fixture after2130 passing checks, verified domain/cloud views and all-four f725 recovery matrices. Preserve original full runs and failed reports. Coordinate the separate period-owner fixture, domain credential-echo guard and PHP transaction-fixture correction before one new combined acceptance. Documentation only; published1.24.0 remains unchanged and1.25.0 is unreleased.
 
-## Domain-date altered-sequence regression checkpoint — 2026-10-15
+## Unreleased — current handoff consolidation
 
-Separate `codex/twentyi-domain-date-recovery` starts from frozen combined `25e0de3b2b468d155c3bd51fb81bfaefda741c76`. This checkpoint adds four native recovery regressions for later failed/unfinished registrar and date intents whose retained sequence is lowered while audits survive. Exact refusal, client hiding, no DNS/send/intent, and finally restoration are asserted outside caller transactions. Shipping bytes are unchanged; these cases are expected to expose the source-reviewed gap. Only the focused native workflow will run before the bounded module correction. Original 25e and 6ba evidence remains intact; no live provider access or deployment.
+Replace repeated historical status/handoff/ownership blocks with current sources, exact evidence, open findings and next actions. Preserve prior text in immutable75d5c60a and local hash-recorded copies. Original25e full now passes native integration and runs HTTP/Chromium; no shipping or release change.
+
+## Unreleased — parent full acceptance and recovery handoff
+
+Record downloaded210 final packages/reports and Windows parity; retain the screenshot limitation. Record actual red domain recovery evidence and reviewed f725 correction, pending PHP credential-echo repair, and separate pure registry-expiry ownership. Documentation only; no release or shipping change.
+
+## Unreleased — combined discovery native matrix
+
+Record all16 downloaded exact25e date/period/cloud/scheduler archives, each with named native and pure checks across four PHP/database combinations. The original full continues, and separate altered-sequence recovery corrections remain required. Documentation only.
+
+## Unreleased — combined source and package checkpoint
+
+Record pushed25e combined discovery source, exact verified Windows packages and original GitHub acceptance handles. Record terminal incoming date/cloud full acceptance, parent210 browser evidence and the retained element-capture limitation. Preserve the PHP packaging-only correction and new PHP/domain-date source-ordering findings for separate regression work. Documentation only; no runtime or release change.
 
 ## Unreleased isolated component — registrar expiry contract
 
@@ -1174,3 +1186,21 @@ Independently verified root2239 browser checkpoint12015677899 from38826150967: S
 ## Unreleased - observed domain registration periods
 
 Add explicit owner refresh of documented registration-year options and saved observation/history displays. Clients see only currently offered extensions under their current enabled search policy. Preserve complete-empty, failed, pending and changed-setting states; retain independent history witnesses. No renewal eligibility, prices, reservations or purchasing are inferred. Native, browser and package acceptance remain pending.
+
+## Domain recovery and echo guard integrated — 2026-10-16 UTC
+
+The owner's continued20i request is implemented by a normal merge of root0b4c068d and exact a132b5b3, preserving red28b62223 and corrected f725 history. The current-date projection now requires latest registrar/date intent order to agree with the independent common-start audit; decoded credential echoes cannot become saved dates. This checks latest selected authority, not immutable ordering of every older record. Synthetic date-shaped keys establish local defense only, not real provider exposure.
+
+All four focused38851489059 artifacts were downloaded and verified:98 native plus87 normal/87 minimal reader cases each. Root and catalog source reviews are clear. The domain module/reader, native/pure regression cases, generated inventory and feature guide are integrated; root's concise status/handoff and period-owner fixture are preserved. Combined application acceptance remains required.
+
+Original25e full38846792746 is terminal failure from the retained browser quota fixture failure; recovery and Apache pass and final source-check is skipped. Final12025544003 awaits independent archive verification. PHPcfc6 native38850899544 is verified in all four environments; its normal merge and isolated browser owner are next, then one combined full acceptance. Pure expiry38850341309 passes both PHP versions but remains outside the application. Latest mainc0e087027 is under read-only licensing review. No release, live request or deployment occurred.
+
+## Combined domain and PHP observation candidate — 2026-10-16 UTC
+
+The owner's complete20i request continues through a normal merge of domain integration4b78a59b and frozen PHPcfc6ecd0. Exact a132 domain shipping remains; cfc6 PHP scalar observation, current hosting authority, order/credential defenses, explicit client sharing, storage and forms join the candidate. Shared seven-file preview is root/catalog reviewed, preserving positional domainContext read6/refresh8, named packageContext read7/refresh9, exclusive typed writers, all period/cloud/date hooks and scheduler guard. Automatic navigation/router merges are separately checked; transport mirror and installer inventory are regenerated.
+
+Source-focused evidence is complete: domain98+87+87 and PHP99 native executions/98 distinct labels+99+99 in all four PHP/database environments, with actual archives verified. Perioddd116 and PHP85ea7586 dedicated-owner fixtures preserve original authority, every prior intent/audit byte, production20/hour budget and real cooldown. The PHP collision was predicted from source, not observed combined execution. Browser order is dates/cloud/period/PHP/scheduler-last. New combined full acceptance remains mandatory; no additional small-repair standalone full is dispatched.
+
+Original25e full38846792746 is terminal FAILURE and final12025544003 is fully verified:122 reports/10 diagnostics,2130 HTTP passes plus the retained empty-period failure,289 recovery/2167 Apache,all319 earlier files unchanged,11 checksums/exact Git and Windows package agreement. Final source-check was skipped. Original domainf725 browser has the same retained failure; its full and PHPcfc6 full remain preserved through final evidence. Pure expiry139+139 on each PHP version passes separately; domains begins isolated application wiring outside this candidate. Latest mainc0e087 source review retains licensing migration/master-delivery findings and identifies direct full-master-key display; Devin retains ownership. No live call, charge, customer mail, SSH, deployment or publication occurred.
+
+Next: finish exact staged/build checks, commit/push and record one combined full, unchanged independent review, current-main reconciliation and exact-main/download release gates. [Current status](PROJECT_STATUS.md) and [handoff](SESSION_HANDOFF.md) identify authoritative next actions.

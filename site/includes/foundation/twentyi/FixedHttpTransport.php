@@ -41,7 +41,7 @@ final class FixedHttpTransport implements HttpTransport
             throw new \InvalidArgumentException('Unsupported provider request.');
         }
         if ($request->method === 'GET') {
-            if ((!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server', 'https://api.20i.com/domain', 'https://api.20i.com/domain-period', 'https://api.20i.com/reseller/*/cloudProviders'], true) && !$this->isDomainSearch($request->url) && !$this->isDomainContract($request->url)) || $request->body !== null
+            if ((!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server', 'https://api.20i.com/domain', 'https://api.20i.com/domain-period', 'https://api.20i.com/reseller/*/cloudProviders'], true) && !$this->isDomainSearch($request->url) && !$this->isDomainContract($request->url) && !$this->isPackagePhpVersion($request->url)) || $request->body !== null
                 || array_keys($request->headers) !== ['Authorization','Accept']
                 || $request->headers['Accept'] !== 'application/json') {
                 throw new \InvalidArgumentException('Unsupported provider probe request.');
@@ -92,6 +92,12 @@ final class FixedHttpTransport implements HttpTransport
         $name=substr($url,strlen($prefix));
         try { return \CajunWebPro\Foundation\TwentyIInventoryReader\DomainSearch::name($name)===$name; }
         catch (\InvalidArgumentException) { return false; }
+    }
+
+    /** One exact allocated-package scalar read; no package path prefix authority. */
+    private function isPackagePhpVersion(string $url): bool
+    {
+        return preg_match('~\Ahttps://api\.20i\.com/package/[1-9][0-9]{0,17}/web/phpVersion\z~',$url)===1;
     }
 
     private function validateAuthorization(mixed $authorization): void
