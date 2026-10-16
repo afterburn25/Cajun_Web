@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## Isolated paid-renewal dispatch work — 2026-10-16
+
+From frozen `faef8a6a0fb0a3969a67fe8bc7aabd3b107c1c10`, branch `codex/twentyi-domain-renewal-dispatch` implements permanent pre-payment invoice purpose, original direct-client renewal consent, verified receipts and explicit owner approval through the existing one-send provider ledger. Root-approved provider/application/Handler/test-wiring patches are applied only here. Dedicated source, shared boundaries and final native/browser fixtures have independent source review. Installer refresh and staged Git parity pass for 2,837 shipping files and 2,836 hashes; actual four-way database execution is next. Local pure125+125, actual adapter/transport25+25 and Handler25 pass with inherited provider regressions. No native/browser/combined acceptance, live request, charge or release is claimed. [Exact contract, corrections, evidence and remaining gates](docs/TWENTYI_DOMAIN_RENEWAL_DISPATCH.md). Preserve root's frozen faef/build/visual lanes and Devin licensing; root retains integration.
+
 Updated 2026-10-16 UTC. **1.24.0 is published; 1.25.0 and complete 20i remain unfinished.** Codex and three parallel agents own 20i; Devin owns software-product licensing. An ownership assignment is not proof an external session is active. CajunWebPro retains its one-page keyless installer.
 
 ## Current integration

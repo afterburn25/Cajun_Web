@@ -1,5 +1,9 @@
 ## Unreleased — scheduler privacy fixture correction
 
+## Unreleased — paid renewal dispatch source under review
+
+Add permanent unpaid-invoice purpose allocation for accepted one-time USD renewal terms, original receipt verification, saved client purpose/outcome views and owner-approved single submission through the existing operation ledger. Unknown/failed attempts remain domain-fenced; payment/consent alone cannot authorize renewal. Corrected index-proof, optional-family and captured-selector boundaries are source-reviewed. Native, browser and release acceptance remain pending. See [scope and evidence](docs/TWENTYI_DOMAIN_RENEWAL_DISPATCH.md).
+
 Avoid falsely rejecting unrelated website-folder controls when checking scheduler privacy. Require the exact scheduler section and retain full-page credential checks, with21 positive/negative regressions and independent review. Application code is unchanged; new combined browser acceptance remains pending.
 
 ## Unreleased — saved WordPress installation indication

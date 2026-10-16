@@ -12,6 +12,7 @@ require_once CWP_CODE_ROOT.'/admin/controllers/provider_mailboxes.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_registrar.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/domain_renewals.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/domain_renewal_agreements.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/domain_renewal_dispatch.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/domain_contracts.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/domain_expiry.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/service_observations.php';

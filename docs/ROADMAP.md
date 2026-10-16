@@ -1,5 +1,9 @@
 ## Current 20i integration — 2026-10-16
 
+## Paid renewal dispatch implementation — 2026-10-16
+
+The next bounded renewal increment is implemented in the isolated dispatch lane: exact accepted terms → permanent pre-payment invoice allocation → verified receipt → owner approval → one existing-ledger submission. Provider price/eligibility remain explicit owner-verified facts; no guessed quotation schema or automatic renewal. Source and portable checks are reviewed, native/browser acceptance pending. [Scope and gates](TWENTYI_DOMAIN_RENEWAL_DISPATCH.md).
+
 Reviewed Force SSL owner controls and renewal retail agreements are joining the root candidate through normal merges. Both have independently verified four-way native archives. Renewal binds existing one-time USD terms and captured consent; provider quotes, payment and renewal dispatch remain unfinished. ForceSSL effects require separate observation; interrupted dispatch remains fenced. Combined browser/package acceptance is pending. WordPress installation indication3f8adaa/docs65c has verified four-way focused38873107762 evidence and is joining the local root candidate; it is not a version/login/plugin/health feature. [Current source and evidence](../SESSION_HANDOFF.md).
 
 Original948 directory/parser candidate remains under its unchanged full run. The published release remains1.24.0; full20i and1.25.0 are unfinished. Devin's latest licensing schema3/checksum source is reviewed separately and not imported. Preserve current ownership and [licensing findings](LICENSING_INTEGRATION_REVIEW.md).

@@ -102,21 +102,22 @@ final class TwentyIOperationAdapter implements ProviderAdapter
                 ],
                 $request->body, $request->timeoutSeconds
             );
+
+            try {
+                $response = $transport->send($request);
+            } catch (InvalidArgumentException) {
+                // A transport-side request refusal happens provably before
+                // any send — failed, never uncertain.
+                return OperationResult::failed($operation->name, 'The request was refused before send.', 'refused');
+            } catch (TransportException $e) {
+                return TwentyIResultClassifier::fromTransportFailure($operation->name, $e);
+            }
+            if ($operation->name === DomainRenewal::OPERATION) return DomainRenewal::result($response, $secret);
+            return $operation->name === MailboxCreate::OPERATION
+                ? MailboxCreate::result($operation, $request, $response)
+                : TwentyIResultClassifier::fromResponse($operation->name, $response);
         } finally {
             unset($secret);
         }
-
-        try {
-            $response = $transport->send($request);
-        } catch (InvalidArgumentException) {
-            // A transport-side request refusal happens provably before
-            // any send — failed, never uncertain.
-            return OperationResult::failed($operation->name, 'The request was refused before send.', 'refused');
-        } catch (TransportException $e) {
-            return TwentyIResultClassifier::fromTransportFailure($operation->name, $e);
-        }
-        return $operation->name === MailboxCreate::OPERATION
-            ? MailboxCreate::result($operation, $request, $response)
-            : TwentyIResultClassifier::fromResponse($operation->name, $response);
     }
 }

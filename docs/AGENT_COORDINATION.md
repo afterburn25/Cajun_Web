@@ -1,5 +1,9 @@
 # Current CajunWebPro agent coordination
 
+## Domains lane: paid renewal dispatch — 2026-10-16
+
+Domains owns `codex/twentyi-domain-renewal-dispatch` from frozen faef. Dedicated document/storage/schema/core/routes/views/controller and synthetic fixtures are isolated. Root-approved provider patch f10f4629, application2f95d91b and Handler3f7844a1 are applied exact; Catalog cleared corrected dedicated2fc7 and application boundaries. Root-approved test wiring5c0aa0f7 is applied; Catalog cleared final native96a2260f/browserb98a8e5e, including the supported cross-client attempt fence. Staged Git/inventory parity passes. Next is one automatic focused matrix and later normal integration that preserves root’s newer parallel application workflow. Do not edit the build branch, root, main or Devin licensing. [Current work](TWENTYI_DOMAIN_RENEWAL_DISPATCH.md).
+
 Updated 2026-10-16 UTC. Codex and three parallel agents own complete20i P0; Devin owns software-product licensing. Work uses separate branches and sequential reviewed shared integration. An allocation is not proof of an active Devin session.
 
 | Owner | Current checkpoint | Scope and next evidence |

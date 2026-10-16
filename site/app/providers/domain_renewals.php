@@ -16,12 +16,14 @@ function domain_renewals_resource(string $linkId):array {
     [$observed]=provider_registrar_observed($link['profile_id'],(int)$profile['revision'],$latest['id'],(int)$link['domain_id']);if($observed['domain']!==$link['domain'])throw new RuntimeException('This registered-domain identity changed.');return [$link,$latest];
 }
 function domain_renewals_pending(string $linkId):bool {
-    $pending=false;foreach(all('SELECT id FROM '.table('domain_renewal_requests').' WHERE link_id=?',[$linkId]) as $row)if(domain_renewals_load($row['id'])['state']==='pending_review')$pending=true;return $pending;
+    require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_dispatch_routes.php';
+    $check=static function()use($linkId):bool{domain_renewal_agreements_locked();foreach(all('SELECT id FROM '.table('domain_renewal_requests').' WHERE link_id=?',[$linkId]) as $row)if(domain_renewals_load($row['id'])['state']==='pending_review'&&!domain_renewal_dispatch_completed($row['id']))return true;return false;};
+    return db()->inTransaction()?$check():staff_locked(fn()=>staff_transaction($check));
 }
 function domain_renewals_options(int $clientId):array {
     domain_renewals_actor($clientId);if(!domain_renewals_ready()||!provider_registrar_ready())return [];$out=[];
     foreach(all('SELECT id FROM '.table('provider_registrar_links').' WHERE client_id=? ORDER BY domain',[$clientId]) as $row){
-        try{[$link,$latest]=domain_renewals_resource($row['id']);}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;continue;}
+        try{[$link,$latest]=domain_renewals_resource($row['id']);require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_dispatch_routes.php';domain_renewal_dispatch_intake_guard($link['domain']);}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;continue;}
         if(domain_renewals_pending($link['id']))continue;
         $out[]=['link_id'=>$link['id'],'link_revision'=>(int)$link['revision'],'profile_revision'=>(int)$link['profile_revision'],'refresh_id'=>$latest['id'],'domain'=>$link['domain']];
     }return $out;
@@ -51,6 +53,7 @@ function domain_renewals_create(string $id,int $clientId,string $linkId,int $lin
         $old=one('SELECT id FROM '.table('domain_renewal_requests').' WHERE id=?',[$id]);$existing=$old?domain_renewals_load($id):null;
         $d=domain_renewals_document(['version'=>1,'id'=>$id,'client_id'=>$clientId,'link_id'=>$linkId,'link_revision'=>$linkRevision,'profile_id'=>$link['profile_id'],'profile_revision'=>$profileRevision,'key_fingerprint'=>$link['key_fingerprint'],'domain_id'=>(int)$link['domain_id'],'domain'=>$link['domain'],'refresh_id'=>$refreshId,'requested_years'=>$years,'renew_privacy'=>$privacy,'created_epoch'=>$existing['request']['created_epoch']??time()]);
         if($existing){if($existing['request']!==$d)throw new RuntimeException('This request identifier already belongs to a different request.');return $existing;}
+        require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_dispatch_routes.php';domain_renewal_dispatch_intake_guard($link['domain']);
         if(domain_renewals_pending($linkId))throw new RuntimeException('A renewal request for this assignment is already awaiting review.');
         if((int)query('SELECT COUNT(*) FROM '.table('domain_renewal_requests').' WHERE client_id=? AND created_epoch>=?',[$clientId,time()-3600])->fetchColumn()>=10)throw new RuntimeException('Please wait before adding more renewal requests.');
         $json=domain_renewals_json($d);$hash=hash('sha256',$json);
