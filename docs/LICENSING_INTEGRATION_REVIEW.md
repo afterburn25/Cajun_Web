@@ -1,3 +1,12 @@
+## Latest main follow-up — 2026-10-15
+
+Read-only review now includes `35ddbbff8d64383f52fb867c510c73be05ce7648`, runtime `780761a6`, afterb8c. The new owner-password setup action and entry-point readiness guards are useful additions, but the two required corrections below remain open.
+
+`site/database/migrations/license_migrate.php` calls `catalog_validate_schema()` on an existing table before doing anything else. It contains no ALTER adding `is_master`, so a pre-master table is refused instead of upgraded. Even an exact current populated schema without the new marker is refused by the explicit nonempty-table check. This is fresh additive preparation, not a supported populated upgrade. The added native checks only toggle the marker and do not exercise the migration. Preserve records while testing the actual pre-master upgrade and retry path.
+
+The customer workspace still selects active customer licenses without `is_master=0`; direct bundle download adds only `license_ready()`, and bundle generation has no master exclusion. Existing customer-associated master bundles remain downloadable. Enforce the internal-key boundary in both generation and direct download, including bundles created before the correction. This is source review, not reproduced database/HTTP acceptance. New main remains outside the20i queue pending these fixes and combined verification.
+
+
 # Licensing integration review for Devin
 
 The owner assigns Devin software-product license generation and installation licensing for products sold by CajunWebPro. Codex retains 20i implementation and combined release coordination. Preserve the existing licensing implementation and keep CajunWebPro's own installer one-page and keyless.

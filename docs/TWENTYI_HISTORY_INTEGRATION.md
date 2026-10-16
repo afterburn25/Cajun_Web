@@ -1,3 +1,12 @@
+## Verified history1759 follow-up — 2026-10-15
+
+Normal history source175930618ab349246020602e634ce55ee49f176b is preserved in forwarding4b33 and the scheduler queue. Its PR merge1fae24fbbb8f4c6fbdacd2c0a8dc6daeb3be87c9 has the identical Git tree. Full38836790751 has passed package/native/browser/recovery and is running Apache at this record.
+
+Root downloaded browser12019539597 (111,612,178 bytes; SHA256 `af48ed93a76191a06f516f1211ea8cb893675cc6dc4d0688c58124e99dc21d64`) and eight history/cloud matrix archives. Metadata/digest/CRC/safe names and every named outcome verify:1,989 HTTP,70 result reports,11 clean diagnostics and175 screenshots in the checkpoint;71 history and33 pure cases per mode,45 creation and87 confirmation cases in each four-way native matrix. Four owner/client desktop/mobile history views are inspected, using full-image bottom crops for the tall owner pages. Controls and text fit; the auxiliary mobile section capture has sticky-navigation composition artifacts, absent from the full-page crop. This is a visual-capture limitation, not a claimed interaction test.
+
+Windows1759 packages independently verify all11 checksums and exact Git/member/update content:FULL5511,COMPLETE2706,UPDATE2693. Local evidence is `work/20i-history1759-artifact-verification.json` and `work/20i-history1759-windows-verification.json`. Later forwarding/scheduler merges need separate combined execution acceptance. Earlier status below remains the original1759 integration history.
+
+
 # Hosting history integration queue
 
 Root normally merges `bff198cca9ea06973088e33d5a164b17d0c16d13` into `a9637f2bb2000196312f72e10f39f614980c98c7` on `codex/twentyi-next-integration`. The separate a963 release checkout and its original acceptance run remain frozen. This document records parent evidence and integration review; it does not certify the combined descendant.

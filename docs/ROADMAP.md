@@ -1,3 +1,9 @@
+## Current combined queue — 2026-10-15
+
+Normal forwarding merge4b33d606 is followed by reviewed scheduler2b9 in [PR151](https://github.com/afterburn25/Cajun_Web/pull/151). Installer refresh and exact parent-union checks pass; independent24-check shared-code review is clear; scheduler browser runs last. Fresh combined acceptance remains required. History1759 browser/native artifacts are downloaded and verified; recovery passed and Apache is active. [Current handoff](../SESSION_HANDOFF.md) is authoritative over earlier checkpoints.
+
+Domains owns07817109/PR152 renewal-date observation, with all four native archives verified and full acceptance active. Catalog owns registration periods, independently reviewed by domains. VPS owns cloud-provider identifiers and is correcting root's paired-history-loss/bounded-query findings. Root integrates shared files sequentially. New full reference34e713 is retained; Devin licensing main35dd remains separate with the updated migration/internal-key findings.
+
 ## Current forwarding integration and reference intake — 2026-10-15
 
 Root normally merges forwarding1992 into history1759 in [PR151](https://github.com/afterburn25/Cajun_Web/pull/151), preserving cloud recovery and both original histories. Exact local parent-union, regenerated installer, route/native union and independent glue checks pass; combined runtime acceptance remains required. Frozen a963 full acceptance and final packages are now verified. Scheduler2b9 retains successful corrected554 browser evidence and is next to integrate; the original5fb full remains failed. [Current handoff](../SESSION_HANDOFF.md), [a963 proof](TWENTYI_A963_ACCEPTANCE.md).
@@ -733,3 +739,7 @@ The bounded owner-approved client history flow is implemented on shipping e5c8ab
 ## 2026-10-15 — Separate hosting-history integration queue
 
 Root normally integrates historybff on codex/twentyi-next-integration from a963, preserving both parent histories. Owner/client visibility remains anchored to current assignment/account context and the approved observation sequence. All four a963 cloud matrices are independently verified at45 creation/87 confirmation each; history parent71native/33pure/1989HTTP evidence remains separate. Combined queue acceptance and publication remain pending. Scheduler/forwarding and Devin licensing remain separate lanes. [Current state](../PROJECT_STATUS.md).
+
+### Scheduled hosting inventory checkpoint - 2026-10-15
+
+HC-13/owner requirement 7: isolated 82302571 descendant adds a real bounded GET/package cron path, owner-bound approval, original credential protection, immutable intent/outcome evidence, concurrent-worker exclusion, backoff and reviewed recovery. Local source/pure verification passes; native/browser and combined release acceptance remain pending. Other inventory schedules and commercial automation remain unfinished. [Implementation/evidence](TWENTYI_SCHEDULED_REFRESH.md).

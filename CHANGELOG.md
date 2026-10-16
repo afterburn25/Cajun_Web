@@ -1,3 +1,7 @@
+## Unreleased integration queue — owner-approved scheduled inventory
+
+Normally integrate reviewed scheduled hosting reads with forwarding requests, client service history and cloud recovery. Preserve explicit schedule approval, durable leases/backoff, exact authority and the shared guarded recorder. Regenerate combined installer and retain native/browser/private-route coverage. Combined acceptance and publication remain pending.
+
 ## Unreleased integration queue — forwarding and owner API reference
 
 Normally integrate client single-address forwarding requests, cancellation and owner review/decline with client hosting history and the cloud recovery correction. Preserve separate forwarding permission and local-review-only behavior; provider forwarding dispatch/readback remains unfinished. Retain/index the new complete owner API reference for the parallel registration-period, cloud-provider and renewal-date readers. Document verified a963 full/package evidence and ready scheduler checkpoint. Combined acceptance and release remain pending.
@@ -44,6 +48,26 @@ Normally integrate reviewed/native-verified cloud package confirmation after cat
 
 
 Normally merge reviewed/native-verified renewal ed4d1cad: clients request renewal review or withdraw; owners save a review message or decline. Current registrar assignment, immutable request/events and a retained request-count witness protect history. Monotonic event timestamps survive clock rollback. This local intake does not place or complete provider renewals. Combined inventory refresh and syntax pass; new combined application acceptance remains required.
+
+## Unreleased - verified scheduled refresh checkpoint
+
+Record successful corrected packaged/browser checkpoint38836183578, four inspected scheduler captures and preserved four-way native/Windows evidence. The original5fb browser failure remains retained with successful recovery/Apache results. This documentation checkpoint changes no runtime, tests, workflow or installer inventory; combined integration acceptance remains required.
+
+## Unreleased - scheduled refresh browser navigation fixture
+
+Refresh the existing browser document after a separate HTTP session changes scheduler state. Retain all network, persisted outcome, backoff and revoked-approval assertions. Application behavior and installer bytes are unchanged; corrected packaged/browser evidence is required.
+
+## Unreleased - scheduled inventory recovery witnesses
+
+Refuse scheduled work and history when original package rows or inventory audit witnesses are missing. Validate exact audit action bytes and preserve the original worker actor when another owner reviews interruption. Restoration retains the original schedule without replay; fresh native and packaged acceptance are required.
+
+## Unreleased - scheduled inventory packaging correction
+
+Regenerate installer hashes against exact committed LF source. Scheduler runtime is unchanged. All four native combinations are independently verified; the earlier full package failure and pending recovery hardening remain recorded.
+
+## Unreleased - owner-approved scheduled hosting inventory
+
+Add one shared-host PHP scheduled task for bounded read-only hosting inventory, disabled until explicit owner approval. Persist immutable attempts and outcomes, enforce current owner/profile/key bindings, serialize concurrent workers, back off incomplete reads and require reviewed recovery after interruption. Owner setup, status, history and recovery controls are included. Native/browser acceptance is pending; no provider write, purchase, release or deployment is included.
 
 ## Catalog readiness integration — candidate, unreleased
 

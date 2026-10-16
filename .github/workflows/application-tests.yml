@@ -1,7 +1,7 @@
 name: Application acceptance
 on:
   push:
-    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests]
+    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh]
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   pull_request:
     branches: [main, codex/twentyi-fulfillment, codex/twentyi-service-orders, codex/twentyi-client-domain-search, codex/twentyi-mailbox-controls]
@@ -104,6 +104,9 @@ jobs:
           .ci-venv/bin/python tests/mail_submission_combined.py
           php8.3 tests/provider_settings_native.php
           php8.3 tests/provider_checks_native.php
+          php8.3 tests/provider_schedule_document.php
+          php8.3 -n tests/provider_schedule_document.php
+          php8.3 tests/provider_schedule_native.php
           php8.3 tests/provider_inventory_native.php
           php8.3 tests/provider_cloud_sites_native.php
           php8.3 tests/provider_cloud_confirmation_native.php

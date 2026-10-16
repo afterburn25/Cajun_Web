@@ -2,6 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/providers/checks.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_schedule.php';
 require_once CWP_CODE_ROOT.'/app/providers/operations.php';
 require_once CWP_CODE_ROOT.'/app/providers/inventory.php';
 require_once CWP_CODE_ROOT.'/app/providers/reconcile.php';
@@ -34,6 +35,7 @@ function provider_inventory_admin_action(string $action):void {
     if(str_starts_with($action,'provider_inventory_forwarding_'))provider_forwarding_admin_action($action);
     if(str_starts_with($action,'provider_inventory_renewal_'))domain_renewals_admin_action($action);
     if(str_starts_with($action,'provider_inventory_cloud_confirmation_')){provider_cloud_confirmation_admin_action($action);return;}
+    if(str_starts_with($action,'provider_inventory_schedule_')){provider_schedule_admin_action($action);return;}
     if(str_starts_with($action,'provider_inventory_mailbox_'))provider_mailbox_admin_action($action);
 
     if(str_starts_with($action,'provider_inventory_registrar_')){provider_registrar_admin_action($action);return;}

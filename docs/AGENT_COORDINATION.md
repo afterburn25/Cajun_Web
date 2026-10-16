@@ -1,3 +1,9 @@
+## Current combined queue — 2026-10-15
+
+Normal forwarding merge4b33d606 is followed by reviewed scheduler2b9 in [PR151](https://github.com/afterburn25/Cajun_Web/pull/151). Installer refresh and exact parent-union checks pass; independent24-check shared-code review is clear; scheduler browser runs last. Fresh combined acceptance remains required. History1759 browser/native artifacts are downloaded and verified; recovery passed and Apache is active. [Current handoff](../SESSION_HANDOFF.md) is authoritative over earlier checkpoints.
+
+Domains owns07817109/PR152 renewal-date observation, with all four native archives verified and full acceptance active. Catalog owns registration periods, independently reviewed by domains. VPS owns cloud-provider identifiers and is correcting root's paired-history-loss/bounded-query findings. Root integrates shared files sequentially. New full reference34e713 is retained; Devin licensing main35dd remains separate with the updated migration/internal-key findings.
+
 ## Current forwarding integration and reference intake — 2026-10-15
 
 Root normally merges forwarding1992 into history1759 in [PR151](https://github.com/afterburn25/Cajun_Web/pull/151), preserving cloud recovery and both original histories. Exact local parent-union, regenerated installer, route/native union and independent glue checks pass; combined runtime acceptance remains required. Frozen a963 full acceptance and final packages are now verified. Scheduler2b9 retains successful corrected554 browser evidence and is next to integrate; the original5fb full remains failed. [Current handoff](../SESSION_HANDOFF.md), [a963 proof](TWENTYI_A963_ACCEPTANCE.md).
@@ -39,6 +45,10 @@ Root normally integrates cloud1a74952c after catalog82302571 and renewal96a2b4c9
 # Current renewal integration — 2026-10-15
 
 Root normally merges reviewed/native-verified renewal ed4d1cad from [PR146](https://github.com/afterburn25/Cajun_Web/pull/146) after catalog82302571. Shared application wiring auto-merges; root regenerates installer inventory. Domain agent owns exact browser checkpoint38827956015 and retained registrar screenshot inspection. Cloud agent owns test-timing correction and native/full evidence; catalog agent independently reviewed both repaired slices and retains its exact full run. [Current evidence](../SESSION_HANDOFF.md).
+
+# Scheduled inventory ownership - 2026-10-15
+
+Catalog agent owns isolated `codex/twentyi-scheduled-refresh` from 82302571: schedule modules/schema, protected PHP entry, owner schedule controller/view, focused tests and docs. Shared files are the root-reviewed inventory persistence extraction, provider controller/view includes, workflow/browser/Apache wiring and generated installer inventory. Domain hosting-history uses existing observations and needs no write hook. Root owns integration/releases. Prior catalog/readiness/discovery branches and evidence stay preserved.
 
 # Current catalog integration — 2026-10-15
 
