@@ -46,20 +46,22 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-      - name: Select supported PHP for the explicit release combination
-        if: env.CWP_PHP_VERSION != '8.3'
-        uses: shivammathur/setup-php@d52fc211a0436f8839a587b3b5b8efddab4744ea
-        with:
-          php-version: ${{ env.CWP_PHP_VERSION }}
-          extensions: pdo_mysql, gd, zip, curl, dom, mbstring, openssl, tokenizer
-          coverage: none
       - name: Prepare isolated runtime and evidence directory
         id: setup
         run: |
           mkdir -p qa
+          # Use one package source for the versioned CLI, extensions and Apache module.
+          # Ubuntu 24.04 retains its distro PHP 8.3 path; other selected versions
+          # require the PHP maintainer's signed Ubuntu Noble package repository.
+          if [ "$CWP_PHP_VERSION" != "8.3" ]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y software-properties-common
+            sudo add-apt-repository --yes ppa:ondrej/php
+          fi
           sudo apt-get update -qq
           sudo apt-get install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
           export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
+          test -x "$PHP_BINARY"
           printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
           "$PHP_BINARY" -v
           "$PHP_BINARY" -m
@@ -153,13 +155,6 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-      - name: Select supported PHP for the explicit release combination
-        if: env.CWP_PHP_VERSION != '8.3'
-        uses: shivammathur/setup-php@d52fc211a0436f8839a587b3b5b8efddab4744ea
-        with:
-          php-version: ${{ env.CWP_PHP_VERSION }}
-          extensions: pdo_mysql, gd, zip, curl, dom, mbstring, openssl, tokenizer
-          coverage: none
       - name: Prepare isolated runtime and evidence directory
         id: setup
         env:
@@ -168,9 +163,18 @@ jobs:
           mkdir -p qa
           printf 'CWP_TEST_PORT=%s\n' "$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
           export CWP_TEST_PORT="$CWP_ASSIGNED_PORT"
+          # Use one package source for the versioned CLI, extensions and Apache module.
+          # Ubuntu 24.04 retains its distro PHP 8.3 path; other selected versions
+          # require the PHP maintainer's signed Ubuntu Noble package repository.
+          if [ "$CWP_PHP_VERSION" != "8.3" ]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y software-properties-common
+            sudo add-apt-repository --yes ppa:ondrej/php
+          fi
           sudo apt-get update -qq
           sudo apt-get install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
           export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
+          test -x "$PHP_BINARY"
           printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
           "$PHP_BINARY" -v
           "$PHP_BINARY" -m
@@ -394,20 +398,22 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-      - name: Select supported PHP for the explicit release combination
-        if: env.CWP_PHP_VERSION != '8.3'
-        uses: shivammathur/setup-php@d52fc211a0436f8839a587b3b5b8efddab4744ea
-        with:
-          php-version: ${{ env.CWP_PHP_VERSION }}
-          extensions: pdo_mysql, gd, zip, curl, dom, mbstring, openssl, tokenizer
-          coverage: none
       - name: Prepare isolated runtime and evidence directory
         id: setup
         run: |
           mkdir -p qa
+          # Use one package source for the versioned CLI, extensions and Apache module.
+          # Ubuntu 24.04 retains its distro PHP 8.3 path; other selected versions
+          # require the PHP maintainer's signed Ubuntu Noble package repository.
+          if [ "$CWP_PHP_VERSION" != "8.3" ]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y software-properties-common
+            sudo add-apt-repository --yes ppa:ondrej/php
+          fi
           sudo apt-get update -qq
           sudo apt-get install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
           export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
+          test -x "$PHP_BINARY"
           printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
           "$PHP_BINARY" -v
           "$PHP_BINARY" -m
@@ -485,13 +491,6 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-      - name: Select supported PHP for the explicit release combination
-        if: env.CWP_PHP_VERSION != '8.3'
-        uses: shivammathur/setup-php@d52fc211a0436f8839a587b3b5b8efddab4744ea
-        with:
-          php-version: ${{ env.CWP_PHP_VERSION }}
-          extensions: pdo_mysql, gd, zip, curl, dom, mbstring, openssl, tokenizer
-          coverage: none
       - name: Prepare isolated runtime and evidence directory
         id: setup
         env:
@@ -500,9 +499,19 @@ jobs:
           mkdir -p qa
           printf 'CWP_TEST_PORT=%s\n' "$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
           export CWP_TEST_PORT="$CWP_ASSIGNED_PORT"
+          # Use one package source for the versioned CLI, extensions and Apache module.
+          # Ubuntu 24.04 retains its distro PHP 8.3 path; other selected versions
+          # require the PHP maintainer's signed Ubuntu Noble package repository.
+          if [ "$CWP_PHP_VERSION" != "8.3" ]; then
+            sudo apt-get update -qq
+            sudo apt-get install -y software-properties-common
+            sudo add-apt-repository --yes ppa:ondrej/php
+          fi
           sudo apt-get update -qq
           sudo apt-get install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring" apache2-bin "libapache2-mod-php${CWP_PHP_VERSION}"
+          test -s "/usr/lib/apache2/modules/libphp${CWP_PHP_VERSION}.so"
           export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
+          test -x "$PHP_BINARY"
           printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
           "$PHP_BINARY" -v
           "$PHP_BINARY" -m

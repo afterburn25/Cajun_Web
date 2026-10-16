@@ -23,19 +23,29 @@ The following acceptance correction commit has parent `85f0b489`. Its enclosing 
 
 The final evidence archive must contain the retained reports and source/run bindings, not just these counts. Later fixture checks and actual CI results must be appended with their exact source and scope.
 
+## Frozen candidate CI checkpoint — 2026-10-16
+
+Candidate `13a7b08cc8f8ac1cf2a5e1ea6b4027a28cf2a597` (tree `62eeed74de3fa89347589ec5fce5be1ebdd069b5`) is pushed on `codex/release-1.25.0` in [draft PR #180](https://github.com/afterburn25/Cajun_Web/pull/180). The four original full runs `38941882420`, `38941894576`, `38941906749` and `38941919998` failed during runner setup: selected PHP8.2/8.4 apt packages were unavailable after the cached runtime setup. Application/native/browser/upgrade tests did not run in those attempts. All eight original artifacts, metadata and failure logs remain retained; repair provisioning before starting corrected full runs. No gate or existing test is removed.
+
+Original licensing run [38941836904](https://github.com/afterburn25/Cajun_Web/actions/runs/38941836904) passes 114 exact named native checks in each of four supported environments (456 executions,114 distinct cases), including actual missing-history, interrupted-setup, master isolation and invoice-review cases. Downloaded archives, runtime versions, PDO/ZIP, hashes, CRC and source/attempt identity were independently verified. This is native licensing evidence only. Exact13a independent migration/authority/upgrade review records66 checks across38 files with no remaining P1/P2 within that scope. Clean Windows FULL/COMPLETE/UPDATE packages match exact Git bytes, installer inventory, strict updater metadata/shims/payload, all checksums and directory/member lists (5914/2887/2874 members). They remain candidate artifacts.
+
+The default PHP8.3 PR run `38942023179` builds the separate merge-preview SHA `8d6c90287d9417e073aa4178d33ebac4fa6cc51b`; its successful build cannot substitute for exact-branch full acceptance. Focused probe run `38942022550` failed because the inherited test sent a delete-operation body to the strict renewal endpoint. The reviewed fixture now uses a valid renewal body for the authority gate and separately checks malformed renewal rejection before authority/network; local default/no-INI/disabled-cURL results pass52/53/53 checks. Both original artifact archives and failure logs remain preserved. No shipping behavior changes. Main remains `d7153b07`, published1.24 remains immutable, no1.25 release exists and no production deployment occurred. Full supported runs, actual packaged HTTP/Chromium and populated upgrades, pixel review, final independent review, normal merge, complete exact-main rerun and publication/download checks remain mandatory.
+
+The correction commit following13a changes only the full-run provisioning workflow, the stale probe fixture and continuity documentation. PHP8.2/8.4 CLI/extensions/Apache now use the same signed Ubuntu Noble package repository; PHP8.3 keeps its distribution path. Every148 native recipe, runtime probe, report, timeout and remaining workflow step is retained. The integrated transfer/provenance helper still passes208 checks. These source/local checks require fresh complete CI at the correction commit.
+
 ## Required candidate and exact-main gates
 
 | Gate | Current state |
 |---|---|
-| Complete PHP 8.2 + MariaDB 10.11 | Pending exact candidate execution and independent evidence inspection |
-| Complete PHP 8.2 + MySQL 8.4 | Pending exact candidate execution and independent evidence inspection |
-| Complete PHP 8.4 + MariaDB 10.11 | Pending exact candidate execution and independent evidence inspection |
-| Complete PHP 8.4 + MySQL 8.4 | Pending exact candidate execution and independent evidence inspection |
+| Complete PHP 8.2 + MariaDB 10.11 | Original13a failed runner provisioning before application tests; corrected exact source execution pending |
+| Complete PHP 8.2 + MySQL 8.4 | Original13a failed runner provisioning before application tests; corrected exact source execution pending |
+| Complete PHP 8.4 + MariaDB 10.11 | Original13a failed runner provisioning before application tests; corrected exact source execution pending |
+| Complete PHP 8.4 + MySQL 8.4 | Original13a failed runner provisioning before application tests; corrected exact source execution pending |
 | Maintained distribution/minimal-PHP lane | Preserved; exact candidate execution pending |
 | Actual published 1.24 COMPLETE → UPDATE | Additive populated upgrade fixtures prepared; root/subfolder, rewrite on/off, interruption, repeat, recovery and reapplication must execute |
 | Extracted HTTP/Chromium and visual inspection | Pending exact candidate captures, named results and actual desktop/mobile inspection |
-| Independent exact candidate review | Pending frozen final source; all P1/P2 blockers must be resolved |
-| Windows/Linux package agreement | Pending clean candidate build and comparison to its CI packages |
+| Independent exact candidate review | Exact13a bounded migration/authority/upgrade review clear; final corrected source review still required |
+| Windows/Linux package agreement | Exact13a Windows packages verified; exact corrected source and Linux agreement remain required |
 | Normal merge and complete exact-main rerun | Pending accepted candidate |
 | Immutable tag, release assets and fresh downloaded-byte verification | Pending exact-main acceptance |
 
