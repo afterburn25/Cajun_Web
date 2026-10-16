@@ -28,6 +28,10 @@ Add a root start-here guide, complete owner-approved assignment and existing lic
 
 # Changelog
 
+## Unreleased — design payment agreements, schedules and bound invoices (Devin port)
+
+Ported the preserved `codex/design-payment-schedules` + `codex/design-financial-activity` stack onto `devin/non20i-design-payments` (stacked on `devin/non20i-project-planning`). Canonical `DesignPaymentSchedule` model with cent-exact deposit/installment allocation; owner-prepared additive `design_payment_*` storage with immutable offered/withdrawn/accepted/declined events; staff financial editor on the client project; explicit client consent bound to the exact offered fingerprint; one bound invoice per accepted stage guarded inside the existing ledger; `financial:` workspace-activity notices resolving to the exact frozen event. No card checkout is activated; publishing an offer records no payment. No live deployment or release.
+
 ## Unreleased — structured project planning (Devin port)
 
 Ported the preserved `codex/project-planning`/`project-planning-storage`/`project-planning-screens` stack onto `devin/non20i-project-planning` (stacked on `devin/non20i-project-progress`, which it extends). Owner-prepared additive `studio_plan_events`/`studio_plan_requests`/`studio_plan_heads` storage; canonical `ProjectPlan`/`ProjectPlanEvent` models with bounded milestone dependencies and immutable revision events; staff planning editor and client dashboard/timeline inside the existing private workspace; `planning:` activity items that open the exact authorized event. Existing project free-text fields, progress history, invoices, files and deliveries remain authoritative — no legacy text is converted. No live deployment or release.
