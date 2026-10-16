@@ -170,7 +170,7 @@ try{
     require_once CWP_CODE_ROOT.'/database/migrations/license_migrate.php';
     license_migrate($password);
     lic_ok('Populated pre-master upgrade adds is_master',(bool)one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'website_licenses','is_master']));
-    lic_ok('Existing licenses preserved after upgrade',(int)query('SELECT COUNT(*) FROM '.table('website_licenses'))->fetchColumn()===4);
+    lic_ok('Existing licenses preserved after upgrade',(int)query('SELECT COUNT(*) FROM '.table('website_licenses'))->fetchColumn()===5);
     lic_ok('Existing domains preserved after upgrade',(int)query('SELECT COUNT(*) FROM '.table('license_domains'))->fetchColumn()===4);
     lic_ok('Existing bundles preserved after upgrade',(int)query('SELECT COUNT(*) FROM '.table('license_bundles'))->fetchColumn()===1);
     lic_ok('Schema stamped v4 after upgrade',(one('SELECT value FROM '.table('settings')." WHERE name='license_schema_version'")['value']??'')==='4');
