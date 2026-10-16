@@ -126,6 +126,18 @@ def run_browser(env, browser):
         for width, height, label in [(1440, 1050, 'Desktop'), (320, 740, 'Mobile')]:
             page.set_viewport_size({'width': width, 'height': height}); page.goto(address); page.evaluate('document.fonts.ready'); expect(page.locator(selector)).to_be_visible(); page.screenshot(path=str(qa / (title + '-' + label + '.png')), full_page=True)
             check(title + ' ' + label + ' fits viewport', page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
+            if selector == '#package-wordpress-installed':
+                check(title + ' ' + label + ' action labels fit their forms without clipping', page.locator(selector + ' button').evaluate_all('''buttons => buttons.length > 0 && buttons.every(button => {
+                    const bounds = button.getBoundingClientRect();
+                    const form = button.closest('form').getBoundingClientRect();
+                    const text = document.createRange();
+                    text.selectNodeContents(button);
+                    return bounds.left >= form.left - 1 && bounds.right <= form.right + 1
+                        && button.scrollWidth <= button.clientWidth + 1
+                        && [...text.getClientRects()].every(rect => rect.left >= bounds.left - 1
+                            && rect.right <= bounds.right + 1 && rect.top >= bounds.top - 1
+                            && rect.bottom <= bounds.bottom + 1);
+                })'''))
         check(title + ' has no script errors', not errors); context.close()
     capture(owner, 'Package-WordPress-Installed-Owner', url, '#package-wordpress-installed')
     capture(client, 'Package-WordPress-Installed-Client', target, '[data-client-wordpress-installed]')

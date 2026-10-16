@@ -1,3 +1,7 @@
+## Unreleased — WordPress admin buttons fit narrow cards
+
+Wrap complete WordPress refresh/sharing action labels within their forms and add four real owner-browser bounds checks. The fix responds to two actual original CI screenshots despite passing viewport assertions. Scoped offline before/after checks and independent source review pass; fresh combined application acceptance remains required.
+
 ## Unreleased — isolated parallel acceptance workflow
 
 Prepare one immutable build for separate test jobs, preserve sequential native/browser state, validate exact same-attempt evidence and retain honest partial failures. Existing assertions and application behavior are unchanged; source review and actual combined execution are pending.

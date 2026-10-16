@@ -1,16 +1,16 @@
 # Current CajunWebPro agent coordination
 
-Updated 2026-10-16 UTC. Codex and three parallel agents own complete20i P0; Devin owns software-product licensing. Work uses separate branches and sequential reviewed shared integration. An allocation is not proof of an active Devin session.
+Updated2026-10-16UTC. Codex and three agents own complete20i P0; Devin owns product licensing. No direct Devin session is implied. Work uses isolated branches and sequential root-reviewed shared changes.
 
-| Owner | Current checkpoint | Scope and next evidence |
+| Owner | Current checkpoint | Next evidence |
 |---|---|---|
-| Root | Local recovery/build union4b73+d72cef; frozenfaef PR151 remains separate | Verify local merge/installer parity; preserve faef original full38875935651,45 focused successes and exact Windows packages. Current integration still needs combined acceptance. |
-| Domains | New codex/twentyi-domain-renewal-dispatch fromfaef | Implement permanent prepayment invoice purpose and exact paid single-send renewal; shared seams reviewed before application. Keep licensing untouched. |
-| VPS | Isolated parallel acceptance from exact e1cd8e44; 100 offline checks pass | Catalog3f086572 and root source review are clear; root independently reran all 100 offline cases. Normal integration and one separately authorized combined run remain. Preserve all original runs and accepted recovery d72cef. |
-| Catalog | Recovery source/renewal proposal/build-port independent reviews clear | Review actual shared integration and later workflow/renewal patches with source-bound evidence. |
-| Devin | Software-product licensing; main9f3b21fd source reviewed | Preserve licensing changes; upgrade, internal-master delivery, legacy-invoice retry and version-marker findings remain open. |
+| Root | WordPress mobile correction on parallel734945c3, descendant of recovery/build e1 | Freeze inventory/source, dispatch one combined parallel acceptance, verify packages and actual screenshots; preserve originalfaef. |
+| Domains | Corrected renewal125+125 pure; provider and11-file application/Handler proposals reviewed | Actual applied-source/native concurrency/payment/tamper/browser evidence; schema/workflow wiring reviewed before CI. |
+| VPS | Parallel734945c3 clean/pushed;100 offline cases and independent source review | Prepare newly named source/run-bound external partition/package evidence helpers for root's next candidate. |
+| Catalog | Parallel corrected3f086572, renewal311ff8/75c906 and mobilef2b4b359 reviews clear | Independent review of new shared wiring and frozen combined evidence as it arrives. |
+| Devin | Fetched maine6192a08 licensing source reviewed, unmerged | Prior populated upgrade/internal-master/legacy-invoice/schema-marker findings remain open. |
 
-Root original948 acceptance is separate from the newer local controls/renewal merge. No parent/focused evidence establishes the latter's browser/release acceptance. [Handoff](../SESSION_HANDOFF.md) contains exact source, artifact and proof identities.
+Originalfaef automated browser112 reports pass; root's22-image review records WordPress mobile overflow/clipping. Original full38875935651 continues through Apache at10:20UTC. Parent/focused evidence does not certify the new candidate. [Current handoff](../SESSION_HANDOFF.md).
 
 ## Integration rules
 

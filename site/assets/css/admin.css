@@ -8,6 +8,9 @@
 
 .notification-endpoint,.notification-identifiers{overflow-wrap:anywhere;word-break:break-word}
 
+/* Keep full WordPress action labels inside their forms on narrow screens. */
+.admin-body #package-wordpress-installed .btn{max-width:100%;white-space:normal;text-align:center;overflow-wrap:anywhere}
+
 /* Inbox headers stay plain text and fit narrow staff screens. */
 .inbox-header { min-width: 0; overflow-wrap: anywhere; }
 .inbox-header h3, .inbox-header p { white-space: pre-wrap; }

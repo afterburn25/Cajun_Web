@@ -1,12 +1,12 @@
-## Isolated Force SSL dispatch-record recovery — 2026-10-16
+## Current complete20i roadmap — 2026-10-16
 
-Implement the bounded finished-ledger recovery case on a separate exact-faef branch: owner/password-reviewed local witness restoration, no provider request or ledger rewrite, still-uncertain fence until separate current GET. Source34f35547 has independently verified four-way native/process acceptance, including137 controls cases and57 recovery portable cases per mode; combined browser/package acceptance remains required. Missing/claimed and other interrupted cases remain unfinished. [Scope](TWENTYI_FORCE_SSL_FINISHED_RECOVERY.md).
+Published1.24.0 remains immutable;1.25.0/full20i remain unfinished. Root's current candidate combines reviewed parallel acceptance734945c3 with WordPress admin mobile label correction over recovery/build e1. Originalfaef browser112 reports pass, but two actual mobile captures require the correction; fresh combined screenshots and exact packages remain mandatory. Parallel100 offline cases are source-reviewed, not GitHub execution. [Current handoff](../SESSION_HANDOFF.md) supersedes older checkpoint instructions below.
 
-## Current 20i integration — 2026-10-16
+Domains continues permanent prepayment invoice purpose and single owner-approved renewal dispatch, with corrected125+125 pure checks and reviewed shared seams. Native payment/concurrency/tamper, schema and actual browser acceptance remain. Full hosting controls, provider commerce/quotes, VPS/cloud lifecycle and support/SSH remain required by the [complete evidence table](TWENTYI_REQUIREMENTS_EVIDENCE.md). Devin retains licensing; maine619 is unmerged and earlier compatibility findings remain open.
 
-Reviewed Force SSL owner controls and renewal retail agreements are joining the root candidate through normal merges. Both have independently verified four-way native archives. Renewal binds existing one-time USD terms and captured consent; provider quotes, payment and renewal dispatch remain unfinished. ForceSSL effects require separate observation; interrupted dispatch remains fenced. Combined browser/package acceptance is pending. WordPress installation indication3f8adaa/docs65c has verified four-way focused38873107762 evidence and is joining the local root candidate; it is not a version/login/plugin/health feature. [Current source and evidence](../SESSION_HANDOFF.md).
+## Historical implementation checkpoints
 
-Original948 directory/parser candidate remains under its unchanged full run. The published release remains1.24.0; full20i and1.25.0 are unfinished. Devin's latest licensing schema3/checksum source is reviewed separately and not imported. Preserve current ownership and [licensing findings](LICENSING_INTEGRATION_REVIEW.md).
+The following entries retain development context. Current source/run status is in the handoff above; original948 is terminal failed and should not be polled or rerun.
 
 ## Combined website-folder and Force SSL observations — 2026-10-16
 

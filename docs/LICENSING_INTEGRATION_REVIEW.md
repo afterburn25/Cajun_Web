@@ -1,3 +1,9 @@
+## Current maine619 audit-detail review — 2026-10-16 UTC
+
+Read-only fetched main e6192a08d68fbbb15d485a848be2463668ece962 differs from reviewed9f3b21fd only in two continuity documents, license_audit truncation to400bytes before insertion, and generated inventory. Source outside that helper and six related migration/deploy/workspace/API/download/native-test files is unchanged. PHP syntax passes. Proof135468fe46044f96cb488e5e6a62237801deec9d2b1c57fd939457a290d911a2 is source/hash/syntax evidence, not native migration or endpoint acceptance.
+
+The four prior populated pre-master upgrade, internal-master customer exposure, legacy invoice consumption and unknown/future schema-marker findings remain unresolved by this delta. Preserve this bounded audit change during later sequential main integration. Devin retains ownership; no licensing runtime edits or main import were made. Earlier seven-conflict preflight was against9f, so refresh it before any actual merge.
+
 ## Current main68a licensing review — 2026-10-16 UTC
 
 Read-only exact main68a42b6bdb1dc564037bf37bccd34c1c8075829b, runtime5b99d064, advances fresh deploy/migrate/readiness to schema marker3 and adds nullable license_bundles.sha256. The store records a hash for a readable file; download compares a nonempty recorded hash before serving. NULL skips comparison, including a newly stored missing/unhashable file, so this is not proof every new bundle has verified integrity. Preserve these changes, unique invoice_id and serialized mutation helpers at eventual integration. Source proof work/main68-licensing-source-review/proof.json SHA2568794c94488bc68887a057b64736324eced6b8421194a8cee01041dd543bbdce4.
