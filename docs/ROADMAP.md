@@ -1,3 +1,9 @@
+## Current checkpoint - 2026-10-16 15:15 UTC
+
+Cloud assignment authority and the legacy StackCP readiness correction are pushed at2a86704f. First four-way focused matrix38921917647 and Windows package construction are running; native/browser/package/main/release acceptance remains pending. [Current checkpoint](TWENTYI_CURRENT_CHECKPOINT.md) records requirements and evidence. Devin continues non-20i work and has specific licensing corrections under [PR159 review](https://github.com/afterburn25/Cajun_Web/pull/159#issuecomment-6218434878). Complete20i remains unfinished; published1.24.0 is unchanged.
+
+## Earlier roadmap checkpoints
+
 Current 20i source and acceptance checkpoint, 2026-10-16 14:41 UTC: [corrected StackCP 819c3ea3 and preserved registration full acceptance](TWENTYI_CURRENT_CHECKPOINT.md). Main changes documentation only; candidate runtime remains separate. Earlier status paragraphs below are historical where they conflict with this checkpoint.
 
 ## Current owner allocation - 2026-10-16

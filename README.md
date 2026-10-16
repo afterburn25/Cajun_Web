@@ -1,4 +1,4 @@
-Current 20i source and acceptance checkpoint, 2026-10-16 14:41 UTC: [corrected StackCP 819c3ea3 and preserved registration full acceptance](docs/TWENTYI_CURRENT_CHECKPOINT.md). Main changes documentation only; candidate runtime remains separate. Earlier status paragraphs below are historical where they conflict with this checkpoint.
+Current checkpoint, 2026-10-16 15:15 UTC: [cloud assignment2a86704f and first focused matrix](docs/TWENTYI_CURRENT_CHECKPOINT.md). Source is pushed; acceptance remains pending. [Devin licensing review](https://github.com/afterburn25/Cajun_Web/pull/159#issuecomment-6218434878) lists two remaining behavior gaps and stale installer hashes. Main changes documentation only. Earlier status below is historical where superseded.
 
 ## Current owner allocation - 2026-10-16
 
