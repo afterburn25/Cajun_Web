@@ -258,15 +258,20 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
-    check('All111 native commands retain exact reviewed order and arguments', native_commands==contract['native_commands'])
+    check('All119 native commands retain exact reviewed order and arguments', native_commands==contract['native_commands'])
     baseline=contract['native_command_baseline'];additions=baseline['additions']
-    preserved=[command for command in native_commands if command not in additions]
+    directory_baseline=contract['directory_control_command_baseline'];directory_additions=directory_baseline['additions']
+    preserved=[command for command in native_commands if command not in additions and command not in directory_additions]
     check('All105 predecessor native commands retain exact order and arguments',
           len(preserved)==baseline['count']==105 and hashlib.sha256(json.dumps(preserved,separators=(',',':')).encode()).hexdigest()==baseline['sha256'])
     position=native_commands.index(baseline['additions_after'])+1
     check('Six renewal native commands occur once immediately after agreement checks',
           len(additions)==len(set(additions))==6 and native_commands[position:position+6]==additions
           and all(native_commands.count(command)==1 for command in additions))
+    directory_position=native_commands.index(directory_baseline['additions_after'])+1
+    check('Eight directory control commands occur once immediately after Force SSL controls',
+          len(directory_additions)==len(set(directory_additions))==8 and native_commands[directory_position:directory_position+8]==directory_additions
+          and all(native_commands.count(command)==1 for command in directory_additions))
     check('Public fixture preparation runs only once in the build job', workflow.count('python3 tests/prepare_legacy.py')==1)
     check('Only one exact source package build remains', workflow.count('python3 tools/build.py --commit')==1)
     check('Assigned ports use permitted step context and GITHUB_ENV in both DB jobs', valid_port_context(workflow))

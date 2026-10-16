@@ -78,12 +78,14 @@ class ProviderServer:
                 import re
                 mailbox_path=re.fullmatch(r'/package/([1-9][0-9]*)/email/([a-z0-9.-]+)',self.path or '')
                 force_ssl_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/forceSSL',self.path or '')
+                directory_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/directoryIndexing',self.path or '')
                 renewal_write=self.path=='/reseller/*/renewDomain'
-                if not (renewal_write or force_ssl_write or mailbox_path or re.fullmatch(r'(?:/reseller/[A-Za-z0-9_.*-]+/(addWeb|updatePackage|deleteWeb)|/cloud_server/[1-9][0-9]{0,17}/addWeb)',self.path or '')) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Content-Type')!='application/json' or self.headers.get('Accept')!='application/json':
+                if not (renewal_write or force_ssl_write or directory_write or mailbox_path or re.fullmatch(r'(?:/reseller/[A-Za-z0-9_.*-]+/(addWeb|updatePackage|deleteWeb)|/cloud_server/[1-9][0-9]{0,17}/addWeb)',self.path or '')) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Content-Type')!='application/json' or self.headers.get('Accept')!='application/json':
                     fixture.errors.append('Unexpected write request '+str(self.path))
                 try:payload=json.loads(raw)
                 except Exception:payload=None;fixture.errors.append('Unparseable write body')
                 if force_ssl_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected Force SSL boolean write body')
+                if directory_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected directory listing boolean write body')
                 fixture.posts.append({'path':self.path,'body':{'mailbox_local':payload.get('new',{}).get('mailbox',{}).get('local')} if mailbox_path and isinstance(payload,dict) else payload})
                 if renewal_write:
                     valid=isinstance(payload,dict) and list(payload)==['name','years','renewPrivacy'] and isinstance(payload.get('name'),str) and re.fullmatch(r'[a-z0-9-]+(?:\.[a-z0-9-]+)+',payload['name']) and type(payload.get('years')) is int and 1<=payload['years']<=10 and type(payload.get('renewPrivacy')) is bool
@@ -96,7 +98,7 @@ class ProviderServer:
                     if self.path.endswith('/addWeb') and isinstance(payload,dict) and isinstance(payload.get('domain_name'),str):
                         name=payload['domain_name'];fixture.packages.append({'id':result['id'],'typeRef':int(payload.get('type',1)),'name':name,'names':[name]+(payload.get('extra_domain_names') or []),'enabled':True,'created':'2000-01-01T00:00:00Z'})
                     body=json.dumps({'result':result['id']} if fixture.write_mode=='success' and self.path.endswith('/addWeb') else result).encode()
-                    if force_ssl_write:
+                    if force_ssl_write or directory_write:
                         body=b'true'  # Synthetic unverified acknowledgement; never changes the GET fixture flag.
                     if mailbox_path:
                         mailbox=payload['new']['mailbox']

@@ -250,6 +250,8 @@ try:
         wordpress_installed_browser(globals(),browser)
         from domain_renewal_dispatch_cases import run_browser as renewal_dispatch_browser
         renewal_dispatch_browser(globals(),browser)
+        from provider_directory_listing_controls_cases import run_browser as directory_controls_browser
+        directory_controls_browser(globals(),browser)
         from provider_schedule_cases import run_browser as schedule_browser
         schedule_browser(globals(),browser)
         browser.close()

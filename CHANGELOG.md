@@ -1,3 +1,12 @@
+## Unreleased — owner directory listing controls
+
+## Unreleased — directory and renewal integration,2026-10-16
+
+- Normally combine tested owner directory controls with paid domain renewal and authenticated Force SSL history; preserve every earlier native/browser scope and both histories.
+- Current merged acceptance remains pending. This entry creates no release, provider call or live deployment.
+
+Add explicit owner Enable/Disable requests with current authority, one durable provider attempt, separate exact observation, independent client sharing and narrowly scoped saved-history recovery. Preserve uncertainty/no-retry fences and authenticate retained indexed history before admission. Source/portable review passes; actual native and combined application acceptance remain pending.
+
 ## Acceptance job-output correction — 2026-10-16
 
 ## Force SSL retained-history correction — 2026-10-16

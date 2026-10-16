@@ -1,12 +1,8 @@
 ## Current complete20i roadmap — 2026-10-16
 
-## Current Force SSL correction — 2026-10-16
+Root is normally integrating directory controlsd98 into renewal/Force SSL correctiona63. Both have independently verified four-way focused evidence; current combined browser/package acceptance remains pending. The reviewed union preserves119 commands,129/168 report sets,318 private paths and all earlier features. Original556 and a63 full runs continue without cancellation/rerun. [Status](../PROJECT_STATUS.md), [handoff](../SESSION_HANDOFF.md).
 
-The current renewal union additionally authenticates all retained Force SSL change documents before indexed admission. Independent source review and PHP syntax pass; four actual storage-tampering cases are added, with native matrix and combined acceptance pending. [Scope and exact evidence](TWENTYI_FORCE_SSL_KEYED_HISTORY_REVIEW.md). The original556 full remains preserved and has reached browser testing; its38 Apache reports are independently verified.
-
-1.24 remains released;1.25/full20i unfinished. Root is normally integrating corrected paid-renewalb221 into556 on codex/twentyi-renewal-integration after independently verifying all four focused archives. The flow reserves the original invoice before payment and requires exact client consent, verified receipts and owner approval for one provider submission. Uncertain or false results remain fenced. Combined browser/package acceptance is pending.
-
-The parallel union retains105 predecessor commands and adds six renewal invocations, with121 browser/160 final reports and111 passing offline helper checks. Original556 full38889625340 remains active: build/recovery/Apache jobs succeeded, native/browser and final evidence pending. Original5a output failure, faef timeout and bbf43 consent failure remain preserved. Directory controls and provider support handoff investigation continue separately; neither is accepted or released. Main licensing remains Devin-owned and unmerged. [Current status](../PROJECT_STATUS.md), [handoff](../SESSION_HANDOFF.md), [full requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md).
+Support prerequisites and detached registration contact/draft contracts are implementing on separate branches. No StackCP login, SSH or domain registration dispatch is established. Full hosting lifecycle, commerce, VPS/cloud and complete20i remain unfinished. Devin retains licensing. Published1.24 remains immutable;1.25 is not released.
 
 ## Historical implementation checkpoints
 

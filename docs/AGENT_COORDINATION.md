@@ -1,16 +1,16 @@
 # Current CajunWebPro agent coordination
 
-Updated 2026-10-16 UTC. Codex and three agents own complete20i P0; Devin owns product licensing. Work uses isolated branches and sequential root-reviewed shared changes. No direct Devin session is implied.
+Updated 2026-10-16 UTC. Codex and three agents own complete20i P0; Devin owns product licensing. Isolated branches and sequential root-reviewed shared changes remain required.
 
-| Owner | Current checkpoint | Next action |
+| Owner | Current work | Next action |
 |---|---|---|
-| Root | Normal556+b221 renewal integration; original556 full remains active | Include reviewed Force SSL history correction, freeze source, run focused matrix and combined full. |
-| Domains | All four b221 focused archives accepted, root proof526a49e0 | Review directory fixture wording and provider support contract; Force SSL source review passed. |
-| VPS | Directory controls on isolated branch from556 | Submit exact shared patch; retain current authority, unknown outcomes and separate fresh GET evidence. |
-| Catalog | Renewal contract/report union reviewed; helper111 passes | Pure support contract308 checks per PHP mode, under review; native prerequisites designed, no sender yet. |
-| Devin | Latest reviewed main79d9 remains outside candidate | Resolve documented populated upgrade/master exposure/legacy invoice/schema-marker findings. |
+| Root | Normal a63+d98 directory/renewal union; original556/a63 full runs preserved | Freeze exact union, complete source/native/browser/package evidence and release gates. |
+| Domains | Detached registration contract,252 cases per mode; directory union independent review | Root review of private contact/draft boundaries; native prerequisites after unresolved provider contracts are accounted for. |
+| VPS | Directory focused all4 passed; external11-file union reviewed | Independently review StackCP runtime/native fixtures. |
+| Catalog | Pure support contract3189,315 cases per mode; local native auth/assignment modules | Prepare dedicated owner UI and external shared wiring; no provider sender or login. |
+| Devin | Licensing main79d9 remains outside candidate | Resolve four recorded integration findings. |
 
-Renewal b221 has23 reports/2,179 named executions in each of four environments; browser and combined acceptance remain pending. The current union preserves105 predecessor commands plus six additions and121/160 report sets. Original556 build/recovery/Apache jobs have succeeded; native/browser and final evidence remain pending. [Handoff](../SESSION_HANDOFF.md).
+Directory proofd9ec10ad binds20 reports/1,686 named executions per environment. Parent a63 focusedproof495a3035 binds14 reports/1,411 each; its full run38895145337 remains active. New union119 commands/129 browser/168 final reports needs its own acceptance. [Handoff](../SESSION_HANDOFF.md).
 
 ## Integration rules
 

@@ -2,9 +2,9 @@
   "base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
   "base_workflow_sha256": "7aef2d8f6df74f4c65091960191a4748b21b8258f111d8a23967abe13bddafe5",
   "unchanged_test_sha256": {
-    "tests/browser_acceptance.py": "07e6aa57301e671212cb2afceb1da7eba28807d99a75d245fadb73230f6afbe8",
+    "tests/browser_acceptance.py": "5552d125b0880bbbef2b1acc9f2c329fc0f60de8bf95ebb1abe3ffa97ab6e6a9",
     "tests/structure_acceptance.py": "2b89114d669f717c4e936123ae256e9c29394664ee1a7db301411964839e86d0",
-    "tests/apache_acceptance.py": "96499c793a60916b01bac554a54275c902ab277883634b0343e7317c1c6d2a28",
+    "tests/apache_acceptance.py": "efc8392db0c7a565fda8364357c5b024cd0dbf806aec7e601b9bae62daa30fdc",
     "tests/prepare_legacy.py": "00a09c11a78eb124a848d4794f0eab8a2901eb1d090f6e8da7da498c06d623a7"
   },
   "native_commands": [
@@ -100,6 +100,14 @@
     "php8.3 tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-results.json",
     "php8.3 -n tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-no-ini-results.json",
     "php8.3 tests/provider_force_ssl_controls_native.php",
+    "php8.3 tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-results.json",
+    "php8.3 -n tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-no-ini-results.json",
+    "php8.3 tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-results.json",
+    "php8.3 -n tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-no-ini-results.json",
+    "php8.3 tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-results.json",
+    "php8.3 -n tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-no-ini-results.json",
+    "php8.3 tests/provider_directory_listing_controls_native.php",
+    "python -B tests/provider_directory_controls_http_contract.py > qa/directory-listing-controls-http-handler-results.json",
     "python -B tests/provider_wordpress_installed_http_contract.py > qa/wordpress-installed-http-handler-results.json",
     "php8.3 tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-results.json",
     "php8.3 -n tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-no-ini-results.json",
@@ -133,6 +141,23 @@
       "php8.3 -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json",
       "python -B tests/domain_renewal_dispatch_http_contract.py > qa/domain-renewal-dispatch-handler-results.json",
       "php8.3 tests/domain_renewal_dispatch_native.php"
+    ]
+  },
+  "directory_control_command_baseline": {
+    "source": "5560635bb2117556de289f0d24c5b170d48e9c77",
+    "count": 105,
+    "sha256": "efdedcd4467b0ff308e7f61f96ceb148448c9bf6df94e38e7721017236e55719",
+    "additions_proposal_sha256": "abdef32316fe6ceb32259218286e5905af9140326320b9a27ba0b09dd1e463d7",
+    "additions_after": "php8.3 tests/provider_force_ssl_controls_native.php",
+    "additions": [
+      "php8.3 tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-results.json",
+      "php8.3 -n tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-no-ini-results.json",
+      "php8.3 tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-results.json",
+      "php8.3 -n tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-no-ini-results.json",
+      "php8.3 tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-results.json",
+      "php8.3 -n tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-no-ini-results.json",
+      "php8.3 tests/provider_directory_listing_controls_native.php",
+      "python -B tests/provider_directory_controls_http_contract.py > qa/directory-listing-controls-http-handler-results.json"
     ]
   }
 }

@@ -10,6 +10,13 @@
     "cloud-provider-reader-noini.json",
     "delivery-archive-results.json",
     "delivery-native-results.json",
+    "directory-listing-control-contract-no-ini-results.json",
+    "directory-listing-control-contract-results.json",
+    "directory-listing-control-recovery-no-ini-results.json",
+    "directory-listing-control-recovery-results.json",
+    "directory-listing-control-transport-no-ini-results.json",
+    "directory-listing-control-transport-results.json",
+    "directory-listing-controls-http-handler-results.json",
     "directory-listing-document-no-ini-results.json",
     "directory-listing-document-results.json",
     "directory-listing-transport-no-ini-results.json",
@@ -79,6 +86,7 @@
     "provider-cloud-confirmation-native-results.json",
     "provider-cloud-providers-native-results.json",
     "provider-cloud-sites-native-results.json",
+    "provider-directory-listing-controls-native-results.json",
     "provider-directory-listing-native-results.json",
     "provider-document-roots-native-results.json",
     "provider-domain-client-native-results.json",
@@ -139,6 +147,13 @@
     "cloud-provider-reader-noini.json",
     "delivery-archive-results.json",
     "delivery-native-results.json",
+    "directory-listing-control-contract-no-ini-results.json",
+    "directory-listing-control-contract-results.json",
+    "directory-listing-control-recovery-no-ini-results.json",
+    "directory-listing-control-recovery-results.json",
+    "directory-listing-control-transport-no-ini-results.json",
+    "directory-listing-control-transport-results.json",
+    "directory-listing-controls-http-handler-results.json",
     "directory-listing-document-no-ini-results.json",
     "directory-listing-document-results.json",
     "directory-listing-transport-no-ini-results.json",
@@ -240,6 +255,7 @@
     "provider-cloud-confirmation-native-results.json",
     "provider-cloud-providers-native-results.json",
     "provider-cloud-sites-native-results.json",
+    "provider-directory-listing-controls-native-results.json",
     "provider-directory-listing-native-results.json",
     "provider-document-roots-native-results.json",
     "provider-domain-client-native-results.json",
@@ -290,9 +306,12 @@
     "additions": [
       "two recovery portable reports already invoked by base",
       "parallel-helper-tests.json is the new offline transfer regression report",
-      "six paid domain renewal dispatch document, transport, handler and native reports"
+      "six paid domain renewal dispatch document, transport, handler and native reports",
+      "eight directory listing control request, transport, recovery, native and actual synthetic Handler reports"
     ],
     "renewal_source": "b221eb4be95ec1509458d916f1ffd10d65e71e64",
-    "root_before_renewal": "5560635bb2117556de289f0d24c5b170d48e9c77"
+    "root_before_renewal": "5560635bb2117556de289f0d24c5b170d48e9c77",
+    "directory_controls_base": "5560635bb2117556de289f0d24c5b170d48e9c77",
+    "directory_controls_proposal_sha256": "abdef32316fe6ceb32259218286e5905af9140326320b9a27ba0b09dd1e463d7"
   }
 }
