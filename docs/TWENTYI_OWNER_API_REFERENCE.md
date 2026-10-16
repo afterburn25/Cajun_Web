@@ -89,6 +89,8 @@ Credentials and private material can appear even in GET responses: DKIM signatur
 
 ## 5. Managed VPS / cloud servers / VPS — HC-10, separate A-10 gate
 
+Primary-source follow-up, checked2026-10-15: the [official managed cloud API guide](https://docs.20i.com/api/managed-cloud-hosting-api-guide), updated2025-11-10, supplies addCloudServer request fields, specification/location tables, balance-debit behavior and an ID/null response description. It does not establish current account pricing/entitlement or the exact raw response envelope. Preserve this evidence for lifecycle implementation; no server order was attempted.
+
 | Supplied sample | Source lines | Source-described contract |
 |---|---|---|
 | GET `/managed_vps` and `/managed_vps/{managedVpsId}` | 2603-2623 | Managed-server summary/detail; detail states SuperPassword/VncPassword are scrubbed. This does not guarantee that every VPS endpoint is credential-free. |

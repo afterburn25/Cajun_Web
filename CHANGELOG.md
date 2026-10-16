@@ -1,5 +1,7 @@
 ## Acceptance repair — foreign-client mailbox fixture
 
+Correction2239a156 is pushed and fresh full38826150967 passed package checks and entered native integration. Prior38bb recovery passed; Apache continues. Catalog readiness has independent source review without a concrete blocker, pending native/browser evidence. No further runtime or release change.
+
 Use the foreign client's actual workspace session token to test mailbox ownership refusal. Retain no-request/network assertions and verify the precise authorization error without password echo. Preserve the failed combined browser artifact and newer main test history; fresh descendant acceptance remains pending. No shipping/version/release change.
 
 ## Acceptance checkpoint — combined20i38bb
