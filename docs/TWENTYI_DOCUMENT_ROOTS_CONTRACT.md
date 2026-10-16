@@ -53,4 +53,15 @@ This pure branch changes no application, shared module, database schema, install
 
 All four new PHP files pass syntax checks. Local PHP8.4 normal and no-INI runs each pass 143 distinct named checks. Cases cover fixed request/credential boundaries, empty object versus error array, malformed/non-string/duplicate maps, exact decoded opaque paths, limits, raw/Base64 credential echoes, all-or-nothing projection, finite errors, every assignment witness, forged restored fields and scalar-reference detachment.
 
-The first local fixture encoded a tab where its expected path contained a backslash; the parser correctly refused it. Only that test input was corrected using JSON encoding, and both original failed reports remain under `qa/document-roots-first-*.json`. Corrected named reports are `qa/document-roots-{default,minimal}.json`. Root independently reviewed the exact stable three classes,143-case fixture and guide with no blocker for the pure scope. The approved narrow PHP8.2/8.4 workflow runs synthetic tests in containers with network disabled; its single automatic run remains pending. No application/shared wiring is authorized by this pure review.
+The first local fixture encoded a tab where its expected path contained a backslash; the parser correctly refused it. Only that test input was corrected using JSON encoding, and both original failed reports remain under `qa/document-roots-first-*.json`. Corrected named reports are `qa/document-roots-{default,minimal}.json`. Root independently reviewed the exact stable three classes,143-case fixture and guide with no blocker for the pure scope. The approved narrow PHP8.2/8.4 workflow runs synthetic tests in containers with network disabled; its single automatic run is verified below. No application/shared wiring is authorized by this pure review.
+
+### Exact remote evidence
+
+Tested source `1e8ee56777845adc56832ed455ea20d7191bfabe`, tree `6ba84333706b481feda2436fb9aed78a0bc2f3a6`, passes the single automatic [run38856621132](https://github.com/afterburn25/Cajun_Web/actions/runs/38856621132). Both PHP8.2/8.4 Linux test containers had network disabled. Each mode has143 distinct passing names:572 executions total. Actual downloaded metadata, SHA256, byte size, CRC, four safe unique members, source/tree, all11 source/dependency/workflow hashes and PHP versions match.
+
+| PHP | Artifact | Bytes | SHA256 |
+|---|---|---|---|
+| 8.2 | 12027870194 | 4740 | `05110966ba7ddd420d023b8b0b8b24818b8bdbd6c0817f7fce6458666d9aeeeb` |
+| 8.4 | 12027586456 | 4776 | `fad7d91741615afb36eac5658c2a8bc20df29a8498bb10ed510cee13f9761b97` |
+
+All artifacts and named proof are retained under `work/20i-document-roots-contract/qa/`, including `pure-matrix-verification.json` and its verifier. The evidence descendant changes documentation only. The reviewed current-authority, storage/recovery, UI and shared-executor prerequisites remain for a future application increment; none is implied by these pure passes. No PR, native/full dispatch, shipping change, live request or release occurred.

@@ -4,7 +4,7 @@ Updated 2026-10-16 UTC. Full roadmap remains active with complete20i P0 priority
 
 ## This isolated branch
 
-`codex/twentyi-document-roots-contract` starts at427e3a233706f22cd39918d8b97256a7fb2b1e90 and preserves DNS96fba852/23cba4be. Only pure document-root binding/observation/reader, synthetic tests, a narrow no-network PHP8.2/8.4 workflow and documentation change.143 local normal/minimal checks pass. Root approved the exact GET/direct-map contract: {} is explicitly an empty validated map, [] is unavailable, and paths remain exact text with no filesystem or confinement meaning. Root independently cleared stable source; the approved narrow no-network workflow awaits its single automatic exact-head run; application/shared wiring is outside this task. [Missing integration prerequisites and proof](docs/TWENTYI_DOCUMENT_ROOTS_CONTRACT.md).
+`codex/twentyi-document-roots-contract` starts at427e3a233706f22cd39918d8b97256a7fb2b1e90 and preserves DNS96fba852/23cba4be. Only pure document-root binding/observation/reader, synthetic tests, a narrow no-network PHP8.2/8.4 workflow and documentation change.143 local normal/minimal checks pass. Root approved the exact GET/direct-map contract: {} is explicitly an empty validated map, [] is unavailable, and paths remain exact text with no filesystem or confinement meaning. Root independently cleared stable source; the single approved no-network run38856621132 at1e8ee567 now passes both PHP8.2/8.4 with143+143 checks each and both actual archives verified; application/shared wiring is outside this task. [Missing integration prerequisites and proof](docs/TWENTYI_DOCUMENT_ROOTS_CONTRACT.md).
 
 ## Current source
 

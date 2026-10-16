@@ -1,6 +1,6 @@
 ## Unreleased — isolated package document-root reader
 
-Add a pure fixed package GET parser for the documented DNS-name→subdirectory string map. Preserve decoded names/paths as observations, reject duplicate keys and credential echoes, distinguish an empty object from the documented empty-array error, and bind the read to exact local assignment witnesses under a dedicated operation.143 local pure cases pass per mode. No shipping integration or filesystem action. [Scope](docs/TWENTYI_DOCUMENT_ROOTS_CONTRACT.md).
+Add a pure fixed package GET parser for the documented DNS-name→subdirectory string map. Preserve decoded names/paths as observations, reject duplicate keys and credential echoes, distinguish an empty object from the documented empty-array error, and bind the read to exact local assignment witnesses under a dedicated operation.143 pure cases pass each local mode and each actual PHP8.2/8.4 normal/minimal mode in verified run38856621132. No shipping integration or filesystem action. [Scope](docs/TWENTYI_DOCUMENT_ROOTS_CONTRACT.md).
 
 ## Unreleased — registration-period browser owner isolation
 

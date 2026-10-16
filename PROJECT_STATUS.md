@@ -4,7 +4,7 @@ Updated 2026-10-16 UTC. **1.24.0 is published; 1.25.0 is unreleased. Full20i int
 
 ## Isolated document-root observation contract
 
-Catalog branch `codex/twentyi-document-roots-contract` starts at frozen427e3a23 outside the release queue. It adds a pure fixed package GET/string-map reader with exact operation binding, documented empty-array error handling, duplicate/credential-echo refusal and opaque observed paths.143 named checks pass per local PHP8.4 mode; root independently cleared exact source and a narrow no-network PHP8.2/8.4 workflow is added; actual remote verification and native application wiring are not claimed. Site/shared/schema/installer/licensing remain unchanged. [Contract and evidence](docs/TWENTYI_DOCUMENT_ROOTS_CONTRACT.md).
+Catalog branch `codex/twentyi-document-roots-contract` starts at frozen427e3a23 outside the release queue. It adds a pure fixed package GET/string-map reader with exact operation binding, documented empty-array error handling, duplicate/credential-echo refusal and opaque observed paths.143 named checks pass per local PHP8.4 mode; root independently cleared exact source; single no-network run38856621132 at1e8ee567 passes both PHP8.2/8.4 (143 default+143 minimal each), with both actual artifacts verified. Native application wiring is not claimed. Site/shared/schema/installer/licensing remain unchanged. [Contract and evidence](docs/TWENTYI_DOCUMENT_ROOTS_CONTRACT.md).
 
 ## Product and ownership
 
