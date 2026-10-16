@@ -1,3 +1,7 @@
+## Unreleased — cloud-provider browser evidence
+
+Record exact6eee browser results and six actual screenshot reviews; preserve original0e2 failed final archive/source proof. Documentation only; final corrected Apache/package acceptance remains pending.
+
 ## Unreleased — verified cloud-provider native compatibility
 
 Record corrected6eeeb020 four-way native acceptance and independent artifact verification, while preserving original MariaDB failures and pending full browser/package acceptance. Save a source-backed next PHP-version observation handoff without adding runtime behavior.
