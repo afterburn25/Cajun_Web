@@ -1,5 +1,17 @@
 # Session log
 
+## Port ticket screenshot readiness — 2026-10-16
+
+Request: last preserved non-20i slice — `codex/ticket-screenshot-readiness` (`e29c1c1f`).
+
+Starting commit: `devin/non20i-support-tickets` tip — the change extends `ticket_cases.py` screenshots, so it stacks on the tickets port.
+
+Files/actions: applied `tests/ticket_screenshot.py` (new) + `tests/ticket_cases.py` hunk — full-page captures now wait for the authenticated activity-bell fetch to settle (`document.fonts.ready` + visible `[data-activity-bell]`) and assert the complete footer is inside the captured PNG bounds, fixing clipped screenshots in the packaged browser lane. Test-only; no runtime source changed.
+
+Tests/verification (local): `python -m py_compile` clean on both files. Browser lane runs in CI.
+
+Next: commit, push, PR targeting the tickets branch, #157 update. All nine preserved non-20i slices are now ported; remaining roadmap work is new ground.
+
 ## Port client support tickets onto main — 2026-10-16
 
 Request: continue the non-20i roadmap after licensing; the assignment's next item is client support tickets/private staff notes, reusing preserved PRs instead of rebuilding.

@@ -6,6 +6,7 @@
 
 ## Devin non-20i in flight — 2026-10-16
 
+- `devin/non20i-ticket-screenshots` (stacked on `devin/non20i-support-tickets`) ports `codex/ticket-screenshot-readiness`: ticket page captures wait for the settled activity bell and verify complete footer bounds instead of clipping mid-render.
 - `devin/non20i-licensing` (`f9668cc4`, `e3d62770`): resolves the four documented licensing findings — populated pre-master upgrades gain `is_master` additively, master keys are excluded from portal/bundle/download surfaces and domain actions, legacy `invoice_id IS NULL` fulfilment retries only claim an exact-one unlinked candidate (ambiguity refused), and unknown/future `license_schema_version` markers are refused before any DDL. Native/functional tests extended; CI pending; PR creation blocked by GitHub API rate limit (branch pushed).
 - `devin/non20i-support-tickets`: ports the preserved `codex/support-ticket-screens` ticket slice onto `main` — owner-prepared ticket storage, `support.tickets` permission, admin queue/detail/create, portal create/reply/status/read, private staff notes, per-viewer read cursors, exact-message activity links. Service-plan slices on that branch are deliberately excluded; subscription links stay document-valid but dormant. Local desk/document/form checks pass (114+ per suite); native/browser/upgrade lanes wired into CI. No live deployment, mail or provider action.
 

@@ -5,6 +5,7 @@ import requests
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
 from staff_cases import OWNER, STAFF
+from ticket_screenshot import capture_ticket_page
 
 
 def run_browser(env, browser):
@@ -153,7 +154,8 @@ def run_browser(env, browser):
         return page.locator('form').filter(has=page.locator('[name=action][value="'+action+'"]'))
 
     def screenshots(page, name):
-        page.screenshot(path=str(QA/(name+'-Desktop.png')), full_page=True)
+        check(name+' desktop screenshot includes the complete footer',
+              capture_ticket_page(page, QA/(name+'-Desktop.png')))
         page.set_viewport_size({'width': 320, 'height': 800})
         if page.locator('.sidebar-toggle').count():
             page.evaluate("window.scrollTo({top:0,left:0,behavior:'instant'})")
@@ -162,7 +164,8 @@ def run_browser(env, browser):
             expect(page.locator('.admin-sidebar')).to_be_in_viewport()
             page.keyboard.press('Escape')
             expect(page.locator('.admin-sidebar')).not_to_be_in_viewport()
-        page.screenshot(path=str(QA/(name+'-Mobile.png')), full_page=True)
+        check(name+' mobile screenshot includes the complete footer',
+              capture_ticket_page(page, QA/(name+'-Mobile.png')))
         check(name+' fits 320px without horizontal overflow', page.evaluate('document.documentElement.scrollWidth <= innerWidth'))
         page.set_viewport_size({'width': 1440, 'height': 1000})
 
