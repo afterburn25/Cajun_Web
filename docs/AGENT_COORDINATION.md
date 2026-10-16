@@ -1,3 +1,7 @@
+# Isolated hosting-history ownership — 2026-10-15
+
+Domain agent owns `codex/twentyi-service-observations` from root3bbc42bd in work/20i-service-observations. New service_observations modules/schema/UI/tests; minimal admin/portal routing and acceptance glue. No inventory_record hook: catalog scheduler extraction remains separate. Root alone integrates/releases. [Scope and evidence](TWENTYI_SERVICE_OBSERVATIONS.md). Preserve registrar725, nameserver9ea and renewal ed4/f62.
+
 # Current combined integration and scheduled-refresh assignment — 2026-10-15
 
 Root normally integrates cloud1a74952c after catalog82302571 and renewal96a2b4c9, regenerates the combined installer and requests independent glue review. Fresh combined full acceptance follows; parent runs remain preserved. Catalog owns a new isolated scheduled GET/package refresh slice from82302571 and current catalog artifact verification. Domains owns renewal browser evidence; cloud owns confirmation browser/package evidence and combined read-only review. Root alone integrates/releases. [Current handoff](../SESSION_HANDOFF.md) supersedes historical states below.

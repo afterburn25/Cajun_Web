@@ -212,6 +212,8 @@ try:
 
         from provider_cloud_sites_cases import run_browser as cloud_sites_browser
         cloud_sites_browser(globals(),browser)
+        from service_observations_cases import run_browser as service_history_browser
+        service_history_browser(globals(),browser)
         from mail_drafts_cases import run_browser as drafts_browser
         drafts_browser(globals(),browser)
         from mail_submissions_cases import run_browser as submissions_browser

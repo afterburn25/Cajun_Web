@@ -2158,3 +2158,8 @@ Combined validation completed: refresh26659 is CLOSED; all shipping PHP/JS synta
 ## 2026-10-15 — preserve newer main documentation before combined acceptance
 
 Starting cloud integrationbdeccc09, normally merge mainb8f8528b. The only incoming delta after already-preserved1fc is two licensing documentation commits. Resolve the handoff conflict by retaining current20i continuity, archiving the complete incoming main handoff and summarizing its source-scoped licensing/design evidence. LICENSING_IMPLEMENTATION.md merges normally. No runtime, test, workflow, generated inventory or version changes occur in this merge; cloud combined shipping remains identical to independently reviewed/refreshedbdeccc09. Documentation/whitespace checks apply. Incoming claims of21 Website_Core functional checks and full38823899660 are labeled imported evidence; root performs no Website_Core execution. Next: push both normal merges and inspect fresh full combined acceptance while all three agents continue. Published1.24, prior tests/artifacts and live-operation gates remain unchanged.
+
+
+## 2026-10-15 — Isolated hosting history implementation
+
+From3bbc42bd on codex/twentyi-service-observations, implement owner-approved client history from retained package snapshots, exact assignment/account visibility anchors, latest-intent states and immutable permission recovery. No new provider contract or persistence hook. Local PHP syntax/Python AST and33pure cases per mode pass; native/browser checks and installer refresh pending at this entry. Root integrates after independent review and exact evidence. No release/deployment. [Contract and next actions](TWENTYI_SERVICE_OBSERVATIONS.md).

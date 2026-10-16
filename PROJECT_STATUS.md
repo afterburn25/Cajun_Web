@@ -1,5 +1,10 @@
 # CajunWebPro current status — 2026-10-15
 
+## Active isolated hosting-history increment — 2026-10-15
+
+Domain agent owns `codex/twentyi-service-observations` from combined `3bbc42bd56270d1c754ff2e72ea039b9c557460e`. Adds owner-approved sequence-anchored client hosting history from existing saved GET/package observations, current assignment/account revocation and immutable local permission/audit/count recovery. No inventory append hook or provider behavior is added. Shared changes are limited to admin/portal routing/navigation and acceptance wiring. [Contract, file ownership and verification limits](docs/TWENTYI_SERVICE_OBSERVATIONS.md). Local syntax/AST and33pure cases per PHP mode pass; native4-way/browser pending. Root owns integration/releases. Prior renewal ed4 exact checkpoint38827956015 is verified:1,910named HTTPchecks,32renewal cases and four inspected owner/client desktop/mobile captures; checkpoint-only, not full recovery acceptance.
+
+
 Published [v1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) remains immutable source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`, with downloaded assets verified. Complete 20i is the active P0; unrelated feature work remains paused. Candidate 1.25.0 is unreleased.
 
 The integration branch `codex/twentyi-mailbox-controls`, [PR140](https://github.com/afterburn25/Cajun_Web/pull/140), now combines reviewed catalog readiness, client domain renewal requests and cloud package confirmation. This normal merge starts at `96a2b4c9` and imports cloud `1a74952c`, whose runtime is unchanged from `0ea6e3a8`. Domain `ed4d1cad` and catalog `872aec34` were normally merged earlier. Shared controller/workflow/Apache conflicts preserve both increments; the installer inventory is regenerated from the combined shipping files. Fresh combined full acceptance is required before publication.
