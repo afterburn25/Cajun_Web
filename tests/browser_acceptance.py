@@ -248,6 +248,8 @@ try:
         renewal_agreements_browser(globals(),browser)
         from provider_package_wordpress_installed_cases import run_browser as wordpress_installed_browser
         wordpress_installed_browser(globals(),browser)
+        from provider_directory_listing_controls_cases import run_browser as directory_controls_browser
+        directory_controls_browser(globals(),browser)
         from provider_schedule_cases import run_browser as schedule_browser
         schedule_browser(globals(),browser)
         browser.close()

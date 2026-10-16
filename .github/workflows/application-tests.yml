@@ -239,6 +239,14 @@ jobs:
           php8.3 tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-results.json
           php8.3 -n tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-no-ini-results.json
           php8.3 tests/provider_force_ssl_controls_native.php
+          php8.3 tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-results.json
+          php8.3 -n tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-no-ini-results.json
+          php8.3 tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-results.json
+          php8.3 -n tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-no-ini-results.json
+          php8.3 tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-results.json
+          php8.3 -n tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-no-ini-results.json
+          php8.3 tests/provider_directory_listing_controls_native.php
+          python -B tests/provider_directory_controls_http_contract.py > qa/directory-listing-controls-http-handler-results.json
           python -B tests/provider_wordpress_installed_http_contract.py > qa/wordpress-installed-http-handler-results.json
           php8.3 tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-results.json
           php8.3 -n tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-no-ini-results.json

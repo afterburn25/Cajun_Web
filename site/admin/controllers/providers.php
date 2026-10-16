@@ -20,6 +20,7 @@ require_once CWP_CODE_ROOT.'/admin/controllers/provider_document_roots.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_package_force_ssl.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_directory_listing.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_force_ssl_controls.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_directory_listing_controls.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_package_wordpress_installed.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_forwarding.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_registration_periods.php';

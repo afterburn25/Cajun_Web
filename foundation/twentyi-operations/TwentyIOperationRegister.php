@@ -25,6 +25,10 @@ final class TwentyIOperationRegister
     {
         $operations = [
             new TwentyIOperation(
+                'packages.directoryindexing', 'POST', '/package/{packageId}/web/directoryIndexing',
+                ['packageId'], ['value'=>'bool'], ['value'], shapeComplete: true,
+            ),
+            new TwentyIOperation(
                 'packages.forcessl', 'POST', '/package/{packageId}/web/forceSSL',
                 ['packageId'], ['value'=>'bool'], ['value'], shapeComplete: true,
             ),

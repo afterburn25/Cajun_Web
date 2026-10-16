@@ -52,15 +52,20 @@ final class FixedHttpTransport implements HttpTransport
             // bounded JSON body and three fixed headers.
             $path = str_starts_with($request->url, self::URL_BASE) ? substr($request->url, strlen(self::URL_BASE)) : '';
             $forceSsl = preg_match('~\Apackage/[1-9][0-9]{0,17}/web/forceSSL\z~', $path) === 1;
-            $mailbox = str_starts_with($path, 'package/') && !$forceSsl;
+            $directoryIndexing = preg_match('~\Apackage/[1-9][0-9]{0,17}/web/directoryIndexing\z~', $path) === 1;
+            $mailbox = str_starts_with($path, 'package/') && !$forceSsl && !$directoryIndexing;
             $cloudWebsite = str_starts_with($path, 'cloud_server/');
-            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb|renewDomain)$/D', $path) && !$mailbox && !$cloudWebsite && !$forceSsl)
+            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb|renewDomain)$/D', $path) && !$mailbox && !$cloudWebsite && !$forceSsl && !$directoryIndexing)
                 || !is_string($request->body) || $request->body === ''
                 || strlen($request->body) > self::REQUEST_BODY_LIMIT
                 || array_keys($request->headers) !== ['Authorization','Accept','Content-Type']
                 || $request->headers['Accept'] !== 'application/json'
                 || $request->headers['Content-Type'] !== 'application/json') {
                 throw new \InvalidArgumentException('Unsupported provider write request.');
+            }
+            if ($directoryIndexing) {
+                require_once __DIR__.'/../twentyi-operations/DirectoryIndexingChange.php';
+                \CajunWebPro\Foundation\TwentyI\Operations\DirectoryIndexingChange::wire($request);
             }
             if ($forceSsl) {
                 require_once __DIR__.'/../twentyi-operations/ForceSslChange.php';

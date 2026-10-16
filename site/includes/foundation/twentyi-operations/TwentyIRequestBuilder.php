@@ -13,6 +13,7 @@ require_once __DIR__.'/NameserverChange.php';
 require_once __DIR__.'/MailboxCreate.php';
 require_once __DIR__.'/CloudWebsiteCreate.php';
 require_once __DIR__.'/ForceSslChange.php';
+require_once __DIR__.'/DirectoryIndexingChange.php';
 
 /**
  * Translates a validated ProviderOperation into one bounded provider
@@ -58,6 +59,7 @@ final class TwentyIRequestBuilder
             throw new InvalidArgumentException('Operation ' . $operation->name . ' requires typed request validation that is not yet implemented.');
         }
 
+        if ($operation->name === DirectoryIndexingChange::OPERATION) return DirectoryIndexingChange::request($operation);
         if ($operation->name === ForceSslChange::OPERATION) return ForceSslChange::request($operation);
         if ($operation->name === CloudWebsiteCreate::OPERATION) return CloudWebsiteCreate::request($operation);
 

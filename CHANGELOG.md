@@ -1,3 +1,7 @@
+## Unreleased — owner directory listing controls
+
+Add explicit owner Enable/Disable requests with current authority, one durable provider attempt, separate exact observation, independent client sharing and narrowly scoped saved-history recovery. Preserve uncertainty/no-retry fences and authenticate retained indexed history before admission. Source/portable review passes; actual native and combined application acceptance remain pending.
+
 ## Acceptance job-output correction — 2026-10-16
 
 Fix the first parallel run rejecting its own sha256 output name. Add nine actual output/entry-point checks (109 total passing locally) and preserve the failed original plus the older105-minute timeout. Application behavior is unchanged; new full acceptance is pending.

@@ -1,6 +1,6 @@
-## Current complete20i roadmap — 2026-10-16
+## Current complete 20i roadmap — 2026-10-16
 
-1.24 remains released;1.25/full20i unfinished. Root fixes the actual first parallel-run sha256 output-name defect from5a402a35;109 local helper checks and independent review pass, with application/shipping/workflow unchanged. Original5a failure and olderfaef105-minute timeout remain retained. Next is one new corrected-source full run, actual partition/diagnostic/package/visual verification and independently accepted renewal integration. Domainsbbf43f8a has its first four-environment focused run38888746617 active. Main79d9 licensing remains separate; current seven-conflict preflight and four prior licensing findings are documented. [Current status](../PROJECT_STATUS.md), [handoff](../SESSION_HANDOFF.md), [full requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md).
+This isolated lane adds reviewed owner directory listing controls from5560635b, with exact saved observation/assignment authority, independent client sharing, durable uncertainty and narrow missing-history recovery. Local portable/source checks pass; focused native and later root combined acceptance are pending. Full hosting lifecycle, domains, VPS/cloud, support/SSH and complete20i remain unfinished. Root preserves the original556 parallel evidence and separately integrates renewal/Force SSL history corrections; Devin retains licensing. [Current status](../PROJECT_STATUS.md), [handoff](../SESSION_HANDOFF.md), [control scope](TWENTYI_DIRECTORY_LISTING_CONTROLS.md).
 
 ## Historical implementation checkpoints
 
