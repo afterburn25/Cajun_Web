@@ -251,6 +251,8 @@ def run(tmp):
     check('Integer aggregate with failure detail remains failed',not a.reports(root)['counts.json']['passed'])
     for lane,name in [('apache','qa/http-results.json'),('recovery','qa/apache-results.json'),('native-browser','qa/structure-results.json'),('build','test-runtime/private/key.txt')]:
         check('Evidence ownership refuses '+lane+' '+name, not a.evidence_allowed(name,lane))
+    from delivery_evidence_cases import run as delivery_evidence_cases
+    delivery_evidence_cases(a, ROOT, tmp/'delivery-evidence', check, deny, context, fixtures, outcomes)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
     contract=a.load(ROOT/'tools/acceptance-contract.json')
     for path,expected_hash in contract['unchanged_test_sha256'].items():

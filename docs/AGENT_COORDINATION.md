@@ -4,13 +4,13 @@ Updated 2026-10-16 UTC. Codex and three agents own complete20i P0; Devin owns pr
 
 | Owner | Current work | Next action |
 |---|---|---|
-| Root | Normal a63+d98 directory/renewal union; original556/a63 full runs preserved | Freeze exact union, complete source/native/browser/package evidence and release gates. |
-| Domains | Detached registration contract,252 cases per mode; directory union independent review | Root review of private contact/draft boundaries; native prerequisites after unresolved provider contracts are accounted for. |
-| VPS | Directory focused all4 passed; external11-file union reviewed | Independently review StackCP runtime/native fixtures. |
-| Catalog | Pure support contract3189,315 cases per mode; local native auth/assignment modules | Prepare dedicated owner UI and external shared wiring; no provider sender or login. |
+| Root | New descendant of4791 repairs exact synthetic delivery evidence packaging | Verify parent artifacts, integrate cleared support work, run exact combined acceptance. |
+| Domains | Reviewed pure registration2e86 and native private-draft proposal4552abd3 | Implement owned encrypted drafts and fixtures; propose shared wiring before application. |
+| VPS | Directory evidence extension209c3a93 and seal correction independent reviewbe46dd38 | New external exact-path verifier, fresh source binding and independent integration review. |
+| Catalog | Source-reviewed separate StackCP auth key and unverified assignments | Freeze current owned source and verify original four-way focused matrix; no provider login. |
 | Devin | Licensing main79d9 remains outside candidate | Resolve four recorded integration findings. |
 
-Directory proofd9ec10ad binds20 reports/1,686 named executions per environment. Parent a63 focusedproof495a3035 binds14 reports/1,411 each; its full run38895145337 remains active. New union119 commands/129 browser/168 final reports needs its own acceptance. [Handoff](../SESSION_HANDOFF.md).
+Original556 full failed sealing after successful native/browser steps; a63/4791 attempts remain preserved. No unchanged-source rerun/cancellation or full pass is claimed. [Handoff](../SESSION_HANDOFF.md).
 
 ## Integration rules
 

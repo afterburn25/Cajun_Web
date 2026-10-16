@@ -1,3 +1,7 @@
+## Unreleased — exact synthetic delivery evidence
+
+Retain the three generated public website-delivery files in native/browser evidence without widening other paths or lanes. Add51 actual offline seal/aggregation/boundary regressions while preserving all112 existing cases. Original556 failure and a63/4791 runs remain unchanged; shipping application bytes are untouched and fresh combined acceptance remains required.
+
 ## Unreleased — owner directory listing controls
 
 ## Unreleased — directory and renewal integration,2026-10-16

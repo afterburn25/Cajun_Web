@@ -1,8 +1,6 @@
 ## Current complete20i roadmap — 2026-10-16
 
-Root is normally integrating directory controlsd98 into renewal/Force SSL correctiona63. Both have independently verified four-way focused evidence; current combined browser/package acceptance remains pending. The reviewed union preserves119 commands,129/168 report sets,318 private paths and all earlier features. Original556 and a63 full runs continue without cancellation/rerun. [Status](../PROJECT_STATUS.md), [handoff](../SESSION_HANDOFF.md).
-
-Support prerequisites and detached registration contact/draft contracts are implementing on separate branches. No StackCP login, SSH or domain registration dispatch is established. Full hosting lifecycle, commerce, VPS/cloud and complete20i remain unfinished. Devin retains licensing. Published1.24 remains immutable;1.25 is not released.
+Frozen4791 combines directory controls, paid renewal and authenticated Force SSL history. Current descendant corrects the exact three synthetic delivery files rejected by original556 evidence sealing. Native/browser steps succeeded but full556 failed; a63/4791 original runs remain preserved with the same known helper defect. All163 offline helper checks pass; shipping bytes and119 commands/129 browser/168 final reports are unchanged. Cleared StackCP prerequisites and private registration drafts progress separately; no login/SSH/registration sender is established. Published1.24 remains immutable,1.25/full20i unfinished. [Current status](../PROJECT_STATUS.md), [handoff](../SESSION_HANDOFF.md), [cause and correction](TWENTYI_DELIVERY_EVIDENCE_CORRECTION.md).
 
 ## Historical implementation checkpoints
 

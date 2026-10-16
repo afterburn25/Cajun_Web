@@ -232,6 +232,12 @@ def receive_inputs(folder, root, context, expected_digest, lane):
 
 def evidence_allowed(name, lane):
     no_private_name(name); parts = PurePosixPath(name).parts
+    # Exact public outputs of delivery_cases.archive(), retained after local browser opening.
+    # No other nested QA path or evidence lane is admitted.
+    if lane == 'native-browser' and name in {
+            'qa/client-website-extracted/HANDOVER.md',
+            'qa/client-website-extracted/LICENSES.md',
+            'qa/client-website-extracted/index.html'}: return True
     if lane == 'build' and len(parts) == 2 and parts[0] == 'dist': return True
     if len(parts) != 2 or parts[0] != 'qa': return False
     filename = parts[1]
