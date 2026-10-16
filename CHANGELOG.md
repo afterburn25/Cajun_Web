@@ -1,3 +1,7 @@
+## Renewal invoice issuance notifications — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-renewal-notifications`, merging `devin/non20i-recurring-billing` and `devin/non20i-notification-events` (union of both feature sets). `recurring_billing_issue` now notifies the owning client when a fresh period invoice is issued — emitted only after the locked issuance transaction commits, and replayed requests never re-notify. Native coverage extended.
+
 ## Port P-04 service-plan contract layer — 2026-10-16
 
 Devin non-20i increment on `devin/non20i-service-plans-foundation` from main `595ac9c3`, continuing preserved `devin/service-plans`. Adds `foundation/service-plans/` — `ServicePlan`, `PlanSubscription` — plan-terms and consent rules for maintenance/service plans, 76 pure checks in `tests/service-plans/run.php`, PHP 8.2/8.4 workflow lane. No billing capture, plan UI or request workflow — integration remains future work. No release or deployment.
