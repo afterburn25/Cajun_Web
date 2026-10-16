@@ -1,3 +1,7 @@
+## Unreleased — current handoff consolidation
+
+Replace repeated historical status/handoff/ownership blocks with current sources, exact evidence, open findings and next actions. Preserve prior text in immutable75d5c60a and local hash-recorded copies. Original25e full now passes native integration and runs HTTP/Chromium; no shipping or release change.
+
 ## Unreleased — parent full acceptance and recovery handoff
 
 Record downloaded210 final packages/reports and Windows parity; retain the screenshot limitation. Record actual red domain recovery evidence and reviewed f725 correction, pending PHP credential-echo repair, and separate pure registry-expiry ownership. Documentation only; no release or shipping change.
