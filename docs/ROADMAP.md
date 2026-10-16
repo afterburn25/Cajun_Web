@@ -1,4 +1,4 @@
-Current20i source and acceptance checkpoint, 2026-10-16 13:47 UTC: [9779879b and full run38909577278](TWENTYI_CURRENT_CHECKPOINT.md). Main contains the documentation handoff; the20i runtime stays on its separate branch. Earlier current-state paragraphs below are historical where they conflict with this checkpoint.
+Current 20i source and acceptance checkpoint, 2026-10-16 14:41 UTC: [corrected StackCP 819c3ea3 and preserved registration full acceptance](TWENTYI_CURRENT_CHECKPOINT.md). Main changes documentation only; candidate runtime remains separate. Earlier status paragraphs below are historical where they conflict with this checkpoint.
 
 ## Current owner allocation - 2026-10-16
 

@@ -1,3 +1,7 @@
+## Documentation - corrected StackCP source and preserved acceptance evidence
+
+Record corrected source 819c3ea3, its independently verified original focused archives and Windows packages, first full 819c run in progress and the preserved original 9779 full acceptance. Preserve the failed 13879 fixture run and terminal failed 9538 browser run, with their separate evidence scopes. Update active source pointers and remove conflicting current pause wording for Devin. Published 1.24.0 and all runtime, installer, version, assets and live installations remain unchanged.
+
 ## Documentation - current20i acceptance and parallel handoff
 
 Publish source9779879b, independently verified focused registration/Windows evidence and the first full acceptance38909577278. Retain original failures and the separate cloud/StackCP review scope. Refresh status/handoff with immutable links to the complete prior licensing history. No application, installer, version, release or deployment change.

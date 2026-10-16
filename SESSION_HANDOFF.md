@@ -1,19 +1,16 @@
 # CajunWebPro current handoff
 
-Updated 2026-10-16 13:47 UTC. **Published1.24.0 remains immutable;1.25.0 and complete20i remain unfinished.**
+Recorded 2026-10-16 14:41 UTC, from main documentation parent `155db254e8e3d0c018200abf6a9325d04c3578ca`. **Published 1.24.0 remains unchanged. Neither 1.25.0 nor complete 20i is released.**
 
-Devin owns the remaining non-20i roadmap, including existing licensing; Codex and three agents own complete20i and final integration/releases. [Devin start here](DEVIN_START_HERE.md). This supersedes older unrelated-work pauses for Devin. External-session acknowledgement is not assumed.
+## Work to continue
 
-## Current work and next action
+1. Follow the first full run [38917429508](https://github.com/afterburn25/Cajun_Web/actions/runs/38917429508), attempt 1, dispatched once with `checkpoint_only: false` from corrected StackCP source `819c3ea39b4ebbef8f37280dc5ede59cf06fd01c`, branch `codex/twentyi-stackcp-access-observations`. Original focused run [38915851687](https://github.com/afterburn25/Cajun_Web/actions/runs/38915851687), attempt 1, and all four actual archives are independently verified by `9ad9a502` and `b8c1d8bc`: 2,045 passing named executions per environment, including 103 native access checks. Windows exact-source packages are verified by proof `41423159`; full/browser acceptance remains pending.
+2. Follow original registration full run [38909577278](https://github.com/afterburn25/Cajun_Web/actions/runs/38909577278) at frozen 9779879b. Build, recovery and Apache proofs pass; native finished successfully and HTTP/Chromium is active. Retain the original attempt, inspect actual browser images and verify final evidence. Do not relabel parent evidence as descendant acceptance or rerun unchanged source.
+3. Integrate reviewed cloud assignment changes sequentially after the remaining fixture and native/HTTP gates. The external unprepared-client correction hides old-account facts and uses the existing review-needed notice. Root then reproduced an active-client check outside the mutex; the bounded callback-entry recheck has reviewed source and 34 passing synthetic cases per mode. Five additional native assertions remain unexecuted; final cloud union and native/HTTP acceptance are still pending.
+4. Reinspect current main and candidate histories before shared integration. Devin owns all non-20i work and the four unresolved licensing findings; Codex owns complete 20i and release coordination. Use [DEVIN_START_HERE](DEVIN_START_HERE.md) and [issue #157](https://github.com/afterburn25/Cajun_Web/issues/157), including the Git-only fallback when API access is limited.
 
-Read the [current20i checkpoint](docs/TWENTYI_CURRENT_CHECKPOINT.md) for exact source, test results, original failures, parallel ownership and release gates. Candidate9779879b is frozen on `codex/twentyi-registration-drafts-integration`; its four-way focused registration checks and exact Windows packages pass independent verification. First full acceptance38909577278 is in_progress; conclusion pending. Follow that original run; do not cancel or rerun unchanged source. Current browser/images/Linux comparisons and complete release gates remain unproven.
+## Evidence and preserved failures
 
-Cloud assignment authority and StackCP membership/grant observations are separate source-reviewed increments with native/browser fixtures still under review. Integrate their shared patches sequentially on a new source and preserve the registration canonical builder area. No login or SSH completion is claimed.
+Read [TWENTYI_CURRENT_CHECKPOINT](docs/TWENTYI_CURRENT_CHECKPOINT.md) for exact identities and scope. Parent 13879b20's four-way focused failure was a native fixture lookup of a nonexistent assignment `package_id` column. Corrected 819c3ea3 uses the validated assignment projection and an exact sibling guard; all shipping bytes remain unchanged. Original 9538 full acceptance is terminal failed at the older renewal browser fixture, with successful evidence sealing and failure classification retained.
 
-Main retains the existing licensing implementation and four unresolved [integration findings](docs/LICENSING_INTEGRATION_REVIEW.md), assigned to Devin. The separate20i candidate has not imported that runtime. Reinspect both histories before integration; preserve billing, support-session, storage and invoice-purpose guards.
-
-## Continuity
-
-The [preserved licensing and20i handoff at80ce8b19](https://github.com/afterburn25/Cajun_Web/blob/80ce8b19a6fb5b05a92821b097b9f8ce2d5b214f/SESSION_HANDOFF.md) retains the earlier licensing implementation, acceptance claims and release history. It is historical evidence, not proof of this candidate. [Published1.24 report](docs/TEST_REPORT_1.24.0.md), [full roadmap](docs/ROADMAP.md), [coordination](docs/AGENT_COORDINATION.md) and [release workflow](docs/RELEASE_WORKFLOW.md) remain available.
-
-This main update changes documentation only. Runtime, schema, installer, versions, released assets and live operations remain unchanged.
+The complete prior handoff remains at [155db254](https://github.com/afterburn25/Cajun_Web/blob/155db254e8e3d0c018200abf6a9325d04c3578ca/SESSION_HANDOFF.md). No login, provider-session restriction, SSH, live provider operation, charge, customer message or deployment is established by these checks. Exact combined and exact-main acceptance plus downloaded asset verification remain release gates.
