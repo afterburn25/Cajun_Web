@@ -1,6 +1,6 @@
 # Active domain increment — local renewal review requests
 
-2026-10-15: implementing native client request, owner message/decline and client withdrawal for explicitly assigned registered domains on isolated `codex/twentyi-domain-renewal-requests`. Current authority and original history are preserved. This does not implement a quote, payment, registry eligibility or provider renewal. Local document checks pass; native/browser acceptance and root integration remain pending. [Scope and remaining controls](TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).
+2026-10-15: implementing native client request, owner message/decline and client withdrawal for explicitly assigned registered domains on isolated `codex/twentyi-domain-renewal-requests`. Current authority and original history are preserved. This does not implement a quote, payment, registry eligibility or provider renewal. Runtimeed4 passes all four native combinations and packaged1,910 HTTP checks including32 renewal cases with four inspected screenshots. Root integration96a2 is recorded; combined/full release acceptance remains separate. [Scope and remaining controls](TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).
 
 # Active 20i parallel work
 

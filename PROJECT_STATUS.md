@@ -1,6 +1,6 @@
 ## Isolated renewal request increment — 2026-10-15
 
-Branch `codex/twentyi-domain-renewal-requests`, based on frozen combined `38bb69cc`, adds native client renewal-review intake, owner review/decline and client withdrawal with immutable local history and current registrar ownership/account checks. No provider renewal, quote, payment or completed-domain claim. Local 28 default + 28 no-INI document cases pass; new native matrix and packaged browser acceptance remain pending. Root integration remains separate; published 1.24 is unchanged. [Scope and evidence](docs/TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).
+Branch `codex/twentyi-domain-renewal-requests`, based on frozen combined `38bb69cc`, adds native client renewal-review intake, owner review/decline and client withdrawal with immutable local history and current registrar ownership/account checks. No provider renewal, quote, payment or completed-domain claim. Runtime `ed4d1cad` / draft PR146 passes four actual native matrix combinations: 78 native +28 default/+28 no-INI document cases each, with downloaded SHA256/CRC/named reports verified. Packaged checkpoint38827956015 passes1,910 HTTP checks including32 renewal cases; four actual desktop/mobile captures are inspected. Root normally integrated runtimeed4 at96a2; combined/full release acceptance remains separate. Root integration remains separate; published 1.24 is unchanged. [Scope and evidence](docs/TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).
 
 # CajunWebPro current status — 2026-10-15
 

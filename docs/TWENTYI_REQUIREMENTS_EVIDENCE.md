@@ -1,6 +1,6 @@
 ## Current local renewal intake increment — 2026-10-15
 
-Client renewal-review requests with owner messages/decline and client withdrawal are implementing on `codex/twentyi-domain-renewal-requests` from combined `38bb69cc`. Current registrar/client/account binding and immutable local request/event recovery are included. Pure validation passes 28 cases per default/no-INI mode; native/browser execution is pending. This does not advance provider renewal, commercial quotes, eligible periods, payment or outcome reconciliation to complete. [Exact scope](TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).
+Client renewal-review requests with owner messages/decline and client withdrawal are implementing on `codex/twentyi-domain-renewal-requests` from combined `38bb69cc`. Current registrar/client/account binding and immutable local request/event recovery are included. Runtimeed4 passes78 native +28 default/+28 no-INI cases per matrix and1,910 packaged HTTP checks including32 renewal cases; actual desktop/mobile captures are inspected. Root integrated at96a2; combined/full release acceptance remains separate. This does not advance provider renewal, commercial quotes, eligible periods, payment or outcome reconciliation to complete. [Exact scope](TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).
 
 # Complete 20i requirements and evidence
 
