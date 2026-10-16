@@ -1,8 +1,8 @@
 ## Renewal retail workflow increment — 2026-10-16
 
-Renewal agreement verification: initial d5909eac focused38870580825 failed all four environments after42 native +69/+69 pure checks because the interruption fixture fault was caught by the reader. The reviewed result-INSERT fixture correction is test-only; corrected native and combined browser acceptance remain pending. Preserve the original archives and root integration ownership.
+Renewal agreement verification: corrected4f458714 focused38871837254 passes all four environments with actual13-report archive verification, including71 new native+69/+69 pure checks. Preserve initiald590 focused38870580825 failed archives. Root owns normal integration and combined browser acceptance; provider domain-purchase contracts remain incomplete.
 
-A source-reviewed isolated implementation links pending registered-domain renewal requests to existing one-time USD service agreements and retained reoffers. Client acceptance is separate from provider cost, eligibility, renewal submission and payment. Native/browser acceptance remains pending; complete domain registration/renewal commerce still requires verified provider contracts. [Feature and evidence boundaries](TWENTYI_DOMAIN_RENEWAL_AGREEMENTS.md).
+A source-reviewed isolated implementation links pending registered-domain renewal requests to existing one-time USD service agreements and retained reoffers. Client acceptance is separate from provider cost, eligibility, renewal submission and payment. Native acceptance is verified; combined browser acceptance remains pending. Complete domain registration/renewal commerce still requires verified provider contracts. [Feature and evidence boundaries](TWENTYI_DOMAIN_RENEWAL_AGREEMENTS.md).
 
 ## Combined website-folder and Force SSL observations — 2026-10-16
 

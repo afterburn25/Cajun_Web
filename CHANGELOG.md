@@ -1,3 +1,7 @@
+## Unreleased — verified renewal agreement native acceptance
+
+Verify the corrected renewal agreement workflow in all four PHP/database environments with downloaded named reports, including71 new native+69/+69 pure checks and all existing billing/order regressions. Preserve the original fixture failure. Evidence only; combined browser and release acceptance remain pending.
+
 ## Unreleased — renewal interruption fixture correction
 
 Preserve the original four-way native failure and correct its synthetic interruption to occur during result persistence. Require one retained intent, one synthetic request and no result after the exact database fault. Application behavior is unchanged; corrected database and combined browser acceptance remain pending.
