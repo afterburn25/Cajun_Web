@@ -1,3 +1,7 @@
+## Unreleased — cloud-provider witness SQL compatibility
+
+Use explicit binary concatenation for cloud-provider retained audit witnesses so MariaDB and MySQL compare the same ASCII bytes. Preserve the original partial native failure, add direct SQL/PHP parity coverage and require new exact acceptance.
+
 ## Unreleased — observed account cloud providers
 
 Add an explicit owner refresh for documented account cloud-provider identifiers, dated immutable observations and honest current/historical/empty/unavailable displays. Reuse the existing fixed GET reader, credentials, durable intent/result storage and guarded recorder. Refuse incomplete retained history, changed context and reordered refreshes. No server ordering or runtime controls are added. Source-reviewed; native/browser and exact package acceptance pending.

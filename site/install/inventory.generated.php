@@ -171,7 +171,7 @@ function setup_expected_files(): array { return [
     'app/providers/cloud_confirmation_storage.php'=>'3fb5eee7f14c07044525bf933570f04d4a799b3c4594071fabd32e9fb65f203b',
     'app/providers/cloud_links.php'=>'2c5c810647b0e16d31b3ba20e118be89c254b50264df8a0bb57b2a806e1053d4',
     'app/providers/cloud_providers.php'=>'0adcb607e44fe95ac6fd743d5a8f0e765560bf408db80cc8618bb09d090b3987',
-    'app/providers/cloud_providers_storage.php'=>'6c971d2dbe538ebe556c74f4387f06a8eef586838907ecabcd8d414d11effc75',
+    'app/providers/cloud_providers_storage.php'=>'62915fdd5e8a750c8911157b5856bebea029d937df29a98013427bb6514b7af1',
     'app/providers/cloud_site_confirmation.php'=>'5c74189fbe1c4c674afc22a2dfa6710dde336a9782f9c6c2a92a580f0e9fa2ca',
     'app/providers/cloud_sites.php'=>'17dd8838f43a1ec4ec411898f4ba508071094eee23ccb59692e413ffafa65a41',
     'app/providers/credentials.php'=>'a25fd07765bf924819dedd6772b32ee11ad5e81fa130735a8869f8666b53b186',

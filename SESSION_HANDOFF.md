@@ -1,3 +1,7 @@
+## Preserve original cloud-provider runs while verifying the SQL correction
+
+Start0e2cab2b39a6b1a9f1fbe70454f6ab12371b173f, draft PR154. Exact focused38841123530 is terminal: MySQL97native/85/85pure passes in both PHP versions; MariaDB fails after8 passes with mixed SQL CONCAT collations. All four archives/digests/reports are verified in qa/38841123530 and documented in [the guide](docs/TWENTYI_CLOUD_PROVIDERS.md). Correct only binary coercion across all witness CONCAT families, preserving proof bytes and exact audit matching; add a named native SQL/PHP byte-parity assertion. Original full38841123460 and PR gates are retained without cancellation/retry. Canonical correction refresh25937 completed; root independently cleared the exact delta at storage62915fdd. Freeze/push and inspect fresh native/full evidence next. Shipping scope remains identifiers only. Parent root owns integration/releases.
+
 ## Isolated cloud-provider discovery — 2026-10-15
 
 Cloud agent owns `codex/twentyi-cloud-providers` from `175930618ab349246020602e634ce55ee49f176b`. The supplied complete API reference establishes the fixed account cloud-provider identifier list. Explicit owner preparation/refresh now uses the single shared inventory executor and retains dated, exact profile/revision/key-bound observations. No specifications, prices, provisioning selector, power control, console or SSH capability is inferred. Forwarding `1992e3769c5d017a16a68718451524e5ed74b734` and all parent evidence remain frozen separately.

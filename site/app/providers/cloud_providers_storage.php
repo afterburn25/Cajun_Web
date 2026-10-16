@@ -32,7 +32,7 @@ function provider_cloud_providers_finish_detail(array $row,string $proof,string 
 function provider_cloud_providers_finish_sql():string {
     $columns=['f.id','f.profile_id','f.operation','f.started_at','r.state','r.reason','r.scope','r.coverage','r.skip_reasons','r.finished_at','r.key_fingerprint','f.profile_revision','f.actor_id','f.started_epoch','r.package_count','r.skipped','r.elapsed_ms','f.seq',"COALESCE(p.proof,'')","COALESCE(p.identifiers,'')","COALESCE(CAST(p.observed_epoch AS CHAR),'')"];
     $parts=[];foreach($columns as $column){$parts[]='OCTET_LENGTH(CAST('.$column.' AS CHAR))';$parts[]="':'";$parts[]='CAST('.$column.' AS CHAR)';}
-    return "CONCAT('Cloud provider refresh ',f.id,' result ',SHA2(CONCAT(".implode(',',$parts).'),256))';
+    return "CONCAT(BINARY 'Cloud provider refresh ',f.id,' result ',SHA2(CONCAT(BINARY '',".implode(',',$parts).'),256))';
 }
 function provider_cloud_providers_counter(string $kind):int {
     if(!in_array($kind,['started','finished'],true))throw new LogicException('Unsupported cloud provider counter.');
@@ -63,10 +63,10 @@ function provider_cloud_providers_ready():bool {
     if($count("SELECT COUNT(*) FROM $a WHERE BINARY action='provider.cloud_providers_prepared'")!==1||$count("SELECT COUNT(*) FROM $a WHERE BINARY action='provider.cloud_providers_prepared' AND BINARY detail='Cloud provider observation storage ready'")!==1)throw new RuntimeException('Cloud provider preparation history needs recovery.');
     if($started!==$count("SELECT COUNT(*) FROM $f f WHERE $op")||$started!==$count("SELECT COUNT(*) FROM $a WHERE BINARY action='provider.cloud_providers_started'")||$finished!==$count("SELECT COUNT(*) FROM $f f JOIN $r r ON r.id=f.id WHERE $op")||$finished!==$count("SELECT COUNT(*) FROM $a WHERE BINARY action='provider.cloud_providers_finished'"))throw new RuntimeException('Cloud provider count history needs recovery.');
     // Correspondence is checked in SQL, with fixed-size PHP results even as history grows.
-    $start="CONCAT('Cloud provider refresh ',f.id,' profile ',f.profile_id,' revision ',f.profile_revision,' sequence ',f.seq)";
-    $commonStart="CONCAT('Refresh ',f.id,' profile ',f.profile_id,' revision ',f.profile_revision)";
+    $start="CONCAT(BINARY 'Cloud provider refresh ',f.id,' profile ',f.profile_id,' revision ',f.profile_revision,' sequence ',f.seq)";
+    $commonStart="CONCAT(BINARY 'Refresh ',f.id,' profile ',f.profile_id,' revision ',f.profile_revision)";
     $finish=provider_cloud_providers_finish_sql();
-    $commonFinish="CONCAT('Refresh ',f.id,' ',r.state,IF(r.reason='','',' '),r.reason)";
+    $commonFinish="CONCAT(BINARY 'Refresh ',f.id,' ',r.state,IF(r.reason='','',' '),r.reason)";
     $witness=static fn(string $action,string $detail):string=>"(SELECT COUNT(*) FROM $a a WHERE BINARY a.action='$action' AND BINARY a.detail=BINARY $detail AND a.user_id=f.actor_id)<>1 OR (SELECT COUNT(*) FROM $a a WHERE BINARY a.action='$action' AND BINARY a.detail=BINARY $detail)<>1";
     if(one("SELECT f.id FROM $f f WHERE $op AND (".$witness('provider.cloud_providers_started',$start).' OR '.$witness('provider.refresh_started',$commonStart).') LIMIT 1')!==null)throw new RuntimeException('Cloud provider attempt history needs recovery.');
     if(one("SELECT f.id FROM $f f JOIN $r r ON r.id=f.id LEFT JOIN $p p ON p.id=f.id WHERE $op AND ((r.state='complete' AND p.id IS NULL) OR (r.state<>'complete' AND p.id IS NOT NULL) OR ".$witness('provider.cloud_providers_finished',$finish).' OR '.$witness('provider.refresh_finished',$commonFinish).') LIMIT 1')!==null)throw new RuntimeException('Cloud provider result history needs recovery.');

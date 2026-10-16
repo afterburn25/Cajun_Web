@@ -1,3 +1,7 @@
+## Cloud-provider native compatibility correction — 2026-10-15
+
+Draft PR154 source0e2cab2b has exact focused evidence: both MySQL8.4 jobs pass97 native and85/85 pure cases; MariaDB10.11 fails after8 passes at a SQL CONCAT collation boundary. All four source-bound archives are verified and preserved. A bounded explicit-binary witness correction is prepared, with a new named SQL/PHP parity case; new four-way and full acceptance remain required. Original full38841123460 is retained. [Exact artifacts and correction](docs/TWENTYI_CLOUD_PROVIDERS.md).
+
 ## Isolated cloud-provider discovery — 2026-10-15
 
 Cloud agent owns `codex/twentyi-cloud-providers` from `175930618ab349246020602e634ce55ee49f176b`. The supplied complete API reference establishes the fixed account cloud-provider identifier list. Explicit owner preparation/refresh now uses the single shared inventory executor and retains dated, exact profile/revision/key-bound observations. No specifications, prices, provisioning selector, power control, console or SSH capability is inferred. Forwarding `1992e3769c5d017a16a68718451524e5ed74b734` and all parent evidence remain frozen separately.
