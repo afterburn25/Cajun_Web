@@ -1,3 +1,7 @@
+## New account cloud-provider discovery — 2026-10-15
+
+`codex/twentyi-cloud-providers` implements the newly supplied reference's exact account provider identifier array through the existing owner refresh executor. 85 pure cases pass per PHP mode and root source review clears retained-history corrections. Actual native/database/browser/package acceptance is pending; no live entitlement or cloud-order capability is established. [Exact evidence and limitations](TWENTYI_CLOUD_PROVIDERS.md). Older capability table labels below retain their earlier source scope.
+
 # Complete 20i requirements and evidence
 
 Current root release sourcea9637f2b repairs cloud assignment-history recovery after the terminal, independently verified3bbc full acceptance. Exact a963 cloud native passes45 creation/87 confirmation cases in all four combinations; Windows packages are independently verified. Its full38834893741 passed package/native and is running browser checks. These results do not certify a later descendant. [Parent full evidence](TWENTYI_COMBINED_3BBC_EVIDENCE.md).

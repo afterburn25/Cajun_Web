@@ -1,3 +1,7 @@
+## Cloud-provider discovery ownership — 2026-10-15
+
+Cloud agent owns `codex/twentyi-cloud-providers` from17593061, new cloud-provider parser/storage/UI/tests and minimal shared inventory/controller/view wiring. Preserve the exact reviewed scheduler writer extraction and normal-merge domain optional binding/result union plus registration-period typed records. Cloud browser cases use real cooldowns near the end of the fixture; root scheduler remains last. Root cleared bounded source-recovery corrections; actual native/browser evidence is pending. Frozen forwarding1992 and earlier source/runs remain separate. [Scope](TWENTYI_CLOUD_PROVIDERS.md).
+
 ## Current history integration evidence — 2026-10-15
 
 The separate a963+bff queue preserves the frozen cloud recovery candidate. Combined installer refresh and independent route/schema/permission review pass; fresh combined acceptance is required. Root independently verifies all four a963 cloud archives and exact Windows packages. [Source, review, evidence and next actions](TWENTYI_HISTORY_INTEGRATION.md). Scheduler554 is a reviewed test-only reload correction over5fb shipping with new checkpoint38836183578 active; forwarding remains separate. Domains keeps history frozen and investigates the next documented discovery reader without shipping edits. Devin retains licensing ownership. Older entries below retain their original evidence scope.

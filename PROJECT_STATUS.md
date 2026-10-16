@@ -1,3 +1,11 @@
+## Isolated cloud-provider discovery — 2026-10-15
+
+Cloud agent owns `codex/twentyi-cloud-providers` from `175930618ab349246020602e634ce55ee49f176b`. The supplied complete API reference establishes the fixed account cloud-provider identifier list. Explicit owner preparation/refresh now uses the single shared inventory executor and retains dated, exact profile/revision/key-bound observations. No specifications, prices, provisioning selector, power control, console or SSH capability is inferred. Forwarding `1992e3769c5d017a16a68718451524e5ed74b734` and all parent evidence remain frozen separately.
+
+Independent root source review identified and then cleared paired-history-loss, unbounded PHP history loading and insertion-sequence tampering gaps. Transactional independent counts, exact common/dedicated audit correspondence and SQL-verifiable witnesses now protect sequence-selected observations; each complete list, including an empty list, gets an immutable HMAC-bound document. No read-path repair. The scheduler recorder extraction is preserved; domain-contract and registration-period shared edits require a normal union at root integration.
+
+Local validation passes 85 dedicated synthetic cases in both PHP modes, existing 139 inventory/28 reader/82 cloud-reader checks, touched PHP/Python syntax and whitespace. Native four-way SQL/PHP parity, actual packaged browser screens and final package acceptance are pending. No live provider call, deployment or release. [Contract, boundaries and evidence](docs/TWENTYI_CLOUD_PROVIDERS.md).
+
 # CajunWebPro integration queue — 2026-10-15
 
 Root owns `codex/twentyi-next-integration` in `work/20i-next-integration`. This queue normally merges reviewed hosting-history `bff198cca9ea06973088e33d5a164b17d0c16d13` onto cloud-recovery correction `a9637f2bb2000196312f72e10f39f614980c98c7`. It preserves the separate release candidate/checkouts and their active tests. The new history slice is not added to the frozen a963 acceptance run, and this queue has not passed combined acceptance.

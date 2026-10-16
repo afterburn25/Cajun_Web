@@ -1,3 +1,7 @@
+## Unreleased — observed account cloud providers
+
+Add an explicit owner refresh for documented account cloud-provider identifiers, dated immutable observations and honest current/historical/empty/unavailable displays. Reuse the existing fixed GET reader, credentials, durable intent/result storage and guarded recorder. Refuse incomplete retained history, changed context and reordered refreshes. No server ordering or runtime controls are added. Source-reviewed; native/browser and exact package acceptance pending.
+
 ## Unreleased integration queue — client hosting history
 
 Normally combine reviewed owner-approved client observation history with the cloud recovery correction on a separate integration branch. Preserve both original sources and evidence; retain all documentation history and regenerate combined installer hashes. Fresh combined acceptance is required. The separate release candidate and published assets are unchanged.

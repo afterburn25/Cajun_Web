@@ -1,3 +1,7 @@
+## Account cloud-provider discovery — implementing, 2026-10-15
+
+New complete-reference lines2666–2672 permit one bounded owner discovery read. Typed parser, shared executor, immutable observations and owner screens are implemented and source-reviewed on an isolated17593061 descendant. Native/browser acceptance remains pending. Specs/zones/pricing and cloud server lifecycle remain separate work; PHP-version scalar evidence is documented for a future hosting reader. [Scope](TWENTYI_CLOUD_PROVIDERS.md).
+
 ## Current history integration evidence — 2026-10-15
 
 The separate a963+bff queue preserves the frozen cloud recovery candidate. Combined installer refresh and independent route/schema/permission review pass; fresh combined acceptance is required. Root independently verifies all four a963 cloud archives and exact Windows packages. [Source, review, evidence and next actions](TWENTYI_HISTORY_INTEGRATION.md). Scheduler554 is a reviewed test-only reload correction over5fb shipping with new checkpoint38836183578 active; forwarding remains separate. Domains keeps history frozen and investigates the next documented discovery reader without shipping edits. Devin retains licensing ownership. Older entries below retain their original evidence scope.
