@@ -47,7 +47,7 @@ def run_browser(env, browser):
     db('UPDATE ci_mail_message_reads SET started_epoch=?', [int(time.time()) - 7200])
     before = inbox_server.connections
     r = owner.post(message, data={'csrf': token(owner.get(message)), 'action': 'mail_message_read', **route}, timeout=30)
-    check('Loaded message exposes Reply and Forward controls to the author', 'data-mail-reply' in r.text and 'value="mail_message_reply"' in r.text and 'value="mail_message_forward"' in r.text and 'Nothing is sent until you review' in r.text and inbox_server.connections == before + 1)
+    check('Loaded message exposes Reply and Forward controls to the author', 'data-mail-reply' in r.text and 'value="mail_message_reply"' in r.text and 'value="mail_message_reply_all"' in r.text and 'value="mail_message_forward"' in r.text and 'Nothing is sent until you review' in r.text and inbox_server.connections == before + 1)
     db('UPDATE ci_mail_message_reads SET started_epoch=?', [int(time.time()) - 7200])
     before = inbox_server.connections
     draft = uuid.uuid4().hex
@@ -131,6 +131,21 @@ def run_browser(env, browser):
     fid = parse_qs(urlparse(r.url).query)['submission_id'][0]
     parsed = BytesParser(policy=policy.default).parsebytes(db('SELECT mime_bytes FROM ci_mail_submissions WHERE id=?', [fid])[0]['mime_bytes'].encode('ascii'))
     check('Forward wire carries no In-Reply-To or References', parsed['In-Reply-To'] is None and parsed['References'] is None and 'SYNTHETIC PRIVATE BODY' in parsed.get_content())
+
+    # Reply all copies every visible recipient except the chosen sending address.
+    reply_all = uuid.uuid4().hex
+    data = {'csrf': token(owner.get(message)), 'action': 'mail_message_reply_all', **route, 'draft_id': reply_all, 'sender': sender_ref}
+    db('UPDATE ci_mail_message_reads SET started_epoch=?', [int(time.time()) - 7200])
+    r = owner.post(message, data=data, timeout=30)
+    check('Reply all performs one fresh authorized read and opens the editable copy', inbox_server.connections == before + 3 and 'draft_id=' + reply_all in r.url)
+    aorigin = json.loads(db('SELECT origin_json FROM ci_mail_reply_drafts WHERE id=?', [reply_all])[0]['origin_json'])
+    acontent = json.loads(db('SELECT content_json FROM ci_mail_reply_drafts WHERE id=?', [reply_all])[0]['content_json'])
+    check('Reply all copies every visible recipient except the sender', aorigin['mode'] == 'reply-all' and acontent['to'] == ['synthetic@example.net', 'other-person@example.invalid'] and acontent['cc'] == ['cc-watcher@example.invalid'] and 'reply-sender@example.invalid' not in acontent['to'] + acontent['cc'] + acontent['bcc'] and 'SYNTHETIC PRIVATE BODY' in acontent['body'])
+    check('Reply all keeps the reply thread binding', aorigin['thread']['in_reply_to'] == '<synthetic-82@example.invalid>' and aorigin['thread']['references'] == ['<synthetic-82@example.invalid>'])
+    r = owner.post(message, data=data, timeout=30)
+    check('Exact reply-all replay reopens the same draft without another fetch', inbox_server.connections == before + 3 and 'draft_id=' + reply_all in r.url)
+    r = reply_post('mail_message_reply', draft_id=reply_all)
+    check('Reusing a reply-all identity for reply is refused', 'different message or sender' in r.text and len(db('SELECT * FROM ci_mail_reply_drafts')) == 3 and inbox_server.connections == before + 3)
 
     db('UPDATE ci_mail_account_grants SET can_read=0 WHERE account_id=? AND user_id=?', [aid, oid])
     r = owner.get(draft_url + '&draft_id=' + forward)

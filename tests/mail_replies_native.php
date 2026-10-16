@@ -71,6 +71,7 @@ try{
     rp_ok('Exact form replay resolves existing draft without fetching',mail_reply_drafts_existing($id,$source,1,'7','44','reply',$sender,1)===$id&&rp_snapshot()===$before);
     rp_deny('Form identity cannot be reused for another message',fn()=>mail_reply_drafts_existing($id,$source,1,'7','45','reply',$sender,1));
     rp_deny('Form identity cannot be reused for another action',fn()=>mail_reply_drafts_existing($id,$source,1,'7','44','forward',$sender,1));
+    rp_deny('Form identity cannot be reused for a reply-all draft',fn()=>mail_reply_drafts_existing($id,$source,1,'7','44','reply-all',$sender,1));
     rp_deny('Repeated creation cannot overwrite changed source content',fn()=>mail_reply_drafts_create($id,$sender,1,$read,ReplyDraft::prepare('reply',rp_raw('Different source subject'))));
     $bad=$read;$bad['uid']='45';rp_deny('Source UID must match durable successful read',fn()=>mail_reply_drafts_create(bin2hex(random_bytes(16)),$sender,1,$bad,$prepared));
     $bad=$read;$bad['request_id']=str_repeat('a',32);rp_deny('Unknown source read cannot create copied content',fn()=>mail_reply_drafts_create(bin2hex(random_bytes(16)),$sender,1,$bad,$prepared));

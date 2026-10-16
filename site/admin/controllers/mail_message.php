@@ -18,7 +18,7 @@ function mail_message_admin_action(string $action): array {
     if($action==='mail_message_setup') {
         mail_messages_migrate(posted('current_password',200));flash('Message request history is ready. No server was contacted.');redirect(admin_url('mail-accounts'));
     }
-    if(($_GET['view']??null)!=='mail-message'||!in_array($action,['mail_message_read','mail_message_reply','mail_message_forward','mail_message_attachment'],true))throw new InvalidArgumentException('Open the current message form before requesting content.');
+    if(($_GET['view']??null)!=='mail-message'||!in_array($action,['mail_message_read','mail_message_reply','mail_message_reply_all','mail_message_forward','mail_message_attachment'],true))throw new InvalidArgumentException('Open the current message form before requesting content.');
     $route=mail_message_route();
     foreach($route as $key=>$value)if(posted($key,32)!==$value)throw new InvalidArgumentException('This message form no longer matches the selected inbox message.');
     if($action==='mail_message_attachment') {
@@ -32,7 +32,7 @@ function mail_message_admin_action(string $action): array {
     }
     if($action==='mail_message_read')return mail_message_read($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],null,null,$route['notice']??null);
     // Reply/Forward: stable posted draft identity resolves an exact replay without another mailbox request.
-    $mode=$action==='mail_message_reply'?'reply':'forward';
+    $mode=match($action){'mail_message_reply'=>'reply','mail_message_reply_all'=>'reply-all',default=>'forward'};
     $draftId=posted('draft_id',32);mail_drafts_id($draftId);
     [$sender,$senderRevision]=mail_drafts_form_reference(posted('sender',43));
     if(mail_reply_drafts_existing($draftId,$route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],$mode,$sender,$senderRevision)) {
@@ -40,7 +40,7 @@ function mail_message_admin_action(string $action): array {
     }
     $read=mail_message_read($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],null,null,$route['notice']??null,true);
     if($read['code']!=='ok')return $read;
-    mail_reply_drafts_create($draftId,$sender,$senderRevision,$read,ReplyDraft::prepare($mode,$read['content']['source']));
+    mail_reply_drafts_create($draftId,$sender,$senderRevision,$read,ReplyDraft::prepare($mode,$read['content']['source'],$mode==='reply-all'?mail_drafts_account($sender,$senderRevision)['address']:null));
     flash('An editable draft was created from the loaded message. No email was sent.');redirect(admin_url('mail-draft',['draft_id'=>$draftId]));
 }
 /** Caller supplies only BodyDecoder's sanitized output in a currently authorized response. */
