@@ -1,3 +1,7 @@
+## Unreleased isolated work — private registration drafts
+
+Add pure typed contact/registration drafts with redacted ordinary projections and an explicit unverified purchase boundary. Both local PHP modes pass252 named cases. Shipping and purchase behavior are unchanged; native editing and the missing provider term/outcome contracts remain separate work.
+
 ## Acceptance job-output correction — 2026-10-16
 
 ## Force SSL retained-history correction — 2026-10-16

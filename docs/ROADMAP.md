@@ -1,3 +1,7 @@
+## Isolated registration contract checkpoint — 2026-10-16
+
+Registration now has reviewed pure contact/draft records and252 local checks per PHP mode. No shipping feature or provider purchase is enabled. Native encrypted draft/contact editing is the next bounded step; exact term wire field, outcome schema, registry requirements and current account acceptance are still prerequisites to commerce/dispatch. [Source scope](TWENTYI_DOMAIN_REGISTRATION_CONTRACT.md), [native proposal](TWENTYI_DOMAIN_REGISTRATION_NATIVE_PREREQUISITES.md), [branch handoff](../SESSION_HANDOFF.md). The integration notes below are retained from parenta63 and are not a fresh acceptance claim.
+
 ## Current complete20i roadmap — 2026-10-16
 
 ## Current Force SSL correction — 2026-10-16

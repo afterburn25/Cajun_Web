@@ -1,3 +1,7 @@
+## Isolated Domains checkpoint — 2026-10-16
+
+Domains owns `codex/twentyi-domain-registration-contract` froma63: six pure/source-guide files frozen70f09573, reviewed by root and VPS71337363. Next is a proposal for private native draft/contact storage and editing, with no billing/payment/purchase enablement. Root owns directory integration and combined acceptance; VPS/Catalog retain their separately assigned work. The historical table below is inherited froma63; use root's current handoff for integration status. All shared changes still require sequential root review.
+
 # Current CajunWebPro agent coordination
 
 Updated 2026-10-16 UTC. Codex and three agents own complete20i P0; Devin owns product licensing. Work uses isolated branches and sequential root-reviewed shared changes. No direct Devin session is implied.
