@@ -1,3 +1,7 @@
+## Unreleased — saved WordPress installation indication
+
+Implement a distinct owner-triggered WordPress installation observation and separately permitted saved client view on an isolated branch. Keep reported true, reported false and unavailable distinct, with current assignment/credential/history guards. This is an indication only, without version, health, absence or installation-action claims. Local pure and actual synthetic-handler checks pass; shared integration and native/browser acceptance remain pending. Preserve the reviewed correction to the initially misrouted synthetic test response.
+
 ## Unreleased — catalog test response-parser correction
 
 Correct the synthetic privacy regression helper to parse raw markup internally while retaining response-object parsing for actual HTTP pages. Preserve all13 privacy cases and the exact public-reference/private-value checks. Downloaded originalc174 browser failure is retained; corrected combined browser acceptance remains pending. No application behavior changes.

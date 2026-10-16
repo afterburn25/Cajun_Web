@@ -1,5 +1,9 @@
 # CajunWebPro current handoff
 
+## Isolated WordPress observation lane — 2026-10-16
+
+`codex/twentyi-wordpress-installed` starts at111808e2. The dedicated14-file runtime and native f96ce138/browser738abf6a fixtures are independently source-reviewed; pure165/mode and corrected actual synthetic handler17 pass locally. [Feature scope and evidence](docs/TWENTYI_WORDPRESS_INSTALLATION_OBSERVATIONS.md). Root cleared shared proposal work/wordpress-installed-shared-proposal manifest71635d2e/patch75ab731f and workflow manifest a714b038 (focused3db3aed9/full7c93e5d0); exact bytes are applied only here. Do not apply stale whole files to root. Keep WordPress context12/14 after directory11/13, independent sharing, exact GET only, scheduler last and private-path union. No CI or provider operation has run. Next: normalized installer/staged Git verification and one approved focused matrix; root owns combined acceptance. Frozen ForceSSL controls/docs89325 remain untouched.
+
 Updated 2026-10-16 UTC. Continue complete20i autonomously with three parallel agents, separate branches, sequential shared integration and verified immutable releases. Codex owns20i; Devin owns software-product licensing. Published1.24.0 remains immutable7190b582a02be8a1daa501db14b5899cfc1eb5d0;1.25.0 and full20i remain unfinished. No new live authorization or Devin-status answer arrived.
 
 ## Root candidate and next actions

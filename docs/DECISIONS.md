@@ -243,3 +243,7 @@ The owner will have Devin implement licensing for software products offered by C
 ## 2026-10-15 — forwarding request permission is independent
 
 Forwarding redirects future delivery, so mailbox-create permission never grants forwarding request permission. Local review does not create a provider operation/result. Use a dedicated signed append-only history with separate count/head and audit witnesses, and retain current exact domain-link event identity to fence same-second reapproval. A cancelled/declined request remains historical; there is no active/completed forwarding status until documented acknowledgement/readback is implemented. [Verified contract and omissions](TWENTYI_FORWARDING_REQUESTS.md).
+
+## 2026-10-16 — WordPress installation is a saved indication
+
+Use only the documented exact package `wordpressIsInstalled` GET. A strict true reports installed; strict false is retained as reported false without claiming absence; null and unexpected shapes remain unavailable. Keep a distinct immutable package context and explicit owner-approved sharing, with no inherited PHP/ForceSSL permissions. There is no WordPress write, admin access or health/version claim. Application transport admission and evidence use the existing executor and recorder. [Scope](TWENTYI_WORDPRESS_INSTALLATION_OBSERVATIONS.md).

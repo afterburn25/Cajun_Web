@@ -43,6 +43,7 @@ function provider_services_portal_render(): never {
         if(!support_current()&&!$service['context_changed'])echo '<a class="btn outline" href="'.esc(studio_url(['document_roots'=>1,'service_link'=>$service['link']['id']])).'">Website folders</a>';
         if(!support_current()&&!$service['context_changed'])echo '<a class="btn outline" href="'.esc(studio_url(['force_ssl'=>1,'service_link'=>$service['link']['id']])).'">Force SSL flag</a>';
         if(!support_current()&&!$service['context_changed'])echo '<a class="btn outline" href="'.esc(studio_url(['directory_indexing'=>1,'service_link'=>$service['link']['id']])).'">Directory listing setting</a>';
+        if(!support_current()&&!$service['context_changed'])echo '<a class="btn outline" href="'.esc(studio_url(['wp_installed'=>1,'service_link'=>$service['link']['id']])).'">WordPress installation</a>';
         echo '</article>';
     }
     foreach($domains as $domain) {

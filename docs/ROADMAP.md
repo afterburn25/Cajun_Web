@@ -1,3 +1,7 @@
+## Isolated WordPress indication increment — 2026-10-16
+
+The [saved WordPress installation indication](TWENTYI_WORDPRESS_INSTALLATION_OBSERVATIONS.md) is implementing on `codex/twentyi-wordpress-installed` from111808e2. Dedicated source and fixtures are reviewed; local pure/offline handler checks pass. Shared integration, four-way native and actual owner/client browser acceptance remain pending. No WordPress setter, install, health/version check, admin handoff or complete CMS integration is implied.
+
 ## Directory-listing observations integrated locally — 2026-10-16
 
 Native-tested3bdba5eb/docsacbf00b joins the next local normal root integration. Owners can save and share the reported directory-listing setting through the existing protected executor. All four actual ten-report archives pass; this new merged tree still needs combined browser/package acceptance. Force SSL owner changes and renewal agreement bindings are parallel implementation lanes. [Scope](TWENTYI_DIRECTORY_LISTING_OBSERVATIONS.md) and [current source/evidence](../SESSION_HANDOFF.md).

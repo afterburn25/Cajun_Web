@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## Isolated WordPress observation checkpoint — 2026-10-16
+
+This branch starts at111808e2 and implements [saved WordPress installation indications](docs/TWENTYI_WORDPRESS_INSTALLATION_OBSERVATIONS.md) separately from the frozen root candidate below. Dedicated runtime and native/browser fixture source reviews pass; the exact reviewed shared executor/routes/transport/workflow are applied only in this branch. Local pure checks pass165 distinct cases per PHP8.4 mode. An actual synthetic-handler regression reproduces the initial external routing bug and passes17 cases after correction. No WordPress native matrix, application browser, provider call or release is claimed. Next: finish staged installer parity before one approved focused run.
+
 Updated 2026-10-16 UTC. **1.24.0 is published; 1.25.0 and complete 20i remain unfinished.** Codex and three parallel agents own 20i. Devin owns software-product licensing; that assignment does not establish whether a Devin session is active. CajunWebPro retains its one-page keyless installer.
 
 ## Current candidate
