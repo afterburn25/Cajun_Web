@@ -4,10 +4,10 @@ Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for
 
 | Owner | Current branch/checkpoint | Scope and next evidence |
 |---|---|---|
-| Root | Local directory727 plus catalog parser correction; PR151 | Preserve actual c174 browser failure; freeze one new combined candidate after independent correction review. |
-| Domains | Isolated renewal-agreement bindings fromc174 | Corrected indexed-identity readiness guard under re-review; dedicated native/shared proposals pending. |
-| VPS | Isolated Force SSL controls fromc174 | Runtime/shared source clear; real contention/persistence-failure fixtures under review; operator crash recovery still required. |
-| Catalog | Independent reviews | Parser entry boundary, amended ForceSSL native fixtures and corrected renewal runtime. |
+| Root | Frozen948/CIe24c; full38867932452; PR151 | Windows packages verified,43 original handles retained; native/browser/recovery/server acceptance underway. |
+| Domains | Isolated renewal-agreement bindings fromc174 | Corrected identity guard and13-file shared636455de source reviews clear; isolated application approved, native/browser/workflow evidence pending. |
+| VPS | Corrected bff7d4d2; original focused38869532626 | Originalc331 four-way bootstrap failure retained; require_once-only fixture correction reviewed. Application/workflow/installer unchanged. Recovery proposal deferred. |
+| Catalog | Source948 parity/helpers and originalc174 final evidence | Prepared100/139-report verifiers; preserve originals and review corrected renewal shared compatibility. |
 | Devin | Software-product licensing; main33ef reviewed | Preserve bundle filtering, invoice uniqueness/marker2/serialized helpers; populated upgrade, master delivery and legacy invoice findings remain. |
 
 Original427 is terminal failure at the preserved setup check: final125 reports,2,107 HTTP passes plus one failure,289 recovery/2,211 Apache passes and exact Git/Windows packages are verified. No further polling or repeated acceptance is needed. See [handoff](../SESSION_HANDOFF.md) for exact current sources, evidence and next actions.
