@@ -1,3 +1,7 @@
+## Unreleased — cloud assignment recovery correction
+
+Refuse cloud confirmation/current-assignment claims when retained package-link events disagree with independent link/relink/unlink audits. Preserve historical ordinal pairing, immutable confirmations and provider outcomes; add native history-loss/restoration regressions. Fresh corrected acceptance remains pending. Document incoming master-license migration/delivery findings for Devin and terminal catalog/hosting-history evidence. No release or live action.
+
 ## Unreleased — software-product licensing ownership and supporting20i evidence
 
 Record the owner's Devin licensing allocation while Codex continues20i. Verify40 additional combined3bbc matrix archives containing142 named reports; all31 focused workflow gates are successful. Combined recovery passed and Apache remains active. Record corrected scheduler/hosting-history/forwarding native evidence and preserve failed packaging/fixture runs. Documentation only; no runtime, release or live action.

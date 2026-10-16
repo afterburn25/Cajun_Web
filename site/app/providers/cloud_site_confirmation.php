@@ -49,9 +49,28 @@ function provider_cloud_confirmation_sources(array $grant,array $doc,array $resu
     ];
 }
 
+/** Later missing events cannot revive an older assignment while their independent audits survive. */
+function provider_cloud_confirmation_link_coverage(string $profileId,int $packageId):void {
+    $expected=[];$actual=[];
+    foreach(all('SELECT event,actor_id FROM '.table('provider_package_link_events').' WHERE BINARY profile_id=? AND package_id=?',[$profileId,$packageId]) as $event){
+        if(!in_array($event['event'],['link','relink','unlink'],true))throw new RuntimeException('Package assignment event history is inconsistent.');
+        $key=$event['event'].':'.$event['actor_id'];$expected[$key]=($expected[$key]??0)+1;
+    }
+    $resource='profile '.preg_quote($profileId,'/').' package '.$packageId;
+    foreach(['link'=>['provider.service_linked','Profile '.$profileId.' package '.$packageId.' client %','Profile '.preg_quote($profileId,'/').' package '.$packageId.' client [1-9][0-9]{0,9}'],
+        'relink'=>['provider.service_relinked','Link % profile '.$profileId.' package '.$packageId.' revision %','Link [a-f0-9]{32} '.$resource.' revision [1-9][0-9]{0,9}'],
+        'unlink'=>['provider.service_unlinked','Link % profile '.$profileId.' package '.$packageId,'Link [a-f0-9]{32} '.$resource]] as $kind=>[$action,$pattern,$shape]){
+        foreach(all('SELECT user_id,detail FROM '.table('audit').' WHERE BINARY action=? AND BINARY detail LIKE ?',[$action,$pattern]) as $audit){
+            if(!preg_match('/\A'.$shape.'\z/',$audit['detail']))throw new RuntimeException('Package assignment audit history is inconsistent.');
+            $key=$kind.':'.$audit['user_id'];$actual[$key]=($actual[$key]??0)+1;
+        }
+    }
+    ksort($expected);ksort($actual);if($expected!==$actual)throw new RuntimeException('Package assignment history needs recovery before cloud confirmation.');
+}
 /** Retained link events have no audit ID. Pair exact actor/target groups in insertion order; ambiguous histories fail closed. */
 function provider_cloud_confirmation_link_audit(?array $event,string $linkId,int $revision):array {
     if(!$event||!in_array($event['event'],['link','relink'],true))throw new RuntimeException('The package assignment event needs recovery.');
+    provider_cloud_confirmation_link_coverage($event['profile_id'],(int)$event['package_id']);
     $detail=$event['event']==='link'?'Profile '.$event['profile_id'].' package '.$event['package_id'].' client '.$event['client_id']:'Link '.$linkId.' profile '.$event['profile_id'].' package '.$event['package_id'].' revision '.$revision;
     if($event['event']==='link'){
         $events=all('SELECT id FROM '.table('provider_package_link_events').' WHERE profile_id=? AND package_id=? AND client_id=? AND event=? AND actor_id=? ORDER BY id',[$event['profile_id'],$event['package_id'],$event['client_id'],'link',$event['actor_id']]);
@@ -68,6 +87,7 @@ function provider_cloud_confirmation_link_audit(?array $event,string $linkId,int
     throw new RuntimeException('The original package assignment audit is missing.');
 }
 function provider_cloud_confirmation_link_event(array $link):array {
+    provider_cloud_confirmation_link_coverage($link['profile_id'],(int)$link['package_id']);
     $event=one('SELECT * FROM '.table('provider_package_link_events').' WHERE profile_id=? AND package_id=? ORDER BY id DESC LIMIT 1',[$link['profile_id'],$link['package_id']]);
     if(!$event||!in_array($event['event'],['link','relink'],true)||(int)$event['client_id']!==(int)$link['client_id'])throw new RuntimeException('The package assignment history needs recovery.');
     provider_cloud_confirmation_link_audit($event,$link['id'],(int)$link['profile_revision']);

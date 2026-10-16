@@ -166,7 +166,7 @@ function setup_expected_files(): array { return [
     'app/providers/checks.php'=>'0c4e843fa8734d5645c09379af959718ce384a31482600f80c59f2354b2459e2',
     'app/providers/cloud_confirmation_storage.php'=>'3fb5eee7f14c07044525bf933570f04d4a799b3c4594071fabd32e9fb65f203b',
     'app/providers/cloud_links.php'=>'2c5c810647b0e16d31b3ba20e118be89c254b50264df8a0bb57b2a806e1053d4',
-    'app/providers/cloud_site_confirmation.php'=>'35e225b5c493725145fae7262d145a74be9697f31c5e25aef42722b832879a32',
+    'app/providers/cloud_site_confirmation.php'=>'5c74189fbe1c4c674afc22a2dfa6710dde336a9782f9c6c2a92a580f0e9fa2ca',
     'app/providers/cloud_sites.php'=>'17dd8838f43a1ec4ec411898f4ba508071094eee23ccb59692e413ffafa65a41',
     'app/providers/credentials.php'=>'a25fd07765bf924819dedd6772b32ee11ad5e81fa130735a8869f8666b53b186',
     'app/providers/domain_renewals.php'=>'1f58eb10142d947a45ccc693fb6921957bd68f0ff03d3b20f75349391325a8bc',
