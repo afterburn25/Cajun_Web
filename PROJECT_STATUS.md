@@ -8,7 +8,19 @@ Local159 named checks pass in both default/minimal PHP modes, with syntax checks
 
 Read-only review of main `94c879ebab28fe94e71690b870f4104e002d3515` is complete: mutation serialization must be preserved, while populated pre-master migration and internal-master customer-delivery findings remain open. Five explicit merge conflicts and one silent setup-form obstruction are mapped; this is source review, not merged/native acceptance.
 
+## Isolated website-folder application increment — 2026-10-16
+
+Catalog owns `codex/twentyi-document-roots-observations`, normal parent merge83851011 (accepted pure0ddd + reviewed expiry18d296b7). New owner-triggered saved document-root maps have independent current authority, immutable recovery/sharing and a private client projection. Shared context appends read9/refresh11 after expiry; no provider writes or path execution. Runtime has independent source review; local143 pure+24 transport cases pass each mode. Native/browser fixtures are prepared, not executed. Root reviewed the corrected exact fixtures and approved one focused matrix. Installer refresh and2,783/2,782 staged source/hash parity pass; native/browser/package acceptance and integration remain pending. [Current scope and evidence](docs/TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md).
+
+This branch is outside the frozen release candidate.1.24.0 remains the published baseline;1.25.0 and full20i remain unfinished. Preserve original pure source, earlier run evidence and Devin licensing ownership. The status below is inherited parent context, not acceptance of this increment.
+
+
+
 Updated 2026-10-16 UTC. **1.24.0 is published; 1.25.0 is unreleased. Full20i integration and the broader roadmap are unfinished.**
+
+## Isolated document-root observation contract
+
+Catalog branch `codex/twentyi-document-roots-contract` starts at frozen427e3a23 outside the release queue. It adds a pure fixed package GET/string-map reader with exact operation binding, documented empty-array error handling, duplicate/credential-echo refusal and opaque observed paths.143 named checks pass per local PHP8.4 mode; root independently cleared exact source; single no-network run38856621132 at1e8ee567 passes both PHP8.2/8.4 (143 default+143 minimal each), with both actual artifacts verified. Native application wiring is not claimed. Site/shared/schema/installer/licensing remain unchanged. [Contract and evidence](docs/TWENTYI_DOCUMENT_ROOTS_CONTRACT.md).
 
 ## Product and ownership
 

@@ -130,6 +130,9 @@ jobs:
           php8.3 tests/twentyi-package-php/run.php > qa/package-php-document-results.json
           php8.3 -n tests/twentyi-package-php/run.php > qa/package-php-document-no-ini-results.json
           php8.3 tests/provider_package_php_native.php
+          php8.3 tests/document_roots_contract.php > qa/document-roots-contract-integrated-results.json
+          php8.3 tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json
+          php8.3 tests/provider_document_roots_native.php
           php8.3 tests/provider_domain_search_native.php
           php8.3 tests/provider_mailboxes_native.php
           php8.3 tests/provider_operations_native.php

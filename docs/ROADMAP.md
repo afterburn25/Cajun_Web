@@ -1,3 +1,7 @@
+## Website-folder observations increment — 2026-10-16
+
+Owner-triggered document-root map storage and explicit client sharing are implemented on isolated catalog application branch, with no filesystem use or provider write. Pure/source checks pass; native/browser/installer and combined release acceptance remain pending. This does not complete DNS editing, file delivery or the full20i roadmap. [Scope](TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md).
+
 ## Registrar expiry observation increment - 2026-10-16
 
 The separate domains branch implements a bounded registrar expiry reader, durable timestamp/history and native owner/client flow from retained provider-authored evidence. Root reviewed shared/current-authority boundaries; local pure139+reader54 pass per PHP mode. Exact f42 focused38855352194 passes all four native environments with actual archives verified; packaged browser verification remains pending. This does not implement expiry eligibility, domain commerce or provider writes. [Current scope and source limits](TWENTYI_DOMAIN_EXPIRY_CONTRACT.md). Frozen427 acceptance and Devin licensing remain separate.
@@ -800,3 +804,7 @@ Registration-period discovery is implementing on isolated`codex/twentyi-registra
 Pure assigned-package GET/strict-boolean contract and159-case local checks are implemented in an isolated427 descendant. Actual saved observations, independent sharing, UI and native/browser evidence remain pending. No certificate/HTTPS-health or write capability is claimed. [Contract](TWENTYI_PACKAGE_FORCE_SSL.md).
 
 ForceSSL b2033 pure contract now has verified run38857815866 acceptance:159 distinct cases per PHP8.2/8.4 default/minimal report. The final docs checkpoint preserves all runtime/testing bytes; no application admission, sharing, persistence, UI or live operation is complete from this evidence. [Proof](TWENTYI_PACKAGE_FORCE_SSL.md#exact-pure-acceptance--2026-10-16).
+
+## 2026-10-16 — pure package document-root observations
+
+Catalog starts a separate branch from frozen427 while preserving accepted DNS proposal96f/23c. Owner reference34e713 lines371–377 supports fixed GET/package documentRoots with a direct name→subdirectory map and [] on error. New pure types/parser retain exact observed strings, reject duplicate decoded names/credential echoes, explicitly distinguish {} from [] and keep every assignment witness under a dedicated operation.143 local tests pass each mode; exact1e8ee567/run38856621132 also passes143+143 on both PHP8.2/8.4, with both archives verified. No path confinement, DNS authority, current hosting state or native application completion is inferred; shared wiring remains a later reviewed increment. [Contract, source and validation limits](TWENTYI_DOCUMENT_ROOTS_CONTRACT.md).

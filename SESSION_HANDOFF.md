@@ -8,6 +8,14 @@ Local159 named checks pass in both default/minimal PHP modes, with syntax checks
 
 Updated 2026-10-16 UTC. Continue complete20i P0 using the supplied API reference and three parallel agents. **1.24.0 is published; 1.25.0 and full20i are unfinished.** [Status](PROJECT_STATUS.md), [agreement](AGENTS.md), [requirements](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md).
 
+## Isolated website-folder application increment — 2026-10-16
+
+Catalog owns `codex/twentyi-document-roots-observations`, normal parent merge83851011 (accepted pure0ddd + reviewed expiry18d296b7). New owner-triggered saved document-root maps have independent current authority, immutable recovery/sharing and a private client projection. Shared context appends read9/refresh11 after expiry; no provider writes or path execution. Runtime has independent source review; local143 pure+24 transport cases pass each mode. Native/browser fixtures are prepared, not executed. Root reviewed the corrected exact fixtures and approved one focused matrix. Installer refresh and2,783/2,782 staged source/hash parity pass; native/browser/package acceptance and integration remain pending. Full/browser runs must use root's later normal merge with corrected03b28476/659 period/PHP login baselines; do not dispatch this branch's inherited standalone full workflow. [Current scope and evidence](docs/TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md).
+
+This branch is outside the frozen release candidate.1.24.0 remains the published baseline;1.25.0 and full20i remain unfinished. Preserve original pure source, earlier run evidence and Devin licensing ownership. The status below is inherited parent context, not acceptance of this increment.
+
+
+
 ## Current source and actual failure
 
 Root checkout `work/20i-next-integration`, branch `codex/twentyi-next-integration`, draft [PR151](https://github.com/afterburn25/Cajun_Web/pull/151), base a9637f2b. This normal merge starts at test-repair659376cd7f538a64c62a9b31276116658bfb929a and imports expiry18d296b714adc24fa967926ffeadc28616ac6915. Shipping/foundation bytes match accepted expiry runtime f42; period/PHP setup corrections remain659. Five documentation-only conflicts preserve root current status and append both session histories. Exact staged parity verifies2,772 shipping files/2,771 inventory entries; no newline normalization was needed. Independent domains review confirms all shared slots/authority/recorder guards, the three-owner setup patterns, browser order and247 private HTTP paths. Changed28 PHP/four Python source files pass syntax checks. Proofs: work/expiry18-root-staged-verification.json, work/expiry18-root-syntax-verification.json and work/20i-domain-expiry-observations/qa/expiry-root-merge-source-review.json. New combined acceptance is pending. Frozen427e3a233706f22cd39918d8b97256a7fb2b1e90 and CI d106dd95eb88b8fb70bb64ff4bfde6861cf77566 share tree925ec3bab0bfb20b4a8063a56d3f48fbfd6f9c8c.

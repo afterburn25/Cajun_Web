@@ -2502,6 +2502,20 @@ Document-root pure38856621132 now verifies143 normal+143 minimal checks per PHP 
 
 Before commit, independent VPS source review and19 offline actual-predicate cases per fixture pass; this reproduces old timestamp rejection and preserves credential/authority/key-set/activation rejection without importing fixtures or accessing a database. Documentation checks pass231 Markdown/1601 local links/21 heading links.
 
+## 2026-10-16 — isolated document-root contract intake and implementation
+
+For continued complete20i work, catalog creates `codex/twentyi-document-roots-contract` from427e3a233706f22cd39918d8b97256a7fb2b1e90, preserving DNS96fba852/23cba4be and frozen release work. Owner34e713 lines371–377 document the fixed package-only GET, direct name→subdirectory map and [] error. All23 retained SDK696a files (19PHP+4metadata/docs) verify exact manifest hashes; REST168–171 directly decodes JSON, with no document-root-specific wrapper. Root approves this bounded pure contract, including explicit empty-map limits, exact opaque paths and duplicate/credential refusal.
+
+Add3pure classes, tests/document_roots_contract.php and contract/continuity docs.143 named checks pass local PHP8.4 default/minimal and all4PHP files lint. Initial local escaped-path fixture encoded a tab; parser correctly refused, test-only input corrected and original failed reports retained. Fixed-reader tests use synthetic transport only; no request/SDK execution against20i, filesystem path use, current application authority, schema, shared/site, installer or licensing change. Root independently cleared exact stable source; the approved narrow no-network PHP8.2/8.4 workflow is added for a single automatic run before any future native wiring. Proof `qa/contract-source-proof.json`, reports `qa/document-roots-{default,minimal}.json`.
+
+Read-only main2796fa48 review completed before this slice: its only delta fromc0e08702 is one handoff line. Entire site tree and relevant licensing bytes are identical, with no substantive runtime correction. Existing migration/internal-master/customer-key findings remain; root support/license_storage_ready/invoice guards must survive any later normal merge. Exact proof `work/catalog-agent-main279-licensing-delta-review.json`; no repeated licensing execution, source edit or Devin message.
+
+## 2026-10-16 — exact document-roots pure matrix verified
+
+From frozen1e8ee56777845adc56832ed455ea20d7191bfabe, record documentation-only acceptance of the bounded pure component. The one approved automatic no-network run38856621132 succeeds on PHP8.2 and8.4,143 named default+143 minimal checks each. Both actual archives12027870194/12027586456 verify exact source/tree6ba84333, all11 source/dependency/workflow hashes, SHA256/size/CRC/safe4members, actual PHP versions and every named result. Proof and verifier remain under this branch's `qa/`; no duplicate dispatch or application acceptance claim.
+
+The source/test/workflow and every shipping byte remain unchanged. Root controls any later current-authority/storage/UI integration and release. Separately, the accepted DNS guide received the authorized SDK-count correction in docs-onlyfb2f19d2, preserving tested96fba852:23 total retained files are19 PHP+4 metadata/docs. Original branches/runs and the current release candidate remain intact.
+
 
 ## 2026-10-16 - bounded registrar expiry application implementation
 
@@ -2534,3 +2548,18 @@ Starting root659376cd7f538a64c62a9b31276116658bfb929a normally merges expiry18d2
 Next: verify staged shipping/foundation agreement with expiry, root corrected-fixture agreement, shared context/order union and exact installer hashes; then one new automatic combined full acceptance. Original427 Apache/final remains separate and must be preserved. No licensing modification, live provider call, charge, mail, SSH or deployment;1.25 remains unreleased.
 
 Before merge commit: exact staged2e83 proof confirms2772 shipping/2771 inventory hashes and full site/foundation equality to18; root corrected fixtures equal659, expiry fixture equal18. No newline correction needed. Independent domains review clears shared contexts/authority/typed writers, all three setup patterns, browser order and247 private paths. Changed28 PHP/four Python files pass syntax. Own18 automatic focused38857786208 reports GitHub success only; acceptedf42 archives were not redundantly rechecked.
+
+
+## 2026-10-16 — document-root application implementation
+
+Root assigned the next bounded20i slice after accepted pure0ddd. Create new isolated `codex/twentyi-document-roots-observations`; normally merge reviewed expiry18d296b7 at83851011, preserving both histories. Resolve only two continuity-doc conflicts; all inherited shipping equals18d before new work. Root approves distinct read9/refresh11 context, owned modules and minimal shared executor/transport/routes/tests/build wiring.
+
+Add independent roots storage/authority and sharing history, fixed typed reader/recorder integration, explicit owner forms and private saved client text view. Pure component remains unchanged. Documented{} stays an explicit empty map;[] and malformed/duplicate/credential echoes remain unavailable. Never interpret saved paths as filesystem targets. Source manifest and independent domain-agent review are retained locally; no source blocker reported. Local PHP8.4 passes143 pure+24 production admission cases per normal/minimal mode, plus changed PHP syntax/Python AST. First admission-fixture HTTP construction was moved inside its expected refusal boundary; production unchanged.
+
+Prepared native tests include recovery, SQL/PHP hashes, real quota/cooldown and typed rollback; browser uses the reviewed post-login original-owner baseline, a newly activated owner, five reads and preserved inherited rows. No CI until root reviews exact source/fixtures. Installer refresh, actual native/browser/package evidence and root integration remain pending. No live calls, provider write, path execution, licensing edit, main merge, release or deployment. [Guide](TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md).
+
+
+Roots fixture review addendum: root found two paired-loss audit DELETE prefixes differed from the durable `Document-root` spelling. Correct both patterns and add exact one-row/absence assertions within each rollback case, retaining the recovery checks. Runtime remains56f02eff/6bdbd34a/inventoryd267; corrected native77652502 lints. Root's03b28476 carries newer period/PHP browser-login baselines, so defer full/browser execution to the later root normal merge instead of dispatching this inherited standalone full. Focused CI remains pending root review.
+
+
+Roots freeze checkpoint: root exact runtime/UI/browser and corrected native77652502 review is clear; independent domains runtime review is also clear. Root approves one automatic focused matrix after freeze, with no standalone full/browser/PR. Installer refresh53609 succeeds, all2,783 staged shipping files equal disk and all2,782 generated hashes; pure3 classes/test remain accepted bytes. Local evidence manifests are qa/document-roots-runtime-review.json, document-roots-fixture-review.json and document-roots-staged-parity.json. Documentation234files/1,634links passes. Commit this bounded source and follow its actual four-environment artifacts without claiming native acceptance prematurely.
