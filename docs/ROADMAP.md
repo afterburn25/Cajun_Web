@@ -1,3 +1,7 @@
+# Active domain increment — local renewal review requests
+
+2026-10-15: implementing native client request, owner message/decline and client withdrawal for explicitly assigned registered domains on isolated `codex/twentyi-domain-renewal-requests`. Current authority and original history are preserved. This does not implement a quote, payment, registry eligibility or provider renewal. Local document checks pass; native/browser acceptance and root integration remain pending. [Scope and remaining controls](TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).
+
 # Active 20i parallel work
 
 Root integrates native mailbox creation, provider plan mappings, registrar ownership/client links and existing cloud-server website creation from three parallel agent branches. [Bounded assignments and acceptance status](TWENTYI_PARALLEL_WORK.md). Mailbox334 passes87 native cases in each supported combination; the new sequence-order recovery cases and combined runtime/browser/recovery/Apache acceptance remain pending. Full mail/domain/VPS controls, automatic catalog discovery and support/SSH remain unfinished. No completion estimate advances solely from source presence. Checkpoints below are historical; current status and the requirements checklist govern remaining work.

@@ -1,3 +1,7 @@
+## Isolated renewal request increment — 2026-10-15
+
+Branch `codex/twentyi-domain-renewal-requests`, based on frozen combined `38bb69cc`, adds native client renewal-review intake, owner review/decline and client withdrawal with immutable local history and current registrar ownership/account checks. No provider renewal, quote, payment or completed-domain claim. Local 28 default + 28 no-INI document cases pass; new native matrix and packaged browser acceptance remain pending. Root integration remains separate; published 1.24 is unchanged. [Scope and evidence](docs/TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).
+
 # CajunWebPro current status — 2026-10-15
 
 Published version: [v1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0), immutable source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`. Release assets were downloaded and verified. The complete 20i integration remains the active P0; unrelated feature development is paused.

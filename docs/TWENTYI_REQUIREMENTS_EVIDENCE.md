@@ -1,3 +1,7 @@
+## Current local renewal intake increment — 2026-10-15
+
+Client renewal-review requests with owner messages/decline and client withdrawal are implementing on `codex/twentyi-domain-renewal-requests` from combined `38bb69cc`. Current registrar/client/account binding and immutable local request/event recovery are included. Pure validation passes 28 cases per default/no-INI mode; native/browser execution is pending. This does not advance provider renewal, commercial quotes, eligible periods, payment or outcome reconciliation to complete. [Exact scope](TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).
+
 # Complete 20i requirements and evidence
 
 Current PR 138 confirmation and newer-main merge are native-tested at `e37517fa`, with exact Windows packages verified. Parent `4d059a5b` passes 1,737 HTTP/Chromium checks; actual screenshots exposed a stale pending sentence on active services, corrected in this descendant with browser regression coverage pending. Full merged browser/recovery/Apache acceptance remains pending. Automatic catalog/configuration verification and the remaining full 20i scope are unfinished. [Current status](../PROJECT_STATUS.md) and [exact evidence](TWENTYI_ORDER_FULFILLMENT.md) separate development, release and live acceptance.

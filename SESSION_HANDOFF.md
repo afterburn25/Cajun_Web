@@ -1,3 +1,9 @@
+## Isolated domain agent checkpoint — 2026-10-15
+
+Continue `codex/twentyi-domain-renewal-requests` from combined `38bb69ccd1c1fc45f479022fe11748ca78b756d2`. Local request/review product flow and dedicated schema/tests are implemented; root owns integration and releases. Shared edits are limited to provider/admin and portal routing/views, service navigation, installer inventory, browser/Apache inclusion and application workflow. Import only the reviewed mailbox browser fixture from root `2239a1569dfa691fe18f23a512fb93b1905079ef`; no root shipping merge. Preserve registrar `725573f0` and nameserver-docs `9ea20f87` branches.
+
+Actual local evidence: 28 named pure document cases in default PHP and 28 with no INI. Native database and browser screenshots remain pending. Next: push this bounded increment, verify all four database artifacts and current packaged browser flow, repair concrete failures, then send root exact source/evidence for review. Root full `38826150967` will supply pending combined registrar screenshots; the earlier failed browser `38824052505` stopped in a fixture before registrar cases and provides no capture acceptance. [Detailed boundaries and recovery](docs/TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).
+
 # CajunWebPro handoff — 2026-10-15
 
 Continue the complete 20i P0 scope in [the owner takeover](docs/TWENTYI_CODEX_TAKEOVER_REQUEST.md) and [requirements checklist](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md). The goal is active. Published v1.24.0 is unchanged; the prior turn made implementation and verified-evidence progress.

@@ -1,3 +1,7 @@
+## Unreleased — client domain renewal review requests
+
+Add a native client request and owner review/decline workflow for currently assigned registered domains. Preserve original account/assignment context, immutable review history and client withdrawal; reject stale authority, duplicate pending requests and incomplete recovery. Requests remain pending review until declined/withdrawn and cannot place a provider renewal, payment or quotation. Native/browser acceptance is pending. [Scope](docs/TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).
+
 ## Integration checkpoint — latest main evidence
 
 Preserve the latest main acceptance record alongside the combined20i source. No additional runtime behavior or release version changes in this final merge.
