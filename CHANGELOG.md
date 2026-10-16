@@ -1,3 +1,7 @@
+## Unreleased - acceptance runtime correction
+
+Load the test extractor tokenizer explicitly in the existing minimal-PHP command and allow180 minutes for the growing stateful native/browser suite after the original105-minute timeout. Keep all shipping code, fixtures, report requirements and failed evidence. Full acceptance and release remain pending.
+
 ## Unreleased - correct StackCP native sibling lookup
 
 Fix the test fixture to select the actual protected sibling assignment and assert its exact identity before the unchanged tamper test. Preserve original four-way failure evidence. Shipping code is unchanged; corrected native acceptance remains pending.

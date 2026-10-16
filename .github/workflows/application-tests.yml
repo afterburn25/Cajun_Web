@@ -96,7 +96,9 @@ jobs:
   native-and-browser:
     needs: build
     runs-on: ubuntu-24.04
-    timeout-minutes: 105
+    # Original run38909577278 exhausted105m while bounded browser requests still progressed.
+    # Preserve every assertion and the native-to-browser state; allow the complete suite.
+    timeout-minutes: 180
     outputs:
       artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
       sha256: ${{ steps.seal.outputs.sha256 }}
@@ -201,7 +203,7 @@ jobs:
           php8.3 tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json
           php8.3 -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json
           php8.3 tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json
-          php8.3 -n tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json
+          php8.3 -n -d extension=tokenizer tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json
           php8.3 tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json
           php8.3 -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json
           php8.3 tests/provider_cloud_assignment_native.php

@@ -1,3 +1,17 @@
+## Current acceptance correction - 2026-10-16 15:46 UTC
+
+Branch `codex/twentyi-cloud-minimal-runtime` continues exact parent [2a86704f](https://github.com/afterburn25/Cajun_Web/commit/2a86704fa0c7775206cf9ac93e27d0457be307fa). Commit description: **Fix minimal PHP extraction and acceptance time budget**. Application shipping files, fixtures, all 147 native commands except one test-extension option, and all 157 browser / 196 final report requirements remain intact. Published 1.24.0 is unchanged; full 20i and 1.25.0 remain unfinished.
+
+Original full [38923745296](https://github.com/afterburn25/Cajun_Web/actions/runs/38923745296), attempt1, failed its native step because Ubuntu PHP8.3 with `-n` lacks `token_get_all()`, used only by the exact-function test extractor. Normal mode passed all34 legacy checks; minimal mode produced no report and HTTP/browser was skipped. The correction explicitly loads the tokenizer extension for that one no-INI test command and synchronizes both command strings in the acceptance contract. It adds no runtime dependency or skipped assertion. Original decoded log and checkpoint remain preserved (proposal79452a4b; root applicationd30f05bf).
+
+Original registration [38909577278](https://github.com/afterburn25/Cajun_Web/actions/runs/38909577278) exceeded GitHub's105-minute native/browser job limit after26m55s native and77m19s HTTP. The annotation confirms a runner timeout; native passed, HTTP was cancelled, and final acceptance failed. Its last10 minutes contained93 completed requests, with no recorded browser assertion or exception. The new finite180-minute budget preserves the stateful native-to-browser sequence and every assertion. It is not acceptance, a retry of unchanged source, or evidence that slow provider-settings reads are resolved; those reads need separate profiling.
+
+Parent2a has separately verified focused3,020 named executions, exact Linux/Windows FULL5886/COMPLETE2884/UPDATE2871 packages (proofe7709ea7), and289 recovery checks (proof2695933b). These certify their parent source and named scopes only. Corrected-source Linux execution, full HTTP/browser/screenshots, combined acceptance, exact-main integration and release checks remain required.
+
+Next: validate the changed workflow/contract locally, commit and push this descendant, then run its first full acceptance and exact-source package verification. Preserve all original failed/cancelled runs and assets. No deployment, provider operation, charge, customer mail or SSH action is performed.
+
+Earlier checkpoint (historical where superseded):
+
 # CajunWebPro current status
 
 Updated 2026-10-16 15:10 UTC. **Published 1.24.0 is unchanged; 1.25.0 and complete 20i remain unfinished.**
