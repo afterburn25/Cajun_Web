@@ -1,3 +1,7 @@
+## Unreleased - minimal PHP fixture compatibility
+
+Load the PDO exception class explicitly alongside tokenizer for the extracted cloud-assignment fixture under Ubuntu PHP 8.3 with no INI. Add a small distro-PHP compatibility job retaining six exact reports and runtime configuration; preserve the existing four-way native matrix and all full application gates. Shipping application behavior is unchanged. Original failures remain retained.
+
 ## Unreleased - acceptance runtime correction
 
 Load the test extractor tokenizer explicitly in the existing minimal-PHP command and allow180 minutes for the growing stateful native/browser suite after the original105-minute timeout. Keep all shipping code, fixtures, report requirements and failed evidence. Full acceptance and release remain pending.

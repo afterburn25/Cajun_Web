@@ -105,3 +105,63 @@ jobs:
         if: always()
         run: |
           echo 'Exact owner and client cloud assignment authority, immutable intent/result/event evidence, legacy unknown credential context, recovery refusal, separate-process mutex and preserved cloud website creation/confirmation. Disposable database and synthetic DNS/transport only; no live provider request, browser, deployment or health proof.' >> "$GITHUB_STEP_SUMMARY"
+
+  distro-minimal:
+    name: Distro PHP 8.3 cloud minimal compatibility
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Prepare the same Ubuntu distribution PHP used by full acceptance
+        run: |
+          mkdir -p qa
+          sudo apt-get update -qq
+          sudo apt-get install -y php8.3-cli php8.3-common
+          {
+            php8.3 -v
+            php8.3 --ini
+            php8.3 -m
+            php8.3 -n -m
+            php8.3 -n -d extension=tokenizer -d extension=pdo -m
+            for module in pdo tokenizer; do
+              test -f "/etc/php/8.3/mods-available/$module.ini"
+              cat "/etc/php/8.3/mods-available/$module.ini"
+            done
+          } > qa/cloud-assignment-distro-runtime.txt
+      - name: Verify the exact minimal exception and extractor dependencies without a driver
+        run: |
+          php8.3 -n -d extension=tokenizer -d extension=pdo -r '
+            $runtime = ["php" => PHP_VERSION, "pdo_exception_extension" => (new ReflectionClass(PDOException::class))->getExtensionName(), "tokenizer_extension" => (new ReflectionFunction("token_get_all"))->getExtensionName(), "drivers" => PDO::getAvailableDrivers(), "modules" => get_loaded_extensions()];
+            if ($runtime["pdo_exception_extension"] !== "PDO" || $runtime["tokenizer_extension"] !== "tokenizer" || $runtime["drivers"] !== []) throw new RuntimeException("Unexpected minimal fixture dependencies.");
+            file_put_contents("qa/cloud-assignment-distro-dependencies.json", json_encode($runtime, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
+          '
+      - name: Run the six exact full-workflow cloud pure and view commands
+        run: |
+          php8.3 tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json
+          php8.3 -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json
+          php8.3 tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json
+          php8.3 -n -d extension=tokenizer -d extension=pdo tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json
+          php8.3 tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json
+          php8.3 -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json
+      - name: Preserve the exact distro compatibility reports and module configuration
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloud-assignment-distro-php83-${{ github.sha }}
+          path: |
+            qa/cloud-assignment-binding-default.json
+            qa/cloud-assignment-binding-minimal.json
+            qa/cloud-assignment-legacy-default.json
+            qa/cloud-assignment-legacy-minimal.json
+            qa/cloud-assignment-views-default.json
+            qa/cloud-assignment-views-minimal.json
+            qa/cloud-assignment-distro-runtime.txt
+            qa/cloud-assignment-distro-dependencies.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record compatibility scope
+        if: always()
+        run: |
+          echo 'Distribution PHP8.3 default/no-INI compatibility only: exact existing binding, synthetic legacy-credential and rendered-view assertions. PDO is loaded solely for its exception class; no database driver, connection, HTTP, provider call or release acceptance.' >> "$GITHUB_STEP_SUMMARY"
