@@ -1,3 +1,7 @@
+## Unreleased — registration-period browser owner isolation
+
+Correct the combined browser fixture's exhausted shared-owner read budget by creating and activating a dedicated synthetic owner through existing admin forms. Preserve every original account, intent, audit, epoch, production limit and cooldown; retain response/counter diagnostics and exact history checks. Application source and installer are unchanged; actual combined acceptance remains required.
+
 ## Unreleased — current handoff consolidation
 
 Replace repeated historical status/handoff/ownership blocks with current sources, exact evidence, open findings and next actions. Preserve prior text in immutable75d5c60a and local hash-recorded copies. Original25e full now passes native integration and runs HTTP/Chromium; no shipping or release change.
