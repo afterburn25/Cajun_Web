@@ -1,3 +1,7 @@
+## Unreleased - scheduled inventory recovery witnesses
+
+Refuse scheduled work and history when original package rows or inventory audit witnesses are missing. Validate exact audit action bytes and preserve the original worker actor when another owner reviews interruption. Restoration retains the original schedule without replay; fresh native and packaged acceptance are required.
+
 ## Unreleased - scheduled inventory packaging correction
 
 Regenerate installer hashes against exact committed LF source. Scheduler runtime is unchanged. All four native combinations are independently verified; the earlier full package failure and pending recovery hardening remain recorded.
