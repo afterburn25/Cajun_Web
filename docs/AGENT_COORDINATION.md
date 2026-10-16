@@ -4,10 +4,10 @@ Updated 2026-10-16 UTC. Codex and three parallel agents own complete20i P0; Devi
 
 | Owner | Current checkpoint | Scope and next evidence |
 |---|---|---|
-| Root | Locala9b3 controls plus renewal38665bf3 normal merge; PR151 | Finish staged parity, integrate WordPress after focused acceptance and freeze one combined candidate. |
-| Domains | Renewal4f original38871837254 accepted; docs38665bf3 | Four actual13-report archives independently verified; review root merge/source/staged parity. Originald590 failure retained. |
-| VPS | WordPress3f8adaa original38873107762 | Frozen source; own actual four native archives. Earlier controlsbff7 accepted and integrated locally. |
-| Catalog | Frozen948 original38867932452; main68a source review complete | Follow unchanged browser/final evidence using original helpers, inspect directory screenshots. Preserve later-candidate verifier assumptions. |
+| Root | Local renewal13e plus WordPress65c normal merge; PR151 | Finish source/staged review, apply reviewed scheduler fixture correction and freeze one combined candidate. |
+| Domains | Renewal4f accepted; WordPress3f four-archive independent review clear | Review actual root WordPress source/staged parity; preserve original failed and accepted evidence. |
+| VPS | WordPress3f8adaa/docs65c accepted original38873107762 | Review merged transport/actual Handler and bounded offline tests, preserving ForceSSL POST. |
+| Catalog | Frozen948 original38867932452 browser failure; ten directory views inspected | Preserve original final follow-through and prepare external scheduler fixture correction; no frozen-source change. |
 | Devin | Software-product licensing; main68a source reviewed | Preserve schema3/checksum/invoice/serialization changes; upgrade, master delivery and legacy invoice findings remain open. |
 
 Root original948 acceptance is separate from the newer local controls/renewal merge. No parent/focused evidence establishes the latter's browser/release acceptance. [Handoff](../SESSION_HANDOFF.md) contains exact source, artifact and proof identities.

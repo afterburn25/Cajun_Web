@@ -20,6 +20,7 @@ require_once CWP_CODE_ROOT.'/admin/controllers/provider_document_roots.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_package_force_ssl.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_directory_listing.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_force_ssl_controls.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_package_wordpress_installed.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_forwarding.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/provider_registration_periods.php';
 
@@ -49,6 +50,7 @@ function provider_inventory_admin_action(string $action):void {
     if(str_starts_with($action,'provider_inventory_document_roots_'))provider_document_roots_admin_action($action);
     if(str_starts_with($action,'provider_inventory_force_ssl_'))provider_force_ssl_admin_action($action);
     if(str_starts_with($action,'provider_inventory_directory_indexing_'))provider_directory_indexing_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_wp_installed_'))provider_wp_installed_admin_action($action);
     if(str_starts_with($action,'provider_inventory_history_'))service_observations_admin_action($action);
     if(str_starts_with($action,'provider_inventory_forwarding_'))provider_forwarding_admin_action($action);
     if(in_array($action,['provider_inventory_renewal_agreements_prepare','provider_inventory_renewal_agreement_bind'],true))domain_renewal_agreements_admin_action($action);

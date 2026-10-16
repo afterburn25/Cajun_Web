@@ -1,6 +1,13 @@
+## Unreleased — saved WordPress installation indication
+
+Integrate explicit owner refresh, saved true/false/unavailable indication and independent client sharing. Preserve current hosting authority and observation history. Four-way native evidence is verified; combined browser/package acceptance remains pending. Retain the original scheduler privacy assertion failure for a bounded test correction before the next acceptance run.
+
 ## Unreleased — renewal agreement integration
 
 Combine exact one-time USD renewal terms and captured client consent with the reviewed hosting controls. Preserve immutable request/agreement history, current authority, reoffer/end safeguards and generic billing exclusions. Four-way native evidence is verified; merged browser/package acceptance remains pending. Record licensing schema3/checksum compatibility without importing Devin's source.
+## Unreleased — saved WordPress installation indication
+
+Implement a distinct owner-triggered WordPress installation observation and separately permitted saved client view on an isolated branch. Keep reported true, reported false and unavailable distinct, with current assignment/credential/history guards. This is an indication only, without version, health, absence or installation-action claims. The exact four-way native matrix and all14 downloaded reports are independently verified; combined application/browser acceptance remains pending. Preserve the reviewed correction to the initially misrouted synthetic test response.
 
 ## Unreleased — catalog test response-parser correction
 

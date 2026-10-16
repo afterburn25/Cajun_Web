@@ -41,7 +41,7 @@ final class FixedHttpTransport implements HttpTransport
             throw new \InvalidArgumentException('Unsupported provider request.');
         }
         if ($request->method === 'GET') {
-            if ((!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server', 'https://api.20i.com/domain', 'https://api.20i.com/domain-period', 'https://api.20i.com/reseller/*/cloudProviders'], true) && !$this->isDomainSearch($request->url) && !$this->isDomainContract($request->url) && !$this->isPackagePhpVersion($request->url) && !$this->isDomainExpiry($request->url) && !$this->isDocumentRoots($request->url) && !$this->isPackageForceSsl($request->url) && !$this->isDirectoryIndexing($request->url)) || $request->body !== null
+            if ((!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server', 'https://api.20i.com/domain', 'https://api.20i.com/domain-period', 'https://api.20i.com/reseller/*/cloudProviders'], true) && !$this->isDomainSearch($request->url) && !$this->isDomainContract($request->url) && !$this->isPackagePhpVersion($request->url) && !$this->isDomainExpiry($request->url) && !$this->isDocumentRoots($request->url) && !$this->isPackageForceSsl($request->url) && !$this->isDirectoryIndexing($request->url) && !$this->isWordpressInstalled($request->url)) || $request->body !== null
                 || array_keys($request->headers) !== ['Authorization','Accept']
                 || $request->headers['Accept'] !== 'application/json') {
                 throw new \InvalidArgumentException('Unsupported provider probe request.');
@@ -123,6 +123,11 @@ final class FixedHttpTransport implements HttpTransport
     private function isDirectoryIndexing(string $url): bool
     {
         return preg_match('~\Ahttps://api\.20i\.com/package/[1-9][0-9]{0,17}/web/directoryIndexing\z~',$url)===1;
+    }
+
+    private function isWordpressInstalled(string $url): bool
+    {
+        return preg_match('~\Ahttps://api\.20i\.com/package/[1-9][0-9]{0,17}/web/wordpressIsInstalled\z~',$url)===1;
     }
 
     /** Only the documented fixed package map read, without a path or domain override. */
