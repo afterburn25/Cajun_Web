@@ -1,20 +1,8 @@
-## Owner allocation update - 2026-10-16
+## Current20i increment - StackCP access observations,2026-10-16
 
-The owner now authorizes Devin to continue **all remaining non-20i site work**, including existing software-product licensing. This supersedes the older unrelated-work pause for Devin's lane. Codex and its three agents retain complete 20i, provider support/SSH and final integration/releases. Work stays on separate branches; shared billing/auth/schema/portal/build seams integrate sequentially. [Assignment #157](https://github.com/afterburn25/Cajun_Web/issues/157) and [detailed boundaries](DEVIN_NON20I_SITE_COMPLETION.md) define the scope. Posting the assignment is not proof of an active Devin session; acknowledgement is pending.
+Membership and whole-user grants reads are integrated onto9779 for first native acceptance. These are authenticated saved observations, not provider login/session permission. Pure/renderer/transport/Handler and169 helper checks pass; native/browser/screenshots/release gates remain pending. Frozen9779 has verified focused registration, Windows/Linux packages and recovery; original full is active. Cloud authority remains separate. Full lifecycle, commerce, VPS/cloud, provider support and SSH remain unfinished. [Status](../PROJECT_STATUS.md), [feature scope](TWENTYI_STACKCP_ACCESS_OBSERVATIONS.md).
 
-## Current 20i increment - private registration drafts, 2026-10-16
-
-Private owner/client registration drafts are integrated for combined testing, including current permissions, encrypted contact history, client submission/withdrawal and paginated owner selection. No provider purchase or registry-consent verification is enabled. Native/browser/package acceptance is pending; original a63 renewal fixture failure requires a bounded fix. Parallel cloud assignment authority and StackCP membership/grants observation branches continue under separate ownership. Full lifecycle, domain commerce, VPS/cloud and support/SSH remain unfinished. [Current status](../PROJECT_STATUS.md).
-
-## Current complete20i roadmap —2026-10-16
-
-## Isolated registration contract checkpoint — 2026-10-16
-
-Registration now has reviewed pure contact/draft records and252 local checks per PHP mode. No shipping feature or provider purchase is enabled. Native encrypted draft/contact editing is the next bounded step; exact term wire field, outcome schema, registry requirements and current account acceptance are still prerequisites to commerce/dispatch. [Source scope](TWENTYI_DOMAIN_REGISTRATION_CONTRACT.md), [native proposal](TWENTYI_DOMAIN_REGISTRATION_NATIVE_PREREQUISITES.md), [branch handoff](../SESSION_HANDOFF.md). The integration notes below are retained from parenta63 and are not a fresh acceptance claim.
-
-## Current complete20i roadmap — 2026-10-16
-
-Normally integrate native-tested StackCP auth-key/unverified-assignment setupfbaa with evidence-corrected directory/renewal1d026. Root verifies exact shared union and installer; the next combined full must cover126 commands,136/175 reports and actual290 captures. No provider login/session or registration purchase sender is enabled. Private registration drafts progress separately. Original failed/ongoing runs remain preserved. Published1.24 stays immutable;1.25 and complete20i remain unfinished. [Status](../PROJECT_STATUS.md), [handoff](../SESSION_HANDOFF.md).
+Devin owns remaining non20i work including licensing under [assignment #157](https://github.com/afterburn25/Cajun_Web/issues/157). Codex retains complete20i/integration/releases. [Boundaries](DEVIN_NON20I_SITE_COMPLETION.md).
 
 ## Historical implementation checkpoints
 

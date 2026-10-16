@@ -269,6 +269,14 @@ jobs:
           php8.3 tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json
           php8.3 -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json
           php8.3 tests/stackcp_prerequisites_native.php
+          php8.3 tests/stackcp_access_contract.php > qa/stackcp-access-contract-default.json
+          php8.3 -n tests/stackcp_access_contract.php > qa/stackcp-access-contract-minimal.json
+          php8.3 tests/stackcp_access_views.php qa/stackcp-access-views-default.json
+          php8.3 -n tests/stackcp_access_views.php qa/stackcp-access-views-minimal.json
+          php8.3 tests/stackcp_access_transport.php > qa/stackcp-access-transport-default.json
+          php8.3 -n tests/stackcp_access_transport.php > qa/stackcp-access-transport-minimal.json
+          python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json
+          php8.3 tests/stackcp_access_native.php
           php8.3 tests/provider_domain_search_native.php
           php8.3 tests/provider_mailboxes_native.php
           php8.3 tests/provider_operations_native.php

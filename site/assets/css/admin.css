@@ -15,3 +15,6 @@
 .inbox-header { min-width: 0; overflow-wrap: anywhere; }
 .inbox-header h3, .inbox-header p { white-space: pre-wrap; }
 [data-mail-message]{min-width:0;overflow-wrap:anywhere}.message-plain{white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%;padding:18px;border:1px solid var(--line);border-radius:12px;font:inherit}.message-formatted{display:block;width:100%;height:560px;max-width:100%;border:1px solid var(--line);border-radius:12px;background:#102338}[data-message-content]{min-width:0}
+
+.admin-body #stackcp-access-observations .btn{max-width:100%;white-space:normal;text-align:center;overflow-wrap:anywhere}
+.admin-body #stackcp-access-observations form,.admin-body #stackcp-access-observations label{min-width:0;max-width:100%;overflow-wrap:anywhere}

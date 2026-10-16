@@ -1,3 +1,7 @@
+## Unreleased - owner StackCP access observations
+
+Add owner membership and whole-user grants reads with fixed GET transport, current authority, authenticated history and finite safe states. Preserve registration/all earlier test contracts. Local source/pure/synthetic checks pass; native, HTTP/browser and release acceptance remain pending. No provider login/session or SSH is enabled.
+
 ## Unreleased - private registration drafts integration
 
 Add owner/direct-client private registration drafts with encrypted contact details, exact captured revisions, authenticated history and explicit studio-review submission. Preserve failed-form edits and paginated clients/history. Registration purchase and payment remain unavailable. This normally combines pure ancestor 2e86 and frozen 9538 with reviewed route/test additions; native/browser/package acceptance is pending. Preserve original a63 renewal fixture failure and its separate seal failure.

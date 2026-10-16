@@ -256,6 +256,8 @@ try:
         stackcp_prerequisites_browser(globals(),browser)
         from domain_registration_drafts_cases import run_browser as registration_drafts_browser
         registration_drafts_browser(globals(),browser)
+        from stackcp_access_cases import run_browser as stackcp_access_browser
+        stackcp_access_browser(globals(),browser)
         from provider_schedule_cases import run_browser as schedule_browser
         schedule_browser(globals(),browser)
         browser.close()

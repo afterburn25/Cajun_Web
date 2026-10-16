@@ -2,9 +2,9 @@
   "base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
   "base_workflow_sha256": "7aef2d8f6df74f4c65091960191a4748b21b8258f111d8a23967abe13bddafe5",
   "unchanged_test_sha256": {
-    "tests/browser_acceptance.py": "830cc255b1745b661e7f9ef09f159a538842592ffd2d7b2b007ec3b2e07a134d",
+    "tests/browser_acceptance.py": "eb5436233c286b9e2b649c5274f7b469b196958ec454baf9552b39e17142bf1f",
     "tests/structure_acceptance.py": "2b89114d669f717c4e936123ae256e9c29394664ee1a7db301411964839e86d0",
-    "tests/apache_acceptance.py": "a8327553cc3430dd602e616d7281ced28080e37f7216293847aff3d13dda24e0",
+    "tests/apache_acceptance.py": "77663cd4088ea1abc8888d6275d4be5ccecb1b22433deace10ed05cf963f289c",
     "tests/prepare_legacy.py": "00a09c11a78eb124a848d4794f0eab8a2901eb1d090f6e8da7da498c06d623a7"
   },
   "native_commands": [
@@ -124,6 +124,14 @@
     "php8.3 tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json",
     "php8.3 -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json",
     "php8.3 tests/stackcp_prerequisites_native.php",
+    "php8.3 tests/stackcp_access_contract.php > qa/stackcp-access-contract-default.json",
+    "php8.3 -n tests/stackcp_access_contract.php > qa/stackcp-access-contract-minimal.json",
+    "php8.3 tests/stackcp_access_views.php qa/stackcp-access-views-default.json",
+    "php8.3 -n tests/stackcp_access_views.php qa/stackcp-access-views-minimal.json",
+    "php8.3 tests/stackcp_access_transport.php > qa/stackcp-access-transport-default.json",
+    "php8.3 -n tests/stackcp_access_transport.php > qa/stackcp-access-transport-minimal.json",
+    "python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json",
+    "php8.3 tests/stackcp_access_native.php",
     "php8.3 tests/provider_domain_search_native.php",
     "php8.3 tests/provider_mailboxes_native.php",
     "php8.3 tests/provider_operations_native.php",
@@ -199,6 +207,22 @@
       "php8.3 tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-default.json",
       "php8.3 -n tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-minimal.json",
       "php8.3 tests/domain_registration_drafts_native.php"
+    ]
+  },
+  "stackcp_access_command_baseline": {
+    "source": "9779879bc93e030bab70be383186700aabea3982",
+    "count": 131,
+    "sha256": "bebd874d4996871ba12828e61997b998da05effdc53234445de3f88fb732a0ed",
+    "additions_after": "php8.3 tests/stackcp_prerequisites_native.php",
+    "additions": [
+      "php8.3 tests/stackcp_access_contract.php > qa/stackcp-access-contract-default.json",
+      "php8.3 -n tests/stackcp_access_contract.php > qa/stackcp-access-contract-minimal.json",
+      "php8.3 tests/stackcp_access_views.php qa/stackcp-access-views-default.json",
+      "php8.3 -n tests/stackcp_access_views.php qa/stackcp-access-views-minimal.json",
+      "php8.3 tests/stackcp_access_transport.php > qa/stackcp-access-transport-default.json",
+      "php8.3 -n tests/stackcp_access_transport.php > qa/stackcp-access-transport-minimal.json",
+      "python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json",
+      "php8.3 tests/stackcp_access_native.php"
     ]
   }
 }

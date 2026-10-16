@@ -260,9 +260,17 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
-    check('All131 native commands retain exact reviewed order and arguments', native_commands==contract['native_commands'])
+    check('All139 native commands retain exact reviewed order and arguments', native_commands==contract['native_commands'])
+    access=contract['stackcp_access_command_baseline'];access_additions=access['additions']
+    access_preserved=[command for command in native_commands if command not in access_additions]
+    check('All131 pre-StackCP-access commands retain exact order and arguments',
+          len(access_preserved)==access['count']==131 and hashlib.sha256(json.dumps(access_preserved,separators=(',',':')).encode()).hexdigest()==access['sha256'])
+    access_position=native_commands.index(access['additions_after'])+1
+    check('Eight StackCP access commands occur once after prerequisite native checks',
+          len(access_additions)==len(set(access_additions))==8 and native_commands[access_position:access_position+8]==access_additions
+          and all(native_commands.count(command)==1 for command in access_additions))
     registration=contract['registration_draft_command_baseline'];registration_additions=registration['additions']
-    registration_preserved=[command for command in native_commands if command not in registration_additions]
+    registration_preserved=[command for command in access_preserved if command not in registration_additions]
     check('All126 pre-registration-draft commands retain exact order and arguments',
           len(registration_preserved)==registration['count']==126 and hashlib.sha256(json.dumps(registration_preserved,separators=(',',':')).encode()).hexdigest()==registration['sha256'])
     registration_position=native_commands.index(registration['additions_after'])+1
