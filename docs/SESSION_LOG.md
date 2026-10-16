@@ -2,7 +2,19 @@
 
 Documentation-only descendant of35d8 records owner release-first override, published normal merge b98b96eb, frozen scope/map, actual source/focused evidence and remaining gates. Runtime, installer, version, published assets and production remain unchanged. Continue release corrections, authentic1.24 upgrade coverage, complete supported runtime acceptance, review, exact-main and publication/download verification before new20i capabilities. Coordination is posted in issue2 comment6220729910 and issue157 comment6220730195. Documentation validation is required before commit; no application acceptance is claimed.
 
-# Session log
+
+
+## Apply A-01 pipeline transition rules and stage history — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Main's pipeline board already rendered stage columns but `studio_pipeline`/`lead_save` wrote `leads.status` directly — any stage, no validation, no history. Starting commit: `devin/non20i-pipeline-foundation` tip `a58736bc`, new branch `devin/non20i-pipeline-runtime`.
+
+Actions: `app/marketing/pipeline.php` defines `pipeline_board()` (canonical rules over the existing seven stages: `new→contacted/spam/closed`, `contacted→qualified/closed/spam`, `qualified→proposal/closed`, `proposal→won/closed`, `won` terminal, `closed`/`spam→new` reopen) and `pipeline_transition()` — same-stage saves update notes/follow-up only; real moves are validated, wrapped in `staff_transaction`, logged via `log_event`, and appended to `lead_stage_history` when enabled. `pipeline_schema.php` + `pipeline_migrate.php` add the owner-authorized additive history table (refuses unknown populated records). Pipeline cards and the inquiry detail select now render `pipeline_choices()`; lead detail shows attributed history. `pipeline_setup` action gated `staff.manage` + owner password + confirm. Build mirror sync, Apache direct-deny list, workflow paths, `application-tests.yml` push/native wiring. Existing tests `release_cases.py`/`staff_cases.py` updated to legal transitions (`new→contacted`, `contacted→qualified`, same-stage).
+
+Tests: `php -l` clean on all touched PHP; `tests/pipeline/run.php` 31 checks pass; `tests/pipeline_native.php` (MariaDB lane, CI-wired) covers owner gates, unknown-history refusal, illegal/terminal transitions, same-stage notes, history actor attribution, audit-failure rollback; `tests/pipeline_cases.py` covers the full HTTP flow (CSRF/password gates, restricted selects, denied jump, history render, staff scope). `tools/build.py --refresh` clean — `includes/foundation/pipeline/` mirror byte-identical.
+
+Known limits: history enablement is opt-in (transitions validate before it); no notifications, search changes, or portal exposure. 
+
+Next: commit, push, open bounded PR, update issue #157; continue notifications/revisions/proposals runtime.
 
 ## Port lead-pipeline contract layer — 2026-10-16
 

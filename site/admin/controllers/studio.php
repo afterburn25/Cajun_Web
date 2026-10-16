@@ -4,6 +4,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function studio_admin_views(): array {return ['studio-clients'=>'Client workspace','studio-job'=>'Client project','studio-pipeline'=>'Sales pipeline','studio-content'=>'Sales content','studio-prices'=>'Estimator prices','studio-portfolio'=>'Portfolio previews','studio-history'=>'Content history','studio-upgrade'=>'Version & database','studio-licenses'=>'Website licenses'];}
 require_once CWP_CODE_ROOT.'/app/settings/revisions.php';
+require_once CWP_CODE_ROOT.'/app/marketing/pipeline.php';
 function studio_admin_action(string $action,array $user): never {
     require_admin();check_csrf();$target='studio-clients';
     require_once CWP_CODE_ROOT.'/app/licenses/service.php';
@@ -33,9 +34,8 @@ function studio_admin_action(string $action,array $user): never {
         if($action==='studio_paid'){$invoice=gint($_POST,'invoice_id',1,2147483647);if(ledger_ready()){ledger_require();redirect(admin_url('invoice-payments',['invoice_id'=>$invoice]));}$note=posted('paid_note',500);if(strlen($note)<5||posted('confirm',1)!=='1')throw new InvalidArgumentException('Record a payment reference and confirm you independently verified receipt.');if(catalog_snapshot($invoice)){catalog_transition($id,$invoice,'paid',$note);}else{payments_manual_paid($id,$invoice,$note);}}
         log_event($action,'Project '.$id);flash('Project updated.');redirect(admin_url('studio-job',['id'=>$id]));
     }elseif($action==='studio_pipeline'){
-        $id=gint($_POST,'id',1,2147483647);$stage=posted('status',20);if(!isset(studio_pipeline_stages()[$stage])||!one('SELECT id FROM '.table('leads').' WHERE id=?',[$id]))throw new InvalidArgumentException('Choose a valid inquiry and stage.');
-        $follow=posted('follow_up',10);if($follow!==''&&(!preg_match('/^\d{4}-\d{2}-\d{2}$/D',$follow)||date('Y-m-d',strtotime($follow))!==$follow))throw new InvalidArgumentException('Use a valid follow-up date.');
-        db()->beginTransaction();try{query('UPDATE '.table('leads').' SET status=?,notes=? WHERE id=?',[$stage,posted('notes',10000),$id]);save_setting('growth_follow_'.$id,$follow);db()->commit();}catch(Throwable $e){if(db()->inTransaction())db()->rollBack();throw $e;}$target='studio-pipeline';
+        $id=gint($_POST,'id',1,2147483647);pipeline_transition($id,posted('status',20),posted('notes',10000),posted('follow_up',10),$user);flash('Inquiry updated.');$target='studio-pipeline';
+    }elseif($action==='pipeline_setup'){if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm you want stage history enabled.');pipeline_migrate(posted('owner_password',1000));flash('Pipeline stage history is enabled.');$target='studio-pipeline';
     }elseif($action==='studio_prices'){
         $r=['enabled'=>isset($_POST['enabled'])];foreach(growth_types()+['page'=>'Additional page','product'=>'Product']+growth_options() as $key=>$unused)$r[$key]=grange([gcents(posted($key.'_min',20)),gcents(posted($key.'_max',20))]);
         studio_revision_save('growth_prices',json_encode($r,JSON_THROW_ON_ERROR),posted('expected',64));$target='studio-prices';
