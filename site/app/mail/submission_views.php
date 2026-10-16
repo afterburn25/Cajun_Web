@@ -40,7 +40,14 @@ function mail_submissions_list(string $account,int $page=1):array {
 /** GET/read only: validate saved content without creating an intent, DNS or credentials. */
 function mail_submissions_review(string $draft,?int $revision=null,?int $accountRevision=null):array {
     return staff_locked(function()use($draft,$revision,$accountRevision):array {
-        $actor=mail_submissions_actor();$saved=mail_drafts_get($draft);
+        $actor=mail_submissions_actor();$saved=mail_drafts_get($draft);$thread=null;$originFingerprint=null;
+        if($saved['status']==='source') {
+            // Copied-message content lives only in prepared protected storage.
+            if(!mail_replies_ready())throw new RuntimeException('This copied-message draft requires prepared Reply/Forward storage.');
+            $saved=mail_reply_drafts_get($draft);
+            $copied=mail_reply_drafts_for_submission($draft,$actor);
+            $thread=$copied['thread'];$originFingerprint=$copied['origin_fingerprint'];
+        }
         // Preserve already prepared history, including an interrupted submission after a failed POST.
         $existing=one('SELECT id FROM '.table('mail_submissions').' WHERE draft_id=? AND draft_revision=? AND owner_id=?',[$draft,$revision??(int)$saved['revision'],$actor['id']]);
         if($existing)return ['existing'=>mail_submissions_get($existing['id'])];
@@ -48,7 +55,7 @@ function mail_submissions_review(string $draft,?int $revision=null,?int $account
         mail_submissions_prior_attempt($draft);$account=mail_drafts_account($saved['account_id'],(int)$saved['account_revision']);
         // Same maintained preparation gate as dispatch; the preview identity is never persisted.
         $content=new \CajunWebPro\Foundation\MailCompose\DraftContent($saved['to'],$saved['cc'],$saved['bcc'],$saved['subject'],$saved['body']);
-        \CajunWebPro\Foundation\MailSubmission\PreparedMime::fromSnapshot(new \CajunWebPro\Foundation\MailSubmission\SubmissionSnapshot(str_repeat('0',32),(int)$actor['id'],$draft,(int)$saved['revision'],$account['id'],$account['revision'],$account['address'],$content,time()));
+        \CajunWebPro\Foundation\MailSubmission\PreparedMime::fromSnapshot(new \CajunWebPro\Foundation\MailSubmission\SubmissionSnapshot(str_repeat('0',32),(int)$actor['id'],$draft,(int)$saved['revision'],$account['id'],$account['revision'],$account['address'],$content,time(),$thread,$originFingerprint));
         return ['existing'=>null,'draft'=>$saved,'account'=>$account];
     });
 }

@@ -3,12 +3,13 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/mail/drafts.php';
+require_once CWP_CODE_ROOT.'/app/mail/replies.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/mail-submission/TransportOutcome.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/mail-transport/EndpointPolicy.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/mail-transport/ProbeFailure.php';
 require_once CWP_CODE_ROOT.'/database/schema/mail_submissions_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/mail_submissions_migrate.php';
-use CajunWebPro\Foundation\MailCompose\DraftContent;
+use CajunWebPro\Foundation\MailCompose\{DraftContent,MessageThread};
 use CajunWebPro\Foundation\MailSubmission\{SubmissionSnapshot,PreparedMime,TransportOutcome};
 use CajunWebPro\Foundation\MailTransport\{EndpointPolicy,ProbeFailure};
 
@@ -28,10 +29,19 @@ function mail_submissions_row(string $id,?int $actor=null):array {
 function mail_submissions_message(array $row):PreparedMime {
     try {
         $p=json_decode($row['payload_json'],true,16,JSON_THROW_ON_ERROR);
-        if(!is_array($p) || array_keys($p)!==['format','id','author_id','draft_id','draft_revision','account_id','account_revision','from','message_id','prepared_epoch','to','cc','bcc','subject','body'] || $p['format']!==1)throw new InvalidArgumentException('Invalid preparation format.');
+        $base=['format','id','author_id','draft_id','draft_revision','account_id','account_revision','from','message_id','prepared_epoch','to','cc','bcc','subject','body'];
+        $format=is_array($p)?($p['format']??null):null;$thread=null;$origin=null;
+        if($format===1) {
+            if(array_keys($p)!==$base)throw new InvalidArgumentException('Invalid preparation format.');
+        }elseif($format===2) {
+            if(array_keys($p)!==[...$base,'thread','origin_fingerprint'])throw new InvalidArgumentException('Invalid preparation format.');
+            $thread=MessageThread::fromStored(is_array($p['thread'])?$p['thread']:[]);
+            if(!is_string($p['origin_fingerprint']))throw new InvalidArgumentException('Invalid copied draft binding.');
+            $origin=$p['origin_fingerprint'];
+        }else throw new InvalidArgumentException('Invalid preparation format.');
         foreach(['from','subject','body'] as $field)if(!is_string($p[$field]))throw new InvalidArgumentException('Invalid private text.');
         foreach(['to','cc','bcc'] as $field)if(!is_array($p[$field]))throw new InvalidArgumentException('Invalid private recipients.');
-        $snapshot=new SubmissionSnapshot($row['id'],(int)$row['owner_id'],$row['draft_id'],(int)$row['draft_revision'],$row['account_id'],(int)$row['account_revision'],$p['from'],new DraftContent($p['to'],$p['cc'],$p['bcc'],$p['subject'],$p['body']),(int)$row['prepared_epoch']);
+        $snapshot=new SubmissionSnapshot($row['id'],(int)$row['owner_id'],$row['draft_id'],(int)$row['draft_revision'],$row['account_id'],(int)$row['account_revision'],$p['from'],new DraftContent($p['to'],$p['cc'],$p['bcc'],$p['subject'],$p['body']),(int)$row['prepared_epoch'],$thread,$origin);
         if($p!==$snapshot->privatePayload() || $row['payload_json']!==json_encode($snapshot->privatePayload(),JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) || !hash_equals($snapshot->fingerprint,$row['snapshot_fingerprint']))throw new InvalidArgumentException('Invalid private fingerprint.');
         $mime=PreparedMime::fromSnapshot($snapshot);
         if(!hash_equals($mime->sha256,$row['mime_sha256']) || !hash_equals($mime->bytes,$row['mime_bytes']))throw new InvalidArgumentException('Invalid saved MIME.');
@@ -65,7 +75,17 @@ function mail_submissions_prepare_intent(string $id,string $draft,int $draftRevi
             mail_drafts_account($existing['account_id']);mail_submissions_message($existing);return ['id'=>$id,'created'=>false];
         }
         $saved=mail_drafts_row($draft,(int)$actor['id'],true);$account=mail_drafts_account($saved['account_id'],$accountRevision);
-        if($saved['status']!=='draft' || (int)$saved['revision']!==$draftRevision || (int)$saved['account_revision']!==$accountRevision)throw new RuntimeException('The draft or sender changed. Reload and review before submitting.');
+        $thread=null;$originFingerprint=null;$content=null;
+        if($saved['status']==='source') {
+            // A copied-message draft keeps its content and immutable origin in
+            // protected storage; current source Read authority is revalidated here.
+            $copied=mail_reply_drafts_for_submission($draft,$actor,true);
+            if($copied['row']['status']!=='draft' || (int)$copied['base']['revision']!==$draftRevision || (int)$copied['base']['account_revision']!==$accountRevision || $copied['base']['account_id']!==$account['id'])throw new RuntimeException('The draft or sender changed. Reload and review before submitting.');
+            $content=$copied['content'];$thread=$copied['thread'];$originFingerprint=$copied['origin_fingerprint'];
+        }else {
+            if($saved['status']!=='draft' || (int)$saved['revision']!==$draftRevision || (int)$saved['account_revision']!==$accountRevision)throw new RuntimeException('The draft or sender changed. Reload and review before submitting.');
+            $content=mail_drafts_content($saved);
+        }
         $existing=one('SELECT * FROM '.table('mail_submissions').' WHERE draft_id=? AND draft_revision=?',[$draft,$draftRevision]);
         if($existing) {
             if((int)$existing['owner_id']!==(int)$actor['id'] || $existing['account_id']!==$account['id'] || (int)$existing['account_revision']!==$accountRevision)throw new RuntimeException('Saved submission identity is inconsistent. Existing data was preserved.');
@@ -75,7 +95,7 @@ function mail_submissions_prepare_intent(string $id,string $draft,int $draftRevi
         $profile=mail_accounts_load($account['id']);EndpointPolicy::host($profile['smtp_host']);EndpointPolicy::port('smtp',(int)$profile['smtp_port'],$profile['smtp_encryption']);
         $now=time();
         if((int)query('SELECT COUNT(*) FROM '.table('mail_submissions').' WHERE owner_id=? AND prepared_epoch>?',[$actor['id'],$now-3600])->fetchColumn()>=100)throw new RuntimeException('Submission preparation limit reached. Try again later.');
-        $mime=PreparedMime::fromSnapshot(new SubmissionSnapshot($id,(int)$actor['id'],$draft,$draftRevision,$account['id'],$accountRevision,$account['address'],mail_drafts_content($saved),$now));
+        $mime=PreparedMime::fromSnapshot(new SubmissionSnapshot($id,(int)$actor['id'],$draft,$draftRevision,$account['id'],$accountRevision,$account['address'],$content,$now,$thread,$originFingerprint));
         query('INSERT INTO '.table('mail_submissions').' (id,attempt_id,owner_id,draft_id,draft_revision,account_id,account_revision,prepared_epoch,payload_json,snapshot_fingerprint,mime_bytes,mime_sha256,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
             [$id,bin2hex(random_bytes(16)),$actor['id'],$draft,$draftRevision,$account['id'],$accountRevision,$now,json_encode($mime->snapshot->privatePayload(),JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE),$mime->snapshot->fingerprint,$mime->bytes,$mime->sha256,gmdate('Y-m-d H:i:s',$now)]);
         mail_submissions_audit((int)$actor['id'],'prepared','Submission '.$id.' draft '.$draft.' revision '.$draftRevision);
@@ -88,9 +108,21 @@ function mail_submissions_authorize(array $row,PreparedMime $mime):array {
     if((int)$actor['id']!==(int)$row['owner_id'])throw new RuntimeException('Current submission author required.');
     $saved=mail_drafts_row($row['draft_id'],(int)$actor['id'],db()->inTransaction());$account=mail_drafts_account($row['account_id'],(int)$row['account_revision']);
     if((new DraftContent([$account['address']],[],[],'',''))->to[0]!==$mime->snapshot->from)throw new RuntimeException('The reviewed sender changed. No message was submitted.');
-    if($saved['status']!=='draft' || (int)$saved['revision']!==(int)$row['draft_revision'] || $saved['account_id']!==$row['account_id'] || (int)$saved['account_revision']!==(int)$row['account_revision'])throw new RuntimeException('The reviewed draft or sender changed. No message was submitted.');
+    $copied=$saved['status']==='source';
+    if($copied!==($mime->snapshot->thread!==null))throw new RuntimeException('The reviewed draft or sender changed. No message was submitted.');
+    if($copied) {
+        // Origin Read authority, integrity fingerprints and revision are all
+        // rechecked here; revoked access refuses dispatch of copied content.
+        $loaded=mail_reply_drafts_for_submission($row['draft_id'],$actor,db()->inTransaction());
+        if($loaded['row']['status']!=='draft' || (int)$loaded['base']['revision']!==(int)$row['draft_revision'] || $loaded['base']['account_id']!==$row['account_id'] || (int)$loaded['base']['account_revision']!==(int)$row['account_revision'])throw new RuntimeException('The reviewed draft or sender changed. No message was submitted.');
+        if(!hash_equals($loaded['origin_fingerprint'],(string)$mime->snapshot->originFingerprint) || $loaded['thread']->toArray()!==$mime->snapshot->thread->toArray())throw new RuntimeException('The reviewed draft origin changed. No message was submitted.');
+        $content=$loaded['content'];
+    }else {
+        if($saved['status']!=='draft' || (int)$saved['revision']!==(int)$row['draft_revision'] || $saved['account_id']!==$row['account_id'] || (int)$saved['account_revision']!==(int)$row['account_revision'])throw new RuntimeException('The reviewed draft or sender changed. No message was submitted.');
+        $content=mail_drafts_content($saved);
+    }
     // A changed saved row at an unchanged revision is damaged, not a new review.
-    $content=mail_drafts_content($saved);$p=$mime->snapshot->content;
+    $p=$mime->snapshot->content;
     if([$content->to,$content->cc,$content->bcc,$content->subject,$content->body]!==[$p->to,$p->cc,$p->bcc,$p->subject,$p->body])throw new RuntimeException('The reviewed draft content changed. No message was submitted.');
     return mail_accounts_load($row['account_id']);
 }

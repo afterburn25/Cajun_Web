@@ -12,6 +12,15 @@ Cloud assignment authority and StackCP membership/grant observations are separat
 
 Main retains the existing licensing implementation and four unresolved [integration findings](docs/LICENSING_INTEGRATION_REVIEW.md), assigned to Devin. The separate20i candidate has not imported that runtime. Reinspect both histories before integration; preserve billing, support-session, storage and invoice-purpose guards.
 
+## Devin non-20i branches — 2026-10-16
+
+- `devin/non20i-licensing` (PR #159) resolves all four documented findings — populated upgrades add `is_master` additively, master keys leave portals/bundles/downloads, legacy null-invoice retries claim exactly one candidate, unknown schema markers refuse before DDL.
+- `devin/non20i-support-tickets` (PR #158) ports the ticket slice — immutable storage, `support.tickets`, admin/portal flows, private notes, read cursors, activity links.
+- `devin/non20i-project-progress` (PR #160) ports the progress slice — `studio_progress_*` storage, hash-linked project history, portal timeline, `progress:` activity items.
+- `devin/non20i-mail-replies` finishes webmail Reply/Forward — opt-in raw retention, message-screen controls, protected copied drafts behind `mail_drafts` placeholders, `mail_reply_drafts` owner-prepared storage, format-2 submissions emitting `In-Reply-To`/`References`, current source-Read revalidation on open/save/review/dispatch. Contract: `docs/MAIL_REPLY_FORWARD.md`. Evidence: 60+45+71 local pure checks, `tests/mail_replies_native.php` (PHP 8.2/8.4 + MariaDB in CI), `tests/mail_reply_cases.py` packaged IMAP→draft→SMTP case in `browser_acceptance.py`.
+
+Next: continue the remaining non-20i roadmap (admin accounts/permissions depth, payment forms, lead management, accessibility, backup/recovery) on fresh `devin/non20i-*` branches; keep shared files bounded and report on issue #157.
+
 ## Continuity
 
 The [preserved licensing and20i handoff at80ce8b19](https://github.com/afterburn25/Cajun_Web/blob/80ce8b19a6fb5b05a92821b097b9f8ce2d5b214f/SESSION_HANDOFF.md) retains the earlier licensing implementation, acceptance claims and release history. It is historical evidence, not proof of this candidate. [Published1.24 report](docs/TEST_REPORT_1.24.0.md), [full roadmap](docs/ROADMAP.md), [coordination](docs/AGENT_COORDINATION.md) and [release workflow](docs/RELEASE_WORKFLOW.md) remain available.

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/mail/drafts.php';
+require_once CWP_CODE_ROOT.'/app/mail/replies.php';
 
 use CajunWebPro\Foundation\MailCompose\DraftContent;
 
@@ -46,11 +47,16 @@ function mail_drafts_admin_action(string $action):?DraftContent {
     if($action==='mail_drafts_setup') {
         mail_drafts_migrate(posted('current_password',200));flash('Local email drafts are ready.');redirect(admin_url('mail-drafts'));
     }
+    if($action==='mail_drafts_replies_setup') {
+        mail_replies_migrate(posted('current_password',200));flash('Protected Reply and Forward drafts are ready.');redirect(admin_url('mail-drafts'));
+    }
     return staff_locked(function()use($action):?DraftContent {
         $actor=mail_drafts_actor();$id=posted('draft_id',32);mail_drafts_id($id);
         $revision=mail_drafts_form_revision($_POST,'revision');
+        $copied=mail_replies_ready()&&one('SELECT id FROM '.table('mail_reply_drafts').' WHERE id=?',[$id]);
         if($action==='mail_drafts_discard') {
-            $old=mail_drafts_get($id);mail_drafts_discard($id,$revision);
+            $old=$copied?mail_reply_drafts_get($id):mail_drafts_get($id);
+            if($copied)mail_reply_drafts_discard($id,$revision);else mail_drafts_discard($id,$revision);
             flash('Draft discarded locally.');redirect(admin_url('mail-drafts',['account_id'=>$old['account_id'],'status'=>'discarded']));
         }
         [$account,$accountRevision]=mail_drafts_form_reference(posted('sender',43));
@@ -58,12 +64,12 @@ function mail_drafts_admin_action(string $action):?DraftContent {
         // Preview/filter/insertion may not disclose or reuse a different author's saved draft.
         $old=one('SELECT id FROM '.table('mail_drafts').' WHERE id=?',[$id]);
         if($old) {
-            $old=mail_drafts_get($id);
+            $old=$copied?mail_reply_drafts_get($id):mail_drafts_get($id);
             if($old['status']!=='draft'||(int)$old['revision']!==$revision) {
                 // Only save owns the exact initial-create replay rule.
-                if(!($action==='mail_drafts_save'&&$revision===0))throw new RuntimeException('The draft changed. Reload before continuing.');
+                if(!($action==='mail_drafts_save'&&$revision===0&&!$copied))throw new RuntimeException('The draft changed. Reload before continuing.');
             }
-        }elseif($revision!==0)throw new RuntimeException('The draft changed. Reload before continuing.');
+        }elseif($revision!==0||$copied)throw new RuntimeException('The draft changed. Reload before continuing.');
         if(in_array($action,['mail_drafts_accounts','mail_drafts_templates'],true))return null;
         $content=mail_drafts_form_content($_POST);
         if($action==='mail_drafts_preview')return $content;
@@ -74,7 +80,8 @@ function mail_drafts_admin_action(string $action):?DraftContent {
             return mail_drafts_template($account,$accountRevision,$template,$templateRevision,$samples,$content->to,$content->cc,$content->bcc);
         }
         if($action!=='mail_drafts_save')throw new InvalidArgumentException('Unknown draft action.');
-        mail_drafts_save($id,$revision,$account,$accountRevision,$content,posted('confirm_sender',1)==='1');
+        if($copied)mail_reply_drafts_save($id,$revision,$account,$accountRevision,$content,posted('confirm_sender',1)==='1');
+        else mail_drafts_save($id,$revision,$account,$accountRevision,$content,posted('confirm_sender',1)==='1');
         flash('Draft saved locally. No email was sent.');redirect(admin_url('mail-draft',['draft_id'=>$id]));
     });
 }
@@ -84,6 +91,12 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
         $actor=mail_drafts_actor();$post=$_SERVER['REQUEST_METHOD']==='POST';
         $id=is_string($_GET['draft_id']??null)?$_GET['draft_id']:'';
         $row=$id!==''?mail_drafts_get($id):null;
+        if($row&&$row['status']==='source') {
+            // Copied-message drafts hold their real content and origin only in
+            // prepared protected storage; the placeholder is never editable.
+            if(!mail_replies_ready())throw new RuntimeException('This copied-message draft requires prepared Reply/Forward storage.');
+            $row=mail_reply_drafts_get($id)+['copied'=>true];
+        }
         $account=is_string($_GET['account_id']??null)?$_GET['account_id']:'';
         if($row)$account=$row['account_id'];
         $accountPage=max(1,min((int)($post?($_POST['account_page']??1):($_GET['account_page']??1)),100000));
@@ -92,7 +105,15 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
         if($account!=='')$accounts[$account]=mail_drafts_account($account);
         elseif($accounts)$account=array_key_first($accounts);
         $page=max(1,min((int)($_GET['p']??1),100000));$status=is_string($_GET['status']??null)?$_GET['status']:'draft';
-        if($view==='mail-drafts')return compact('actor','accounts','account','accountPage','moreAccounts','page','status')+['rows'=>$account!==''?mail_drafts_list($account,$status,$page):[]];
+        if($view==='mail-drafts') {
+            $rows=$account!==''?mail_drafts_list($account,$status,$page):[];
+            if($account!==''&&mail_replies_ready()) {
+                foreach(mail_reply_drafts_list($account,$status,$page) as $copied)$rows[]=$copied+['status'=>$status,'copied'=>true];
+                usort($rows,static fn(array $a,array $b):int=>[$b['updated_at'],$b['id']]<=>[$a['updated_at'],$a['id']]);
+                $rows=array_slice($rows,0,21);
+            }
+            return compact('actor','accounts','account','accountPage','moreAccounts','page','status')+['rows'=>$rows];
+        }
         $values=['to'=>'','cc'=>'','bcc'=>'','subject'=>'','body'=>''];$revision=0;
         if($row) {
             foreach(['to','cc','bcc'] as $key)$values[$key]=implode(', ',$row[$key]);
@@ -125,7 +146,7 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
         }
         $templates=[];$templatePage=max(1,min((int)($_POST['template_page']??1),100000));$templateSearch=mail_drafts_form_text($_POST,'template_search',120);
         if(staff_can('mail.templates.manage',$actor)&&mail_templates_ready())$templates=mail_templates_list('active',$templateSearch,$templatePage);
-        $historyPage=max(1,min((int)($_GET['history_page']??1),100000));$history=$row?mail_drafts_history($id,$historyPage):[];
+        $historyPage=max(1,min((int)($_GET['history_page']??1),100000));$history=$row?($row['copied']??false?mail_reply_drafts_history($id,$historyPage):mail_drafts_history($id,$historyPage)):[];
         return compact('actor','row','accounts','account','accountPage','moreAccounts','id','values','revision','sender','editable','preview','templates','templatePage','templateSearch','historyPage','history','unsaved');
     });
 }
@@ -148,6 +169,12 @@ function mail_drafts_admin_render(string $view,string $error,?DraftContent $prev
         }else echo '<p>An owner must prepare drafts before you can use them.</p>';
         echo '</section>';
     }else {
+        if(!mail_replies_ready()) {
+            echo '<section class="workspace-card"><h2>Prepare protected Reply and Forward drafts</h2><p>Replying to or forwarding an inbox message copies it into a protected private draft. An owner prepares this storage once; existing drafts and submission history are preserved.</p>';
+            if($actor['role']==='owner') {echo '<form method="post">';admin_action('mail_drafts_replies_setup');admin_input('current_password','Your current password','','password','required autocomplete="current-password"');echo '<button class="btn gold">Prepare Reply and Forward drafts</button></form>';}
+            else echo '<p>An owner must prepare protected drafts before Reply and Forward appear on inbox messages.</p>';
+            echo '</section>';
+        }
         try {$data=mail_drafts_admin_data($view,$preview);require CWP_CODE_ROOT.'/admin/views/mail_drafts.php';}
         catch(InvalidArgumentException|RuntimeException $e) {
             if($e instanceof PDOException)throw $e;echo '<p class="notice error" role="alert">'.esc($e->getMessage()).'</p>';

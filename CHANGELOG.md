@@ -1,3 +1,7 @@
+## Complete webmail Reply/Forward end-to-end — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-mail-replies` from main `155db254`, continuing the preserved `codex/mail-replies-forwards` content/storage slice. Adds opt-in raw retention to `mail_message_read` (default reads still never retain raw MIME), Reply/Forward controls on the exact message screen, fresh authorized reads feeding `ReplyDraft::prepare` into protected copied drafts, `mail_reply_drafts` storage behind content-free `mail_drafts` placeholders, owner-prepared additive migration, copied-draft list/detail/edit/save/discard/history integration, format-2 `SubmissionSnapshot` payloads with `In-Reply-To`/`References` in `PreparedMime`, and current source-Read/send revalidation through prepare/authorize/dispatch. Includes `tests/mail_replies_native.php` and packaged `tests/mail_reply_cases.py` (isolated IMAP→draft→SMTP/TLS) wired into browser acceptance and new focused CI workflows. No schema change for existing installs, no live mail/provider/customer operation, no release.
+
 ## Documentation - current20i acceptance and parallel handoff
 
 Publish source9779879b, independently verified focused registration/Windows evidence and the first full acceptance38909577278. Retain original failures and the separate cloud/StackCP review scope. Refresh status/handoff with immutable links to the complete prior licensing history. No application, installer, version, release or deployment change.
@@ -5,8 +9,6 @@ Publish source9779879b, independently verified focused registration/Windows evid
 ## Documentation - Devin non20i assignment discoverable on main
 
 Add a root start-here guide, complete owner-approved assignment and existing licensing source/review links. Supersede the earlier unrelated-work pause for Devin while Codex retains20i and final integration. This changes no application, schema, installer, version, release or deployment.
-
-# Changelog
 
 ## Synchronize release entry points after review — 2026-10-15
 
