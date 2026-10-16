@@ -11,14 +11,14 @@ Codex owns complete20i P0 and integration/releases. Devin owns software-product 
 ## Published baseline and active queue
 
 - [1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is immutable at `7190b582a02be8a1daa501db14b5899cfc1eb5d0`; all16 release assets, checksums and archive members were downloaded and verified. This is a GitHub release, not production deployment. [Release report](docs/TEST_REPORT_1.24.0.md).
-- Draft [PR151](https://github.com/afterburn25/Cajun_Web/pull/151), branch `codex/twentyi-next-integration`, retains normal merge history. Shipping/test source is `25e0de3b2b468d155c3bd51fb81bfaefda741c76`; documentation descendants do not change that source. Its base is `codex/twentyi-mailbox-controls` at `a9637f2bb2000196312f72e10f39f614980c98c7`.
+- Draft [PR151](https://github.com/afterburn25/Cajun_Web/pull/151), branch `codex/twentyi-next-integration`, retains normal merge history. Shipping source remains `25e0de3b2b468d155c3bd51fb81bfaefda741c76`; this normal merge adds only the reviewed dd116b89 period browser fixture to executable tests, pending new combined acceptance. Its base is `codex/twentyi-mailbox-controls` at `a9637f2bb2000196312f72e10f39f614980c98c7`.
 - The queue adds client hosting history, local forwarding requests/review, explicitly approved scheduled package reads, registration-year options, owner-only cloud-provider identifiers and saved domain renewal-date observations. These do not establish prices, expiry/renewal eligibility, fulfillment or full20i completion.
 
 ## Current verification
 
 | Source | Verified evidence | Remaining scope |
 |---|---|---|
-| Combined25e | Exact Windows packages: FULL5593/COMPLETE2749/UPDATE2736;11 checksums and exact source/decoded update. All16 focused archives pass. Actual browser checkpoint12025480056 verifies2130 passing assertions then one failed empty-period assertion;49 date and27 cloud checks pass, with10 scoped domain/cloud views inspected. | Original full[38846792746](https://github.com/afterburn25/Cajun_Web/actions/runs/38846792746) continues recovery after the browser failure. Combined fixture exhausts the existing20/hour owner limit; catalog is isolating its period owner without changing production limits/history. Later browser cases were not reached. |
+| Combined25e | Exact Windows packages: FULL5593/COMPLETE2749/UPDATE2736;11 checksums and exact source/decoded update. All16 focused archives pass. Actual browser checkpoint12025480056 verifies2130 passing assertions then one failed empty-period assertion;49 date and27 cloud checks pass, with10 scoped domain/cloud views inspected. | Original full[38846792746](https://github.com/afterburn25/Cajun_Web/actions/runs/38846792746) passes recovery and continues Apache after the browser failure. Source/history reconstruction identifies the existing20/hour owner limit; reviewed dd116b89 isolates the period test owner without changing production limits/history. Later browser cases were not reached. |
 | Parent210 | Terminal full[38844717543](https://github.com/afterburn25/Cajun_Web/actions/runs/38844717543); final12024561896 verifies117 reports,12 clean diagnostics,2101 HTTP/289 recovery/2095 Apache checks,192 unchanged images and exact Git/Windows packages. | Parent evidence only. The narrow failure element capture retains a framing limitation; original full-page period section is clear. |
 | Incoming date6ba / cloud6eee | Both original full runs are terminal success with final archives, native matrices, source/packages and actual scoped images verified. | Their acceptance does not certify later source or newly identified recovery invariants. |
 
@@ -33,7 +33,7 @@ Per combined matrix combination: dates60 native+79 default+79 minimal, periods80
 
 ## Remaining delivery
 
-Complete focused domain/PHP correction evidence and the period fixture review, normally integrate those changes, then run one new exact combined full acceptance before exact-main and release asset verification. Existing full runs continue; do not duplicate a full run for each small repair. Major20i work still includes complete commerce/provisioning/lifecycle, DNS, databases, runtime/security controls, backups/logs, VPS/cloud management, support handoff and interactive SSH; use the requirement table rather than a guessed completion percentage.
+The reviewed period fixture is now normally included. Complete focused domain/PHP correction evidence, normally integrate those changes, then run one new exact combined full acceptance before exact-main and release asset verification. Existing full runs continue; do not duplicate a full run for each small repair. Major20i work still includes complete commerce/provisioning/lifecycle, DNS, databases, runtime/security controls, backups/logs, VPS/cloud management, support handoff and interactive SSH; use the requirement table rather than a guessed completion percentage.
 
 No live provider request, charge, customer mail, interactive SSH or deployment occurs through routine development/testing. Preserve operation-specific production activation gates. [Actionable handoff](SESSION_HANDOFF.md).
 
