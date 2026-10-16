@@ -1,8 +1,10 @@
 # CajunWebPro current status
 
+Fresh observation, 2026-10-16: original full819c run38917429508 reached a real populated-inventory upgrade defect in the owner view: StackCP readiness queried operation on a legacy schema without that column. The native job failed and browser execution skipped; original evidence is retained (8e973156). The cloud-assignment descendant is held for a bounded compatibility correction. Build and recovery evidence remain valid for their own scope.
+
 Updated 2026-10-16 14:41 UTC. **Published 1.24.0 is unchanged; 1.25.0 and complete 20i are not released.**
 
-Devin owns all remaining non-20i site work, including existing licensing. Codex and its three agents own complete 20i, shared integration and releases. [Devin start here](DEVIN_START_HERE.md); assignment [#157](https://github.com/afterburn25/Cajun_Web/issues/157) remains current. No external-session acknowledgement is assumed.
+Devin owns all remaining non-20i site work, including existing licensing. Codex and its three agents own complete 20i, shared integration and releases. [Devin start here](DEVIN_START_HERE.md); assignment [#157](https://github.com/afterburn25/Cajun_Web/issues/157) remains current. Devin [acknowledged the assignment and reported work](https://github.com/afterburn25/Cajun_Web/issues/157#issuecomment-6217621738). Licensing PR #159, tickets #158 and project progress #160 are open; their proposed changes require independent acceptance and sequential integration.
 
 ## Current checkpoint
 

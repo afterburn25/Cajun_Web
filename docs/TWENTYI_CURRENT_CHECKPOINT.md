@@ -1,10 +1,12 @@
 # Current 20i checkpoint
 
+Fresh observation, 2026-10-16: original full819c run38917429508 reached a real populated-inventory upgrade defect in the owner view: StackCP readiness queried operation on a legacy schema without that column. The native job failed and browser execution skipped; original evidence is retained (8e973156). The cloud-assignment descendant is held for a bounded compatibility correction. Build and recovery evidence remain valid for their own scope.
+
 Recorded 2026-10-16 14:41 UTC from main documentation parent `155db254e8e3d0c018200abf6a9325d04c3578ca`. Main retains its existing licensing runtime; this checkpoint does not import the separate 20i candidate or publish a release.
 
 ## Ownership and exact source
 
-Devin owns all remaining non-20i site work, including licensing; [start here](../DEVIN_START_HERE.md) and [issue #157](https://github.com/afterburn25/Cajun_Web/issues/157) remain the assignment. Codex and its three agents own complete 20i, provider support/SSH, shared integration and releases. Earlier unrelated-work pauses are superseded for Devin. No external-session acknowledgement is assumed.
+Devin owns all remaining non-20i site work, including licensing; [start here](../DEVIN_START_HERE.md) and [issue #157](https://github.com/afterburn25/Cajun_Web/issues/157) remain the assignment. Codex and its three agents own complete 20i, provider support/SSH, shared integration and releases. Earlier unrelated-work pauses are superseded for Devin. Devin [acknowledged the assignment and reported work](https://github.com/afterburn25/Cajun_Web/issues/157#issuecomment-6217621738). Licensing PR #159, tickets #158 and project progress #160 are open; their proposed changes require independent acceptance and sequential integration.
 
 Current corrected source is [819c3ea3](https://github.com/afterburn25/Cajun_Web/commit/819c3ea39b4ebbef8f37280dc5ede59cf06fd01c), tree `9a31153ed5b3f4576bd4c9dca781892433711f21`, branch `codex/twentyi-stackcp-access-observations`. It retains registration candidate 9779879b and adds owner-triggered saved package-membership and whole-user-grants observations under current owner/account/client/package/assignment authority. The two fixed General-key GETs retain authenticated history; no auth-client key is decrypted. Membership and grants remain separate dated observations, with no login-ready or remotely restricted-session claim. SSH remains unfinished.
 

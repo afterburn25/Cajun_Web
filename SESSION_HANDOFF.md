@@ -1,5 +1,7 @@
 # CajunWebPro current handoff
 
+Fresh observation, 2026-10-16: original full819c run38917429508 reached a real populated-inventory upgrade defect in the owner view: StackCP readiness queried operation on a legacy schema without that column. The native job failed and browser execution skipped; original evidence is retained (8e973156). The cloud-assignment descendant is held for a bounded compatibility correction. Build and recovery evidence remain valid for their own scope.
+
 Recorded 2026-10-16 14:41 UTC, from main documentation parent `155db254e8e3d0c018200abf6a9325d04c3578ca`. **Published 1.24.0 remains unchanged. Neither 1.25.0 nor complete 20i is released.**
 
 ## Work to continue
