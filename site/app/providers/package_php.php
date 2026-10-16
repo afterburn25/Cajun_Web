@@ -42,6 +42,12 @@ function provider_php_common_history(string $profileId):void {
     if($intents!==$audits)throw new RuntimeException('Hosting observation intent history needs recovery.');
     $detail="CONCAT(BINARY 'Refresh ',f.id,' profile ',f.profile_id,' revision ',f.profile_revision)";
     if(one("SELECT f.id FROM $f f WHERE BINARY f.profile_id=? AND ((SELECT COUNT(*) FROM $a a WHERE BINARY a.action='provider.refresh_started' AND BINARY a.detail=BINARY $detail AND a.user_id=f.actor_id)<>1 OR (SELECT COUNT(*) FROM $a a WHERE BINARY a.action='provider.refresh_started' AND BINARY a.detail=BINARY $detail)<>1) LIMIT 1",[$profileId]))throw new RuntimeException('Hosting observation intent correspondence needs recovery.');
+    // Common start-audit order independently witnesses which package intent came last.
+    $package="BINARY f.profile_id=? AND (f.operation IS NULL OR BINARY f.operation=?)";
+    $bySequence=one("SELECT f.id FROM $f f WHERE $package ORDER BY f.seq DESC LIMIT 1",[$profileId,InventoryRead::PACKAGES_LIST]);
+    $byAudit=one("SELECT f.id FROM $f f JOIN $a a ON a.user_id=f.actor_id AND BINARY a.action='provider.refresh_started' AND BINARY a.detail=BINARY $detail WHERE $package ORDER BY a.id DESC LIMIT 1",[$profileId,InventoryRead::PACKAGES_LIST]);
+    if(($bySequence['id']??null)!==($byAudit['id']??null))throw new RuntimeException('Hosting observation intent order needs recovery.');
+
 }
 function provider_php_binding(string $linkId):PackagePhpVersionBinding {
     $a=provider_php_assignment($linkId);$l=$a['link'];provider_php_common_history($l['profile_id']);$latest=service_observations_reads($l['profile_id'])[0]??null;

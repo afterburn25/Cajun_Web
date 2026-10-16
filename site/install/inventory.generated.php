@@ -194,7 +194,7 @@ function setup_expected_files(): array { return [
     'app/providers/mailbox_views.php'=>'fd035a1ec48b8b98c564b819a56998ee4bbd6c0645c129dfa76d99ca8d6a9d1b',
     'app/providers/mailboxes.php'=>'0c94eb1e4c0c989d5d6e7dfd29e990f914df9d1fe2933468cb00e6213363ba1f',
     'app/providers/operations.php'=>'d6b3237c87ccdc5f73390266e8c12a6387978626af807f8302d59e0cf36c07ca',
-    'app/providers/package_php.php'=>'bc4136e7ae2a6f6caf1a309de62a1bb08aff968f5090b8ae98f6ab136fbc2ff2',
+    'app/providers/package_php.php'=>'77ca32d7092919dc374c6e7cf3e46aeeb107b5d8028d3f8ddd8b20736d4185b4',
     'app/providers/package_php_storage.php'=>'b283f782d493886cbb6570206895ca27f5bdab5ed115a8d38140be454a5d8262',
     'app/providers/package_php_views.php'=>'d0de263e63250b5ec63d11c3db49c97609ff2c3cbc8e72102c4b81fc8c923126',
     'app/providers/plan_catalog.php'=>'f7cea8cfaaba5d7280ccf184199db47954de6e39d3288dc7a7cf0dab04b908c1',

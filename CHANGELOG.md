@@ -1,3 +1,7 @@
+## Unreleased — PHP hosting-history order safeguard
+
+Refuse disagreement between package inventory sequence and its exact retained start-audit order so later failed/unfinished intent damage cannot revive an earlier PHP observation. Add focused restoration/no-request regressions; actual corrected native/browser acceptance remains pending.
+
 ## Unreleased — PHP-version installer hash correction
 
 Correct six installer metadata hashes to the exact committed LF shipping bytes. Preserve the original pre-native CI failures; no runtime logic change.

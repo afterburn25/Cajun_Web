@@ -1,3 +1,11 @@
+## PHP hosting-history order guard — 2026-10-15
+
+Source review after the packaging-only `c7f0ab73bcd4826e11283e1cc1813c46af3b8b5b` checkpoint found an additional bounded authority gap. A later failed or unfinished hosting inventory intent could have its retained sequence moved below an earlier complete H1 while its common start audit remained intact; the profile count/detail checks would still pass, and an H1-backed PHP observation could appear current again. Root and domain review confirmed this source path; it is distinct from the earlier CRLF installer metadata failure.
+
+The correction compares the latest package-inventory intent by sequence with the latest intent by its exact paired common-start audit ID, after existing profile-wide count/actor/detail correspondence. Both selections use the identical profile and packages.list/legacy-null filter, so unrelated domain/cloud reads do not become package authority. Any disagreement requires recovery. No shared history machinery, signatures, transport or client data scope changes.
+
+Native fixture cases cover both failed and unfinished later hosting intents with sequence rollback, stale projection, refusal before DNS/request, and exact restoration in a finally block outside a caller transaction. Actual execution remains pending on the corrected descendant; presence of these fixtures is not acceptance. Original1c500 and c7f0 focused/full runs remain intact. The installer is regenerated from normalized LF source and checked against staged Git bytes before freezing. Root owns combined integration and release; cloud6eee final acceptance remains separately verified.
+
 ## PHP-version packaging correction — 2026-10-15
 
 The first exact PHP source `1c5005663bb892e3c5569914547f154be4620ffc` is retained in [PR155](https://github.com/afterburn25/Cajun_Web/pull/155). Focused run38846465351 and full38846467235 remain intact, along with PR runs38846423585/38846423574. The first focused job116798016213 stopped at installer inventory verification before PHP/native execution; it emitted no native report.
