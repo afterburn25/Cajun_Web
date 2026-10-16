@@ -48,3 +48,18 @@ Proof and original ZIPs are retained in ignored local `qa/38841123530/`. Origina
 ## Separate newly precise scalar read
 
 Lines 2484–2490 document `GET /package/{packageId}/web/phpVersion`, returning the active PHP version string in the platform format, for example `php82`. This is useful evidence for a later bounded hosting read. No descriptor, transport permission or UI for it is added here.
+
+## Corrected exact four-way native acceptance
+
+Source `6eeeb020f3aa095b56aa81e7f4b2be6aeb2a0175` is frozen in draft PR154. Focused [38841913897](https://github.com/afterburn25/Cajun_Web/actions/runs/38841913897) is terminal SUCCESS on PHP8.2/8.4 with MariaDB10.11/MySQL8.4. Every exact artifact has three safe unique members and passes metadata source/run, size, SHA256 and ZIP CRC verification. Each contains98 named native passes,85 default pure passes and85 no-INI pure passes; overlapping modes are not added together as unique coverage. Native SQL/PHP witness byte parity and all retained-history loss/restoration cases pass. The catalog agent independently verifies the same four archives against fresh GitHub metadata.
+
+| Runtime/database | Artifact | SHA256 | Bytes |
+|---|---|---|---|
+| 8.4-mariadb-10.11 | 12021831127 | `4e4a857b5c74c9f1a21a90d3bcd206e52a5d01799bdf1171ac938981678fdb2b` | 4474 |
+| 8.2-mysql-8.4 | 12021711845 | `601fbf5374fb3733a612d9f0c90a7f6e6062ee6e183f45cc0f12f4aae661a162` | 4474 |
+| 8.2-mariadb-10.11 | 12021484119 | `baaa30f6c777d565bb928758c99e6ab1c84b9101a5c57a6a59f81a79d9a23ffd` | 4474 |
+| 8.4-mysql-8.4 | 12021399686 | `483bd9752a99f32ba23086fde5f8f2131c5b13e8e0f7ba1d99527184ee42736a` | 4474 |
+
+Local reusable proof is `qa/38841913897/verification.json`; independent proof is retained in `work/catalog-agent-cloud6ee-native-verification.json`. Exact full [38841913938](https://github.com/afterburn25/Cajun_Web/actions/runs/38841913938) has passed package checks and is still in native integration at this checkpoint. Browser, recovery, Apache and final package acceptance remain pending. PR-triggered38841919208/38841919245 and original0e2 runs remain intact. Original full38841123460 has reached Apache after its recorded native failure; it cannot establish cloud-browser acceptance.
+
+The next read-only handoff is saved locally in `qa/package-php-version-next-lane-handoff.json` (SHA256 `996a5d62c8d9aabeb335a869c42382f026633ac8fe9600014a76572ca9dde90c`). Owner reference2484–2490 describes an active PHP-version scalar GET for an exact package. Retained provider-authored SDK1.0.6 REST168–171 directly JSON-decodes the body; this supports a JSON string parser as source-backed inference, not a live response capture. The handoff requires exact current package/client/key/link/event/audit binding, separate explicit client sharing, typed result through the same executor and immutable history witnesses. It excludes POST and available-version enumeration. No PHP-version implementation is included here.

@@ -1,3 +1,7 @@
+## Cloud-provider corrected native acceptance — 2026-10-15
+
+Frozen source6eeeb020 in draft PR154 passes exact four-way focused38841913897. All four downloaded archives independently verify98 native and85 pure passes per mode, including SQL/PHP byte parity and retained-history recovery. Catalog independently rechecks these exact bytes and fresh GitHub metadata. Full38841913938 remains in native integration after package checks; actual browser/recovery/Apache/final acceptance is pending. Original0e2 failures and full runs remain preserved. This checkpoint changes documentation only; no runtime or release. [Exact artifacts and boundaries](docs/TWENTYI_CLOUD_PROVIDERS.md).
+
 ## Cloud-provider native compatibility correction — 2026-10-15
 
 Draft PR154 source0e2cab2b has exact focused evidence: both MySQL8.4 jobs pass97 native and85/85 pure cases; MariaDB10.11 fails after8 passes at a SQL CONCAT collation boundary. All four source-bound archives are verified and preserved. A bounded explicit-binary witness correction is prepared, with a new named SQL/PHP parity case; new four-way and full acceptance remain required. Original full38841123460 is retained. [Exact artifacts and correction](docs/TWENTYI_CLOUD_PROVIDERS.md).

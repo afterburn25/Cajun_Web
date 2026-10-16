@@ -1,3 +1,9 @@
+## Continue exact cloud-provider full acceptance
+
+Source6eeeb020f3aa095b56aa81e7f4b2be6aeb2a0175 is frozen; corrected focused38841913897 passes all four supported combinations. All98 native/85 default/85 no-INI named results are independently verified in each source-bound archive. Full38841913938 is still native integration at this checkpoint; continue authoritative observation, then verify actual browser screenshots and recovery/Apache/final packages. Preserve all original0e2 failures and PR-triggered runs. Root alone integrates/releases.
+
+Read-only next PHP-version handoff is retained in qa/package-php-version-next-lane-handoff.json, with exact reference/SDK provenance, package authorization and proposed shared signatures. No implementation is authorized on the frozen cloud source. A future lane must start from root's accepted combined base and coordinate shared executor unions, explicit sharing and scheduler guard. [Evidence and contract limits](docs/TWENTYI_CLOUD_PROVIDERS.md).
+
 ## Preserve original cloud-provider runs while verifying the SQL correction
 
 Start0e2cab2b39a6b1a9f1fbe70454f6ab12371b173f, draft PR154. Exact focused38841123530 is terminal: MySQL97native/85/85pure passes in both PHP versions; MariaDB fails after8 passes with mixed SQL CONCAT collations. All four archives/digests/reports are verified in qa/38841123530 and documented in [the guide](docs/TWENTYI_CLOUD_PROVIDERS.md). Correct only binary coercion across all witness CONCAT families, preserving proof bytes and exact audit matching; add a named native SQL/PHP byte-parity assertion. Original full38841123460 and PR gates are retained without cancellation/retry. Canonical correction refresh25937 completed; root independently cleared the exact delta at storage62915fdd. Freeze/push and inspect fresh native/full evidence next. Shipping scope remains identifiers only. Parent root owns integration/releases.
