@@ -1,3 +1,7 @@
+## Unreleased — current expiry native and package verification
+
+Record frozen03b and its original acceptance handles, verified four-way expiry reports and exact Windows packages. Close original427 with preserved browser failure, successful recovery/server protection and exact final packages. Document reviewed website-folder and ForceSSL application lanes without claiming pending browser acceptance or a release. Documentation only; shipping source remains03b.
+
 ## Unreleased — integrate saved upstream expiry observations
 
 Normally integrate the native-tested upstream-expiry feature with dedicated-owner test corrections. Owners explicitly prepare and refresh saved expiry observations for current assigned domains; clients see only permitted current or historical records. Separate date/expiry authority, immutable history, unavailable results, credential filtering and owner controls remain. No automatic renewal, provider mutation or eligibility claim. Combined packaged browser/recovery acceptance is pending.

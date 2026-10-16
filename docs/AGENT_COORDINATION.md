@@ -4,13 +4,13 @@ Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for
 
 | Owner | Current branch/checkpoint | Scope and next evidence |
 |---|---|---|
-| Root | PR151, test/docs descendant of0ff93d22/frozen427 | Preserve actual427 setup failure/final evidence; normal expiry18 integration and reviewed period/PHP repair659 now require exact combined acceptance. |
-| Domains | Expiry f42 native accepted; fixture/docs correction pending commit | Reviewed fixture correction18d296b7 imported with unchanged f42 runtime; final shared-source review next. Main94 read-only merge map complete. |
-| VPS | PHPcfc6/docs8b257538; cloud36c2/docs9f46; ForceSSL staged | Root fixture review, then one pure ForceSSL matrix after accepted reference-detachment correction. No app wiring/live call. |
-| Catalog | Document-roots1e8ee567/docs0ddd5101; DNS96f/docsfb2f19d2 | Both pure matrices/artifacts accepted; prepare document-root application contract before shared edits. ForceSSL independent source review clear. |
+| Root | Frozen03b/PR151; CI dd521 |39 focused workflows successful, Windows exact packages and fresh four-way expiry archives verified; original full38858618681 remains active. Coordinate sequential merges and exact-main release. |
+| Domains | Expiry18 imported; source reviews complete | Fresh03b expiry artifacts and original427 final failure verified. Prepare exact03b browser/final verifiers and preserve actual original evidence. |
+| VPS | ForceSSL pureb2033/docs6988; application staged | Dedicated runtime/fixtures/shared proposal reviewed. Normal03b/document-roots prerequisite integration, exact patch application and final installer/workflow review precede one focused matrix. No full/browser dispatch. |
+| Catalog | Document-roots applicatione2b9fd6d; DNS96f/docsfb2f19d2 | Single focused38859581032 and all four actual archives accepted. Record evidence-only descendant. Root preserves corrected659 owner fixtures at eventual normal integration. |
 | Devin | Software-product licensing; main94 reviewed | Populated upgrade/internal-master customer-delivery findings remain. Preserve serialized mutation helpers and keyless installer. Active session status remains unconfirmed. |
 
-Original427 browser fails at setup after2107 HTTP passes; separate runtime matrices pass. Original recovery succeeds and Apache/final continues. Keep actual failed evidence and all prior immutable releases. See [handoff](../SESSION_HANDOFF.md) for exact sources and next actions.
+Original427 is terminal failure at the preserved setup check: final125 reports,2,107 HTTP passes plus one failure,289 recovery/2,211 Apache passes and exact Git/Windows packages are verified. No further polling or repeated acceptance is needed. See [handoff](../SESSION_HANDOFF.md) for exact current sources, evidence and next actions.
 
 ## Integration rules
 
