@@ -1,5 +1,10 @@
 ## Domain renewal request integration — candidate, unreleased
 
+## Unreleased — preserve current main continuity
+
+Normally preserve mainb8f8528b licensing documentation after combined cloud integrationbdeccc09. Archive the incoming handoff and retain the approved portal design reference. No runtime, test, installer or version change in this documentation merge; fresh combined acceptance remains required.
+
+
 ## Unreleased — combined 20i confirmation and parallel scheduler work
 
 Normally integrate reviewed/native-verified cloud package confirmation after catalog readiness and local domain renewal requests. Preserve exact returned-ID/name checks, atomic client assignment/history, sequence-first freshness and existing authorization. Combined installer and full acceptance remain required; published1.24.0 stays unchanged. Catalog browser screens now pass on their own source. Three agents continue independently, including a new bounded scheduled package inventory refresh implementation. No live activation or release is claimed.

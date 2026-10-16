@@ -161,10 +161,13 @@ license_bundles (
   domain normalization, multi-domain, 2-active cap, deactivation, SKU
   mapping, bundle guards); runs in CI on MariaDB.
 - `tests/license_bundle_functional.php` — builds a real bundle from the
-  Website_Core checkout and verifies the extracted layout
+  Website_Core checkout, verifies the extracted layout
   (`site/install.php` + `site/modules/industries/*/addon.json` with
   embedded `license_key`) matches the Website Core installer's
-  expectations. 14 checks, all passing.
+  expectations, and exercises the real WC install path: module
+  extraction from the ZIP → WC + module migrations on sqlite →
+  license/packages rows → enable → real provider boot via
+  `ModuleRegistry`. 21 checks, all passing.
 - Website Core side: `LicenseApiContractTest` spawns a real `php -S`
   mock of this API and verifies the HTTP wire contract including the
   200-vs-non-200 denial/transient semantics.

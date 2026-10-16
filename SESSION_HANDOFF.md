@@ -4,11 +4,11 @@ Continue complete 20i P0 under the [owner request](docs/TWENTYI_CODEX_TAKEOVER_R
 
 ## Current integration
 
-Root checkout: `C:\Users\after\Documents\Codex\2026-10-12\ok-x20\work\Cajun_Web-twentyi-service-orders`; branch `codex/twentyi-mailbox-controls`, [PR140](https://github.com/afterburn25/Cajun_Web/pull/140). Normal parents are96a2b4c92794bf95e52bf275738d1a2c0e6098a1 and cloud1a74952cb832ef851e5cad3a128c4bf8ad28f793. Earlier normal merges preserve catalog872aec34, renewal ed4d1cad, original mailbox/registrar/cloud work and main1fcfb5e9. Cloud runtime is0ea6e3a8; c3b2c022 changes only the synthetic future-time fixture from +31 to +120 seconds, and1a749 adds evidence documentation.
+Root checkout: `C:\Users\after\Documents\Codex\2026-10-12\ok-x20\work\Cajun_Web-twentyi-service-orders`; branch `codex/twentyi-mailbox-controls`, [PR140](https://github.com/afterburn25/Cajun_Web/pull/140). Cloud integrationbdeccc09 normally merged96a2b4c92794bf95e52bf275738d1a2c0e6098a1 and1a74952cb832ef851e5cad3a128c4bf8ad28f793. The current merge normally preserves mainb8f8528b into that combined source; its additional changes are documentation only. Earlier normal merges preserve catalog872aec34, renewal ed4d1cad, original mailbox/registrar/cloud work and main1fcfb5e9. Cloud runtime is0ea6e3a8; c3b2c022 changes only the synthetic future-time fixture from +31 to +120 seconds, and1a749 adds evidence documentation.
 
 Controller conflict keeps both renewal and cloud-confirmation dispatch. Application workflow retains both branch allowlists and both native test invocations. Apache protection uses the union of both parents' private paths. Incoming session history is appended; current status/handoff is rewritten with older versions archived. Refresh26659 completed successfully and is CLOSED: all shipping PHP/JS syntax passes and all2,696 indexed hashes match. Root's independent proof work/20i-cloud-combined-local-verification.json verifies exact cloud shipping bytes, the original corrected mailbox fixture, changed test PHP syntax and Python ASTs. Cloud agent independently verified both handler imports/dispatch,20 workflow branches,54 native invocations and172 private paths as exact unions, with no concrete issue. Root dist still contains the preserved38bb build, not the current candidate. Fresh combined acceptance is mandatory.
 
-GitHub main is nowb8f8528b72520e60ee052119dcff1e8b2c829737. Its two commits after1fc change only SESSION_HANDOFF.md and docs/LICENSING_IMPLEMENTATION.md. Root inspected the diff and will normally preserve it after this merge, without running Website_Core. The existing1fc51-line external functional test is already retained and syntaxchecked.
+GitHub main is nowb8f8528b72520e60ee052119dcff1e8b2c829737. Its two commits after1fc change only SESSION_HANDOFF.md and docs/LICENSING_IMPLEMENTATION.md. Root inspected and normally preserved the diff in this merge, without running Website_Core. The existing1fc51-line external functional test is already retained and syntaxchecked.
 
 ## Active runs and exact evidence
 
@@ -39,10 +39,16 @@ Original38bb native matrices remain verified: mailbox91 cases ×4, registrar63 n
 2. Domains: work/20i-domain-controls, branch `codex/twentyi-domain-renewal-requests`, PR146, ed4d1cad now merged. Own exact renewal browser artifacts/screens and follow-up domain engineering on a new isolated branch when assigned. Preserve registrar725 and nameserver9ea. No renewal dispatch, pricing or completed-renewal claim in current slice.
 3. Cloud: work/20i-cloud-confirmation, branch `codex/twentyi-cloud-confirmation`, PR147, frozen1a74952c now integrated. Own actual confirmation browser/final package proof and read-only independent review of root's combined glue. Allocated package observation/assignment does not establish current server membership, health, service or billing activation. Preserve original33a2 branch/checkouts and failed timing evidence.
 
-Root finishes combined refresh and independent review, normally preserves main's documentation, pushes fresh full acceptance, verifies exact packages/screens and then completes exact-main release gates. No stage is accepted solely because a parent passed. Shared edits merge sequentially; agents use separate checkouts.
+Root has completed combined refresh/independent review and preserved main documentation; next push fresh full acceptance, verifies exact packages/screens and then completes exact-main release gates. No stage is accepted solely because a parent passed. Shared edits merge sequentially; agents use separate checkouts.
 
 ## Preserved constraints
 
 Full provider docs redirect to My20i login without an authenticated browser session. The original195457-byte API upload is unavailable; exact missing schemas are recorded rather than inferred. Do not repeat the prior upload question while implementation can proceed independently. Retain owner-operation scopes and protected credential file permissions, including the Windows refusal; no bypass. No live provider write, charge, customer mail, SSH or deployment is authorized by general roadmap work.
 
 Keep Website_Core untouched and preserve the populated licensing40-check prefixlicmerge1015_. PR attachment cap100 and prior comment/review/metadata auto-review refusals remain; do not delete attachments or use another tool to bypass them. Goal remains active; no complete20i percentage or new release is asserted.
+
+## Preserved main licensing and approved design evidence
+
+Mainb8f8528b's complete handoff is [archived](docs/archive/2026-10-15-b8f8528b-main-SESSION_HANDOFF.md). Its authors report a second passing full run38823899660 on1fcfb5e9 and21 functional Website_Core bundle/install checks. This is incoming evidence, not a new root execution or acceptance of the combined20i source. The functional test and licensing documentation are preserved; root did not execute Website_Core. Production still requires configured license_core_dir and has no real purchase/install acceptance here. [Licensing implementation](docs/LICENSING_IMPLEMENTATION.md).
+
+Preserve the owner's [approved client portal design](docs/APPROVED_CLIENT_PORTAL_DESIGN.md), recorded atfd2001e90a54e9936e0c3aebf2714e05a2916a82. Current20i increments do not replace that approved visual direction.
