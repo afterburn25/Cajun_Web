@@ -1,3 +1,7 @@
+## Unreleased - scheduled refresh browser navigation fixture
+
+Refresh the existing browser document after a separate HTTP session changes scheduler state. Retain all network, persisted outcome, backoff and revoked-approval assertions. Application behavior and installer bytes are unchanged; corrected packaged/browser evidence is required.
+
 ## Unreleased - scheduled inventory recovery witnesses
 
 Refuse scheduled work and history when original package rows or inventory audit witnesses are missing. Validate exact audit action bytes and preserve the original worker actor when another owner reviews interruption. Restoration retains the original schedule without replay; fresh native and packaged acceptance are required.

@@ -88,7 +88,9 @@ def run_browser(env, browser):
     last = db('SELECT document_json FROM ci_provider_schedule_events ORDER BY sequence DESC LIMIT 1')[0]
     document = json.loads(last['document_json'])
     check('Actual failed scheduled read persists finite outcome and backoff', provider.calls == calls+2 and document['kind'] == 'finish' and document['data']['outcome'] == 'unavailable' and document['state']['failures'] == 1 and document['state']['next'] >= int(time.time())+1790 and 'private synthetic response' not in failed.text)
-    page.goto(url+'#scheduled-refresh')
+    # The requests session changed the server state while Chromium already has this exact anchored URL open.
+    # Navigating to the same fragment can reuse the old document, so fetch the real current page explicitly.
+    page.reload()
     expect(page.locator('[data-provider-schedule]')).to_contain_text('Refresh unavailable')
     page.locator('[data-provider-schedule]').screenshot(path=str(qa/'Provider-Schedule-Failure-Mobile.png'))
     provider.mode = 'success'
@@ -99,7 +101,7 @@ def run_browser(env, browser):
     owner.post(url, data={**edit, 'label': 'Schedule revoked connection revision', 'general_key': '', 'enabled': '1', 'current_password': OWNER})
     rejected = owner.post(url, data={**stale_run, 'current_password': OWNER})
     check('Saved connection revision invalidates scheduling before remote call', provider.calls == calls+2 and 'approve the schedule again' in rejected.text and soup(rejected).select_one('[data-schedule-run]') is None)
-    page.goto(url+'#scheduled-refresh')
+    page.reload()
     expect(page.locator('[data-schedule-status]')).to_contain_text('approval required')
     page.locator('[data-provider-schedule]').screenshot(path=str(qa/'Provider-Schedule-Revoked-Mobile.png'))
     response = submit(owner, url, prefix+'disable', {'current_password': OWNER})
