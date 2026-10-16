@@ -1,6 +1,6 @@
 ## Unreleased - assigned registrar expiry observations
 
-Add explicit owner refresh and private saved-client observations of a registered domain's bounded upstream-expiry timestamp, with exact current assignment/account authority, independent history recovery, latest-intent order checks and credential-echo refusal. Keep renewal dates and renewal review separate. Root source review and local pure checks pass; native and packaged browser acceptance remain pending. No live provider call or release. [Contract and evidence](docs/TWENTYI_DOMAIN_EXPIRY_CONTRACT.md).
+Add explicit owner refresh and private saved-client observations of a registered domain's bounded upstream-expiry timestamp, with exact current assignment/account authority, independent history recovery, latest-intent order checks and credential-echo refusal. Keep renewal dates and renewal review separate. Root/catalog source review and all four exact f42 focused native/compatibility archives pass; packaged browser acceptance remains pending. No live provider call or release. [Contract and evidence](docs/TWENTYI_DOMAIN_EXPIRY_CONTRACT.md).
 
 ## Unreleased — registration-period browser owner isolation
 

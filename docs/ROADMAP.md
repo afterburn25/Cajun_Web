@@ -1,6 +1,6 @@
 ## Registrar expiry observation increment - 2026-10-16
 
-The separate domains branch implements a bounded registrar expiry reader, durable timestamp/history and native owner/client flow from retained provider-authored evidence. Root reviewed shared/current-authority boundaries; local pure139+reader54 pass per PHP mode. Native and browser verification remain pending; this does not implement expiry eligibility, domain commerce or provider writes. [Current scope and source limits](TWENTYI_DOMAIN_EXPIRY_CONTRACT.md). Frozen427 acceptance and Devin licensing remain separate.
+The separate domains branch implements a bounded registrar expiry reader, durable timestamp/history and native owner/client flow from retained provider-authored evidence. Root reviewed shared/current-authority boundaries; local pure139+reader54 pass per PHP mode. Exact f42 focused38855352194 passes all four native environments with actual archives verified; packaged browser verification remains pending. This does not implement expiry eligibility, domain commerce or provider writes. [Current scope and source limits](TWENTYI_DOMAIN_EXPIRY_CONTRACT.md). Frozen427 acceptance and Devin licensing remain separate.
 
 ## Combined domain and PHP observation candidate — 2026-10-16 UTC
 
