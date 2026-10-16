@@ -1,3 +1,7 @@
+## Current browser checkpoint and reader corrections - 2026-10-15
+
+Combined4f/PR151 passes packaged HTTP/Chromium with downloaded2,065 passing executions (2,054 distinct labels),75 reports and11 clean diagnostics. Actual forwarding/history/scheduler views are inspected within recorded limits; full Apache/final-artifact acceptance remains pending. Domains owns corrected6ba dates, catalog owns corrected ee3 registration periods (all four native archives pass80+62+62), and VPS owns corrected6eee cloud identifiers. Root integrates only accepted sources and keeps scheduler browser last. Latest main794 fixes the licensing parser in source; migration/master-delivery findings remain separate under Devin. [Exact evidence and handles](TWENTYI_COMBINED_4F_EVIDENCE.md); [authoritative handoff](../SESSION_HANDOFF.md). Earlier entries retain their historical scope.
+
 ## Current combined queue — 2026-10-15
 
 Normal forwarding merge4b33d606 is followed by reviewed scheduler2b9 in [PR151](https://github.com/afterburn25/Cajun_Web/pull/151). Installer refresh and exact parent-union checks pass; independent24-check shared-code review is clear; scheduler browser runs last. Fresh combined acceptance remains required. History1759 browser/native artifacts are downloaded and verified; recovery passed and Apache is active. [Current handoff](../SESSION_HANDOFF.md) is authoritative over earlier checkpoints.

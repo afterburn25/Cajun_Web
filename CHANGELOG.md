@@ -1,3 +1,7 @@
+## Unreleased - combined browser verification and reader corrections
+
+Record actual combined4f browser/native/package evidence and scoped desktop/mobile visual review. Preserve failed child runs and exact domain-date, registration-period and cloud-provider corrections; record the latest licensing parser source fix and remaining findings. Documentation only; no new runtime or release in this checkpoint.
+
 ## Unreleased — combined build and source-review continuity
 
 Preserve exact4f Windows build verification and original combined CI handles. Document independent licensing setup/migration/master-delivery findings and the owner API reference's auth-code side effect. Documentation only; no runtime or published release change.

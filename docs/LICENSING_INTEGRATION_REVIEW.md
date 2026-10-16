@@ -1,3 +1,11 @@
+## Latest main source correction - 2026-10-15
+
+Exact main `79434bb87cf3535c61ccd6182a88aa08dea7919c` corrects the schema parser to recognize TINYINT and normalize its display width. Root's pure PHP diagnostic now matches all8 website_licenses columns, all6 license_domains columns and all5 license_bundles columns; tinyint/int/bigint display-width normalization is also verified. Validator SHA256 is `4cbaf88d46cf9f09e627055866faa59f9a50de44b76d09d1eb7d95b3e639f17f`. The parser finding below is resolved in source; actual existing-schema/repeated-setup database acceptance is not claimed by this diagnostic.
+
+The migration, licensing service, bundle generator, direct download and customer workspace are byte-identical to previously reviewed35dd. Therefore the populated pre-master upgrade and internal-master customer delivery findings remain open. This review makes no new database, bundle or production execution claim. Local proof: `work/main-794-licensing-source-review.json`. Devin retains implementation ownership; newer main remains outside the20i integration queue pending the remaining corrections and combined acceptance.
+
+## Historical parser finding before79434bb8
+
 ## Independent current-schema setup finding — 2026-10-15
 
 Independent review of exact main35ddbbff confirms both earlier findings and identifies another repeatability blocker. `license_migrate.php:20` reuses `catalog_validate_schema.php:7`, whose column regex recognizes INT/BIGINT, CHAR/VARCHAR, DATETIME and text, but not TINYINT. The current website_licenses schema has8 declared columns; only6 are matched because is_active and is_master are TINYINT. The license_domains schema has6 columns;5 are matched. Existing current tables therefore fail the column-count check, including empty tables and repeated setup after initial preparation.
