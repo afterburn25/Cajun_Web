@@ -1,3 +1,27 @@
+## Unreleased — cloud-provider final branch acceptance
+
+Record exact6eee terminal full acceptance, verified final ZIP/source packages, named recovery/Apache/browser outcomes and unchanged screenshots. Documentation only; combined release acceptance remains separate.
+
+## Unreleased — cloud-provider browser evidence
+
+Record exact6eee browser results and six actual screenshot reviews; preserve original0e2 failed final archive/source proof. Documentation only; final corrected Apache/package acceptance remains pending.
+
+## Unreleased — verified cloud-provider native compatibility
+
+Record corrected6eeeb020 four-way native acceptance and independent artifact verification, while preserving original MariaDB failures and pending full browser/package acceptance. Save a source-backed next PHP-version observation handoff without adding runtime behavior.
+
+## Unreleased — cloud-provider witness SQL compatibility
+
+Use explicit binary concatenation for cloud-provider retained audit witnesses so MariaDB and MySQL compare the same ASCII bytes. Preserve the original partial native failure, add direct SQL/PHP parity coverage and require new exact acceptance.
+
+## Unreleased — observed account cloud providers
+
+Add an explicit owner refresh for documented account cloud-provider identifiers, dated immutable observations and honest current/historical/empty/unavailable displays. Reuse the existing fixed GET reader, credentials, durable intent/result storage and guarded recorder. Refuse incomplete retained history, changed context and reordered refreshes. No server ordering or runtime controls are added. Source-reviewed; native/browser and exact package acceptance pending.
+
+## Unreleased integration queue — client hosting history
+
+Normally combine reviewed owner-approved client observation history with the cloud recovery correction on a separate integration branch. Preserve both original sources and evidence; retain all documentation history and regenerate combined installer hashes. Fresh combined acceptance is required. The separate release candidate and published assets are unchanged.
+
 ## Unreleased — cloud assignment recovery correction
 
 Refuse cloud confirmation/current-assignment claims when retained package-link events disagree with independent link/relink/unlink audits. Preserve historical ordinal pairing, immutable confirmations and provider outcomes; add native history-loss/restoration regressions. Fresh corrected acceptance remains pending. Document incoming master-license migration/delivery findings for Devin and terminal catalog/hosting-history evidence. No release or live action.
@@ -9,6 +33,10 @@ Record the owner's Devin licensing allocation while Codex continues20i. Verify40
 ## Unreleased — combined native evidence and parallel source review
 
 Verify20 archives from all five combined3bbc focused matrices and final corrected2239 full acceptance/packages. Record concrete hosting-history/forwarding review fixes and the scheduler MariaDB correction under their separate agent branches. Documentation only; 3bbc packaged browser checkpoint now verifies1945HTTP with actual screenshot review; full recovery/Apache and exact-main release gates remain pending.
+
+## Unreleased — explicitly shared hosting history
+
+Owners can enable saved hosting observation history for an exact current client/package assignment. Clients see only observations from the approved sequence onward, with stale, failed and unfinished latest reads clearly identified. Revocation, current account context and retained permission/history recovery are enforced. No live monitoring or provider operation is added. Corrected checkpoint65725ad passes all four native combinations (71 native and 33 pure checks per mode), plus 1,989 actual HTTP/Chromium checks including 44 hosting-history cases. Full owner/client desktop/mobile screens are inspected; auxiliary mobile capture defects are retained and documented. Combined full acceptance remains required. The initial standalone native fixture failure is preserved and corrected by loading the existing owner layout; shipping is unchanged by that test correction.
 
 ## Domain renewal request integration — candidate, unreleased
 

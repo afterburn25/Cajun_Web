@@ -212,6 +212,8 @@ try:
 
         from provider_cloud_sites_cases import run_browser as cloud_sites_browser
         cloud_sites_browser(globals(),browser)
+        from service_observations_cases import run_browser as service_history_browser
+        service_history_browser(globals(),browser)
         from mail_drafts_cases import run_browser as drafts_browser
         drafts_browser(globals(),browser)
         from mail_submissions_cases import run_browser as submissions_browser
@@ -222,6 +224,8 @@ try:
         service_plan_browser(globals(),browser)
         from recurring_billing_cases import run_browser as recurring_browser
         recurring_browser(globals(),browser)
+        from provider_cloud_providers_cases import run_browser as cloud_providers_browser
+        cloud_providers_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)

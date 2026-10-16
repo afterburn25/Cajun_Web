@@ -1,3 +1,15 @@
+## Cloud-provider discovery ownership — 2026-10-15
+
+Cloud agent owns `codex/twentyi-cloud-providers` from17593061, new cloud-provider parser/storage/UI/tests and minimal shared inventory/controller/view wiring. Preserve the exact reviewed scheduler writer extraction and normal-merge domain optional binding/result union plus registration-period typed records. Cloud browser cases use real cooldowns near the end of the fixture; root scheduler remains last. Root cleared bounded source-recovery corrections; actual native/browser evidence is pending. Frozen forwarding1992 and earlier source/runs remain separate. [Scope](TWENTYI_CLOUD_PROVIDERS.md).
+
+## Current history integration evidence — 2026-10-15
+
+The separate a963+bff queue preserves the frozen cloud recovery candidate. Combined installer refresh and independent route/schema/permission review pass; fresh combined acceptance is required. Root independently verifies all four a963 cloud archives and exact Windows packages. [Source, review, evidence and next actions](TWENTYI_HISTORY_INTEGRATION.md). Scheduler554 is a reviewed test-only reload correction over5fb shipping with new checkpoint38836183578 active; forwarding remains separate. Domains keeps history frozen and investigates the next documented discovery reader without shipping edits. Devin retains licensing ownership. Older entries below retain their original evidence scope.
+
+## Root integration queue — 2026-10-15
+
+Root uses separate work/20i-next-integration on codex/twentyi-next-integration, normally merging hosting-historybff into a963. Do not edit the frozen a963 release checkout while Windows61944/full38834893741 run. Scheduler5fb and forwardingc292 retain separate source/evidence ownership. New main licensing remains Devin-owned and unmerged pending the documented findings. This queue needs exact combined checks before release. [Current handoff](../SESSION_HANDOFF.md).
+
 ## Owner allocation — software-product licensing, 2026-10-15
 
 The owner is assigning Devin licensing for software products offered by CajunWebPro, including generation of licenses used to install other products. Continue the existing licensing implementation; this assignment does not establish that a Devin session is running or that licensing is complete. No new Devin branch/PR has been supplied yet. Previous mainb8f8528b licensing changes are preserved in the20i integration branch. New mainb8c432ca adds master-key runtime; it is inspected but not merged pending the migration and internal-key delivery findings in [the licensing handoff](LICENSING_INTEGRATION_REVIEW.md).
@@ -7,6 +19,10 @@ Codex and its three agents continue complete20i P0. Reserve licensing service/va
 ## Current active agent assignments — 2026-10-15
 
 Root preserves3bbc42bd full38829910791 and verified Windows packages. Catalog owns codex/twentyi-scheduled-refresh from82302571, including source-review recovery repairs, MariaDB SQL comparison correction and native/browser tests. Hosting-history and forwarding review found assignment-history gaps; their respective authors are applying bounded fixes before integration. [Review details](TWENTYI_COMBINED_3BBC_EVIDENCE.md). Domains owns codex/twentyi-service-observations from3bbc with no shared inventory append hook. Cloud owns codex/twentyi-forwarding-requests from3bbc, without provider dispatch until response/readback semantics are verified. Their prior branches/builds/runs remain preserved. Root alone integrates/releases. [Current handoff](../SESSION_HANDOFF.md). Older entries below retain their original source scope.
+
+# Isolated hosting-history ownership — 2026-10-15
+
+Domain agent owns `codex/twentyi-service-observations` from root3bbc42bd in work/20i-service-observations. New service_observations modules/schema/UI/tests; minimal admin/portal routing and acceptance glue. No inventory_record hook: catalog scheduler extraction remains separate. Root alone integrates/releases. [Scope and evidence](TWENTYI_SERVICE_OBSERVATIONS.md). Preserve registrar725, nameserver9ea and renewal ed4/f62. Shipping e5c8aba8 and corrected test65725ad are frozen; all four native matrices and the actual browser checkpoint are downloaded and verified. Root receives PR149 with only a final evidence documentation checkpoint; no root merge or further provider behavior is added here.
 
 # Current combined integration and scheduled-refresh assignment — 2026-10-15
 

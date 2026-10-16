@@ -1,3 +1,11 @@
+## Account cloud-provider discovery — implementing, 2026-10-15
+
+New complete-reference lines2666–2672 permit one bounded owner discovery read. Typed parser, shared executor, immutable observations and owner screens are implemented and source-reviewed on an isolated17593061 descendant. Native/browser acceptance remains pending. Specs/zones/pricing and cloud server lifecycle remain separate work; PHP-version scalar evidence is documented for a future hosting reader. [Scope](TWENTYI_CLOUD_PROVIDERS.md).
+
+## Current history integration evidence — 2026-10-15
+
+The separate a963+bff queue preserves the frozen cloud recovery candidate. Combined installer refresh and independent route/schema/permission review pass; fresh combined acceptance is required. Root independently verifies all four a963 cloud archives and exact Windows packages. [Source, review, evidence and next actions](TWENTYI_HISTORY_INTEGRATION.md). Scheduler554 is a reviewed test-only reload correction over5fb shipping with new checkpoint38836183578 active; forwarding remains separate. Domains keeps history frozen and investigates the next documented discovery reader without shipping edits. Devin retains licensing ownership. Older entries below retain their original evidence scope.
+
 ## Current parallel implementation and combined acceptance — 2026-10-15
 
 Frozen3bbc42bd includes reviewed catalog readiness, renewal intake and cloud confirmation; all have native and browser proof on their own sources. Windows packages and all20 focused matrix archives verify; full combined38829910791 passed package/native/browser and passed unprivileged recovery and is running Apache protection checks. Corrected parent2239 full acceptance and final packages now verify. [Exact evidence](TWENTYI_COMBINED_3BBC_EVIDENCE.md). New isolated lanes implement scheduled inventory refresh, client hosting observation history and forwarding request/review; scheduler recovery corrections remain in progress. Full lifecycle/discovery/native controls/SSH and release gates remain unfinished. [Current handoff](../SESSION_HANDOFF.md). Older entries below retain their original source scope.
@@ -706,3 +714,16 @@ Owner continued complete20i work with parallel agents. New isolated `codex/twent
 ## 2026-10-15 owner allocation — software-product licensing
 
 Devin owns license generation and installation licensing for other software products sold by this site. Codex and its three agents continue the complete20i P0. This is ownership, not completion or running-agent evidence. Preserve the current licensing module and merge shared billing/portal/schema changes with reviewed tests. [Coordination](AGENT_COORDINATION.md).
+
+## 2026-10-15 — Hosting observation history
+
+From3bbc42bd on codex/twentyi-service-observations, implement owner-approved client history from retained package snapshots, exact assignment/account visibility anchors, latest-intent states and immutable permission recovery. No new provider contract or persistence hook. Local PHP syntax/Python AST and33pure cases per mode pass; native/browser checks and installer refresh pending at this entry. Root integrates after independent review and exact evidence. No release/deployment. [Contract and next actions](TWENTYI_SERVICE_OBSERVATIONS.md).
+
+
+## 2026-10-16 — Hosting history acceptance checkpoint
+
+The bounded owner-approved client history flow is implemented on shipping e5c8aba8, corrected test65725ad. Downloaded exact-source native run38832431406 verifies 71 native and 33 pure checks per mode in all four combinations. Actual packaged checkpoint38832527134 verifies 1,989 HTTP checks, including 44 history cases, and four inspected full owner/client desktop/mobile captures. Two auxiliary mobile element crops remain documented as capture artifacts. Root integration and combined full recovery/Apache/package acceptance remain required. This is saved provider observation history, not live uptime or completed provisioning. [Contract, source and evidence](TWENTYI_SERVICE_OBSERVATIONS.md).
+
+## 2026-10-15 — Separate hosting-history integration queue
+
+Root normally integrates historybff on codex/twentyi-next-integration from a963, preserving both parent histories. Owner/client visibility remains anchored to current assignment/account context and the approved observation sequence. All four a963 cloud matrices are independently verified at45 creation/87 confirmation each; history parent71native/33pure/1989HTTP evidence remains separate. Combined queue acceptance and publication remain pending. Scheduler/forwarding and Devin licensing remain separate lanes. [Current state](../PROJECT_STATUS.md).

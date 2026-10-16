@@ -16,17 +16,20 @@ class ProviderServer:
         (runtime/'ca.pem').write_bytes(cac.public_bytes(serialization.Encoding.PEM))
         (runtime/'server.pem').write_bytes(certificate.public_bytes(serialization.Encoding.PEM))
         (runtime/'server.key').write_bytes(key.private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.PKCS8,serialization.NoEncryption()))
-        self.mode='success';self.write_mode='success';self.calls=0;self.errors=[];self.names=[];self.packages=[];self.posts=[];self.cloud_servers=[];self.cloud_mode='success';self.get_paths=[];self.domain_mode='success';self.registrar_mode='success';self.registrar_domains=[];fixture=self
+        self.mode='success';self.write_mode='success';self.calls=0;self.errors=[];self.names=[];self.packages=[];self.posts=[];self.cloud_servers=[];self.cloud_mode='success';self.get_paths=[];self.domain_mode='success';self.registrar_mode='success';self.registrar_domains=[];self.cloud_providers=[];self.cloud_providers_mode='success';fixture=self
         class Handler(BaseHTTPRequestHandler):
             def do_GET(self):
                 fixture.calls+=1
                 fixture.get_paths.append(self.path)
-                if self.path not in ['/package','/cloud_server','/domain-search/example.invalid','/domain'] or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Accept')!='application/json':
+                if self.path not in ['/package','/cloud_server','/domain-search/example.invalid','/domain','/reseller/*/cloudProviders'] or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Accept')!='application/json':
                     fixture.errors.append('Unexpected fixed request')
                 mode=fixture.registrar_mode if self.path=='/domain' else (fixture.cloud_mode if self.path=='/cloud_server' else fixture.mode)
                 status=401 if mode=='authentication' else 200
                 listed=json.dumps(fixture.registrar_domains if self.path=='/domain' else (fixture.cloud_servers if self.path=='/cloud_server' else fixture.packages)).encode()
                 body={'success':listed,'object':b'{}','authentication':b'private synthetic response','echo':b'["SYNTHETIC_RAW_GENERAL_KEY"]'}.get(mode,listed)
+                if self.path=='/reseller/*/cloudProviders':
+                    status=401 if fixture.cloud_providers_mode=='authentication' else 200
+                    body={'success':json.dumps(fixture.cloud_providers).encode(),'object':b'{}','authentication':b'private cloud provider response'}.get(fixture.cloud_providers_mode,b'["invalid",false]')
                 if self.path=='/domain-search/example.invalid':
                     packets=[{'header':{'names':['example.invalid']}},{'name':'suggested.invalid','can':'register'},{'name':'unsold.com','can':'register'},{'name':'example.invalid','can':'register'}]
                     status=429 if fixture.domain_mode=='limited' else 200

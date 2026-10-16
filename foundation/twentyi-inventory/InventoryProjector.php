@@ -88,6 +88,17 @@ final class InventoryProjector
             array_values($servers), $observedAt, $skipped, $reasons, '', $scope, InventorySnapshot::COVERAGE_UNKNOWN);
     }
 
+    /** Exact account provider identifiers; malformed lists never become partial choices. */
+    public static function cloudProvidersList(TransportResponse $response, int $observedAt, string $scope = ''): InventorySnapshot
+    {
+        require_once __DIR__.'/CloudProviderList.php';
+        $decoded = self::listBody($response, $observedAt, $scope, CloudProviderList::MAX_ITEMS);
+        if ($decoded instanceof InventorySnapshot) return $decoded;
+        try { $records = CloudProviderList::fromValues($decoded); }
+        catch (\InvalidArgumentException) { return InventorySnapshot::unavailable('unexpected_shape', $observedAt, $scope); }
+        return new InventorySnapshot(InventorySnapshot::COMPLETE, $records, $observedAt, 0, [], '', $scope);
+    }
+
     /** 20i SDK registrar example documents only allocated id and name. */
     public static function domainsList(TransportResponse $response, int $observedAt, string $scope = ''): InventorySnapshot
     {
