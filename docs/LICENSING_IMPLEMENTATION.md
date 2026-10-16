@@ -45,7 +45,10 @@ the site.
 Creates three tables:
 
 - `website_licenses` — stores license keys, customer association, active
-  status, and `is_master` (staff test keys that authorize any domain)
+  status, `is_master` (staff test keys that authorize any domain), and
+  `invoice_id` (UNIQUE, nullable — links each licence to the paid invoice
+  that produced it; fulfilment is idempotent per invoice while a second
+  purchase of the same product mints a new license)
 - `license_domains` — stores registered domains per license (allows multiple domains per license for test/public sites)
 - `license_bundles` — records generated bundle ZIPs per license
 
@@ -53,12 +56,15 @@ Creates three tables:
 
 **File:** `site/database/migrations/license_migrate.php` — owner-gated
 adoption for existing installs (`studio_license_setup` in admin). Fresh
-deploys set `license_schema_version='1'` automatically; upgraded installs
+deploys set `license_schema_version='2'` automatically; upgraded installs
 prepare storage once via Studio → Website licenses with the administrator
 password. All license entry points (admin actions, portal actions/view,
 `api/validate.php`, `api/bundle-download.php`, invoice fulfilment) check
 `license_ready()` first — unprepared installs never touch license tables
-and the API answers inconclusive 500, never a false denial.
+and the API answers inconclusive 500, never a false denial. Version 2
+added `website_licenses.invoice_id`; `license_migrate()` upgrades a
+version-1 adoption in place (`ALTER TABLE` + re-validate) without losing
+existing license rows.
 
 ### 3. License service
 
