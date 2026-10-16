@@ -78,6 +78,18 @@ try{
     $key2=license_create(2,'WEBSITE-SALON');
     lic_ok('Second license independent',(int)license_get($key2)['is_active']===1);
 
+    // --- master keys (staff test keys — authorize any domain) -------------------
+    $key3=license_create(2,'TEST-MASTER',0,true);
+    $lic3=license_get($key3);
+    lic_ok('Master flag persisted',(int)$lic3['is_master']===1);
+    lic_ok('Master creation audited',(bool)one('SELECT id FROM '.table('audit')." WHERE action='license.create' AND detail LIKE '%master%'"));
+    lic_ok('Master authorizes unregistered domain',license_domain_authorized($lic3,'anything.example.org'));
+    lic_ok('Master authorizes second unregistered domain',license_domain_authorized($lic3,'another.test-site.com'));
+    lic_ok('Regular license denies unregistered domain',!license_domain_authorized(license_get($key2),'ghost.example.net'));
+    license_register_domain((int)license_get($key2)['id'],'real.example.net');
+    lic_ok('Regular license authorizes registered domain',license_domain_authorized(license_get($key2),'real.example.net'));
+    lic_ok('www variant authorized for registered apex',license_domain_authorized(license_get($key2),'www.real.example.net'));
+
     // --- product→industry mapping --------------------------------------------
     require_once CWP_CODE_ROOT.'/app/billing/catalog.php'; // pulls fulfill.php
     lic_ok('WEBSITE-RESTAURANT maps to restaurant',license_product_industry(['sku'=>'WEBSITE-RESTAURANT'])==='restaurant');

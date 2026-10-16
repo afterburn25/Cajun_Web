@@ -31,6 +31,7 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <option value="<?= esc($key) ?>"><?= esc($name) ?></option>
 <?php endforeach; ?>
 </select>
+<label><input type="checkbox" name="master" value="1"> Master key — validates on any domain (internal testing only, keep private)</label>
 <button class="btn gold">Generate license key</button>
 </form>
 </section>
@@ -48,7 +49,7 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <dt><strong>Product</strong></dt>
 <dd><?= esc($lic['product_id']) ?></dd>
 <dt><strong>Status</strong></dt>
-<dd><?= $lic['is_active'] ? '<span style="color:green">Active</span>' : '<span style="color:red">Inactive</span>' ?></dd>
+<dd><?= $lic['is_active'] ? '<span style="color:green">Active</span>' : '<span style="color:red">Inactive</span>' ?><?= (int)($lic['is_master']??0) ? ' <span style="color:#b8860b">MASTER — any domain</span>' : '' ?></dd>
 <dt><strong>Created</strong></dt>
 <dd><?= esc($lic['created_at']) ?></dd>
 </dl>

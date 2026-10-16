@@ -66,7 +66,7 @@ try {
 
     // Look up the license key
     $license = one(
-        'SELECT id, license_key, is_active FROM ' . table('website_licenses') . ' WHERE license_key = ?',
+        'SELECT id, license_key, is_active, is_master FROM ' . table('website_licenses') . ' WHERE license_key = ?',
         [$licenseKey]
     );
 
@@ -78,17 +78,13 @@ try {
         license_response(false, 'License is deactivated');
     }
 
-    // Check if domain is registered for this license. The www/apex pair
+    // Check if domain is authorized for this license. The www/apex pair
     // names the same site — a customer who registered example.com and
     // installs at www.example.com (or vice versa) is not a second
-    // instance and must not be denied.
-    $alt = str_starts_with($domain, 'www.') ? substr($domain, 4) : 'www.' . $domain;
-    $domainRegistered = one(
-        'SELECT id FROM ' . table('license_domains') . ' WHERE license_id = ? AND domain IN (?, ?) AND is_active = 1',
-        [$license['id'], $domain, $alt]
-    );
-
-    if (!$domainRegistered) {
+    // instance and must not be denied. Master licenses are staff-only
+    // test keys that authorize any domain without registration.
+    require_once CWP_CODE_ROOT . '/app/licenses/service.php';
+    if (!license_domain_authorized($license, $domain)) {
         license_response(false, 'Domain not registered for this license');
     }
 

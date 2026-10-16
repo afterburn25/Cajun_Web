@@ -27,7 +27,7 @@ function license_generate_key(): string {
 /**
  * Create a new license for a customer.
  */
-function license_create(int $customerId, string $productId, int $actor = 0): string {
+function license_create(int $customerId, string $productId, int $actor = 0, bool $master = false): string {
     $now = gmdate('Y-m-d H:i:s');
     // license_key is UNIQUE — 128-bit random keys make collisions essentially
     // impossible, but retry rather than fail outright if one ever occurs.
@@ -35,10 +35,10 @@ function license_create(int $customerId, string $productId, int $actor = 0): str
         $key = license_generate_key();
         try {
             query(
-                'INSERT INTO ' . table('website_licenses') . ' (license_key, customer_id, product_id, is_active, created_at, updated_at) VALUES (?, ?, ?, 1, ?, ?)',
-                [$key, $customerId, $productId, $now, $now]
+                'INSERT INTO ' . table('website_licenses') . ' (license_key, customer_id, product_id, is_active, is_master, created_at, updated_at) VALUES (?, ?, ?, 1, ?, ?, ?)',
+                [$key, $customerId, $productId, $master ? 1 : 0, $now, $now]
             );
-            license_audit($actor, 'create', 'License ' . substr($key, 0, 8) . '… customer ' . $customerId . ' product ' . $productId);
+            license_audit($actor, 'create', 'License ' . substr($key, 0, 8) . '… customer ' . $customerId . ' product ' . $productId . ($master ? ' (master)' : ''));
             return $key;
         } catch (PDOException $e) {
             if ($attempt === 2 || (int) ($e->errorInfo[1] ?? 0) !== 1062) {
@@ -47,6 +47,23 @@ function license_create(int $customerId, string $productId, int $actor = 0): str
         }
     }
     throw new RuntimeException('Could not allocate a unique license key.');
+}
+
+/**
+ * Whether a domain is authorized for the license.
+ * Master licenses are staff-only test keys — they authorize any domain
+ * and never consume domain slots. Normal licenses require an active
+ * license_domains row; the www/apex pair names the same site.
+ */
+function license_domain_authorized(array $license, string $domain): bool {
+    if ((int) ($license['is_master'] ?? 0) === 1) {
+        return true;
+    }
+    $alt = str_starts_with($domain, 'www.') ? substr($domain, 4) : 'www.' . $domain;
+    return (bool) one(
+        'SELECT id FROM ' . table('license_domains') . ' WHERE license_id = ? AND domain IN (?, ?) AND is_active = 1',
+        [(int) $license['id'], $domain, $alt]
+    );
 }
 
 /**
