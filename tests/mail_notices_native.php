@@ -81,7 +81,7 @@ try {
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
     for($i=1;$i<=4;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Notice staff '.$i,'notice'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);foreach([2=>['mail.read'],3=>['mail.send'],4=>[]] as $user=>$permissions)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$user,$user===4?'owner':'administrator',json_encode($permissions)]);
-    save_setting('mail_accounts_schema_version','1');save_setting('mail_inbox_schema_version','2');save_setting('mail_messages_schema_version','1');nt_actor();$id=nt_account();nt_grant($id);nt_grant($id,2);nt_grant($id,3);
+    save_setting('mail_accounts_schema_version','1');save_setting('mail_inbox_schema_version','2');save_setting('mail_messages_schema_version','2');nt_actor();$id=nt_account();nt_grant($id);nt_grant($id,2);nt_grant($id,3);
     nt_deny('Setup requires current owner password',fn()=>mail_notices_migrate('wrong'));
     nt_actor(2);nt_deny('Mail reader cannot prepare storage',fn()=>mail_notices_migrate($password));nt_actor();
     nt_deny('Count refuses unprepared storage',fn()=>mail_notices_count());
@@ -124,7 +124,7 @@ try {
     $_SESSION['last_activity']=time()-120;$idle=$_SESSION['last_activity'];mail_notices_passive_count();nt_ok('Passive count does not extend idle expiry',$_SESSION['last_activity']===$idle);
     $_SESSION['last_activity']=time()-1801;nt_deny('Expired session cannot read count',fn()=>mail_notices_passive_count());nt_ok('Passive count does not resurrect expired authentication',!isset($_SESSION['uid']));nt_actor();
     $_SESSION['auth_version']='revoked';nt_deny('Revoked authentication version excludes notices',fn()=>mail_notices_count());nt_actor();
-    save_setting('mail_notices_schema_version','0');nt_deny('Unknown nonempty storage cannot be silently adopted',fn()=>mail_notices_migrate($password));save_setting('mail_notices_schema_version','1');
+    save_setting('mail_notices_schema_version','0');nt_deny('Unknown nonempty storage cannot be silently adopted',fn()=>mail_notices_migrate($password));save_setting('mail_notices_schema_version','2');
     $stored=nt_snapshot();nt_ok('Notice storage retains no message contents or credentials',!str_contains($stored,'PRIVATE_SUBJECT')&&!str_contains($stored,'PRIVATE_SENDER')&&!str_contains($stored,'private password')&&!str_contains($stored,'Synthetic message date'));
     nt_ok('Notice projection returns no ciphertext or message content',!str_contains(json_encode(mail_notices_feed()),'credentials')&&!str_contains(json_encode(mail_notices_feed()),'PRIVATE_'));
     require __DIR__.'/mail_notices_hook_cases.php';

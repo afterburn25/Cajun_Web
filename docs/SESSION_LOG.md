@@ -4,6 +4,16 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 # Session log
 
+## Folder browsing follow-up — folder column width correction — 2026-10-16
+
+Request: continue #157 non-20i roadmap. Review of the folder-scoped read increment found `mail_message_reads.folder` and `mail_notice_windows/mail_notice_items.folder` still declared `VARCHAR(5)`, which rejects legal folder names such as `Sent Items` under strict SQL mode.
+
+Actions: `mail_messages_schema.php` and `mail_notices_schema.php` declare `folder VARCHAR(64)` (the same bound as `mail_inbox_reads.folder` and the wire-safe folder rule); `mail_messages_migrate()` and `mail_notices_migrate()` apply an additive `MODIFY COLUMN folder VARCHAR(64)` before strict validation when an existing install still has `varchar(5)`; `mail_messages_schema_version` and `mail_notices_schema_version` advance to `2` with adoption checks only for truly unmarked installs; fresh deploys stamp `2`. Test assertions updated for the new markers.
+
+Tests: `php -l` clean on all touched PHP; Python case files compile; build refresh clean (40 locked packages, 2188 exact dependency files, receiving mirror byte-identical). The widen/refuse paths run in the native MariaDB lane in CI.
+
+Next: continue the non-20i roadmap (provider flag sync and remaining mail acceptance items).
+
 ## Folder-scoped mailbox browsing — 2026-10-16
 
 Request: continue #157 non-20i roadmap; next named A-06 gap was other-folder reads. Starting commit: `devin/non20i-mail-send-attachments` tip `213325a4`, new branch `devin/non20i-mail-folders`.

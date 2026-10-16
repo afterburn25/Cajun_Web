@@ -8,7 +8,7 @@ require_once CWP_CODE_ROOT.'/app/mail/inbox.php';
 require_once CWP_CODE_ROOT.'/database/schema/mail_messages_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/mail_messages_migrate.php';
 
-function mail_messages_ready(): bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_messages_schema_version'])['value']??'')==='1';}
+function mail_messages_ready(): bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_messages_schema_version'])['value']??'')==='2';}
 function mail_message_outcomes(): array {
     return array_replace(mail_inbox_messages(),[
         'ok'=>'Message loaded. The server’s read flag was left unchanged.',
