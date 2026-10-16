@@ -14,6 +14,10 @@ Record reviewedcccf85bf, its first full38927120383, preserved2a/9779 failure evi
 
 Record exact2a focused3,020 checks, matching Windows/Linux packages and289 recovery checks alongside the original full run's tokenizer test-dependency failure and skipped HTTP. Preserve819c's terminal failure/99 missing reports and9779's newly canceled native-and-browser job with failed aggregate, pending diagnosis. Update current entry points and the159/161 correction priority; PRs163–170 are unaccepted proposals/foundations. This documentation-only descendant of82667afb imports no runtime and changes no installer, version, release or deployment.
 
+## Wire remaining P-07 client-facing notification events — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-notification-events`, stacked on `devin/non20i-notification-metrics`. Emits directed feed notifications on the remaining client-facing studio events: staff publishing a pending design/proposal version (client `approval-request`), private project file shares in both directions (admin share -> client, client share -> clients.manage staff, silent during support sessions), project creation, stage changes and manual invoice issuance. Every emit runs after the business write commits and failures are recorded via report_error, never rolling back the event. Native + browser assertions extended. No live mail claim.
+
 ## Surface honest operational freshness metrics — 2026-10-16
 
 Devin non-20i increment on `devin/non20i-notification-metrics`, stacked on the notifications runtime. Adds `app/notifications/metrics.php` — a read-side producer mapping the newest real rows (administration audit, inquiries, published website deliveries, notification delivery attempts) onto the foundation `MetricSample` contract — and an "Operational freshness" card on the System health page. Each sample's `checkedAt` is the recorded time of the underlying row, never render time; unprepared features show absent and quiet tables show stale rather than invented values. Staff-only surface; native and browser assertions cover fresh/stale/absent states and access denial. No polling daemon, provider call or live deployment.
