@@ -15,8 +15,8 @@ function nt_grant(string $id,int $user=1):void {global $password;$g=one('SELECT 
 function nt_batch(array $uids=['1','2'],string $epoch='55',bool $seen=false):array {return ['folder'=>'INBOX','uidvalidity'=>$epoch,'total'=>count($uids),'messages'=>array_map(fn($uid)=>['uid'=>$uid,'seen'=>$seen,'bytes'=>'200','headers_truncated'=>false,'subject'=>'SYNTHETIC_PRIVATE_SUBJECT','from'=>'SYNTHETIC_PRIVATE_SENDER','date'=>'Synthetic message date'],$uids)];}
 function nt_observe(string $id,array $batch,?callable $handle=null,int $revision=1):void {
     staff_locked(fn()=>staff_transaction(function()use($id,$batch,$handle,$revision):void {
-        $actor=mail_notices_actor();$started=['id'=>bin2hex(random_bytes(16)),'account_id'=>$id,'account_revision'=>$revision,'actor_id'=>(int)$actor['id'],'started_at'=>gmdate('Y-m-d H:i:s'),'started_epoch'=>time()];
-        query('INSERT INTO '.table('mail_inbox_reads').' (id,account_id,account_revision,actor_id,started_at,started_epoch) VALUES (?,?,?,?,?,?)',array_values($started));
+        $actor=mail_notices_actor();$started=['id'=>bin2hex(random_bytes(16)),'account_id'=>$id,'account_revision'=>$revision,'actor_id'=>(int)$actor['id'],'folder'=>'INBOX','started_at'=>gmdate('Y-m-d H:i:s'),'started_epoch'=>time()];
+        query('INSERT INTO '.table('mail_inbox_reads').' (id,account_id,account_revision,actor_id,folder,started_at,started_epoch) VALUES (?,?,?,?,?,?,?)',array_values($started));
         query('INSERT INTO '.table('mail_inbox_results')." (id,outcome,result_code,finished_at,elapsed_ms,message_count,mailbox_total,uidvalidity) VALUES (?,'success','ok',?,1,?,?,?)",[$started['id'],$started['started_at'],count($batch['messages']),$batch['total'],$batch['uidvalidity']]);
         mail_notices_observe($started,$batch,$handle);mail_accounts_audit((int)$actor['id'],'inbox_finished','Synthetic result '.$started['id']);
     }));
@@ -81,7 +81,7 @@ try {
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
     for($i=1;$i<=4;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Notice staff '.$i,'notice'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);foreach([2=>['mail.read'],3=>['mail.send'],4=>[]] as $user=>$permissions)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$user,$user===4?'owner':'administrator',json_encode($permissions)]);
-    save_setting('mail_accounts_schema_version','1');save_setting('mail_inbox_schema_version','1');save_setting('mail_messages_schema_version','1');nt_actor();$id=nt_account();nt_grant($id);nt_grant($id,2);nt_grant($id,3);
+    save_setting('mail_accounts_schema_version','1');save_setting('mail_inbox_schema_version','2');save_setting('mail_messages_schema_version','1');nt_actor();$id=nt_account();nt_grant($id);nt_grant($id,2);nt_grant($id,3);
     nt_deny('Setup requires current owner password',fn()=>mail_notices_migrate('wrong'));
     nt_actor(2);nt_deny('Mail reader cannot prepare storage',fn()=>mail_notices_migrate($password));nt_actor();
     nt_deny('Count refuses unprepared storage',fn()=>mail_notices_count());

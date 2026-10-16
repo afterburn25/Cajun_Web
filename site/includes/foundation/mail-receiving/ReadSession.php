@@ -88,29 +88,32 @@ final class ReadSession
         if($this->stream instanceof ReceivingStream) $this->stream->assertWithinBudget();
     }
 
-    public function headers(string $encryption, #[\SensitiveParameter] string $user, #[\SensitiveParameter] string $password): array
-    {
-        if($this->profile!==ReadProfile::Headers) {$this->stream->close();throw new ReceivingFailure('protocol');}
-        return $this->execute($encryption,$user,$password,function(int $exists,string $validity): array {
-            $rows=$exists?$this->fetch(max(1,$exists-19),$exists):[];
-            return ['folder'=>'INBOX','uidvalidity'=>$validity,'total'=>$exists,'messages'=>$rows];
-        });
-    }
-    public function message(string $encryption, #[\SensitiveParameter] string $user, #[\SensitiveParameter] string $password, string $validity, string $uid): array
+    public function headers(string $encryption, #[\SensitiveParameter] string $user, #[\SensitiveParameter] string $password, string $folder='INBOX'): array
     {
         try {
-            self::identity($validity,$uid);
+            self::folder($folder);
+            if($this->profile!==ReadProfile::Headers) throw new ReceivingFailure('protocol');
+        } catch(ReceivingFailure $e) {$this->stream->close();throw $e;}
+        return $this->execute($encryption,$user,$password,function(int $exists,string $validity)use($folder): array {
+            $rows=$exists?$this->fetch(max(1,$exists-19),$exists):[];
+            return ['folder'=>$folder,'uidvalidity'=>$validity,'total'=>$exists,'messages'=>$rows];
+        },$folder);
+    }
+    public function message(string $encryption, #[\SensitiveParameter] string $user, #[\SensitiveParameter] string $password, string $validity, string $uid, string $folder='INBOX'): array
+    {
+        try {
+            self::identity($validity,$uid); self::folder($folder);
             if($this->profile!==ReadProfile::Message) throw new ReceivingFailure('protocol');
         } catch(ReceivingFailure $e) {$this->stream->close();throw $e;}
-        return $this->execute($encryption,$user,$password,function(int $exists,string $current)use($validity,$uid): array {
+        return $this->execute($encryption,$user,$password,function(int $exists,string $current)use($validity,$uid,$folder): array {
             if($current!==$validity || $exists===0) throw new ReceivingFailure('mailbox_changed');
             $before=$this->one($uid,$exists,false);
             if((int)$before['RFC822.SIZE']>262144) throw new ReceivingFailure('limit');
             $after=$this->one($uid,$exists,true);
             if($before['RFC822.SIZE']!==$after['RFC822.SIZE'] || strlen($after['BODY'])!==(int)$after['RFC822.SIZE']) throw new ReceivingFailure('mailbox_changed');
-            return ['folder'=>'INBOX','uidvalidity'=>$current,'uid'=>$uid,'bytes'=>$after['RFC822.SIZE'],
+            return ['folder'=>$folder,'uidvalidity'=>$current,'uid'=>$uid,'bytes'=>$after['RFC822.SIZE'],
                 'seen'=>in_array('\\SEEN',$after['FLAGS'],true),'raw'=>$after['BODY']];
-        });
+        },$folder);
     }
     /** Validate before a production caller opens any network connection. */
     public static function identity(string $validity,string $uid): void
@@ -118,8 +121,15 @@ final class ReadSession
         foreach([$validity,$uid] as $id) if(!preg_match('/\A[1-9][0-9]{0,9}\z/D',$id)
             || strlen($id)===10 && strcmp($id,'4294967295')>0) throw new ReceivingFailure('protocol');
     }
+    /** A folder name safe to quote on the wire: printable ASCII, no specials. */
+    public static function folder(string $name): string
+    {
+        if(!preg_match('/\A[\x20-\x7E]{1,64}\z/D',$name) || str_contains($name,'"') || str_contains($name,'\\')
+            || str_contains($name,'%') || str_contains($name,'*')) throw new ReceivingFailure('folder');
+        return $name;
+    }
 
-    private function execute(string $encryption, #[\SensitiveParameter] string $user, #[\SensitiveParameter] string $password, callable $operation): array
+    private function execute(string $encryption, #[\SensitiveParameter] string $user, #[\SensitiveParameter] string $password, callable $operation, string $folder='INBOX'): array
     {
         $started=hrtime(true);
         try {
@@ -143,7 +153,7 @@ final class ReadSession
             $this->authorize();
             $this->stream->fwrite(base64_encode("\0".$user."\0".$password)."\r\n");
             $this->replies($tag,'authentication'); $this->authorize();
-            [$exists,$validity]=$this->examine();
+            [$exists,$validity]=$this->examine($folder);
             $result=$operation($exists,$validity);
             $this->authorize();
             if((hrtime(true)-$started)/1e9>20) throw new ReceivingFailure('timeout');
@@ -154,10 +164,10 @@ final class ReadSession
         finally { $this->stream->close(); }
     }
 
-    private function examine(): array
+    private function examine(string $folder): array
     {
         $exists=null; $validity=null; $readOnly=false;
-        foreach($this->replies($this->command('EXAMINE "INBOX"')) as $row) {
+        foreach($this->replies($this->command('EXAMINE "'.self::folder($folder).'"'),'folder') as $row) {
             $tokens=$row->tokens();
             if($row instanceof UntaggedResponse && ($tokens[1]??null) instanceof Number) {
                 $type=self::word($tokens[2]??null);

@@ -10,7 +10,9 @@ function mail_message_route(): array {
     $id=$_GET['account_id']??null;$revision=$_GET['revision']??null;$validity=$_GET['uidvalidity']??null;$uid=$_GET['uid']??null;
     if(!is_string($id)||!is_string($revision)||!preg_match('/\A[1-9][0-9]{0,9}\z/D',$revision)||(float)$revision>4294967295)throw new InvalidArgumentException('Open a message from the current inbox headers.');
     mail_message_identity($validity,$uid);
-    $route=['account_id'=>$id,'revision'=>$revision,'uidvalidity'=>$validity,'uid'=>$uid];
+    try {$folder=mail_inbox_folder($_GET['folder']??'INBOX');}
+    catch(InvalidArgumentException) {throw new InvalidArgumentException('This message link no longer matches the selected folder.');}
+    $route=['account_id'=>$id,'revision'=>$revision,'uidvalidity'=>$validity,'uid'=>$uid,'folder'=>$folder];
     if(array_key_exists('notice',$_GET)){if(!is_string($_GET['notice']))throw new InvalidArgumentException('This email notice is unavailable.');mail_notices_handle($_GET['notice']);$route['notice']=$_GET['notice'];}
     return $route;
 }
@@ -20,18 +22,20 @@ function mail_message_admin_action(string $action): array {
     }
     if(($_GET['view']??null)!=='mail-message'||!in_array($action,['mail_message_read','mail_message_reply','mail_message_reply_all','mail_message_forward','mail_message_attachment'],true))throw new InvalidArgumentException('Open the current message form before requesting content.');
     $route=mail_message_route();
-    foreach($route as $key=>$value)if(posted($key,32)!==$value)throw new InvalidArgumentException('This message form no longer matches the selected inbox message.');
+    foreach($route as $key=>$value)if(posted($key,70)!==$value)throw new InvalidArgumentException('This message form no longer matches the selected inbox message.');
     if($action==='mail_message_attachment') {
         $index=posted('attachment',4);if(!is_string($index)||!preg_match('/\A[0-9]{1,2}\z/D',$index))throw new InvalidArgumentException('This attachment is unavailable.');
-        try {$read=mail_message_attachment($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],(int)$index,null,null,$route['notice']??null);}
+        try {$read=mail_message_attachment($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],(int)$index,null,null,$route['notice']??null,$route['folder']);}
         catch(InvalidArgumentException) {flash('This attachment is unavailable.');redirect(admin_url('mail-message',$route));}
         if($read['code']!=='ok'||$read['attachment']===null){flash(mail_message_outcome($read['code']));redirect(admin_url('mail-message',$route));}
         $part=$read['attachment'];
         header('Content-Type: application/octet-stream');header('Content-Disposition: attachment; filename="'.$part['name'].'"');header('Cache-Control: private, no-store');header('X-Content-Type-Options: nosniff');header('Content-Length: '.strlen($part['bytes']));
         if(session_status()===PHP_SESSION_ACTIVE)session_write_close();echo $part['bytes'];exit;
     }
-    if($action==='mail_message_read')return mail_message_read($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],null,null,$route['notice']??null);
+    if($action==='mail_message_read')return mail_message_read($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],null,null,$route['notice']??null,false,$route['folder']);
     // Reply/Forward: stable posted draft identity resolves an exact replay without another mailbox request.
+    // Copied drafts remain bound to INBOX source reads; other folders cannot originate them yet.
+    if($route['folder']!=='INBOX')throw new InvalidArgumentException('Reply and forward are only available for inbox messages.');
     $mode=match($action){'mail_message_reply'=>'reply','mail_message_reply_all'=>'reply-all',default=>'forward'};
     $draftId=posted('draft_id',32);mail_drafts_id($draftId);
     [$sender,$senderRevision]=mail_drafts_form_reference(posted('sender',43));
@@ -56,15 +60,15 @@ function mail_message_admin_render(string $error,#[\SensitiveParameter] ?array $
     try {
         $route=mail_message_route();$accountId=$route['account_id'];
         [$actor,$row]=mail_message_authority($accountId,(int)$route['revision'],false);
-        if(isset($route['notice']))mail_notices_resolve($route['notice'],['account_id'=>$accountId,'account_revision'=>(int)$route['revision'],'folder'=>'INBOX','uidvalidity'=>$route['uidvalidity'],'uid'=>$route['uid']]);
+        if(isset($route['notice']))mail_notices_resolve($route['notice'],['account_id'=>$accountId,'account_revision'=>(int)$route['revision'],'folder'=>$route['folder'],'uidvalidity'=>$route['uidvalidity'],'uid'=>$route['uid']]);
         $record=mail_accounts_projection($row);unset($row);
         if($result!==null) {
             [$current]=mail_message_authority($accountId,(int)$route['revision']);
-            if($result['account_id']!==$accountId||$result['actor_id']!==(int)$current['id']||$result['account_revision']!==(int)$route['revision']||$result['uidvalidity']!==$route['uidvalidity']||$result['uid']!==$route['uid']||($result['notice_handle']??null)!==($route['notice']??null))throw new RuntimeException('Reload the current inbox before viewing this message.');
+            if($result['account_id']!==$accountId||$result['actor_id']!==(int)$current['id']||$result['account_revision']!==(int)$route['revision']||$result['uidvalidity']!==$route['uidvalidity']||$result['uid']!==$route['uid']||$result['folder']!==$route['folder']||($result['notice_handle']??null)!==($route['notice']??null))throw new RuntimeException('Reload the current inbox before viewing this message.');
         }
         // Reply/Forward senders: only accounts with a current Send grant for this actor.
         $replySenders=[];
-        if($result!==null&&$result['code']==='ok'&&mail_replies_ready()&&mail_drafts_ready()) {
+        if($result!==null&&$result['code']==='ok'&&$result['folder']==='INBOX'&&mail_replies_ready()&&mail_drafts_ready()) {
             try {
                 staff_locked(function()use(&$replySenders):void {
                     foreach(array_slice(mail_accounts_assigned(1),0,20) as $assigned)if($assigned['can_send'])$replySenders[$assigned['id']]=mail_drafts_account($assigned['id']);

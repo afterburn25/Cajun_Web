@@ -18,17 +18,17 @@ function mm_batch():array {
     $raw="Subject: SYNTHETIC_PRIVATE_HEADER <script>claim</script>\r\nFrom: Synthetic <synthetic@example.net>\r\nMIME-Version: 1.0\r\nContent-Type: multipart/alternative; boundary=m\r\n\r\n--m\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\nSYNTHETIC_PRIVATE_BODY 👩‍💻\r\n--m\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n<html><body><p>SYNTHETIC_PRIVATE_BODY</p><script>attack()</script><img src=https://tracker.invalid></body></html>\r\n--m--\r\n";
     return ['folder'=>'INBOX','uidvalidity'=>'4294967295','uid'=>'4294967295','seen'=>false,'bytes'=>(string)strlen($raw),'raw'=>$raw];
 }
-function mm_transport(array $row,#[SensitiveParameter] array $secrets,string $address,string $validity,string $uid,callable $authorize):array {
+function mm_transport(array $row,#[SensitiveParameter] array $secrets,string $address,string $validity,string $uid,callable $authorize,string $folder='INBOX'):array {
     global $transportCalls,$mode;$transportCalls++;
     if(db()->inTransaction()||$address!=='8.8.8.8'||$secrets['imap_password']!=='Synthetic private message password')throw new LogicException('Invalid receiving boundary');
     if($mode==='expire')query('UPDATE '.table('mail_account_grants').' SET expires_at=? WHERE account_id=? AND user_id=1',[time()-1,$row['id']]);
     $authorize();if($mode==='tls')throw new ReceivingFailure('tls');if($mode==='throw')throw new RuntimeException('private provider secret');
-    $batch=mm_batch();
+    $batch=mm_batch();$batch['folder']=$folder;
     if($mode==='after')query('UPDATE '.table('mail_account_grants').' SET enabled=0 WHERE account_id=? AND user_id=1',[$row['id']]);
     if($mode==='partial')$batch['bytes']='1';
     if($mode==='uid')$batch['uid']='1';
     if($mode==='epoch')$batch['uidvalidity']='1';
-    if($mode==='folder')$batch['folder']='Sent';
+    if($mode==='folder')$batch['folder']=$folder==='INBOX'?'Sent':'INBOX';
     if($mode==='oversize'){$batch['raw']=str_repeat('x',262145);$batch['bytes']='262145';}
     if($mode==='badmime'){$batch['raw']='No MIME headers';$batch['bytes']=(string)strlen($batch['raw']);}
     if($mode==='attachment'){$batch['raw']="Subject: With attachment\r\nFrom: Synthetic <synthetic@example.net>\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=att\r\n\r\n--att\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\nSee attached.\r\n--att\r\nContent-Type: application/pdf\r\nContent-Disposition: attachment; filename=\"quote.pdf\"\r\nContent-Transfer-Encoding: base64\r\n\r\n".base64_encode('SYNTHETIC_ATTACHMENT_BYTES')."\r\n--att--\r\n";$batch['bytes']=(string)strlen($batch['raw']);}
@@ -114,6 +114,9 @@ try {
     $beforeAttach=$transportCalls;mm_deny('Negative attachment index refuses before any request',fn()=>mail_message_attachment($id,1,'4294967295','4294967295',-1,'mm_resolve','mm_transport'));mm_ok('Refused index never reaches DNS or transport',$transportCalls===$beforeAttach);
     mm_age();$beforeAttach=$transportCalls;mm_deny('Out-of-range service index still refuses pre-read',fn()=>mail_message_attachment($id,1,'4294967295','4294967295',99,'mm_resolve','mm_transport'));mm_ok('Range-refused index never reaches transport',$transportCalls===$beforeAttach);
     mm_age();mm_grant($id,1,false,false);$r=mail_message_attachment($id,1,'4294967295','4294967295',0,'mm_resolve','mm_transport');mm_ok('Revoked read grant records a bounded failure, not bytes',$r['code']==='access_changed'&&$r['attachment']===null);mm_grant($id);
+    mm_age();$r=mail_message_read($id,1,'4294967295','4294967295','mm_resolve','mm_transport',null,false,'Sent');mm_ok('Folder-scoped message read binds and records the exact folder',$r['code']==='ok'&&$r['folder']==='Sent'&&$r['content']['folder']==='Sent'&&one('SELECT folder FROM '.table('mail_message_reads').' WHERE id=?',[$r['request_id']])['folder']==='Sent');
+    mm_age();$r=mail_message_attachment($id,1,'4294967295','4294967295',0,'mm_resolve','mm_transport',null,'Sent');mm_ok('Folder-scoped attachment download records the folder',$r['code']==='ok'&&$r['attachment']!==null);
+    mm_age();$mode='folder';$r=mail_message_read($id,1,'4294967295','4294967295','mm_resolve','mm_transport',null,false,'Sent');mm_ok('Folder-scoped transport mismatch is refused as protocol',$r['code']==='protocol');$mode='ok';
     mm_age();$mode='ok';
     $paged=mm_create();mm_grant($paged);for($i=0;$i<24;$i++)query('INSERT INTO '.table('mail_message_reads').' (id,account_id,account_revision,actor_id,folder,uidvalidity,uid,started_at,started_epoch) VALUES (?,?,1,1,\'INBOX\',\'4294967295\',\'4294967295\',?,?)',[bin2hex(random_bytes(16)),$paged,gmdate('Y-m-d H:i:s'),time()-7200-$i]);$a=mail_message_history($paged);$b=mail_message_history($paged,2);mm_ok('Personal message history pages are distinct and bounded',count($a)===21&&count($b)===4&&!array_intersect(array_column(array_slice($a,0,20),'id'),array_column($b,'id')));
     $retained=json_encode([all('SELECT * FROM '.table('mail_message_reads')),all('SELECT * FROM '.table('mail_message_results')),all('SELECT * FROM '.table('audit'))]);mm_ok('Request and audit storage contain no content passwords or remote exception text',!str_contains($retained,'PRIVATE_HEADER')&&!str_contains($retained,'PRIVATE_BODY')&&!str_contains($retained,'private message password')&&!str_contains($retained,'private provider'));

@@ -4,6 +4,16 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 # Session log
 
+## Folder-scoped mailbox browsing — 2026-10-16
+
+Request: continue #157 non-20i roadmap; next named A-06 gap was other-folder reads. Starting commit: `devin/non20i-mail-send-attachments` tip `213325a4`, new branch `devin/non20i-mail-folders`.
+
+Actions: `ReadSession::folder` bounds wire folder names (printable ASCII ≤64, no quote/backslash/wildcard) and `headers`/`message`/`InboxReader::read`/`MessageReader::read`/`HeaderSession` accept a folder argument that feeds `EXAMINE "<name>"` — read-only, `folder` refusal is a distinct bounded outcome. `mail_inbox_folder` mirrors the rule for service callers; `mail_inbox_read` gains a folder parameter recorded in `mail_inbox_reads.folder` (additive `VARCHAR(64) ... DEFAULT 'INBOX'` — version-1 installs get the owner-gated ALTER through the same `mail_inbox_setup`, storage version now `2`); inbox results/history and audit detail carry the folder. `mail_message_read`/`mail_message_attachment` accept a folder, journal it in the existing `mail_message_reads.folder` column, and verify the transport's claimed folder against the requested one. `mail_notices_observe`/`mail_notices_resolve` remain INBOX-keyed so folder reads never invent or resolve notices. The inbox view gains a bounded folder select (common names plus the account's configured Sent folder); message routes/forms carry the folder through the same posted-field binding; non-INBOX pages hide Reply/Reply all/Forward because protected copied drafts still bind to INBOX source reads. The HTTP IMAP fixture answers `EXAMINE "Sent"` with a separate UIDVALIDITY/message set and `NO` for absent folders.
+
+Tests: `php -l` clean on all touched PHP; pure session suite extended to 53 checks (quoted folder names, `folder` refusal, wildcard/backslash/quote names refused before network); native inbox/message suites extended (folder recorded in journals, transport folder-mismatch refused, attachment reads keep folder binding); HTTP cases extended (Sent headers and message through real TLS fixture, reply hidden on Sent, missing-folder refusal, unsafe name refused before network); update fixture remains compatible (`DEFAULT 'INBOX'` lets legacy folderless inserts run on both shapes; version-1 tables migrate in place). Build refresh clean; canonical mirrors byte-identical. Native/HTTP/Apache lanes run in CI; no real mailbox or provider use is claimed.
+
+Next: push, open stacked PR on `devin/non20i-mail-send-attachments`, update #157.
+
 ## Send-side draft attachments — 2026-10-16
 
 Request: continue #157 non-20i roadmap; send-side attachments were the largest remaining named mail gap. Starting commit: `devin/non20i-mail-reply-all` tip `74e98c6d`, new branch `devin/non20i-mail-send-attachments`.
