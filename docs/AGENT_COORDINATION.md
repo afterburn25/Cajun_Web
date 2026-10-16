@@ -1,5 +1,10 @@
 # Current CajunWebPro agent coordination
 
+## Isolated StackCP prerequisite lane — 2026-10-16
+
+Catalog owns `codex/twentyi-stackcp-prerequisites` from3189: dedicated auth/assignment/vault/documents/storage/schema, owner controller/renderers and focused fixtures. Runtime/root/VPS source review is clear; pure141/renderer46 per mode pass, native/browser remain pending. Pure315 source stays unchanged. External shared proposal uses a63 (111 native calls) and preserves renewal plus scheduler-last ordering; root composes directory additions and its separate evidence-packaging correction. Package2401 and owner `stackcp-setup-owner@example.invalid` are reserved; directory controls retain2301. No shared files or CI before root approval; no sender/session/client-login code. [Scope](TWENTYI_STACKCP_NATIVE_PREREQUISITES.md).
+
+
 Updated2026-10-16UTC. Codex and three agents own complete20i P0; Devin owns product licensing. No direct Devin session is implied. Work uses isolated branches and sequential root-reviewed shared changes.
 
 | Owner | Current checkpoint | Next evidence |

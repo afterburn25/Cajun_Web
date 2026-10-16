@@ -1,3 +1,7 @@
+## Unreleased — owner-only StackCP local setup prerequisites
+
+Add reviewed separate protected auth-client configuration, unverified local Stack-user assignments and owner forms with immutable history, captured authority and no-decrypt status. Pure141 and renderer46 checks pass in both PHP modes; actual native/browser/package acceptance is pending. No provider session or login link is enabled. Shared integration remains an external reviewed proposal.
+
 ## Acceptance job-output correction — 2026-10-16
 
 ## StackCP support handoff contract — 2026-10-16
