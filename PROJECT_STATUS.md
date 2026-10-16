@@ -10,7 +10,17 @@ Use the [migration instructions](docs/MIGRATION-INSTRUCTIONS-1.25.0.md) with the
 
 Devin continues the [non-20i assignment](DEVIN_START_HERE.md) on separate branches. Unaccepted proposals stay outside the frozen scope unless a reviewed release blocker requires a narrow correction.
 
-## 2026-10-16 — package acquisition retry and retained b42 evidence
+## 2026-10-16 — licensing fixture and release runtime provisioning
+
+This release-only batch starts from `8f54d36e418ee112ae5c3cb8ac4c63ceb277be32`; the enclosing commit identifies the descendant. Its ten paths are two workflows, two tests, one acceptance-contract hash and five documentation files. Load the workspace prerequisite in the existing licensing HTTP helper and add a supplemental maintained PHP 8.3/MariaDB job using the entire unchanged licensing browser scenario against the built COMPLETE package. In the four full-workflow setup blocks, select the fixed HTTPS setup-php PPA mirror for PHP 8.2/8.4 only, preserving the original publisher `Signed-By` bytes and checking its current fingerprint. Distro PHP 8.3, shipping code, all existing assertions, APT signature/TLS checks, runtime probes and test gates remain unchanged.
+
+Parent evidence cutoff is **2026-10-16 20:43 UTC**. Original 13a run 38942023179 passed native integration and 2,902 HTTP checks before the old-fulfillment child assertion failed; historical stderr is absent. Controlled source reproduction finds undefined `studio_ready()` and the import reaches the exact older-invoice refusal. Root/independent review and 208 existing helper checks pass. The new diagnostic is source-reviewed, not executed.
+
+8f54 PHP 8.2/MariaDB and PHP 8.4/MySQL build partitions agree with Windows FULL 5915 / COMPLETE 2887 / UPDATE 2874 (`2ee60128`, `db424739`). The other two build partitions failed on PPA HTTP 503 before application tests (`2a2a6ae2`, `10bda257`); three exact failed URLs still returned 503 in independent default-TLS HEAD probes. Focused run 38954927832 has three native environments at 755 checks each and maintained-distro 260 checks, with one native job still pending (`dc3d619f`). Parent b42's actual upgrade diagnostic passed 666 checks and eight root-viewed captures; it remains supplemental evidence.
+
+The guarded mirror proposal has 41 offline checks and four shell syntax checks, with no actual APT installation yet. After application, verify real provisioning and the supplemental licensing flow, then require fresh complete descendant four-environment/maintained acceptance, images/packages, normal main merge, complete exact-main acceptance and all-asset download verification. Later parent results belong in receipts rather than rewriting this cutoff. No 1.25 publication or live deployment is claimed; 1.24 remains immutable.
+
+## Historical checkpoint — package acquisition retry and retained b42 evidence (2026-10-16)
 
 This combined release-only checkpoint starts from `b42dda4cf763ca48a90b145673214a9641b2e024`; its enclosing Git history identifies the descendant. Bounded feature scope is unchanged. The accompanying workflow correction adds five APT acquisition retries to eight update/eight install commands and makes all eight updates fail on any index error. It preserves selected PHP packages, signature/TLS checks, all 148 native recipes, runtime probes, 160 browser/204 final reports and application-test failure behavior. The two instruction introductions are made neutral or explicitly historical; substantive procedures remain intact.
 

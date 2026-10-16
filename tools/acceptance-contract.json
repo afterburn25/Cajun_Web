@@ -480,7 +480,7 @@
     "source_sha256": {
       "tests/release_cases.py": "c157e61849cfdf3683c198eed3fe4cf3132d3d267f60a74e4221602c5fb5566c",
       "tests/license_release_cases.py": "72e31bbb6e904c88e308da8099c25a1f5edcab71a83f3a76c7034efa7de1a9ed",
-      "tests/license_release_browser_fixture.php": "00159fb93c49975fcba9d8cc63ad3a5dd7f128dbb93df4d077aff93a61b75be9",
+      "tests/license_release_browser_fixture.php": "9b0b4f72b1ed9281332afbf3b5060fef98d43501e3685bd4bc3c51c703d91bc9",
       "tests/recurring_billing_cases.py": "7aa87c9e429bce08d41384d7b1aad48ccf32c7309dca84fe31388109c81a1ca7",
       "tests/fixture_db.php": "08951dc232de301a5c1c0fa9e903e49ecf5c0c1cc7800583bdc620dd31731a2a"
     },

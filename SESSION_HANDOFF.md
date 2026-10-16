@@ -8,7 +8,15 @@ Keep all148 native recipes, complete PHP8.2/8.4 × MariaDB10.11/MySQL8.4 environ
 
 The tracked [acceptance report](docs/TEST_REPORT_1.25.0.md) has an explicit source/evidence cutoff. Final exact-main and publication facts belong in the external release report and receipts once those events occur; do not amend an accepted source merely to insert its own future test results. Verify identical versioned/compatibility report asset bytes before publication. No live deployment is authorized. Resume remaining20i only after the release and downloads are verified.
 
-## 2026-10-16 — package acquisition retry and retained b42 evidence
+## 2026-10-16 — licensing fixture and release runtime provisioning
+
+Batch the reviewed release-only corrections from exact `8f54d36e418ee112ae5c3cb8ac4c63ceb277be32`: one licensing helper import and contract hash, one supplemental runner/job, four guarded PHP 8.2/8.4 mirror selections, and five continuity records. Intended commit description: “Repair licensing fixture and release runtime provisioning”. Preserve original signing scope/key bytes and current fingerprint, strict APT/TLS/probes and every application assertion. Distro PHP 8.3 stays unchanged. Shipping code is unchanged.
+
+Keep the parent-evidence cutoff at **2026-10-16 20:43 UTC**: two build-only Linux/Windows agreements; two PPA 503 setup failures before application tests; three focused native environments × 755 plus distro 260, with one native job pending. Retain the original 13a HTTP failure and missing historical stderr separately from the proven missing-workspace reproduction. B42's 666-check/eight-image actual upgrade diagnostic is supplemental parent evidence. Exact receipts are recorded in the test report; subsequent parent results stay in external receipts.
+
+The new licensing diagnostic is unexecuted. The mirror has source review, 41 offline guards and four shell syntax checks, not an APT installation result. Verify both on the committed descendant, then complete all four full environments and maintained runtime, actual visual/package review, normal merge and complete exact-main acceptance before publication and fresh download verification. Preserve old runs and prior release assets. No new feature, release clearance or live action is included.
+
+## Historical checkpoint — package acquisition retry and retained b42 evidence (2026-10-16)
 
 Base this combined correction on frozen `b42dda4cf763ca48a90b145673214a9641b2e024`; do not invent its descendant identity or reuse parent acceptance. Batch only the reviewed APT acquisition policy (`6dd1e097`, workflow `dacb9292`) and neutral/historical instruction addendum (`76906652`) with these checkpoint records. The policy changes eight updates/eight installs, uses five acquisition retries and update error mode `any`, and leaves application tests, package selection, signatures and TLS unchanged.
 

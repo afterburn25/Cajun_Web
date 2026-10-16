@@ -56,7 +56,46 @@ jobs:
           if [ "$CWP_PHP_VERSION" != "8.3" ]; then
             sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
             sudo apt-get -o Acquire::Retries=5 install -y software-properties-common
-            sudo add-apt-repository --yes ppa:ondrej/php
+            sudo add-apt-repository --yes --no-update ppa:ondrej/php
+            # setup-php f3e473d116dcccaddc5834248c87452386958240 documents this
+            # fixed mirror. Preserve Launchpad's original scoped publisher key.
+            sudo python3 - <<'CWP_PHP_MIRROR'
+          from pathlib import Path
+          import re, subprocess, tempfile
+          source = Path('/etc/apt/sources.list.d/ondrej-ubuntu-php-noble.sources')
+          primary = 'https://ppa.launchpadcontent.net/ondrej/php/ubuntu/'
+          mirror = 'https://ppa.setup-php.com/ondrej/php/ubuntu/'
+          fingerprint = 'B8DC7E53946656EFBCE4C1DD71DAEAAB4AD4CAB6'
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 65536:
+              raise SystemExit('Expected regular Noble PHP PPA source is unavailable')
+          original = source.read_bytes()
+          text = original.decode('utf-8')
+          for field, expected in [('Types', 'deb'), ('URIs', primary), ('Suites', 'noble'), ('Components', 'main')]:
+              if re.findall(r'^' + field + r': (.*)$', text, re.M) != [expected]:
+                  raise SystemExit('Unexpected Noble PHP PPA source field: ' + field)
+          if re.search(r'^(?:Trusted|Allow-Insecure|Allow-Weak|Allow-Downgrade-To-Insecure):', text, re.M | re.I):
+              raise SystemExit('Unsafe repository trust override refused')
+          keys = re.findall(r'^Signed-By:([^\n]*(?:\n[ \t][^\n]*)*)', text, re.M)
+          if len(keys) != 1:
+              raise SystemExit('Exactly one publisher Signed-By field is required')
+          signed_by = '\n'.join('' if line.strip() == '.' else line.strip() for line in keys[0].splitlines()).strip()
+          if signed_by.startswith('-----BEGIN PGP PUBLIC KEY BLOCK-----'):
+              key = signed_by.encode('ascii')
+          else:
+              key_path = Path(signed_by)
+              if key_path.parent not in (Path('/usr/share/keyrings'), Path('/etc/apt/keyrings')) or key_path.is_symlink() or not key_path.is_file() or key_path.stat().st_size > 65536:
+                  raise SystemExit('Unexpected publisher key file')
+              key = key_path.read_bytes()
+          with tempfile.TemporaryDirectory(prefix='cwp-public-key-inspection-') as key_home:
+              shown = subprocess.run(['gpg', '--batch', '--no-options', '--homedir', key_home, '--no-autostart', '--with-colons', '--show-keys'], input=key, capture_output=True, check=True).stdout.decode('utf-8')
+          if len(re.findall(r'^pub:', shown, re.M)) != 1 or re.findall(r'^fpr:::::::::([A-F0-9]{40}):', shown, re.M)[:1] != [fingerprint]:
+              raise SystemExit('Unexpected PHP PPA signing identity')
+          changed = re.sub(r'^URIs: ' + re.escape(primary) + r'$', 'URIs: ' + mirror, text, count=1, flags=re.M).encode('utf-8')
+          if changed.replace(mirror.encode(), primary.encode(), 1) != original or changed == original:
+              raise SystemExit('Only the exact repository URI may change')
+          source.write_bytes(changed)
+          print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)
+          CWP_PHP_MIRROR
           fi
           sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
           sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
@@ -169,7 +208,46 @@ jobs:
           if [ "$CWP_PHP_VERSION" != "8.3" ]; then
             sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
             sudo apt-get -o Acquire::Retries=5 install -y software-properties-common
-            sudo add-apt-repository --yes ppa:ondrej/php
+            sudo add-apt-repository --yes --no-update ppa:ondrej/php
+            # setup-php f3e473d116dcccaddc5834248c87452386958240 documents this
+            # fixed mirror. Preserve Launchpad's original scoped publisher key.
+            sudo python3 - <<'CWP_PHP_MIRROR'
+          from pathlib import Path
+          import re, subprocess, tempfile
+          source = Path('/etc/apt/sources.list.d/ondrej-ubuntu-php-noble.sources')
+          primary = 'https://ppa.launchpadcontent.net/ondrej/php/ubuntu/'
+          mirror = 'https://ppa.setup-php.com/ondrej/php/ubuntu/'
+          fingerprint = 'B8DC7E53946656EFBCE4C1DD71DAEAAB4AD4CAB6'
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 65536:
+              raise SystemExit('Expected regular Noble PHP PPA source is unavailable')
+          original = source.read_bytes()
+          text = original.decode('utf-8')
+          for field, expected in [('Types', 'deb'), ('URIs', primary), ('Suites', 'noble'), ('Components', 'main')]:
+              if re.findall(r'^' + field + r': (.*)$', text, re.M) != [expected]:
+                  raise SystemExit('Unexpected Noble PHP PPA source field: ' + field)
+          if re.search(r'^(?:Trusted|Allow-Insecure|Allow-Weak|Allow-Downgrade-To-Insecure):', text, re.M | re.I):
+              raise SystemExit('Unsafe repository trust override refused')
+          keys = re.findall(r'^Signed-By:([^\n]*(?:\n[ \t][^\n]*)*)', text, re.M)
+          if len(keys) != 1:
+              raise SystemExit('Exactly one publisher Signed-By field is required')
+          signed_by = '\n'.join('' if line.strip() == '.' else line.strip() for line in keys[0].splitlines()).strip()
+          if signed_by.startswith('-----BEGIN PGP PUBLIC KEY BLOCK-----'):
+              key = signed_by.encode('ascii')
+          else:
+              key_path = Path(signed_by)
+              if key_path.parent not in (Path('/usr/share/keyrings'), Path('/etc/apt/keyrings')) or key_path.is_symlink() or not key_path.is_file() or key_path.stat().st_size > 65536:
+                  raise SystemExit('Unexpected publisher key file')
+              key = key_path.read_bytes()
+          with tempfile.TemporaryDirectory(prefix='cwp-public-key-inspection-') as key_home:
+              shown = subprocess.run(['gpg', '--batch', '--no-options', '--homedir', key_home, '--no-autostart', '--with-colons', '--show-keys'], input=key, capture_output=True, check=True).stdout.decode('utf-8')
+          if len(re.findall(r'^pub:', shown, re.M)) != 1 or re.findall(r'^fpr:::::::::([A-F0-9]{40}):', shown, re.M)[:1] != [fingerprint]:
+              raise SystemExit('Unexpected PHP PPA signing identity')
+          changed = re.sub(r'^URIs: ' + re.escape(primary) + r'$', 'URIs: ' + mirror, text, count=1, flags=re.M).encode('utf-8')
+          if changed.replace(mirror.encode(), primary.encode(), 1) != original or changed == original:
+              raise SystemExit('Only the exact repository URI may change')
+          source.write_bytes(changed)
+          print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)
+          CWP_PHP_MIRROR
           fi
           sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
           sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
@@ -408,7 +486,46 @@ jobs:
           if [ "$CWP_PHP_VERSION" != "8.3" ]; then
             sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
             sudo apt-get -o Acquire::Retries=5 install -y software-properties-common
-            sudo add-apt-repository --yes ppa:ondrej/php
+            sudo add-apt-repository --yes --no-update ppa:ondrej/php
+            # setup-php f3e473d116dcccaddc5834248c87452386958240 documents this
+            # fixed mirror. Preserve Launchpad's original scoped publisher key.
+            sudo python3 - <<'CWP_PHP_MIRROR'
+          from pathlib import Path
+          import re, subprocess, tempfile
+          source = Path('/etc/apt/sources.list.d/ondrej-ubuntu-php-noble.sources')
+          primary = 'https://ppa.launchpadcontent.net/ondrej/php/ubuntu/'
+          mirror = 'https://ppa.setup-php.com/ondrej/php/ubuntu/'
+          fingerprint = 'B8DC7E53946656EFBCE4C1DD71DAEAAB4AD4CAB6'
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 65536:
+              raise SystemExit('Expected regular Noble PHP PPA source is unavailable')
+          original = source.read_bytes()
+          text = original.decode('utf-8')
+          for field, expected in [('Types', 'deb'), ('URIs', primary), ('Suites', 'noble'), ('Components', 'main')]:
+              if re.findall(r'^' + field + r': (.*)$', text, re.M) != [expected]:
+                  raise SystemExit('Unexpected Noble PHP PPA source field: ' + field)
+          if re.search(r'^(?:Trusted|Allow-Insecure|Allow-Weak|Allow-Downgrade-To-Insecure):', text, re.M | re.I):
+              raise SystemExit('Unsafe repository trust override refused')
+          keys = re.findall(r'^Signed-By:([^\n]*(?:\n[ \t][^\n]*)*)', text, re.M)
+          if len(keys) != 1:
+              raise SystemExit('Exactly one publisher Signed-By field is required')
+          signed_by = '\n'.join('' if line.strip() == '.' else line.strip() for line in keys[0].splitlines()).strip()
+          if signed_by.startswith('-----BEGIN PGP PUBLIC KEY BLOCK-----'):
+              key = signed_by.encode('ascii')
+          else:
+              key_path = Path(signed_by)
+              if key_path.parent not in (Path('/usr/share/keyrings'), Path('/etc/apt/keyrings')) or key_path.is_symlink() or not key_path.is_file() or key_path.stat().st_size > 65536:
+                  raise SystemExit('Unexpected publisher key file')
+              key = key_path.read_bytes()
+          with tempfile.TemporaryDirectory(prefix='cwp-public-key-inspection-') as key_home:
+              shown = subprocess.run(['gpg', '--batch', '--no-options', '--homedir', key_home, '--no-autostart', '--with-colons', '--show-keys'], input=key, capture_output=True, check=True).stdout.decode('utf-8')
+          if len(re.findall(r'^pub:', shown, re.M)) != 1 or re.findall(r'^fpr:::::::::([A-F0-9]{40}):', shown, re.M)[:1] != [fingerprint]:
+              raise SystemExit('Unexpected PHP PPA signing identity')
+          changed = re.sub(r'^URIs: ' + re.escape(primary) + r'$', 'URIs: ' + mirror, text, count=1, flags=re.M).encode('utf-8')
+          if changed.replace(mirror.encode(), primary.encode(), 1) != original or changed == original:
+              raise SystemExit('Only the exact repository URI may change')
+          source.write_bytes(changed)
+          print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)
+          CWP_PHP_MIRROR
           fi
           sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
           sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
@@ -505,7 +622,46 @@ jobs:
           if [ "$CWP_PHP_VERSION" != "8.3" ]; then
             sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
             sudo apt-get -o Acquire::Retries=5 install -y software-properties-common
-            sudo add-apt-repository --yes ppa:ondrej/php
+            sudo add-apt-repository --yes --no-update ppa:ondrej/php
+            # setup-php f3e473d116dcccaddc5834248c87452386958240 documents this
+            # fixed mirror. Preserve Launchpad's original scoped publisher key.
+            sudo python3 - <<'CWP_PHP_MIRROR'
+          from pathlib import Path
+          import re, subprocess, tempfile
+          source = Path('/etc/apt/sources.list.d/ondrej-ubuntu-php-noble.sources')
+          primary = 'https://ppa.launchpadcontent.net/ondrej/php/ubuntu/'
+          mirror = 'https://ppa.setup-php.com/ondrej/php/ubuntu/'
+          fingerprint = 'B8DC7E53946656EFBCE4C1DD71DAEAAB4AD4CAB6'
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 65536:
+              raise SystemExit('Expected regular Noble PHP PPA source is unavailable')
+          original = source.read_bytes()
+          text = original.decode('utf-8')
+          for field, expected in [('Types', 'deb'), ('URIs', primary), ('Suites', 'noble'), ('Components', 'main')]:
+              if re.findall(r'^' + field + r': (.*)$', text, re.M) != [expected]:
+                  raise SystemExit('Unexpected Noble PHP PPA source field: ' + field)
+          if re.search(r'^(?:Trusted|Allow-Insecure|Allow-Weak|Allow-Downgrade-To-Insecure):', text, re.M | re.I):
+              raise SystemExit('Unsafe repository trust override refused')
+          keys = re.findall(r'^Signed-By:([^\n]*(?:\n[ \t][^\n]*)*)', text, re.M)
+          if len(keys) != 1:
+              raise SystemExit('Exactly one publisher Signed-By field is required')
+          signed_by = '\n'.join('' if line.strip() == '.' else line.strip() for line in keys[0].splitlines()).strip()
+          if signed_by.startswith('-----BEGIN PGP PUBLIC KEY BLOCK-----'):
+              key = signed_by.encode('ascii')
+          else:
+              key_path = Path(signed_by)
+              if key_path.parent not in (Path('/usr/share/keyrings'), Path('/etc/apt/keyrings')) or key_path.is_symlink() or not key_path.is_file() or key_path.stat().st_size > 65536:
+                  raise SystemExit('Unexpected publisher key file')
+              key = key_path.read_bytes()
+          with tempfile.TemporaryDirectory(prefix='cwp-public-key-inspection-') as key_home:
+              shown = subprocess.run(['gpg', '--batch', '--no-options', '--homedir', key_home, '--no-autostart', '--with-colons', '--show-keys'], input=key, capture_output=True, check=True).stdout.decode('utf-8')
+          if len(re.findall(r'^pub:', shown, re.M)) != 1 or re.findall(r'^fpr:::::::::([A-F0-9]{40}):', shown, re.M)[:1] != [fingerprint]:
+              raise SystemExit('Unexpected PHP PPA signing identity')
+          changed = re.sub(r'^URIs: ' + re.escape(primary) + r'$', 'URIs: ' + mirror, text, count=1, flags=re.M).encode('utf-8')
+          if changed.replace(mirror.encode(), primary.encode(), 1) != original or changed == original:
+              raise SystemExit('Only the exact repository URI may change')
+          source.write_bytes(changed)
+          print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)
+          CWP_PHP_MIRROR
           fi
           sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
           sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring" apache2-bin "libapache2-mod-php${CWP_PHP_VERSION}"

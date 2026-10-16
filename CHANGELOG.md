@@ -4,7 +4,11 @@ Includes the hosting/domain/cloud observations, explicit assignments, reviewed c
 
 The [acceptance report](docs/TEST_REPORT_1.25.0.md) records source-specific results and limits. This source change entry does not assert publication or live deployment. The release assets and verification receipts establish those later outcomes.
 
-## 2026-10-16 — package acquisition retry and retained b42 evidence
+## 2026-10-16 — licensing fixture and release runtime provisioning
+
+From 8f54, load the licensing fixture's workspace prerequisite and align its contract hash; add a supplemental maintained PHP 8.3/MariaDB HTTP/Chromium job using the unchanged licensing case. Guardedly select the fixed HTTPS setup-php PPA mirror in four PHP 8.2/8.4 setup blocks, retaining original publisher trust, signatures, TLS, strict APT failure behavior and all probes/tests. Distro PHP 8.3 and shipping code stay unchanged. The mirror has 41 offline checks/four shell syntax checks; actual APT and diagnostic execution remain pending. Preserve parent evidence at 20:43 UTC and all previous failures. Complete descendant/maintained and exact-main acceptance, publication and download verification remain required.
+
+## Historical checkpoint — package acquisition retry and retained b42 evidence (2026-10-16)
 
 Starting from b42, add bounded APT acquisition retries and strict index-update failure handling while retaining every runtime selection, application test and release gate. Clarify the generic migration/directory introductions without changing substantive instructions or removing historical records. Retain eight original 061/e713 PPA HTTP 503 setup failures and two successful setup comparisons. B42 Windows packages and e713 focused maintained-cloud results pass only their named scopes; original b42 upgrade diagnostic 38951170365 was still in setup at the documentation cutoff. No complete descendant acceptance, publication or live deployment is claimed.
 

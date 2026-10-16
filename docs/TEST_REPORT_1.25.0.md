@@ -2,7 +2,27 @@
 
 This tracked report records source-specific candidate evidence available at its documentation cutoff. It does not certify a future commit or publication. [Scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md) and [owner upgrade instructions](MIGRATION-INSTRUCTIONS-1.25.0.md) define the increment. Complete exact-main outcomes and publication verification are recorded in the external final release report/receipts once those events occur; versioned and compatibility final report assets must contain identical bytes.
 
-## Recorded source
+## 2026-10-16 — licensing fixture and release runtime provisioning
+
+Parent is exact `8f54d36e418ee112ae5c3cb8ac4c63ceb277be32`; the enclosing commit identifies the correction. Parent results below have a fixed **2026-10-16 20:43 UTC** cutoff. Source-review records for this batch are separate from runtime outcomes.
+
+| Evidence | Actual result and limit |
+|---|---|
+| Original 13a run 38942023179 / native-browser job 117113081545 | Native integration passed; 2,902 HTTP passes then the old-fulfillment child assertion failed. Historical child stderr was not retained. |
+| Loader review `0ffb7ea6` / root `c18d4586` | Controlled source reproduction raises undefined `studio_ready()` without workspace; corrected import reaches the exact older-invoice refusal. Lint and 208 existing artifact-helper checks pass; not corrected HTTP acceptance. |
+| 8f54 builds 38954876383 and 38954914058 | PHP 8.2/MariaDB and PHP 8.4/MySQL build-only Linux/Windows FULL 5915 / COMPLETE 2887 / UPDATE 2874 agreement (`2ee60128`, `db424739`). |
+| 8f54 builds 38954885552 and 38954899956 | PPA index 503 and PHP 8.4 common/opcache DEB 503 despite bounded retries; no application tests (`2a2a6ae2`, `10bda257`). |
+| Independent availability `672d1964` | Default-TLS HEAD at 20:37:34–20:37:40 UTC: all three exact failed URLs still 503. Local metadata only; no package/runner acceptance. |
+| Focused 8f54 run 38954927832, `dc3d619f` | Three native environments × 755 checks and maintained PHP 8.3 distro 260 pass. One native environment pending; no complete focused/full acceptance. |
+| B42 diagnostic 38951170365, `1cda937f` / `2393255f` | Actual published 1.24 across four scopes: 666 checks and eight root-viewed captures. Supplemental parent evidence; intermediate later-family snapshots remain fixture assertions. |
+
+This ten-file source batch adds the one-line helper prerequisite/hash, a supplemental diagnostic runner/job, four guarded runtime repository selections and five records. Diagnostic `62082eb5` / independent `aaf20ca9` / root application `9e8c3bcc` reuses all existing licensing assertions, six captures and twenty response diagnostics. Its 27 author and 46 independent source checks do not claim actual HTTP execution.
+
+Mirror proposal `1cc84655` and independent source review `5067a78b` retain the original publisher `Signed-By` bytes/current fingerprint, strict APT signatures/TLS, selected packages and every runtime/test gate. Only the fixed HTTPS setup-php mirror is selected for PHP 8.2/8.4; distro PHP 8.3 is unchanged. All 41 offline guards and four shell syntax checks pass; no actual APT installation or future mirror availability is established. Source metadata signature evidence is limited to the current publisher signature; the retained raw GPG exit 2 from an additional unknown historical signature is not called whole-command success.
+
+Shipping and existing assertions are unchanged. Require actual descendant provisioning and licensing diagnostic, fresh full PHP 8.2/8.4 × MariaDB 10.11/MySQL 8.4 plus maintained runtime, all 148 native recipes / 160 browser / 204 final reports, actual images and package agreement. Complete exact-main acceptance, immutable publication and fresh verification of every asset remain separate gates. Subsequent parent results stay in external receipts. No release or live deployment is claimed.
+
+## Historical integration ancestry
 
 The canonical branch is `codex/release-1.25.0`. It started from main `35d8fb7efc94f6f851399d0755fa93097f1fce66`, normally merged mature 20i source `3fa72d7b3b447fa3d281cc981ed861c508f850f2` in `b98b96eb2a33e4bdeb72e15217213431885aad67`, and normally merged the main documentation checkpoint `d7153b076e91b524ff2f99a9a7aa5c910551fc5e` in `85f0b489b30d4e9e6db839e2cf7da02f512176c5`.
 

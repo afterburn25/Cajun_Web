@@ -47,6 +47,7 @@ if($operation==='seed'){
     query('INSERT INTO '.table('license_bundles').' (license_id,file_path,title,sha256,created_at) VALUES (?,?,?,?,?)',[$master['id'],$path,'Synthetic historical master bundle',hash_file('sha256',$path),$now]);
     echo json_encode(['bundle_id'=>(int)db()->lastInsertId()],JSON_THROW_ON_ERROR);
 }elseif($operation==='old-fulfillment'){
+    require_once CWP_CODE_ROOT.'/app/clients/workspace.php';
     require_once CWP_CODE_ROOT.'/app/licenses/fulfill.php';
     try{license_fulfill_invoice(900);echo json_encode(['refused'=>false]);}
     catch(RuntimeException $e){if($e instanceof PDOException)throw $e;echo json_encode(['refused'=>true,'reason'=>$e->getMessage()],JSON_THROW_ON_ERROR);}
