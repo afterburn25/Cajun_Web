@@ -1,0 +1,46 @@
+# Assigned-package Force SSL observation contract
+
+Application follow-up is isolated and pending review; see [saved Force SSL observations](TWENTYI_PACKAGE_FORCE_SSL_OBSERVATIONS.md). The accepted pure source and evidence below remain unchanged.
+
+This isolated lane starts at `427e3a233706f22cd39918d8b97256a7fb2b1e90` on `codex/twentyi-package-force-ssl`. It adds a pure typed read contract and synthetic tests only. No application transport permission, dispatch, storage, client sharing, UI, scheduler, POST descriptor or provider operation is added. The frozen1.25 candidate and Devin licensing allocation remain unchanged.
+
+## Source and interpretation
+
+The owner-supplied full reference is195,404 bytes, SHA256 `34e713c3c0b4145b6a5e3f5929d0bd470605793f98d2d917c2b28f21814c3e95`. Its [portable redacted copy](reference/20i-owner-api-34e713-redacted.txt) preserves line alignment. Lines1664–1670 document a bodyless `GET /package/{packageId}/web/forceSSL`, returning true when the virtual host's ForceSSL flag is set. The request has no field, query or alternative resource selector.
+
+The retained provider-authored SDK1.0.6, redistributed in2018, directly decodes GET responses with `json_decode` and does not unwrap an envelope. [Immutable REST.php](https://raw.githubusercontent.com/LunarDevelopment/20iRestModule/696a5f1299cd2b1e67ae7f688d644ac800f41b67/lib/TwentyI/API/REST.php), SHA256 `0f9b724e34bd26fa0cc85dc3d266e97472e2ae70396d2b7451f5995330860031`: lines142–157 add no query for empty fields;168–171 directly decode the response. This is documentation evidence, not a current live-account response capture.
+
+The strict projection accepts HTTP200 containing exactly one JSON boolean. True has the documented flag-set meaning. False is retained as a reported false flag, a narrow boolean-domain inference: the reference does not explicitly describe the unset response or show a raw false response. Null is unavailable, never false. If an account returns null or another representation for an unset flag, that observation remains unavailable until its contract is verified. Strings, numbers, arrays, objects/envelopes, malformed JSON and other status codes are refused; values are never tested by truthiness. The4,096-byte body limit and15-second request budget are local defensive policy, not provider guarantees.
+
+20i's [Force HTTPS support guide](https://docs.20i.com/ssl-certificates/force-https), updated2023-08-21 and reviewed2026-10-16, distinguishes the redirect setting from certificate presence and mixed-content issues. The captured public HTML is173,110 bytes, SHA256 `77021afb4928bad05cf27d81a05fd3456e5e53294d62886ba747ceef602cb8aa`. A saved flag must never be described as TLS health, certificate validity, verified redirect behavior, secure-site status, HTTPS reachability or account entitlement.
+
+Lines1671–1678 also show a POST setter with `value:true`. Its acknowledgement and disabling response semantics are not established. That descriptor, application admission and execution are deferred; no write is implemented here.
+
+## Supplied binding and read boundary
+
+`PackageForceSslBinding` retains a distinct `package.force-ssl` scope with exact supplied profile/revision, key fingerprint, sealed-credential hash, package/client/link identity, link/event/audit hashes and original package-list source identity/sequence/hash. Each validated scalar is detached from caller-held references. Restored objects revalidate their canonical data, JSON, digest and scope before use. No PHP-version sharing permission is inherited. These supplied facts do not establish current database or provider authority by themselves.
+
+`PackageForceSslObservation` preserves a boolean only for a complete result; unavailable results always carry null plus a bounded reason. Restored observations revalidate the nested binding and derived scope. The injected typed reader checks provider/account identity before resolving a credential, sends one fixed request, maps transport failures to bounded classifications without retry, and returns no raw response or headers. Locally accepted synthetic credentials exactly matching the canonical true/false token or its Base64 authorization form are conservatively refused before producing a value. The standalone projector has no credential and cannot perform that credential-owned check.
+
+Independent review reproduced one issue in the initial pure source: a restored binding could contain an externally referenced package ID. Its current fields validated, but an observation retained that same object; changing the external variable then changed the observation's binding while its canonical JSON and scope stayed unchanged. The corrected boundaries consume `validated()` snapshots, which check all original derived fields and rebuild detached scalar data. Request, read, project and observation construction use these copies; restored observations also expose a validated detached document. Seven added regression checks exercise the exact123→456 mutation and credential/transport callback changes. The initial152 local reports are retained separately; they did not cover this finding. No application exposure or live provider action is claimed.
+
+Any later runtime integration must independently validate current exact assigned-package authority, complete fresh post-assignment inventory, source/common-audit correspondence and latest-intent order, original event/audit history, active client and current profile/sealed credential before credentials and after response. It needs its own immutable evidence, counters and recovery witnesses in the existing guarded shared writer, plus separate explicit owner-approved client sharing. Shared optional arguments will be coordinated sequentially by root; this pure lane reserves no positions. An ordinary view must not dispatch a read, and a failed or unfinished latest read must not revive an older current value.
+
+## Verification and remaining work
+
+Local PHP syntax passes all three new foundation files and the test file. `tests/twentyi-package-force-ssl/run.php` passes159 distinct named checks in both normal and no-INI PHP modes. It verifies true/false/null distinctions; all rejected shapes/statuses and body bounds; exact request/account/credential handling; immutable and restored bindings/observations; credential echo refusal; bounded transport errors and no retries. It also verifies the existing application transport still rejects both ForceSSL GET and POST. All transport responses are synthetic; no DNS, live request, database, permission or browser operation occurs.
+
+Root and catalog independently cleared the corrected detached snapshot boundary at Binding8867d049, Readerf4da6ae3, Observation027c7360 and testdb3f119f. The narrow `package-force-ssl-contract.yml` workflow runs PHP8.2/8.4 in default/minimal modes with network disabled, read-only container root and no application/database execution. Actual artifacts remain pending at this freeze; source review and local results are not CI acceptance. Runtime wiring, durable observation and sharing, actual four-way native and owner/client browser acceptance remain future work requiring review. No new full application run is dispatched for this pure slice.
+
+## Exact pure acceptance — 2026-10-16
+
+Tested source `b2033bab854d9f56b2416652def362030c06cbfc`, tree `0acb1f4d351d58ed52343a0d3de2b8e246de88d4`, passed the single automatic [run38857815866](https://github.com/afterburn25/Cajun_Web/actions/runs/38857815866), attempt1. Both PHP8.2/8.4 jobs passed syntax, documentation links, the network-disabled contract checks and unchanged-source verification. Each default/minimal report contains159 distinct passing named results. These repeat the same contract cases across versions/modes and are not summed as unique coverage.
+
+| PHP | Artifact | SHA256 |
+| --- | --- | --- |
+| 8.2 | 12027687956 | `a84aa528aa8ffa6134c3d84e2cd0d3492d93571742248b5e4432a7ecf2284b0b` |
+| 8.4 | 12027364829 | `7b0767d3a3f899c0381d264b7e8b44fcaf2a33972bc4eccc46a3dc8ac210ab9f` |
+
+Each downloaded archive is3,682 bytes with exactly two safe case-unique JSON members and clear CRC. Exact source/run metadata, digest, size, complete named outcomes and outer pass/failure fields were independently verified. Local `qa/38857815866/verification.json` retains every result; `acceptance-proof.json` has SHA256 `045fd1cdbf95fa776d22daec274a82b7ef5b851b4185ea74616acf35bffced0e`. The original archives and pre-correction152-case local reports remain intact.
+
+This final handoff changes documentation only. All foundation/tests/workflow/site/tools bytes remain exactly b2033. No PR was opened or manual/native/full run dispatched. This accepts only the pure supplied-binding/strict-boolean contract; runtime observations, sharing, native persistence, browser views and current account behavior remain unimplemented/unverified in this lane. Root owns any later sequential integration and release.

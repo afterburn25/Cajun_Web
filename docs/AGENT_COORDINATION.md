@@ -4,10 +4,10 @@ Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for
 
 | Owner | Current branch/checkpoint | Scope and next evidence |
 |---|---|---|
-| Root | Local normal roots57e72 merge over2f6569; original03b/PR151 evidence retained |39 focused workflows successful, Windows exact packages and fresh four-way expiry archives verified; original full38858618681 remains active. Review current roots staged parity; combine native-tested ForceSSL before one new full dispatch, then current-main/exact-main release gates. |
-| Domains | Expiry18 imported; source reviews complete | Fresh03b expiry artifacts and original427 final failure verified. Prepare exact03b browser/final verifiers and preserve actual original evidence. |
-| VPS | ForceSSL pureb2033/docs6988; application staged | Dedicated runtime/fixtures/shared proposal reviewed. Normal03b/document-roots prerequisite integration, exact patch application and final installer/workflow review precede one focused matrix. No full/browser dispatch. |
-| Catalog | Document-roots applicatione2b9fd6d; DNS96f/docsfb2f19d2 | Single focused38859581032 and all four actual archives accepted. Record evidence-only descendant. Root preserves corrected659 owner fixtures at eventual normal integration. |
+| Root | Normal ForceSSLc06 merge overb8a9; catalog fixture repair | Verify staged2,794/2,793 parity and one new combined full run. Preserve original03b failure and reviewed main boundaries. |
+| Domains | Original03b terminal evidence; directory-listing runtime review clear | Preserve final archive against frozen03b and Windows packages; no rerun. |
+| VPS | ForceSSLb5c2 native accepted; catalog correction independently clear | Review isolated directory-listing native/browser fixtures/workflow; no root edits or CI. |
+| Catalog | Isolated directory-listing application overb5c2 | Dedicated runtime independently clear; external shared wiring and fixtures await coordinated review before one focused matrix. |
 | Devin | Software-product licensing; main187 docs-only delta reviewed | Populated upgrade/internal-master customer-delivery findings remain. Preserve serialized mutation helpers and keyless installer. Active session status remains unconfirmed. |
 
 Original427 is terminal failure at the preserved setup check: final125 reports,2,107 HTTP passes plus one failure,289 recovery/2,211 Apache passes and exact Git/Windows packages are verified. No further polling or repeated acceptance is needed. See [handoff](../SESSION_HANDOFF.md) for exact current sources, evidence and next actions.

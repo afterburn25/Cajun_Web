@@ -1,12 +1,56 @@
 """Actual owner catalog forms and existing order preparation; provider fixture is untouched."""
 import json
+import re
+from copy import deepcopy
 from release_cases import db
 from staff_cases import OWNER
+
+
+def catalog_progress_privacy(progress, account_id, cost, provider_type, catalog_id):
+    """Check private values without treating the verified public reference as a type."""
+    references = progress.select('.hosting-service-reference') if progress is not None else []
+    reference_matches = (bool(re.fullmatch(r'[a-f0-9]{32}', account_id)) and len(references) == 1
+                         and references[0].string is not None and str(references[0].string) == account_id)
+    markup = str(progress) if progress is not None else ''
+    remainder = deepcopy(progress)
+    if reference_matches:
+        # Remove only the verified text; attributes and every other node remain checked.
+        remainder.select_one('.hosting-service-reference').string.replace_with('[verified public service reference]')
+    return {'progress_present': progress is not None, 'reference_count': len(references),
+            'reference_matches': reference_matches,
+            'cost_absent': cost not in markup,
+            'catalog_id_absent': catalog_id not in markup,
+            'provider_type_absent': provider_type not in str(remainder)}
+
+
+def catalog_progress_privacy_regressions(soup):
+    account = '534f6811451c047dc2b50c8cfd80b8a1'  # Public reference in the retained failed-run screenshot.
+    catalog = 'c' * 32
+    reference = '<span class="hosting-service-reference">' + account + '</span>'
+    def result(body):
+        progress = soup('<section data-hosting-progress>' + body + '</section>').select_one('[data-hosting-progress]') if body is not None else None
+        evidence = catalog_progress_privacy(progress, account, '12.5000', '811', catalog)
+        return all(evidence[k] for k in ['progress_present', 'reference_matches', 'cost_absent', 'catalog_id_absent', 'provider_type_absent'])
+    cases = [('public reference containing provider digits', reference, True),
+             ('missing progress', None, False), ('missing reference', 'Pending', False),
+             ('wrong reference', reference.replace(account, 'a' * 32), False),
+             ('duplicate reference', reference * 2, False),
+             ('provider type in text', reference + '<p>Type 811</p>', False),
+             ('provider type in attribute', reference + '<i data-type="811"></i>', False),
+             ('provider type in public-reference attribute', reference.replace('<span ', '<span data-type="811" '), False),
+             ('private cost in text', reference + '<p>12.5000</p>', False),
+             ('private cost in attribute', reference + '<i data-cost="12.5000"></i>', False),
+             ('catalog identity in text', reference + catalog, False),
+             ('catalog identity in attribute', reference + '<i data-catalog="' + catalog + '"></i>', False),
+             ('provider type nested inside reference', reference.replace(account, account + '<b>811</b>'), False)]
+    return [('Catalog privacy regression: ' + label, result(body) is expected) for label, body, expected in cases]
 
 
 def prepare(env, browser, owner, client, source_id, staff_url, client_url, capture):
     base, qa = env['BASE'], env['QA']
     check, form_for, form_data, soup = (env[k] for k in ['check', 'form_for', 'form_data', 'soup'])
+    for label, passed in catalog_progress_privacy_regressions(soup):
+        check(label, passed)
     plan = db('SELECT plan_id FROM ci_service_subscriptions WHERE id=?', [source_id])[0]['plan_id']
     url = base+'/existing/admin/index.php?view=service-plan&record='+plan
     before_calls = env['provider_server'].calls
@@ -51,8 +95,13 @@ def prepare(env, browser, owner, client, source_id, staff_url, client_url, captu
     order = db('SELECT id FROM ci_service_orders WHERE agreement_id=?', [source_id])[0]
     binding = json.loads(db('SELECT binding_json FROM ci_hosting_order_links WHERE id=?', [order['id']])[0]['binding_json'])
     check('Catalog HTTP preparation retains exact original mapping provenance', binding['format']==2 and binding['catalog']=={'id': row['id'], 'sha256': row['binding_sha256']})
-    progress = soup(client.get(client_url)).select_one('[data-hosting-progress]')
-    check('Catalog client progress excludes private cost and provider type', progress and '12.5000' not in progress.get_text() and '811' not in progress.get_text() and row['id'] not in str(progress))
+    progress_response = client.get(client_url)
+    progress = soup(progress_response).select_one('[data-hosting-progress]')
+    privacy = catalog_progress_privacy(progress, binding['account_id'], data['cost_amount'], data['package_type'], row['id'])
+    # Finite status/component evidence only: no full HTML, account IDs, tokens or private values.
+    (qa / 'provider-plan-catalog-privacy-diagnostics.json').write_text(json.dumps({'status': progress_response.status_code, **privacy}, indent=2))
+    check('Catalog client progress shows the exact public service reference', progress_response.status_code == 200 and privacy['progress_present'] and privacy['reference_matches'])
+    check('Catalog client progress excludes private cost and provider type', privacy['progress_present'] and privacy['reference_matches'] and privacy['cost_absent'] and privacy['provider_type_absent'] and privacy['catalog_id_absent'])
     replacement = form_data(form_for(owner.get(url), 'service_plans_catalog_save'))
     changed = {**data, **replacement, 'package_label': 'Replacement <review>', 'limit_websites': '2', 'limit_disk_mb': '0', 'cost_amount': '19.2500', 'reviewed_defaults': '1', 'confirm': '1', 'current_password': OWNER}
     changed.pop('catalog_enabled', None)
