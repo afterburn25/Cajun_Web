@@ -1,10 +1,10 @@
 name: Application acceptance
 on:
   push:
-    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor]
+    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version]
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   pull_request:
-    branches: [main]
+    branches: [main, codex/twentyi-fulfillment, codex/twentyi-service-orders, codex/twentyi-client-domain-search, codex/twentyi-mailbox-controls]
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   workflow_dispatch:
     inputs:
@@ -15,15 +15,95 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: application-${{ github.ref }}-${{ inputs.checkpoint_only && 'checkpoint' || 'full' }}
-  cancel-in-progress: true
+  # Preserve every running acceptance, including repeated invocations of one source.
+  group: application-${{ github.ref }}-${{ github.sha }}-${{ inputs.checkpoint_only && 'checkpoint' || 'full' }}
+  cancel-in-progress: false
+env:
+  CWP_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 jobs:
-  native-and-browser:
+  build:
     runs-on: ubuntu-24.04
-    # Browser/SMTP plus 25 retained upgrade baselines and both Apache modes.
-    # The 1.22 candidate exhausted 45m during no-rewrite 1.13; keep every case.
-    # Run38567952137 exhausted75m in Apache; retain every baseline and case.
-    timeout-minutes: 105
+    timeout-minutes: 45
+    outputs:
+      artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
+      sha256: ${{ steps.seal.outputs.sha256 }}
+      inputs_id: ${{ steps.input_upload.outputs.artifact-id }}
+      input_sha256: ${{ steps.inputs.outputs.sha256 }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prepare isolated runtime and evidence directory
+        id: setup
+        run: |
+          mkdir -p qa
+          sudo apt-get update -qq
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring
+          php8.3 -v
+          php8.3 -m
+      - name: Offline transfer, provenance and failure regressions
+        id: helpers
+        run: python3 tests/acceptance_artifacts_test.py --report qa/parallel-helper-tests.json
+      - name: Exact source, installer inventory and one package build
+        id: build
+        run: |
+          set -o pipefail
+          python3 tools/build.py --commit "$GITHUB_SHA" | tee qa/build-results.txt
+          python3 tests/build_guards.py
+      - name: Prepare only pristine public historical fixtures
+        id: fixtures
+        run: |
+          set -o pipefail
+          python3 tests/prepare_legacy.py | tee qa/legacy-preparation.txt
+      - name: Seal exact build and public inputs
+        id: inputs
+        run: python3 tools/acceptance_artifacts.py pack-inputs
+      - name: Upload immutable build inputs
+        id: input_upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-inputs-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            .acceptance/inputs/inputs.zip
+            .acceptance/inputs/inputs.json
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
+      - name: Verify shipping source after this job, including failure
+        if: always()
+        id: mutation
+        run: python3 tools/acceptance_artifacts.py guard
+      - name: Preserve this job's exact evidence partition
+        if: always()
+        id: seal
+        env:
+          CWP_STEP_OUTCOMES: >-
+            {"setup": "${{ steps.setup.outcome }}", "helpers": "${{ steps.helpers.outcome }}", "build": "${{ steps.build.outcome }}", "fixtures": "${{ steps.fixtures.outcome }}", "inputs": "${{ steps.inputs.outcome }}", "mutation": "${{ steps.mutation.outcome }}"}
+        run: python3 tools/acceptance_artifacts.py seal --lane build
+      - name: Upload immutable evidence partition
+        if: always() && steps.seal.outcome == 'success'
+        id: partition_upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-partition-build-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            .acceptance/partition/partition.zip
+            .acceptance/partition/partition.json
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
+  native-and-browser:
+    needs: build
+    runs-on: ubuntu-24.04
+    # Original run38909577278 exhausted105m while bounded browser requests still progressed.
+    # Preserve every assertion and the native-to-browser state; allow the complete suite.
+    timeout-minutes: 180
+    outputs:
+      artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
+      sha256: ${{ steps.seal.outputs.sha256 }}
+      checkpoint_id: ${{ steps.checkpoint_upload.outputs.artifact-id }}
+      checkpoint_digest: ${{ steps.checkpoint_upload.outputs.artifact-digest }}
     services:
       mariadb:
         image: mariadb:10.11
@@ -32,38 +112,56 @@ jobs:
           MARIADB_DATABASE: cwp_test
           MARIADB_USER: cwp_test
           MARIADB_PASSWORD: local-ci-only
-        ports: ['33306:3306']
+        ports: ['3306']
         options: >-
           --health-cmd="healthcheck.sh --connect --innodb_initialized"
           --health-interval=5s --health-timeout=5s --health-retries=20
     env:
       CWP_TEST_DATABASE: cwp_test
       CWP_TEST_HOST: 127.0.0.1
-      CWP_TEST_PORT: '33306'
       CWP_TEST_USER: cwp_test
       CWP_TEST_PASSWORD: local-ci-only
+      CWP_INPUT_SHA256: ${{ needs.build.outputs.input_sha256 }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
-      - name: Native runtime and browser dependencies
+      - name: Prepare isolated runtime and evidence directory
+        id: setup
+        env:
+          CWP_ASSIGNED_PORT: ${{ job.services.mariadb.ports[3306] }}
         run: |
+          mkdir -p qa
+          printf 'CWP_TEST_PORT=%s\n' "$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
           sudo apt-get update -qq
-          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring apache2-bin libapache2-mod-php8.3
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring
           php8.3 -v
           php8.3 -m
           python3 -m venv .ci-venv
-          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 playwright cryptography==50.0.1
+          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
           .ci-venv/bin/python -m playwright install --with-deps chromium
-      - name: Exact source, installer inventory and package checks
-        run: |
-          set -o pipefail
-          mkdir -p qa
-          python3 tools/build.py --commit "$GITHUB_SHA" | tee qa/build-results.txt
-          python3 tests/build_guards.py
+      - name: Download this attempt's immutable build input
+        id: download
+        if: needs.build.outputs.inputs_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.build.outputs.inputs_id }}
+          merge-multiple: true
+          path: .acceptance/download
+      - name: Verify and materialize exact same-attempt inputs
+        id: input
+        run: python3 tools/acceptance_artifacts.py receive --lane native-browser
       - name: Native database, upgrade and authorization integration
+        id: native
         run: |
-          python3 tests/prepare_legacy.py
+          php8.3 tests/service-plans/forms.php > qa/service-plans-forms-results.json
+          php8.3 tests/service-plans/documents.php > qa/service-plans-documents-results.json
+          php8.3 tests/service-plans/run.php > qa/service-plans-supplied-default.txt
+          php8.3 tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-results.json
+          php8.3 tests/twentyi-operations/run.php qa/twentyi-operations-integrated-results.json
+          php8.3 tests/twentyi-operations/mailboxes.php qa/twentyi-mailboxes-integrated-results.json
+          php8.3 tests/twentyi-operations/cloud-sites.php qa/twentyi-cloud-sites-integrated-results.json
           php8.3 tests/estimator_adapter.php
           php8.3 tests/native.php
           php8.3 tests/staff_native.php
@@ -96,10 +194,108 @@ jobs:
           .ci-venv/bin/python tests/mail_submission_combined.py
           php8.3 tests/provider_settings_native.php
           php8.3 tests/provider_checks_native.php
+          php8.3 tests/provider_schedule_document.php
+          php8.3 -n tests/provider_schedule_document.php
+          php8.3 tests/provider_schedule_native.php
           php8.3 tests/provider_inventory_native.php
+          php8.3 tests/provider_cloud_sites_native.php
+          php8.3 tests/provider_cloud_confirmation_native.php
+          php8.3 tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json
+          php8.3 -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json
+          php8.3 tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json
+          php8.3 -n -d extension=tokenizer -d extension=pdo tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json
+          php8.3 tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json
+          php8.3 -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json
+          php8.3 tests/provider_cloud_assignment_native.php
+          python3 -B tests/cloud_assignment_fixture_test.py qa/cloud-assignment-fixture-results.json
+          php8.3 tests/provider_forwarding_contract.php
+          php8.3 tests/provider_forwarding_native.php
+          php8.3 tests/provider_cloud_providers_native.php
+          php8.3 tests/twentyi-inventory-reader/cloud-providers.php > qa/cloud-provider-reader-default.json
+          php8.3 -n tests/twentyi-inventory-reader/cloud-providers.php > qa/cloud-provider-reader-noini.json
           php8.3 tests/provider_inventory_upgrade_native.php
+          php8.3 tests/provider_registrar_native.php
+          php8.3 tests/provider_registration_periods_native.php
+          php8.3 tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-results.json
+          php8.3 -n tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-no-ini-results.json
+          php8.3 tests/domain_renewals_native.php
+          php8.3 tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-default.json
+          php8.3 -n tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-minimal.json
+          php8.3 tests/domain_renewal_agreements_native.php
+          php8.3 tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-default.json
+          php8.3 -n tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-minimal.json
+          php8.3 tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-default.json
+          php8.3 -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json
+          python -B tests/domain_renewal_dispatch_http_contract.py > qa/domain-renewal-dispatch-handler-results.json
+          php8.3 tests/domain_renewal_dispatch_native.php
+          php8.3 tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-default.json
+          php8.3 -n tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-minimal.json
+          php8.3 tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-default.json
+          php8.3 -n tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-minimal.json
+          php8.3 tests/domain_registration_drafts_native.php
+          php8.3 tests/service_observations_native.php
+          php8.3 tests/domain_contracts_reader.php > qa/domain-contract-reader-integrated-results.json
+          php8.3 tests/domain_contracts_native.php
+          php8.3 tests/domain_expiry_contract.php > qa/domain-expiry-contract-integrated-results.json
+          php8.3 tests/domain_expiry_reader.php > qa/domain-expiry-reader-integrated-results.json
+          php8.3 tests/domain_expiry_native.php
+          php8.3 tests/twentyi-package-php/run.php > qa/package-php-document-results.json
+          php8.3 -n tests/twentyi-package-php/run.php > qa/package-php-document-no-ini-results.json
+          php8.3 tests/provider_package_php_native.php
+          php8.3 tests/document_roots_contract.php > qa/document-roots-contract-integrated-results.json
+          php8.3 tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json
+          php8.3 tests/provider_document_roots_native.php
+          php8.3 tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-results.json
+          php8.3 -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-no-ini-results.json
+          php8.3 tests/provider_package_force_ssl_native.php
+          php8.3 tests/directory_listing_contract.php > qa/directory-listing-document-results.json
+          php8.3 -n tests/directory_listing_contract.php > qa/directory-listing-document-no-ini-results.json
+          php8.3 tests/directory_listing_transport.php > qa/directory-listing-transport-results.json
+          php8.3 -n tests/directory_listing_transport.php > qa/directory-listing-transport-no-ini-results.json
+          php8.3 tests/provider_directory_listing_native.php
+          php8.3 tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-results.json
+          php8.3 -n tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-no-ini-results.json
+          php8.3 tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-results.json
+          php8.3 -n tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-no-ini-results.json
+          php8.3 tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-results.json
+          php8.3 -n tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-no-ini-results.json
+          php8.3 tests/provider_force_ssl_controls_native.php
+          php8.3 tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-results.json
+          php8.3 -n tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-no-ini-results.json
+          php8.3 tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-results.json
+          php8.3 -n tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-no-ini-results.json
+          php8.3 tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-results.json
+          php8.3 -n tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-no-ini-results.json
+          php8.3 tests/provider_directory_listing_controls_native.php
+          python -B tests/provider_directory_controls_http_contract.py > qa/directory-listing-controls-http-handler-results.json
+          python -B tests/provider_wordpress_installed_http_contract.py > qa/wordpress-installed-http-handler-results.json
+          php8.3 tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-results.json
+          php8.3 -n tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-no-ini-results.json
+          php8.3 tests/provider_package_wordpress_installed_native.php
+          php8.3 tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-default.json
+          php8.3 -n tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-minimal.json
+          php8.3 tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-default.json
+          php8.3 -n tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-minimal.json
+          php8.3 tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json
+          php8.3 -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json
+          php8.3 tests/stackcp_prerequisites_native.php
+          php8.3 tests/stackcp_access_contract.php > qa/stackcp-access-contract-default.json
+          php8.3 -n tests/stackcp_access_contract.php > qa/stackcp-access-contract-minimal.json
+          php8.3 tests/stackcp_access_views.php qa/stackcp-access-views-default.json
+          php8.3 -n tests/stackcp_access_views.php qa/stackcp-access-views-minimal.json
+          php8.3 tests/stackcp_access_transport.php > qa/stackcp-access-transport-default.json
+          php8.3 -n tests/stackcp_access_transport.php > qa/stackcp-access-transport-minimal.json
+          python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json
+          php8.3 tests/stackcp_access_native.php
+          php8.3 tests/stackcp_read_snapshot_native.php
+          php8.3 tests/provider_domain_search_native.php
+          php8.3 tests/provider_mailboxes_native.php
           php8.3 tests/provider_operations_native.php
           php8.3 tests/provider_operations_execute_native.php
+          php8.3 tests/service_plans_native.php
+          php8.3 tests/recurring_billing_native.php
+          php8.3 tests/recurring-billing/forms.php qa/recurring-billing-forms-results.json
+          php8.3 -n tests/recurring-billing/forms.php qa/recurring-billing-forms-default-results.json
           php8.3 tests/hosting_records_native.php
           php8.3 tests/hosting_operations_native.php
           php8.3 tests/hosting_retry_native.php
@@ -108,28 +304,235 @@ jobs:
           php8.3 tests/client_authority_native.php
           php8.3 tests/license_native.php
       - name: Real HTTP and Chromium application workflows
+        id: browser
         run: .ci-venv/bin/python tests/browser_acceptance.py
-      - name: Preserve browser checkpoint before the extended recovery matrix
+      - name: Verify shipping source after this job, including failure
         if: always()
+        id: mutation
+        run: python3 tools/acceptance_artifacts.py guard
+      - name: Preserve this job's exact evidence partition
+        if: always()
+        id: seal
+        env:
+          CWP_STEP_OUTCOMES: >-
+            {"setup": "${{ steps.setup.outcome }}", "input": "${{ steps.input.outcome }}", "native": "${{ steps.native.outcome }}", "browser": "${{ steps.browser.outcome }}", "mutation": "${{ steps.mutation.outcome }}"}
+        run: python3 tools/acceptance_artifacts.py seal --lane native-browser
+      - name: Upload immutable evidence partition
+        if: always() && steps.seal.outcome == 'success'
+        id: partition_upload
         uses: actions/upload-artifact@v4
         with:
-          name: application-browser-checkpoint-${{ github.sha }}
-          path: qa/
+          name: application-partition-native-browser-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            .acceptance/partition/partition.zip
+            .acceptance/partition/partition.json
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
+      - name: Preserve browser checkpoint independently of other jobs
+        if: always()
+        id: checkpoint_upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-browser-checkpoint-${{ github.sha }}${{ github.run_attempt != 1 && format('-attempt-{0}', github.run_attempt) || '' }}
+          path: ${{ steps.seal.outcome == 'success' && '.acceptance/checkpoint/qa/' || 'qa/' }}
           retention-days: 3
           if-no-files-found: warn
+  recovery:
+    needs: build
+    if: ${{ !inputs.checkpoint_only }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    outputs:
+      artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
+      sha256: ${{ steps.seal.outputs.sha256 }}
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_INPUT_SHA256: ${{ needs.build.outputs.input_sha256 }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prepare isolated runtime and evidence directory
+        id: setup
+        run: |
+          mkdir -p qa
+          sudo apt-get update -qq
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring
+          php8.3 -v
+          php8.3 -m
+          python3 -m venv .ci-venv
+      - name: Download this attempt's immutable build input
+        id: download
+        if: needs.build.outputs.inputs_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.build.outputs.inputs_id }}
+          merge-multiple: true
+          path: .acceptance/download
+      - name: Verify and materialize exact same-attempt inputs
+        id: input
+        run: python3 tools/acceptance_artifacts.py receive --lane recovery
       - name: Unprivileged structure update interruption and recovery
-        if: (success() || failure()) && !inputs.checkpoint_only
+        id: test
         run: .ci-venv/bin/python tests/structure_acceptance.py
+      - name: Verify shipping source after this job, including failure
+        if: always()
+        id: mutation
+        run: python3 tools/acceptance_artifacts.py guard
+      - name: Preserve this job's exact evidence partition
+        if: always()
+        id: seal
+        env:
+          CWP_STEP_OUTCOMES: >-
+            {"setup": "${{ steps.setup.outcome }}", "input": "${{ steps.input.outcome }}", "test": "${{ steps.test.outcome }}", "mutation": "${{ steps.mutation.outcome }}"}
+        run: python3 tools/acceptance_artifacts.py seal --lane recovery
+      - name: Upload immutable evidence partition
+        if: always() && steps.seal.outcome == 'success'
+        id: partition_upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-partition-recovery-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            .acceptance/partition/partition.zip
+            .acceptance/partition/partition.json
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
+  apache:
+    needs: build
+    if: ${{ !inputs.checkpoint_only }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 105
+    outputs:
+      artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
+      sha256: ${{ steps.seal.outputs.sha256 }}
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: isolated-ci-root-only
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+        ports: ['3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_INPUT_SHA256: ${{ needs.build.outputs.input_sha256 }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prepare isolated runtime and evidence directory
+        id: setup
+        env:
+          CWP_ASSIGNED_PORT: ${{ job.services.mariadb.ports[3306] }}
+        run: |
+          mkdir -p qa
+          printf 'CWP_TEST_PORT=%s\n' "$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
+          sudo apt-get update -qq
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring apache2-bin libapache2-mod-php8.3
+          php8.3 -v
+          php8.3 -m
+          python3 -m venv .ci-venv
+          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1
+      - name: Download this attempt's immutable build input
+        id: download
+        if: needs.build.outputs.inputs_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.build.outputs.inputs_id }}
+          merge-multiple: true
+          path: .acceptance/download
+      - name: Verify and materialize exact same-attempt inputs
+        id: input
+        run: python3 tools/acceptance_artifacts.py receive --lane apache
       - name: Apache protection with and without rewriting
-        if: (success() || failure()) && !inputs.checkpoint_only
+        id: test
         run: .ci-venv/bin/python tests/apache_acceptance.py
-      - name: Verify tests did not mutate shipping source
-        run: git diff --exit-code -- site/
-      - name: Preserve named test evidence
+      - name: Verify shipping source after this job, including failure
+        if: always()
+        id: mutation
+        run: python3 tools/acceptance_artifacts.py guard
+      - name: Preserve this job's exact evidence partition
+        if: always()
+        id: seal
+        env:
+          CWP_STEP_OUTCOMES: >-
+            {"setup": "${{ steps.setup.outcome }}", "input": "${{ steps.input.outcome }}", "test": "${{ steps.test.outcome }}", "mutation": "${{ steps.mutation.outcome }}"}
+        run: python3 tools/acceptance_artifacts.py seal --lane apache
+      - name: Upload immutable evidence partition
+        if: always() && steps.seal.outcome == 'success'
+        id: partition_upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-partition-apache-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            .acceptance/partition/partition.zip
+            .acceptance/partition/partition.json
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
+  acceptance:
+    needs: [build, native-and-browser, recovery, apache]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Download exact build evidence
+        if: always() && needs.build.outputs.artifact_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.build.outputs.artifact_id }}
+          merge-multiple: true
+          path: .acceptance/incoming/build
+      - name: Download exact native-browser evidence
+        if: always() && needs.native-and-browser.outputs.artifact_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.native-and-browser.outputs.artifact_id }}
+          merge-multiple: true
+          path: .acceptance/incoming/native-browser
+      - name: Download exact recovery evidence
+        if: always() && needs.recovery.outputs.artifact_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.recovery.outputs.artifact_id }}
+          merge-multiple: true
+          path: .acceptance/incoming/recovery
+      - name: Download exact apache evidence
+        if: always() && needs.apache.outputs.artifact_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.apache.outputs.artifact_id }}
+          merge-multiple: true
+          path: .acceptance/incoming/apache
+      - name: Verify partitions and assemble honest final evidence
+        if: always()
+        env:
+          CWP_CHECKPOINT_ONLY: ${{ inputs.checkpoint_only && 'true' || 'false' }}
+          CWP_JOB_BINDINGS: >-
+            {"build": {"result": "${{ needs.build.result }}", "artifact_id": "${{ needs.build.outputs.artifact_id }}", "sha256": "${{ needs.build.outputs.sha256 }}", "input_sha256": "${{ needs.build.outputs.input_sha256 }}"}, "native-browser": {"result": "${{ needs.native-and-browser.result }}", "artifact_id": "${{ needs.native-and-browser.outputs.artifact_id }}", "sha256": "${{ needs.native-and-browser.outputs.sha256 }}", "checkpoint_id": "${{ needs.native-and-browser.outputs.checkpoint_id }}", "checkpoint_digest": "${{ needs.native-and-browser.outputs.checkpoint_digest }}"}, "recovery": {"result": "${{ needs.recovery.result }}", "artifact_id": "${{ needs.recovery.outputs.artifact_id }}", "sha256": "${{ needs.recovery.outputs.sha256 }}"}, "apache": {"result": "${{ needs.apache.result }}", "artifact_id": "${{ needs.apache.outputs.artifact_id }}", "sha256": "${{ needs.apache.outputs.sha256 }}"}}
+        run: |
+          mkdir -p qa
+          python3 tools/acceptance_artifacts.py aggregate
+      - name: Preserve final or deliberately limited checkpoint evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: application-${{ inputs.checkpoint_only && 'checkpoint' || 'acceptance' }}-${{ github.sha }}
+          name: application-${{ inputs.checkpoint_only && 'checkpoint' || 'acceptance' }}-${{ github.sha }}${{ github.run_attempt != 1 && format('-attempt-{0}', github.run_attempt) || '' }}
           path: |
             qa/
             dist/

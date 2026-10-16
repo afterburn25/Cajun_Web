@@ -1,3 +1,9 @@
+## Release priority checkpoint — 2026-10-16
+
+Canonical `codex/release-1.25.0` starts from main35d8 and normally integrates mature3fa. New20i capabilities are frozen until publication and download verification. [Frozen scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md), [current status](../PROJECT_STATUS.md) and [handoff](../SESSION_HANDOFF.md) supersede older current labels below. Source3fa focused38933590118 and Windows packages pass their bounded scopes; the combined release still needs licensing corrections, supported runtime/full browser/actual1.24 upgrade gates, independent review, exact-main acceptance and all-asset verification. Published1.24 remains unchanged; no1.25 release or live deployment exists yet.
+
+## Retained earlier source and release records
+
 # Release records
 
 ## Latest verified publication — 1.24.0

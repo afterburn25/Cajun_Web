@@ -1,8 +1,40 @@
+## 2026-10-16 — freeze and consolidate release 1.25.0
+
+Owner request: publish the mature increment without waiting for complete20i. Start canonical `codex/release-1.25.0` from main `35d8fb7efc94f6f851399d0755fa93097f1fce66`, then normally merge exact mature `3fa72d7b3b447fa3d281cc981ed861c508f850f2`. Fresh ancestry finds all mature capability heads already included, so no duplicate cherry-pick/branch stack is imported. Adopt the26-row scope/dependency map and9 held groups. Resolve shared licensing/deploy/workspace/tests intentionally and preserve both parents' historical records. Generated installer is rebuilt from final source.
+
+Imported-source original focused38933590118 is independently verified successful in all4 environments (11 reports/1,440 named executions each); Windows5890/2885/2872 packages agree with exact source. Existing main licensing defects and release acceptance gaps are explicit blockers, not waived. Catalog prepares complete supported-runtime wiring; Domains extends real1.24 root/subfolder/client-data acceptance; VPS prepares minimal licensing corrections. No combined candidate/native/browser acceptance is claimed by the merge. Required next steps: reviewed corrections, exact-candidate full acceptance and images, independent review, normal main merge, exact-main full acceptance, immutable publication and all-asset download verification. Published1.24/main/production are unchanged; no new feature work until release.
+
+## Retained historical checkpoints from both integration parents
+
+Earlier current-status labels below are historical; the release-priority entry above supersedes them.
+
 ## Current owner allocation - 2026-10-16
 
 **Devin: continue all remaining non-20i site work, including licensing. Codex and its three agents: continue complete20i.** This supersedes older unrelated-work pause statements for Devin. [Start here](../DEVIN_START_HERE.md) gives the full assignment, direct licensing code locations, shared-file boundaries and instructions that work without the GitHub API. Licensing is already on main; inspect and repair its documented gaps rather than recreating it. Work on separate feature branches; Codex coordinates final integration/releases. Assignment [#157](https://github.com/afterburn25/Cajun_Web/issues/157) is posted; external-session acknowledgement is not assumed.
 
+## 2026-10-16 — reuse agreements for renewal retail terms
+
+## Renewal payments must have an original purpose before receipt — 2026-10-16
+
+An unrelated paid invoice is not renewal authority. Reserve an existing unpaid one-time USD invoice permanently to exact accepted domain/years/privacy terms before any payment activity; use the original receipt ledger and require a separate owner approval for the 20i balance charge. Retain unknown/false attempt fences and one existing execution journal. No new invoice generator, waiver, quote engine or inferred eligibility. [Contract and recovery](TWENTYI_DOMAIN_RENEWAL_DISPATCH.md).
+
+The supplied provider reference does not establish an executable premium/standard renewal quote response schema. Use studio-entered one-time USD terms through the existing immutable service-plan/subscription journals. Append a bounded immutable request-to-agreement binding; retain globally unique agreements and multiple historical offers per request after explicit existing abandon/cancel actions. Do not create a parallel quote event engine, invoice generator, currency model or provider purchase promise. Exact current registrar authority and a captured binding fingerprint gate acceptance; original invoice origins and shared-hosting-only order documents remain unchanged. [Contract and lifecycle](TWENTYI_DOMAIN_RENEWAL_AGREEMENTS.md).
+
+## 2026-10-15 — preserve new source identity and coordinate discovery readers
+
+Retain the newly supplied complete reference34e713 with line positions and two bearer-example redactions; never relabel it as the earlier missingf7c738 upload. Documentation establishes specific wire contracts, not feature completion or live execution. Add registration periods and cloud-provider identifiers through typed list observations in the existing inventory executor; domain renewalDate remains a distinct typed scalar result with exact assignment/source binding. Preserve the scheduler recorder transaction/mutex guard. Root integrates the three shared changes sequentially; no duplicate journal or generic endpoint runner. [Intake](TWENTYI_OWNER_API_REFERENCE_INTAKE.md).
+
 # Decision record
+
+## 2026-10-15 — parallel workers and transient mailbox passwords
+
+The owner explicitly authorized simultaneous agents. Root owns mailbox work and integration/releases; three actual workers own catalog mappings, registrar inventory/client links and cloud website creation in isolated branches from0ebc. [Allocation](TWENTYI_PARALLEL_WORK.md).
+
+Immediate mailbox creation retains no recoverable password, superseding the earlier proposed encrypted payload for this increment. Its request-bound master-key HMAC detects changed-password nonce reuse; the password is used only by the immediate authorized resolver. Interrupted requests cannot resume or resend, so a queued password vault is unnecessary for this workflow. Future queued operations need separate design. Owner request limits are distinct from unverified provider quotas/costs.
+
+## 2026-10-15 — Reuse service agreements for 20i commercial intent
+
+Retain #90–#92 through a normal merge as the exact client/terms-consent dependency. Agreement acceptance and activation do not establish payment or provisioning eligibility. Add that eligibility using the existing catalog, invoice ledger, hosting and provider journals. Prepared missing agreement tables require restoration; do not recreate empty consent history. Codex owns this work under the 20i P0 override.
 
 ## Separate constructible requests from purchase authority — 2026-10-15
 
@@ -215,3 +247,29 @@ Owner instruction: “let devin do the complete 20i integration.” Devin's prio
 ## 2026-10-15 — Preserve provider acknowledgements separately from completion
 
 Retain the existing gateway/ledger, extending its bounded result with accepted_pending and the provider-issued package ID. A valid documented addWeb acknowledgement proves acceptance, not activation; generic2xx, false/null or mixed envelopes cannot prove business success. Recorded legacy results are preserved. Name-only matches never adopt resources. Current ID-array contracts invalidate old scalar approvals rather than silently translating them. No mixed updatePackage request receives a blanket idempotent capability. Full inner request schemas, first-party order/hosting controls and release acceptance remain required.
+
+## 2026-10-15 — typed owner catalog evidence before automatic discovery
+
+Use immutable, expiring owner-reviewed provider plan mappings to reuse exact package configuration. Preserve exact decimal major currency units and explicit period/tax/allocation evidence separately from USD retail cents. Unknown wholesale cost is null; do not infer conversion, margin, allocation or provider quote. Official public sources do not supply a verified packageTypes response schema, so this increment introduces no invented automatic reader. Catalog selection binds original accepted plan and existing order preparation; dedicated fulfillment review remains required. [Scope and evidence](TWENTYI_PLAN_CATALOG.md).
+
+
+## 2026-10-15 — Reuse cloud creation request authority
+
+The bounded cloud management increment uses the existing provider approval and operation ledger tables. Its typed, installation-keyed approval envelope binds the explicit server/client assignment and current observation; request nonce consumption precedes DNS and sending. Returned cloud addWeb package IDs remain accepted-pending until separately observed and explicitly linked. Server capacity/domain permission are manually reviewed and not falsely reported as API-verified. This delivers the documented existing-server website operation while full server lifecycle, power and SSH contracts remain separate. No new generic operation approval surface or replacement ledger is introduced.
+
+
+## 2026-10-15 — owner assigns software-product licensing to Devin
+
+The owner will have Devin implement licensing for software products offered by CajunWebPro, including generated licenses for installing other products. Codex retains complete20i P0 and integration/release coordination. Preserve inherited licensing rather than implementing a competing module. Keep shared billing/portal/schema/installer changes on isolated branches and merge reviewed source sequentially with combined checks. This allocation does not add a license requirement to CajunWebPro's one-page keyless installer or establish live product installation acceptance. [Current ownership](AGENT_COORDINATION.md).
+
+## 2026-10-15 — forwarding request permission is independent
+
+Forwarding redirects future delivery, so mailbox-create permission never grants forwarding request permission. Local review does not create a provider operation/result. Use a dedicated signed append-only history with separate count/head and audit witnesses, and retain current exact domain-link event identity to fence same-second reapproval. A cancelled/declined request remains historical; there is no active/completed forwarding status until documented acknowledgement/readback is implemented. [Verified contract and omissions](TWENTYI_FORWARDING_REQUESTS.md).
+
+## 2026-10-16 — WordPress installation is a saved indication
+
+Use only the documented exact package `wordpressIsInstalled` GET. A strict true reports installed; strict false is retained as reported false without claiming absence; null and unexpected shapes remain unavailable. Keep a distinct immutable package context and explicit owner-approved sharing, with no inherited PHP/ForceSSL permissions. There is no WordPress write, admin access or health/version claim. Application transport admission and evidence use the existing executor and recorder. [Scope](TWENTYI_WORDPRESS_INSTALLATION_OBSERVATIONS.md).
+
+## 2026-10-16 — StackCP access scope and separate authentication credential
+
+The retained provider-authored SDK supports a distinct auth-client-key exchange and whole-Stack-user session, not an atomic package-only session. Use a dedicated pure operation and initially owner-only local policy; never inherit website support permissions or the existing pure StackCpGrant read/manage labels. A recorded single-package grant snapshot is only an admission observation. Local expiry/revocation cannot claim to end a provider session. Preserve exact default HTTPS destination limits and keep the undocumented custom-brand response/native execution boundary explicit. [Contract](TWENTYI_STACKCP_HANDOFF_CONTRACT.md); [native prerequisites](TWENTYI_STACKCP_NATIVE_PREREQUISITES.md).

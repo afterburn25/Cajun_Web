@@ -3,6 +3,14 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 
+/** Read-only upgrade guard; existing portals must not query tables they do not yet have. */
+function license_storage_ready(): bool {
+    foreach(['website_licenses','license_domains','license_bundles'] as $name) {
+        if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))return false;
+    }
+    return true;
+}
+
 /**
  * Write a licensing audit record — every mutation (create, domain
  * register/deactivate/replace, license deactivate) leaves a trail so a

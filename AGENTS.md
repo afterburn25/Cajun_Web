@@ -1,4 +1,10 @@
-## Current owner allocation - 2026-10-16
+## Owner release priority — 2026-10-16
+
+Freeze new 20i capabilities and nonessential refactors until CajunWebPro 1.25.0 is published and every downloaded release asset is verified. The owner explicitly requires the mature increment now, without waiting for complete20i. Codex root owns `codex/release-1.25.0`, started from main `35d8fb7e`, and one normal merge of the mature `3fa72d7b` history. [Frozen scope](docs/RELEASE_SCOPE_1.25.0.md) and [integration map](docs/RELEASE_1.25_INTEGRATION_MAP.md) distinguish included capabilities, dependencies and held work.
+
+Only integration, release-blocking corrections, migrations, authorization, tests, browser fixes, packaging and release documentation proceed in this lane. Preserve unfinished branches and original failed evidence. Devin's remaining non-20i assignment continues on separate branches; do not import unaccepted proposals opportunistically. Root coordinates shared seams and release acceptance. Published 1.24.0 stays immutable. No live deployment is authorized. Resume remaining20i after the verified incremental release.
+
+## Earlier owner allocation — retained context
 
 **Devin: continue all remaining non-20i site work, including licensing. Codex and its three agents: continue complete20i.** This supersedes older unrelated-work pause statements for Devin. [Start here](DEVIN_START_HERE.md) gives the full assignment, direct licensing code locations, shared-file boundaries and instructions that work without the GitHub API. Licensing is already on main; inspect and repair its documented gaps rather than recreating it. Work on separate feature branches; Codex coordinates final integration/releases. Assignment [#157](https://github.com/afterburn25/Cajun_Web/issues/157) is active. Devin [acknowledged the assignment and reported work](https://github.com/afterburn25/Cajun_Web/issues/157#issuecomment-6217621738). Licensing PR #159, tickets #158 and project progress #160 are open; their proposed changes require independent acceptance and sequential integration. Licensing159 has [actionable review findings](https://github.com/afterburn25/Cajun_Web/pull/159#issuecomment-6218434878): unsupported sole-license invoice association, unmarked populated legacy upgrade, and stale installer inventory.
 
@@ -7,6 +13,8 @@
 Codex owns the complete 20i P0 integration. [CajunWebPro 1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly downloaded/verified at immutable source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`. All16 assets, checksums, ZIP members and the tag agree with accepted source; previous1.23 assets are unchanged. This is a GitHub release, not live-site deployment. Full 20i remains unfinished. Codex stays focused on 20i; Devin continues the remaining non-20i site work under the current owner allocation.
 
 Read [takeover](docs/TWENTYI_CODEX_TAKEOVER.md), [requirements and evidence](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md), current status and handoff first. The priority is implementation through verified incremental releases. Former allocation and stopping points in the [historical agreement](docs/archive/2026-10-15-AGENTS.md) are superseded.
+
+Owner allocation,2026-10-16: Devin owns remaining non20i work, including licensing for software products sold by this site and generated licenses for installing other products. Codex and its three agents stay focused on20i and preserve the existing licensing lane. Shared billing/portal/schema/installer changes integrate sequentially under root review. CajunWebPro itself retains its one-page keyless installer. See [current coordination](docs/AGENT_COORDINATION.md). This records the owner's assignment, not proof of an active Devin session.
 
 These are the owner's project requirements and the repository continuity procedure. Follow them for work in `afterburn25/Cajun_Web`. Do not treat older chat summaries, screenshots, or ZIP filenames as proof of the current implementation.
 

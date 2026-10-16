@@ -51,6 +51,9 @@ require_once __DIR__ . '/OperationResult.php';
  *  - An applied provisioning result must carry the provider resource id.
  *    A confirmation without one is not `active` — it is held unresolved
  *    until reconciliation supplies the identity.
+ *  - An accepted provisioning identity remains `provisioning`, with no
+ *    active resource. Only conclusive confirmation of that exact identity
+ *    settles the original attempt; inventory absence cannot enable a retry.
  *  - Suspension for payment lapse is refused before `graceUntil` and
  *    while a billing dispute is open — access and backups are preserved
  *    during disputes per policy.
@@ -150,10 +153,18 @@ final class HostingAccount
         return $this->disputeOpen;
     }
 
-    /** Whether the remote outcome of the last attempt is still unknown. */
+    /** Whether the last attempt still needs conclusive remote confirmation. */
     public function awaitingReconciliation(): bool
     {
         return $this->unresolvedOperation !== null;
+    }
+
+    /** A retained acknowledgement is a reconciliation target, never an active resource. */
+    public function acknowledgedResourceRef(): ?string
+    {
+        if ($this->unresolvedOperation !== self::OP_PROVISION) return null;
+        $last = $this->operations[count($this->operations) - 1] ?? null;
+        return $last?->outcome === OperationResult::ACCEPTED_PENDING ? $last->resourceRef : null;
     }
 
     /**
@@ -198,6 +209,10 @@ final class HostingAccount
             $this->pendingAttempt = null;
             $this->providerRef = $result->resourceRef;
             $this->move(self::ACTIVE, $actor, $at, 'provisioned: ' . $result->receipt);
+        } elseif ($result->outcome === OperationResult::ACCEPTED_PENDING) {
+            $this->unresolvedOperation = self::OP_PROVISION;
+            $this->unresolvedAttempt = $this->pendingAttempt;
+            $this->move(self::PROVISIONING, $actor, $at, 'provider accepted provisioning; exact-resource confirmation is pending');
         } elseif ($result->outcome === OperationResult::TIMEOUT) {
             $this->unresolvedOperation = self::OP_PROVISION;
             $this->unresolvedAttempt = $this->pendingAttempt;
@@ -229,13 +244,15 @@ final class HostingAccount
     }
 
     /**
-     * Close an unresolved timeout with reconciliation evidence. The
+     * Close an unresolved attempt with reconciliation evidence. The
      * caller states what the provider actually confirmed, with evidence:
      *
      *  - provision timed out, remote resource exists → it is *adopted*
      *    (resourceRef required), never recreated;
      *  - provision timed out, no remote resource → stays `failed`, and
      *    `retry()` is safe;
+     *  - provision accepted with an assigned id → only confirmation of
+     *    that exact id can activate the service; absence stays unresolved;
      *  - suspend/resume timed out → the account moves to the state the
      *    provider confirms (suspended/active or active/suspended);
      *  - deprovision timed out → confirmed becomes `deprovisioned`,
@@ -285,6 +302,12 @@ final class HostingAccount
         }
         if ($appliedRemotely && $this->unresolvedOperation === self::OP_PROVISION && ($resourceRef === null || trim($resourceRef) === '')) {
             throw new InvalidArgumentException('Adopting a remote resource needs its provider id.');
+        }
+        $acknowledged = $this->acknowledgedResourceRef();
+        if ($acknowledged !== null && (!$appliedRemotely || $resourceRef !== $acknowledged)) {
+            // Absence in inventory cannot undo an accepted asynchronous purchase.
+            // A later provider-specific failure/cancellation proof needs its own path.
+            throw new InvalidArgumentException('Accepted provisioning requires confirmation of its exact assigned resource.');
         }
         $operation = $this->unresolvedOperation;
         $this->unresolvedOperation = null;

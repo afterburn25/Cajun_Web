@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Three deterministic, sanitized artifacts from one clean recorded commit."""
 from pathlib import Path, PurePosixPath
-import argparse,hashlib,json,re,subprocess,zipfile,shutil
+import argparse,hashlib,json,re,subprocess,zipfile,shutil,tempfile
+from contextlib import contextmanager
 ROOT=Path(__file__).resolve().parents[1];SITE=ROOT/'site'
 MAP=json.loads((ROOT/'tools/directory-map.json').read_text(encoding="utf-8"))
 SCAFFOLDS={'storage/.htaccess','storage/index.php','upload/.htaccess','upload/index.php'}
@@ -13,6 +14,50 @@ def source_bytes(commit,name):
     # path. `git show` otherwise stats SHA:path and can exceed Windows MAX_PATH
     # even when the real checked-out dependency file is readable.
     return subprocess.check_output(['git','cat-file','blob',commit+':'+name],cwd=ROOT)
+
+@contextmanager
+def source_blobs(commit,names):
+    # Resolve paths once against the recorded tree. Only fixed object IDs enter
+    # the binary batch protocol; path lengths, quoting and newlines cannot alter it.
+    tree=subprocess.check_output(['git','ls-tree','-r','-z','--full-tree',commit],cwd=ROOT)
+    objects={}
+    for entry in tree.split(b'\0'):
+        if not entry:continue
+        metadata,path=entry.split(b'\t',1);mode,kind,oid=metadata.split(b' ')
+        name=path.decode('utf-8','surrogateescape');safe(name)
+        if mode not in {b'100644',b'100755'} or kind!=b'blob':raise RuntimeError('Non-regular Git source: '+name)
+        if not re.fullmatch(rb'(?:[0-9a-f]{40}|[0-9a-f]{64})',oid) or name in objects:raise RuntimeError('Invalid Git source tree')
+        objects[name]=oid
+    if len(names)!=len(set(names)) or set(objects)!=set(names):raise RuntimeError('Git blob snapshot differs from tracked source')
+    # Drain stderr to a temporary file instead of an unread pipe. Requests are
+    # sent one at a time, so retained memory stays full-project bytes plus one blob.
+    with tempfile.TemporaryFile() as errors:
+        process=subprocess.Popen(['git','cat-file','--batch'],cwd=ROOT,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=errors)
+        try:
+            def read_source(name):
+                oid=objects[name]
+                process.stdin.write(oid+b'\n');process.stdin.flush()
+                header=process.stdout.readline(128)
+                match=re.fullmatch(rb'([0-9a-f]{40}|[0-9a-f]{64}) blob (0|[1-9][0-9]*)\n',header)
+                if match is None or match[1]!=oid:raise RuntimeError('Invalid Git batch blob header: '+name)
+                size=int(match[2]);data=process.stdout.read(size)
+                if len(data)!=size or process.stdout.read(1)!=b'\n':raise RuntimeError('Truncated Git batch blob: '+name)
+                digest=(hashlib.sha1 if len(oid)==40 else hashlib.sha256)()
+                digest.update(b'blob '+str(size).encode('ascii')+b'\0');digest.update(data)
+                if digest.hexdigest().encode('ascii')!=oid:raise RuntimeError('Git batch blob identity differs: '+name)
+                return data
+            yield read_source
+            process.stdin.close()
+            if process.stdout.read(1):raise RuntimeError('Unexpected trailing Git batch output')
+            if process.wait():
+                errors.seek(0)
+                raise RuntimeError('Git batch blob reader failed: '+errors.read(8192).decode('utf-8','replace'))
+        finally:
+            if process.poll() is None:process.kill()
+            process.wait()
+            try:process.stdin.close()
+            finally:process.stdout.close()
+
 def safe(name):
     p=PurePosixPath(name)
     if p.is_absolute() or '..' in p.parts or '\\' in name or ':' in name or str(p)!=name:raise RuntimeError('Unsafe path: '+name)
@@ -73,7 +118,7 @@ def generated(refresh):
             target=SITE/'includes/foundation/mail-submission'/source.relative_to(submission)
             target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(source.read_bytes())
     check_submission_mirror(required=True)
-    for area in ['hosting','access','invitations','portfolio','estimator','email-templates','webmail','review-requests','scheduling','mail-transport','provider','twentyi','twentyi-inventory','twentyi-inventory-reader','twentyi-operations','mail-compose']:
+    for area in ['billing-calendar','recurring-billing','service-plans','hosting','access','invitations','portfolio','estimator','email-templates','webmail','review-requests','scheduling','mail-transport','provider','twentyi','twentyi-inventory','twentyi-inventory-reader','twentyi-operations','twentyi-document-roots','twentyi-directory-listing','twentyi-support-handoff', 'twentyi-cloud-assignment','mail-compose','twentyi-domain-registration','twentyi-stackcp-access']:
         for source in (ROOT/'foundation'/area).glob('*.php'):
             target=SITE/'includes/foundation'/area/source.name
             if refresh:
@@ -146,19 +191,20 @@ def main():
     if any(line.startswith('120000 ') for line in modes):raise RuntimeError('Git symlinks cannot be shipped, including on Windows checkouts')
     if {n[5:] for n in tracked if n.startswith('site/')}!=set(inv):raise RuntimeError('Shipping inventory differs from source commit')
     full={};allowed={'.github','docs','tests','tools','brand','foundation','site'}
-    for n in tracked:
-        safe(n);p=ROOT/n
-        if p.is_symlink():raise RuntimeError('Project contains symlink')
-        if '/' in n and n.split('/')[0] not in allowed:raise RuntimeError('Unapproved full-project area: '+n)
-        if p.name in {'config.php','proxy-config.php','.installed.php','payment-master.key'} or p.name.startswith('.env') or p.suffix in {'.pem','.key','.p12','.sql'} or any(part in {'.git','node_modules','__pycache__','qa','dist','test-runtime'} for part in PurePosixPath(n).parts):raise RuntimeError('Unsanitized full-project source: '+n)
-        data=source_bytes(commit,n)
-        if p.read_bytes()!=data:
-            # Git's declared text normalization is allowed for development docs/tools.
-            # Shipping bytes remain strict because their installer hashes are byte-based.
-            normalized=subprocess.check_output(['git','hash-object','--path='+n,n],cwd=ROOT,text=True).strip()
-            recorded=subprocess.check_output(['git','rev-parse',commit+':'+n],cwd=ROOT,text=True).strip()
-            if n.startswith('site/') or normalized!=recorded:raise RuntimeError('Working bytes differ from recorded source: '+n)
-        full[n]=data
+    with source_blobs(commit,tracked) as read_source:
+        for n in tracked:
+            safe(n);p=ROOT/n
+            if p.is_symlink():raise RuntimeError('Project contains symlink')
+            if '/' in n and n.split('/')[0] not in allowed:raise RuntimeError('Unapproved full-project area: '+n)
+            if p.name in {'config.php','proxy-config.php','.installed.php','payment-master.key'} or p.name.startswith('.env') or p.suffix in {'.pem','.key','.p12','.sql'} or any(part in {'.git','node_modules','__pycache__','qa','dist','test-runtime'} for part in PurePosixPath(n).parts):raise RuntimeError('Unsanitized full-project source: '+n)
+            data=read_source(n)
+            if p.read_bytes()!=data:
+                # Git's declared text normalization is allowed for development docs/tools.
+                # Shipping bytes remain strict because their installer hashes are byte-based.
+                normalized=subprocess.check_output(['git','hash-object','--path='+n,n],cwd=ROOT,text=True).strip()
+                recorded=subprocess.check_output(['git','rev-parse',commit+':'+n],cwd=ROOT,text=True).strip()
+                if n.startswith('site/') or normalized!=recorded:raise RuntimeError('Working bytes differ from recorded source: '+n)
+            full[n]=data
     site={n:(SITE/n).read_bytes() for n in inv}
     payload={n:data for n,data in site.items() if n!='install.php' and not n.startswith(('install/','storage/','upload/'))}
     shims={old:"<?php\n/** Upgrade compatibility: directly preserves method, query, body and cookies. */\ndeclare(strict_types=1);\nrequire __DIR__.'/"+new+"';\n" for old,new in MAP['routes'].items() if old not in {'robots.php','sitemap.php'}}

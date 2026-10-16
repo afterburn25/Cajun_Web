@@ -1,7 +1,10 @@
-# Current agent coordination
+# Current release coordination
 
-Codex root owns reviewed20i integration/releases and current StackCP snapshot3fa72d7b. VPS verifies original focused38933590118 without redispatch. Catalog prepares bounded PHP-settings performance externally; Domains completed reviewed StackCP runtime/native fixtures and its expected-report contract. Root preserves current source, workflow, billing/auth/schema seams and final full acceptance. [Current checkpoint](TWENTYI_CURRENT_CHECKPOINT.md).
+The owner prioritizes verified publication of 1.25.0 before new20i capabilities. Root owns `codex/release-1.25.0`, normal merges, shared conflicts, canonical inventory, current-candidate review, exact-main acceptance and release/download verification. [Frozen scope](RELEASE_SCOPE_1.25.0.md) is the boundary.
 
-Devin owns all remaining non-20i work under [assignment157](https://github.com/afterburn25/Cajun_Web/issues/157). Repair existing158/159/161 findings first, preserve stacked dependencies through175, then finish complete workflows. [Exact entry point and repairs](../DEVIN_START_HERE.md). Open PRs and foundations are not accepted application features.
+- Catalog: source/evidence scope and complete supported runtime acceptance proposal.
+- Domains: actual published1.24 populated client/provider/business upgrade and recovery coverage.
+- VPS: reviewed main-preserving licensing corrections and regression evidence.
+- Devin: remaining non-20i implementation on separate branches under [assignment157](https://github.com/afterburn25/Cajun_Web/issues/157). Existing158/159/161 repairs remain; no unaccepted proposal is automatically in this release.
 
-Keep original failures/artifacts and published versions immutable. Parent cloud focused38931463106 passed; current native/full/browser acceptance remains separate. Published1.24.0 is unchanged, full20i/1.25.0 unfinished. This main checkpoint changes only documentation.
+Agents prepare external bounded patches; root applies shared changes sequentially. Preserve all unfinished branches, parent evidence and published versions. No new capability branch or nonessential performance refactor until1.25 is published and downloaded back successfully. [Status](../PROJECT_STATUS.md) and [handoff](../SESSION_HANDOFF.md) track remaining gates. No live deployment is authorized.

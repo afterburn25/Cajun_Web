@@ -1,5 +1,9 @@
 # Installation, packaging and updates
 
+## Unreleased agreement recovery integration
+
+Codex owns complete 20i P0 work under the [takeover](TWENTYI_CODEX_TAKEOVER.md), superseding historical allocation below. PR #130 preserves the later #101 upgrade/recovery fixture against actual published 1.23, including exact client consent and original keys. Its inherited 1.24 label does not place agreements in the separate 1.24 inventory release. New combined acceptance and a later version are required. The permanent shared `structure-1.11.0` lock and prior release assets remain preserved. [Service-agreement guide](SERVICE_AGREEMENTS.md).
+
 ## Latest verified publication — 1.23.0
 
 [Version 1.23.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0) is published and freshly downloaded/verified at immutable source/tag `4fdb56266c77f6e6bf7b58e966d24696e1eaefc8`, through [PR #85](https://github.com/afterburn25/Cajun_Web/pull/85). Client account edits reject stale forms and retain escaped unsaved details for review. Client changes/invitations recheck current authority, serialize writes and audit atomically; invitation activation is single-use and unexpired. Client administration is refused during support sessions. [Owner guide](CLIENT_ACCOUNT_SAFEGUARDS.md).
