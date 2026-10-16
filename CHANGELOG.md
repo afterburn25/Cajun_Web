@@ -1,3 +1,7 @@
+## Unreleased — Verified isolated PHP observation acceptance
+
+Recorded exact cfc6 four-way native and terminal full acceptance, actual owner/client/historical views, package hashes and retained original failures. Documentation only; runtime and installer are unchanged. Combined root acceptance and release remain separate.
+
 ## Unreleased — PHP retry fixture comparison
 
 ## PHP native rollback-fixture correction — 2026-10-15

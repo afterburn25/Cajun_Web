@@ -71,3 +71,26 @@ Starting source `c1b9eb5f2e4a8660f43d368ad26e4abbc7ee8833`, [PR155](https://gith
 The actual stack identifies a fixture call to the normal transaction-opening projection helper while the paired-history-loss test already holds a rollback transaction. The corrected assertion calls the internal projection under the staff lock in that existing transaction. Exact recovery reason, no-DNS/request counters, stale-value assertion and finally rollback remain; the normal helper and production transaction guard are unchanged. Only the native fixture and continuity docs change from c1b9. Shipping, installer, authority and credential-echo protection remain byte-identical.
 
 PHP syntax and whitespace checks pass. Actual corrected native/full acceptance is pending. Preserve c1b9 focused38850218141/full38850218170, e6ce and all earlier originals without retry/cancellation; root retains integration/release ownership. Root independently cleared the exact one-expression correction at native fixture SHA256 `d19fb38ab0654c062d61262d47bf7e736ffd001fcd9716c90abc5e397a3fa342`. Next: fresh exact-source four-way native/full evidence. No live action occurred.
+
+## Completed original acceptance — 2026-10-16
+
+The final tested source is `cfc6ecd034ad93cb317fe156ed0621fa50436c10`, tree `174f0f829115e8f4f6583a7673dadd79e094b68c`, on `codex/twentyi-package-php-version` / [PR155](https://github.com/afterburn25/Cajun_Web/pull/155). This enclosing checkpoint changes documentation only. Runtime remains c1b9, including credential-echo refusal and the hosting-intent order safeguard; cfc6 repairs only the rollback fixture's inappropriate nested transaction. The earlier pending statements above are historical checkpoints.
+
+[Focused run38850899544](https://github.com/afterburn25/Cajun_Web/actions/runs/38850899544) passed all four PHP/database combinations. Each downloaded archive contains99 passing native executions (98 distinct labels),99 default pure checks and99 no-INI pure checks. These overlapping reports are not summed as unique coverage. Metadata source/run, digest, size, safe case-unique paths, CRC and every named outcome were verified.
+
+| PHP / database | Artifact | SHA256 |
+| --- | --- | --- |
+| 8.4 / MySQL8.4 | 12025981625 | `033de88854ccec8cac69a9db5b2b4a328366163a62547dbf9482a3c8b51ea573` |
+| 8.4 / MariaDB10.11 | 12025237391 | `bdedfff48077b2c6655356cf1b7302fc3c5644eb0e67f19babf0b89e97de82f7` |
+| 8.2 / MariaDB10.11 | 12025084184 | `6abb58eda904ce3c3e46a36533c42008224b46c6af17d9b434fd249843ce7cdf` |
+| 8.2 / MySQL8.4 | 12024979311 | `43d314d72bac9649838919dbe145d43b37d6ae3aa5557e89cea5da6ff8130b17` |
+
+[Original full38850899573](https://github.com/afterburn25/Cajun_Web/actions/runs/38850899573) is terminal success through unchanged-source verification. Final artifact12026887934 is147,990,762 bytes, SHA256 `32d28fdc2e984280083a07be863a4e16aae3ab201116928d35291b021f20771b`:428 safe unique members, CRC clear,117 named reports all passing,11 diagnostics inspected,2,093 HTTP executions (2,082 distinct labels),289 recovery and2,107 Apache checks. Eleven checksum entries agree; FULL5,562 files, COMPLETE2,734 files and UPDATE2,721 payload files match exact Git source and package/update rules. All192 earlier checkpoint screenshots are unchanged.
+
+The browser checkpoint12026415411 is129,336,282 bytes, SHA256 `f5e570525b7bff3b7649759ed748c5267bac893a5051d70ef624a1fd1e0d3641`. Its28 PHP-specific checks pass. All six actual desktop/mobile owner, client and historical captures were inspected, including retained-coordinate crops of the very long owner pages. They show explicit owner refresh/sharing, the assigned client's saved scalar/date, and the older value labelled historical after a failed refresh. No clipped PHP controls or private raw response appeared in those views. This is real Chromium against the extracted local package with synthetic loopback provider responses; it is not a live20i account test. Diagnostics contain only the existing expected estimator422 event, without unexpected requests/page errors/PHP diagnostics.
+
+Reusable local proofs are `qa/38850899544/verification.json`, `qa/38850899573/php-browser-visual-review.json`, and `qa/38850899573/final-package-verification.json`; archive bytes and original checkpoint images are retained alongside them. These local evidence files are not shipping content.
+
+Original failures remain distinctly verified:1c500 full38846467235 stops at installer hash mismatch before native execution; c7f0 full38847316629 and cd38 full38848350248 fail the hydrated-object retry assertion; e6ce full38848617330 and c1b9 full38850218170 fail the nested-transaction fixture. Their original artifacts/runs were neither cancelled nor retried. Actual recovered package/Apache success in those failed runs is not full acceptance. The corrected final source above is the accepted isolated lane.
+
+Root's combined427 has separate source, dedicated PHP browser-owner fixture and acceptance run38853750274. No combined result is inferred from this isolated source. Root retains current-main/licensing reconciliation, final acceptance and immutable release/download ownership. No PHP change operation, version enumeration, scheduling, provider write or deployment was added.

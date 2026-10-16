@@ -751,3 +751,7 @@ Root normally integrates historybff on codex/twentyi-next-integration from a963,
 ### Scheduled hosting inventory checkpoint - 2026-10-15
 
 HC-13/owner requirement 7: isolated 82302571 descendant adds a real bounded GET/package cron path, owner-bound approval, original credential protection, immutable intent/outcome evidence, concurrent-worker exclusion, backoff and reviewed recovery. Local source/pure verification passes; native/browser and combined release acceptance remain pending. Other inventory schedules and commercial automation remain unfinished. [Implementation/evidence](TWENTYI_SCHEDULED_REFRESH.md).
+
+### Assigned-package PHP observation acceptance — 2026-10-16
+
+Frozen cfc6 passes verified four-way native and terminal full38850899573 acceptance, including explicit sharing, recovery/refusal cases and six actual owner/client/historical views. The bounded scalar GET is ready for root combined acceptance; PHP mutation, available-version discovery and live account verification remain outside this slice. [Evidence](TWENTYI_PACKAGE_PHP_VERSION.md#completed-original-acceptance--2026-10-16).
