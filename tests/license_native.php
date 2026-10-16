@@ -18,7 +18,7 @@ try{
 
     // --- storage readiness (fresh deploy marks license_schema_version) -------
     lic_ok('Storage not ready before version mark',!license_ready());
-    save_setting('license_schema_version','2');
+    save_setting('license_schema_version','3');
     lic_ok('Storage ready after version mark',license_ready());
 
     // --- key generation ----------------------------------------------------
@@ -143,9 +143,12 @@ try{
     lic_deny('Bundle rejects missing industry module',fn()=>license_bundle($key2,'nonexistent','/tmp','/tmp'));
 
     // --- license_bundles storage ----------------------------------------------
-    license_bundle_store((int)license_get($key2)['id'],'/tmp/fake-bundle.zip','Test bundle');
+    $bundleFile=tempnam(sys_get_temp_dir(),'bf-');file_put_contents($bundleFile,'zip-bytes-fixture');
+    license_bundle_store((int)license_get($key2)['id'],$bundleFile,'Test bundle');
     $bundles=all('SELECT * FROM '.table('license_bundles').' WHERE license_id=?',[(int)license_get($key2)['id']]);
     lic_ok('Bundle record stored',count($bundles)===1&&$bundles[0]['title']==='Test bundle');
+    lic_ok('Bundle SHA-256 recorded for download integrity',$bundles[0]['sha256']===hash_file('sha256',$bundleFile));
+    @unlink($bundleFile);
 }catch(Throwable $e){fwrite(STDERR,'SETUP '.get_class($e).': '.$e->getMessage());exit(1);}
 $failed=array_filter($checks,fn($c)=>!$c['passed']);
 echo json_encode(['checks'=>$checks,'passed'=>count($checks)-count($failed),'failed'=>count($failed)],JSON_THROW_ON_ERROR);

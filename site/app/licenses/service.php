@@ -22,7 +22,7 @@ function license_audit(int $actor, string $action, string $detail): void {
  * API, fulfilment) check this before touching license tables.
  */
 function license_ready(): bool {
-    return (one('SELECT value FROM ' . table('settings') . ' WHERE name = ?', ['license_schema_version'])['value'] ?? '') === '2';
+    return (one('SELECT value FROM ' . table('settings') . ' WHERE name = ?', ['license_schema_version'])['value'] ?? '') === '3';
 }
 
 /**

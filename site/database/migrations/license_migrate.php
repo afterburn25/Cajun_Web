@@ -19,10 +19,14 @@ function license_migrate(#[\SensitiveParameter] string $password): void {
         ];
         foreach (license_schema($prefix) as $name=>$sql) {
             if (one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[$prefix.$name])) {
-                // Version 2 added website_licenses.invoice_id — add it to a
-                // version-1 adoption before validating against the full schema.
+                // Additive column upgrades for earlier adoptions — apply the
+                // missing-column ALTER before validating against the full
+                // schema (v2: website_licenses.invoice_id; v3: license_bundles.sha256).
                 if ($name==='website_licenses' && !one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[$prefix.$name,'invoice_id'])) {
                     db()->exec('ALTER TABLE `'.$prefix.$name.'` ADD COLUMN invoice_id INT UNSIGNED NULL AFTER product_id, ADD UNIQUE KEY invoice_lookup (invoice_id)');
+                }
+                if ($name==='license_bundles' && !one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[$prefix.$name,'sha256'])) {
+                    db()->exec('ALTER TABLE `'.$prefix.$name.'` ADD COLUMN sha256 CHAR(64) NULL AFTER title');
                 }
                 catalog_validate_schema($name,$sql,$keys[$name]);
             }
@@ -34,7 +38,7 @@ function license_migrate(#[\SensitiveParameter] string $password): void {
                 // First adoption — only adopt known-empty tables.
                 foreach (array_keys(license_schema(config()['db']['prefix'])) as $name) if ((int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn()) throw new RuntimeException('Unrecognized license records exist. No data was adopted.');
             }
-            save_setting('license_schema_version','2');
+            save_setting('license_schema_version','3');
             license_audit((int)$actor['id'],'setup','Additive license storage verified');
         });
     });

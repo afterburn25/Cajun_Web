@@ -91,12 +91,15 @@ function license_bundle(string $licenseKey, string $industry, string $coreDir, s
 }
 
 /**
- * Store a bundle for download in the customer portal.
+ * Store a bundle for download in the customer portal. The ZIP's SHA-256 is
+ * recorded alongside it so the download endpoint can prove the bytes served
+ * are the bytes built — a corrupted or tampered bundle is refused.
  */
 function license_bundle_store(int $licenseId, string $zipPath, string $title): void {
     $now = gmdate('Y-m-d H:i:s');
+    $sha = is_file($zipPath) ? hash_file('sha256', $zipPath) : false;
     query(
-        'INSERT INTO ' . table('license_bundles') . ' (license_id, file_path, title, created_at) VALUES (?, ?, ?, ?)',
-        [$licenseId, $zipPath, $title, $now]
+        'INSERT INTO ' . table('license_bundles') . ' (license_id, file_path, title, sha256, created_at) VALUES (?, ?, ?, ?, ?)',
+        [$licenseId, $zipPath, $title, $sha === false ? null : $sha, $now]
     );
 }

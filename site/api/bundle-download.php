@@ -58,6 +58,24 @@ if ($real === false || $storage === false || !str_starts_with(str_replace('\\', 
 }
 $path = $real;
 
+// Integrity: the recorded SHA-256 must match the bytes on disk — a
+// corrupted or tampered bundle is refused rather than served. NULL
+// checksums (bundles recorded before v3) are served without the check.
+$expected = (string) ($bundle['sha256'] ?? '');
+if ($expected !== '') {
+    $actual = @hash_file('sha256', $path);
+    if ($actual === false || !hash_equals($expected, $actual)) {
+        query(
+            'INSERT INTO ' . table('audit') . ' (user_id, action, detail, created_at) VALUES (?, ?, ?, ?)',
+            [0, 'bundle.download.integrity_failed', 'Bundle ' . $bundleId . ' checksum mismatch — file refused', gmdate('Y-m-d H:i:s')]
+        );
+        http_response_code(404);
+        header('Content-Type: application/json');
+        echo json_encode(['error' => 'Bundle file is unavailable']);
+        exit;
+    }
+}
+
 // Log the download
 query(
     'INSERT INTO ' . table('audit') . ' (user_id, action, detail, created_at) VALUES (?, ?, ?, ?)',

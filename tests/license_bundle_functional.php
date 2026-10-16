@@ -26,7 +26,7 @@ function one(string $sql, array $p = []): ?array {
     return null;
 }
 function all(string $sql, array $p = []): array { return $GLOBALS['bf_bundles']; }
-function query(string $sql, array $p = []): void { $GLOBALS['bf_bundles'][] = ['license_id' => $p[0], 'file_path' => $p[1], 'title' => $p[2]]; }
+function query(string $sql, array $p = []): void { $GLOBALS['bf_bundles'][] = ['license_id' => $p[0], 'file_path' => $p[1], 'title' => $p[2], 'sha256' => $p[3] ?? null]; }
 function config(): array { return ['storage' => sys_get_temp_dir()]; }
 
 require CWP_CODE_ROOT . '/app/licenses/service.php';
@@ -82,6 +82,7 @@ bf_deny('Unknown industry refused', fn() => license_bundle('TEST-1234-ABCD-5678'
 // --- bundle store -----------------------------------------------------------
 license_bundle_store(7, $zipPath, 'Restaurant bundle');
 bf_ok('Bundle record stored', count($GLOBALS['bf_bundles']) === 1 && $GLOBALS['bf_bundles'][0]['file_path'] === $zipPath);
+bf_ok('Bundle SHA-256 recorded for download integrity', ($GLOBALS['bf_bundles'][0]['sha256'] ?? null) === hash_file('sha256', $zipPath));
 
 // --- cross-repo install verification ----------------------------------------
 // Prove the artifact WC's installer would receive actually installs: extract
