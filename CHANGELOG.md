@@ -9,6 +9,9 @@ Integrate owner-triggered observations of the directory-listing setting with ind
 ## Unreleased — integration evidence and licensing compatibility notes
 
 Document verified c174 Windows packages, the preserved03b failure, current focused acceptance and source review of main's invoice-linked licensing/schema version2. Record remaining upgrade, legacy-invoice retry and internal-key-delivery requirements without changing the tested application candidate.
+## Unreleased isolated work — owner Force SSL change requests
+
+Prepare explicit owner approval against a current saved flag, a single shared-gateway request, immutable dispatch evidence and separate exact GET readback. HTTP200 never acknowledges the effect. Client observation sharing stays separate; pending requests make older observations historical. Reviewed shared wiring is applied; four-way native acceptance now passes atbff7; browser acceptance remains pending, and interrupted-dispatch operator recovery is not yet implemented. The first focused run stopped before native setup on a duplicated test include; change only that include to require_once and retain the original failure. No provider action or release is claimed.
 
 ## Unreleased — saved Force SSL flags and catalog privacy test repair
 

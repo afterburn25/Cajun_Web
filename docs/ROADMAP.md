@@ -1,6 +1,9 @@
 ## Directory-listing observations integrated locally — 2026-10-16
 
 Native-tested3bdba5eb/docsacbf00b joins the next local normal root integration. Owners can save and share the reported directory-listing setting through the existing protected executor. All four actual ten-report archives pass; this new merged tree still needs combined browser/package acceptance. Force SSL owner changes and renewal agreement bindings are parallel implementation lanes. [Scope](TWENTYI_DIRECTORY_LISTING_OBSERVATIONS.md) and [current source/evidence](../SESSION_HANDOFF.md).
+## Isolated Force SSL controls — 2026-10-16
+
+Owner Force SSL changes are implementing on `codex/twentyi-force-ssl-controls` from c1743664. The bounded request/readback workflow uses exact current authority and existing gateway/ledger, with independent client sharing and no certificate/HTTPS-health inference. Exactbff7 four-way native artifacts now pass82 control cases plus inherited reports; combined browser/package acceptance remains pending. Interrupted dispatch remains fenced pending a separately reviewed operator recovery transition; this lane cannot be marked complete before that transition. [Guide](TWENTYI_FORCE_SSL_CONTROLS.md).
 
 ## Combined website-folder and Force SSL observations — 2026-10-16
 

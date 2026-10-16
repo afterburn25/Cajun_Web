@@ -4,9 +4,9 @@ Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for
 
 | Owner | Current branch/checkpoint | Scope and next evidence |
 |---|---|---|
-| Root | Frozen948/CIe24c; full38867932452; PR151 | Windows packages verified,43 original handles retained; native/browser/recovery/server acceptance underway. |
-| Domains | Isolated renewal-agreement bindings fromc174 | Corrected identity guard and13-file shared636455de source reviews clear; isolated application approved, native/browser/workflow evidence pending. |
-| VPS | Corrected bff7d4d2; original focused38869532626 | Originalc331 four-way bootstrap failure retained; require_once-only fixture correction reviewed. Application/workflow/installer unchanged. Recovery proposal deferred. |
+| Root | Frozen948/CIe24c plus local controls merge89325cde; PR151 | Preserve original948 acceptance; verify reviewed controls union before one later candidate. |
+| Domains | Originald5909eac/38870580825 failed; fixtureaff556b9 corrected | Preserve four actual failed archives; corrected focused descendant and later combined browser evidence pending. |
+| VPS | Controls acceptedbff7/docs89325cde; new WordPress indication from111808e2 | Four archives independently verified. Dedicated WordPress bool observation context12/14; shared seams remain external. |
 | Catalog | Source948 parity/helpers and originalc174 final evidence | Prepared100/139-report verifiers; preserve originals and review corrected renewal shared compatibility. |
 | Devin | Software-product licensing; main33ef reviewed | Preserve bundle filtering, invoice uniqueness/marker2/serialized helpers; populated upgrade, master delivery and legacy invoice findings remain. |
 
