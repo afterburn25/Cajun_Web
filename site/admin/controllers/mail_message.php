@@ -4,6 +4,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/mail/messages.php';
 require_once CWP_CODE_ROOT.'/app/mail/notices.php';
 require_once CWP_CODE_ROOT.'/app/mail/copied_drafts.php';
+require_once CWP_CODE_ROOT.'/app/mail/flags.php';
 function mail_message_route(): array {
     $id=$_GET['account_id']??null;$revision=$_GET['revision']??null;$validity=$_GET['uidvalidity']??null;$uid=$_GET['uid']??null;
     if(!is_string($id)||!is_string($revision)||!preg_match('/\A[1-9][0-9]{0,9}\z/D',$revision)||(float)$revision>4294967295)throw new InvalidArgumentException('Open a message from the current folder headers.');
@@ -18,8 +19,11 @@ function mail_message_admin_action(string $action): array {
     if($action==='mail_message_setup') {
         mail_messages_migrate(posted('current_password',200));flash('Message request history is ready. No server was contacted.');redirect(admin_url('mail-accounts'));
     }
+    if($action==='mail_message_flags_setup') {
+        mail_flags_migrate(posted('current_password',200));flash('Message flag history is ready. No server was contacted.');redirect(admin_url('mail-accounts'));
+    }
     $copyModes=['mail_message_reply'=>'reply','mail_message_reply_all'=>'reply-all','mail_message_forward'=>'forward'];
-    if(($_GET['view']??null)!=='mail-message'||!in_array($action,['mail_message_read','mail_message_attachment',...array_keys($copyModes)],true))throw new InvalidArgumentException('Open the current message form before requesting content.');
+    if(($_GET['view']??null)!=='mail-message'||!in_array($action,['mail_message_read','mail_message_flag','mail_message_attachment',...array_keys($copyModes)],true))throw new InvalidArgumentException('Open the current message form before requesting content.');
     $route=mail_message_route();
     foreach($route as $key=>$value)if(posted($key,64)!==$value)throw new InvalidArgumentException('This message form no longer matches the selected folder message.');
     if($action==='mail_message_attachment') {
@@ -29,6 +33,12 @@ function mail_message_admin_action(string $action): array {
         if($read['code']!=='ok'||$read['attachment']===null){flash(mail_message_outcome($read['code']));redirect(admin_url('mail-message',$route));}
         $part=$read['attachment'];header('Content-Type: application/octet-stream');header('Content-Disposition: attachment; filename="'.$part['name'].'"');header('Cache-Control: private, no-store');header('X-Content-Type-Options: nosniff');header('Content-Length: '.strlen($part['bytes']));
         if(session_status()===PHP_SESSION_ACTIVE)session_write_close();echo $part['bytes'];exit;
+    }
+    if($action==='mail_message_flag') {
+        $mark=posted('mark',6);
+        if(!in_array($mark,['read','unread'],true))throw new InvalidArgumentException('Choose whether to mark the message read or unread.');
+        $flag=mail_message_mark($route['account_id'],(int)$route['revision'],$route['folder'],$route['uidvalidity'],$route['uid'],$mark==='read');
+        flash(mail_flag_outcome($flag['code']));redirect(admin_url('mail-message',$route));
     }
     if($action==='mail_message_read')return mail_message_read($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],null,null,$route['notice']??null,$route['folder']);
     if($route['folder']!=='INBOX')throw new InvalidArgumentException('Copied-message drafts are available only from INBOX.');

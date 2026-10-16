@@ -3,6 +3,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/mail/accounts.php';
 require_once CWP_CODE_ROOT.'/app/mail/connections.php';
+require_once CWP_CODE_ROOT.'/app/mail/flags.php';
 
 function mail_accounts_revision(): int {
     $revision=posted('revision',10);

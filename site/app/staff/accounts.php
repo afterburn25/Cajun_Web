@@ -173,8 +173,9 @@ function staff_action_permission(string $action): ?string {
     if(str_starts_with($action,'mail_drafts_'))return null; // Strict actor/account/author checks in every draft action.
     if($action==='mail_notices_setup')return 'staff.manage';
     if($action==='mail_notices_dismiss')return null; // Current mail actor plus exact tuple/grant rechecked by the action.
-    if($action==='mail_message_setup')return 'staff.manage';
+    if(in_array($action,['mail_message_setup','mail_message_flags_setup'],true))return 'staff.manage';
     if(in_array($action,['mail_message_read','mail_message_attachment','mail_message_reply','mail_message_reply_all','mail_message_forward'],true))return null; // Exact current Read and chosen Send are enforced inside each message action.
+    if($action==='mail_message_flag')return null; // Flag changes revalidate exact read authority and account revision internally.
     if($action==='mail_inbox_setup')return 'staff.manage';
     if($action==='mail_inbox_read')return null; // mail_inbox_read enforces the exact account scope.
     if(str_starts_with($action,'mail_inbox_'))return 'mail.read';

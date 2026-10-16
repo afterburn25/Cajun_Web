@@ -14,3 +14,4 @@ require_once __DIR__.'/InboxReader.php';
 require_once __DIR__.'/BodyHtml.php';
 require_once __DIR__.'/BodyDecoder.php';
 require_once __DIR__.'/MessageReader.php';
+require_once __DIR__.'/FlagSession.php';

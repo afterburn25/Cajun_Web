@@ -8,6 +8,6 @@ final class ReceivingFailure extends \RuntimeException
 {
     public function __construct(string $reason)
     {
-        parent::__construct(in_array($reason, ['connection','tls','protocol','limit','timeout','authentication','mechanism','credential','upgrade','access_changed','mailbox_changed','folder'], true) ? $reason : 'protocol');
+        parent::__construct(in_array($reason, ['connection','tls','protocol','limit','timeout','authentication','mechanism','credential','upgrade','access_changed','mailbox_changed','folder','flags'], true) ? $reason : 'protocol');
     }
 }

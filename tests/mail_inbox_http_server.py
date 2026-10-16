@@ -35,7 +35,24 @@ class InboxServer:
                         data+=part
                         assert len(data)<4096
                     value=data[:-2].decode();assert value in expected if isinstance(expected,tuple) else value==expected,'Unexpected synthetic IMAP command';self.commands.append(label or value);return value
-                send('* OK Synthetic HTTP inbox fixture');expect('CWR001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWR001 OK done')
+                send('* OK Synthetic HTTP inbox fixture')
+                if mode.startswith('flag'):
+                    expect('CWF001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWF001 OK done')
+                    expect('CWF002 AUTHENTICATE PLAIN');send('+ ');expect(base64.b64encode(b'\0synthetic@example.net\0Synthetic receiving HTTP password').decode(),'CREDENTIAL');send('CWF002 OK authenticated')
+                    expect(('CWF003 SELECT "INBOX"','CWF003 SELECT "Sent"'));send('* 2 EXISTS');send('* FLAGS (\\Seen \\Answered)');send('* OK [UIDVALIDITY 1234] stable');send('CWF003 OK [READ-ONLY] selected' if mode=='flag-readonly' else 'CWF003 OK [READ-WRITE] selected')
+                    if mode=='flag-readonly':continue
+                    expect('CWF004 UID FETCH 82 (UID FLAGS)')
+                    if mode=='flag-gone':send('CWF004 OK flags');continue
+                    before_seen=mode=='flag-unseen'
+                    send('* 2 FETCH (UID 82 FLAGS (\\Seen))' if before_seen else '* 2 FETCH (UID 82 FLAGS ())');send('CWF004 OK flags')
+                    command=expect(('CWF005 UID STORE 82 +FLAGS.SILENT (\\Seen)','CWF005 UID STORE 82 -FLAGS.SILENT (\\Seen)','CWF005 LOGOUT'))
+                    if command.endswith('LOGOUT'):continue
+                    if mode=='flag-refused':send('CWF005 NO refused');continue
+                    send('CWF005 OK stored');expect('CWF006 UID FETCH 82 (UID FLAGS)')
+                    after_seen='+FLAGS.SILENT' in command
+                    send('* 2 FETCH (UID 82 FLAGS (\\Seen))' if after_seen else '* 2 FETCH (UID 82 FLAGS ())');send('CWF006 OK flags');expect('CWF007 LOGOUT')
+                    continue
+                expect('CWR001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWR001 OK done')
                 expect('CWR002 AUTHENTICATE PLAIN');send('+ ');expect(base64.b64encode(b'\0synthetic@example.net\0Synthetic receiving HTTP password').decode(),'CREDENTIAL');send('CWR002 OK authenticated')
                 expect(('CWR003 EXAMINE "INBOX"','CWR003 EXAMINE "Sent"'));send('* '+('0' if mode=='empty' else '2')+' EXISTS');send('* OK [UIDVALIDITY '+('1235' if mode=='message-epoch' else '1234')+'] stable');send('CWR003 OK [READ-ONLY] examined')
                 if mode.startswith('message'):
