@@ -31,7 +31,10 @@ function license_bundle(string $licenseKey, string $industry, string $coreDir, s
         @mkdir($outputDir, 0750, true);
     }
 
-    $zipPath = $outputDir . '/bundle-' . $licenseKey . '.zip';
+    // Unique filename per build — bundle records are immutable, so a later
+    // regeneration must never overwrite bytes an earlier record's stored
+    // SHA-256 still verifies against.
+    $zipPath = $outputDir . '/bundle-' . $licenseKey . '-' . gmdate('YmdHis') . '-' . bin2hex(random_bytes(3)) . '.zip';
     $zip = new ZipArchive();
     if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
         throw new RuntimeException('Could not create bundle ZIP.');

@@ -84,6 +84,11 @@ license_bundle_store(7, $zipPath, 'Restaurant bundle');
 bf_ok('Bundle record stored', count($GLOBALS['bf_bundles']) === 1 && $GLOBALS['bf_bundles'][0]['file_path'] === $zipPath);
 bf_ok('Bundle SHA-256 recorded for download integrity', ($GLOBALS['bf_bundles'][0]['sha256'] ?? null) === hash_file('sha256', $zipPath));
 
+// Regeneration must produce a NEW file — overwriting a path another record's
+// stored checksum verifies against would permanently break that download.
+$zipPath2 = license_bundle('TEST-1234-ABCD-5678', 'restaurant', $coreDir, $outDir);
+bf_ok('Regeneration writes a distinct bundle file', $zipPath2 !== $zipPath && is_file($zipPath) && is_file($zipPath2));
+
 // --- cross-repo install verification ----------------------------------------
 // Prove the artifact WC's installer would receive actually installs: extract
 // the bundled module from the real ZIP, run WC migrations on sqlite, write

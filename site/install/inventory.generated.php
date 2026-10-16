@@ -102,7 +102,7 @@ function setup_expected_files(): array { return [
     'app/hosting/reconciliation.php'=>'46cc262c94c83b2825684bcda71eec4d0f06fda837723bc78d888930e131cf84',
     'app/hosting/records.php'=>'a1712228deecb10c9e9c7d983777011e3dd2c0ca98c8d80ae339643d1cf015fe',
     'app/index.php'=>'696138b31bbb2a20c4bb53eb98b68dbe25557947dd6a7513c81e1c8b9446ce0d',
-    'app/licenses/bundle.php'=>'d7e396d25e8b8d13d58ffb42aa360e31a2196f0014827eb30fbf5c9267d43f69',
+    'app/licenses/bundle.php'=>'c8bca27875564f412fdc038297b1ee7434e233368a6fa73684a5a4940c9225e0',
     'app/licenses/fulfill.php'=>'98c779c391c9672aa4ca7ddca301fcd7a3aa08b3956ff81872d22bf18907e81d',
     'app/licenses/service.php'=>'78ff900205b5abd8dcf1dea82d82a3caab9f47986acc558ba09942959e35aca7',
     'app/mail/accounts.php'=>'b0f687bc5056d43d535d4cf9a065d4c3399e643a502515d5794636ddd2f45297',
