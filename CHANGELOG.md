@@ -1,3 +1,7 @@
+## Acceptance job-output correction — 2026-10-16
+
+Fix the first parallel run rejecting its own sha256 output name. Add nine actual output/entry-point checks (109 total passing locally) and preserve the failed original plus the older105-minute timeout. Application behavior is unchanged; new full acceptance is pending.
+
 ## Unreleased — WordPress admin buttons fit narrow cards
 
 Wrap complete WordPress refresh/sharing action labels within their forms and add four real owner-browser bounds checks. The fix responds to two actual original CI screenshots despite passing viewport assertions. Scoped offline before/after checks and independent source review pass; fresh combined application acceptance remains required.

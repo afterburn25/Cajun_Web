@@ -8,7 +8,9 @@ import re
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
+from unittest.mock import patch
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -90,6 +92,21 @@ def run(tmp):
         assert resolved.is_relative_to(require_parent) and resolved.name=='native-browser'
         shutil.rmtree(resolved)
     ctx = context(); source = tmp / 'source'; fixtures(source, ctx)
+    # Exercise the actual entry points and GitHub output file, including the
+    # numeric suffix used by both immutable artifact-manifest outputs.
+    cli_root=tmp/'cli-source';fixtures(cli_root,ctx);job_output=tmp/'github-output'
+    with patch.object(a,'ROOT',cli_root),patch.object(a,'identity',return_value=ctx),patch.dict(a.os.environ,{'GITHUB_OUTPUT':str(job_output),'CWP_STEP_OUTCOMES':json.dumps(outcomes('build')),'CWP_INPUT_SHA256':''}):
+        with patch.object(sys,'argv',['acceptance_artifacts.py','pack-inputs']):a.main()
+        expected='sha256='+a.digest(cli_root/'.acceptance/inputs/inputs.json')+'\n'
+        check('Actual pack-inputs entry point writes its sha256 manifest digest to GitHub output',job_output.read_text()==expected)
+        with patch.object(sys,'argv',['acceptance_artifacts.py','seal','--lane','build']):a.main()
+        expected+='sha256='+a.digest(cli_root/'.acceptance/partition/partition.json')+'\n'
+        check('Actual seal entry point appends its sha256 manifest digest to GitHub output',job_output.read_text()==expected)
+        for label,name in [('empty',''),('digit prefix','9sha'),('line break','sha256\ninjected'),('assignment','sha256=x')]:
+            deny('Job output refuses '+label+' name',lambda n=name:a.output(n,'a'*64))
+        for label,value in [('line feed','a\ninjected=yes'),('carriage return','a\rinjected=yes')]:
+            deny('Job output refuses '+label+' injection',lambda v=value:a.output('sha256',v))
+        check('Rejected output fields never append to the GitHub output file',job_output.read_text()==expected)
     transfer = tmp / 'input'; input_sha = a.create_inputs(source, ctx, transfer)
     obj = a.verify_bundle(transfer, 'inputs', ctx, input_sha)
     check('Input binds all27 public fixture trees plus exact package/checksum files', len(a.FIXTURES) == 27 and 'dist/SHA256SUMS.txt' in obj['files'])

@@ -4,13 +4,13 @@ Updated2026-10-16UTC. Codex and three agents own complete20i P0; Devin owns prod
 
 | Owner | Current checkpoint | Next evidence |
 |---|---|---|
-| Root | WordPress mobile correction on parallel734945c3, descendant of recovery/build e1 | Freeze inventory/source, dispatch one combined parallel acceptance, verify packages and actual screenshots; preserve originalfaef. |
-| Domains | Corrected renewal125+125 pure; provider and11-file application/Handler proposals reviewed | Actual applied-source/native concurrency/payment/tamper/browser evidence; schema/workflow wiring reviewed before CI. |
-| VPS | Parallel734945c3 clean/pushed;100 offline cases and independent source review | Prepare newly named source/run-bound external partition/package evidence helpers for root's next candidate. |
-| Catalog | Parallel corrected3f086572, renewal311ff8/75c906 and mobilef2b4b359 reviews clear | Independent review of new shared wiring and frozen combined evidence as it arrives. |
-| Devin | Fetched maine6192a08 licensing source reviewed, unmerged | Prior populated upgrade/internal-master/legacy-invoice/schema-marker findings remain open. |
+| Root | Corrects5a first-run output-name failure;109 local helper checks pass | Commit reviewed correction, one new exact full run, Windows/Linux and actual screenshot evidence. |
+| Domains | Clean/pushedbbf43f8a; sole focused38888746617 active | Verify all four23-report archives, preserve failures; no standalone full dispatch. |
+| VPS | Output fix independently reviewed af689e22; failed5a verifier draft preserved | Rebind helpers in a new corrected-source directory after root supplies source/run. |
+| Catalog | Renewal tests/cross-client wiring and separate six-missing timeout supplement reviewed | Review new parallel helpers; root verified retainedfaef evidence44b1e4bf without full acceptance. |
+| Devin | Main79d9 docs-only over reviewed e619, still unmerged | Prior populated upgrade/internal-master/legacy-invoice/schema-marker findings remain open. |
 
-Originalfaef automated browser112 reports pass; root's22-image review records WordPress mobile overflow/clipping. Original full38875935651 continues through Apache at10:20UTC. Parent/focused evidence does not certify the new candidate. [Current handoff](../SESSION_HANDOFF.md).
+Originalfaef timed out during Apache at105minutes; no full acceptance. Original5a parallel run failed at output emission before children; its truthful incomplete aggregate is verified. Parent/focused evidence does not certify the corrected descendant. [Current handoff](../SESSION_HANDOFF.md).
 
 ## Integration rules
 

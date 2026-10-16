@@ -1,8 +1,6 @@
 ## Current complete20i roadmap — 2026-10-16
 
-Published1.24.0 remains immutable;1.25.0/full20i remain unfinished. Root's current candidate combines reviewed parallel acceptance734945c3 with WordPress admin mobile label correction over recovery/build e1. Originalfaef browser112 reports pass, but two actual mobile captures require the correction; fresh combined screenshots and exact packages remain mandatory. Parallel100 offline cases are source-reviewed, not GitHub execution. [Current handoff](../SESSION_HANDOFF.md) supersedes older checkpoint instructions below.
-
-Domains continues permanent prepayment invoice purpose and single owner-approved renewal dispatch, with corrected125+125 pure checks and reviewed shared seams. Native payment/concurrency/tamper, schema and actual browser acceptance remain. Full hosting controls, provider commerce/quotes, VPS/cloud lifecycle and support/SSH remain required by the [complete evidence table](TWENTYI_REQUIREMENTS_EVIDENCE.md). Devin retains licensing; maine619 is unmerged and earlier compatibility findings remain open.
+1.24 remains released;1.25/full20i unfinished. Root fixes the actual first parallel-run sha256 output-name defect from5a402a35;109 local helper checks and independent review pass, with application/shipping/workflow unchanged. Original5a failure and olderfaef105-minute timeout remain retained. Next is one new corrected-source full run, actual partition/diagnostic/package/visual verification and independently accepted renewal integration. Domainsbbf43f8a has its first four-environment focused run38888746617 active. Main79d9 licensing remains separate; current seven-conflict preflight and four prior licensing findings are documented. [Current status](../PROJECT_STATUS.md), [handoff](../SESSION_HANDOFF.md), [full requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md).
 
 ## Historical implementation checkpoints
 

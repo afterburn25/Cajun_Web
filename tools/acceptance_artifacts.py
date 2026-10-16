@@ -341,7 +341,7 @@ def shipping_guard(root):
 
 
 def output(name, value):
-    require(re.fullmatch('[a-z_]+', name) and '\n' not in value, 'Invalid job output')
+    require(re.fullmatch('[a-z_][a-z0-9_]*', name) and '\n' not in value and '\r' not in value, 'Invalid job output')
     with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as f: f.write(name + '=' + value + '\n')
 
 
