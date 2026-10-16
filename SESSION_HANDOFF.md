@@ -1,5 +1,7 @@
 # CajunWebPro current handoff
 
+Local build optimization: `codex/build-git-blob-batch` is based exactly on frozen faef8a6a. Review only `tools/build.py`, the additive `tests/build_git_blob_batch.py` helper and its two-line hook after the original 21 builder guards. Current local results are 45 portable cases and 66 combined guards, all passing. The reviewed proposal matched every one of faef's 5,745 source blobs (37,687,794 bytes); its local source-read timing was 0.399 seconds versus 191.967 seconds, not a full-build benchmark. The sole later reader correction guarantees stdout closure if a broken stdin close raises, covered by an actual early-exit child. Root must review and integrate this nonshipping change before future combined/package acceptance. Keep faef's source, original run 38875935651, verifier family and retained packages unchanged; do not push or start another full run for this branch.
+
 Updated 2026-10-16 UTC. Continue complete20i with three parallel agents, separate branches, sequential integration and immutable verified releases. Codex owns20i; Devin owns software-product licensing. Published1.24.0 remains immutable7190b582a02be8a1daa501db14b5899cfc1eb5d0.1.25.0 and full20i remain unfinished. Preserve the one-page keyless installer.
 
 ## Root source and next actions

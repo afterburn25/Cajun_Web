@@ -173,6 +173,8 @@ Owner direction recorded 2026-10-12: use GitHub for testing, deliver incremental
 
 ## Current implementation
 
+The build tool resolves an immutable Git tree and reads raw blob objects through one binary batch process. It checks framing, exact object identity and content, and closes/reaps the child on refusal. Existing clean-checkout, source normalization, symlink/path, installer, full PHP/JavaScript lint and archive checks remain unchanged; batching does not skip them. The [portable blob tests](../tests/build_git_blob_batch.py) use a small temporary Git repository and run inside the existing [builder guard report](../tests/build_guards.py), preserving its original 21 checks. Local source-read timing is not full-build or release acceptance.
+
 - [Repository checks](../.github/workflows/repository-checks.yml) runs on pull requests, pushes to `main` and manual dispatch. It uses read-only repository permissions and no production credentials.
 - [Documentation checker](../tools/check_docs.py) verifies required continuity files and inline relative Markdown links, including heading targets. Use `python tools/check_docs.py` locally. External URLs, reference-style links, HTML links and application behavior are outside this check's scope.
 - [Application acceptance](../.github/workflows/application-tests.yml) verifies exact source/package bytes, native MariaDB and actual HTTP/Chromium workflows, plus fresh/update package behavior. It retains reports and screenshots. Final combined-main acceptance and downloaded release verification are required; documentation checks alone are insufficient.

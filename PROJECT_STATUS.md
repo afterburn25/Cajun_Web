@@ -1,5 +1,7 @@
 # CajunWebPro current status
 
+Build-tool branch `codex/build-git-blob-batch` starts exactly at frozen `faef8a6a0fb0a3969a67fe8bc7aabd3b107c1c10`. It batches immutable Git blob reads while retaining existing lint, path, symlink, clean-source, normalization, hash and archive checks. All 45 portable cases and the complete 66-case Windows builder guard report pass locally. No shipping, installer or workflow bytes change; no push, full build or CI run is claimed. Frozen faef acceptance remains separate. Root owns later reviewed integration.
+
 Updated 2026-10-16 UTC. **1.24.0 is published; 1.25.0 and complete 20i remain unfinished.** Codex and three parallel agents own 20i; Devin owns software-product licensing. An ownership assignment is not proof an external session is active. CajunWebPro retains its one-page keyless installer.
 
 ## Current integration
