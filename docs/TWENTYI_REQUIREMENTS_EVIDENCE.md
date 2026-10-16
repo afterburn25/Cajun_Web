@@ -1,3 +1,7 @@
+## Current local renewal intake increment — 2026-10-15
+
+Client renewal-review requests with owner messages/decline and client withdrawal are implementing on `codex/twentyi-domain-renewal-requests` from combined `38bb69cc`. Current registrar/client/account binding and immutable local request/event recovery are included. Pure validation passes 28 cases per default/no-INI mode; native/browser execution is pending. This does not advance provider renewal, commercial quotes, eligible periods, payment or outcome reconciliation to complete. [Exact scope](TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).
+
 # Complete 20i requirements and evidence
 
 Combined candidate38bb69cc preserves mailbox, registrar, reviewed catalog and cloud website increments. All four corresponding native matrices have downloaded/verified results; exact Windows packages match source. Full combined application38824052505 passed package/native but stopped in browser after1343 recorded passing checks because its foreign-client mailbox fixture sought a token from a correctly form-free page. The corrected descendant uses the actual client workspace token and asserts permission refusal. Recovery/Apache, completed combined screenshots and release gates remain pending. Next parallel implementation covers renewal requests/review, catalog readiness/history and cloud package observation/client assignment. [Current status](../PROJECT_STATUS.md) and [evidence](TWENTYI_PARALLEL_WORK.md) distinguish implementation, release and live acceptance.

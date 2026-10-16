@@ -1,3 +1,7 @@
+# Current renewal integration — 2026-10-15
+
+Root normally merges reviewed/native-verified renewal ed4d1cad from [PR146](https://github.com/afterburn25/Cajun_Web/pull/146) after catalog82302571. Shared application wiring auto-merges; root regenerates installer inventory. Domain agent owns exact browser checkpoint38827956015 and retained registrar screenshot inspection. Cloud agent owns test-timing correction and native/full evidence; catalog agent independently reviewed both repaired slices and retains its exact full run. [Current evidence](../SESSION_HANDOFF.md).
+
 # Current catalog integration — 2026-10-15
 
 Root normally merges reviewed/native-verified catalog872aec34 from [PR145](https://github.com/afterburn25/Cajun_Web/pull/145) into the integration branch. Its exact full38826955926 and Windows31645 continue under the catalog agent, which also independently reviews domain-renewal repairs. Domain/cloud authors retain their isolated slices. Preserve full2239 and38bb runs; complete new combined acceptance after ready reviewed increments are integrated. [Current evidence](../SESSION_HANDOFF.md).

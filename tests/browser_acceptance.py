@@ -207,6 +207,8 @@ try:
 
         from provider_registrar_cases import run_browser as registrar_browser
         registrar_browser(globals(),browser)
+        from domain_renewals_cases import run_browser as domain_renewals_browser
+        domain_renewals_browser(globals(),browser)
 
         from provider_cloud_sites_cases import run_browser as cloud_sites_browser
         cloud_sites_browser(globals(),browser)

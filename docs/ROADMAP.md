@@ -1,3 +1,7 @@
+## Client domain renewal requests — integrated candidate, 2026-10-15
+
+Reviewed/native-verified ed4d1cad is normally merged after the catalog readiness increment. Actual client request/withdrawal and owner review/decline forms retain original registrar assignment and immutable history. Four supported native combinations pass78 request cases plus28 pure cases per mode. Commercial offers, provider renewal execution and completed-renewal verification remain unfinished; combined application acceptance is still required. [Scope](TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).
+
 ## Owner catalog readiness — integrated candidate, 2026-10-15
 
 Reviewed catalog872aec34 is normally merged into the integration branch: bounded owner plan summaries, precise local readiness reasons and immutable selected-review details. Four native database/runtime combinations pass with78 catalog cases each; actual browser and new combined acceptance remain pending. Automatic provider catalog discovery remains unfinished. [Scope](TWENTYI_CATALOG_READINESS.md).

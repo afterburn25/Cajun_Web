@@ -1,3 +1,7 @@
+## Domain renewal request integration — candidate, unreleased
+
+Normally merge reviewed/native-verified renewal ed4d1cad: clients request renewal review or withdraw; owners save a review message or decline. Current registrar assignment, immutable request/events and a retained request-count witness protect history. Monotonic event timestamps survive clock rollback. This local intake does not place or complete provider renewals. Combined inventory refresh and syntax pass; new combined application acceptance remains required.
+
 ## Catalog readiness integration — candidate, unreleased
 
 Normally merge reviewed catalog872aec34: owner plan summaries explain local readiness, distinguish zero from unknown costs/limits, and show selected immutable mapping reviews without changing current edit or execution authority. All four focused native combinations are verified; actual browser and combined application acceptance remain pending.
