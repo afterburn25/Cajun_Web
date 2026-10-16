@@ -2,7 +2,7 @@
 /** Disposable native database, synthetic provider transport and actual application authority. */
 declare(strict_types=1);
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
-define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/admin/controllers/providers.php';require __DIR__.'/../site/app/providers/package_force_ssl_views.php';require __DIR__.'/../site/app/providers/force_ssl_controls_views.php';require __DIR__.'/../site/includes/layout/admin.php';
+define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/admin/controllers/providers.php';require __DIR__.'/../site/app/providers/package_force_ssl_views.php';require_once __DIR__.'/../site/app/providers/force_ssl_controls_views.php';require __DIR__.'/../site/includes/layout/admin.php';
 use CajunWebPro\Foundation\Provider\{HttpTransport,ProviderCredential,TransportRequest,TransportResponse};
 use CajunWebPro\Foundation\TwentyIInventory\{InventoryRead,InventoryProjector};
 use CajunWebPro\Foundation\TwentyIPackageForceSsl\{PackageForceSslBinding,PackageForceSslObservation,PackageForceSsl};

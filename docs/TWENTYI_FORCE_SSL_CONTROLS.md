@@ -1,6 +1,6 @@
 # Force SSL change requests — isolated implementation
 
-This lane starts from root candidate `c1743664c9ea6d81abb0c2784c20a2fdee4720fd` on `codex/twentyi-force-ssl-controls`. Dedicated source and the exact reviewed shared application changes are applied locally. Independent runtime, browser and amended native-fixture source reviews are clear; no provider action, CI dispatch, release or deployment has occurred. Root owns integration. Directory-listing observation arguments and Devin's software licensing lane remain separate.
+This lane starts from root candidate `c1743664c9ea6d81abb0c2784c20a2fdee4720fd` on `codex/twentyi-force-ssl-controls`. Dedicated source and the exact reviewed shared application changes are applied locally. Independent runtime, browser and amended native-fixture source reviews are clear; no live provider action, release or deployment has occurred. Root owns integration. Directory-listing observation arguments and Devin's software licensing lane remain separate.
 
 The owner-supplied [reference](reference/20i-owner-api-34e713-redacted.txt), original SHA256 `34e713c3c0b4145b6a5e3f5929d0bd470605793f98d2d917c2b28f21814c3e95`, lines1671–1678 documents `POST /package/{packageId}/web/forceSSL` with one JSON property, `value`, whose value is a boolean. It supplies no acknowledgement schema. The existing strict boolean GET contract remains the independent observation source. Local positive-integer and body-size limits are defensive validation, not claimed provider limits.
 
@@ -20,6 +20,21 @@ A crash before the immutable terminal witness leaves an owner-visible interrupte
 
 ## Evidence at this source checkpoint
 
-Seven dedicated runtime files pass PHP syntax inspection. Local request/classifier76, exact transport37, retained ForceSSL165 and roots-transport24 checks pass in both normal and minimal PHP modes; the existing operation contract has230 passing named checks. This proves typed request construction, refusal boundaries and lack of invented acknowledgement semantics only. Dedicated native and browser fixtures are source prepared; they have not executed. The native fixture covers independent counters/witnesses, paired loss with affected-row assertions, immutable shared ledger outcomes, phase-specific refusal, interrupted claims, latest-receipt supersession and separate sharing. The browser fixture reserves a dedicated synthetic owner and package2101, preserves prior history/account bytes, and budgets six GETs plus one loopback POST with the existing cooldown.
+Seven dedicated runtime files pass PHP syntax inspection. Local request/classifier76, exact transport37, retained ForceSSL165 and roots-transport24 checks pass in both normal and minimal PHP modes; the existing operation contract has230 passing named checks. This proves typed request construction, refusal boundaries and lack of invented acknowledgement semantics only. The dedicated native fixture was invoked by the original focused run but stopped during bootstrap before native setup; browser fixtures remain unexecuted. The native fixture covers independent counters/witnesses, paired loss with affected-row assertions, immutable shared ledger outcomes, phase-specific refusal, interrupted claims, latest-receipt supersession and separate sharing. The browser fixture reserves a dedicated synthetic owner and package2101, preserves prior history/account bytes, and budgets six GETs plus one loopback POST with the existing cooldown.
 
 Root cleared the bounded two-test dependency correction (proof3692af96). Original installer refresh83310 completed successfully; staged Git parity is checked before the feature commit. Next commit/push once under root approval and inspect the exact four-combination focused artifacts. The reviewed workflow preserves12 named reports and unchanged full-acceptance triggers. Root will integrate sequentially and own eventual combined browser/package acceptance. No live provider account or production authorization is implied.
+
+## Preserved first focused failure and fixture correction
+
+Frozen source `c33150c2650818b2d404f3fc7b257e068a9b314e` ran [38868819957](https://github.com/afterburn25/Cajun_Web/actions/runs/38868819957), attempt1, on PHP8.2/8.4 with MariaDB10.11/MySQL8.4. All four jobs pass the request and transport pure reports, then fail before native setup on a repeated plain require of the controls view already loaded by the provider controller. The correction changes only that test include to require_once; runtime/workflow/installer bytes remain identical. Exact original bootstrap execution reproduces exit255, while corrected bootstrap exits0 with284 source files loaded, without DB or provider execution. This is fixture/bootstrap proof, not native acceptance.
+
+All four original archives contain the same four fully passing named reports:76 default/+76 minimal request and37 default/+37 minimal transport cases. Digests, sizes, unique safe paths, CRC and every named outcome were checked. Native result files are absent.
+
+| Environment | Artifact | SHA256 |
+|---|---|---|
+| 8.4-mariadb-10.11 | 12032273384 (3238 bytes) | `cdbaf74faeebbc5edccb0714643c43dc714bf952df0a64548e272591c92d257e` |
+| 8.4-mysql-8.4 | 12032183535 (3238 bytes) | `1226fd86150860b7f46e204b885da66d9cf86945deab77cc3823b1b4b07aaa44` |
+| 8.2-mysql-8.4 | 12031834974 (3238 bytes) | `e34d5ff5c8567f3e218b7bb1e3c3bd4cc4e7be951f3a974fca62f5ad223f340f` |
+| 8.2-mariadb-10.11 | 12031524680 (3238 bytes) | `676b42189ad79aa856f6bdd09150c9774146d6c34f67ecc1299bd84a5c33684f` |
+
+Original logs/metadata/archives and offline correction proof remain in local qa/38868819957 and qa/force-ssl-controls-native-loader-correction.json. The corrected source requires its own four-environment native acceptance. No automatic retry, dispatch recovery, browser completion or provider success is inferred.

@@ -1,6 +1,6 @@
 ## Unreleased isolated work — owner Force SSL change requests
 
-Prepare explicit owner approval against a current saved flag, a single shared-gateway request, immutable dispatch evidence and separate exact GET readback. HTTP200 never acknowledges the effect. Client observation sharing stays separate; pending requests make older observations historical. Reviewed shared wiring is applied; native/browser acceptance is pending, and interrupted-dispatch operator recovery is not yet implemented. No provider action or release is claimed.
+Prepare explicit owner approval against a current saved flag, a single shared-gateway request, immutable dispatch evidence and separate exact GET readback. HTTP200 never acknowledges the effect. Client observation sharing stays separate; pending requests make older observations historical. Reviewed shared wiring is applied; native/browser acceptance is pending, and interrupted-dispatch operator recovery is not yet implemented. The first focused run stopped before native setup on a duplicated test include; change only that include to require_once and retain the original failure. No provider action or release is claimed.
 
 ## Unreleased — saved Force SSL flags and catalog privacy test repair
 

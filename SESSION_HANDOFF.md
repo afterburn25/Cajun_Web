@@ -1,6 +1,6 @@
 ## Isolated Force SSL controls handoff — 2026-10-16
 
-Continue `codex/twentyi-force-ssl-controls` from c1743664 in its own checkout. The seven dedicated runtime files and amended real-contention/post-send-failure native fixtures have independent source clearance; the exact reviewed15-file shared proposal and reviewed four-combination workflow are applied. Finish the bounded two-test dependency correction review, original installer refresh and staged Git parity, then commit/push once under root approval and verify all four original focused artifacts. No full/browser/PR dispatch is authorized in this lane. Keep operator interrupted-request recovery explicitly unfinished; never release its fence through a retry or database edits. [Detailed scope](docs/TWENTYI_FORCE_SSL_CONTROLS.md).
+Continue `codex/twentyi-force-ssl-controls` from frozen c33150c2650818b2d404f3fc7b257e068a9b314e. Original focused38868819957 failed before native setup on a duplicate view require; all four original archives and exact logs are retained. Root reviewed the sole fixture change to require_once (SHA f1bc7f1f), reproduced offline as original exit255 versus corrected exit0. Commit/push the test/docs-only descendant once and verify its new automatic four-way focused run. Application/workflow/installer must remain exactlyc331; no refresh/full/browser/PR/manual duplicate is needed. External recovery proposal remains unimplemented and the original interrupted-request fence stays. [Detailed scope](docs/TWENTYI_FORCE_SSL_CONTROLS.md).
 
 # CajunWebPro current handoff
 
