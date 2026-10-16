@@ -594,6 +594,8 @@ Extend existing inquiries with stages such as New, Consultation, Proposal Sent, 
 
 Save meaningful versions, compare changes, restore as draft, and retain approval context separately. Acceptance: permissions, no silent overwrite of later edits, explicit restore action, and recorded author/time.
 
+> Runtime status: main already persists `studio_revisions` with optimistic-concurrency saves and deliberate restore. `devin/non20i-revisions-runtime` adds contract-backed line-level diffs (`RevisionDiff`) in the history view. Remaining: applying the `ContentDocument`/`ApprovalContext` model to a broader document surface.
+
 ### A-03 — Backup and restore
 
 Protected export of required database/media/configuration with clear scope, integrity metadata, secrets protection, storage limits and retention. Restore must show impact, validate compatibility, require deliberate authorization, and support recovery. Acceptance: a successful restore drill in an isolated environment; an archive download alone is not a tested backup system.

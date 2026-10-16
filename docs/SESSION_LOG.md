@@ -4,6 +4,16 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 # Session log
 
+## Revision diff integration (A-02) — 2026-10-16
+
+Request: continue all remaining non-20i work (issue #157). Starting commit: `devin/non20i-revisions-foundation` tip `ced446a4`, new branch `devin/non20i-revisions-runtime`.
+
+Actions: `studio_revision_diff()` adapter wraps a `studio_revisions` row as a foundation `ContentRevision` pair and returns `RevisionDiff`; the `studio-history` view renders added/removed line sets with counts, keeps full values nested, and states identical restores plainly. Added `revisions` to the build mirror, Apache direct-access inventory, workflow path filters, and diff assertions in `tests/native.php` + `tests/release_cases.py`.
+
+Tests: `php -l` clean; `tests/revisions/run.php` 30/30 on PHP 8.4; native/browser suites extended rather than duplicated. `tools/build.py --refresh` clean. Synthetic only.
+
+Next: PR + #157 update; continue remaining foundation runtime gaps (notifications feed depth, comparisons governance).
+
 ## Port A-02 content-revision contract layer — 2026-10-16
 
 Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-revisions-foundation`.
