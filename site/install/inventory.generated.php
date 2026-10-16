@@ -104,7 +104,7 @@ function setup_expected_files(): array { return [
     'app/index.php'=>'696138b31bbb2a20c4bb53eb98b68dbe25557947dd6a7513c81e1c8b9446ce0d',
     'app/licenses/bundle.php'=>'f99cf0e3ac84ef8a004c8c9874496ed5424349d6988787b9e25c6d4536af1823',
     'app/licenses/fulfill.php'=>'90c88fae9489cd5267f0daa4160bfcf36a3602472abb488452ad32e4a62088d6',
-    'app/licenses/service.php'=>'07a4547cacf245372ac017d8d3a0b1a1f69ec9865e61afe3d4fce7c62c46879d',
+    'app/licenses/service.php'=>'a957109d451e34df64a1c8474b2b40eeddaf6532adfa286f22ce2f2239522c37',
     'app/mail/accounts.php'=>'b0f687bc5056d43d535d4cf9a065d4c3399e643a502515d5794636ddd2f45297',
     'app/mail/connections.php'=>'ab19f6616283c044802f740a9f886217965acfe3d9b7419d8a9e3e602391f92c',
     'app/mail/credentials.php'=>'6f458c7e7cf0f649e8a2f14e48f655682babfa21f654a337b6d9d6b10249a5d5',
