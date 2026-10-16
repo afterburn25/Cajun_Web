@@ -4,6 +4,8 @@ Updated 2026-10-16 UTC. **1.24.0 is published; 1.25.0 is unreleased. Full20i int
 
 ## Isolated DNS proposal increment
 
+Provenance correction: the verified SDK snapshot contains23 total retained files:19 PHP plus4 metadata/documentation files. The tested contract and results are unchanged.
+
 Catalog branch `codex/twentyi-hosting-dns-contract` starts at frozen427e3a23 outside the release queue. Three pure types validate local A/AAAA/CNAME/MX/TXT/SRV proposals with distinct unverified package-domain identity, immutable package context and bounded credential-echo checks. Root source review is clear and all158 named cases pass local PHP8.4 normal/minimal modes; exact96fba852 no-network run38855162311 passes both PHP8.2/8.4 with both actual artifacts verified (158 default+158 minimal each). No application routes, transport, schema, installer or DNS operation is added. Exact response/identity/policy/outcome contracts remain required. [Scope and source evidence](docs/TWENTYI_HOSTING_DNS_CONTRACT.md).
 
 ## Product and ownership

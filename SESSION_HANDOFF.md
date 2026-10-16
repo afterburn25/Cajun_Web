@@ -4,6 +4,8 @@ Updated 2026-10-16 UTC. Full roadmap remains active with complete20i P0 priority
 
 ## This isolated branch
 
+The later document-root intake independently rechecked the SDK manifest:23 total files,19 PHP plus4 metadata/docs. The DNS guide now corrects its earlier file-count wording; no tested source changes.
+
 `codex/twentyi-hosting-dns-contract` starts at427e3a233706f22cd39918d8b97256a7fb2b1e90. Three pure foundation types, `tests/hosting_dns_contract.php`, a narrow no-network PHP8.2/8.4 workflow and continuity/contract documentation change. The local proposal remains non-executable with unverified package-domain identity.158 checks pass each local PHP8.4 mode; root independently cleared the exact pure source; exact96fba852 automatic no-network run38855162311 passes PHP8.2/8.4, with both archives verified (158+158 each). Do not wire requests, shipping routes or provider result parsing without the missing contracts in [the DNS guide](docs/TWENTYI_HOSTING_DNS_CONTRACT.md). Site/shared/tools and all existing workflows remain unchanged; no installer refresh, full application dispatch or release is implied.
 
 Preserve pure expiryb3c1cc31 and root427. Catalog independently verified all eight root427 period38853750056/scheduler38853749719 archives:80+62+62 and102+42+42 per environment respectively, with exact CI/source tree925ec3ba, SHA256/size/CRC and named outcomes. Local proofs `work/catalog-agent-root427-period-verification.json` and `work/catalog-agent-root427-scheduler-verification.json`; root owns combined full38853750274. These focused passes do not certify that full run.
