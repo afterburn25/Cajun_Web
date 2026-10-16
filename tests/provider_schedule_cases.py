@@ -1,5 +1,8 @@
 """Real packaged owner controls and fixed TLS loopback GET/package; no external provider."""
 import json
+import html
+import re
+from bs4 import BeautifulSoup
 import subprocess
 import time
 import requests
@@ -8,7 +11,67 @@ from release_cases import db
 from staff_cases import OWNER, STAFF
 
 
+def schedule_projection_privacy(markup, approval):
+    """Return finite checks only; never include retained secrets or response markup."""
+    document = BeautifulSoup(markup, 'html.parser')
+    marked = document.select('[data-provider-schedule]')
+    identified = document.select('#scheduled-refresh')
+    exact_section = (len(marked) == 1 and len(identified) == 1
+                     and marked[0] is identified[0] and marked[0].name == 'section')
+    section = str(marked[0]).lower() if exact_section else ''
+    # Inspect raw/HTML-decoded attributes as well as visible text. The response
+    # parser in env expects response.text, so synthetic markup is parsed here.
+    whole = html.unescape(markup) + '\n' + document.get_text('', strip=False)
+    data = approval.get('data') if isinstance(approval, dict) else None
+    hashes = [data.get(key) for key in ('owner_auth_sha256', 'credential_sha256')] if isinstance(data, dict) else []
+    retained_hashes_valid = (len(hashes) == 2 and all(isinstance(value, str)
+                             and re.fullmatch(r'[0-9a-f]{64}', value) for value in hashes))
+    return {
+        'one_real_schedule_section': exact_section,
+        'global_sensitive_keys_absent': all(key not in whole.lower() for key in ('owner_auth_sha256', 'credential_sha256')),
+        'retained_hashes_valid': retained_hashes_valid,
+        'global_retained_hashes_absent': bool(retained_hashes_valid and all(value not in whole.lower() for value in hashes)),
+        'schedule_document_root_absent': bool(exact_section and 'document_root' not in section),
+        # Singular field names remain forbidden globally. A separate feature's
+        # legitimate provider_inventory_document_roots_* action is not that field.
+        'global_document_root_field_absent': re.search(r'(?<![a-z0-9])document_root(?![a-z0-9_])', whole.lower()) is None,
+    }
+
+
+def schedule_projection_privacy_regressions():
+    approved = {'data': {'owner_auth_sha256': 'a' * 64, 'credential_sha256': 'b' * 64}}
+    section = '<section id="scheduled-refresh" data-provider-schedule><p>Approved read</p></section>'
+    unrelated = '<section id="document-roots"><form><input type="hidden" name="action" value="provider_inventory_document_roots_share"></form></section>'
+    cases = [
+        ('accepts exact schedule section', section, approved, True),
+        ('allows unrelated website-folder action', unrelated + section, approved, True),
+        ('rejects absent schedule section', unrelated, approved, False),
+        ('rejects duplicate schedule section', section + section, approved, False),
+        ('rejects duplicate schedule identifier', section + '<div id="scheduled-refresh"></div>', approved, False),
+        ('rejects wrong section element', section.replace('section', 'div'), approved, False),
+        ('rejects mismatched section identifier', section.replace('scheduled-refresh', 'other'), approved, False),
+        ('rejects scheduler document-root text', section.replace('Approved read', 'document_root'), approved, False),
+        ('rejects scheduler document-root attribute', section.replace('<p>', '<p data-document_root="private">'), approved, False),
+        ('rejects misplaced website-folder action in scheduler', section.replace('Approved read', unrelated), approved, False),
+        ('rejects outside singular document-root field', section + '<input name="document_root">', approved, False),
+        ('rejects outside auth key text', section + '<p>owner_auth_sha256</p>', approved, False),
+        ('rejects outside credential key attribute', section + '<input name="credential_sha256">', approved, False),
+        ('rejects scheduler auth key attribute', section.replace('<p>', '<p data-owner_auth_sha256="private">'), approved, False),
+        ('rejects scheduler credential key text', section.replace('Approved read', 'credential_sha256'), approved, False),
+        ('rejects outside exact auth hash text', section + '<p>' + 'a' * 64 + '</p>', approved, False),
+        ('rejects outside exact credential hash attribute', section + '<input value="' + 'b' * 64 + '">', approved, False),
+        ('rejects HTML-encoded sensitive hash', section + '<p>' + '&#97;' * 64 + '</p>', approved, False),
+        ('rejects split visible sensitive hash', section + '<p>' + 'a' * 32 + '<span>' + 'a' * 32 + '</span></p>', approved, False),
+        ('rejects missing retained hashes', section, {'data': {}}, False),
+        ('rejects malformed retained hashes', section, {'data': {'owner_auth_sha256': [], 'credential_sha256': 'b' * 64}}, False),
+    ]
+    return [('Schedule privacy regression ' + name, all(schedule_projection_privacy(markup, approval).values()) == expected)
+            for name, markup, approval, expected in cases]
+
+
 def run_browser(env, browser):
+    for name, passed in schedule_projection_privacy_regressions():
+        env['check'](name, passed)
     check, soup, form_data, form_for, submit = (env[k] for k in ['check', 'soup', 'form_data', 'form_for', 'submit'])
     base, qa, provider = env['BASE'], env['QA'], env['provider_server']
     admin = base+'/existing/admin/index.php'
@@ -40,7 +103,10 @@ def run_browser(env, browser):
     check('Owner support context cannot see scheduling', owner.get(url+'&support=fixture').status_code == 403)
     response = owner.post(url, data={**fields, **valid})
     check('Actual owner approval saves no password or raw provider key', len(db('SELECT * FROM ci_provider_schedule_events')) == 2 and provider.calls == calls and 'SYNTHETIC_RAW_GENERAL_KEY' not in json.dumps(db('SELECT * FROM ci_provider_schedule_events')) and OWNER not in response.text)
-    check('Owner schedule projection omits auth and credential hashes', 'owner_auth_sha256' not in response.text and 'credential_sha256' not in response.text and 'document_root' not in response.text)
+    retained_approval = json.loads(db('SELECT document_json FROM ci_provider_schedule_events WHERE kind="approval" ORDER BY sequence DESC LIMIT 1')[0]['document_json'])
+    privacy = schedule_projection_privacy(response.text, retained_approval)
+    (qa/'provider-schedule-privacy-diagnostics.json').write_text(json.dumps(privacy, sort_keys=True))
+    check('Owner schedule projection omits auth and credential hashes', all(privacy.values()))
     owner.post(url, data={**fields, **valid})
     check('Stale approval submission cannot silently replace newer review', len(db('SELECT * FROM ci_provider_schedule_events')) == 2)
 

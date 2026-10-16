@@ -1,3 +1,7 @@
+## Unreleased — scheduler privacy fixture correction
+
+Avoid falsely rejecting unrelated website-folder controls when checking scheduler privacy. Require the exact scheduler section and retain full-page credential checks, with21 positive/negative regressions and independent review. Application code is unchanged; new combined browser acceptance remains pending.
+
 ## Unreleased — saved WordPress installation indication
 
 Integrate explicit owner refresh, saved true/false/unavailable indication and independent client sharing. Preserve current hosting authority and observation history. Four-way native evidence is verified; combined browser/package acceptance remains pending. Retain the original scheduler privacy assertion failure for a bounded test correction before the next acceptance run.
