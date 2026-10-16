@@ -1,5 +1,7 @@
 ## Unreleased - combined browser verification and reader corrections
 
+Follow-up records corrected cloud-provider four-way native acceptance and the independent64-check incoming shared-boundary review. Runtime remains unchanged.
+
 Record actual combined4f browser/native/package evidence and scoped desktop/mobile visual review. Preserve failed child runs and exact domain-date, registration-period and cloud-provider corrections; record the latest licensing parser source fix and remaining findings. Documentation only; no new runtime or release in this checkpoint.
 
 ## Unreleased — combined build and source-review continuity
