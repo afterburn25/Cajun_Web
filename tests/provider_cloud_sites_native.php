@@ -49,6 +49,7 @@ try{
     $beforePreparation=all('SHOW TABLES');db()->beginTransaction();save_setting('cloud_preparation_transaction_sentinel','pending');$refusedTransaction=false;
     try{try{provider_operations_migrate($password);}catch(LogicException){$refusedTransaction=true;}cw_ok('Fresh preparation refuses caller transaction before any table or marker change',$refusedTransaction&&db()->inTransaction()&&all('SHOW TABLES')===$beforePreparation&&!one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version']));}finally{if(db()->inTransaction())db()->rollBack();}
     cw_ok('Refused preparation preserves caller rollback of unrelated writes',!one('SELECT value FROM '.table('settings').' WHERE name=?',['cloud_preparation_transaction_sentinel']));provider_operations_migrate($password);
+    provider_cloud_assignment_prepare($password);
     cw_ok('Native complete cloud observation',provider_inventory_refresh($profileId,1,$password,'cw_dns','cw_read',InventoryRead::CLOUD_SERVERS_LIST)==='complete');
     $refresh=provider_inventory_observation($profileId,InventoryRead::CLOUD_SERVERS_LIST)['id'];provider_cloud_link($profileId,1201,1,1,$refresh,$password);$link=provider_cloud_links($profileId)[0];$dnsCalls=0;
     cw_deny('Wrong password refuses cloud request',fn()=>cw_create('wrong.example','',null,'wrong'));

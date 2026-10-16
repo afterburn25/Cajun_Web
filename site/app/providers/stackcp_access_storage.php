@@ -41,8 +41,16 @@ function provider_stackcp_access_ready():bool {
     if ($marker==='') {
         $witness=one("SELECT name FROM $settings WHERE name IN (?,?,?) LIMIT 1",['provider_stackcp_access_proof','provider_stackcp_access_checkpoint','provider_stackcp_access_checkpoint_proof'])||one("SELECT id FROM $audit WHERE BINARY action IN (?,?,?) LIMIT 1",['provider.stackcp_access_prepared','provider.stackcp_access_started','provider.stackcp_access_finished']);
         foreach (['started','finished'] as $kind) if (provider_stackcp_access_exists(provider_stackcp_access_table($kind))&&(int)query('SELECT COUNT(*) FROM '.table(provider_stackcp_access_table($kind)))->fetchColumn()>0) $witness=true;
-        if (provider_stackcp_access_exists('provider_refreshes')&&one("SELECT id FROM $f WHERE BINARY operation IN (?,?) LIMIT 1",$operations)) $witness=true;
-        if ($witness) throw new RuntimeException('Restore the original StackCP access observation history.');return false;
+        if ($witness) throw new RuntimeException('Restore the original StackCP access observation history.');
+        if (provider_stackcp_access_exists('provider_refreshes')) {
+            $hasOperation=one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_refreshes','operation'])!==null;
+            if (!$hasOperation) {
+                $inventoryVersion=one("SELECT value FROM $settings WHERE name=?",['provider_inventory_schema_version'])['value']??'';
+                // Explicit legacy inventories predate operation-scoped reads. Never adopt or repair them on GET.
+                if (!in_array($inventoryVersion,['1','2','3'],true)) throw new RuntimeException('StackCP access inventory history needs recovery.');
+            } elseif (one("SELECT id FROM $f WHERE BINARY operation IN (?,?) LIMIT 1",$operations)) throw new RuntimeException('Restore the original StackCP access observation history.');
+        }
+        return false;
     }
     if ($marker!=='1'||!provider_stackcp_access_exists('provider_stackcp_reads')||!provider_stackcp_access_exists('provider_stackcp_observations')||!provider_stackcp_ready('assignment')) throw new RuntimeException('StackCP access storage needs recovery.');
     provider_stackcp_access_validate_schema();$prepared=provider_stackcp_proof(provider_stackcp_vault(),'access-prepared','1');

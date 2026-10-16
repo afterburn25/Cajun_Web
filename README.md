@@ -1,10 +1,10 @@
-# CajunWebPro — project source of truth
+# CajunWebPro - project source of truth
 
-Owner update: Devin now owns the remaining non-20i site roadmap, including licensing; Codex and three agents continue 20i. [GitHub assignment #157](https://github.com/afterburn25/Cajun_Web/issues/157) records branch/shared-file boundaries. Devin acknowledgement is pending.
+Codex and its three agents own complete20i, integration and releases. Devin owns remaining non-20i work, including licensing, under [assignment #157](https://github.com/afterburn25/Cajun_Web/issues/157).
 
-## Current 20i integration - 2026-10-16
+The unreleased cloud-assignment candidate adds authenticated owner approval and client sharing boundaries onto frozen StackCP819c. Focused native/full/browser/package acceptance is still required for this descendant. [Current status](PROJECT_STATUS.md), [handoff](SESSION_HANDOFF.md), [cloud guide](docs/TWENTYI_CLOUD_ASSIGNMENT_AUTHORITY.md). Published1.24.0 remains unchanged; complete20i and1.25.0 are unfinished.
 
-Private owner/client registration drafts join the reviewed StackCP, directory and renewal source for combined testing. Registration purchase and support login remain unfinished. The preserved a63 full test exposed an invalid renewal-fixture stage and remains failed; its bounded fixture correction is now applied for new-source testing. Frozen 9538 Windows/GitHub packages match, while full acceptance is pending. [Status](PROJECT_STATUS.md), [handoff](SESSION_HANDOFF.md).
+## Historical release and implementation records
 
 ## Current release and ownership — 2026-10-15
 

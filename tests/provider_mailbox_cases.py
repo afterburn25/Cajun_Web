@@ -1,6 +1,7 @@
 """Actual packaged mailbox permissions and Chromium creation against loopback TLS only."""
 import requests
 from release_cases import db, chosen_form
+from cloud_assignment_fixture import age_unprotected_refreshes
 from staff_cases import OWNER
 
 
@@ -25,7 +26,7 @@ def run_browser(env, browser):
     check('Client mailbox form requires an explicit domain policy',create not in client.get(url).text)
     provider.mode='success';provider.write_mode='success'
     provider.packages.append({'id':85001,'typeRef':9,'enabled':True,'name':'mailbox.example.invalid','names':['mailbox.example.invalid'],'created':'2024-01-01T00:00:00Z'})
-    db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-120')
+    age_unprotected_refreshes(120)
     submit(owner,settings,'provider_inventory_refresh',{'current_password':OWNER})
     profile=db('SELECT id,revision FROM ci_provider_profiles')[0]
     fields={'csrf':env['token'](owner.get(settings)),'action':'provider_inventory_domain_link','profile_id':profile['id'],'revision':profile['revision'],'package_id':'85001','domain':'mailbox.example.invalid','client_id':cid,'current_password':OWNER}

@@ -75,6 +75,9 @@ function provider_inventory_admin_action(string $action):void {
         flash($result->message,$result->status==='accepted_pending'?'success':'error');redirect(admin_url('provider-settings'));
     }
 
+    if($action==='provider_inventory_cloud_assignment_prepare'){
+        provider_cloud_assignment_prepare($password);flash('Cloud assignment history is ready. Refresh cloud inventory before approving assignments.');redirect(admin_url('provider-settings'));
+    }
     if($action==='provider_inventory_prepare'){
         provider_inventory_migrate($password);flash('20i inventory storage is ready.');redirect(admin_url('provider-settings'));
     }

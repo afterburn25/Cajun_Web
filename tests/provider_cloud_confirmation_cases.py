@@ -2,6 +2,7 @@
 import time
 from playwright.sync_api import expect
 from release_cases import db
+from cloud_assignment_fixture import age_unprotected_refreshes
 from staff_cases import OWNER
 
 
@@ -24,7 +25,7 @@ def run_browser(env, browser, owner, client, other, profile):
     check('Preparing cloud confirmation makes no provider call', provider.calls == calls)
     check('Cloud confirmation does not appear from acknowledgement alone', soup(owner.get(url)).select_one('[data-cloud-confirmation]') is None)
     # Advance only this disposable fixture past its documented refresh cooldown.
-    db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-60 WHERE profile_id=?', [profile['id']])
+    age_unprotected_refreshes(60, profile['id'])
     time.sleep(1)
     post('provider_inventory_refresh')
     form = soup(owner.get(url)).select_one('[data-cloud-confirmation]')

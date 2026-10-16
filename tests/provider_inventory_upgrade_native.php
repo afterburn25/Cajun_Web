@@ -50,6 +50,32 @@ try {
     query('INSERT INTO '.table('provider_package_link_events').' (profile_id,package_id,client_id,event,actor_id,recorded_at) VALUES (?,777,1,?,1,?)',[$profile,'link','2026-01-01 00:00:00']);
     $before=pu_snapshot();
     pu_ok('Populated v1 is gated before domain queries',!provider_inventory_ready()&&provider_inventory_client_services(1)===[]&&provider_inventory_client_domains(1)===[]);
+    // The optional StackCP view must inspect legacy inventory without reading its absent operation column.
+    $accessSettings=all('SELECT * FROM '.table('settings').' ORDER BY name');$accessAudit=all('SELECT * FROM '.table('audit').' ORDER BY id');$accessTables=all('SHOW TABLES');
+    pu_ok('Never-prepared StackCP observation readiness accepts genuine legacy v1 without mutation',staff_locked(fn()=>provider_stackcp_access_ready())===false);
+    foreach (['4','5','99',''] as $invalidVersion) {
+        save_setting('provider_inventory_schema_version',$invalidVersion);
+        try {
+            try {staff_locked(fn()=>provider_stackcp_access_ready());pu_ok('Missing operation column refuses nonlegacy inventory marker '.($invalidVersion===''?'empty':$invalidVersion),false);}
+            catch (RuntimeException $e) {if ($e instanceof PDOException) throw $e;pu_ok('Missing operation column refuses nonlegacy inventory marker '.($invalidVersion===''?'empty':$invalidVersion),$e->getMessage()==='StackCP access inventory history needs recovery.');}
+        } finally {save_setting('provider_inventory_schema_version','1');}
+    }
+    foreach (['provider_stackcp_access_proof','provider_stackcp_access_checkpoint','provider_stackcp_access_checkpoint_proof'] as $witness) {
+        pu_ok('Legacy StackCP setting witness starts absent '.$witness,one('SELECT name FROM '.table('settings').' WHERE name=?',[$witness])===null);
+        save_setting($witness,'synthetic-retained-witness');
+        try {
+            try {staff_locked(fn()=>provider_stackcp_access_ready());pu_ok('Legacy StackCP setting witness refuses before operation lookup '.$witness,false);}
+            catch (RuntimeException $e) {if ($e instanceof PDOException) throw $e;pu_ok('Legacy StackCP setting witness refuses before operation lookup '.$witness,$e->getMessage()==='Restore the original StackCP access observation history.');}
+        } finally {query('DELETE FROM '.table('settings').' WHERE name=?',[$witness]);}
+    }
+    foreach (['provider.stackcp_access_prepared','provider.stackcp_access_started','provider.stackcp_access_finished'] as $witness) {
+        $q=query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (1,?,?,?)',[$witness,'synthetic retained witness','2026-01-01 00:00:00']);$witnessId=(int)db()->lastInsertId();
+        try {
+            try {staff_locked(fn()=>provider_stackcp_access_ready());pu_ok('Legacy StackCP audit witness refuses before operation lookup '.$witness,false);}
+            catch (RuntimeException $e) {if ($e instanceof PDOException) throw $e;pu_ok('Legacy StackCP audit witness refuses before operation lookup '.$witness,$e->getMessage()==='Restore the original StackCP access observation history.');}
+        } finally {query('DELETE FROM '.table('audit').' WHERE id=?',[$witnessId]);}
+    }
+    pu_ok('Legacy StackCP readiness probes restore exact settings audits tables and inventory without key creation',all('SELECT * FROM '.table('settings').' ORDER BY name')===$accessSettings&&all('SELECT * FROM '.table('audit').' ORDER BY id')===$accessAudit&&all('SHOW TABLES')===$accessTables&&pu_snapshot()===$before&&!is_file($private.'/provider-master.key'));
     $tablesBeforeView=all('SHOW TABLES');$settingsBeforeView=all('SELECT * FROM '.table('settings').' ORDER BY name');$unpreparedHtml=pu_render();
     pu_ok('Populated v1 owner view retains preparation without querying missing domain tables',str_contains($unpreparedHtml,'Prepare inventory storage'));
     pu_ok('Controller-rendered legacy view offers separate domain search preparation without schema-changing GET',str_contains($unpreparedHtml,'Prepare domain search')&&!provider_domain_search_ready()&&all('SHOW TABLES')===$tablesBeforeView&&all('SELECT * FROM '.table('settings').' ORDER BY name')===$settingsBeforeView&&pu_snapshot()===$before);

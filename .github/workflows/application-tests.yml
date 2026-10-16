@@ -198,6 +198,14 @@ jobs:
           php8.3 tests/provider_inventory_native.php
           php8.3 tests/provider_cloud_sites_native.php
           php8.3 tests/provider_cloud_confirmation_native.php
+          php8.3 tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json
+          php8.3 -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json
+          php8.3 tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json
+          php8.3 -n tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json
+          php8.3 tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json
+          php8.3 -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json
+          php8.3 tests/provider_cloud_assignment_native.php
+          python3 -B tests/cloud_assignment_fixture_test.py qa/cloud-assignment-fixture-results.json
           php8.3 tests/provider_forwarding_contract.php
           php8.3 tests/provider_forwarding_native.php
           php8.3 tests/provider_cloud_providers_native.php

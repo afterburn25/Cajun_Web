@@ -258,6 +258,8 @@ try:
         registration_drafts_browser(globals(),browser)
         from stackcp_access_cases import run_browser as stackcp_access_browser
         stackcp_access_browser(globals(),browser)
+        from provider_cloud_assignment_cases import run_browser as cloud_assignment_browser
+        cloud_assignment_browser(globals(),browser)
         from provider_schedule_cases import run_browser as schedule_browser
         schedule_browser(globals(),browser)
         browser.close()

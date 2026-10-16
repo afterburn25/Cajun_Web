@@ -25,8 +25,9 @@ function provider_services_portal_render(): never {
     if(!support_current())echo '<a class="btn outline" href="'.esc(studio_url(['domain_expiry'=>1])).'">Expiry observations</a> <a class="btn outline" href="'.esc(studio_url(['domain_dates'=>1])).'">Renewal dates</a> <a class="btn outline" href="'.esc(studio_url(['domain_renewals'=>1])).'">Domain renewal requests</a><a class="btn outline" href="'.esc(studio_url(['service_history'=>1])).'">Service history</a><a class="btn outline" href="'.esc(studio_url(['forwarding'=>1])).'">Email forwarding requests</a>';
     $services=provider_inventory_client_services((int)$client['id']);
     $domains=provider_inventory_client_domains((int)$client['id']);
-    $cloudServices=provider_cloud_client_services((int)$client['id']);
-    if(!$services&&!$domains&&!$cloudServices)echo '<p>No hosting services are linked to your account yet. Contact the studio if you expected one.</p>';
+    $cloudUnavailable=false;try{$cloudServices=provider_cloud_client_services((int)$client['id']);}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;$cloudServices=[];$cloudUnavailable=true;}
+    if($cloudUnavailable)echo '<p data-client-cloud-unavailable>The studio needs to review the saved cloud assignment records. Cloud details are temporarily unavailable. Contact the studio for an update.</p>';
+    if(!$services&&!$domains&&!$cloudServices&&!$cloudUnavailable)echo '<p>No hosting services are linked to your account yet. Contact the studio if you expected one.</p>';
     echo '<div class="workspace-grid">';
     foreach($services as $service) {
         $package=$service['package'];echo '<article class="workspace-card">';
@@ -66,6 +67,7 @@ function provider_services_portal_render(): never {
         else {
             $server=$cloud['server'];echo '<p>Cloud server #'.(int)$server['id'].' · Location '.esc($server['location']??'not reported').' · Specification '.esc($server['product_spec']??'not reported').'</p>';
             if($server['configuration']!==null){echo '<dl>';foreach(['CpuCores'=>'CPU cores','RamMb'=>'Memory (MB)','OsDiskSizeGb'=>'OS disk (GB)','DataDiskSizeGb'=>'Data disk (GB)'] as $key=>$label)echo '<dt>'.esc($label).'</dt><dd>'.esc($server['configuration'][$key]===null?'Not reported':(string)$server['configuration'][$key]).'</dd>';echo '</dl>';}
+            echo '<p data-client-cloud-state>'.esc(($cloud['current']??false)?'Current reviewed assignment':'Historical saved specifications').'</p>';
             echo '<p class="hint">Observed '.esc($cloud['observed_at']).' UTC. These are saved provider specifications, not a live health check. Billing and renewal terms are separate.</p>';
             foreach(provider_cloud_sites_client_history((int)$server['id']) as $request)echo '<p data-client-cloud-request><strong>'.esc($request['domain']).'</strong> · '.esc($request['status']).' · '.esc($request['created_at']).' UTC</p>';
         }

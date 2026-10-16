@@ -260,9 +260,17 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
-    check('All139 native commands retain exact reviewed order and arguments', native_commands==contract['native_commands'])
+    check('All147 native commands retain exact reviewed order and arguments', native_commands==contract['native_commands'])
+    cloud=contract['cloud_assignment_native_command_baseline'];cloud_additions=cloud['additions']
+    cloud_preserved=[command for command in native_commands if command not in cloud_additions]
+    check('All139 pre-cloud-assignment native commands retain exact order and arguments',
+          len(cloud_preserved)==cloud['count']==139 and hashlib.sha256(json.dumps(cloud_preserved,separators=(',',':')).encode()).hexdigest()==cloud['sha256'])
+    cloud_position=native_commands.index(cloud['additions_after'])+1
+    check('Eight cloud assignment commands occur once immediately after cloud confirmation',
+          len(cloud_additions)==len(set(cloud_additions))==8 and native_commands[cloud_position:cloud_position+8]==cloud_additions
+          and all(native_commands.count(command)==1 for command in cloud_additions))
     access=contract['stackcp_access_command_baseline'];access_additions=access['additions']
-    access_preserved=[command for command in native_commands if command not in access_additions]
+    access_preserved=[command for command in cloud_preserved if command not in access_additions]
     check('All131 pre-StackCP-access commands retain exact order and arguments',
           len(access_preserved)==access['count']==131 and hashlib.sha256(json.dumps(access_preserved,separators=(',',':')).encode()).hexdigest()==access['sha256'])
     access_position=native_commands.index(access['additions_after'])+1

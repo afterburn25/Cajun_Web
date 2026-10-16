@@ -2,6 +2,7 @@
 import requests
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
+from cloud_assignment_fixture import age_unprotected_refreshes
 from staff_cases import OWNER, STAFF
 
 
@@ -23,7 +24,7 @@ def run_browser(env, browser):
     profile=db('SELECT * FROM ci_provider_profiles')[0]
     provider.registrar_domains=[{'id':1701,'name':'one.registrar.invalid','contact':{'email':'REGISTRAR_BROWSER_PRIVATE'}},{'id':1702,'name':'two.registrar.invalid'}]
     def read():
-        db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-7200')
+        age_unprotected_refreshes(7200)
         return submit(owner,url,refresh,{'current_password':OWNER})
     read()
     latest=db('SELECT id FROM ci_provider_refreshes WHERE operation=? ORDER BY seq DESC LIMIT 1',['domains.list'])[0]['id']

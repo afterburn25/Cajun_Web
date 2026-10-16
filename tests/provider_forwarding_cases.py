@@ -3,6 +3,7 @@ import json
 import requests
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
+from cloud_assignment_fixture import age_unprotected_refreshes
 from staff_cases import OWNER
 
 
@@ -20,7 +21,7 @@ def run_browser(env,browser):
         submit(owner,settings,prepare,changes);check('Forwarding preparation refuses '+label,not db('SHOW TABLES LIKE "ci_provider_forwarding_events"'))
     submit(owner,settings,prepare,{'current_password':OWNER});check('Forwarding preparation has no provider effect',db('SELECT * FROM ci_provider_forwarding_events')==[] and provider.calls==calls)
     provider.mode='success';provider.packages.append({'id':85002,'typeRef':9,'enabled':True,'name':'forwarding.example.invalid','names':['forwarding.example.invalid'],'created':'2024-01-01T00:00:00Z'})
-    db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-120');submit(owner,settings,'provider_inventory_refresh',{'current_password':OWNER});profile=db('SELECT id,revision FROM ci_provider_profiles')[0]
+    age_unprotected_refreshes(120);submit(owner,settings,'provider_inventory_refresh',{'current_password':OWNER});profile=db('SELECT id,revision FROM ci_provider_profiles')[0]
     owner.post(settings,data={'csrf':env['token'](owner.get(settings)),'action':'provider_inventory_domain_link','profile_id':profile['id'],'revision':profile['revision'],'package_id':'85002','domain':'forwarding.example.invalid','client_id':cid,'current_password':OWNER});link=db('SELECT id FROM ci_provider_domain_links WHERE domain=?',['forwarding.example.invalid'])[0]['id'];calls=provider.calls
     check('Domain assignment alone does not permit forwarding',create not in client.get(url).text)
     def policy(**changes):return chosen_form(owner,settings,permission,'link_id',link,{'current_password':OWNER,'enabled':'1','daily_limit':'5','hours':'24','permission_confirm':'1',**changes})

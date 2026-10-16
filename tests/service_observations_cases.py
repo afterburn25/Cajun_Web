@@ -3,6 +3,7 @@ import json
 import requests
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
+from cloud_assignment_fixture import age_unprotected_refreshes
 from staff_cases import OWNER
 
 def run_browser(env,browser):
@@ -22,7 +23,7 @@ def run_browser(env,browser):
     def post(action,**values):
         return owner.post(settings,data={'csrf':env['token'](owner.get(settings)),'action':action,'profile_id':profile['id'],'revision':str(profile['revision']),'current_password':OWNER,**values})
     def read():
-        saved=db('SELECT id,started_epoch FROM ci_provider_refreshes');db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-7200')
+        saved=db('SELECT id,started_epoch FROM ci_provider_refreshes WHERE operation IS NULL OR operation<>?', ['cloudservers.list']);age_unprotected_refreshes(7200)
         try:return post('provider_inventory_refresh')
         finally:
             for row in saved:db('UPDATE ci_provider_refreshes SET started_epoch=? WHERE id=?',[row['started_epoch'],row['id']])

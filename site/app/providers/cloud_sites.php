@@ -27,6 +27,7 @@ function provider_cloud_sites_context(string $linkId,int $linkRevision,int $prof
     if(!provider_inventory_ready()||!provider_operations_ready())throw new RuntimeException('Prepare the original inventory and operation storage first.');
     provider_cloud_sites_history_ready();
     $link=provider_cloud_link_current($linkId,$linkRevision);
+    provider_cloud_assignment_current($linkId,$linkRevision,$profileRevision,$refreshId);
     [, $profile]=provider_checks_authority($link['profile_id'],$profileRevision);
     if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$link['client_id']]))throw new RuntimeException('The assigned client is unavailable.');
     // A newer failed or unfinished attempt invalidates eligibility; old good data cannot hide it.

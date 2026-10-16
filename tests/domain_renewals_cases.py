@@ -2,6 +2,7 @@
 import requests
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
+from cloud_assignment_fixture import age_unprotected_refreshes
 from staff_cases import OWNER
 
 def run_browser(env,browser):
@@ -16,7 +17,7 @@ def run_browser(env,browser):
     for fields,label in [({'csrf':'bad','current_password':OWNER},'CSRF'),({'current_password':'wrong'},'password')]:
         submit(owner,settings,prepare,fields);check('Renewal prepare refuses '+label,not db('SHOW TABLES LIKE "ci_domain_renewal_requests"') and provider.calls==calls)
     submit(owner,settings,prepare,{'current_password':OWNER});check('Renewal storage preparation makes no provider call',not db('SELECT * FROM ci_domain_renewal_requests') and provider.calls==calls)
-    provider.registrar_mode='success';provider.registrar_domains.append({'id':1703,'name':'renewal.registrar.invalid'});db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-7200')
+    provider.registrar_mode='success';provider.registrar_domains.append({'id':1703,'name':'renewal.registrar.invalid'});age_unprotected_refreshes(7200)
     submit(owner,settings,'provider_inventory_registrar_refresh',{'current_password':OWNER})
     chosen_form(owner,settings,'provider_inventory_registrar_link','domain_id',1703,{'client_id':cid,'current_password':OWNER});calls=provider.calls
     response=client.get(url);fields=form_data(form_for(response,create));check('Renewal request form is private and does not offer payment','renewal.registrar.invalid' in response.text and 'does not place a renewal or payment' in response.text and 'no-store' in response.headers.get('Cache-Control','') and response.headers.get('Referrer-Policy')=='no-referrer')
@@ -42,8 +43,8 @@ def run_browser(env,browser):
     check('Client withdrawal retains request and owner review history',db('SELECT state,revision FROM ci_domain_renewal_requests WHERE id=?',[rid])[0]=={'state':'withdrawn','revision':2} and len(db('SELECT * FROM ci_domain_renewal_events WHERE request_id=?',[rid]))==2)
     submit(client,url,create,values);rid2=db('SELECT id FROM ci_domain_renewal_requests WHERE state=?',['pending_review'])[0]['id'];chosen_form(owner,settings,'provider_inventory_renewal_review','request_id',rid2,{'current_password':OWNER,'command':'declined','review_note':'Please contact the studio before requesting again.'})
     check('Owner decline is shown without claiming a renewal','Declined' in client.get(url).text and db('SELECT state FROM ci_domain_renewal_requests WHERE id=?',[rid2])[0]['state']=='declined')
-    stale=form_data(form_for(client.get(url),create));provider.registrar_mode='authentication';db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-7200');submit(owner,settings,'provider_inventory_registrar_refresh',{'current_password':OWNER});calls=provider.calls;client.post(url,data={**stale,**values});check('New failed registrar read fences captured renewal intake',len(db('SELECT * FROM ci_domain_renewal_requests'))==2 and create not in client.get(url).text and provider.calls==calls)
-    provider.registrar_mode='success';db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-7200');submit(owner,settings,'provider_inventory_registrar_refresh',{'current_password':OWNER});calls=provider.calls
+    stale=form_data(form_for(client.get(url),create));provider.registrar_mode='authentication';age_unprotected_refreshes(7200);submit(owner,settings,'provider_inventory_registrar_refresh',{'current_password':OWNER});calls=provider.calls;client.post(url,data={**stale,**values});check('New failed registrar read fences captured renewal intake',len(db('SELECT * FROM ci_domain_renewal_requests'))==2 and create not in client.get(url).text and provider.calls==calls)
+    provider.registrar_mode='success';age_unprotected_refreshes(7200);submit(owner,settings,'provider_inventory_registrar_refresh',{'current_password':OWNER});calls=provider.calls
     saved=db('SELECT * FROM ci_domain_renewal_events ORDER BY id');db('RENAME TABLE ci_domain_renewal_events TO ci_saved_renewal_events')
     try:
         check('Lost renewal history gives controlled private unavailable response','needs to review the renewal request records' in client.get(url).text)

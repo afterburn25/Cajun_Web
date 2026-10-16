@@ -3,6 +3,7 @@ import copy
 import requests
 from playwright.sync_api import expect
 from release_cases import db
+from cloud_assignment_fixture import age_unprotected_refreshes
 from staff_cases import OWNER
 
 def run_browser(env,browser):
@@ -17,7 +18,7 @@ def run_browser(env,browser):
     profile=db('SELECT id,revision FROM ci_provider_profiles')[0];cid=db('SELECT id FROM ci_studio_clients WHERE email=?',['alice@example.invalid'])[0]['id']
     def post(action,**fields):
         return owner.post(url,data={'csrf':token(owner.get(url)),'action':action,'profile_id':profile['id'],'revision':str(profile['revision']),'current_password':OWNER,**fields})
-    db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-7200')
+    age_unprotected_refreshes(7200)
     post('provider_inventory_cloud_refresh')
     refresh=db('SELECT id FROM ci_provider_refreshes WHERE operation="cloudservers.list" ORDER BY seq DESC LIMIT 1')[0]['id']
     post('provider_inventory_cloud_link',server_id='1401',client_id=str(cid),refresh_id=refresh)

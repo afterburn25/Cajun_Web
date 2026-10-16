@@ -2,9 +2,9 @@
   "base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
   "base_workflow_sha256": "7aef2d8f6df74f4c65091960191a4748b21b8258f111d8a23967abe13bddafe5",
   "unchanged_test_sha256": {
-    "tests/browser_acceptance.py": "eb5436233c286b9e2b649c5274f7b469b196958ec454baf9552b39e17142bf1f",
+    "tests/browser_acceptance.py": "a6c944c1a7a71f84a638306b299d22d2e1cc81321b9adc1e75efc1c6a0db38c1",
     "tests/structure_acceptance.py": "2b89114d669f717c4e936123ae256e9c29394664ee1a7db301411964839e86d0",
-    "tests/apache_acceptance.py": "77663cd4088ea1abc8888d6275d4be5ccecb1b22433deace10ed05cf963f289c",
+    "tests/apache_acceptance.py": "e918b31928417fc2b19a9d9f25e31d8e247392576db57a3068b55b94e46a6c0c",
     "tests/prepare_legacy.py": "00a09c11a78eb124a848d4794f0eab8a2901eb1d090f6e8da7da498c06d623a7"
   },
   "native_commands": [
@@ -53,6 +53,14 @@
     "php8.3 tests/provider_inventory_native.php",
     "php8.3 tests/provider_cloud_sites_native.php",
     "php8.3 tests/provider_cloud_confirmation_native.php",
+    "php8.3 tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json",
+    "php8.3 -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json",
+    "php8.3 tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json",
+    "php8.3 -n tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json",
+    "php8.3 tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json",
+    "php8.3 -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json",
+    "php8.3 tests/provider_cloud_assignment_native.php",
+    "python3 -B tests/cloud_assignment_fixture_test.py qa/cloud-assignment-fixture-results.json",
     "php8.3 tests/provider_forwarding_contract.php",
     "php8.3 tests/provider_forwarding_native.php",
     "php8.3 tests/provider_cloud_providers_native.php",
@@ -223,6 +231,23 @@
       "php8.3 -n tests/stackcp_access_transport.php > qa/stackcp-access-transport-minimal.json",
       "python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json",
       "php8.3 tests/stackcp_access_native.php"
+    ]
+  },
+  "cloud_assignment_native_command_baseline": {
+    "source": "819c3ea39b4ebbef8f37280dc5ede59cf06fd01c",
+    "source_file_sha256": "b0df625dfedebcbc31653e78f84651d000e3bed8c0ed396afc2c3acc76393530",
+    "count": 139,
+    "sha256": "5052dc82e3bf89dbb80c764c0562b03067fa868785a58ce278993b09d4227fd5",
+    "additions_after": "php8.3 tests/provider_cloud_confirmation_native.php",
+    "additions": [
+      "php8.3 tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json",
+      "php8.3 -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json",
+      "php8.3 tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json",
+      "php8.3 -n tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json",
+      "php8.3 tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json",
+      "php8.3 -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json",
+      "php8.3 tests/provider_cloud_assignment_native.php",
+      "python3 -B tests/cloud_assignment_fixture_test.py qa/cloud-assignment-fixture-results.json"
     ]
   }
 }

@@ -3,6 +3,7 @@ import json,time
 import requests
 from playwright.sync_api import expect
 from release_cases import db
+from cloud_assignment_fixture import age_unprotected_refreshes, dedicated_cloud_owner
 from staff_cases import OWNER,STAFF
 
 def run_browser(env,browser):
@@ -135,7 +136,7 @@ def run_browser(env,browser):
         if old_version=='1':
             client_page=alice.get(services_url)
             check('Legacy v1 client link stays suppressed after upgrade','client-pack.example' not in client_page.text and 'Details are hidden' in client_page.text)
-            db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-120')
+            age_unprotected_refreshes(120)
             inv_post('provider_inventory_refresh');inv_post('provider_inventory_relink',link_id=package_link)
             check('Legacy v1 link requires fresh observation and explicit approval','client-pack.example' in alice.get(services_url).text)
         else:
@@ -157,7 +158,7 @@ def run_browser(env,browser):
     provider_server.packages[-1]['id']=911
     provider_server.packages[-1]['name']='another-client-private.example'
     provider_server.packages[-1]['names']=['another-client-private.example','linked-domain.example','shared.example']
-    db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-120')
+    age_unprotected_refreshes(120)
     inv_post('provider_inventory_refresh');r=owner.get(url)
     check('Moved domain owner page shows approved and observed package identities','Approved package #910' in r.text and 'package #911' in r.text and 'Unlink the old binding' in r.text)
     domain_forms=[f for f in soup(r).select('form') if f.select_one('[name=action][value=provider_inventory_domain_relink]')]
@@ -185,16 +186,20 @@ def run_browser(env,browser):
     check('Unlinked domain leaves the client view','linked-domain.example' not in alice.get(BASE+'/existing/portal/index.php?services=1').text)
     check('Provider fixture stays clean after inventory reads',not provider_server.errors)
 
+    # A separate invited owner keeps retained cloud reads out of the original owner's later budget.
+    owner, cloud_actor_id = dedicated_cloud_owner(env, owner, 'cloud-inventory-owner@example.invalid', 'Cloud inventory owner')
     # Real packaged cloud GET over the same isolated TLS fixture and transport.
     cloud_item={'id':1201,'name':'cloud.browser.invalid','location':'dc_location-uk','productSpec':'cloud-20i','configuration':{'CpuCores':2,'RamMb':2048,'OsDiskSizeGb':40,'DataDiskSizeGb':0,'Provider':'20i','Zone':'20i','Country':'GB','VpsOsId':1,'spec':'synthetic'},'packageIds':[911],'cpanelInfo':{'password':'CLOUD_BROWSER_PRIVATE'}}
     provider_server.cloud_servers=[cloud_item]
+    before_prepare=provider_server.calls;prepared=inv_post('provider_inventory_cloud_assignment_prepare')
+    check('Cloud assignment preparation is explicit and sends no provider request', 'Cloud assignment history is ready' in prepared.text and provider_server.calls==before_prepare)
     before_calls=provider_server.calls;before_refreshes=db('SELECT * FROM ci_provider_refreshes ORDER BY seq')
     r=inv_post('provider_inventory_cloud_refresh',csrf='bad')
     check('Cloud refresh rejects invalid CSRF before network or intent','session expired' in r.text.lower() and provider_server.calls==before_calls and db('SELECT * FROM ci_provider_refreshes ORDER BY seq')==before_refreshes)
     r=inv_post('provider_inventory_cloud_refresh',current_password='wrong')
     check('Cloud refresh rejects wrong password before network or intent','current password' in r.text and provider_server.calls==before_calls and db('SELECT * FROM ci_provider_refreshes ORDER BY seq')==before_refreshes)
     packages_before=db('SELECT * FROM ci_provider_observation_packages ORDER BY id')
-    db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-7200')
+    age_unprotected_refreshes(7200)
     r=inv_post('provider_inventory_cloud_refresh')
     check('Packaged cloud refresh reaches only the documented fixed GET',provider_server.calls==before_calls+1 and provider_server.get_paths[-1]=='/cloud_server' and 'observed cloud server list was saved' in r.text)
     cloud_rows=db('SELECT * FROM ci_provider_observation_cloud')
@@ -203,11 +208,11 @@ def run_browser(env,browser):
     check('Cloud observation is bound to its saved operation',db('SELECT operation FROM ci_provider_refreshes WHERE id=?',[cloud_rows[0]['refresh_id']])==[{'operation':'cloudservers.list'}])
     calls=provider_server.calls;inv_post('provider_inventory_cloud_refresh')
     check('Cloud duplicate submission observes shared cooldown',provider_server.calls==calls)
-    provider_server.cloud_servers=[cloud_item,{'id':False}];db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-120')
+    provider_server.cloud_servers=[cloud_item,{'id':False}];age_unprotected_refreshes(120)
     r=inv_post('provider_inventory_cloud_refresh')
     check('Partial cloud response records skipped entries honestly','partial cloud observation' in r.text and db('SELECT r.state,r.skipped FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id WHERE f.operation="cloudservers.list" ORDER BY f.seq DESC LIMIT 1')==[{'state':'partial','skipped':1}])
     retained_cloud=db('SELECT * FROM ci_provider_observation_cloud ORDER BY id')
-    provider_server.cloud_mode='authentication';db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-120')
+    provider_server.cloud_mode='authentication';age_unprotected_refreshes(120)
     r=inv_post('provider_inventory_cloud_refresh')
     check('Cloud authentication failure preserves prior observation','cloud.browser.invalid' in r.text and 'No usable inventory was returned' in r.text and db('SELECT * FROM ci_provider_observation_cloud ORDER BY id')==retained_cloud and 'private synthetic response' not in r.text)
     provider_server.cloud_mode='success'
@@ -218,6 +223,13 @@ def run_browser(env,browser):
         rendered.evaluate('window.scrollTo({top:0,left:0,behavior:"instant"})');rendered.screenshot(path=str(QA/('Provider-Cloud-'+label+'.png')),full_page=True)
         check('Cloud screen '+label+' fits viewport',rendered.evaluate('document.documentElement.scrollWidth <= innerWidth'))
     check('Cloud screen has no browser errors',not cloud_errors);capture.close()
+    # A failed latest intent cannot authorize assignment from its prior partial display.
+    stale_cloud=db('SELECT r.id FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id WHERE f.operation="cloudservers.list" AND r.state="partial" ORDER BY f.seq DESC LIMIT 1')[0]['id']
+    calls_before=provider_server.calls
+    stale_response=inv_post('provider_inventory_cloud_link',server_id='1201',client_id=str(alice_id),refresh_id=stale_cloud)
+    check('Failed latest cloud read refuses assignment from retained partial display', 'latest complete observation' in stale_response.text and not db('SELECT * FROM ci_provider_cloud_links') and provider_server.calls==calls_before)
+    provider_server.cloud_servers=[cloud_item];age_unprotected_refreshes(120)
+    inv_post('provider_inventory_cloud_refresh')
     # Explicit cloud assignment and safe client projection through actual packaged routes.
     cloud_observation=db('SELECT r.id FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id WHERE f.operation="cloudservers.list" AND r.state IN ("complete","partial") ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1')[0]['id']
     cloud_args={'server_id':'1201','client_id':str(alice_id),'refresh_id':cloud_observation}
@@ -246,8 +258,8 @@ def run_browser(env,browser):
     cloud_card=soup(alice.get(services_url)).select_one('[data-client-cloud]')
     check('Settings edit hides cloud details pending owner review',cloud_card and 'Server details are hidden' in cloud_card.text and 'cloud.browser.invalid' not in cloud_card.text)
     r=inv_post('provider_inventory_cloud_relink',link_id=cloud_link['id'],link_revision='1',refresh_id=cloud_observation)
-    check('Cloud reapproval rejects old observation after settings edit','cloud observation changed' in r.text.lower() and db('SELECT revision FROM ci_provider_cloud_links')==[{'revision':1}])
-    db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-7200');r=inv_post('provider_inventory_cloud_refresh')
+    check('Cloud reapproval rejects old observation after settings edit','latest complete observation' in r.text.lower() and db('SELECT revision FROM ci_provider_cloud_links')==[{'revision':1}])
+    age_unprotected_refreshes(7200);r=inv_post('provider_inventory_cloud_refresh')
     cloud_observation=db('SELECT r.id FROM ci_provider_refresh_results r JOIN ci_provider_refreshes f ON f.id=r.id WHERE f.operation="cloudservers.list" AND r.state IN ("complete","partial") ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1')[0]['id']
     check('New cloud read cannot silently approve stale assignment','cloud.browser.invalid' not in alice.get(services_url).text)
     r=inv_post('provider_inventory_cloud_relink',link_id=cloud_link['id'],link_revision='1',refresh_id=cloud_observation)
@@ -257,3 +269,5 @@ def run_browser(env,browser):
     r=inv_post('provider_inventory_cloud_unlink',link_id=cloud_link['id'],link_revision='2')
     check('Cloud unlink removes client visibility and retains approval history','Cloud assignment removed' in r.text and not db('SELECT * FROM ci_provider_cloud_links') and db('SELECT event FROM ci_provider_cloud_link_events ORDER BY id')==[{'event':'link'},{'event':'relink'},{'event':'unlink'}] and 'cloud.browser.invalid' not in alice.get(services_url).text)
     check('Provider fixture stays clean after cloud reads',not provider_server.errors)
+
+    check('Cloud inventory owner uses exactly five retained reads without rewriting their history', db('SELECT operation FROM ci_provider_refreshes WHERE actor_id=? ORDER BY seq',[cloud_actor_id])==[{'operation':'cloudservers.list'}]*5)

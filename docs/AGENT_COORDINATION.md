@@ -1,15 +1,7 @@
 # Current CajunWebPro agent coordination
 
-Updated 2026-10-16 UTC. **1.24.0 remains published; 1.25.0 and complete20i are unfinished.** Codex owns20i and integration/releases. Devin owns remaining non20i work, including licensing, under [assignment #157](https://github.com/afterburn25/Cajun_Web/issues/157). Devin acknowledgement is unconfirmed.
+Codex root integrates cloud assignment authority onto frozen StackCP819c and applies the independently reviewed legacy-readiness correction. Catalog reviews combined source and the correction; Domains preserves original native/Apache/browser evidence; VPS completed independent licensing PR159 review. Root composes shared files, coordinates actionable findings and publishes reviewed commits/releases. [Status](../PROJECT_STATUS.md) identifies actual evidence and remaining gates.
 
-| Owner | Current work | Next action |
-|---|---|---|
-| Root | StackCP access integrated onto9779 | Canonical checks, first focused matrix, preserved full evidence and release gates. |
-| Catalog | StackCP owned source frozen and handed to root | Independent review when requested. |
-| VPS | Cloud authority and corrected SQL/native fixtures | Preserve exact inputs; shared application/CI requires root review. |
-| Domains | Independent cloud authority/fixture review | Verify corrected inputs and retain original evidence. |
-| Devin | Remaining non20i site and existing licensing | Four licensing findings first; separate devin/non20i-* branches. |
+Devin acknowledged all remaining non-20i work under [issue #157](https://github.com/afterburn25/Cajun_Web/issues/157). Licensing159 proposes fixes to the four findings; tickets158 and progress160 are also open. Independent acceptance and sequential integration remain pending. Keep separate `devin/non20i-*` branches and coordinate shared auth, billing, schema, portal, installer and CI changes.
 
-Work only in owned files/branches. Root composes shared authentication, executor, schema, billing, portal, installer and CI sequentially from reviewed diffs. Preserve histories/original failures; do not rerun unchanged source. Source/pure evidence does not establish native/browser/live/release acceptance. Published assets stay immutable. Synthetic development does not authorize live operations.
-
-[Status](../PROJECT_STATUS.md), [handoff](../SESSION_HANDOFF.md), [immutable previous coordination](https://github.com/afterburn25/Cajun_Web/blob/9779879bc93e030bab70be383186700aabea3982/docs/AGENT_COORDINATION.md).
+Preserve every original source/run and immutable release. Focused, source and synthetic evidence do not replace combined application/visual/package acceptance. Full 20i and 1.25.0 remain unfinished. [Previous coordination](https://github.com/afterburn25/Cajun_Web/blob/819c3ea39b4ebbef8f37280dc5ede59cf06fd01c/docs/AGENT_COORDINATION.md).

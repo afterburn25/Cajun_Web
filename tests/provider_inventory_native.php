@@ -28,8 +28,9 @@ function pi_read(array $row,#[SensitiveParameter] string $key,string $address,ca
     return InventoryReader::read($transport,$credential,$operation,0,time());
 }
 function pi_refresh(string $id,?callable $resolver=null,?callable $transport=null,int $revision=1):string {global $password;return provider_inventory_refresh($id,$revision,$password,$resolver??'pi_resolve',$transport??'pi_read');}
-function pi_cool():void {query('UPDATE '.table('provider_refreshes').' SET started_epoch=started_epoch-120 WHERE started_epoch>?',[time()-30]);}
-function pi_aged():void {query('UPDATE '.table('provider_refreshes').' SET started_epoch=started_epoch-7200');}
+function pi_cloud_wait():void {$epoch=(int)query('SELECT COALESCE(MAX(started_epoch),0) FROM '.table('provider_refreshes'))->fetchColumn();$wait=max(0,$epoch+31-time());if($wait)sleep($wait);}
+function pi_cool():void {if(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_cloud_assignment_head'])){query('UPDATE '.table('provider_refreshes').' SET started_epoch=started_epoch-120 WHERE started_epoch>? AND (operation IS NULL OR operation<>?)',[time()-30,InventoryRead::CLOUD_SERVERS_LIST]);pi_cloud_wait();}else query('UPDATE '.table('provider_refreshes').' SET started_epoch=started_epoch-120 WHERE started_epoch>?',[time()-30]);}
+function pi_aged():void {if(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_cloud_assignment_head'])){query('UPDATE '.table('provider_refreshes').' SET started_epoch=started_epoch-7200 WHERE operation IS NULL OR operation<>?',[InventoryRead::CLOUD_SERVERS_LIST]);pi_cloud_wait();}else query('UPDATE '.table('provider_refreshes').' SET started_epoch=started_epoch-7200');}
 function pi_count(string $name):int {return (int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn();}
 function pi_audit_failure(string $action,callable $fn):bool {
     db()->exec('CREATE TRIGGER pcin_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='provider.".$action."' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic inventory audit failure'; END IF; END");
@@ -191,6 +192,7 @@ try {
     pi_ok('Package observation before cloud refresh is retained',pi_refresh($id,null,null,6)==='complete');pi_cool();
     provider_inventory_link($id,201,1,6,$password);
     $packageBefore=provider_inventory_observation($id);$clientBefore=provider_inventory_client_services(1);$packagesBefore=all('SELECT * FROM '.table('provider_observation_packages'));
+    provider_cloud_assignment_prepare($password);
     $cloudRefresh=fn($transport=null,$revision=6)=>provider_inventory_refresh($id,$revision,$password,'pi_resolve',$transport??'pi_read',InventoryRead::CLOUD_SERVERS_LIST);
     $scripted=[new TransportResponse(200,[],json_encode([$cloudItem]))];
     pi_ok('Cloud read uses the existing durable refresh engine',$cloudRefresh()==='complete');pi_cool();

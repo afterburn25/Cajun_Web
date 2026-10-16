@@ -1,3 +1,9 @@
+## Current 20i candidate - protected cloud assignments
+
+Cloud assignment authority joins StackCP access and private registration drafts on a descendant of819c. Local source/pure/helper checks pass; first native matrix and combined browser/package/release acceptance are pending. Historical client sharing is separate from current owner-approved operations. Legacy original-account uncertainty and client deactivation at lock entry withhold facts. Full hosting lifecycle, domain commerce, VPS/cloud, provider support and SSH remain incomplete. Devin continues all non-20i work including licensing. [Current status](../PROJECT_STATUS.md), [feature guide](TWENTYI_CLOUD_ASSIGNMENT_AUTHORITY.md).
+
+## Earlier implementation checkpoints
+
 ## Current verification correction - 2026-10-16
 
 First StackCP focused run failed at a fixture-only nonexistent-column lookup. The corrected test uses validated assignment status and preserves the security assertion;14 extracted cases per PHP mode pass. Current native/full acceptance remains pending. [Status](../PROJECT_STATUS.md).
