@@ -79,6 +79,9 @@ Functions:
   at its next validation) and registers the new one in the freed slot
 - `license_deactivate_domain($licenseId, $domain)` — deactivates a domain
 - `license_deactivate($licenseId)` — deactivates entire license
+- `license_reactivate($licenseId)` — reverses a license deactivation;
+  previously-registered domains resume as-is (domain-level deactivations
+  stay deactivated)
 - `license_domains($licenseId)` — gets all domains for a license
 
 ### 4. Admin UI
