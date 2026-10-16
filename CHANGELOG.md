@@ -1,3 +1,7 @@
+## Unreleased — cloud-provider final branch acceptance
+
+Record exact6eee terminal full acceptance, verified final ZIP/source packages, named recovery/Apache/browser outcomes and unchanged screenshots. Documentation only; combined release acceptance remains separate.
+
 ## Unreleased — cloud-provider browser evidence
 
 Record exact6eee browser results and six actual screenshot reviews; preserve original0e2 failed final archive/source proof. Documentation only; final corrected Apache/package acceptance remains pending.
