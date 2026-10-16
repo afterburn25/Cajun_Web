@@ -4,11 +4,11 @@ Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for
 
 | Owner | Current branch/checkpoint | Scope and next evidence |
 |---|---|---|
-| Root | Normal ForceSSLc06 merge overb8a9; catalog fixture repair | Verify staged2,794/2,793 parity and one new combined full run. Preserve original03b failure and reviewed main boundaries. |
-| Domains | Original03b terminal evidence; directory-listing runtime review clear | Preserve final archive against frozen03b and Windows packages; no rerun. |
-| VPS | ForceSSLb5c2 native accepted; catalog correction independently clear | Review isolated directory-listing native/browser fixtures/workflow; no root edits or CI. |
-| Catalog | Isolated directory-listing application overb5c2 | Dedicated runtime independently clear; external shared wiring and fixtures await coordinated review before one focused matrix. |
-| Devin | Software-product licensing; main187 docs-only delta reviewed | Populated upgrade/internal-master customer-delivery findings remain. Preserve serialized mutation helpers and keyless installer. Active session status remains unconfirmed. |
+| Root | Frozenc174/CIa187, full38863417123 | Exact Windows packages verified; preserve42 original handles and follow combined browser/recovery/server acceptance. |
+| Domains | Original03b final failure fully verified | No further original polling; inspect priced domain quote contract evidence read-only. |
+| VPS | Exactc174 helper/source review clear; new Force SSL control contract | Isolated owner-change proposal uses exact boolean request and durable unknown/readback handling; shared wiring requires review. |
+| Catalog | Directory-listing application overb5c2; shared glue applied | Runtime/fixtures/shared review clear; installer/staged parity precedes single focused native matrix. |
+| Devin | Software-product licensing; main187 docs-only delta reviewed | Populated upgrade/internal-master customer-delivery findings remain. Preserve serialized helpers and keyless installer; active session unconfirmed. |
 
 Original427 is terminal failure at the preserved setup check: final125 reports,2,107 HTTP passes plus one failure,289 recovery/2,211 Apache passes and exact Git/Windows packages are verified. No further polling or repeated acceptance is needed. See [handoff](../SESSION_HANDOFF.md) for exact current sources, evidence and next actions.
 
