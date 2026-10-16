@@ -83,6 +83,7 @@ jobs:
           php8.3 tests/mail_connections_native.php
           php8.3 tests/mail_inbox_native.php
           php8.3 tests/mail_message_native.php
+          php8.3 tests/mail_flags_native.php
           php8.3 tests/mail_notices_native.php
           php8.3 tests/mail_drafts_native.php
           php8.3 tests/mail_drafts_form.php
