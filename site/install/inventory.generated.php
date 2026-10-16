@@ -216,7 +216,7 @@ function setup_expected_files(): array { return [
     'app/providers/domain_renewal_agreements_document.php'=>'c2f6afc6fa003240d59e622839fddc187512deab0b96e3b9dad11dccc1b5a914',
     'app/providers/domain_renewal_agreements_storage.php'=>'a6e39ba7218d1a8f4663be171daea660142bc77341293f7a29147331ec260e2b',
     'app/providers/domain_renewal_agreements_views.php'=>'cd5c0bff178a0180408f065de0472bb72c1f94cc5e3894c71a299614fa86013c',
-    'app/providers/domain_renewal_dispatch.php'=>'c338d7ec912bd73415dcce6ec1f8d7703e794a2fae6aa33a3e85d59e2d9bfd1a',
+    'app/providers/domain_renewal_dispatch.php'=>'ae5877c6b2ed6131fd2652b86b5c6c145d87b9748d9e134a821228961ea5591c',
     'app/providers/domain_renewal_dispatch_document.php'=>'8f580f50bc54ab36da4d2e6b3e1b8a883301e897e410cd2ec7fa99156fba5ca3',
     'app/providers/domain_renewal_dispatch_routes.php'=>'31f2263f5d907944814e4bbf76c2148ff485b7dde41252a512c6a8c924a91505',
     'app/providers/domain_renewal_dispatch_storage.php'=>'6c232fbb3618a94d05964296aa731a6a60b011728bb96d58e2d496856aedf388',

@@ -23,7 +23,7 @@ function domain_renewal_dispatch_audit(string $kind,array $row):array {
 function domain_renewal_dispatch_offer(string $requestId):array {
     $history=domain_renewal_agreements_history_locked($requestId);$offers=$history['offers'];if(!$offers)throw new RuntimeException('Agree to the exact renewal terms first.');$offer=end($offers);$binding=$offer['binding'];$agreement=$offer['agreement'];$model=$agreement->model();
     domain_renewal_agreements_current($history,$binding,false);
-    if($model->state()!=='active'||$model->consent()===null||$model->consent()['by']!==(string)$binding->data()['registrar']['client_id']||$model->plan->cadence!=='one-time'||$model->plan->currency!=='USD'||$model->agreedPrice<1)throw new RuntimeException('The active renewal agreement needs this client’s recorded consent and positive one-time USD terms.');
+    if($model->state()!=='active'||$model->consent()===null||$model->consent()['by']!=='client:'.$binding->data()['registrar']['client_id']||$model->plan->cadence!=='one-time'||$model->plan->currency!=='USD'||$model->agreedPrice<1)throw new RuntimeException('The active renewal agreement needs this client’s recorded consent and positive one-time USD terms.');
     return ['history'=>$history,'offer'=>$offer,'authority'=>domain_renewal_agreements_authority($history['request'])];
 }
 function domain_renewal_dispatch_invoice_snapshot(array $i):array {
@@ -74,7 +74,7 @@ function domain_renewal_dispatch_allocation(string $id):array {
     $history=domain_renewal_agreements_history_locked($b['request_id']);$offer=null;foreach($history['offers'] as $candidate)if($candidate['binding']->data()['id']===$b['id'])$offer=$candidate;
     if(!$offer||$offer['binding']->json()!==DomainRenewalInvoiceDocument::json($b)||$d['agreement_revision']>$offer['agreement']->revision())throw new RuntimeException('Original accepted renewal terms need recovery.');
     $prefix=$offer['agreement']->data();$prefix['events']=array_slice($prefix['events'],0,$d['agreement_revision']);$accepted=ServiceSubscriptionDocument::fromJson(service_plans_json($prefix));$model=$accepted->model();
-    if(!hash_equals($accepted->fingerprint(),$d['agreement_sha256'])||$model->state()!=='active'||$model->consent()===null||$model->consent()['by']!==(string)$b['registrar']['client_id'])throw new RuntimeException('Original renewal consent needs recovery.');
+    if(!hash_equals($accepted->fingerprint(),$d['agreement_sha256'])||$model->state()!=='active'||$model->consent()===null||$model->consent()['by']!=='client:'.$b['registrar']['client_id'])throw new RuntimeException('Original renewal consent needs recovery.');
     $audit=domain_renewal_dispatch_audit('allocation',$row);$event=end($prefix['events']);[$kind,$actor]=explode(':',$event['actor'],2);$prior=domain_contracts_audit_row($kind==='staff'?(int)$actor:0,'service_plans.subscription_changed','Record '.$b['agreement_id'].' event '.$event['id'].' revision '.$d['agreement_revision'].' '.$event['command'].' client '.$b['registrar']['client_id']);
     if($prior['id']>=$audit['id']||$event['at']>$d['created_epoch'])throw new RuntimeException('Renewal allocation precedes accepted terms.');
     $invoice=ledger_invoice($d['invoice']['id']);if(domain_renewal_dispatch_invoice_snapshot($invoice)!==$d['invoice'])throw new RuntimeException('The original renewal invoice changed.');domain_renewal_dispatch_other_origins($d['invoice']['id']);
