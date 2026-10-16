@@ -1,3 +1,27 @@
+## Release 1.25.0 priority — 2026-10-16
+
+New20i capabilities and nonessential refactors are frozen until1.25.0 publication and all-asset download verification. Canonical [codex/release-1.25.0](https://github.com/afterburn25/Cajun_Web/tree/codex/release-1.25.0) is published at `b98b96eb2a33e4bdeb72e15217213431885aad67`, normally merging current main35d8 and mature3fa. The [frozen scope](https://github.com/afterburn25/Cajun_Web/blob/codex/release-1.25.0/docs/RELEASE_SCOPE_1.25.0.md) and [integration map](https://github.com/afterburn25/Cajun_Web/blob/codex/release-1.25.0/docs/RELEASE_1.25_INTEGRATION_MAP.md) are also copied into main for discovery. The owner wants the mature increment now, without waiting for complete20i.
+
+Root and agents are closing existing licensing defects, extending real populated1.24 root/subfolder client-data upgrades, and preparing complete PHP8.2/8.4 × MariaDB10.11/MySQL8.4 application/browser/update runs. Devin continues separate non20i work; Codex owns the narrow release licensing corrections and shared seams. Proposed PRs are not automatically included. Unfinished branches and original failed evidence remain preserved.
+
+Merge checkpoint passes canonical installer generation, all shipping PHP/JavaScript syntax, documentation and exact2886-file staged preservation checks. Imported3fa focused38933590118 passes11 reports/1440 executions in each of4 environments and its Windows packages. These are scoped results, not combined release acceptance. Exact-candidate full checks/images, independent review, normal main merge, exact-main full checks, packages, publication and download verification remain required. Published1.24 is unchanged; no1.25 release or live deployment exists.
+
+This main checkpoint changes documentation only; runtime remains35d8. Follow the release branch for implementation and acceptance. Earlier current-status labels below are historical where superseded.
+
+## Current checkpoint - 2026-10-16
+
+Published StackCP candidate3fa72d7b has reviewed local source/portable/helper/installer evidence and first focused38933590118 in progress. Parent5bfd cloud native/distro compatibility passed all5jobs. Complete actual query/HTML/authority evidence, remaining settings performance and combined acceptance before a release. Devin repairs158/159/161 then continues end-to-end site work, preserving dependencies through175. [Current checkpoint](TWENTYI_CURRENT_CHECKPOINT.md) supersedes historical statuses below. Full20i/1.25.0 remain unfinished; this main update is documentation only.
+
+## Current checkpoint - 2026-10-16
+
+Current acceptance source: [cccf85bf](https://github.com/afterburn25/Cajun_Web/commit/cccf85bf6c3523bca8a0659b5c660915fd67e248), tree `7ee27c085caaa5de08e3ec1daca4adf198c750a3`, on `codex/twentyi-cloud-minimal-runtime`, parent2a86704f. The reviewed correction explicitly loads the test-only tokenizer and increases only the stateful native/browser job's finite budget to180 minutes after the original105-minute timeout. Application shipping files, foundation classes and fixtures are byte-identical to2a; no assertions were removed. Local171 artifact-helper checks and documentation validation pass. Its first [full run38927120383](https://github.com/afterburn25/Cajun_Web/actions/runs/38927120383), attempt1 with checkpoint_only=false, is active; exact-source Windows packaging and corrected Linux/full acceptance remain pending.
+
+Cloud assignment and legacy StackCP readiness source2a86704f passes all four focused environments (3,020 checks) and exact Windows/Linux package comparison. Its first full38923745296 fails the minimal-PHP test extractor before HTTP; corrected descendantcccf85bf is in its first full acceptance, with corrected Linux execution pending. Recovery289 passes; Apache remains active at15:39UTC. [Current checkpoint](TWENTYI_CURRENT_CHECKPOINT.md) preserves original failures and required gates. Devin's priority is fixing159/161 and finishing existing end-to-end work; new PRs/foundations are unaccepted proposals. Complete20i remains unfinished; published1.24.0 is unchanged.
+
+## Earlier roadmap checkpoints
+
+Current 20i source and acceptance checkpoint, 2026-10-16 14:41 UTC: [corrected StackCP 819c3ea3 and preserved registration full acceptance](TWENTYI_CURRENT_CHECKPOINT.md). Main changes documentation only; candidate runtime remains separate. Earlier status paragraphs below are historical where they conflict with this checkpoint.
+
 ## Current owner allocation - 2026-10-16
 
 **Devin: continue all remaining non-20i site work, including licensing. Codex and its three agents: continue complete20i.** This supersedes older unrelated-work pause statements for Devin. [Start here](../DEVIN_START_HERE.md) gives the full assignment, direct licensing code locations, shared-file boundaries and instructions that work without the GitHub API. Licensing is already on main; inspect and repair its documented gaps rather than recreating it. Work on separate feature branches; Codex coordinates final integration/releases. Assignment [#157](https://github.com/afterburn25/Cajun_Web/issues/157) is posted; external-session acknowledgement is not assumed.
