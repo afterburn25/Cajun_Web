@@ -2,7 +2,9 @@
 
 Published [v1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) remains immutable source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`, with downloaded assets verified. Complete 20i is the active P0; unrelated feature development is paused.
 
-Corrected descendant2239a156 is pushed; [fresh application38826150967](https://github.com/afterburn25/Cajun_Web/actions/runs/38826150967) passed package checks and entered native integration. The retained38bb run has now passed recovery and entered Apache. Its browser failure described below remains a failed checkpoint, not completed acceptance.
+Current integration normally merges reviewed/native-verified catalog872aec34 into parentafe39b3a. Its three PHP runtime changes and generated inventory merge cleanly; current documentation resolves the four text conflicts. This candidate remains unreleased and requires fresh combined acceptance after the ready domain/cloud increments.
+
+Corrected descendant2239a156 is pushed; [fresh application38826150967](https://github.com/afterburn25/Cajun_Web/actions/runs/38826150967) passed package/native integration and entered HTTP/Chromium acceptance. The retained38bb run has now passed recovery and entered Apache. Its browser failure described below remains a failed checkpoint, not completed acceptance.
 
 Combined acceptance source is `38bb69ccd1c1fc45f479022fe11748ca78b756d2`, branch `codex/twentyi-mailbox-controls`, [PR140](https://github.com/afterburn25/Cajun_Web/pull/140). It normally preserves registrar725573f0, catalog8f7028db, cloud33a2a2b0, mailbox work and mainc3b1a69c. The executing PR merge `dab7005f3df5a6c2bcbbf947d402ec56315179f2` has the identical tree `4c1a7613f800336167b4a827e13c3e9f6bac243d`. The current descendant normally merges main1fcfb5e9 into parentf3d25f4f and corrects a mailbox browser fixture; shipping and installer bytes remain identical to38bb. Fresh descendant application acceptance is required.
 

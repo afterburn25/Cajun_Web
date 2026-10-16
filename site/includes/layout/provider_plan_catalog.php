@@ -27,15 +27,35 @@ function provider_plan_catalog_value(string $key,string $fallback='',int $max=20
     while($value!==''&&preg_match('//u',$value)!==1)$value=substr($value,0,-1);
     return $value;
 }
+function provider_plan_catalog_readiness_ui(array $status,string $plan,bool $detail=false):void {
+    echo '<div data-catalog-readiness="'.esc($status['code']).'"><p><strong>20i mapping: '.esc($status['code']==='ready'?'ready for local preparation':'review required').'</strong></p><p>'.esc($status['message']).'</p>';
+    if(in_array($status['code'],['connection_setup','connection_missing','connection_changed','connection_disabled','credentials_missing','credentials_changed'],true))echo '<p><a href="'.esc(admin_url('provider-settings')).'">Review provider connection</a></p>';
+    if(!$detail)echo '<p><a href="'.esc(admin_url('service-plan',['record'=>$plan])).'#provider-catalog">Review provider mapping</a></p>';
+    echo '</div>';
+}
+/** Already authorized and validated immutable display projection; never a form or current grant. */
+function provider_plan_catalog_review_ui(array $ctx,string $plan):void {
+    if(!$ctx['selected'])return;
+    $review=$ctx['selected'];$configuration=$review['configuration'];
+    echo '<section class="workspace-card" data-catalog-review="'.(int)$review['revision'].'"><h3>Mapping review version '.(int)$review['revision'].'</h3><p>'.($review['current']?'Latest saved review. Its current readiness is shown above.':'Historical review. This does not replace the latest mapping or authorize new preparation.').'</p><p>Saved by owner account '.(int)$review['created_by'].' on '.esc(gmdate('Y-m-d H:i',$review['created_at'])).' UTC · reviewed through '.esc(gmdate('Y-m-d H:i',$review['expires_at'])).' UTC · retail plan version '.(int)$review['plan_revision'].'.</p><p>Saved choice: '.($review['enabled']?'available for new preparation':'withdrawn from new preparation').'.</p>';
+    echo '<p><strong>'.esc($configuration['label']).'</strong> · reseller '.(int)$configuration['reseller_id'].' · type '.esc($configuration['type']).' · '.esc($configuration['region']).'</p><h4>Provider limits recorded in this review</h4><ul>';
+    foreach(['websites'=>'Websites','disk_mb'=>'Disk space (MB)','bandwidth_mb'=>'Monthly transfer (MB)','mailboxes'=>'Mailboxes','databases'=>'Databases'] as $key=>$label)echo '<li>'.esc($label).': '.esc(array_key_exists($key,$configuration['limits'])?(string)$configuration['limits'][$key]:'not recorded').'</li>';
+    $cost=$configuration['cost'];echo '</ul><h4>Private provider cost evidence</h4><p>'.($cost?esc($cost['amount'].' '.$cost['currency'].' per '.$cost['period_months'].' month(s), '.$cost['basis'].', tax '.$cost['tax'].' — '.$cost['reference']):'Not recorded').'. This is owner-entered evidence, not a provider quote or the client’s retail price.</p></section>';
+    echo '<details data-catalog-history><summary>Choose a mapping review</summary><ol>';
+    foreach(array_reverse($ctx['history']) as $entry)echo '<li><a href="'.esc(admin_url('service-plan',['record'=>$plan,'catalog_revision'=>$entry['revision']])).'#provider-catalog">Version '.(int)$entry['revision'].'</a> · '.esc($entry['enabled']?'enabled':'withdrawn').' · '.esc(gmdate('Y-m-d H:i',$entry['created_at'])).' UTC · '.esc($entry['configuration']['label']).'</li>';
+    echo '</ol></details>';
+}
 function provider_plan_catalog_ui(ServicePlanDocument $plan):void {
-    if(!provider_settings_ready()){echo '<section class="workspace-card"><h2>20i package mapping</h2><p>Prepare your provider connection to map this retail plan to a reviewed hosting package.</p><a class="btn outline" href="'.esc(admin_url('provider-settings')).'">Provider connection</a></section>';return;}
-    $ctx=provider_plan_catalog_context($plan->data()['id']);$profile=$ctx['profile'];$current=$ctx['current'];
-    echo '<section class="workspace-card" data-provider-plan-catalog><h2>20i package mapping</h2><p>Reuse the provider package reviewed for this exact retail plan. Provider costs are private reference evidence; they never replace the client’s price or create a charge.</p>';
+    $revision=array_key_exists('catalog_revision',$_GET)?service_plans_form_number($_GET,'catalog_revision',128):null;
+    $ctx=provider_plan_catalog_context($plan->data()['id'],$revision);$profile=$ctx['profile'];$current=$ctx['current'];
+    echo '<section class="workspace-card" id="provider-catalog" data-provider-plan-catalog><h2>20i package mapping</h2><p>Reuse the provider package reviewed for this exact retail plan. Provider costs are private reference evidence; they never replace the client’s price or create a charge.</p>';
+    provider_plan_catalog_readiness_ui($ctx['readiness'],$plan->data()['id'],true);
+    if($ctx['readiness']['code']==='connection_setup'){echo '</section>';return;}
     if(!$ctx['ready']){echo '<form method="post">';admin_action('service_plans_catalog_setup');echo '<input type="hidden" name="plan_id" value="'.esc($plan->data()['id']).'">';service_plans_confirmation('Prepare empty provider mapping history.',true);echo '<button class="btn gold">Prepare provider mappings</button></form></section>';return;}
     if($current){
-        $config=$current['configuration'];echo '<p><strong>'.esc($ctx['eligible']?'Ready for local preparation':'Review required before use').'</strong> · version '.(int)$current['revision'].' · reviewed through '.esc(gmdate('Y-m-d H:i',$current['expires_at'])).' UTC</p><p>'.esc($config['label']).' · type '.esc($config['type']).' · '.esc($config['region']).'</p>';
-        $cost=$config['cost'];echo '<p>Provider cost reference: '.($cost?esc($cost['amount'].' '.$cost['currency'].' per '.$cost['period_months'].' month(s), '.$cost['basis'].', tax '.$cost['tax'].' — '.$cost['reference']):'not recorded').'. No exchange conversion or margin is inferred.</p>';
+        echo '<p>Latest mapping version '.(int)$current['revision'].' · reviewed through '.esc(gmdate('Y-m-d H:i',$current['expires_at'])).' UTC.</p>';
     }
+    provider_plan_catalog_review_ui($ctx,$plan->data()['id']);
     if($plan->model()->status()!=='active'||!$profile||(int)$profile['enabled']!==1||!$profile['has_credentials']){echo '<p>A published retail plan and enabled provider connection are required to save a new review.</p></section>';return;}
     $config=$current['configuration']??[];$cost=$config['cost']??[];
     echo '<p>Check the package type, location, limits, welcome mail, automatic apps, SSH keys and Website Turbo in My20i. This saved owner review does not automatically discover offerings or verify provider entitlement.</p><form method="post">';admin_action('service_plans_catalog_save');
@@ -47,7 +67,6 @@ function provider_plan_catalog_ui(ServicePlanDocument $plan):void {
     foreach(['cost_known'=>['Cost availability',['0'=>'Not recorded','1'=>'Record reviewed cost'],$cost?'1':'0'],'cost_tax'=>['Tax treatment',['unknown'=>'Unknown','included'=>'Included','excluded'=>'Excluded'],$cost['tax']??'unknown'],'cost_basis'=>['Cost basis',['per-package'=>'Per hosting package','shared-account'=>'Shared reseller account cost'],$cost['basis']??'per-package']] as $key=>[$label,$options,$fallback]){echo '<label>'.esc($label).'<select name="'.esc($key).'">';foreach($options as $value=>$text)echo '<option value="'.esc((string)$value).'"'.(provider_plan_catalog_value($key,$fallback)===(string)$value?' selected':'').'>'.esc($text).'</option>';echo '</select></label>';}
     foreach(['cost_amount'=>['Amount in major currency units (example: 12.50)',$cost['amount']??'',14],'cost_currency'=>['Three-letter currency (example: GBP)',$cost['currency']??'',3],'cost_period'=>['Period in whole months',$cost?(string)$cost['period_months']:'',3],'cost_reference'=>['Reference for your account review',$cost['reference']??'',120]] as $key=>[$label,$value,$max])admin_input($key,$label,provider_plan_catalog_value($key,$value,$max),'text','maxlength="'.$max.'"');
     echo '</fieldset><label class="check"><input type="checkbox" name="catalog_enabled" value="1"'.(provider_plan_catalog_value('catalog_enabled',$current&& !$current['enabled']?'':'1')==='1'?' checked':'').'> Make this review available for new hosting preparation</label><label class="check"><input type="checkbox" name="reviewed_defaults" value="1" required> I reviewed this provider account, package defaults, limits and cost evidence.</label>';service_plans_confirmation('Save this exact mapping version; preserve all previous reviews.',true);echo '<button class="btn gold">Save provider mapping review</button></form>';
-    if($ctx['history']){echo '<details><summary>Mapping review history</summary><ol>';foreach(array_reverse($ctx['history']) as $entry)echo '<li>Version '.(int)$entry['revision'].' · '.esc($entry['enabled']?'enabled':'withdrawn').' · '.esc(gmdate('Y-m-d H:i',$entry['created_at'])).' UTC · '.esc($entry['configuration']['label']).'</li>';echo '</ol></details>';}
     echo '</section>';
 }
 function provider_plan_catalog_order_ui(ServiceOrderDocument $order):void {

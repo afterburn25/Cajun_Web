@@ -4,9 +4,12 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 echo '<div class="button-row"><a class="btn outline" href="'.esc(admin_url('service-plans')).'">All plans</a><a class="btn outline" href="'.esc(admin_url('service-agreements')).'">Client agreements</a><a class="btn gold" href="'.esc(admin_url('service-plan')).'">Create a plan</a></div><p>Offer an exact service scope and price. Client agreement is separate from automatic payment authorization.</p>';
 if($view==='service-plans' || $view==='service-agreements') {
     $subscriptions=$view==='service-agreements';$page=service_plans_page(service_plans_ui_page(),$subscriptions);
+    $mappingSummaries=$subscriptions?[]:provider_plan_catalog_summaries(array_map(fn($item)=>$item['document']->data()['id'],$page['items']));
     foreach($page['items'] as $item) {
         $doc=$item['document'];$model=$doc->model();$plan=$subscriptions?$model->plan:$model;
-        echo '<section class="workspace-card"><h2>'.esc($plan->name).'</h2><p>'.esc($subscriptions?$item['client_name'].' · '.service_plans_agreement_label($doc):ucfirst($plan->status())).'</p><p>$'.esc(gmoney($plan->priceAmount)).' USD · '.esc(service_plans_cadences()[$plan->cadence]).'</p><a class="btn outline" href="'.esc(admin_url($subscriptions?'service-agreement':'service-plan',['record'=>$doc->data()['id']])).'">Review details</a></section>';
+        echo '<section class="workspace-card"><h2>'.esc($plan->name).'</h2><p>'.esc($subscriptions?$item['client_name'].' · '.service_plans_agreement_label($doc):ucfirst($plan->status())).'</p><p>$'.esc(gmoney($plan->priceAmount)).' USD · '.esc(service_plans_cadences()[$plan->cadence]).'</p><a class="btn outline" href="'.esc(admin_url($subscriptions?'service-agreement':'service-plan',['record'=>$doc->data()['id']])).'">Review details</a>';
+        if(!$subscriptions)provider_plan_catalog_readiness_ui($mappingSummaries[$doc->data()['id']],$doc->data()['id']);
+        echo '</section>';
     }
     if(!$page['items'])echo '<div class="workspace-card"><p>No '.($subscriptions?'service agreements':'plans').' on this page.</p></div>';
     service_plans_ui_pagination($page,fn($p)=>admin_url($view,['p'=>$p]));return;

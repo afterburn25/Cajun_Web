@@ -1,3 +1,7 @@
+## Catalog readiness integration — candidate, unreleased
+
+Normally merge reviewed catalog872aec34: owner plan summaries explain local readiness, distinguish zero from unknown costs/limits, and show selected immutable mapping reviews without changing current edit or execution authority. All four focused native combinations are verified; actual browser and combined application acceptance remain pending.
+
 ## Acceptance repair — foreign-client mailbox fixture
 
 Parallel continuation: catalog readiness is in PR145 with exact-head testing; independent domain/cloud review found bounded clock-order and retained-history gaps for their authors to repair before integration. No further root runtime or release change.

@@ -48,3 +48,7 @@ Root is normally integrating this exact branch into registrar mergec1585199. Ind
 ## Catalog withdrawal recovery correction — 2026-10-15
 
 Starting41123e9b5b95f8bbe4244ee5db64a15eb3a85a58, PR141: source review found that losing a latest withdrawal record together with its matching audit could make an older enabled mapping appear current. Added an independently retained per-plan latest ID/digest pointer in settings, saved atomically with every review. Exact pointer/history checks and plan-family counts refuse missing/older review histories, including loss of both withdrawal and audit. Native fixtures cover paired loss, refusal of new approval, missing pointer and exact restoration. This strengthens recovery; it does not add provider execution. Local syntax and51 pure checks pass; current native/full acceptance remains pending. Preserve parent41123 full38819193594 and native38819193595; do not replace or cancel those runs.
+
+## Owner readiness and historical details continuation
+
+The follow-on [readiness and history increment](TWENTYI_CATALOG_READINESS.md) adds precise local refusal reasons, bounded owner plan-list summaries and selected immutable configuration details. It starts at combined38bb69cc; its own native/browser acceptance is pending.
