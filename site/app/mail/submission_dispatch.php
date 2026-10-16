@@ -43,6 +43,7 @@ function mail_submissions_send(string $id,string $draft,int $draftRevision,int $
         try {$claim=mail_submissions_claim($id);}
         catch(Throwable $e) {
             if($e instanceof PDOException)throw $e;
+            error_log('CWP-DIAG submission claim refused: '.get_class($e).': '.$e->getMessage().' @'.$e->getFile().':'.$e->getLine());
             mail_submissions_refuse($id,$row['attempt_id'],$row['snapshot_fingerprint'],$row['mime_sha256'],$e instanceof ProbeFailure&&$e->getMessage()==='limit'?'limit':'access_changed');return $id;
         }
         if($claim===null)return $id;
@@ -55,7 +56,7 @@ function mail_submissions_send(string $id,string $draft,int $draftRevision,int $
                 foreach(['id','revision','address','smtp_host','smtp_port','smtp_encryption','smtp_username','credentials'] as $key) {
                     if($current[$key]!==$profile[$key])throw new ProbeFailure('access_changed');
                 }
-            }catch(Throwable $e) {if($e instanceof PDOException)throw $e;throw new ProbeFailure('access_changed');}
+            }catch(Throwable $e) {if($e instanceof PDOException)throw $e;error_log('CWP-DIAG transport authorize refused: '.get_class($e).': '.$e->getMessage().' @'.$e->getFile().':'.$e->getLine());throw new ProbeFailure('access_changed');}
         };
         $outcome=null;
         try {$authorize();}
