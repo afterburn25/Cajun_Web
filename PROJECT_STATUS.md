@@ -1,4 +1,8 @@
+## Renewal-date acceptance checkpoint — 2026-10-16 UTC
 
+Renewal-date PR152 is ready for root integration from corrected checkpoint `6ba2fb4e9f59fccc0c57d58554f743d55270f19d`, with shipping unchanged from `07817109a562bf716bd021149467dae125a6ede0`. All four exact native combinations pass60 native plus79 normal/79 minimal reader checks each. Actual browser artifact12023065488 verifies2038 HTTP executions/2027 unique labels, including49 date-workflow cases; all four owner/client desktop/mobile captures are inspected without a visual blocker. Full38841973723 is still running recovery; Apache/final source checks remain pending. Original078 full is terminal failure from the preserved fixture-only browser defect, although recovery/Apache passed. No release or live provider acceptance is claimed. [Exact evidence and limits](docs/TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).
+
+### Preserved previous checkpoint
 
 Renewal-date source07817109 / PR152 passes verified native60+79+79 in all four combinations. Full38839208232 passed package/native but browser failed after1992 checks because the new fixture temporarily changed an earlier immutable observation epoch. Only test setup is corrected to wait for real cooldown; no shipping changes. Corrected browser/screens are pending. See [exact evidence](docs/TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).
 ## Isolated registered-domain date observations — 2026-10-15

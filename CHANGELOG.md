@@ -1,8 +1,9 @@
 ## Unreleased — explicit domain renewal-date observations
 
+- Exact corrected checkpoint6ba now has four verified native combinations and2038 passing HTTP executions, including49 date checks and four inspected desktop/mobile captures. Shipping remains078; the original failed fixture evidence is retained.
 - Test-only renewal-date browser correction preserves all inherited observation timestamps and waits for actual cooldown. Exact078 native matrix passed; its first browser checkpoint failed before new date screens. No shipping behavior changed.
 
-Adds saved date-only provider observations and history for exact current registered-domain assignments, explicit owner refresh and private client display. Current native/browser acceptance remains pending. No renewal or registry-expiry claim.
+Adds saved date-only provider observations and history for exact current registered-domain assignments, explicit owner refresh and private client display. Corrected exact native and browser acceptance now verifies the saved-date workflow; combined integration and full-run completion remain pending. No renewal or registry-expiry claim.
 
 ## Unreleased integration queue — client hosting history
 
