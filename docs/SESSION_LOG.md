@@ -4,6 +4,16 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 # Session log
 
+## Sent-folder synchronization for accepted submissions — 2026-10-16
+
+Request: continue #157 non-20i roadmap; the mail roadmap's Sent-folder synchronization gap. Starting commit: `devin/non20i-mail-attachments` tip `921f7c53`, new branch `devin/non20i-mail-sent-sync`.
+
+Actions: added `foundation/mail-receiving/AppendSession.php` and `SentCopy.php` (mirrored to `site/includes/`) — a fixed APPEND-only session (CWA tags, capability negotiation, TLS/STARTTLS identical to the read path, AUTHENTICATE PLAIN, single literal continuation, `fwriteLiteral` bounded write, exact tagged final response) plus `ReadProfile::Append`, `ReceivingStream::fwriteLiteral`, and `folder` added to `ReceivingFailure`'s finite codes; added `site/database/schema/mail_copies_schema.php` + `mail_copies_migrate.php` creating `mail_sent_folders`, `mail_copy_attempts`, `mail_copy_results` under owner-password gated additive migration with strict relation/collation validation; added `site/app/mail/copies.php` — `mail_sent_folder_save` (owner-only, wire-unsafe names refused), `mail_copy_status`, immutable `mail_copy_record` (conflicting results refuse, never rewrite), and `mail_submission_copy` with a durable attempt fence before transport, current-authority revalidation inside the IMAP session at each boundary, dedupe of recorded `appended` results, and 2-second account plus 60/hour actor limits; wired `mail_accounts_sent_setup`/`mail_accounts_sent_folder` and `mail_submissions_copy_sent` controller actions, account settings card and submission detail copy form/result.
+
+Tests: `php -l` clean on all touched PHP; `tests/mail-receiving/append_test.php` 32/32 pass (acceptance, folder refusal, auth/protocol/timeout/authorization-loss boundaries, unsafe names, oversized/malformed/non-ASCII payload refusal, literal-injection refusal, budget bounds); receiving suites unchanged-pass; `tests/mail_submissions_native.php` extended (setup gating, dedupe fence, mid-copy grant loss, folder refusal retry, author isolation); `mail_submissions_cases.py` extended (no silent append on send, folder setup, wire-unsafe names, byte-exact fixture append, dedupe replay, folder refusal, non-author refusal); `mail_inbox_http_server.py` gained `append`/`append-refused` modes; `apache_acceptance.py` and `mail-receiving.yml` updated; attachment test `require` fixed for the now-canonical bootstrap class. Build refresh clean: 2204 receiving files byte-identical, 40 locked packages, pinned PHPMailer and submission bundles verified. Native/HTTP lanes run in CI; no real mailbox, provider or deployment acceptance is claimed.
+
+Next: push, open stacked PR on `devin/non20i-mail-attachments`, update #157.
+
 ## Receive-side mail attachments — 2026-10-16
 
 Request: continue #157 non-20i roadmap; the message view declared "attachments unavailable." Starting commit: `devin/non20i-mail-replies` tip `c99370a6`, new branch `devin/non20i-mail-attachments`.

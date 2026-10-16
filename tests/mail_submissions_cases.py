@@ -37,10 +37,10 @@ def run_browser(env, browser):
     db('UPDATE ci_staff_profiles SET permissions=? WHERE user_id=?', [json.dumps(['mail.send']), uid])
     check('Send-only staff can open mail history without website permissions', member.get(library).status_code == 200 and member.get(root + '?view=projects').status_code == 403)
 
-    def account(encryption):
+    def account(encryption, imap_host='imap.example.invalid', imap_username='synthetic-incoming', imap_password='Synthetic incoming password'):
         f = soup(owner.get(accounts)).select_one('[data-mail-account-editor]')
         data = form_data(f)
-        data.update(label='Synthetic SMTP ' + encryption, address='sender@example.invalid', imap_host='imap.example.invalid', imap_port='993', imap_encryption='ssl', imap_username='synthetic-incoming', imap_password='Synthetic incoming password', smtp_host=submission_server.host, smtp_port='465' if encryption == 'ssl' else '587', smtp_encryption=encryption, smtp_username=submission_server.username, smtp_password=submission_server.password, enabled='1', current_password=OWNER)
+        data.update(label='Synthetic SMTP ' + encryption, address='sender@example.invalid', imap_host=imap_host, imap_port='993', imap_encryption='ssl', imap_username=imap_username, imap_password=imap_password, smtp_host=submission_server.host, smtp_port='465' if encryption == 'ssl' else '587', smtp_encryption=encryption, smtp_username=submission_server.username, smtp_password=submission_server.password, enabled='1', current_password=OWNER)
         r = owner.post(accounts, data=data)
         aid = parse_qs(urlparse(r.url).query)['account_id'][0]
         for actor in [uid, oid]:
@@ -191,10 +191,57 @@ def run_browser(env, browser):
     check('HTTP accepted mail with failed result persistence remains unresolved', 'Submission unresolved' in r.text and 'Do not resend' in r.text and submission_server.connections == count + 1 and submission_server.attempts[-1]['terminator'] and not db('SELECT * FROM ci_mail_submission_results WHERE submission_id=?', [lost_sid]) and len(db('SELECT * FROM ci_mail_submission_dispatches WHERE submission_id=?', [lost_sid])) == 1)
     member.post(lost_target, data={**lost_data, 'confirm_send': '1'})
     check('HTTP unresolved result cannot be retried by replay', submission_server.connections == count + 1 and soup(member.get(lost_url)).select_one('[data-mail-submission-confirm]') is None)
+
+    # An accepted submission can save one exact copy into a configured server Sent folder.
+    copy_connections = 0
+    sent_aid = account('ssl', 'inbox-fixture.example.net', 'synthetic@example.net', 'Synthetic receiving HTTP password')
+    sent_detail = accounts + '&account_id=' + sent_aid
+    sent_did, sent_url = create(sent_aid)
+    sent_target, sent_data = review(sent_url)
+    submission_server.configure('ssl', 'accepted')
+    r = member.post(sent_target, data={**sent_data, 'confirm_send': '1'})
+    sent_sid = parse_qs(urlparse(r.url).query)['submission_id'][0]
+    copy_page = root + '?view=mail-submission&submission_id=' + sent_sid
+    check('Acceptance never appends a Sent copy silently', inbox_server.connections == inbox_connections and soup(member.get(copy_page)).select_one('[data-mail-sent-copy]') is None)
+
+    def copy_post():
+        t = token(member.get(copy_page))
+        return member.post(copy_page, data={'csrf': t, 'action': 'mail_submissions_copy_sent', 'submission_id': sent_sid})
+
+    r = copy_post()
+    check('Copy refuses before an owner configures a Sent folder', 'Sent folder' in r.text and inbox_server.connections == inbox_connections and not db('SELECT * FROM ci_mail_copy_attempts'))
+    r = owner.post(sent_detail, data={'csrf': token(owner.get(sent_detail)), 'action': 'mail_accounts_sent_setup', 'account_id': sent_aid, 'current_password': OWNER})
+    check('Owner prepares additive Sent-copy storage', 'Sent-copy storage is ready' in r.text and db("SELECT value FROM ci_settings WHERE name='mail_copies_schema_version'") == [{'value': '1'}])
+    for bad in ['Sent*', 'Sent"Folder', 'INBOX\\Sent']:
+        r = owner.post(sent_detail, data={'csrf': token(owner.get(sent_detail)), 'action': 'mail_accounts_sent_folder', 'account_id': sent_aid, 'sent_folder': bad, 'current_password': OWNER})
+        check('Wire-unsafe Sent folder refused over HTTP ' + bad, not db('SELECT * FROM ci_mail_sent_folders WHERE id=?', [sent_aid]) and 'plain server folder' in r.text)
+    r = owner.post(sent_detail, data={'csrf': token(owner.get(sent_detail)), 'action': 'mail_accounts_sent_folder', 'account_id': sent_aid, 'sent_folder': 'Sent', 'current_password': OWNER})
+    check('Owner saves the Sent folder setting', db('SELECT sent_folder FROM ci_mail_sent_folders WHERE id=?', [sent_aid]) == [{'sent_folder': 'Sent'}])
+    check('Copy form appears only for accepted mail with a folder', soup(member.get(copy_page)).select_one('[data-mail-sent-copy]') is not None)
+    inbox_server.mode = 'append'
+    r = copy_post()
+    copy_connections += 1
+    sent_mime = db('SELECT mime_bytes FROM ci_mail_submissions WHERE id=?', [sent_sid])[0]['mime_bytes'].encode('ascii')
+    check('HTTP copy appends the exact accepted MIME once', inbox_server.appended == sent_mime and 'copy was saved in the server Sent folder' in r.text and db('SELECT outcome,result_code FROM ci_mail_copy_results') == [{'outcome': 'success', 'result_code': 'appended'}])
+    r = copy_post()
+    check('HTTP cannot append a recorded Sent copy twice', 'already has a recorded Sent copy' in r.text and inbox_server.connections == inbox_connections + copy_connections)
+    r = owner.post(copy_page, data={'csrf': token(owner.get(sent_detail)), 'action': 'mail_submissions_copy_sent', 'submission_id': sent_sid})
+    check('Another author cannot drive a Sent copy', 'copy was saved' not in r.text and inbox_server.connections == inbox_connections + copy_connections)
+    inbox_server.mode = 'append-refused'
+    refused_did, refused_url = create(sent_aid)
+    refused_target, refused_data = review(refused_url)
+    r = member.post(refused_target, data={**refused_data, 'confirm_send': '1'})
+    refused_sid = parse_qs(urlparse(r.url).query)['submission_id'][0]
+    refused_page = root + '?view=mail-submission&submission_id=' + refused_sid
+    r = member.post(refused_page, data={'csrf': token(member.get(refused_page)), 'action': 'mail_submissions_copy_sent', 'submission_id': refused_sid})
+    copy_connections += 1
+    check('Server folder refusal records a bounded failure without copy claims', 'did not accept the configured Sent folder' in r.text and db('SELECT result_code FROM ci_mail_copy_results WHERE id=(SELECT id FROM ci_mail_copy_attempts WHERE submission_id=?)', [refused_sid]) == [{'result_code': 'folder'}] and inbox_server.appended == sent_mime)
+    inbox_server.mode = 'ok'
+    db('UPDATE ci_mail_copy_attempts SET started_epoch=0')
     metadata = json.dumps(db("SELECT * FROM ci_audit WHERE action LIKE 'mail_submissions.%'"))
     check('Submission audits exclude message content recipients and credentials', all(x not in metadata for x in ['SYNTHETIC_PRIVATE_SUBMISSION_BODY', 'private@example.invalid', payload['subject'], submission_server.password]))
     for path in ['app/mail/submissions.php', 'app/mail/submission_dispatch.php', 'app/mail/submission_views.php', 'admin/controllers/mail_submissions.php', 'admin/views/mail_submissions.php', 'database/schema/mail_submissions_schema.php', 'database/migrations/mail_submissions_migrate.php', 'includes/foundation/mail-submission/SubmissionChannel.php']:
         check('HTTP denies direct submission internal ' + path, requests.get(BASE + '/existing/' + path).status_code == 404)
-    check('Submission workflows leave IMAP provider and system-mail traffic unchanged', inbox_server.connections == inbox_connections and provider_server.calls == provider_calls and (QA / 'mail-capture.txt').read_bytes() == capture)
+    check('Submission workflows leave IMAP provider and system-mail traffic unchanged', inbox_server.connections == inbox_connections + copy_connections and not inbox_server.errors and provider_server.calls == provider_calls and (QA / 'mail-capture.txt').read_bytes() == capture)
     check('Isolated submission SMTP server observed only expected protocol', not submission_server.errors)
     db('UPDATE ci_staff_profiles SET permissions=? WHERE user_id=?', [original, uid])

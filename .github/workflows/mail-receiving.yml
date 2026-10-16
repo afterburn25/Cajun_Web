@@ -36,6 +36,7 @@ jobs:
           php tests/mail-receiving/session_test.php > qa/mail-receiving-session-results.json
           php tests/mail-receiving/body_test.php > qa/mail-message-body-results.json
           php tests/mail-receiving/attachment_test.php > qa/mail-message-attachment-results.json
+          php tests/mail-receiving/append_test.php > qa/mail-message-append-results.json
           php tests/mail-receiving/message_session_test.php > qa/mail-message-session-results.json
           php -n -d extension=mbstring -d extension=iconv -d extension=ctype tests/mail-receiving/no_dom_test.php > qa/mail-message-no-dom-results.json
           python3 -m venv .ci-venv

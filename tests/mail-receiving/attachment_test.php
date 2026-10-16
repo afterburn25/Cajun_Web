@@ -2,7 +2,7 @@
 declare(strict_types=1);
 if(PHP_SAPI!=='cli')exit(2);
 require __DIR__.'/../../foundation/mail-receiving/bootstrap.php';
-require __DIR__.'/../../foundation/mail-receiving/AttachmentIndex.php';
+require_once __DIR__.'/../../foundation/mail-receiving/AttachmentIndex.php';
 use CajunWebPro\Foundation\MailReceiving\{AttachmentIndex,ReceivingFailure};
 $checks=[];
 function check(string $name,callable $fn): void {global $checks;try {$ok=$fn()===true;}catch(Throwable $e){$ok=false;$detail=get_class($e).': '.$e->getMessage();}$checks[]=['name'=>$name,'passed'=>$ok,'detail'=>$detail??null];}
