@@ -1,3 +1,7 @@
+## Port A-02 content-revision contract layer — 2026-10-16
+
+Devin non-20i increment on `devin/non20i-revisions-foundation` from main `595ac9c3`, continuing preserved `devin/revisions-foundation`. Adds `foundation/revisions/` — `ContentDocument`, `ContentRevision`, `RevisionDiff`, `ApprovalContext` — versioned content with computed diffs and deliberate approval/restore states, 30 pure checks in `tests/revisions/run.php`, PHP 8.2/8.4 workflow lane. No persistence, permissions or compare/restore UI — integration remains future work. No release or deployment.
+
 ## Documentation - corrected StackCP source and preserved acceptance evidence
 
 Record corrected source 819c3ea3, its independently verified original focused archives and Windows packages, first full 819c run in progress and the preserved original 9779 full acceptance. Preserve the failed 13879 fixture run and terminal failed 9538 browser run, with their separate evidence scopes. Update active source pointers and remove conflicting current pause wording for Devin. Published 1.24.0 and all runtime, installer, version, assets and live installations remain unchanged.
