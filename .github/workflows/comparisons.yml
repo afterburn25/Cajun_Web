@@ -1,0 +1,41 @@
+name: Comparison-facts model checks
+
+on:
+  pull_request:
+    paths: ['foundation/comparisons/**', 'tests/comparisons/**', '.github/workflows/comparisons.yml']
+  push:
+    branches: [main, 'devin/non20i-*']
+    paths: ['foundation/comparisons/**', 'tests/comparisons/**', '.github/workflows/comparisons.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: comparisons-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    name: Comparison checks PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - name: Check out the revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Syntax and comparison checks using the official PHP image
+        run: |
+          docker run --rm --network none -v "$PWD:/workspace:ro" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            for source in foundation/comparisons/*.php tests/comparisons/*.php; do php -l "$source"; done
+            php tests/comparisons/run.php
+          '
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Isolated claim-registry checks only. No web fetching, rendering, CMS or application integration is tested by this job.' >> "$GITHUB_STEP_SUMMARY"
