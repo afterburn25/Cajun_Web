@@ -29,3 +29,16 @@ Any later runtime integration must independently validate current exact assigned
 Local PHP syntax passes all three new foundation files and the test file. `tests/twentyi-package-force-ssl/run.php` passes159 distinct named checks in both normal and no-INI PHP modes. It verifies true/false/null distinctions; all rejected shapes/statuses and body bounds; exact request/account/credential handling; immutable and restored bindings/observations; credential echo refusal; bounded transport errors and no retries. It also verifies the existing application transport still rejects both ForceSSL GET and POST. All transport responses are synthetic; no DNS, live request, database, permission or browser operation occurs.
 
 Root and catalog independently cleared the corrected detached snapshot boundary at Binding8867d049, Readerf4da6ae3, Observation027c7360 and testdb3f119f. The narrow `package-force-ssl-contract.yml` workflow runs PHP8.2/8.4 in default/minimal modes with network disabled, read-only container root and no application/database execution. Actual artifacts remain pending at this freeze; source review and local results are not CI acceptance. Runtime wiring, durable observation and sharing, actual four-way native and owner/client browser acceptance remain future work requiring review. No new full application run is dispatched for this pure slice.
+
+## Exact pure acceptance — 2026-10-16
+
+Tested source `b2033bab854d9f56b2416652def362030c06cbfc`, tree `0acb1f4d351d58ed52343a0d3de2b8e246de88d4`, passed the single automatic [run38857815866](https://github.com/afterburn25/Cajun_Web/actions/runs/38857815866), attempt1. Both PHP8.2/8.4 jobs passed syntax, documentation links, the network-disabled contract checks and unchanged-source verification. Each default/minimal report contains159 distinct passing named results. These repeat the same contract cases across versions/modes and are not summed as unique coverage.
+
+| PHP | Artifact | SHA256 |
+| --- | --- | --- |
+| 8.2 | 12027687956 | `a84aa528aa8ffa6134c3d84e2cd0d3492d93571742248b5e4432a7ecf2284b0b` |
+| 8.4 | 12027364829 | `7b0767d3a3f899c0381d264b7e8b44fcaf2a33972bc4eccc46a3dc8ac210ab9f` |
+
+Each downloaded archive is3,682 bytes with exactly two safe case-unique JSON members and clear CRC. Exact source/run metadata, digest, size, complete named outcomes and outer pass/failure fields were independently verified. Local `qa/38857815866/verification.json` retains every result; `acceptance-proof.json` has SHA256 `045fd1cdbf95fa776d22daec274a82b7ef5b851b4185ea74616acf35bffced0e`. The original archives and pre-correction152-case local reports remain intact.
+
+This final handoff changes documentation only. All foundation/tests/workflow/site/tools bytes remain exactly b2033. No PR was opened or manual/native/full run dispatched. This accepts only the pure supplied-binding/strict-boolean contract; runtime observations, sharing, native persistence, browser views and current account behavior remain unimplemented/unverified in this lane. Root owns any later sequential integration and release.

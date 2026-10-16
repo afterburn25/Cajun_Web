@@ -1,3 +1,7 @@
+## Unreleased — Verified Force SSL pure contract
+
+Record exact b2033 two-version/default-minimal acceptance and downloaded artifact hashes. Documentation only; application behavior remains unchanged.
+
 ## Unreleased — Isolated Force SSL read contract
 
 Add pure reported-boolean parsing and immutable supplied-package binding tests. No application or shipping behavior changes; runtime integration remains pending.
