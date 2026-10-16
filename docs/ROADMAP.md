@@ -1,3 +1,7 @@
+## Directory-listing observations integrated locally — 2026-10-16
+
+Native-tested3bdba5eb/docsacbf00b joins the next local normal root integration. Owners can save and share the reported directory-listing setting through the existing protected executor. All four actual ten-report archives pass; this new merged tree still needs combined browser/package acceptance. Force SSL owner changes and renewal agreement bindings are parallel implementation lanes. [Scope](TWENTYI_DIRECTORY_LISTING_OBSERVATIONS.md) and [current source/evidence](../SESSION_HANDOFF.md).
+
 ## Combined website-folder and Force SSL observations — 2026-10-16
 
 Native-tested document roots and Force SSL flags join the normal root candidate. Both use explicit owner refresh, saved history and separate client sharing. Exact four-way focused archives are verified; combined packaged browser acceptance remains required. The previous03b browser stopped at a public-reference/provider-ID substring collision in a catalog privacy assertion; the test-only repair has13 passing regressions and independent offline layout review. Original failed evidence remains preserved. [Current handoff](../SESSION_HANDOFF.md).

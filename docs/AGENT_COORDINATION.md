@@ -4,11 +4,11 @@ Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for
 
 | Owner | Current branch/checkpoint | Scope and next evidence |
 |---|---|---|
-| Root | Frozenc174/CIa187, full38863417123 | Exact Windows packages verified; preserve42 original handles and follow combined browser/recovery/server acceptance. |
-| Domains | Original03b final failure fully verified | No further original polling; inspect priced domain quote contract evidence read-only. |
-| VPS | Exactc174 helper/source review clear; new Force SSL control contract | Isolated owner-change proposal uses exact boolean request and durable unknown/readback handling; shared wiring requires review. |
-| Catalog | Directory-listing application overb5c2; shared glue applied | Frozen3bdba5eb passes its single38864231460 in all four environments; actual ten-report archives independently verified. Docs handoff and normal root integration next. |
-| Devin | Software-product licensing; main ee97 invoice-linked delta reviewed | Populated upgrade/internal-master delivery and legacy invoice-retry findings remain. Preserve invoice uniqueness, marker2, serialized helpers and keyless installer; active session unconfirmed. |
+| Root | Local normal directoryacbf merge over33fee; frozenc174 original38863417123 preserved | Staged parity and independent source review clear; commit the local normal merge and await the original c174 browser outcome before choosing the next stable candidate. |
+| Domains | Isolated domain-renewal-agreements fromc174 | Approved immutable renewal binding to existing one-time USD agreements; dedicated implementation, shared proposals external. |
+| VPS | Isolated Force SSL controls fromc174 | Single gateway/ledger, terminal ownership/readback boundaries independently reviewed; dedicated modules underway, recovery requirement explicit. |
+| Catalog | Directory3bd/acbf native accepted in all four environments | Actual archives and root merge review complete; independently review dedicated Force SSL change runtime next. |
+| Devin | Software-product licensing; main ee97 reviewed | Invoice uniqueness/marker2/serialized helpers must be preserved; populated upgrade, master delivery and legacy invoice handling remain under review. |
 
 Original427 is terminal failure at the preserved setup check: final125 reports,2,107 HTTP passes plus one failure,289 recovery/2,211 Apache passes and exact Git/Windows packages are verified. No further polling or repeated acceptance is needed. See [handoff](../SESSION_HANDOFF.md) for exact current sources, evidence and next actions.
 

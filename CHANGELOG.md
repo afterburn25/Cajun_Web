@@ -1,3 +1,7 @@
+## Unreleased — saved directory-listing settings
+
+Integrate owner-triggered observations of the directory-listing setting with independent client sharing, immutable history and current hosting authority. False and unavailable remain distinct. The setting is informational and does not test file exposure. Four-way focused native evidence is verified; combined browser/package acceptance remains pending.
+
 ## Unreleased — integration evidence and licensing compatibility notes
 
 Document verified c174 Windows packages, the preserved03b failure, current focused acceptance and source review of main's invoice-linked licensing/schema version2. Record remaining upgrade, legacy-invoice retry and internal-key-delivery requirements without changing the tested application candidate.
