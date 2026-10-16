@@ -1,6 +1,6 @@
 ## Catalog application lane — 2026-10-16
 
-Catalog owns new `codex/twentyi-document-roots-observations` from pure0ddd + normal expiry18d merge83851011. Owned roots modules/schema/admin/client views and tests; reviewed minimal shared inventory/transport/routes/build union adds named read9/refresh11 after expiry. Runtime is stable for root/domain review while tests/docs/package preparation finish. No CI until root reviews exact source/fixtures; no changes to frozen root or licensing. [Scope](TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md).
+Catalog owns new `codex/twentyi-document-roots-observations` from pure0ddd + normal expiry18d merge83851011. Owned roots modules/schema/admin/client views and tests; reviewed minimal shared inventory/transport/routes/build union adds named read9/refresh11 after expiry. Root/domain source reviews and all four exact e2b9 focused38859581032 native environments pass, with all actual archives verified. Runtime stays frozen; root will normally integrate and run packaged browser acceptance with its newer corrected period/PHP setup fixtures. No standalone full/browser/PR dispatch or changes to root/licensing. [Scope](TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md).
 
 # Current CajunWebPro agent coordination
 

@@ -1,6 +1,6 @@
 ## Unreleased — saved website-folder observations
 
-Add explicit owner preparation/refresh and separately approved client sharing of saved hosting name/folder maps, with current package authority, credential refusal and immutable history/recovery. Preserve documented empty/error distinctions and display paths only as escaped text. Native/browser/package acceptance remains pending. [Scope](docs/TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md).
+Add explicit owner preparation/refresh and separately approved client sharing of saved hosting name/folder maps, with current package authority, credential refusal and immutable history/recovery. Preserve documented empty/error distinctions and display paths only as escaped text. All four exact e2b9 focused native/compatibility environments pass with verified artifacts. Browser/package acceptance remains pending. [Scope](docs/TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md).
 
 ## Unreleased — isolated package document-root reader
 

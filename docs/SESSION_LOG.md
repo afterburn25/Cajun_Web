@@ -2509,3 +2509,10 @@ Roots fixture review addendum: root found two paired-loss audit DELETE prefixes 
 
 
 Roots freeze checkpoint: root exact runtime/UI/browser and corrected native77652502 review is clear; independent domains runtime review is also clear. Root approves one automatic focused matrix after freeze, with no standalone full/browser/PR. Installer refresh53609 succeeds, all2,783 staged shipping files equal disk and all2,782 generated hashes; pure3 classes/test remain accepted bytes. Local evidence manifests are qa/document-roots-runtime-review.json, document-roots-fixture-review.json and document-roots-staged-parity.json. Documentation234files/1,634links passes. Commit this bounded source and follow its actual four-environment artifacts without claiming native acceptance prematurely.
+
+
+## 2026-10-16 — document-root native evidence closeout
+
+From frozen e2b9fd6d, the one automatic focused38859581032 finishes success in PHP8.2/8.4 with MariaDB10.11/MySQL8.4. Download all four original archives and verify exact source/SHA256/size/CRC/safe unique members/all eight reports. Each passes115 roots executions114 labels,143+143 pure,24+24 transport and PHP99 executions98 labels/expiry111/scheduler102:3,044 total executions. Verify the repeated roots stale-value label against its failed/unfinished source loop; preserve the initial overly strict verifier proof, correct only its explicit duplicate policy, and retain all actual named outcomes. No fixture, runtime or workflow correction was necessary.
+
+Update only continuity/evidence documentation and retain `qa/38859581032/verification.json` plus original metadata/ZIPs. Shipping/tests/workflows/installer remain exacte2b9. No full/browser/PR dispatch, live provider request, release or deployment. Root integration and actual combined packaged browser/screens remain next, preserving root03b28476/659 login fixtures instead of this branch's inherited standalone full. [Source, artifact hashes and limits](TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md#exact-native-evidence--2026-10-16).

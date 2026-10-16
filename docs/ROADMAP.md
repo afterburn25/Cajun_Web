@@ -1,6 +1,6 @@
 ## Website-folder observations increment — 2026-10-16
 
-Owner-triggered document-root map storage and explicit client sharing are implemented on isolated catalog application branch, with no filesystem use or provider write. Pure/source checks pass; native/browser/installer and combined release acceptance remain pending. This does not complete DNS editing, file delivery or the full20i roadmap. [Scope](TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md).
+Owner-triggered document-root map storage and explicit client sharing are implemented on isolated catalog application branch, with no filesystem use or provider write. Root/domain source review, installer parity and all four exact e2b9 focused native environments pass with actual archives verified. Packaged browser and combined release acceptance remain pending. This does not complete DNS editing, file delivery or the full20i roadmap. [Scope](TWENTYI_DOCUMENT_ROOTS_OBSERVATIONS.md).
 
 ## Registrar expiry observation increment - 2026-10-16
 
