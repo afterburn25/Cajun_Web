@@ -1,6 +1,6 @@
 ## Unreleased — isolated hosting DNS proposal contract
 
-Add non-executable pure types for the six documented DNS record field sets, exact local package/zone context, bounded proposal validation and raw/Base64 credential-echo refusal. Preserve opaque package-domain IDs separately from zone names; no URL builder, response parser, write admission or shipping integration is added.158 synthetic checks pass each local PHP8.4 mode. [Contract, missing evidence and integration prerequisites](docs/TWENTYI_HOSTING_DNS_CONTRACT.md).
+Add non-executable pure types for the six documented DNS record field sets, exact local package/zone context, bounded proposal validation and raw/Base64 credential-echo refusal. Preserve opaque package-domain IDs separately from zone names; no URL builder, response parser, write admission or shipping integration is added.158 synthetic checks pass each local PHP8.4 mode and each actual no-network PHP8.2/8.4 mode at96fba852 (run38855162311, both artifacts verified). [Contract, missing evidence and integration prerequisites](docs/TWENTYI_HOSTING_DNS_CONTRACT.md).
 
 ## Unreleased — registration-period browser owner isolation
 

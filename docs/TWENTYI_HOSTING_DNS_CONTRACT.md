@@ -66,4 +66,15 @@ The application, shared readers/transport, schema, installer and licensing stay 
 
 Local PHP 8.4 runs `php tests/hosting_dns_contract.php` and `php -n tests/hosting_dns_contract.php`: 158 distinct named checks pass in each mode. All four added PHP files pass syntax checks. Cases cover all field sets, wrong families/types/keys, strict numeric/name bounds, duplicate/CNAME conflicts, exact opaque identities, immutable witness/hash changes, malformed restored objects, scalar-reference detachment, credential echoes, exact JSON/size limits and absence of request/result methods. Reports are retained under the branch's ignored `qa/` directory.
 
-These are pure synthetic tests only. No native database, UI, packaged application, live DNS or provider acceptance is claimed. Root independently reviewed the exact three pure types, tests and guide with no concrete blocker for this non-executable scope. A narrow PHP8.2/8.4 workflow is approved and added; actual remote reports remain pending. No application full run is needed for this non-shipping increment. Preserve the separate root candidate and all prior failed/passing runs.
+These are pure synthetic tests only. No native database, UI, packaged application, live DNS or provider acceptance is claimed. Root independently reviewed the exact three pure types, tests and guide with no concrete blocker for this non-executable scope. The narrow PHP8.2/8.4 workflow is approved and added; its exact-source results are verified below. No application full run is needed for this non-shipping increment. Preserve the separate root candidate and all prior failed/passing runs.
+
+### Exact remote pure evidence
+
+Frozen source `96fba852629ae0b441051008225d1b790bc4597f`, tree `8d5b4e3ac6632b5ff1854c74fb86038abd217a36`, passes the single automatic [run38855162311](https://github.com/afterburn25/Cajun_Web/actions/runs/38855162311). Both Linux containers ran with network disabled:158 distinct default and158 minimal checks per PHP version,632 executions total. Both actual archives were downloaded; fresh metadata, SHA256, size, CRC, four safe unique members, all six source/workflow hashes, exact source/tree, actual PHP versions and every named result agree.
+
+| PHP | Artifact | Bytes | SHA256 |
+|---|---|---|---|
+| 8.2 | 12026543068 | 4514 | `141dcced55bae3084ed38d6028633b539d8143adb5817c97101221ebd5c0b38c` |
+| 8.4 | 12027355024 | 4553 | `60bc39b5f4ecefa27c44111842e6fe6b2f36d8bfd55eb1cab4234c024a63c7b9` |
+
+Artifacts, metadata/jobs and all named proof are retained under `work/20i-hosting-dns-contract/qa/`, particularly `pure-matrix-verification.json`. The documentation-only evidence descendant preserves the tested foundation/test/workflow and every shipping file. No PR, native/full dispatch, DNS operation or release occurred. Next obtain the missing package-domain identity and actual read/write response contracts before proposing any application integration.
