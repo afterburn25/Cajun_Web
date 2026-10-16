@@ -1,6 +1,6 @@
 ## Forwarding intake candidate — 2026-10-15
 
-Implemented locally with verified four-way native and42 packaged browser cases; root integration/full acceptance remains pending: separate owner permission; client single-address request/cancel; owner message/decline; immutable local history. Provider forwarding submission/readback and active-delivery confirmation remain incomplete because exact response semantics are unverified. [Contract and acceptance](TWENTYI_FORWARDING_REQUESTS.md).
+Implemented locally with verified four-way native and42 packaged browser cases; full isolated recovery/Apache/packages also pass, while root integration/combined acceptance remains pending: separate owner permission; client single-address request/cancel; owner message/decline; immutable local history. Provider forwarding submission/readback and active-delivery confirmation remain incomplete because exact response semantics are unverified. [Contract and acceptance](TWENTYI_FORWARDING_REQUESTS.md).
 
 ## Client domain renewal requests — integrated candidate, 2026-10-15
 

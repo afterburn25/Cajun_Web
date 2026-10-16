@@ -2,7 +2,7 @@
 
 Cloud agent owns `work/20i-forwarding-requests`, branch `codex/twentyi-forwarding-requests`, base3bbc42bd. Scope is local forwarding-specific permission/request/review only, with an unregistered offline exact typed request. New helper/schema/owner/client modules and tests; shared edits limited to provider dispatch/view, portal router/actions, services navigation, browser/application workflow and Apache private-path hooks plus generated installer inventory. No changes to transport, provider operation register, scheduled inventory implementation or other worktrees. Root reviews and integrates. [Evidence and limits](TWENTYI_FORWARDING_REQUESTS.md).
 
-Native85/contract15 in four modes and42 actual packaged forwarding cases are independently verified on frozena02. Full38832724941 recovery/Apache/final continue. Root owns the separately found cloud-confirmation history correction; preserve the frozen forwarding run and integrate sequentially. Devin owns software-product licensing;20i work does not alter its lane.
+Native85/contract15 in four modes and42 actual packaged forwarding cases are independently verified on frozena02. Full38832724941 is terminal SUCCESS; final12018823878 independently verifies exacta02 source/packages and unchanged browser screenshots. Root owns the separately found cloud-confirmation history correction; preserve the frozen forwarding run and integrate sequentially. Devin owns software-product licensing;20i work does not alter its lane.
 
 # Current combined integration and scheduled-refresh assignment — 2026-10-15
 

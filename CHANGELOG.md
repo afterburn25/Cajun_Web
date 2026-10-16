@@ -1,6 +1,6 @@
 ## Unreleased — local forwarding requests
 
-Add separate owner permission and client forwarding request/review history. Clients can request or cancel; owners can save review messages or decline. Signed immutable records and exact current domain/account checks fence stale, foreign and replayed actions. Offline request shape follows the verified 20i browser-console example; no forwarding dispatch or activation is enabled. Four-way native and packaged owner/client browser evidence is verified; full recovery/Apache/final acceptance remains pending.
+Add separate owner permission and client forwarding request/review history. Clients can request or cancel; owners can save review messages or decline. Signed immutable records and exact current domain/account checks fence stale, foreign and replayed actions. Offline request shape follows the verified 20i browser-console example; no forwarding dispatch or activation is enabled. Four-way native, actual packaged owner/client browser, recovery, Apache and exact-source final archive acceptance are verified on isolateda02; root integration/combined acceptance remains separate.
 
 ## Domain renewal request integration — candidate, unreleased
 
