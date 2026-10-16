@@ -4,6 +4,18 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 # Session log
 
+## Repair ticket-upgrade retention baseline — 2026-10-16
+
+Request: continue #157; after the `tickets.css` registration fix, fresh `native-and-browser` run 38959922023 reached the ticket upgrade case and failed `rewrite 1.23.0 throttled recovery cannot change populated tickets or private records` (`tests/apache_acceptance.py:126` → `organized_update_cases.py:297` → `ticket_upgrade_cases.py:99`).
+
+Investigation: the compound check's `retained()` compared `studio_clients`/`studio_jobs`/`studio_invoices` content hashes against `original = records()` captured before the seeded-client invitation. `studio_invite`/`studio_activate` legitimately rewrite `studio_clients` (`invite_hash`, `auth_version`, `password_hash`), so `retained()` could never hold — a test baseline defect, not a runtime regression. The seeded `structure-owner` rate bucket, journal write ordering and ticket/studio write paths were verified unchanged and correct.
+
+Actions: `tests/ticket_upgrade_cases.py` now captures `baseline = records()` after client activation and `retained()` compares studio tables against it (`original` is retained for the pre-setup preservation check). The compound check was split into a throttle/journal leg and a records leg for exact failure attribution.
+
+Tests: `python -m py_compile` clean. Full Apache/native acceptance reruns in CI on this commit; original run 38959922023 failure preserved as evidence.
+
+Next: push, confirm fresh CI reaches the later recovery/replay checks, then PR #161 verification.
+
 ## Port ticket screenshot readiness — 2026-10-16
 
 Request: last preserved non-20i slice — `codex/ticket-screenshot-readiness` (`e29c1c1f`).
