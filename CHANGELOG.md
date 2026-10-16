@@ -1,3 +1,7 @@
+## Unreleased — renewal interruption fixture correction
+
+Preserve the original four-way native failure and correct its synthetic interruption to occur during result persistence. Require one retained intent, one synthetic request and no result after the exact database fault. Application behavior is unchanged; corrected database and combined browser acceptance remain pending.
+
 ## Unreleased — renewal service agreement binding
 
 Allow studio-entered one-time USD service terms to be linked to an exact pending domain-renewal request, with explicit privacy scope, acceptance deadline and retained replacement-offer history. Reuse existing client consent/end actions and prevent generic hosting forms from bypassing the renewal binding. Source-reviewed; native/browser acceptance pending. No automatic provider renewal, charge or invoice generation.

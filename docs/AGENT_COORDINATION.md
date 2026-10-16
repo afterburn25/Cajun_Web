@@ -1,5 +1,7 @@
 # Current CajunWebPro agent coordination
 
+Renewal agreement verification: initial d5909eac focused38870580825 failed all four environments after42 native +69/+69 pure checks because the interruption fixture fault was caught by the reader. The reviewed result-INSERT fixture correction is test-only; corrected native and combined browser acceptance remain pending. Preserve the original archives and root integration ownership.
+
 ## Domains lane: renewal agreements — 2026-10-16
 
 Domains owns `codex/twentyi-domain-renewal-agreements` from frozen c1743664, with dedicated binding/storage/schema/owner-view/tests and root-reviewed shared agreement/router hooks. Catalog independently reviews runtime and fixtures; root owns normal integration and combined acceptance. Root-approved patch636455de is applied only in this checkout. One focused native four-way run follows review/freeze; no new standalone full dispatch. Preserve root’s later directory/controls routes and concise handoff. Devin’s licensing lane is untouched.
