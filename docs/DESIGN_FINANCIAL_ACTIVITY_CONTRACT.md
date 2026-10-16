@@ -1,0 +1,21 @@
+# Financial agreement activity
+
+Devin owns this bounded HC-11/P-05/P-07 increment on `devin/non20i-design-payments`, continuing preserved `codex/design-financial-activity` from financial forms PR114 source `a9a5f40932e32ed2a4b5d000f75018e3c8d75be6`. Codex retains all 20i implementation. This contract precedes implementation; no new release, checkout or external message is activated.
+
+## Behavior
+
+Extend the existing workspace activity center and bell using the retained financial event records. Actual clients receive new or replacement offers and withdrawals for their own active projects. Staff with current `clients.manage` and `payments.manage` receive client accept/decline decisions and other staff members' offers/withdrawals. Do not notify someone of their own action. Existing invoice/payment activity continues to represent issued invoices and recorded receipts; do not duplicate it with another financial-issued notice.
+
+Use stable `financial:<event-id>` keys in the existing per-person read table. Display the project title, a fixed action description and recorded UTC time, without financial terms, feedback, prices, private notes, staff IDs or hashes in the feed/count response. Opening a notification goes to the exact financial history event and its real page, even after later offers or invoice issuance. It never silently selects a newer agreement, marks read or records consent. History retains its distinction between original and current terms.
+
+Current authorized identity, active client, project ownership and the financial event's original client binding apply to list, unread count, cursor, direct link and read/unread actions. Support sessions cannot impersonate client activity or alter another person's read state. Revoked financial permissions remove financial notices while other authorized workspace notices remain available. A permission or ownership change between projection and validation must refuse the stale financial result. Passive bell checks retain the original idle deadline.
+
+Validate the complete bounded financial history and saved head once per project represented in a page before trusting event metadata. Refuse corrupt or unavailable financial events rather than report a fabricated count or open unrelated history. Keep the existing 30-item pages, bounded mark-visible keys and 99+ unread presentation. Same-second financial events order by their retained sequence before opaque identity; pagination must not skip or repeat events. Validate all keys before changing any read state; audit failure rolls the entire read-state action back.
+
+No new business write, schema migration, automatic setup, email send, payment, scheduler or provider call is introduced. Source facts remain authoritative; an activity outage cannot stop or duplicate an offer, client decision or invoice. Existing installations retain personal reads and financial history through update/recovery/reapplication. Existing owner preparation remains required.
+
+## Acceptance and ownership
+
+Own only the financial activity projection/validator, narrow activity renderer/key/navigation hooks, relevant native/HTTP/recovery tests, installer inventory and continuity documentation. Preserve existing planning, progress, tickets, mail, invoice and delivery activity. No20i file changes.
+
+Native MariaDB checks must cover recipients and omitted fields, same-second pagination, old exact-event destinations, personal read independence, original offer replay, new arrivals after a captured visible page, audit rollback, foreign/inactive/expired clients, financial permission revocation, support denial, current ownership changes and corrupted event/head refusal. Verify that failed activity mutations cannot alter financial records. Actual authenticated HTTP/browser checks must demonstrate client/staff notifications, exact history navigation, CSRF, escaped project text, desktop/320px and existing public-admin/private-count isolation. Extend populated latest1.23 recovery with retained financial read states and replay. Run focused PHP8.2/8.4 and full current application/package/Apache acceptance, inspect actual screens, obtain independent review and perform exact-main release gates before publication. The full merchant checkout and broader roadmap remain incomplete.
