@@ -1,3 +1,11 @@
+## PHP native retry assertion correction — 2026-10-15
+
+The first actual native result on packaging-corrected `c7f0ab73` came from focused38847342463, PHP8.4/MySQL8.4 job116800759725. Artifact12024192616 (3,279 bytes; SHA256 `dd4ce9e2091c98522ae5a84290b3be4896a828b2928132f0d26a93bd6221ed51`) was downloaded and verified against exact source/run metadata, digest, size, safe case-unique ZIP paths and CRC. It contains25 passing native checks followed by the failed exact-sharing-retry assertion and its unexpected-failure wrapper; both87-case pure reports pass. This is not native acceptance.
+
+The assertion compared complete PHP arrays containing newly hydrated immutable binding objects with strict identity. The corrected assertion checks the persisted canonical document and its hash, binding hash, anchor proof, unchanged audit count and unchanged permission-row count. Runtime, authority, storage and installer hashes remain exactly those in `cd38a78a8ee39c99fea3e6f6abeadc2845a149b7`; only the fixture and continuity documentation change. The earlier hosting-order safeguard remains core77ca32d7. Original1c500/c7f0/cd38 runs are preserved, not retried or cancelled.
+
+Next: actual four-way native and exact full owner/client browser acceptance of this corrected test descendant. Previous syntax/pure/source review is not a substitute. Root retains integration/release ownership; no live provider action occurred.
+
 ## PHP hosting-history order guard — 2026-10-15
 
 Source review after the packaging-only `c7f0ab73bcd4826e11283e1cc1813c46af3b8b5b` checkpoint found an additional bounded authority gap. A later failed or unfinished hosting inventory intent could have its retained sequence moved below an earlier complete H1 while its common start audit remained intact; the profile count/detail checks would still pass, and an H1-backed PHP observation could appear current again. Root and domain review confirmed this source path; it is distinct from the earlier CRLF installer metadata failure.

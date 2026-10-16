@@ -1,3 +1,7 @@
+## Unreleased — PHP retry fixture comparison
+
+Compare persisted permission values and unchanged audit/row counts across an exact retry. Preserve the original native failure; runtime and installer remain unchanged.
+
 ## Unreleased — PHP hosting-history order safeguard
 
 Refuse disagreement between package inventory sequence and its exact retained start-audit order so later failed/unfinished intent damage cannot revive an earlier PHP observation. Add focused restoration/no-request regressions; actual corrected native/browser acceptance remains pending.
