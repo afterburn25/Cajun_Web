@@ -1,5 +1,9 @@
 # Complete 20i requirements and evidence
 
+## Current registration-period integration — 2026-10-15
+
+Verified ee3 registration options join the root queue through a normal merge with9112. Original4f now has downloaded full acceptance; the new combined source needs fresh execution. Root preserves a test-only mobile capture correction, all original failures and exact packages. Domains retains date-reader evidence, VPS retains cloud-provider evidence and implements a separate PHP-version observation lane from9112; Devin owns licensing. [Current scope, sources and next actions](TWENTYI_REGISTRATION_INTEGRATION.md). Published1.24.0 remains unchanged; full20i is unfinished.
+
 ## Current combined queue — 2026-10-15
 
 Normal forwarding merge4b33d606 is followed by reviewed scheduler2b9 in [PR151](https://github.com/afterburn25/Cajun_Web/pull/151). Installer refresh and exact parent-union checks pass; independent24-check shared-code review is clear; scheduler browser runs last. Fresh combined acceptance remains required. History1759 browser/native artifacts are downloaded and verified; recovery passed and Apache is active. [Current handoff](../SESSION_HANDOFF.md) is authoritative over earlier checkpoints.
@@ -73,3 +77,4 @@ Owner and real client can offer/confirm a domain with exact accepted service agr
 ## Order-to-service dependency — implementing
 
 Parent5728c2df, PR138: add one native order/service association with exact commercial and provider-request context, atomic audit/replay and missing-history guards; preserve existing hosting/provider engines. Parent actual browser artifact and four order screenshots are now inspected. New runtime validation is pending Linux CI after the local Windows key-permission refusal; no protection was relaxed. Mapping does not verify provider entitlement or authorize dispatch. [Exact scope, evidence, limitations and continuation](TWENTYI_ORDER_SERVICE_LINKS.md).
+Registration-period increment,2026-10-15: new full-reference SHA25634e713c3 defines GET/domain-period map exactly. Isolated17593061 descendant adds typed read, owner preparation/refresh, immutable evidence and offered-TLD client projection. Local62 pure checks per mode and independent source review are clear; native/browser/package acceptance is pending. This establishes neither prices nor renewal eligibility, domain availability or purchase authority. [Provenance and bounded scope](TWENTYI_REGISTRATION_PERIODS.md).

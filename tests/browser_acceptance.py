@@ -226,6 +226,8 @@ try:
         service_plan_browser(globals(),browser)
         from recurring_billing_cases import run_browser as recurring_browser
         recurring_browser(globals(),browser)
+        from provider_registration_periods_cases import run_browser as registration_periods_browser
+        registration_periods_browser(globals(),browser)
         from provider_schedule_cases import run_browser as schedule_browser
         schedule_browser(globals(),browser)
         browser.close()

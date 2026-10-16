@@ -2,7 +2,13 @@
 
 Recorded 2026-10-15. Exact source `4f683f883d0ce809de64be5c97f78c73c0b89d39` is the normal integration of forwarding `1992e376`, hosting history `17593061`, cloud recovery `a9637f2b` and scheduled inventory `2b9b0dc0` on [PR151](https://github.com/afterburn25/Cajun_Web/pull/151). CI merge `c92340eccc7a793bf3d38c4bb1bc7e09e86e3fab` has the identical Git tree. Later continuity commits change Markdown only. Published 1.24.0 remains immutable; this is not release or live-provider acceptance.
 
-## Actual combined browser checkpoint
+## Final full acceptance — 2026-10-15
+
+Original full38839969235 is terminal SUCCESS, including recovery and Apache. Downloaded final artifact12021724935 is140,567,677 bytes with SHA256 `597ed2b0fb9f67abd829ec88f6aedc4fd14d209b61c122bdbf08bd3f6f01ea67`. Exact source/run/tree identity,419 safe unique ZIP members/CRC,114 named-result reports,11 clean diagnostics,2,065 HTTP executions,289 recovery and2,063 Apache checks verify. All186 screenshot bytes equal the earlier checkpoint; the scoped visual reviews below still apply.
+
+All11 distribution checksums, exact Git/package members and decoded UPDATE payload verify. Windows FULL/COMPLETE member bytes agree; UPDATE differs only by equivalent-tree CI source metadata. Local proof: `work/20i-queue4f-final-verification.json`. This completes acceptance of4f, not exact-main release acceptance or any later merge. [Next registration-period integration](TWENTYI_REGISTRATION_INTEGRATION.md). Earlier pending status below records the prior checkpoints.
+
+## Earlier combined browser checkpoint
 
 [Original full run38839969235](https://github.com/afterburn25/Cajun_Web/actions/runs/38839969235), job116777563713, passed package, native, HTTP/Chromium and unprivileged recovery stages and entered Apache checks with no failed step. Apache and final full-artifact verification remain pending at this checkpoint; current later-stage activity alone is never used to infer an earlier stage passed.
 

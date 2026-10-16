@@ -144,6 +144,7 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <h3>Additional services still to be connected</h3><ul><li>Automatic hosting plan discovery and account balance</li><li>Hosting plan changes and deletion</li><li>Domain registration, renewals and transfers</li><li>VPS ordering and power controls</li><li>Backup restoration and SSH access</li></ul></section>
 
 <?php require CWP_CODE_ROOT.'/admin/views/provider_domain_search.php'; ?>
+<?php require CWP_CODE_ROOT.'/admin/views/provider_registration_periods.php'; ?>
 
 <?php require CWP_CODE_ROOT.'/admin/views/provider_mailboxes.php'; ?>
 

@@ -1,3 +1,7 @@
+## Unreleased — observed registration options
+
+Normally integrate owner-triggered registration-year observations and current-policy client display with the accepted history/forwarding/scheduler queue. Preserve exact read authority, sequence-first failure behavior, current offered suffixes, audit witnesses and scheduler ordering. Correct only failure-mobile screenshot timing and add complete-page context. Record verified incoming native/browser/package evidence and completed parent4f full acceptance; new combined acceptance and release remain pending.
+
 ## Unreleased - combined browser verification and reader corrections
 
 Follow-up records corrected cloud-provider four-way native acceptance and the independent64-check incoming shared-boundary review. Runtime remains unchanged.
@@ -15,6 +19,10 @@ Normally integrate reviewed scheduled hosting reads with forwarding requests, cl
 ## Unreleased integration queue — forwarding and owner API reference
 
 Normally integrate client single-address forwarding requests, cancellation and owner review/decline with client hosting history and the cloud recovery correction. Preserve separate forwarding permission and local-review-only behavior; provider forwarding dispatch/readback remains unfinished. Retain/index the new complete owner API reference for the parallel registration-period, cloud-provider and renewal-date readers. Document verified a963 full/package evidence and ready scheduler checkpoint. Combined acceptance and release remain pending.
+
+## Unreleased — registration-period fixture ordering
+
+Correct the native expected client rows to match the existing sorted offered-extension policy, including exact saved years. Preserve all four failed original reports and exact Windows package evidence. Runtime and generated installer files are unchanged; fresh corrected native/browser evidence is required.
 
 ## Unreleased integration queue — client hosting history
 
@@ -1120,3 +1128,6 @@ Parent0ea6e3a8, commit `Stabilize cloud confirmation future-time fixture`. Focus
 Parentc3b2c022, commit `Record cloud confirmation native and combined browser evidence`. Exact focused [38828579877](https://github.com/afterburn25/Cajun_Web/actions/runs/38828579877) completed successfully on c3b2c022336fe55a93e685220352a6b5e8230782. All four independently downloaded artifacts match their published SHA256 and pass ZIP CRC, with45 unique creation and74 unique confirmation named outcomes each. This verifies the corrected future-time refusal, sequence-first authority, original-context integrity, exact link/audit pairing, rollback, concurrent confirmation and later-reapproval historical projection on PHP8.2/8.4 with MariaDB10.11/MySQL8.4. The original fourth-combination timing failure remains retained separately; shipping is byte-identical to0ea6e3a8. Full38827979412 remains in progress, last observed after package success during native integration; no new confirmation browser/recovery/Apache acceptance or release is claimed.
 
 Independently verified root2239 browser checkpoint12015677899 from38826150967: SHA256 `630b6400d8af6bb3725f6d20207f5b8880fad8bf3eb097738ab5c4d62b3f715b`,259 ZIP members with clear CRC,1878 passing named HTTP outcomes including18 cloud website-creation cases. Inspected actual owner/client desktop and320px screenshots: pending status and accurate capability wording are visible, controls stay contained; owner mobile nested fields are narrow but have no overlap. PHP diagnostics and unexpected browser errors are empty. This is original creation UI evidence, separate from the new confirmation UI. Root owns the normal integration and release. Next: inspect original0ea full browser/checkpoint/screenshots and final recovery/Apache packages, preserve prior runs, and verify combined descendant acceptance. No live provider calls, payment, mail, SSH or deployment.
+## Unreleased - observed domain registration periods
+
+Add explicit owner refresh of documented registration-year options and saved observation/history displays. Clients see only currently offered extensions under their current enabled search policy. Preserve complete-empty, failed, pending and changed-setting states; retain independent history witnesses. No renewal eligibility, prices, reservations or purchasing are inferred. Native, browser and package acceptance remain pending.

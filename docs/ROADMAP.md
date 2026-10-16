@@ -1,3 +1,7 @@
+## Current registration-period integration — 2026-10-15
+
+Verified ee3 registration options join the root queue through a normal merge with9112. Original4f now has downloaded full acceptance; the new combined source needs fresh execution. Root preserves a test-only mobile capture correction, all original failures and exact packages. Domains retains date-reader evidence, VPS retains cloud-provider evidence and implements a separate PHP-version observation lane from9112; Devin owns licensing. [Current scope, sources and next actions](TWENTYI_REGISTRATION_INTEGRATION.md). Published1.24.0 remains unchanged; full20i is unfinished.
+
 ## Current browser checkpoint and reader corrections - 2026-10-15
 
 Combined4f/PR151 passes packaged HTTP/Chromium with downloaded2,065 passing executions (2,054 distinct labels),75 reports and11 clean diagnostics. Actual forwarding/history/scheduler views are inspected within recorded limits; full Apache/final-artifact acceptance remains pending. Domains owns corrected6ba dates, catalog owns corrected ee3 registration periods (all four native archives pass80+62+62), and VPS owns corrected6eee cloud identifiers. Root integrates only accepted sources and keeps scheduler browser last. Latest main794 fixes the licensing parser in source; migration/master-delivery findings remain separate under Devin. [Exact evidence and handles](TWENTYI_COMBINED_4F_EVIDENCE.md); [authoritative handoff](../SESSION_HANDOFF.md). Earlier entries retain their historical scope.
@@ -747,3 +751,5 @@ Root normally integrates historybff on codex/twentyi-next-integration from a963,
 ### Scheduled hosting inventory checkpoint - 2026-10-15
 
 HC-13/owner requirement 7: isolated 82302571 descendant adds a real bounded GET/package cron path, owner-bound approval, original credential protection, immutable intent/outcome evidence, concurrent-worker exclusion, backoff and reviewed recovery. Local source/pure verification passes; native/browser and combined release acceptance remain pending. Other inventory schedules and commercial automation remain unfinished. [Implementation/evidence](TWENTYI_SCHEDULED_REFRESH.md).
+
+Registration-period discovery is implementing on isolated`codex/twentyi-registration-periods`: precise new owner reference supports a TLD-to-integer-registration-year map. Explicit owner read, immutable observations and current-policy client planning projection are present with62 pure cases per mode; native/browser/package verification remains required. Pricing, renewal-year eligibility and purchase/fulfillment remain separate incomplete work. [Scope and evidence](TWENTYI_REGISTRATION_PERIODS.md).
