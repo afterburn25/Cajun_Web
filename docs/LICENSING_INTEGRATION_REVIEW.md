@@ -1,3 +1,9 @@
+## Latest main delta — 2026-10-16 UTC
+
+Newer remote main `94c879ebab28fe94e71690b870f4104e002d3515` was observed after the2796 review and is under read-only delta/merge-preview review; do not treat the prior findings as a completed review of94.
+
+Exact main `2796fa48aeba6dd02731945d45fd613c2c5759e9` changes one handoff line afterc0e087027. Its entire site tree remains `ea6e06f4251ba5534e6fb9e65d48a746dd76021a`; licensing migration/service/bundle/download/workspace bytes are unchanged. The findings below remain open. Root427 already retains `!support_current()`, `license_storage_ready()` and `recurring_billing_invoice_guard()` in the shared workspace; preserve them during eventual integration. Read-only delta proof: `work/catalog-agent-main279-licensing-delta-review.json`. No licensing source was modified/imported or database/HTTP acceptance repeated.
+
 ## Current main full-key display — 2026-10-16 UTC
 
 Read-only review of exact main `c0e0870278eaf158499a501954164f9f33ff052a` (runtime f55db177) confirms both required corrections below remain open. The populated migration and bundle authorization are unchanged from1aa421e5. The new [workspace display](https://github.com/afterburn25/Cajun_Web/blob/c0e0870278eaf158499a501954164f9f33ff052a/site/portal/views/workspace.php#L9) selects every active customer-associated license and now prints the complete key. Because master creation requires a customer and this query does not exclude masters, an active customer-associated master key is exposed directly even without a bundle. The same source also lacks the support-session exclusion; preserve the20i branch's existing `!support_current()` and `license_storage_ready()` guards during integration.

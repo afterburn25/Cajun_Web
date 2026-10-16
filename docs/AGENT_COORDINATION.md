@@ -1,16 +1,16 @@
 # Current CajunWebPro agent coordination
 
-Updated 2026-10-15. The owner authorizes Codex and three parallel agents for complete20i P0, separate branches, sequential integration and verified incremental GitHub releases. Devin owns software-product licensing for other products. These assignments are ownership records, not proof of an active Devin session.
+Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for complete20i P0, separate branches, sequential integration and verified incremental GitHub releases. Devin owns software-product licensing for other products. These assignments are ownership records, not proof of an active Devin session.
 
 | Owner | Current branch/checkpoint | Scope and next evidence |
 |---|---|---|
-| Root | `codex/twentyi-next-integration`, PR151; frozen combined427, docs-only checkpoint | Exact Windows packages verified; full38853750274 passes packaging/native active; then review/exact-main/release gates. Original25e final failure fully verified. |
-| Domains | Frozen a132; new isolated expiry application branch | All four a132 focused98+87+87 verified. Own original f725 full evidence (known period browser failure); implement expiry from pureb3c1cc31 with separate readiness/authority/dedicated test owner. Shared glue root-reviewed. |
-| VPS | Frozen `codex/twentyi-package-php-version`, PR155, cfc6 | All four focused99 native executions/98 labels+99+99 verified. Own original full38850899573 (2093 HTTP passes/six PHP views verified; recovery active) and failures. Combined427 PHP/cloud all8 artifacts verified. New isolated pure cloud request contract141/141 is source-reviewed; no response parser/dispatch. |
-| Catalog | Pure expiry b3c1cc31; independent integration review; next isolated DNS contract | Both pure PHP versions139+139 verified; original25e final12025544003 verified while preserving failure. Actual PHP shared/automatic glue and owner fixture independently clear. Own combined427 period/scheduler actual artifacts; new isolated pure DNS proposals stay outside current candidate. |
-| Devin | Licensing lane; latest inspected mainc0e087027 | Own software-product licenses; populated migration/internal-master delivery/full-key display findings remain open. Preserve one-page keyless CajunWebPro installer. |
+| Root | PR151, frozen427; documentation descendants only | All38 focused workflows and20 downloaded reader matrices pass; exact Windows packages verified. Full38853750274 runs browser after native success. Final/main/release gates pending. |
+| Domains | Expiry f42ce633, docs9e33d600 | Four-way111 expiry/99 date/99 PHP executions/102 scheduler verified; packaged expiry browser pending. Original f725 final known-failure evidence complete. Now prepares read-only main/candidate ancestry and merge-resolution map. |
+| VPS | PHPcfc6, docs8b257538; cloud36c2/docs9f46 | Original PHP full/final verified success. Non-owned root427 integration review clear. Pure cloud141 per mode/version verified. Separate ForceSSL read contract/fixtures next; no shared wiring or live call. |
+| Catalog | DNS96fba852, docs23cba4be; document-roots branch from427 | Pure DNS158 per mode/version verified. Root427 period/scheduler archives and expiry fixture review complete. Document-root pure reader follows the owner map response; no application admission yet. |
+| Devin | Software-product licensing; reviewed2796, newer94c879 under review | Main runtime unchanged afterc0e087. Populated migration/internal-master delivery/full-key display findings remain open. Preserve keyless CajunWebPro installer and root portal/invoice guards. |
 
-Root/catalog-reviewed domain recovery33fa34b6/4bcf1e11 now has all-four exact native execution. Catalog completed all eight combined period/scheduler artifacts and parent210 visual review; domains completed all four combined date artifacts and root all four cloud artifacts. The later25e browser failure is a separate combined fixture budget problem, not evidence that those focused matrices failed. [Current evidence and known limitations](TWENTYI_DISCOVERY_INTEGRATION.md).
+Original25e and f725 final browser failures remain recorded separately from passing recovery/Apache/package evidence; PHPcfc6 is now verified full success. All original runs and immutable releases are retained. The [current handoff](../SESSION_HANDOFF.md) carries exact handles, proofs and next actions. Root427 stays fixed for release testing while next increments develop separately.
 
 ## Integration rules
 

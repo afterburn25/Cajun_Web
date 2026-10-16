@@ -1,3 +1,7 @@
+## Unreleased — frozen candidate verification and parallel handoff
+
+Record all20 exact combined reader matrix artifacts, successful combined packaging/native checks, verified original PHP full acceptance and preserved domain full failure evidence. Record independent integration review, separately native-tested expiry and pure cloud/DNS components; document-root/ForceSSL work remains separate. Update issue2 ownership/status and current-main licensing findings. Documentation only;427 shipping stays fixed,1.25.0 remains unreleased, and no live provider action occurs.
+
 ## Unreleased — registration-period browser owner isolation
 
 Correct the combined browser fixture's exhausted shared-owner read budget by creating and activating a dedicated synthetic owner through existing admin forms. Preserve every original account, intent, audit, epoch, production limit and cooldown; retain response/counter diagnostics and exact history checks. Application source and installer are unchanged; actual combined acceptance remains required.

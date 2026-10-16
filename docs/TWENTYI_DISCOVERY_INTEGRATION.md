@@ -1,3 +1,11 @@
+# Current frozen candidate — 2026-10-16 UTC
+
+Combined427/CI d106 have identical source trees; documentation descendants do not change its shipping source. All38 focused workflows succeed and all20 date/PHP/cloud/period/scheduler archives are downloaded and verified. Full38853750274 passes packaging/native integration and runs HTTP/Chromium as of05:31UTC. Exact Windows FULL5612/COMPLETE2760/UPDATE2747 is verified. Root/catalog shared/fixture reviews and independent VPS non-owned integration review are clear. Final browser/recovery/Apache, main reconciliation and exact-main release acceptance remain required.
+
+Original PHPcfc6 full38850899573/final12026887934 is verified SUCCESS:117 reports,2093 HTTP/289 recovery/2107 Apache,11 checksums/exact packages and192 unchanged images. Original f725 full38849384530/final12027326438 is verified FAILURE:122 reports,only the known period empty-response browser failure,289 recovery/2167 Apache,exact packages and319 unchanged checkpoint files. These originals are complete; do not rerun them or substitute parent acceptance for427.
+
+Separate expiry f42/docs9e33 passes four focused environments but still needs packaged browser/screens. Pure cloud36c2/docs9f46 and DNS96f/docs23cba pass narrow matrices only. Document-root and ForceSSL pure readers remain outside frozen427. [Current actionable handoff](../SESSION_HANDOFF.md). Earlier checkpoints below retain their original time/source scope.
+
 # Combined registration options, cloud identifiers and renewal dates
 
 ## Actual combined browser failure and focused repairs — 2026-10-15
