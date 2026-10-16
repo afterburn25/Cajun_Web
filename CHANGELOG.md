@@ -1,3 +1,7 @@
+## Documentation - Devin non20i assignment discoverable on main
+
+Add a root start-here guide, complete owner-approved assignment and existing licensing source/review links. Supersede the earlier unrelated-work pause for Devin while Codex retains20i and final integration. This changes no application, schema, installer, version, release or deployment.
+
 # Changelog
 
 ## Synchronize release entry points after review — 2026-10-15

@@ -1,3 +1,7 @@
+## Current owner allocation - 2026-10-16
+
+**Devin: continue all remaining non-20i site work, including licensing. Codex and its three agents: continue complete20i.** This supersedes older unrelated-work pause statements for Devin. [Start here](../DEVIN_START_HERE.md) gives the full assignment, direct licensing code locations, shared-file boundaries and instructions that work without the GitHub API. Licensing is already on main; inspect and repair its documented gaps rather than recreating it. Work on separate feature branches; Codex coordinates final integration/releases. Assignment [#157](https://github.com/afterburn25/Cajun_Web/issues/157) is posted; external-session acknowledgement is not assumed.
+
 # Approved roadmap and acceptance criteria
 
 Current20i P0 checkpoint:1.24 inventory/ownership/label-operation recovery is published and download-verified. Full platform remains unfinished. [Current requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) and [release evidence](TEST_REPORT_1.24.0.md) supersede older status notes. Cloud1.25 and necessary commercial eligibility continue.

@@ -1,3 +1,7 @@
+## Current owner allocation - 2026-10-16
+
+**Devin: continue all remaining non-20i site work, including licensing. Codex and its three agents: continue complete20i.** This supersedes older unrelated-work pause statements for Devin. [Start here](../DEVIN_START_HERE.md) gives the full assignment, direct licensing code locations, shared-file boundaries and instructions that work without the GitHub API. Licensing is already on main; inspect and repair its documented gaps rather than recreating it. Work on separate feature branches; Codex coordinates final integration/releases. Assignment [#157](https://github.com/afterburn25/Cajun_Web/issues/157) is posted; external-session acknowledgement is not assumed.
+
 # Agent coordination — 20i P0
 
 Codex owns the complete 20i P0 integration. [Version1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly download-verified at immutable source7190b582. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38711850732) passes9,134 named executions and30 gates; all16 assets, tag, manifests and ZIP contents match accepted source. Previous1.23 assets remain unchanged. [Current status](../PROJECT_STATUS.md), [release evidence](TEST_REPORT_1.24.0.md) and [requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) define current scope. Complete20i remains unfinished; unrelated work stays paused. No live deployment is claimed.

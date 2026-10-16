@@ -1,0 +1,37 @@
+Authoritative GitHub assignment: [issue #157](https://github.com/afterburn25/Cajun_Web/issues/157).
+
+# Devin: continue the remaining non-20i CajunWebPro roadmap
+
+Owner instruction, 2026-10-16: "can you let deven continue building the rest of the site for now while you work on 20i". This expands Devin's existing software-product licensing assignment and supersedes the earlier pause on unrelated site work **for Devin's lane**. Codex and its three agents retain the complete 20i integration, its provider-facing support/SSH, combined integration and incremental releases. This issue is the handoff; an active Devin session or acknowledgement is not assumed.
+
+## Start from actual current source
+
+Fetch current `main`, inspect the roadmap, handoff, coordination, open PRs and source before choosing the next increment. Main was inspected at `79d9e8e90d9fd3e8b3c34140814aa90272a2f82b`; fetch again rather than treating that as permanently current. Published [1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0), source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`, remains the last verified release. Older roadmap entries contain historical statuses; verify implementation and evidence instead of rebuilding released functionality.
+
+Read `AGENTS.md`, `PROJECT_STATUS.md`, `SESSION_HANDOFF.md`, `docs/ROADMAP.md`, `docs/AGENT_COORDINATION.md`, `docs/PROJECT_DIRECTION.md`, `docs/ADMIN_MAIL_ROADMAP.md`, `docs/CLIENT_PORTAL_ROADMAP.md`, `docs/APPROVED_CLIENT_PORTAL_DESIGN.md` and the relevant feature guides. Current 20i status is tracked in [issue #2](https://github.com/afterburn25/Cajun_Web/issues/2). Codex's preserved 20i candidate is `codex/twentyi-stackcp-integration` at `9538ef1c`; its next reviewed descendant is being assembled on `codex/twentyi-registration-drafts-integration`. Do not change either branch.
+
+## Your scope and practical order
+
+1. Continue software-product licensing: generation, installation/activation and customer/admin management, with product ownership and retained activation history. First resolve the four concrete current-main findings in [the licensing integration review](https://github.com/afterburn25/Cajun_Web/blob/9538ef1c87884167de8e0c1d84d1f9c28203423c/docs/LICENSING_INTEGRATION_REVIEW.md): populated pre-master migration/adoption, internal-master key/bundle/download exposure, legacy null-invoice replay, and unknown/future schema markers. Do not add a licensing key to CajunWebPro's own installer.
+2. Complete ready non-20i client operations: support tickets/private staff notes, web-design project timelines and milestones, versioned proposals/approvals, protected previews/uploads, downloadable website ZIPs and handover, and notifications that open the exact authorized item. Reuse and review preserved PRs #102-#108, #110/#112/#113 and #124 as applicable. Do not equate their historical passing tests with current combined acceptance.
+3. Finish admin webmail and templates: review/resume preserved Reply/Forward PR #125, then the remaining multi-account inbox/message/compose/template/notification workflows in the mail roadmap. Preserve current mailbox grants, encrypted credentials, message isolation and exact-message bell links in admin and the admin-only public header. Reuse the maintained mail dependencies and existing send protections.
+4. Complete web-design commercial workflows: customer payment forms/links, proposals/deposits/installments, invoice history, maintenance plans and their notifications, using current consent and verified-payment records. Inspect preserved #114/#116 and recurring-billing #117-#123 before choosing changes. Codex has already integrated necessary commercial dependencies for 20i on its candidate; propose shared billing changes as a minimal reviewed patch instead of importing stale whole-file versions. Test with synthetic/sandbox data; do not trigger live charges or customer messages.
+5. Continue remaining public-site, lead-management and resilience work: portfolio/case studies, approved visual polish/accessibility, estimator and service-content gaps, factual comparisons, consultation/review workflows, lead pipeline, staff administration, revisions, backups/restore drills and updater recovery. Work from the documented requirements and actual gaps; no invented prices, reviews, metrics or service claims.
+
+Proceed through small end-to-end increments rather than stopping after foundations or documents. These priorities are an ordering aid, not a restriction to the first item. Where external account configuration is missing, complete the code and synthetic acceptance, document the precise remaining external requirement, and continue another independent item.
+
+## Parallel-work boundaries
+
+- Use your own `devin/non20i-*` feature branches and, if useful, a `devin/site-completion` integration branch. Preserve all existing licensing/feature history through normal merges. Do not rewrite Codex branches or force-push other workers' work.
+- Codex owns 20i adapters, provider credentials/inventory/scheduler, hosting/domain/VPS/cloud operations, resource assignment/observation history, registration/renewal dispatch, StackCP membership/login and provider/VPS SSH. Leave those modules and their fixtures to Codex.
+- Shared authentication, permissions, schemas, billing, portal navigation/layout, installer/build and CI contracts need explicit small diffs and coordination in this issue before integration. Prepare the complete reviewable patch on your branch; continue independent work while Codex integrates shared seams sequentially. Preserve existing provider hooks and exact revision/consent/payment boundaries.
+- Preserve the approved navy/gold brand, original logo/favicon and approved portal design. Shared portal shell changes must coordinate with Codex; non-20i panels can be built in owned components. Concept content is illustrative, not customer data or working service status.
+- Keep PHP/MySQL shared-host deployment, organized flat packages and the one-page keyless installer. No required Node service, daemon, root/SSH installation step, wrapper-folder regression or destructive reset of installed/private data.
+
+## Delivery and acceptance
+
+Open a bounded PR for each ready increment and report its exact head, affected/shared files, native/HTTP/browser tests, actual desktop/mobile screenshots where UI changes, known failures and next action. Recheck current authorization, cross-client/staff isolation, stale captured requests, meaningful rollback/recovery and existing data preservation. Regenerate and verify canonical mirrors and installer hashes whenever shipping files change. Keep failed original CI evidence; fix source and test the new commit rather than hiding failures or rerunning unchanged source.
+
+Update status/handoff/changelog/roadmap and append a concise session log with exact source/test evidence so both agents can continue without repeating discovery. Codex retains final independent review, sequential main integration, exact-source package acceptance and versioned releases with retained old assets. Do not deploy live, move published tags or replace old downloads as part of this handoff.
+
+First response requested: acknowledge the expanded non-20i lane, identify your active licensing/feature branch and SHA, list the next bounded increment and shared files you need, then continue implementation. No 20i work is transferred to Devin by this assignment.

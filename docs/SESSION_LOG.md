@@ -1629,3 +1629,9 @@ Second hardening round on `main` through `ba650ece`; each code commit carries a 
 - **Bounded audit detail** (`e6192a08`): `license_audit` passed `detail` through unbounded against a VARCHAR(400) column — an overlong audit string would have thrown inside `license_transaction()` and rolled back the mutation it was only recording. Now truncated to the column size. Acceptance `38881661033` green.
 
 Still not live-verified: production `license_core_dir`, real purchase→bundle→install→validation cycle.
+
+## 2026-10-16 - make Devin's assignment available without the GitHub API
+
+The owner asked Devin to continue the remaining site while Codex handles20i, then reported Devin could not find the assignment under API rate limiting. Starting actual main79d9e8e90d9fd3e8b3c34140814aa90272a2f82b, prepare a documentation-only fast-forward with DEVIN_START_HERE, full issue157 assignment, current licensing review and prominent allocation links in the standard entry points. Existing licensing code is on main under app/licenses, API handlers, schema/migration and native/functional tests; a missing branch name does not establish missing code. Preserve all existing handoff/history and provide fetch/show commands that do not depend on GitHub API access. The current20i candidate9779879b stays separate and unchanged.
+
+Validation: documentation/local-link checks and exact non-Markdown tree comparison against main79d9 precede publication; no application acceptance is inferred from documentation checks. Record the enclosing commit as Publish Devin non20i assignment on main with direct source links. Scope changes no runtime, installer, version, live deployment, provider request, charge or customer message. Next: Devin can fetch main and implement the existing non20i assignment on an owned branch; Codex continues original20i tests and integration. Acknowledgement is pending, not a blocker to the owner's already-authorized work.
