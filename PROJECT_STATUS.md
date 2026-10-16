@@ -1,6 +1,6 @@
 # CajunWebPro current status
 
-Updated 2026-10-15, with execution status checked 2026-10-16 04:15 UTC. **1.24.0 is published; 1.25.0 is unreleased. Full 20i integration and the broader roadmap are unfinished.**
+Updated 2026-10-15, with evidence checked 2026-10-16 04:31 UTC. **1.24.0 is published; 1.25.0 is unreleased. Full 20i integration and the broader roadmap are unfinished.**
 
 ## Product and ownership
 
@@ -18,7 +18,7 @@ Codex owns complete20i P0 and integration/releases. Devin owns software-product 
 
 | Source | Verified evidence | Remaining scope |
 |---|---|---|
-| Combined25e | Exact Windows packages: FULL5593/COMPLETE2749/UPDATE2736;11 checksums, exact source/members/directories and decoded update. All16 actual date/period/cloud/scheduler archives pass four PHP/database combinations. | Original full[38846792746](https://github.com/afterburn25/Cajun_Web/actions/runs/38846792746) passes packaging and native integration; HTTP/Chromium is active. Recovery, Apache, final packages and actual combined views remain pending. |
+| Combined25e | Exact Windows packages: FULL5593/COMPLETE2749/UPDATE2736;11 checksums and exact source/decoded update. All16 focused archives pass. Actual browser checkpoint12025480056 verifies2130 passing assertions then one failed empty-period assertion;49 date and27 cloud checks pass, with10 scoped domain/cloud views inspected. | Original full[38846792746](https://github.com/afterburn25/Cajun_Web/actions/runs/38846792746) continues recovery after the browser failure. Combined fixture exhausts the existing20/hour owner limit; catalog is isolating its period owner without changing production limits/history. Later browser cases were not reached. |
 | Parent210 | Terminal full[38844717543](https://github.com/afterburn25/Cajun_Web/actions/runs/38844717543); final12024561896 verifies117 reports,12 clean diagnostics,2101 HTTP/289 recovery/2095 Apache checks,192 unchanged images and exact Git/Windows packages. | Parent evidence only. The narrow failure element capture retains a framing limitation; original full-page period section is clear. |
 | Incoming date6ba / cloud6eee | Both original full runs are terminal success with final archives, native matrices, source/packages and actual scoped images verified. | Their acceptance does not certify later source or newly identified recovery invariants. |
 
@@ -26,14 +26,14 @@ Per combined matrix combination: dates60 native+79 default+79 minimal, periods80
 
 ## Corrections and separate development
 
-- **Domain current-observation recovery:** lower sequence values on retained later failed/unfinished registrar/date intents could revive an older current value. All four actual PHP/database red archives reproduce all four paths:54 named checks and14 expected failures per combination, with exact sequence restoration passing. Reviewed correction `f725b1c386164c533a8edb1556f7f5545309bdc6` is separate; native38849382058/full38849384530 are pending. Its fence protects the latest selected intent, not every older historical ordering.
-- **PHP-version observation:** PR155 remains separate. Original installer-line-ending and test object-identity failures are preserved. Reviewed order fence and test correction are at e6ce001b; a subsequent dummy-credential echo reproduction requires a bounded response guard before integration. VPS owns corrected acceptance.
-- **Registry expiry:** catalog is building only a pure typed contract/tests on `codex/twentyi-domain-expiry-contract`. No application route, shared transport, schema, installer or release integration yet. The strict timestamp subset is local defensive policy, not a verified complete provider grammar.
+- **Domain current-observation recovery:** all four red archives reproduce the earlier failed/unfinished registrar/date revival paths. Corrected `f725b1c386164c533a8edb1556f7f5545309bdc6` now passes90 native+79+79 pure cases per combination; original full38849384530 continues. The fence protects latest selected authority. A separate descendant adds credential-echo protection after an offline accepted date-shaped dummy-key reproduction; root reviewed guard8ec730e9 and corrected existing-profile fixture07153990. Installer parity and focused native execution remain pending.
+- **PHP-version observation:** PR155 remains separate at `cfc6ecd034ad93cb317fe156ed0621fa50436c10`. It retains the order fence and credential-echo guard from c1b9 and fixes one test helper that tried to nest a transaction. Root/catalog reviewed that one-expression fixture change; native38850899544/full38850899573 are pending. All original packaging, retry-identity and nesting failures remain preserved.
+- **Registry expiry:** pure contract `b1e7609e854cebe580673b61e1299fedc27437ec` is frozen separately; narrow PHP8.2/8.4 run38850341309 is pending. No application route, shared transport, schema, installer or release integration. Its strict timestamp subset is local defensive policy, not a verified complete provider grammar.
 - **Devin licensing:** latest inspected main `1aa421e57d36d6c47d3623f7dadad2967a907d1b` adds reactivation and retains the earlier parser fix. Populated pre-master migration and customer delivery of internal master keys remain open source-review findings. These newer main changes are preserved outside the20i queue; [licensing review](docs/LICENSING_INTEGRATION_REVIEW.md).
 
 ## Remaining delivery
 
-Complete the corrected domain/PHP branches, inspect actual combined browser evidence, normally integrate reviewed changes, then perform exact-main acceptance and release asset verification. Preserve existing versions and original run handles. Major20i work still includes complete commerce/provisioning/lifecycle, DNS, databases, runtime/security controls, backups/logs, VPS/cloud management, support handoff and interactive SSH; use the requirement table rather than a guessed completion percentage.
+Complete focused domain/PHP correction evidence and the period fixture review, normally integrate those changes, then run one new exact combined full acceptance before exact-main and release asset verification. Existing full runs continue; do not duplicate a full run for each small repair. Major20i work still includes complete commerce/provisioning/lifecycle, DNS, databases, runtime/security controls, backups/logs, VPS/cloud management, support handoff and interactive SSH; use the requirement table rather than a guessed completion percentage.
 
 No live provider request, charge, customer mail, interactive SSH or deployment occurs through routine development/testing. Preserve operation-specific production activation gates. [Actionable handoff](SESSION_HANDOFF.md).
 

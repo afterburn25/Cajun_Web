@@ -1,3 +1,7 @@
+## Unreleased — combined browser evidence and bounded corrections
+
+Record the actual25e browser failure at the period empty-response fixture after2130 passing checks, verified domain/cloud views and all-four f725 recovery matrices. Preserve original full runs and failed reports. Coordinate the separate period-owner fixture, domain credential-echo guard and PHP transaction-fixture correction before one new combined acceptance. Documentation only; published1.24.0 remains unchanged and1.25.0 is unreleased.
+
 ## Unreleased — current handoff consolidation
 
 Replace repeated historical status/handoff/ownership blocks with current sources, exact evidence, open findings and next actions. Preserve prior text in immutable75d5c60a and local hash-recorded copies. Original25e full now passes native integration and runs HTTP/Chromium; no shipping or release change.
