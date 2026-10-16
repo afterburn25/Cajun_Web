@@ -27,7 +27,8 @@ require_once CWP_CODE_ROOT.'/app/providers/checks.php';
 require_once CWP_CODE_ROOT.'/database/migrations/provider_inventory_migrate.php';
 foreach(['ProviderCredential','TransportRequest','TransportResponse','TransportException','HttpTransport'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/provider/'.$class.'.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/twentyi/FixedHttpTransport.php';
-foreach(['InventoryRead','InventoryPackage','InventoryCloudServer','InventoryDomain','InventorySnapshot','InventoryProjector'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory/'.$class.'.php';
+foreach(['InventoryRead','InventoryPackage','InventoryCloudServer','InventoryDomain','RegistrationPeriod','InventorySnapshot','InventoryProjector'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory/'.$class.'.php';
+require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory-reader/RegistrationPeriods.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory-reader/InventoryReader.php';
 
 final class ProviderInventoryAccessChanged extends RuntimeException {}
@@ -74,11 +75,31 @@ function provider_inventory_read(array $row,#[\SensitiveParameter] string $secre
 /** Result states that carry package observations. */
 function provider_inventory_observed(string $state): bool {return in_array($state,['complete','partial'],true);}
 
+/** The public wrapper retains its original transaction behavior for existing callers. */
 function provider_inventory_record(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,?InventorySnapshot $snapshot,string $fingerprint=''): void {
-    staff_transaction(function()use($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint):void {
+    ProviderInventoryRecorder::record($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint);
+}
+/** Internal scheduled-job commit path. The caller owns both guards and the surrounding transaction. */
+function provider_inventory_record_transaction(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,?InventorySnapshot $snapshot,string $fingerprint=''): void {
+    ProviderInventoryRecorder::withinTransaction($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint);
+}
+final class ProviderInventoryRecorder {
+    public static function record(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,?InventorySnapshot $snapshot,string $fingerprint=''): void {
+        staff_transaction(fn()=>self::write($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint));
+    }
+    public static function withinTransaction(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,?InventorySnapshot $snapshot,string $fingerprint=''): void {
+        $key='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
+        if(!db()->inTransaction()||(int)query('SELECT IS_USED_LOCK(?)=CONNECTION_ID()',[$key])->fetchColumn()!==1)throw new LogicException('Inventory persistence requires the owning account transaction and mutex.');
+        self::write($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint);
+    }
+    private static function write(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,?InventorySnapshot $snapshot,string $fingerprint=''): void {
+        if(($started['operation']??'')===InventoryRead::DOMAIN_REGISTRATION_PERIODS){require_once CWP_CODE_ROOT.'/app/providers/registration_periods.php';if(!provider_registration_period_ready())throw new RuntimeException('Restore registration period history before recording a result.');}
         query('INSERT INTO '.table('provider_refresh_results').' (id,state,reason,scope,coverage,package_count,skipped,skip_reasons,finished_at,elapsed_ms,key_fingerprint) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
             [$started['id'],$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,gmdate('Y-m-d H:i:s'),max(0,min($elapsed,2147483647)),$fingerprint]);
-        if($snapshot!==null&&provider_inventory_observed($state)) {
+        if(($started['operation']??'')===InventoryRead::DOMAIN_REGISTRATION_PERIODS){
+            require_once CWP_CODE_ROOT.'/app/providers/registration_periods.php';
+            provider_registration_period_record($started,$state,$snapshot);
+        }elseif($snapshot!==null&&provider_inventory_observed($state)) {
             foreach($snapshot->packages as $package) {
                 if(($started['operation']??'')===InventoryRead::DOMAINS_LIST) {
                     if(!$package instanceof InventoryDomain)throw new LogicException('Only validated registrar identities persist.');
@@ -97,7 +118,7 @@ function provider_inventory_record(array $started,string $state,string $reason,s
             }
         }
         provider_settings_audit((int)$started['actor_id'],'refresh_finished','Refresh '.$started['id'].' '.$state.($reason!==''?' '.$reason:''));
-    });
+    }
 }
 
 /**
@@ -111,24 +132,28 @@ function provider_inventory_refresh(string $id,int $revision,#[\SensitiveParamet
 /** Internal receipt exposes the exact durable refresh, never a latest-row guess. */
 function provider_inventory_refresh_attempt(string $id,int $revision,#[\SensitiveParameter] string $password,?callable $resolver=null,?callable $transport=null,string $operation=InventoryRead::PACKAGES_LIST,?callable $scopeAuthority=null):array {
     if(!InventoryReader::supports($operation))throw new InvalidArgumentException('This inventory reader is not available.');
+    if($operation===InventoryRead::DOMAIN_REGISTRATION_PERIODS)require_once CWP_CODE_ROOT.'/app/providers/registration_periods.php';
     if($operation===InventoryRead::DOMAINS_LIST){require_once CWP_CODE_ROOT.'/app/providers/registrar.php';if(!provider_registrar_ready())throw new RuntimeException('Prepare registered-domain storage first.');}
     if(db()->inTransaction())throw new LogicException('Provider refreshes cannot run inside a transaction.');
     $started=staff_locked(fn()=>staff_transaction(function()use($id,$revision,$password,$operation,$scopeAuthority):array {
         if($scopeAuthority)$scopeAuthority();
+        if($operation===InventoryRead::DOMAIN_REGISTRATION_PERIODS)provider_registration_period_authority($id,$revision,$password);
         [$actor]=provider_inventory_authority($id,$revision,$password);$now=time();
         if(one('SELECT id FROM '.table('provider_refreshes').' WHERE profile_id=? AND started_epoch>? LIMIT 1',[$id,$now-30]))throw new RuntimeException('Wait 30 seconds between refreshes of this profile.');
         if((int)query('SELECT COUNT(*) FROM '.table('provider_refreshes').' WHERE actor_id=? AND started_epoch>?',[$actor['id'],$now-3600])->fetchColumn()>=20)throw new RuntimeException('Inventory refresh limit reached. Try again later.');
         if($operation===InventoryRead::DOMAINS_LIST&&!provider_registrar_ready())throw new RuntimeException('Registered-domain storage is unavailable.');
         $started=['id'=>bin2hex(random_bytes(16)),'profile_id'=>$id,'profile_revision'=>$revision,'actor_id'=>(int)$actor['id'],'started_at'=>gmdate('Y-m-d H:i:s',$now),'started_epoch'=>$now,'operation'=>$operation];
         query('INSERT INTO '.table('provider_refreshes').' (id,profile_id,profile_revision,actor_id,started_at,started_epoch,operation) VALUES (?,?,?,?,?,?,?)',array_values($started));
-        provider_settings_audit((int)$actor['id'],'refresh_started','Refresh '.$started['id'].' profile '.$id.' revision '.$revision);return $started;
+        provider_settings_audit((int)$actor['id'],'refresh_started','Refresh '.$started['id'].' profile '.$id.' revision '.$revision);
+        if($operation===InventoryRead::DOMAIN_REGISTRATION_PERIODS)provider_registration_period_start($started);
+        return $started;
     }));
     $begin=hrtime(true);$code=null;$address='';
     try{$address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];}
     catch(Throwable $e){if($e instanceof PDOException)throw $e;$code='unavailable';}
     $state=staff_locked(function()use($started,$password,$address,$code,$begin,$transport,$scopeAuthority):string {
         $authorize=static function()use($started,$scopeAuthority):void {
-            try{if($scopeAuthority)$scopeAuthority();[$actor]=provider_inventory_authority($started['profile_id'],$started['profile_revision']);if((int)$actor['id']!==$started['actor_id'])throw new RuntimeException('Changed actor.');}
+            try{if($scopeAuthority)$scopeAuthority();if($started['operation']===InventoryRead::DOMAIN_REGISTRATION_PERIODS)provider_registration_period_intent_authority($started);[$actor]=provider_inventory_authority($started['profile_id'],$started['profile_revision']);if((int)$actor['id']!==$started['actor_id'])throw new RuntimeException('Changed actor.');}
             catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;throw new ProviderInventoryAccessChanged('Current provider access changed.');}
         };
         $elapsed=static fn():int=>(int)((hrtime(true)-$begin)/1e6);

@@ -109,6 +109,9 @@ jobs:
           php8.3 tests/provider_cloud_confirmation_native.php
           php8.3 tests/provider_inventory_upgrade_native.php
           php8.3 tests/provider_registrar_native.php
+          php8.3 tests/provider_registration_periods_native.php
+          php8.3 tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-results.json
+          php8.3 -n tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-no-ini-results.json
           php8.3 tests/domain_renewals_native.php
           php8.3 tests/service_observations_native.php
           php8.3 tests/provider_domain_search_native.php
