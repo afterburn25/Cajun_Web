@@ -56,15 +56,19 @@ Creates three tables:
 
 **File:** `site/database/migrations/license_migrate.php` — owner-gated
 adoption for existing installs (`studio_license_setup` in admin). Fresh
-deploys set `license_schema_version='2'` automatically; upgraded installs
+deploys set `license_schema_version='4'` automatically; upgraded installs
 prepare storage once via Studio → Website licenses with the administrator
 password. All license entry points (admin actions, portal actions/view,
 `api/validate.php`, `api/bundle-download.php`, invoice fulfilment) check
 `license_ready()` first — unprepared installs never touch license tables
 and the API answers inconclusive 500, never a false denial. Version 2
-added `website_licenses.invoice_id`; `license_migrate()` upgrades a
-version-1 adoption in place (`ALTER TABLE` + re-validate) without losing
-existing license rows.
+added `website_licenses.invoice_id`; version 3 added
+`license_bundles.sha256`; version 4 adds `website_licenses.is_master`
+(master keys predate the marker — populated pre-master databases gain the
+column in place, existing licenses defaulting to ordinary). The stored
+marker is checked before any schema change: version 1–4 markers migrate,
+an empty marker only adopts known-empty tables, and an unknown or future
+marker is refused untouched so a later migration path can inspect it.
 
 ### 3. License service
 
@@ -115,7 +119,17 @@ Adds "Website licenses" to the Studio admin section with:
 authorizes any well-formed domain for a master license without domain
 registration or slot consumption; `is_active` still applies so a master
 key can be revoked at any time. Master keys are displayed once at
-creation like normal keys — keep them private.
+creation like normal keys — keep them private. The internal-only boundary
+is enforced at every delivery layer, not just the interface:
+
+- the customer workspace lists only `is_master=0` licenses, and the
+  portal's domain actions refuse master IDs even when the customer owns
+  the attached account
+- `license_bundle()` and `license_bundle_store()` reject master keys —
+  no deliverable ZIP can embed an unrestricted key
+- the admin bundle action refuses masters before building
+- `api/bundle-download.php` requires `is_master=0`, so a master bundle
+  recorded before the guard cannot be downloaded through a customer URL
 
 ### 5. Customer portal UI
 
@@ -125,7 +139,10 @@ creation like normal keys — keep them private.
 Adds license management to the customer workspace:
 - View active licenses with the **full license key** — self-service
   recovery when the fulfilment email is lost (the key is the customer's
-  own; the portal only exposes it to the authenticated owner)
+  own; the portal only exposes it to the authenticated owner). Internal
+  master keys are excluded (`is_master=0`) even when attached to the
+  customer's account, and the portal's domain actions apply the same
+  predicate so a master ID cannot be mutated through the portal
 - Register new domains
 - Replace a domain in one step (old site auto-deactivates — goes offline
   at its next validation)
@@ -159,7 +176,7 @@ Adds license management to the customer workspace:
 
 **File:** `site/app/licenses/fulfill.php`
 
-- `license_fulfill_invoice($invoiceId)` — idempotent; creates license + bundle when a catalog invoice becomes `paid`
+- `license_fulfill_invoice($invoiceId)` — idempotent; creates license + bundle when a catalog invoice becomes `paid`. Before minting it also reconciles licenses created before `invoice_id` existed: when exactly one unlinked (`invoice_id IS NULL`), non-master license matches the invoice's customer+product, that license is claimed for the invoice (`WHERE id=? AND invoice_id IS NULL` keeps concurrent fulfillers honest) instead of minting a duplicate. When several unlinked candidates exist the pairing is ambiguous, so fulfilment refuses and the link is reconciled explicitly — a guess could attach the wrong historical purchase.
 - Product mapping: SKU `WEBSITE-{INDUSTRY}` → module `industry-{industry}` (e.g., `WEBSITE-RESTAURANT` → restaurant module)
 - Hooked into both payment paths:
   - `catalog_transition()` — non-ledger path, fires after invoice marked paid
@@ -187,7 +204,7 @@ Best-effort: a mail failure is logged but does not block license creation.
 ```sql
 website_licenses (
   id, license_key (unique), customer_id, product_id (VARCHAR(60) SKU),
-  is_active, created_at, updated_at
+  invoice_id (unique, nullable), is_active, is_master, created_at, updated_at
 )
 
 license_domains (
@@ -195,7 +212,7 @@ license_domains (
 )
 
 license_bundles (
-  id, license_id, title, path (private storage), created_at
+  id, license_id, file_path (private storage), title, sha256, created_at
 )
 ```
 
@@ -204,7 +221,14 @@ license_bundles (
 - `tests/license_native.php` — service-layer checks (key generation,
   domain normalization, multi-domain, 2-active cap, atomic replace,
   mutation audit, master keys, deactivation, SKU
-  mapping, bundle guards); runs in CI on MariaDB.
+  mapping, bundle guards) plus the upgrade and isolation cases: populated
+  pre-master migration (rows/domains/bundles preserved, `is_master` added,
+  marker stamped v4), repeated migration, unknown/future marker refusal
+  without touching the stored marker, refusal to adopt populated unmarked
+  tables, master exclusion from the portal predicate/bundle
+  builder/bundle store/direct-download authorization, ordinary and
+  revoked bundle authorization, legacy NULL-invoice fulfilment reuse, and
+  ambiguous-candidate refusal. Runs in CI on MariaDB.
 - `tests/license_bundle_functional.php` — builds a real bundle from the
   Website_Core checkout, verifies the extracted layout
   (`site/install.php` + `site/modules/industries/*/addon.json` with

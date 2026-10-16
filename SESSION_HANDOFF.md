@@ -4,6 +4,18 @@
 
 # Session handoff — continue 20i P0
 
+## Licensing v4 fixes on `devin/non20i-licensing` (Devin) — 2026-10-16
+
+Branch `devin/non20i-licensing` from `origin/main` `80ce8b19` resolves the four findings in `docs/LICENSING_INTEGRATION_REVIEW.md`. Marker moves to `4`; fresh deploys stamp it directly.
+
+- Migration: marker gate runs before any DDL — `1`–`4` upgrade, empty adopts only known-empty tables, unknown/future throws untouched. Missing `is_master` is ALTERed in (`DEFAULT 0`, `AFTER is_active` for the positional validator) with all existing license/domain/bundle rows preserved; guarded column adds make a failed migration retryable.
+- Master isolation: portal list + all three portal domain actions filter `is_master=0`; `license_bundle()`/`license_bundle_store()` refuse masters; admin bundle action/view refuse before building; `api/bundle-download.php` requires `is_master=0`, so even a pre-existing master bundle cannot download.
+- Legacy replay: `license_fulfill_invoice()` claims the single unlinked non-master NULL-invoice license matching the invoice's customer+product (race-guarded `UPDATE ... invoice_id IS NULL`); multiple candidates refuse for explicit reconciliation. Exact-invoice idempotency and second-purchase mint are unchanged.
+- `license_ready()` is strict `=== '4'` — unmigrated installs degrade to the owner-gated setup prompt rather than SQL errors on the new column.
+- Tests: `tests/license_native.php` now covers populated upgrade (4 licenses/4 domains/1 bundle preserved), idempotent re-migration, marker refusals (99 and empty-on-populated), portal/bundle/store/download master exclusion, ordinary + revoked bundle authorization, legacy claim + idempotent retry, ambiguous-candidate refusal; `license_bundle_functional.php` adds master refusals. `php -l` clean on all 11 touched files; `tools/build.py --refresh` regenerated the installer inventory (all canonical checks green). Native MariaDB execution is pending in CI — not run locally.
+
+**Next:** watch CI, open a bounded PR, then continue `docs/DEVIN_NON20I_SITE_COMPLETION.md` (support tickets, project progress/handover, admin webmail/notifications, payments/maintenance, public-site/backup items). Codex retains 20i and release integration.
+
 ## Website licensing/DRM (Devin, on main) — 2026-10-15
 
 Complete purchase-to-install DRM landed on `main` (~25 commits through `544336af`): validation API (`api/validate.php`, status-coded denial-vs-transient contract, audited, rate-limited), `website_licenses`/`license_domains`/`license_bundles` schema, license service (2-active-domain cap for public+test), bundle builder (`license_key` embedded in module manifest), auto-fulfillment on paid invoices, admin `studio-licenses` UI, portal domain management + owner-only bundle downloads, native + functional tests. Companion work on Website_Core `devin/website-core`: install-time validation, license table, periodic `license.validate` job (hourly while deactivated, 24h otherwise), explicit-denial-only deactivation, 503 public gate, bundled-module install+enable, HTTP contract tests.

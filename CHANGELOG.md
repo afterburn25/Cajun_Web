@@ -2,6 +2,18 @@
 
 Add a root start-here guide, complete owner-approved assignment and existing licensing source/review links. Supersede the earlier unrelated-work pause for Devin while Codex retains20i and final integration. This changes no application, schema, installer, version, release or deployment.
 
+## Licensing v4: populated-upgrade, master isolation, invoice reconciliation — 2026-10-16
+
+Devin non-20i assignment #157, first increment on branch `devin/non20i-licensing` from `origin/main` `80ce8b19`. Resolves the four findings documented in `docs/LICENSING_INTEGRATION_REVIEW.md`; licensing schema advances to marker `4`.
+
+- `license_migrate()` reads the stored marker before any DDL: versions 1–4 migrate, an empty marker adopts only known-empty tables, and unknown/future markers throw before touching schema or the marker value. Populated pre-master tables gain `is_master TINYINT NOT NULL DEFAULT 0 AFTER is_active` in place — licenses, domains, bundles and audit history preserved; the `AFTER` clause keeps positional `catalog_validate_schema` passing. Each column add is guarded by an existence check so a failed migration retries cleanly. Fresh deploys stamp `4`; `license_ready()` is strict `=== '4'` so an unmigrated install shows the owner-gated preparation prompt instead of fataling on the new column.
+- Internal master keys are excluded at every delivery layer: portal license list and all three portal domain actions filter `is_master=0`; `license_bundle()`/`license_bundle_store()` refuse master keys (no deliverable ZIP can embed an unrestricted key); the admin bundle action refuses before building and the admin view hides the form; `api/bundle-download.php` requires `is_master=0`, so a master bundle recorded before the guard cannot be downloaded.
+- `license_fulfill_invoice()` reconciles historical licenses whose `invoice_id` is NULL: exactly one unlinked non-master candidate for the invoice's customer+product is claimed via a guarded `UPDATE ... invoice_id IS NULL` (a concurrent claim for another invoice falls through to mint); multiple candidates refuse with a reconciliation error rather than guess. Exact `invoice_id` idempotency and the UNIQUE-index race handling are unchanged — a second purchase still mints a second license.
+- `tests/license_native.php` gains a staff-owner fixture and the missing coverage: populated pre-master upgrade preserving 4 licenses/4 domains/1 bundle, repeat-migration idempotency, v2 marker not-ready, marker 99 refused with the marker left untouched, populated unmarked tables not adopted, portal master exclusion, bundle builder/store master refusal, direct-download denial for an already-recorded master bundle, ordinary bundle allowed, revoked-license bundle denied, legacy NULL-invoice claim + idempotent retry, and ambiguous-candidate refusal. `tests/license_bundle_functional.php` adds master refusal for `license_bundle` and `license_bundle_store`.
+- PHP syntax passes on all 11 touched PHP files; installer inventory regenerated (`tools/build.py --refresh`, all canonical checks pass). Native MariaDB execution runs in CI — not run locally (no local MySQL). No live deployment, charge, mail or provider call.
+
+Next: CI verification, bounded PR, then the remaining non-20i roadmap (support tickets, project progress/handover, admin webmail/notifications, payments/maintenance, public-site and backup/recovery items in `docs/DEVIN_NON20I_SITE_COMPLETION.md`).
+
 # Changelog
 
 ## Synchronize release entry points after review — 2026-10-15

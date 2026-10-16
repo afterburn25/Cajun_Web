@@ -13,12 +13,21 @@ try{
     foreach(default_settings() as $k=>$v)save_setting($k,$v);
     query('INSERT INTO '.table('studio_clients').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['License client','license-client@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat('b',32),gmdate('Y-m-d H:i:s')]);
     query('INSERT INTO '.table('studio_clients').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Second client','license-client2@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat('c',32),gmdate('Y-m-d H:i:s')]);
+    // Staff owner fixture — license_migrate() authenticates through
+    // staff_owner(), which needs a users row, an owner profile and a
+    // session whose auth_version matches.
+    query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['License owner','license-admin@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
+    require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
+    staff_seed_owner(1);
+    $_SESSION=['uid'=>1,'auth_version'=>one('SELECT auth_version FROM '.table('users').' WHERE id=1')['auth_version'],'login_at'=>time(),'last_activity'=>time()];
 
     require_once CWP_CODE_ROOT.'/app/licenses/service.php';
 
     // --- storage readiness (fresh deploy marks license_schema_version) -------
     lic_ok('Storage not ready before version mark',!license_ready());
     save_setting('license_schema_version','3');
+    lic_ok('Prior schema marker is not ready until migrated',!license_ready());
+    save_setting('license_schema_version','4');
     lic_ok('Storage ready after version mark',license_ready());
 
     // --- key generation ----------------------------------------------------
@@ -131,7 +140,7 @@ try{
     $inv2=$mkInvoice('LIC-FIXTURE-2');
     $f2=license_fulfill_invoice($inv2);
     lic_ok('Second paid invoice mints a second license',(bool)$f2&&$f2['license_key']!==$f1['license_key']&&(int)$f2['invoice_id']===$inv2);
-    lic_ok('Admin-created license has no invoice link',license_get($key)['invoice_id']===null);
+    lic_ok('Admin-created license claimed by the invoice fulfilment',(int)license_get($key)['invoice_id']===$inv1);
     $dupRejected=false;
     try{license_create(1,'WEBSITE-RESTAURANT',0,false,$inv1);}catch(PDOException $e){$dupRejected=(int)($e->errorInfo[1]??0)===1062;}
     lic_ok('Duplicate invoice_id rejected by unique index',$dupRejected);
@@ -149,6 +158,84 @@ try{
     lic_ok('Bundle record stored',count($bundles)===1&&$bundles[0]['title']==='Test bundle');
     lic_ok('Bundle SHA-256 recorded for download integrity',$bundles[0]['sha256']===hash_file('sha256',$bundleFile));
     @unlink($bundleFile);
+
+    // --- populated pre-master migration ---------------------------------------
+    // Simulate a database created before is_master existed: populated rows,
+    // a prior marker, and the column missing. Migration must add the column,
+    // preserve every row, and stamp v4 — not refuse or rewrite data.
+    db()->exec('ALTER TABLE '.table('website_licenses').' DROP COLUMN is_master');
+    save_setting('license_schema_version','2');
+    lic_ok('Pre-master schema reported as v2',(one('SELECT value FROM '.table('settings')." WHERE name='license_schema_version'")['value']??'')==='2');
+    lic_ok('Pre-master marker is not ready',!license_ready());
+    require_once CWP_CODE_ROOT.'/database/migrations/license_migrate.php';
+    license_migrate($password);
+    lic_ok('Populated pre-master upgrade adds is_master',(bool)one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'website_licenses','is_master']));
+    lic_ok('Existing licenses preserved after upgrade',(int)query('SELECT COUNT(*) FROM '.table('website_licenses'))->fetchColumn()===4);
+    lic_ok('Existing domains preserved after upgrade',(int)query('SELECT COUNT(*) FROM '.table('license_domains'))->fetchColumn()===4);
+    lic_ok('Existing bundles preserved after upgrade',(int)query('SELECT COUNT(*) FROM '.table('license_bundles'))->fetchColumn()===1);
+    lic_ok('Schema stamped v4 after upgrade',(one('SELECT value FROM '.table('settings')." WHERE name='license_schema_version'")['value']??'')==='4');
+    lic_ok('Ready after populated upgrade',license_ready());
+    lic_ok('Ordinary license still authorizes after upgrade',license_domain_authorized(license_get($key2),'real.example.net'));
+    lic_ok('Deactivated license still denied after upgrade',!((bool)license_get($key)['is_active']&&license_domain_authorized(license_get($key),'example.com')));
+    try{license_migrate($password);lic_ok('Repeat migration is idempotent',true);}catch(Throwable){lic_ok('Repeat migration is idempotent',false);}
+    // Restore the master flag the simulated upgrade cleared — a real
+    // pre-master database cannot contain master keys.
+    query('UPDATE '.table('website_licenses').' SET is_master=1 WHERE id=?',[$lic3['id']]);
+
+    // --- master keys excluded from customer projections -----------------------
+    $masterLic=license_get($key3);
+    lic_ok('Master key re-flagged after upgrade',(int)$masterLic['is_master']===1);
+    // Same predicate the customer workspace uses — masters never listed.
+    $customerLicenses=all('SELECT * FROM '.table('website_licenses').' WHERE customer_id=? AND is_active=1 AND is_master=0',[2]);
+    lic_ok('Customer portal excludes master keys',count($customerLicenses)===1&&$customerLicenses[0]['license_key']===$key2);
+    lic_deny('Bundle builder refuses master key',fn()=>license_bundle($key3,'restaurant','/tmp','/tmp'));
+    lic_deny('Bundle store refuses master license',fn()=>license_bundle_store((int)$masterLic['id'],'/tmp/master.zip','x'));
+    // A master bundle recorded before the guard must still not download.
+    query('INSERT INTO '.table('license_bundles').' (license_id,file_path,title,sha256,created_at) VALUES (?,?,?,?,?)',[$masterLic['id'],'/nonexistent.zip','master bundle',str_repeat('a',64),gmdate('Y-m-d H:i:s')]);
+    $masterBundleId=(int)db()->lastInsertId();
+    lic_ok('Direct download refuses a master-license bundle',
+        one('SELECT b.id FROM '.table('license_bundles').' b JOIN '.table('website_licenses').' l ON b.license_id=l.id WHERE b.id=? AND l.customer_id=? AND l.is_active=1 AND l.is_master=0',[$masterBundleId,2])===null);
+    lic_ok('Direct download still serves an ordinary bundle',
+        one('SELECT b.id FROM '.table('license_bundles').' b JOIN '.table('website_licenses').' l ON b.license_id=l.id WHERE b.id=? AND l.customer_id=? AND l.is_active=1 AND l.is_master=0',[$bundles[0]['id'],2])!==null);
+    query('INSERT INTO '.table('license_bundles').' (license_id,file_path,title,sha256,created_at) VALUES (?,?,?,?,?)',[$licId,'/x.zip','revoked bundle',str_repeat('b',64),gmdate('Y-m-d H:i:s')]);
+    lic_ok('Direct download refuses a revoked-license bundle',
+        one('SELECT b.id FROM '.table('license_bundles').' b JOIN '.table('website_licenses').' l ON b.license_id=l.id WHERE b.id=? AND l.customer_id=? AND l.is_active=1 AND l.is_master=0',[(int)db()->lastInsertId(),1])===null);
+
+    // --- legacy null-invoice replay -------------------------------------------
+    // A license created before invoice_id existed has NULL. Retrying the
+    // fulfilment of that historical invoice must claim the existing license
+    // — not mint a duplicate — when exactly one unlinked candidate exists.
+    $legacyKey=license_create(1,'WEBSITE-RESTAURANT',0,false,null);
+    $legacyLic=license_get($legacyKey);
+    lic_ok('Legacy license has NULL invoice_id',$legacyLic['invoice_id']===null);
+    $legacyInv=$mkInvoice('LIC-LEGACY-1');
+    $f3=license_fulfill_invoice($legacyInv);
+    lic_ok('Legacy fulfilment returns the existing license',$f3['license_key']===$legacyKey);
+    lic_ok('Legacy link claimed for future lookups',(int)$f3['invoice_id']===$legacyInv);
+    lic_ok('No duplicate license minted for legacy invoice',(int)query('SELECT COUNT(*) FROM '.table('website_licenses').' WHERE customer_id=1 AND product_id=?',['WEBSITE-RESTAURANT'])->fetchColumn()===3);
+    lic_ok('Repeat legacy fulfilment stays idempotent',license_fulfill_invoice($legacyInv)['license_key']===$legacyKey);
+
+    // Two unlinked licenses for the same customer+product cannot be paired to
+    // one invoice without guessing — fulfilment refuses instead of picking one.
+    $amb1=license_create(1,'WEBSITE-RESTAURANT',0,false,null);
+    $amb2=license_create(1,'WEBSITE-RESTAURANT',0,false,null);
+    $ambInv=$mkInvoice('LIC-AMBIG-1');
+    lic_deny('Ambiguous legacy candidates refuse fulfilment',fn()=>license_fulfill_invoice($ambInv));
+    lic_ok('Ambiguous candidates stay unlinked',
+        license_get($amb1)['invoice_id']===null&&license_get($amb2)['invoice_id']===null);
+    lic_ok('No license minted on ambiguous retry',(int)query('SELECT COUNT(*) FROM '.table('website_licenses').' WHERE customer_id=1 AND product_id=?',['WEBSITE-RESTAURANT'])->fetchColumn()===5);
+
+    // --- unknown/future schema markers are refused untouched -------------------
+    save_setting('license_schema_version','99');
+    lic_ok('Future marker is not ready',!license_ready());
+    lic_deny('Future schema marker refused before any schema change',fn()=>license_migrate($password));
+    lic_ok('Marker left untouched after refusal',(one('SELECT value FROM '.table('settings')." WHERE name='license_schema_version'")['value']??'')==='99');
+    // Empty marker on populated tables: first adoption must refuse, not claim.
+    save_setting('license_schema_version','');
+    lic_deny('Populated tables without a marker are not adopted',fn()=>license_migrate($password));
+    save_setting('license_schema_version','4');
+    lic_ok('Current marker ready again',license_ready());
+
 }catch(Throwable $e){fwrite(STDERR,'SETUP '.get_class($e).': '.$e->getMessage());exit(1);}
 $failed=array_filter($checks,fn($c)=>!$c['passed']);
 echo json_encode(['checks'=>$checks,'passed'=>count($checks)-count($failed),'failed'=>count($failed)],JSON_THROW_ON_ERROR);

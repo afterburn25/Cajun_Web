@@ -1,3 +1,14 @@
+## Devin non20i-licensing resolution — 2026-10-16 UTC
+
+Branch `devin/non20i-licensing` (from `origin/main` `80ce8b19`) resolves the four findings in source. Schema marker advances to `4`:
+
+1. **Populated pre-master upgrade** — `license_migrate()` now ALTERs `website_licenses` to add `is_master TINYINT NOT NULL DEFAULT 0 AFTER is_active` when the column is missing, in place, preserving licenses/domains/bundles; positional `AFTER` keeps `catalog_validate_schema` passing. Fresh deploys stamp `4`.
+2. **Internal-master customer delivery** — portal list and all three portal domain actions filter `is_master=0`; `license_bundle()` and `license_bundle_store()` refuse masters; the admin bundle action refuses before building; `api/bundle-download.php` requires `is_master=0`, so pre-existing master bundles cannot download.
+3. **Legacy NULL-invoice replay** — `license_fulfill_invoice()` claims the sole unlinked non-master license matching the invoice's customer+product (guarded `UPDATE ... invoice_id IS NULL` for race safety); multiple unlinked candidates refuse rather than guess.
+4. **Unknown/future markers** — the marker is read before any DDL; versions 1–4 migrate, empty adopts only known-empty tables, anything else throws before touching schema or the marker.
+
+`license_ready()` is strict `=== '4'` so an unmigrated install degrades to the preparation prompt instead of SQL errors on the new column. New native cases exercise the populated upgrade, idempotent repeat, marker refusals, portal/bundle/download master exclusion, revoked-bundle denial, legacy claim/reuse, ambiguous-candidate refusal and second-purchase mint. Native MariaDB execution is pending in CI; no database run is claimed here yet.
+
 ## Current main79d9 documentation delta and preflight — 2026-10-16 UTC
 
 Latest fetched79d9e8e90d9fd3e8b3c34140814aa90272a2f82b changes only SESSION_HANDOFF.md and docs/SESSION_LOG.md above reviewede619; the entire site tree is identical. Read-only merge-tree against root5a402a35 finds seven conflicts in handoff/session log/license service/deploy/inventory/portal workspace/license native tests. Proof13a2b31d049efad34ce12d7ee69b99758c918978774e0279527ed55e70014c8e records unchanged checkout and no merge. All prior four licensing findings remain open; preserve both lanes and refresh the preflight before actual integration if either source advances.
