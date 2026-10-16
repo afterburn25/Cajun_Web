@@ -1,5 +1,7 @@
 ## Unreleased — explicit domain renewal-date observations
 
+- Test-only renewal-date browser correction preserves all inherited observation timestamps and waits for actual cooldown. Exact078 native matrix passed; its first browser checkpoint failed before new date screens. No shipping behavior changed.
+
 Adds saved date-only provider observations and history for exact current registered-domain assignments, explicit owner refresh and private client display. Current native/browser acceptance remains pending. No renewal or registry-expiry claim.
 
 ## Unreleased integration queue — client hosting history

@@ -1,4 +1,6 @@
 
+
+Renewal-date PR152 shipping remains07817109. Preserve its native38839208240 four verified archives and failed-browser artifact12021267711/SHA256df40855ae66a35e819fd24fa0399d4d6ff671b6ebdf655ccff786efe5e8acf0b. This checkpoint changes only browser fixture cooldown setup and documentation; actual new screens are not yet verified. Next: exact corrected browser run, actual artifact/screens review, then parent integration. [Evidence](docs/TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).
 ## Isolated registered-domain date observations — 2026-10-15
 
 Domain agent starts `codex/twentyi-domain-contracts` at175930618ab349246020602e634ce55ee49f176b; PR149 remains frozen. Implements a dedicated typed date reader, exact current registrar/client/account binding, shared refresh intents/results with recovery witnesses, and native owner/client dated observations. Read-only wire contract is the retained20i SDK1.0.6 example, not live account acceptance. New owner reference34e713c3 is inspected and kept distinct from old source. Local pure checks pass; native/browser/package acceptance remains pending. Root owns integration/releases; no live provider call, domain change, payment, mail, SSH, licensing edit or deployment. [Scope, shared interfaces, provenance and required evidence](docs/TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).

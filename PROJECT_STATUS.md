@@ -1,4 +1,6 @@
 
+
+Renewal-date source07817109 / PR152 passes verified native60+79+79 in all four combinations. Full38839208232 passed package/native but browser failed after1992 checks because the new fixture temporarily changed an earlier immutable observation epoch. Only test setup is corrected to wait for real cooldown; no shipping changes. Corrected browser/screens are pending. See [exact evidence](docs/TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).
 ## Isolated registered-domain date observations — 2026-10-15
 
 Domain agent starts `codex/twentyi-domain-contracts` at175930618ab349246020602e634ce55ee49f176b; PR149 remains frozen. Implements a dedicated typed date reader, exact current registrar/client/account binding, shared refresh intents/results with recovery witnesses, and native owner/client dated observations. Read-only wire contract is the retained20i SDK1.0.6 example, not live account acceptance. New owner reference34e713c3 is inspected and kept distinct from old source. Local pure checks pass; native/browser/package acceptance remains pending. Root owns integration/releases; no live provider call, domain change, payment, mail, SSH, licensing edit or deployment. [Scope, shared interfaces, provenance and required evidence](docs/TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).

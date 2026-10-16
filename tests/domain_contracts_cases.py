@@ -1,5 +1,5 @@
 """Actual packaged renewal-date owner/client UI; explicit local TLS reads only."""
-import requests
+import requests,time
 from playwright.sync_api import expect
 from release_cases import db, chosen_form
 from staff_cases import OWNER
@@ -18,37 +18,35 @@ def run_browser(env,browser):
     submit(owner,settings,prepare,{'current_password':OWNER});check('Renewal dates prepare is local and explicit',not db('SELECT * FROM ci_domain_contract_bindings') and provider.calls==calls)
     old_domains=list(provider.registrar_domains);old_mode=provider.registrar_mode
     provider.registrar_mode='success';provider.registrar_domains=old_domains+[{'id':3701,'name':'dates-client.invalid'},{'id':3702,'name':'dates-sibling.invalid'}]
-    saved=db('SELECT id,started_epoch FROM ci_provider_refreshes');db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-7200')
-    try:submit(owner,settings,'provider_inventory_registrar_refresh',{'current_password':OWNER})
-    finally:
-        for row in saved:db('UPDATE ci_provider_refreshes SET started_epoch=? WHERE id=?',[row['started_epoch'],row['id']])
+    # Earlier browser workflows have immutable evidence tied to their original read times.
+    # Preserve every inherited intent and wait out only the real shared cooldown.
+    inherited=db('SELECT id,started_epoch FROM ci_provider_refreshes ORDER BY seq')
+    def wait_read():
+        rows=db('SELECT MAX(started_epoch) AS latest FROM ci_provider_refreshes WHERE profile_id=?',[profile['id']]);latest=int(rows[0]['latest'] or 0)
+        remaining=latest+31-int(time.time())
+        if remaining>0:time.sleep(remaining)
+    wait_read()
+    response=owner.get(settings);(qa/'Domain-Dates-before-registrar.html').write_text(response.text,encoding='utf-8')
+    response=submit(owner,settings,'provider_inventory_registrar_refresh',{'current_password':OWNER});(qa/'Domain-Dates-after-registrar.html').write_text(response.text,encoding='utf-8')
+    check('Renewal date fixture preserves inherited observation epochs',all(db('SELECT started_epoch FROM ci_provider_refreshes WHERE id=?',[row['id']])==[{'started_epoch':row['started_epoch']}] for row in inherited))
     source=db('SELECT id FROM ci_provider_refreshes WHERE operation=? ORDER BY seq DESC LIMIT 1',['domains.list'])[0]['id']
-    # Establish a consistent synthetic source120seconds old before any binding captures it.
-    db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-120 WHERE id=?',[source])
+    check('Renewal date fixture establishes one new complete registrar source',source not in {row['id'] for row in inherited} and db('SELECT state FROM ci_provider_refresh_results WHERE id=?',[source])==[{'state':'complete'}] and provider.get_paths[-1]=='/domain')
     chosen_form(owner,settings,'provider_inventory_registrar_link','domain_id',3701,{'client_id':cid,'current_password':OWNER})
     sibling=db('SELECT id FROM ci_studio_clients WHERE email=?',['registrar-client2@example.invalid'])[0]['id'];chosen_form(owner,settings,'provider_inventory_registrar_link','domain_id',3702,{'client_id':sibling,'current_password':OWNER})
     link=db('SELECT * FROM ci_provider_registrar_links WHERE domain_id=3701')[0];calls=provider.calls
     provider.contract_dates={'dates-client.invalid':'2028-02-29','dates-sibling.invalid':'2029-01-01'}
     def fields():return form_data(next(f for f in soup(owner.get(settings)).select('form') if f.select_one('[name=action][value='+refresh+']') and f.select_one('[name=link_id]')['value']==link['id']))
     def read():
-        # Pass existing shared cooldown in the fixture while restoring every original row exactly.
-        prior=db('SELECT id,started_epoch FROM ci_provider_refreshes WHERE id<>?',[source]);bindings=db('SELECT id,started_epoch FROM ci_domain_contract_bindings')
-        db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-7200 WHERE id<>?',[source]);db('UPDATE ci_domain_contract_bindings SET started_epoch=started_epoch-7200')
-        try:return chosen_form(owner,settings,refresh,'link_id',link['id'],{'current_password':OWNER})
-        finally:
-            for row in prior:db('UPDATE ci_provider_refreshes SET started_epoch=? WHERE id=?',[row['started_epoch'],row['id']])
-            for row in bindings:db('UPDATE ci_domain_contract_bindings SET started_epoch=? WHERE id=?',[row['started_epoch'],row['id']])
+        wait_read()
+        return chosen_form(owner,settings,refresh,'link_id',link['id'],{'current_password':OWNER})
     stale=fields()
     for changed,label in [({'csrf':'bad'},'CSRF'),({'current_password':'wrong'},'password'),({'link_revision':'999'},'assignment revision'),({'refresh_id':'f'*32},'source revision')]:
         owner.post(settings,data={**stale,'current_password':OWNER,**changed});check('Renewal date refresh refuses '+label,not db('SELECT * FROM ci_domain_contract_bindings') and provider.calls==calls)
-    # Age only unbound existing reads for the actual Chromium submit; restore after navigation.
-    prior=db('SELECT id,started_epoch FROM ci_provider_refreshes WHERE id<>?',[source]);db('UPDATE ci_provider_refreshes SET started_epoch=started_epoch-7200 WHERE id<>?',[source])
+    # Exercise the real shared cooldown without changing any retained observation or binding.
+    wait_read()
     context=browser.new_context(viewport={'width':1440,'height':1000});context.add_cookies([{'name':c.name,'value':c.value,'url':base} for c in owner.cookies]);page=context.new_page();page.goto(settings);form=page.locator('form').filter(has=page.locator('[name=action][value='+refresh+']')).filter(has=page.locator('[name=link_id][value="'+link['id']+'"]'));form.locator('[name=current_password]').fill(OWNER)
-    try:
-        with page.expect_navigation(wait_until='domcontentloaded'):form.get_by_role('button',name='Refresh renewal date',exact=True).click()
-        expect(page.locator('#domain-contracts')).to_contain_text('Provider renewal date: 2028-02-29')
-    finally:
-        for row in prior:db('UPDATE ci_provider_refreshes SET started_epoch=? WHERE id=?',[row['started_epoch'],row['id']])
+    with page.expect_navigation(wait_until='domcontentloaded'):form.get_by_role('button',name='Refresh renewal date',exact=True).click()
+    expect(page.locator('#domain-contracts')).to_contain_text('Provider renewal date: 2028-02-29')
     context.close();calls=provider.calls
     check('Chromium saves one exact contract read with no provider mutation',len(db('SELECT * FROM ci_domain_contract_dates'))==1 and provider.get_paths[-1]=='/domain/dates-client.invalid/contract' and provider.posts==posts)
     response=client.get(url);check('Client sees own dated observation without private provider fields','Provider renewal date: 2028-02-29' in response.text and 'dates-client.invalid' in response.text and 'dates-sibling.invalid' not in response.text and 'CONTRACT_PRIVATE_MARKER' not in response.text and provider.calls==calls)
@@ -77,4 +75,5 @@ def run_browser(env,browser):
     for path in ['app/providers/domain_contracts.php','app/providers/domain_contracts_storage.php','app/providers/domain_contracts_views.php','admin/controllers/domain_contracts.php','admin/views/domain_contracts.php','portal/controllers/domain_contracts.php','portal/views/domain_contracts.php','database/schema/domain_contracts_schema.php','includes/foundation/twentyi-domain-contracts/DomainContract.php','includes/foundation/twentyi-domain-contracts/DomainContractBinding.php','includes/foundation/twentyi-domain-contracts/DomainContractObservation.php']:
         for prefix in ['/existing/','/fresh/']:check('Renewal date private HTTP denial '+prefix+path,requests.get(base+prefix+path).status_code==404)
     check('Renewal date browser workflow sends only explicit reads',provider.calls==calls and provider.posts==posts and not provider.errors)
+    check('Renewal date fixture leaves all inherited read times intact',all(db('SELECT started_epoch FROM ci_provider_refreshes WHERE id=?',[row['id']])==[{'started_epoch':row['started_epoch']}] for row in inherited))
     provider.registrar_domains=old_domains;provider.registrar_mode=old_mode;client.close();other.close();owner.close()
