@@ -1,3 +1,7 @@
+## 2026-10-16 — deterministic client-observation privacy assertions
+
+Release-only correction after06140894: replace four blanket JSON substring assertions with exact allowed client shapes and values. Valid opaque IDs/timestamps no longer create false privacy failures; unexpected fields, values, dates and sibling data remain rejected. Preserve all existing named assertions and record only safe mismatch booleans.200 controlled extracted-code checks and four lints pass; corrected native/full release acceptance remains required. No application or feature-scope change. Original failed evidence is retained.
+
 ## Frozen candidate CI checkpoint — 2026-10-16
 
 Candidate `13a7b08cc8f8ac1cf2a5e1ea6b4027a28cf2a597` (tree `62eeed74de3fa89347589ec5fce5be1ebdd069b5`) is pushed on `codex/release-1.25.0` in [draft PR #180](https://github.com/afterburn25/Cajun_Web/pull/180). The four original full runs `38941882420`, `38941894576`, `38941906749` and `38941919998` failed during runner setup: selected PHP8.2/8.4 apt packages were unavailable after the cached runtime setup. Application/native/browser/upgrade tests did not run in those attempts. All eight original artifacts, metadata and failure logs remain retained; repair provisioning before starting corrected full runs. No gate or existing test is removed.

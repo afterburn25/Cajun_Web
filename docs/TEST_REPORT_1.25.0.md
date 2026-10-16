@@ -33,6 +33,18 @@ The default PHP8.3 PR run `38942023179` builds the separate merge-preview SHA `8
 
 The correction commit following13a changes only the full-run provisioning workflow, the stale probe fixture and continuity documentation. PHP8.2/8.4 CLI/extensions/Apache now use the same signed Ubuntu Noble package repository; PHP8.3 keeps its distribution path. Every148 native recipe, runtime probe, report, timeout and remaining workflow step is retained. The integrated transfer/provenance helper still passes208 checks. These source/local checks require fresh complete CI at the correction commit.
 
+## Observation-fixture correction checkpoint — 2026-10-16
+
+Canonical `codex/release-1.25.0` remains in [draft PR #180](https://github.com/afterburn25/Cajun_Web/pull/180). This correction starts from `0614089482073e8779f7b130b0c8306f7d1f6c6f`; its enclosing commit records the new exact candidate. Frozen included/held features are unchanged. Only four native observation fixtures and continuity documentation change; application, schema, installer, workflows and named test sequences remain unchanged.
+
+Original [Force SSL workflow 38942022993](https://github.com/afterburn25/Cajun_Web/actions/runs/38942022993), source13a/merge-preview8d6, failed in the inherited PHP-observation privacy assertion after29 passing PHP checks. ForceSSL119, document-roots115 and pure165/165 checks passed first; the other three environments passed all7 reports/876 executions each. Four archives, metadata and the failure log are retained. The original compound assertion did not retain its projection, so the exact historical failing operand remains unknown.
+
+Exact-source controlled projection reproductions prove that blanket JSON substring `702` can reject valid random public references or observation timestamps. PHP, ForceSSL, directory-listing and document-root fixtures now compare the complete permitted client shape, exact scalar/map, timestamp and current flag, plus the exact receipt only where exposed. Extra private fields and sibling data remain refused. All original named assertions and sibling/other-client/support checks remain. Safe mismatch diagnostics contain booleans only.200 extracted-code checks across four fixtures/default/minimal PHP and four syntax checks pass; these do not substitute for native database execution. Independent source review is retained with the correction.
+
+Parent061 Windows packages pass exact source, member/directory/checksum, installer and updater checks (5914/2887/2874 members). Parent13a cloud run38941928822 passes four native755-execution environments and260 distro/minimal checks. The frozen external full-run verifier has independent reviews and111 additive/132 preparation checks, including retained original keys and published1.24 upgrades. These are bounded evidence, not full candidate acceptance.
+
+Parent061 original full runs38943147018/38943159324/38943171219/38943182554 and maintained38943195376 stay preserved; they cannot certify this new source. Next: push the corrected candidate, rebuild exact packages, dispatch its original complete four-environment matrix and maintained lane, verify all actual results/captures and review the exact source. Then normal-merge, repeat complete exact-main acceptance, publish and download-verify every asset. Main remains `d7153b07`; stable1.24/tag/assets remain unchanged. No1.25 release or live deployment exists.
+
 ## Required candidate and exact-main gates
 
 | Gate | Current state |
