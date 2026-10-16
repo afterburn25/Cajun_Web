@@ -11,7 +11,8 @@ if($licenses):?>
 <h2>Website licenses</h2><div class="workspace-grid">
 <?php foreach($licenses as $lic):?>
 <article class="workspace-card">
-<h3>License: <?=esc(substr($lic['license_key'],0,8))?>…</h3>
+<h3>License</h3>
+<p>Key: <code><?=esc($lic['license_key'])?></code></p>
 <p>Product: <?=esc($lic['product_id'])?></p>
 <h4>Registered domains</h4>
 <?php $domains=all('SELECT * FROM '.table('license_domains').' WHERE license_id=? AND is_active=1 ORDER BY registered_at DESC',[$lic['id']]);?>
