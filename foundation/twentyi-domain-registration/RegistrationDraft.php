@@ -61,4 +61,3 @@ final readonly class RegistrationDraft implements \JsonSerializable {
     public function __debugInfo():array {return $this->jsonSerialize();}
     public function __serialize():array {throw new \LogicException('Use explicit protected registration storage.');}
 }
-

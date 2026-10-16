@@ -42,4 +42,3 @@ Pure coverage must prove exact documented term/body/response and private-contact
 Packaged HTTP/Chromium uses a dedicated owner and independent clients, real shared cooldowns and original history preservation. Capture owner/client desktop/mobile purpose and contact-review screens with escaped synthetic PII, explicit prices and consent, plus accepted/unknown results according to the verified contract. Do not put real contacts/secrets in screenshots or artifacts. Preserve all predecessor fixtures, commands and report sets; one root-coordinated combined full run follows focused acceptance.
 
 This checkpoint implements the reusable pure records and testable refusal boundary. Protected native storage, agreement/invoice-purpose integration, owner/client UI, current authority, single dispatch and reconciliation remain engineering work. The four provider-input items above remain separate factual gaps.
-

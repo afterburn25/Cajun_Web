@@ -22,4 +22,3 @@ final class RegistrationContract {
     }
     public static function canDispatch():bool {return false;}
 }
-

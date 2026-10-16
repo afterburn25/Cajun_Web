@@ -67,4 +67,3 @@ try {
     ok('All pure outcome labels are distinct',count($checks)===count(array_unique(array_column($checks,'name'))));
     echo json_encode(['passed'=>true,'scope'=>'Pure private registration draft/contact and missing-contract boundaries only. No request, registry acceptance, billing, native database, browser or live provider evidence.','checks'=>$checks],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES).PHP_EOL;
 }catch(Throwable $e){echo json_encode(['passed'=>false,'checks'=>$checks,'error'=>get_class($e),'failed_case'=>$checks?end($checks)['name']:'setup'],JSON_PRETTY_PRINT).PHP_EOL;exit(1);}
-

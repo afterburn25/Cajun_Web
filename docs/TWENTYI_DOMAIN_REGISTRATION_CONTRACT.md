@@ -38,4 +38,3 @@ No raw contact, credential or response data appears in exception messages or pur
 The first checkpoint has252 distinct pure cases in each local PHP mode (normal and no-INI), covering immutable reference detachment, exact restoration, private diagnostics, contact syntax, all documented extension names, term/privacy separation, CA-domain/client binding, unavailable registration outcomes and unchanged generic refusal. Source manifest and retained reports are under ignored `qa/registration-contract`; root source review is pending. No native database, browser, live API or current registry acceptance is claimed.
 
 [Native prerequisites and proposed integration seams](TWENTYI_DOMAIN_REGISTRATION_NATIVE_PREREQUISITES.md) distinguish remaining engineering from exact missing provider input.
-

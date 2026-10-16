@@ -33,4 +33,3 @@ final readonly class RegistrationContact implements \JsonSerializable {
     public function __debugInfo():array {return $this->jsonSerialize();}
     public function __serialize():array {throw new \LogicException('Use explicit protected contact storage.');}
 }
-
