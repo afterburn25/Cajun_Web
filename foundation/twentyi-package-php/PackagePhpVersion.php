@@ -46,7 +46,12 @@ final class PackagePhpVersion
         if($secret===''||strlen($secret)>4096||preg_match('/[\x00-\x1f\x7f]/',$secret))throw new \InvalidArgumentException('Provider credentials are unavailable.');
         $descriptor=self::request($binding);
         $request=new TransportRequest('GET',$descriptor->url,['Authorization'=>'Bearer '.base64_encode($secret),'Accept'=>'application/json'],null,15.0);
-        try{$response=$transport->send($request);return self::project($response,$binding,$at);}
+        try{
+            $response=$transport->send($request);$observation=self::project($response,$binding,$at);
+            // Check decoded text while credentials remain local; never persist an echoed secret.
+            if($observation->state==='complete'&&(str_contains($observation->value,$secret)||str_contains($observation->value,base64_encode($secret))))return new PackagePhpVersionObservation($binding,$at,'unavailable','invalid_value',null);
+            return $observation;
+        }
         catch(TransportException $e){return new PackagePhpVersionObservation($binding,$at,'unavailable','transport_'.$e->kind,null);}
         finally{unset($secret,$request);}
     }
