@@ -1,6 +1,6 @@
 # Comparison-facts foundation (C-01 contract layer)
 
-Canonical component: `foundation/comparisons/`. Implementation status: **Implemented (local/source)** on `devin/non20i-comparisons-foundation`. External gate: **Not required** for this contract layer — the actual Wix/Squarespace comparison content, page markup and admin editing are application work remaining in Devin's non-20i scope (Codex owns the complete 20i integration only).
+Canonical component: `foundation/comparisons/`. Implementation status: **Implemented (local/source)** on `devin/non20i-comparisons-foundation`, with the runtime adapter on `devin/non20i-comparisons-runtime` — `site/app/marketing/comparisons.php` registers the published Wix/Squarespace claims as sourced facts and `site/pages/comparisons/index.php` renders each provider's fair-comparison block only while every cited fact is unexpired, falling back to a re-verification note. External gate: **Not required** — facts cite the same primary provider documentation the pages already link; no live fetching.
 
 This is the sourced-claims portion of [C-01](ROADMAP.md#c-01--why-custom--wix-and-squarespace-comparisons): the roadmap acceptance requires "source/date/plan registry, no copied unsupported mockup claims, no guarantees of rankings/speed/conversion or universal superiority". This component makes those rules structural rather than editorial.
 

@@ -7,6 +7,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 boot();
 require CWP_CODE_ROOT.'/includes/layout/public.php';
 require_once CWP_CODE_ROOT.'/app/marketing/growth.php';
+require_once CWP_CODE_ROOT.'/app/marketing/comparisons.php';
 require_once CWP_CODE_ROOT.'/app/portfolio/browse.php';
 $page = is_string($_GET['page'] ?? null) ? $_GET['page'] : 'home';
 $allowed = ['home','about','services','work','project','process','contact','privacy','thanks'];
