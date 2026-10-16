@@ -1,6 +1,6 @@
 # CajunWebPro current status
 
-Read-only review of main `94c879ebab28fe94e71690b870f4104e002d3515` is complete: mutation serialization must be preserved, while populated pre-master migration and internal-master customer-delivery findings remain open. Five explicit merge conflicts and one silent setup-form obstruction are mapped; this is source review, not merged/native acceptance.
+Latest main `18766495dd36b53eb1313cc535ac2a7c8a794d26` changes handoff only; site/tests/workflows remain identical to reviewed94c879. Its reported acceptance run was not independently verified. Prior read-only source review remains applicable: mutation serialization must be preserved, while populated pre-master migration and internal-master customer-delivery findings remain open. Five explicit merge conflicts and one silent setup-form obstruction are mapped; this is source review, not merged/native acceptance.
 
 Updated 2026-10-16 UTC. **1.24.0 is published; 1.25.0 is unreleased. Full20i integration and the broader roadmap are unfinished.**
 
@@ -14,7 +14,8 @@ Codex owns complete20i P0 and integration/releases with three parallel agents. D
 
 - [1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is immutable at7190b582a02be8a1daa501db14b5899cfc1eb5d0. All16 assets/checksums/archive members were freshly downloaded and verified. This is a GitHub release, not live deployment. [Release report](docs/TEST_REPORT_1.24.0.md).
 - Draft [PR151](https://github.com/afterburn25/Cajun_Web/pull/151) freezes normal merge **03b28476df90765b1dc0f8738a165100af0a6551**, combining reviewed owner-fixture repair659 and expiry18 over a9637f2b. CI dd521411a01becfc027d26ffc88bc9c2cf5be542 has the same tree72dbda2440bdef52c53bc33b20ce1419918774d5. Windows packages are verified. All39 focused workflows report success; the single original full38858618681 is still running. Current browser/recovery/Apache acceptance remains pending.
-- The candidate adds client hosting history, local forwarding requests/review, approved scheduled package reads, registration-year options, owner-only cloud identifiers, saved domain renewal dates, separately observed upstream expiry dates and saved package PHP versions with explicit client sharing. These do not establish prices, renewal/expiry eligibility, fulfillment or complete20i.
+- Current local normal integration adds accepted website-folder runtimee2b9/docs57e72 to root2f6569, preserving corrected659 owner fixtures. Staged source review and later combined packaged browser acceptance remain required; original03b is separate evidence.
+- The candidate adds client hosting history, local forwarding requests/review, approved scheduled package reads, registration-year options, owner-only cloud identifiers, saved domain renewal dates, separately observed upstream expiry dates and saved package PHP versions and website-folder mappings with explicit client sharing. These do not establish prices, renewal/expiry eligibility, fulfillment or complete20i.
 
 ## Verified evidence and remaining gates
 

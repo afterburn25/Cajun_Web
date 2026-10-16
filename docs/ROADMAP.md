@@ -2,7 +2,7 @@
 
 Frozen03b normally integrates saved registrar expiry and all three dedicated-owner fixture corrections. All39 focused workflows succeed; all four fresh expiry archives verify111 native expiry,99 date,99 PHP executions/98 labels,102 scheduler and normal/minimal reader54/contract139 per environment. Exact Windows packages are verified; original combined full38858618681 remains active. Original427 final evidence preserves the known fixture failure and successful recovery/server protection. [Current acceptance and next actions](../SESSION_HANDOFF.md).
 
-The separate website-folder applicatione2b9fd6d is source-reviewed and all four actual native38859581032 archives pass115 executions/114 names plus pure/transport/PHP/expiry/scheduler compatibility. ForceSSL true/false/unavailable observations have reviewed dedicated runtime/shared wiring and are preparing prerequisite integration/native testing. Both still require combined packaged browser acceptance; neither implements provider writes. Devin retains software-product licensing. Full20i and1.25.0 remain unfinished.
+Website-folder applicatione2b9fd6d/docs57e72 is now in the next local normal root integration, preserving the corrected03b fixtures; it is source-reviewed and all four actual native38859581032 archives pass115 executions/114 names plus pure/transport/PHP/expiry/scheduler compatibility. ForceSSL true/false/unavailable observations have reviewed dedicated runtime/shared wiring and are preparing prerequisite integration/native testing. Both still require combined packaged browser acceptance; neither implements provider writes. Devin retains software-product licensing. Full20i and1.25.0 remain unfinished.
 
 ## Combined domain and PHP observation candidate — 2026-10-16 UTC
 

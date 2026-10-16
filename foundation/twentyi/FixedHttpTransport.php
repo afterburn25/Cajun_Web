@@ -41,7 +41,7 @@ final class FixedHttpTransport implements HttpTransport
             throw new \InvalidArgumentException('Unsupported provider request.');
         }
         if ($request->method === 'GET') {
-            if ((!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server', 'https://api.20i.com/domain', 'https://api.20i.com/domain-period', 'https://api.20i.com/reseller/*/cloudProviders'], true) && !$this->isDomainSearch($request->url) && !$this->isDomainContract($request->url) && !$this->isPackagePhpVersion($request->url) && !$this->isDomainExpiry($request->url)) || $request->body !== null
+            if ((!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server', 'https://api.20i.com/domain', 'https://api.20i.com/domain-period', 'https://api.20i.com/reseller/*/cloudProviders'], true) && !$this->isDomainSearch($request->url) && !$this->isDomainContract($request->url) && !$this->isPackagePhpVersion($request->url) && !$this->isDomainExpiry($request->url) && !$this->isDocumentRoots($request->url)) || $request->body !== null
                 || array_keys($request->headers) !== ['Authorization','Accept']
                 || $request->headers['Accept'] !== 'application/json') {
                 throw new \InvalidArgumentException('Unsupported provider probe request.');
@@ -106,6 +106,12 @@ final class FixedHttpTransport implements HttpTransport
     private function isPackagePhpVersion(string $url): bool
     {
         return preg_match('~\Ahttps://api\.20i\.com/package/[1-9][0-9]{0,17}/web/phpVersion\z~',$url)===1;
+    }
+
+    /** Only the documented fixed package map read, without a path or domain override. */
+    private function isDocumentRoots(string $url): bool
+    {
+        return preg_match('~\Ahttps://api\.20i\.com/package/[1-9][0-9]{0,17}/web/documentRoots\z~',$url)===1;
     }
 
     private function validateAuthorization(mixed $authorization): void

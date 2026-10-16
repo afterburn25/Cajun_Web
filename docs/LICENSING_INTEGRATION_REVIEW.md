@@ -1,3 +1,7 @@
+## Main187 documentation-only delta — 2026-10-16 UTC
+
+Exact18766495dd36b53eb1313cc535ac2a7c8a794d26 is a direct docs-only child of reviewed94c879: only SESSION_HANDOFF.md changes to report acceptance38855488508. Its entire site tree remains14cfbbbfde6b3ee93455171dafaa10d83c54f778; tests/workflows and11 reviewed licensing/generated files are identical. No new or resolved source finding. The populated pre-master upgrade and internal-master customer projection/full-key/bundle/direct-download issues below remain open; retain serialized mutation helpers and root support/storage/invoice guards. Proof work/20i-document-roots-observations/qa/main187-licensing-delta-review.json. This source comparison does not independently verify the newly reported run, import licensing or prove Devin is active.
+
 ## Main94 merge preservation map — 2026-10-16 UTC
 
 Read-only preview against94c879ebab28fe94e71690b870f4104e002d3515 identifies five explicit conflicts and a silent automatic merge that returns on missing physical licensing tables before displaying main's preparation form. Keep the unprepared-marker setup form first, then the root physical-storage guard before queries. Preserve main's transaction/row-lock/internal mutation helpers, root license_storage_ready and the combined workspace guard `!support_current() && license_storage_ready() && license_ready()`. Keep recurring invoice guards,20i navigation, inventory marker5 and licensing marker1; regenerate installer hashes from final bytes.

@@ -4,11 +4,11 @@ Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for
 
 | Owner | Current branch/checkpoint | Scope and next evidence |
 |---|---|---|
-| Root | Frozen03b/PR151; CI dd521 |39 focused workflows successful, Windows exact packages and fresh four-way expiry archives verified; original full38858618681 remains active. Coordinate sequential merges and exact-main release. |
+| Root | Local normal roots57e72 merge over2f6569; original03b/PR151 evidence retained |39 focused workflows successful, Windows exact packages and fresh four-way expiry archives verified; original full38858618681 remains active. Review current roots staged parity; combine native-tested ForceSSL before one new full dispatch, then current-main/exact-main release gates. |
 | Domains | Expiry18 imported; source reviews complete | Fresh03b expiry artifacts and original427 final failure verified. Prepare exact03b browser/final verifiers and preserve actual original evidence. |
 | VPS | ForceSSL pureb2033/docs6988; application staged | Dedicated runtime/fixtures/shared proposal reviewed. Normal03b/document-roots prerequisite integration, exact patch application and final installer/workflow review precede one focused matrix. No full/browser dispatch. |
 | Catalog | Document-roots applicatione2b9fd6d; DNS96f/docsfb2f19d2 | Single focused38859581032 and all four actual archives accepted. Record evidence-only descendant. Root preserves corrected659 owner fixtures at eventual normal integration. |
-| Devin | Software-product licensing; main94 reviewed | Populated upgrade/internal-master customer-delivery findings remain. Preserve serialized mutation helpers and keyless installer. Active session status remains unconfirmed. |
+| Devin | Software-product licensing; main187 docs-only delta reviewed | Populated upgrade/internal-master customer-delivery findings remain. Preserve serialized mutation helpers and keyless installer. Active session status remains unconfirmed. |
 
 Original427 is terminal failure at the preserved setup check: final125 reports,2,107 HTTP passes plus one failure,289 recovery/2,211 Apache passes and exact Git/Windows packages are verified. No further polling or repeated acceptance is needed. See [handoff](../SESSION_HANDOFF.md) for exact current sources, evidence and next actions.
 

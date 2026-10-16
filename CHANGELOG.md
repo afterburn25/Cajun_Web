@@ -1,3 +1,7 @@
+## Unreleased — integrate saved website-folder mappings
+
+Normally integrate native-tested document-root observations. Owners can explicitly prepare, refresh and share saved folder mappings for a currently assigned hosting package; clients see only permitted current or historical data. Folder paths are escaped text, with independent sharing, credential/current-assignment checks and recoverable immutable history. No file operations or provider mutation. Combined browser/package acceptance remains pending.
+
 ## Unreleased — current expiry native and package verification
 
 Record frozen03b and its original acceptance handles, verified four-way expiry reports and exact Windows packages. Close original427 with preserved browser failure, successful recovery/server protection and exact final packages. Document reviewed website-folder and ForceSSL application lanes without claiming pending browser acceptance or a release. Documentation only; shipping source remains03b.

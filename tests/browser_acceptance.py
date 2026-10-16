@@ -236,6 +236,8 @@ try:
         package_php_browser(globals(),browser)
         from domain_expiry_cases import run_browser as domain_expiry_browser
         domain_expiry_browser(globals(),browser)
+        from provider_document_roots_cases import run_browser as document_roots_browser
+        document_roots_browser(globals(),browser)
         from provider_schedule_cases import run_browser as schedule_browser
         schedule_browser(globals(),browser)
         browser.close()
