@@ -16,6 +16,14 @@ The [current 20i checkpoint](docs/TWENTYI_CURRENT_CHECKPOINT.md) records exact e
 
 Main retains existing licensing and the four unresolved [integration findings](docs/LICENSING_INTEGRATION_REVIEW.md), assigned to Devin. Its runtime has not been imported into the separate 20i candidate. Preserve both histories and billing, support-session, storage and invoice-purpose guards during later integration.
 
+## Devin non-20i branches — 2026-10-16
+
+- `devin/non20i-licensing` (PR #159), `devin/non20i-support-tickets` (PR #158), `devin/non20i-project-progress` (PR #160), `devin/non20i-mail-replies` (PR #161) — application slices documented on their own branches.
+- `devin/non20i-backups-foundation` (PR #162), `devin/non20i-pipeline-foundation` (PR #163), `devin/non20i-proposals-foundation` (PR #164), `devin/non20i-notifications-foundation` (PR #165), `devin/non20i-revisions-foundation` (PR #166), `devin/non20i-support-access-foundation` (PR #167), `devin/non20i-comparisons-foundation` (PR #168) — isolated contract layers, no application wiring.
+- `devin/non20i-service-plans-foundation` ports the P-04 maintenance/service-plan contract layer — `ServicePlan`/`PlanSubscription` plan terms and consent rules with no billing calls.
+
+All are local/CI validation only — no live deployment, mail, provider or customer action.
+
 ## Continuity
 
 The [previous checkpoint at 155db254](https://github.com/afterburn25/Cajun_Web/blob/155db254e8e3d0c018200abf6a9325d04c3578ca/docs/TWENTYI_CURRENT_CHECKPOINT.md), [published 1.24 report](docs/TEST_REPORT_1.24.0.md), [roadmap](docs/ROADMAP.md) and [coordination](docs/AGENT_COORDINATION.md) preserve earlier evidence. This main checkpoint changes documentation only; it changes no runtime, installer, version, asset or live installation.
