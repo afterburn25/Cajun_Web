@@ -1,5 +1,9 @@
 # CajunWebPro current handoff
 
+## Isolated renewal agreement handoff — 2026-10-16
+
+Branch `codex/twentyi-domain-renewal-agreements` starts at c1743664. Dedicated runtime and reviewed shared patch636455de are applied only in this lane. Existing agreement journals handle consent/decline/withdrawal/cancel; new immutable bindings permit historical reoffers on one request, with current registrar authority and exact captured binding required for new acceptance. Root/Catalog cleared indexed-identity recovery, optional-plan absence and malformed redisplay fixes in source. Local69+69 pure tests and20 PHP syntax checks pass. Native/browser fixtures are being independently reviewed; one automatic four-way focused run follows freeze, with no separate full dispatch. Preserve root’s newer continuity text during normal integration. [Feature guide](docs/TWENTYI_DOMAIN_RENEWAL_AGREEMENTS.md).
+
 Updated 2026-10-16 UTC. Continue complete20i P0 using the supplied API reference and three parallel agents. **1.24.0 is published; 1.25.0 and full20i are unfinished.** [Status](PROJECT_STATUS.md), [agreement](AGENTS.md), [requirements](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md).
 
 ## Current Force SSL integration and catalog test correction

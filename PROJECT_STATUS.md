@@ -1,5 +1,9 @@
 # CajunWebPro current status
 
+## Isolated renewal service agreements — 2026-10-16
+
+On `codex/twentyi-domain-renewal-agreements` from c1743664, connect exact pending renewal requests to existing one-time USD service agreements. Source-reviewed immutable binding/reoffer history and generic captured-form/hosting exclusion hooks are applied in this isolated lane. No provider purchase, invoice generator, payment or licensing change. Local69+69 pure checks and PHP syntax pass; focused native and combined browser acceptance remain pending. Root preserves its newer combined handoff when integrating. [Bounded scope and review corrections](docs/TWENTYI_DOMAIN_RENEWAL_AGREEMENTS.md).
+
 Latest main `18766495dd36b53eb1313cc535ac2a7c8a794d26` changes handoff only; site/tests/workflows remain identical to reviewed94c879. Its reported acceptance run was not independently verified. Prior read-only source review remains applicable: mutation serialization must be preserved, while populated pre-master migration and internal-master customer-delivery findings remain open. Five explicit merge conflicts and one silent setup-form obstruction are mapped; this is source review, not merged/native acceptance.
 
 Updated 2026-10-16 UTC. **1.24.0 is published; 1.25.0 is unreleased. Full20i integration and the broader roadmap are unfinished.**

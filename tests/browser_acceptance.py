@@ -240,6 +240,8 @@ try:
         document_roots_browser(globals(),browser)
         from provider_package_force_ssl_cases import run_browser as package_force_ssl_browser
         package_force_ssl_browser(globals(),browser)
+        from domain_renewal_agreements_cases import run_browser as renewal_agreements_browser
+        renewal_agreements_browser(globals(),browser)
         from provider_schedule_cases import run_browser as schedule_browser
         schedule_browser(globals(),browser)
         browser.close()

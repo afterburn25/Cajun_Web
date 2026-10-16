@@ -19,7 +19,9 @@ if($view==='service-agreement') {
     echo '<p><strong>'.esc($item['client']['name']).'</strong> · '.esc(service_plans_agreement_label($doc)).'</p>';
     if(!$item['client']['active'])echo '<div class="notice warning">This client account is inactive. Existing agreements can still be ended or paused; activation and resumption require an active client account.</div>';
     service_plans_terms_view(ServicePlanDocument::fromJson(service_plans_json($doc->data()['plan'])));
-    service_plans_agreement_controls($doc,true,$item['client']['active']);service_plans_agreement_history($doc);service_orders_ui($doc,true);return;
+    require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_agreements.php';require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_agreements_views.php';
+    $renewalContext=domain_renewal_agreements_context($id,(int)$doc->data()['client_id'],false);if($renewalContext!==null)domain_renewal_agreements_card($renewalContext);
+    service_plans_agreement_controls($doc,true,$item['client']['active'],$renewalContext);service_plans_agreement_history($doc);if($renewalContext===null)service_orders_ui($doc,true);return;
 }
 $id=service_plans_form_text($_GET,'record',32);$doc=$id===''?null:service_plans_get($id);$model=$doc?->model();
 if(!$doc || $model->status()==='draft' || ($_POST['action']??null)==='service_plans_edit') {

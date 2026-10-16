@@ -16,7 +16,7 @@ function service_plans_portal_action(string $action,array $client):never {
     if(!is_string($_GET['agreement']??null) || $_GET['agreement']!==$intent['record_id'])throw new InvalidArgumentException('Reload the agreement you intend to change.');
     $command=match($action){'service_agreements_consent'=>'consent','service_agreements_cancel'=>'cancel','service_agreements_abandon'=>'abandon',default=>throw new InvalidArgumentException('Unknown agreement action.')};
     $args=match($command){'consent'=>['terms_hash'=>service_plans_form_hash($_POST,'terms_hash')],'cancel'=>['reason'=>service_plans_form_text($_POST,'reason',1000,true)],default=>[]};
-    service_plans_client_change($intent['record_id'],(int)$client['id'],$intent['revision'],$intent['event_id'],$command,$args,true);
+    service_plans_client_change($intent['record_id'],(int)$client['id'],$intent['revision'],$intent['event_id'],$command,$args,true,array_key_exists('renewal_binding',$_POST)?service_plans_form_hash($_POST,'renewal_binding'):null);
     flash($command==='consent'?'Your agreement to these service terms was recorded.':'Your service agreement was updated.');redirect(studio_url(['agreement'=>$intent['record_id']]));
 }
 function service_plans_portal_render(array $client,string $error):never {

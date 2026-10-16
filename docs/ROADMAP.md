@@ -1,3 +1,7 @@
+## Renewal retail workflow increment — 2026-10-16
+
+A source-reviewed isolated implementation links pending registered-domain renewal requests to existing one-time USD service agreements and retained reoffers. Client acceptance is separate from provider cost, eligibility, renewal submission and payment. Native/browser acceptance remains pending; complete domain registration/renewal commerce still requires verified provider contracts. [Feature and evidence boundaries](TWENTYI_DOMAIN_RENEWAL_AGREEMENTS.md).
+
 ## Combined website-folder and Force SSL observations — 2026-10-16
 
 Native-tested document roots and Force SSL flags join the normal root candidate. Both use explicit owner refresh, saved history and separate client sharing. Exact four-way focused archives are verified; combined packaged browser acceptance remains required. The previous03b browser stopped at a public-reference/provider-ID substring collision in a catalog privacy assertion; the test-only repair has13 passing regressions and independent offline layout review. Original failed evidence remains preserved. [Current handoff](../SESSION_HANDOFF.md).

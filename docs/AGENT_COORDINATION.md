@@ -1,5 +1,9 @@
 # Current CajunWebPro agent coordination
 
+## Domains lane: renewal agreements — 2026-10-16
+
+Domains owns `codex/twentyi-domain-renewal-agreements` from frozen c1743664, with dedicated binding/storage/schema/owner-view/tests and root-reviewed shared agreement/router hooks. Catalog independently reviews runtime and fixtures; root owns normal integration and combined acceptance. Root-approved patch636455de is applied only in this checkout. One focused native four-way run follows review/freeze; no new standalone full dispatch. Preserve root’s later directory/controls routes and concise handoff. Devin’s licensing lane is untouched.
+
 Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for complete20i P0, separate branches, sequential integration and verified incremental GitHub releases. Devin owns software-product licensing for other products. These assignments are ownership records, not proof of an active Devin session.
 
 | Owner | Current branch/checkpoint | Scope and next evidence |

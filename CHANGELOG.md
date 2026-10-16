@@ -1,3 +1,7 @@
+## Unreleased — renewal service agreement binding
+
+Allow studio-entered one-time USD service terms to be linked to an exact pending domain-renewal request, with explicit privacy scope, acceptance deadline and retained replacement-offer history. Reuse existing client consent/end actions and prevent generic hosting forms from bypassing the renewal binding. Source-reviewed; native/browser acceptance pending. No automatic provider renewal, charge or invoice generation.
+
 ## Unreleased — saved Force SSL flags and catalog privacy test repair
 
 Integrate native-tested owner refresh and separate client sharing of saved Force SSL flags, preserving false versus unavailable and immutable authority-bound history. This flag does not verify HTTPS or certificate health. Correct the browser privacy test to distinguish the exact public service reference from a private provider type, retaining private-value rejection and adding13 regressions with safe diagnostics. Combined package/browser acceptance remains pending.

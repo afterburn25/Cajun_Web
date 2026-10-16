@@ -1,3 +1,7 @@
+## 2026-10-16 — source-review renewal service agreement integration
+
+Starting c1743664 in isolated `codex/twentyi-domain-renewal-agreements`, implement dedicated canonical binding/history/schema and native owner/client product flow using existing one-time USD agreement journals. Root and Catalog source reviews identify and close indexed agreement-ID movement, optional-plan readiness ordering and malformed hidden-field redisplay. Root-approved shared patch636455de is applied locally with exact UTF-8/span verification. Local69+69 named pure tests,20 PHP syntax checks and browser AST pass. Native fixture covers actual generic wrappers, historical reoffers, expiry/revision/current-authority refusals, audit/row loss and serialized consent; browser fixture uses separate fresh installation and retains existing histories. Native/browser/package execution is not yet claimed; reviewed workflow/freeze and one automatic focused matrix are next, then root combined acceptance. No live provider, payment, mail, SSH, deployment or licensing edit.
+
 ## 2026-10-15 — preserve exact4f build and current review findings
 
 Starting4f683f88, verify the remote PR head and retain32 original CI run handles; all31 focused workflows succeed and full38839969235 is active. Initial Windows build3504 refused the missing explicit --commit after source checks. Corrected98832 targets exact4f; all11 outputs/source/member/directories/update payloads verify and are preserved. Documentation follow-up only; no shipping changes or new acceptance claim.
