@@ -226,6 +226,8 @@ try:
         service_plan_browser(globals(),browser)
         from recurring_billing_cases import run_browser as recurring_browser
         recurring_browser(globals(),browser)
+        from domain_contracts_cases import run_browser as domain_contracts_browser
+        domain_contracts_browser(globals(),browser)
         from provider_cloud_providers_cases import run_browser as cloud_providers_browser
         cloud_providers_browser(globals(),browser)
         from provider_registration_periods_cases import run_browser as registration_periods_browser

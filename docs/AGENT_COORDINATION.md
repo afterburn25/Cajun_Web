@@ -1,3 +1,7 @@
+## Current combined discovery integration — 2026-10-15
+
+Root combines registration options, owner-only cloud identifiers and exact client-domain renewal-date observations through sequential normal merges, preserving scheduler guards and all original evidence. Both cloud/date commits are pushed together for fresh combined acceptance. PHP-version1c500566/PR155 remains separate under GitHub native/browser testing; Devin retains licensing. [Authoritative source/evidence/next-action guide](TWENTYI_DISCOVERY_INTEGRATION.md). Full20i and1.25.0 remain unfinished.
+
 ## Current cloud-provider integration — 2026-10-15
 
 Root combines accepted owner-only cloud identifier observations with registration periods and the scheduler queue through a normal210+e006 merge. Reviewed date-reader5b is next; push both normal merges together for fresh combined acceptance. Parent210 packages are verified, original full runs remain intact, and the PHP-version lane stays separate under regression work. [Precise source, evidence and remaining gates](TWENTYI_CLOUD_PROVIDERS.md#root-cloud-provider-integration--2026-10-15). Devin owns licensing; full20i remains active.
@@ -25,6 +29,17 @@ The new complete owner API reference34e713 is preserved/indexed separately from 
 ## Cloud-provider discovery ownership — 2026-10-15
 
 Cloud agent owns `codex/twentyi-cloud-providers` from17593061, new cloud-provider parser/storage/UI/tests and minimal shared inventory/controller/view wiring. Preserve the exact reviewed scheduler writer extraction and normal-merge domain optional binding/result union plus registration-period typed records. Cloud browser cases use real cooldowns near the end of the fixture; root scheduler remains last. Root cleared bounded source-recovery corrections; actual native/browser evidence is pending. Frozen forwarding1992 and earlier source/runs remain separate. [Scope](TWENTYI_CLOUD_PROVIDERS.md).
+
+## Renewal-date acceptance checkpoint — 2026-10-16 UTC
+
+Renewal-date PR152 is ready for root integration from corrected checkpoint `6ba2fb4e9f59fccc0c57d58554f743d55270f19d`, with shipping unchanged from `07817109a562bf716bd021149467dae125a6ede0`. All four exact native combinations pass60 native plus79 normal/79 minimal reader checks each. Actual browser artifact12023065488 verifies2038 HTTP executions/2027 unique labels, including49 date-workflow cases; all four owner/client desktop/mobile captures are inspected without a visual blocker. Full38841973723 is still running recovery; Apache/final source checks remain pending. Original078 full is terminal failure from the preserved fixture-only browser defect, although recovery/Apache passed. No release or live provider acceptance is claimed. [Exact evidence and limits](TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).
+
+### Preserved previous checkpoint
+
+Domain agent retains PR152. Shipping078 is frozen/native-verified; corrected browser fixture replaces timestamp rewriting with actual cooldown waits after an evidence-preserved browser failure. Root owns integration; no licensing or provider-write changes. [Evidence](TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).
+## Isolated registered-domain date observations — 2026-10-15
+
+Domain agent starts `codex/twentyi-domain-contracts` at175930618ab349246020602e634ce55ee49f176b; PR149 remains frozen. Implements a dedicated typed date reader, exact current registrar/client/account binding, shared refresh intents/results with recovery witnesses, and native owner/client dated observations. Read-only wire contract is the retained20i SDK1.0.6 example, not live account acceptance. New owner reference34e713c3 is inspected and kept distinct from old source. Local pure checks pass; native/browser/package acceptance remains pending. Root owns integration/releases; no live provider call, domain change, payment, mail, SSH, licensing edit or deployment. [Scope, shared interfaces, provenance and required evidence](TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).
 
 ## Current history integration evidence — 2026-10-15
 

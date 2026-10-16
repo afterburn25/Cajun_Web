@@ -4,6 +4,10 @@
 
 # Complete 20i requirements and evidence
 
+## Current combined discovery integration — 2026-10-15
+
+Root combines registration options, owner-only cloud identifiers and exact client-domain renewal-date observations through sequential normal merges, preserving scheduler guards and all original evidence. Both cloud/date commits are pushed together for fresh combined acceptance. PHP-version1c500566/PR155 remains separate under GitHub native/browser testing; Devin retains licensing. [Authoritative source/evidence/next-action guide](TWENTYI_DISCOVERY_INTEGRATION.md). Full20i and1.25.0 remain unfinished.
+
 ## Current cloud-provider integration — 2026-10-15
 
 Root combines accepted owner-only cloud identifier observations with registration periods and the scheduler queue through a normal210+e006 merge. Reviewed date-reader5b is next; push both normal merges together for fresh combined acceptance. Parent210 packages are verified, original full runs remain intact, and the PHP-version lane stays separate under regression work. [Precise source, evidence and remaining gates](TWENTYI_CLOUD_PROVIDERS.md#root-cloud-provider-integration--2026-10-15). Devin owns licensing; full20i remains active.

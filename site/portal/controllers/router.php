@@ -4,6 +4,8 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }boot();require CWP_C
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_search.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/mailboxes.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/domain_renewals.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/domain_contracts.php';
+if(array_key_exists('domain_dates',$_GET))header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/portal/controllers/service_observations.php';
 if(array_key_exists('service_history',$_GET))header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/portal/controllers/forwarding.php';
@@ -33,6 +35,7 @@ if(isset($_GET['services']))provider_services_portal_render();
 require CWP_CODE_ROOT.'/portal/views/auth.php';
 if(array_key_exists('domains',$_GET))provider_domain_client_render($client,$error);
 if(array_key_exists('hosting_mail',$_GET))provider_mailbox_client_render($client,$error);
+if(array_key_exists('domain_dates',$_GET))domain_contracts_client_render($client);
 if(array_key_exists('domain_renewals',$_GET))domain_renewals_client_render($client,$error);
 if(array_key_exists('service_history',$_GET))service_observations_client_render($client);
 if(array_key_exists('forwarding',$_GET))provider_forwarding_client_render($client,$error);

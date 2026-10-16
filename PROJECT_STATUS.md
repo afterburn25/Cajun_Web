@@ -1,3 +1,9 @@
+## Current combined discovery integration — 2026-10-15
+
+Root normally integrates reviewed cloud-provider identifiers as1e2ba841, then date-reader5b into the existing registration-option queue. Owners can refresh these saved observations; clients see only their own domain dates and currently offered registration options. Shared context, history, transaction guards and scheduler-last test order are preserved. Incoming native/browser evidence and actual views are verified; source/local checks pass after correcting an independently caught merge syntax error. Fresh combined runtime acceptance remains required.
+
+[Exact sources, artifacts, review findings and next actions](docs/TWENTYI_DISCOVERY_INTEGRATION.md). Parent210 packages and eight focused artifacts are verified; its original full remains active. PHP-version1c500566/PR155 is separately frozen in GitHub testing. Devin owns licensing. Published1.24.0 is unchanged;1.25.0 and full20i remain unfinished. Earlier entries below retain historical scope.
+
 ## Current cloud-provider integration — 2026-10-15
 
 Root normally merges reviewed cloud-provider observations e006/6eee into the registration-period queue210. The existing period reader and scheduled package reads are preserved; owner-only cloud identifiers remain distinct from specifications, prices or purchase. Incoming native/browser evidence and actual desktop/mobile views are verified. Local combined source, installer, route, pure and syntax checks pass; fresh combined application acceptance remains required. [Exact integration and evidence](docs/TWENTYI_CLOUD_PROVIDERS.md#root-cloud-provider-integration--2026-10-15).
@@ -35,6 +41,17 @@ Cloud agent owns `codex/twentyi-cloud-providers` from `175930618ab349246020602e6
 Independent root source review identified and then cleared paired-history-loss, unbounded PHP history loading and insertion-sequence tampering gaps. Transactional independent counts, exact common/dedicated audit correspondence and SQL-verifiable witnesses now protect sequence-selected observations; each complete list, including an empty list, gets an immutable HMAC-bound document. No read-path repair. The scheduler recorder extraction is preserved; domain-contract and registration-period shared edits require a normal union at root integration.
 
 Local validation passes 85 dedicated synthetic cases in both PHP modes, existing 139 inventory/28 reader/82 cloud-reader checks, touched PHP/Python syntax and whitespace. Native four-way SQL/PHP parity, actual packaged browser screens and final package acceptance are pending. No live provider call, deployment or release. [Contract, boundaries and evidence](docs/TWENTYI_CLOUD_PROVIDERS.md).
+
+## Renewal-date acceptance checkpoint — 2026-10-16 UTC
+
+Renewal-date PR152 is ready for root integration from corrected checkpoint `6ba2fb4e9f59fccc0c57d58554f743d55270f19d`, with shipping unchanged from `07817109a562bf716bd021149467dae125a6ede0`. All four exact native combinations pass60 native plus79 normal/79 minimal reader checks each. Actual browser artifact12023065488 verifies2038 HTTP executions/2027 unique labels, including49 date-workflow cases; all four owner/client desktop/mobile captures are inspected without a visual blocker. Full38841973723 is still running recovery; Apache/final source checks remain pending. Original078 full is terminal failure from the preserved fixture-only browser defect, although recovery/Apache passed. No release or live provider acceptance is claimed. [Exact evidence and limits](docs/TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).
+
+### Preserved previous checkpoint
+
+Renewal-date source07817109 / PR152 passes verified native60+79+79 in all four combinations. Full38839208232 passed package/native but browser failed after1992 checks because the new fixture temporarily changed an earlier immutable observation epoch. Only test setup is corrected to wait for real cooldown; no shipping changes. Corrected browser/screens are pending. See [exact evidence](docs/TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).
+## Isolated registered-domain date observations — 2026-10-15
+
+Domain agent starts `codex/twentyi-domain-contracts` at175930618ab349246020602e634ce55ee49f176b; PR149 remains frozen. Implements a dedicated typed date reader, exact current registrar/client/account binding, shared refresh intents/results with recovery witnesses, and native owner/client dated observations. Read-only wire contract is the retained20i SDK1.0.6 example, not live account acceptance. New owner reference34e713c3 is inspected and kept distinct from old source. Local pure checks pass; native/browser/package acceptance remains pending. Root owns integration/releases; no live provider call, domain change, payment, mail, SSH, licensing edit or deployment. [Scope, shared interfaces, provenance and required evidence](docs/TWENTYI_DOMAIN_CONTRACT_OBSERVATIONS.md).
 
 # CajunWebPro integration queue — 2026-10-15
 

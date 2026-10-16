@@ -1,3 +1,7 @@
+## Unreleased — client domain renewal-date observations
+
+Normally integrate explicit owner refresh and private client display of saved provider renewal dates with registration options and cloud-provider identifiers. Preserve exact current assignment/account/source binding, typed scalar/list separation, current-versus-historical failures and scheduler authority. Correct a locally caught merge syntax error before publication and regenerate installer hashes. Combined runtime acceptance and release remain pending.
+
 ## Unreleased — observed cloud-provider identifiers
 
 Normally integrate explicitly refreshed owner-only cloud-provider observations with registration options, preserving current/historical labels, both typed list readers and the shared guarded recorder. Retain the verified binary SQL witness correction and all original failures. Current combined acceptance and publication remain pending.
@@ -39,6 +43,13 @@ Use explicit binary concatenation for cloud-provider retained audit witnesses so
 ## Unreleased — observed account cloud providers
 
 Add an explicit owner refresh for documented account cloud-provider identifiers, dated immutable observations and honest current/historical/empty/unavailable displays. Reuse the existing fixed GET reader, credentials, durable intent/result storage and guarded recorder. Refuse incomplete retained history, changed context and reordered refreshes. No server ordering or runtime controls are added. Source-reviewed; native/browser and exact package acceptance pending.
+
+## Unreleased — explicit domain renewal-date observations
+
+- Exact corrected checkpoint6ba now has four verified native combinations and2038 passing HTTP executions, including49 date checks and four inspected desktop/mobile captures. Shipping remains078; the original failed fixture evidence is retained.
+- Test-only renewal-date browser correction preserves all inherited observation timestamps and waits for actual cooldown. Exact078 native matrix passed; its first browser checkpoint failed before new date screens. No shipping behavior changed.
+
+Adds saved date-only provider observations and history for exact current registered-domain assignments, explicit owner refresh and private client display. Corrected exact native and browser acceptance now verifies the saved-date workflow; combined integration and full-run completion remain pending. No renewal or registry-expiry claim.
 
 ## Unreleased integration queue — client hosting history
 
