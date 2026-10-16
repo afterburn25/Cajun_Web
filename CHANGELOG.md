@@ -4,7 +4,11 @@ Includes the hosting/domain/cloud observations, explicit assignments, reviewed c
 
 The [acceptance report](docs/TEST_REPORT_1.25.0.md) records source-specific results and limits. This source change entry does not assert publication or live deployment. The release assets and verification receipts establish those later outcomes.
 
-## 2026-10-16 — actual upgrade fixture correction and focused diagnostic
+## 2026-10-16 — package acquisition retry and retained b42 evidence
+
+Starting from b42, add bounded APT acquisition retries and strict index-update failure handling while retaining every runtime selection, application test and release gate. Clarify the generic migration/directory introductions without changing substantive instructions or removing historical records. Retain eight original 061/e713 PPA HTTP 503 setup failures and two successful setup comparisons. B42 Windows packages and e713 focused maintained-cloud results pass only their named scopes; original b42 upgrade diagnostic 38951170365 was still in setup at the documentation cutoff. No complete descendant acceptance, publication or live deployment is claimed.
+
+## Historical checkpoint — actual upgrade fixture correction and focused diagnostic (2026-10-16)
 
 Correct the release-only CLI fixture to use the actual Apache public root, preserving its historical defaults and production vault boundary. Add an exact-source published1.24 upgrade diagnostic for faster failure investigation; every complete candidate/main gate remains required. Align fixture source hashes and clarify historical versus current release documentation. Parent e713 focused probe and four-environment ForceSSL checks pass their bounded scopes; corrected real upgrade execution remains required. No new feature or shipping-runtime change.
 

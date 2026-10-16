@@ -8,7 +8,15 @@ Keep all148 native recipes, complete PHP8.2/8.4 × MariaDB10.11/MySQL8.4 environ
 
 The tracked [acceptance report](docs/TEST_REPORT_1.25.0.md) has an explicit source/evidence cutoff. Final exact-main and publication facts belong in the external release report and receipts once those events occur; do not amend an accepted source merely to insert its own future test results. Verify identical versioned/compatibility report asset bytes before publication. No live deployment is authorized. Resume remaining20i only after the release and downloads are verified.
 
-## 2026-10-16 — actual upgrade fixture correction and focused diagnostic
+## 2026-10-16 — package acquisition retry and retained b42 evidence
+
+Base this combined correction on frozen `b42dda4cf763ca48a90b145673214a9641b2e024`; do not invent its descendant identity or reuse parent acceptance. Batch only the reviewed APT acquisition policy (`6dd1e097`, workflow `dacb9292`) and neutral/historical instruction addendum (`76906652`) with these checkpoint records. The policy changes eight updates/eight installs, uses five acquisition retries and update error mode `any`, and leaves application tests, package selection, signatures and TLS unchanged.
+
+Preserve b42 exact Windows proof `45f34633` (5915/2887/2874 members), e713 focused maintained-cloud proof `36aaf524` (four 755-execution environments plus 260 distro/minimal checks), and original setup classification `fe776245` (eight PPA HTTP 503 failures: seven DEB/one index; two successful same-runtime/source comparisons). Source/script review is not a package-acquisition or application pass. Older failed/cancelled records and immutable 1.24 assets remain intact.
+
+The original b42 upgrade diagnostic 38951170365 attempt 1 was in runtime setup at the retained 19:15 UTC snapshot; no pass is claimed. Root follows that original run. Only after actual diagnostic success should the frozen descendant receive a new complete four-environment matrix and maintained lane. Bind new evidence helpers to its observed source/run IDs, preserving earlier chains. Required exact-candidate/main, upgrade, image, package and downloaded-release gates remain. Last verified main is `d7153b07`; no 1.25 publication or live deployment has occurred.
+
+## Historical checkpoint — actual upgrade fixture correction and focused diagnostic (2026-10-16)
 
 The correction starts from `e713623cb93c98642ca8fd1dd61f66a9b72112e2` on `codex/release-1.25.0`; the enclosing Git history identifies the corrected source. The original13a full run [38942023179](https://github.com/afterburn25/Cajun_Web/actions/runs/38942023179), Apache job117113081566, passed its prior Apache checks but stopped after five actual1.24 upgrade checks during original mail-account seeding. Failure proof `ab76032d` retains the source/preview tree, artifact digest,116-member partition and explicit exception. No upgrade scope or new upgrade capture completed.
 

@@ -45,7 +45,22 @@ Parent061 Windows packages pass exact source, member/directory/checksum, install
 
 Parent061 original full runs38943147018/38943159324/38943171219/38943182554 and maintained38943195376 stay preserved; they cannot certify this new source. Next: push the corrected candidate, rebuild exact packages, dispatch its original complete four-environment matrix and maintained lane, verify all actual results/captures and review the exact source. Then normal-merge, repeat complete exact-main acceptance, publish and download-verify every asset. Main remains `d7153b07`; stable1.24/tag/assets remain unchanged. No1.25 release or live deployment exists.
 
-## 2026-10-16 — actual upgrade fixture correction and focused diagnostic
+## 2026-10-16 — package acquisition retry and retained b42 evidence
+
+This documentation checkpoint starts from exact b42 (`b42dda4cf763ca48a90b145673214a9641b2e024`, tree `33d375ff80a2cd7b930bd95f93272f09ce2501c8`). The enclosing history identifies any combined descendant. No result below certifies that later source.
+
+| Retained evidence | Actual result and limit |
+|---|---|
+| B42 Windows packages, proof `45f34633` | PASS exact Git bytes, archive members/directories/checksums, installer and updater:5,915 FULL / 2,887 COMPLETE / 2,874 UPDATE. Linux agreement and complete application acceptance are separate. |
+| E713 maintained-cloud38946715775 attempt 1, proof `36aaf524` | PASS all four focused environments, 755 named executions each, plus 260 maintained PHP 8.3/minimal checks. Focused evidence only; no complete-release clearance. |
+| Original061/e713 setup classification `fe776245` | Eight PPA HTTP 503 setup failures: seven DEB downloads and one index retrieval. Two same-runtime/source setup comparisons succeeded. The failed jobs did not reach application tests. |
+| B42 upgrade diagnostic 38951170365 attempt 1 | At the retained 19:15 UTC snapshot, runtime setup was in progress. No diagnostic, upgrade or application pass is claimed. |
+| APT policy proposal `6dd1e097`, workflow `dacb9292` | Source/YAML/Bash review only. Five acquisition retries on eight updates/eight installs; error mode `any` on all updates. Tests, selected packages, signature/TLS checks and reports unchanged. No actual corrected acquisition result yet. |
+| Instruction addendum `76906652` | Two neutral/historical introductions; substantive migration/directory procedures and historical evidence preserved. No execution or acceptance claim. |
+
+Retain all original failed/cancelled attempts and evidence. After actual focused upgrade-diagnostic success, require the complete four-environment matrix and maintained lane on the frozen descendant, all 148 native recipes, 160 browser/204 final report contracts, real 1.24 upgrades and actual image review. Then require normal merge, complete exact-main acceptance, package agreement and downloaded-asset verification. Last verified main remains `d7153b07`; 1.25 is unpublished and no live deployment occurred. Final exact-main/publication facts belong in external source-bound receipts, without editing an accepted source to insert its future result.
+
+## Historical checkpoint — actual upgrade fixture correction and focused diagnostic (2026-10-16)
 
 The correction starts from `e713623cb93c98642ca8fd1dd61f66a9b72112e2` on `codex/release-1.25.0`; the enclosing Git history identifies the corrected source. The original13a full run [38942023179](https://github.com/afterburn25/Cajun_Web/actions/runs/38942023179), Apache job117113081566, passed its prior Apache checks but stopped after five actual1.24 upgrade checks during original mail-account seeding. Failure proof `ab76032d` retains the source/preview tree, artifact digest,116-member partition and explicit exception. No upgrade scope or new upgrade capture completed.
 

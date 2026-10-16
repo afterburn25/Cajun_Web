@@ -1,4 +1,14 @@
-## 2026-10-16 — actual upgrade fixture correction and focused diagnostic
+## 2026-10-16 — package acquisition retry and retained b42 evidence
+
+Preparation source is `b42dda4cf763ca48a90b145673214a9641b2e024`, tree `33d375ff80a2cd7b930bd95f93272f09ce2501c8`. Its exact Windows verification `45f34633` passes all source/member/directory/checksum, installer and strict updater checks: 5,915 FULL, 2,887 COMPLETE, 2,874 UPDATE members. Those preserved packages do not certify a future descendant.
+
+The retained e713 maintained-cloud run 38946715775 attempt 1 independently verifies all four focused PHP 8.2/8.4 × MariaDB 10.11/MySQL 8.4 archives (755 named executions per environment) plus 260 PHP 8.3 distro/minimal checks; proof `36aaf524` explicitly denies full application/release clearance. Read-only classification `fe776245` preserves eight original 061/e713 setup failures caused by PPA HTTP 503: seven DEB fetches and one index fetch, plus two successful same-runtime/source setup comparisons. The failed jobs did not reach application tests. This classification does not replay, cancel or relabel any original attempt.
+
+The bounded workflow proposal `6dd1e097` produces application YAML `dacb9292`: add `Acquire::Retries=5` to eight updates/eight installs and `APT::Update::Error-Mode=any` to those updates. All other YAML values, test commands and report contracts remain unchanged; package selection, signature/TLS checks and error exits remain. Source/YAML/Bash checks are distinct from executing package acquisition. Neutral/historical instruction proposal `76906652` changes two introductions, preserving all operational instructions and historical records. Root combines these reviewed changes once; this entry does not invent the resulting commit or application outcome.
+
+Original b42 focused upgrade diagnostic 38951170365 attempt 1 was still in runtime setup in the retained 19:15 UTC metadata. No upgrade pass is established. Require an actual diagnostic pass before new complete descendant PHP/database and maintained runs; then inspect exact candidate source/images/packages, normally merge and repeat complete exact-main acceptance before immutable publication and fresh all-asset verification. Main was last verified at `d7153b076e91b524ff2f99a9a7aa5c910551fc5e`; 1.25 remains unpublished and no live deployment occurred. Earlier failures, cancellations and their corrections remain preserved below.
+
+## Historical checkpoint — actual upgrade fixture correction and focused diagnostic (2026-10-16)
 
 The correction starts from `e713623cb93c98642ca8fd1dd61f66a9b72112e2` on `codex/release-1.25.0`; the enclosing Git history identifies the corrected source. The original13a full run [38942023179](https://github.com/afterburn25/Cajun_Web/actions/runs/38942023179), Apache job117113081566, passed its prior Apache checks but stopped after five actual1.24 upgrade checks during original mail-account seeding. Failure proof `ab76032d` retains the source/preview tree, artifact digest,116-member partition and explicit exception. No upgrade scope or new upgrade capture completed.
 

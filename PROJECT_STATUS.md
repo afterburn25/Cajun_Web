@@ -10,7 +10,15 @@ Use the [migration instructions](docs/MIGRATION-INSTRUCTIONS-1.25.0.md) with the
 
 Devin continues the [non-20i assignment](DEVIN_START_HERE.md) on separate branches. Unaccepted proposals stay outside the frozen scope unless a reviewed release blocker requires a narrow correction.
 
-## 2026-10-16 — actual upgrade fixture correction and focused diagnostic
+## 2026-10-16 — package acquisition retry and retained b42 evidence
+
+This combined release-only checkpoint starts from `b42dda4cf763ca48a90b145673214a9641b2e024`; its enclosing Git history identifies the descendant. Bounded feature scope is unchanged. The accompanying workflow correction adds five APT acquisition retries to eight update/eight install commands and makes all eight updates fail on any index error. It preserves selected PHP packages, signature/TLS checks, all 148 native recipes, runtime probes, 160 browser/204 final reports and application-test failure behavior. The two instruction introductions are made neutral or explicitly historical; substantive procedures remain intact.
+
+Exact b42 Windows packages pass source/member/checksum/installer/updater verification (5,915 FULL / 2,887 COMPLETE / 2,874 UPDATE; proof `45f34633`). Actual e713 maintained-cloud run [38946715775](https://github.com/afterburn25/Cajun_Web/actions/runs/38946715775) passes four focused environments at 755 named executions each plus 260 maintained PHP 8.3/minimal checks (proof `36aaf524`). These results are limited to their respective sources and scopes.
+
+Eight original 061/e713 jobs failed during setup on PPA HTTP 503 responses: seven package downloads and one index retrieval. Two same-runtime/source setup comparisons succeeded; neither fact establishes application acceptance (classification `fe776245`). At the retained 19:15 UTC snapshot, b42 upgrade diagnostic [38951170365](https://github.com/afterburn25/Cajun_Web/actions/runs/38951170365), attempt 1, was still preparing its runtime and had not passed. Preserve every original failure/cancellation. After an actual diagnostic pass, freeze and test the descendant through the complete four-environment matrix and maintained lane, then source/visual/package review, normal merge, complete exact-main acceptance and all-asset download verification. Last verified main remains `d7153b07`; 1.25 is unpublished and no live deployment occurred.
+
+## Historical checkpoint — actual upgrade fixture correction and focused diagnostic (2026-10-16)
 
 The correction starts from `e713623cb93c98642ca8fd1dd61f66a9b72112e2` on `codex/release-1.25.0`; the enclosing Git history identifies the corrected source. The original13a full run [38942023179](https://github.com/afterburn25/Cajun_Web/actions/runs/38942023179), Apache job117113081566, passed its prior Apache checks but stopped after five actual1.24 upgrade checks during original mail-account seeding. Failure proof `ab76032d` retains the source/preview tree, artifact digest,116-member partition and explicit exception. No upgrade scope or new upgrade capture completed.
 
