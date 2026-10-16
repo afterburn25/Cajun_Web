@@ -1,3 +1,7 @@
+## Unreleased — isolated package document-root reader
+
+Add a pure fixed package GET parser for the documented DNS-name→subdirectory string map. Preserve decoded names/paths as observations, reject duplicate keys and credential echoes, distinguish an empty object from the documented empty-array error, and bind the read to exact local assignment witnesses under a dedicated operation.143 local pure cases pass per mode. No shipping integration or filesystem action. [Scope](docs/TWENTYI_DOCUMENT_ROOTS_CONTRACT.md).
+
 ## Unreleased — registration-period browser owner isolation
 
 Correct the combined browser fixture's exhausted shared-owner read budget by creating and activating a dedicated synthetic owner through existing admin forms. Preserve every original account, intent, audit, epoch, production limit and cooldown; retain response/counter diagnostics and exact history checks. Application source and installer are unchanged; actual combined acceptance remains required.

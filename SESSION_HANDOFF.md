@@ -2,6 +2,10 @@
 
 Updated 2026-10-16 UTC. Full roadmap remains active with complete20i P0 priority. **1.25.0 is unreleased.** [Status](PROJECT_STATUS.md), [agreement](AGENTS.md), [requirements](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md).
 
+## This isolated branch
+
+`codex/twentyi-document-roots-contract` starts at427e3a233706f22cd39918d8b97256a7fb2b1e90 and preserves DNS96fba852/23cba4be. Only pure document-root binding/observation/reader, synthetic tests, a narrow no-network PHP8.2/8.4 workflow and documentation change.143 local normal/minimal checks pass. Root approved the exact GET/direct-map contract: {} is explicitly an empty validated map, [] is unavailable, and paths remain exact text with no filesystem or confinement meaning. Root independently cleared stable source; the approved narrow no-network workflow awaits its single automatic exact-head run; application/shared wiring is outside this task. [Missing integration prerequisites and proof](docs/TWENTYI_DOCUMENT_ROOTS_CONTRACT.md).
+
 ## Current source
 
 Root checkout `work/20i-next-integration`, branch `codex/twentyi-next-integration`, draft [PR151](https://github.com/afterburn25/Cajun_Web/pull/151), base a9637f2b. Normal domain merge4b78a59b6abc86e4259e1e0a8f0cb79a83c17d08 preserves root0b4c068d plus exact a132b5b3. The enclosing normal PHP merge has parents4b78a59b and cfc6ecd034ad93cb317fe156ed0621fa50436c10, reviewed shared preview plus test-only dedicated PHP owner85ea7586. Domain/period histories remain intact. Installer refresh passes;2,760 shipping files match2,759 staged inventory hashes. Shared mirror, changed PHP/Python syntax, automatic-glue review and eight synthetic reader reports pass.
