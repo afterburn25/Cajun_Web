@@ -1,0 +1,50 @@
+name: Pure cloud catalog request contract
+on:
+  push:
+    branches: [main, codex/twentyi-cloud-catalog-contract]
+    paths: ['foundation/twentyi-cloud-catalog/**', 'tests/twentyi-cloud-catalog-contract/**', '.github/workflows/cloud-catalog-contract.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cloud-catalog-contract-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  contract:
+    name: Cloud catalog contract PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Check documentation links
+        run: python -B tools/check_docs.py
+      - name: Prepare official PHP
+        run: docker pull php:${{ matrix.php }}-cli
+      - name: Pure request contract without network or application
+        run: |
+          mkdir -p qa
+          docker run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges \
+            --user "$(id -u):$(id -g)" -v "$PWD:/workspace" -w /workspace php:${{ matrix.php }}-cli sh -ec '
+              php -l foundation/twentyi-cloud-catalog/CloudProviderCatalogBinding.php
+              php -l foundation/twentyi-cloud-catalog/CloudProviderCatalogRequest.php
+              php -l tests/twentyi-cloud-catalog-contract/run.php
+              php tests/twentyi-cloud-catalog-contract/run.php qa/cloud-catalog-contract-default.json
+              php -n tests/twentyi-cloud-catalog-contract/run.php qa/cloud-catalog-contract-minimal.json
+            '
+          git diff --exit-code
+      - name: Preserve named contract evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloud-catalog-contract-${{ matrix.php }}-${{ github.sha }}
+          path: |
+            qa/cloud-catalog-contract-default.json
+            qa/cloud-catalog-contract-minimal.json
+          if-no-files-found: error
+          retention-days: 14

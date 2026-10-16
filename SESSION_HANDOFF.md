@@ -2,6 +2,10 @@
 
 Updated 2026-10-16 UTC. Full roadmap remains active with complete20i P0 priority. **1.25.0 is unreleased.** [Status](PROJECT_STATUS.md), [agreement](AGENTS.md), [requirements](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md).
 
+## Isolated cloud request contract — 2026-10-16 UTC
+
+This branch is `codex/twentyi-cloud-catalog-contract`, checkout `work/20i-cloud-catalog-contract`, based on exact frozen427e3a233706f22cd39918d8b97256a7fb2b1e90. It adds only two pure foundation files, their exact contract tests and a narrow PHP8.2/8.4 workflow plus documentation. Local141 distinct checks pass normal/minimal modes and syntax passes. Root reviewed exact source7cc758ab/574d721a/test93c3f406 with no blocker for pure-only scope. Freeze/push once, follow the automatically triggered pure workflow and verify both named-report artifacts; no separate native/full run. No site/mirror/transport/parser/installer change or live request. [Sources, binding limits and next review](docs/TWENTYI_CLOUD_CATALOG_CONTRACT.md). Keep root427 and PHPcfc6 acceptance frozen; the root handoff below retains its original integration scope.
+
 ## Current source
 
 Root checkout `work/20i-next-integration`, branch `codex/twentyi-next-integration`, draft [PR151](https://github.com/afterburn25/Cajun_Web/pull/151), base a9637f2b. Normal domain merge4b78a59b6abc86e4259e1e0a8f0cb79a83c17d08 preserves root0b4c068d plus exact a132b5b3. The enclosing normal PHP merge has parents4b78a59b and cfc6ecd034ad93cb317fe156ed0621fa50436c10, reviewed shared preview plus test-only dedicated PHP owner85ea7586. Domain/period histories remain intact. Installer refresh passes;2,760 shipping files match2,759 staged inventory hashes. Shared mirror, changed PHP/Python syntax, automatic-glue review and eight synthetic reader reports pass.

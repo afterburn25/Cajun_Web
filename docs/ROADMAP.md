@@ -1,3 +1,7 @@
+## Cloud catalog contract groundwork — 2026-10-16
+
+Isolated427 descendant adds only a pure exact provider-list binding and unsent specs/zones POST description with141 local checks per PHP mode. Full response schemas, native catalog, prices/entitlements and purchases remain unfinished. Root source review is clear; focused acceptance is pending; no shipping change enters frozen427. [Contract, evidence and limitations](TWENTYI_CLOUD_CATALOG_CONTRACT.md).
+
 ## Combined domain and PHP observation candidate — 2026-10-16 UTC
 
 The owner's complete20i request continues through a normal merge of domain integration4b78a59b and frozen PHPcfc6ecd0. Exact a132 domain shipping remains; cfc6 PHP scalar observation, current hosting authority, order/credential defenses, explicit client sharing, storage and forms join the candidate. Shared seven-file preview is root/catalog reviewed, preserving positional domainContext read6/refresh8, named packageContext read7/refresh9, exclusive typed writers, all period/cloud/date hooks and scheduler guard. Automatic navigation/router merges are separately checked; transport mirror and installer inventory are regenerated.

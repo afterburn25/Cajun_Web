@@ -1,3 +1,7 @@
+## Unreleased — pure cloud catalog request contract
+
+Add an immutable supplied-provider-list binding and an unsent fixed specs/zones lookup description, with141 named local contract cases per PHP mode. Preserve exact provider identity and reject altered or stale context. No response envelope, account authorization, usable catalog, transport admission or server purchase is inferred. Root source review clear; focused acceptance pending; shipping and published releases remain unchanged.
+
 ## Unreleased — registration-period browser owner isolation
 
 Correct the combined browser fixture's exhausted shared-owner read budget by creating and activating a dedicated synthetic owner through existing admin forms. Preserve every original account, intent, audit, epoch, production limit and cooldown; retain response/counter diagnostics and exact history checks. Application source and installer are unchanged; actual combined acceptance remains required.
