@@ -1,3 +1,16 @@
+## Main ee97 invoice-linked licensing review — 2026-10-16 UTC
+
+Read-only exact main `ee97ce3bbe965d9878b5a7b4b7b6ff368ce04893` adds invoice-linked licensing over reviewed187 through runtime dce58a9b. New licenses have nullable unique invoice_id, paid fulfillment looks up that invoice, and a second paid invoice can create a second license for the same product. Migration and fresh installation use license_schema_version2. Preserve these changes and serialized mutation helpers at eventual integration; earlier guidance to retain licensing marker1 is superseded by marker2. Inventory marker5 and root physical-storage/support/invoice guards remain required. Six current preview conflicts include both handoff and session log; the unprepared setup-form ordering concern remains.
+
+Source findings still open under Devin:
+
+- The migration adds invoice_id but still has no ALTER for pre-master is_master, and unmarked populated adoption is refused. Existing pre-master installations still need a supported preserved-data upgrade.
+- Five customer/master-delivery files are byte-identical to187: the portal can show an active customer-associated master key, and bundle creation/direct download still lack the internal-master exclusion described below.
+- Existing version1 licenses receive NULL invoice_id. New fulfillment searches only by invoice_id, so retrying a historical invoice already fulfilled under version1 can create another license. Provide a supported legacy reconciliation policy and upgrade/retry tests; customer/product alone cannot establish a unique historical invoice association.
+- The migration writes marker2 for every nonempty prior marker after schema validation. Unknown/future-marker refusal and interrupted-upgrade behavior need explicit handling and tests.
+
+The five new native assertions exercise fresh invoice fulfillment and unique-index rejection; `tests/license_native.php` does not invoke `license_migrate()`. This source review does not claim a native upgrade reproduction or acceptance of newly reported licensing workflows. Exact changed/retained hashes and normal merge preview are in work/main-ee97-licensing-source-review.json, SHA256ba25c238b124788c79981a2a2c71d4cd3963a517b7f5ea9a119ba5e3c010642f. New main was fetched and reviewed only; no licensing source was imported or edited, no purchase/mail occurred, and no direct Devin message was sent.
+
 ## Main187 documentation-only delta — 2026-10-16 UTC
 
 Exact18766495dd36b53eb1313cc535ac2a7c8a794d26 is a direct docs-only child of reviewed94c879: only SESSION_HANDOFF.md changes to report acceptance38855488508. Its entire site tree remains14cfbbbfde6b3ee93455171dafaa10d83c54f778; tests/workflows and11 reviewed licensing/generated files are identical. No new or resolved source finding. The populated pre-master upgrade and internal-master customer projection/full-key/bundle/direct-download issues below remain open; retain serialized mutation helpers and root support/storage/invoice guards. Proof work/20i-document-roots-observations/qa/main187-licensing-delta-review.json. This source comparison does not independently verify the newly reported run, import licensing or prove Devin is active.

@@ -1,5 +1,13 @@
 # CajunWebPro current status
 
+## Latest main review and current acceptance — 2026-10-16 UTC
+
+All41 focused workflows for frozenc174 report success; original full38863417123 continues native integration after successful packaging. Exact Windows packages remain verified and unchanged. Directory-listing3bdba5eb single focused38864231460 is terminal success; all four actual archives independently verify127 new native cases plus157+157 pure,24+24 transport and five inherited native suites,1,035 executions each. Root proof work/directory-listing-root-native-verification.json SHA256d349ec483d232f6bde4f84f1e7d5eab0f49d7f1757cab1396bcb8be0c26f8ae2; combined browser acceptance remains pending. A read-only merge preview preserves all incoming non-Markdown bytes except the intentionally retained catalog test correction.
+
+Main advanced to ee97ce3bbe965d9878b5a7b4b7b6ff368ce04893 with invoice-linked licenses/schema version2. Read-only review retains the prior populated pre-master/internal-master delivery findings and identifies legacy invoice-retry and unknown-marker migration handling still needing evidence. Five master-delivery files are unchanged. Preserve invoice uniqueness, serialized helpers and marker2 at eventual main integration; no new licensing code is imported. [Exact source review](docs/LICENSING_INTEGRATION_REVIEW.md) remains under Devin ownership.
+
+VPS implements isolated Force SSL change controls through the existing gateway/ledger, with independent Catalog boundary review. Unknown sends remain fenced, exact newly returned GET evidence must still be latest at confirmation, and no HTTP response/TTL/attempt count proves completion. Interrupted-request operator recovery is still a named implementation requirement, not a completed control. Domains proposes a renewal request binding to existing one-time USD agreements, including captured-form protection and reoffer lifecycle; no separate quote/invoice engine or provider pricing schema is invented. Full20i and1.25.0 remain unfinished.
+
 ## Frozen candidate c174 and exact Windows packages — 2026-10-16 UTC
 
 Source **c1743664c9ea6d81abb0c2784c20a2fdee4720fd** is pushed on `codex/twentyi-next-integration`, [PR151](https://github.com/afterburn25/Cajun_Web/pull/151), with normal parentsb8a9a109/c06ea25d. Original automatic full [38863417123](https://github.com/afterburn25/Cajun_Web/actions/runs/38863417123), job116850691631, is in progress. CIa18736c19700af5c20092d0ef98111a36e7b51f5 and source share treecc3b68ac12b484ffda17ff80119b068da8594c8c. All42 original workflow handles are retained at work/20i-combined-c174-run-handles.json; the initial follow-up snapshot records22 successes,11 running and9 queued, not final acceptance.

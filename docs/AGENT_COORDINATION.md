@@ -7,8 +7,8 @@ Updated 2026-10-16 UTC. The owner authorizes Codex and three parallel agents for
 | Root | Frozenc174/CIa187, full38863417123 | Exact Windows packages verified; preserve42 original handles and follow combined browser/recovery/server acceptance. |
 | Domains | Original03b final failure fully verified | No further original polling; inspect priced domain quote contract evidence read-only. |
 | VPS | Exactc174 helper/source review clear; new Force SSL control contract | Isolated owner-change proposal uses exact boolean request and durable unknown/readback handling; shared wiring requires review. |
-| Catalog | Directory-listing application overb5c2; shared glue applied | Runtime/fixtures/shared review clear; installer/staged parity precedes single focused native matrix. |
-| Devin | Software-product licensing; main187 docs-only delta reviewed | Populated upgrade/internal-master customer-delivery findings remain. Preserve serialized helpers and keyless installer; active session unconfirmed. |
+| Catalog | Directory-listing application overb5c2; shared glue applied | Frozen3bdba5eb passes its single38864231460 in all four environments; actual ten-report archives independently verified. Docs handoff and normal root integration next. |
+| Devin | Software-product licensing; main ee97 invoice-linked delta reviewed | Populated upgrade/internal-master delivery and legacy invoice-retry findings remain. Preserve invoice uniqueness, marker2, serialized helpers and keyless installer; active session unconfirmed. |
 
 Original427 is terminal failure at the preserved setup check: final125 reports,2,107 HTTP passes plus one failure,289 recovery/2,211 Apache passes and exact Git/Windows packages are verified. No further polling or repeated acceptance is needed. See [handoff](../SESSION_HANDOFF.md) for exact current sources, evidence and next actions.
 

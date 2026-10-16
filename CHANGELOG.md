@@ -1,3 +1,7 @@
+## Unreleased — integration evidence and licensing compatibility notes
+
+Document verified c174 Windows packages, the preserved03b failure, current focused acceptance and source review of main's invoice-linked licensing/schema version2. Record remaining upgrade, legacy-invoice retry and internal-key-delivery requirements without changing the tested application candidate.
+
 ## Unreleased — saved Force SSL flags and catalog privacy test repair
 
 Integrate native-tested owner refresh and separate client sharing of saved Force SSL flags, preserving false versus unavailable and immutable authority-bound history. This flag does not verify HTTPS or certificate health. Correct the browser privacy test to distinguish the exact public service reference from a private provider type, retaining private-value rejection and adding13 regressions with safe diagnostics. Combined package/browser acceptance remains pending.
