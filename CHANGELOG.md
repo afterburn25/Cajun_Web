@@ -1,3 +1,7 @@
+## Unreleased - verified scheduled refresh checkpoint
+
+Record successful corrected packaged/browser checkpoint38836183578, four inspected scheduler captures and preserved four-way native/Windows evidence. The original5fb browser failure remains retained with successful recovery/Apache results. This documentation checkpoint changes no runtime, tests, workflow or installer inventory; combined integration acceptance remains required.
+
 ## Unreleased - scheduled refresh browser navigation fixture
 
 Refresh the existing browser document after a separate HTTP session changes scheduler state. Retain all network, persisted outcome, backoff and revoked-approval assertions. Application behavior and installer bytes are unchanged; corrected packaged/browser evidence is required.
