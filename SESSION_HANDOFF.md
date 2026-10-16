@@ -10,6 +10,8 @@ Acceptance evidence: [run 38817902722](https://github.com/afterburn25/Cajun_Web/
 
 `1fcfb5e9` extends `tests/license_bundle_functional.php` (21 checks) so the generated bundle is verified through the real Website_Core install path: extract the bundled module from the actual ZIP, run WC + module migrations on sqlite, write license/packages rows, enable, and boot the real provider via ModuleRegistry — one repeatable local command proving the bundle artifact Cajun_Web produces is the artifact WC installs.
 
+`f0a27fe1` adds **master license keys** (owner-requested, for staff testing): `website_licenses.is_master`, `license_create(..., $master)`, `license_domain_authorized()` extracted as the single domain-check source used by `api/validate.php`, a master-key checkbox in the admin create form + MASTER badge in the list. Master keys authorize any well-formed domain without registration or slot consumption; `is_active` still applies so they can be revoked. Native checks cover the flag, audit, any-domain authorization, and regular-license denial unchanged. Website Core needs no change — it just receives `authorized:true`.
+
 Not live-verified: production needs `license_core_dir` pointing at a Website_Core checkout; no real purchase/bundle/install/validation cycle has run. Full details in [LICENSING_IMPLEMENTATION.md](docs/LICENSING_IMPLEMENTATION.md). This workstream is separate from 20i P0 below.
 
 ## Owner-approved client portal design — 2026-10-15

@@ -35,16 +35,19 @@ the site.
 - Audit logging: all validation attempts logged to `audit` table — and every license mutation (`license.create`, `license.domain.register`, `license.domain.deactivate`, `license.domain.replace`, `license.deactivate`) records the acting staff/client id (0 for system paths like fulfilment), so a domain change is never an unexplained state
 - Multiple domain support: allows test + public sites on same license key, capped at 2 active domains per license — a third requires deactivating one first, which takes that site offline at its next validation
 - www/apex equivalence: `www.example.com` and `example.com` name the same site — registration canonicalizes `www.` to the apex and validation accepts either form, so the pair never consumes two slots
-- Active check: deactivated licenses are rejected
+- Active check: deactivated licenses are rejected — including master keys
+- Master keys: `is_master` licenses authorize any domain (staff testing only); the domain check lives in `license_domain_authorized()` so the handler and native suite exercise identical logic
 
 ### 2. Database schema
 
 **File:** `site/database/schema/license_schema.php`
 
-Creates two tables:
+Creates three tables:
 
-- `website_licenses` — stores license keys, customer association, active status
+- `website_licenses` — stores license keys, customer association, active
+  status, and `is_master` (staff test keys that authorize any domain)
 - `license_domains` — stores registered domains per license (allows multiple domains per license for test/public sites)
+- `license_bundles` — records generated bundle ZIPs per license
 
 **File:** `site/database/schema/base.php` — updated to include `license_schema($prefix)`
 
@@ -54,7 +57,12 @@ Creates two tables:
 
 Functions:
 - `license_generate_key()` — generates unique license keys (XXXX-XXXX-XXXX-XXXX)
-- `license_create($customerId, $productId)` — creates a new license
+- `license_create($customerId, $productId, $actor, $master)` — creates a
+  new license; `$master` produces a staff test key that validates on any
+  domain (internal use — never issue to customers)
+- `license_domain_authorized($license, $domain)` — single source for the
+  domain check used by `api/validate.php`: master → true; otherwise an
+  active `license_domains` row (www/apex treated as one site)
 - `license_get($key)` — retrieves license by key
 - `license_register_domain($licenseId, $domain)` — registers a domain
 - `license_replace_domain($licenseId, $oldDomain, $newDomain)` — atomic
@@ -70,10 +78,16 @@ Functions:
 **File:** `site/admin/controllers/studio.php` (updated)
 
 Adds "Website licenses" to the Studio admin section with:
-- Create license (customer + product selection)
-- List all licenses with customer, product, status
+- Create license (customer + product selection, master-key checkbox)
+- List all licenses with customer, product, status (master keys badged)
 - Add/remove domains per license
 - Deactivate entire license
+
+**Master keys:** for internal testing/demos only. The validation API
+authorizes any well-formed domain for a master license without domain
+registration or slot consumption; `is_active` still applies so a master
+key can be revoked at any time. Master keys are displayed once at
+creation like normal keys — keep them private.
 
 ### 5. Customer portal UI
 
@@ -156,7 +170,8 @@ license_bundles (
 ## Test coverage
 
 - `tests/license_native.php` — service-layer checks (key generation,
-  domain normalization, multi-domain, 2-active cap, deactivation, SKU
+  domain normalization, multi-domain, 2-active cap, atomic replace,
+  mutation audit, master keys, deactivation, SKU
   mapping, bundle guards); runs in CI on MariaDB.
 - `tests/license_bundle_functional.php` — builds a real bundle from the
   Website_Core checkout, verifies the extracted layout
