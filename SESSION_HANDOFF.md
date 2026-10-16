@@ -12,6 +12,14 @@ Cloud assignment authority and StackCP membership/grant observations are separat
 
 Main retains the existing licensing implementation and four unresolved [integration findings](docs/LICENSING_INTEGRATION_REVIEW.md), assigned to Devin. The separate20i candidate has not imported that runtime. Reinspect both histories before integration; preserve billing, support-session, storage and invoice-purpose guards.
 
+## Devin non-20i branches — 2026-10-16
+
+- `devin/non20i-licensing` (PR #159) — resolves all four review findings (populated `is_master` upgrade, master-key isolation, exact-one legacy replay, unknown-marker refusal before DDL).
+- `devin/non20i-support-tickets` (PR #158) — support tickets + private staff notes, ported from `codex/support-ticket-screens` ticket slice only.
+- `devin/non20i-project-progress` — dated project history, ported from `codex/project-progress-screens` progress slice only: `studio_progress_*` storage, `studio_job` history writes, portal timeline, `progress:` activity items.
+
+Shared seams these branches touch (integrate sequentially): `site/app/activity/events.php`, `site/includes/layout/activity.php`, `site/app/staff/accounts.php`, `admin/controllers/{router,actions,studio}.php`, `admin/views/studio/*`, `portal/{controllers,views/workspace.php}`, `tools/build.py`, `tests/{apache,browser}_acceptance.py`, `tests/organized_update_*`.
+
 ## Continuity
 
 The [preserved licensing and20i handoff at80ce8b19](https://github.com/afterburn25/Cajun_Web/blob/80ce8b19a6fb5b05a92821b097b9f8ce2d5b214f/SESSION_HANDOFF.md) retains the earlier licensing implementation, acceptance claims and release history. It is historical evidence, not proof of this candidate. [Published1.24 report](docs/TEST_REPORT_1.24.0.md), [full roadmap](docs/ROADMAP.md), [coordination](docs/AGENT_COORDINATION.md) and [release workflow](docs/RELEASE_WORKFLOW.md) remain available.

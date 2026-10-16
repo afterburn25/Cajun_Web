@@ -1,6 +1,18 @@
 # Session log
 
-## Synchronize release entry points after review — 2026-10-15
+## Port dated project history onto main — 2026-10-16
+
+Request: continue the non-20i roadmap — assignment item "web-design project progress, updates, approvals, previews", reusing preserved PRs instead of rebuilding.
+
+Starting commit: `origin/main` `80ce8b19`; source port from preserved `origin/codex/project-progress-screens` (progress slice only — ticket/plans/mail/hosting layers on that branch are separate slices owned by their own branches).
+
+Files/actions: extracted `foundation/projects/{ProjectSnapshot,ProjectProgressEvent}.php` (+ deployment mirrors via new `projects` entry in `tools/build.py`), `site/app/projects/{progress,progress_activity,progress_forms}.php`, `site/database/{schema,migrations}/project_progress_*`, `site/includes/layout/project_progress.php`, `tests/project-progress/*`, `tests/project_progress_{native,native_integrity,native_limits,screen_native_cases,cases.py,upgrade_cases.py}`, `.github/workflows/project-progress{,-native}.yml`, `docs/PROJECT_HISTORY.md`, `docs/PROJECT_PROGRESS_CONTRACT.md`. Wired shared seams (progress-only hunks): `app/activity/events.php` (branch version taken wholesale — `sort_sequence` + `progress` feed + validation calls), `includes/layout/activity.php` (`progress` label), `app/staff/accounts.php` (`project_progress_setup` → `staff.manage`), `admin/controllers/{studio,actions,router}.php`, `admin/views/studio/{job,clients,upgrade}.php`, `portal/controllers/router.php`, `portal/views/workspace.php`, `assets/css/growth.css`. `project_progress_upgrade_cases.py` made self-contained (own form helpers + invite/activate client session) since `ticket_context` does not exist on this branch; fixture gained `progress` + `owner-rate-*` modes; upgrade wired at the 1.23 baseline; Apache integrity list + browser suite extended with the progress file set and `progress_browser`.
+
+Tests/verification (local): `php -l` clean on all touched PHP; `tests/project-progress/records.php` 155 checks pass on PHP 8.4; `tests/project-progress/forms.php` 50 checks pass; `python tools/build.py --refresh` passes with `foundation/projects` mirrored byte-for-byte and inventory regenerated. Native MariaDB, HTTP/Chromium and packaged 1.23 upgrade lanes are CI-wired; no local database here.
+
+Known limits: fresh installs keep history off until the owner enables it (by design — unprepared editing still works); `project_progress_native.php` and browser/upgrade suites pending CI on this branch.
+
+Next: commit/push this increment, open bounded PR, continue remaining non-20i items (mail Reply/Forward, payment schedules).
 
 Review4281622110 on4cbc2375 reproduced stale pending1.24 headers in README, agent coordination, release workflow and inventory owner guide. Update every listed entry point plus current migration instructions to the actual immutable publication, archive earlier coordination and mark historical1.23 sections clearly. No runtime or package bytes change. Starting parent4cbc23758674b29899d235b511b40f0a18cf8503 is “Record verified1.24 publication and current20i continuation”; correctiondf57d0ce is “Synchronize published1.24 across current entry-point guides.” Actual local documentation check passed161 Markdown files/1,330 local links and canonical dependency checks; git diff whitespace check passed. These checks cover documentation/source consistency only, not runtime acceptance, which remains the separately published7190 evidence. Known failure: initial review4281622110 found stale headers and was corrected. Follow-up review4281670745 requested this explicit validation record. Renewed review is pending; continue cloud/commercial20i work.
 

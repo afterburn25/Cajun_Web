@@ -1,0 +1,31 @@
+<?php
+declare(strict_types=1);
+if(PHP_SAPI!=='cli'||!defined('CWP_BOOT'))exit(2);
+require_once CWP_CODE_ROOT.'/includes/layout/project_progress.php';
+pg_staff();activity_migrate($password);$activityJob=project_progress_save(0,2,pg_id(3000),'',pg_fields('Activity project'))['job_id'];
+pg_client(2);pg_ok('Tracking baseline creates no progress activity',array_filter(activity_feed('client')['rows'],fn($r)=>$r['kind']==='progress')===[]);
+pg_staff();$activityIds=[];
+for($n=1;$n<=35;$n++){$fields=pg_fields('Activity project');$fields['summary']='Timeline revision '.$n;$request=pg_id(5000-$n);project_progress_save($activityJob,2,$request,pg_saved($activityJob)['expected'],$fields);$activityIds[]='progress:'.$request;}
+$newest=array_reverse($activityIds);pg_client(2);$feed=activity_feed('client');$older=activity_feed('client',false,$feed['next']);
+pg_ok('Numeric progress revision orders same-second updates before random keys',array_column($feed['rows'],'event_key')===array_slice($newest,0,30));
+pg_ok('Progress cursor retains timestamp revision and key without duplicates',array_column($older['rows'],'event_key')===array_slice($newest,30)&&$older['next']==='');
+pg_ok('Activity metadata contains no project descriptions or private attribution',!str_contains(project_progress_json($feed),'Timeline revision')&&!str_contains(project_progress_json($feed),'staff_id')&&!str_contains(project_progress_json($feed),'expected'));
+$key=$newest[0];$before=all('SELECT * FROM '.table('activity_reads'));$destination=activity_destination('client',$key);
+pg_ok('Client activity opens exact project event on its actual history page',str_contains($destination,'job='.$activityJob)&&str_contains($destination,'focus_progress='.substr($key,9))&&str_ends_with($destination,'#progress-'.substr($key,9))&&project_progress_client_get($activityJob,2,0,substr($key,9))['page']===2);
+pg_ok('Opening progress history never changes personal read status',all('SELECT * FROM '.table('activity_reads'))===$before);
+$idle=time()-120;$_SESSION['client_last']=$idle;$count=activity_passive_count('client');pg_ok('Passive project progress count preserves idle expiry',$count===35&&$_SESSION['client_last']===$idle);
+activity_mark('client',[$key],true);pg_ok('Marking one actual progress event read leaves the others unread',activity_count('client')===34&&count(all('SELECT * FROM '.table('activity_reads')." WHERE actor_type='client' AND actor_id=2"))===1);
+activity_mark('client',[$key],true);pg_ok('Repeated explicit read is idempotent',activity_count('client')===34);
+pg_staff();$fields=pg_fields('Activity project');$fields['summary']='Timeline newest';project_progress_save($activityJob,2,pg_id(6000),pg_saved($activityJob)['expected'],$fields);pg_client(2);
+pg_ok('A later progress update is independently unread',activity_count('client')===35&&activity_feed('client',true)['rows'][0]['event_key']==='progress:'.pg_id(6000));
+activity_mark('client',[$key],false);pg_ok('Explicit unread restores only the selected progress event',activity_count('client')===36);
+pg_ok('Read audit failure rolls back all personal progress read changes',pg_fail_audit(fn()=>activity_mark('client',[$key],true))&&activity_count('client')===36);
+pg_client(1);pg_deny('Another client cannot resolve a progress activity key',fn()=>activity_source('client',$key));pg_deny('Another client cannot mark a foreign progress update',fn()=>activity_mark('client',[$key],true));
+pg_staff();pg_deny('A staff member does not receive their own progress activity',fn()=>activity_source('admin',$key));pg_staff(2);pg_ok('Other authorized client managers receive real progress updates',activity_source('admin',$key)['job_id']==$activityJob);
+$before=all('SELECT * FROM '.table('activity_reads'));query('UPDATE '.table('staff_profiles').' SET permissions=\'[]\' WHERE user_id=2');pg_deny('Current revoked manager grant refuses progress resolution',fn()=>activity_source('admin',$key));pg_deny('Current revoked manager grant refuses progress marking',fn()=>activity_mark('admin',[$key],true));pg_ok('Revoked progress access preserves personal reads',all('SELECT * FROM '.table('activity_reads'))===$before);query('UPDATE '.table('staff_profiles').' SET permissions=\'["clients.manage"]\' WHERE user_id=2');
+pg_client(2);query('UPDATE '.table('studio_clients').' SET active=0 WHERE id=2');pg_deny('Inactive client loses progress activity access',fn()=>activity_feed('client'));query('UPDATE '.table('studio_clients').' SET active=1 WHERE id=2');pg_client(2);
+$current=one('SELECT summary FROM '.table('studio_jobs').' WHERE id=?',[$activityJob]);query('UPDATE '.table('studio_jobs').' SET summary=\'unjournaled\' WHERE id=?',[$activityJob]);
+pg_deny('Progress feed validates retained history before exposing metadata',fn()=>activity_feed('client'));pg_deny('Progress bell refuses inconsistent retained history',fn()=>activity_count('client'));pg_deny('Progress read mutation refuses inconsistent retained history',fn()=>activity_mark('client',[$key],true));pg_ok('Failed history reads do not change personal state',all('SELECT * FROM '.table('activity_reads'))===$before);query('UPDATE '.table('studio_jobs').' SET summary=? WHERE id=?',[$current['summary'],$activityJob]);
+pg_staff();pg_ok('Prepared project mode is explicit',project_progress_mode());save_setting('project_progress_schema_version','');pg_deny('Missing activation marker cannot bypass retained project history',fn()=>project_progress_mode());save_setting('project_progress_schema_version','99');pg_deny('Unknown version cannot route saves to legacy storage',fn()=>project_progress_mode());save_setting('project_progress_schema_version','1');
+support_policy(2,true,$password);pg_staff(3);$progressSupport=support_start(2);$_GET['support']=$progressSupport;pg_deny('Scoped support cannot impersonate client progress read status',fn()=>activity_mark('client',[$key],true));pg_deny('Scoped support cannot enter staff progress activity',fn()=>activity_feed('admin'));unset($_GET['support']);pg_staff();
+pg_ok('Unchanged pure models remain byte exact in the deployed tree',file_get_contents(__DIR__.'/../foundation/projects/ProjectProgressEvent.php')===file_get_contents(CWP_CODE_ROOT.'/includes/foundation/projects/ProjectProgressEvent.php'));
