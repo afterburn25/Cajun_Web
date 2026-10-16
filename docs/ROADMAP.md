@@ -1,3 +1,7 @@
+## Forwarding intake candidate — 2026-10-15
+
+Implemented locally, pending native/browser verification: separate owner permission; client single-address request/cancel; owner message/decline; immutable local history. Provider forwarding submission/readback and active-delivery confirmation remain incomplete because exact response semantics are unverified. [Contract and acceptance](TWENTYI_FORWARDING_REQUESTS.md).
+
 ## Client domain renewal requests — integrated candidate, 2026-10-15
 
 Reviewed/native-verified ed4d1cad is normally merged after the catalog readiness increment. Actual client request/withdrawal and owner review/decline forms retain original registrar assignment and immutable history. Four supported native combinations pass78 request cases plus28 pure cases per mode. Commercial offers, provider renewal execution and completed-renewal verification remain unfinished; combined application acceptance is still required. [Scope](TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).

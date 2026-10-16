@@ -230,3 +230,7 @@ Use immutable, expiring owner-reviewed provider plan mappings to reuse exact pac
 ## 2026-10-15 — Reuse cloud creation request authority
 
 The bounded cloud management increment uses the existing provider approval and operation ledger tables. Its typed, installation-keyed approval envelope binds the explicit server/client assignment and current observation; request nonce consumption precedes DNS and sending. Returned cloud addWeb package IDs remain accepted-pending until separately observed and explicitly linked. Server capacity/domain permission are manually reviewed and not falsely reported as API-verified. This delivers the documented existing-server website operation while full server lifecycle, power and SSH contracts remain separate. No new generic operation approval surface or replacement ledger is introduced.
+
+## 2026-10-15 — forwarding request permission is independent
+
+Forwarding redirects future delivery, so mailbox-create permission never grants forwarding request permission. Local review does not create a provider operation/result. Use a dedicated signed append-only history with separate count/head and audit witnesses, and retain current exact domain-link event identity to fence same-second reapproval. A cancelled/declined request remains historical; there is no active/completed forwarding status until documented acknowledgement/readback is implemented. [Verified contract and omissions](TWENTYI_FORWARDING_REQUESTS.md).

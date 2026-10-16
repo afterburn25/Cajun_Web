@@ -1,3 +1,7 @@
+# Forwarding request ownership — 2026-10-15
+
+Cloud agent owns `work/20i-forwarding-requests`, branch `codex/twentyi-forwarding-requests`, base3bbc42bd. Scope is local forwarding-specific permission/request/review only, with an unregistered offline exact typed request. New helper/schema/owner/client modules and tests; shared edits limited to provider dispatch/view, portal router/actions, services navigation, browser/application workflow and Apache private-path hooks plus generated installer inventory. No changes to transport, provider operation register, scheduled inventory implementation or other worktrees. Root reviews and integrates. [Evidence and limits](TWENTYI_FORWARDING_REQUESTS.md).
+
 # Current combined integration and scheduled-refresh assignment — 2026-10-15
 
 Root normally integrates cloud1a74952c after catalog82302571 and renewal96a2b4c9, regenerates the combined installer and requests independent glue review. Fresh combined full acceptance follows; parent runs remain preserved. Catalog owns a new isolated scheduled GET/package refresh slice from82302571 and current catalog artifact verification. Domains owns renewal browser evidence; cloud owns confirmation browser/package evidence and combined read-only review. Root alone integrates/releases. [Current handoff](../SESSION_HANDOFF.md) supersedes historical states below.

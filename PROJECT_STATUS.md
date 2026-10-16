@@ -1,3 +1,9 @@
+## Forwarding request intake — isolated candidate, 2026-10-15
+
+Parent assigned bounded local forwarding requests from `3bbc42bd56270d1c754ff2e72ea039b9c557460e` on `codex/twentyi-forwarding-requests`. Adds an unregistered offline typed request contract, separate expiring owner permission, client request/cancel, owner review/decline, immutable signed event/audit history with independent recovery witness, current exact hosting/domain assignment checks, and owner/client forms. It does not submit forwarding, create a provider-operation result, or claim delivery is active. [Contract, limits and verification](docs/TWENTYI_FORWARDING_REQUESTS.md). Root owns integration and release; published 1.24.0 is unchanged.
+
+Local syntax and 15 named offline contract checks pass. Four-way native and packaged Chromium acceptance are implemented but have not run yet. Corrected-source installer refresh18962 passed all shipping PHP/JavaScript checks; initial refresh92804 is also complete and closed. The independently reviewed orphan-domain-event recovery fix is included. Preserve frozen cloud source 1a74952c and full run 38827979412 (package/native/browser/recovery passed, Apache in progress at last authoritative read); its final artifact verification remains assigned here. No live account calls, forwarding, SSH, customer mail, purchases or deployment.
+
 # CajunWebPro current status — 2026-10-15
 
 Published [v1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) remains immutable source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`, with downloaded assets verified. Complete 20i is the active P0; unrelated feature work remains paused. Candidate 1.25.0 is unreleased.

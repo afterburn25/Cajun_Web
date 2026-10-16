@@ -1,3 +1,9 @@
+## Forwarding request intake — isolated candidate, 2026-10-15
+
+Parent assigned bounded local forwarding requests from `3bbc42bd56270d1c754ff2e72ea039b9c557460e` on `codex/twentyi-forwarding-requests`. Adds an unregistered offline typed request contract, separate expiring owner permission, client request/cancel, owner review/decline, immutable signed event/audit history with independent recovery witness, current exact hosting/domain assignment checks, and owner/client forms. It does not submit forwarding, create a provider-operation result, or claim delivery is active. [Contract, limits and verification](docs/TWENTYI_FORWARDING_REQUESTS.md). Root owns integration and release; published 1.24.0 is unchanged.
+
+Local syntax and 15 named offline contract checks pass. Four-way native and packaged Chromium acceptance are implemented but have not run yet. Corrected-source installer refresh18962 passed all shipping PHP/JavaScript checks; initial refresh92804 is also complete and closed. The independently reviewed orphan-domain-event recovery fix is included. Preserve frozen cloud source 1a74952c and full run 38827979412 (package/native/browser/recovery passed, Apache in progress at last authoritative read); its final artifact verification remains assigned here. No live account calls, forwarding, SSH, customer mail, purchases or deployment.
+
 # CajunWebPro handoff — 2026-10-15
 
 Continue complete 20i P0 under the [owner request](docs/TWENTYI_CODEX_TAKEOVER_REQUEST.md) and [requirements](docs/TWENTYI_REQUIREMENTS_EVIDENCE.md). Goal stays active. Published v1.24.0 remains unchanged; 1.25.0 labels are candidate artifacts only. Earlier status/handoff is preserved in the [96a2 archive](docs/archive/2026-10-15-96a2b4c9-SESSION_HANDOFF.md), with historical session entries retained.
@@ -52,3 +58,9 @@ Keep Website_Core untouched and preserve the populated licensing40-check prefixl
 Mainb8f8528b's complete handoff is [archived](docs/archive/2026-10-15-b8f8528b-main-SESSION_HANDOFF.md). Its authors report a second passing full run38823899660 on1fcfb5e9 and21 functional Website_Core bundle/install checks. This is incoming evidence, not a new root execution or acceptance of the combined20i source. The functional test and licensing documentation are preserved; root did not execute Website_Core. Production still requires configured license_core_dir and has no real purchase/install acceptance here. [Licensing implementation](docs/LICENSING_IMPLEMENTATION.md).
 
 Preserve the owner's [approved client portal design](docs/APPROVED_CLIENT_PORTAL_DESIGN.md), recorded atfd2001e90a54e9936e0c3aebf2714e05a2916a82. Current20i increments do not replace that approved visual direction.
+
+### Cloud parent full artifact independently verified — 2026-10-15
+
+Preserved exact runtime0ea6e3a8 full run38827979412 finished successfully, including recovery/Apache and unchanged-source checks. Downloaded final artifact12017179352 SHA25639bba16bb95d9dd2be9180b5ac806fcdb62cfd500712ac8a59853b6265aa5a16 verifies385 ZIP members,107 check-bearing reports,12,967 passing named outcomes excluding duplicate progress/readiness reports, and11 diagnostic reports with only the expected estimator422. HTTP1,899/recovery289/Apache1,923. All11 checksum entries and all three nested package member hashes/derived directory inventories/source commit match. COMPLETE2688files/351directories; FULL5474/675; UPDATE2675/348. Local proof is `work/20i-forwarding-requests/qa/cloud-0ea-full-verification.json`; this certifies the preserved cloud source, not the new forwarding increment.
+
+The four exact combined3bbc cloud confirmation screenshots supplied by root were also inspected: readable desktop/mobile client assignment and bounded owner confirmation history, no visual blocker. Owner mobile nested add-site form is narrow but contained. These are post-confirmation screenshots; pre-submit confirmation was exercised by browser tests but not separately captured.
