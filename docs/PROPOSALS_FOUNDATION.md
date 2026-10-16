@@ -1,6 +1,6 @@
 # Versioned proposals foundation (P-02 contract layer)
 
-Canonical component: `foundation/proposals/`. Implementation status: **Implemented (local/source)** on `devin/non20i-proposals-foundation`. External gate: **Not required** for this contract layer — persistence, admin/client UI, document rendering and notification delivery are application-integration work remaining in Devin's non-20i scope (Codex owns the complete 20i integration only).
+Canonical component: `foundation/proposals/`. Implementation status: **Runtime integrated (local/source)** on `devin/non20i-proposals-runtime` — additive `proposals`/`proposal_versions`/`proposal_events`/`proposal_decisions` schema, `site/app/marketing/proposals.php` persistence that replays the durable record through this model for every transition, admin authoring/send/withdraw UI at `?view=proposals`, and a client portal decision surface at `?proposal=` that pins approvals to the exact version id. External gate: **Not required** for this contract layer (Codex owns the complete 20i integration only).
 
 This is the safe portion of [P-02](ROADMAP.md#p-02--versioned-approvals-and-proposals): the versioned-approval rules a proposal feature must satisfy, as a pure model with no database, mail or signature assumptions.
 
