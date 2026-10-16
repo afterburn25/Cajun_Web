@@ -135,7 +135,7 @@ Adds license management to the customer workspace:
 
 **File:** `site/app/licenses/bundle.php`
 
-- `license_bundle($licenseKey, $industry, $coreDir, $outputDir)` — creates bundled ZIP (core + industry module with embedded license_key)
+- `license_bundle($licenseKey, $industry, $coreDir, $outputDir)` — creates bundled ZIP (core + industry module with embedded license_key). Each build writes a unique `bundle-{key}-{timestamp}-{rand}.zip` — records are immutable, so regeneration never overwrites bytes another record's checksum verifies against
 - `license_bundle_store($licenseId, $zipPath, $title)` — stores bundle record with the ZIP's SHA-256 for download integrity
 
 **Admin UI:** `site/admin/views/studio/licenses.php` — "Generate bundle" button creates downloadable ZIP
