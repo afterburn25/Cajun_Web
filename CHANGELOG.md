@@ -1,5 +1,10 @@
 ## Domain renewal request integration — candidate, unreleased
 
+## Unreleased — combined package proof and continuing parallel implementation
+
+Verify exact3bbc Windows packages and record its running full combined acceptance. Renewal browser/screens now pass oned4; three agents continue scheduled inventory refresh, client observation history and forwarding requests on separate branches. Record concrete scheduler recovery review findings and correct the stale recurring-defect tracker from existing source/browser evidence. Documentation only; no new runtime, release or live action.
+
+
 ## Unreleased — preserve current main continuity
 
 Normally preserve mainb8f8528b licensing documentation after combined cloud integrationbdeccc09. Archive the incoming handoff and retain the approved portal design reference. No runtime, test, installer or version change in this documentation merge; fresh combined acceptance remains required.

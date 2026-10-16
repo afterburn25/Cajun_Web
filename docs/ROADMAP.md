@@ -1,3 +1,7 @@
+## Current parallel implementation and combined acceptance — 2026-10-15
+
+Frozen3bbc42bd includes reviewed catalog readiness, renewal intake and cloud confirmation; all have native and browser proof on their own sources. Windows packages verify and full combined38829910791 is running. New isolated lanes implement scheduled inventory refresh, client hosting observation history and forwarding request/review; scheduler recovery corrections remain in progress. Full lifecycle/discovery/native controls/SSH and release gates remain unfinished. [Current handoff](../SESSION_HANDOFF.md). Older entries below retain their original source scope.
+
 ## Client domain renewal requests — integrated candidate, 2026-10-15
 
 Reviewed/native-verified ed4d1cad is normally merged after the catalog readiness increment. Actual client request/withdrawal and owner review/decline forms retain original registrar assignment and immutable history. Four supported native combinations pass78 request cases plus28 pure cases per mode. Commercial offers, provider renewal execution and completed-renewal verification remain unfinished; combined application acceptance is still required. [Scope](TWENTYI_DOMAIN_RENEWAL_REQUESTS.md).

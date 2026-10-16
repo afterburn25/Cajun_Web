@@ -1,3 +1,7 @@
+## Current active agent assignments — 2026-10-15
+
+Root preserves3bbc42bd full38829910791 and verified Windows packages. Catalog owns codex/twentyi-scheduled-refresh from82302571, including source-review recovery repairs and tests. Domains owns codex/twentyi-service-observations from3bbc with no shared inventory append hook. Cloud owns codex/twentyi-forwarding-requests from3bbc, without provider dispatch until response/readback semantics are verified. Their prior branches/builds/runs remain preserved. Root alone integrates/releases. [Current handoff](../SESSION_HANDOFF.md). Older entries below retain their original source scope.
+
 # Current combined integration and scheduled-refresh assignment — 2026-10-15
 
 Root normally integrates cloud1a74952c after catalog82302571 and renewal96a2b4c9, regenerates the combined installer and requests independent glue review. Fresh combined full acceptance follows; parent runs remain preserved. Catalog owns a new isolated scheduled GET/package refresh slice from82302571 and current catalog artifact verification. Domains owns renewal browser evidence; cloud owns confirmation browser/package evidence and combined read-only review. Root alone integrates/releases. [Current handoff](../SESSION_HANDOFF.md) supersedes historical states below.

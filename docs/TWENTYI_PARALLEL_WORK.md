@@ -1,3 +1,7 @@
+## Current three-agent checkpoint — 2026-10-15
+
+All three agents continue new isolated implementation while root verifies frozen combined3bbc42bd. Exact Windows5494/2697/2684 package members,11 checksum entries and source/manifest/directory inventories pass; full38829910791/job116746050262 is in native integration. Its PR mergea99beac7 has identical tree4481fe21886f5403d31003de728e1301db6e4ae2. All current assignments, parent artifacts, hashes and concrete scheduler review findings are in the handoff. [Current handoff](../SESSION_HANDOFF.md). Older entries below retain their original source scope.
+
 # Current combined checkpoint — 2026-10-15
 
 Normal integration96a2 plus cloud1a749 preserves three independently reviewed native-tested increments. Catalog browser872 now verifies1,892 HTTP checks including34 catalog cases and actual desktop/mobile screens. Corrected original combined2239 verifies1,878 HTTP checks and all mailbox/registrar/cloud-creation screens; recovery passed and Apache continues. New combined acceptance is required. Three agents remain active, with catalog beginning scheduled GET/package on an isolated branch while original evidence stays preserved. Exact run/artifact/hash/proof details are consolidated in [current handoff](../SESSION_HANDOFF.md). Historical checkpoints below retain their original source scope.
