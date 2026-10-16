@@ -1,3 +1,11 @@
+## Current PR159 review - 2026-10-16 15:15 UTC
+
+Exact head e3d627701f14d4d44acc02be49f4bbd20cb2b389 remains unmerged. [Actionable source/CI review](https://github.com/afterburn25/Cajun_Web/pull/159#issuecomment-6218434878) identifies unsafe sole-candidate NULL-invoice association and missing supported populated unmarked pre-master adoption. The new native fixture expects an unrelated revoked admin license to be consumed and stamps marker2 before its upgrade case; those cases do not prove the requested behavior. Original CI38912600662 stopped at stale installer hashes before native/HTTP execution. Master-customer exclusions and unknown-marker refusal are present in source; actual endpoint/native acceptance remains pending.
+
+Retained proof299bf71e6aeac3070f362b946f3b6448f3670785ab301776050887bd8b40e0b8 includes84 source/hash/CI checks and15 unique exact-function synthetic cases per PHP mode. This does not establish native migration or endpoint acceptance. Devin received fixes in issue157 comment6218437910. Preserve root physical-storage/support exclusions, shared setup-form ordering, provider inventory marker5 and billing invoice-purpose guards during eventual integration. No licensing runtime was imported into2a or changed by this documentation update.
+
+## Earlier immutable review history
+
 ## Current main79d9 documentation delta and preflight — 2026-10-16 UTC
 
 Latest fetched79d9e8e90d9fd3e8b3c34140814aa90272a2f82b changes only SESSION_HANDOFF.md and docs/SESSION_LOG.md above reviewede619; the entire site tree is identical. Read-only merge-tree against root5a402a35 finds seven conflicts in handoff/session log/license service/deploy/inventory/portal workspace/license native tests. Proof13a2b31d049efad34ce12d7ee69b99758c918978774e0279527ed55e70014c8e records unchanged checkout and no merge. All prior four licensing findings remain open; preserve both lanes and refresh the preflight before actual integration if either source advances.
