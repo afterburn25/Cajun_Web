@@ -140,7 +140,7 @@ try{
     $inv2=$mkInvoice('LIC-FIXTURE-2');
     $f2=license_fulfill_invoice($inv2);
     lic_ok('Second paid invoice mints a second license',(bool)$f2&&$f2['license_key']!==$f1['license_key']&&(int)$f2['invoice_id']===$inv2);
-    lic_ok('Admin-created license claimed by the invoice fulfilment',(int)license_get($key)['invoice_id']===$inv1);
+    lic_ok('Unrelated unlinked license is never captured by fulfilment',license_get($key)['invoice_id']===null&&(int)license_get($key)['is_active']===0);
     $dupRejected=false;
     try{license_create(1,'WEBSITE-RESTAURANT',0,false,$inv1);}catch(PDOException $e){$dupRejected=(int)($e->errorInfo[1]??0)===1062;}
     lic_ok('Duplicate invoice_id rejected by unique index',$dupRejected);
@@ -201,40 +201,77 @@ try{
     lic_ok('Direct download refuses a revoked-license bundle',
         one('SELECT b.id FROM '.table('license_bundles').' b JOIN '.table('website_licenses').' l ON b.license_id=l.id WHERE b.id=? AND l.customer_id=? AND l.is_active=1 AND l.is_master=0',[(int)db()->lastInsertId(),1])===null);
 
-    // --- legacy null-invoice replay -------------------------------------------
-    // A license created before invoice_id existed has NULL. Retrying the
-    // fulfilment of that historical invoice must claim the existing license
-    // — not mint a duplicate — when exactly one unlinked candidate exists.
+    // --- legacy null-invoice handling -----------------------------------------
+    // A license created before invoice_id existed has NULL. A matching
+    // customer+product is never provenance — fulfilment must mint the invoice's
+    // own license and leave the legacy row unlinked until an owner reconciles
+    // it explicitly. After reconciliation, fulfilment reuses the exact link.
     $legacyKey=license_create(1,'WEBSITE-RESTAURANT',0,false,null);
     $legacyLic=license_get($legacyKey);
     lic_ok('Legacy license has NULL invoice_id',$legacyLic['invoice_id']===null);
-    $legacyInv=$mkInvoice('LIC-LEGACY-1');
+    $legacyInv=$mkInvoice('LIC-LEGACY-0');
     $f3=license_fulfill_invoice($legacyInv);
-    lic_ok('Legacy fulfilment returns the existing license',$f3['license_key']===$legacyKey);
-    lic_ok('Legacy link claimed for future lookups',(int)$f3['invoice_id']===$legacyInv);
-    lic_ok('No duplicate license minted for legacy invoice',(int)query('SELECT COUNT(*) FROM '.table('website_licenses').' WHERE customer_id=1 AND product_id=?',['WEBSITE-RESTAURANT'])->fetchColumn()===3);
-    lic_ok('Repeat legacy fulfilment stays idempotent',license_fulfill_invoice($legacyInv)['license_key']===$legacyKey);
+    lic_ok('Fulfilment never claims an unlinked license by inference',$f3['license_key']!==$legacyKey&&(int)$f3['invoice_id']===$legacyInv);
+    lic_ok('Legacy row stays unlinked after fulfilment',license_get($legacyKey)['invoice_id']===null);
+    lic_deny('Cannot re-link to an already-produced invoice',fn()=>license_link_invoice((int)$legacyLic['id'],$legacyInv,1));
+    // Genuine legacy retry: the invoice that historically produced the
+    // unlinked license is still unfulfilled; the owner links it explicitly.
+    $retryInv=$mkInvoice('LIC-LEGACY-2');
+    license_link_invoice((int)$legacyLic['id'],$retryInv,1);
+    lic_ok('Owner reconciliation links the known legacy license',(int)license_get($legacyKey)['invoice_id']===$retryInv);
+    lic_ok('Fulfilment reuses the reconciled exact link',license_fulfill_invoice($retryInv)['license_key']===$legacyKey);
 
     // Two unlinked licenses for the same customer+product cannot be paired to
     // one invoice without guessing — fulfilment refuses instead of picking one.
     $amb1=license_create(1,'WEBSITE-RESTAURANT',0,false,null);
     $amb2=license_create(1,'WEBSITE-RESTAURANT',0,false,null);
     $ambInv=$mkInvoice('LIC-AMBIG-1');
-    lic_deny('Ambiguous legacy candidates refuse fulfilment',fn()=>license_fulfill_invoice($ambInv));
-    lic_ok('Ambiguous candidates stay unlinked',
+    $ambF=license_fulfill_invoice($ambInv);
+    lic_ok('A genuine purchase mints a new license despite matching unlinked rows',(bool)$ambF&&(int)$ambF['invoice_id']===$ambInv&&!in_array($ambF['license_key'],[license_get($amb1)['license_key'],license_get($amb2)['license_key']],true));
+    lic_ok('Unrelated active unlinked licenses stay unlinked',
         license_get($amb1)['invoice_id']===null&&license_get($amb2)['invoice_id']===null);
-    lic_ok('No license minted on ambiguous retry',(int)query('SELECT COUNT(*) FROM '.table('website_licenses').' WHERE customer_id=1 AND product_id=?',['WEBSITE-RESTAURANT'])->fetchColumn()===5);
+
+    // --- explicit owner reconciliation for known legacy links -----------------
+    $legInv=$mkInvoice('LIC-LEGACY-1');
+    license_link_invoice((int)license_get($amb1)['id'],$legInv,1);
+    lic_ok('Owner reconciliation links a known legacy license',(int)license_get($amb1)['invoice_id']===$legInv);
+    lic_ok('Fulfilment reuses the reconciled exact link',license_fulfill_invoice($legInv)['license_key']===license_get($amb1)['license_key']);
+    lic_deny('Reconcile refuses an already-linked license',fn()=>license_link_invoice((int)license_get($amb1)['id'],$legInv,1));
+    lic_deny('Reconcile refuses an inactive license',fn()=>license_link_invoice((int)license_get($key)['id'],$legInv,1));
+    lic_deny('Reconcile refuses a customer/product mismatch',fn()=>license_link_invoice((int)license_get($key2)['id'],$legInv,1));
 
     // --- unknown/future schema markers are refused untouched -------------------
     save_setting('license_schema_version','99');
     lic_ok('Future marker is not ready',!license_ready());
     lic_deny('Future schema marker refused before any schema change',fn()=>license_migrate($password));
     lic_ok('Marker left untouched after refusal',(one('SELECT value FROM '.table('settings')." WHERE name='license_schema_version'")['value']??'')==='99');
-    // Empty marker on populated tables: first adoption must refuse, not claim.
-    save_setting('license_schema_version','');
-    lic_deny('Populated tables without a marker are not adopted',fn()=>license_migrate($password));
-    save_setting('license_schema_version','4');
-    lic_ok('Current marker ready again',license_ready());
+    // --- genuine populated unmarked (pre-marker) adoption ---------------------
+    // Rebuild the earliest known layout — product_id INT, no invoice_id, no
+    // is_master, no license_bundles table — populated, with the marker absent.
+    db()->exec('DROP TABLE '.table('license_bundles'));db()->exec('DROP TABLE '.table('license_domains'));db()->exec('DROP TABLE '.table('website_licenses'));
+    $pre=config()['db']['prefix'];$eng=' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci';
+    db()->exec('CREATE TABLE '.$pre.'website_licenses (id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,license_key VARCHAR(255) NOT NULL UNIQUE,customer_id INT UNSIGNED NOT NULL,product_id INT UNSIGNED NOT NULL,is_active TINYINT NOT NULL DEFAULT 1,created_at DATETIME NOT NULL,updated_at DATETIME NOT NULL,INDEX customer_lookup(customer_id),INDEX product_lookup(product_id),FOREIGN KEY (customer_id) REFERENCES '.$pre.'studio_clients(id) ON DELETE CASCADE)'.$eng);
+    db()->exec('CREATE TABLE '.$pre.'license_domains (id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,license_id INT UNSIGNED NOT NULL,domain VARCHAR(255) NOT NULL,is_active TINYINT NOT NULL DEFAULT 1,registered_at DATETIME NOT NULL,deactivated_at DATETIME NULL,UNIQUE license_domain(license_id,domain),INDEX active_lookup(license_id,is_active),FOREIGN KEY (license_id) REFERENCES '.$pre.'website_licenses(id) ON DELETE CASCADE)'.$eng);
+    query('INSERT INTO '.$pre.'website_licenses (license_key,customer_id,product_id,is_active,created_at,updated_at) VALUES (?,?,?,?,?,?)',['LEGACY-AAAA-BBBB-CCCC',1,7,1,$now,$now]);
+    query('INSERT INTO '.$pre.'license_domains (license_id,domain,is_active,registered_at) VALUES (?,?,?,?)',[1,'legacy.example.net',1,$now]);
+    query('DELETE FROM '.table('settings')." WHERE name='license_schema_version'");
+    lic_ok('Genuine unmarked populated install is not ready',!license_ready());
+    license_migrate($password);
+    lic_ok('Legacy populated install adopted and upgraded',license_ready());
+    lic_ok('Legacy license row preserved',(string)one('SELECT license_key FROM '.table('website_licenses').' WHERE id=1')['license_key']==='LEGACY-AAAA-BBBB-CCCC');
+    lic_ok('Legacy domain row preserved',(string)one('SELECT domain FROM '.table('license_domains').' WHERE id=1')['domain']==='legacy.example.net');
+    lic_ok('Adoption added invoice_id and is_master',(bool)one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[$pre.'website_licenses','invoice_id'])&&(bool)one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[$pre.'website_licenses','is_master']));
+    lic_ok('Legacy INT product_id widened to VARCHAR',strtolower((string)one('SELECT DATA_TYPE FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[$pre.'website_licenses','product_id'])['DATA_TYPE'])==='varchar');
+    lic_ok('Missing bundles table created during adoption',(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[$pre.'license_bundles']));
+    try{license_migrate($password);lic_ok('Adoption survives a retry',true);}catch(Throwable){lic_ok('Adoption survives a retry',false);}
+
+    // A populated table with an unknown column is still refused untouched.
+    db()->exec('ALTER TABLE '.table('website_licenses').' ADD COLUMN mystery_col VARCHAR(9) NULL');
+    query('DELETE FROM '.table('settings')." WHERE name='license_schema_version'");
+    lic_deny('Unrecognized populated column refuses adoption',fn()=>license_migrate($password));
+    lic_ok('Unknown-column rows preserved after refusal',(string)one('SELECT license_key FROM '.table('website_licenses').' WHERE id=1')['license_key']==='LEGACY-AAAA-BBBB-CCCC');
+    db()->exec('ALTER TABLE '.table('website_licenses').' DROP COLUMN mystery_col');
+    license_migrate($password);lic_ok('Cleaned layout adopts after refusal',license_ready());
 
 }catch(Throwable $e){fwrite(STDERR,'SETUP '.get_class($e).': '.$e->getMessage());exit(1);}
 $failed=array_filter($checks,fn($c)=>!$c['passed']);

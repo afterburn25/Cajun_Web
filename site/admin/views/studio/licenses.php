@@ -59,7 +59,20 @@ if(isset($_SESSION['license_key_created'])){echo '<div class="notice info">Licen
 <dd><?= $lic['is_active'] ? '<span style="color:green">Active</span>' : '<span style="color:red">Inactive</span>' ?><?= (int)($lic['is_master']??0) ? ' <span style="color:#b8860b">MASTER — any domain</span>' : '' ?></dd>
 <dt><strong>Created</strong></dt>
 <dd><?= esc($lic['created_at']) ?></dd>
+<dt><strong>Invoice</strong></dt>
+<dd><?= $lic['invoice_id']!==null ? 'Linked · #'.esc($lic['invoice_id']) : 'Unlinked' ?></dd>
 </dl>
+
+<?php if($lic['invoice_id']===null && $lic['is_active'] && !(int)($lic['is_master']??0) && staff_can('staff.manage')): ?>
+<form method="post">
+<?php admin_action('studio_license_reconcile'); ?>
+<input type="hidden" name="license_id" value="<?= esc($lic['id']) ?>">
+<label for="invoice_<?= esc($lic['id']) ?>">Link to paid invoice</label>
+<input type="number" name="invoice_id" id="invoice_<?= esc($lic['id']) ?>" min="1" placeholder="Invoice ID" required>
+<button class="btn outline" type="submit">Reconcile</button>
+</form>
+<p class="hint">Only link a license you created before invoice tracking existed to the paid invoice that produced it — this is permanent.</p>
+<?php endif; ?>
 
 <h3>Registered domains</h3>
 <?php $domains = license_domains((int)$lic['id']); ?>

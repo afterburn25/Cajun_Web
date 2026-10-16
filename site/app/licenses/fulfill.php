@@ -57,33 +57,12 @@ function license_fulfill_invoice(int $invoiceId): ?array {
     );
     if ($existing) return $existing;
 
-    // Legacy path: licenses created before the invoice_id column have NULL.
-    // Retrying a historical invoice must reuse the license it already produced
-    // instead of minting a duplicate — but only when exactly one unlinked
-    // candidate exists. Multiple unlinked licenses for the same
-    // customer+product cannot be paired to a specific invoice without
-    // guessing, so refuse: an operator reconciles the link explicitly.
-    $candidates = all(
-        'SELECT id FROM '.table('website_licenses')
-        .' WHERE customer_id=? AND product_id=? AND invoice_id IS NULL AND is_master=0 ORDER BY created_at ASC',
-        [$clientId, $productKey]
-    );
-    if (count($candidates) === 1) {
-        // Claim the link so future lookups find it by invoice_id. The
-        // invoice_id IS NULL guard keeps a concurrent fulfiller from
-        // stealing the row for a different invoice.
-        query(
-            'UPDATE '.table('website_licenses').' SET invoice_id=? WHERE id=? AND invoice_id IS NULL',
-            [$invoiceId, (int)$candidates[0]['id']]
-        );
-        $existing = one('SELECT * FROM '.table('website_licenses').' WHERE invoice_id=?', [$invoiceId]);
-        if ($existing) return $existing;
-        // Another fulfiller claimed the row for a different invoice first —
-        // this invoice is a separate purchase, so fall through and mint.
-    } elseif (count($candidates) > 1) {
-        throw new RuntimeException('Multiple unlinked licenses match this invoice. Reconcile the invoice link explicitly before retrying.');
-    }
-
+    // Legacy licenses created before the invoice_id column carry NULL. A
+    // customer+product match is never provenance — an unrelated, revoked or
+    // admin-created license must not be captured for this invoice. Genuine
+    // legacy links come only from an explicit owner reconciliation
+    // (license_link_invoice); until then each paid invoice mints its own
+    // entitlement, so a real purchase is never absorbed into an old record.
     // Create license — UNIQUE(invoice_id) collapses a concurrent fulfilment
     // race: the loser reads the winner's row instead of minting a duplicate.
     try {

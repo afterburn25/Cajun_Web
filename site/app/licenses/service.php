@@ -253,6 +253,44 @@ function license_reactivate(int $licenseId, int $actor = 0): void {
 }
 
 /**
+ * Explicit owner reconciliation: link a known legacy license (invoice_id
+ * NULL from before the column existed) to the paid invoice that actually
+ * produced it. This is never inferred — an operator makes the decision
+ * after checking records, and fulfilment then reuses the exact link.
+ * The license must be active, non-master and still unlinked; the invoice
+ * must be paid and belong to the same customer and product. The
+ * invoice_id IS NULL guard keeps a concurrent link/fulfilment from
+ * stealing the row.
+ */
+function license_link_invoice(int $licenseId, int $invoiceId, int $actor = 0): void {
+    require_once CWP_CODE_ROOT.'/app/billing/catalog.php';
+    license_transaction(function() use ($licenseId, $invoiceId, $actor): void {
+        license_lock($licenseId);
+        $license = one('SELECT * FROM ' . table('website_licenses') . ' WHERE id = ?', [$licenseId]);
+        if ($license['invoice_id'] !== null) throw new RuntimeException('This license is already linked to an invoice.');
+        if (!(int) $license['is_active']) throw new RuntimeException('An inactive license cannot be reconciled to an invoice.');
+        if ((int) $license['is_master'] === 1) throw new RuntimeException('Master license keys are internal and cannot be invoice-linked.');
+        $invoice = one(
+            'SELECT i.id, i.status, j.client_id FROM ' . table('studio_invoices') . ' i
+             JOIN ' . table('studio_jobs') . ' j ON i.job_id = j.id WHERE i.id = ?',
+            [$invoiceId]
+        );
+        $snapshot = $invoice ? catalog_snapshot($invoiceId) : null;
+        if (!$invoice || $invoice['status'] !== 'paid' || !$snapshot) throw new RuntimeException('Only a paid catalog invoice can be reconciled.');
+        if ((int) $invoice['client_id'] !== (int) $license['customer_id'] || (string) ($snapshot['sku'] ?? '') !== (string) $license['product_id']) {
+            throw new RuntimeException('The invoice belongs to a different customer or product — check records before linking.');
+        }
+        if (one('SELECT id FROM ' . table('website_licenses') . ' WHERE invoice_id = ?', [$invoiceId])) {
+            throw new RuntimeException('This invoice already produced a license.');
+        }
+        if (query('UPDATE ' . table('website_licenses') . ' SET invoice_id = ?, updated_at = ? WHERE id = ? AND invoice_id IS NULL', [$invoiceId, gmdate('Y-m-d H:i:s'), $licenseId])->rowCount() !== 1) {
+            throw new RuntimeException('This license was linked by another request. Review before retrying.');
+        }
+        license_audit($actor, 'reconcile', 'License ' . $licenseId . ' linked to invoice ' . $invoiceId);
+    });
+}
+
+/**
  * Get all domains for a license.
  */
 function license_domains(int $licenseId): array {

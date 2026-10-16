@@ -1,3 +1,7 @@
+## Devin licensing — PR159 review corrections — 2026-10-16
+
+`devin/non20i-licensing` responds to the actionable PR #159 review: fulfilment no longer claims a sole NULL-invoice license by customer/product inference — each paid invoice mints its own entitlement and unlinked legacy rows stay untouched until an owner runs the explicit `license_link_invoice` reconciliation (owner-only `studio_license_reconcile` action + licenses-view form). `license_migrate` now adopts genuine populated unmarked pre-marker installs through narrow legacy-shape validation (known column subset, stray licensing tables refused untouched) with in-place `product_id` widening and additive `invoice_id`/`is_master` columns; unknown/future markers still refuse before DDL. Native suite covers non-capture, reconcile refusals, reconciled retry and genuine v0 adoption. Installer inventory regenerated.
+
 ## 2026-10-16 — publish the concrete release freeze and branch
 
 Documentation-only descendant of35d8 records owner release-first override, published normal merge b98b96eb, frozen scope/map, actual source/focused evidence and remaining gates. Runtime, installer, version, published assets and production remain unchanged. Continue release corrections, authentic1.24 upgrade coverage, complete supported runtime acceptance, review, exact-main and publication/download verification before new20i capabilities. Coordination is posted in issue2 comment6220729910 and issue157 comment6220730195. Documentation validation is required before commit; no application acceptance is claimed.
