@@ -1,8 +1,10 @@
 # CajunWebPro — project source of truth
 
-## Current20i integration —2026-10-16
+Owner update: Devin now owns the remaining non-20i site roadmap, including licensing; Codex and three agents continue 20i. [GitHub assignment #157](https://github.com/afterburn25/Cajun_Web/issues/157) records branch/shared-file boundaries. Devin acknowledgement is pending.
 
-Protected owner StackCP setup now joins the directory/paid-renewal candidate with the exact synthetic-delivery evidence correction. All four original focused StackCP environments pass; current combined browser/package acceptance remains pending. Actual556 WordPress mobile labels are visually corrected while that original full remains failed at sealing. No provider login, registration purchase or full20i completion is claimed. [Status](PROJECT_STATUS.md), [handoff](SESSION_HANDOFF.md).
+## Current 20i integration - 2026-10-16
+
+Private owner/client registration drafts join the reviewed StackCP, directory and renewal source for combined testing. Registration purchase and support login remain unfinished. The preserved a63 full test exposed an invalid renewal-fixture stage and remains failed; its bounded fixture correction is now applied for new-source testing. Frozen 9538 Windows/GitHub packages match, while full acceptance is pending. [Status](PROJECT_STATUS.md), [handoff](SESSION_HANDOFF.md).
 
 ## Current release and ownership — 2026-10-15
 

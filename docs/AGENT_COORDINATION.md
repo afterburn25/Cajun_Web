@@ -1,3 +1,15 @@
+## Owner allocation update - 2026-10-16
+
+The owner now authorizes Devin to continue **all remaining non-20i site work**, including existing software-product licensing. This supersedes the older unrelated-work pause for Devin's lane. Codex and its three agents retain complete 20i, provider support/SSH and final integration/releases. Work stays on separate branches; shared billing/auth/schema/portal/build seams integrate sequentially. [Assignment #157](https://github.com/afterburn25/Cajun_Web/issues/157) and [detailed boundaries](DEVIN_NON20I_SITE_COMPLETION.md) define the scope. Posting the assignment is not proof of an active Devin session; acknowledgement is pending.
+
+## Current allocation - 2026-10-16
+
+Root integrates private registration drafts from exact 2e86 into frozen 9538 on `codex/twentyi-registration-drafts-integration`, owns the original full-run evidence and releases. Domains prioritizes the actual a63 renewal browser fixture failure; final draft runtime/fixtures are frozen in manifest8b394f5a. Catalog owns `codex/twentyi-stackcp-access-observations` from9538, dedicated read13/refresh15 contexts and explicit membership/grants observations with no login claim. VPS owns `codex/twentyi-cloud-assignment-authority` from9538, current assignment admission and protected historical sharing. Shared patches require root integration; none changes frozen9538 or another agent's owned files. Devin retains software-product licensing, with current main79d9 findings recorded separately.
+
+## Isolated Domains checkpoint — 2026-10-16
+
+Domains owns `codex/twentyi-domain-registration-contract` froma63: six pure/source-guide files frozen70f09573, reviewed by root and VPS71337363. Next is a proposal for private native draft/contact storage and editing, with no billing/payment/purchase enablement. Root owns directory integration and combined acceptance; VPS/Catalog retain their separately assigned work. The historical table below is inherited froma63; use root's current handoff for integration status. All shared changes still require sequential root review.
+
 # Current CajunWebPro agent coordination
 
 Updated2026-10-16 UTC. Codex and three agents own complete20i P0; Devin owns software-product licensing.

@@ -98,8 +98,12 @@ def run_browser(env, browser):
             check('Renewal payment client '+str(number)+' activates and logs in normally', response.status_code == 200 and 'Welcome, ' in response.text)
             clients.append((cid, client))
         (cid, client), (_, foreign) = clients
-        submit(owner, admin+'?view=studio-clients', 'studio_job', {'client_id': str(cid), 'title': 'Domain renewal invoice project', 'stage': 'planning', 'summary': 'Synthetic exact renewal invoices', 'milestones': 'Review agreed renewal terms'})
-        job = db('SELECT id FROM fresh_studio_jobs WHERE client_id=?', [cid])[0]['id']
+        response = submit(owner, admin+'?view=studio-clients', 'studio_job', {'client_id': str(cid), 'title': 'Domain renewal invoice project', 'stage': 'discovery', 'summary': 'Synthetic exact renewal invoices', 'milestones': 'Review agreed renewal terms'})
+        jobs = db('SELECT id,client_id,title,stage FROM fresh_studio_jobs WHERE client_id=? AND title=?', [cid, 'Domain renewal invoice project'])
+        project_created = response.status_code == 200 and [r.status_code for r in response.history] == [303] and not soup(response).select('.notice.error') and len(jobs) == 1 and jobs[0]['client_id'] == cid and jobs[0]['stage'] == 'discovery' and jobs[0]['title'] == 'Domain renewal invoice project' and parse_qs(urlparse(response.url).query) == {'view': ['studio-job'], 'id': [str(jobs[0]['id'])]}
+        if not project_created: evidence('Create renewal invoice project', response)
+        check('Renewal payment project uses supported stage and exact client before invoices', project_created)
+        job = jobs[0]['id']
         job_url = admin+'?view=studio-job&id='+str(job)
         for view, action, fields in [('payments', 'payments_migrate', {'owner_password': password, 'confirm': '1'}),
                                      ('invoice-payments', 'payments_ledger_setup', {'owner_password': password, 'confirm': '1'}),

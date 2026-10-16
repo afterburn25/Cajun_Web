@@ -218,6 +218,11 @@ jobs:
           php8.3 -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json
           python -B tests/domain_renewal_dispatch_http_contract.py > qa/domain-renewal-dispatch-handler-results.json
           php8.3 tests/domain_renewal_dispatch_native.php
+          php8.3 tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-default.json
+          php8.3 -n tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-minimal.json
+          php8.3 tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-default.json
+          php8.3 -n tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-minimal.json
+          php8.3 tests/domain_registration_drafts_native.php
           php8.3 tests/service_observations_native.php
           php8.3 tests/domain_contracts_reader.php > qa/domain-contract-reader-integrated-results.json
           php8.3 tests/domain_contracts_native.php

@@ -1,3 +1,7 @@
+## Owner allocation update - 2026-10-16
+
+The owner now authorizes Devin to continue **all remaining non-20i site work**, including existing software-product licensing. This supersedes the older unrelated-work pause for Devin's lane. Codex and its three agents retain complete 20i, provider support/SSH and final integration/releases. Work stays on separate branches; shared billing/auth/schema/portal/build seams integrate sequentially. [Assignment #157](https://github.com/afterburn25/Cajun_Web/issues/157) and [detailed boundaries](docs/DEVIN_NON20I_SITE_COMPLETION.md) define the scope. Posting the assignment is not proof of an active Devin session; acknowledgement is pending.
+
 # Working agreement for CajunWebPro
 
 Codex owns the complete 20i P0 integration. [CajunWebPro 1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly downloaded/verified at immutable source `7190b582a02be8a1daa501db14b5899cfc1eb5d0`. All16 assets, checksums, ZIP members and the tag agree with accepted source; previous1.23 assets are unchanged. This is a GitHub release, not live-site deployment. Full20i is unfinished; unrelated roadmap work remains paused.

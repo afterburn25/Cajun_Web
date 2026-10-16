@@ -2,9 +2,9 @@
   "base": "e1cd8e44e4b8f748140618cf152521bb4215bc27",
   "base_workflow_sha256": "7aef2d8f6df74f4c65091960191a4748b21b8258f111d8a23967abe13bddafe5",
   "unchanged_test_sha256": {
-    "tests/browser_acceptance.py": "cf964c77274d791312028f5cd2129f070a0f940e850b9d054219c703e00476d2",
+    "tests/browser_acceptance.py": "830cc255b1745b661e7f9ef09f159a538842592ffd2d7b2b007ec3b2e07a134d",
     "tests/structure_acceptance.py": "2b89114d669f717c4e936123ae256e9c29394664ee1a7db301411964839e86d0",
-    "tests/apache_acceptance.py": "2e460b9c477c47117514a33dc335344af2ad743971814da6e52031a067cefb03",
+    "tests/apache_acceptance.py": "a8327553cc3430dd602e616d7281ced28080e37f7216293847aff3d13dda24e0",
     "tests/prepare_legacy.py": "00a09c11a78eb124a848d4794f0eab8a2901eb1d090f6e8da7da498c06d623a7"
   },
   "native_commands": [
@@ -73,6 +73,11 @@
     "php8.3 -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json",
     "python -B tests/domain_renewal_dispatch_http_contract.py > qa/domain-renewal-dispatch-handler-results.json",
     "php8.3 tests/domain_renewal_dispatch_native.php",
+    "php8.3 tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-default.json",
+    "php8.3 -n tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-minimal.json",
+    "php8.3 tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-default.json",
+    "php8.3 -n tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-minimal.json",
+    "php8.3 tests/domain_registration_drafts_native.php",
     "php8.3 tests/service_observations_native.php",
     "php8.3 tests/domain_contracts_reader.php > qa/domain-contract-reader-integrated-results.json",
     "php8.3 tests/domain_contracts_native.php",
@@ -180,6 +185,20 @@
       "php8.3 tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json",
       "php8.3 -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json",
       "php8.3 tests/stackcp_prerequisites_native.php"
+    ]
+  },
+  "registration_draft_command_baseline": {
+    "source": "9538ef1c87884167de8e0c1d84d1f9c28203423c",
+    "count": 126,
+    "sha256": "91264c4f0921a7a05408250444353a4f121a58ba61f6d9f3425a2c6d59d39208",
+    "owned_ancestry": "2e86e4e021980364b8f6d340e100e66779cf6fb0",
+    "additions_after": "php8.3 tests/domain_renewal_dispatch_native.php",
+    "additions": [
+      "php8.3 tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-default.json",
+      "php8.3 -n tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-minimal.json",
+      "php8.3 tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-default.json",
+      "php8.3 -n tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-minimal.json",
+      "php8.3 tests/domain_registration_drafts_native.php"
     ]
   }
 }

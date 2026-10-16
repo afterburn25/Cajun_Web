@@ -1,3 +1,7 @@
+## Unreleased - private registration drafts integration
+
+Add owner/direct-client private registration drafts with encrypted contact details, exact captured revisions, authenticated history and explicit studio-review submission. Preserve failed-form edits and paginated clients/history. Registration purchase and payment remain unavailable. This normally combines pure ancestor 2e86 and frozen 9538 with reviewed route/test additions; native/browser/package acceptance is pending. Preserve original a63 renewal fixture failure and its separate seal failure.
+
 ## Unreleased — protected StackCP setup integration
 
 Add owner-only explicit separate authentication-key configuration and unverified resource assignments with current-password/review checks, encrypted append-only history, missing-key restoration protection and no credential decryption on status pages. Original focused matrix passes all four environments. Combine with directory controls, paid renewals and exact synthetic delivery evidence correction; new combined UI/package acceptance is still required. No provider session/login or remote revoke guarantee is enabled.
@@ -14,6 +18,14 @@ Retain the three generated public website-delivery files in native/browser evide
 - Current merged acceptance remains pending. This entry creates no release, provider call or live deployment.
 
 Add explicit owner Enable/Disable requests with current authority, one durable provider attempt, separate exact observation, independent client sharing and narrowly scoped saved-history recovery. Preserve uncertainty/no-retry fences and authenticate retained indexed history before admission. Source/portable review passes; actual native and combined application acceptance remain pending.
+
+## Registration source formatting — 2026-10-16
+
+Remove one trailing blank line from each of the six reviewed registration files, preserving the original commit and all252 named outcomes per mode. No behavior or provider contract change.
+
+## Unreleased isolated work — private registration drafts
+
+Add pure typed contact/registration drafts with redacted ordinary projections and an explicit unverified purchase boundary. Both local PHP modes pass252 named cases. Shipping and purchase behavior are unchanged; native editing and the missing provider term/outcome contracts remain separate work.
 
 ## Acceptance job-output correction — 2026-10-16
 

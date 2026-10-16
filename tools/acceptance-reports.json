@@ -28,6 +28,11 @@
     "domain-expiry-contract-integrated-results.json",
     "domain-expiry-native-results.json",
     "domain-expiry-reader-integrated-results.json",
+    "domain-registration-contract-default.json",
+    "domain-registration-contract-minimal.json",
+    "domain-registration-drafts-native-results.json",
+    "domain-registration-drafts-pure-default.json",
+    "domain-registration-drafts-pure-minimal.json",
     "domain-renewal-agreements-document-default.json",
     "domain-renewal-agreements-document-minimal.json",
     "domain-renewal-agreements-native-results.json",
@@ -172,6 +177,11 @@
     "domain-expiry-contract-integrated-results.json",
     "domain-expiry-native-results.json",
     "domain-expiry-reader-integrated-results.json",
+    "domain-registration-contract-default.json",
+    "domain-registration-contract-minimal.json",
+    "domain-registration-drafts-native-results.json",
+    "domain-registration-drafts-pure-default.json",
+    "domain-registration-drafts-pure-minimal.json",
     "domain-renewal-agreements-document-default.json",
     "domain-renewal-agreements-document-minimal.json",
     "domain-renewal-agreements-native-results.json",
@@ -321,11 +331,14 @@
       "two recovery portable reports already invoked by base",
       "parallel-helper-tests.json is the new offline transfer regression report",
       "six paid domain renewal dispatch document, transport, handler and native reports",
-      "eight directory listing control request, transport, recovery, native and actual synthetic Handler reports"
+      "eight directory listing control request, transport, recovery, native and actual synthetic Handler reports",
+      "five private registration contract, encrypted draft/form and native reports; no provider registration or purchase"
     ],
     "renewal_source": "b221eb4be95ec1509458d916f1ffd10d65e71e64",
     "root_before_renewal": "5560635bb2117556de289f0d24c5b170d48e9c77",
     "directory_controls_base": "5560635bb2117556de289f0d24c5b170d48e9c77",
-    "directory_controls_proposal_sha256": "abdef32316fe6ceb32259218286e5905af9140326320b9a27ba0b09dd1e463d7"
+    "directory_controls_proposal_sha256": "abdef32316fe6ceb32259218286e5905af9140326320b9a27ba0b09dd1e463d7",
+    "registration_drafts_source_base": "9538ef1c87884167de8e0c1d84d1f9c28203423c",
+    "registration_drafts_owned_ancestry": "2e86e4e021980364b8f6d340e100e66779cf6fb0"
   }
 }

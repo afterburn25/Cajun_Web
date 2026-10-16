@@ -260,9 +260,17 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
-    check('All126 native commands retain exact reviewed order and arguments', native_commands==contract['native_commands'])
+    check('All131 native commands retain exact reviewed order and arguments', native_commands==contract['native_commands'])
+    registration=contract['registration_draft_command_baseline'];registration_additions=registration['additions']
+    registration_preserved=[command for command in native_commands if command not in registration_additions]
+    check('All126 pre-registration-draft commands retain exact order and arguments',
+          len(registration_preserved)==registration['count']==126 and hashlib.sha256(json.dumps(registration_preserved,separators=(',',':')).encode()).hexdigest()==registration['sha256'])
+    registration_position=native_commands.index(registration['additions_after'])+1
+    check('Five registration contract draft pure and native commands occur once after renewal dispatch',
+          len(registration_additions)==len(set(registration_additions))==5 and native_commands[registration_position:registration_position+5]==registration_additions
+          and all(native_commands.count(command)==1 for command in registration_additions))
     stackcp=contract['stackcp_native_command_baseline'];stackcp_additions=stackcp['additions']
-    stackcp_preserved=[command for command in native_commands if command not in stackcp_additions]
+    stackcp_preserved=[command for command in registration_preserved if command not in stackcp_additions]
     check('All119 pre-StackCP native commands retain exact order and arguments',
           len(stackcp_preserved)==stackcp['count']==119 and hashlib.sha256(json.dumps(stackcp_preserved,separators=(',',':')).encode()).hexdigest()==stackcp['sha256'])
     stackcp_position=native_commands.index(stackcp['additions_after'])+1
