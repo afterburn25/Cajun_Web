@@ -1972,3 +1972,30 @@ Owner reviews on #210 and #211 plus follow-throughs on #212/#213:
   cancelled): client-actions run 39076920607 on `37b131e9`,
   portal-account run 39076926308 on `2dfa5d69` — in progress.
 - No merges, deployments, provider activity, or release publication.
+
+## 2026-10-18 — Second acceptance round: missing activity enablement on the upgraded fixture
+
+- Redispatched runs 39076920607 / 39076926308 both reached the HTTP
+  step and failed identically at `staff_cases.py` "Milestone change
+  enters client activity feed" (portal-account run observed to
+  completion; client-actions run cancelled once the cause was known —
+  identical file/line).
+- Root cause: `/existing/` is an upgraded install, so
+  `activity_schema_version` is unset until the owner completes the
+  guarded `activity_setup` step; `activity_actor` then throws and the
+  client page renders a 403 access error with no feed rows. The prior
+  negative assertion at staff_cases.py:76 ("Client activity never
+  surfaces internal notes") passes vacuously on that page, which hid
+  the missing precondition. Component lanes never execute this suite.
+- Fix `66841f3a` on `devin/non20i-milestones`: owner POSTs
+  `activity_setup` on `/existing/` before the feed assertion. Also
+  unblocks `contacts_cases.py`'s own `?activity=1` mark/feed checks on
+  the same fixture (its assertions had never run either — the runner
+  halts at the first failure, staff_cases precedes contacts_cases).
+- One union conflict on the forward merge (staff_cases.py): kept #212's
+  "Open blockers" check plus the new enablement — `8e1cc8b7` on
+  client-actions, propagated to activity-prefs `bfaee17d` and
+  portal-account `2ba0a003`.
+- Acceptance redispatched on the exact corrected heads: client-actions
+  run 39079044619 (`8e1cc8b7`), portal-account run 39079050602
+  (`2ba0a003`) — in progress.
