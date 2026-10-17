@@ -265,6 +265,11 @@ def run(tmp):
     check('Integer aggregate with failure detail remains failed',not a.reports(root)['counts.json']['passed'])
     for lane,name in [('apache','qa/http-results.json'),('recovery','qa/apache-results.json'),('native-browser','qa/structure-results.json'),('build','test-runtime/private/key.txt')]:
         check('Evidence ownership refuses '+lane+' '+name, not a.evidence_allowed(name,lane))
+    snapshot_root=tmp/'access-snapshot-report';snapshot_name='stackcp-access-read-snapshot-native-results.json';seed_name='stackcp-access-read-snapshot-seed.json'
+    named(snapshot_root/'qa'/snapshot_name);a.write(snapshot_root/'qa'/seed_name,{'passed':True,'scope':'Synthetic metadata, not acceptance','prefix':'sapr_','linked_packages':21,'local_assignments':20})
+    check('Finite access snapshot seed stays diagnostic metadata beside its required report',set(a.reports(snapshot_root))=={snapshot_name} and a.evidence_allowed('qa/'+seed_name,'native-browser') and not a.input_allowed('qa/'+seed_name))
+    named(snapshot_root/'qa'/snapshot_name,False)
+    check('Successful seed cannot mask a failed access snapshot native report',not a.reports(snapshot_root)[snapshot_name]['passed'])
     from delivery_evidence_cases import run as delivery_evidence_cases
     delivery_evidence_cases(a, ROOT, tmp/'delivery-evidence', check, deny, context, fixtures, outcomes)
     from acceptance_environment_test import run as environment_checks
@@ -276,7 +281,13 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
-    check('All148 native commands retain exact selected-runtime order and arguments', native_commands==contract['native_commands'])
+    access_snapshot=contract['stackcp_access_snapshot_native_command_baseline'];access_snapshot_command='"$PHP_BINARY" tests/stackcp_access_read_snapshot_native.php'
+    check('All149 native commands equal the exact current selected-runtime recipe',len(native_commands)==149 and native_commands==contract['native_commands'])
+    access_snapshot_position=native_commands.index(access_snapshot['additions_after'])+1
+    check('Access snapshot comparison occurs exactly once after prerequisite snapshot',access_snapshot['additions']==[access_snapshot_command] and native_commands[access_snapshot_position:access_snapshot_position+1]==[access_snapshot_command] and native_commands.count(access_snapshot_command)==1)
+    native_commands=[command for command in native_commands if command!=access_snapshot_command]
+    check('Access snapshot addition retains exact148 source-bound commands',len(native_commands)==access_snapshot['count']==148 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==access_snapshot['sha256'])
+    check('All148 native commands retain exact selected-runtime order and arguments', native_commands==[command for command in contract['native_commands'] if command!=access_snapshot_command])
     predecessor=contract['release_environment_predecessor']
     native_commands=['php8.3 '+command[len('"$PHP_BINARY" '):] if command.startswith('"$PHP_BINARY" ') else command for command in native_commands]
     check('Only explicit executable selection changes all148 predecessor commands',len(native_commands)==predecessor['count']==148 and native_commands==predecessor['commands'] and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==predecessor['sha256'])

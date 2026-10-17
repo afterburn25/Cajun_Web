@@ -5,7 +5,9 @@
     "tests/browser_acceptance.py": "092b2ecc03f9827e96494e6515c0b9e95debbb7f5b4ab2f9952e72ebb3c26238",
     "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
     "tests/apache_acceptance.py": "cb6c083414ad55e6c9c729b19f2bee5b326267d34ef572efaecb1e69e3692703",
-    "tests/prepare_legacy.py": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9"
+    "tests/prepare_legacy.py": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
+    "tests/stackcp_access_read_snapshot_native.php": "5bda32f95549f664e3064e95a03ddc0bab2a00150f410697f68236c3c174365b",
+    "tests/fixtures/stackcp_access_read_original.json": "2c7e731489c862f021514c53efa2ef4893c3f4333c215cfa69b9eb3a321f138e"
   },
   "native_commands": [
     "\"$PHP_BINARY\" tests/service-plans/forms.php > qa/service-plans-forms-results.json",
@@ -141,6 +143,7 @@
     "python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json",
     "\"$PHP_BINARY\" tests/stackcp_access_native.php",
     "\"$PHP_BINARY\" tests/stackcp_read_snapshot_native.php",
+    "\"$PHP_BINARY\" tests/stackcp_access_read_snapshot_native.php",
     "\"$PHP_BINARY\" tests/provider_domain_search_native.php",
     "\"$PHP_BINARY\" tests/provider_mailboxes_native.php",
     "\"$PHP_BINARY\" tests/provider_operations_native.php",
@@ -490,7 +493,7 @@
       "tests/payments_cases.py": "ea33b4aed1d73bd2cf66efc6dcbd9e5bc03f18bb02839a39dc0e8a955dd4e821",
       "tests/payments_native.php": "77f8bd5b2fd62e30ffaa29d6448c64d1c9c6a16929954f7c9764ce4ff96edba3",
       "tests/provider_package_wordpress_installed_native.php": "5a92693ec7dac1db7660b9f2a8e200fa925edbe33bda26bbbe026d7b760cda09",
-      "tests/provider_schedule_cases.py": "a82e4e5e2c0ec7dfea7936a2e8ae72108f6fb15a64a0dc70251dd10faca94718",
+      "tests/provider_schedule_cases.py": "642b208ea9376f7535a2045d3cab0f80f226ccf9a72e392c02002eeb32d1e04b",
       "tests/domain_expiry_native.php": "1a206c75cc2ab411bed8b1449917c414551e11ad7842054e4eafe83e12cde52d",
       "tests/domain_contracts_native.php": "a6f76a7ad0aa7eb65064265cd5d206b0f63a7c03f529f9fd5604b360bc21cfdd"
     },
@@ -507,5 +510,17 @@
       "Licensing-Owner-Invoice-Review-Mobile.png"
     ],
     "scope": "Additive landing-page captures, isolated licensing HTTP/forms/downloads, truthful optional setup assertion and exact private legacy helper path; all original native commands and browser flows retained."
+  },
+  "stackcp_access_snapshot_native_command_baseline": {
+    "source": "60c053b5c9f5a5fded943930500ea57cddd20ff8",
+    "count": 148,
+    "sha256": "c639df7617a88a3e5fb5a7a538a2c38e7ea87839dabb7dc6a2df6ad8a4b1558a",
+    "additions_after": "\"$PHP_BINARY\" tests/stackcp_read_snapshot_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/stackcp_access_read_snapshot_native.php"
+    ],
+    "report": "stackcp-access-read-snapshot-native-results.json",
+    "seed_diagnostic": "stackcp-access-read-snapshot-seed.json",
+    "seed_scope": "Finite synthetic metadata only, with no checks array; never application input or acceptance authority."
   }
 }

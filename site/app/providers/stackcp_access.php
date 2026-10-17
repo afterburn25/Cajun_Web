@@ -18,13 +18,7 @@ function provider_stackcp_access_package_history(string $profile):void {
 }
 /** Current locally approved resource facts; distinct from remotely observed access and from a session. */
 function provider_stackcp_access_base(string $profile,int $package):array {
-    provider_stackcp_guard();$actor=provider_settings_manager();$vault=provider_stackcp_vault();$c=provider_stackcp_assignment_context($profile,$package,$vault);
-    if (!$c['prepared']||$c['status']!=='unverified'||$c['binding']===null||$c['auth']['status']!=='configured') throw new ProviderStackCpAccessUnavailable('Review a current protected StackCP assignment first.');
-    $assignment=$c['document'];$auth=$c['auth']['document'];$local=$c['binding'];provider_stackcp_access_package_history($profile);$latest=service_observations_reads($profile)[0]??null;$p=provider_settings_load($profile);
-    if (!$latest||!service_observations_fresh($latest)||!provider_inventory_link_context_matches($local,$p,$latest)) throw new ProviderStackCpAccessUnavailable('Refresh hosting inventory for this exact assignment first.');
-    $source=provider_stackcp_access_package_source($latest['id'],$package);if ((int)$source['start']['id']<=$local['audit_id']) throw new ProviderStackCpAccessUnavailable('Refresh hosting inventory after this assignment or reapproval.');
-    $b=['operation'=>StackCpAccessBinding::MEMBERSHIP,'profile_id'=>$profile,'profile_revision'=>$local['profile_revision'],'credential_sha256'=>$local['profile_credentials_sha256'],'key_fingerprint'=>$local['key_fingerprint'],'package_id'=>$package,'client_id'=>$local['client_id'],'client_auth_version'=>$local['client_auth_version'],'link_id'=>$local['link_id'],'link_sha256'=>$local['link_sha256'],'event_id'=>$local['event_id'],'event_sha256'=>$local['event_sha256'],'audit_id'=>$local['audit_id'],'audit_sha256'=>$local['audit_sha256'],'source_id'=>$source['row']['id'],'source_seq'=>(int)$source['row']['seq'],'source_sha256'=>$source['sha256'],'actor_id'=>(int)$actor['id'],'actor_auth_version'=>$actor['auth_version'],'assignment_id'=>$assignment['id'],'assignment_revision'=>$assignment['revision'],'assignment_sha256'=>$c['row']['document_sha256'],'assignment_proof'=>$c['row']['proof'],'auth_id'=>$auth['id'],'auth_revision'=>$auth['revision'],'auth_sha256'=>$c['auth']['row']['document_sha256'],'auth_proof'=>$c['auth']['row']['proof'],'auth_ciphertext_sha256'=>$auth['ciphertext_sha256'],'stack_identity'=>$assignment['stack_identity'],'membership_id'=>'','membership_seq'=>0,'membership_sha256'=>''];
-    return (new StackCpAccessBinding($b))->data;
+    return ProviderStackCpReadProjection::accessBase($profile,$package);
 }
 /** Select across every client/assignment in the profile. A later failed or unfinished read wins. */
 function provider_stackcp_access_latest(string $profile,int $package,string $identity,string $operation):?array {
@@ -39,12 +33,7 @@ function provider_stackcp_access_saved(array $read):array {
 }
 function provider_stackcp_access_recent(array $saved):bool {return $saved['finish']!==null&&$saved['finish']['state']==='complete'&&(int)$saved['start']['common']['started_epoch']>=time()-900&&(int)$saved['start']['common']['started_epoch']<=time()+30&&$saved['finish']['observed_epoch']<=time()+30;}
 function provider_stackcp_access_binding(string $profile,int $package,string $operation):StackCpAccessBinding {
-    $b=provider_stackcp_access_base($profile,$package);
-    if ($operation===StackCpAccessBinding::MEMBERSHIP) return new StackCpAccessBinding($b);
-    if ($operation!==StackCpAccessBinding::GRANTS) throw new InvalidArgumentException('Choose a supported StackCP observation.');
-    $r=provider_stackcp_access_latest($profile,$package,$b['stack_identity'],StackCpAccessBinding::MEMBERSHIP);$saved=$r?provider_stackcp_access_saved($r):null;
-    if (!$saved||!provider_stackcp_access_recent($saved)||$saved['binding']->data!==$b||!in_array($b['stack_identity'],$saved['finish']['values'],true)) throw new ProviderStackCpAccessUnavailable('Refresh package membership and review this exact selected Stack user first.');
-    $b['operation']=$operation;$b['membership_id']=$r['id'];$b['membership_seq']=(int)$saved['start']['common']['seq'];$b['membership_sha256']=$saved['row']['document_sha256'];return new StackCpAccessBinding($b);
+    return ProviderStackCpReadProjection::accessBinding($profile,$package,$operation);
 }
 /** Shared executor revalidates before credentials/transport and after response; no auth-client key is opened. */
 function provider_stackcp_access_authority(StackCpAccessBinding $expected):void {
@@ -75,19 +64,6 @@ function provider_stackcp_access_refresh(string $profile,int $package,string $op
 }
 /** Owner-only finite projection; ciphertext, digests, raw documents and sibling identities stay private. */
 function provider_stackcp_access_projection(string $profile,int $package):array {
-    provider_stackcp_guard();provider_settings_manager();provider_stackcp_hex($profile);provider_stackcp_number($package);
-    $out=['prepared'=>provider_stackcp_access_ready(),'profile_id'=>$profile,'package_id'=>$package,'status'=>'unprepared','login_ready'=>false,'remote_scope_restricted'=>false,'membership'=>null,'grants'=>null,'reviews'=>[]];if (!$out['prepared']) return $out;
-    try {$base=provider_stackcp_access_base($profile,$package);}catch (ProviderStackCpAccessUnavailable $e) {$out['status']='assignment_or_source_unavailable';return $out;}
-    $out['stack_identity']=$base['stack_identity'];$out['status']='not_observed';$memberBinding=new StackCpAccessBinding($base);$out['reviews'][StackCpAccessBinding::MEMBERSHIP]=$memberBinding->sha256;
-    try {$grantBinding=provider_stackcp_access_binding($profile,$package,StackCpAccessBinding::GRANTS);$out['reviews'][StackCpAccessBinding::GRANTS]=$grantBinding->sha256;}catch (ProviderStackCpAccessUnavailable) {$grantBinding=null;}
-    foreach (['membership'=>StackCpAccessBinding::MEMBERSHIP,'grants'=>StackCpAccessBinding::GRANTS] as $key=>$operation) {
-        $r=provider_stackcp_access_latest($profile,$package,$base['stack_identity'],$operation);if (!$r) continue;$saved=provider_stackcp_access_saved($r);$finish=$saved['finish'];$current=$key==='membership'?$memberBinding:$grantBinding;
-        $same=$current!==null&&hash_equals($current->sha256,$saved['binding']->sha256);$state=$finish['state']??'unfinished';$currentSaved=$same&&provider_stackcp_access_recent($saved);$match=false;
-        if ($currentSaved) {$observation=new StackCpAccessObservation($saved['binding'],$finish['observed_epoch'],'complete','',$finish['values']);$match=$observation->selectedMatch();}
-        // For a whole-user grants receipt owned by another package/client, expose only the stale state.
-        $out[$key]=['id'=>$r['id'],'state'=>$same?$state:'context_changed','reason'=>$same?($finish['reason']??''):'','observed_epoch'=>$same?($finish['observed_epoch']??0):0,'current'=>$currentSaved,'matches'=>$match,'empty'=>$same&&$finish!==null&&$state==='complete'&&$finish['values']===[],'count'=>$same&&$finish!==null&&$state==='complete'?count($finish['values']):null];
-    }
-    if (($out['membership']['current']??false)&&($out['membership']['matches']??false)&&($out['grants']['current']??false)&&($out['grants']['matches']??false)) $out['status']='observed_match';
-    elseif ($out['membership']!==null||$out['grants']!==null) $out['status']='not_verified';return $out;
+    return ProviderStackCpReadProjection::accessProjection($profile,$package);
 }
 function provider_stackcp_access_status(string $profile,int $package):array {return staff_locked(fn()=>staff_transaction(fn()=>provider_stackcp_access_projection($profile,$package)));}

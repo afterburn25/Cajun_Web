@@ -410,6 +410,7 @@ jobs:
           python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json
           "$PHP_BINARY" tests/stackcp_access_native.php
           "$PHP_BINARY" tests/stackcp_read_snapshot_native.php
+          "$PHP_BINARY" tests/stackcp_access_read_snapshot_native.php
           "$PHP_BINARY" tests/provider_domain_search_native.php
           "$PHP_BINARY" tests/provider_mailboxes_native.php
           "$PHP_BINARY" tests/provider_operations_native.php

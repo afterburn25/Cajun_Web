@@ -1,5 +1,18 @@
 ## 1.25.0 — bounded mature increment
 
+## 2026-10-17 - verified bounded StackCP correction integrated for full acceptance
+
+Integrate the reviewed single-call StackCP access snapshot and exact scheduler-backoff fixture correction after the original bounded native/packaged-browser diagnostic passed. Add the native comparison to full acceptance while retaining every earlier recipe, image and guard. Complete corrected-candidate/main acceptance and verified publication remain pending; no new provider capability or production deployment.
+
+## 2026-10-17 - StackCP access read performance correction under verification
+
+Starting source: `60c053b5c9f5a5fded943930500ea57cddd20ff8`. Original full-browser runs expose a slow prepared StackCP access section; the required PHP 8.2/MySQL run also exposes a latency-sensitive scheduled-backoff assertion. Preserve the original failures and all completed evidence. The [diagnostic record](docs/STACKCP_ACCESS_READ_DIAGNOSTIC.md) explains the observed behavior, bounded correction and limits.
+
+An isolated release-blocker branch prepares one synchronous access read snapshot under the owning mutex and transaction. All original validation bodies, current package/client authority, public mutation paths and displayed hosting links remain. Root and independent source reviews passed, along with 798 actual local PHP 8.4.25 contract/renderer checks in default/minimal modes. The scheduler fixture now requires an exact 1,800-second delay from a finish event within its request window; 18 modeled predicate/inverse checks and independent review passed. Independent diagnostic source review passed 63 checks; all 208 acceptance-helper regressions also passed. Native work measurements, exact output equivalence and extracted-package HTTP/Chromium remain pending. Do not count earlier source results as acceptance of this correction. No timeouts or release gates are relaxed, and no new20i scope is added.
+
+Next: validate the bounded correction, integrate it into the canonical candidate, then run complete candidate/maintained acceptance and actual visual review before normal merge, complete exact-main acceptance and all-asset publication/download verification. Main, immutable 1.24 and production remain unchanged;1.25 is unpublished.
+
+
 Includes the hosting/domain/cloud observations, explicit assignments, reviewed commercial workflows, bounded settings controls and local StackCP prerequisites listed in [release scope](docs/RELEASE_SCOPE_1.25.0.md). Includes the reviewed licensing migration/master-isolation/older-invoice/history corrections, complete supported-runtime acceptance wiring and authentic1.24 update/recovery fixtures. Held capabilities remain incomplete; provider-issued login and SSH are not included. Existing public/portal layouts are retained.
 
 The [acceptance report](docs/TEST_REPORT_1.25.0.md) records source-specific results and limits. This source change entry does not assert publication or live deployment. The release assets and verification receipts establish those later outcomes.
