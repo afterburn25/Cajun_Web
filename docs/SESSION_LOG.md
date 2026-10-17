@@ -1904,3 +1904,40 @@ merged source:
 
 Each merge reduced the PR's effective diff to its own feature; the
 chain is MERGEABLE end to end again.
+
+## Review corrections, 2026-10-17 (round 4 — milestones/prefs + stack propagation)
+
+Owner reviews on #210 and #211 plus follow-throughs on #212/#213:
+
+- #210 `devin/non20i-milestones` `2e06f185` — two P2 corrections:
+  - `studio.php` milestone targets now require a real calendar date via
+    `checkdate()` (ledger idiom), not just the YYYY-MM-DD shape;
+    `2026-02-31`, `2026-13-01`, `2026-00-00`, `2027-02-29` refused,
+    `2028-02-29` accepted, empty still optional.
+  - `events.php` milestone events carry a revision-qualified identity
+    `milestone:<id>:<16-hex>` hashed over title/state/target_date/
+    updated_at, so an acknowledgement applies only to the acknowledged
+    revision — a later meaningful update resurfaces unread and an older
+    ack cannot consume it. `activity_key` accepts the optional suffix;
+    `activity_reads` VARCHAR(80) fits — no schema change. HTTP coverage:
+    read-then-update for primary client (`activity_cases.py`) and
+    projects-permission contact (`contacts_cases.py`) with exact
+    `data-event-key` assertions.
+- #211 `devin/non20i-activity-prefs` `0cd5ce7a` — the preference-
+  isolation check expected an admin-authored message in a staff feed,
+  which the staff projection intentionally excludes; the substring could
+  only false-match. The client reply is now created first and asserted
+  by exact `data-event-key` in the staff feed, while the admin-authored
+  key is asserted absent (staff author filter preserved).
+- #212/#213 follow-through: PR203 (`9015ef8f`) dependency changes
+  propagated through the whole stack — merged forward contacts →
+  contact-decisions → contact-activity (`17f0227b`) → staff-notes
+  (`b4d25087`) → milestones (`81bf0c27`) → activity-prefs (`180f1309`+
+  `5d325631`) → client-actions (`66cc00b7`) → portal-account
+  (`49dfe86c`+`eb6c8082`). Union conflicts resolved preserving every
+  feature (staff notes, milestone checks, upload attribution, boundary
+  block, password/session tail, both worker modes); inventory pins
+  regenerated per merge.
+- Combined acceptance dispatched on the propagated exact heads:
+  client-actions run 39073761930, portal-account run 39073763300 —
+  pending at this writing.
