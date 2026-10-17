@@ -1,3 +1,7 @@
+## Owner additions — 2026-10-17
+
+The owner explicitly added installer corrections, reorganized collapsible admin navigation, public Hosting / Web Design / Products links, and admin import of 20i products with images. These bounded requests supersede the earlier release freeze only for this work. Installer correction is committed as `345b335e`; this branch adds the [reviewed navigation increment](docs/NAVIGATION_1.25.0.md). Root coordinates shared seams and normal integration; the product-import lane remains separate and incomplete. All other held capabilities and the complete candidate/main/publication gates remain in force. No live deployment is authorized.
+
 ## Owner release priority — 2026-10-16
 
 Freeze new 20i capabilities and nonessential refactors until CajunWebPro 1.25.0 is published and every downloaded release asset is verified. The owner explicitly requires the mature increment now, without waiting for complete20i. Codex root owns `codex/release-1.25.0`, started from main `35d8fb7e`, and one normal merge of the mature `3fa72d7b` history. [Frozen scope](docs/RELEASE_SCOPE_1.25.0.md) and [integration map](docs/RELEASE_1.25_INTEGRATION_MAP.md) distinguish included capabilities, dependencies and held work.

@@ -9,7 +9,7 @@ require CWP_CODE_ROOT.'/includes/layout/public.php';
 require_once CWP_CODE_ROOT.'/app/marketing/growth.php';
 require_once CWP_CODE_ROOT.'/app/portfolio/browse.php';
 $page = is_string($_GET['page'] ?? null) ? $_GET['page'] : 'home';
-$allowed = ['home','about','services','work','project','process','contact','privacy','thanks'];
+$allowed = ['home','about','services','hosting','products','work','project','process','contact','privacy','thanks'];
 if(in_array($page,growth_routes(),true)){require CWP_CODE_ROOT.'/pages/marketing/controller.php';exit;}
 if (!in_array($page, $allowed, true)) {
     $page = '404';
@@ -20,6 +20,8 @@ if ($page === 'home') {require CWP_CODE_ROOT.'/pages/home/index.php';
 }elseif($page==='work'){require CWP_CODE_ROOT.'/pages/portfolio/index.php';
 }elseif($page==='project'){require CWP_CODE_ROOT.'/pages/portfolio/project.php';
 }elseif($page==='services'){require CWP_CODE_ROOT.'/pages/services/index.php';
+}elseif($page==='hosting'){require CWP_CODE_ROOT.'/pages/services/hosting.php';
+}elseif($page==='products'){require CWP_CODE_ROOT.'/pages/services/products.php';
 }elseif($page==='about'){require CWP_CODE_ROOT.'/pages/about.php';
 }elseif($page==='process'){require CWP_CODE_ROOT.'/pages/process.php';
 }elseif($page==='contact'){require CWP_CODE_ROOT.'/pages/contact/index.php';

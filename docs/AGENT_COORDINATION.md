@@ -1,3 +1,7 @@
+## Owner additions — 2026-10-17
+
+The owner explicitly added installer corrections, reorganized collapsible admin navigation, public Hosting / Web Design / Products links, and admin import of 20i products with images. These bounded requests supersede the earlier release freeze only for this work. Installer correction is committed as `345b335e`; this branch adds the [reviewed navigation increment](NAVIGATION_1.25.0.md). Root coordinates shared seams and normal integration; the product-import lane remains separate and incomplete. All other held capabilities and the complete candidate/main/publication gates remain in force. No live deployment is authorized.
+
 # Current release coordination
 
 The owner prioritizes verified publication of 1.25.0 before new20i capabilities. Root owns `codex/release-1.25.0`, normal merges, shared conflicts, canonical inventory, current-candidate review, exact-main acceptance and release/download verification. [Frozen scope](RELEASE_SCOPE_1.25.0.md) is the boundary.

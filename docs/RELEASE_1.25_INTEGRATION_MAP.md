@@ -1,3 +1,7 @@
+## Owner-requested additions — 2026-10-17
+
+The subsequent explicit requests add the installer correction in [PR206](https://github.com/afterburn25/Cajun_Web/pull/206) and [grouped administration/public navigation](NAVIGATION_1.25.0.md). They retain the original complete acceptance and publication gates. Bounded 20i product import is still on a separate unaccepted branch and is not represented as complete by this navigation change. All other HOLD items remain held.
+
 ## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
 
 Pending import: `codex/installer-layout-1.25.0`, starting head and merge base `bc5ec277580aa681f43aaf2c9b97df730f6954f1`. It is a direct descendant of the current release candidate and adds only the owner-requested installer/password/recovery correction and its tests/docs. No feature branch is reimported. The enclosing correction commit supplies the reviewed head; record the actual subsequent normal merge separately. Local evidence is in [the correction report](INSTALLER_FRESH_START_1.25.0.md); complete candidate/main gates remain required.

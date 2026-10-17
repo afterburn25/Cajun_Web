@@ -1,3 +1,7 @@
+## Owner-requested additions — 2026-10-17
+
+The subsequent explicit requests add the installer correction in [PR206](https://github.com/afterburn25/Cajun_Web/pull/206) and [grouped administration/public navigation](NAVIGATION_1.25.0.md). They retain the original complete acceptance and publication gates. Bounded 20i product import is still on a separate unaccepted branch and is not represented as complete by this navigation change. All other HOLD items remain held.
+
 # CajunWebPro 1.25.0 frozen release scope
 
 Release priority override dated2026-10-16: ship the mature increment; do not wait for complete20i. Root adopted this bounded scope on 2026-10-16. Scope is frozen; the versioned acceptance report records actual source-specific results and remaining gates.
