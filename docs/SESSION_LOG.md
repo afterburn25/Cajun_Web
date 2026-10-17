@@ -1770,3 +1770,62 @@ Tests so far: php -l on six touched PHP files; activity_cases.py compiles; canon
 Known limits: preferences are portal/bell visibility only — no outbound email delivery exists yet; the upgrade path requires an owner to re-run activity setup once.
 
 Next: commit, open stacked PR, monitor CI.
+
+## 2026-10-17 — Devin lane: stacked increments #209-#212
+
+- Request: continue non-20i roadmap (issue #157). Working chain stacked on `devin/non20i-contact-activity` tip: staff-notes → milestones → activity-prefs → client-actions.
+- #212 `devin/non20i-client-actions`: portal project dashboard gains derived "What we need from you" (latest pending-version decisions; issued invoices when billing access applies) and "Open blockers" (blocked milestones). Read-only, no schema. Files: `site/portal/views/workspace.php`, `tests/staff_cases.py`, `tests/contacts_cases.py`, `site/install/inventory.generated.php` (refreshed), docs.
+- Verified: `php -l` on workspace.php; `py_compile` both test modules; canonical inventory check PASS (no drift).
+- Known limits: read-only derivation only; admin "request feedback" remains covered by `studio_message`. CI lanes for #209-#211 queued behind release-capacity runners; #212's will queue likewise. Long lanes run after Codex retargets each parent to main.
+- Next: open PR #212, keep monitoring CI waves, fix failures on exact new commits.
+
+## Review corrections, 2026-10-17 (round 2)
+
+Owner review surfaced four acceptance findings; all corrected and pushed:
+
+- #203 `52f524bc` (48/48 incl. native-and-browser): a revoked/disabled contact no longer degrades to
+  primary-account identity - contact lookup failure ends the request and
+  invalidates the complete authentication context. Bundle download requires
+  explicit `contact_can('downloads')`; multipart upload accepts and
+  attributes `author_type='contact'`. Tests cover all three.
+- #202 `40eb7f29` (48/48 incl. native-and-browser): `payments_master(true)`
+  now refuses generating a replacement key when retained payment-request
+  sealed-link history exists (previously only gateway credentials blocked
+  it). Native test preserves the original key + history and proves sealed
+  links still open. `40eb7f29` also fixes a bound-parameter bug found by
+  native CI: `table()` returns a backtick-quoted identifier which never
+  matched `information_schema` table_name - now uses the unquoted
+  prefixed name like the migration probes.
+- #209 `82c62c98` (43/43): refreshed the stale `admin/views/studio/job.php`
+  inventory pin.
+- #212 `b85d87db` (41/41): review action links navigate through `focus_review`,
+  so a pending decision outside the 100-row display window still lands on
+  its exact decision form.
+
+All correction heads verified green on full component matrices.
+
+## Review corrections, 2026-10-17 (round 3)
+
+Follow-up reviews produced three more work items; all corrected and pushed:
+
+- #203 `53a60482`: upload write boundary — `studio_upload` now commits
+  client/contact uploads under the shared `staff_locked` account mutex and
+  re-reads the active client, enabled contact, current auth versions and
+  projects permission FOR UPDATE inside the transaction before any write;
+  the project is locked with its expected client id. Native coverage:
+  four committed interleavings (disable, rotation, permission removal,
+  client deactivation) via a worker process, plus permitted control.
+- #213 `9e898a4a`: `studio_password_change` is atomic — re-reads the
+  active actor (+ contact's active parent) FOR UPDATE under `staff_locked`,
+  verifies session auth versions and the current password against fresh
+  rows, commits credential + audit together; session rotates only after
+  commit. HTTP test asserts the client rotation revokes the contact
+  session, re-signs it, uses one session for CSRF GET+POST and verifies
+  signed-in identity. Native coverage: three committed interleavings,
+  audit-failure rollback, both success paths.
+- #212 `91f4599e`: boundary regression now retains a pending proposal,
+  adds 101 newer design versions, follows the generated action link and
+  asserts the exact pending review renders with its decision form;
+  controls cover another job's review and superseded pending rows.
+
+CI is re-running on all three heads at this writing.

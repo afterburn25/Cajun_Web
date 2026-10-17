@@ -17,9 +17,10 @@ Previous checkpoint: https://github.com/afterburn25/Cajun_Web/blob/35d8fb7efc94f
 All earlier Devin PRs verified green: #198 protected previews `21198602` (48/48), #202 payment links `95a3db9b` (48/48), #203 company contacts `37324121` (48/48), plus stacked #200 stage history `93cb8f3a` (43/43), #204 contact decision attribution `c70dc0e0` (37/37), #205 contact activity routing `58c5d4af` (41/41) — long lanes for stacked PRs run after Codex retargets them to main.
 
 Current tips (stacked chain on devin/non20i-contact-activity):
-- #209 `devin/non20i-staff-notes` @ `d203b5ea` — staff-only internal project notes via `studio_messages.author_type='internal'` (no schema change); portal conversation allow-lists visible author types.
+- #209 `devin/non20i-staff-notes` @ `3e6db257` — staff-only internal project notes via `studio_messages.author_type='internal'` (no schema change); portal conversation allow-lists visible author types. `3e6db257` corrects a flash-assert regression in `d203b5ea`.
 - #210 `devin/non20i-milestones` @ `868e967c` — additive `studio_milestones` (state + optional YYYY-MM-DD target date) via existing `studio_migrate`; admin manage forms, portal visibility, milestone activity events.
-- #211 `devin/non20i-activity-prefs` @ `537c2c98` — additive `activity_prefs`; per-actor hiding of update types from feed/unread/open/mark, re-run `activity_setup` provisions on existing installs.
+- #211 `devin/non20i-activity-prefs` @ `3b8b5ffd` — additive `activity_prefs`; per-actor hiding of update types from feed/unread/open/mark, re-run `activity_setup` provisions on existing installs.
+- #212 `devin/non20i-client-actions` @ `01dce055` — read-only derived "What we need from you" (pending version decisions; issued invoices when billing access applies) and "Open blockers" (blocked milestones) on the portal project dashboard; no schema.
 
 php -l + test-compile + canonical inventory pass on all. Component lanes queued (GitHub runner starvation); long lanes run after Codex retargets to main.
 

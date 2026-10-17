@@ -84,6 +84,8 @@ def run_http(env):
     check('Milestone state update persists','Project updated' in r.text and db("SELECT state,target_date FROM ci_studio_milestones WHERE id=?",[mid])[0]=={'state':'progress','target_date':'2027-01-15'})
     r=admin.post(job,data={'csrf':token(admin.get(job)),'action':'studio_milestone','job_id':'1','id':'0','title':'Bad date','state':'done','target_date':'next Friday'})
     check('Milestone target date must be ISO','YYYY-MM-DD' in r.text and not db("SELECT id FROM ci_studio_milestones WHERE title='Bad date'"))
+    r=chosen_form(admin,job,'studio_milestone','id',0,{'title':'Synthetic milestone awaiting client content','state':'blocked','target_date':''})
+    check('Blocked milestone persists',db("SELECT state FROM ci_studio_milestones WHERE title='Synthetic milestone awaiting client content'")[0]['state']=='blocked')
     for bad in ['2026-02-31','2026-13-01','2026-00-00','2027-02-29']:
         r=admin.post(job,data={'csrf':token(admin.get(job)),'action':'studio_milestone','job_id':'1','id':'0','title':'Bad date','state':'done','target_date':bad})
         check('Milestone target date must be a real calendar date','calendar date' in r.text and not db("SELECT id FROM ci_studio_milestones WHERE title='Bad date'"))
@@ -91,6 +93,7 @@ def run_http(env):
     check('Milestone target accepts a real leap day','Project updated' in r.text and db('SELECT target_date FROM ci_studio_milestones WHERE id=?',[mid])[0]['target_date']=='2028-02-29')
     r=alice.get(BASE+'/existing/portal/index.php?job=1')
     check('Client sees milestone states and target dates','Synthetic milestone content approved' in r.text and '2026-11-30' in r.text and 'milestone-'+str(mid) in r.text)
+    check('Client sees open blockers and the needed-actions section','Open blockers' in r.text and 'What we need from you' in r.text)
     check('Milestone change enters client activity feed','milestone:'+str(mid) in alice.get(BASE+'/existing/portal/index.php?activity=1').text)
     check('Milestones stay isolated to the owning client',bob.get(BASE+'/existing/portal/index.php?job=1').status_code==404)
     return {'url':url,'id':uid,'link':link,'code':code}
