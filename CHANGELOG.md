@@ -4,6 +4,10 @@ Includes the hosting/domain/cloud observations, explicit assignments, reviewed c
 
 The [acceptance report](docs/TEST_REPORT_1.25.0.md) records source-specific results and limits. This source change entry does not assert publication or live deployment. The release assets and verification receipts establish those later outcomes.
 
+## 2026-10-17 - scheduled-run browser synchronization
+
+Wait for the complete Chromium page load after the scheduler's Run if due action before switching to the separate HTTP client. Preserve every existing assertion, request timeout and capture, and pin the corrected fixture in the acceptance contract. An independent actual localhost reproduction with a synthetic streamed tail passes 13 checks at the unchanged 15-second request timeout. Original failed evidence remains retained; shipping behavior and workflows are unchanged. Fresh complete candidate/main acceptance and verified publication remain pending.
+
 ## 2026-10-17 - exact WordPress client projection assertion
 
 Replace the WordPress client privacy fixture's whole-JSON sibling-ID substring search with exact approved-field/value equality. Valid timestamps or receipt IDs containing `2202` now pass; extra/private fields, wrong values/types and cross-client access remain refused. Preserve all existing labels and shipping behavior. Modeled 41+41 cases and independent review pass; full corrected-source acceptance and publication remain pending.

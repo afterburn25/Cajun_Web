@@ -10,6 +10,14 @@ Use the [migration instructions](docs/MIGRATION-INSTRUCTIONS-1.25.0.md) with the
 
 Devin continues the [non-20i assignment](DEVIN_START_HERE.md) on separate branches. Unaccepted proposals stay outside the frozen scope unless a reviewed release blocker requires a narrow correction.
 
+## 2026-10-17 - scheduled-run browser response completion
+
+This release-only correction starts from `cc0ec4a9b4131498831fb761d4a2d7f93ade4604`; its enclosing commit identifies the corrected candidate. The [original PR run](https://github.com/afterburn25/Cajun_Web/actions/runs/38994351830) passed 3,003 HTTP checks, then timed out fetching the next scheduler form before its duplicate-run assertion. All seven original archives and completed job logs remain preserved. The fixture now waits for Chromium's page load after the scheduled-run click, and the acceptance contract pins that fixture. No request timeout, assertion, shipping file or workflow changes.
+
+An independent actual localhost PHP/Chromium reproduction with a synthetic 20-second streamed response demonstrates the sequence: early text appeared while the document was loading; the separate GET timed out at its unchanged 15-second limit. The exact load wait allowed that GET to return HTTP 200 without retry. All 13 reproduction checks pass. This establishes the synchronization mechanism, not the original application's database timing or full acceptance.
+
+Evidence cutoff: **2026-10-17 05:07 UTC**. Parent cc0 has verified Windows/four-Linux packages, maintained/minimal compatibility, all four recovery partitions and all four Apache/populated published-1.24 upgrades. All four original full runs remain active in Chromium after successful native stages; no complete browser result or accepted image review exists. Preserve their original outcomes. The corrected source requires fresh complete candidate/maintained acceptance, all 328 actual images, independent review, normal merge, complete exact-main acceptance, and publication/download verification of all 18 assets. Main remains `d7153b076e91b524ff2f99a9a7aa5c910551fc5e`; 1.25 is unpublished, 1.24 immutable, and no production deployment occurred.
+
 ## 2026-10-17 - exact WordPress client projection assertion
 
 This release-only correction starts from `d55a347ec0dec8e351e6cf325e3f3a16cba3a821`; its enclosing commit identifies the corrected candidate. The original [PR acceptance run](https://github.com/afterburn25/Cajun_Web/actions/runs/38989916313) failed the WordPress client projection assertion after 34 successful named checks. Its preview source has the exact candidate tree. The fixture searched all JSON for sibling package digits `2202`, which also occur in a valid timestamp and can occur in an opaque observation ID. The failed per-call projection was not retained; source inspection and modeled reproduction establish the assertion defect without claiming that operand was captured.

@@ -135,6 +135,7 @@ def run_browser(env, browser):
     form = page.locator('[data-schedule-run]')
     form.locator('[name=current_password]').fill(OWNER)
     form.get_by_role('button', name='Run if due', exact=True).click()
+    page.wait_for_load_state('load')
     expect(page.locator('[data-provider-schedule]')).to_contain_text('Refresh complete')
     check('Chromium scheduled run uses exactly one fixed authenticated GET', provider.calls == calls+1 and provider.get_paths[-1] == '/package' and provider.posts == posts)
     check('Scheduled observation preserves all explicit client assignments', all(db('SELECT * FROM ci_'+name+' ORDER BY id') == rows for name, rows in links.items()))
