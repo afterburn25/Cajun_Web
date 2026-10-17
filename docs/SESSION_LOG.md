@@ -1778,3 +1778,24 @@ Next: commit, open stacked PR, monitor CI.
 - Verified: `php -l` on workspace.php; `py_compile` both test modules; canonical inventory check PASS (no drift).
 - Known limits: read-only derivation only; admin "request feedback" remains covered by `studio_message`. CI lanes for #209-#211 queued behind release-capacity runners; #212's will queue likewise. Long lanes run after Codex retargets each parent to main.
 - Next: open PR #212, keep monitoring CI waves, fix failures on exact new commits.
+
+## Review corrections, 2026-10-17 (round 2)
+
+Owner review surfaced four acceptance findings; all corrected and pushed:
+
+- #203 `52f524bc`: a revoked/disabled contact no longer degrades to
+  primary-account identity - contact lookup failure ends the request and
+  invalidates the complete authentication context. Bundle download requires
+  explicit `contact_can('downloads')`; multipart upload accepts and
+  attributes `author_type='contact'`. Tests cover all three.
+- #202 `d36470f3`: `payments_master(true)` now refuses generating a
+  replacement key when retained payment-request sealed-link history exists
+  (previously only gateway credentials blocked it). Native test preserves
+  the original key + history and proves sealed links still open.
+- #209 `82c62c98`: refreshed the stale `admin/views/studio/job.php`
+  inventory pin.
+- #212 `b85d87db`: review action links navigate through `focus_review`,
+  so a pending decision outside the 100-row display window still lands on
+  its exact decision form.
+
+CI is re-running on all correction heads at this writing.
