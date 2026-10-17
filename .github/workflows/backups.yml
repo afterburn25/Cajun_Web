@@ -29,9 +29,14 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+      - name: Prepare a test PHP image with the ZIP extension
+        run: |
+          docker run --name cwp-backup-php "php:${{ matrix.php }}-cli" sh -ec 'apt-get update -qq && apt-get install -y -qq libzip-dev && docker-php-ext-install -j2 zip && php -m | grep -Fx zip'
+          docker commit cwp-backup-php cwp-backup-php:${{ matrix.php }} >/dev/null
+          docker rm cwp-backup-php >/dev/null
       - name: Syntax and backup checks using the official PHP image
         run: |
-          docker run --rm --network none -v "$PWD:/workspace:ro" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+          docker run --rm --network none -v "$PWD:/workspace:ro" -w /workspace "cwp-backup-php:${{ matrix.php }}" sh -ec '
             for source in foundation/backups/*.php tests/backups/*.php; do php -l "$source"; done
             php tests/backups/run.php
             php tests/backups/archive_run.php
