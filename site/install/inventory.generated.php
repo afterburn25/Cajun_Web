@@ -140,7 +140,7 @@ function setup_expected_files(): array { return [
     'app/providers/settings.php'=>'15e47fc5b5b9bbe39ae398e1789eb38627cffdb86e8f8de65e20b61bb2127871',
     'app/settings/revisions.php'=>'edcf7ba63bea26eeb964e0b44379d78ae93dd00535754d2375e07bfd5fcdc1bb',
     'app/settings/store.php'=>'f2c9eeba756c02f3b31b5cee3f93866f6fd22cc6f3e1f3e3bc6a5aa0108af564',
-    'app/staff/accounts.php'=>'049a20302c10b5424dfb4dfd9ec9e6e0c275e261b1db8fa8f85adb6b0d54f912',
+    'app/staff/accounts.php'=>'f61c3a4d18a70a3069c56252bcc116c9846efd86aa7c27c10395da4da6a2f78d',
     'app/support/sessions.php'=>'faedce8d00f432dd78ec91ab61e56397b31d9fec778281ea02d515469124512d',
     'app/updates/structure.php'=>'9085455efdb94ccce41cf8006a6e1137ec35d986f432b3259cb6e6194a71b3d6',
     'assets/css/admin.css'=>'3f6bc1cf6d9fc5f771bf814c8bbe6c83476622890f65b067862bb8bb87522175',
