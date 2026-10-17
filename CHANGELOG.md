@@ -1,5 +1,11 @@
 ## 1.25.0 — bounded mature increment
 
+## 2026-10-17 — combined owner additions ready for acceptance
+
+Release branch `codex/release-1.25.0` normally integrates installer `345b335e` ([PR206](https://github.com/afterburn25/Cajun_Web/pull/206)), navigation `e8ccefc9` ([PR207](https://github.com/afterburn25/Cajun_Web/pull/207)), and observed hosting import `ecf52ee4` ([PR208](https://github.com/afterburn25/Cajun_Web/pull/208)). Integration commit `4b4ce250064036b228747db7550f7c14d3a2bcb0` has exactly the reviewed importer tree, including its installer and navigation ancestors. This enclosing documentation checkpoint records that integration before the fresh full acceptance dispatch. [Release PR180](https://github.com/afterburn25/Cajun_Web/pull/180) remains draft.
+
+Actual local verification includes the shipping PHP/JS build refresh, all 2,894 installer hashes, 221 offline acceptance-helper checks, and the documented installer/navigation/import checks. A native-test-only missing studio form helper was corrected and independently verified with the actual PHP include graph; no application behavior was changed by that correction. Native database, multipart HTTP, combined browser images and full release acceptance remain pending. New expected report/image totals are 208 and 330, retaining all prior assertions and adding the import cases. Earlier parent results cannot certify this combined source. Main remains `d7153b07`, 1.25.0 is unpublished, 1.24.0 remains immutable, and production was not changed. Next: full combined candidate tests, then the documented main and publication gates.
+
 ## 2026-10-17 — observed hosting draft imports and product images
 
 The owner requested admin import of 20i products including images. This bounded increment starts from reviewed navigation source `e8ccefc931829aa9245a71d4ba0d310db2d0add6` on `codex/twentyi-product-import-1.25.0`. It adds an owner-only catalog panel to create hosting drafts from named types in the latest saved 20i inventory, with editable local details and image upload/replacement. Complete provider catalogs, provider pricing/images, hosting publication and ordering remain unfinished. See [scope, setup and evidence](docs/TWENTYI_PRODUCT_IMPORT.md).
