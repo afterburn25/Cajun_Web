@@ -26,6 +26,10 @@ This is the safe portion of [A-03](ROADMAP.md#a-03--backup-and-restore): the man
 
 No archive format, compression, filesystem extraction, database dump/restore, storage backend, scheduling, or download packaging — all adapter concerns. A successful restore drill in an isolated environment (the roadmap's acceptance) still needs the integrated implementation.
 
+## Runtime integration (devin/non20i-backups-runtime)
+
+The `site/` adapter now implements this contract: `app/backups/records.php` keeps durable backup rows plus the manifest/hash pair, `app/backups/archive.php` collects the deployable tree (applying the same forbidden-path rules), writes private ZIP archives and applies authorized restores atomically per item, and `admin/?view=backups` exposes create, impact preview, phrase-authorized restore, private no-store download and owner-gated pruning. Files added after a snapshot are left in place on restore; only manifest-covered items are rewritten.
+
 ## Integration contract
 
 When integrated, the adapter: generates manifests at backup time from real item bytes; persists manifests durably; renders `changedItems()` as the impact preview; collects the confirmation phrase before calling `authorize()`; applies item writes atomically per item-class and reports `applied()`/`abandon()`; enforces owner-only permission; and runs the isolated restore-drill acceptance before claiming the feature.
