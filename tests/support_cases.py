@@ -21,6 +21,8 @@ def run_upgrade():
     up=requests.Session();root=BASE+'/support-upgrade/admin/index.php'
     r=submit(up,root+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
     check('Actual 1.2.0 owner signs in before support migration','Sales pipeline' in r.text)
+    r=submit(up,root+'?view=studio-upgrade','studio_migrate',{'confirm':'1'})
+    check('Actual 1.2.0 workspace upgrade precedes support migration','Database update completed' in r.text)
     r=submit(up,root+'?view=support','support_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})
     check('Actual 1.2.0 explicit support upgrade succeeds','Support access is ready' in r.text)
     for t in ['staff_profiles','staff_invitations','studio_clients','studio_jobs','leads','projects']:
