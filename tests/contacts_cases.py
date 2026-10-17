@@ -3,7 +3,7 @@ import json
 from urllib.parse import parse_qs, urlparse
 import requests
 from playwright.sync_api import expect
-from release_cases import db
+from release_cases import db,chosen_form
 from staff_cases import OWNER
 
 CPASS='Synthetic contact passphrase 2026'
@@ -133,6 +133,15 @@ def run_browser(env,browser):
     r=submit(contact,portal+'?activity=1','activity_mark',{'keys':json.dumps(['message:'+str(mid)]),'state':'read'})
     check('Contact read state is stored per contact identity',bool(db('SELECT * FROM ci_activity_reads WHERE actor_type=? AND actor_id=? AND event_key=?',['contact',ctid,'message:'+str(mid)])))
     check('Contact read state leaves the client account unread',not db('SELECT * FROM ci_activity_reads WHERE actor_type=? AND event_key=?',['client','message:'+str(mid)]))
+    r=chosen_form(owner,jobAdmin,'studio_milestone','id',0,{'title':'Contact milestone revision fixture','state':'pending','target_date':''})
+    mmid=db("SELECT id FROM ci_studio_milestones WHERE title='Contact milestone revision fixture'")[0]['id']
+    mkey=[n['data-event-key'] for n in soup(contact.get(portal+'?activity=1')).select('[data-event-key]') if n['data-event-key'].startswith('milestone:'+str(mmid)+':')][0]
+    r=submit(contact,portal+'?activity=1','activity_mark',{'keys':json.dumps([mkey]),'state':'read'})
+    check('Contact acknowledges the exact milestone revision','read status was saved' in r.text and bool(db('SELECT * FROM ci_activity_reads WHERE actor_type=? AND actor_id=? AND event_key=?',['contact',ctid,mkey])))
+    r=chosen_form(owner,jobAdmin,'studio_milestone','id',mmid,{'state':'blocked','target_date':'2027-03-01'})
+    feed=contact.get(portal+'?activity=1');mkey2=[n['data-event-key'] for n in soup(feed).select('[data-event-key]') if n['data-event-key'].startswith('milestone:'+str(mmid)+':')][0]
+    check('Contact sees the later milestone update as a new unread event','data-event-key="'+mkey+'"' not in feed.text and mkey2!=mkey and 'data-event-key="'+mkey2+'"' in contact.get(portal+'?activity=1&filter=unread').text)
+    check('Older contact acknowledgement cannot consume the later update',not db('SELECT * FROM ci_activity_reads WHERE actor_type=? AND actor_id=? AND event_key=?',['contact',ctid,mkey2]))
 
     # Billing-only contact: invoices without project review or files.
     data=add_form(cid);data.update(name='Billing Only Contact',email='billing-contact@example.invalid',**{'perms[]':'billing'})

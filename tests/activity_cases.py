@@ -108,6 +108,17 @@ def run_browser(env,browser):
     uid=db("SELECT id FROM ci_users WHERE email='request-staff@example.invalid'")[0]['id'];old_grants=db('SELECT permissions FROM ci_staff_profiles WHERE user_id=?',[uid])[0]['permissions'];db("UPDATE ci_staff_profiles SET permissions='[]' WHERE user_id=?",[uid])
     check('Current grant revocation removes count center and exact navigation',member.get(endpoint+'?audience=admin').status_code==204 and member.get(url).status_code==403 and member.get(url+'&open='+ckey).status_code==403);db('UPDATE ci_staff_profiles SET permissions=? WHERE user_id=?',[old_grants,uid])
     db('UPDATE ci_studio_clients SET active=0 WHERE id=1');check('Client deactivation removes count and exact navigation',alice.get(endpoint+'?audience=client').status_code==204 and alice.get(center+'&open='+key).status_code==403);db('UPDATE ci_studio_clients SET active=1 WHERE id=1')
+    # A milestone revision gets a new event identity; an older acknowledgement cannot consume it.
+    jobAdmin=root+'?view=studio-job&id=1'
+    r=chosen_form(admin,jobAdmin,'studio_milestone','id',0,{'title':'Activity milestone revision fixture','state':'pending','target_date':''})
+    mmid=db("SELECT id FROM ci_studio_milestones WHERE title='Activity milestone revision fixture'")[0]['id']
+    mkey=[n['data-event-key'] for n in soup(alice.get(center)).select('[data-event-key]') if n['data-event-key'].startswith('milestone:'+str(mmid)+':')][0]
+    r=mark(alice,center,[mkey])
+    check('Client acknowledges the exact milestone revision','read status was saved' in r.text and bool(db('SELECT * FROM ci_activity_reads WHERE actor_type=? AND event_key=?',['client',mkey])))
+    r=chosen_form(admin,jobAdmin,'studio_milestone','id',mmid,{'state':'blocked','target_date':'2027-03-01'})
+    feed=alice.get(center);mkey2=[n['data-event-key'] for n in soup(feed).select('[data-event-key]') if n['data-event-key'].startswith('milestone:'+str(mmid)+':')][0]
+    check('Later milestone update replaces the event identity','data-event-key="'+mkey+'"' not in feed.text and mkey2!=mkey and mkey2.startswith('milestone:'+str(mmid)+':'))
+    check('Acknowledged milestone revision cannot consume the later update','data-event-key="'+mkey2+'"' in alice.get(center+'&filter=unread').text and not db('SELECT * FROM ci_activity_reads WHERE actor_type=? AND event_key=?',['client',mkey2]))
     # Actual Chromium rendering and controlled browser clock for one-minute polling.
     ctx=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce');p=ctx.new_page();p.bring_to_front();errors=[];p.on('pageerror',lambda e:errors.append(str(e)))
     p.goto(root+'?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill(OWNER);p.locator('form button').click();p.wait_for_url('**/admin/index.php?view=dashboard');p.goto(url);expect(p.locator('.activity-bell')).to_be_visible();p.screenshot(path=str(QA/'Activity-Admin-Desktop.png'),full_page=True)
