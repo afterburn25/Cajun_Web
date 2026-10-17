@@ -4,6 +4,18 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 # Session log
 
+## Diagnose deterministic copied-draft HTTP send failure — 2026-10-17
+
+Request: continue #157 repairs on `devin/non20i-mail-replies`. After `a382bed6` (missing `submission_views.php` require for the copied-history checks) the native lane is green, but `Reviewed reply send records server acceptance` in `tests/mail_reply_cases.py` fails deterministically on `a382bed6` (runs 38978848909/38978854961): the POST returns a 303 to the submission record, so the flow completes with a non-`accepted` outcome or no SMTP connection.
+
+Investigation: the send/authorize path was re-verified statically end to end — `mail_submissions_authorize` legs (author, sender address, copied flag/thread match, `mail_reply_drafts_load` identity/source-Read/read-record/fingerprint checks, revision/content equality), per-account dispatch cooldown, `EndpointResolver` fixture interception (`submission-fixture.example.net` → 8.8.8.8 → 127.0.0.1:fixture-port via `tests/mail_submission_socket_connector.php`), and `mail_accounts_grant` not bumping account revision. All consistent; the recorded outcome is needed to name the refusal leg.
+
+Actions: `tests/mail_reply_cases.py` now prints the recorded `ci_mail_submission_results` row (status/phase/reason/smtp_code), dispatch count, fixture connection delta and rendered status title when the check fails (`54c5b566`). A shipping-file `error_log` diagnostic (`bcf42dd1`) broke the combined suite — stderr during intentional refusal cases — and was reverted at `af570376`.
+
+Tests: `python -m py_compile` clean; inventory refreshed after the revert. CI reruns will report the outcome directly.
+
+Next: read the diagnostic, fix the real authorize/transport defect, remove the print, re-run full acceptance.
+
 ## Repair copied-submission authorization and draft pagination — 2026-10-16
 
 Request: continue #157; independent review of PR #161 head `1d45798b` found a P1 authorization gap and two P2 defects.
