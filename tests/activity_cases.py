@@ -119,6 +119,7 @@ def run_browser(env,browser):
     feed=alice.get(center);mkey2=[n['data-event-key'] for n in soup(feed).select('[data-event-key]') if n['data-event-key'].startswith('milestone:'+str(mmid)+':')][0]
     check('Later milestone update replaces the event identity','data-event-key="'+mkey+'"' not in feed.text and mkey2!=mkey and mkey2.startswith('milestone:'+str(mmid)+':'))
     check('Acknowledged milestone revision cannot consume the later update','data-event-key="'+mkey2+'"' in alice.get(center+'&filter=unread').text and not db('SELECT * FROM ci_activity_reads WHERE actor_type=? AND event_key=?',['client',mkey2]))
+    r=mark(alice,center,[mkey]);check('Submitted stale milestone key is rejected and leaves the new revision unread','read status was saved' not in r.text and not db('SELECT * FROM ci_activity_reads WHERE event_key=?',[mkey2]))
     # Actual Chromium rendering and controlled browser clock for one-minute polling.
     ctx=browser.new_context(viewport={'width':1440,'height':1000},reduced_motion='reduce');p=ctx.new_page();p.bring_to_front();errors=[];p.on('pageerror',lambda e:errors.append(str(e)))
     p.goto(root+'?view=login');p.locator('[name=email]').fill('owner@example.invalid');p.locator('[name=password]').fill(OWNER);p.locator('form button').click();p.wait_for_url('**/admin/index.php?view=dashboard');p.goto(url);expect(p.locator('.activity-bell')).to_be_visible();p.screenshot(path=str(QA/'Activity-Admin-Desktop.png'),full_page=True)
