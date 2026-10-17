@@ -15,6 +15,7 @@ class SubmissionServer:
         assert self.root.is_relative_to((Path(root)/'test-runtime').resolve())
         self.root.mkdir(parents=True,exist_ok=True)
         self.mode='accepted';self.encryption='ssl';self.connections=0;self.attempts=[];self.errors=[]
+        self.sender='sender@example.invalid';self.recipients=['first@example.invalid','copy@example.invalid','private@example.invalid']
         self.stopped=threading.Event();self.idle=threading.Event();self.idle.set()
         key=rsa.generate_private_key(public_exponent=65537,key_size=2048)
         name=x509.Name([x509.NameAttribute(NameOID.COMMON_NAME,self.host)]);now=datetime.datetime.now(datetime.timezone.utc)
@@ -25,10 +26,14 @@ class SubmissionServer:
         self.config={'ca':str(cert),'port':self.listener.getsockname()[1]}
         (self.root/'config.json').write_text(json.dumps(self.config),encoding='utf-8')
         self.thread=threading.Thread(target=self.serve,daemon=True);self.thread.start()
-    def configure(self,encryption='ssl',mode='accepted'):
+    def configure(self,encryption='ssl',mode='accepted',sender=None,recipients=None):
         assert self.idle.wait(6),'Previous SMTP fixture still active'
         assert encryption in ('ssl','starttls')
         assert mode in ('accepted','authentication','sender','recipient','data','final450','final550','disconnect_final','malformed_final','disconnect_body')
+        self.sender=sender or 'sender@example.invalid'
+        recipients=['first@example.invalid','copy@example.invalid','private@example.invalid'] if recipients is None else list(recipients)
+        assert 0<len(recipients)<=10 and all(isinstance(a,str) and '@' in a for a in recipients),'Synthetic recipient list invalid'
+        self.recipients=recipients
         self.encryption=encryption;self.mode=mode
     def serve(self):
         while not self.stopped.is_set():
@@ -36,6 +41,7 @@ class SubmissionServer:
             except socket.timeout:continue
             except OSError:return
             self.idle.clear();self.connections+=1;mode=self.mode;encryption=self.encryption
+            sender=self.sender;recipients=list(self.recipients)
             attempt={'mode':mode,'encryption':encryption,'commands':[],'data':b'','terminator':False,'authenticated':False,'recipients':[]}
             self.attempts.append(attempt)
             try:
@@ -62,11 +68,11 @@ class SubmissionServer:
                 send('535 Synthetic rejection' if mode=='authentication' else '235 Authenticated')
                 if mode=='authentication':continue
                 attempt['authenticated']=True
-                expect('MAIL FROM:<sender@example.invalid>');send('550 Sender refused' if mode=='sender' else '250 Sender accepted')
+                expect('MAIL FROM:<'+sender+'>');send('550 Sender refused' if mode=='sender' else '250 Sender accepted')
                 if mode=='sender':continue
-                for address in ['first@example.invalid','copy@example.invalid','private@example.invalid']:
+                for index,address in enumerate(recipients):
                     expect('RCPT TO:<'+address+'>');attempt['recipients'].append(address)
-                    refused=mode=='recipient' and address=='copy@example.invalid'
+                    refused=mode=='recipient' and index==1
                     send('550 Recipient refused' if refused else '250 Recipient accepted')
                     if refused:
                         # A maintained adapter must close without issuing DATA after any refused recipient.
