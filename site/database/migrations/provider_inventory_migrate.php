@@ -86,7 +86,7 @@ function provider_inventory_upgrade_v2(): void {
 function provider_inventory_migrate(#[\SensitiveParameter] string $password): void {
     staff_locked(function()use($password):void {
         $actor=provider_settings_owner($password);
-        if(!in_array((one('SELECT value FROM '.table('settings').' WHERE name=?',['studio_schema_version'])['value']??''),['2','3'],true))throw new RuntimeException('Prepare the client workspace before provider inventory.');
+        if(!in_array((one('SELECT value FROM '.table('settings').' WHERE name=?',['studio_schema_version'])['value']??''),['2','3','4'],true))throw new RuntimeException('Prepare the client workspace before provider inventory.');
         $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'');
         if(!in_array($version,['','1','2','3'],true))throw new RuntimeException('This provider inventory storage version is not supported. Existing data was preserved.');
         $missing=[];

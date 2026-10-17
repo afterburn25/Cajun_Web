@@ -61,7 +61,7 @@ def run_browser(env,browser):
     source_keys=[];next_url=center
     while next_url:
         page=soup(alice.get(next_url));source_keys.extend(n['data-event-key'] for n in page.select('[data-event-key]'));link=page.find('a',string='Older updates →');next_url=link['href'] if link else None
-    for kind in ['message','review','file','invoice','payment','release']:
+    for kind in ['message','review','file','invoice','payment','release','stage']:
         event=next(k for k in source_keys if k.startswith(kind+':'));result=alice.get(center+'&open='+event);fragment=urlparse(result.url).fragment
         check('Activity navigation resolves exact authorized '+kind,result.status_code==200 and (soup(result).find(id=fragment) is not None if fragment else parse_qs(urlparse(result.url).query).get('release')==[event.split(':')[1]]))
     check('Listing and opening do not implicitly mark read',db('SELECT * FROM ci_activity_reads')==[] and alice.get(center+'&open='+key).status_code==200 and db('SELECT * FROM ci_activity_reads')==[])
