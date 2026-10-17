@@ -5,6 +5,7 @@ from pathlib import Path
 from urllib.parse import urlparse,parse_qs,urljoin
 import requests
 from bs4 import BeautifulSoup
+import release_cases
 from release_cases import db
 ROOT=Path(__file__).resolve().parents[1];BASE='http://127.0.0.1:8091';WEB=ROOT/'test-runtime/web';QA=ROOT/'qa';QA.mkdir(exist_ok=True)
 checks=[]
@@ -54,7 +55,8 @@ from provider_http_server import ProviderServer
 provider_server=ProviderServer(ROOT)
 from mail_submission_server import SubmissionServer
 submission_server=SubmissionServer(ROOT)
-php=shutil.which('php8.3') or shutil.which('php');log=open(QA/'http-server.log','w');proc=subprocess.Popen([php,'-d','auto_prepend_file='+str(ROOT/'tests/mail_inbox_http_connector.php'),'-d','sendmail_path=python3 '+str(ROOT/'tests/mail_capture.py'),'-S','127.0.0.1:8091','-t',str(WEB)],stdout=log,stderr=log)
+php=shutil.which('php8.3') or shutil.which('php');release_cases.php=php;log=open(QA/'http-server.log','w');proc=subprocess.Popen([php,'-d','auto_prepend_file='+str(ROOT/'tests/mail_inbox_http_connector.php'),'-d','sendmail_path=python3 '+str(ROOT/'tests/mail_capture.py'),'-S','127.0.0.1:8091','-t',str(WEB)],stdout=log,stderr=log)
+db=release_cases.db
 error=None
 try:
     for _ in range(60):
