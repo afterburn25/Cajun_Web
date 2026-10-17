@@ -8,6 +8,12 @@ Keep all148 native recipes, complete PHP8.2/8.4 × MariaDB10.11/MySQL8.4 environ
 
 The tracked [acceptance report](docs/TEST_REPORT_1.25.0.md) has an explicit source/evidence cutoff. Final exact-main and publication facts belong in the external release report and receipts once those events occur; do not amend an accepted source merely to insert its own future test results. Verify identical versioned/compatibility report asset bytes before publication. No live deployment is authorized. Resume remaining20i only after the release and downloads are verified.
 
+## 2026-10-17 - exact WordPress client projection assertion
+
+This release-only correction starts from `d55a347ec0dec8e351e6cf325e3f3a16cba3a821`; its enclosing commit identifies the corrected candidate. The original [PR acceptance run](https://github.com/afterburn25/Cajun_Web/actions/runs/38989916313) failed the WordPress client projection assertion after 34 successful named checks. Its preview source has the exact candidate tree. The fixture searched all JSON for sibling package digits `2202`, which also occur in a valid timestamp and can occur in an opaque observation ID. The failed per-call projection was not retained; source inspection and modeled reproduction establish the assertion defect without claiming that operand was captured.
+
+Continue from this correction, preserving the exact original failed run and its artifacts. The fixture change and contract pin are the only executable/contract differences from d55; shipping/workflow bytes remain unchanged. Rebuild and bind the actual corrected source, dispatch its original complete four-environment matrix plus maintained lane, review exact artifacts and actual pixels, then follow normal merge/exact-main/publication gates. Do not use earlier passes to certify the new source.
+
 ## 2026-10-17 - payment throttle fixture boundary correction
 
 This release-only correction starts from `9e7b62e9520ad728744bfde62cff0e5ab1dce37f`; the enclosing commit identifies its descendant. Evidence cutoff is **2026-10-17 01:12 UTC**. Original PHP8.2/MySQL full run [38985873076](https://github.com/afterburn25/Cajun_Web/actions/runs/38985873076) failed the native payment assertion `Authentication attempts are rate limited` after32 passing checks. Its job ran across01:00 UTC, a fixed15-minute rate-window boundary. Source inspection and a deterministic reproduction support the rollover explanation; original per-call bucket rows/timestamps were not retained. The failed report, original logs and incomplete full run remain preserved and are not accepted.

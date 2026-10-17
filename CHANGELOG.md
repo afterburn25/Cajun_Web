@@ -4,6 +4,10 @@ Includes the hosting/domain/cloud observations, explicit assignments, reviewed c
 
 The [acceptance report](docs/TEST_REPORT_1.25.0.md) records source-specific results and limits. This source change entry does not assert publication or live deployment. The release assets and verification receipts establish those later outcomes.
 
+## 2026-10-17 - exact WordPress client projection assertion
+
+Replace the WordPress client privacy fixture's whole-JSON sibling-ID substring search with exact approved-field/value equality. Valid timestamps or receipt IDs containing `2202` now pass; extra/private fields, wrong values/types and cross-client access remain refused. Preserve all existing labels and shipping behavior. Modeled 41+41 cases and independent review pass; full corrected-source acceptance and publication remain pending.
+
 ## 2026-10-17 - deterministic payment throttle test
 
 Correct the isolated payment verifier test's dependency on earlier checks sharing one15-minute window. Prepare and restore its two owner-specific counters, require the precise throttle refusal, one counter increment and no provider/gateway/audit side effect. Preserve all54 literal labels and all shipping behavior. Parent9e's failed native result remains retained;12 local source checks and13 modeled boundary/fault cases pass. Full corrected candidate/main acceptance and verified publication remain pending.

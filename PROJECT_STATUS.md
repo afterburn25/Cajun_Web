@@ -10,6 +10,14 @@ Use the [migration instructions](docs/MIGRATION-INSTRUCTIONS-1.25.0.md) with the
 
 Devin continues the [non-20i assignment](DEVIN_START_HERE.md) on separate branches. Unaccepted proposals stay outside the frozen scope unless a reviewed release blocker requires a narrow correction.
 
+## 2026-10-17 - exact WordPress client projection assertion
+
+This release-only correction starts from `d55a347ec0dec8e351e6cf325e3f3a16cba3a821`; its enclosing commit identifies the corrected candidate. The original [PR acceptance run](https://github.com/afterburn25/Cajun_Web/actions/runs/38989916313) failed the WordPress client projection assertion after 34 successful named checks. Its preview source has the exact candidate tree. The fixture searched all JSON for sibling package digits `2202`, which also occur in a valid timestamp and can occur in an opaque observation ID. The failed per-call projection was not retained; source inspection and modeled reproduction establish the assertion defect without claiming that operand was captured.
+
+The exact structured assertion and its acceptance-contract pin replace the ambiguous substring check. All existing privacy/authority tests and shipping behavior remain. Local modeled 41+41 cases and independent review pass; corrected native/full acceptance is pending. See the [acceptance report](docs/TEST_REPORT_1.25.0.md) for evidence and limits.
+
+Evidence cutoff: **2026-10-17 02:13 UTC**. Parent d55 has independently verified Windows/four-Linux packages, the complete maintained compatibility matrix and all four recovery partitions; both MySQL Apache/published-1.24 upgrade partitions also passed bounded review. Its full acceptance remains blocked by the original WordPress fixture failure; other original runs and all failed evidence remain retained. These results do not certify this corrected descendant. Complete candidate acceptance and actual image review, normal main merge, complete exact-main acceptance, and publication/fresh download verification of all 18 assets remain required. Main remains `d7153b076e91b524ff2f99a9a7aa5c910551fc5e`; v1.25 is unpublished, v1.24 is immutable, and no live deployment occurred.
+
 ## 2026-10-17 - payment throttle fixture boundary correction
 
 This release-only correction starts from `9e7b62e9520ad728744bfde62cff0e5ab1dce37f`; the enclosing commit identifies its descendant. Evidence cutoff is **2026-10-17 01:12 UTC**. Original PHP8.2/MySQL full run [38985873076](https://github.com/afterburn25/Cajun_Web/actions/runs/38985873076) failed the native payment assertion `Authentication attempts are rate limited` after32 passing checks. Its job ran across01:00 UTC, a fixed15-minute rate-window boundary. Source inspection and a deterministic reproduction support the rollover explanation; original per-call bucket rows/timestamps were not retained. The failed report, original logs and incomplete full run remain preserved and are not accepted.
