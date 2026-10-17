@@ -1,5 +1,11 @@
 ## 1.25.0 — bounded mature increment
 
+## 2026-10-17 — grouped administration and public service navigation
+
+The owner-requested navigation increment starts from installer correction `345b335eeea8331bba5800aa926a3bc1c7507100` on `codex/admin-navigation-1.25.0`. It groups all 36 existing administrator destinations into collapsible categories with current-account permissions, active-page opening and mobile keyboard controls. The public menu adds Hosting, Web Design and Products; Hosting is consultation-only and Products preserves the existing published service allowlist. See [behavior, evidence and remaining gates](docs/NAVIGATION_1.25.0.md).
+
+Local actual-render PHP/Chromium checks passed: 134 admin and 91 public checks with explicitly synthetic data seams. Native database, combined candidate and exact-main release acceptance remain pending. Installer correction is committed in [PR206](https://github.com/afterburn25/Cajun_Web/pull/206); bounded 20i product import continues separately. Main remains `d7153b076e91b524ff2f99a9a7aa5c910551fc5e`; 1.25 is unpublished and no live deployment occurred.
+
 ## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
 
 Improve the one-page installer layout and remove redundant permission/process copy. Require at least 12 characters for new administrator passwords. Preserve existing-site configuration on ordinary uploads, show recovery for missing configuration with retained markers, and offer an explicit fresh start with separate tables/private storage. Existing data and install locks are preserved. This correction is awaiting release acceptance; it is not a published update.
