@@ -4,6 +4,18 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 # Session log
 
+## Fix copied-draft SMTP fixture envelope mismatch — 2026-10-17
+
+Request: continue #157; resolve the deterministic `Reviewed reply send records server acceptance` failure on `devin/non20i-mail-replies`.
+
+Root cause (from the `54c5b566` outcome diagnostic, run 38985432533): the send committed its dispatch fence, opened the TLS channel and passed greeting/EHLO/AUTH, then the recorded outcome was `not_submitted`/`sender`/`connection` — the fixture dropped the connection at `MAIL FROM`. `tests/mail_submission_server.py` hard-asserted the canonical envelope (`MAIL FROM:<sender@example.invalid>` plus `first@/copy@/private@example.invalid` RCPTs) written for `mail_submissions_cases.py`; `mail_reply_cases.py` sends `MAIL FROM:<reply-sender@example.invalid>` with `synthetic@example.net`/`forward-recipient@example.invalid` recipients, so its `expect()` assertion failed and the socket closed mid-dialogue. The application/authorize/transport code was correct — every leg re-verified statically and the native/combined suites already pass.
+
+Fix: `configure()` now accepts optional `sender`/`recipients` and resets them to the canonical envelope on every call, so each case declares its expected dialogue while strict command-order assertions are unchanged; the `recipient`-refusal mode keys on the second configured recipient. `mail_reply_cases.py` declares the reply envelope before its send and the forward envelope before its send; the temporary outcome diagnostic is removed.
+
+Tests: `python -m py_compile` clean on both files. CI re-runs the full native/HTTP/Chromium/recovery/Apache matrix.
+
+Next: inspect the run; if green, PR #161 has no remaining known defects.
+
 ## Diagnose deterministic copied-draft HTTP send failure — 2026-10-17
 
 Request: continue #157 repairs on `devin/non20i-mail-replies`. After `a382bed6` (missing `submission_views.php` require for the copied-history checks) the native lane is green, but `Reviewed reply send records server acceptance` in `tests/mail_reply_cases.py` fails deterministically on `a382bed6` (runs 38978848909/38978854961): the POST returns a 303 to the submission record, so the flow completes with a non-`accepted` outcome or no SMTP connection.
