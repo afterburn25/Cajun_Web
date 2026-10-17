@@ -110,6 +110,7 @@ def run_browser(env,browser):
     vid=db('SELECT id FROM ci_studio_versions WHERE job_id=1 ORDER BY id DESC LIMIT 1')[0]['id']
     r=contact.get(portal+'?job=1')
     check('Pending decision appears in the needed-actions list','What we need from you' in r.text and 'Review and approve or request changes on design version' in r.text)
+    check('Action link navigates through focus_review to reach its review','focus_review='+str(vid) in r.text)
     dec=None
     for f in soup(contact.get(portal+'?job=1')).select('form'):
         a,v=f.select_one('[name=action]'),f.select_one('[name=version]')
