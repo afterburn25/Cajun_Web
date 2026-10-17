@@ -208,10 +208,10 @@ def run_browser(env, browser):
         t = token(member.get(copy_page))
         return member.post(copy_page, data={'csrf': t, 'action': 'mail_submissions_copy_sent', 'submission_id': sent_sid})
 
-    r = copy_post()
-    check('Copy refuses before an owner configures a Sent folder', 'Sent folder' in r.text and inbox_server.connections == inbox_connections and not db('SELECT * FROM ci_mail_copy_attempts'))
     r = owner.post(sent_detail, data={'csrf': token(owner.get(sent_detail)), 'action': 'mail_accounts_sent_setup', 'account_id': sent_aid, 'current_password': OWNER})
     check('Owner prepares additive Sent-copy storage', 'Sent-copy storage is ready' in r.text and db("SELECT value FROM ci_settings WHERE name='mail_copies_schema_version'") == [{'value': '1'}])
+    r = copy_post()
+    check('Copy refuses before an owner configures a Sent folder', 'Sent folder' in r.text and inbox_server.connections == inbox_connections and not db('SELECT * FROM ci_mail_copy_attempts'))
     for bad in ['Sent*', 'Sent"Folder', 'INBOX\\Sent']:
         r = owner.post(sent_detail, data={'csrf': token(owner.get(sent_detail)), 'action': 'mail_accounts_sent_folder', 'account_id': sent_aid, 'sent_folder': bad, 'current_password': OWNER})
         check('Wire-unsafe Sent folder refused over HTTP ' + bad, not db('SELECT * FROM ci_mail_sent_folders WHERE id=?', [sent_aid]) and 'plain server folder' in r.text)
