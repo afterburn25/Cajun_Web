@@ -16,6 +16,7 @@ if(isset($_GET['downloads'])||isset($_GET['release'])){if($client&&!contact_can(
 if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403);if(!contact_can('downloads'))fail_page('Your contact permissions do not include downloads.',403);studio_download(is_string($_GET['file'])?$_GET['file']:'',(int)$client['id']);}
 if(isset($_GET['invoice'])||isset($_GET['receipt'])){if($client&&!contact_can('billing'))fail_page('Your contact permissions do not include billing.',403);ledger_portal_render();}
 if(isset($_GET['services'])){if($client&&!contact_can('billing'))fail_page('Your contact permissions do not include billing.',403);provider_services_portal_render();}
+if(isset($_GET['account'])&&$client){require CWP_CODE_ROOT.'/portal/views/account.php';exit;}
 require CWP_CODE_ROOT.'/portal/views/auth.php';
 if($jobId){try{$job=studio_job($jobId,(int)$client['id']);}catch(InvalidArgumentException){if(support_current())support_record('portal.view','project',(string)$jobId,'denied');fail_page('Project not found or access denied.',404);}}
 if(support_current())support_record('portal.view',$jobId?'project':'client',(string)($jobId?:$client['id']));

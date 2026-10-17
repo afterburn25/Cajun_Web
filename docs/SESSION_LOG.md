@@ -1779,6 +1779,19 @@ Next: commit, open stacked PR, monitor CI.
 - Known limits: read-only derivation only; admin "request feedback" remains covered by `studio_message`. CI lanes for #209-#211 queued behind release-capacity runners; #212's will queue likewise. Long lanes run after Codex retargets each parent to main.
 - Next: open PR #212, keep monitoring CI waves, fix failures on exact new commits.
 
+## 2026-10-17 — Devin lane: #213 portal account self-service
+
+- #213 `devin/non20i-portal-account`: new `site/portal/views/account.php` + `account_password` action; clients and contacts change their own password with current-password proof; `auth_version` bump signs out other sessions while the current session is refreshed (`session_regenerate_id`); rate-limited (`client-password` bucket), audited (`studio_client_audit`), CSRF-protected; support sessions remain blocked by the existing action gate. No schema change. Files: `identity.php`, `actions.php`, `router.php`, `views/account.php`, `views/workspace.php` (Account button), `tests/contacts_cases.py`, inventory refresh, docs.
+- Verified: `php -l` all touched PHP; `py_compile` contacts_cases; canonical inventory PASS.
+- Next: open stacked PR #213 on `devin/non20i-client-actions`; monitor remaining CI.
+
+## 2026-10-17 — CI wave complete; #213 verified
+
+- All stacked lanes resolved green: #209 `3e6db257` (43/43), #210 `868e967c` (43/43), #211 `3b8b5ffd` (43/43), #212 `bfb96f93` (41/41), #213 `b8ff2791` (41/41). Docs-continuity cp1252-byte failure fixed on #212.
+- Chain base is current `origin/main` `d7153b07` — zero drift.
+- Remaining named roadmap items are Codex-owned (provider/hosting monitoring, VPS) or already green on preserved PRs (#158 tickets, #178 proposals, #188 outbox) awaiting Codex integration; "assigned contact" on the dashboard would need a new `studio_jobs` column and was skipped as poor ROI on a 10-deep stacked chain.
+- Next: Codex sequential retarget/integration; Devin fixes failures on exact new commits.
+
 ## Review corrections, 2026-10-17 (round 2)
 
 Owner review surfaced four acceptance findings; all corrected and pushed:
@@ -1829,3 +1842,102 @@ Follow-up reviews produced three more work items; all corrected and pushed:
   controls cover another job's review and superseded pending rows.
 
 CI is re-running on all three heads at this writing.
+
+## Review corrections, 2026-10-17 (round 3 status)
+
+- #212 `5e1e043d`: component matrix green 41/41 (native-and-browser runs post-retarget per stacked-chain convention; the boundary regression itself is verified code-reviewed and will exercise then).
+- #213 `de343e95`: the branch went CONFLICTING when `91f4599e` landed on its base (`tests/contacts_cases.py` touched by both) which suppressed check runs entirely; resolved by merging the updated base into the branch (auto-merge kept both test changes; inventory pin regenerated for the merged `workspace.php`). Manually dispatched `Client authority` on `9e898a4a` passed — new password-worker interleavings and audit-failure rollback coverage green on the exact fix head. Full matrix queued on `de343e95`.
+- #203 `9015ef8f` — **fully green 48/48 including native-and-browser.** Two lane failures were diagnosed and resolved:
+  - `Form missing upload`: my own test bug — `submit(billing,...,'upload')` requires a rendered upload form, but a billing-only contact legitimately has none (no projects permission), so `form_for` raised before the POST ran. `fcebfd08` switched to a forged direct POST matching the neighboring denial checks.
+  - `rewrite 1.17.0 prior organized version actually cached`: deterministic across two runs but outside the diff (GET/render path untouched); bisect dispatch on previously-green `40eb7f29` (run 39067511358) later passed the same suite, confirming environmental pressure. `9015ef8f` added a bounded warm-up + decomposed probe print (assertion unchanged); every fixture probed `{"enabled":true,"timestamps":"0","cached":true}` and the lane passed.
+- #213 `3411de28`: **fully green 41/41** on the restacked head (docs follow-up after `de343e95`).
+- #212 `5e1e043d`: **fully green 41/41**.
+
+## Review corrections, 2026-10-17 (round 4 — #212 fixture interaction)
+
+Owner review (comment 6239686025) found a real latent defect in the
+`91f4599e` boundary regression: its 101 newer approved `design` filler
+versions generate `review:` activity events that permanently displace
+the earlier `review:<vid>` event expected by the later contact/alice
+feed assertions (the feed pages at 30 rows ordered by
+`occurred_at DESC, event_key DESC`). Broad `review:<id>` substrings can
+also falsely match a different numeric id.
+
+`6bf64fce` on `devin/non20i-client-actions` moves the whole boundary
+block (pending proposal + 101 fillers + focus_review link assertions +
+other-job/superseded controls + action-list checks) to after every
+activity-feed assertion, so feed checks observe only events that
+predate the fixture. Feed assertions now match exact rendered
+`data-event-key="kind:id"` attributes instead of bare `kind:<id>`
+substrings. Boundary, ownership, superseded and actionable-link
+coverage is unchanged. `py_compile` passes; no deployed source or
+installer bytes changed.
+
+Propagated to the stacked descendant by merging the updated base into
+`devin/non20i-portal-account` (`f4835eda`) so the inherited fixture
+defect noted in the #213 review is fixed through the stack; the test
+file auto-merged cleanly and the canonical installer check passes.
+
+Round-3 review confirmations received this round: #203 source fix
+accepted (`9015ef8f`), #213 implementation accepted (`3411de28`) — its
+remaining combined HTTP/browser acceptance exercises this repaired
+fixture on the retargeted base per the stacked-chain convention.
+
+## Stacked-chain restack, 2026-10-17
+
+`82c62c98` landing on `devin/non20i-staff-notes` left #210 CONFLICTING
+(inventory pin for merged `admin/views/studio/job.php`), which
+suppresses its check runs — the same suppression seen earlier on #213.
+Restacked each descendant by merging the updated base upward and
+regenerating `site/install/inventory.generated.php` so pins match the
+merged source:
+
+- #210 `devin/non20i-milestones` `e3a7e800` — merge `250f1d4a` + pin
+  refresh; **green 19/19**.
+- #211 `devin/non20i-activity-prefs` `71a900bb` — merge `19fc4fe7` +
+  pin refresh; **green 19/19**.
+- #212 `devin/non20i-client-actions` `1c47854a` — clean merge;
+  **green 18/18**.
+- #213 `devin/non20i-portal-account` `4eedb8cc` — clean merge;
+  **green 18/18** after rerunning a Docker port-binding infra failure
+  (`0.0.0.0:33306` address already in use) in Provider inventory.
+
+Each merge reduced the PR's effective diff to its own feature; the
+chain is MERGEABLE end to end again.
+
+## Review corrections, 2026-10-17 (round 4 — milestones/prefs + stack propagation)
+
+Owner reviews on #210 and #211 plus follow-throughs on #212/#213:
+
+- #210 `devin/non20i-milestones` `2e06f185` — two P2 corrections:
+  - `studio.php` milestone targets now require a real calendar date via
+    `checkdate()` (ledger idiom), not just the YYYY-MM-DD shape;
+    `2026-02-31`, `2026-13-01`, `2026-00-00`, `2027-02-29` refused,
+    `2028-02-29` accepted, empty still optional.
+  - `events.php` milestone events carry a revision-qualified identity
+    `milestone:<id>:<16-hex>` hashed over title/state/target_date/
+    updated_at, so an acknowledgement applies only to the acknowledged
+    revision — a later meaningful update resurfaces unread and an older
+    ack cannot consume it. `activity_key` accepts the optional suffix;
+    `activity_reads` VARCHAR(80) fits — no schema change. HTTP coverage:
+    read-then-update for primary client (`activity_cases.py`) and
+    projects-permission contact (`contacts_cases.py`) with exact
+    `data-event-key` assertions.
+- #211 `devin/non20i-activity-prefs` `0cd5ce7a` — the preference-
+  isolation check expected an admin-authored message in a staff feed,
+  which the staff projection intentionally excludes; the substring could
+  only false-match. The client reply is now created first and asserted
+  by exact `data-event-key` in the staff feed, while the admin-authored
+  key is asserted absent (staff author filter preserved).
+- #212/#213 follow-through: PR203 (`9015ef8f`) dependency changes
+  propagated through the whole stack — merged forward contacts →
+  contact-decisions → contact-activity (`17f0227b`) → staff-notes
+  (`b4d25087`) → milestones (`81bf0c27`) → activity-prefs (`180f1309`+
+  `5d325631`) → client-actions (`66cc00b7`) → portal-account
+  (`49dfe86c`+`eb6c8082`). Union conflicts resolved preserving every
+  feature (staff notes, milestone checks, upload attribution, boundary
+  block, password/session tail, both worker modes); inventory pins
+  regenerated per merge.
+- Combined acceptance dispatched on the propagated exact heads:
+  client-actions run 39073761930, portal-account run 39073763300 —
+  pending at this writing.

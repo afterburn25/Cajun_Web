@@ -244,6 +244,28 @@ def run_browser(env,browser):
     check('Contact browser session has no page errors',not errors)
     context.close()
 
+    # Self-service account password change for client and contact.
+    acct=portal+'?account=1'
+    r=alice.get(acct)
+    check('Account page renders identity','Your account.' in r.text and 'alice@example.invalid' in r.text)
+    prev=db('SELECT auth_version FROM ci_studio_clients WHERE id=?',[cid])[0]['auth_version']
+    r=alice.post(acct,data={'csrf':token(alice.get(acct)),'action':'account_password','current_password':'not-the-real-pass','password':'New client passphrase 2026!!','confirm_password':'New client passphrase 2026!!'})
+    check('Wrong current password is rejected','current password is not correct' in r.text)
+    r=alice.post(acct,data={'csrf':token(alice.get(acct)),'action':'account_password','current_password':'Synthetic client passphrase 2026','password':'New client passphrase 2026!!','confirm_password':'New client passphrase 2026!!'})
+    check('Client changes own password','password is updated' in r.text and db('SELECT auth_version FROM ci_studio_clients WHERE id=?',[cid])[0]['auth_version']!=prev)
+    check('Session survives own password change',alice.get(portal+'?job=1').status_code==200)
+    stale=requests.Session();r=stale.post(portal,data={'csrf':token(stale.get(portal)),'action':'login','email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
+    check('Old client password no longer signs in','not recognized' in r.text)
+    contactHash=db("SELECT password_hash FROM ci_studio_contacts WHERE id=?",[btid])[0]['password_hash']
+    check('Client credential rotation revokes the contact session',soup(billing.get(acct)).select_one('[name=action][value=login]') is not None)
+    r=billing.post(acct,data={'csrf':token(billing.get(acct)),'action':'account_password','current_password':CPASS,'password':'New billing passphrase 2026!!','confirm_password':'New billing passphrase 2026!!'})
+    check('Revoked contact session cannot change its password',db("SELECT password_hash FROM ci_studio_contacts WHERE id=?",[btid])[0]['password_hash']==contactHash)
+    submit(billing,portal,'login',{'email':'billing-contact@example.invalid','password':CPASS})
+    r=billing.post(acct,data={'csrf':token(billing.get(acct)),'action':'account_password','current_password':CPASS,'password':'New billing passphrase 2026!!','confirm_password':'New billing passphrase 2026!!'})
+    check('Contact changes own password after signing back in','password is updated' in r.text)
+    fresh=requests.Session();r=fresh.post(portal,data={'csrf':token(fresh.get(portal)),'action':'login','email':'billing-contact@example.invalid','password':'New billing passphrase 2026!!'})
+    check('New contact password signs in','billing-contact@example.invalid' in fresh.get(acct).text)
+
     for path in ['app/clients/contacts.php','database/schema/contacts_schema.php','database/migrations/contacts_migrate.php']:
         check('Direct HTTP access denies contacts internal '+path,requests.get(BASE+'/existing/'+path).status_code==404)
     check('Contact fixtures send no mail or provider requests',inbox_server.connections==connections and provider_server.calls==calls and (QA/'mail-capture.txt').read_bytes()==capture)

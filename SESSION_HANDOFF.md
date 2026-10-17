@@ -25,3 +25,38 @@ Current tips (stacked chain on devin/non20i-contact-activity):
 php -l + test-compile + canonical inventory pass on all. Component lanes queued (GitHub runner starvation); long lanes run after Codex retargets to main.
 
 No merge, deployment, provider call, email, payment or SSH occurred. Codex owns 20i integration and release coordination; Devin owns licensing and non-20i roadmap items only.
+
+## Devin review corrections — 2026-10-17 (round 2)
+
+Owner review produced four findings; all corrected and pushed:
+
+- #203 `devin/non20i-client-contacts` @ `52f524bc` — GREEN 48/48 incl. native-and-browser. Revoked/disabled contact no longer degrades to primary-client identity (full auth context invalidated at lookup failure); bundle download requires `contact_can('downloads')`; contact multipart upload accepted with `author_type='contact'` attribution.
+- #202 `devin/non20i-payment-links` @ `40eb7f29` — `payments_master(true)` refuses a replacement key when sealed `payment_requests.link_secret` history exists, even with gateway credentials absent/cleared. `40eb7f29` also fixes a bound-parameter bug: `table()` returns a backtick-quoted identifier and never matched `information_schema`; uses the unquoted prefixed name. Matrix re-running.
+- #209 `devin/non20i-staff-notes` @ `82c62c98` — GREEN 43/43. Stale `admin/views/studio/job.php` inventory pin refreshed.
+- #212 `devin/non20i-client-actions` @ `b85d87db` — GREEN 41/41. Action links navigate via `focus_review` so a pending decision outside the 100-row window lands on its exact decision form.
+- #213 `devin/non20i-portal-account` @ `480b0fcd` — GREEN 41/41 (docs head).
+
+## Devin review corrections — 2026-10-17 (round 3)
+
+Owner follow-up reviews produced three more work items; all corrected and verified green:
+
+- #203 `devin/non20i-client-contacts` @ `9015ef8f` — GREEN 48/48 incl. native-and-browser. Upload write boundary serializes under `staff_locked` + fresh `FOR UPDATE` client/contact/permission revalidation before any private-file or row write; job locked with expected client id; rollback cleans the file. Native coverage: four committed interleavings (disable, rotation, permission removal, client deactivation) via worker processes. `fcebfd08` fixed a test-side bug (billing contact has no upload form to `submit()` through — forged POST instead); `9015ef8f` added a bounded warm-up + decomposed print to the shared organized-update OPcache probe after a deterministic-but-external `rewrite 1.17.0` probe failure (bisect run 39067511358 on previously-green `40eb7f29` confirms environment, all probes now report `cached:true`).
+- #213 `devin/non20i-portal-account` @ `3411de28` — GREEN 41/41. `studio_password_change` is atomic: fresh `FOR UPDATE` actor reads under `staff_locked`, current password verified against the locked row, credential + audit committed in one transaction, session rotates only post-commit. Native coverage: interleavings + audit-failure rollback. HTTP test now asserts revocation, re-signs the contact, one persistent session for CSRF GET+POST, DOM identity verified. Branch restacked (`de343e95` merge) after base `91f4599e` touched the same test file.
+- #212 `devin/non20i-client-actions` @ `5e1e043d` — GREEN 41/41. `91f4599e` added the required boundary regression: pending review + 101 newer versions of another kind, follow the generated `focus_review` link, assert the exact pending review and its decision form render; other-job and superseded controls preserved.
+
+Round-4 review (comment 6239686025) found a latent fixture interaction in that regression: the 101 filler versions' `review:` events displace `review:<vid>` from the first activity page (30-row window, `occurred_at DESC, event_key DESC`), breaking the later feed assertions — and broad `kind:<id>` substrings can false-match other ids. Corrected:
+
+- #212 `devin/non20i-client-actions` @ `6bf64fce` — boundary block moved after all activity-feed assertions; feed checks match exact `data-event-key="kind:id"` attributes. Component lanes re-running; `native-and-browser` (which exercises `contacts_cases.py`) verifies on retarget per convention.
+- #213 `devin/non20i-portal-account` @ `9a5534a8` — same fix propagated via base merge `f4835eda` plus session-log record.
+- Round-3 reviews confirmed: #203 source fix accepted, #213 implementation accepted; #202/#209 accepted previously.
+
+Reconciled the reported `organized_update_cases.py` single-probe state: the bounded warm-up + diagnostic lives on `devin/non20i-client-contacts` tip `9015ef8f` and is intact; `portal-account` legitimately lacks it until the base propagates — no revert to reconcile.
+
+Round-4 reviews delivered two more corrections plus a full stack propagation:
+
+- #210 `devin/non20i-milestones` @ `72ba94c3` — GREEN 19/19. `2e06f185`: milestone targets require real calendar dates (`checkdate()`; `2027-02-29` refused, `2028-02-29` accepted); milestone events are revision-qualified `milestone:<id>:<hash>` so a later update resurfaces unread and an older ack cannot consume it — read-then-update covered for primary client and projects-permission contact.
+- #211 `devin/non20i-activity-prefs` @ `5d325631` — GREEN 19/19. `0cd5ce7a`: the pref-isolation check now uses the client-authored reply (eligible for staff feeds) with exact `data-event-key` identity; admin-authored key asserted absent (staff author filter preserved).
+- PR203 dependency propagation per #212/#213 follow-throughs: contacts `9015ef8f` merged forward through contact-decisions (`308805de` 17/17) → contact-activity (`17f0227b` 18/18) → staff-notes (`b4d25087` 19/19) → milestones → activity-prefs → client-actions (`66cc00b7`) → portal-account (`eb6c8082`, docs tip `4f72f3fb`). Union merges preserved every feature; inventory pins regenerated.
+- Combined acceptance dispatched on exact propagated heads: client-actions run 39073761930, portal-account run 39073810828 (`eb6c8082`'s run was auto-cancelled when the docs tip superseded it — same runtime tree).
+
+Next: Codex sequential retarget/integration of the chain (#203 → #204 → #205 → #209 → #210 → #211 → #212 → #213); long lanes re-run per retargeted parent. Devin fixes failures on exact new commits.
