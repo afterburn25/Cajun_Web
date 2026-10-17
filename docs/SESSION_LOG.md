@@ -1784,3 +1784,10 @@ Next: commit, open stacked PR, monitor CI.
 - #213 `devin/non20i-portal-account`: new `site/portal/views/account.php` + `account_password` action; clients and contacts change their own password with current-password proof; `auth_version` bump signs out other sessions while the current session is refreshed (`session_regenerate_id`); rate-limited (`client-password` bucket), audited (`studio_client_audit`), CSRF-protected; support sessions remain blocked by the existing action gate. No schema change. Files: `identity.php`, `actions.php`, `router.php`, `views/account.php`, `views/workspace.php` (Account button), `tests/contacts_cases.py`, inventory refresh, docs.
 - Verified: `php -l` all touched PHP; `py_compile` contacts_cases; canonical inventory PASS.
 - Next: open stacked PR #213 on `devin/non20i-client-actions`; monitor remaining CI.
+
+## 2026-10-17 — CI wave complete; #213 verified
+
+- All stacked lanes resolved green: #209 `3e6db257` (43/43), #210 `868e967c` (43/43), #211 `3b8b5ffd` (43/43), #212 `bfb96f93` (41/41), #213 `b8ff2791` (41/41). Docs-continuity cp1252-byte failure fixed on #212.
+- Chain base is current `origin/main` `d7153b07` — zero drift.
+- Remaining named roadmap items are Codex-owned (provider/hosting monitoring, VPS) or already green on preserved PRs (#158 tickets, #178 proposals, #188 outbox) awaiting Codex integration; "assigned contact" on the dashboard would need a new `studio_jobs` column and was skipped as poor ROI on a 10-deep stacked chain.
+- Next: Codex sequential retarget/integration; Devin fixes failures on exact new commits.
