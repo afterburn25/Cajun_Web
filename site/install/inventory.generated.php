@@ -193,7 +193,7 @@ function setup_expected_files(): array { return [
     'database/schema/attempts_schema.php'=>'829320b6b6e8f692586406ce844b31a70185d7352a4fdab7fa41d0d2fd3b5d63',
     'database/schema/base.php'=>'2120f63a8ef24f67e1d3dc27475b5db9cbabf8c80ca5b5015287aca5cb5295bb',
     'database/schema/catalog_schema.php'=>'fb26ad24cca1686b8aae78083532e1d1eeba70b700551c3774feb0697acb0f53',
-    'database/schema/catalog_validate_schema.php'=>'4cbaf88d46cf9f09e627055866faa59f9a50de44b76d09d1eb7d95b3e639f17f',
+    'database/schema/catalog_validate_schema.php'=>'4f8745c8fcee09454acf8e6e0fdb163a57c0cadbd65b517962cf5b46710f738c',
     'database/schema/delivery_schema.php'=>'03bd6c1ece50aa89a0cd2f811df3e71daa3222b8875e22ecdd2fc7e82c10dfb3',
     'database/schema/hosting_operations_schema.php'=>'b391ad1442899a3d6ddd993aeb2b219f28ff69ff2d66cf1357f18e98df3d7f75',
     'database/schema/hosting_reconciliation_schema.php'=>'6ad1940b8c28fcd02ae11a0a519839d28ad09b119f605c4a332731c94902af2b',
