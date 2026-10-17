@@ -93,7 +93,7 @@ function setup_expected_files(): array { return [
     'app/billing/catalog.php'=>'ab4e0aa36dca2e2fb5f4602a3ae9fc229e376f3accb76ea20ac03b7381cdc88b',
     'app/billing/ledger.php'=>'4283fb6444dcb8868d6f5364effafb2d6cd93bf78b5e7aead6ee3f1abaef235e',
     'app/billing/notifications.php'=>'069f9ec5056375d224b7dcd735d7db8c399d79045a1b1df655dda820bd717c89',
-    'app/billing/payments.php'=>'ca5bf0fe1bc165bc9c30e9bc5cebeec7565577f03d35452f4eecabb27a61e5de',
+    'app/billing/payments.php'=>'30d00a724ae4cdbbcbc0f27b7badee67ec81316af9279d7fbbff94e3f2faecb9',
     'app/clients/accounts.php'=>'03ca51e11d3ce125f2eb203685a82c109dbe3638f37c84cad953da171c665c1e',
     'app/clients/files.php'=>'240db0d553fa492b677767de7207f7f05e620d5f8a4522a94dc2770c26d26149',
     'app/clients/identity.php'=>'42bb888223848260b76a5d49730e8d50d5aaaac29eae7220771b6294cd6034e9',

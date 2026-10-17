@@ -75,6 +75,13 @@ try{
     $url=payments_link_url($linkRow);pay_ok('Payment link URL exposes only the share route',$url!==null&&str_contains($url,'page=pay&t=')&&!str_contains($url,$linkRow['request_key']));
     pay_deny('Damaged link ciphertext fails closed',fn()=>payments_link_open(['request_key'=>$linkRow['request_key'],'link_secret'=>substr($linkRow['link_secret'],4)]));
     pay_ok('Request without a link produces no URL',payments_link_url(['request_key'=>$linkRow['request_key'],'link_secret'=>''])===null);
+    $savedCreds=all('SELECT environment,credentials FROM '.table('payment_gateways'));query('UPDATE '.table('payment_gateways')." SET credentials=''");
+    rename($storage.'/payment-master.key',$storage.'/payment-master-held.key');
+    pay_deny('Sealed-link history refuses a replacement master key',fn()=>pay_request(str_repeat('9',64),'full'));
+    pay_ok('History and missing key left intact',!file_exists($storage.'/payment-master.key')&&one('SELECT link_secret FROM '.table('payment_requests').' WHERE id=?',[$linkRow['id']])['link_secret']===$linkRow['link_secret']&&(int)query('SELECT COUNT(*) FROM '.table('payment_requests'))->fetchColumn()>0);
+    rename($storage.'/payment-master-held.key',$storage.'/payment-master.key');
+    pay_ok('Original key reopens the original link',payments_link_open($linkRow)!=='');
+    foreach($savedCreds as $row)query('UPDATE '.table('payment_gateways').' SET credentials=? WHERE environment=?',[$row['credentials'],$row['environment']]);
     payments_revoke($next);pay_ok('Revocation retains original invoice and request',one('SELECT status FROM '.table('payment_requests').' WHERE id=?',[$next])['status']==='revoked'&&one('SELECT * FROM '.table('studio_invoices'))===$original);
     pay_ok('Revoked request keeps its link resolvable to the revoked state',payments_link_url(one('SELECT * FROM '.table('payment_requests').' WHERE id=?',[$next]))!==null);
     pay_deny('Revoked request cannot be revoked again',fn()=>payments_revoke($next));

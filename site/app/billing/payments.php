@@ -34,7 +34,10 @@ function payments_master(bool $create=false): string {
     $path=$storage.'/payment-master.key';
     if(is_link($path))throw new RuntimeException('The payment master key cannot be a symbolic link.');
     if(!is_file($path)){
-        if(!$create||(int)query('SELECT COUNT(*) FROM '.table('payment_gateways')." WHERE credentials<>''")->fetchColumn()>0)throw new RuntimeException('Payment master key unavailable. Restore the original protected key; existing credentials were not replaced.');
+        $sealed=(int)query('SELECT COUNT(*) FROM '.table('payment_gateways')." WHERE credentials<>''")->fetchColumn()>0;
+        $hasLinkColumn=(int)(one('SELECT COUNT(*) n FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[table('payment_requests'),'link_secret'])['n']??0)===1;
+        if(!$sealed&&$hasLinkColumn)$sealed=(int)query('SELECT COUNT(*) FROM '.table('payment_requests')." WHERE link_secret<>''")->fetchColumn()>0;
+        if(!$create||$sealed>0)throw new RuntimeException('Payment master key unavailable. Restore the original protected key; existing credentials were not replaced.');
         write_private_file($path,random_bytes(32));
     }
     clearstatcache(true,$path);
