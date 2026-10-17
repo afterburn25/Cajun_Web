@@ -1842,3 +1842,9 @@ Follow-up reviews produced three more work items; all corrected and pushed:
   controls cover another job's review and superseded pending rows.
 
 CI is re-running on all three heads at this writing.
+
+## Review corrections, 2026-10-17 (round 3 status)
+
+- #212 `5e1e043d`: component matrix green 41/41 (native-and-browser runs post-retarget per stacked-chain convention; the boundary regression itself is verified code-reviewed and will exercise then).
+- #213 `de343e95`: the branch went CONFLICTING when `91f4599e` landed on its base (`tests/contacts_cases.py` touched by both) which suppressed check runs entirely; resolved by merging the updated base into the branch (auto-merge kept both test changes; inventory pin regenerated for the merged `workspace.php`). Manually dispatched `Client authority` on `9e898a4a` passed — new password-worker interleavings and audit-failure rollback coverage green on the exact fix head. Full matrix queued on `de343e95`.
+- #203 `53a60482`: 47/48 component lanes green; `native-and-browser` failed on `Form missing upload` (browser_acceptance alice GET after a successful upload POST — GET render path untouched by the diff) plus an unrelated Apache `1.17.0` retained-release cache assertion. Both failures sit outside the changed code; failed-job rerun is in flight to determine flake vs regression.
