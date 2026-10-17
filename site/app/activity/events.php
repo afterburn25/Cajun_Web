@@ -23,6 +23,7 @@ function activity_projection(array $actor): array {
     };
     $add('studio_messages','message','s.created_at',"''","s.author_type='".($client?'admin':'client')."'");
     $add('studio_files','file','s.created_at','s.original_name',"s.author_type='".($client?'admin':'client')."'");
+    $add('studio_stage_events','stage','s.created_at',"CONCAT('Stage: ',s.from_stage,' → ',s.to_stage)",'1=1');
     if($client){
         $add('studio_versions','review','s.created_at',"CONCAT(s.kind,' v',s.version_no,' · ',s.title)",'1=1');
         $add('studio_invoices','invoice','s.created_at',"CONCAT(s.reference,' · ',s.title)",'1=1');
@@ -31,7 +32,7 @@ function activity_projection(array $actor): array {
     }else $add('studio_versions','decision','s.decided_at',"CONCAT(s.kind,' v',s.version_no,' · ',s.decision,' · ',s.title)","s.decision IN ('approved','changes') AND s.decided_at IS NOT NULL AND s.decided_by=j.client_id");
     return [implode(' UNION ALL ',$parts),$args];
 }
-function activity_key(string $key): void {if(!preg_match('/^(?:(?:message|review|invoice|payment|decision):[1-9][0-9]{0,19}|(?:file|release):[a-f0-9]{32})$/D',$key))throw new InvalidArgumentException('Activity item unavailable.');}
+function activity_key(string $key): void {if(!preg_match('/^(?:(?:message|review|invoice|payment|decision|stage):[1-9][0-9]{0,19}|(?:file|release):[a-f0-9]{32})$/D',$key))throw new InvalidArgumentException('Activity item unavailable.');}
 function activity_source(string $audience,string $key): array {
     activity_key($key);[$sql,$args]=activity_projection(activity_actor($audience));
     $row=one('SELECT * FROM ('.$sql.') events WHERE event_key=?',[...$args,$key]);if(!$row)throw new InvalidArgumentException('Activity item unavailable.');return $row;

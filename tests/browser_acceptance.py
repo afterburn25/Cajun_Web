@@ -119,6 +119,11 @@ try:
     check('Preview upload to a foreign version is refused','belongs to this project' in r.text)
     with open(ROOT/'site/images/icons/favicon.png','rb') as f:r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_preview',{'version_id':str(vrow['id'])},files={'document':('duplicate.png',f,'image/png')})
     check('A second preview on the same version is refused','could not be saved' in r.text)
+    old_stage=db("SELECT stage FROM ci_studio_jobs WHERE id=1")[0]['stage'];new_stage='development' if old_stage!='development' else 'design'
+    r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_job',{'stage':new_stage})
+    check('Stage change records a durable event',db("SELECT from_stage,to_stage,actor_type FROM ci_studio_stage_events WHERE job_id=1 ORDER BY id DESC LIMIT 1")==[{'from_stage':old_stage,'to_stage':new_stage,'actor_type':'admin'}])
+    check('Unchanged stage save records no event',db("SELECT COUNT(*) AS n FROM ci_studio_stage_events WHERE job_id=1")==[{'n':1}])
+    r=alice.get(BASE+'/existing/portal/index.php?job=1');check('Client sees progress history',('Progress history' in r.text) and ('→' in r.text))
     r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_invoice',{'title':'HTTP manual invoice','amount':'125.00','instructions':'Synthetic manual payment instructions; do not send money.'});check('Manual invoice created',r.status_code==200 and 'HTTP manual invoice' in r.text and '$125.00' in r.text)
     r=alice.get(BASE+'/existing/portal/index.php?job=1');check('Client sees own invoice','HTTP manual invoice' in r.text)
     r=bob.get(BASE+'/existing/portal/index.php?job=2');check('Other client does not see invoice','HTTP manual invoice' not in r.text)
