@@ -6,6 +6,7 @@ require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
 require_once __DIR__.'/../site/app/mail/replies.php';
 require_once __DIR__.'/../site/app/mail/submissions.php';
+require_once __DIR__.'/../site/app/mail/submission_views.php';
 use CajunWebPro\Foundation\MailCompose\{DraftContent,ReplyDraft,DraftOrigin};
 $prefix=getenv('CWP_TEST_PREFIX')?:'rpci_';if(!preg_match('/\Arp[a-z0-9_]{2,15}_\z/',$prefix))exit(2);
 $private=__DIR__.'/../test-runtime/'.$prefix.'private';@mkdir($private,0700,true);@mkdir(__DIR__.'/../qa',0700,true);
