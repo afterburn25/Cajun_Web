@@ -12,7 +12,7 @@ require_once CWP_CODE_ROOT.'/database/migrations/workspace.php';
 require_once CWP_CODE_ROOT.'/app/clients/identity.php';
 require_once CWP_CODE_ROOT.'/app/projects/reviews.php';
 require_once CWP_CODE_ROOT.'/app/clients/files.php';
-function studio_ready(): bool {return setting('studio_schema_version')==='2';}
+function studio_ready(): bool {return setting('studio_schema_version')==='3';}
 
 function studio_stages(): array {return ['discovery'=>'Discovery','design'=>'Design','development'=>'Development','review'=>'Final review','launched'=>'Launched','care'=>'Ongoing care','paused'=>'Paused'];}
 

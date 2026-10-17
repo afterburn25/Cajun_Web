@@ -1,3 +1,7 @@
+## Unreleased — protected version previews
+
+Staff can attach one private PDF/PNG/JPEG preview to an exact published design or proposal version. The artifact lives in guarded private storage and is served inline with integrity verification only to the owning client, staff or granted support sessions — never as a public URL. External staging links remain available and labeled external. Workspace storage upgrades additively (marker 3); existing content is preserved. Branch `devin/non20i-protected-previews`; packaged acceptance pending on CI.
+
 ## 2026-10-16 — publish the concrete release freeze and branch
 
 Documentation-only descendant of35d8 records owner release-first override, published normal merge b98b96eb, frozen scope/map, actual source/focused evidence and remaining gates. Runtime, installer, version, published assets and production remain unchanged. Continue release corrections, authentic1.24 upgrade coverage, complete supported runtime acceptance, review, exact-main and publication/download verification before new20i capabilities. Coordination is posted in issue2 comment6220729910 and issue157 comment6220730195. Documentation validation is required before commit; no application acceptance is claimed.

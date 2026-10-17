@@ -5,6 +5,7 @@ from pathlib import Path
 from urllib.parse import urlparse,parse_qs,urljoin
 import requests
 from bs4 import BeautifulSoup
+from release_cases import db
 ROOT=Path(__file__).resolve().parents[1];BASE='http://127.0.0.1:8091';WEB=ROOT/'test-runtime/web';QA=ROOT/'qa';QA.mkdir(exist_ok=True)
 checks=[]
 def check(name,condition):
@@ -105,6 +106,17 @@ try:
     r=alice.get(fileurl);check('Owner downloads identical private file',r.status_code==200 and r.content==(ROOT/'site/images/icons/favicon.png').read_bytes() and r.headers.get('Content-Disposition','').startswith('attachment'))
     r=bob.get(fileurl);check('Another client cannot download private file',r.status_code==404)
     r=requests.get(fileurl);check('Anonymous private-file request denied',r.status_code==403)
+    vrow=db("SELECT id FROM ci_studio_versions WHERE job_id=1 ORDER BY id DESC LIMIT 1")[0]
+    with open(ROOT/'site/images/icons/favicon.png','rb') as f:r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_preview',{'version_id':str(vrow['id'])},files={'document':('version-preview.png',f,'image/png')})
+    check('Protected preview attaches to a version',r.status_code==200 and 'Open protected preview' in r.text)
+    r=alice.get(BASE+'/existing/portal/index.php?job=1');links=[a['href'] for a in soup(r).select('a[href]') if 'preview=' in a['href']];check('Client sees the protected preview link',bool(links))
+    r=alice.get(links[0]);check('Owner opens the protected preview inline',r.status_code==200 and r.content==(ROOT/'site/images/icons/favicon.png').read_bytes() and r.headers.get('Content-Disposition','').startswith('inline') and r.headers.get('Content-Type','').startswith('image/png') and 'no-store' in r.headers.get('Cache-Control',''))
+    r=bob.get(BASE+'/existing/portal/index.php?preview='+str(vrow['id']));check('Other client cannot open the protected preview',r.status_code==404)
+    r=requests.get(BASE+'/existing/portal/index.php?preview='+str(vrow['id']));check('Anonymous preview request is refused',r.status_code==403)
+    with open(ROOT/'site/images/icons/favicon.png','rb') as f:r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_preview',{'version_id':'999999'},files={'document':('stray.png',f,'image/png')})
+    check('Preview upload to a foreign version is refused','belongs to this project' in r.text)
+    with open(ROOT/'site/images/icons/favicon.png','rb') as f:r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_preview',{'version_id':str(vrow['id'])},files={'document':('duplicate.png',f,'image/png')})
+    check('A second preview on the same version is refused','could not be saved' in r.text)
     r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_invoice',{'title':'HTTP manual invoice','amount':'125.00','instructions':'Synthetic manual payment instructions; do not send money.'});check('Manual invoice created',r.status_code==200 and 'HTTP manual invoice' in r.text and '$125.00' in r.text)
     r=alice.get(BASE+'/existing/portal/index.php?job=1');check('Client sees own invoice','HTTP manual invoice' in r.text)
     r=bob.get(BASE+'/existing/portal/index.php?job=2');check('Other client does not see invoice','HTTP manual invoice' not in r.text)
