@@ -52,7 +52,7 @@ try{
     a_ok('Published delivery destination opens owned release',str_contains(activity_destination('client','release:'.$published),'release='.$published));
     activity_mark('client',[$message],true);$first=all('SELECT * FROM '.table('activity_reads'));activity_mark('client',[$message],true);a_ok('Repeated mark read is idempotent and preserves first timestamp',all('SELECT * FROM '.table('activity_reads'))===$first&&activity_count('client')===6);
     a_ok('Unread filter omits marked source',!in_array($message,array_column(activity_feed('client',true)['rows'],'event_key'),true));activity_mark('client',[$message],false);a_ok('Explicit unread restores only that event',activity_count('client')===7);
-    a_ok('Client can hide seven receivable update types',count(activity_kinds(activity_actor('client')))===7);
+    a_ok('Client can hide every receivable update type including milestones',count(activity_kinds(activity_actor('client')))===7&&in_array('milestone',activity_kinds(activity_actor('client')),true));
     activity_prefs_save(activity_actor('client'),['message']);a_ok('Hidden update type leaves feed and count',activity_count('client')===6&&!in_array($message,a_keys('client'),true));
     a_deny('Hidden source cannot be opened',fn()=>activity_source('client',$message));a_deny('Hidden source cannot be marked',fn()=>activity_mark('client',[$message],true));
     a_ok('Hidden source stays in the project record',one('SELECT id FROM '.table('studio_messages').' WHERE id=?',[substr($message,8)])!==false&&all('SELECT kind,actor_type FROM '.table('activity_prefs'))===[['kind'=>'message','actor_type'=>'client']]);
