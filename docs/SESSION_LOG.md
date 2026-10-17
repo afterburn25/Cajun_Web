@@ -1758,3 +1758,15 @@ Tests so far: php -l on all seven touched PHP files; staff_cases.py and contacts
 Known limits: milestones have no deletion path; the free-form narrative field is retained unchanged.
 
 Next: commit, open stacked PR, monitor CI.
+
+## 2026-10-17 — P-07 per-actor update preferences (stacked)
+
+Request: continue non-20i roadmap; P-07 names "preferences" among pending notification work. New branch devin/non20i-activity-prefs stacked on devin/non20i-milestones.
+
+Changed: new additive activity_prefs table (actor_type, actor_id, kind) inside activity_schema(); the existing idempotent activity_setup re-run creates it on installs that already enabled activity — activity_migrate now validates per-table unique keys and the activity page offers an "Enable update preferences" card to staff.manage when the table is missing. activity_prefs_ready()/activity_kinds()/activity_disabled()/activity_prefs_save() model the feature; activity_projection skips hidden kinds per actor so feeds, unread counts, exact-open and mark endpoints all respect preferences; hidden sources stay in the project record. New activity_prefs action wired through the admin activity_* dispatcher (clients.manage) and the portal's permission-gated activity route; preferences render per audience and are keyed per actor identity — a contact's choices never touch the client account. tests/activity_cases.py covers additive upgrade storage, hiding a kind (feed, open, mark denied), per-account isolation, record preservation and re-enable.
+
+Tests so far: php -l on six touched PHP files; activity_cases.py compiles; canonical installer checks pass. Packaged acceptance pending on the stacked PR. No email, provider call, payment, deployment or SSH.
+
+Known limits: preferences are portal/bell visibility only — no outbound email delivery exists yet; the upgrade path requires an owner to re-run activity setup once.
+
+Next: commit, open stacked PR, monitor CI.

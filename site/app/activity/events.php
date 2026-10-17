@@ -18,11 +18,41 @@ function activity_actor(string $audience): array {
     if(!studio_ready()||!activity_ready())throw new RuntimeException('Workspace activity has not been enabled.');
     return $actor;
 }
+/** Preference storage is additive; older installs get it by re-running workspace-activity setup. */
+function activity_prefs_ready(): bool {
+    static $ready=null;
+    if($ready===null)$ready=activity_ready()&&(bool)one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'activity_prefs']);
+    return $ready;
+}
+/** The update kinds an actor can actually receive under current permissions and enabled storage. */
+function activity_kinds(array $actor): array {
+    $member=$actor['type']!=='admin';
+    $can=function(string $permission) use($actor,$member): bool {return !$member||$actor['perms']===null||in_array($permission,$actor['perms'],true);};
+    $kinds=[];
+    if($can('projects')){array_push($kinds,'message','file');if($member)$kinds[]='review';if(studio_milestones_ready())$kinds[]='milestone';}
+    if(!$member)$kinds[]='decision';
+    else{if($can('billing')){$kinds[]='invoice';if(ledger_ready())$kinds[]='payment';}if($can('downloads')&&delivery_ready())$kinds[]='release';}
+    return $kinds;
+}
+function activity_disabled(array $actor): array {
+    return activity_prefs_ready()?array_column(all('SELECT kind FROM '.table('activity_prefs').' WHERE actor_type=? AND actor_id=?',[$actor['type'],$actor['id']]),'kind'):[];
+}
+function activity_prefs_save(array $actor,array $hidden): void {
+    if(!activity_prefs_ready())throw new RuntimeException('Notification preferences are not enabled on this installation.');
+    $allowed=array_flip(activity_kinds($actor));$hidden=array_values(array_unique(array_filter($hidden,fn($k)=>is_string($k)&&isset($allowed[$k]))));
+    staff_locked(fn()=>staff_transaction(function() use($actor,$hidden): void {
+        query('DELETE FROM '.table('activity_prefs').' WHERE actor_type=? AND actor_id=?',[$actor['type'],$actor['id']]);
+        foreach($hidden as $kind)query('INSERT INTO '.table('activity_prefs').' (actor_type,actor_id,kind) VALUES (?,?,?)',[$actor['type'],$actor['id'],$kind]);
+        activity_audit($actor,'preferences',count($hidden).' hidden update types');
+    }));
+}
 /** Internal SQL projection. Never contains message bodies, payment notes or draft deliveries. */
 function activity_projection(array $actor): array {
     $parts=[];$args=[];$member=$actor['type']!=='admin';$contact=$actor['type']==='contact';
+    $hidden=array_flip(activity_disabled($actor));
     $can=function(string $permission) use($actor,$member): bool {return !$member||$actor['perms']===null||in_array($permission,$actor['perms'],true);};
-    $add=function(string $table,string $kind,string $time,string $title,string $where,string $target='s.id') use(&$parts,&$args,$member,$actor): void {
+    $add=function(string $table,string $kind,string $time,string $title,string $where,string $target='s.id') use(&$parts,&$args,$member,$actor,$hidden): void {
+        if(isset($hidden[$kind]))return;
         $parts[]="SELECT CAST(CONCAT('".$kind.":',s.id) AS CHAR CHARACTER SET ascii) COLLATE ascii_bin AS event_key,'".$kind."' AS kind,CAST(s.id AS CHAR) AS source_id,".$target." AS target_id,j.id AS job_id,j.client_id,j.title AS project_title,".$title." AS item_title,".$time.' AS occurred_at FROM '.table($table).' s JOIN '.table('studio_jobs').' j ON j.id=s.job_id JOIN '.table('studio_clients').' c ON c.id=j.client_id WHERE c.active=1 AND ('.$where.')'.($member?' AND j.client_id=?':'');
         if($member)$args[]=$actor['client_id'];
     };
