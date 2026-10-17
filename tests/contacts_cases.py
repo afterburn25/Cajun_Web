@@ -110,6 +110,7 @@ def run_browser(env,browser):
     vid=db('SELECT id FROM ci_studio_versions WHERE job_id=1 ORDER BY id DESC LIMIT 1')[0]['id']
     r=contact.get(portal+'?job=1')
     check('Pending decision appears in the needed-actions list','What we need from you' in r.text and 'Review and approve or request changes on design version' in r.text)
+    check('Action link navigates through focus_review to reach its review','focus_review='+str(vid) in r.text)
     dec=None
     for f in soup(contact.get(portal+'?job=1')).select('form'):
         a,v=f.select_one('[name=action]'),f.select_one('[name=version]')
@@ -122,6 +123,31 @@ def run_browser(env,browser):
     check('Contact decision keeps client as decider and attributes the contact',row['decision']=='approved' and int(row['decided_by'])==int(cid) and msg['author_type']=='contact' and int(msg['author_id'])==int(ctid))
     r=owner.get(jobAdmin)
     check('Admin conversation attributes the decision to the contact','Review Only Contact (contact)' in r.text)
+
+    # A pending review pushed outside the 100-version window must still reach its decision form.
+    r=submit(owner,jobAdmin,'studio_publish',{'kind':'proposal','title':'Boundary proposal','body':'Pending proposal outside the display window'})
+    old_vid=db("SELECT id FROM ci_studio_versions WHERE job_id=1 AND kind='proposal' ORDER BY id DESC LIMIT 1")[0]['id']
+    for n in range(101):
+        db("INSERT INTO ci_studio_versions (job_id,kind,version_no,title,body,decision,created_at) VALUES (1,'design',?,?,?,'approved',NOW())",[900+n,'Window filler '+str(n),'filler'])
+    r=contact.get(portal+'?job=1')
+    link=[a.get('href') for a in soup(r).select('a[href]') if 'focus_review='+str(old_vid) in (a.get('href') or '')]
+    check('Pending review outside the 100-row window is still offered',len(link)==1)
+    r=contact.get(link[0])
+    article=soup(r).select_one('#review-'+str(old_vid))
+    check('Action link reaches the exact pending decision form',article is not None and article.select_one('form [name=action][value=decision]') is not None)
+    db("INSERT INTO ci_studio_jobs (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,NOW(),NOW())",[cid,'Other job','s','m'])
+    other_job=db('SELECT MAX(id) m FROM ci_studio_jobs')[0]['m']
+    db("INSERT INTO ci_studio_versions (job_id,kind,version_no,title,body,decision,created_at) VALUES (?,?,?,?,?,'pending',NOW())",[other_job,'proposal',1,'Other job review','other'])
+    other_vid=db('SELECT MAX(id) m FROM ci_studio_versions')[0]['m']
+    r=contact.get(portal+'?job=1&focus_review='+str(other_vid))
+    check('focus_review cannot pull another job review into this project',soup(r).select_one('#review-'+str(other_vid)) is None)
+    r=submit(owner,jobAdmin,'studio_publish',{'kind':'proposal','title':'Boundary proposal v2','body':'Newer pending proposal'})
+    new_vid=db("SELECT id FROM ci_studio_versions WHERE job_id=1 AND kind='proposal' ORDER BY id DESC LIMIT 1")[0]['id']
+    r=contact.get(portal+'?job=1&focus_review='+str(old_vid))
+    article=soup(r).select_one('#review-'+str(old_vid))
+    check('Superseded pending review renders without a decision form',article is not None and article.select_one('form [name=action][value=decision]') is None)
+    r=contact.get(portal+'?job=1')
+    check('Action list now targets only the latest pending review','focus_review='+str(new_vid)+'#' in r.text and 'focus_review='+str(old_vid)+'#' not in r.text)
     r=contact.get(portal+'?job=1')
     check('Decided version leaves the needed-actions list','Review and approve or request changes on design version' not in r.text)
 

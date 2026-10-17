@@ -2595,7 +2595,7 @@ function setup_expected_files(): array { return [
     'portal/views/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
     'portal/views/account.php'=>'d1485d42fab3e100c1ab2dfc9d3deeca1e394d3137ee0a036a3a367361150c98',
     'portal/views/auth.php'=>'7ae4bbab0e2eab7d3489fe728bce5b1a06947c4f657f6bc27fe246eeef5cecea',
-    'portal/views/workspace.php'=>'5be5d6e6f2642ddc23ebe8fb46a7dd58f721d792a0e8f935114680e7c4e08975',
+    'portal/views/workspace.php'=>'483a8850c7485f89f608fe703df9ceda9ba5d52925f89fd113b6d615cb8460e6',
     'robots.php'=>'643efa6953174e2ccb0f0ca7d282f5d3f67b07f243b1593f47575bfcc960f567',
     'sitemap.php'=>'e73fd55f7d88bc2a4899bdd1305337b6bcf0110aab164d9e9d4cda56f303a3bd',
     'storage/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
