@@ -132,7 +132,9 @@ def run_browser(env,browser):
     check('Disabled contact loses its session immediately',soup(contact.get(portal)).select_one('[name=action][value=login]') is not None)
     r=contact.post(portal,data={'csrf':token(contact.get(portal)),'action':'login','email':'review-contact@example.invalid','password':CPASS})
     check('Disabled contact cannot sign back in','Email or password not recognized' in r.text)
-    edit['enabled']='1';owner.post(clients,data=edit)
+    reenable=find_form('studio_contact','id',ctid);reenable['enabled']='1'
+    r=owner.post(clients,data=reenable)
+    check('Contact re-enable uses the refreshed version','Contact saved' in r.text)
     submit(contact,portal,'login',{'email':'review-contact@example.invalid','password':CPASS})
     check('Reenabled contact signs in again',soup(contact.get(portal)).select_one('[name=action][value=logout]') is not None)
     r=owner.post(clients,data=find_form('studio_contact_invite','id',ctid))
