@@ -123,6 +123,9 @@ def run_browser(env,browser):
     check('Billing-only contact cannot post project messages','do not include project access' in r.text and not db("SELECT id FROM ci_studio_messages WHERE body='Billing contact must not post.'"))
     r=billing.get(portal+'?file='+file_id)
     check('Billing-only contact cannot download files',r.status_code==403)
+    with open(Path(__file__).resolve().parents[1]/'site/images/icons/favicon.png','rb') as f:
+        r=submit(billing,portal+'?job=1','upload',files={'document':('billing-forged.png',f,'image/png')})
+    check('Billing-only contact cannot upload project files','do not include project access' in r.text and not db("SELECT id FROM ci_studio_files WHERE original_name='billing-forged.png'"))
     r=billing.get(portal+'?activity=1')
     check('Billing-only contact cannot open project activity',r.status_code==403)
 
