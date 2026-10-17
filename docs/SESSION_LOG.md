@@ -1803,3 +1803,29 @@ Owner review surfaced four acceptance findings; all corrected and pushed:
   its exact decision form.
 
 All correction heads verified green on full component matrices.
+
+## Review corrections, 2026-10-17 (round 3)
+
+Follow-up reviews produced three more work items; all corrected and pushed:
+
+- #203 `53a60482`: upload write boundary — `studio_upload` now commits
+  client/contact uploads under the shared `staff_locked` account mutex and
+  re-reads the active client, enabled contact, current auth versions and
+  projects permission FOR UPDATE inside the transaction before any write;
+  the project is locked with its expected client id. Native coverage:
+  four committed interleavings (disable, rotation, permission removal,
+  client deactivation) via a worker process, plus permitted control.
+- #213 `9e898a4a`: `studio_password_change` is atomic — re-reads the
+  active actor (+ contact's active parent) FOR UPDATE under `staff_locked`,
+  verifies session auth versions and the current password against fresh
+  rows, commits credential + audit together; session rotates only after
+  commit. HTTP test asserts the client rotation revokes the contact
+  session, re-signs it, uses one session for CSRF GET+POST and verifies
+  signed-in identity. Native coverage: three committed interleavings,
+  audit-failure rollback, both success paths.
+- #212 `91f4599e`: boundary regression now retains a pending proposal,
+  adds 101 newer design versions, follows the generated action link and
+  asserts the exact pending review renders with its decision form;
+  controls cover another job's review and superseded pending rows.
+
+CI is re-running on all three heads at this writing.
