@@ -108,7 +108,7 @@ def run_http(env):
     user=db('SELECT * FROM upgrade_users')[0]; old=rows_before['users'][0]
     check('Upgrade preserves original credentials and identity',all(user[k]==old[k] for k in old if k!='last_login'))
     submit(up,BASE+'/upgrade/admin/index.php?view=studio-upgrade','studio_migrate',{'confirm':'1'})
-    check('HTTP upgrade can safely repeat',db("SELECT value FROM upgrade_settings WHERE name='studio_schema_version'")[0]['value']=='2')
+    check('HTTP upgrade can safely repeat',db("SELECT value FROM upgrade_settings WHERE name='studio_schema_version'")[0]['value']=='3')
     check('Upgraded site never reruns fresh setup',requests.get(BASE+'/upgrade/install.php').status_code==404)
     # Private invitation is copied from the real admin response; no customer mail.
     clients=BASE+'/existing/admin/index.php?view=studio-clients'

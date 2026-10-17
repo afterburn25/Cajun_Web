@@ -66,7 +66,7 @@ try {
     // Simulate an interrupted additive update that created only its first table.
     db()->exec(studio_schema('ci_')['studio_clients']);
     admin_session();studio_migrate();
-    ok('Additive upgrade creates seven workspace tables',count(all("SELECT table_name FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name LIKE 'ci_studio_%'"))===7);
+    ok('Additive upgrade creates eight workspace tables',count(all("SELECT table_name FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name LIKE 'ci_studio_%'"))===8);
     ok('Upgrade retains populated lead',one('SELECT * FROM '.table('leads').' WHERE id=1')===$oldLead);
     ok('Upgrade retains owner account',one('SELECT * FROM '.table('users').' WHERE id=1')===$owner);
     ok('Upgrade retains original settings',setting('sentinel_original')==='Preserve original settings');
