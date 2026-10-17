@@ -13,11 +13,14 @@ function contact_perms_decode($json): array {
     $perms=json_decode($json,true);if(!is_array($perms))return [];
     return array_values(array_intersect($perms,array_keys(contact_permissions())));
 }
-/** The signed-in additional contact, or null for the primary client account and support sessions. */
+/** The signed-in additional contact, or null for the primary client account and support sessions. A present but revoked contact identity invalidates the whole portal session and stops the request — it must never degrade to primary-account access. */
 function studio_contact(): ?array {
     if(support_current()||empty($_SESSION['contact_id'])||!contacts_ready())return null;
     $c=one('SELECT * FROM '.table('studio_contacts').' WHERE id=? AND enabled=1',[(int)$_SESSION['contact_id']]);
-    if(!$c||!hash_equals($c['auth_version'],(string)($_SESSION['contact_auth']??''))){unset($_SESSION['contact_id'],$_SESSION['contact_auth']);return null;}
+    if(!$c||!hash_equals($c['auth_version'],(string)($_SESSION['contact_auth']??''))){
+        unset($_SESSION['client_id'],$_SESSION['client_auth'],$_SESSION['contact_id'],$_SESSION['contact_auth']);
+        fail_page('Your sign-in session ended. Please sign in again.',403);
+    }
     return $c;
 }
 function contact_can(string $permission): bool {
