@@ -43,7 +43,7 @@ ar_check('Every referenced asset resolves ('.$resolved.' names)',$resolved===cou
 
 // The map must not carry entries pointing at missing files, which would break
 // the first layout that references them.
-foreach(new ReflectionFunction('asset')->getStaticVariables()['paths'] as $name=>$target)
+foreach((new ReflectionFunction('asset'))->getStaticVariables()['paths'] as $name=>$target)
     ar_check('Registered asset '.$name.' exists on disk',is_file($siteRoot.'/'.$target));
 
 @mkdir(__DIR__.'/../qa',0700,true);

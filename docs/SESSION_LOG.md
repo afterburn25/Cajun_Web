@@ -4,6 +4,30 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 # Session log
 
+## Fix PHP 8.2 asset-registry parse and Apache opcache capacity — 2026-10-16
+
+Request: continue #157; after the retention-baseline fix `b4ef8dfa`, fresh Apache run 38979337765 progressed past the ticket case (the baseline repair verified) but surfaced two separate failures: `PHP Parse error: unexpected token "->"` at `tests/asset_registry.php:46` on the PHP 8.2 native lane, and `rewrite 1.16.0 prior organized version actually cached without timestamp checks` in the shared mod_php acceptance lane.
+
+Investigation: the ReflectionFunction constructor-method chain is only valid syntax on PHP 8.4+; the native lane's PHP 8.2 rejects it. For the opcache check, the `rewrite`/`no-rewrite` lanes compile the current package plus ~15 retained baselines into one shared opcache under PHP defaults (`max_accelerated_files=10000`, `memory_consumption=128`); this branch's added ticket files raise cumulative cached scripts past the cap so late baselines can no longer cache `config/defaults.php` — deterministic at 1.16.0 on this branch while `main` passes under the cap.
+
+Actions: `tests/asset_registry.php` wraps the `new ReflectionFunction('asset')` expression in parentheses for PHP 8.2. `tests/apache_acceptance.py` raises headroom in `99-acceptance.ini` (`memory_consumption=512`, `max_accelerated_files=80000`, `interned_strings_buffer=32`) — check semantics unchanged. `tests/organized_update_cases.py` extends the probe to record `num_cached_scripts`/`free_memory`/`cache_full` into `qa/organized-*-cache.json` so any future capacity failure is evidenced in the artifact.
+
+Tests: `php -l` clean; `php tests/asset_registry.php` passes 45 checks (17 names); `python -m py_compile` clean. Apache/native verification reruns in CI on this commit; runs 38979337765/38979345933 preserved as failing evidence.
+
+Next: push and monitor fresh CI for the full branch, then dependent PR #175.
+
+## Repair ticket-upgrade retention baseline — 2026-10-16
+
+Request: continue #157; after the `tickets.css` registration fix, fresh `native-and-browser` run 38959922023 reached the ticket upgrade case and failed `rewrite 1.23.0 throttled recovery cannot change populated tickets or private records` (`tests/apache_acceptance.py:126` → `organized_update_cases.py:297` → `ticket_upgrade_cases.py:99`).
+
+Investigation: the compound check's `retained()` compared `studio_clients`/`studio_jobs`/`studio_invoices` content hashes against `original = records()` captured before the seeded-client invitation. `studio_invite`/`studio_activate` legitimately rewrite `studio_clients` (`invite_hash`, `auth_version`, `password_hash`), so `retained()` could never hold — a test baseline defect, not a runtime regression. The seeded `structure-owner` rate bucket, journal write ordering and ticket/studio write paths were verified unchanged and correct.
+
+Actions: `tests/ticket_upgrade_cases.py` now captures `baseline = records()` after client activation and `retained()` compares studio tables against it (`original` is retained for the pre-setup preservation check). The compound check was split into a throttle/journal leg and a records leg for exact failure attribution.
+
+Tests: `python -m py_compile` clean. Full Apache/native acceptance reruns in CI on this commit; original run 38959922023 failure preserved as evidence.
+
+Next: push, confirm fresh CI reaches the later recovery/replay checks, then PR #161 verification.
+
 ## Repair tickets.css asset registration from review — 2026-10-16
 
 Request: continue #157; independent review of PR #158 head `3ca4bbb7` found a blocking defect — `tickets.css` was used in shared admin/portal layouts without a closed-map registration, breaking dashboard/portal renders (`urls.php` `Unknown public asset`, corroborated by run 38915585801 dashboard 500).
