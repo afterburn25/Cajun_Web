@@ -70,7 +70,9 @@ $staleSender=$data['sender']!==''&&!array_key_exists($data['sender'],$senders);
 <p class="hint">Use bare email addresses separated by commas. Up to 20 recipients across To, Cc and Bcc. Empty fields are allowed while drafting.</p>
 <?php foreach(['to'=>'To','cc'=>'Cc','bcc'=>'Bcc'] as $key=>$label)admin_input($key,$label,$values[$key],'text','maxlength="5600" autocomplete="off" spellcheck="false"');
 admin_input('subject','Subject',$values['subject'],'text','maxlength="200"');admin_textarea('body','Message',$values['body'],12,40000); ?>
-<p class="hint">Plain text only. Subject: up to 200 UTF-8 bytes. Message: up to 20,000 UTF-8 bytes. Non-English characters may use more than one byte.</p>
+<p class="hint">Subject: up to 200 UTF-8 bytes. Message: up to 20,000 UTF-8 bytes. Non-English characters may use more than one byte.</p>
+<?php admin_textarea('body_html','Formatted message (optional)',$values['body_html'],10,40960); ?>
+<p class="hint">Optional HTML for a formatted alternative sent alongside the plain text. Limited to basic formatting, tables and links — scripts, forms, images, styles and remote content are removed when you save or preview. The plain message above is always included.</p>
 <button class="btn gold" name="action" value="mail_drafts_save">Save draft</button>
 <button class="btn outline" name="action" value="mail_drafts_preview">Preview draft</button>
 <?php if(staff_can('mail.templates.manage',$data['actor'])&&mail_templates_ready()): ?>
@@ -109,12 +111,16 @@ admin_input('subject','Subject',$values['subject'],'text','maxlength="200"');adm
 <?php else: ?>
 <section class="workspace-card"><h2>Discarded draft</h2><p>This retained draft is read-only.</p>
 <?php foreach(['to'=>'To','cc'=>'Cc','bcc'=>'Bcc','subject'=>'Subject'] as $key=>$label): ?><p><strong><?=esc($label)?>:</strong> <?=esc($values[$key])?></p><?php endforeach; ?>
-<div class="formatted"><?=nl2br(esc($values['body']))?></div></section>
+<div class="formatted"><?=nl2br(esc($values['body']))?></div>
+<?php if($values['body_html']!==''): ?><p class="hint">Retained sanitized formatted alternative:</p>
+<iframe class="message-formatted" data-draft-formatted title="Retained formatted message" sandbox="allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer" srcdoc="<?=esc(mail_message_document($values['body_html']))?>"></iframe><?php endif; ?></section>
 <?php endif; ?>
 <?php if($data['preview']): $preview=$data['preview']; ?><section class="workspace-card" data-mail-draft-preview><h2>Draft preview</h2><p class="hint">This is a preview of your entered text. It has not been sent.</p>
 <?php [$senderId]=mail_drafts_form_reference($data['sender']); ?><p><strong>From:</strong> <?=esc($accounts[$senderId]['address'])?></p>
 <?php foreach(['to'=>'To','cc'=>'Cc','bcc'=>'Bcc'] as $key=>$label): ?><p><strong><?=esc($label)?>:</strong> <?=esc(implode(', ',$preview->$key))?></p><?php endforeach; ?>
-<h3><?=esc($preview->subject)?></h3><div class="formatted"><?=nl2br(esc($preview->body))?></div></section><?php endif; ?>
+<h3><?=esc($preview->subject)?></h3><div class="formatted"><?=nl2br(esc($preview->body))?></div>
+<?php if($preview->html!==null): ?><p class="hint">Sanitized formatted alternative as it will be sent:</p>
+<iframe class="message-formatted" data-draft-formatted title="Sanitized formatted message preview" sandbox="allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer" srcdoc="<?=esc(mail_message_document($preview->html))?>"></iframe><?php endif; ?></section><?php endif; ?>
 <?php if($row): ?><section class="workspace-card"><h2>Draft history</h2>
 <?php foreach(array_slice($data['history'],0,20) as $event): ?><p>Version <?=(int)$event['revision']?> · <?=esc($event['action'])?> · <?=esc($event['recorded_at'])?> UTC</p><?php endforeach; ?>
 <nav aria-label="Draft history pages">

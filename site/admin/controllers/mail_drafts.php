@@ -4,6 +4,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/mail/drafts.php';
 require_once CWP_CODE_ROOT.'/app/mail/replies.php';
 require_once CWP_CODE_ROOT.'/app/mail/files.php';
+require_once CWP_CODE_ROOT.'/app/mail/document.php';
 
 use CajunWebPro\Foundation\MailCompose\DraftAttachment;
 use CajunWebPro\Foundation\MailCompose\DraftContent;
@@ -20,13 +21,14 @@ function mail_drafts_form_content(array $input):DraftContent {
         $value=mail_drafts_form_text($input,$key,5600);
         $lists[]=trim($value,' ')===''?[]:explode(',',$value);
     }
-    return new DraftContent(...[...$lists,mail_drafts_form_text($input,'subject',200),mail_drafts_form_text($input,'body',40000)]);
+    $html=mail_drafts_form_text($input,'body_html',65536);
+    return new DraftContent(...[...$lists,mail_drafts_form_text($input,'subject',200),mail_drafts_form_text($input,'body',40000),mail_drafts_html($html)]);
 }
 /** Display only: preserve entered Unicode after byte-limit errors; never use this for persistence. */
 function mail_drafts_form_values(array $input):array {
     $values=[];
     // HTML maxlength measures characters, so allow four UTF-8 bytes per displayed character.
-    foreach(['to'=>22400,'cc'=>22400,'bcc'=>22400,'subject'=>800,'body'=>160000] as $key=>$limit) {
+    foreach(['to'=>22400,'cc'=>22400,'bcc'=>22400,'subject'=>800,'body'=>160000,'body_html'=>262144] as $key=>$limit) {
         $value=$input[$key]??'';$values[$key]=is_string($value)?substr($value,0,$limit):'';
     }
     return $values;
@@ -141,10 +143,11 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
             $rows=$account===''?[]:(mail_replies_ready()?mail_drafts_combined_list($account,$status,$page):mail_drafts_list($account,$status,$page));
             return compact('actor','accounts','account','accountPage','moreAccounts','page','status')+['rows'=>$rows];
         }
-        $values=['to'=>'','cc'=>'','bcc'=>'','subject'=>'','body'=>''];$revision=0;
+        $values=['to'=>'','cc'=>'','bcc'=>'','subject'=>'','body'=>'','body_html'=>''];$revision=0;
         if($row) {
             foreach(['to','cc','bcc'] as $key)$values[$key]=implode(', ',$row[$key]);
             foreach(['subject','body'] as $key)$values[$key]=$row[$key];
+            $values['body_html']=$row['html']??($row['body_html']??'');
             $revision=(int)$row['revision'];
         }
         $sender=$account!==''?$account.':'.($row['account_revision']??$accounts[$account]['revision']):'';

@@ -3,14 +3,17 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 
+use CajunWebPro\Foundation\MailCompose\ComposeHtml;
 use CajunWebPro\Foundation\MailCompose\DraftContent;
+use CajunWebPro\Foundation\MailReceiving\ReceivingFailure;
 require_once CWP_CODE_ROOT.'/app/mail/accounts.php';
 require_once CWP_CODE_ROOT.'/app/mail/templates.php';
+require_once CWP_CODE_ROOT.'/includes/foundation/mail-compose/ComposeHtml.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/mail-compose/DraftContent.php';
 require_once CWP_CODE_ROOT.'/database/schema/mail_drafts_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/mail_drafts_migrate.php';
 
-function mail_drafts_ready():bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_schema_version'])['value']??'')==='1';}
+function mail_drafts_ready():bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_schema_version'])['value']??'')==='2';}
 function mail_drafts_actor():array {
     $actor=mail_accounts_actor();
     // The canonical mailbox decision below still requires both global Send and an exact grant.
@@ -26,6 +29,11 @@ function mail_drafts_account(string $id,?int $revision=null):array {
     return ['id'=>$row['id'],'revision'=>(int)$row['revision'],'label'=>$row['label'],'address'=>$row['address']];
 }
 function mail_drafts_id(string $id):void {if(!preg_match('/^[a-f0-9]{32}$/D',$id))throw new InvalidArgumentException('Draft unavailable.');}
+/** Bounded optional formatted alternative; '' input means plain text only. */
+function mail_drafts_html(string $raw):?string {
+    try {return ComposeHtml::sanitize($raw)?:null;}
+    catch(ReceivingFailure $e){throw new InvalidArgumentException($e->getMessage()==='limit'?'The formatted message text is too long.':'The formatted message text is not valid HTML.');}
+}
 function mail_drafts_audit(int $actor,string $action,string $detail):void {
     query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[$actor,'mail_drafts.'.$action,$detail,gmdate('Y-m-d H:i:s')]);
 }
@@ -41,14 +49,14 @@ function mail_drafts_content(array $row):DraftContent {
             $value=json_decode($row[$key],false,8,JSON_THROW_ON_ERROR);
             if(!is_array($value))throw new InvalidArgumentException('Invalid recipient list.');$lists[]=$value;
         }
-        return new DraftContent(...[...$lists,$row['subject'],$row['body']]);
+        return new DraftContent(...[...$lists,$row['subject'],$row['body'],$row['body_html']]);
     }catch(JsonException|InvalidArgumentException){throw new RuntimeException('Saved draft content is damaged. Existing data was preserved.');}
 }
 function mail_drafts_get(string $id):array {
     return staff_locked(function()use($id):array {
     $actor=mail_drafts_actor();$row=mail_drafts_row($id,(int)$actor['id']);$account=mail_drafts_account($row['account_id']);
     $content=mail_drafts_content($row);unset($row['create_fingerprint'],$row['to_json'],$row['cc_json'],$row['bcc_json']);
-    return $row+['to'=>$content->to,'cc'=>$content->cc,'bcc'=>$content->bcc,'sender'=>$account,'sender_changed'=>(int)$row['account_revision']!==$account['revision']];
+    return $row+['to'=>$content->to,'cc'=>$content->cc,'bcc'=>$content->bcc,'html'=>$content->html,'sender'=>$account,'sender_changed'=>(int)$row['account_revision']!==$account['revision']];
     });
 }
 function mail_drafts_list(string $account,string $status='draft',int $page=1):array {
@@ -75,7 +83,7 @@ function mail_drafts_save(string $id,int $revision,string $account,int $accountR
     return staff_locked(fn()=>staff_transaction(function()use($id,$revision,$account,$accountRevision,$content,$confirmSenderChange):string {
         $actor=mail_drafts_actor();mail_drafts_id($id);mail_drafts_account($account,$accountRevision);
         if($revision<0 || $revision>=2147483647)throw new RuntimeException('The draft changed. Reload before saving.');
-        $data=[json_encode($content->to,JSON_THROW_ON_ERROR),json_encode($content->cc,JSON_THROW_ON_ERROR),json_encode($content->bcc,JSON_THROW_ON_ERROR),$content->subject,$content->body];
+        $data=[json_encode($content->to,JSON_THROW_ON_ERROR),json_encode($content->cc,JSON_THROW_ON_ERROR),json_encode($content->bcc,JSON_THROW_ON_ERROR),$content->subject,$content->body,$content->html];
         $fingerprint=hash('sha256',json_encode([(int)$actor['id'],$account,$accountRevision,...$data],JSON_THROW_ON_ERROR));
         $old=one('SELECT * FROM '.table('mail_drafts').' WHERE id=? FOR UPDATE',[$id]);
         if($old && (int)$old['owner_id']!==(int)$actor['id'])throw new InvalidArgumentException('Draft unavailable.');
@@ -86,8 +94,8 @@ function mail_drafts_save(string $id,int $revision,string $account,int $accountR
             if(($old['account_id']!==$account || (int)$old['account_revision']!==$accountRevision) && !$confirmSenderChange)throw new RuntimeException('Confirm the current sending account before saving this change.');
         }elseif($revision!==0)throw new RuntimeException('The draft changed. Reload before saving.');
         $now=gmdate('Y-m-d H:i:s');
-        if($old)query('UPDATE '.table('mail_drafts').' SET account_id=?,account_revision=?,revision=?,to_json=?,cc_json=?,bcc_json=?,subject=?,body=?,updated_at=? WHERE id=?',[$account,$accountRevision,$revision+1,...$data,$now,$id]);
-        else query('INSERT INTO '.table('mail_drafts')." (id,owner_id,account_id,account_revision,revision,status,create_fingerprint,to_json,cc_json,bcc_json,subject,body,created_at,updated_at) VALUES (?,?,?,?,1,'draft',?,?,?,?,?,?,?,?)",[$id,$actor['id'],$account,$accountRevision,$fingerprint,...$data,$now,$now]);
+        if($old)query('UPDATE '.table('mail_drafts').' SET account_id=?,account_revision=?,revision=?,to_json=?,cc_json=?,bcc_json=?,subject=?,body=?,body_html=?,updated_at=? WHERE id=?',[$account,$accountRevision,$revision+1,...$data,$now,$id]);
+        else query('INSERT INTO '.table('mail_drafts')." (id,owner_id,account_id,account_revision,revision,status,create_fingerprint,to_json,cc_json,bcc_json,subject,body,body_html,created_at,updated_at) VALUES (?,?,?,?,1,'draft',?,?,?,?,?,?,?,?,?)",[$id,$actor['id'],$account,$accountRevision,$fingerprint,...$data,$now,$now]);
         mail_drafts_snapshot(mail_drafts_row($id,(int)$actor['id']),(int)$actor['id'],$old?'save':'create');return $id;
     }));
 }

@@ -15,16 +15,18 @@ final readonly class DraftOrigin
         $this->fingerprint=hash('sha256',$this->json);
     }
     public static function contentPayload(DraftContent $content):array {
-        return ['to'=>$content->to,'cc'=>$content->cc,'bcc'=>$content->bcc,'subject'=>$content->subject,'body'=>$content->body];
+        $payload=['to'=>$content->to,'cc'=>$content->cc,'bcc'=>$content->bcc,'subject'=>$content->subject,'body'=>$content->body];
+        if($content->html!==null)$payload['body_html']=$content->html;
+        return $payload;
     }
     public static function contentJson(DraftContent $content):string {
         return json_encode(self::contentPayload($content),JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
     }
     public static function contentFromJson(string $json):DraftContent {
         $v=json_decode($json,true,8,JSON_THROW_ON_ERROR);
-        if(!is_array($v)||array_keys($v)!==['to','cc','bcc','subject','body']||!is_string($v['subject'])||!is_string($v['body']))throw new InvalidArgumentException('Invalid copied draft content.');
+        if(!is_array($v)||!in_array(array_keys($v),[['to','cc','bcc','subject','body'],['to','cc','bcc','subject','body','body_html']],true)||!is_string($v['subject'])||!is_string($v['body'])||($v['body_html']??'')!==''&&!is_string($v['body_html']))throw new InvalidArgumentException('Invalid copied draft content.');
         foreach(['to','cc','bcc'] as $k)if(!is_array($v[$k]))throw new InvalidArgumentException('Invalid copied draft recipients.');
-        $content=new DraftContent($v['to'],$v['cc'],$v['bcc'],$v['subject'],$v['body']);
+        $content=new DraftContent($v['to'],$v['cc'],$v['bcc'],$v['subject'],$v['body'],$v['body_html']??null);
         if(self::contentJson($content)!==$json)throw new InvalidArgumentException('Noncanonical copied draft content.');
         return $content;
     }
