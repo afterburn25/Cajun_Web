@@ -1,3 +1,7 @@
+## Observed product import candidate — 2026-10-17
+
+The explicit owner addition now has a reviewed [hosting-draft and local-image implementation](TWENTYI_PRODUCT_IMPORT.md), based on navigation source e8ccefc9. Root integrates its shared CI wiring and generated inventory. It preserves prior acceptance requirements and adds three reports and two images. Native/HTTP verification is pending; complete 20i catalogs and automatic provider images remain unresolved. This does not mark the full import roadmap or release complete.
+
 ## Owner additions — 2026-10-17
 
 The owner explicitly added installer corrections, reorganized collapsible admin navigation, public Hosting / Web Design / Products links, and admin import of 20i products with images. These bounded requests supersede the earlier release freeze only for this work. Installer correction is committed as `345b335e`; this branch adds the [reviewed navigation increment](NAVIGATION_1.25.0.md). Root coordinates shared seams and normal integration; the product-import lane remains separate and incomplete. All other held capabilities and the complete candidate/main/publication gates remain in force. No live deployment is authorized.

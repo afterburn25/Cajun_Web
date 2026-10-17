@@ -1,6 +1,6 @@
 ## Owner additions — 2026-10-17
 
-The owner explicitly added installer corrections, reorganized collapsible admin navigation, public Hosting / Web Design / Products links, and admin import of 20i products with images. These bounded requests supersede the earlier release freeze only for this work. Installer correction is committed as `345b335e`; this branch adds the [reviewed navigation increment](docs/NAVIGATION_1.25.0.md). Root coordinates shared seams and normal integration; the product-import lane remains separate and incomplete. All other held capabilities and the complete candidate/main/publication gates remain in force. No live deployment is authorized.
+The owner explicitly added installer corrections, reorganized collapsible admin navigation, public Hosting / Web Design / Products links, and admin import of 20i products with images. These bounded requests supersede the earlier release freeze only for this work. Installer correction is committed as `345b335e`; this branch adds the [reviewed navigation increment](docs/NAVIGATION_1.25.0.md). Root coordinates shared seams and normal integration; the [product-import lane](docs/TWENTYI_PRODUCT_IMPORT.md) now has a reviewed hosting-draft/local-image subset, with native acceptance and full catalog coverage pending. All other held capabilities and the complete candidate/main/publication gates remain in force. No live deployment is authorized.
 
 ## Owner release priority — 2026-10-16
 

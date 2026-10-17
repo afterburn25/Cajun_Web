@@ -1,3 +1,7 @@
+## Observed product import candidate — 2026-10-17
+
+The explicit owner addition now has a reviewed [hosting-draft and local-image implementation](TWENTYI_PRODUCT_IMPORT.md), based on navigation source e8ccefc9. Root integrates its shared CI wiring and generated inventory. It preserves prior acceptance requirements and adds three reports and two images. Native/HTTP verification is pending; complete 20i catalogs and automatic provider images remain unresolved. This does not mark the full import roadmap or release complete.
+
 ## Owner-requested additions — 2026-10-17
 
 The subsequent explicit requests add the installer correction in [PR206](https://github.com/afterburn25/Cajun_Web/pull/206) and [grouped administration/public navigation](NAVIGATION_1.25.0.md). They retain the original complete acceptance and publication gates. Bounded 20i product import is still on a separate unaccepted branch and is not represented as complete by this navigation change. All other HOLD items remain held.
