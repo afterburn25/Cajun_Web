@@ -1,5 +1,14 @@
 # CajunWebPro 1.25.0 release handoff
 
+## 2026-10-17 - StackCP access read performance correction under verification
+
+Starting source: `60c053b5c9f5a5fded943930500ea57cddd20ff8`. Original full-browser runs expose a slow prepared StackCP access section; the required PHP 8.2/MySQL run also exposes a latency-sensitive scheduled-backoff assertion. Preserve the original failures and all completed evidence. The [diagnostic record](docs/STACKCP_ACCESS_READ_DIAGNOSTIC.md) explains the observed behavior, bounded correction and limits.
+
+An isolated release-blocker branch prepares one synchronous access read snapshot under the owning mutex and transaction. All original validation bodies, current package/client authority, public mutation paths and displayed hosting links remain. Root and independent source reviews passed, along with 798 actual local PHP 8.4.25 contract/renderer checks in default/minimal modes. The scheduler fixture now requires an exact 1,800-second delay from a finish event within its request window; 18 modeled predicate/inverse checks and independent review passed. Independent diagnostic source review passed 63 checks; all 208 acceptance-helper regressions also passed. Native work measurements, exact output equivalence and extracted-package HTTP/Chromium remain pending. Do not count earlier source results as acceptance of this correction. No timeouts or release gates are relaxed, and no new20i scope is added.
+
+Next: validate the bounded correction, integrate it into the canonical candidate, then run complete candidate/maintained acceptance and actual visual review before normal merge, complete exact-main acceptance and all-asset publication/download verification. Main, immutable 1.24 and production remain unchanged;1.25 is unpublished.
+
+
 Continue the release-first scope in [status](PROJECT_STATUS.md), [frozen scope](docs/RELEASE_SCOPE_1.25.0.md), [integration map](docs/RELEASE_1.25_INTEGRATION_MAP.md) and [release workflow](docs/RELEASE_WORKFLOW.md). The main35d8/mature3fa integration and subsequent main documentation merge already exist; do not repeat feature imports. Preserve the current licensing serialization, provider authority, original histories and installer/source parity.
 
 Use actual source-bound receipts to determine the next unfinished gate: complete candidate acceptance and independent visual/source/package review; normal main merge; complete exact-main acceptance; immutable tag/release assets; then fresh all-asset download verification. Do not infer completion from this handoff or a prior source. Preserve original failures and reviewed corrections. New capabilities and the external PHP snapshot proposal remain held until publication is verified.

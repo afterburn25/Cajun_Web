@@ -151,10 +151,13 @@ def run_browser(env, browser):
     submit(owner, url, prefix+'enable', valid)
     cooldown()
     provider.mode = 'authentication'
+    # The backoff begins at the retained finish event; the redirected page can take time to render.
+    failure_requested_epoch = int(time.time())
     failed = submit(owner, url, prefix+'run', {'current_password': OWNER})
+    failure_response_epoch = int(time.time())
     last = db('SELECT document_json FROM ci_provider_schedule_events ORDER BY sequence DESC LIMIT 1')[0]
     document = json.loads(last['document_json'])
-    check('Actual failed scheduled read persists finite outcome and backoff', provider.calls == calls+2 and document['kind'] == 'finish' and document['data']['outcome'] == 'unavailable' and document['state']['failures'] == 1 and document['state']['next'] >= int(time.time())+1790 and 'private synthetic response' not in failed.text)
+    check('Actual failed scheduled read persists finite outcome and backoff', provider.calls == calls+2 and document['kind'] == 'finish' and document['data']['outcome'] == 'unavailable' and document['state']['failures'] == 1 and failure_requested_epoch <= document['at'] <= failure_response_epoch and document['state']['next'] == document['at']+1800 and 'private synthetic response' not in failed.text)
     # The requests session changed the server state while Chromium already has this exact anchored URL open.
     # Navigating to the same fragment can reuse the old document, so fetch the real current page explicitly.
     page.reload()

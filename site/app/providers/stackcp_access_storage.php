@@ -35,60 +35,7 @@ function provider_stackcp_access_common_row(string $id,bool $finished):?array {
 }
 /** No DDL, decryption, history adoption or network. Validate every signed row before indexed availability. */
 function provider_stackcp_access_ready():bool {
-    provider_stackcp_guard();$settings=table('settings');$audit=table('audit');$f=table('provider_refreshes');$z=table('provider_refresh_results');$reads=table('provider_stackcp_reads');$results=table('provider_stackcp_observations');
-    $marker=one("SELECT value FROM $settings WHERE name=?",['provider_stackcp_access_schema_version'])['value']??'';
-    $operations=[StackCpAccessBinding::MEMBERSHIP,StackCpAccessBinding::GRANTS];
-    if ($marker==='') {
-        $witness=one("SELECT name FROM $settings WHERE name IN (?,?,?) LIMIT 1",['provider_stackcp_access_proof','provider_stackcp_access_checkpoint','provider_stackcp_access_checkpoint_proof'])||one("SELECT id FROM $audit WHERE BINARY action IN (?,?,?) LIMIT 1",['provider.stackcp_access_prepared','provider.stackcp_access_started','provider.stackcp_access_finished']);
-        foreach (['started','finished'] as $kind) if (provider_stackcp_access_exists(provider_stackcp_access_table($kind))&&(int)query('SELECT COUNT(*) FROM '.table(provider_stackcp_access_table($kind)))->fetchColumn()>0) $witness=true;
-        if ($witness) throw new RuntimeException('Restore the original StackCP access observation history.');
-        if (provider_stackcp_access_exists('provider_refreshes')) {
-            $hasOperation=one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_refreshes','operation'])!==null;
-            if (!$hasOperation) {
-                $inventoryVersion=one("SELECT value FROM $settings WHERE name=?",['provider_inventory_schema_version'])['value']??'';
-                // Explicit legacy inventories predate operation-scoped reads. Never adopt or repair them on GET.
-                if (!in_array($inventoryVersion,['1','2','3'],true)) throw new RuntimeException('StackCP access inventory history needs recovery.');
-            } elseif (one("SELECT id FROM $f WHERE BINARY operation IN (?,?) LIMIT 1",$operations)) throw new RuntimeException('Restore the original StackCP access observation history.');
-        }
-        return false;
-    }
-    if ($marker!=='1'||!provider_stackcp_access_exists('provider_stackcp_reads')||!provider_stackcp_access_exists('provider_stackcp_observations')||!provider_stackcp_ready('assignment')) throw new RuntimeException('StackCP access storage needs recovery.');
-    provider_stackcp_access_validate_schema();$prepared=provider_stackcp_proof(provider_stackcp_vault(),'access-prepared','1');
-    if (!hash_equals($prepared,one("SELECT value FROM $settings WHERE name=?",['provider_stackcp_access_proof'])['value']??'')||(int)query("SELECT COUNT(*) FROM $audit WHERE BINARY action='provider.stackcp_access_prepared'")->fetchColumn()!==1||(int)query("SELECT COUNT(*) FROM $audit WHERE BINARY action='provider.stackcp_access_prepared' AND BINARY detail=?",['StackCP access observation storage ready '.$prepared])->fetchColumn()!==1) throw new RuntimeException('StackCP access preparation proof needs recovery.');
-    $checkpoint=provider_stackcp_access_checkpoint();
-    if ((int)query("SELECT COUNT(*) FROM $f WHERE BINARY operation IN (?,?)",$operations)->fetchColumn()!==$checkpoint['started']||(int)query("SELECT COUNT(*) FROM $z z JOIN $reads r ON r.id=z.id")->fetchColumn()!==$checkpoint['finished']) throw new RuntimeException('StackCP common observation counts disagree.');
-    foreach (['started','finished'] as $kind) {
-        $table=table(provider_stackcp_access_table($kind));$action='provider.stackcp_access_'.$kind;
-        if ((int)query("SELECT COUNT(*) FROM $table")->fetchColumn()!==$checkpoint[$kind]||(int)query("SELECT COUNT(*) FROM $audit WHERE BINARY action=?",[$action])->fetchColumn()!==$checkpoint[$kind]) throw new RuntimeException('StackCP access history counts disagree.');
-        $seen=0;$previous=str_repeat('0',64);$lastAudit=0;$lastCommonAudit=0;$lastSeq=0;
-        while ($seen<$checkpoint[$kind]) {
-            $detail="CONCAT(BINARY 'StackCP access $kind ',r.id,' ',r.document_sha256,' ',r.proof)";
-            $select=['r.*'];foreach (provider_stackcp_access_common_keys($kind==='finished') as $field) $select[]=((in_array($field,provider_stackcp_access_common_keys(),true)?'f.':'z.').$field.' AS c_'.$field);
-            $select[]="(SELECT COUNT(*) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $detail) AS own_audit_count";
-            $select[]="(SELECT COUNT(*) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $detail AND a.user_id=f.actor_id) AS own_actor_count";
-            $select[]="(SELECT MIN(a.id) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $detail) AS own_audit_id";
-            $commonDetail=$kind==='started'?"CONCAT(BINARY 'Refresh ',f.id,' profile ',f.profile_id,' revision ',f.profile_revision)":"CONCAT(BINARY 'Refresh ',f.id,' ',z.state,IF(z.reason='','',' '),z.reason)";
-            $commonAction='provider.refresh_'.($kind==='started'?'started':'finished');
-            $select[]="(SELECT COUNT(*) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $commonDetail) AS common_audit_count";
-            $select[]="(SELECT COUNT(*) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $commonDetail AND a.user_id=f.actor_id) AS common_actor_count";
-            $select[]="(SELECT MIN(a.id) FROM $audit a WHERE BINARY a.action=? AND BINARY a.detail=BINARY $commonDetail) AS common_audit_id";
-            $join='';if ($kind==='finished') {$select[]='s.document_json AS start_json';$select[]='s.document_sha256 AS start_sha256';$join=" LEFT JOIN $z z ON z.id=r.id LEFT JOIN $reads s ON s.id=r.id";}
-            $rows=all('SELECT '.implode(',',$select)." FROM $table r LEFT JOIN $f f ON f.id=r.id $join WHERE r.ordinal>? ORDER BY r.ordinal LIMIT 200",[$action,$action,$action,$commonAction,$commonAction,$commonAction,$seen]);
-            if (!$rows) throw new RuntimeException('StackCP access history order needs recovery.');$starts=[];
-            foreach ($rows as $row) {
-                $d=provider_stackcp_access_row($kind,$row);$common=[];foreach (provider_stackcp_access_common_keys($kind==='finished') as $field) $common[$field]=$row['c_'.$field];
-                if ($d['ordinal']!==++$seen||$d['previous_sha256']!==$previous||$d['common']!==provider_stackcp_access_common($common,$kind==='finished')||(int)$row['own_audit_count']!==1||(int)$row['own_actor_count']!==1||(int)$row['common_audit_count']!==1||(int)$row['common_actor_count']!==1||(int)$row['own_audit_id']<=$lastAudit||(int)$row['common_audit_id']<=$lastCommonAudit) throw new RuntimeException('StackCP access history correspondence needs recovery.');
-                if ($kind==='started') {if ((int)$common['seq']<=$lastSeq||(int)$row['own_audit_id']<=(int)$row['common_audit_id']) throw new RuntimeException('StackCP access intent sequence needs recovery.');$lastSeq=(int)$common['seq'];$starts[]=$d;}
-                else {if ($row['start_json']===null||$d['read_sha256']!==$row['start_sha256']||(int)$row['own_audit_id']>=(int)$row['common_audit_id']) throw new RuntimeException('StackCP access result source needs recovery.');$start=provider_stackcp_access_document('started',json_decode($row['start_json'],true,16,JSON_THROW_ON_ERROR));provider_stackcp_access_finish_check($start,$d);}
-                $lastAudit=(int)$row['own_audit_id'];$lastCommonAudit=(int)$row['common_audit_id'];$previous=$row['document_sha256'];
-            }
-            if ($starts) provider_stackcp_access_retained_sources($starts);
-        }
-        if ($previous!==$checkpoint[$kind.'_sha256']) throw new RuntimeException('StackCP access history head needs recovery.');
-    }
-    // A finish audit with its common result removed is an independent surviving witness.
-    if (one("SELECT r.id FROM $reads r JOIN $audit a ON BINARY a.action='provider.refresh_finished' AND BINARY a.detail LIKE CONCAT('Refresh ',r.id,' %') LEFT JOIN $z z ON z.id=r.id WHERE z.id IS NULL LIMIT 1")) throw new RuntimeException('StackCP common result history needs recovery.');
-    return true;
+    return ProviderStackCpReadProjection::accessReady();
 }
 function provider_stackcp_access_prepare(#[SensitiveParameter] string $password):void {
     if (db()->inTransaction()) throw new LogicException('StackCP observation preparation cannot run in a transaction.');

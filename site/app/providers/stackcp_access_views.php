@@ -35,14 +35,17 @@ function provider_stackcp_access_render(array $view,int $page=1):void {
 function provider_stackcp_access_admin_render():void {
     provider_settings_manager();echo '<section class="workspace-card" id="stackcp-access-observations"><h2>Check StackCP assignments</h2><p>Read package membership and whole-user grants explicitly. Results are dated observations only. Existing local assignments remain unverified setup; provider login and remote session revocation are unavailable.</p>';
     try {
-        $profile=provider_settings_profile();if (!$profile) {echo '<p>Save your 20i account first.</p></section>';return;}$id=$profile['id'];
-        $ready=staff_locked(fn()=>provider_stackcp_access_ready());
-        if (!$ready) {echo '<p>Prepare protected StackCP key and assignment storage first, then enable these observation records. Back up the database and protected master key together.</p><form method="post">';admin_action('provider_inventory_stackcp_access_prepare');provider_stackcp_password();echo '<button class="btn gold">Prepare observations</button></form></section>';return;}
         $raw=$_GET['stackcp_access_page']??'1';$page=is_string($raw)&&preg_match('/\A[1-9][0-9]{0,3}\z/',$raw)?min(500,(int)$raw):1;
-        $packages=staff_locked(fn()=>staff_transaction(function()use($id,$page):array {provider_settings_manager();if (!provider_stackcp_access_ready()) throw new RuntimeException('Prepare StackCP access observations first.');return all('SELECT package_id FROM '.table('provider_package_links').' WHERE profile_id=? UNION SELECT CAST(JSON_UNQUOTE(JSON_EXTRACT(document_json,\'$.package_id\')) AS UNSIGNED) AS package_id FROM '.table('provider_stackcp_assignments').' WHERE profile_id=? ORDER BY package_id LIMIT 21 OFFSET '.(($page-1)*20),[$id,$id]);}));
+        $snapshot=ProviderStackCpReadProjection::ownerAccessSnapshot($page);
+        if ($snapshot['error']!==null && !$snapshot['packages']) throw new RuntimeException($snapshot['error']);
+        if ($snapshot['state']==='account_missing') {echo '<p>Save your 20i account first.</p></section>';return;}
+        $ready=$snapshot['state']==='ready';
+        if (!$ready) {echo '<p>Prepare protected StackCP key and assignment storage first, then enable these observation records. Back up the database and protected master key together.</p><form method="post">';admin_action('provider_inventory_stackcp_access_prepare');provider_stackcp_password();echo '<button class="btn gold">Prepare observations</button></form></section>';return;}
+        $packages=$snapshot['packages'];
         if (!$packages) echo '<p>Save an owner-reviewed Stack-user assignment before reading access.</p>';
-        foreach (array_slice($packages,0,20) as $row) provider_stackcp_access_render(provider_stackcp_access_status($id,(int)$row['package_id']),$page);
-        echo '<nav class="button-row" aria-label="StackCP access observation pages">';if ($page>1) echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['stackcp_access_page'=>$page-1])).'#stackcp-access-observations">Previous</a>';if (count($packages)>20&&$page<500) echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['stackcp_access_page'=>$page+1])).'#stackcp-access-observations">More packages</a>';echo '</nav>';
+        foreach ($packages as $view) provider_stackcp_access_render($view,$page);
+        if ($snapshot['error']!==null) throw new RuntimeException($snapshot['error']);
+        echo '<nav class="button-row" aria-label="StackCP access observation pages">';if ($page>1) echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['stackcp_access_page'=>$page-1])).'#stackcp-access-observations">Previous</a>';if ($snapshot['has_more']&&$page<500) echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['stackcp_access_page'=>$page+1])).'#stackcp-access-observations">More packages</a>';echo '</nav>';
     } catch (InvalidArgumentException|RuntimeException $e) {if ($e instanceof PDOException) throw $e;echo '<p class="notice error" role="alert">'.esc($e->getMessage()).'</p>';}
     echo '</section>';
 }
