@@ -151,6 +151,8 @@ def run_browser(env,browser):
     feed=contact.get(portal+'?activity=1');mkey2=[n['data-event-key'] for n in soup(feed).select('[data-event-key]') if n['data-event-key'].startswith('milestone:'+str(mmid)+':')][0]
     check('Contact sees the later milestone update as a new unread event','data-event-key="'+mkey+'"' not in feed.text and mkey2!=mkey and 'data-event-key="'+mkey2+'"' in contact.get(portal+'?activity=1&filter=unread').text)
     check('Older contact acknowledgement cannot consume the later update',not db('SELECT * FROM ci_activity_reads WHERE actor_type=? AND actor_id=? AND event_key=?',['contact',ctid,mkey2]))
+    r=contact.post(portal+'?activity=1',data={'csrf':token(contact.get(portal+'?activity=1')),'action':'activity_mark','keys':json.dumps([mkey]),'state':'read'})
+    check('Submitted stale milestone key is rejected for the contact','read status was saved' not in r.text and not db('SELECT * FROM ci_activity_reads WHERE event_key=?',[mkey2]))
 
     # Billing-only contact: invoices without project review or files.
     data=add_form(cid);data.update(name='Billing Only Contact',email='billing-contact@example.invalid',**{'perms[]':'billing'})
