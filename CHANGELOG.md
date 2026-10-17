@@ -725,3 +725,9 @@ Fresh issue157 comments6217621738/6217865863 acknowledge non20i work. Open heads
 ## 2026-10-16 15:15 UTC - Publish cloud candidate and actionable licensing review
 
 +Owner goal: continue complete20i and coordinate Devin non-20i work. Documentation parent595ac9c3; commit "Document cloud assignment candidate and licensing review" records exact source2a86704f/tree32f1058c/parent819c, original focused run38921917647 attempt1 and pending Windows build. Local/source/staged checks passed; native/full/browser/package/main/release acceptance remains pending. Original819c upgrade failure is preserved and corrected on2a; original9779 browser remains active. Licensing159 review299bf71e produced comments6218434878/6218437910 with two behavior gaps and stale inventory failure. All changed files are Markdown; no runtime, installer, version, release, live provider or customer action. Next: actual focused archives, full combined evidence and sequential integration.
+
+## Unreleased — shareable payment-request links (devin/non20i-payment-links)
+
+- Each prepared payment request now mints a 256-bit shareable link (`index.php?page=pay&t=`); the token is sealed with the payment master key and looked up only by its SHA-256 hash, grants no portal access, and the page is `noindex`/`no-referrer`/`no-store` with per-IP rate limiting.
+- Link states stay honest end-to-end: prepared requests show invoice reference, purpose, authoritative amount, expiry and the studio's instructions; revoked, superseded, expired, paid, invoice-changed and unknown links each render a truthful terminal state. No card checkout yet.
+- Payments schema 1 → 2 via additive `ALTER` (v1 rows keep `NULL` links); admin request history surfaces the link for prepared requests and the portal invoice card links the owning client to it.
