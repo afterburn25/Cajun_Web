@@ -104,7 +104,7 @@ def run_browser(env, browser):
     r = owner.get(send_page)
     f = soup(r).select_one('[data-mail-submission-confirm]')
     check('Copied reply opens the same explicit review screen', f is not None and 'synthetic@example.net' in r.text)
-    submission_server.configure('ssl', 'accepted')
+    submission_server.configure('ssl', 'accepted', sender='reply-sender@example.invalid', recipients=['synthetic@example.net'])
     smtp_before = submission_server.connections
     target = urljoin(send_page, f.get('action') or send_page)
     data = form_data(f)
@@ -125,6 +125,7 @@ def run_browser(env, browser):
     data = form_data(f)
     # Advance only the disposable-fixture per-account cooldown, never a production retry control.
     db('UPDATE ci_mail_submission_dispatches SET started_epoch=0')
+    submission_server.configure('ssl', 'accepted', sender='reply-sender@example.invalid', recipients=['forward-recipient@example.invalid'])
     smtp_before = submission_server.connections
     r = owner.post(urljoin(send_page, f.get('action') or send_page), data={**data, 'confirm_send': '1'}, timeout=30)
     check('Reviewed forward send succeeds without reply headers', 'Server accepted' in r.text and submission_server.connections == smtp_before + 1)
