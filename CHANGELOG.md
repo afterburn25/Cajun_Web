@@ -28,6 +28,10 @@ Add a root start-here guide, complete owner-approved assignment and existing lic
 
 # Changelog
 
+## Unreleased — staff-only project notes (devin/non20i-staff-notes)
+
+Authorized staff (clients.manage) can record internal notes on a project that never reach clients or company contacts. Notes reuse the immutable studio_messages store with author_type=internal attributed to the acting staff member — no schema change. The admin project view lists them under a separate Staff-only card with author names; the portal conversation allow-lists visible author types so internal rows cannot render for clients, contacts or support sessions, and they never create activity events for any audience.
+
 ## Unreleased — per-contact workspace activity routing (devin/non20i-contact-activity)
 
 Company contacts now get their own workspace activity feed filtered to assigned permissions: project events (messages, files, published reviews) require projects, invoice/payment events require billing, and website release events require downloads. Read state is recorded per contact identity (actor_type=contact) rather than shared with the client account, contact-authored events never notify contacts, and the ?activity=1 route plus mark-read action accept any routed permission. Primary client feeds remain company-wide and the primary account is unchanged when contacts are unused. No email, provider call, schema change or new notification channel is added.

@@ -1734,3 +1734,15 @@ Tests so far: php -l on the four touched PHP files; contacts_cases.py compiles. 
 Known limits: stage history remains a separate P-05/P-07 increment; contact feeds exclude other contacts' authored events by design.
 
 Next: commit, refresh installer inventory, open stacked PR, monitor CI.
+
+## 2026-10-17 — P-05 staff-only project notes (stacked)
+
+Request: continue non-20i roadmap; implement "staff-note privacy" named in the P-05 acceptance ("distinguish staff-only notes from published client updates"). New branch devin/non20i-staff-notes stacked on devin/non20i-contact-activity.
+
+Changed: studio_messages gains author_type='internal' semantics — no schema change because studio_migrate validates exact columns. New admin action studio_note (mapped to clients.manage) appends an internal note attributed to the acting staff account. The admin job view gets a Staff-only notes card with per-author staff names; the client portal conversation (and its contacts-aware variant) now allow-lists author_type to admin/client/contact so internal rows can never render, including through support-session portal views. Activity projections needed no change — client/contact feeds only surface admin/client-authored message events and admin feeds only client/contact-authored. tests/staff_cases.py gains: unauthorized staff POST refusal, owner note save, single private render in admin view, and client portal/activity absence; tests/contacts_cases.py asserts the contact conversation never shows the internal note.
+
+Tests so far: php -l on the four touched PHP files; staff_cases.py and contacts_cases.py compile; canonical installer checks pass (40 packages, 2,188 dependency, 2,201 runtime, 6 PHPMailer, 15 submission files; no drift). Packaged acceptance pending on the stacked PR. No email, provider call, payment, deployment or SSH.
+
+Known limits: notes are append-only immutable rows like messages; they never create activity events for any audience.
+
+Next: commit, open stacked PR, monitor CI.

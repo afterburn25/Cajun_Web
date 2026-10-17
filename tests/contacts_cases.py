@@ -100,6 +100,7 @@ def run_browser(env,browser):
     check('Contact project message saved with contact attribution','Contact-scoped review message' in r.text and db("SELECT author_type FROM ci_studio_messages WHERE body='Contact-scoped review message.'")[0]['author_type']=='contact')
     r=contact.get(portal+'?job=1')
     check('Contact attribution renders on the message','Review Only Contact' in r.text)
+    check('Contact conversation never shows internal staff notes','Staff-only internal marker note.' not in r.text)
 
     # A contact decision keeps the client as the deciding account but attributes the person.
     jobAdmin=root+'?view=studio-job&id=1'
