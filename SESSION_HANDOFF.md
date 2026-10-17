@@ -44,4 +44,12 @@ Owner follow-up reviews produced three more work items; all corrected and verifi
 - #213 `devin/non20i-portal-account` @ `3411de28` — GREEN 41/41. `studio_password_change` is atomic: fresh `FOR UPDATE` actor reads under `staff_locked`, current password verified against the locked row, credential + audit committed in one transaction, session rotates only post-commit. Native coverage: interleavings + audit-failure rollback. HTTP test now asserts revocation, re-signs the contact, one persistent session for CSRF GET+POST, DOM identity verified. Branch restacked (`de343e95` merge) after base `91f4599e` touched the same test file.
 - #212 `devin/non20i-client-actions` @ `5e1e043d` — GREEN 41/41. `91f4599e` added the required boundary regression: pending review + 101 newer versions of another kind, follow the generated `focus_review` link, assert the exact pending review and its decision form render; other-job and superseded controls preserved.
 
+Round-4 review (comment 6239686025) found a latent fixture interaction in that regression: the 101 filler versions' `review:` events displace `review:<vid>` from the first activity page (30-row window, `occurred_at DESC, event_key DESC`), breaking the later feed assertions — and broad `kind:<id>` substrings can false-match other ids. Corrected:
+
+- #212 `devin/non20i-client-actions` @ `6bf64fce` — boundary block moved after all activity-feed assertions; feed checks match exact `data-event-key="kind:id"` attributes. Component lanes re-running; `native-and-browser` (which exercises `contacts_cases.py`) verifies on retarget per convention.
+- #213 `devin/non20i-portal-account` @ `9a5534a8` — same fix propagated via base merge `f4835eda` plus session-log record.
+- Round-3 reviews confirmed: #203 source fix accepted, #213 implementation accepted; #202/#209 accepted previously.
+
+Reconciled the reported `organized_update_cases.py` single-probe state: the bounded warm-up + diagnostic lives on `devin/non20i-client-contacts` tip `9015ef8f` and is intact; `portal-account` legitimately lacks it until the base propagates — no revert to reconcile.
+
 Next: Codex sequential retarget/integration of the chain (#203 → #204 → #205 → #209 → #210 → #211 → #212 → #213); long lanes re-run per retargeted parent. Devin fixes failures on exact new commits.
