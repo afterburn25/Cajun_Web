@@ -47,6 +47,12 @@ if(($argv[1]??'')==='activate-worker') {
     try{studio_activate($argv[2],'Synthetic activated client passphrase');echo 'activated';}
     catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
 }
+if(($argv[1]??'')==='password-worker') {
+    $_SESSION=['client_id'=>(int)$argv[2],'client_auth'=>$argv[3],'contact_id'=>(int)$argv[4],'contact_auth'=>$argv[5],'client_last'=>time(),'client_login'=>time()];
+    echo "ready\n";fflush(STDOUT);
+    try{studio_password_change($argv[4]!=='0',$argv[6],'Synthetic replacement passphrase 2026');echo 'changed';}
+    catch(InvalidArgumentException|RuntimeException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
+}
 try {
     foreach(schema_statements('caci_') as $sql)db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
@@ -98,6 +104,42 @@ try {
     staff_locked(function()use($id,$token,$row):void {$GLOBALS['activation_waiter']=ca_worker('activate-worker',[$token]);if(trim(fgets($GLOBALS['activation_waiter'][1][1]))!=='ready')throw new RuntimeException('Activation did not reach guard');usleep(500000);ca_ok('Public activation cannot bypass the shared hosting guard',ca_client($id)===$row);studio_client_save($id,$row['auth_version'],'Revoked while waiting','client@example.invalid',false);});$before=ca_snapshot();ca_ok('Client deactivated while activation waits cannot establish credentials',ca_finish($GLOBALS['activation_waiter'])==='denied'&&ca_snapshot()===$before);
     studio_client_save($id,ca_version($id),'Restored','client@example.invalid',true);$token=ca_token(studio_new_invite($id,ca_version($id)));
     staff_locked(function()use($id,$token):void {$GLOBALS['expired_waiter']=ca_worker('activate-worker',[$token]);if(trim(fgets($GLOBALS['expired_waiter'][1][1]))!=='ready')throw new RuntimeException('Expiry activation did not reach guard');query('UPDATE '.table('studio_clients').' SET invite_expires=? WHERE id=?',[time()-1,$id]);});$before=ca_snapshot();ca_ok('Token expiry is rechecked after waiting for shared guard',ca_finish($GLOBALS['expired_waiter'])==='denied'&&ca_snapshot()===$before);
+    // Self-service password changes re-read authority under the shared account lock.
+    save_setting('contacts_schema_version','1');
+    query('UPDATE '.table('studio_clients').' SET password_hash=? WHERE id=?',[password_hash('Synthetic pre-change passphrase',PASSWORD_DEFAULT),$id]);
+    query('INSERT INTO '.table('studio_contacts').' (client_id,name,email,password_hash,permissions,enabled,auth_version,created_at) VALUES (?,?,?,?,?,1,?,?)',[$id,'Password contact','password-contact@example.invalid',password_hash('Synthetic contact passphrase',PASSWORD_DEFAULT),json_encode(['projects']),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);$contact=(int)db()->lastInsertId();
+    $contactHash=one('SELECT password_hash FROM '.table('studio_contacts').' WHERE id=?',[$contact])['password_hash'];
+    $contactAuth=one('SELECT auth_version FROM '.table('studio_contacts').' WHERE id=?',[$contact])['auth_version'];$clientAuth=ca_version($id);
+    staff_locked(function()use($id,$contact,$clientAuth,$contactAuth):void{
+        $GLOBALS['pw_waiter']=ca_worker('password-worker',[(string)$id,$clientAuth,(string)$contact,$contactAuth,'Synthetic contact passphrase']);
+        if(trim(fgets($GLOBALS['pw_waiter'][1][1]))!=='ready')throw new RuntimeException('Password writer did not reach the guard');
+        query('UPDATE '.table('studio_clients').' SET auth_version=? WHERE id=?',[bin2hex(random_bytes(16)),$id]);
+    });
+    ca_ok('Contact password change denied after parent credential rotation',ca_finish($GLOBALS['pw_waiter'])==='denied'&&one('SELECT password_hash FROM '.table('studio_contacts').' WHERE id=?',[$contact])['password_hash']===$contactHash);
+    $contactAuth=one('SELECT auth_version FROM '.table('studio_contacts').' WHERE id=?',[$contact])['auth_version'];$clientAuth=ca_version($id);
+    staff_locked(function()use($id,$contact,$clientAuth,$contactAuth):void{
+        $GLOBALS['pw_waiter']=ca_worker('password-worker',[(string)$id,$clientAuth,(string)$contact,$contactAuth,'Synthetic contact passphrase']);
+        if(trim(fgets($GLOBALS['pw_waiter'][1][1]))!=='ready')throw new RuntimeException('Password writer did not reach the guard');
+        query('UPDATE '.table('studio_contacts').' SET auth_version=? WHERE id=?',[bin2hex(random_bytes(16)),$contact]);
+    });
+    ca_ok('Contact password change denied after contact credential rotation',ca_finish($GLOBALS['pw_waiter'])==='denied'&&one('SELECT password_hash FROM '.table('studio_contacts').' WHERE id=?',[$contact])['password_hash']===$contactHash);
+    $clientHash=ca_client($id)['password_hash'];$clientAuth=ca_version($id);
+    staff_locked(function()use($id,$clientAuth):void{
+        $GLOBALS['pw_waiter']=ca_worker('password-worker',[(string)$id,$clientAuth,'0','','Synthetic pre-change passphrase']);
+        if(trim(fgets($GLOBALS['pw_waiter'][1][1]))!=='ready')throw new RuntimeException('Password writer did not reach the guard');
+        query('UPDATE '.table('studio_clients').' SET auth_version=? WHERE id=?',[bin2hex(random_bytes(16)),$id]);
+    });
+    ca_ok('Client password change denied after concurrent credential reset',ca_finish($GLOBALS['pw_waiter'])==='denied'&&ca_client($id)['password_hash']===$clientHash);
+    $_SESSION=['client_id'=>$id,'client_auth'=>ca_version($id),'client_last'=>time(),'client_login'=>time()];
+    $before=ca_client($id);
+    ca_ok('Audit failure rolls back the credential and leaves the session unchanged',ca_audit_failure(fn()=>studio_password_change(false,'Synthetic pre-change passphrase','Synthetic replacement passphrase 2026'))&&ca_client($id)===$before&&$_SESSION['client_auth']===$before['auth_version']);
+    $before=ca_client($id);$auditBefore=(int)query('SELECT COUNT(*) FROM '.table('audit'))->fetchColumn();
+    studio_password_change(false,'Synthetic pre-change passphrase','Synthetic replacement passphrase 2026');
+    ca_ok('Client password change commits credential audit and rotates the session',password_verify('Synthetic replacement passphrase 2026',ca_client($id)['password_hash'])&&ca_client($id)['auth_version']!==$before['auth_version']&&$_SESSION['client_auth']===ca_client($id)['auth_version']&&(int)query('SELECT COUNT(*) FROM '.table('audit'))->fetchColumn()===$auditBefore+1);
+    $_SESSION=['client_id'=>$id,'client_auth'=>ca_version($id),'contact_id'=>$contact,'contact_auth'=>one('SELECT auth_version FROM '.table('studio_contacts').' WHERE id=?',[$contact])['auth_version'],'client_last'=>time(),'client_login'=>time()];
+    studio_password_change(true,'Synthetic contact passphrase','Synthetic new contact passphrase 2026');
+    $freshContact=one('SELECT * FROM '.table('studio_contacts').' WHERE id=?',[$contact]);
+    ca_ok('Contact password change commits credential and rotates the session',password_verify('Synthetic new contact passphrase 2026',$freshContact['password_hash'])&&$freshContact['auth_version']===$_SESSION['contact_auth']);
     $audit=json_encode(all('SELECT * FROM '.table('audit')));ca_ok('Client audit excludes names emails passwords raw invitations and password hashes',!str_contains($audit,'@example.invalid')&&!str_contains($audit,'Cajun')&&!str_contains($audit,$password)&&!str_contains($audit,$token)&&!str_contains($audit,ca_client($id)['password_hash']));
     ca_ok('Client account changes create no provider or email credentials',!is_file($private.'/provider-master.key')&&!is_file($private.'/mail-master.key')&&!all('SELECT * FROM '.table('provider_profiles'))&&!all('SELECT * FROM '.table('mail_accounts')));
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
