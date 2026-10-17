@@ -2577,7 +2577,7 @@ function setup_expected_files(): array { return [
     'pages/home/index.php'=>'1fc328c8f9bc361d1d97965992d1771650aaf4269f768d52f16266e75f4c65b2',
     'pages/marketing/content.php'=>'646fa18436a89124bf65f873c6f43c62ecfe9e5db49c2871bf50394216b87966',
     'pages/marketing/controller.php'=>'e75619b42e70f480a851f84efef29d3129147ac2cf080eeef2fdbfca67ece781',
-    'pages/pay/index.php'=>'544cb8dab4e0e5043badd05b63888f9f232585d0ba12f313fc96436178ecd106',
+    'pages/pay/index.php'=>'151d6165f8398a90fad2cf717ee637c7f6f9d2a2aaffac8283f785af6369bc41',
     'pages/portfolio/index.php'=>'f122cb490f0da2c01b4b73106c1c668f6f2aee1b11e8cb83f75ed7dda12eaefc',
     'pages/portfolio/project.php'=>'15568532a230909c2414e3b22e74410bcaf0f822e5885d342ada48b7a0a4bae7',
     'pages/privacy.php'=>'0dc1473a938e8b9105b2df2766d16e1a84e22d3af7a278a177ca840abdabadac',
