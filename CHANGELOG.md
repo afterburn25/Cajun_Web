@@ -28,6 +28,10 @@ Add a root start-here guide, complete owner-approved assignment and existing lic
 
 # Changelog
 
+## Unreleased — contact-attributed version decisions (devin/non20i-contact-decisions)
+
+When an additional company contact records a version decision, the decision message in the project conversation is attributed to that contact (author_type=contact) while studio_versions.decided_by stays the client account as the company-level artifact. The same contact permission gate (projects) protects the decision action against forged POSTs; no schema change is required because attribution rides the existing contact-authored message model.
+
 ## Unreleased — additional company contacts with scoped permissions (devin/non20i-client-contacts)
 
 Client accounts can carry additional company contacts: separate sign-in identities with independent project-review, billing and download permissions (P-05). Storage is a new additive `contacts_schema_version=1` (`studio_contacts`), prepared explicitly by the owner under Version & database with password reauthentication; unknown schema markers and non-empty unrecognized tables refuse adoption. Staff create/edit/disable contacts and issue 24-hour private one-time invitations shown once; raw tokens are never stored. Contact sessions ride the client session model (same idle/absolute limits) but revalidate contact enabled state, auth version and owning client on every request; disabling, editing or re-inviting a contact revokes it immediately. Portal routes and writes enforce scope server-side — `projects` gates job pages, messages, decisions, uploads and activity; `billing` gates invoices, receipts, license actions and hosting services; `downloads` gates `?file=`, releases and deliveries. Messages/uploads attribute to the contact identity and admin/client views render the contact name. Primary client accounts are unchanged when the feature is unused. No email is sent and no portal access is granted beyond the assigned permissions.

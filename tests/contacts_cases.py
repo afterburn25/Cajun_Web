@@ -107,6 +107,24 @@ def run_browser(env,browser):
     r=contact.get(BASE+'/existing/api/bundle-download.php?id=1')
     check('Project-only contact cannot download license bundles',r.status_code==403)
 
+    # A contact decision keeps the client as the deciding account but attributes the person.
+    jobAdmin=root+'?view=studio-job&id=1'
+    r=submit(owner,jobAdmin,'studio_publish',{'kind':'design','title':'Decision fixture','body':'Synthetic scope for decision attribution'})
+    check('Owner publishes a version for the decision check','Decision fixture' in r.text)
+    vid=db('SELECT id FROM ci_studio_versions WHERE job_id=1 ORDER BY id DESC LIMIT 1')[0]['id']
+    dec=None
+    for f in soup(contact.get(portal+'?job=1')).select('form'):
+        a,v=f.select_one('[name=action]'),f.select_one('[name=version]')
+        if a and v and a['value']=='decision' and v['value']==str(vid):dec=form_data(f)
+    check('Project contact sees the pending decision form',dec is not None)
+    dec.update(choice='approved',confirm='1')
+    r=contact.post(portal+'?job=1',data=dec)
+    row=db('SELECT decision,decided_by FROM ci_studio_versions WHERE id=?',[vid])[0]
+    msg=db('SELECT author_type,author_id FROM ci_studio_messages WHERE job_id=1 ORDER BY id DESC LIMIT 1')[0]
+    check('Contact decision keeps client as decider and attributes the contact',row['decision']=='approved' and int(row['decided_by'])==int(cid) and msg['author_type']=='contact' and int(msg['author_id'])==int(ctid))
+    r=owner.get(jobAdmin)
+    check('Admin conversation attributes the decision to the contact','Review Only Contact (contact)' in r.text)
+
     # Billing-only contact: invoices without project review or files.
     data=add_form(cid);data.update(name='Billing Only Contact',email='billing-contact@example.invalid',**{'perms[]':'billing'})
     r=owner.post(clients,data=data)
@@ -128,6 +146,8 @@ def run_browser(env,browser):
     check('Billing-only contact cannot upload project files','do not include project access' in r.text and not db("SELECT id FROM ci_studio_files WHERE original_name='billing-forged.png'"))
     r=billing.get(portal+'?activity=1')
     check('Billing-only contact cannot open project activity',r.status_code==403)
+    r=billing.post(portal+'?job=1',data={'csrf':token(billing.get(portal+'?job=1')),'action':'decision','version':str(vid),'choice':'approved','confirm':'1'})
+    check('Billing-only contact cannot record a decision','do not include project access' in r.text)
 
     # Primary client account remains unaffected by contact rows.
     alice=requests.Session()
