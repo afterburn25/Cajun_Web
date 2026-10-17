@@ -1710,3 +1710,15 @@ Tests and results: PR #203 48/48 checks pass including the native-and-browser la
 Known limits: PR open at c025e501, not merged; Codex coordinates integration. Decisions still record the client account as decided_by.
 
 Next: integrate via Codex sequencing; continue next non-20i increment.
+
+## 2026-10-17 - P-05 contact-attributed version decisions
+
+Request: continue non-20i roadmap after PR #203 verified green (48/48); selected the remaining per-contact decision attribution gap. Stacked branch devin/non20i-contact-decisions on devin/non20i-client-contacts (c025e501+) because the feature depends on the contacts model.
+
+Changed: studio_decide now attributes the auto-inserted decision message to the acting contact (author_type=contact, author_id=contact id) when a contact session decides; decided_by stays the client account (company artifact). No schema change - studio_versions is validated with exact columns by studio_migrate, so adding a column would collide with the previews/stage-history marker stack; the message row is already the durable attribution record rendered with the contact name in admin and portal conversations. tests/contacts_cases.py gains: owner publishes a decision fixture version, project-permission contact approves it, decided_by stays the client while the message attributes the contact id, admin conversation renders the contact name, and a billing-only forged decision POST is refused.
+
+Tests so far: php -l reviews.php clean; contacts_cases.py compiles; no shipping-file signature changes needed beyond reviews.php (inventory refresh pending in commit). Packaged acceptance pending on the stacked PR.
+
+Known limits: decided_by remains client-level by design; per-contact notification routing still pending.
+
+Next: commit, refresh inventory if needed, open stacked PR, monitor CI.

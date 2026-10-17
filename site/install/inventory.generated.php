@@ -128,7 +128,7 @@ function setup_expected_files(): array { return [
     'app/portfolio/browse.php'=>'fa8340a1416e8884a08eb6fe54b055dafb38ec5ae8bb925828e6e06020275d14',
     'app/projects/archive.php'=>'268adf8bec7572fb73db45babc2a3037868d69e6a330552ab6e1d3b428292fdb',
     'app/projects/deliveries.php'=>'4c60ba2a54a721fdda8446f59d35d70f6650586acccbcf943c437390dfc8fab5',
-    'app/projects/reviews.php'=>'fffd404534c4d73455a37b2e1ac69a4b48ad29c0ba9529a91821cdb18c16d7b1',
+    'app/projects/reviews.php'=>'ffd206264564e68a4a3e81aec22b5c9144325ba0a288a5d59c6bd7f637a2f843',
     'app/providers/checks.php'=>'0c4e843fa8734d5645c09379af959718ce384a31482600f80c59f2354b2459e2',
     'app/providers/credentials.php'=>'a25fd07765bf924819dedd6772b32ee11ad5e81fa130735a8869f8666b53b186',
     'app/providers/inventory.php'=>'190050f73659d30720a3ae5a9adc5b76e3816ca4bc66cb5b1de78e06be265b6a',
