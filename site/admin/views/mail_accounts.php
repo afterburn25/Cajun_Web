@@ -78,6 +78,16 @@ admin_input($protocol.'_password',($record && $record['has_credentials'])?'New a
 <?php elseif ($record['has_credentials']): ?><button class="btn outline" name="action" value="mail_accounts_enable">Enable saved account</button><?php endif; ?>
 <?php if ($record['has_credentials']): ?><button class="btn outline" name="action" value="mail_accounts_clear">Clear saved passwords and disable</button><?php endif; ?>
 </form><p class="hint">Disabling removes current staff availability. Clearing removes stored passwords and disables this account; settings and assignment history remain.</p></section>
+<section class="workspace-card"><h2>Server Sent folder</h2><p>Accepted submissions can save an exact copy to this account's server Sent folder. Set the folder name your provider uses, such as Sent or INBOX.Sent. Saving this setting connects to no email server.</p>
+<?php if(!mail_copies_ready()): ?>
+<p class="hint">Sent-copy storage is not prepared yet.</p><form method="post"><?php admin_action('mail_accounts_sent_setup'); ?><input type="hidden" name="account_id" value="<?=esc($accountId)?>"><?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?><button class="btn outline">Prepare Sent-copy storage</button></form>
+<?php else: $sentFolder=mail_sent_folder($accountId); ?>
+<form method="post" data-mail-sent-folder><?php admin_action('mail_accounts_sent_folder'); ?><input type="hidden" name="account_id" value="<?=esc($accountId)?>">
+<?php admin_input('sent_folder','Server Sent folder name',$sentFolder,'text','maxlength="64"'); ?>
+<?php admin_input('current_password','Your current administrator password','','password','required autocomplete="current-password"'); ?>
+<button class="btn outline">Save Sent folder</button></form>
+<p class="hint">Current: <?=esc($sentFolder===''?'not set':$sentFolder)?>. Leave blank to clear the setting.</p>
+<?php endif; ?></section>
 <section class="workspace-card"><h2>Staff assignments</h2><p>Each staff member needs a separate assignment, including owners. Administrators also need the matching Read assigned email or Send from assigned email permission under Administrators. The owner also needs the corresponding assignment to check each connection. Reading and sending also require their respective storage to be prepared.</p>
 <?php $grants=mail_accounts_grants($accountId);$options=[];
 foreach (all('SELECT u.id,u.name,u.email FROM '.table('users').' u JOIN '.table('staff_profiles')." p ON p.user_id=u.id WHERE p.enabled=1 AND u.password_hash<>'' AND p.role IN ('owner','administrator') ORDER BY u.name,u.id") as $staff) $options[(string)$staff['id']]=$staff['name'].' · '.$staff['email'];

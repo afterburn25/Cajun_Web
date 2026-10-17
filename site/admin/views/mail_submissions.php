@@ -26,7 +26,16 @@ $review=$view==='mail-send';
 $content=$review?['from'=>$data['account']['address'],'to'=>$data['draft']['to'],'cc'=>$data['draft']['cc'],'bcc'=>$data['draft']['bcc'],'subject'=>$data['draft']['subject'],'body'=>$data['draft']['body']]:$data['row']['content'];
 $draft=$review?$data['draft']['id']:$data['row']['draft_id'];
 ?>
-<?php if(!$review): ?><section class="workspace-card" role="status"><h2><?=esc($data['status']['title'])?></h2><p><?=esc($data['status']['text'])?></p><p>Prepared <?=esc($data['row']['created_at'])?> UTC · Saved draft version <?=(int)$data['row']['draft_revision']?></p><?php if($data['row']['result']): ?><p>Result recorded <?=esc($data['row']['result']['finished_at'])?> UTC</p><?php endif; ?></section><?php endif; ?>
+<?php if(!$review): ?><section class="workspace-card" role="status"><h2><?=esc($data['status']['title'])?></h2><p><?=esc($data['status']['text'])?></p><p>Prepared <?=esc($data['row']['created_at'])?> UTC · Saved draft version <?=(int)$data['row']['draft_revision']?></p><?php if($data['row']['result']): ?><p>Result recorded <?=esc($data['row']['result']['finished_at'])?> UTC</p><?php endif; ?></section>
+<?php $copy=$data['copy'];$sentFolder=$data['sentFolder'];$accepted=($data['row']['result']['status']??'')==='accepted'; ?>
+<section class="workspace-card"><h2>Server Sent folder</h2>
+<?php if($copy&&$copy['result_code']==='appended'): ?><p>A copy of the exact sent message was saved in <strong><?=esc($copy['folder'])?></strong> on <?=esc($copy['finished_at'])?> UTC. The server keeps that copy; deleting it is not part of this site.</p>
+<?php elseif($accepted&&$sentFolder!==''): ?><p>The server accepted this message. You can save the exact sent copy in this account's <strong><?=esc($sentFolder)?></strong> folder. Recipients and the server read flag are unchanged.</p>
+<?php if($copy): ?><p class="hint">Last copy attempt: <?=esc(mail_copy_outcome($copy['result_code']))?> (<?=esc($copy['finished_at'])?> UTC)</p><?php endif; ?>
+<form method="post" action="<?=esc(admin_url('mail-submission',['submission_id'=>$data['row']['id']]))?>" data-mail-sent-copy>
+<?php admin_action('mail_submissions_copy_sent'); ?><input type="hidden" name="submission_id" value="<?=esc($data['row']['id'])?>"><button class="btn outline">Save copy to server Sent folder</button></form>
+<?php elseif($accepted): ?><p class="hint">No server Sent folder is set for this account. An owner can set one in Email account settings.</p>
+<?php else: ?><p class="hint">Only a message the server accepted can be copied to a Sent folder.</p><?php endif; ?></section><?php endif; ?>
 <section class="workspace-card"><h2><?=$review?'Review the saved message':'Recorded message'?></h2>
 <?php if($review): ?><p>Only this saved version will be sent. Changes in an unsaved editor tab are not included.</p><?php endif; ?>
 <p><strong>From:</strong> <?=esc($content['from'])?></p>
