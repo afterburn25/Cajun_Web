@@ -1,5 +1,11 @@
 # CajunWebPro 1.25.0 scope and release status
 
+## 2026-10-17 — delivery manifest browser correction
+
+Candidate `de97e63b` is not accepted: [original default PHP8.3 run39047519450](https://github.com/afterburn25/Cajun_Web/actions/runs/39047519450) completed native integration, then failed when the delivery browser test's generic `summary` click matched seven new navigation headings and the file manifest. All seven original evidence archives and both failed-job logs are retained. The correction scopes both admin/client manifest clicks to `.delivery-detail > details > summary` and adds the fixture's exact source pin. Shipping files, all assertions,152 native commands,164 browser/208 final reports,330 images and timeouts are unchanged.
+
+Actual local verification:221 existing helper checks and12 real Chromium checks using the exact PHP navigation/delivery renderers with synthetic records. The latter reproduces the old ambiguity and confirms the corrected click opens only the manifest. Independent selector/source review found no other concrete collision. Earlier de97 build/recovery/Apache partitions and maintained-runtime results remain parent evidence; eight actual upgrade PNGs were inspected but do not certify the successor. Main is still `d7153b07`;1.25 remains unpublished. Next: fresh corrected candidate/default/four-runtime acceptance and images, normal main merge, exact-main acceptance and verified release downloads.
+
 ## 2026-10-17 — combined owner additions ready for acceptance
 
 Release branch `codex/release-1.25.0` normally integrates installer `345b335e` ([PR206](https://github.com/afterburn25/Cajun_Web/pull/206)), navigation `e8ccefc9` ([PR207](https://github.com/afterburn25/Cajun_Web/pull/207)), and observed hosting import `ecf52ee4` ([PR208](https://github.com/afterburn25/Cajun_Web/pull/208)). Integration commit `4b4ce250064036b228747db7550f7c14d3a2bcb0` has exactly the reviewed importer tree, including its installer and navigation ancestors. This enclosing documentation checkpoint records that integration before the fresh full acceptance dispatch. [Release PR180](https://github.com/afterburn25/Cajun_Web/pull/180) remains draft.

@@ -1,5 +1,11 @@
 # CajunWebPro 1.25.0 release handoff
 
+## 2026-10-17 — resume from delivery selector correction
+
+The enclosing correction starts from `de97e63b3354f52ee26508bfc0609e951a6ee20c`. Original default run[39047519450](https://github.com/afterburn25/Cajun_Web/actions/runs/39047519450) failed browser acceptance at the delivery manifest: generic `summary` matched the new navigation groups as well. Preserve its seven original archives and failed-job logs. The two manifest clicks now use `.delivery-detail > details > summary`, with an additive exact fixture pin; shipping source and every release gate remain intact.221 helper checks and12 actual Chromium checks with exact PHP renderers/synthetic rows passed; this is not native/HTTP/full application acceptance.
+
+Require a fresh exact corrected candidate, default PHP8.3 and four supported runtime runs, maintained checks and330 actual images. Keep earlier de97 runs/proofs as parent evidence; their build/recovery/Apache and maintained passes do not certify the successor. Then normal-merge to main and complete fresh exact-main/publication/download gates. Main remains `d7153b07`,1.25 unpublished,1.24 immutable and production unchanged. Devin's separate proposals have concrete review feedback on PRs202,203,205,209,210,211,212,213; preserve those branches and resolve their findings before later integration. Full20i catalog/image fields remain unresolved; the owner has already supplied the retained full reference and must not be asked to resend it.
+
 ## 2026-10-17 — combined owner additions ready for acceptance
 
 Release branch `codex/release-1.25.0` normally integrates installer `345b335e` ([PR206](https://github.com/afterburn25/Cajun_Web/pull/206)), navigation `e8ccefc9` ([PR207](https://github.com/afterburn25/Cajun_Web/pull/207)), and observed hosting import `ecf52ee4` ([PR208](https://github.com/afterburn25/Cajun_Web/pull/208)). Integration commit `4b4ce250064036b228747db7550f7c14d3a2bcb0` has exactly the reviewed importer tree, including its installer and navigation ancestors. This enclosing documentation checkpoint records that integration before the fresh full acceptance dispatch. [Release PR180](https://github.com/afterburn25/Cajun_Web/pull/180) remains draft.

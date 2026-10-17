@@ -501,7 +501,8 @@
       "tests/domain_contracts_native.php": "a6f76a7ad0aa7eb65064265cd5d206b0f63a7c03f529f9fd5604b360bc21cfdd",
       "tests/admin_password.php": "1bda7c3a585721563e4c12ae0ebe20a269cdc76d9600e60aac4930864fa48a22",
       "tests/staff_native.php": "befbc58373f5c8873f1eb2cf760a9aecc243d59f5f35c5cb02ff8fd9f4442a7c",
-      "tests/installer_fresh_input.php": "1398469ed4ac1b008a4dc49d128a96427ef883cad9e8c30f0ca6f4967cd5c2ca"
+      "tests/installer_fresh_input.php": "1398469ed4ac1b008a4dc49d128a96427ef883cad9e8c30f0ca6f4967cd5c2ca",
+      "tests/delivery_cases.py": "d89f8b51e16cd95be0461010b005be6138b69cf07f5d05b083db423bbfa9b944"
     },
     "additional_screenshots": [
       "Admin-Overview-Desktop.png",

@@ -1,5 +1,9 @@
 ## 1.25.0 — bounded mature increment
 
+## 2026-10-17 — scope delivery manifest browser clicks
+
+Correct two browser selectors to target the delivery file manifest after adding collapsible admin navigation. Preserve all existing assertions/captures and add the fixture's exact acceptance pin. No shipping behavior changes. Original default de97 acceptance failed and is retained;221 helper checks plus12 exact-renderer/synthetic Chromium checks pass locally. Complete corrected candidate/main acceptance and publication remain pending.
+
 ## 2026-10-17 — combined owner additions ready for acceptance
 
 Release branch `codex/release-1.25.0` normally integrates installer `345b335e` ([PR206](https://github.com/afterburn25/Cajun_Web/pull/206)), navigation `e8ccefc9` ([PR207](https://github.com/afterburn25/Cajun_Web/pull/207)), and observed hosting import `ecf52ee4` ([PR208](https://github.com/afterburn25/Cajun_Web/pull/208)). Integration commit `4b4ce250064036b228747db7550f7c14d3a2bcb0` has exactly the reviewed importer tree, including its installer and navigation ancestors. This enclosing documentation checkpoint records that integration before the fresh full acceptance dispatch. [Release PR180](https://github.com/afterburn25/Cajun_Web/pull/180) remains draft.

@@ -1,3 +1,11 @@
+## 2026-10-17 — delivery selector correction; complete acceptance pending
+
+Original candidate de97/default PHP8.3 [run39047519450](https://github.com/afterburn25/Cajun_Web/actions/runs/39047519450) completed native integration but failed the delivery browser click at17:33UTC. `summary` resolved to seven navigation disclosures and File manifest. The aggregate correctly refused acceptance. Seven original archives and both failed-job logs are retained. No partial result is promoted to full acceptance.
+
+The two delivery manifest clicks now target `.delivery-detail > details > summary`; the acceptance contract adds that exact fixture pin. All assertions,152 native recipes,164 browser/208 final reports,330 images and timeouts are unchanged. Existing helper suite:221 passed. Real installed Chromium with exact PHP navigation/delivery renderers and synthetic rows:12 passed, reproducing old ambiguity and checking a unique manifest click without changing navigation. This focused test has no database, production CSS/JS or complete application coverage. Independent source/selector review found no further concrete collision.
+
+Parent de97 has verified Windows/five Linux build partitions, five recovery and five Apache partitions, and54 maintained reports/3280 named checks. Eight actual Apache upgrade PNGs were viewed. These are retained parent results; fresh corrected candidate/default/four-runtime/maintained/visual acceptance, normal main merge, exact-main acceptance and publication/download checks remain required.1.25 is unpublished and production unchanged.
+
 ## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
 
 ## 2026-10-17 — combined owner additions ready for acceptance
