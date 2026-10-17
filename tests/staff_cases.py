@@ -91,6 +91,8 @@ def run_http(env):
     check('Milestone target accepts a real leap day','Project updated' in r.text and db('SELECT target_date FROM ci_studio_milestones WHERE id=?',[mid])[0]['target_date']=='2028-02-29')
     r=alice.get(BASE+'/existing/portal/index.php?job=1')
     check('Client sees milestone states and target dates','Synthetic milestone content approved' in r.text and '2026-11-30' in r.text and 'milestone-'+str(mid) in r.text)
+    r=submit(admin,BASE+'/existing/admin/index.php?view=activity','activity_setup',{'password':OWNER})
+    check('Owner enables workspace activity on the upgraded install','Workspace activity is enabled' in r.text)
     check('Milestone change enters client activity feed','milestone:'+str(mid) in alice.get(BASE+'/existing/portal/index.php?activity=1').text)
     check('Milestones stay isolated to the owning client',bob.get(BASE+'/existing/portal/index.php?job=1').status_code==404)
     return {'url':url,'id':uid,'link':link,'code':code}
