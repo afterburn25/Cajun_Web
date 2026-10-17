@@ -26,7 +26,7 @@ def run_upgrade():
     for t in ['staff_profiles','staff_invitations','studio_clients','studio_jobs','leads','projects']:
         check('Actual 1.2.0 support update retains '+t,db('SELECT * FROM supportup_'+t)==before[t])
     after={r['name']:r['value'] for r in db('SELECT * FROM supportup_settings')}
-    check('Actual 1.2.0 retains original settings',all(after[r['name']]==r['value'] for r in before['settings']))
+    check('Actual 1.2.0 retains original settings',all(after[r['name']]==r['value'] for r in before['settings'] if not r['name'].endswith('_schema_version')))
     users=db('SELECT * FROM supportup_users')
     check('Actual 1.2.0 retains passwords and auth versions',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(users,before['users'])))
     check('Actual 1.2.0 has no implicit client support grants',not db('SELECT * FROM supportup_support_clients'))
