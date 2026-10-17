@@ -3,7 +3,9 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/mail/drafts.php';
 require_once CWP_CODE_ROOT.'/app/mail/replies.php';
+require_once CWP_CODE_ROOT.'/app/mail/files.php';
 
+use CajunWebPro\Foundation\MailCompose\DraftAttachment;
 use CajunWebPro\Foundation\MailCompose\DraftContent;
 
 /** Raw bounded fields: do not trim controls out of addresses or subjects. */
@@ -43,7 +45,22 @@ function mail_drafts_admin_access(array $actor):bool {
     $permissions=json_decode($actor['permissions']??'[]',true);
     return !support_current()&&(($actor['role']??'')==='owner'||(is_array($permissions)&&in_array('mail.send',$permissions,true)));
 }
+/** One bounded uploaded file; detection and bounds run before the locked attach. */
+function mail_drafts_form_upload():DraftAttachment {
+    $f=$_FILES['file']??null;
+    if(!is_array($f)||!is_int($f['error']??null)||$f['error']!==UPLOAD_ERR_OK||!is_string($f['tmp_name']??null)||!is_uploaded_file($f['tmp_name']))throw new InvalidArgumentException('Choose a file to attach.');
+    $size=filesize($f['tmp_name']);
+    if($size===false||$size<1||$size>DraftAttachment::MAX_BYTES)throw new InvalidArgumentException('Each attachment must be between 1 byte and 256 KiB.');
+    $bytes=file_get_contents($f['tmp_name']);
+    if($bytes===false||strlen($bytes)!==$size)throw new RuntimeException('The upload could not be read completely.');
+    $mime='application/octet-stream';
+    if(function_exists('finfo_open')) {$type=(new finfo(FILEINFO_MIME_TYPE))->file($f['tmp_name']);if(is_string($type)&&$type!=='')$mime=$type;}
+    return new DraftAttachment(is_string($f['name']??null)?$f['name']:'attachment',$mime,$bytes);
+}
 function mail_drafts_admin_action(string $action):?DraftContent {
+    if($action==='mail_drafts_files_setup') {
+        mail_files_migrate(posted('current_password',200));flash('Draft attachments are ready.');redirect(admin_url('mail-drafts'));
+    }
     if($action==='mail_drafts_setup') {
         mail_drafts_migrate(posted('current_password',200));flash('Local email drafts are ready.');redirect(admin_url('mail-drafts'));
     }
@@ -54,6 +71,19 @@ function mail_drafts_admin_action(string $action):?DraftContent {
         $actor=mail_drafts_actor();$id=posted('draft_id',32);mail_drafts_id($id);
         $revision=mail_drafts_form_revision($_POST,'revision');
         $copied=mail_replies_ready()&&one('SELECT id FROM '.table('mail_reply_drafts').' WHERE id=?',[$id]);
+        if($action==='mail_drafts_attach') {
+            mail_drafts_attach($id,$revision,mail_drafts_form_upload());
+            flash('File attached to the saved draft. No email was sent.');redirect(admin_url('mail-draft',['draft_id'=>$id]));
+        }
+        if($action==='mail_drafts_detach') {
+            mail_drafts_detach($id,$revision,posted('file_id',32));
+            flash('Attachment removed from the saved draft.');redirect(admin_url('mail-draft',['draft_id'=>$id]));
+        }
+        if($action==='mail_drafts_file') {
+            $stored=mail_drafts_file($id,posted('file_id',32));
+            header('Content-Type: application/octet-stream');header('Content-Disposition: attachment; filename="'.$stored['name'].'"');header('Cache-Control: private, no-store');header('X-Content-Type-Options: nosniff');header('Content-Length: '.strlen($stored['data']));
+            if(session_status()===PHP_SESSION_ACTIVE)session_write_close();echo $stored['data'];exit;
+        }
         if($action==='mail_drafts_discard') {
             $old=$copied?mail_reply_drafts_get($id):mail_drafts_get($id);
             if($copied)mail_reply_drafts_discard($id,$revision);else mail_drafts_discard($id,$revision);
@@ -144,7 +174,8 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
         $templates=[];$templatePage=max(1,min((int)($_POST['template_page']??1),100000));$templateSearch=mail_drafts_form_text($_POST,'template_search',120);
         if(staff_can('mail.templates.manage',$actor)&&mail_templates_ready())$templates=mail_templates_list('active',$templateSearch,$templatePage);
         $historyPage=max(1,min((int)($_GET['history_page']??1),100000));$history=$row?($row['copied']??false?mail_reply_drafts_history($id,$historyPage):mail_drafts_history($id,$historyPage)):[];
-        return compact('actor','row','accounts','account','accountPage','moreAccounts','id','values','revision','sender','editable','preview','templates','templatePage','templateSearch','historyPage','history','unsaved');
+        $files=$row&&$row['status']==='draft'&&mail_files_ready()?mail_drafts_files($id):[];
+        return compact('actor','row','accounts','account','accountPage','moreAccounts','id','values','revision','sender','editable','preview','templates','templatePage','templateSearch','historyPage','history','unsaved','files');
     });
 }
 function mail_drafts_admin_render(string $view,string $error,?DraftContent $preview):void {
@@ -170,6 +201,11 @@ function mail_drafts_admin_render(string $view,string $error,?DraftContent $prev
             echo '<section class="workspace-card"><h2>Prepare protected Reply and Forward drafts</h2><p>Replying to or forwarding an inbox message copies it into a protected private draft. An owner prepares this storage once; existing drafts and submission history are preserved.</p>';
             if($actor['role']==='owner') {echo '<form method="post">';admin_action('mail_drafts_replies_setup');admin_input('current_password','Your current password','','password','required autocomplete="current-password"');echo '<button class="btn gold">Prepare Reply and Forward drafts</button></form>';}
             else echo '<p>An owner must prepare protected drafts before Reply and Forward appear on inbox messages.</p>';
+            echo '</section>';
+        }
+        if(!mail_files_ready()) {
+            echo '<section class="workspace-card"><h2>Prepare draft attachments</h2><p>Saved drafts can carry bounded private files that are copied into the reviewed message at send time. An owner prepares this storage once; existing drafts and submission history are preserved.</p>';
+            if($actor['role']==='owner') {echo '<form method="post">';admin_action('mail_drafts_files_setup');admin_input('current_password','Your current password','','password','required autocomplete="current-password"');echo '<button class="btn gold">Prepare attachments</button></form>';}
             echo '</section>';
         }
         try {$data=mail_drafts_admin_data($view,$preview);require CWP_CODE_ROOT.'/admin/views/mail_drafts.php';}

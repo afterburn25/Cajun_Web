@@ -15,7 +15,7 @@ final class AppendSession
     private int $tag=0;
     private int $responses=0;
     private \Closure $authorize;
-    public function __construct(private StreamInterface $stream, callable $authorize)
+    public function __construct(private StreamInterface $stream, callable $authorize, private int $maxBytes=65536)
     {
         $this->authorize=\Closure::fromCallable($authorize);
         $this->tokenizer=new BoundedTokenizer($stream,ReadProfile::Append);
@@ -84,10 +84,10 @@ final class AppendSession
             || str_contains($name,'%') || str_contains($name,'*')) throw new ReceivingFailure('folder');
         return $name;
     }
-    /** Exact saved MIME is the only accepted payload; bounds match the submission contract. */
-    public static function message(#[\SensitiveParameter] string $bytes): string
+    /** Exact saved MIME is the only accepted payload; the bound matches the submission contract. */
+    public static function message(#[\SensitiveParameter] string $bytes,int $maxBytes=65536): string
     {
-        if(strlen($bytes)>65536 || strlen($bytes)<32 || !str_contains($bytes,"\r\n\r\n")
+        if(strlen($bytes)>$maxBytes || strlen($bytes)<32 || !str_contains($bytes,"\r\n\r\n")
             || preg_match('/[^\x09\x0A\x0D\x20-\x7E]/',$bytes)) throw new ReceivingFailure('protocol');
         return $bytes;
     }
@@ -99,7 +99,7 @@ final class AppendSession
         try {
             if(!in_array($encryption,['ssl','starttls'],true)) throw new ReceivingFailure('protocol');
             if($user==='' || $password==='' || strlen($user)>190 || strlen($password)>1024 || str_contains($user,"\0") || str_contains($password,"\0")) throw new ReceivingFailure('credential');
-            $folder=self::folder($folder); $message=self::message($message);
+            $folder=self::folder($folder); $message=self::message($message,$this->maxBytes);
             $greeting=$this->next();
             if(!$greeting instanceof UntaggedResponse || self::word($greeting->tokens()[1]??null)!=='OK') throw new ReceivingFailure('protocol');
             $caps=$this->capabilities();
