@@ -64,7 +64,7 @@ function setup_expected_files(): array { return [
     'admin/views/studio/clients.php'=>'5d42172fb9767e187564c4af59d75c519f5f2c942593f5c59d037b98358370b3',
     'admin/views/studio/content.php'=>'e751af62e6207c1503be6784ec47f94ba4c37e67539f7fcfa4c0f486bfd9c46a',
     'admin/views/studio/history.php'=>'27d93f94a05425dd0dce97c06ae9d7ce003bd25fcfb7381fde0f7f796d4cced8',
-    'admin/views/studio/job.php'=>'f41b03bce24c40f2cf4e82f0d27dfb8bc83a45898bc9e3f9768e16572acfe551',
+    'admin/views/studio/job.php'=>'d903a42189456ef946d3f53d9bbc070a7b2c7a7659f88d52ed4af8f897ac04fc',
     'admin/views/studio/licenses.php'=>'95791fc5766a8256f1b1bc3d46f4f3277c24491865f03df119d39d2e9ea6d1d4',
     'admin/views/studio/pipeline.php'=>'f630ec6c4650b5a06039558e133550c8bcf1d975581e94f1789f495dac4f4e1b',
     'admin/views/studio/portfolio.php'=>'01def50c10d9054aaa221b133ee8952a408fc91a7022986977dd6c484f01c84a',
