@@ -1698,3 +1698,15 @@ Tests so far: php -l on all 17 touched PHP files pass; python compile of both te
 Known limits: decisions still record the client account as decided_by (company-level artifact); per-contact notification routing and stage history remain pending elsewhere.
 
 Next: commit, open PR, monitor CI.
+
+## 2026-10-17 - P-05 contacts verified green; two CI repairs
+
+Request: continue without stopping; verify PR #203 acceptance on branch devin/non20i-client-contacts (head c025e501).
+
+Changed (test/dispatch only, no runtime contract change): contacts_setup/contact_invite renamed to studio_contacts_setup/studio_contact_invite in permission map, upgrade+clients forms, controller branches and contacts_cases.py - the admin dispatcher only routes studio_* actions to studio_admin_action so the original names fell through to Unknown administration action (d6d77b9d). Installer inventory refreshed after the rename (8f27e213). Re-enable flow in contacts_cases.py now fetches a freshly rendered form instead of reusing the pre-disable expected auth_version, which the rotation guard correctly rejected (c025e501).
+
+Tests and results: PR #203 48/48 checks pass including the native-and-browser lane - owner setup reauthentication/idempotency/unknown-marker refusal, contact create/collision/permission-required, one-time hashed invite with subfolder URL, activation CSRF/one-use, scoped project/billing/download views and denied routes/writes (403 + inline errors), disable/invite session revocation, support-session isolation, fresh-install marker, guard 404s, no mail/provider traffic, Chromium scoped render.
+
+Known limits: PR open at c025e501, not merged; Codex coordinates integration. Decisions still record the client account as decided_by.
+
+Next: integrate via Codex sequencing; continue next non-20i increment.
