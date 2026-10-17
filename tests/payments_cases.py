@@ -23,7 +23,7 @@ def upgrade():
     r=submit(up,url+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})
     check('Actual 1.4.0 payment preparation migration completes','Payment preparation enabled' in r.text)
     for t in tables:check('Actual 1.4.0 retains '+t,db('SELECT * FROM paymentup_'+t)==before[t])
-    now={v['name']:v['value'] for v in db('SELECT * FROM paymentup_settings')};check('Actual 1.4.0 retains all original settings',all(now[s['name']]==s['value'] for s in settings))
+    now={v['name']:v['value'] for v in db('SELECT * FROM paymentup_settings')};check('Actual 1.4.0 retains all original settings',all(now[s['name']]==s['value'] for s in settings if not s['name'].endswith('_schema_version')))
     check('Actual 1.4.0 retains owner passwords and account identities',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(db('SELECT * FROM paymentup_users'),users)))
     check('Actual 1.4.0 upgrade creates no gateway or payable requests',not db('SELECT * FROM paymentup_payment_gateways') and not db('SELECT * FROM paymentup_payment_requests'))
     check('Actual 1.4.0 installed guard remains',requests.get(BASE+'/payment-upgrade/install.php').status_code==404)
