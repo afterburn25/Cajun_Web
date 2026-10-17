@@ -1,5 +1,13 @@
 # CajunWebPro 1.25.0 scope and release status
 
+## 2026-10-17 — observed hosting draft imports and product images
+
+The owner requested admin import of 20i products including images. This bounded increment starts from reviewed navigation source `e8ccefc931829aa9245a71d4ba0d310db2d0add6` on `codex/twentyi-product-import-1.25.0`. It adds an owner-only catalog panel to create hosting drafts from named types in the latest saved 20i inventory, with editable local details and image upload/replacement. Complete provider catalogs, provider pricing/images, hosting publication and ordering remain unfinished. See [scope, setup and evidence](docs/TWENTYI_PRODUCT_IMPORT.md).
+
+Current owner, saved-observation and credential checks protect preview/import; repeated requests preserve the existing draft. The import source is retained, family changes cannot bypass draft restrictions, and media cleanup shares the import lock. Uploaded images retain the existing public-URL behavior, explained in the form. Public catalog and invoice projections remain unchanged.
+
+Actual local checks: 48 document cases in each of default/minimal PHP 8.4.25, changed-source syntax, and 221 offline helper checks with the exact reviewed CI wiring, now applied. Independent owned-source and wiring reviews are clear. Native database, genuine multipart uploads, browser pixels and combined release acceptance remain pending. The source-derived expectations are 65 new native and 24 HTTP checks; these are not passing results. Original 149 native recipes, all earlier reports/assertions and 328 release images are retained; 3 commands/reports and 2 images are additive. Published 1.24.0 is unchanged, 1.25 is unpublished, and no live deployment occurred.
+
 ## 2026-10-17 — grouped administration and public service navigation
 
 The owner-requested navigation increment starts from installer correction `345b335eeea8331bba5800aa926a3bc1c7507100` on `codex/admin-navigation-1.25.0`. It groups all 36 existing administrator destinations into collapsible categories with current-account permissions, active-page opening and mobile keyboard controls. The public menu adds Hosting, Web Design and Products; Hosting is consultation-only and Products preserves the existing published service allowlist. See [behavior, evidence and remaining gates](docs/NAVIGATION_1.25.0.md).
