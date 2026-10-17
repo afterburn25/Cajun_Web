@@ -1,10 +1,10 @@
 # CajunWebPro current handoff
 
-## Active non-20i increment — send-side draft attachments
+## Active non-20i increment — folder-scoped mailbox browsing
 
-`devin/non20i-mail-send-attachments` stacks on `devin/non20i-mail-reply-all` (`74e98c6d`) and carries the largest remaining mail-roadmap gap: bounded private files attached to saved drafts (≤256 KiB each, ≤4 files, ≤512 KiB total), copied verbatim into immutable `mail_submission_files` at preparation, encoded into the maintained MIME via `addStringAttachment` with a deterministic snapshot-derived boundary and a raised 768 KiB wire bound, and revalidated at dispatch. Payload formats 3/4 add ordered attachment descriptors; format-1/2 records remain byte-identical. Owner-gated `mail_files_migrate` creates `mail_draft_files`/`mail_submission_files`; attach/detach bumps the draft revision so attachment edits invalidate reviewed submissions. The draft editor offers upload/list/download/remove; send review and submission history show metadata only. Pure suite 99 checks plus 55 independent Python wire parses; native/HTTP/Apache lanes extended for CI. Sent-copy APPEND accepts the raised bound.
+`devin/non20i-mail-folders` stacks on `devin/non20i-mail-send-attachments` (`213325a4`) and delivers the remaining A-06 folder gap: header and exact-message reads can target any wire-safe server folder (`ReadSession::folder` — printable ASCII ≤64, no quote/backslash/wildcard; `EXAMINE "<name>"` stays read-only). `mail_inbox_reads` gains an additive `folder` column (`DEFAULT 'INBOX'`; storage version 2; version-1 installs ALTER through the same owner-gated `mail_inbox_setup`), `mail_message_reads.folder` journals message/attachment reads, and the transport's claimed folder is verified against the request on every path. A bounded select offers common folders plus the account's configured Sent folder. Bell notices and protected copied-draft origins remain INBOX-bound, so non-INBOX message pages hide Reply/Reply all/Forward. Pure session suite 53 checks; native/HTTP cases extended; `EXAMINE "Sent"` and missing-folder `NO` covered by the synthetic TLS fixture.
 
-Next: push, open stacked PR on `devin/non20i-mail-reply-all`, update #157, then continue remaining non-20i items (HTML composition, OAuth, other-folder sync remain unscheduled).
+Next: push, open stacked PR on `devin/non20i-mail-send-attachments`, update #157, then continue remaining non-20i items (HTML composition, OAuth, other-folder notices, external flag sync remain unscheduled).
 
 ## Release 1.25.0 priority — 2026-10-16
 

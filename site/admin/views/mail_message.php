@@ -3,9 +3,9 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 ?>
 <section class="workspace-card" data-mail-message>
-<a href="<?=esc(admin_url('mail-inbox',['account_id'=>$accountId]))?>">← Recent inbox headers</a>
+<a href="<?=esc(admin_url('mail-inbox',['account_id'=>$accountId,'folder'=>$route['folder']]))?>">← Recent headers</a>
 <p><a href="<?=esc(admin_url('mail-notices'))?>">Recent email notices</a></p>
-<h2><?=esc($record['label'])?></h2><p><?=esc($record['address'])?> · INBOX · Saved version <?=(int)$record['revision']?></p>
+<h2><?=esc($record['label'])?></h2><p><?=esc($record['address'])?> · <?=esc($route['folder'])?> · Saved version <?=(int)$record['revision']?></p>
 <p>Read this message without changing its server read flag. Remote images and sending are unavailable in this view. Messages over 256 KiB, including any attachments, must be opened in your regular email app.</p>
 <?php if(!mail_messages_ready()): ?><p class="notice">An owner must prepare message reading in Email accounts first.</p>
 <?php else: ?>
@@ -33,7 +33,8 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <li><form method="post" action="<?=esc(admin_url('mail-message',$route))?>" data-mail-attachment><?=csrf_field()?><?php foreach($route as $key=>$value): ?><input type="hidden" name="<?=esc($key)?>" value="<?=esc($value)?>"><?php endforeach; ?><input type="hidden" name="attachment" value="<?=(int)$i?>"><button class="btn outline" name="action" value="mail_message_attachment"><?=esc($attachment['name'])?> (<?=(int)$attachment['size']?> bytes)</button></form></li>
 <?php endforeach; ?></ul><?php endif; ?>
 </article>
-<?php if(mail_replies_ready()&&mail_drafts_ready()): ?>
+<?php if($route['folder']!=='INBOX'): ?><p class="hint">Reply and forward are only available for inbox messages.</p>
+<?php elseif(mail_replies_ready()&&mail_drafts_ready()): ?>
 <section class="workspace-card" data-mail-reply><h3>Reply or forward this message</h3>
 <?php if(!$replySenders): ?><p class="hint">No sending account is currently assigned to you. An owner can review your email account assignments before you reply or forward.</p>
 <?php else: ?>
@@ -52,7 +53,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <?php if(!$history): ?><p>No message requests recorded.</p><?php endif; ?>
 <?php foreach(array_slice($history,0,20) as $entry): ?>
 <article class="workspace-card"><h4><?=esc($entry['outcome']==='success'?'Message loaded':($entry['outcome']==='failed'?'Request failed':'Result not recorded'))?></h4>
-<p><?=esc($entry['started_at'])?> UTC · Version <?=(int)$entry['account_revision']?><?php if((int)$entry['account_revision']!==(int)$record['revision']): ?> · Historical settings<?php endif; ?></p>
+<p><?=esc($entry['started_at'])?> UTC · <?=esc($entry['folder'])?> · Version <?=(int)$entry['account_revision']?><?php if((int)$entry['account_revision']!==(int)$record['revision']): ?> · Historical settings<?php endif; ?></p>
 <p><?=esc(mail_message_outcome($entry['result_code']??''))?></p></article>
 <?php endforeach; ?>
 <nav aria-label="Message request history pages"><?php if($historyPage>1): ?><a class="btn outline" href="<?=esc(admin_url('mail-message',$route+['p'=>$historyPage-1]))?>">Newer requests</a><?php endif; ?><?php if(count($history)>20): ?><a class="btn outline" href="<?=esc(admin_url('mail-message',$route+['p'=>$historyPage+1]))?>">Older requests</a><?php endif; ?></nav>

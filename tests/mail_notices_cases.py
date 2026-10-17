@@ -12,7 +12,7 @@ def run_browser(env,browser):
     root=BASE+'/existing/admin/index.php';home=BASE+'/existing/';center=root+'?view=mail-notices';endpoint=BASE+'/existing/api/mail-notices.php';library=root+'?view=mail-accounts'
     owner=requests.Session();submit(owner,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     before=inbox_server.connections
-    check('Fresh notice setup is ready with no invented messages',db("SELECT value FROM fresh_settings WHERE name='mail_notices_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_mail_notice_items'))
+    check('Fresh notice setup is ready with no invented messages',db("SELECT value FROM fresh_settings WHERE name='mail_notices_schema_version'")==[{'value':'2'}] and not db('SELECT * FROM fresh_mail_notice_items'))
     check('Existing installation waits for explicit owner notice preparation','must prepare' in owner.get(center).text and owner.get(endpoint).status_code==204)
     for changes in [{'csrf':'bad','current_password':OWNER},{'current_password':'wrong'}]:
         r=submit(owner,library,'mail_notices_setup',changes)
