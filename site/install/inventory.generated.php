@@ -2539,7 +2539,7 @@ function setup_expected_files(): array { return [
     'includes/foundation/webmail/UnifiedInbox.php'=>'8a995a7b28de49b030aec5ff0f6440dd7c9904e71404484774f3bbb3a62d74c9',
     'includes/layout/activity.php'=>'35cc13064079a919310fed20acf4337acf97aa7af926b6fc944adb6406790979',
     'includes/layout/admin.php'=>'c19732ce1abea8d8ca9082201ef6af994c70d32f22c7bf8ffd911bf11c2a9285',
-    'includes/layout/backups.php'=>'c7d3474729c7525fcbd1d75d815baffc7e92a15f09178b6cabcd858710195821',
+    'includes/layout/backups.php'=>'242bd1b6bf20822e6212758ea1d106eba368b0af9541d3a31aa120a703b4a968',
     'includes/layout/catalog.php'=>'1fe89aa4dda684a65ac66c0b672debcff21401871ef9a176a7e9f1262728306f',
     'includes/layout/deliveries.php'=>'b6ab761e27e9507b82b3a0320a3d0a2158f5764961683b9b5cc8c00dd26ab662',
     'includes/layout/growth_home.php'=>'2fb80089be9d96ac7eed8a9fcd5590572f80472f87b04d2cf77482b9cdc3d6bd',
