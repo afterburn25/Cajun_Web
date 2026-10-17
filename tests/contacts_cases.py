@@ -101,6 +101,7 @@ def run_browser(env,browser):
     check('Contact project message saved with contact attribution','Contact-scoped review message' in r.text and db("SELECT author_type FROM ci_studio_messages WHERE body='Contact-scoped review message.'")[0]['author_type']=='contact')
     r=contact.get(portal+'?job=1')
     check('Contact attribution renders on the message','Review Only Contact' in r.text)
+    check('Contact conversation never shows internal staff notes','Staff-only internal marker note.' not in r.text)
     with open(Path(__file__).resolve().parents[1]/'site/images/icons/favicon.png','rb') as f:
         r=submit(contact,portal+'?job=1','upload',files={'document':('contact-capture.png',f,'image/png')})
     check('Projects-permission contact uploads with contact attribution','File saved' in r.text and db("SELECT author_type FROM ci_studio_files WHERE original_name='contact-capture.png'")[0]['author_type']=='contact' and db("SELECT * FROM ci_audit WHERE action='file.upload.contact'"))
