@@ -1,3 +1,7 @@
+## 2026-10-17 — stabilize copy-migration foreign-key verification
+
+Commit08600bed makes the sent-copy migration compare relationships order-insensitively. `mail_copy_attempts` declares two single-column foreign keys; `information_schema.KEY_COLUMN_USAGE` reports both at ORDINAL_POSITION1, so ordering by that column left their relative order to engine defaults and the strict per-column check falsely refused fresh storage with `Incompatible copy relationships`. Found rows now order by COLUMN_NAME and the expected relation list is sorted to match; count, referenced table/column and RESTRICT-rule checks are unchanged. The fix is cascaded through reply-all, send-attachments, folders, flags and html-compose after the corrected mail-replies base (a382bed6, bba1e1cb) unmasked it downstream.
+
 ## 2026-10-16 — publish the concrete release freeze and branch
 
 Documentation-only descendant of35d8 records owner release-first override, published normal merge b98b96eb, frozen scope/map, actual source/focused evidence and remaining gates. Runtime, installer, version, published assets and production remain unchanged. Continue release corrections, authentic1.24 upgrade coverage, complete supported runtime acceptance, review, exact-main and publication/download verification before new20i capabilities. Coordination is posted in issue2 comment6220729910 and issue157 comment6220730195. Documentation validation is required before commit; no application acceptance is claimed.
