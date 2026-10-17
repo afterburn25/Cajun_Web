@@ -1783,19 +1783,23 @@ Next: commit, open stacked PR, monitor CI.
 
 Owner review surfaced four acceptance findings; all corrected and pushed:
 
-- #203 `52f524bc`: a revoked/disabled contact no longer degrades to
+- #203 `52f524bc` (48/48 incl. native-and-browser): a revoked/disabled contact no longer degrades to
   primary-account identity - contact lookup failure ends the request and
   invalidates the complete authentication context. Bundle download requires
   explicit `contact_can('downloads')`; multipart upload accepts and
   attributes `author_type='contact'`. Tests cover all three.
-- #202 `d36470f3`: `payments_master(true)` now refuses generating a
-  replacement key when retained payment-request sealed-link history exists
-  (previously only gateway credentials blocked it). Native test preserves
-  the original key + history and proves sealed links still open.
-- #209 `82c62c98`: refreshed the stale `admin/views/studio/job.php`
+- #202 `40eb7f29` (48/48 incl. native-and-browser): `payments_master(true)`
+  now refuses generating a replacement key when retained payment-request
+  sealed-link history exists (previously only gateway credentials blocked
+  it). Native test preserves the original key + history and proves sealed
+  links still open. `40eb7f29` also fixes a bound-parameter bug found by
+  native CI: `table()` returns a backtick-quoted identifier which never
+  matched `information_schema` table_name - now uses the unquoted
+  prefixed name like the migration probes.
+- #209 `82c62c98` (43/43): refreshed the stale `admin/views/studio/job.php`
   inventory pin.
-- #212 `b85d87db`: review action links navigate through `focus_review`,
+- #212 `b85d87db` (41/41): review action links navigate through `focus_review`,
   so a pending decision outside the 100-row display window still lands on
   its exact decision form.
 
-CI is re-running on all correction heads at this writing.
+All correction heads verified green on full component matrices.
