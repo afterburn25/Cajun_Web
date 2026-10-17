@@ -68,7 +68,7 @@ def run_http(env):
     check('HTTP cannot demote last activated owner','at least one active owner' in r.text and db('SELECT role FROM ci_staff_profiles WHERE user_id=1')[0]['role']=='owner')
     # Staff-only project notes never reach clients or staff without client grants.
     r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_note',{'body':'Staff-only internal marker note.'})
-    check('Owner saves an internal staff note','Project saved' in r.text and db("SELECT author_type FROM ci_studio_messages WHERE body='Staff-only internal marker note.'")[0]['author_type']=='internal')
+    check('Owner saves an internal staff note','Project updated' in r.text and db("SELECT author_type FROM ci_studio_messages WHERE body='Staff-only internal marker note.'")[0]['author_type']=='internal')
     r=admin.get(BASE+'/existing/admin/index.php?view=studio-job&id=1')
     check('Admin project renders the note privately once','staff only' in r.text and r.text.count('Staff-only internal marker note.')==1 and 'Internal notes are never shown' in r.text)
     alice=requests.Session();submit(alice,BASE+'/existing/portal/index.php','login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
