@@ -55,6 +55,17 @@ class InboxServer:
                     send('CWA003 NO folder unavailable' if mode=='append-refused' else 'CWA003 OK appended')
                     if mode=='append':expect('CWA004 LOGOUT')
                     continue
+                if mode.startswith('flag'):
+                    expect('CWF001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWF001 OK done')
+                    expect('CWF002 AUTHENTICATE PLAIN');send('+ ');expect(base64.b64encode(b'\0synthetic@example.net\0Synthetic receiving HTTP password').decode(),'CREDENTIAL');send('CWF002 OK authenticated')
+                    expect('CWF003 SELECT "INBOX"');send('* 2 EXISTS');send('* FLAGS (\\Seen \\Answered)');send('* OK [UIDVALIDITY 1234] stable');send('CWF003 OK [READ-WRITE] selected' if mode!='flag-readonly' else 'CWF003 OK [READ-ONLY] selected')
+                    if mode=='flag-readonly':continue
+                    expect('CWF004 UID FETCH 82 (UID FLAGS)')
+                    if mode=='flag-gone':send('CWF004 OK flags');continue
+                    send('* 2 FETCH (UID 82 FLAGS ())' if mode in ['flag','flag-refused'] else '* 2 FETCH (UID 82 FLAGS (\\Seen))');send('CWF004 OK flags')
+                    expect('CWF005 UID STORE 82 +FLAGS.SILENT (\\Seen)' if mode in ['flag','flag-refused'] else 'CWF005 UID STORE 82 -FLAGS.SILENT (\\Seen)');                    send('CWF005 NO refused' if mode=='flag-refused' else 'CWF005 OK stored')
+                    if mode!='flag-refused':expect('CWF006 LOGOUT')
+                    continue
                 expect('CWR001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWR001 OK done')
                 expect('CWR002 AUTHENTICATE PLAIN');send('+ ');expect(base64.b64encode(b'\0synthetic@example.net\0Synthetic receiving HTTP password').decode(),'CREDENTIAL');send('CWR002 OK authenticated')
                 data=b''

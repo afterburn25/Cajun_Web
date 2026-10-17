@@ -17,3 +17,4 @@ require_once __DIR__.'/MessageReader.php';
 require_once __DIR__.'/AttachmentIndex.php';
 require_once __DIR__.'/AppendSession.php';
 require_once __DIR__.'/SentCopy.php';
+require_once __DIR__.'/FlagSession.php';
