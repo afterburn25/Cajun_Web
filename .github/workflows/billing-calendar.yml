@@ -1,0 +1,45 @@
+name: Recurring billing calendar checks
+on:
+  push:
+    branches: [main, codex/billing-calendar, codex/twentyi-recurring-eligibility]
+    paths: ['foundation/billing-calendar/**', 'tests/billing-calendar/**', '.github/workflows/billing-calendar.yml']
+  pull_request:
+    paths: ['foundation/billing-calendar/**', 'tests/billing-calendar/**', '.github/workflows/billing-calendar.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: billing-calendar-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  calendar:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Exact periods in isolated official PHP
+        run: |
+          mkdir -p qa
+          docker run --rm --network none --user "$(id -u):$(id -g)" -v "$PWD:/workspace:ro" -v "$PWD/qa:/workspace/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            php -l foundation/billing-calendar/BillingCalendar.php
+            php -l tests/billing-calendar/calendar.php
+            php tests/billing-calendar/calendar.php > qa/billing-calendar-default.json
+            php -n tests/billing-calendar/calendar.php > qa/billing-calendar-no-ini.json
+          '
+      - name: Preserve named evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: billing-calendar-${{ matrix.php }}-${{ github.sha }}
+          path: qa/billing-calendar-*.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record scope
+        if: always()
+        run: echo 'Pure recurring calendar dates. No database, application activation, invoice, consent, scheduler, merchant or provider acceptance.' >> "$GITHUB_STEP_SUMMARY"

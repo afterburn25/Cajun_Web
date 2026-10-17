@@ -1,6 +1,18 @@
+## Observed product import candidate — 2026-10-17
+
+The explicit owner addition now has a reviewed [hosting-draft and local-image implementation](TWENTYI_PRODUCT_IMPORT.md), based on navigation source e8ccefc9. Root integrates its shared CI wiring and generated inventory. It preserves prior acceptance requirements and adds three reports and two images. Native/HTTP verification is pending; complete 20i catalogs and automatic provider images remain unresolved. This does not mark the full import roadmap or release complete.
+
+## Owner-requested additions — 2026-10-17
+
+The subsequent explicit requests add the installer correction in [PR206](https://github.com/afterburn25/Cajun_Web/pull/206) and [grouped administration/public navigation](NAVIGATION_1.25.0.md). They retain the original complete acceptance and publication gates. Bounded 20i product import is still on a separate unaccepted branch and is not represented as complete by this navigation change. All other HOLD items remain held.
+
+## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
+
+Pending import: `codex/installer-layout-1.25.0`, starting head and merge base `bc5ec277580aa681f43aaf2c9b97df730f6954f1`. It is a direct descendant of the current release candidate and adds only the owner-requested installer/password/recovery correction and its tests/docs. No feature branch is reimported. The enclosing correction commit supplies the reviewed head; record the actual subsequent normal merge separately. Local evidence is in [the correction report](INSTALLER_FRESH_START_1.25.0.md); complete candidate/main gates remain required.
+
 # CajunWebPro 1.25.0 integration map
 
-Start `codex/release-1.25.0` from freshly fetched current main. Root created it from35d8. Normally merge candidate3fa once; its included feature parents do not need duplicate integration. Preserve both side histories and resolve shared files by behavior union.
+Original integration inputs were main35d8 and mature3fa. Root already created `codex/release-1.25.0` from35d8 and normally merged3fa once, followed by the main documentation checkpoint. The feature ancestor table below is a historical source map, not a request to integrate those heads again. Both histories and the deliberate shared-file behavior union are retained.
 
 - Main: `35d8fb7efc94f6f851399d0755fa93097f1fce66`; tree`196670c9b305a9aa45d7a9ae9e0661a703d9a4dc`.
 - Candidate: `3fa72d7b3b447fa3d281cc981ed861c508f850f2`; tree`5ae5f5f025c79d217f769545290e80e400abc397`.
@@ -107,7 +119,7 @@ All following remote Codex20i heads were inspected. Ancestor means the exact hea
 | Validated StackCP owner read snapshot | codex/twentyi-stackcp-read-snapshot / `3fa72d7b3b447fa3d281cc981ed861c508f850f2` | `site/app/providers/stackcp_read_projection.php` | `work/stackcp-3fa72d7b-focused-evidence/20261016T164824729438Z/named-verification.json` (`efa6da57ee577ba970f788327a7b7ade648cc3b4d94c9659522c9b3984d0d1b7`); `work/3fa72d7b-windows-verification.json` (`faa38a5bbb302efeb2ceedd509a18c668bfa1396656c3661c0ced7eff4e484f3`) |
 | Shared commercial/history/gateway, compatibility, packaging and acceptance infrastructure | codex/twentyi-stackcp-read-snapshot / `3fa72d7b3b447fa3d281cc981ed861c508f850f2` | `site/app/hosting/operations.php`, `site/app/hosting/reconciliation.php`, `tools/build.py`, `tools/acceptance_artifacts.py`, `.github/workflows/application-tests.yml` | Source-bound guide and suite evidence summarized in scope; not reexecuted by this audit |
 
-## Merge requirements
+## Original merge requirements and retained gates
 
 - Preserve all39 main-only commits, including marker3/nullable bundle SHA256, immutable bundle filenames, serialized license mutation/activation helpers and bounded audit details. Preserve candidate physical-storage/support/current-client/invoice-purpose guards. Applicable known licensing defects are release blockers, not grounds for replacing main with candidate.
 - Root should retain actual merge-tree conflict list and intentional resolutions. Expected sensitive areas are license service/deploy/generated inventory/portal workspace/native license tests plus continuity; recheck actual current parents instead of relying on an older conflict list.
@@ -120,7 +132,7 @@ Root created `codex/release-1.25.0` from exact main `35d8fb7efc94f6f851399d0755f
 
 ## Intentional shared-file resolutions
 
-- Licensing service keeps main's serialized transaction/lock/internal mutation helpers and bounded audits, plus candidate physical-storage readiness. Native tests retain checksum/master/fulfillment coverage and candidate rollback/actor/caller-transaction cases, with persisted success/failure reports. Four previously reported licensing defects still require a separate release correction.
+- Licensing service keeps main's serialized transaction/lock/internal mutation helpers and bounded audits, plus candidate physical-storage readiness. Native tests retain checksum/master/fulfillment coverage and candidate rollback/actor/caller-transaction cases, with persisted success/failure reports. At this initial merge checkpoint the four licensing findings still required a separate release correction. The integrated release source now contains that separately reviewed bounded correction, subject to its source-specific acceptance evidence; PR159 itself is not accepted by this statement.
 - Fresh installer combines provider inventory marker5 with licensing marker3. The generated installer inventory is rebuilt from the resulting source.
 - Workspace combines support-session denial, physical storage readiness and licensing marker readiness; preserve all provider/recurring links and invoice-purpose guards. The automatically merged portal controller retains both licensing actions and current domain/hosting billing restrictions.
 - Admin licensing preparation form appears before the unavailable-storage refusal, so upgraded owners can explicitly prepare missing new storage without schema-changing GET requests.
@@ -128,6 +140,16 @@ Root created `codex/release-1.25.0` from exact main `35d8fb7efc94f6f851399d0755f
 
 ## Merge checkpoint validation
 
-Canonical installer refresh and every shipping PHP/JavaScript syntax check pass on the merged source. Documentation check passes261 Markdown files,1712 local links and23 heading links. No combined native database/HTTP/browser acceptance is claimed. Four licensing corrections and the new release-only acceptance coverage remain pending.
+Canonical installer refresh and every shipping PHP/JavaScript syntax check pass on the merged source. Documentation check passes261 Markdown files,1712 local links and23 heading links. No combined native database/HTTP/browser acceptance is claimed. The licensing corrections and release-only acceptance coverage were pending at this initial merge checkpoint; subsequent implementation and execution are recorded in the versioned acceptance report.
 
 Staging check also removed one inherited trailing blank line in `provider-domain-search.yml`; its workflow statements are unchanged.
+
+## Main documentation synchronization
+
+Main documentation checkpoint `d7153b076e91b524ff2f99a9a7aa5c910551fc5e` publishes the same owner release freeze, canonical b98b96eb branch and scope/map to make them discoverable. Its12 Markdown-only changes add no runtime, installer, schema or version delta. The release branch normally merges that checkpoint; its existing release-specific status and all prior histories remain, rather than copying main's pre-integration runtime wording. Both sources agree on frozen capabilities, licensing corrections, complete supported acceptance, published1.24 and no live deployment.
+
+## Release-only correction and evidence contract
+
+The integrated source includes the reviewed licensing/history repairs, selected-runtime provisioning, authentic published1.24 upgrade fixtures and deterministic observation privacy assertions. Existing148 native recipes remain. The complete release contract requires160 browser and204 final reports,208 artifact-helper checks, four complete PHP8.2/8.4 × MariaDB10.11/MySQL8.4 environments, the maintained/minimal lane and separate actual runtime provenance. These are source requirements, not claims that a run passed.
+
+The [acceptance report](TEST_REPORT_1.25.0.md) identifies the actual candidate evidence cutoff, preserved failures, final exact-main receipts and publication conditions. The bounded INCLUDE/HOLD scope is unchanged. Additional unmerged Devin PRs are separate work; no stale whole-file proposal is implicitly imported by this correction history.

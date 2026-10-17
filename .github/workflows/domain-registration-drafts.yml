@@ -1,0 +1,92 @@
+name: Native private registration drafts
+on:
+  push:
+    branches: [main, codex/twentyi-registration-drafts-integration]
+    paths: ["foundation/twentyi-domain-registration/**", "site/includes/foundation/twentyi-domain-registration/**", "site/app/providers/domain_registration_drafts*", "site/admin/controllers/domain_registration_drafts.php", "site/admin/views/domain_registration_drafts.php", "site/portal/controllers/domain_registration_drafts.php", "site/portal/views/domain_registration_drafts.php", "site/admin/controllers/router.php", "site/admin/controllers/actions.php", "site/portal/controllers/router.php", "site/portal/controllers/actions.php", "site/includes/layout/admin.php", "site/portal/views/workspace.php", "site/database/**", "site/app/staff/**", "site/includes/auth/**", "site/includes/security/**", "site/app/support/**", "site/app/studio/**", "tests/twentyi-domain-registration/**", "tests/domain_registration_drafts*", "tests/invitations/Dockerfile", "tools/build.py", ".github/workflows/domain-registration-drafts.yml"]
+  pull_request:
+    paths: ["foundation/twentyi-domain-registration/**", "site/includes/foundation/twentyi-domain-registration/**", "site/app/providers/domain_registration_drafts*", "site/admin/controllers/domain_registration_drafts.php", "site/admin/views/domain_registration_drafts.php", "site/portal/controllers/domain_registration_drafts.php", "site/portal/views/domain_registration_drafts.php", "site/admin/controllers/router.php", "site/admin/controllers/actions.php", "site/portal/controllers/router.php", "site/portal/controllers/actions.php", "site/includes/layout/admin.php", "site/portal/views/workspace.php", "site/database/**", "site/app/staff/**", "site/includes/auth/**", "site/includes/security/**", "site/app/support/**", "site/app/studio/**", "tests/twentyi-domain-registration/**", "tests/domain_registration_drafts*", "tests/invitations/Dockerfile", "tools/build.py", ".github/workflows/domain-registration-drafts.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: registration-drafts-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  native-drafts:
+    name: Private drafts ${{ matrix.php }} and ${{ matrix.database.label }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database:
+          - {image: 'mariadb:10.11', label: 'mariadb-10.11'}
+          - {image: 'mysql:8.4', label: 'mysql-8.4'}
+    services:
+      database:
+        image: ${{ matrix.database.image }}
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['3306/tcp']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify canonical deployment mirrors and documentation
+        run: |
+          PYTHONPATH=tools python -B -c 'import build; build.generated(False)'
+          python -B tools/check_docs.py
+      - name: Prepare official PHP with PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-inventory-test -f tests/invitations/Dockerfile tests/invitations
+      - name: Allow isolated MySQL audit-failure fixture triggers
+        if: matrix.database.label == 'mysql-8.4'
+        run: docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+      - name: Native private draft authority encryption and recovery checks
+        env:
+          CWP_TEST_PORT: ${{ job.services.database.ports['3306'] }}
+        run: |
+          mkdir -p qa
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-inventory-test sh -ec '
+              for source in site/app/providers/domain_registration_drafts*.php site/database/schema/domain_registration_drafts_schema.php site/admin/controllers/domain_registration_drafts.php site/admin/views/domain_registration_drafts.php site/portal/controllers/domain_registration_drafts.php site/portal/views/domain_registration_drafts.php foundation/twentyi-domain-registration/*.php site/includes/foundation/twentyi-domain-registration/*.php tests/domain_registration_drafts*.php; do php -l "$source"; done
+              php tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-default.json
+              php -n tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-minimal.json
+              php tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-default.json
+              php -n tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-minimal.json
+              php tests/domain_registration_drafts_native.php
+            '
+      - name: Preserve named native evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: registration-drafts-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
+          path: |
+            qa/domain-registration-contract-default.json
+            qa/domain-registration-contract-minimal.json
+            qa/domain-registration-drafts-pure-default.json
+            qa/domain-registration-drafts-pure-minimal.json
+            qa/domain-registration-drafts-native-results.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Local encrypted registration drafts only. Synthetic disposable SQL, actual AES-GCM, current owner/direct-client authority, key and retained-history recovery, captured revisions and separate-process mutex checks. No provider lookup, registration, agreement, invoice, charge, browser or live request.' >> "$GITHUB_STEP_SUMMARY"

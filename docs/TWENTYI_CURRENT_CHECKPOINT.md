@@ -1,18 +1,28 @@
-## Release 1.25.0 priority — 2026-10-16
+# Current 1.25.0 scope and evidence pointer
 
-New20i capabilities and nonessential refactors are frozen until1.25.0 publication and all-asset download verification. Canonical [codex/release-1.25.0](https://github.com/afterburn25/Cajun_Web/tree/codex/release-1.25.0) is published at `b98b96eb2a33e4bdeb72e15217213431885aad67`, normally merging current main35d8 and mature3fa. The [frozen scope](https://github.com/afterburn25/Cajun_Web/blob/codex/release-1.25.0/docs/RELEASE_SCOPE_1.25.0.md) and [integration map](https://github.com/afterburn25/Cajun_Web/blob/codex/release-1.25.0/docs/RELEASE_1.25_INTEGRATION_MAP.md) are also copied into main for discovery. The owner wants the mature increment now, without waiting for complete20i.
+The mature20i source and current-main licensing history have already been normally integrated on `codex/release-1.25.0`; original35d8/3fa are integration inputs, not a feature stack waiting to be imported. Read [status](../PROJECT_STATUS.md), [scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md) and [versioned acceptance](TEST_REPORT_1.25.0.md) for the bounded release and actual source-specific evidence.
 
-Root and agents are closing existing licensing defects, extending real populated1.24 root/subfolder client-data upgrades, and preparing complete PHP8.2/8.4 × MariaDB10.11/MySQL8.4 application/browser/update runs. Devin continues separate non20i work; Codex owns the narrow release licensing corrections and shared seams. Proposed PRs are not automatically included. Unfinished branches and original failed evidence remain preserved.
+At this documentation preparation checkpoint, complete release-candidate acceptance remains pending. Later exact-main and publication receipts must identify their actual source and outcomes. The separate full20i roadmap remains incomplete; no remote StackCP session or SSH claim is added. Devin's separate [assignment157](../DEVIN_START_HERE.md) and unaccepted proposals remain separate from this release.
 
-Merge checkpoint passes canonical installer generation, all shipping PHP/JavaScript syntax, documentation and exact2886-file staged preservation checks. Imported3fa focused38933590118 passes11 reports/1440 executions in each of4 environments and its Windows packages. These are scoped results, not combined release acceptance. Exact-candidate full checks/images, independent review, normal main merge, exact-main full checks, packages, publication and download verification remain required. Published1.24 is unchanged; no1.25 release or live deployment exists.
+## Historical source checkpoints
 
-This main checkpoint changes documentation only; runtime remains35d8. Follow the release branch for implementation and acceptance. Earlier current-status labels below are historical where superseded.
+All lower active/current labels describe their dated source only; completed predecessor runs must not be polled or imported again because this history was retained.
 
-# Current 20i checkpoint
+### Historical checkpoint: Release acceptance correction checkpoint — 2026-10-16
+
+Canonical `codex/release-1.25.0` parent85f0b489 retains main35d8/d715 and mature3fa through normal merges. Root applied complete supported-runtime selection, authentic published1.24 upgrade fixtures, reviewed licensing repairs and narrow existing-layout capture/copy changes. Local208helper/69build-guard/28retention/19actual-ZIP checks pass; the independently reviewed licensing audit-history recovery correction is applied. All native/HTTP/visual/full-candidate/exact-main/publication gates remain pending. See [current acceptance report](TEST_REPORT_1.25.0.md) and [precise owner update instructions](MIGRATION-INSTRUCTIONS-1.25.0.md). Stable1.24 and main runtime remain unchanged; no1.25 release or live deployment. Frozen scope and held roadmap remain in force.
+
+### Historical checkpoint: Release priority checkpoint — 2026-10-16
+
+Canonical `codex/release-1.25.0` starts from main35d8 and normally integrates mature3fa. New20i capabilities are frozen until publication and download verification. [Frozen scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md), [current status](../PROJECT_STATUS.md) and [handoff](../SESSION_HANDOFF.md) supersede older current labels below. Source3fa focused38933590118 and Windows packages pass their bounded scopes; the combined release still needs licensing corrections, supported runtime/full browser/actual1.24 upgrade gates, independent review, exact-main acceptance and all-asset verification. Published1.24 remains unchanged; no1.25 release or live deployment exists yet.
+
+### Historical checkpoint: Retained earlier source and release records
+
+### Historical checkpoint: Current 20i checkpoint
 
 Updated 2026-10-16. This main commit updates documentation only; runtime integration is still on the named candidate branch. Published [1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) remains unchanged. Full 20i and 1.25.0 remain unfinished.
 
-## Active StackCP candidate
+### Historical checkpoint: Active StackCP candidate
 
 Source [3fa72d7b3b447fa3d281cc981ed861c508f850f2](https://github.com/afterburn25/Cajun_Web/commit/3fa72d7b3b447fa3d281cc981ed861c508f850f2), tree `5ae5f5f025c79d217f769545290e80e400abc397`, is published on `codex/twentyi-stackcp-read-snapshot`, parent `5bfd9c69`. Its first focused [run 38933590118](https://github.com/afterburn25/Cajun_Web/actions/runs/38933590118), attempt 1, is in progress at this checkpoint. Do not rerun unchanged source. [Exact implementation guide](https://github.com/afterburn25/Cajun_Web/blob/3fa72d7b3b447fa3d281cc981ed861c508f850f2/docs/TWENTYI_STACKCP_READ_SNAPSHOT.md).
 
@@ -20,13 +30,13 @@ The owner StackCP view now validates complete setup histories once within its ow
 
 The actual database fixture compares old/new HTML and query categories for 0/1/20 packages, then tests out-of-page corruption, paired history/audit loss, original-key recovery, current authority and separate-process locking. Its 49 expected labels are source-derived and not yet accepted. Four focused archives must each retain all 11 reports. Full acceptance requires 148 native commands, 158 browser reports, 197 final reports and 360 protected paths; predecessor commands, browser assertions/screenshots and the distro correction are preserved. Runtime069bf0ab, fixtureb6001dbf, independent review3c599a33 and root application4e52ac41 bind the reviewed changes. The synthetic 1,629-to-236 query comparison is a model, not measured page latency.
 
-## Verified cloud compatibility predecessor
+### Historical checkpoint: Verified cloud compatibility predecessor
 
 Exact parent [5bfd9c69](https://github.com/afterburn25/Cajun_Web/commit/5bfd9c695d35103c3bf27e8eaf66b054c59741cf), tree `f30ce6f40744606381ce249ae384d2f986fcd0c2`, passed original focused [38931463106](https://github.com/afterburn25/Cajun_Web/actions/runs/38931463106), attempt 1. All four PHP 8.2/8.4 × MySQL 8.4/MariaDB 10.11 archives contain 12 reports and 755 passing named executions each (3,020 total). The Ubuntu PHP 8.3 archive contains six passing reports and 260 executions; actual module evidence proves explicit tokenizer/PDO loading with no PDO driver.
 
 All five archives were verified against exact source/run/attempt, size/digest, safe members, CRC and original labels. Final proof SHA256: `ab93db1398ba3fed57af6dec3ccf50f4f759c2434f5df5793294c031dd5d0332`. The source correction loads PDO for the extracted-function fixture and adds an early distro compatibility job. It does not change shipping code. This focused success does not establish full application or descendant acceptance.
 
-## Preserved failed full runs
+### Historical checkpoint: Preserved failed full runs
 
 | Source / original run | Actual terminal result | Independently passing partitions |
 | --- | --- | --- |
@@ -36,7 +46,7 @@ All five archives were verified against exact source/run/attempt, size/digest, s
 
 Terminal classification proofs: cccf `330b0670ee112694a07575c00fa9c9df54f35beeb3304203e075d2950a8cdbc0`, 2a `8010c1737828ef8c56936da3ba932ee350c1223125d69096dae0be534caacad8`, 9779 `793fced7172cb5a409e5f69d5e28902be10cd77375e6c425d87b624ad329b6da`. Original helper failures, runs and artifacts remain retained. Overlapping Apache progress reports are not additive. Earlier819c/9538/13879 failures and detailed source evidence remain in the [previous immutable checkpoint](https://github.com/afterburn25/Cajun_Web/blob/00201b98798f08ea4eee2ffc2336438bf2a74c3e/docs/TWENTYI_CURRENT_CHECKPOINT.md).
 
-## Devin priorities and integration queue
+### Historical checkpoint: Devin priorities and integration queue
 
 Devin owns all remaining non-20i work under [assignment157](https://github.com/afterburn25/Cajun_Web/issues/157); [start here](../DEVIN_START_HERE.md). Codex owns complete20i/provider support/SSH and final integration/releases. Freshly inspected PRs158/159/161 remain on their reviewed heads:
 

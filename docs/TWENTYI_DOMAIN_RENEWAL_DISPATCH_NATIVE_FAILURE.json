@@ -1,0 +1,96 @@
+{
+  "source": "bbf43f8a06fd1aca80726926dca23053376295fa",
+  "tree": "f823d0da07e46ef5b7014ce6bb5acc2228fb0419",
+  "run": 38888746617,
+  "attempt": 1,
+  "conclusion": "failure",
+  "scope": "Preserved original focused native failure; no browser or live-provider acceptance.",
+  "verification_sha256": "ff416cfbb7a0af4e18ef0aa31af19d9082a61bdf83ff079974c517278a0d1b58",
+  "cause": "Current and retained renewal consent guards compared a bare numeric client string with the existing application model namespaced actor client:<id>. Actual canonical-model reproduction confirms this earlier refusal before the paid-invoice test reaches its intended prerequisite.",
+  "artifacts": [
+    {
+      "id": 12041088745,
+      "name": "domain-renewal-dispatch-8.4-mysql-8.4-bbf43f8a06fd1aca80726926dca23053376295fa",
+      "environment": "8.4-mysql-8.4",
+      "size_bytes": 36816,
+      "sha256": "99de9d58275c066221b441074fb166ac6f9c2c4ed92f3c8c5b2234389726e772",
+      "crc": "passed",
+      "missing_reports": [
+        "renewal-existing-cloud-sites.json",
+        "renewal-existing-force-ssl-transport.json",
+        "renewal-existing-mailboxes.json",
+        "renewal-existing-operations.json"
+      ],
+      "named_executions": 1691,
+      "reports": 19,
+      "own_native_passes": 10,
+      "own_native_failed_names": [
+        "Unrelated already-paid invoice cannot be allocated retroactively",
+        "Unexpected: Unrelated already-paid invoice cannot be allocated retroactively"
+      ]
+    },
+    {
+      "id": 12040859315,
+      "name": "domain-renewal-dispatch-8.4-mariadb-10.11-bbf43f8a06fd1aca80726926dca23053376295fa",
+      "environment": "8.4-mariadb-10.11",
+      "size_bytes": 36816,
+      "sha256": "e2fbe4c378cd9c177ffab689fd648683b317bb1964acdefad5afe1ce075b25c2",
+      "crc": "passed",
+      "missing_reports": [
+        "renewal-existing-cloud-sites.json",
+        "renewal-existing-force-ssl-transport.json",
+        "renewal-existing-mailboxes.json",
+        "renewal-existing-operations.json"
+      ],
+      "named_executions": 1691,
+      "reports": 19,
+      "own_native_passes": 10,
+      "own_native_failed_names": [
+        "Unrelated already-paid invoice cannot be allocated retroactively",
+        "Unexpected: Unrelated already-paid invoice cannot be allocated retroactively"
+      ]
+    },
+    {
+      "id": 12040578505,
+      "name": "domain-renewal-dispatch-8.2-mysql-8.4-bbf43f8a06fd1aca80726926dca23053376295fa",
+      "environment": "8.2-mysql-8.4",
+      "size_bytes": 36816,
+      "sha256": "9ddbee150ce52be451631f404becd1492390fed3caa42b73949173a5427ec033",
+      "crc": "passed",
+      "missing_reports": [
+        "renewal-existing-cloud-sites.json",
+        "renewal-existing-force-ssl-transport.json",
+        "renewal-existing-mailboxes.json",
+        "renewal-existing-operations.json"
+      ],
+      "named_executions": 1691,
+      "reports": 19,
+      "own_native_passes": 10,
+      "own_native_failed_names": [
+        "Unrelated already-paid invoice cannot be allocated retroactively",
+        "Unexpected: Unrelated already-paid invoice cannot be allocated retroactively"
+      ]
+    },
+    {
+      "id": 12040219448,
+      "name": "domain-renewal-dispatch-8.2-mariadb-10.11-bbf43f8a06fd1aca80726926dca23053376295fa",
+      "environment": "8.2-mariadb-10.11",
+      "size_bytes": 36816,
+      "sha256": "188378d22924f97be0b1862e123231d5fce7d714c32159c7838c6fb71ea93f8d",
+      "crc": "passed",
+      "missing_reports": [
+        "renewal-existing-cloud-sites.json",
+        "renewal-existing-force-ssl-transport.json",
+        "renewal-existing-mailboxes.json",
+        "renewal-existing-operations.json"
+      ],
+      "named_executions": 1691,
+      "reports": 19,
+      "own_native_passes": 10,
+      "own_native_failed_names": [
+        "Unrelated already-paid invoice cannot be allocated retroactively",
+        "Unexpected: Unrelated already-paid invoice cannot be allocated retroactively"
+      ]
+    }
+  ]
+}
