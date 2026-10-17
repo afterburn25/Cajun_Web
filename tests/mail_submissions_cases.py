@@ -235,7 +235,8 @@ def run_browser(env, browser):
     refused_page = root + '?view=mail-submission&submission_id=' + refused_sid
     r = member.post(refused_page, data={'csrf': token(member.get(refused_page)), 'action': 'mail_submissions_copy_sent', 'submission_id': refused_sid})
     copy_connections += 1
-    check('Server folder refusal records a bounded failure without copy claims', 'did not accept the configured Sent folder' in r.text and db('SELECT result_code FROM ci_mail_copy_results WHERE id=(SELECT id FROM ci_mail_copy_attempts WHERE submission_id=?)', [refused_sid]) == [{'result_code': 'folder'}] and inbox_server.appended == sent_mime)
+    refused_mime = db('SELECT mime_bytes FROM ci_mail_submissions WHERE id=?', [refused_sid])[0]['mime_bytes'].encode('ascii')
+    check('Server folder refusal records a bounded failure without copy claims', 'did not accept the configured Sent folder' in r.text and db('SELECT result_code FROM ci_mail_copy_results WHERE id=(SELECT id FROM ci_mail_copy_attempts WHERE submission_id=?)', [refused_sid]) == [{'result_code': 'folder'}] and inbox_server.appended == refused_mime)
     inbox_server.mode = 'ok'
     db('UPDATE ci_mail_copy_attempts SET started_epoch=0')
     metadata = json.dumps(db("SELECT * FROM ci_audit WHERE action LIKE 'mail_submissions.%'"))
