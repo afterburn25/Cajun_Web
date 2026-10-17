@@ -50,7 +50,7 @@ function mail_message_record(array $started,string $code,int $elapsed,#[\Sensiti
     });
 }
 /** Test seams are internal PHP callables; never exposed through owner/HTTP configuration. */
-function mail_message_read(string $id,int $revision,string $validity,string $uid,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null): array {
+function mail_message_read(string $id,int $revision,string $validity,string $uid,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null,bool $retainSource=false): array {
     mail_message_identity($validity,$uid);
     if($noticeHandle!==null){require_once CWP_CODE_ROOT.'/app/mail/notices.php';mail_notices_handle($noticeHandle);}
     if(db()->inTransaction())throw new LogicException('Message reads cannot run inside a transaction.');
@@ -74,7 +74,7 @@ function mail_message_read(string $id,int $revision,string $validity,string $uid
     catch(InvalidArgumentException) {$code='destination';}
     catch(ProbeFailure $e) {$code=$e->getMessage();}
     catch(Throwable) {$code='connection';}
-    return staff_locked(function()use($started,$code,$addresses,$begin,$transport,$noticeHandle):array {
+    return staff_locked(function()use($started,$code,$addresses,$begin,$transport,$noticeHandle,$retainSource):array {
         $authorize=static function()use($started,$noticeHandle):array {
             try {[$actor,$row]=mail_message_authority($started['account_id'],$started['account_revision']);
                 if((int)$actor['id']!==$started['actor_id'])throw new RuntimeException('Changed actor.');
@@ -92,6 +92,10 @@ function mail_message_read(string $id,int $revision,string $validity,string $uid
                     $response=($transport??'mail_message_transport')($current,$secrets,$addresses[0],$started['uidvalidity'],$started['uid'],$authorize);
                     $authorize();
                     $content=mail_message_content($response,$started['uidvalidity'],$started['uid']);
+                    // Only an internal caller that must re-parse the exact bytes
+                    // (protected Reply/Forward draft creation) may retain the raw
+                    // source; it is never persisted or returned to display paths.
+                    if($retainSource)$content['source']=$response['raw'];
                     $authorize();
                 }catch(ReceivingFailure $e) {$code=$e->getMessage();$content=null;}
                 catch(Throwable $e) {if($e instanceof PDOException)throw $e;$code='connection';$content=null;}

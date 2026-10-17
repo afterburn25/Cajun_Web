@@ -1,7 +1,7 @@
 name: Application acceptance
 on:
   push:
-    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor]
+    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, 'devin/non20i-*']
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   pull_request:
     branches: [main]
@@ -89,6 +89,7 @@ jobs:
           cp qa/mail-drafts-form-results.json qa/mail-drafts-form-default-results.json
           php8.3 -n tests/mail_drafts_form.php
           php8.3 tests/mail_submissions_native.php
+          php8.3 tests/mail_replies_native.php
           php8.3 tests/mail_submission_dispatch_native.php
           php8.3 tests/mail_submission_forms.php
           cp qa/mail-submission-forms-results.json qa/mail-submission-forms-default-results.json
