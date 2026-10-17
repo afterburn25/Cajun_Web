@@ -6,7 +6,7 @@ require_once CWP_CODE_ROOT.'/includes/foundation/backups/RestorePlan.php';
 require_once CWP_CODE_ROOT.'/database/schema/backups_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/backups_migrate.php';
 use CajunWebPro\Foundation\Backups\{BackupManifest,RestorePlan};
-function backups_ready(): bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['backups_schema_version'])['value']??'')==='1';}
+function backups_ready(): bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['backups_schema_version'])['value']??'')==='2';}
 function backups_require(): array {if(support_current())throw new RuntimeException('Leave support before managing backups.');if(!backups_ready())throw new RuntimeException('An owner must prepare backups first.');return staff_require('staff.manage');}
 function backups_audit(int $actor,string $action,string $detail): void {query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[$actor,'backups.'.$action,$detail,gmdate('Y-m-d H:i:s')]);}
 function backups_directory(): string {
