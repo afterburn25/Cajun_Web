@@ -4,6 +4,18 @@ Documentation-only descendant of35d8 records owner release-first override, publi
 
 
 
+## Provision ext-zip for the backup archive lane — 2026-10-17
+
+Request: continue #157 repairs; `Backup checks` on PHP 8.2/8.4 failed deterministically at `archive_run.php` with the production refusal `Ask your host to enable the PHP ZIP extension`.
+
+Root cause: `04fabe80` added `tests/backups/archive_run.php` to the docker lane, but the stock `php:8.2-cli`/`8.4-cli` images ship without ext-zip; the suite never ran green in CI. The native lane (`php8.3` on the runner) and production host requirement are unaffected.
+
+Fix: `.github/workflows/backups.yml` now builds a throwaway image layer (`apt-get install libzip-dev` + `docker-php-ext-install zip`, asserted via `php -m`) then commits it for the suite run; the test container still executes under `--network none` with the workspace mounted read-only.
+
+Tests: YAML parse clean; lane re-runs in CI on this push.
+
+Next: confirm both `Backup checks` lanes pass; continue monitoring the cascaded mail-stack repairs.
+
 ## Implement A-03 backup/restore runtime — 2026-10-16
 
 Request: continue the remaining non-20i roadmap (issue #157). The foundation supplied only the manifest/restore-plan contract; this slice builds the application runtime on it. Starting commit: `devin/non20i-backups-foundation` tip `b1849208`, new branch `devin/non20i-backups-runtime`.
