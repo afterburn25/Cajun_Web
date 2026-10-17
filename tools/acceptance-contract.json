@@ -490,7 +490,9 @@
       "tests/payments_cases.py": "ea33b4aed1d73bd2cf66efc6dcbd9e5bc03f18bb02839a39dc0e8a955dd4e821",
       "tests/payments_native.php": "77f8bd5b2fd62e30ffaa29d6448c64d1c9c6a16929954f7c9764ce4ff96edba3",
       "tests/provider_package_wordpress_installed_native.php": "5a92693ec7dac1db7660b9f2a8e200fa925edbe33bda26bbbe026d7b760cda09",
-      "tests/provider_schedule_cases.py": "a82e4e5e2c0ec7dfea7936a2e8ae72108f6fb15a64a0dc70251dd10faca94718"
+      "tests/provider_schedule_cases.py": "a82e4e5e2c0ec7dfea7936a2e8ae72108f6fb15a64a0dc70251dd10faca94718",
+      "tests/domain_expiry_native.php": "1a206c75cc2ab411bed8b1449917c414551e11ad7842054e4eafe83e12cde52d",
+      "tests/domain_contracts_native.php": "a6f76a7ad0aa7eb65064265cd5d206b0f63a7c03f529f9fd5604b360bc21cfdd"
     },
     "additional_screenshots": [
       "Admin-Overview-Desktop.png",

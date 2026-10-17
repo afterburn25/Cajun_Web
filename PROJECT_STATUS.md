@@ -10,6 +10,14 @@ Use the [migration instructions](docs/MIGRATION-INSTRUCTIONS-1.25.0.md) with the
 
 Devin continues the [non-20i assignment](DEVIN_START_HERE.md) on separate branches. Unaccepted proposals stay outside the frozen scope unless a reviewed release blocker requires a narrow correction.
 
+## 2026-10-17 - paired domain fixture timestamps
+
+The next release-only correction starts from `c0ed18397349a023224623027ba5bfd3bf9d7e67`. Original PHP 8.4/MySQL [run39005276959](https://github.com/afterburn25/Cajun_Web/actions/runs/39005276959) failed at the domain-expiry fixture after 67 passing checks; Chromium was skipped and the final aggregate failed. The fixture evaluates `time()-600` separately for two rows whose epochs must agree. Source and trace support a clock-boundary race, but the original row values were not captured. The identical pattern also exists in the domain-contract fixture.
+
+The bounded correction uses one captured epoch for each paired update and adds both fixture hashes to the acceptance contract. Production guards and all existing assertion names, 148 native recipes, 160 browser/204 final reports, 320+8 images and timeouts remain. The resulting source, Windows build and full-run bindings are pending; parent results cannot certify it.
+
+Evidence cutoff: **2026-10-17 06:24 UTC**. Parent c0ed has independently reviewed Windows/four-Linux builds, maintained compatibility (3,280 named executions), all four recovery partitions and all four Apache/published-1.24 upgrade partitions. Its full candidate acceptance is blocked; the other three original full runs were still active. Preserve all original failures and require complete corrected candidate/maintained acceptance, actual visual review, independent aggregate review, normal merge, complete exact-main acceptance and publication/fresh verification of all 18 assets. Main remains `d7153b07`; 1.25 is unpublished, 1.24 immutable and production unchanged.
+
 ## 2026-10-17 - scheduled-run browser response completion
 
 This release-only correction starts from `cc0ec4a9b4131498831fb761d4a2d7f93ade4604`; its enclosing commit identifies the corrected candidate. The [original PR run](https://github.com/afterburn25/Cajun_Web/actions/runs/38994351830) passed 3,003 HTTP checks, then timed out fetching the next scheduler form before its duplicate-run assertion. All seven original archives and completed job logs remain preserved. The fixture now waits for Chromium's page load after the scheduled-run click, and the acceptance contract pins that fixture. No request timeout, assertion, shipping file or workflow changes.

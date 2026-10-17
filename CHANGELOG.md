@@ -4,6 +4,10 @@ Includes the hosting/domain/cloud observations, explicit assignments, reviewed c
 
 The [acceptance report](docs/TEST_REPORT_1.25.0.md) records source-specific results and limits. This source change entry does not assert publication or live deployment. The release assets and verification receipts establish those later outcomes.
 
+## 2026-10-17 - paired domain fixture timestamps
+
+Capture one earlier timestamp for each paired refresh/binding update in the domain expiry and contract fixtures. Keep production identity guards, named assertions, runtime behavior and acceptance requirements unchanged. Preserve the original c0ed PHP 8.4/MySQL native failure and its seven archives/five logs. Source and trace support a clock-boundary fixture race; original row values were not captured. Corrected-source full acceptance and verified publication remain pending.
+
 ## 2026-10-17 - scheduled-run browser synchronization
 
 Wait for the complete Chromium page load after the scheduler's Run if due action before switching to the separate HTTP client. Preserve every existing assertion, request timeout and capture, and pin the corrected fixture in the acceptance contract. An independent actual localhost reproduction with a synthetic streamed tail passes 13 checks at the unchanged 15-second request timeout. Original failed evidence remains retained; shipping behavior and workflows are unchanged. Fresh complete candidate/main acceptance and verified publication remain pending.

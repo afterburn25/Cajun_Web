@@ -8,6 +8,12 @@ Keep all148 native recipes, complete PHP8.2/8.4 × MariaDB10.11/MySQL8.4 environ
 
 The tracked [acceptance report](docs/TEST_REPORT_1.25.0.md) has an explicit source/evidence cutoff. Final exact-main and publication facts belong in the external release report and receipts once those events occur; do not amend an accepted source merely to insert its own future test results. Verify identical versioned/compatibility report asset bytes before publication. No live deployment is authorized. Resume remaining20i only after the release and downloads are verified.
 
+## 2026-10-17 - paired domain fixture timestamps
+
+Continue from parent `c0ed18397349a023224623027ba5bfd3bf9d7e67` with only the reviewed timestamp correction in `tests/domain_expiry_native.php` and `tests/domain_contracts_native.php`, their two acceptance-contract pins and these five continuity documents. Capture one `time()-600` value for both rows in each fixture; do not relax the production equal-epoch guard or any assertion. The full source-binding inventory becomes 122 pins; all 148 native recipes, 160/204 reports, 320+8 images, workflows and timeouts remain. Root owns application, commit and fresh identities.
+
+At **2026-10-17 06:24 UTC**, original PHP 8.4/MySQL run39005276959 had failed after 67 domain-expiry passes, skipped Chromium and failed its final aggregate. Its seven archives/five logs remain preserved; the other three full runs were active. Parent c0ed's build, maintained, recovery and Apache passes are bounded evidence only. Review the actual correction and local evidence, freeze/build/bind its observed source, then complete every candidate/maintained and visual gate before normal merge, complete exact-main rerun and all-asset publication/download verification. No future commit/run/Windows outcome is assumed. Main `d7153b07`, published 1.24 and production stay unchanged; 1.25 is unpublished.
+
 ## 2026-10-17 - scheduled-run browser response completion
 
 Continue from the narrow correction to parent `cc0ec4a9b4131498831fb761d4a2d7f93ade4604`: wait for the scheduled-run Chromium page load before the separate requests client fetches its next form, and pin the corrected fixture in the acceptance contract. All original requests, assertions, timeouts, captures and shipping/workflow bytes remain. Independent actual localhost reproduction passes 13 checks with the same 15-second request timeout; its 20-second render tail is synthetic and does not profile the application database.
