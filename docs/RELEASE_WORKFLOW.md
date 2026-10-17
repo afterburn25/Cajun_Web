@@ -1,5 +1,9 @@
 ## Release 1.25.0 evidence and publication boundary
 
+## 2026-10-17 - complete acceptance job allowance
+
+The combined native/browser job has a240-minute aggregate execution allowance. The change from180 follows the preserved [original cancellation and timing evidence](ACCEPTANCE_JOB_BUDGET_1.25.0.md); individual application/request/browser/provider timeout behavior and every acceptance requirement stay intact. Keep the native-to-browser state in one job. This is capacity for completing the suite, not a successful result or a substitute for any missing report. Require actual corrected candidate/default PHP8.3 and four-environment results, then fresh exact-main acceptance before release.
+
 The bounded increment is defined by [scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md), [acceptance report](TEST_REPORT_1.25.0.md) and [migration instructions](MIGRATION-INSTRUCTIONS-1.25.0.md). The original main/mature20i histories are already normally merged. Preserve every existing acceptance and publication gate; current source integration does not itself publish or deploy the application.
 
 Record complete exact-main outcomes and publication only from their actual receipts. Final release notes/report assets may add those facts after accepted source is frozen. Do not rewrite an accepted commit to claim a future result, and do not replace an immutable released asset with a later source. A publication is verified only after every asset is freshly downloaded and compared with its prepared source-bound bytes.

@@ -1,5 +1,9 @@
 ## 1.25.0 — bounded mature increment
 
+## 2026-10-17 - complete acceptance job allowance
+
+Allow four hours for the complete combined native/browser CI job after the preserved original three-hour cancellation near the final scheduler flow. Keep all149 commands, state continuity, named checks, application timeouts and328 image requirements. Shipping application code is unchanged. Fresh corrected-source acceptance and publication remain pending.
+
 ## 2026-10-17 - verified bounded StackCP correction integrated for full acceptance
 
 Integrate the reviewed single-call StackCP access snapshot and exact scheduler-backoff fixture correction after the original bounded native/packaged-browser diagnostic passed. Add the native comparison to full acceptance while retaining every earlier recipe, image and guard. Complete corrected-candidate/main acceptance and verified publication remain pending; no new provider capability or production deployment.

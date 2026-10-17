@@ -159,9 +159,10 @@ jobs:
   native-and-browser:
     needs: build
     runs-on: ubuntu-24.04
-    # Original run38909577278 exhausted105m while bounded browser requests still progressed.
-    # Preserve every assertion and the native-to-browser state; allow the complete suite.
-    timeout-minutes: 180
+    # Original run38909577278 exhausted105m; run39024070818 later exhausted180m
+    # during the final scheduler flow, with requests completing until the job cap.
+    # Preserve every assertion, request/browser/provider limit and native-to-browser state.
+    timeout-minutes: 240
     outputs:
       artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
       sha256: ${{ steps.seal.outputs.sha256 }}
