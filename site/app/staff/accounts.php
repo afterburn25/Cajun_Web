@@ -172,7 +172,7 @@ function staff_action_permission(string $action): ?string {
     if(str_starts_with($action,'payments_'))return 'payments.manage';
     if(in_array($action,['delivery_setup','delivery_publish'],true))return 'staff.manage';
     if($action==='activity_setup')return 'staff.manage';
-    if($action==='activity_mark')return 'clients.manage';
+    if(in_array($action,['activity_mark','activity_prefs'],true))return 'clients.manage';
     if($action==='delivery_upload')return 'clients.manage';
     if($action==='studio_contacts_setup')return 'staff.manage';
     if(in_array($action,['studio_contact','studio_contact_invite'],true))return 'clients.manage';

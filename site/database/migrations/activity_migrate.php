@@ -5,9 +5,10 @@ function activity_migrate(#[\SensitiveParameter] string $password): void {
     staff_locked(function() use($password): void {
         if(support_current())throw new RuntimeException('Leave support before setup.');$u=staff_owner($password);
         if(!studio_ready())throw new RuntimeException('Enable the client workspace first.');
+        $keys=['activity_reads'=>['read_event'=>['actor_type','actor_id','event_key']],'activity_prefs'=>['pref_kind'=>['actor_type','actor_id','kind']]];
         foreach(activity_schema(config()['db']['prefix']) as $name=>$sql){
             if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name])){
-                catalog_validate_schema($name,$sql,['read_event'=>['actor_type','actor_id','event_key']]);
+                catalog_validate_schema($name,$sql,$keys[$name]);
                 foreach(all('SHOW FULL COLUMNS FROM '.table($name)) as $c)if($c['Field']==='event_key'&&$c['Collation']!=='ascii_bin')throw new RuntimeException('Incompatible activity identifiers.');
             }else db()->exec($sql);
         }
