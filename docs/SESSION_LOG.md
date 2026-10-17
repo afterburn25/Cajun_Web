@@ -1882,3 +1882,25 @@ Round-3 review confirmations received this round: #203 source fix
 accepted (`9015ef8f`), #213 implementation accepted (`3411de28`) — its
 remaining combined HTTP/browser acceptance exercises this repaired
 fixture on the retargeted base per the stacked-chain convention.
+
+## Stacked-chain restack, 2026-10-17
+
+`82c62c98` landing on `devin/non20i-staff-notes` left #210 CONFLICTING
+(inventory pin for merged `admin/views/studio/job.php`), which
+suppresses its check runs — the same suppression seen earlier on #213.
+Restacked each descendant by merging the updated base upward and
+regenerating `site/install/inventory.generated.php` so pins match the
+merged source:
+
+- #210 `devin/non20i-milestones` `e3a7e800` — merge `250f1d4a` + pin
+  refresh; **green 19/19**.
+- #211 `devin/non20i-activity-prefs` `71a900bb` — merge `19fc4fe7` +
+  pin refresh; **green 19/19**.
+- #212 `devin/non20i-client-actions` `1c47854a` — clean merge;
+  **green 18/18**.
+- #213 `devin/non20i-portal-account` `4eedb8cc` — clean merge;
+  **green 18/18** after rerunning a Docker port-binding infra failure
+  (`0.0.0.0:33306` address already in use) in Provider inventory.
+
+Each merge reduced the PR's effective diff to its own feature; the
+chain is MERGEABLE end to end again.
