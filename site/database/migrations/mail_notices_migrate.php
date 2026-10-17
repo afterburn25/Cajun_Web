@@ -48,8 +48,11 @@ function mail_notices_migrate(#[\SensitiveParameter] string $password): void {
             }
         }
         staff_transaction(function()use($actor):void {
-            if((one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_notices_schema_version'])['value']??'')==='') {
+            $version=(string)(one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_notices_schema_version'])['value']??'');
+            if($version==='') {
                 foreach(array_keys(mail_notices_schema(config()['db']['prefix'])) as $name)if((int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn())throw new RuntimeException('Unrecognized email notice records exist. No data was adopted.');
+            } elseif($version!=='1'&&$version!=='2') {
+                throw new RuntimeException('Unrecognized email notice storage version. Existing data was preserved.');
             }
             save_setting('mail_notices_schema_version','2');
             mail_accounts_audit((int)$actor['id'],'notice_setup','Additive email notice storage verified');
