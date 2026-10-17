@@ -35,7 +35,7 @@ def run_browser(env,browser):
         check('Restore is audited',db("SELECT COUNT(*) AS c FROM ci_audit WHERE action='backups.restore'")[0]['c']>=1)
         r=owner.get(url+'&download='+bid);check('Backup download is private no-store ZIP','application/zip' in r.headers.get('Content-Type','') and 'no-store' in r.headers.get('Cache-Control','') and r.content==archive.read_bytes())
         check('Staff download is refused',web.get(url+'&download='+bid).status_code in (403,404))
-        check('Anonymous download is refused',requests.get(url+'&download='+bid).status_code in (302,403,404))
+        r=requests.get(url+'&download='+bid,allow_redirects=False);check('Anonymous download is refused',r.status_code in (302,303,403,404) and 'application/zip' not in r.headers.get('Content-Type',''))
         web.post(url,data={'csrf':token(web.get(root+'?view=dashboard')),'action':'backups_drill','backup':bid})
         check('Website-only staff drill attempt writes nothing',db('SELECT COUNT(*) AS c FROM ci_backup_drills')[0]['c']==0)
         r=submit(owner,url,'backups_drill',{'backup':bid})
