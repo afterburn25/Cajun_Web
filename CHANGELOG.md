@@ -725,3 +725,9 @@ Fresh issue157 comments6217621738/6217865863 acknowledge non20i work. Open heads
 ## 2026-10-16 15:15 UTC - Publish cloud candidate and actionable licensing review
 
 +Owner goal: continue complete20i and coordinate Devin non-20i work. Documentation parent595ac9c3; commit "Document cloud assignment candidate and licensing review" records exact source2a86704f/tree32f1058c/parent819c, original focused run38921917647 attempt1 and pending Windows build. Local/source/staged checks passed; native/full/browser/package/main/release acceptance remains pending. Original819c upgrade failure is preserved and corrected on2a; original9779 browser remains active. Licensing159 review299bf71e produced comments6218434878/6218437910 with two behavior gaps and stale inventory failure. All changed files are Markdown; no runtime, installer, version, release, live provider or customer action. Next: actual focused archives, full combined evidence and sequential integration.
+
+## Unreleased — comparison source registry (devin/non20i-comparison-sources)
+
+- `growth_sources()` now carries the C-01 source/date/plan registry: each of the four cited provider documents records its title, primary URL, review date and plan scope, rendered as a sourced list under every comparison page.
+- Squarespace export link corrected to the current help-center slug (`206566687-Exporting-your-site`); all four sources re-verified against live primary documentation on 2026-10-16, including plan-gated Squarespace code features (Core, Plus, Advanced or some legacy plans).
+- HTTP acceptance asserts the registry lists all four sources with reviewed dates/scopes and HTTPS primary links. No copied competitor claims, prices or performance guarantees added.
