@@ -30,6 +30,14 @@ function backups_manifest(array $row): BackupManifest {
     if(!hash_equals($row['manifest_hash'],$manifest->manifestHash()))throw new RuntimeException('Stored backup manifest does not match its recorded integrity hash.');
     return $manifest;
 }
+
+/** Recorded database-export section for a backup row, or null for pre-export snapshots. */
+function backups_database(array $row): ?array {
+    $data=json_decode($row['manifest'],true);
+    $section=$data['database']??null;
+    if(!is_array($section)||($section['file']??'')!=='database/snapshot.sql'||!preg_match('/^[0-9a-f]{64}$/D',(string)($section['sha256']??'')))return null;
+    return $section;
+}
 function backups_download(string $id): never {
     backups_require();$row=backups_row($id);$path=backups_archive_path($row);
     if(!is_file($path))throw new RuntimeException('The stored archive for this backup is missing.');

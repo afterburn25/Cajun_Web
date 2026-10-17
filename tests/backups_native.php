@@ -26,8 +26,13 @@ try{
     $storage=config()['storage'];$GLOBALS['cwp_config']['storage']=realpath(CWP_CODE_ROOT);b_deny('Backup storage cannot be inside web root',fn()=>backups_directory());$GLOBALS['cwp_config']['storage']=$storage;
     b_deny('Create refuses a malformed request key',fn()=>backups_create([],'short'));
     b_actor(3);b_deny('Website-only staff cannot create backups',fn()=>backups_create([],bin2hex(random_bytes(32))));b_actor();
+    db()->exec('CREATE TABLE backupci_probe (id INT PRIMARY KEY, marker VARCHAR(40))');query("INSERT INTO backupci_probe VALUES (1,'MARKER-DATABASE-ROW')");
+    query("INSERT INTO ".table('rate_limits')." (bucket,attempts,expires) VALUES ('TRANSIENT-THROTTLE-ROW',1,1)");
     $key=bin2hex(random_bytes(32));$id=backups_create(['notes'=>'Synthetic snapshot','retain_days'=>30],$key);$row=backups_row($id);
     b_ok('Create persists manifest, archive and owner attribution',strlen($id)===32&&$row['status']==='ready'&&(int)$row['created_by']===1&&is_file(backups_archive_path($row))&&$row['manifest_hash']===backups_manifest($row)->manifestHash());
+    $section=backups_database($row);$zip=new ZipArchive();$zip->open(backups_archive_path($row));$dump=$zip->getFromName('database/snapshot.sql');$zip->close();
+    b_ok('Backup preserves a consistent database export inside private storage',$section!==null&&$dump!==false&&hash_equals($section['sha256'],hash('sha256',$dump))&&$section['tables']>=2&&$section['rows']>=1);
+    b_ok('Database export contains real rows and skips transient state',str_contains($dump,"INSERT INTO `backupci_probe`")&&str_contains($dump,'MARKER-DATABASE-ROW')&&!str_contains($dump,'TRANSIENT-THROTTLE-ROW'));
     b_ok('Manifest excludes secrets and private storage structurally',!isset(backups_manifest($row)->items['config.php'],backups_manifest($row)->items['.env'])&&!array_filter(array_keys(backups_manifest($row)->items),fn($n)=>str_starts_with($n,'storage/')||str_contains($n,'payment-master')));
     b_ok('Same request returns same record and bytes',backups_create(['notes'=>'Synthetic snapshot','retain_days'=>30],$key)===$id&&(int)query('SELECT COUNT(*) FROM '.table('backups'))->fetchColumn()===1);
     b_deny('Reusing create key with changed details rejected',fn()=>backups_create(['notes'=>'changed','retain_days'=>30],$key));
@@ -44,7 +49,8 @@ try{
     b_ok('Authorized restore rewrote only the changed file',file_get_contents($fixtureFile)==='original fixture bytes'&&backups_row($id)['status']==='applied');
     unlink($fixtureFile);$plan=backups_preview(backups_row($id));b_ok('Preview marks a deleted file missing',$plan->impact['backups-fixture.txt']['current']==='missing');
     backups_restore($id,backups_restore_phrase($row),$password);b_ok('Second restore recreates the missing file',file_get_contents($fixtureFile)==='original fixture bytes');
-    $drill=backups_drill($id);b_ok('Restore drill verifies every item in isolated storage',$drill['result']==='verified'&&$drill['verified']===(int)$row['items']&&$drill['missing']===0&&$drill['mismatched']===0&&$drill['verified']>0);
+    b_ok('File restores never write the database export into the deployed tree',!file_exists(CWP_CODE_ROOT.'/database/snapshot.sql'));
+    $drill=backups_drill($id);b_ok('Restore drill verifies every item in isolated storage',$drill['result']==='verified'&&$drill['verified']===(int)$row['items']+1&&$drill['missing']===0&&$drill['mismatched']===0&&$drill['verified']>0);
     b_ok('Drill attempt is recorded durably',(one('SELECT result FROM '.table('backup_drills').' WHERE id=?',[$drill['id']])['result']??'')==='verified');
     b_ok('Drill leaves no scratch and no deployed change',glob(backups_directory().'/drill-*')===[]&&file_get_contents($fixtureFile)==='original fixture bytes');
     b_actor(3);b_deny('Website-only staff cannot run a restore drill',fn()=>backups_drill($id));b_actor();
@@ -57,7 +63,7 @@ try{
     file_put_contents($archive,$bytes);
     b_ok('File unchanged after archive rejection',file_get_contents($fixtureFile)==='tampered again');
     $zip=new ZipArchive();$zip->open($archive);$zip->addFromString('backups-fixture.txt','substituted bytes');$zip->close();
-    $d2=backups_drill($id);b_ok('Drill flags archive bytes that no longer match the manifest',$d2['result']==='incomplete'&&$d2['mismatched']===1&&$d2['verified']===(int)$row['items']-1);
+    $d2=backups_drill($id);b_ok('Drill flags archive bytes that no longer match the manifest',$d2['result']==='incomplete'&&$d2['mismatched']===1&&$d2['verified']===(int)$row['items']);
     file_put_contents($archive,$bytes);
     $zip=new ZipArchive();$zip->open($archive);$zip->deleteName('backups-fixture.txt');$zip->close();
     $d3=backups_drill($id);b_ok('Drill flags a missing archive entry',$d3['result']==='incomplete'&&$d3['missing']===1);

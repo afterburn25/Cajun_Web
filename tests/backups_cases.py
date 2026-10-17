@@ -1,5 +1,5 @@
 """Backup/restore admin flows over real HTTP: setup, private archive, deliberate restore, guarded download."""
-import json,requests
+import io,json,requests,zipfile
 from release_cases import db
 from staff_cases import OWNER,STAFF
 
@@ -34,12 +34,15 @@ def run_browser(env,browser):
         r=submit(owner,url+'&preview='+bid,'backups_restore',{'phrase':phrase,'owner_password':OWNER,'confirm':'1'});check('Deliberate restore rewrites the changed file','Backup applied' in r.text and fixture.read_text()=='original browser bytes' and db('SELECT status FROM ci_backups WHERE id=?',[bid])[0]['status']=='applied')
         check('Restore is audited',db("SELECT COUNT(*) AS c FROM ci_audit WHERE action='backups.restore'")[0]['c']>=1)
         r=owner.get(url+'&download='+bid);check('Backup download is private no-store ZIP','application/zip' in r.headers.get('Content-Type','') and 'no-store' in r.headers.get('Cache-Control','') and r.content==archive.read_bytes())
+        with zipfile.ZipFile(io.BytesIO(r.content)) as z:dump=z.read('database/snapshot.sql').decode('utf-8')
+        manifest=json.loads(row['manifest']);check('Archive embeds a consistent database export','database' in manifest and manifest['database']['file']=='database/snapshot.sql' and manifest['database']['sha256']==__import__('hashlib').sha256(dump.encode()).hexdigest() and 'INSERT INTO `ci_settings`' in dump)
+        check('Database export skips transient runtime tables','ci_rate_limits' not in dump and 'ci_resets' not in dump)
         check('Staff download is refused',web.get(url+'&download='+bid).status_code in (403,404))
         r=requests.get(url+'&download='+bid,allow_redirects=False);check('Anonymous download is refused',r.status_code in (302,303,403,404) and 'application/zip' not in r.headers.get('Content-Type',''))
         web.post(url,data={'csrf':token(web.get(root+'?view=dashboard')),'action':'backups_drill','backup':bid})
         check('Website-only staff drill attempt writes nothing',db('SELECT COUNT(*) AS c FROM ci_backup_drills')[0]['c']==0)
         r=submit(owner,url,'backups_drill',{'backup':bid})
-        check('Owner restore drill verifies every archived item','Restore drill verified all' in r.text and db('SELECT result,verified,missing,mismatched FROM ci_backup_drills WHERE backup_id=?',[bid])==[{'result':'verified','verified':int(row['items']),'missing':0,'mismatched':0}])
+        check('Owner restore drill verifies every archived item','Restore drill verified all' in r.text and db('SELECT result,verified,missing,mismatched FROM ci_backup_drills WHERE backup_id=?',[bid])==[{'result':'verified','verified':int(row['items'])+1,'missing':0,'mismatched':0}])
         check('Drill result is shown on the backups list','Restore drill' in owner.get(url).text and 'verified' in owner.get(url).text)
         check('Drill is audited',db("SELECT COUNT(*) AS c FROM ci_audit WHERE action='backups.drill'")[0]['c']>=1)
         check('Drill left no scratch directories',not list(private.glob('drill-*')))
