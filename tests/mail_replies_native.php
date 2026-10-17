@@ -72,6 +72,7 @@ try{
     rp_ok('Exact form replay resolves existing draft without fetching',mail_reply_drafts_existing($id,$source,1,'7','44','reply',$sender,1)===$id&&rp_snapshot()===$before);
     rp_deny('Form identity cannot be reused for another message',fn()=>mail_reply_drafts_existing($id,$source,1,'7','45','reply',$sender,1));
     rp_deny('Form identity cannot be reused for another action',fn()=>mail_reply_drafts_existing($id,$source,1,'7','44','forward',$sender,1));
+    rp_deny('Form identity cannot be reused for a reply-all draft',fn()=>mail_reply_drafts_existing($id,$source,1,'7','44','reply-all',$sender,1));
     rp_deny('Repeated creation cannot overwrite changed source content',fn()=>mail_reply_drafts_create($id,$sender,1,$read,ReplyDraft::prepare('reply',rp_raw('Different source subject'))));
     $bad=$read;$bad['uid']='45';rp_deny('Source UID must match durable successful read',fn()=>mail_reply_drafts_create(bin2hex(random_bytes(16)),$sender,1,$bad,$prepared));
     $bad=$read;$bad['request_id']=str_repeat('a',32);rp_deny('Unknown source read cannot create copied content',fn()=>mail_reply_drafts_create(bin2hex(random_bytes(16)),$sender,1,$bad,$prepared));
@@ -141,5 +142,6 @@ try{
     $metadata=json_encode([all('SELECT * FROM '.table('mail_draft_revisions')),all('SELECT * FROM '.table('audit'))]);rp_ok('Metadata history and audit never retain copied subject body or recipients',!str_contains($metadata,'PRIVATE_COPIED')&&!str_contains($metadata,'source@example.invalid')&&!str_contains($metadata,'Edited body'));
     rp_ok('Original mailbox encryption key remains unchanged',file_get_contents($private.'/mail-master.key')===$key);
     rp_ok('No SMTP dispatch record or system-mail activation exists',(int)query('SELECT COUNT(*) FROM '.table('mail_submission_dispatches'))->fetchColumn()===0&&setting('email_mode')==='disabled'&&setting('smtp_host')==='');
+    rp_ok('All reply modes delegate to current mailbox authority',staff_action_permission('mail_message_reply')===null&&staff_action_permission('mail_message_reply_all')===null&&staff_action_permission('mail_message_forward')===null);
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
 $passed=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/mail-replies-native-results.json',json_encode(['passed'=>$passed,'scope'=>'Native MariaDB protected source drafts, synthetic successful-read journals, current authority, audit/race and retained ordinary-code recovery barriers. No real IMAP, SMTP, HTTP, packaged recovery or UI acceptance.','checks'=>$checks],JSON_PRETTY_PRINT)."\n");echo ($passed?'PASS':'FAIL').': '.count($checks)." native reply draft checks\n";exit($passed?0:1);

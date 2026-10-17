@@ -43,6 +43,15 @@ Actions: `tests/mail_reply_cases.py` now prints the recorded `ci_mail_submission
 Tests: `python -m py_compile` clean; inventory refreshed after the revert. CI reruns will report the outcome directly.
 
 Next: read the diagnostic, fix the real authorize/transport defect, remove the print, re-run full acceptance.
+## Reply all for protected copied drafts — 2026-10-16
+
+Request: continue #157 non-20i roadmap; reply-all was the remaining named gap in the Reply/Forward contract. Starting commit: `devin/non20i-mail-sent-sync` tip `3a3cb28c`, new branch `devin/non20i-mail-reply-all`.
+
+Actions: `ReplyMetadata::decode` now bounds and parses the original To/Cc headers alongside the existing reply fields (parser header budget 5→7, shared mailbox syntax pattern, ≤20 addresses per field); `ReplyDraft::prepare` accepts `reply-all` with a required `$self` argument — To = reply recipients ∪ original To, Cc = original Cc, each deduplicated by first occurrence and dropping the sender under `DraftContent`'s exact-address rule; `DraftOrigin` and `mail_reply_drafts_existing` whitelists gained `reply-all`; the `mail_message_reply_all` controller action resolves the sender's own address from the exact authorized account before preparing; the message view gained a Reply all button; the synthetic inbox fixture's stored message now carries To/Cc headers.
+
+Tests: `php -l` clean; `tests/mail-compose/reply.php` 67/67 pure checks including reply-all recipient union, self-exclusion exactness, Cc-vs-To dedupe, Reply-To precedence, missing-sender refusal, malformed recipient refusal and the recipient bound; `mail_reply_cases.py` extended with an HTTP reply-all flow asserting fixture-verified recipients, origin mode, thread binding and replay/different-action refusals; `mail_replies_native.php` gained a reply-all form-identity refusal. Build refresh clean; mirrors byte-identical. Native/HTTP lanes run in CI; no real mailbox acceptance is claimed.
+
+Next: push, open stacked PR on `devin/non20i-mail-sent-sync`, update #157.
 
 ## Sent-folder synchronization for accepted submissions — 2026-10-16
 
