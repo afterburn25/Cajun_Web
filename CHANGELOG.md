@@ -4,6 +4,10 @@ Includes the hosting/domain/cloud observations, explicit assignments, reviewed c
 
 The [acceptance report](docs/TEST_REPORT_1.25.0.md) records source-specific results and limits. This source change entry does not assert publication or live deployment. The release assets and verification receipts establish those later outcomes.
 
+## 2026-10-17 - PHP 8.4 upgrade test compatibility
+
+Correct six removed-installer assertions for PHP8.4 built-in-server homepage fallback. Preserve every named assertion, physical installer absence and strict404 on earlier runtimes; also verify POST, reject setup UI/redirects, and require an exact separately fetched homepage DOM after validating its one CSP nonce. Shipping code and Apache behavior are unchanged. Parent155 original failures remain preserved. Focused66 guards and12 actual local HTTP scenarios pass; complete descendant candidate/main acceptance and verified publication remain pending.
+
 ## 2026-10-16 — licensing permission-test correction
 
 From f77, distinguish the existing owner-only licensing page refusal from the forbidden-action refusal in the shared HTTP fixture. Verify staff login and exact403/no-history-change page behavior, and exercise both nonowner actions through the accessible dashboard while retaining strict200/action-denial and original-history checks. Align the helper source hash; no production permission, route, schema or workflow change. Preserve original run38965358937's HTTP failure and four native114-check passes. Corrected real HTTP and full descendant/main acceptance remain required before publication.

@@ -99,7 +99,7 @@ def run_http(env):
     preserved={p:p.read_bytes() for p in [upgrade/'config.php',upgrade/'.installed.php',upgrade/'unrelated.txt',ROOT/'test-runtime/upgrade-private/media/retained.php']}
     rows_before={t:db('SELECT * FROM upgrade_'+t) for t in ['settings','users','leads','projects']}
     with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(upgrade)
-    from structure_helpers import apply_file_update
+    from structure_helpers import apply_file_update, removed_setup_unavailable
     apply_file_update(globals(),upgrade)
     check('Actual update ZIP preserves config locks media and unrelated files',all(p.read_bytes()==data for p,data in preserved.items()))
     up=requests.Session();r=submit(up,BASE+'/upgrade/admin/index.php?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
@@ -113,7 +113,7 @@ def run_http(env):
     check('Upgrade preserves original credentials and identity',all(user[k]==old[k] for k in old if k!='last_login'))
     submit(up,BASE+'/upgrade/admin/index.php?view=studio-upgrade','studio_migrate',{'confirm':'1'})
     check('HTTP upgrade can safely repeat',db("SELECT value FROM upgrade_settings WHERE name='studio_schema_version'")[0]['value']=='2')
-    check('Upgraded site never reruns fresh setup',requests.get(BASE+'/upgrade/install.php').status_code==404)
+    check('Upgraded site never reruns fresh setup',removed_setup_unavailable(globals(),upgrade,up))
     # Private invitation is copied from the real admin response; no customer mail.
     clients=BASE+'/existing/admin/index.php?view=studio-clients'
     cid=db("SELECT id FROM ci_studio_clients WHERE email='newclient@example.invalid'")[0]['id']

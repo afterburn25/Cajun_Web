@@ -21,7 +21,7 @@ def run_http(env):
     tables=['users','settings','leads','projects','studio_clients','studio_jobs']
     before={t:db('SELECT * FROM staffup_'+t) for t in tables}
     with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(dest)
-    from structure_helpers import apply_file_update
+    from structure_helpers import apply_file_update, removed_setup_unavailable
     apply_file_update(globals(),dest)
     check('1.1.0 package update preserves configuration locks media unrelated files',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();root=BASE+'/staff-upgrade/admin/index.php'
@@ -37,7 +37,7 @@ def run_http(env):
     check('Actual 1.1.0 retains all passwords identifiers and auth versions',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(users,before['users'])))
     profiles=db('SELECT role,enabled,permissions FROM staffup_staff_profiles ORDER BY user_id')
     check('Migration explicitly assigns owner and other existing staff',profiles[0]['role']=='owner' and profiles[1]['role']=='administrator' and json.loads(profiles[1]['permissions'])==['website.manage','clients.manage'])
-    check('Upgraded 1.1.0 fresh setup remains blocked',requests.get(BASE+'/staff-upgrade/install.php').status_code==404)
+    check('Upgraded 1.1.0 fresh setup remains blocked',removed_setup_unavailable(globals(),dest,up))
     other=requests.Session();r=submit(other,root+'?view=login','login',{'email':'other-legacy@example.invalid','password':'Synthetic other legacy passphrase'})
     check('Other legacy administrator retains normal sign-in and client access','Sales pipeline' in r.text and other.get(root+'?view=studio-clients').status_code==200 and other.get(root+'?view=staff').status_code==403)
     # Upgrade the regression fixture only after its original release acceptance is complete.

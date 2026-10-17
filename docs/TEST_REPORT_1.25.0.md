@@ -2,6 +2,16 @@
 
 This tracked report records source-specific candidate evidence available at its documentation cutoff. It does not certify a future commit or publication. [Scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md) and [owner upgrade instructions](MIGRATION-INSTRUCTIONS-1.25.0.md) define the increment. Complete exact-main outcomes and publication verification are recorded in the external final release report/receipts once those events occur; versioned and compatibility final report assets must contain identical bytes.
 
+## 2026-10-17 — PHP 8.4 upgrade fixture compatibility
+
+This release-only correction starts from `155838eb8574dcc96f7d038cc306677d2d4784a0`; its enclosing commit identifies the descendant. Both original PHP 8.4 full runs, [MariaDB 38975755408](https://github.com/afterburn25/Cajun_Web/actions/runs/38975755408) and [MySQL 38975766343](https://github.com/afterburn25/Cajun_Web/actions/runs/38975766343), passed native integration and stopped at HTTP check126: `upgrade setup cannot be reused after update` (125 pass, one fail). The installer was physically absent; the retained request logs show HTTP200 for its removed URL. That response body was not retained, and the original failed reports/artifacts remain preserved.
+
+The [PHP built-in server manual](https://www.php.net/manual/en/features.commandline.webserver.php) documents a PHP8.4 change: a missing filename can use the directory index. Six related fixture assertions incorrectly required the pre8.4 HTTP404 behavior. The corrected shared helper retains physical installer absence before and after real GET/POST requests, rejects redirects and setup UI, and permits the documented200 fallback only on observed PHP8.4 when its complete homepage DOM matches a separately fetched index after normalizing the one validated CSP nonce. All six original named checks remain; earlier runtimes still require404. Shipping code, Apache404 expectations, database assertions, all148 native recipes and the160 browser/204 final report requirements remain unchanged.
+
+Local validation: 66 offline helper/source guards and an independent 12-scenario/29-request real PHP8.4.25 helper run pass. The latter uses synthetic HTML and does not establish full application acceptance. Root confirms all273 existing named checks in the six edited fixtures remain unchanged. Independent source review found no concrete blocker in this narrow correction.
+
+Parent155 has verified builds across Windows/four Linux environments, all four Apache/published1.24-upgrade/recovery partitions, the maintained runtime lane, and the supplemental licensing flow. Eight upgrade and six supplemental licensing images were actually reviewed. These are bounded parent results; neither failed full run is accepted. The corrected descendant still requires its complete four-environment/maintained acceptance, actual browser review, a normal main merge, complete exact-main acceptance, and publication with fresh verification of all18 assets. Main remains `d7153b07`; v1.25.0 is unpublished, v1.24 is immutable and no live deployment occurred.
+
 ## 2026-10-16 — licensing page/action fixture correction
 
 Parent is `f77c9fb7f4b1b57d13ce352dd7e4fc51b1330695`; the enclosing commit identifies the correction. Evidence cutoff is **2026-10-16 22:03 UTC**.
