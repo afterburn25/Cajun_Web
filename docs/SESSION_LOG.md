@@ -14,7 +14,9 @@ Fix: `configure()` now accepts optional `sender`/`recipients` and resets them to
 
 Tests: `python -m py_compile` clean on both files. CI re-runs the full native/HTTP/Chromium/recovery/Apache matrix.
 
-Next: inspect the run; if green, PR #161 has no remaining known defects.
+Verified: both push (`38988201829`) and pull_request (`38988207057`) Application acceptance runs are green on `bba1e1cb` — 61/61 PR checks pass, including named PASS evidence for `Reviewed reply send records server acceptance`, `Reply wire equals saved MIME with RFC thread headers`, `Same saved copied revision replays without another SMTP connection`, and `Reviewed forward send succeeds without reply headers`. All six #157 named repairs are now fully green (#158 55/55 `5ec3fe9a`, #159 48/48 `69630e95`, #160 `6fc6e897`, #161 61/61 `bba1e1cb`, #174, #175 44/44 `cdf016f5`).
+
+Next: none for this repair set; PRs await integration review/coordination (merge state is not inferred from CI).
 
 ## Diagnose deterministic copied-draft HTTP send failure — 2026-10-17
 
