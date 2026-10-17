@@ -72,6 +72,8 @@ Import existing 20i customers/services through a reviewed mapping workflow that 
 
 ## P-05 — Web-design project workspace and progress
 
+**Partial delivery — additional company contacts:** scoped contact identities with separate project-review, billing and download permissions are implemented on `devin/non20i-client-contacts`. Contacts get their own one-time private invitation and password; message/file authorship is attributed to the contact; every portal route and write revalidates the contact's current permissions, enabled state and owning client. Pending on this branch until packaged acceptance is verified; stage history, per-contact decision attribution and notification routing remain pending.
+
 Each project has a client-visible dashboard: agreed scope, proposal/version, assigned contact, current stage, target dates, milestone list, action required from the client, open questions/blockers, and a dated activity timeline. Suggested configurable stages are Discovery, Content, Design, Development, Review, Ready for launch, Launched and Maintenance. Stage changes and dates come from actual staff updates; never invent progress percentages, completion or guaranteed delivery dates.
 
 Provide protected preview/staging links, design versions, feedback threads, revision requests, client content uploads, version-specific approvals, deliverables and payment milestones. Distinguish staff-only notes from published client updates. A design approval references the exact reviewed version; changing it creates a new revision rather than rewriting history. Financial progress and production progress remain separate.
