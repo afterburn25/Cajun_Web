@@ -1746,3 +1746,15 @@ Tests so far: php -l on the four touched PHP files; staff_cases.py and contacts_
 Known limits: notes are append-only immutable rows like messages; they never create activity events for any audience.
 
 Next: commit, open stacked PR, monitor CI.
+
+## 2026-10-17 — P-05 structured project milestones (stacked)
+
+Request: continue non-20i roadmap; P-05 requires a milestone list with states, target dates and an admin capability to "change milestone state" — previously only a free-form narrative field existed. New branch devin/non20i-milestones stacked on devin/non20i-staff-notes.
+
+Changed: new additive studio_milestones table inside studio_schema() — created on fresh installs via the merged base schema and on older installs by re-running the existing studio_migrate (no marker change; the table is exact-column validated when present). studio_milestones_ready() gates the feature on workspace readiness plus table presence so upgraded installs that have not re-run the update degrade cleanly, and the upgrade card says "current; run again to add milestone tracking". New admin action studio_milestone (clients.manage) adds/updates a milestone with a state (pending/progress/done/blocked) and optional YYYY-MM-DD target date; admin project view renders per-milestone save forms plus an add form. The portal shows the list with state chips and target dates inside the existing projects-permission gate, so clients and permitted contacts see it and other audiences cannot. Activity projects milestone updates (kind 'milestone') under the projects scope for every audience, keyed milestone:<id>, anchored to #milestone-<id> on both job views; the feed label map gains the new kind. tests/staff_cases.py covers add/state update/invalid date/client visibility/activity entry/cross-client isolation; tests/contacts_cases.py covers the projects-permission contact view. Also corrects the staff-note flash assertion to 'Project updated' (the shared action group's actual flash text).
+
+Tests so far: php -l on all seven touched PHP files; staff_cases.py and contacts_cases.py compile; canonical installer checks pass. Packaged acceptance pending on the stacked PR. No email, provider call, payment, deployment or SSH.
+
+Known limits: milestones have no deletion path; the free-form narrative field is retained unchanged.
+
+Next: commit, open stacked PR, monitor CI.

@@ -101,6 +101,7 @@ def run_browser(env,browser):
     r=contact.get(portal+'?job=1')
     check('Contact attribution renders on the message','Review Only Contact' in r.text)
     check('Contact conversation never shows internal staff notes','Staff-only internal marker note.' not in r.text)
+    check('Projects-permission contact sees milestone states and dates','Synthetic milestone content approved' in r.text and '2026-11-30' in r.text and 'milestone-' in r.text)
 
     # A contact decision keeps the client as the deciding account but attributes the person.
     jobAdmin=root+'?view=studio-job&id=1'
