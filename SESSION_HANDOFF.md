@@ -52,4 +52,11 @@ Round-4 review (comment 6239686025) found a latent fixture interaction in that r
 
 Reconciled the reported `organized_update_cases.py` single-probe state: the bounded warm-up + diagnostic lives on `devin/non20i-client-contacts` tip `9015ef8f` and is intact; `portal-account` legitimately lacks it until the base propagates — no revert to reconcile.
 
+Round-4 reviews delivered two more corrections plus a full stack propagation:
+
+- #210 `devin/non20i-milestones` @ `72ba94c3` — GREEN 19/19. `2e06f185`: milestone targets require real calendar dates (`checkdate()`; `2027-02-29` refused, `2028-02-29` accepted); milestone events are revision-qualified `milestone:<id>:<hash>` so a later update resurfaces unread and an older ack cannot consume it — read-then-update covered for primary client and projects-permission contact.
+- #211 `devin/non20i-activity-prefs` @ `5d325631` — GREEN 19/19. `0cd5ce7a`: the pref-isolation check now uses the client-authored reply (eligible for staff feeds) with exact `data-event-key` identity; admin-authored key asserted absent (staff author filter preserved).
+- PR203 dependency propagation per #212/#213 follow-throughs: contacts `9015ef8f` merged forward through contact-decisions (`308805de` 17/17) → contact-activity (`17f0227b` 18/18) → staff-notes (`b4d25087` 19/19) → milestones → activity-prefs → client-actions (`66cc00b7`) → portal-account (`eb6c8082`, docs tip `4f72f3fb`). Union merges preserved every feature; inventory pins regenerated.
+- Combined acceptance dispatched on exact propagated heads: client-actions run 39073761930, portal-account run 39073810828 (`eb6c8082`'s run was auto-cancelled when the docs tip superseded it — same runtime tree).
+
 Next: Codex sequential retarget/integration of the chain (#203 → #204 → #205 → #209 → #210 → #211 → #212 → #213); long lanes re-run per retargeted parent. Devin fixes failures on exact new commits.
