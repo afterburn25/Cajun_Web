@@ -172,6 +172,8 @@ try:
         support_browser(globals(),browser)
         from catalog_cases import run_browser as catalog_browser
         catalog_browser(globals(),browser)
+        from provider_catalog_import_cases import run_browser as catalog_import_browser
+        catalog_import_browser(globals(),browser)
         from payments_cases import run_browser as payments_browser
         payments_browser(globals(),browser)
         from attempts_cases import run_browser as attempts_browser
