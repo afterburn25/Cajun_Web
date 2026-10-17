@@ -1,3 +1,7 @@
+## 2026-10-17 — correct the corrected-tickets merge and notification-center name collision
+
+The feddd459 merge brought the verified tickets base (5ec3fe9a) into this branch. Browser and Apache acceptance then failed every admin route: admin/views/payment-notifications.php already declares notifications_admin_action/notifications_admin_render for the sandbox payment receiver, and includes/layout/notifications.php redeclared both, so login returned a fatal redeclare. Commit cd44b518 renames the notification-center handlers to notification_feed_admin_action/notification_feed_admin_render and updates actions.php and router.php; installer inventory regenerated. No test weakened; the pre-existing payment-notification handlers are untouched.
+
 ## 2026-10-16 — publish the concrete release freeze and branch
 
 Documentation-only descendant of35d8 records owner release-first override, published normal merge b98b96eb, frozen scope/map, actual source/focused evidence and remaining gates. Runtime, installer, version, published assets and production remain unchanged. Continue release corrections, authentic1.24 upgrade coverage, complete supported runtime acceptance, review, exact-main and publication/download verification before new20i capabilities. Coordination is posted in issue2 comment6220729910 and issue157 comment6220730195. Documentation validation is required before commit; no application acceptance is claimed.
@@ -51,6 +55,18 @@ Tests/verification so far (local): `php -l` clean on all touched PHP; `python to
 Known limits: service-agreement link resolution is dormant until a plans module exists; licensing branch `devin/non20i-licensing` is a separate increment and its PR remains blocked by GitHub API rate limits.
 
 Next: push branch, open bounded PR when the API recovers, watch CI for the native/browser/upgrade lanes, then continue the next non-20i item (web-design project progress or mail Reply/Forward per the assignment order).
+
+## Port P-07 notification contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-notifications-foundation`.
+
+Actions: extracted the preserved `devin/notifications` slice — five `foundation/notifications/` classes, `tests/notifications/run.php`, `notifications.yml`, `docs/NOTIFICATIONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters.
+
+Tests: `php -l` clean; `php tests/notifications/run.php` → 65/65 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
+
+## Synchronize release entry points after review — 2026-10-15
 
 Review4281622110 on4cbc2375 reproduced stale pending1.24 headers in README, agent coordination, release workflow and inventory owner guide. Update every listed entry point plus current migration instructions to the actual immutable publication, archive earlier coordination and mark historical1.23 sections clearly. No runtime or package bytes change. Starting parent4cbc23758674b29899d235b511b40f0a18cf8503 is “Record verified1.24 publication and current20i continuation”; correctiondf57d0ce is “Synchronize published1.24 across current entry-point guides.” Actual local documentation check passed161 Markdown files/1,330 local links and canonical dependency checks; git diff whitespace check passed. These checks cover documentation/source consistency only, not runtime acceptance, which remains the separately published7190 evidence. Known failure: initial review4281622110 found stale headers and was corrected. Follow-up review4281670745 requested this explicit validation record. Renewed review is pending; continue cloud/commercial20i work.
 

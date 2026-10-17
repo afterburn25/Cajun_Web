@@ -38,6 +38,7 @@ def run_browser(env, browser):
         check('Ticket setup refuses '+('bad CSRF' if 'csrf' in changes else 'wrong password'), 'Prepare support tickets' in r.text and not db("SELECT * FROM ci_settings WHERE name='support_tickets_schema_version'"))
     r = submit(owner, listing, 'tickets_setup', {'current_password': OWNER})
     check('Owner prepares empty native tickets through actual form', 'Support tickets are ready' in r.text and not db('SELECT * FROM ci_support_tickets'))
+    db("REPLACE INTO ci_settings (name,value) VALUES('notification_feed_version','1')")
     check('Staff ticket pages prohibit caching and referrer disclosure', r.headers.get('Cache-Control')=='no-store, private' and r.headers.get('Referrer-Policy')=='no-referrer')
 
     clients = []
@@ -106,8 +107,11 @@ def run_browser(env, browser):
     check('Exact client reply replay does not duplicate history', snapshot()==saved)
     foreign.post(client_url, data=dict(reply_request, csrf=token(foreign.get(portal)), request_id='f'*32, body='Foreign client forged reply'))
     check('Foreign valid session CSRF cannot write into another ticket', snapshot()==saved)
+    check('Client opening and reply notify ticket-holding staff once each', db('SELECT recipient_id FROM ci_notification_feed WHERE audience=? AND ref=? ORDER BY recipient_id', ['staff', 'ticket:'+ticket])==[{'recipient_id': 1}]*2+[{'recipient_id': staff_id}]*2)
+    check('Private note and assignment never reach the client feed', db('SELECT id FROM ci_notification_feed WHERE audience=? AND ref=?', ['client', 'ticket:'+ticket])==[])
 
     submit(owner, owner_url, 'tickets_reply', {'body': 'Studio response for your design'})
+    check('Public staff reply notifies only the owning client', db('SELECT audience,recipient_id,kind,ref FROM ci_notification_feed WHERE audience=? AND ref=?', ['client', 'ticket:'+ticket])==[{'audience': 'client', 'recipient_id': cid, 'kind': 'support-reply', 'ref': 'ticket:'+ticket}])
     check('Public staff reply increments client notification count', count(client, 'client')==initial_count+1)
     feed = client.get(portal+'?activity=1')
     notice = soup(feed).select_one('[data-ticket-event] h3 a')
