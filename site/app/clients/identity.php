@@ -28,4 +28,13 @@ function studio_login(string $email,string $password): void {
  }
  $row=$contact?:$c;$hash=$row['password_hash']??'$2y$12$k41gRE1TEYzHWgNYkc/yDuDTWYfPr6HvCaDvQfmUTDpAWPSgwOI6u';$ok=password_verify($password,$hash);if(!$row||!$ok)throw new InvalidArgumentException('Email or password not recognized.');session_regenerate_id(true);$_SESSION['client_id']=(int)$c['id'];$_SESSION['client_auth']=$c['auth_version'];if($contact){$_SESSION['contact_id']=(int)$contact['id'];$_SESSION['contact_auth']=$contact['auth_version'];}$_SESSION['client_last']=$_SESSION['client_login']=time();$_SESSION['csrf']=bin2hex(random_bytes(32));
 }
+function studio_password_change(array $actor,bool $isContact,#[\SensitiveParameter] string $current,#[\SensitiveParameter] string $new): void {
+ if(!password_verify($current,(string)$actor['password_hash']))throw new InvalidArgumentException('Your current password is not correct.');
+ validate_password($new);
+ $version=bin2hex(random_bytes(16));
+ query('UPDATE '.table($isContact?'studio_contacts':'studio_clients').' SET password_hash=?,auth_version=? WHERE id=?',[password_hash($new,PASSWORD_DEFAULT),$version,(int)$actor['id']]);
+ if($isContact)$_SESSION['contact_auth']=$version;else $_SESSION['client_auth']=$version;
+ session_regenerate_id(true);
+ studio_client_audit(0,'password_change',(int)($isContact?$actor['client_id']:$actor['id']));
+}
 /** Decision attached to an immutable version, with a project row lock shared by publication. */

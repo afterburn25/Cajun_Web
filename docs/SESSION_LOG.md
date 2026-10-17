@@ -1778,3 +1778,9 @@ Next: commit, open stacked PR, monitor CI.
 - Verified: `php -l` on workspace.php; `py_compile` both test modules; canonical inventory check PASS (no drift).
 - Known limits: read-only derivation only; admin "request feedback" remains covered by `studio_message`. CI lanes for #209-#211 queued behind release-capacity runners; #212's will queue likewise. Long lanes run after Codex retargets each parent to main.
 - Next: open PR #212, keep monitoring CI waves, fix failures on exact new commits.
+
+## 2026-10-17 — Devin lane: #213 portal account self-service
+
+- #213 `devin/non20i-portal-account`: new `site/portal/views/account.php` + `account_password` action; clients and contacts change their own password with current-password proof; `auth_version` bump signs out other sessions while the current session is refreshed (`session_regenerate_id`); rate-limited (`client-password` bucket), audited (`studio_client_audit`), CSRF-protected; support sessions remain blocked by the existing action gate. No schema change. Files: `identity.php`, `actions.php`, `router.php`, `views/account.php`, `views/workspace.php` (Account button), `tests/contacts_cases.py`, inventory refresh, docs.
+- Verified: `php -l` all touched PHP; `py_compile` contacts_cases; canonical inventory PASS.
+- Next: open stacked PR #213 on `devin/non20i-client-actions`; monitor remaining CI.
