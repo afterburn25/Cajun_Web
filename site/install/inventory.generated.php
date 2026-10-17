@@ -2533,7 +2533,7 @@ function setup_expected_files(): array { return [
     'includes/foundation/webmail/MailboxAssignment.php'=>'a884e5852ff151a04801e038a527f11b255607126181276d4072aa7b55279ce1',
     'includes/foundation/webmail/MailboxProfile.php'=>'cace780aa11733e031004a1f43871840a2c16517d283d86c4190d9152d069223',
     'includes/foundation/webmail/UnifiedInbox.php'=>'8a995a7b28de49b030aec5ff0f6440dd7c9904e71404484774f3bbb3a62d74c9',
-    'includes/layout/activity.php'=>'e0ea589e5ec5c162c115daf4060dd139418fa198b337008574d50178afb210aa',
+    'includes/layout/activity.php'=>'7a815029024c62b1e7182e126dddc26c4ced980023607033e7a30ebca0673bdf',
     'includes/layout/admin.php'=>'cb4947b8779f4ce8e47f7f9f958480ca108b9b2a674d069f4ab79e8168e0e2b3',
     'includes/layout/catalog.php'=>'1fe89aa4dda684a65ac66c0b672debcff21401871ef9a176a7e9f1262728306f',
     'includes/layout/deliveries.php'=>'b6ab761e27e9507b82b3a0320a3d0a2158f5764961683b9b5cc8c00dd26ab662',
