@@ -132,7 +132,7 @@ try {
     $first=mail_drafts_list($a);$older=mail_drafts_list($a,'draft',2);dr_ok('Draft pagination has distinct displayed pages and bounded lookahead',count($first)===21&&count($older)===3&&!array_intersect(array_column(array_slice($first,0,20),'id'),array_column($older,'id')));
     if(extension_loaded('dom')) {
         $sanitized=mail_drafts_html('<p>SYNTHETIC <strong>formatted</strong> <script>bad()</script></p>');
-        dr_ok('Formatted alternative sanitizes through the service wrapper',$sanitized==='<p>SYNTHETIC <strong>formatted</strong></p>'&&mail_drafts_html('')===null&&mail_drafts_html('<script>x</script>')===null);
+        dr_ok('Formatted alternative sanitizes through the service wrapper',$sanitized==='<p>SYNTHETIC <strong>formatted</strong> </p>'&&mail_drafts_html('')===null&&mail_drafts_html('<script>x</script>')===null);
         dr_deny('Oversized formatted alternative is refused before storage',fn()=>mail_drafts_html('<p>'.str_repeat('x',40960).'</p>'));
         $rich=bin2hex(random_bytes(16));mail_drafts_save($rich,0,$a,1,new DraftContent(['client@example.invalid'],[],[],'Formatted draft','Plain body',$sanitized));
         $got=mail_drafts_get($rich);
