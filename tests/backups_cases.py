@@ -22,7 +22,7 @@ def run_browser(env,browser):
         r=submit(owner,url,'backups_create',{'retain_days':'30','notes':'Browser HTTP snapshot','confirm':'1'})
         check('Backup creation records the archive','Backup snapshot recorded' in r.text and db('SELECT COUNT(*) AS c FROM ci_backups')[0]['c']==before+1)
         row=db('SELECT * FROM ci_backups ORDER BY created_at DESC LIMIT 1')[0];bid=row['id']
-        private=ROOT/'test-runtime/existing-private/backups';archive=private/('backup-'+bid+'.zip')
+        private=ROOT/'test-runtime/private/backups';archive=private/('backup-'+bid+'.zip')
         check('Archive lives in private storage outside the site root',archive.is_file() and not str(archive).startswith(str(site)))
         manifest=json.loads(row['manifest'])
         check('Recorded manifest excludes secrets and storage',all(not n.startswith('storage/') and n not in ('config.php','.env') for n in manifest['items']))
