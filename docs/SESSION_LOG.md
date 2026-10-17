@@ -1,3 +1,7 @@
+## 2026-10-17 — correct the corrected-tickets merge and notification-center name collision
+
+The feddd459 merge brought the verified tickets base (5ec3fe9a) into this branch. Browser and Apache acceptance then failed every admin route: admin/views/payment-notifications.php already declares notifications_admin_action/notifications_admin_render for the sandbox payment receiver, and includes/layout/notifications.php redeclared both, so login returned a fatal redeclare. Commit cd44b518 renames the notification-center handlers to notification_feed_admin_action/notification_feed_admin_render and updates actions.php and router.php; installer inventory regenerated. No test weakened; the pre-existing payment-notification handlers are untouched.
+
 ## 2026-10-16 — publish the concrete release freeze and branch
 
 Documentation-only descendant of35d8 records owner release-first override, published normal merge b98b96eb, frozen scope/map, actual source/focused evidence and remaining gates. Runtime, installer, version, published assets and production remain unchanged. Continue release corrections, authentic1.24 upgrade coverage, complete supported runtime acceptance, review, exact-main and publication/download verification before new20i capabilities. Coordination is posted in issue2 comment6220729910 and issue157 comment6220730195. Documentation validation is required before commit; no application acceptance is claimed.
