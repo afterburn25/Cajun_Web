@@ -2,7 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function studio_upload(int $jobId,string $actor): void {
- if($actor==='admin'){require_admin();studio_job($jobId);}elseif($actor==='client'){$c=studio_client();if(!$c)throw new InvalidArgumentException('Sign in to upload.');studio_job($jobId,(int)$c['id']);}else throw new InvalidArgumentException('Invalid file actor.');
+ if($actor==='admin'){require_admin();studio_job($jobId);}elseif($actor==='client'){$c=studio_client();if(!$c)throw new InvalidArgumentException('Sign in to upload.');studio_job($jobId,(int)$c['id']);}elseif($actor==='contact'){$c=studio_client();$ct=studio_contact();if(!$c||!$ct)throw new InvalidArgumentException('Sign in to upload.');studio_job($jobId,(int)$c['id']);}else throw new InvalidArgumentException('Invalid file actor.');
  $f=$_FILES['document']??null;
  if(!is_array($f)||!is_int($f['error']??null)||$f['error']!==UPLOAD_ERR_OK||!is_string($f['tmp_name']??null)||!is_uploaded_file($f['tmp_name']))throw new InvalidArgumentException('Choose a PDF, PNG or JPEG document.');
  $size=filesize($f['tmp_name']);if($size===false||$size<1||$size>8*1024*1024)throw new InvalidArgumentException('Files must be between 1 byte and 8 MB.');
@@ -19,7 +19,7 @@ function studio_upload(int $jobId,string $actor): void {
   }elseif(!one('SELECT id FROM '.table('studio_jobs').' WHERE id=? FOR UPDATE',[$jobId]))throw new InvalidArgumentException('Project not found.');
   $sum=(int)query('SELECT COALESCE(SUM(bytes),0) FROM '.table('studio_files').' WHERE job_id=?',[$jobId])->fetchColumn();if($sum+$size>100*1024*1024)throw new RuntimeException('This project has reached its 100 MB file limit.');
   write_private_file($path,CWP_GUARD.$bytes);$written=true;
-  query('INSERT INTO '.table('studio_files').' (id,job_id,author_type,original_name,stored_name,mime,bytes,sha256,created_at) VALUES (?,?,?,?,?,?,?,?,?)',[$id,$jobId,$actor,$name,basename($path),$mime,$size,hash('sha256',$bytes),gmdate('Y-m-d H:i:s')]);if(support_current())support_record('file.upload','file',$id);db()->commit();
+  query('INSERT INTO '.table('studio_files').' (id,job_id,author_type,original_name,stored_name,mime,bytes,sha256,created_at) VALUES (?,?,?,?,?,?,?,?,?)',[$id,$jobId,$actor,$name,basename($path),$mime,$size,hash('sha256',$bytes),gmdate('Y-m-d H:i:s')]);if($actor==='contact')query('INSERT INTO '.table('audit')." (user_id,action,detail,created_at) VALUES (0,'file.upload.contact',?,?)",['Contact '.(int)($ct['id']??0).' file '.$id.' project '.$jobId,gmdate('Y-m-d H:i:s')]);if(support_current())support_record('file.upload','file',$id);db()->commit();
  }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();if($written)@unlink($path);throw $e;}
 }
 

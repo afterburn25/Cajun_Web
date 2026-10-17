@@ -1,5 +1,6 @@
 """Scoped additional-contact HTTP/browser acceptance; synthetic identities only."""
 import json
+from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 import requests
 from playwright.sync_api import expect
@@ -100,6 +101,11 @@ def run_browser(env,browser):
     check('Contact project message saved with contact attribution','Contact-scoped review message' in r.text and db("SELECT author_type FROM ci_studio_messages WHERE body='Contact-scoped review message.'")[0]['author_type']=='contact')
     r=contact.get(portal+'?job=1')
     check('Contact attribution renders on the message','Review Only Contact' in r.text)
+    with open(Path(__file__).resolve().parents[1]/'site/images/icons/favicon.png','rb') as f:
+        r=submit(contact,portal+'?job=1','upload',files={'document':('contact-capture.png',f,'image/png')})
+    check('Projects-permission contact uploads with contact attribution','File saved' in r.text and db("SELECT author_type FROM ci_studio_files WHERE original_name='contact-capture.png'")[0]['author_type']=='contact' and db("SELECT * FROM ci_audit WHERE action='file.upload.contact'"))
+    r=contact.get(BASE+'/existing/api/bundle-download.php?id=1')
+    check('Project-only contact cannot download license bundles',r.status_code==403)
 
     # Billing-only contact: invoices without project review or files.
     data=add_form(cid);data.update(name='Billing Only Contact',email='billing-contact@example.invalid',**{'perms[]':'billing'})
@@ -132,6 +138,8 @@ def run_browser(env,browser):
     check('Disabled contact loses its session immediately',soup(contact.get(portal)).select_one('[name=action][value=login]') is not None)
     r=contact.post(portal,data={'csrf':token(contact.get(portal)),'action':'login','email':'review-contact@example.invalid','password':CPASS})
     check('Disabled contact cannot sign back in','Email or password not recognized' in r.text)
+    r=contact.post(portal+'?job=1',data={'csrf':token(contact.get(portal)),'action':'message','body':'Revoked contact must not write.'})
+    check('Revoked contact session cannot write as the client',not db("SELECT id FROM ci_studio_messages WHERE body='Revoked contact must not write.'"))
     reenable=find_form('studio_contact','id',ctid);reenable['enabled']='1'
     r=owner.post(clients,data=reenable)
     check('Contact re-enable uses the refreshed version','Contact saved' in r.text)
