@@ -1941,3 +1941,34 @@ Owner reviews on #210 and #211 plus follow-throughs on #212/#213:
 - Combined acceptance dispatched on the propagated exact heads:
   client-actions run 39073761930, portal-account run 39073763300 —
   pending at this writing.
+
+## 2026-10-18 — Acceptance failure corrected; stale-ack cases added; acceptance redispatched
+
+- Combined acceptance on the first propagation round failed at
+  `tests/native.php` "Additive upgrade creates seven workspace tables":
+  the assertion still counted seven `ci_studio_*` tables after #210 added
+  `studio_milestones` (native lanes had never run the stacked merge).
+  Both dispatched runs hit it — 39073761930 (client-actions `66cc00b7`)
+  and 39073810828 (portal-account `4f72f3fb`). Infrastructure-independent,
+  source-specific.
+- Fix `0be1fc7a` on `devin/non20i-milestones`: the check now compares the
+  actual table names against `studio_schema()`'s sorted key set, so it
+  cannot rot when tables are added or removed. `activity_native.php`'s
+  `===7` assertions were audited — the event counts remain seven (the
+  fixture seeds no milestone rows), and the receivable-kind count also
+  stays seven because the milestone kind was already gated in by #210;
+  `9ab408b0` on `devin/non20i-activity-prefs` additionally asserts
+  `milestone` is a member of that set so the count cannot silently rot.
+- #210 stale-acknowledgement coverage strengthened `fecf93f9` on
+  `devin/non20i-milestones`: client and contact suites now submit the
+  superseded `milestone:<id>:<rev>` key over HTTP after the milestone
+  changes and assert the mark is rejected while the new revision stays
+  unread — exercising `activity_mark`'s current-projection revalidation
+  end-to-end.
+- Propagated clean through the stack: activity-prefs `d7374456`,
+  client-actions `37b131e9`, portal-account `2dfa5d69`. Test-only diffs;
+  no inventory regeneration required (site/ bytes unchanged).
+- Acceptance redispatched on the exact corrected heads (stale runs
+  cancelled): client-actions run 39076920607 on `37b131e9`,
+  portal-account run 39076926308 on `2dfa5d69` — in progress.
+- No merges, deployments, provider activity, or release publication.
