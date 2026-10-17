@@ -1,3 +1,7 @@
+## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
+
+Pending import: `codex/installer-layout-1.25.0`, starting head and merge base `bc5ec277580aa681f43aaf2c9b97df730f6954f1`. It is a direct descendant of the current release candidate and adds only the owner-requested installer/password/recovery correction and its tests/docs. No feature branch is reimported. The enclosing correction commit supplies the reviewed head; record the actual subsequent normal merge separately. Local evidence is in [the correction report](INSTALLER_FRESH_START_1.25.0.md); complete candidate/main gates remain required.
+
 # CajunWebPro 1.25.0 integration map
 
 Original integration inputs were main35d8 and mature3fa. Root already created `codex/release-1.25.0` from35d8 and normally merged3fa once, followed by the main documentation checkpoint. The feature ancestor table below is a historical source map, not a request to integrate those heads again. Both histories and the deliberate shared-file behavior union are retained.

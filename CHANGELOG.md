@@ -1,5 +1,9 @@
 ## 1.25.0 — bounded mature increment
 
+## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
+
+Improve the one-page installer layout and remove redundant permission/process copy. Require at least 12 characters for new administrator passwords. Preserve existing-site configuration on ordinary uploads, show recovery for missing configuration with retained markers, and offer an explicit fresh start with separate tables/private storage. Existing data and install locks are preserved. This correction is awaiting release acceptance; it is not a published update.
+
 ## 2026-10-17 - complete acceptance job allowance
 
 Allow four hours for the complete combined native/browser CI job after the preserved original three-hour cancellation near the final scheduler flow. Keep all149 commands, state continuity, named checks, application timeouts and328 image requirements. Shipping application code is unchanged. Fresh corrected-source acceptance and publication remain pending.

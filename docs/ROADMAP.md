@@ -1,3 +1,7 @@
+## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
+
+The release lane now includes the owner-requested installer layout, 12-character administrator password minimum, missing-configuration recovery and explicit fresh-start preservation corrections. Implementation exists on the isolated installer branch; complete candidate/main acceptance and publication are still pending. All held 20i capabilities remain held until verified 1.25 publication.
+
 ## Release 1.25.0 scope and evidence
 
 Release 1.25.0 contains the bounded INCLUDE scope in [RELEASE_SCOPE_1.25.0.md](RELEASE_SCOPE_1.25.0.md). The HOLD rows and complete20i roadmap remain unfinished. The [versioned acceptance report](TEST_REPORT_1.25.0.md) records source-specific results and the final release receipts identify publication. Development, release acceptance and live deployment are separate events.

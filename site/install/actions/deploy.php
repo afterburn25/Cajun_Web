@@ -2,7 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); exit; }
 function setup_owner_input(): array {
-    $name=posted('owner_name',120);$email=posted('owner_email',190);$password=posted('owner_password',72);validate_password($password);
+    $name=posted('owner_name',120);$email=posted('owner_email',190);$password=posted('owner_password',72);validate_admin_password($password);
     if($password!==posted('owner_confirm',72))throw new InvalidArgumentException('The administrator passwords do not match.');
     if($name===''||!filter_var($email,FILTER_VALIDATE_EMAIL))throw new InvalidArgumentException('Enter your name and a valid administrator email.');
     $url=rtrim(posted('site_url',500),'/');if($url==='')throw new InvalidArgumentException('Enter the website URL.');
@@ -14,6 +14,7 @@ function setup_owner_input(): array {
 function setup_database_input(): array {
     $c=['host'=>posted('db_host',253),'port'=>(int)posted('db_port',5),'name'=>posted('db_name',64),'user'=>posted('db_user',128),'pass'=>posted('db_password',512),'prefix'=>posted('db_prefix',20)];
     if(!preg_match('/^[a-zA-Z0-9.-]+$/D',$c['host'])||$c['port']<1||$c['port']>65535||!preg_match('/^[a-zA-Z0-9_$-]+$/D',$c['name'])||!preg_match('/^[a-zA-Z][a-zA-Z0-9_]{1,19}$/D',$c['prefix'])||$c['user']==='')throw new InvalidArgumentException('Check the database host, port, full database/user names and table prefix. The prefix must be 2–20 letters, digits or underscores, beginning with a letter.');
+    $fresh=setup_fresh_token();if($fresh!=='')$c['prefix']='cwp_fresh_'.substr($fresh,0,9).'_';
     return $c;
 }
 function setup_database_test(array $c): string {
@@ -57,7 +58,7 @@ function setup_deploy(array $o,array $c,string $storage): array {
         try{$deleted=cwp_installer_cleanup();}catch(Throwable $e){$deleted=[];$warnings[]='The website is installed and locked, but installer cleanup needs attention in your hosting File Manager.';}
         foreach($deleted as $file=>$gone){if($gone&&!empty($legacy[$file]))$events[]='Removed '.$file.'.';elseif(!$gone)$warnings[]=$file.' could not be deleted. The installed-site guard blocks setup. Remove only this installer file in File Manager.';}
         $events[]='Private files and media use: '.$storage;
-        unset($_SESSION['setup_db'],$_SESSION['setup_owner'],$_SESSION['setup_storage'],$_SESSION['setup_until']);
+        unset($_SESSION['setup_db'],$_SESSION['setup_owner'],$_SESSION['setup_storage'],$_SESSION['setup_until'],$_SESSION['cwp_setup_fresh_token']);
         @session_regenerate_id(true);
         return ['ok'=>true,'events'=>$events,'warnings'=>$warnings,'deleted'=>$deleted,'storage'=>$storage,'admin'=>$o['site_url'].'/admin/index.php','site'=>$o['site_url'].'/'];
     } catch(Throwable $e){

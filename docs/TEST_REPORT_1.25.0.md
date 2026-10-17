@@ -1,3 +1,7 @@
+## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
+
+The owner-requested installer/password/fresh-start correction is documented in [its bounded report](INSTALLER_FRESH_START_1.25.0.md). Local PHP8.4.25/Chrome evidence is not native installation, target-host or release acceptance. Existing workflows, report sets, timeouts, original assertions and 328 required images remain; focused boundary/preservation assertions are additive. New exact-source candidate/main acceptance is required.
+
 # CajunWebPro 1.25.0 release acceptance
 
 ## 2026-10-17 - complete acceptance job allowance
