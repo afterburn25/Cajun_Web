@@ -23,15 +23,15 @@ def upgrade():
     check('Retained 1.10 portfolio gains real server category filtering',page.status_code==200 and len(soup(page).select('.project-card:not([hidden])'))==1)
     check('Actual 1.10 update preserves read markers settings and all business records without migration',all(db('SELECT * FROM portfolioup_'+t)==rows for t,rows in before.items()))
     client=requests.Session();portal=BASE+'/portfolio-upgrade/portal/index.php'
+    owner=requests.Session();admin=BASE+'/portfolio-upgrade/admin/index.php'
+    submit(owner,admin+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
+    r=submit(owner,admin+'?view=studio-upgrade','studio_migrate',{'confirm':'1'})
+    check('Workspace schema upgrade precedes retained portal and finance checks','Database update completed' in r.text)
     submit(client,portal,'login',{'email':'retained@example.invalid','password':'Synthetic retained client passphrase'})
     r=client.get(portal+'?activity=1');check('Retained client activity still renders after portfolio update',r.status_code==200 and 'Studio message' in r.text)
     check('Retained read marker survives client browsing',db('SELECT * FROM portfolioup_activity_reads')==before['activity_reads'] and len(before['activity_reads'])==1)
     published=next(v for v in before['website_releases'] if v['status']=='published')
     check('Retained client downloads identical website ZIP after portfolio update',client.get(portal+'?download_release='+published['id']).content==(ROOT/'test-runtime/portfolio-upgrade.zip').read_bytes())
-    owner=requests.Session();admin=BASE+'/portfolio-upgrade/admin/index.php'
-    submit(owner,admin+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
-    r=submit(owner,admin+'?view=studio-upgrade','studio_migrate',{'confirm':'1'})
-    check('Workspace schema upgrade precedes retained finance checks','Database update completed' in r.text)
     check('Retained invoice balance survives portfolio update','$375.00' in owner.get(admin+'?view=invoice-payments&invoice_id=3').text)
     r=submit(owner,admin+'?view=payment-settings','payments_save',{'owner_password':'Synthetic upgrade passphrase 2026'})
     check('Retained encrypted credentials still decrypt after portfolio update','Credentials protected and saved' in r.text)
