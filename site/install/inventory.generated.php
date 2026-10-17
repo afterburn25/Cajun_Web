@@ -169,7 +169,7 @@ function setup_expected_files(): array { return [
     'database/migrations/license_migrate.php'=>'3a4e0998cae905409c22bb4db67da34d2ef4ea5be39e5932aff43f65b3b1eead',
     'database/migrations/mail_accounts_migrate.php'=>'2734d3c86c213da8da4f7c3cae659a3945cf04e0db724e66dd147c7a6d6b1e31',
     'database/migrations/mail_connections_migrate.php'=>'95e251346117567755caf4e6c4dbf169ba0d87b1c173779d4551163931f4b20d',
-    'database/migrations/mail_copies_migrate.php'=>'b13d3001d4abca8e0b74bcda5308a02eec3b58577ac007674200c7a9a8bcb233',
+    'database/migrations/mail_copies_migrate.php'=>'38398d490e1964a67e20e4432c4cd6bce58260e6412247cde4c06419684b7010',
     'database/migrations/mail_drafts_migrate.php'=>'0606d25f2656527ea44553506e70b615199bfd03a940a841c1c8437199925848',
     'database/migrations/mail_inbox_migrate.php'=>'c6428a27ef693adde70f99fe9799b1567b96a22c1e80abe7311ea17f093155af',
     'database/migrations/mail_messages_migrate.php'=>'16c8d0bfc4dfb9913f4a38f4da451f7cafd793f39482be37b4e04fa2230ec80a',
