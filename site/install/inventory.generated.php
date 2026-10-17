@@ -178,7 +178,7 @@ function setup_expected_files(): array { return [
     'database/migrations/mail_flags_migrate.php'=>'7e72704bbbd56568ff07d61e43c238519224c677bc0efe38a9cd34b6866ca2cd',
     'database/migrations/mail_inbox_migrate.php'=>'5d688802e002cb9af7d425cbd8a5c1d375b7f00981bac89d5ab95a2594f18413',
     'database/migrations/mail_messages_migrate.php'=>'e414e3b5457ae9f3edf49d4265e347e34bda4c0a223fd0695e20ed0fae301188',
-    'database/migrations/mail_notices_migrate.php'=>'7d311c669d3482ced384dc161f29de9d5d4afdda3683ab566f36703c5f39364e',
+    'database/migrations/mail_notices_migrate.php'=>'56fbe057402e45d9b2a2090de661e4698a93ac5758a3c8cb14fe14b6486d6ec4',
     'database/migrations/mail_replies_migrate.php'=>'1e300bf47433c1e83a175e78f0ae5686f92279209048c6f2b605f240e5e47737',
     'database/migrations/mail_submissions_migrate.php'=>'2a7289aa3057312afa24c04add8b1a0e6d610146be056745c9cf72dbf599d741',
     'database/migrations/mail_templates_migrate.php'=>'3b961653cf7ed61188572f32428147c487231696b8f641cb6b9abb537b03912c',
