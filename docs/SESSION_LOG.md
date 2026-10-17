@@ -1852,3 +1852,33 @@ CI is re-running on all three heads at this writing.
   - `rewrite 1.17.0 prior organized version actually cached`: deterministic across two runs but outside the diff (GET/render path untouched); bisect dispatch on previously-green `40eb7f29` (run 39067511358) later passed the same suite, confirming environmental pressure. `9015ef8f` added a bounded warm-up + decomposed probe print (assertion unchanged); every fixture probed `{"enabled":true,"timestamps":"0","cached":true}` and the lane passed.
 - #213 `3411de28`: **fully green 41/41** on the restacked head (docs follow-up after `de343e95`).
 - #212 `5e1e043d`: **fully green 41/41**.
+
+## Review corrections, 2026-10-17 (round 4 — #212 fixture interaction)
+
+Owner review (comment 6239686025) found a real latent defect in the
+`91f4599e` boundary regression: its 101 newer approved `design` filler
+versions generate `review:` activity events that permanently displace
+the earlier `review:<vid>` event expected by the later contact/alice
+feed assertions (the feed pages at 30 rows ordered by
+`occurred_at DESC, event_key DESC`). Broad `review:<id>` substrings can
+also falsely match a different numeric id.
+
+`6bf64fce` on `devin/non20i-client-actions` moves the whole boundary
+block (pending proposal + 101 fillers + focus_review link assertions +
+other-job/superseded controls + action-list checks) to after every
+activity-feed assertion, so feed checks observe only events that
+predate the fixture. Feed assertions now match exact rendered
+`data-event-key="kind:id"` attributes instead of bare `kind:<id>`
+substrings. Boundary, ownership, superseded and actionable-link
+coverage is unchanged. `py_compile` passes; no deployed source or
+installer bytes changed.
+
+Propagated to the stacked descendant by merging the updated base into
+`devin/non20i-portal-account` (`f4835eda`) so the inherited fixture
+defect noted in the #213 review is fixed through the stack; the test
+file auto-merged cleanly and the canonical installer check passes.
+
+Round-3 review confirmations received this round: #203 source fix
+accepted (`9015ef8f`), #213 implementation accepted (`3411de28`) — its
+remaining combined HTTP/browser acceptance exercises this repaired
+fixture on the retargeted base per the stacked-chain convention.
