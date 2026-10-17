@@ -8,27 +8,38 @@ function activity_audit(array $actor,string $action,string $detail): void {query
 require_once CWP_CODE_ROOT.'/database/migrations/activity_migrate.php';
 function activity_actor(string $audience): array {
     if(support_current()||array_key_exists('support',$_GET))throw new RuntimeException('Leave support to view your own activity.');
-    if($audience==='admin'){$u=admin_user();if(!$u||!staff_can('clients.manage',$u))throw new RuntimeException('Activity access unavailable.');}
-    elseif($audience==='client'){$u=studio_client();if(!$u)throw new RuntimeException('Sign in to view your activity.');}
+    if($audience==='admin'){$u=admin_user();if(!$u||!staff_can('clients.manage',$u))throw new RuntimeException('Activity access unavailable.');$actor=['type'=>'admin','id'=>(int)$u['id'],'client_id'=>0,'perms'=>null];}
+    elseif($audience==='client'){
+        $u=studio_client();if(!$u)throw new RuntimeException('Sign in to view your activity.');
+        $contact=studio_contact();
+        $actor=$contact!==null?['type'=>'contact','id'=>(int)$contact['id'],'client_id'=>(int)$u['id'],'perms'=>contact_perms_decode($contact['permissions'])]:['type'=>'client','id'=>(int)$u['id'],'client_id'=>(int)$u['id'],'perms'=>null];
+    }
     else throw new InvalidArgumentException('Invalid activity audience.');
     if(!studio_ready()||!activity_ready())throw new RuntimeException('Workspace activity has not been enabled.');
-    return ['type'=>$audience,'id'=>(int)$u['id']];
+    return $actor;
 }
 /** Internal SQL projection. Never contains message bodies, payment notes or draft deliveries. */
 function activity_projection(array $actor): array {
-    $parts=[];$args=[];$client=$actor['type']==='client';
-    $add=function(string $table,string $kind,string $time,string $title,string $where,string $target='s.id') use(&$parts,&$args,$actor,$client): void {
-        $parts[]="SELECT CAST(CONCAT('".$kind.":',s.id) AS CHAR CHARACTER SET ascii) COLLATE ascii_bin AS event_key,'".$kind."' AS kind,CAST(s.id AS CHAR) AS source_id,".$target." AS target_id,j.id AS job_id,j.client_id,j.title AS project_title,".$title." AS item_title,".$time.' AS occurred_at FROM '.table($table).' s JOIN '.table('studio_jobs').' j ON j.id=s.job_id JOIN '.table('studio_clients').' c ON c.id=j.client_id WHERE c.active=1 AND ('.$where.')'.($client?' AND j.client_id=?':'');
-        if($client)$args[]=$actor['id'];
+    $parts=[];$args=[];$member=$actor['type']!=='admin';$contact=$actor['type']==='contact';
+    $can=function(string $permission) use($actor,$member): bool {return !$member||$actor['perms']===null||in_array($permission,$actor['perms'],true);};
+    $add=function(string $table,string $kind,string $time,string $title,string $where,string $target='s.id') use(&$parts,&$args,$member,$actor): void {
+        $parts[]="SELECT CAST(CONCAT('".$kind.":',s.id) AS CHAR CHARACTER SET ascii) COLLATE ascii_bin AS event_key,'".$kind."' AS kind,CAST(s.id AS CHAR) AS source_id,".$target." AS target_id,j.id AS job_id,j.client_id,j.title AS project_title,".$title." AS item_title,".$time.' AS occurred_at FROM '.table($table).' s JOIN '.table('studio_jobs').' j ON j.id=s.job_id JOIN '.table('studio_clients').' c ON c.id=j.client_id WHERE c.active=1 AND ('.$where.')'.($member?' AND j.client_id=?':'');
+        if($member)$args[]=$actor['client_id'];
     };
-    $add('studio_messages','message','s.created_at',"''","s.author_type".($client?"='admin'":" IN ('client','contact')"));
-    $add('studio_files','file','s.created_at','s.original_name',"s.author_type".($client?"='admin'":" IN ('client','contact')"));
-    if($client){
-        $add('studio_versions','review','s.created_at',"CONCAT(s.kind,' v',s.version_no,' · ',s.title)",'1=1');
-        $add('studio_invoices','invoice','s.created_at',"CONCAT(s.reference,' · ',s.title)",'1=1');
-        if(ledger_ready())$add('invoice_payments','payment','s.created_at',"CASE WHEN s.kind='reversal' THEN 'Recording corrected' ELSE 'Payment recorded' END","s.kind IN ('manual','reversal') AND s.client_id=j.client_id AND EXISTS (SELECT 1 FROM ".table('studio_invoices').' i WHERE i.id=s.invoice_id AND i.job_id=j.id)','s.invoice_id');
-        if(delivery_ready())$add('website_releases','release','s.published_at',"CONCAT(s.version,' · ',s.title)","s.status='published' AND s.published_at IS NOT NULL AND s.client_id=j.client_id");
+    $authors=$member?($contact?" IN ('admin','client')":"='admin'"):" IN ('client','contact')";
+    if($can('projects')){
+        $add('studio_messages','message','s.created_at',"''","s.author_type".$authors);
+        $add('studio_files','file','s.created_at','s.original_name',"s.author_type".$authors);
+    }
+    if($member){
+        if($can('projects'))$add('studio_versions','review','s.created_at',"CONCAT(s.kind,' v',s.version_no,' · ',s.title)",'1=1');
+        if($can('billing')){
+            $add('studio_invoices','invoice','s.created_at',"CONCAT(s.reference,' · ',s.title)",'1=1');
+            if(ledger_ready())$add('invoice_payments','payment','s.created_at',"CASE WHEN s.kind='reversal' THEN 'Recording corrected' ELSE 'Payment recorded' END","s.kind IN ('manual','reversal') AND s.client_id=j.client_id AND EXISTS (SELECT 1 FROM ".table('studio_invoices').' i WHERE i.id=s.invoice_id AND i.job_id=j.id)','s.invoice_id');
+        }
+        if($can('downloads')&&delivery_ready())$add('website_releases','release','s.published_at',"CONCAT(s.version,' · ',s.title)","s.status='published' AND s.published_at IS NOT NULL AND s.client_id=j.client_id");
     }else $add('studio_versions','decision','s.decided_at',"CONCAT(s.kind,' v',s.version_no,' · ',s.decision,' · ',s.title)","s.decision IN ('approved','changes') AND s.decided_at IS NOT NULL AND s.decided_by=j.client_id");
+    if(!$parts)return ["SELECT '' AS event_key,'none' AS kind,'' AS source_id,0 AS target_id,0 AS job_id,0 AS client_id,'' AS project_title,'' AS item_title,'1970-01-01 00:00:00' AS occurred_at WHERE 1=0",[]];
     return [implode(' UNION ALL ',$parts),$args];
 }
 function activity_key(string $key): void {if(!preg_match('/^(?:(?:message|review|invoice|payment|decision):[1-9][0-9]{0,19}|(?:file|release):[a-f0-9]{32})$/D',$key))throw new InvalidArgumentException('Activity item unavailable.');}
