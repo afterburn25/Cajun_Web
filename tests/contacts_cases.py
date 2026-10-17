@@ -124,6 +124,52 @@ def run_browser(env,browser):
     r=owner.get(jobAdmin)
     check('Admin conversation attributes the decision to the contact','Review Only Contact (contact)' in r.text)
 
+    # Workspace activity routes to each contact by permission, with per-contact read state.
+    r=submit(owner,jobAdmin,'studio_message',{'body':'Routing marker admin message.'})
+    mid=db("SELECT id FROM ci_studio_messages WHERE body='Routing marker admin message.'")[0]['id']
+    cmsg=db("SELECT id FROM ci_studio_messages WHERE body='Contact-scoped review message.'")[0]['id']
+    r=submit(owner,jobAdmin,'studio_invoice',{'title':'Routing check invoice','amount':'25.00','instructions':'Synthetic routing instructions'})
+    iid=db("SELECT id FROM ci_studio_invoices WHERE title='Routing check invoice' ORDER BY id DESC LIMIT 1")[0]['id']
+    r=contact.get(portal+'?activity=1')
+    check('Project contact feed shows project events without billing items','data-event-key="message:'+str(mid)+'"' in r.text and 'data-event-key="review:'+str(vid)+'"' in r.text and 'data-event-key="invoice:'+str(iid)+'"' not in r.text)
+    check('Contact feed excludes contact-authored messages','data-event-key="message:'+str(cmsg)+'"' not in r.text)
+    r=submit(contact,portal+'?activity=1','activity_mark',{'keys':json.dumps(['message:'+str(mid)]),'state':'read'})
+    check('Contact read state is stored per contact identity',bool(db('SELECT * FROM ci_activity_reads WHERE actor_type=? AND actor_id=? AND event_key=?',['contact',ctid,'message:'+str(mid)])))
+    check('Contact read state leaves the client account unread',not db('SELECT * FROM ci_activity_reads WHERE actor_type=? AND event_key=?',['client','message:'+str(mid)]))
+
+    # Billing-only contact: invoices without project review or files.
+    data=add_form(cid);data.update(name='Billing Only Contact',email='billing-contact@example.invalid',**{'perms[]':'billing'})
+    r=owner.post(clients,data=data)
+    btid=db("SELECT id FROM ci_studio_contacts WHERE email='billing-contact@example.invalid'")[0]['id']
+    r=owner.post(clients,data=find_form('studio_contact_invite','id',btid))
+    blink=soup(r).select_one('.notice.info a[href*="cinvite="]')['href']
+    visitor=requests.Session();r=visitor.get(blink);activation=form_data(soup(r).select_one('form'));activation.update(password=CPASS,confirm_password=CPASS)
+    visitor.post(blink,data=activation)
+    billing=requests.Session()
+    submit(billing,portal,'login',{'email':'billing-contact@example.invalid','password':CPASS})
+    r=billing.get(portal+'?job=1')
+    check('Billing contact sees invoices not project material','Invoices & payment instructions' in r.text and 'HTTP manual invoice' in r.text and 'Designs & proposals' not in r.text and 'Private project files' not in r.text)
+    r=billing.post(portal+'?job=1',data={'csrf':token(billing.get(portal+'?job=1')),'action':'message','body':'Billing contact must not post.'})
+    check('Billing-only contact cannot post project messages','do not include project access' in r.text and not db("SELECT id FROM ci_studio_messages WHERE body='Billing contact must not post.'"))
+    r=billing.get(portal+'?file='+file_id)
+    check('Billing-only contact cannot download files',r.status_code==403)
+    r=billing.get(portal+'?activity=1')
+    check('Billing-only contact feed shows billing events without project items',r.status_code==200 and 'data-event-key="invoice:'+str(iid)+'"' in r.text and 'data-event-key="message:'+str(mid)+'"' not in r.text and 'data-event-key="review:' not in r.text)
+    r=submit(billing,portal+'?activity=1','activity_mark',{'keys':json.dumps(['message:'+str(mid)]),'state':'read'})
+    check('Billing contact cannot mark out-of-scope events','unavailable' in r.text.lower())
+    check('Out-of-scope mark did not write read state',not db('SELECT * FROM ci_activity_reads WHERE actor_id=? AND event_key=?',[btid,'message:'+str(mid)]))
+    r=billing.post(portal+'?job=1',data={'csrf':token(billing.get(portal+'?job=1')),'action':'decision','version':str(vid),'choice':'approved','confirm':'1'})
+    check('Billing-only contact cannot record a decision','do not include project access' in r.text)
+
+    # Primary client account remains unaffected by contact rows.
+    alice=requests.Session()
+    submit(alice,portal,'login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
+    r=alice.get(portal+'?job=1')
+    check('Primary account keeps full project access','Designs & proposals' in r.text and 'Invoices & payment instructions' in r.text and 'HTTP manual invoice' in r.text)
+    check('Outstanding invoice appears in the needed-actions list','Outstanding invoice' in r.text)
+    r=alice.get(portal+'?activity=1')
+    check('Primary account feed stays company-wide','data-event-key="invoice:'+str(iid)+'"' in r.text and 'data-event-key="message:'+str(mid)+'"' in r.text and 'data-event-key="review:'+str(vid)+'"' in r.text)
+
     # A pending review pushed outside the 100-version window must still reach its decision form.
     r=submit(owner,jobAdmin,'studio_publish',{'kind':'proposal','title':'Boundary proposal','body':'Pending proposal outside the display window'})
     old_vid=db("SELECT id FROM ci_studio_versions WHERE job_id=1 AND kind='proposal' ORDER BY id DESC LIMIT 1")[0]['id']
@@ -150,52 +196,6 @@ def run_browser(env,browser):
     check('Action list now targets only the latest pending review','focus_review='+str(new_vid)+'#' in r.text and 'focus_review='+str(old_vid)+'#' not in r.text)
     r=contact.get(portal+'?job=1')
     check('Decided version leaves the needed-actions list','Review and approve or request changes on design version' not in r.text)
-
-    # Workspace activity routes to each contact by permission, with per-contact read state.
-    r=submit(owner,jobAdmin,'studio_message',{'body':'Routing marker admin message.'})
-    mid=db("SELECT id FROM ci_studio_messages WHERE body='Routing marker admin message.'")[0]['id']
-    cmsg=db("SELECT id FROM ci_studio_messages WHERE body='Contact-scoped review message.'")[0]['id']
-    r=submit(owner,jobAdmin,'studio_invoice',{'title':'Routing check invoice','amount':'25.00','instructions':'Synthetic routing instructions'})
-    iid=db("SELECT id FROM ci_studio_invoices WHERE title='Routing check invoice' ORDER BY id DESC LIMIT 1")[0]['id']
-    r=contact.get(portal+'?activity=1')
-    check('Project contact feed shows project events without billing items','message:'+str(mid) in r.text and 'review:'+str(vid) in r.text and 'invoice:'+str(iid) not in r.text)
-    check('Contact feed excludes contact-authored messages','message:'+str(cmsg) not in r.text)
-    r=submit(contact,portal+'?activity=1','activity_mark',{'keys':json.dumps(['message:'+str(mid)]),'state':'read'})
-    check('Contact read state is stored per contact identity',bool(db('SELECT * FROM ci_activity_reads WHERE actor_type=? AND actor_id=? AND event_key=?',['contact',ctid,'message:'+str(mid)])))
-    check('Contact read state leaves the client account unread',not db('SELECT * FROM ci_activity_reads WHERE actor_type=? AND event_key=?',['client','message:'+str(mid)]))
-
-    # Billing-only contact: invoices without project review or files.
-    data=add_form(cid);data.update(name='Billing Only Contact',email='billing-contact@example.invalid',**{'perms[]':'billing'})
-    r=owner.post(clients,data=data)
-    btid=db("SELECT id FROM ci_studio_contacts WHERE email='billing-contact@example.invalid'")[0]['id']
-    r=owner.post(clients,data=find_form('studio_contact_invite','id',btid))
-    blink=soup(r).select_one('.notice.info a[href*="cinvite="]')['href']
-    visitor=requests.Session();r=visitor.get(blink);activation=form_data(soup(r).select_one('form'));activation.update(password=CPASS,confirm_password=CPASS)
-    visitor.post(blink,data=activation)
-    billing=requests.Session()
-    submit(billing,portal,'login',{'email':'billing-contact@example.invalid','password':CPASS})
-    r=billing.get(portal+'?job=1')
-    check('Billing contact sees invoices not project material','Invoices & payment instructions' in r.text and 'HTTP manual invoice' in r.text and 'Designs & proposals' not in r.text and 'Private project files' not in r.text)
-    r=billing.post(portal+'?job=1',data={'csrf':token(billing.get(portal+'?job=1')),'action':'message','body':'Billing contact must not post.'})
-    check('Billing-only contact cannot post project messages','do not include project access' in r.text and not db("SELECT id FROM ci_studio_messages WHERE body='Billing contact must not post.'"))
-    r=billing.get(portal+'?file='+file_id)
-    check('Billing-only contact cannot download files',r.status_code==403)
-    r=billing.get(portal+'?activity=1')
-    check('Billing-only contact feed shows billing events without project items',r.status_code==200 and 'invoice:'+str(iid) in r.text and 'message:'+str(mid) not in r.text and 'review:' not in r.text)
-    r=submit(billing,portal+'?activity=1','activity_mark',{'keys':json.dumps(['message:'+str(mid)]),'state':'read'})
-    check('Billing contact cannot mark out-of-scope events','unavailable' in r.text.lower())
-    check('Out-of-scope mark did not write read state',not db('SELECT * FROM ci_activity_reads WHERE actor_id=? AND event_key=?',[btid,'message:'+str(mid)]))
-    r=billing.post(portal+'?job=1',data={'csrf':token(billing.get(portal+'?job=1')),'action':'decision','version':str(vid),'choice':'approved','confirm':'1'})
-    check('Billing-only contact cannot record a decision','do not include project access' in r.text)
-
-    # Primary client account remains unaffected by contact rows.
-    alice=requests.Session()
-    submit(alice,portal,'login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
-    r=alice.get(portal+'?job=1')
-    check('Primary account keeps full project access','Designs & proposals' in r.text and 'Invoices & payment instructions' in r.text and 'HTTP manual invoice' in r.text)
-    check('Outstanding invoice appears in the needed-actions list','Outstanding invoice' in r.text)
-    r=alice.get(portal+'?activity=1')
-    check('Primary account feed stays company-wide','invoice:'+str(iid) in r.text and 'message:'+str(mid) in r.text and 'review:'+str(vid) in r.text)
 
     # Disabling or editing a contact revokes its session and outstanding invitation.
     edit=find_form('studio_contact','id',ctid);edit.pop('enabled',None)
