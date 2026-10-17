@@ -54,7 +54,7 @@ if($view==='support')support_admin_render($user,$error);
 if(in_array($view,['catalog','catalog-invoice'],true))catalog_admin_render($view,$user,$error);
 if(in_array($view,['payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],true))payments_admin_render($view,$user,$error);
 if($view==='deliveries')delivery_admin_render($user,$error);
-if($view==='notifications')notifications_admin_render($user,$error);
+if($view==='notifications')notification_feed_admin_render($user,$error);
 if($view==='activity')activity_render('admin',$error);
 if(array_key_exists($view,studio_admin_views())){studio_admin_render($view,$user,$error);exit;}
 $titles=['dashboard'=>'Your studio, at a glance.','projects'=>'Portfolio','project'=>$id?'Edit project':'New project','services'=>'Services','service'=>$id?'Edit service':'New service','leads'=>'Project inquiries','lead'=>'Inquiry details','testimonials'=>'Client testimonials','testimonial'=>$id?'Edit testimonial':'New testimonial','settings'=>'Website settings','email'=>'Email delivery','security'=>'Your account','health'=>'System health'];admin_head($titles[$view],$view,$user);if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';
