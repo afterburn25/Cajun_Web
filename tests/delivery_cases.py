@@ -33,7 +33,7 @@ def upgrade():
     up=requests.Session();root=BASE+'/delivery-upgrade/admin/index.php';url=root+'?view=deliveries';submit(up,root+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
     r=submit(up,root+'?view=payments','payments_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Payment schema upgrade precedes the feature migration','Payment preparation enabled' in r.text)
     r=submit(up,url,'delivery_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Actual 1.8 additive delivery setup succeeds','Website deliveries enabled' in r.text and db('SELECT * FROM deliveryup_website_releases')==[])
-    check('Actual 1.8 retains all prior billing notifications and client records',all(db('SELECT * FROM deliveryup_'+t)==rows for t,rows in before.items()))
+    after={t:db('SELECT * FROM deliveryup_'+t) for t in before};check('Actual 1.8 retains all prior billing notifications and client records',all(len(after[t])==len(rows) and all(row[k]==rows[i][k] for i,row in enumerate(after[t]) for k in rows[i]) for t,rows in before.items()))
     after={s['name']:s['value'] for s in db('SELECT * FROM deliveryup_settings')};check('Actual 1.8 retains original settings',all(after[s['name']]==s['value'] for s in settings if not s['name'].endswith('_schema_version')))
     check('Actual 1.8 retains passwords and auth versions',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(db('SELECT * FROM deliveryup_users'),users)))
     check('Actual 1.8 retained manual receipt and balance still render','$375.00' in up.get(root+'?view=invoice-payments&invoice_id=3').text)
