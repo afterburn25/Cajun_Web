@@ -62,7 +62,11 @@ def run(web,base,check,qa,php,label,prefix,version):
     check(label+' retained schema contains meaningful client project and invoice records',all(before[n]['count']>0 for n in before))
     session.get(url+'/admin/index.php?view=login')
     probe=root/'cache-probe.php';probe.write_text("<?php echo json_encode(['enabled'=>opcache_get_status(false)['opcache_enabled']??false,'timestamps'=>ini_get('opcache.validate_timestamps'),'cached'=>opcache_is_script_cached(__DIR__.'/config/defaults.php')]);")
-    cache=session.get(url+'/cache-probe.php').json();probe.unlink()
+    for _ in range(4):
+        cache=session.get(url+'/cache-probe.php').json()
+        if cache['enabled'] and cache['timestamps']=='0' and cache['cached']:break
+        session.get(url+'/admin/index.php?view=login');session.get(url+'/index.php')
+    probe.unlink();print(label+' cache probe: '+json.dumps(cache),flush=True)
     check(label+' prior organized version actually cached without timestamp checks',cache['enabled'] and cache['timestamps']=='0' and cache['cached'])
     with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(root)
     owner=url+'/'+STAGE+'/owner-update.php';r=session.get(owner)
