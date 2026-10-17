@@ -1,3 +1,10 @@
+## Unreleased - Devin non-20i stacked increments (PRs #209-#212)
+
+- #209 `devin/non20i-staff-notes`: staff-only internal project notes via `studio_messages.author_type='internal'` (no schema change); admin-only rendering, excluded from client/contact feeds and activity projections.
+- #210 `devin/non20i-milestones`: additive `studio_milestones` (title, state, optional YYYY-MM-DD target date) via `studio_schema`/`studio_migrate`; admin create/update with job-ownership validation, client/contact visibility, milestone activity events.
+- #211 `devin/non20i-activity-prefs`: additive `activity_prefs`; per-actor hide/show of permitted update kinds filtered centrally in `activity_projection` (feeds, unread counts, `?open=` destinations, mark-read); CSRF+authorization+audit; upgrade hint re-provisions via `activity_migrate`.
+- #212 `devin/non20i-client-actions`: read-only derived "What we need from you" (pending latest-version decisions; outstanding issued invoices when billing access applies) and "Open blockers" (blocked milestones) on the portal project dashboard; no schema.
+
 ## 2026-10-16 — publish the concrete release freeze and branch
 
 Documentation-only descendant of35d8 records owner release-first override, published normal merge b98b96eb, frozen scope/map, actual source/focused evidence and remaining gates. Runtime, installer, version, published assets and production remain unchanged. Continue release corrections, authentic1.24 upgrade coverage, complete supported runtime acceptance, review, exact-main and publication/download verification before new20i capabilities. Coordination is posted in issue2 comment6220729910 and issue157 comment6220730195. Documentation validation is required before commit; no application acceptance is claimed.

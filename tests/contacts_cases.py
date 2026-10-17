@@ -108,6 +108,8 @@ def run_browser(env,browser):
     r=submit(owner,jobAdmin,'studio_publish',{'kind':'design','title':'Decision fixture','body':'Synthetic scope for decision attribution'})
     check('Owner publishes a version for the decision check','Decision fixture' in r.text)
     vid=db('SELECT id FROM ci_studio_versions WHERE job_id=1 ORDER BY id DESC LIMIT 1')[0]['id']
+    r=contact.get(portal+'?job=1')
+    check('Pending decision appears in the needed-actions list','What we need from you' in r.text and 'Review and approve or request changes on design version' in r.text)
     dec=None
     for f in soup(contact.get(portal+'?job=1')).select('form'):
         a,v=f.select_one('[name=action]'),f.select_one('[name=version]')
@@ -120,6 +122,8 @@ def run_browser(env,browser):
     check('Contact decision keeps client as decider and attributes the contact',row['decision']=='approved' and int(row['decided_by'])==int(cid) and msg['author_type']=='contact' and int(msg['author_id'])==int(ctid))
     r=owner.get(jobAdmin)
     check('Admin conversation attributes the decision to the contact','Review Only Contact (contact)' in r.text)
+    r=contact.get(portal+'?job=1')
+    check('Decided version leaves the needed-actions list','Review and approve or request changes on design version' not in r.text)
 
     # Workspace activity routes to each contact by permission, with per-contact read state.
     r=submit(owner,jobAdmin,'studio_message',{'body':'Routing marker admin message.'})
@@ -163,6 +167,7 @@ def run_browser(env,browser):
     submit(alice,portal,'login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
     r=alice.get(portal+'?job=1')
     check('Primary account keeps full project access','Designs & proposals' in r.text and 'Invoices & payment instructions' in r.text and 'HTTP manual invoice' in r.text)
+    check('Outstanding invoice appears in the needed-actions list','Outstanding invoice' in r.text)
     r=alice.get(portal+'?activity=1')
     check('Primary account feed stays company-wide','invoice:'+str(iid) in r.text and 'message:'+str(mid) in r.text and 'review:'+str(vid) in r.text)
 

@@ -1770,3 +1770,11 @@ Tests so far: php -l on six touched PHP files; activity_cases.py compiles; canon
 Known limits: preferences are portal/bell visibility only — no outbound email delivery exists yet; the upgrade path requires an owner to re-run activity setup once.
 
 Next: commit, open stacked PR, monitor CI.
+
+## 2026-10-17 — Devin lane: stacked increments #209-#212
+
+- Request: continue non-20i roadmap (issue #157). Working chain stacked on `devin/non20i-contact-activity` tip: staff-notes → milestones → activity-prefs → client-actions.
+- #212 `devin/non20i-client-actions`: portal project dashboard gains derived "What we need from you" (latest pending-version decisions; issued invoices when billing access applies) and "Open blockers" (blocked milestones). Read-only, no schema. Files: `site/portal/views/workspace.php`, `tests/staff_cases.py`, `tests/contacts_cases.py`, `site/install/inventory.generated.php` (refreshed), docs.
+- Verified: `php -l` on workspace.php; `py_compile` both test modules; canonical inventory check PASS (no drift).
+- Known limits: read-only derivation only; admin "request feedback" remains covered by `studio_message`. CI lanes for #209-#211 queued behind release-capacity runners; #212's will queue likewise. Long lanes run after Codex retargets each parent to main.
+- Next: open PR #212, keep monitoring CI waves, fix failures on exact new commits.
