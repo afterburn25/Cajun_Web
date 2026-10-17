@@ -34,14 +34,14 @@ def run_browser(env,browser):
         raise AssertionError('Missing add-contact form for client '+str(c))
 
     # Explicit owner preparation, never silent adoption.
-    r=submit(owner,upgrade,'contacts_setup',{'current_password':'wrong'})
+    r=submit(owner,upgrade,'studio_contacts_setup',{'current_password':'wrong'})
     check('Contacts setup reauthenticates the owner','current password is not correct' in r.text)
-    r=submit(owner,upgrade,'contacts_setup',{'current_password':OWNER})
+    r=submit(owner,upgrade,'studio_contacts_setup',{'current_password':OWNER})
     check('Owner prepares contacts storage','contacts storage prepared' in r.text and db("SELECT value FROM ci_settings WHERE name='contacts_schema_version'")==[{'value':'1'}])
-    r=submit(owner,upgrade,'contacts_setup',{'current_password':OWNER})
+    r=submit(owner,upgrade,'studio_contacts_setup',{'current_password':OWNER})
     check('Contacts setup is idempotent','contacts storage prepared' in r.text)
     db("UPDATE ci_settings SET value='bogus' WHERE name='contacts_schema_version'")
-    r=submit(owner,upgrade,'contacts_setup',{'current_password':OWNER})
+    r=submit(owner,upgrade,'studio_contacts_setup',{'current_password':OWNER})
     check('Unknown contacts marker refuses to adopt data','Unrecognized contacts schema version' in r.text)
     db("UPDATE ci_settings SET value='1' WHERE name='contacts_schema_version'")
 
@@ -61,7 +61,7 @@ def run_browser(env,browser):
     check('Contact requires at least one permission','at least one contact permission' in r.text and not db("SELECT id FROM ci_studio_contacts WHERE email='none-contact@example.invalid'"))
 
     # Private one-time invitation; hash at rest only.
-    r=owner.post(clients,data=find_form('contact_invite','id',ctid))
+    r=owner.post(clients,data=find_form('studio_contact_invite','id',ctid))
     link=soup(r).select_one('.notice.info a[href*="cinvite="]')
     check('Contact invitation displays a private one-time URL',link is not None and 'No email was sent' in r.text)
     link=link['href']
@@ -105,7 +105,7 @@ def run_browser(env,browser):
     data=add_form(cid);data.update(name='Billing Only Contact',email='billing-contact@example.invalid',**{'perms[]':'billing'})
     r=owner.post(clients,data=data)
     btid=db("SELECT id FROM ci_studio_contacts WHERE email='billing-contact@example.invalid'")[0]['id']
-    r=owner.post(clients,data=find_form('contact_invite','id',btid))
+    r=owner.post(clients,data=find_form('studio_contact_invite','id',btid))
     blink=soup(r).select_one('.notice.info a[href*="cinvite="]')['href']
     visitor=requests.Session();r=visitor.get(blink);activation=form_data(soup(r).select_one('form'));activation.update(password=CPASS,confirm_password=CPASS)
     visitor.post(blink,data=activation)
@@ -135,7 +135,7 @@ def run_browser(env,browser):
     edit['enabled']='1';owner.post(clients,data=edit)
     submit(contact,portal,'login',{'email':'review-contact@example.invalid','password':CPASS})
     check('Reenabled contact signs in again',soup(contact.get(portal)).select_one('[name=action][value=logout]') is not None)
-    r=owner.post(clients,data=find_form('contact_invite','id',ctid))
+    r=owner.post(clients,data=find_form('studio_contact_invite','id',ctid))
     check('New contact invitation revokes the contact session',soup(contact.get(portal)).select_one('[name=action][value=login]') is not None)
 
     # Fresh installations ship the storage prepared and empty.

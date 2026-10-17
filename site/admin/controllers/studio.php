@@ -17,14 +17,14 @@ function studio_admin_action(string $action,array $user): never {
     }elseif($action==='studio_invite'){
         $id=gint($_POST,'id',1,2147483647);
         $_SESSION['studio_invite_link']=studio_new_invite($id,is_string($_POST['expected']??null)?$_POST['expected']:'');flash('New private invitation created. Share it directly with this client; it expires after 24 hours. No email was sent.');redirect(admin_url('studio-clients'));
-    }elseif($action==='contacts_setup'){
+    }elseif($action==='studio_contacts_setup'){
         contacts_migrate(posted('current_password',200));flash('Client contacts storage prepared.');redirect(admin_url('studio-upgrade'));
     }elseif($action==='studio_contact'){
         if(!contacts_ready())throw new RuntimeException('Prepare contacts storage under Version & database first.');
         $id=gint($_POST,'id',0,2147483647);$clientId=gint($_POST,'client_id',1,2147483647);$perms=array_filter(array_map('strval',(array)($_POST['perms']??[])));
         contact_save($id,$clientId,is_string($_POST['expected']??null)?$_POST['expected']:'',posted('name',120),strtolower(posted('email',190)),$perms,isset($_POST['enabled']));
         flash('Contact saved. Its sessions and outstanding invitations were revoked.');redirect(admin_url('studio-clients'));
-    }elseif($action==='contact_invite'){
+    }elseif($action==='studio_contact_invite'){
         if(!contacts_ready())throw new RuntimeException('Prepare contacts storage under Version & database first.');
         $id=gint($_POST,'id',1,2147483647);$clientId=gint($_POST,'client_id',1,2147483647);
         $_SESSION['studio_invite_link']=contact_invite($id,$clientId,is_string($_POST['expected']??null)?$_POST['expected']:'');flash('New private contact invitation created. Share it directly with this contact; it expires after 24 hours. No email was sent.');redirect(admin_url('studio-clients'));
