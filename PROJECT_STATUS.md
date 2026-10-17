@@ -1,5 +1,13 @@
 # CajunWebPro 1.25.0 scope and release status
 
+## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
+
+Owner-requested correction on `codex/installer-layout-1.25.0`, starting from `bc5ec277580aa681f43aaf2c9b97df730f6954f1`. Server checks move left on desktop; Website details follows Website files; the exact-permission report and redundant one-form sentence are removed. Administrator setup, activation, reset and account changes use a minimum of 12 Unicode characters and the existing 72-byte maximum. Client password policy is unchanged.
+
+Ordinary file replacement retains configuration and settings. Missing configuration with a surviving local installation marker now shows recovery guidance rather than redirecting into setup. An optional, default-off **Start a fresh website** choice selects separate tables and external private storage, retaining previous data. Configuration and installation locks still block setup; no old tables, locks or media are deleted. Retained data is not a recoverable backup without its original configuration and encryption keys. See [behavior and verification](docs/INSTALLER_FRESH_START_1.25.0.md).
+
+Local password boundaries and isolated PHP/Chrome layout checks passed within their documented scope. Native database, complete fresh-start/install/file-overwrite acceptance, final source review and release acceptance remain pending. Parent bc5 has verified Windows/four-Linux build partitions and maintained compatibility (54 reports, 3,280 named executions). At 15:02 UTC its five original full runs still had native checks active, with successful build/recovery/Apache jobs. Those parent results do not certify this shipping change. Main remains `d7153b076e91b524ff2f99a9a7aa5c910551fc5e`; 1.25 is unpublished, 1.24 immutable and production unchanged.
+
 ## 2026-10-17 - complete acceptance job allowance
 
 The enclosing correction starts from `88f116f0caf4a9bd8ea6f7faafd1e0eadb432039`. Its supplemental PHP 8.3/MariaDB [run39024070818](https://github.com/afterburn25/Cajun_Web/actions/runs/39024070818) reached the final scheduler flow before GitHub cancelled the combined native/browser job at its three-hour limit. All seven original archives and five completed logs are preserved. The checkpoint is incomplete, not a pass. Independent timing review supports increasing only this job's overall allowance from 180 to 240 minutes. Every test command, native-to-browser state, assertion, application/request/browser/provider timeout, report and image requirement remains unchanged. See [the timing evidence](docs/ACCEPTANCE_JOB_BUDGET_1.25.0.md).

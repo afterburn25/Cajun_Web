@@ -1,3 +1,11 @@
+## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
+
+**Uploading files over an installed website:** retain `config.php`, `.installed.php`, private storage and the database. Release packages exclude your live configuration and keys. The site continues using its saved settings; the installer does not run. Use the versioned UPDATE workflow for changes requiring application/database migration. Deleting the old site first is not a normal update.
+
+**Starting a completely new site:** use an empty database/unused prefix and empty private storage, or select **Start a fresh website** in the corrected installer. That option selects separate tables and a new private folder outside the public website; existing tables and storage stay in place. It needs write access to a permanent private parent. It never bypasses a retained config.php, .installed.php or local storage installation lock. If these remain, preserve them and restore/recover the existing installation.
+
+**Missing configuration:** restore the original `config.php` to keep the database connection, encryption key and storage location. Uploading a fresh package cannot reconstruct a deleted encryption key. Keep original database, files, storage and configuration backups together. Details and release status: [installer correction](INSTALLER_FRESH_START_1.25.0.md).
+
 # Installation, packaging and updates
 
 ## Unreleased agreement recovery integration

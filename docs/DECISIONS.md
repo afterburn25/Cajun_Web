@@ -1,3 +1,7 @@
+## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
+
+The owner clarified a completely fresh installation after deleting the prior public files. Default setup retains strict existing-table and storage refusals. Explicit fresh-start intent creates separate resources and never drops existing tables or unlocks an installed site. Routine file uploads retain config.php, keys, database and storage. Local retained locks without config lead to recovery, not automatic setup. Administrator passwords use a dedicated 12-character validator; the shared client policy remains unchanged. This supersedes the earlier update-only interpretation of this installer incident.
+
 ## 2026-10-16 — release-only licensing and complete acceptance corrections
 
 Starting parent `85f0b489b30d4e9e6db839e2cf7da02f512176c5` on `codex/release-1.25.0`, preserve the main/mature20i normal-merge union and add explicit full PHP8.2/8.4 × MariaDB10.11/MySQL8.4 selection with actual runtime evidence. Retain all148 native recipes, earlier browser/recovery/Apache cases and distro compatibility. Add actual pinned published1.24 install/population/update/repeat/interruption/recovery/reapplication in root/subfolder and both rewrite modes; stock1.24 has no recurring/licensing records, so those are created and retained separately after upgrading.
