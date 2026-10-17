@@ -1,3 +1,7 @@
+## Unreleased — layered homepage depth with measured evidence
+
+A CSS-composed device pair now sits as a nearer parallax plane in the hero, giving real pointer-depth without new image assets; it respects reduced-motion, `motion-off` and small screens. Browser acceptance records measured CLS/LCP/longtask evidence to `qa/homepage-performance.json` with a hard layout-shift bound — evidence recorded before any performance claim. Branch `devin/non20i-homepage-device-depth`; acceptance pending on CI.
+
 ## 2026-10-16 — publish the concrete release freeze and branch
 
 Documentation-only descendant of35d8 records owner release-first override, published normal merge b98b96eb, frozen scope/map, actual source/focused evidence and remaining gates. Runtime, installer, version, published assets and production remain unchanged. Continue release corrections, authentic1.24 upgrade coverage, complete supported runtime acceptance, review, exact-main and publication/download verification before new20i capabilities. Coordination is posted in issue2 comment6220729910 and issue157 comment6220730195. Documentation validation is required before commit; no application acceptance is claimed.
