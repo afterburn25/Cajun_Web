@@ -10,6 +10,15 @@ The [first catalog diagnostic](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#origina
 
 ## 2026-10-18 — preserve first catalog outcome; review bounded follow-through
 
+Previous checkpoint: https://github.com/afterburn25/Cajun_Web/blob/35d8fb7efc94f6f851399d0755fa93097f1fce66/SESSION_HANDOFF.md
+
+## Devin non-20i lane — 2026-10-17
+
+All earlier Devin PRs verified green: #198 protected previews `21198602` (48/48), #202 payment links `95a3db9b` (48/48), #203 company contacts `37324121` (48/48), plus stacked #200 stage history `93cb8f3a` (43/43), #204 contact decision attribution `c70dc0e0` (37/37), #205 contact activity routing `58c5d4af` (41/41) — long lanes for stacked PRs run after Codex retargets them to main.
+
+Current tip: `devin/non20i-staff-notes` pushed at `b6d20382`, stacked on `devin/non20i-contact-activity`. Adds staff-only internal project notes (`studio_messages` `author_type='internal'`, no schema change) via the `studio_note` admin action; portal conversation queries allow-list visible author types so notes cannot reach clients, contacts, support sessions or activity feeds. php -l + test-compile + canonical inventory all pass. PR creation is pending on a GitHub API rate limit — branch is pushed and ready; create PR base `devin/non20i-contact-activity` when the limit resets, or Codex may include it in integration coordination.
+
+No merge, deployment, provider call, email, payment or SSH occurred. Codex owns 20i integration and release coordination; Devin owns licensing and non-20i roadmap items only.
 Start this documentation follow-up from `1159648f968d46439f7e88a9cd0f6dbee3758643` on `ops/twentyi-catalog-schema-read`. Original [run 39090394774](https://github.com/afterburn25/Cajun_Web/actions/runs/39090394774), attempt 1, failed after 39 passing offline tests: package-type field/type observations were retained, while the cloud operation ended with `unexpected_root` and no retained root kind. Its safe artifact is [copied byte-for-byte](docs/evidence/twentyi-catalog-schema-39090394774.json); [the diagnostic record](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#original-outcome--2026-10-18) binds the source, job, artifact and limits.
 
 Next, review Domains' hosting follow-through against these observed spellings/types and VPS's proposed single cloud root-kind read. Keep unknown-key semantics, complete catalog coverage, provider prices and image contracts unresolved. The original failure is not a successful import and must not be retried automatically. This documentation-only update changes no diagnostic code or workflow and triggers no new provider read; root owns applying it with a documentation commit message. No provider writes or image downloads occur here. Preserve immutable release `b79c6711` and its published assets. Earlier pending-read statements below describe the preparation checkpoint, before this original execution.

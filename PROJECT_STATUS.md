@@ -10,6 +10,13 @@ The [first catalog diagnostic](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#origina
 
 ## 2026-10-18 — first catalog metadata read incomplete
 
+Previous checkpoint: https://github.com/afterburn25/Cajun_Web/blob/35d8fb7efc94f6f851399d0755fa93097f1fce66/PROJECT_STATUS.md
+
+## Devin non-20i lane — 2026-10-17
+
+Devin PRs verified green: #198, #202, #203 on main (48/48 each) and stacked #200, #204, #205 on their parents (long lanes run after retarget). New tip `devin/non20i-staff-notes` @ `b6d20382` stacked on #205: staff-only internal project notes via `studio_messages.author_type='internal'` — invisible to clients, contacts, support sessions and activity feeds; no schema change. Syntax/test-compile/canonical inventory pass; PR pending GitHub API rate limit reset.
+
+Nothing merged, deployed or contacted externally. 20i/provider/hosting/SSH work remains Codex-owned.
 Original [run 39090394774](https://github.com/afterburn25/Cajun_Web/actions/runs/39090394774), attempt 1, checked out `1159648f968d46439f7e88a9cd0f6dbee3758643`. Its 39 offline transport/disclosure tests passed; the live step and overall run failed, and the bounded shape artifact was uploaded. `package_types` observed an array of objects with `id` integer, `label` string and `platform` string. `cloud_server_product_data` returned the diagnostic outcome `unexpected_root`; the actual root kind was not retained, so an empty catalog or missing entitlement cannot be inferred.
 
 The [original safe shape and interpretation](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#original-outcome--2026-10-18) establish lexical field/type observations only. Complete catalog, pricing, image and importer contracts remain unaccepted; no absence of provider images is established. Domains is preparing the bounded hosting follow-through, and VPS is preparing a separate one-read cloud root-kind diagnostic. Neither proposal is executed by this documentation follow-up. Preserve the first failure; do not rerun it automatically. Published 1.25.0 remains unchanged. The preparation checkpoint below is historical.

@@ -66,6 +66,14 @@ def run_http(env):
     check('Client identity cannot create administrator accounts',r.status_code==303 and 'login' in r.headers.get('Location',''))
     r=chosen_form(admin,url,'staff_save','id',1,{'role':'administrator','owner_password':OWNER})
     check('HTTP cannot demote last activated owner','at least one active owner' in r.text and db('SELECT role FROM ci_staff_profiles WHERE user_id=1')[0]['role']=='owner')
+    # Staff-only project notes never reach clients or staff without client grants.
+    r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_note',{'body':'Staff-only internal marker note.'})
+    check('Owner saves an internal staff note','Project updated' in r.text and db("SELECT author_type FROM ci_studio_messages WHERE body='Staff-only internal marker note.'")[0]['author_type']=='internal')
+    r=admin.get(BASE+'/existing/admin/index.php?view=studio-job&id=1')
+    check('Admin project renders the note privately once','staff only' in r.text and r.text.count('Staff-only internal marker note.')==1 and 'Internal notes are never shown' in r.text)
+    alice=requests.Session();submit(alice,BASE+'/existing/portal/index.php','login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
+    check('Client conversation never shows internal notes','Staff-only internal marker note.' not in alice.get(BASE+'/existing/portal/index.php?job=1').text)
+    check('Client activity never surfaces internal notes','Staff-only internal marker note.' not in alice.get(BASE+'/existing/portal/index.php?activity=1').text)
     return {'url':url,'id':uid,'link':link,'code':code}
 
 def run_browser(env,browser):
@@ -109,6 +117,8 @@ def run_browser(env,browser):
     count=db('SELECT COUNT(*) AS n FROM ci_studio_clients')[0]['n']
     r=web.get(BASE+'/existing/admin/index.php?view=security');r=web.post(r.url,data={'csrf':token(r),'action':'studio_client','id':'0','name':'Forbidden','email':'forbidden@example.invalid'})
     check('POST authorization cannot be bypassed through own-account page','does not have access' in r.text and db('SELECT COUNT(*) AS n FROM ci_studio_clients')[0]['n']==count)
+    r=web.get(BASE+'/existing/admin/index.php?view=security');r=web.post(r.url,data={'csrf':token(r),'action':'studio_note','job_id':'1','body':'Unauthorized note attempt.'})
+    check('Website staff cannot write internal project notes','does not have access' in r.text and not db("SELECT id FROM ci_studio_messages WHERE body='Unauthorized note attempt.'"))
     # The second administrator activates without JavaScript and gets the correct landing page.
     plain=browser.new_context(java_script_enabled=False);c=plain.new_page();c.goto(client_link);c.locator('[data-setup-token]').fill(parse_qs(urlparse(client_link).fragment)['token'][0]);c.locator('[name=password]').fill(STAFF);c.locator('[name=confirm_password]').fill(STAFF);c.get_by_role('button',name='Set up account').click();expect(c.locator('[name=email]')).to_be_visible()
     c.locator('[name=email]').fill('client-staff@example.invalid');c.locator('[name=password]').fill(STAFF);c.locator('form button').click();c.wait_for_url('**/admin/index.php?view=studio-clients')
