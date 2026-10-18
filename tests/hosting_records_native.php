@@ -145,6 +145,8 @@ try {
     $before=hr_snapshot();hosting_records_migrate($password);hr_ok('Repeated verified setup retains all populated hosting rows',all('SELECT id FROM '.table('hosting_records'))!==[]&&hosting_records_get($remote,1)->json()===$active->json());
     hr_ok('Audit excludes password and serialized package payload',!str_contains(json_encode(all('SELECT * FROM '.table('audit'))),$password)&&!str_contains(json_encode(all('SELECT * FROM '.table('audit'))),'HOST-1'));
     hr_ok('No provider profile or credential key created',!all('SELECT * FROM '.table('provider_profiles'))&&!is_file($private.'/provider-master.key')&&!is_file($private.'/mail-master.key'));
+    require_once __DIR__.'/hosting_storage_recovery_cases.php';hr_actor();
+    hosting_test_recovery('records',['hosting_records','hosting_record_events'],fn()=>hosting_records_ready(),fn()=>hosting_records_migrate($password),fn()=>hosting_records_get($remote,1),fn()=>hr_snapshot(),'hr_ok');
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
 $ok=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/hosting-records-native-results.json',json_encode(['passed'=>$ok,'scope'=>'Native MariaDB owner records and competing processes; synthetic remote state only, no provider dispatch or UI acceptance','checks'=>$checks],JSON_PRETTY_PRINT));
 echo ($ok?'PASS':'FAIL').': '.count($checks).' native hosting record checks'.PHP_EOL;exit($ok?0:1);
