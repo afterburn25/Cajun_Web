@@ -2,7 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 echo '<p>Publish hosting offers from your imported drafts and reviewed service plans. Choose studio-reviewed requests or a client confirmation that creates an unpaid first invoice. Invoice checkout requires verified payment and a separate owner approval before hosting setup.</p>';
-echo '<div class="button-row"><a class="btn outline" href="'.esc(admin_url('hosting-offers')).'">Offers</a><a class="btn outline" href="'.esc(admin_url('hosting-offers',['tab'=>'requests'])).'">Client requests</a><a class="btn outline" href="'.esc(admin_url('catalog')).'">Edit products and images</a><a class="btn outline" href="'.esc(admin_url('service-plans')).'">Service plans</a></div>';
+echo '<div class="button-row"><a class="btn outline" href="'.esc(admin_url('hosting-offers')).'">Offers</a><a class="btn outline" href="'.esc(admin_url('hosting-offers',['tab'=>'requests'])).'">Client requests</a><a class="btn outline" href="'.esc(admin_url('hosting-purchases')).'">Hosting purchases</a><a class="btn outline" href="'.esc(admin_url('catalog')).'">Edit products and images</a><a class="btn outline" href="'.esc(admin_url('service-plans')).'">Service plans</a></div>';
 if (!$data['ready']) {
     echo '<section class="workspace-card"><h2>Enable hosting offers</h2><p>Prepare the offer and request history after setting up your product catalog, service plans and hosting mappings. Existing products stay as drafts.</p><form method="post">';
     hosting_catalog_admin_fields('hosting_catalog_setup',[]);

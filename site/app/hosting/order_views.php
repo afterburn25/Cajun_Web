@@ -22,9 +22,17 @@ function service_orders_context(string $agreement,int $client,bool $asClient=fal
         }
         if(one('SELECT id FROM '.table('audit').' WHERE action=? AND detail LIKE ? LIMIT 1',['service_orders.offered','% agreement '.$agreement.' invoice %']))throw new RuntimeException('Hosting order history is missing. Restore the original database.');
         if(!$asClient&&$source->model()->state()==='active'){
-            // Explicit invoice selection is bounded and never infers provider ownership.
-            $rows=all('SELECT i.id,i.reference,i.title FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id WHERE j.client_id=? AND i.amount_cents=? AND i.currency=? AND i.status IN (?,?) ORDER BY i.id DESC LIMIT 51',[$client,$source->model()->agreedPrice,$source->model()->plan->currency,'issued','paid']);
-            $more=count($rows)>50;
+            // Checkout retains its exact original invoice even after newer invoices exist.
+            if($source->data()['format']===2){
+                require_once CWP_CODE_ROOT.'/app/hosting/catalog_offers_storage.php';
+                $origin=hosting_catalog_agreement_origin($agreement,$client);
+                if($origin===null||!is_int($origin['invoice_id']??null)||$origin['invoice_id']<1)throw new RuntimeException('The original checkout invoice needs recovery.');
+                $rows=all('SELECT i.id,i.reference,i.title FROM '.table('studio_invoices').' i WHERE i.id=?',[$origin['invoice_id']]);
+            }else{
+                // Legacy agreements retain explicit, bounded invoice selection.
+                $rows=all('SELECT i.id,i.reference,i.title FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id WHERE j.client_id=? AND i.amount_cents=? AND i.currency=? AND i.status IN (?,?) ORDER BY i.id DESC LIMIT 51',[$client,$source->model()->agreedPrice,$source->model()->plan->currency,'issued','paid']);
+                $more=count($rows)>50;
+            }
             foreach(array_slice($rows,0,50) as $i){
                 if(one('SELECT id FROM '.table('service_orders').' WHERE invoice_id=?',[$i['id']]))continue;
                 try{$binding=service_orders_invoice($source,(int)$i['id']);}

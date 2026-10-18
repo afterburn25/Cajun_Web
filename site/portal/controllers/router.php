@@ -28,6 +28,8 @@ if(array_key_exists('domain_renewals',$_GET)||(is_string($_POST['action']??null)
 if(array_key_exists('hosting_mail',$_GET)||($_POST['action']??null)==='client_mailbox_create')header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/portal/controllers/plans.php';
 require_once CWP_CODE_ROOT.'/portal/controllers/hosting_catalog.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/hosting_purchases.php';
+if(array_key_exists('hosting_purchases',$_GET))header('Cache-Control: no-store, private');
 if(array_key_exists('hosting',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'hosting_catalog_')))header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/portal/controllers/recurring_billing.php';
 if(array_key_exists('recurring',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_')))header('Cache-Control: no-store, private');
@@ -40,6 +42,7 @@ if($supportRequested){
  }
  $context=support_resolve($supportId);if(!$context)support_unavailable();$GLOBALS['cwp_support']=$context;
 }
+if(array_key_exists('hosting_purchases',$_GET)){try{hosting_purchases_portal_access();}catch(RuntimeException){fail_page('Sign in as the primary client outside support access to view hosting purchases.',403);}}
 $client=studio_client();$jobId=isset($_GET['job'])&&is_string($_GET['job'])?(int)$_GET['job']:0;$invite=is_string($_GET['invite']??null)?$_GET['invite']:'';
 require CWP_CODE_ROOT.'/portal/controllers/actions.php';
 if(isset($_GET['activity']))activity_render('client',$error);
@@ -49,6 +52,7 @@ if(isset($_GET['file'])){if(!$client)fail_page('Sign in to view this file.',403)
 if(isset($_GET['invoice'])||isset($_GET['receipt']))ledger_portal_render();
 if(isset($_GET['services']))provider_services_portal_render();
 require CWP_CODE_ROOT.'/portal/views/auth.php';
+if(array_key_exists('hosting_purchases',$_GET))hosting_purchases_portal_render($client);
 if(array_key_exists('hosting',$_GET))hosting_catalog_portal_render($client,$error);
 if(array_key_exists('registration_drafts',$_GET))registration_drafts_client_render($client,$error);
 if(array_key_exists('domains',$_GET))provider_domain_client_render($client,$error);

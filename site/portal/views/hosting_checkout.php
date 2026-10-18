@@ -4,7 +4,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 if ($result!==null) {
     echo '<section class="workspace-card"><h2>Your hosting invoice</h2><p>Invoice '.esc($result['invoice_reference']).' is saved for $'.esc(gmoney($result['amount_cents'])).' '.esc($result['currency']).'.</p><p>Invoice status: '.esc(ucfirst($result['invoice_status'])).'. Hosting setup follows verified payment and owner approval.</p><div class="button-row">';
     foreach (['View invoice'=>['invoice'=>$result['invoice_id']],'View project'=>['job'=>$result['project_id']],'Service agreement'=>['agreement'=>$result['agreement_id']],'Billing schedule'=>['recurring'=>1,'job'=>$result['project_id'],'schedule'=>$result['schedule_id']]] as $label=>$target) echo '<a class="btn outline" href="'.esc(studio_url($target)).'">'.esc($label).'</a>';
-    echo '</div></section>';return;
+    echo '<a class="btn outline" href="'.esc(studio_url(['hosting_purchases'=>1])).'">My hosting purchases</a></div></section>';return;
 }
 if ($review!==null) {
     $b=$review['billing'];$p=$b['first_period'];

@@ -130,7 +130,7 @@ function staff_reset_token(string $email): ?array {
     }));
 }
 function staff_view_permission(string $view): ?string {
-    if($view==='hosting-offers')return 'staff.manage';
+    if(in_array($view,['hosting-offers','hosting-purchases'],true))return 'staff.manage';
     if($view==='registration-drafts')return 'staff.manage';
     if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true))return 'staff.manage';
     if($view==='studio-licenses')return 'staff.manage';

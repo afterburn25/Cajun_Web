@@ -19,6 +19,7 @@ spec = importlib.util.spec_from_file_location('acceptance_artifacts', ROOT / 'to
 a = importlib.util.module_from_spec(spec); spec.loader.exec_module(a)
 checks = []
 from imported_plan_setup_wiring import historical_bytes, run as imported_plan_setup_checks
+from hosting_purchase_inbox_wiring import run as purchase_inbox_checks
 
 
 def check(name, condition):
@@ -757,7 +758,8 @@ def run(tmp):
     environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
     contract=a.load(ROOT/'tools/acceptance-contract.json')
-    contract,plan_workflow,plan_reports=imported_plan_setup_checks(a,ROOT,tmp,check,deny,named,contract)
+    contract,inbox_reports=purchase_inbox_checks(a,ROOT,tmp,check,deny,named,contract)
+    contract,plan_workflow,plan_reports=imported_plan_setup_checks(a,ROOT,tmp,check,deny,named,contract,inbox_reports)
     catalog_storefront_http_checks(contract)
     catalog_storefront_source_checks(contract)
     driver_paths = {'tests/prepare_legacy.py', 'tests/apache_acceptance.py', 'tests/structure_acceptance.py'}
