@@ -432,3 +432,26 @@
   .no-js .cwp-site .site-header nav{display:flex;position:static;flex-direction:row;flex-wrap:wrap;padding:4px 0 0;width:100%;gap:3px;background:none;box-shadow:none;border:0;}
   .no-js .cwp-site .site-header nav a{font-size:12px;padding:7px 10px;}
 }
+
+/* Public navigation keeps every destination available without crowding the brand. */
+@media(min-width:1201px) {
+    .cwp-site .site-header .brand img {width:clamp(250px,22vw,320px);}
+    .cwp-site .nav-inner {gap:20px;}
+    .cwp-site .site-header nav {gap:clamp(14px,1.4vw,24px);}
+    .cwp-site .nav-cta {padding-inline:18px;gap:12px;white-space:nowrap;}
+}
+@media(max-width:1200px) {
+    .cwp-site .site-header .brand {max-width:calc(100% - 60px);}
+    .cwp-site .site-header .brand img {max-width:100%;}
+    .cwp-site .nav-cta {display:none;}
+    .cwp-site .menu-toggle {display:block;flex-shrink:0;background:linear-gradient(140deg,#173455,#030c1a);border-color:#d8b86a8a;}
+    .cwp-site .site-header nav {display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;align-items:stretch;gap:3px;padding:16px 20px;background:linear-gradient(140deg,#091d34fa,#030b18fc);border-bottom:1px solid #d7b56c;box-shadow:0 15px 28px #000a;max-height:calc(100dvh - 100px);overflow-y:auto;}
+    .cwp-site .site-header nav.open {display:flex;}
+    .cwp-site .site-header nav a {font-size:15px;padding:10px 16px;}
+    .cwp-site .site-header nav a:after {display:none;}
+    .cwp-site .site-header nav a.active {background:#ecc26412;border:1px solid #ecc26433;border-radius:4px;}
+    .no-js .cwp-site .site-header,.no-js .cwp-site .nav-inner {height:auto;}
+    .no-js .cwp-site .nav-inner {flex-wrap:wrap;padding-block:16px;}
+    .no-js .cwp-site .menu-toggle {display:none;}
+    .no-js .cwp-site .site-header nav {display:flex;position:static;flex:0 0 100%;max-height:none;}
+}

@@ -11,4 +11,10 @@ function slugify(string $text): string { return trim(preg_replace('/[^a-z0-9]+/'
 
 function validate_password(string $password): void { if(str_contains($password,"\0") || strlen($password)<14 || strlen($password)>72) throw new InvalidArgumentException('Use a password between 14 and 72 bytes. A long, unique passphrase works well.'); }
 
+function validate_admin_password(string $password): void {
+    $characters=preg_match_all('/./us',$password);
+    if(str_contains($password,"\0") || $characters===false || $characters<12 || strlen($password)>72)
+        throw new InvalidArgumentException('Use an administrator password with at least 12 characters and no more than 72 bytes. A long, unique passphrase works well.');
+}
+
 function format_date(?string $date): string { return $date ? gmdate('M j, Y',strtotime($date)) : '—'; }

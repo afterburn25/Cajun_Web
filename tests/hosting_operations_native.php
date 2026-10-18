@@ -157,6 +157,8 @@ try {
     $before=ho_all();hosting_operations_migrate($password);ho_ok('Repeated setup retains all operation and resource records',all('SELECT id FROM '.table('hosting_dispatches'))!==[]&&ho_load(ho_id(3))->account()->providerRef()==='synthetic-resource-3');
     ho_ok('Operation records never alter or rotate saved credentials',provider_settings_load($profileId)['credentials']===$credential&&file_get_contents($private.'/provider-master.key')===$keyBytes);
     $audits=json_encode(all('SELECT * FROM '.table('audit')));ho_ok('Audit contains no credential or private binding payload',!str_contains($audits,'synthetic-local-only-key')&&!str_contains($audits,$credential)&&!str_contains($audits,'before_sha256'));
+    require_once __DIR__.'/hosting_storage_recovery_cases.php';ho_actor();
+    hosting_test_recovery('operations',['hosting_dispatches','hosting_operation_results','hosting_resources'],fn()=>hosting_operations_ready(),fn()=>hosting_operations_migrate($password),fn()=>hosting_operations_require_ready(),fn()=>ho_all(),'ho_ok');
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
 $ok=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/hosting-operations-native-results.json',json_encode(['passed'=>$ok,'scope'=>'Native MariaDB durable operation fences and synthetic result fixtures only; no provider transport or UI acceptance','checks'=>$checks],JSON_PRETTY_PRINT));
 echo ($ok?'PASS':'FAIL').': '.count($checks).' native hosting operation checks'.PHP_EOL;exit($ok?0:1);
