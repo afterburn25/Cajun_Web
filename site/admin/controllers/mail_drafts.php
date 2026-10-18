@@ -151,7 +151,7 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
             $revision=(int)$row['revision'];
         }
         $sender=$account!==''?$account.':'.($row['account_revision']??$accounts[$account]['revision']):'';
-        $editable=(!$row||$row['status']==='draft')&&mail_drafts_html_ready();$unsaved=null;
+        $editable=(!$row||$row['status']==='draft')&&(!empty($row['copied'])||mail_drafts_html_ready());$unsaved=null;
         // A concurrent discard must not erase text submitted from an earlier edit tab.
         // Keep the retained saved record separate, under the same current author/account gate.
         if($post&&$row&&!$editable&&in_array($_POST['action']??null,['mail_drafts_save','mail_drafts_preview','mail_drafts_insert','mail_drafts_accounts','mail_drafts_templates'],true)) {
