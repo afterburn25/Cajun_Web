@@ -25,7 +25,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
     }
     if($action==='reset'){
         if(!consume_rate(ip_key('reset-submit'),10,900))throw new InvalidArgumentException('Please wait before trying another reset.');
-        $token=posted('token',64);$password=posted('password',72);validate_password($password);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('The passwords do not match.');
+        $token=posted('token',64);$password=posted('password',72);validate_admin_password($password);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('The passwords do not match.');
         if(!preg_match('/^[a-f0-9]{64}$/D',$token))throw new InvalidArgumentException('This reset link is not valid.');
         staff_reset($token,$password);
         unset($_SESSION['uid']);session_regenerate_id(true);flash('Your password has been changed. Sign in with your new password.');redirect(admin_url('login'));
