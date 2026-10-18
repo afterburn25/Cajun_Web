@@ -1,3 +1,8 @@
+## Development — original hosting mapping continuity, 2026-10-18
+
+- Keep new and saved catalog-origin hosting order links tied to the exact provider mapping in the client's original offer. Reject silent substitutions and manual bypasses; guide owners through a new offer/agreement when the original mapping is no longer eligible.
+- Preserve ordinary order preparation, historical mapping readability and explicit billing project consent. This remains development work awaiting joined SQL/HTTP/browser and release acceptance.
+
 ## Unreleased — guide confirmed hosting orders to client access
 
 Show saved package assignment status and the expected client on the owner’s confirmed hosting order. Provide a direct link to the matching provider inventory card for the existing password-confirmed assignment action. Keep provider purchases, confirmation, ownership writes, client projections and billing behavior unchanged. Native/browser and full purchase-through-access acceptance remain pending.

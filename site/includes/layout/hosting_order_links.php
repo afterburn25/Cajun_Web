@@ -33,7 +33,11 @@ function hosting_order_links_ui(ServiceOrderDocument $order,bool $owner,?array $
         service_plans_confirmation('Prepare local hosting history for this accepted order.',true);echo '<button class="btn gold">Prepare hosting history</button></form></section>';return;
     }
     if(!$assessment||!$assessment['eligible']){echo '<p>Complete the commercial review before creating this order’s hosting record.</p></section>';return;}
-    provider_plan_catalog_order_ui($order);
+    $catalogOrigin=$ctx['catalog_origin']??null;
+    provider_plan_catalog_order_ui($order,$catalogOrigin);
+    if($catalogOrigin!==null){
+        echo '<p>This order keeps the provider mapping from its original hosting offer. <a href="'.esc(admin_url('studio-job',['id'=>$catalogOrigin['job_id']])).'">View original project</a>.</p></section>';return;
+    }
     $action='service_plans_order_map_service';
     echo '<p>Record the package and location reviewed in your provider account. This prepares a local service record; provider availability, defaults and setup authorization still require verification.</p><p>Check package defaults such as Website Turbo, welcome email, application installation and SSH keys in My20i. A package type can apply these automatically.</p><form method="post">';service_orders_ui_fields($action,$order->data()['agreement']['id'],$order);
     foreach(['order_hash'=>$order->fingerprint(),'account_id'=>bin2hex(random_bytes(16)),'profile_id'=>$profile['id'],'profile_revision'=>(string)$profile['revision']] as $key=>$value)echo '<input type="hidden" name="'.esc($key).'" value="'.esc(service_orders_ui_value($action,$key,$value,64)).'">';

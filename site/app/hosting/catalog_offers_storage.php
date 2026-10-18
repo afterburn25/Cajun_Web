@@ -221,6 +221,23 @@ function hosting_catalog_ready(): bool {
     return true;
 }
 
+/** Historical catalog origin, under the caller's current authority and owning transaction.
+ * This is not a new publication/readiness grant and never selects a replacement mapping.
+ */
+function hosting_catalog_agreement_origin(string $agreement,int $client): ?array {
+    hosting_catalog_guard();service_plans_id($agreement);service_plans_actor($client);
+    if (!hosting_catalog_ready()) return null;
+    $row=one('SELECT * FROM '.table('hosting_catalog_decisions').' WHERE agreement_id=?',[$agreement]);
+    if (!$row) return null;
+    $decision=hosting_catalog_row_document('hosting_catalog_decisions',$row);
+    $request=HostingCatalogRequest::fromJson(hosting_catalog_row('hosting_catalog_requests',$decision['request_id'])['document_json']);
+    $publication=HostingCatalogPublication::fromJson(hosting_catalog_row('hosting_catalog_publications',$request->data()['publication_id'])['document_json']);
+    $request->assertPublication($publication);
+    if ($decision['kind']!=='offered' || $decision['agreement_id']!==$agreement || $request->data()['client_id']!==$client) hosting_catalog_recovery();
+    $mapping=provider_plan_catalog_document($publication->data()['mapping_json']);
+    return ['publication_id'=>$publication->data()['id'],'job_id'=>$decision['job_id'],'mapping_id'=>$mapping['id'],'mapping_sha256'=>hash('sha256',$publication->data()['mapping_json'])];
+}
+
 /** After one new INSERT, in the caller's authorized transaction. Duplicate/retry paths do not call this. */
 function hosting_catalog_recorded(string $name,string $id): array {
     hosting_catalog_guard();hosting_catalog_table($name);service_plans_id($id);

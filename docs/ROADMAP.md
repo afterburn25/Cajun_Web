@@ -1,3 +1,7 @@
+## Successor follow-through — original package continuity
+
+Catalog-origin order preparation and retained service links now enforce the original publication mapping on the separate portal handoff branch. The owner screen follows that mapping and preserves the original project link. Source/model checks pass; actual joined SQL/browser acceptance remains pending. Current recurring billing also requires a future activation date and invoices only after that period starts, so immediate first-payment checkout remains unfinished. See [behavior and limitations](TWENTYI_HOSTING_CLIENT_ACCESS.md).
+
 ## Successor follow-through — client hosting access
 
 The separate hosting portal handoff branch connects confirmed orders to the existing owner package-assignment screen with saved-state guidance and exact package navigation. Local renderer/projection checks pass; this does not complete the joined offer, payment, fulfillment and client service-control path. See [remaining acceptance](TWENTYI_HOSTING_CLIENT_ACCESS.md).

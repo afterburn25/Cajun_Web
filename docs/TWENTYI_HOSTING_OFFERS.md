@@ -51,3 +51,7 @@ The isolated local Windows SQL check passes all 138 existing service-plan assert
 The additional focused Linux job builds an exact-source COMPLETE package and seeds the real native fixture in its own isolated database. `tests/hosting_catalog_browser.py` then drives real owner image upload, preview/publication, client request, owner conversion and separate client agreement consent. Direct HTTP tests cover CSRF, owner password, stale forms, exact retries, project/client ownership and support-session refusal. Closed failure diagnostics retain source locations and SQLSTATE without SQL arguments or private fixture values. Ten desktop/mobile captures require subsequent pixel review. This job does not replace full application acceptance.
 
 Next: retain and review all original four-environment results; run the packaged owner/public/client browser flow; test the actual agreement/invoice/payment/order path with synthetic provider fixtures. Refresh installer inventory after each combined shipping change. Preserve every original 1.26 run and published 1.25 asset.
+
+## Purchase follow-through
+
+The separate [client access and mapping follow-through](TWENTYI_HOSTING_CLIENT_ACCESS.md) preserves the originally published provider mapping through order preparation and fulfillment validation. It also records the current recurring billing limitation: activation starts on a future billing date and the first invoice is unavailable until that period begins. The joined purchase-to-client-Hosting test remains pending and must not be described as immediate checkout.

@@ -17,3 +17,15 @@ The three changed PHP files pass syntax checks. The exact proposed projection an
 The canonical build refresh updates the installer dependency inventory for the changed shipping files. This branch changes no test workflow, existing assertion count, schema, API request or version label. The frozen 1.26 candidate and current focused hosting source remain unchanged.
 
 Before integration/release, run existing native fulfillment and inventory tests on the combined source and inspect actual desktop/mobile navigation. Complete one joined imported offer through client request, agreement consent/activation, billing consent/activation, first invoice, verified synthetic receipt, hosting order, synthetic fulfillment, exact confirmation, explicit owner package assignment and client Hosting visibility. Verify other-client exclusion, replay, concurrent assignment, audit rollback and recovery. The prepared hosting-offer fixtures currently stop before that entire joined flow.
+
+## Preserve the original offer mapping
+
+The follow-up starts at `bde6cc1c4fa8a4230085ed3e4f99f05d6df0f5da`. For a catalog-origin agreement, preparation derives the mapping ID and digest from the validated original decision, request and publication. It rejects a replacement mapping or manual bypass before constructing the request. Existing saved links are checked against that same history before fulfillment; inconsistent links require recovery rather than silent reassignment. Historical validation retains the existing historical-only mapping check, while new preparation retains current eligibility checks.
+
+The owner screen offers only the original mapping and links to the original project. An expired or superseded mapping requires a new offer and client agreement before a different setup. Ordinary non-catalog orders and separately accepted billing project choices are unchanged. No new provider operation, schema, consent rule or automatic purchase is introduced.
+
+The five production files pass PHP syntax, independent source review, 37 exact-function/renderer checks per normal/minimal PHP mode and six actual original-fixture dependency loads. Dependency rows in the function checks are modeled; fixture bodies and SQL were not executed. Each origin lookup revalidates retained hosting history, so repeated validation still scales with that history. Measure the joined native path before claiming acceptable runtime cost.
+
+## Current recurring purchase timing
+
+A newly accepted recurring schedule must activate on a future billing date, and its first invoice cannot be issued before that period begins. The planned joined test uses an isolated process clock only for preparation, then real time for invoicing and fulfillment. It demonstrates an eventual recurring purchase, not immediate checkout. Billing semantics are unchanged; immediate first-payment hosting checkout remains separate unfinished work.

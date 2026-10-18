@@ -1,3 +1,11 @@
+## 2026-10-18 — preserve the hosting package a client requested
+
+The separate `codex/twentyi-hosting-portal-handoff` branch now binds catalog-origin order preparation and saved-link validation to the provider mapping retained in the original published offer. A later mapping for the same retail plan, or a manual preparation submission, cannot silently replace it. Owners see the original mapping or guidance to create a new offer and client agreement; historical validation does not require that old mapping to remain currently available. Ordinary non-catalog orders and explicit billing project consent retain their existing behavior.
+
+Starting source `bde6cc1c4fa8a4230085ed3e4f99f05d6df0f5da`. Five production files pass syntax and independent source review; 37 modeled checks pass in each PHP mode, and six real fixture dependency loads pass. The canonical installer refresh/full syntax check and 1,912 local documentation links also pass. These are not SQL, browser or complete purchase acceptance. Original release and focused hosting sources/runs are preserved. The joined purchase test is being prepared separately and must measure the repeated historical-read cost. [Behavior and remaining checks](docs/TWENTYI_HOSTING_CLIENT_ACCESS.md).
+
+The separate 1.26 candidate now has verified maintained compatibility: 54 reports, 3,280 named checks, all five original jobs passing. Full application/browser, recovery and release acceptance remain pending in [PR216](https://github.com/afterburn25/Cajun_Web/pull/216). Published 1.25.0 remains unchanged.
+
 ## 2026-10-18 — client hosting access handoff in development
 
 The separate `codex/twentyi-hosting-portal-handoff` branch adds a saved-assignment card to confirmed hosting orders. It identifies the expected client, shows whether the package is linked or needs review, and opens the existing provider inventory at that package. Existing owner linking and provider refresh actions remain responsible for access changes. [Scope and validation](docs/TWENTYI_HOSTING_CLIENT_ACCESS.md).
