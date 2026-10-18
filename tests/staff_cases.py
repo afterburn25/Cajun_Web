@@ -100,12 +100,6 @@ def run_http(env):
     check('Client sees milestone states and target dates','Synthetic milestone content approved' in r.text and '2026-11-30' in r.text and 'milestone-'+str(mid) in r.text)
     check('Client sees open blockers and the needed-actions section','Open blockers' in r.text and 'What we need from you' in r.text)
     feed=alice.get(BASE+'/existing/portal/index.php?activity=1')
-    if 'milestone:'+str(mid) not in feed.text:
-        try:settings=db("SELECT name,value FROM ci_settings WHERE name IN ('activity_schema_version','studio_schema_version','contacts_schema_version','staff_schema_version')")
-        except Exception as e:settings='db-error '+repr(e)[:120]
-        try:ms=db('SELECT id,job_id,title,state,target_date,updated_at FROM ci_studio_milestones')
-        except Exception as e:ms='db-error '+repr(e)[:120]
-        print('ACTIVITY PAGE DEBUG',feed.status_code,feed.url,settings,ms,[n.get('data-event-key') for n in soup(feed).select('[data-event-key]')][:40],feed.text[:400])
     check('Milestone change enters client activity feed','milestone:'+str(mid) in feed.text)
     check('Milestones stay isolated to the owning client',bob.get(BASE+'/existing/portal/index.php?job=1').status_code==404)
     return {'url':url,'id':uid,'link':link,'code':code}
