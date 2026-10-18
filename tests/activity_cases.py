@@ -109,6 +109,8 @@ def run_browser(env,browser):
     uid=db("SELECT id FROM ci_users WHERE email='request-staff@example.invalid'")[0]['id'];old_grants=db('SELECT permissions FROM ci_staff_profiles WHERE user_id=?',[uid])[0]['permissions'];db("UPDATE ci_staff_profiles SET permissions='[]' WHERE user_id=?",[uid])
     check('Current grant revocation removes count center and exact navigation',member.get(endpoint+'?audience=admin').status_code==204 and member.get(url).status_code==403 and member.get(url+'&open='+ckey).status_code==403);db('UPDATE ci_staff_profiles SET permissions=? WHERE user_id=?',[old_grants,uid])
     db('UPDATE ci_studio_clients SET active=0 WHERE id=1');check('Client deactivation removes count and exact navigation',alice.get(endpoint+'?audience=client').status_code==204 and alice.get(center+'&open='+key).status_code==403);db('UPDATE ci_studio_clients SET active=1 WHERE id=1')
+    # Deactivation drops the client session; sign back in after the row is restored.
+    submit(alice,portal,'login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
     # A milestone revision gets a new event identity; an older acknowledgement cannot consume it.
     jobAdmin=root+'?view=studio-job&id=1'
     r=chosen_form(admin,jobAdmin,'studio_milestone','id',0,{'title':'Activity milestone revision fixture','state':'pending','target_date':''})
