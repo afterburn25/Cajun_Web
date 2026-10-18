@@ -1,3 +1,9 @@
+## 2026-10-19 — restore-drill review corrections (non-20i)
+
+Coordinator review corrections landed on `devin/non20i-backup-restore-drill` (`01487ba2`): the full reviewed restore-runtime fix set is applied on this independent branch — depth-aware protected-path exclusions in the manifest and its mirror, canonical target resolution refusing linked/reparse parents and escapes, two-pass restore preflight before any write, recoverable originals through the post-write hash proof, authorized intent plus applied/failed outcomes in separate transactions, authority refreshed inside the staff mutex, and marker/table-family preflight before DDL (marker 1 requires the original backups table, marker 2 the drill family; missing `backup_drills` stays the legitimate additive v1->v2 upgrade). The drill additionally refuses corrupt/non-ZIP archives up front, counts missing members and hash mismatches, writes into an isolated 0700 scratch under private storage, and scrubs it in all outcomes.
+
+Local verification: 37 manifest, 24 archive-adapter and acceptance-artifact checks pass; PHP lint clean; installer inventory regenerated and the changed native pin refreshed. The MariaDB native fixture and packaged acceptance run in CI. No merge, deployment, provider action or release.
+
 ## 2026-10-18 — CI trigger correction
 
 Parent `6caf654c99cb5befb610f405e40df69b0c174cb6`; branch `codex/ci-pr-path-filters`. Ten focused workflows now use matching push/PR path lists, retaining prior paths and covering shared runtime, native Docker and mail dependencies. Source review verifies unchanged jobs and every non-path setting; 119 finite source/applicability checks passed. This is trigger validation, not new application acceptance. [Details](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).
