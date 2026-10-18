@@ -51,14 +51,14 @@ function activity_projection(array $actor): array {
     $parts=[];$args=[];$member=$actor['type']!=='admin';$contact=$actor['type']==='contact';
     $hidden=array_flip(activity_disabled($actor));
     $can=function(string $permission) use($actor,$member): bool {return !$member||$actor['perms']===null||in_array($permission,$actor['perms'],true);};
-    $add=function(string $table,string $kind,string $time,string $title,string $where,string $target='s.id',string $keySource='s.id') use(&$parts,&$args,$member,$actor,$hidden): void {
+    $add=function(string $table,string $kind,string $time,string $title,string $where,string $target='s.id',string $keySource='s.id',string $author="''") use(&$parts,&$args,$member,$actor,$hidden): void {
         if(isset($hidden[$kind]))return;
-        $parts[]="SELECT CAST(CONCAT('".$kind.":',".$keySource.") AS CHAR CHARACTER SET ascii) COLLATE ascii_bin AS event_key,'".$kind."' AS kind,CAST(s.id AS CHAR) AS source_id,".$target." AS target_id,j.id AS job_id,j.client_id,j.title AS project_title,".$title." AS item_title,".$time.' AS occurred_at FROM '.table($table).' s JOIN '.table('studio_jobs').' j ON j.id=s.job_id JOIN '.table('studio_clients').' c ON c.id=j.client_id WHERE c.active=1 AND ('.$where.')'.($member?' AND j.client_id=?':'');
+        $parts[]="SELECT CAST(CONCAT('".$kind.":',".$keySource.") AS CHAR CHARACTER SET ascii) COLLATE ascii_bin AS event_key,'".$kind."' AS kind,CAST(s.id AS CHAR) AS source_id,".$target." AS target_id,j.id AS job_id,j.client_id,j.title AS project_title,".$title." AS item_title,".$time." AS occurred_at,".$author.' AS author_type FROM '.table($table).' s JOIN '.table('studio_jobs').' j ON j.id=s.job_id JOIN '.table('studio_clients').' c ON c.id=j.client_id WHERE c.active=1 AND ('.$where.')'.($member?' AND j.client_id=?':'');
         if($member)$args[]=$actor['client_id'];
     };
     $authors=$member?($contact?" IN ('admin','client')":"='admin'"):" IN ('client','contact')";
     if($can('projects')){
-        $add('studio_messages','message','s.created_at',"''","s.author_type".$authors);
+        $add('studio_messages','message','s.created_at',"''","s.author_type".$authors,'s.id','s.id','s.author_type');
         $add('studio_files','file','s.created_at','s.original_name',"s.author_type".$authors);
         if(studio_milestones_ready())$add('studio_milestones','milestone','s.updated_at',"CONCAT('Milestone: ',s.title,' · ',s.state)",'1=1','s.id',"CONCAT(s.id,':',SUBSTR(SHA1(CONCAT_WS('|',s.title,s.state,COALESCE(s.target_date,''),s.updated_at)),1,16))");
     }
