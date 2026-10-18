@@ -73,6 +73,9 @@ def run_http(env):
     check('Admin project renders the note privately once','staff only' in r.text and r.text.count('Staff-only internal marker note.')==1 and 'Internal notes are never shown' in r.text)
     alice=requests.Session();submit(alice,BASE+'/existing/portal/index.php','login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
     check('Client conversation never shows internal notes','Staff-only internal marker note.' not in alice.get(BASE+'/existing/portal/index.php?job=1').text)
+    # The upgraded install gates workspace activity behind owner setup; enable it before asserting feed content.
+    r=submit(admin,BASE+'/existing/admin/index.php?view=activity','activity_setup',{'password':OWNER})
+    check('Owner enables workspace activity on the upgraded install','Workspace activity is enabled' in r.text and db("SELECT value FROM ci_settings WHERE name='activity_schema_version'")==[{'value':'1'}])
     check('Client activity never surfaces internal notes','Staff-only internal marker note.' not in alice.get(BASE+'/existing/portal/index.php?activity=1').text)
     # Structured milestones carry a state and optional target date the client can follow.
     job=BASE+'/existing/admin/index.php?view=studio-job&id=1'
