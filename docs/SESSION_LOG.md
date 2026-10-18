@@ -261,6 +261,26 @@ Actions: `tests/mail_reply_cases.py` now prints the recorded `ci_mail_submission
 Tests: `python -m py_compile` clean; inventory refreshed after the revert. CI reruns will report the outcome directly.
 
 Next: read the diagnostic, fix the real authorize/transport defect, remove the print, re-run full acceptance.
+## Folder browsing follow-up — folder column width correction — 2026-10-16
+
+Request: continue #157 non-20i roadmap. Review of the folder-scoped read increment found `mail_message_reads.folder` and `mail_notice_windows/mail_notice_items.folder` still declared `VARCHAR(5)`, which rejects legal folder names such as `Sent Items` under strict SQL mode.
+
+Actions: `mail_messages_schema.php` and `mail_notices_schema.php` declare `folder VARCHAR(64)` (the same bound as `mail_inbox_reads.folder` and the wire-safe folder rule); `mail_messages_migrate()` and `mail_notices_migrate()` apply an additive `MODIFY COLUMN folder VARCHAR(64)` before strict validation when an existing install still has `varchar(5)`; `mail_messages_schema_version` and `mail_notices_schema_version` advance to `2` with adoption checks only for truly unmarked installs; fresh deploys stamp `2`. Test assertions updated for the new markers.
+
+Tests: `php -l` clean on all touched PHP; Python case files compile; build refresh clean (40 locked packages, 2188 exact dependency files, receiving mirror byte-identical). The widen/refuse paths run in the native MariaDB lane in CI.
+
+Next: continue the non-20i roadmap (provider flag sync and remaining mail acceptance items).
+
+## Folder-scoped mailbox browsing — 2026-10-16
+
+Request: continue #157 non-20i roadmap; next named A-06 gap was other-folder reads. Starting commit: `devin/non20i-mail-send-attachments` tip `213325a4`, new branch `devin/non20i-mail-folders`.
+
+Actions: `ReadSession::folder` bounds wire folder names (printable ASCII ≤64, no quote/backslash/wildcard) and `headers`/`message`/`InboxReader::read`/`MessageReader::read`/`HeaderSession` accept a folder argument that feeds `EXAMINE "<name>"` — read-only, `folder` refusal is a distinct bounded outcome. `mail_inbox_folder` mirrors the rule for service callers; `mail_inbox_read` gains a folder parameter recorded in `mail_inbox_reads.folder` (additive `VARCHAR(64) ... DEFAULT 'INBOX'` — version-1 installs get the owner-gated ALTER through the same `mail_inbox_setup`, storage version now `2`); inbox results/history and audit detail carry the folder. `mail_message_read`/`mail_message_attachment` accept a folder, journal it in the existing `mail_message_reads.folder` column, and verify the transport's claimed folder against the requested one. `mail_notices_observe`/`mail_notices_resolve` remain INBOX-keyed so folder reads never invent or resolve notices. The inbox view gains a bounded folder select (common names plus the account's configured Sent folder); message routes/forms carry the folder through the same posted-field binding; non-INBOX pages hide Reply/Reply all/Forward because protected copied drafts still bind to INBOX source reads. The HTTP IMAP fixture answers `EXAMINE "Sent"` with a separate UIDVALIDITY/message set and `NO` for absent folders.
+
+Tests: `php -l` clean on all touched PHP; pure session suite extended to 53 checks (quoted folder names, `folder` refusal, wildcard/backslash/quote names refused before network); native inbox/message suites extended (folder recorded in journals, transport folder-mismatch refused, attachment reads keep folder binding); HTTP cases extended (Sent headers and message through real TLS fixture, reply hidden on Sent, missing-folder refusal, unsafe name refused before network); update fixture remains compatible (`DEFAULT 'INBOX'` lets legacy folderless inserts run on both shapes; version-1 tables migrate in place). Build refresh clean; canonical mirrors byte-identical. Native/HTTP/Apache lanes run in CI; no real mailbox or provider use is claimed.
+
+Next: push, open stacked PR on `devin/non20i-mail-send-attachments`, update #157.
+
 ## Send-side draft attachments — 2026-10-16
 
 Request: continue #157 non-20i roadmap; send-side attachments were the largest remaining named mail gap. Starting commit: `devin/non20i-mail-reply-all` tip `74e98c6d`, new branch `devin/non20i-mail-send-attachments`.
@@ -2303,6 +2323,8 @@ Original9779 is now classified as a runner105-minute timeout, with140/141 checkp
 ## 2026-10-16 - Publish current StackCP and Devin checkpoint on main
 
 Continue roadmap and keep the published assignment directly usable. Start main00201b98798f08ea4eee2ffc2336438bf2a74c3e. Commit description: Record StackCP candidate tests and direct Devin repair priorities. Rewrite current status/handoff/checkpoint, updateREADME/roadmap/coordination/changelog/start-here/fullassignment and preserve old detail through immutable Git links. Runtime remains on reviewed3fa72d7b; first focused38933590118 is active. Parent5bfd focused38931463106 passes four755-check native environments plus260distro checks (proofab93db13); original cccf/2a/9779 failures are classified. Fresh PR state158–175 preserves unchanged reviewed158/159/161 findings and stacked dependencies. This commit changes only Markdown; no runtime/installer/version/asset/live state. Documentation validation follows before publication. Next: verify original focused artifacts and actual query profiles, continue bounded PHP-settings work and complete full/combined/release acceptance.
+
+- 2026-10-17 mail-folders: fixed `mail_inbox_admin_action` folder default and the notice-migration version guard. `posted('folder',70)` returns `''` (not null) for the folderless POST used by the upgraded-1.16 Apache baseline, so `??'INBOX'` never fired and `mail_inbox_folder('')` threw before the endpoint-policy check — switched to `?:` (1bbc91d5). The v1->v2 notice rewrite also silently adopted any populated storage with an unrecognized schema-version marker; it now requires empty/'1'/'2' and refuses otherwise, matching the flags-side fix. Installer inventory regenerated; cascaded through flags (579b3d64) and html-compose (c6bfff6e).
 
 - 2026-10-17 mail-sent-sync: corrected the 'Server folder refusal records a bounded failure without copy claims' expectation (9051a74d). The APPEND literal is always transmitted before the server's NO, so the fixture's `appended` bytes are the refused submission's MIME — comparing to the earlier accepted MIME could never hold. Now asserts the fixture received exactly the refused submission's bytes. Cascaded through reply-all (ff0e120e), send-attachments (a6a74d82), folders (2d19a992), flags (3fe1a281) and html-compose (4fa5d1ae); inventories verified on every branch.
 

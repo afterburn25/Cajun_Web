@@ -9,10 +9,10 @@ from staff_cases import OWNER,STAFF
 def run_browser(env,browser):
     globals().update({k:env[k] for k in ['BASE','QA','check','soup','token','submit','inbox_server']})
     db('DELETE FROM ci_rate_limits');root=BASE+'/existing/admin/index.php';library=root+'?view=mail-accounts'
-    check('Fresh setup creates empty exact-message request storage',db("SELECT value FROM fresh_settings WHERE name='mail_messages_schema_version'")==[{'value':'1'}] and not db('SELECT * FROM fresh_mail_message_reads'))
+    check('Fresh setup creates empty exact-message request storage',db("SELECT value FROM fresh_settings WHERE name='mail_messages_schema_version'")==[{'value':'2'}] and not db('SELECT * FROM fresh_mail_message_reads'))
     owner=requests.Session();submit(owner,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
     aid=db("SELECT id FROM ci_mail_accounts WHERE label='Staff inbox fixture'")[0]['id'];inbox=root+'?view=mail-inbox&account_id='+aid;detail=root+'?view=mail-account&account_id='+aid
-    route={'account_id':aid,'revision':'1','uidvalidity':'1234','uid':'82'};message=root+'?view=mail-message&'+urlencode(route)
+    route={'account_id':aid,'revision':'1','uidvalidity':'1234','uid':'82','folder':'INBOX'};message=root+'?view=mail-message&'+urlencode(route)
     before=inbox_server.connections
     check('Upgrade waits for owner message preparation','must prepare message reading' in owner.get(message).text and inbox_server.connections==before)
     r=submit(owner,library,'mail_message_setup',{'csrf':'bad','current_password':OWNER});check('Message preparation rejects bad CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='mail_messages_schema_version'"))
@@ -61,6 +61,13 @@ def run_browser(env,browser):
     before_attach=inbox_server.connections;d=download(owner,uid='81');check('Stale message identity refuses an attachment download','no longer matches' in d.text.lower() and inbox_server.connections==before_attach)
     before_attach=inbox_server.connections;d=download(member);check('Staff without message permission cannot download','SYNTHETIC ATTACHMENT SECRET' not in d.text and inbox_server.connections==before_attach)
     age();inbox_server.mode='message-html-only';r=load(owner);check('HTML-only message has formatting without invented plaintext',soup(r).select_one('[data-message-formatted]') is not None and soup(r).select_one('[data-message-plain]') is None)
+    sent_route={'account_id':aid,'revision':'1','uidvalidity':'4321','uid':'90','folder':'Sent'};sent_page=root+'?view=mail-message&'+urlencode(sent_route)
+    age();inbox_server.mode='message';r=owner.post(sent_page,data={'action':'mail_message_read','csrf':token(owner.get(sent_page)),**sent_route},timeout=30)
+    check('Sent folder message loads through the same exact-identity read',r.status_code==200 and 'SYNTHETIC SENT BODY' in r.text and 'EXAMINE Sent' in inbox_server.commands)
+    check('Non-inbox message hides reply and forward controls','only available for inbox messages' in r.text)
+    check('Folder-scoped message history records the folder',db("SELECT folder FROM ci_mail_message_reads WHERE folder='Sent'")==[{'folder':'Sent'}])
+    r=owner.post(sent_page,data={'action':'mail_message_reply','csrf':token(owner.get(sent_page)),**sent_route},timeout=30)
+    check('Reply on a non-inbox message refuses before any request','only available for inbox' in r.text)
     retained=json.dumps(db('SELECT * FROM ci_mail_message_reads')+db('SELECT * FROM ci_mail_message_results')+db("SELECT * FROM ci_audit WHERE action LIKE 'mail_accounts.message_%'"))
     check('Message storage and audit retain no contents or credentials','SYNTHETIC PRIVATE' not in retained and 'SYNTHETIC ATTACHMENT' not in retained and 'receiving HTTP password' not in retained)
     context=browser.new_context(viewport={'width':1440,'height':1050});page=context.new_page();errors=[];remote=[];external=[];frame_resources=[];dialogs=[];failed_requests=[];frame_routes=[];security_console=[]

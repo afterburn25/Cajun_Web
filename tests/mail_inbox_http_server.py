@@ -57,7 +57,33 @@ class InboxServer:
                     continue
                 expect('CWR001 CAPABILITY');send('* CAPABILITY IMAP4rev1 AUTH=PLAIN');send('CWR001 OK done')
                 expect('CWR002 AUTHENTICATE PLAIN');send('+ ');expect(base64.b64encode(b'\0synthetic@example.net\0Synthetic receiving HTTP password').decode(),'CREDENTIAL');send('CWR002 OK authenticated')
-                expect('CWR003 EXAMINE "INBOX"');send('* '+('0' if mode=='empty' else '2')+' EXISTS');send('* OK [UIDVALIDITY '+('1235' if mode=='message-epoch' else '1234')+'] stable');send('CWR003 OK [READ-ONLY] examined')
+                data=b''
+                while not data.endswith(b'\r\n'):
+                    part=s.recv(1)
+                    if not part:raise EOFError()
+                    data+=part
+                    assert len(data)<4096
+                line=data[:-2].decode();assert line.startswith('CWR003 EXAMINE "') and line.endswith('"'),'Unexpected synthetic IMAP command'
+                folder=line[16:-1];self.commands.append('EXAMINE '+folder)
+                if folder not in ['INBOX','Sent']:
+                    send('CWR003 NO folder unavailable');continue
+                if folder=='Sent':
+                    send('* 1 EXISTS');send('* OK [UIDVALIDITY 4321] stable');send('CWR003 OK [READ-ONLY] examined')
+                    if mode=='message':
+                        sent=(f'From: synthetic@example.net\r\nTo: Customer <customer@example.invalid>\r\nSubject: SYNTHETIC SENT COPY\r\nDate: Tue, 13 Oct 2026 12:05:00 +0000\r\nMessage-ID: <synthetic-sent@example.invalid>\r\n\r\nSYNTHETIC SENT BODY').encode()
+                        expect('CWR004 UID FETCH 90 (UID FLAGS RFC822.SIZE)');send(f'* 1 FETCH (UID 90 FLAGS (\\Seen) RFC822.SIZE {len(sent)})');send('CWR004 OK size')
+                        expect('CWR005 UID FETCH 90 (UID FLAGS RFC822.SIZE BODY.PEEK[])')
+                        send(f'* 1 FETCH (UID 90 FLAGS (\\Seen) RFC822.SIZE {len(sent)} BODY[] {{{len(sent)}}}')
+                        for at in range(0,len(sent),17):s.sendall(sent[at:at+17])
+                        send(')');send('CWR005 OK fetched');expect('CWR006 LOGOUT')
+                    else:
+                        expect('CWR004 FETCH 1:1 (UID FLAGS RFC822.SIZE BODY.PEEK[HEADER])')
+                        header=(f'From: synthetic@example.net\r\nSubject: SYNTHETIC SENT COPY\r\nDate: Tue, 13 Oct 2026 12:05:00 +0000\r\n\r\n').encode()
+                        send(f'* 1 FETCH (UID 90 FLAGS (\\Seen) RFC822.SIZE 2048 BODY[HEADER] {{{len(header)}}}')
+                        for at in range(0,len(header),17):s.sendall(header[at:at+17])
+                        send(')');send('CWR004 OK fetched');expect('CWR005 LOGOUT')
+                    continue
+                send('* '+('0' if mode=='empty' else '2')+' EXISTS');send('* OK [UIDVALIDITY '+('1235' if mode=='message-epoch' else '1234')+'] stable');send('CWR003 OK [READ-ONLY] examined')
                 if mode.startswith('message'):
                     if mode=='message-epoch':continue
                     head='From: Synthetic sender <synthetic@example.net>\r\nTo: reply-sender@example.invalid, other-person@example.invalid\r\nCc: cc-watcher@example.invalid\r\nSubject: SYNTHETIC PRIVATE MESSAGE <img src="https://untrusted.example.invalid/header">\r\nDate: Tue, 13 Oct 2026 12:00:00 +0000\r\nMessage-ID: <synthetic-82@example.invalid>\r\nMIME-Version: 1.0\r\n'
