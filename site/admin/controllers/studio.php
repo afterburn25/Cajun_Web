@@ -39,7 +39,7 @@ function studio_admin_action(string $action,array $user): never {
         [$id,$previous,$client,$title,$stage]=$saved;
         require_once CWP_CODE_ROOT.'/app/notifications/feed.php';try{if($previous===null)notification_emit('client',$client,'project-update','job:'.$id,'Project opened: '.$title,'Your project workspace is ready.');elseif($previous!==$stage)notification_emit('client',$client,'project-update','job:'.$id,'Project stage updated: '.$title,'Moved to '.studio_stages()[$stage].'.');}catch(Throwable $e){report_error($e);}
         flash('Project saved. History tracking is not enabled yet.');redirect(admin_url('studio-job',['id'=>$id]));
-    }elseif(in_array($action,['studio_message','studio_publish','studio_upload','studio_invoice','studio_paid'],true)){
+        if($action==='studio_invoice'){$amount=gcents(posted('amount',20));$title=posted('title',160);if($amount===null||$amount<=0||$title==='')throw new InvalidArgumentException('Enter an invoice title and positive amount.');$ref='INV-'.strtoupper(bin2hex(random_bytes(6)));query('INSERT INTO '.table('studio_invoices').' (job_id,reference,title,amount_cents,instructions,created_at) VALUES (?,?,?,?,?,?)',[$id,$ref,$title,$amount,posted('instructions',6000),gmdate('Y-m-d H:i:s')]);$invId=(int)db()->lastInsertId();require_once CWP_CODE_ROOT.'/app/notifications/feed.php';try{$jobRow=studio_job($id);notification_emit('client',(int)$jobRow['client_id'],'billing','invoice:'.$invId,'Invoice issued on '.$jobRow['title'],$ref.' · '.$title.' · $'.number_format($amount/100,2).' USD');}catch(Throwable $e){report_error($e);}}
         $id=gint($_POST,'job_id',1,2147483647);studio_job($id);
         if($action==='studio_message'){$body=posted('body',5000);if(strlen($body)<2)throw new InvalidArgumentException('Write a message.');query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,\'admin\',?,?,?)',[$id,$user['id'],$body,gmdate('Y-m-d H:i:s')]);require_once CWP_CODE_ROOT.'/app/notifications/feed.php';try{$jobRow=studio_job($id);notification_emit('client',(int)$jobRow['client_id'],'project-update','job:'.$id,'New studio message on '.$jobRow['title'],$body);}catch(Throwable $e){report_error($e);}}
         if($action==='studio_publish')studio_publish($id,posted('kind',20),posted('title',160),posted('body',30000),posted('preview_url',500));
@@ -72,9 +72,16 @@ function studio_admin_action(string $action,array $user): never {
         license_migrate(posted('current_password',200));flash('Website licensing storage prepared.');redirect(admin_url('studio-licenses'));
     }elseif(in_array($action,['studio_license_create','studio_license_deactivate','studio_license_reactivate','studio_domain_add','studio_domain_deactivate','studio_domain_replace','studio_license_bundle'],true)&&!license_ready()){
         throw new RuntimeException('Prepare licensing storage first.');
+    }elseif($action==='studio_license_legacy_review'){
+        require_once CWP_CODE_ROOT.'/app/licenses/legacy.php';
+        $resolved=license_resolve_legacy_invoice(gint($_POST,'invoice_id',1,2147483647),gint($_POST,'license_id',0,2147483647),posted('confirm',1)==='1',posted('evidence',200),posted('current_password',200));
+        flash('Invoice linked to license '.(int)$resolved['id'].'. Existing activation and download settings were preserved; no email was sent.');redirect(admin_url('studio-licenses'));
     }elseif($action==='studio_license_create'){
         $customerId=gint($_POST,'customer_id',1,2147483647);$productId=posted('product_id',50);
         if($productId===''||!one('SELECT id FROM '.table('studio_clients').' WHERE id=?',[$customerId]))throw new InvalidArgumentException('Choose a client and product.');
+        // A master key authorizes every domain — staff.manage is owner-only
+        // (it is not a grantable permission), so only an owner mints one.
+        if(isset($_POST['master'])&&$_POST['master']==='1')staff_require('staff.manage');
         require_once CWP_CODE_ROOT.'/app/licenses/service.php';
         $key=license_create($customerId,$productId,(int)$user['id'],isset($_POST['master'])&&$_POST['master']==='1');$_SESSION['license_key_created']=$key;$target='studio-licenses';
     }elseif($action==='studio_license_deactivate'){
@@ -102,6 +109,7 @@ function studio_admin_action(string $action,array $user): never {
     }elseif($action==='studio_license_bundle'){
         $id=gint($_POST,'id',1,2147483647);$license=one('SELECT * FROM '.table('website_licenses').' WHERE id=?',[$id]);
         if(!$license)throw new InvalidArgumentException('License not found.');
+        if((int)$license['is_master']===1)throw new InvalidArgumentException('Master license keys are internal and cannot be bundled for delivery.');
         $industry=posted('industry',50);
         require_once CWP_CODE_ROOT.'/app/licenses/fulfill.php';
         $coreDir=license_core_source_dir();

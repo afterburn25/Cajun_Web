@@ -1,7 +1,7 @@
 name: Recurring billing calendar checks
 on:
   push:
-    branches: [main, codex/billing-calendar, "devin/non20i-*"]
+    branches: [main, codex/billing-calendar, codex/twentyi-recurring-eligibility, "devin/non20i-*"]
     paths: ['foundation/billing-calendar/**', 'tests/billing-calendar/**', '.github/workflows/billing-calendar.yml']
   pull_request:
     paths: ['foundation/billing-calendar/**', 'tests/billing-calendar/**', '.github/workflows/billing-calendar.yml']

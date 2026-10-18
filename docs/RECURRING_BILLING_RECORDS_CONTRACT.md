@@ -1,6 +1,8 @@
 # Native recurring agreements and period invoices
 
-Devin owns this HC-06/P-03/P-04 draft increment on `devin/non20i-recurring-billing` (continuing preserved `codex/recurring-billing-records`), based on lifecycle119/`027afe8bb59fa9a7e41961ca6813584689d54922`. Devin owns every 20i implementation and correction. This contract precedes implementation. Draft development may proceed while independent calendar/terms/lifecycle review is pending; those reviews remain required before combined merge and deployment. Nothing here activates a scheduler, merchant collection or provider action.
+Current integration: Codex owns the complete 20i P0 under the [owner takeover](TWENTYI_CODEX_TAKEOVER.md). This preserved contract comes from #120 at `66f7760b686c91ca88b8395d350e083cd1ef2516`; its older Devin allocation and checkpoint claims below are historical. Only the necessary recurring consent/invoice dependency is reused. New combined native, interface, package and review evidence remain required.
+
+Codex owns this HC-06/P-03/P-04 draft increment on `codex/recurring-billing-records`, based on lifecycle119/`027afe8bb59fa9a7e41961ca6813584689d54922`. Devin owns every 20i implementation and correction. This contract precedes implementation. Draft development may proceed while independent calendar/terms/lifecycle review is pending; those reviews remain required before combined merge and deployment. Nothing here activates a scheduler, merchant collection or provider action.
 
 ## Native agreement
 

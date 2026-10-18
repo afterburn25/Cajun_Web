@@ -1,6 +1,6 @@
-# Service agreements — unreleased candidate
+# Service agreements — preserved 20i commercial dependency
 
-This workflow is under acceptance on the Devin non-20i service-plans and recurring-billing branches. Version 1.24.0 remains the published download.
+This workflow is an unreleased dependency in PR #130, preserved from service-plan #90–#92 and recovery #101. Its inherited 1.24 development label is not a release assignment. Codex owns the complete 20i P0 integration; the separately prepared 1.24 inventory release does not contain these agreements.
 
 The owner opens **Service plans** in administration and enables service agreements with the current password. Existing clients, projects and invoices are preserved. Create a draft with its price and cadence, included work, exclusions, usage limits and support expectations. Review and publish it. Published terms stay fixed; use a new plan when you need different terms.
 
@@ -12,4 +12,4 @@ If another action changes the record while a form is open, the old form cannot r
 
 Existing installations must use the published UPDATE package once this candidate passes acceptance. Keep recoverable file/database/private-storage backups and follow [installation and updates](INSTALLATION_AND_UPDATES.md). Candidate tests use the actual 1.23 package and retain saved terms, client consent, activation history, invoices, email submission history and private keys through file recovery/reapplication. These new combined recovery cases are prepared, not yet accepted.
 
-Technical contracts: [screens](SERVICE_PLAN_SCREENS.md), [durable terms and consent](SERVICE_PLAN_RECORDS.md). Complete 20i delivery is Codex's separate assignment; see [the 20i handoff](DEVIN_COMPLETE_20I_HANDOFF.md) for its preserved scope.
+Technical contracts: [screens](SERVICE_PLAN_SCREENS.md), [durable terms and consent](SERVICE_PLAN_RECORDS.md). Complete 20i delivery is owned by Codex under the [owner takeover](TWENTYI_CODEX_TAKEOVER.md).

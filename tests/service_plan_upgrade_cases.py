@@ -124,4 +124,5 @@ def run(env):
     response = action('apply')
     check(label+' reapplication keeps active agreement without generating an invoice',
           '<h2>Complete</h2>' in response.text and retained(active) and 'Active agreement' in client.get(target).text)
+
     return {'client': client, 'fields': fields, 'submit': submit}

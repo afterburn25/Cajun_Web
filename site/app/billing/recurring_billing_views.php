@@ -4,6 +4,7 @@ declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/billing/recurring_billing_invoices.php';
 require_once CWP_CODE_ROOT.'/app/billing/recurring_billing_forms.php';
+require_once CWP_CODE_ROOT.'/app/billing/ledger_fulfillment.php';
 use CajunWebPro\Foundation\RecurringBilling\{RecurringBillingTerms,RecurringBillingSchedule};
 
 function recurring_ui_mode():bool {
@@ -12,6 +13,7 @@ function recurring_ui_mode():bool {
     if($version==='')foreach(array_keys(recurring_billing_schema(config()['db']['prefix'])) as $name){
         if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name])&&(int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn())throw new RuntimeException('Retained recurring records are not activated. Ask an owner to review storage.');
     }
+    if($version==='1'&&!recurring_billing_ready())throw new RuntimeException('Established recurring billing history is missing. Restore the original database before continuing.');
     return $version==='1';
 }
 function recurring_ui_authority(?int $client):void {
@@ -26,13 +28,14 @@ function recurring_ui_source_view(ServiceSubscriptionDocument $doc):array {
         'title'=>$model->plan->name,'state'=>$model->state(),'amount_cents'=>$model->agreedPrice,
         'currency'=>$model->plan->currency,'cadence'=>$model->plan->cadence,'plan'=>ServicePlanDocument::fromJson(service_plans_json($data['plan']))];
 }
-function recurring_ui_invoice(array $map,RecurringBillingSchedule $doc):array {
+function recurring_ui_invoice(array $map,RecurringBillingSchedule $doc,bool $paymentReview=false):array {
     $invoice=recurring_billing_invoice_validate($map,$doc);$balance=ledger_balance(ledger_invoice((int)$invoice['id']));
-    return ['id'=>(int)$invoice['id'],'reference'=>$invoice['reference'],'period'=>json_decode($map['snapshot_json'],true,8,JSON_THROW_ON_ERROR)['period'],
+    $review=$paymentReview?ledger_fulfillment_evidence((int)$invoice['id'],$doc->data()['terms']['client_id']):null;
+    return ['payment_review'=>$review===null?null:array_intersect_key($review,array_flip(['verified_cents','legacy_cents','payment_evidence_ready','blockers'])),'id'=>(int)$invoice['id'],'reference'=>$invoice['reference'],'period'=>json_decode($map['snapshot_json'],true,8,JSON_THROW_ON_ERROR)['period'],
         'paid_cents'=>$balance['paid_cents'],'due_cents'=>$balance['due_cents'],'status'=>$invoice['status']];
 }
 function recurring_ui_context(array $q,?int $client=null):array {
-    return project_progress_touch(fn()=>project_progress_locked(function()use($q,$client):array{
+    return recurring_billing_touch(fn()=>recurring_billing_locked(function()use($q,$client):array{
         recurring_ui_authority($client);$ready=recurring_ui_mode();$out=['ready'=>$ready,'query'=>$q,'staff'=>$client===null];
         if(!$ready)return $out;
         recurring_billing_require();
@@ -40,7 +43,7 @@ function recurring_ui_context(array $q,?int $client=null):array {
             $where=$client===null?'':' WHERE j.client_id=?';$rows=all('SELECT j.id,j.title,j.client_id,c.name AS client_name FROM '.table('studio_jobs').' j JOIN '.table('studio_clients').' c ON c.id=j.client_id'.$where.' ORDER BY j.id DESC LIMIT 21 OFFSET '.($q['p']*20),$client===null?[]:[$client]);
             return $out+['projects'=>recurring_ui_slice($rows,$q['p'])];
         }
-        $job=project_progress_job($q['job'],$client);$owner=project_progress_client_row((int)$job['client_id'],false);
+        $job=recurring_billing_job($q['job'],$client);$owner=service_plans_client_row((int)$job['client_id'],false);
         $out+=['project'=>['id'=>(int)$job['id'],'title'=>$job['title']],'client'=>['id'=>(int)$owner['id'],'name'=>$owner['name'],'active'=>(int)$owner['active']===1]];
         if($q['source']!==''){
             $row=service_plans_row($q['source'],true,true);
@@ -56,12 +59,12 @@ function recurring_ui_context(array $q,?int $client=null):array {
             $current=$terms->periodAt(time());$selected=$q['period_date']===''?($current['index']??0):recurring_ui_period($terms,$q['period_date']);
             $assessment=$doc->assessment($selected,time());$next=recurring_ui_next_dates($doc,time());
             $maps=all('SELECT * FROM '.table('recurring_billing_invoices').' WHERE schedule_id=? ORDER BY period_index DESC LIMIT 21 OFFSET '.($q['invoices_page']*20),[$q['schedule']]);
-            $invoices=recurring_ui_slice($maps,$q['invoices_page']);$invoices['items']=array_map(fn($m)=>recurring_ui_invoice($m,$doc),$invoices['items']);
+            $invoices=recurring_ui_slice($maps,$q['invoices_page']);$invoices['items']=array_map(fn($m)=>recurring_ui_invoice($m,$doc,$client===null),$invoices['items']);
             $map=one('SELECT * FROM '.table('recurring_billing_invoices').' WHERE schedule_id=? AND period_index=?',[$q['schedule'],$selected]);
             $q['history_page']=recurring_ui_history_page($doc,$q['history_page'],$q['focus_event']);$out['query']=$q;
             $history=recurring_ui_slice(array_slice(array_reverse($data['events']),$q['history_page']*10,11),$q['history_page'],10);
             return $out+['document'=>$doc,'source'=>recurring_ui_source_view($family['source']),'current'=>$family['row']['id']===$row['id'],
-                'history'=>$history,'invoices'=>$invoices,'assessment'=>$assessment,'selected_invoice'=>$map?recurring_ui_invoice($map,$doc):null]+$next;
+                'history'=>$history,'invoices'=>$invoices,'assessment'=>$assessment,'selected_invoice'=>$map?recurring_ui_invoice($map,$doc,$client===null):null]+$next;
         }
         $sources=[];
         if($client===null){
@@ -81,8 +84,8 @@ function recurring_ui_context(array $q,?int $client=null):array {
 /** Exact retained source prefix supplies price; browser input can never set an amount. */
 function recurring_ui_offer_source(array $a,int $job):array {
     recurring_ui_valid($a);$client=recurring_ui_number($a['client_id']);$source=recurring_ui_hex($a['source_id']);$revision=recurring_ui_number($a['source_revision'],256);$hash=recurring_ui_hex($a['source_sha256'],64);
-    return project_progress_locked(function()use($client,$source,$revision,$hash,$job):array{
-        recurring_billing_staff();project_progress_job($job,$client);$row=service_plans_row($source,true,true);
+    return recurring_billing_locked(function()use($client,$source,$revision,$hash,$job):array{
+        recurring_billing_staff();recurring_billing_job($job,$client);$row=service_plans_row($source,true,true);
         if((int)$row['client_id']!==$client)throw new RuntimeException('Service agreement unavailable for this project.');
         $current=service_plans_validate($row,true);if($revision>$current->revision())throw new RuntimeException('The reviewed service version is unavailable.');
         $data=$current->data();$data['events']=array_slice($data['events'],0,$revision);$prefix=ServiceSubscriptionDocument::fromJson(service_plans_json($data));

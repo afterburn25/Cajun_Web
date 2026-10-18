@@ -4,9 +4,12 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 echo '<div class="button-row"><a class="btn outline" href="'.esc(admin_url('service-plans')).'">All plans</a><a class="btn outline" href="'.esc(admin_url('service-agreements')).'">Client agreements</a><a class="btn gold" href="'.esc(admin_url('service-plan')).'">Create a plan</a></div><p>Offer an exact service scope and price. Client agreement is separate from automatic payment authorization.</p>';
 if($view==='service-plans' || $view==='service-agreements') {
     $subscriptions=$view==='service-agreements';$page=service_plans_page(service_plans_ui_page(),$subscriptions);
+    $mappingSummaries=$subscriptions?[]:provider_plan_catalog_summaries(array_map(fn($item)=>$item['document']->data()['id'],$page['items']));
     foreach($page['items'] as $item) {
         $doc=$item['document'];$model=$doc->model();$plan=$subscriptions?$model->plan:$model;
-        echo '<section class="workspace-card"><h2>'.esc($plan->name).'</h2><p>'.esc($subscriptions?$item['client_name'].' · '.service_plans_agreement_label($doc):ucfirst($plan->status())).'</p><p>$'.esc(gmoney($plan->priceAmount)).' USD · '.esc(service_plans_cadences()[$plan->cadence]).'</p><a class="btn outline" href="'.esc(admin_url($subscriptions?'service-agreement':'service-plan',['record'=>$doc->data()['id']])).'">Review details</a></section>';
+        echo '<section class="workspace-card"><h2>'.esc($plan->name).'</h2><p>'.esc($subscriptions?$item['client_name'].' · '.service_plans_agreement_label($doc):ucfirst($plan->status())).'</p><p>$'.esc(gmoney($plan->priceAmount)).' USD · '.esc(service_plans_cadences()[$plan->cadence]).'</p><a class="btn outline" href="'.esc(admin_url($subscriptions?'service-agreement':'service-plan',['record'=>$doc->data()['id']])).'">Review details</a>';
+        if(!$subscriptions)provider_plan_catalog_readiness_ui($mappingSummaries[$doc->data()['id']],$doc->data()['id']);
+        echo '</section>';
     }
     if(!$page['items'])echo '<div class="workspace-card"><p>No '.($subscriptions?'service agreements':'plans').' on this page.</p></div>';
     service_plans_ui_pagination($page,fn($p)=>admin_url($view,['p'=>$p]));return;
@@ -16,7 +19,9 @@ if($view==='service-agreement') {
     echo '<p><strong>'.esc($item['client']['name']).'</strong> · '.esc(service_plans_agreement_label($doc)).'</p>';
     if(!$item['client']['active'])echo '<div class="notice warning">This client account is inactive. Existing agreements can still be ended or paused; activation and resumption require an active client account.</div>';
     service_plans_terms_view(ServicePlanDocument::fromJson(service_plans_json($doc->data()['plan'])));
-    service_plans_agreement_controls($doc,true,$item['client']['active']);service_plans_agreement_history($doc);return;
+    require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_agreements.php';require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_agreements_views.php';
+    $renewalContext=domain_renewal_agreements_context($id,(int)$doc->data()['client_id'],false);if($renewalContext!==null)domain_renewal_agreements_card($renewalContext);
+    service_plans_agreement_controls($doc,true,$item['client']['active'],$renewalContext);service_plans_agreement_history($doc);if($renewalContext===null)service_orders_ui($doc,true);return;
 }
 $id=service_plans_form_text($_GET,'record',32);$doc=$id===''?null:service_plans_get($id);$model=$doc?->model();
 if(!$doc || $model->status()==='draft' || ($_POST['action']??null)==='service_plans_edit') {
@@ -54,3 +59,5 @@ if($model->subscribable()) {
 echo '<section class="workspace-card"><h2>Plan history</h2><p>Created '.esc(gmdate('Y-m-d H:i:s',$doc->data()['created_at'])).' UTC.</p><ol>';
 foreach($doc->data()['events'] as $event)echo '<li>'.esc(match($event['command']){'replace_draft'=>'Draft terms updated','activate'=>'Terms published','retire'=>'Plan retired'}).' · owner '.(int)$event['actor'].' · '.esc(gmdate('Y-m-d H:i:s',$event['at'])).' UTC</li>';
 echo '</ol></section>';
+
+provider_plan_catalog_ui($doc);

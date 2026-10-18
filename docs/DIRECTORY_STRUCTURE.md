@@ -1,6 +1,10 @@
 # Directory structure — current source contract
 
-## Latest verified publication — 1.23.0
+The [frozen 1.25.0 scope](RELEASE_SCOPE_1.25.0.md) and [migration instructions](MIGRATION-INSTRUCTIONS-1.25.0.md) describe the current increment. Source-specific acceptance and publication evidence are recorded separately in the [acceptance report](TEST_REPORT_1.25.0.md).
+
+The publication records below, before the **Before** heading, retain historical results, pending work and ownership at their original checkpoints. They do not describe current release status or assignment. The directory and migration instructions follow those records.
+
+## Historical verified publication — 1.23.0
 
 [Version 1.23.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.23.0) is published and freshly downloaded/verified at immutable source/tag `4fdb56266c77f6e6bf7b58e966d24696e1eaefc8`, through [PR #85](https://github.com/afterburn25/Cajun_Web/pull/85). Client account edits reject stale forms and retain escaped unsaved details for review. Client changes/invitations recheck current authority, serialize writes and audit atomically; invitation activation is single-use and unexpired. Client administration is refused during support sessions. [Owner guide](CLIENT_ACCOUNT_SAFEGUARDS.md).
 
@@ -260,3 +264,7 @@ The machine-readable authoritative map is [tools/directory-map.json](../tools/di
 ## Existing-site migration and recovery
 
 Use [START-HERE](../START-HERE.txt) and [migration guide](STRUCTURE_MIGRATION.md). UPDATE is a staged owner workflow, not a blind overwrite of live files. Keep legacy runtime data and custom code intact; do not recursively delete old directories to make them look clean.
+
+## Prepared service-plan storage
+
+Private `site/app/plans/` contains bounded canonical terms/agreement documents and current-authorized transactional operations. The paired schema and migration live under `site/database/`; no router or automatic schema activation is added. [Storage, ownership and acceptance contract](SERVICE_PLAN_RECORDS.md).

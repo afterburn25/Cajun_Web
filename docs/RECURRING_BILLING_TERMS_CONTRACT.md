@@ -1,6 +1,8 @@
 # Exact recurring invoice terms
 
-Devin owns this HC-06/P-03/P-04 increment on `devin/non20i-recurring-billing` (continuing preserved `codex/recurring-billing-terms`), starting from calendar PR 117 source `8f8ea1c8dad4cdae612da9157494c15bdaf871f4`. Codex retains complete 20i implementation. This contract precedes the pure terms document; all shipping files and live financial acceptance sources stay unchanged.
+Current integration: Codex owns the complete 20i P0 under the [owner takeover](TWENTYI_CODEX_TAKEOVER.md). This preserved contract comes from #120 at `66f7760b686c91ca88b8395d350e083cd1ef2516`; its older Devin allocation and checkpoint claims below are historical. Only the necessary recurring consent/invoice dependency is reused. New combined native, interface, package and review evidence remain required.
+
+Codex owns this HC-06/P-03/P-04 increment on `codex/recurring-billing-terms`, starting from calendar PR 117 source `8f8ea1c8dad4cdae612da9157494c15bdaf871f4`. Devin retains complete 20i implementation. This contract precedes the pure terms document; all shipping files and live financial acceptance sources stay unchanged.
 
 ## Product purpose and fixed boundaries
 

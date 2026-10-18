@@ -37,11 +37,13 @@ function rb_historical_billing(int $id,int $source):RecurringBillingSchedule {
     return $d;
 }
 function rb_issue(int $id,int $request,int $period=0):array {$d=rb_read($id);return recurring_billing_issue(rb_id($id),1,$d->revision(),$d->fingerprint(),$period,rb_id($request));}
-if(($argv[1]??'')==='activity-worker'){
-    require_once CWP_CODE_ROOT.'/app/activity/events.php';$audience=$argv[2];if($audience==='admin')rb_staff(2);else rb_client();
-    echo "ready\n";fflush(STDOUT);
-    try{if($argv[3]==='mark')activity_mark($audience,[$argv[4]],true);else activity_source($audience,$argv[4]);echo 'allowed';}
-    catch(RuntimeException|InvalidArgumentException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
+if(($argv[1]??'')==='fulfillment-worker'){require __DIR__.'/hosting_fulfillment_native_cases.php';exit;}
+if(($argv[1]??'')==='order-worker'){
+    require_once __DIR__.'/../site/app/hosting/orders.php';rb_staff();echo "ready\n";fflush(STDOUT);
+    try{
+        $source=service_plans_validate(service_plans_row($argv[2],true),true);
+        service_orders_offer($argv[4],$argv[2],1,$source->revision(),$source->fingerprint(),(int)$argv[3],ledger_invoice_hash(ledger_invoice((int)$argv[3])),$password);echo 'new';
+    }catch(RuntimeException|InvalidArgumentException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
 }
 if(($argv[1]??'')==='worker'){
     rb_staff();echo "ready\n";fflush(STDOUT);try{$r=recurring_billing_issue($argv[2],1,(int)$argv[3],$argv[4],(int)$argv[5],$argv[6]);echo $r['replayed']?'replay':'new';}catch(RuntimeException|InvalidArgumentException|LogicException $e){if($e instanceof PDOException)throw $e;echo 'denied';}exit;
@@ -84,7 +86,29 @@ try {
     recurring_billing_migrate($password);rb_ok('Populated repeated migration preserves agreements and invoices',rb_count('recurring_billing_schedules')===3&&rb_count('recurring_billing_invoices')===3);save_setting('recurring_billing_schema_version','future');rb_deny('Unknown version refuses setup',fn()=>recurring_billing_migrate($password));save_setting('recurring_billing_schema_version','1');
     require __DIR__.'/recurring_billing_native_extra.php';
     require __DIR__.'/recurring_billing_interface_cases.php';
+    // A retained schema stamp may never silently replace lost consent or invoice history.
+    rb_staff();$beforeMissing=rb_snapshot();
+    foreach(array_keys(recurring_billing_schema(config()['db']['prefix'])) as $missing){
+        $saved='rbill_retained_'.$missing;db()->exec('RENAME TABLE '.table($missing).' TO `'.$saved.'`');
+        try{
+            rb_ok('Missing established '.$missing.' disables readiness',!recurring_billing_ready());
+            rb_deny('Missing '.$missing.' refuses native UI projection before storage queries',fn()=>recurring_ui_context(recurring_ui_query(['view'=>'recurring-billing'],true)));
+            $restoreRefused=false;
+            try{recurring_billing_migrate($password);}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;$restoreRefused=str_contains($e->getMessage(),'Restore the original database');}
+            rb_ok('Missing established '.$missing.' requires restore without empty recreation',$restoreRefused&&!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$missing])&&(one('SELECT value FROM '.table('settings').' WHERE name=?',['recurring_billing_schema_version'])['value']??'')==='1');
+            rb_deny('Missing '.$missing.' refuses current agreement read',fn()=>rb_read(300));
+            rb_deny('Missing '.$missing.' refuses recurring invoice payment projection',fn()=>ledger_balance(ledger_invoice($issued['invoice_id'])));
+            rb_deny('Missing '.$missing.' cannot reclassify an invoice by changing its reference',fn()=>ledger_balance(array_replace(ledger_invoice($issued['invoice_id']),['reference'=>'Changed legacy reference'])));
+        }finally{db()->exec('RENAME TABLE `'.$saved.'` TO '.table($missing));}
+        rb_ok('Restored '.$missing.' retains exact consent invoices and audit',recurring_billing_ready()&&rb_snapshot()===$beforeMissing);
+    }
     rb_ok('Existing project fields are unchanged',$projects===recurring_billing_json(all('SELECT * FROM '.table('studio_jobs'))));rb_ok('No provider call or payment attempt is created',rb_count('provider_profiles')===0&&rb_count('payment_attempts')===0);rb_ok('Audit excludes agreement text and passwords',!str_contains(recurring_billing_json(all('SELECT * FROM '.table('audit'))),$password)&&!str_contains(recurring_billing_json(all('SELECT * FROM '.table('audit'))),$fields['terms']));
-    require __DIR__.'/recurring_billing_activity_cases.php';
+    require __DIR__.'/service_orders_native_cases.php';
+    require __DIR__.'/service_orders_links_cases.php';
+    require __DIR__.'/service_orders_link_views_cases.php';
+    require __DIR__.'/hosting_fulfillment_native_cases.php';
+    require __DIR__.'/hosting_fulfillment_view_cases.php';
+    require __DIR__.'/hosting_fulfillment_confirmation_cases.php';
+    require __DIR__.'/provider_plan_catalog_cases.php';
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,(string)$e.PHP_EOL);}
 $passed=!in_array(false,array_column($checks,'passed'),true);file_put_contents(__DIR__.'/../qa/recurring-billing-native-results.json',json_encode(['passed'=>$passed,'scope'=>'Synthetic MariaDB native recurring consent/history, replacement and existing-ledger period invoices; no HTTP, merchant or provider call. Historical fixtures use real canonical documents.','php'=>PHP_VERSION,'checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));echo ($passed?'PASS':'FAIL').': '.count($checks).' native recurring checks'.PHP_EOL;exit($passed?0:1);

@@ -56,6 +56,8 @@ def run_browser(env, browser):
     creation = data(owner, new, 'service_plans_create')
     r = owner.post(new, data=dict(creation, **terms, csrf='bad'))
     check('Draft create requires session CSRF and preserves escaped unsaved fields', not db('SELECT * FROM ci_service_plans') and soup(r).select_one('[name=name]')['value']==terms['name'] and '<review>' not in r.text)
+    r = owner.post(new, data=dict(creation, **dict(terms, name='Unlimited support')))
+    check('Owner cannot publish unsupported promises through a plan name', not db('SELECT * FROM ci_service_plans') and 'Terms cannot promise unbounded or guaranteed service' in r.text and soup(r).select_one('[name=name]')['value']=='Unlimited support')
     r = owner.post(new, data=dict(creation, **terms))
     plan_id = parse_qs(urlparse(r.url).query)['record'][0]
     detail = admin+'?view=service-plan&record='+plan_id
@@ -180,4 +182,18 @@ def run_browser(env, browser):
     context.close()
     for private in ['app/plans/views.php', 'admin/controllers/plans.php', 'admin/views/plans.php', 'portal/controllers/plans.php', 'portal/views/plans.php']:
         check('Direct HTTP access denies agreement internal '+private, requests.get(BASE+'/existing/'+private).status_code==404)
+    retained = snapshot()
+    for missing in ['service_plans', 'service_plan_events', 'service_subscriptions', 'service_subscription_events']:
+        db('RENAME TABLE ci_'+missing+' TO ci_retained_'+missing)
+        try:
+            r = owner.get(listing)
+            check('Missing '+missing+' owner page requires restore without setup action', r.status_code==200 and 'Restore the original database' in r.text and 'Enable service agreements' not in r.text and 'Reviewed care plan' not in r.text)
+            csrf = soup(r).select_one('input[name="csrf"]')['value']
+            r = owner.post(listing, data={'action':'service_plans_setup','csrf':csrf,'current_password':OWNER})
+            check('Missing '+missing+' stale setup cannot recreate agreement history', 'Restore the original database' in r.text and db('SHOW TABLES LIKE "ci_'+missing+'"')==[])
+            r = client.get(portal+'?agreement='+agreement)
+            check('Missing '+missing+' client route fails closed without private terms', r.status_code==403 and 'Service agreements are unavailable' in r.text and 'Reviewed care plan' not in r.text)
+        finally:
+            db('RENAME TABLE ci_retained_'+missing+' TO ci_'+missing)
+        check('Original '+missing+' restoration recovers exact agreement records', snapshot()==retained and owner.get(detail).status_code==200)
     check('Agreement workflows create no invoice or provider or mail activity', db('SELECT * FROM ci_studio_invoices ORDER BY id')==invoices and provider_server.calls==calls and inbox_server.connections==connections and (QA/'mail-capture.txt').read_bytes()==capture)

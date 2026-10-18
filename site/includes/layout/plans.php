@@ -74,7 +74,7 @@ function service_plans_ui_pagination(array $page,callable $url):void {
     if($page['more'])echo '<a class="btn outline" href="'.esc($url($page['page']+1)).'">Next</a>';
     echo '</nav>';
 }
-function service_plans_agreement_controls(ServiceSubscriptionDocument $doc,bool $owner,bool $clientActive=true):void {
+function service_plans_agreement_controls(ServiceSubscriptionDocument $doc,bool $owner,bool $clientActive=true,?array $renewalContext=null):void {
     $model=$doc->model();$commands=[];
     if($model->state()==='pending-consent') {
         if($owner && $clientActive && $model->consent())$commands['activate']='Activate this agreement';
@@ -84,9 +84,11 @@ function service_plans_agreement_controls(ServiceSubscriptionDocument $doc,bool 
         if($owner && ($model->state()==='active' || $clientActive))$commands[$model->state()==='active'?'pause':'resume']=$model->state()==='active'?'Pause this agreement':'Resume this agreement';
         $commands['cancel']='End this agreement';
     }
+    if($renewalContext!==null&&!$renewalContext['actionable'])foreach(['consent','activate','resume'] as $blocked)unset($commands[$blocked]);
     foreach($commands as $command=>$label) {
         $action=($owner?'service_plans_':'service_agreements_').$command;$intent=service_plans_ui_intent($doc,$action);
         echo '<section class="workspace-card"><h2>'.esc($label).'</h2><form method="post">';service_plans_intent_fields($action,$intent,csrf_field());
+        if($renewalContext!==null){$binding=$renewalContext['binding_sha256'];if(($_POST['action']??null)===$action){$submitted=$_POST['renewal_binding']??null;$binding=is_string($submitted)&&preg_match('/\A[a-f0-9]{64}\z/',$submitted)?$submitted:'';}echo '<input type="hidden" name="renewal_binding" value="'.esc($binding).'">';}
         if($owner)echo '<input type="hidden" name="client_id" value="'.(int)$doc->data()['client_id'].'">';
         if($command==='consent') {
             $hash=($_POST['action']??null)===$action?service_plans_form_values($_POST)['terms_hash']:$model->plan->termsHash();

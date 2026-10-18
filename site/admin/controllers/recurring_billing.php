@@ -4,7 +4,7 @@ if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/includes/layout/recurring_billing.php';
 function recurring_billing_admin_render(string $error):never {
     header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');
-    try{project_progress_touch(fn()=>project_progress_locked(fn()=>recurring_ui_authority(null)),false);}
+    try{recurring_billing_touch(fn()=>recurring_billing_locked(fn()=>recurring_ui_authority(null)),false);}
     catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;http_response_code(403);admin_head('Recurring billing unavailable','recurring-billing',require_admin());echo '<p class="notice error">'.esc($e->getMessage()).'</p>';admin_foot();exit;}
     $user=require_admin();admin_head('Recurring billing','recurring-billing',$user);
     if($error!=='')echo '<p class="notice error" role="alert">'.esc($error).'</p>';

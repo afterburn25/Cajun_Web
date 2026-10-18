@@ -1,6 +1,8 @@
 # Recurring billing calendar contract
 
-Devin owns this HC-06/P-03/P-04 increment on `devin/non20i-billing-calendar`, continuing preserved `codex/billing-calendar` from frozen notification source `f053dacac8a949a113a295a6b3fd68543ced3452`. Codex retains complete 20i implementation. This contract precedes the calendar implementation. The existing financial, service-agreement and provider source remains unchanged.
+Current integration: Codex owns the complete 20i P0 under the [owner takeover](TWENTYI_CODEX_TAKEOVER.md). This preserved contract comes from #120 at `66f7760b686c91ca88b8395d350e083cd1ef2516`; its older Devin allocation and checkpoint claims below are historical. Only the necessary recurring consent/invoice dependency is reused. New combined native, interface, package and review evidence remain required.
+
+Codex owns this HC-06/P-03/P-04 increment on `codex/billing-calendar`, starting from frozen notification PR 116 source `f053dacac8a949a113a295a6b3fd68543ced3452`. Devin retains complete 20i implementation. This contract precedes the calendar implementation. The existing financial, service-agreement and provider source remains unchanged.
 
 ## Required behavior
 

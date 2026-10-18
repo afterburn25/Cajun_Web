@@ -92,7 +92,7 @@ function staff_invite(int $id,#[\SensitiveParameter] string $password): string {
     }));
 }
 function staff_activate(#[\SensitiveParameter] string $token,#[\SensitiveParameter] string $password): void {
-    validate_password($password);$hash=password_hash($password,PASSWORD_DEFAULT);
+    validate_admin_password($password);$hash=password_hash($password,PASSWORD_DEFAULT);
     $ok=staff_locked(function() use($token,$hash): bool {
         if(!staff_ready())return false;
         return staff_store()->redeem($token,function(PDO $db,string $id,string $version) use($hash): bool {
@@ -105,14 +105,14 @@ function staff_activate(#[\SensitiveParameter] string $token,#[\SensitiveParamet
 }
 function staff_account_save(int $id,string $name,string $email,#[\SensitiveParameter] string $current,#[\SensitiveParameter] string $password): string {
     if(trim($name)===''||strlen($name)>120||strlen($email)>190||!filter_var($email,FILTER_VALIDATE_EMAIL))throw new InvalidArgumentException('A name and valid email are required.');
-    if($password!=='')validate_password($password);
+    if($password!=='')validate_admin_password($password);
     return staff_locked(fn()=>staff_transaction(function() use($id,$name,$email,$current,$password): string {
         $u=require_admin();if((int)$u['id']!==$id||!password_verify($current,$u['password_hash']))throw new InvalidArgumentException('Your current password is not correct.');
         $version=bin2hex(random_bytes(16));staff_revoke_credentials($id);query('UPDATE '.table('users').' SET name=?,email=?,password_hash=?,auth_version=? WHERE id=?',[trim($name),strtolower($email),$password===''?$u['password_hash']:password_hash($password,PASSWORD_DEFAULT),$version,$id]);log_event('account.update');return $version;
     }));
 }
 function staff_reset(#[\SensitiveParameter] string $token,#[\SensitiveParameter] string $password): void {
-    validate_password($password);if(!preg_match('/^[a-f0-9]{64}$/D',$token))throw new InvalidArgumentException('This reset link is not valid.');
+    validate_admin_password($password);if(!preg_match('/^[a-f0-9]{64}$/D',$token))throw new InvalidArgumentException('This reset link is not valid.');
     $hash=password_hash($password,PASSWORD_DEFAULT);
     staff_locked(fn()=>staff_transaction(function() use($token,$hash): void {
         $r=one('SELECT * FROM '.table('resets').' WHERE token_hash=? FOR UPDATE',[hash('sha256',$token)]);
@@ -130,6 +130,11 @@ function staff_reset_token(string $email): ?array {
     }));
 }
 function staff_view_permission(string $view): ?string {
+    if($view==='registration-drafts')return 'staff.manage';
+    if(in_array($view,['domain-renewal-agreements','domain-renewal-dispatch'],true))return 'staff.manage';
+    if($view==='studio-licenses')return 'staff.manage';
+    if($view==='recurring-billing')return 'payments.manage';
+    if(in_array($view,['service-plans','service-plan','service-agreements','service-agreement'],true))return 'staff.manage';
     if(in_array($view,['mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft'],true))return null; // Draft controller enforces current Send plus exact mailbox/author.
     if($view==='mail-notices')return null; // The mail-specific actor and exact grants protect this projection.
     // The inbox controller checks mail.read with its exact current mailbox grant.
@@ -149,6 +154,10 @@ function staff_view_permission(string $view): ?string {
     return 'website.manage';
 }
 function staff_action_permission(string $action): ?string {
+    if(str_starts_with($action,'registration_drafts_'))return 'staff.manage';
+    if(str_starts_with($action,'studio_license_')||str_starts_with($action,'studio_domain_'))return 'staff.manage';
+    if(str_starts_with($action,'recurring_'))return 'payments.manage';
+    if(str_starts_with($action,'service_plans_'))return 'staff.manage';
     if($action==='mail_submissions_setup')return 'staff.manage';
     if(str_starts_with($action,'mail_submissions_'))return null; // Current author/Send/mailbox/review checks in submission controller.
     if($action==='mail_drafts_setup')return 'staff.manage';
@@ -163,6 +172,7 @@ function staff_action_permission(string $action): ?string {
     if(in_array($action,['appointments_setup','appointments_configure'],true))return 'staff.manage';
     if(str_starts_with($action,'appointments_'))return 'website.manage';
     if(in_array($action,['logout','account_save'],true))return null;
+    if(str_starts_with($action,'provider_renewal_dispatch_'))return 'staff.manage';
     if(str_starts_with($action,'provider_settings_'))return 'staff.manage';
     if(str_starts_with($action,'provider_inventory_'))return 'staff.manage';
     if(str_starts_with($action,'mail_accounts_'))return 'staff.manage';
