@@ -111,10 +111,14 @@ function support_tickets_create_locked(string $id,int $client,array $actor,strin
     support_tickets_audit($actor['staff_id']??0,'created','Ticket '.$id.' client '.$client.' author '.$actor['ref']);return $doc;
 }
 function support_tickets_staff_create(string $id,int $client,string $subject,string $message,string $body,array $links=[]):SupportTicketDocument {
-    return support_tickets_locked(function()use($id,$client,$subject,$message,$body,$links):SupportTicketDocument {$actor=support_tickets_staff_identity(support_tickets_staff());return support_tickets_create_locked($id,$client,$actor,$subject,$message,$body,$links);});
+    $doc=support_tickets_locked(function()use($id,$client,$subject,$message,$body,$links):SupportTicketDocument {$actor=support_tickets_staff_identity(support_tickets_staff());return support_tickets_create_locked($id,$client,$actor,$subject,$message,$body,$links);});
+    require_once CWP_CODE_ROOT.'/app/notifications/feed.php';try{notification_emit('client',$client,'support-reply','ticket:'.$id,'Support conversation opened · '.$doc->data()['subject'],'The studio opened a conversation for you.','ticket-open-client:'.$id);}catch(Throwable $e){report_error($e);}
+    return $doc;
 }
 function support_tickets_client_create(string $id,int $client,string $subject,string $message,string $body,array $links=[],?string $support=null):array {
-    return support_tickets_locked(function()use($id,$client,$subject,$message,$body,$links,$support):array {$actor=support_tickets_portal_identity($client,$support,true);if($actor['type']!=='client')throw new RuntimeException('Create support conversations from the staff desk.');return support_tickets_create_locked($id,$client,$actor,$subject,$message,$body,$links)->forClient($client);});
+    $view=support_tickets_locked(function()use($id,$client,$subject,$message,$body,$links,$support):array {$actor=support_tickets_portal_identity($client,$support,true);if($actor['type']!=='client')throw new RuntimeException('Create support conversations from the staff desk.');return support_tickets_create_locked($id,$client,$actor,$subject,$message,$body,$links)->forClient($client);});
+    if($support===null){require_once CWP_CODE_ROOT.'/app/notifications/feed.php';try{foreach(notification_staff_ids('support.tickets') as $sid)notification_emit('staff',$sid,'support-reply','ticket:'.$id,'New support conversation · '.$subject,'A client opened a support conversation.','ticket-open:'.$id.':'.$sid);}catch(Throwable $e){report_error($e);}}
+    return $view;
 }
 function support_tickets_assignee(int $id):void {
     support_tickets_number($id);$user=one('SELECT * FROM '.table('users').' WHERE id=? FOR UPDATE',[$id]);$profile=$user?staff_profile($user):null;
@@ -141,16 +145,20 @@ function support_tickets_append_locked(array $row,array $actor,int $revision,str
     return $next;
 }
 function support_tickets_staff_change(string $ticket,int $revision,string $request,string $command,array $args):SupportTicketDocument {
-    return support_tickets_locked(function()use($ticket,$revision,$request,$command,$args):SupportTicketDocument {
+    $doc=support_tickets_locked(function()use($ticket,$revision,$request,$command,$args):SupportTicketDocument {
         $actor=support_tickets_staff_identity(support_tickets_staff());$row=support_tickets_row($ticket);support_tickets_client_row((int)$row['client_id']);
         return support_tickets_append_locked($row,$actor,$revision,$request,$command,$args);
     });
+    if(in_array($command,['reply','status'],true)){$row=support_tickets_row($ticket);require_once CWP_CODE_ROOT.'/app/notifications/feed.php';try{notification_emit('client',(int)$row['client_id'],'support-reply','ticket:'.$ticket,($command==='reply'?'New reply · ':'Status updated · ').$doc->data()['subject'],$command==='reply'?substr((string)($args['body']??''),0,300):'The studio set the conversation status to '.$args['status'].'.','ticket-event:'.$ticket.':'.$request);}catch(Throwable $e){report_error($e);}}
+    return $doc;
 }
 function support_tickets_client_change(string $ticket,int $client,int $revision,string $request,string $command,array $args,?string $support=null):array {
-    return support_tickets_locked(function()use($ticket,$client,$revision,$request,$command,$args,$support):array {
+    $view=support_tickets_locked(function()use($ticket,$client,$revision,$request,$command,$args,$support):array {
         $actor=support_tickets_portal_identity($client,$support,true);
         if(!in_array($command,$actor['type']==='support'?['reply']:['reply','status'],true))throw new RuntimeException('This action requires the staff desk.');
         $row=support_tickets_row($ticket);if((int)$row['client_id']!==$client)throw new RuntimeException('Ticket unavailable.');
         return support_tickets_append_locked($row,$actor,$revision,$request,$command,$args)->forClient($client);
     });
+    if($support===null){$row=support_tickets_row($ticket);$subject=support_tickets_validate($row)->data()['subject']??'Support conversation';require_once CWP_CODE_ROOT.'/app/notifications/feed.php';try{foreach(notification_staff_ids('support.tickets') as $sid)notification_emit('staff',$sid,'support-reply','ticket:'.$ticket,($command==='reply'?'Client replied · ':'Client updated status · ').$subject,substr((string)($args['body']??'The client updated the conversation status.'),0,300),'ticket-event:'.$ticket.':'.$request.':'.$sid);}catch(Throwable $e){report_error($e);}}
+    return $view;
 }
