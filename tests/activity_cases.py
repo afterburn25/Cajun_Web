@@ -41,9 +41,10 @@ def run_browser(env,browser):
     check('Fresh install enables empty activity state',db("SELECT value FROM fresh_settings WHERE name='activity_schema_version'")==[{'value':'1'}] and db('SELECT * FROM fresh_activity_reads')==[])
     root=BASE+'/existing/admin/index.php';url=root+'?view=activity';portal=BASE+'/existing/portal/index.php';center=portal+'?activity=1';endpoint=BASE+'/existing/api/activity.php'
     admin=requests.Session();submit(admin,root+'?view=login','login',{'email':'owner@example.invalid','password':OWNER})
-    r=submit(admin,url,'activity_setup',{'password':OWNER,'csrf':'wrong'});check('Activity setup rejects CSRF','session expired' in r.text.lower() and not db("SELECT value FROM ci_settings WHERE name='activity_schema_version'"))
-    r=submit(admin,url,'activity_setup',{'password':'wrong'});check('Activity setup requires owner password','current password' in r.text.lower())
-    r=submit(admin,url,'activity_setup',{'password':OWNER});check('HTTP owner enables workspace activity','Workspace activity is enabled' in r.text)
+    prior=db("SELECT value FROM ci_settings WHERE name='activity_schema_version'")
+    r=admin.post(url,data={'csrf':'wrong','action':'activity_setup','password':OWNER});check('Activity setup rejects CSRF','session expired' in r.text.lower() and db("SELECT value FROM ci_settings WHERE name='activity_schema_version'")==prior)
+    r=admin.post(url,data={'csrf':token(admin.get(url)),'action':'activity_setup','password':'wrong'});check('Activity setup requires owner password','current password' in r.text.lower() and db("SELECT value FROM ci_settings WHERE name='activity_schema_version'")==prior)
+    r=admin.post(url,data={'csrf':token(admin.get(url)),'action':'activity_setup','password':OWNER});check('HTTP owner enables workspace activity','Workspace activity is enabled' in r.text and db("SELECT value FROM ci_settings WHERE name='activity_schema_version'")==[{'value':'1'}])
     member=requests.Session();submit(member,root+'?view=login','login',{'email':'request-staff@example.invalid','password':STAFF})
     viewer=requests.Session();submit(viewer,root+'?view=login','login',{'email':'client-staff@example.invalid','password':STAFF})
     alice=requests.Session();bob=requests.Session()
