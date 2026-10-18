@@ -239,6 +239,49 @@ def run_browser(env, browser):
     check('Server folder refusal records a bounded failure without copy claims', 'did not accept the configured Sent folder' in r.text and db('SELECT result_code FROM ci_mail_copy_results WHERE id=(SELECT id FROM ci_mail_copy_attempts WHERE submission_id=?)', [refused_sid]) == [{'result_code': 'folder'}] and inbox_server.appended == refused_mime)
     inbox_server.mode = 'ok'
     db('UPDATE ci_mail_copy_attempts SET started_epoch=0')
+
+    # Bounded private draft attachments: multipart upload, exact download,
+    # revision binding and byte-exact send/Sent-copy of the larger MIME.
+    drafts_page = root + '?view=mail-drafts'
+    r = owner.post(drafts_page, data={'csrf': token(owner.get(drafts_page)), 'action': 'mail_drafts_files_setup', 'current_password': OWNER})
+    check('Owner prepares additive attachment storage', 'attachments are ready' in r.text and db("SELECT value FROM ci_settings WHERE name='mail_files_schema_version'") == [{'value': '1'}])
+    attach_did, attach_url = create(sent_aid)
+    attach_page = draft_url + '&draft_id=' + attach_did
+    attach_bytes = b'SYNTHETIC_ATTACHMENT_BYTES\x00\xff' + bytes(range(256)) * 400
+    def file_post(action, revision, **extra):
+        data = {'csrf': token(member.get(attach_page)), 'action': action, 'draft_id': attach_did, 'revision': str(revision), **extra}
+        files = {'file': ('report.pdf', attach_bytes, 'application/pdf')} if action == 'mail_drafts_attach' else None
+        return member.post(attach_page, data=data, files=files)
+    r = file_post('mail_drafts_attach', 2)
+    check('Stale revision cannot attach over HTTP', 'changed' in r.text.lower() and not db('SELECT * FROM ci_mail_draft_files'))
+    r = file_post('mail_drafts_attach', 1)
+    check('Multipart upload attaches exact bytes to the saved draft', 'File attached' in r.text and db('SELECT name,mime,LENGTH(data) FROM ci_mail_draft_files WHERE draft_id=?', [attach_did]) == [{'name': 'report.pdf', 'mime': 'application/pdf', 'LENGTH(data)': len(attach_bytes)}])
+    check('Attachment card lists stored metadata', 'report.pdf' in member.get(attach_page).text)
+    file_id = db('SELECT id FROM ci_mail_draft_files WHERE draft_id=?', [attach_did])[0]['id']
+    r = file_post('mail_drafts_file', 2, file_id=file_id)
+    check('Attachment download streams exact bytes with safe headers', r.content == attach_bytes and r.headers.get('Content-Type') == 'application/octet-stream' and r.headers.get('X-Content-Type-Options') == 'nosniff' and 'no-store' in r.headers.get('Cache-Control', ''))
+    r = owner.post(attach_page, data={'csrf': token(owner.get(attach_page)), 'action': 'mail_drafts_file', 'draft_id': attach_did, 'revision': '2', 'file_id': file_id})
+    check('Another author cannot download draft attachments', r.content != attach_bytes)
+    r = file_post('mail_drafts_detach', 1, file_id=file_id)
+    check('Stale revision cannot detach over HTTP', 'changed' in r.text.lower() and db('SELECT COUNT(*) AS n FROM ci_mail_draft_files WHERE draft_id=?', [attach_did])[0]['n'] == 1)
+    r = member.get(attach_url)
+    check('Send review displays the attachment before sending', 'report.pdf' in r.text and soup(r).select_one('[data-mail-submission-files]') is not None)
+    age_dispatches()
+    attach_target, attach_data = review(attach_url)
+    count = submission_server.connections
+    r = member.post(attach_target, data={**attach_data, 'confirm_send': '1'})
+    attach_sid = parse_qs(urlparse(r.url).query)['submission_id'][0]
+    wire = submission_server.attempts[-1]
+    parts = BytesParser(policy=policy.default).parsebytes(wire['data'])
+    decoded = [p.get_payload(decode=True) for p in parts.walk() if p.get_content_disposition() == 'attachment']
+    check('HTTP sends attachment-bearing MIME byte-exactly', wire['data'] == db('SELECT mime_bytes FROM ci_mail_submissions WHERE id=?', [attach_sid])[0]['mime_bytes'].encode('ascii') and decoded == [attach_bytes] and submission_server.connections == count + 1)
+    check('Submission record shows the saved attachment', 'report.pdf' in member.get(root + '?view=mail-submission&submission_id=' + attach_sid).text)
+    r = member.post(root + '?view=mail-submission&submission_id=' + attach_sid, data={'csrf': token(member.get(copy_page)), 'action': 'mail_submissions_copy_sent', 'submission_id': attach_sid})
+    copy_connections += 1
+    check('Sent copy carries the larger attachment MIME byte-exactly', inbox_server.appended == wire['data'] and db('SELECT result_code FROM ci_mail_copy_results WHERE id=(SELECT id FROM ci_mail_copy_attempts WHERE submission_id=?)', [attach_sid]) == [{'result_code': 'appended'}])
+    r = file_post('mail_drafts_detach', db('SELECT revision FROM ci_mail_drafts WHERE id=?', [attach_did])[0]['revision'], file_id=file_id)
+    check('Author removes the saved attachment', 'Attachment removed' in r.text and not db('SELECT * FROM ci_mail_draft_files WHERE draft_id=?', [attach_did]))
+
     metadata = json.dumps(db("SELECT * FROM ci_audit WHERE action LIKE 'mail_submissions.%'"))
     check('Submission audits exclude message content recipients and credentials', all(x not in metadata for x in ['SYNTHETIC_PRIVATE_SUBMISSION_BODY', 'private@example.invalid', payload['subject'], submission_server.password]))
     for path in ['app/mail/submissions.php', 'app/mail/submission_dispatch.php', 'app/mail/submission_views.php', 'admin/controllers/mail_submissions.php', 'admin/views/mail_submissions.php', 'database/schema/mail_submissions_schema.php', 'database/migrations/mail_submissions_migrate.php', 'includes/foundation/mail-submission/SubmissionChannel.php']:

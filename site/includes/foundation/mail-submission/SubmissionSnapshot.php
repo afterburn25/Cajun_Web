@@ -5,11 +5,13 @@ namespace CajunWebPro\Foundation\MailSubmission;
 
 if (PHP_SAPI !== 'cli' && !defined('CWP_BOOT')) { http_response_code(404); exit; }
 
+use CajunWebPro\Foundation\MailCompose\DraftAttachment;
 use CajunWebPro\Foundation\MailCompose\DraftContent;
 use CajunWebPro\Foundation\MailCompose\MessageThread;
 use InvalidArgumentException;
 
 require_once __DIR__.'/../mail-compose/DraftContent.php';
+require_once __DIR__.'/../mail-compose/DraftAttachment.php';
 require_once __DIR__.'/../mail-compose/MessageThread.php';
 
 /**
@@ -36,7 +38,10 @@ final readonly class SubmissionSnapshot
         public int $preparedEpoch,
         public ?MessageThread $thread = null,
         public ?string $originFingerprint = null,
+        /** @var list<DraftAttachment> exact bytes bound into this immutable snapshot */
+        public array $attachments = [],
     ) {
+        DraftAttachment::list($attachments);
         foreach ([$id,$draftId,$accountId] as $opaque) {
             if (!preg_match('/\A[a-f0-9]{32}\z/',$opaque)) {
                 throw new InvalidArgumentException('Submission, draft and account identities must be exact opaque ids.');
@@ -94,6 +99,11 @@ final readonly class SubmissionSnapshot
             $payload['format']=2;
             $payload['thread']=$this->thread->toArray();
             $payload['origin_fingerprint']=$this->originFingerprint;
+        }
+        // Formats 3/4 mirror 1/2 with ordered attachment descriptors (no bytes).
+        if ($this->attachments!==[]) {
+            $payload['format']+=2;
+            $payload['attachments']=DraftAttachment::descriptors($this->attachments);
         }
         return $payload;
     }

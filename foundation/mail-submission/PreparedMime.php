@@ -8,7 +8,9 @@ require_once __DIR__.'/PreparationFailure.php';
 /** Private exact MIME bytes and immutable envelope; no persistence or dispatch. */
 final readonly class PreparedMime
 {
-    public const MAX_BYTES=65536;
+    // 768 KiB covers the 64 KiB text body bound plus four ≤256 KiB attachments
+    // (≤512 KiB combined) after base64 expansion and multipart framing.
+    public const MAX_BYTES=786432;
     private function __construct(public SubmissionSnapshot $snapshot,public string $bytes,public string $sha256) {}
 
     public static function fromSnapshot(SubmissionSnapshot $snapshot):self
@@ -20,6 +22,8 @@ final readonly class PreparedMime
         if(OfflineMailer::VERSION!=='7.1.1')throw new PreparationFailure('unsupported_runtime');
         try {
             $mail=new OfflineMailer();
+            // Snapshot-derived identity keeps multipart boundaries deterministic.
+            $mail->fixedId=substr($snapshot->fingerprint,0,43);
             $mail->setFrom($snapshot->from,'',false);
             $mail->Sender=$snapshot->from;
             $mail->MessageID=$snapshot->messageId;
@@ -37,6 +41,10 @@ final readonly class PreparedMime
             $mail->Subject=$mail->literalSubject($snapshot->content->subject);
             $mail->Body=str_replace("\n","\r\n",$snapshot->content->body);
             $mail->isHTML(false);
+            // Exact snapshot bytes only; wire names stay the sanitized printable names.
+            foreach($snapshot->attachments as $attachment) {
+                if(!$mail->addStringAttachment($attachment->bytes,$attachment->name,$mail::ENCODING_BASE64,$attachment->mime))throw new PreparationFailure('encoding_failed');
+            }
             // RFC 5322 reply threading from the saved, exact snapshot context.
             if($snapshot->thread!==null) {
                 $expected=0;

@@ -1,5 +1,12 @@
 ## 2026-10-18 — cloud endpoint supplied no catalog details
 
+## Active non-20i increment — send-side draft attachments
+
+`devin/non20i-mail-send-attachments` stacks on `devin/non20i-mail-reply-all` (`74e98c6d`) and carries the largest remaining mail-roadmap gap: bounded private files attached to saved drafts (≤256 KiB each, ≤4 files, ≤512 KiB total), copied verbatim into immutable `mail_submission_files` at preparation, encoded into the maintained MIME via `addStringAttachment` with a deterministic snapshot-derived boundary and a raised 768 KiB wire bound, and revalidated at dispatch. Payload formats 3/4 add ordered attachment descriptors; format-1/2 records remain byte-identical. Owner-gated `mail_files_migrate` creates `mail_draft_files`/`mail_submission_files`; attach/detach bumps the draft revision so attachment edits invalidate reviewed submissions. The draft editor offers upload/list/download/remove; send review and submission history show metadata only. Pure suite 99 checks plus 55 independent Python wire parses; native/HTTP/Apache lanes extended for CI. Sent-copy APPEND accepts the raised bound.
+
+Next: push, open stacked PR on `devin/non20i-mail-reply-all`, update #157, then continue remaining non-20i items (HTML composition, OAuth, other-folder sync remain unscheduled).
+
+## Release 1.25.0 priority — 2026-10-16
 The separate [cloud-only diagnostic](docs/TWENTYI_CLOUD_ROOT_DIAGNOSTIC.md#original-follow-up-outcome--2026-10-18), original run39090973425 at source `bf788894b1acd4c07daf74e718c4f95774acef85`, completed successfully after 42 passing offline checks. Its one fixed GET observed a JSON `null` root. This establishes the response type for that request and credential context, not an empty catalog, missing entitlement, provider fault or valid import contract. No cloud product fields were supplied. The original two-operation run39090394774 remains failed and unchanged; this later observation cannot retrospectively identify its scalar kind.
 
 Continue the hosting catalog import using the observed `id`/`label` fields and documented package-type ID relationship. Do not substitute cloud data or automatic provider images. Three agents now own the hosting projection/importer, durable observations, and focused tests; root coordinates the admin flow and integration. No repeated cloud request is planned without new evidence. Published 1.25.0 and production remain unchanged. Earlier preparation blocks are historical.

@@ -4,7 +4,7 @@
   "unchanged_test_sha256": {
     "tests/browser_acceptance.py": "7492796715778fe0ef861f48d8122f47e0929f89219a0ad143d185aad2aed096",
     "tests/structure_acceptance.py": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
-    "tests/apache_acceptance.py": "06bb40586ce82d8d44456e66a3f7743ce762b90de3df71638fe915635c851e80",
+    "tests/apache_acceptance.py": "1611b63b7607e0f9019262a9ffa17f42fa09b01f99b3ad65cf55b5e0c2c5c8cb",
     "tests/prepare_legacy.py": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
     "tests/stackcp_access_read_snapshot_native.php": "5bda32f95549f664e3064e95a03ddc0bab2a00150f410697f68236c3c174365b",
     "tests/fixtures/stackcp_access_read_original.json": "2c7e731489c862f021514c53efa2ef4893c3f4333c215cfa69b9eb3a321f138e"

@@ -88,6 +88,24 @@ admin_input('subject','Subject',$values['subject'],'text','maxlength="200"');adm
 <?php if($row): ?><form method="post" action="<?=esc(admin_url('mail-draft',['draft_id'=>$data['id']]))?>"><?php admin_action('mail_drafts_discard');?><input type="hidden" name="draft_id" value="<?=esc($data['id'])?>"><input type="hidden" name="revision" value="<?=(int)$data['revision']?>">
 <p class="hint">Discard keeps the last saved text and its history in your discarded drafts. Unsaved changes are not saved.</p><button class="btn outline">Discard saved draft</button></form><?php endif; ?>
 </section>
+<?php if($row&&$row['status']==='draft'): ?>
+<section class="workspace-card" data-mail-draft-files><h2>Attachments</h2>
+<?php if(mail_files_ready()): ?>
+<p class="hint">Attached files are stored privately with the saved draft and copied into the reviewed message when you send it. Each file up to 256 KiB, at most 4 files and 512 KiB in total. Adding or removing a file saves a new draft version.</p>
+<?php foreach($data['files'] as $file): ?>
+<div><strong><?=esc($file['name'])?></strong> · <?=esc($file['mime'])?> · <?=(int)$file['bytes']?> bytes
+<form method="post" action="<?=esc(admin_url('mail-draft',['draft_id'=>$data['id']]))?>" style="display:inline"><?=csrf_field()?><input type="hidden" name="draft_id" value="<?=esc($data['id'])?>"><input type="hidden" name="revision" value="<?=(int)$data['revision']?>"><input type="hidden" name="file_id" value="<?=esc($file['id'])?>">
+<button class="btn outline" name="action" value="mail_drafts_file">Download</button><button class="btn outline" name="action" value="mail_drafts_detach">Remove</button></form></div>
+<?php endforeach; ?>
+<?php if(!$data['files']): ?><p class="hint">No files are attached to this saved draft.</p><?php endif; ?>
+<form method="post" enctype="multipart/form-data" action="<?=esc(admin_url('mail-draft',['draft_id'=>$data['id']]))?>"><?=csrf_field()?><input type="hidden" name="draft_id" value="<?=esc($data['id'])?>"><input type="hidden" name="revision" value="<?=(int)$data['revision']?>">
+<label>File to attach<input type="file" name="file" required></label>
+<button class="btn outline" name="action" value="mail_drafts_attach">Attach to saved draft</button></form>
+<?php else: ?>
+<p class="notice">Attachment storage has not been prepared. An owner can prepare it from the drafts page.</p>
+<?php endif; ?>
+</section>
+<?php endif; ?>
 <?php else: ?>
 <section class="workspace-card"><h2>Discarded draft</h2><p>This retained draft is read-only.</p>
 <?php foreach(['to'=>'To','cc'=>'Cc','bcc'=>'Bcc','subject'=>'Subject'] as $key=>$label): ?><p><strong><?=esc($label)?>:</strong> <?=esc($values[$key])?></p><?php endforeach; ?>

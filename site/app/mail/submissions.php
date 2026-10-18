@@ -4,12 +4,13 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/mail/drafts.php';
 require_once CWP_CODE_ROOT.'/app/mail/replies.php';
+require_once CWP_CODE_ROOT.'/app/mail/files.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/mail-submission/TransportOutcome.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/mail-transport/EndpointPolicy.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/mail-transport/ProbeFailure.php';
 require_once CWP_CODE_ROOT.'/database/schema/mail_submissions_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/mail_submissions_migrate.php';
-use CajunWebPro\Foundation\MailCompose\{DraftContent,MessageThread};
+use CajunWebPro\Foundation\MailCompose\{DraftAttachment,DraftContent,MessageThread};
 use CajunWebPro\Foundation\MailSubmission\{SubmissionSnapshot,PreparedMime,TransportOutcome};
 use CajunWebPro\Foundation\MailTransport\{EndpointPolicy,ProbeFailure};
 
@@ -30,18 +31,28 @@ function mail_submissions_message(array $row):PreparedMime {
     try {
         $p=json_decode($row['payload_json'],true,16,JSON_THROW_ON_ERROR);
         $base=['format','id','author_id','draft_id','draft_revision','account_id','account_revision','from','message_id','prepared_epoch','to','cc','bcc','subject','body'];
-        $format=is_array($p)?($p['format']??null):null;$thread=null;$origin=null;
-        if($format===1) {
-            if(array_keys($p)!==$base)throw new InvalidArgumentException('Invalid preparation format.');
-        }elseif($format===2) {
-            if(array_keys($p)!==[...$base,'thread','origin_fingerprint'])throw new InvalidArgumentException('Invalid preparation format.');
+        $format=is_array($p)?($p['format']??null):null;$thread=null;$origin=null;$attachments=[];
+        if($format===1||$format===3) {
+            if($format===1&&array_keys($p)!==$base)throw new InvalidArgumentException('Invalid preparation format.');
+            if($format===3&&array_keys($p)!==[...$base,'attachments'])throw new InvalidArgumentException('Invalid preparation format.');
+        }elseif($format===2||$format===4) {
+            $keys=[...$base,'thread','origin_fingerprint'];
+            if($format===4)$keys[]='attachments';
+            if(array_keys($p)!==$keys)throw new InvalidArgumentException('Invalid preparation format.');
             $thread=MessageThread::fromStored(is_array($p['thread'])?$p['thread']:[]);
             if(!is_string($p['origin_fingerprint']))throw new InvalidArgumentException('Invalid copied draft binding.');
             $origin=$p['origin_fingerprint'];
         }else throw new InvalidArgumentException('Invalid preparation format.');
+        if($format>=3) {
+            if(!is_array($p['attachments'])||!array_is_list($p['attachments']))throw new InvalidArgumentException('Invalid attachment descriptors.');
+            $stored=mail_submission_files($row['id']);
+            if(count($stored)!==count($p['attachments']))throw new InvalidArgumentException('Invalid attachment set.');
+            foreach($stored as $i=>$file)if($p['attachments'][$i]!==$file->descriptor())throw new InvalidArgumentException('Invalid attachment set.');
+            $attachments=$stored;
+        }
         foreach(['from','subject','body'] as $field)if(!is_string($p[$field]))throw new InvalidArgumentException('Invalid private text.');
         foreach(['to','cc','bcc'] as $field)if(!is_array($p[$field]))throw new InvalidArgumentException('Invalid private recipients.');
-        $snapshot=new SubmissionSnapshot($row['id'],(int)$row['owner_id'],$row['draft_id'],(int)$row['draft_revision'],$row['account_id'],(int)$row['account_revision'],$p['from'],new DraftContent($p['to'],$p['cc'],$p['bcc'],$p['subject'],$p['body']),(int)$row['prepared_epoch'],$thread,$origin);
+        $snapshot=new SubmissionSnapshot($row['id'],(int)$row['owner_id'],$row['draft_id'],(int)$row['draft_revision'],$row['account_id'],(int)$row['account_revision'],$p['from'],new DraftContent($p['to'],$p['cc'],$p['bcc'],$p['subject'],$p['body']),(int)$row['prepared_epoch'],$thread,$origin,$attachments);
         if($p!==$snapshot->privatePayload() || $row['payload_json']!==json_encode($snapshot->privatePayload(),JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) || !hash_equals($snapshot->fingerprint,$row['snapshot_fingerprint']))throw new InvalidArgumentException('Invalid private fingerprint.');
         $mime=PreparedMime::fromSnapshot($snapshot);
         if(!hash_equals($mime->sha256,$row['mime_sha256']) || !hash_equals($mime->bytes,$row['mime_bytes']))throw new InvalidArgumentException('Invalid saved MIME.');
@@ -102,9 +113,20 @@ function mail_submissions_prepare_intent(string $id,string $draft,int $draftRevi
         $profile=mail_accounts_load($account['id']);EndpointPolicy::host($profile['smtp_host']);EndpointPolicy::port('smtp',(int)$profile['smtp_port'],$profile['smtp_encryption']);
         $now=time();
         if((int)query('SELECT COUNT(*) FROM '.table('mail_submissions').' WHERE owner_id=? AND prepared_epoch>?',[$actor['id'],$now-3600])->fetchColumn()>=100)throw new RuntimeException('Submission preparation limit reached. Try again later.');
-        $mime=PreparedMime::fromSnapshot(new SubmissionSnapshot($id,(int)$actor['id'],$draft,$draftRevision,$account['id'],$accountRevision,$account['address'],$content,$now,$thread,$originFingerprint));
+        // Saved attachment bytes are copied verbatim into immutable submission storage.
+        $attachments=[];
+        if(mail_files_ready()) {
+            foreach(all('SELECT * FROM '.table('mail_draft_files').' WHERE draft_id=? ORDER BY slot',[$draft]) as $stored) {
+                if(!hash_equals($stored['sha256'],hash('sha256',$stored['data']))||(int)$stored['bytes']!==strlen($stored['data']))throw new RuntimeException('Saved draft attachments are damaged. Existing data was preserved.');
+                $attachments[]=new DraftAttachment($stored['name'],$stored['mime'],$stored['data']);
+            }
+        }
+        $mime=PreparedMime::fromSnapshot(new SubmissionSnapshot($id,(int)$actor['id'],$draft,$draftRevision,$account['id'],$accountRevision,$account['address'],$content,$now,$thread,$originFingerprint,$attachments));
         query('INSERT INTO '.table('mail_submissions').' (id,attempt_id,owner_id,draft_id,draft_revision,account_id,account_revision,prepared_epoch,payload_json,snapshot_fingerprint,mime_bytes,mime_sha256,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
             [$id,bin2hex(random_bytes(16)),$actor['id'],$draft,$draftRevision,$account['id'],$accountRevision,$now,json_encode($mime->snapshot->privatePayload(),JSON_THROW_ON_ERROR|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE),$mime->snapshot->fingerprint,$mime->bytes,$mime->sha256,gmdate('Y-m-d H:i:s',$now)]);
+        $slot=0;
+        foreach($attachments as $file)query('INSERT INTO '.table('mail_submission_files').' (id,slot,name,mime,bytes,sha256,data,created_at,submission_id) VALUES (?,?,?,?,?,?,?,?,?)',
+            [bin2hex(random_bytes(16)),++$slot,$file->name,$file->mime,strlen($file->bytes),$file->sha256,$file->bytes,gmdate('Y-m-d H:i:s',$now),$id]);
         mail_submissions_audit((int)$actor['id'],'prepared','Submission '.$id.' draft '.$draft.' revision '.$draftRevision);
         return ['id'=>$id,'created'=>true,'row'=>mail_submissions_row($id),'profile'=>$profile];
     }));
@@ -131,6 +153,13 @@ function mail_submissions_authorize(array $row,PreparedMime $mime):array {
     // A changed saved row at an unchanged revision is damaged, not a new review.
     $p=$mime->snapshot->content;
     if([$content->to,$content->cc,$content->bcc,$content->subject,$content->body]!==[$p->to,$p->cc,$p->bcc,$p->subject,$p->body])throw new RuntimeException('The reviewed draft content changed. No message was submitted.');
+    // Attachment changes always bump the saved revision; a same-revision
+    // difference means damaged storage rather than a reviewed edit.
+    if($mime->snapshot->attachments!==[]&&!mail_files_ready())throw new RuntimeException('Saved submission files are unsupported. Existing data was preserved.');
+    if(mail_files_ready()) {
+        $current=array_map(static fn(array $f):array=>['name'=>$f['name'],'mime'=>$f['mime'],'sha256'=>$f['sha256'],'bytes'=>(int)$f['bytes']],all('SELECT name,mime,bytes,sha256 FROM '.table('mail_draft_files').' WHERE draft_id=? ORDER BY slot',[$row['draft_id']]));
+        if($current!==array_map(static fn(DraftAttachment $a):array=>$a->descriptor(),$mime->snapshot->attachments))throw new RuntimeException('The reviewed draft files changed. No message was submitted.');
+    }
     return mail_accounts_load($row['account_id']);
 }
 /** Internal dispatcher claim, atomically audited. A replay never grants another attempt. */
