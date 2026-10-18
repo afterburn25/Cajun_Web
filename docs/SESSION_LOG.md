@@ -2055,3 +2055,24 @@ Owner reviews on #210 and #211 plus follow-throughs on #212/#213:
   `ef222bb0` → client-actions `d795be7c` → portal-account `ee03cfca`.
 - Diagnostic acceptance dispatched: run 39084434485 on portal-account
   `ee03cfca` — queued behind the recovery tail of run 39083645344.
+
+## 2026-10-18 — Feed-check root cause: missing activity_setup, not a projection bug
+
+- Resolved the contradiction between runs: `legacy-schema.json` is
+  generated from the retained **1.0.8** fixture (`prepare_legacy.py`),
+  so `activity_schema_version` can never exist on `ci_` — `activity_ready()`
+  is FALSE on `/existing/` at staff_cases time in every run. Run
+  39081460330's `403` + `[]` is the 'Workspace activity has not been
+  enabled' fail_page; run 39079050602's 'Form missing activity_setup'
+  was a transient card-render miss (saturated runner), misread earlier
+  as proof activity was already enabled — `a5f6fe59`'s inference was
+  wrong, `66841f3a`'s enable-submit was the right fix.
+- `a7b0dfeb` on milestones: re-adds the `activity_setup` submit — now
+  placed before the internal-note negative check (a 403 page vacuously
+  passes `not in text`) and asserts `ci_settings.activity_schema_version`
+  lands, so a silent migrate failure surfaces directly. Kept the
+  corrected conditional dump on the feed check for one more run.
+- Propagated: activity-prefs `94894ae3` → client-actions `ab513563` →
+  portal-account `c87d1060`. Acceptance dispatched on `c87d1060`
+  (run 39084652934); diagnostic-only run 39084434485 (`ee03cfca`)
+  remains in flight to confirm the dump mechanics.
