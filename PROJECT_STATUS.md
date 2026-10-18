@@ -4,11 +4,15 @@ The separate `codex/twentyi-hosting-commerce` branch now connects owner publicat
 
 Local Windows PHP 8.4.25 with MariaDB 10.11.18 passes all 138 existing service-plan SQL checks. The new hosting fixture stops before its assertions because Windows does not retain the existing required POSIX 0600 permissions. No filesystem safeguard was changed or bypassed. The full supplied 20i reference is already retained; automatic provider images and the cloud catalog still lack a verified response contract.
 
-The separate 1.26 release candidate is `f67b1631`, with corrected browser-test ordering and verified Windows packages. Its original full Linux runs remain pending. Published 1.25 assets and the live site are unchanged.
+Hosting UI checkpoint `dfb0ec18` now normally incorporates the browser callback correction from `f67b1631`. The separate 1.26 release candidate remains `f67b1631`, with corrected browser-test ordering and verified Windows packages. Its original full Linux runs remain pending. Published 1.25 assets and the live site are unchanged.
 
 ## 2026-10-18 — separate hosting-order connection in progress
 
 `codex/twentyi-hosting-commerce` starts at frozen 1.26 source `6e3dbeff6dc6359a418837d0c95baa43e4c92533`. It prepares [hosting publications and client requests](docs/TWENTYI_HOSTING_OFFERS.md) connected to the existing agreement writer. Pure documents pass 119 checks in normal and minimal PHP; source/syntax review is separate from pending SQL, route, browser and full ordering acceptance. No customer route is enabled. The 1.26 release candidate remains unchanged on its own branch, and published 1.25 assets remain immutable.
+
+## 2026-10-18 — browser fixture ordering correction
+
+The original browser checkpoint39093140366 failed after 1,225 successful HTTP checks: the new catalog fixture made six simulated reads before an unchanged provider-setup test required zero prior calls. All 31 catalog HTTP checks passed. The same ordering exists in frozen `6e3dbeff`. Move only the catalog callback after the existing scheduler callback; retain every assertion and original result. Shipping files are unchanged. The corrected descendant still requires complete candidate/main/browser/release acceptance. See [test record](docs/TEST_REPORT_1.26.0.md). Published 1.25.0 remains unchanged; hosting-order backend work stays on a separate branch.
 
 ## 2026-10-18 — assembled 1.26.0 candidate
 

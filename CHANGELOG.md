@@ -6,6 +6,10 @@ Add owner offer review/publication and client request handling under Hosting & D
 
 Connect exact imported hosting drafts to reviewed service plans through explicit local publications, retained client requests and atomic agreement conversion. Add immutable history, current-session and stale-offer checks, and protection for historical product images during media cleanup. Generic hosting catalog invoices remain refused. No route enables the feature yet; focused native SQL, browser and full ordering acceptance are pending. This successor is separate from the frozen 1.26.0 release candidate.
 
+## Unreleased — isolate direct catalog browser fixture ordering
+
+Run the new catalog browser callback after the existing provider/scheduler callbacks so its six simulated reads do not invalidate older zero-prior-call assertions. Keep all test predicates and deployment bytes unchanged. Original failed evidence remains retained; corrected full acceptance is pending.
+
 ## Unreleased —1.26.0 upgrade preparation
 
 Advance development version markers and staged-update instructions to1.26.0. Add the immutable published1.25 baseline while retaining older upgrade/recovery cases. Full1.26 acceptance and publication remain pending.

@@ -4,9 +4,13 @@ This records the assembled candidate on `codex/twentyi-direct-hosting-catalog`, 
 
 ## Existing feature evidence
 
+The original `12da59d1` checkpoint39093140366 completed native integration but failed HTTP check1,226 (`Additive provider setup preserves earlier settings and projects`) after 1,225 passes. Its original completed log and both raw evidence archives are retained and digest/size/CRC/member verified. All 287 browser-checkpoint members match the sealed native/browser partition. The 31 new catalog HTTP checks, its separate 51 native checks and eight runtime checks passed, but the combined checkpoint failed. The other operands of the failing composite predicate were not separately saved; no independent success is inferred for them.
+
+The new catalog fixture uses the shared simulated provider and records six reads before the older provider-setup callback asserts its lifetime call count is zero. Both driver and affected fixtures are byte-identical between `12da59d1` and `6e3dbeff`. The correction moves exactly the catalog import/invocation lines after the existing scheduler callback. Its separate `ptici_` database/site and relative before/after counters allow this placement; no later original callback observes its side effects. Every callback, assertion, timeout and report/image requirement remains unchanged. Source review validates the raw inverse and callback multiplicities. Shipping files are unchanged. The original failed result remains authoritative for its source; the corrected descendant needs fresh complete acceptance.
+
 The focused catalog matrix [39092587358](https://github.com/afterburn25/Cajun_Web/actions/runs/39092587358), original attempt 1 at `9f0b83fd1f18b9075f7d141f9a1d00b2646f4ebe`, passes PHP 8.2/8.4 with MariaDB 10.11/MySQL 8.4. Each environment passes 109 default, 109 minimal and 51 actual database checks. All twelve reports and four artifacts were retained and digest-verified. This is evidence for the unchanged shipping catalog implementation, not the later 1.26 package or full browser workflow.
 
-Combined checkpoint [39093140366](https://github.com/afterburn25/Cajun_Web/actions/runs/39093140366) at `12da59d1` has passed packaging and is running native/browser acceptance. It intentionally omits recovery and Apache; it cannot certify a release. Earlier failed matrix/build/provenance-fixture attempts remain retained and are explained in the [feature guide](TWENTYI_HOSTING_CATALOG.md#verification-status).
+Combined checkpoint [39093140366](https://github.com/afterburn25/Cajun_Web/actions/runs/39093140366) at `12da59d1` passed packaging/native integration and failed browser acceptance as described above. It intentionally omits recovery and Apache; it cannot certify a release. Earlier failed matrix/build/provenance-fixture attempts remain retained and are explained in the [feature guide](TWENTYI_HOSTING_CATALOG.md#verification-status).
 
 ## Assembled source checks
 
