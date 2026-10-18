@@ -1,3 +1,23 @@
+## 2026-10-18 — cloud endpoint supplied no catalog details
+
+The separate [cloud-only diagnostic](docs/TWENTYI_CLOUD_ROOT_DIAGNOSTIC.md#original-follow-up-outcome--2026-10-18), original run39090973425 at source `bf788894b1acd4c07daf74e718c4f95774acef85`, completed successfully after 42 passing offline checks. Its one fixed GET observed a JSON `null` root. This establishes the response type for that request and credential context, not an empty catalog, missing entitlement, provider fault or valid import contract. No cloud product fields were supplied. The original two-operation run39090394774 remains failed and unchanged; this later observation cannot retrospectively identify its scalar kind.
+
+Continue the hosting catalog import using the observed `id`/`label` fields and documented package-type ID relationship. Do not substitute cloud data or automatic provider images. Three agents now own the hosting projection/importer, durable observations, and focused tests; root coordinates the admin flow and integration. No repeated cloud request is planned without new evidence. Published 1.25.0 and production remain unchanged. Earlier preparation blocks are historical.
+
+## 2026-10-18 — separate cloud response-type check prepared
+
+The [first catalog diagnostic](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#original-outcome--2026-10-18) remains failed and preserved. A separate [cloud-only follow-up](docs/TWENTYI_CLOUD_ROOT_DIAGNOSTIC.md) addresses its missing root-kind observation with one fixed metadata GET. It never repeats the hosting catalog request. Only a finite JSON type or the same closed container shape is exported; values, URLs and unknown names remain withheld. This source checkpoint prepares the follow-up, without claiming a live outcome or a valid cloud catalog. Hosting import implementation proceeds separately from the observed hosting fields and documented type-ID relationship. Released 1.25.0 is unchanged.
+
+## 2026-10-18 — preserve first catalog outcome; review bounded follow-through
+
+Start this documentation follow-up from `1159648f968d46439f7e88a9cd0f6dbee3758643` on `ops/twentyi-catalog-schema-read`. Original [run 39090394774](https://github.com/afterburn25/Cajun_Web/actions/runs/39090394774), attempt 1, failed after 39 passing offline tests: package-type field/type observations were retained, while the cloud operation ended with `unexpected_root` and no retained root kind. Its safe artifact is [copied byte-for-byte](docs/evidence/twentyi-catalog-schema-39090394774.json); [the diagnostic record](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#original-outcome--2026-10-18) binds the source, job, artifact and limits.
+
+Next, review Domains' hosting follow-through against these observed spellings/types and VPS's proposed single cloud root-kind read. Keep unknown-key semantics, complete catalog coverage, provider prices and image contracts unresolved. The original failure is not a successful import and must not be retried automatically. This documentation-only update changes no diagnostic code or workflow and triggers no new provider read; root owns applying it with a documentation commit message. No provider writes or image downloads occur here. Preserve immutable release `b79c6711` and its published assets. Earlier pending-read statements below describe the preparation checkpoint, before this original execution.
+
+## 2026-10-18 — next original catalog metadata read
+
+The published release remains immutable b79c6711. Root's `ops/twentyi-catalog-schema-read` branch starts from documentation main bdbdf3e1 and adds the reviewed [catalog diagnostic](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md). Preserve its first run, checkout identity and shape artifact after execution. Do not rerun automatically or treat lexical field/type observations as proven product/pricing/image semantics. At this source checkpoint the read is pending; no actual provider response is claimed. Owner-requested import work authorizes these two necessary metadata GETs only; this diagnostic performs no provider writes or image download.
+
 # CajunWebPro 1.25.0 release handoff
 
 ## 2026-10-18 — resume after verified publication

@@ -1,3 +1,23 @@
+## 2026-10-18 — cloud endpoint supplied no catalog details
+
+The separate [cloud-only diagnostic](docs/TWENTYI_CLOUD_ROOT_DIAGNOSTIC.md#original-follow-up-outcome--2026-10-18), original run39090973425 at source `bf788894b1acd4c07daf74e718c4f95774acef85`, completed successfully after 42 passing offline checks. Its one fixed GET observed a JSON `null` root. This establishes the response type for that request and credential context, not an empty catalog, missing entitlement, provider fault or valid import contract. No cloud product fields were supplied. The original two-operation run39090394774 remains failed and unchanged; this later observation cannot retrospectively identify its scalar kind.
+
+Continue the hosting catalog import using the observed `id`/`label` fields and documented package-type ID relationship. Do not substitute cloud data or automatic provider images. Three agents now own the hosting projection/importer, durable observations, and focused tests; root coordinates the admin flow and integration. No repeated cloud request is planned without new evidence. Published 1.25.0 and production remain unchanged. Earlier preparation blocks are historical.
+
+## 2026-10-18 — separate cloud response-type check prepared
+
+The [first catalog diagnostic](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#original-outcome--2026-10-18) remains failed and preserved. A separate [cloud-only follow-up](docs/TWENTYI_CLOUD_ROOT_DIAGNOSTIC.md) addresses its missing root-kind observation with one fixed metadata GET. It never repeats the hosting catalog request. Only a finite JSON type or the same closed container shape is exported; values, URLs and unknown names remain withheld. This source checkpoint prepares the follow-up, without claiming a live outcome or a valid cloud catalog. Hosting import implementation proceeds separately from the observed hosting fields and documented type-ID relationship. Released 1.25.0 is unchanged.
+
+## 2026-10-18 — first catalog metadata read incomplete
+
+Original [run 39090394774](https://github.com/afterburn25/Cajun_Web/actions/runs/39090394774), attempt 1, checked out `1159648f968d46439f7e88a9cd0f6dbee3758643`. Its 39 offline transport/disclosure tests passed; the live step and overall run failed, and the bounded shape artifact was uploaded. `package_types` observed an array of objects with `id` integer, `label` string and `platform` string. `cloud_server_product_data` returned the diagnostic outcome `unexpected_root`; the actual root kind was not retained, so an empty catalog or missing entitlement cannot be inferred.
+
+The [original safe shape and interpretation](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#original-outcome--2026-10-18) establish lexical field/type observations only. Complete catalog, pricing, image and importer contracts remain unaccepted; no absence of provider images is established. Domains is preparing the bounded hosting follow-through, and VPS is preparing a separate one-read cloud root-kind diagnostic. Neither proposal is executed by this documentation follow-up. Preserve the first failure; do not rerun it automatically. Published 1.25.0 remains unchanged. The preparation checkpoint below is historical.
+
+## 2026-10-18 — catalog schema diagnostic prepared
+
+After verified 1.25.0 publication, root prepared a separate `ops/twentyi-catalog-schema-read` branch from documentation main `bdbdf3e154e09db9c7dcc391e8e8cead2a2c8497`. The [two fixed metadata reads](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md) support the owner's full product import request. The proposed diagnostic exports a closed vocabulary of field spellings and JSON types, withholding all values, unknown keys and URLs. It changes no production adapter or catalog importer. Offline source/transport checks pass; this source checkpoint has not yet executed the provider reads or established complete catalog/image contracts.
+
 # CajunWebPro 1.25.0 scope and release status
 
 ## 2026-10-18 — 1.25.0 published and download-verified
