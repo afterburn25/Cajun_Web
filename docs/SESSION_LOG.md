@@ -1689,6 +1689,7 @@ Continue roadmap and keep the published assignment directly usable. Start main00
 
 ## 2026-10-16 - scoped additional company contacts (P-05)
 
+<<<<<<< HEAD
 Request: continue Devin non-20i roadmap work; selected P-05's named gap - company contacts with separate project-review, billing and download permissions. Branch devin/non20i-client-contacts from main.
 
 Changed: new additive contacts schema v1 (studio_contacts: client_id FK scope, unique email, password_hash, auth_version, JSON permissions, enabled, hashed 24-hour invite) + versioned contacts_migrate (owner reauthentication, validate-or-create, refuse unknown markers and non-empty unrecognized tables). contacts.php app layer: studio_contact(), contact_can(), contact_save/contact_invite/contact_activate mirroring client identity patterns. identity.php: contact fallback in studio_login (same rate limits and dummy-hash path) and per-request contact revalidation in studio_client(). Portal router/actions gate activity, downloads, releases, files, invoices, receipts, services, license actions, message/decision/upload/activity_mark by permission; message/upload rows attribute author_type='contact'. workspace.php renders scoped sections per permission with contact indicator; auth.php adds cinvite activation. Admin: contacts_setup + studio_contact + contact_invite actions, permission map, clients view contact forms, upgrade view setup card; admin job view joins contact names. Activity feed includes contact-authored messages/files for admin. deploy.php seeds contacts_schema_version=1. tests/contacts_cases.py + browser_acceptance.py wiring: owner setup/idempotency/unknown-marker refusal, create/collision/permission-required, invite hash-at-rest/one-time, scoped views, denied routes/writes, disable/invite session revocation, fresh-install readiness, guard 404s, no mail/provider calls, Chromium scoped render.
@@ -2164,3 +2165,24 @@ Owner reviews on #210 and #211 plus follow-throughs on #212/#213:
   on the propagated heads. This is branch CI evidence only — no merge,
   retarget, deployment or release. Codex owns the sequential
   integration of the chain.
+
+## 2026-10-18 — Licensing PR #159 audited against main and closed as superseded
+
+- `devin/non20i-licensing` @ `69630e95` (48/48 lanes green) was
+  CONFLICTING vs main `6caf654c`. Merge preview showed 9 conflicts;
+  main's licensing subsystem had been rewritten during the 1.25
+  integration (`license_upgrade_shape`, journaled
+  `license_upgrade_pending`, `license_invoice_cutover`,
+  `legacy.php::license_resolve_legacy_invoice`).
+- File-by-file delta audit: every #159 protection exists on main in an
+  equal-or-stronger form (master-key `is_master=0` filters on portal /
+  bundle / download / admin mint; owner-attested legacy reconcile with
+  evidence + password + FOR UPDATE; version gate refusing unknown
+  markers before DDL; `catalog_validate_schema` checks column types so
+  legacy INT `product_id` is preserved-not-widened).
+- Residual branch deltas evaluated and dropped: stray `license_%`
+  table scan (inert tables never adopted), `product_id` INT→VARCHAR
+  widening (unsafe — would mint `'1'` not a product key).
+- PR #159 closed with verification comment 6245264465; branch retained
+  for history. Source inspection only — no runtime test, merge or
+  release action.
