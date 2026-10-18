@@ -3409,3 +3409,13 @@ Actual root documentation checks passed 12 required documents,271 Markdown files
 ## 2026-10-16 - Protected-preview test harness repair
 
 `native-and-browser` on #198 failed with `NameError: php` — `release_cases.db` resolves `php` in its own module globals, populated only inside `run_browser(env)`; the direct preview-version `db()` lookup ran earlier. Fix `5c5f3454` injects `release_cases.php=php` right after the local binary is resolved. Same-lineage `devin/non20i-stage-history` received the fix via merge `8962924d`; its earlier green snapshot never ran the `native-and-browser` lane at all, so this repair is real coverage for both branches.
+
+## 2026-10-18 — reduce unrelated pull-request workflow fan-out
+
+Request: continue the roadmap and finish verification without asking the owner to repeat the supplied 20i reference. Starting main: `6caf654c99cb5befb610f405e40df69b0c174cb6`; branch `codex/ci-pr-path-filters`; enclosing commit: `Filter unrelated pull-request checks while retaining shared dependencies`.
+
+At 06:18 UTC the GitHub API reported 1,032 queued workflows and three active workflows. Ten workflow files had filtered pushes but unfiltered PRs. Added matching PR filters and conservative shared runtime/Docker/mail dependency paths; preserved every existing job, matrix, command, artifact, timeout, permission and concurrency setting. Updated status, handoff, changelog and release workflow guidance. No shipping files or installer inventory changed.
+
+Validation: 119 finite source/YAML/dependency/inverse/applicability checks passed, plus independent comparison of all ten jobs sections and non-path settings before applying the patch. Static retained PR186/188/191 file comparisons each reduce these ten workflows from 26 to 22 jobs; docs/CSS examples reduce them to zero. This is not a runtime or queue-clearing claim. No original CI run was canceled, deleted or retried.
+
+The separate corrected 1.26 build job passed and its original inputs/build artifacts were retained with API digest verification. Database/browser/server/recovery acceptance remains pending; hosting offer/recovery source6cf7 also awaits focused acceptance. Next: normal PR integration of this CI-only correction, then continue original-result review and staged-owner HTTP/full-suite hosting work. Published1.25 and production remain unchanged.

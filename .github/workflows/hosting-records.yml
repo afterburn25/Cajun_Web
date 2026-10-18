@@ -2,8 +2,9 @@ name: Hosting record storage checks
 on:
   push:
     branches: [main, codex/hosting-storage]
-    paths: ['site/app/hosting/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/hosting/**', 'site/includes/foundation/hosting/**', 'tests/hosting_records*.php', 'tests/hosting_storage_recovery_cases.php', '.github/workflows/hosting-records.yml']
+    paths: ['site/app/hosting/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/hosting/**', 'site/includes/foundation/hosting/**', 'tests/hosting_records*.php', 'tests/hosting_storage_recovery_cases.php', '.github/workflows/hosting-records.yml', 'site/app/**', 'site/includes/**', 'site/config/**', 'foundation/**', 'tests/invitations/**']
   pull_request:
+    paths: ['site/app/hosting/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/hosting/**', 'site/includes/foundation/hosting/**', 'tests/hosting_records*.php', 'tests/hosting_storage_recovery_cases.php', '.github/workflows/hosting-records.yml', 'site/app/**', 'site/includes/**', 'site/config/**', 'foundation/**', 'tests/invitations/**']
   workflow_dispatch:
 permissions:
   contents: read

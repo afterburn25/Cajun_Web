@@ -2,8 +2,9 @@ name: Hosting operation storage checks
 on:
   push:
     branches: [main, codex/hosting-operations, codex/hosting-provision-retry, codex/hosting-deprovision-retry, codex/hosting-reconciliation, codex/hosting-reconciliation-storage]
-    paths: ['site/app/hosting/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/hosting/**', 'site/includes/foundation/hosting/**', 'tests/hosting_*native.php', 'tests/hosting_*cases.php', '.github/workflows/hosting-operations.yml']
+    paths: ['site/app/hosting/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/hosting/**', 'site/includes/foundation/hosting/**', 'tests/hosting_*native.php', 'tests/hosting_*cases.php', '.github/workflows/hosting-operations.yml', 'site/app/**', 'site/includes/**', 'site/config/**', 'foundation/**', 'tests/invitations/**']
   pull_request:
+    paths: ['site/app/hosting/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/hosting/**', 'site/includes/foundation/hosting/**', 'tests/hosting_*native.php', 'tests/hosting_*cases.php', '.github/workflows/hosting-operations.yml', 'site/app/**', 'site/includes/**', 'site/config/**', 'foundation/**', 'tests/invitations/**']
   workflow_dispatch:
 permissions:
   contents: read
