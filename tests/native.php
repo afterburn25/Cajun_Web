@@ -138,7 +138,7 @@ if(!isset($error))try {
     ok('Prior version content immutable',one('SELECT body FROM '.table('studio_versions').' WHERE id=?',[$v1])['body']==='Original version text');
     $previewId=studio_preview_store(1,$v2,'approved-preview.png','png preview bytes','image/png',17);
     $previewFile=one('SELECT * FROM '.table('studio_files').' WHERE id=?',[$previewId]);$previewPath=config()['storage'].'/media/'.$previewFile['stored_name'];
-    ok('Preview store binds the protected file to its version',(bool)one('SELECT id FROM '.table('studio_version_files').' WHERE version_id=? AND file_id=?',[$v2,$previewId])&&is_file($previewPath)&&hash_file('sha256',substr(file_get_contents($previewPath),strlen(CWP_GUARD)))===hash('sha256','png preview bytes'));
+    ok('Preview store binds the protected file to its version',(bool)one('SELECT id FROM '.table('studio_version_files').' WHERE version_id=? AND file_id=?',[$v2,$previewId])&&is_file($previewPath)&&hash('sha256',substr(file_get_contents($previewPath),strlen(CWP_GUARD)))===hash('sha256','png preview bytes'));
     studio_publish(1,'proposal','Proposal one','Scope and fee for review','');$proposal=(int)query('SELECT MAX(id) FROM '.table('studio_versions'))->fetchColumn();
     rejected('Change request requires feedback',fn()=>studio_decide(1,$proposal,'changes',''));
     studio_decide(1,$proposal,'changes','Please clarify the content scope.');
