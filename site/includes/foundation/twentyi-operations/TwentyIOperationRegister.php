@@ -25,6 +25,19 @@ final class TwentyIOperationRegister
     {
         $operations = [
             new TwentyIOperation(
+                'packages.directoryindexing', 'POST', '/package/{packageId}/web/directoryIndexing',
+                ['packageId'], ['value'=>'bool'], ['value'], shapeComplete: true,
+            ),
+            new TwentyIOperation(
+                'packages.forcessl', 'POST', '/package/{packageId}/web/forceSSL',
+                ['packageId'], ['value'=>'bool'], ['value'], shapeComplete: true,
+            ),
+            new TwentyIOperation(
+                'cloudsites.create', 'POST', '/cloud_server/{cloudServerId}/addWeb',
+                ['cloudServerId'], ['domain_name'=>'hostname','extra_domain_names'=>'hostname_list'],
+                ['domain_name','extra_domain_names'], shapeComplete: true,
+            ),
+            new TwentyIOperation(
                 'packages.create', 'POST', '/reseller/{resellerId}/addWeb',
                 ['resellerId'],
                 [
@@ -89,9 +102,9 @@ final class TwentyIOperationRegister
             new TwentyIOperation(
                 'domains.nameservers', 'POST', '/package/{packageId}/domain/{domainId}/nameservers',
                 ['packageId', 'domainId'],
-                [],
-                [],
-                shapeComplete: false, // owner supplied ns/old-ns arrays; actual delta implementation pending
+                ['ns' => 'hostname_list', 'old-ns' => 'hostname_list'],
+                ['ns', 'old-ns'],
+                shapeComplete: true, // Exact disjoint additions/removals; native consent/read workflow remains separate.
             ),
             new TwentyIOperation(
                 'domains.dns', 'POST', '/package/{packageId}/domain/{domainId}/dns',
@@ -114,6 +127,13 @@ final class TwentyIOperationRegister
                 ['delete-id'],
                 shapeComplete: true, // Owner complete-reference clarification: array of IDs.
                 destructive: true,
+            ),
+            // Official provision-mailbox-api; the dedicated builder resolves a protected
+            // password reference transiently. Generic approval never admits this operation.
+            new TwentyIOperation(
+                'mailboxes.create', 'POST', '/package/{packageId}/email/{domain}',
+                ['packageId', 'domain'],
+                ['new'=>'json'], ['new'], shapeComplete: true,
             ),
         ];
         $this->operations = [];

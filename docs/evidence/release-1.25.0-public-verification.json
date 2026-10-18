@@ -1,0 +1,31 @@
+{
+  "packages": {
+    "FULL-PROJECT": {
+      "members": 5938,
+      "sha256": "a667f249205b5d41cbed7504e32edfd4d35602cc397efc54476483910a314743"
+    },
+    "COMPLETE-UPLOAD": {
+      "members": 2895,
+      "sha256": "bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39"
+    },
+    "UPDATE": {
+      "members": 2882,
+      "sha256": "5391171ef111f7690c3796909c7dd61069425075cda67adace4c5d3056c30c11"
+    }
+  },
+  "assets": 18,
+  "evidence_members": 2335,
+  "all_asset_digests_and_bytes": true,
+  "passed": true,
+  "source": "b79c67110829126916e3a65e616191542448bccc",
+  "tree": "f862cc9205e073513f419cdf5ff24cacd1f801df",
+  "version": "1.25.0",
+  "tag": "v1.25.0",
+  "mode": "published",
+  "release_id": 416184457,
+  "release_url": "https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0",
+  "prior_124_unchanged": true,
+  "binding_sha256": "5e9b35a1e2d06da4cc118350008bdb0ede4105ed775c8164531a9f3d548a1f2b",
+  "verifier_sha256": "44ff347651d4f2ab6d5fd4e5b2daf609e658df1a108da967ae938643cd75c5b7",
+  "scope": "Fresh downloaded release assets versus already reviewed exact-main acceptance; no publication or live deployment performed."
+}
