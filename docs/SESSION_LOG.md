@@ -261,6 +261,16 @@ Actions: `tests/mail_reply_cases.py` now prints the recorded `ci_mail_submission
 Tests: `python -m py_compile` clean; inventory refreshed after the revert. CI reruns will report the outcome directly.
 
 Next: read the diagnostic, fix the real authorize/transport defect, remove the print, re-run full acceptance.
+## Explicit server read/unread flags — 2026-10-16
+
+Request: continue #157 non-20i roadmap after folder-scoped reads; A-06/A-08 require deliberate per-message read-state sync with the provider ("opening/marking a particular message updates the relevant provider flag").
+
+Actions: `foundation/mail-receiving/FlagSession.php` + `FlagWriter.php` — fixed `SELECT "<folder>"` (READ-WRITE required, `flags` refusal on READ-ONLY/refused folders), `UID FETCH <uid> (UID FLAGS)` existence/current-state proof, conditional `UID STORE <uid> ±FLAGS.SILENT (\Seen)`, UIDVALIDITY fencing, same authorize-callback cadence and 20s bound as reads; `ReadProfile::Flags` (1 KiB literal bound) and a `flags` `ReceivingFailure` code. `site/app/mail/flags.php` — `mail_message_mark()` with `mail.read` grant + exact account revision, `mail_inbox_folder` wire-safe validation, 5s per-account cooldown, 120/hour account+actor limits, durable request row before DNS, immutable result, and `mail_notice_items.server_seen` reconciliation on success. Additive `mail_flags_schema`/`mail_flags_migrate` (owner password, strict validation, no adoption of unknown rows). Controller `mail_message_flag` under the `mail_message_` prefix with route-identity POST matching; message view adds one mark button and a private flag history; accounts view adds the owner preparation card. Permission map: setup owner-only (`staff.manage`), mark action delegates to internal exact-authority checks.
+
+Tests: `tests/mail-receiving/flag_test.php` — 42 checks covering the exact wire sequence, both directions, unchanged short-circuit, UIDVALIDITY/folder/READ-ONLY/STORE refusals, revocation at every authorization boundary, unsafe folder/UID refusal before network. `tests/mail_flags_native.php` — 39 injected-resolver/transport checks (setup gating, identity fencing, cooldown, ceilings, revocation mid-flight, immutable single result, notice reconcile, audit hygiene). `tests/mail_message_cases.py` + `mail_inbox_http_server.py` — packaged HTTP `flag`/`flag-unseen`/`flag-refused`/`flag-readonly`/`flag-gone` modes over real synthetic TLS. `php -l` clean; all five pure receiving suites pass (42 flag + retained); build refresh clean (2206 mirrored receiving files). MariaDB native and HTTP lanes run in CI — no database or real-mailbox run is claimed here.
+
+Next: stacked PR against the folders branch; then remaining mail items (HTML composition, OAuth) or other non-20i roadmap work.
+
 ## Folder browsing follow-up — folder column width correction — 2026-10-16
 
 Request: continue #157 non-20i roadmap. Review of the folder-scoped read increment found `mail_message_reads.folder` and `mail_notice_windows/mail_notice_items.folder` still declared `VARCHAR(5)`, which rejects legal folder names such as `Sent Items` under strict SQL mode.

@@ -4,6 +4,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/mail/messages.php';
 require_once CWP_CODE_ROOT.'/app/mail/notices.php';
 require_once CWP_CODE_ROOT.'/app/mail/replies.php';
+require_once CWP_CODE_ROOT.'/app/mail/flags.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_drafts.php';
 use CajunWebPro\Foundation\MailCompose\ReplyDraft;
 function mail_message_route(): array {
@@ -20,7 +21,10 @@ function mail_message_admin_action(string $action): array {
     if($action==='mail_message_setup') {
         mail_messages_migrate(posted('current_password',200));flash('Message request history is ready. No server was contacted.');redirect(admin_url('mail-accounts'));
     }
-    if(($_GET['view']??null)!=='mail-message'||!in_array($action,['mail_message_read','mail_message_reply','mail_message_reply_all','mail_message_forward','mail_message_attachment'],true))throw new InvalidArgumentException('Open the current message form before requesting content.');
+    if($action==='mail_message_flags_setup') {
+        mail_flags_migrate(posted('current_password',200));flash('Message flag history is ready. No server was contacted.');redirect(admin_url('mail-accounts'));
+    }
+    if(($_GET['view']??null)!=='mail-message'||!in_array($action,['mail_message_read','mail_message_flag','mail_message_reply','mail_message_reply_all','mail_message_forward','mail_message_attachment'],true))throw new InvalidArgumentException('Open the current message form before requesting content.');
     $route=mail_message_route();
     foreach($route as $key=>$value)if(posted($key,70)!==$value)throw new InvalidArgumentException('This message form no longer matches the selected inbox message.');
     if($action==='mail_message_attachment') {
@@ -31,6 +35,12 @@ function mail_message_admin_action(string $action): array {
         $part=$read['attachment'];
         header('Content-Type: application/octet-stream');header('Content-Disposition: attachment; filename="'.$part['name'].'"');header('Cache-Control: private, no-store');header('X-Content-Type-Options: nosniff');header('Content-Length: '.strlen($part['bytes']));
         if(session_status()===PHP_SESSION_ACTIVE)session_write_close();echo $part['bytes'];exit;
+    }
+    if($action==='mail_message_flag') {
+        $mark=posted('mark',6);
+        if(!in_array($mark,['read','unread'],true))throw new InvalidArgumentException('Choose whether to mark the message read or unread.');
+        $flag=mail_message_mark($route['account_id'],(int)$route['revision'],$route['folder'],$route['uidvalidity'],$route['uid'],$mark==='read');
+        flash(mail_flag_outcome($flag['code']));redirect(admin_url('mail-message',$route));
     }
     if($action==='mail_message_read')return mail_message_read($route['account_id'],(int)$route['revision'],$route['uidvalidity'],$route['uid'],null,null,$route['notice']??null,false,$route['folder']);
     // Reply/Forward: stable posted draft identity resolves an exact replay without another mailbox request.

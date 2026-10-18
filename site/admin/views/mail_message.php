@@ -17,7 +17,14 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <?php elseif($result['code']!=='ok'): ?><p class="notice error" role="alert"><?=esc(mail_message_outcome($result['code']))?></p>
 <?php else: $content=$result['content']; ?>
 <article data-message-content>
-<p class="notice">Loaded <?=esc($result['loaded_at'])?> UTC · <?=esc($content['seen']?'Read on server':'Unread on server')?> · Server read flag unchanged</p>
+<p class="notice">Loaded <?=esc($result['loaded_at'])?> UTC · <?=esc($content['seen']?'Read on server':'Unread on server')?> · Reading never changes the server flag</p>
+<?php if(mail_flags_ready()): ?>
+<form method="post" data-message-flag><?php admin_action('mail_message_flag'); ?>
+<?php foreach($route as $key=>$value): ?><input type="hidden" name="<?=esc($key)?>" value="<?=esc($value)?>"><?php endforeach; ?>
+<input type="hidden" name="mark" value="<?=esc($content['seen']?'unread':'read')?>">
+<button class="btn outline"><?=$content['seen']?'Mark unread on server':'Mark read on server'?></button></form>
+<p class="hint">Marking contacts the server once and is recorded. Allow 5 seconds between flag requests for this account.</p>
+<?php endif; ?>
 <h3><?=esc($content['subject']!==''?$content['subject']:'(No subject)')?></h3>
 <p><strong>From:</strong> <?=esc($content['from']!==''?$content['from']:'Not provided')?></p>
 <p><strong>Date from message:</strong> <?=esc($content['date']!==''?$content['date']:'Not provided')?></p>
@@ -57,4 +64,13 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <p><?=esc(mail_message_outcome($entry['result_code']??''))?></p></article>
 <?php endforeach; ?>
 <nav aria-label="Message request history pages"><?php if($historyPage>1): ?><a class="btn outline" href="<?=esc(admin_url('mail-message',$route+['p'=>$historyPage-1]))?>">Newer requests</a><?php endif; ?><?php if(count($history)>20): ?><a class="btn outline" href="<?=esc(admin_url('mail-message',$route+['p'=>$historyPage+1]))?>">Older requests</a><?php endif; ?></nav>
+<?php if(mail_flags_ready()): $flagHistory=mail_flags_history($accountId); ?>
+<h3>Your recent flag requests</h3><p class="hint">History keeps outcomes and message identifiers. Message contents are never saved.</p>
+<?php if(!$flagHistory): ?><p>No flag requests recorded.</p><?php endif; ?>
+<?php foreach(array_slice($flagHistory,0,20) as $entry): ?>
+<article class="workspace-card"><h4><?=esc($entry['outcome']==='success'?'Flag '.((int)$entry['mark_seen']===1?'read':'unread').((int)($entry['applied']??0)===0&&$entry['result_code']==='unchanged'?' already set':' changed'):($entry['outcome']==='uncertain'?'Flag change unconfirmed':($entry['outcome']==='failed'?'Flag request failed':'Result not recorded')))?></h4>
+<p><?=esc($entry['started_at'])?> UTC · <?=esc($entry['folder'])?> · Version <?=(int)$entry['account_revision']?><?php if((int)$entry['account_revision']!==(int)$record['revision']): ?> · Historical settings<?php endif; ?></p>
+<p><?=esc(mail_flag_outcome($entry['result_code']??''))?></p></article>
+<?php endforeach; ?>
+<?php endif; ?>
 <?php endif; ?></section>
