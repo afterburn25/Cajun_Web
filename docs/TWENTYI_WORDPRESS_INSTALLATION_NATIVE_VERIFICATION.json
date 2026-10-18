@@ -1,0 +1,363 @@
+{
+  "run_id": 38873107762,
+  "attempt": 1,
+  "source": "3f8adaa091f70e515a4bda008af8368f623ac122",
+  "tree": "c5d44b5c186235bbadd504a2b5bceea8119361b1",
+  "status": "completed",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "id": 116881655115,
+      "name": "Assigned package WordPress installation 8.2 and mysql-8.4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116881655293,
+      "name": "Assigned package WordPress installation 8.4 and mariadb-10.11",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116881655353,
+      "name": "Assigned package WordPress installation 8.2 and mariadb-10.11",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 116881655415,
+      "name": "Assigned package WordPress installation 8.4 and mysql-8.4",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "scope": "Exact original focused native/pure/offline-handler reports only; no application browser/live-provider/release acceptance",
+  "all_four_named_outcomes_exact": true,
+  "report_bytes_differ": [
+    "domain-expiry-native-results.json"
+  ],
+  "inherited_expiry_difference_only_recorded_observation_epochs": true,
+  "run_url": "https://github.com/afterburn25/Cajun_Web/actions/runs/38873107762",
+  "complete_local_proof_sha256": "303c7d0a1359668584a0f7eab393f184e67a50d6b7f5b200fe83a98c39af5cc0",
+  "artifacts": [
+    {
+      "artifact_id": 12034761464,
+      "name": "wordpress-installed-8.2-mysql-8.4-3f8adaa091f70e515a4bda008af8368f623ac122",
+      "size_bytes": 25309,
+      "sha256": "e5d600fb37babc9c0ad9483e570a27ab1874055d27bb3592146652cd37a71057",
+      "reports": {
+        "package-wordpress-installed-pure-results.json": {
+          "sha256": "257fe4101be160021d47192cf14f9f35be20a4709277c992a40bc1b567f91ba8",
+          "executions": 165,
+          "unique_names": 165
+        },
+        "provider-package-wordpress-installed-native-results.json": {
+          "sha256": "65ad01d58d11220f73c81b5fe1c2e077b9573c236870a742f9d6dc0470d3774d",
+          "executions": 123,
+          "unique_names": 123
+        },
+        "package-wordpress-installed-pure-no-ini-results.json": {
+          "sha256": "257fe4101be160021d47192cf14f9f35be20a4709277c992a40bc1b567f91ba8",
+          "executions": 165,
+          "unique_names": 165
+        },
+        "wordpress-installed-http-handler-results.json": {
+          "sha256": "f4a445d37816a49de825ab28e459b02b13c591bba5fc48e15b0d493c93d409b7",
+          "executions": 17,
+          "unique_names": 17
+        },
+        "provider-document-roots-native-results.json": {
+          "sha256": "46aed7e041015940b00019f6796f68232f2dd25e3e74258f63babbcb18badcc4",
+          "executions": 115,
+          "unique_names": 114
+        },
+        "provider-directory-listing-native-results.json": {
+          "sha256": "61caba98d0e5af687251e68263f3b1681a16e4274c14714dd5865388d604810f",
+          "executions": 127,
+          "unique_names": 127
+        },
+        "provider-package-force-ssl-native-results.json": {
+          "sha256": "dd6d0d96003cfbca8130ddaf629ec94404fa0b27a292c105248ec8d280c28423",
+          "executions": 119,
+          "unique_names": 119
+        },
+        "directory-listing-transport-results.json": {
+          "sha256": "560ae5b473d3bc1b5ecdb707a7569103c23a972c9be134710cf15c2e1db65759",
+          "executions": 24,
+          "unique_names": 24
+        },
+        "directory-listing-transport-no-ini-results.json": {
+          "sha256": "560ae5b473d3bc1b5ecdb707a7569103c23a972c9be134710cf15c2e1db65759",
+          "executions": 24,
+          "unique_names": 24
+        },
+        "directory-listing-document-results.json": {
+          "sha256": "89f7c83556126e26d027685edf7e023f6c774bfae330137d07b88be5a6fa0aa7",
+          "executions": 157,
+          "unique_names": 157
+        },
+        "directory-listing-document-no-ini-results.json": {
+          "sha256": "89f7c83556126e26d027685edf7e023f6c774bfae330137d07b88be5a6fa0aa7",
+          "executions": 157,
+          "unique_names": 157
+        },
+        "provider-package-php-native-results.json": {
+          "sha256": "e5fac5d25c37fc7bcfb4bc4d8f1f0fbd18bc53e38446c8e757328f88427c6485",
+          "executions": 99,
+          "unique_names": 98
+        },
+        "domain-expiry-native-results.json": {
+          "sha256": "7faa3efab1060b6c187fb420a2cc4b00a8b3d96a59e8909d35aadba58ccdcea0",
+          "executions": 111,
+          "unique_names": 111
+        },
+        "provider-schedule-native-results.json": {
+          "sha256": "3b13cb6ec4116446c655c299cbed01397bc2ab5cf1135460124496d38cfd9f64",
+          "executions": 102,
+          "unique_names": 102
+        }
+      }
+    },
+    {
+      "artifact_id": 12034632413,
+      "name": "wordpress-installed-8.4-mariadb-10.11-3f8adaa091f70e515a4bda008af8368f623ac122",
+      "size_bytes": 25312,
+      "sha256": "b3a9662c4c8a49e7adc49dba88ddcdf87a1a83653f5f356dd3a89dc7ff47b9a8",
+      "reports": {
+        "package-wordpress-installed-pure-results.json": {
+          "sha256": "257fe4101be160021d47192cf14f9f35be20a4709277c992a40bc1b567f91ba8",
+          "executions": 165,
+          "unique_names": 165
+        },
+        "package-wordpress-installed-pure-no-ini-results.json": {
+          "sha256": "257fe4101be160021d47192cf14f9f35be20a4709277c992a40bc1b567f91ba8",
+          "executions": 165,
+          "unique_names": 165
+        },
+        "provider-package-wordpress-installed-native-results.json": {
+          "sha256": "65ad01d58d11220f73c81b5fe1c2e077b9573c236870a742f9d6dc0470d3774d",
+          "executions": 123,
+          "unique_names": 123
+        },
+        "wordpress-installed-http-handler-results.json": {
+          "sha256": "f4a445d37816a49de825ab28e459b02b13c591bba5fc48e15b0d493c93d409b7",
+          "executions": 17,
+          "unique_names": 17
+        },
+        "provider-document-roots-native-results.json": {
+          "sha256": "46aed7e041015940b00019f6796f68232f2dd25e3e74258f63babbcb18badcc4",
+          "executions": 115,
+          "unique_names": 114
+        },
+        "provider-directory-listing-native-results.json": {
+          "sha256": "61caba98d0e5af687251e68263f3b1681a16e4274c14714dd5865388d604810f",
+          "executions": 127,
+          "unique_names": 127
+        },
+        "provider-package-force-ssl-native-results.json": {
+          "sha256": "dd6d0d96003cfbca8130ddaf629ec94404fa0b27a292c105248ec8d280c28423",
+          "executions": 119,
+          "unique_names": 119
+        },
+        "directory-listing-transport-results.json": {
+          "sha256": "560ae5b473d3bc1b5ecdb707a7569103c23a972c9be134710cf15c2e1db65759",
+          "executions": 24,
+          "unique_names": 24
+        },
+        "directory-listing-transport-no-ini-results.json": {
+          "sha256": "560ae5b473d3bc1b5ecdb707a7569103c23a972c9be134710cf15c2e1db65759",
+          "executions": 24,
+          "unique_names": 24
+        },
+        "directory-listing-document-results.json": {
+          "sha256": "89f7c83556126e26d027685edf7e023f6c774bfae330137d07b88be5a6fa0aa7",
+          "executions": 157,
+          "unique_names": 157
+        },
+        "directory-listing-document-no-ini-results.json": {
+          "sha256": "89f7c83556126e26d027685edf7e023f6c774bfae330137d07b88be5a6fa0aa7",
+          "executions": 157,
+          "unique_names": 157
+        },
+        "provider-package-php-native-results.json": {
+          "sha256": "e5fac5d25c37fc7bcfb4bc4d8f1f0fbd18bc53e38446c8e757328f88427c6485",
+          "executions": 99,
+          "unique_names": 98
+        },
+        "domain-expiry-native-results.json": {
+          "sha256": "7f2303256499c992b2c730de61ed19c50a56b99843855b35626e73e086cca0d8",
+          "executions": 111,
+          "unique_names": 111
+        },
+        "provider-schedule-native-results.json": {
+          "sha256": "3b13cb6ec4116446c655c299cbed01397bc2ab5cf1135460124496d38cfd9f64",
+          "executions": 102,
+          "unique_names": 102
+        }
+      }
+    },
+    {
+      "artifact_id": 12034192971,
+      "name": "wordpress-installed-8.2-mariadb-10.11-3f8adaa091f70e515a4bda008af8368f623ac122",
+      "size_bytes": 25307,
+      "sha256": "f4b1f76442f3d0fb3f127c8f2de982eeb63f8b9b42a2fd0bf625d616cdc48874",
+      "reports": {
+        "package-wordpress-installed-pure-results.json": {
+          "sha256": "257fe4101be160021d47192cf14f9f35be20a4709277c992a40bc1b567f91ba8",
+          "executions": 165,
+          "unique_names": 165
+        },
+        "package-wordpress-installed-pure-no-ini-results.json": {
+          "sha256": "257fe4101be160021d47192cf14f9f35be20a4709277c992a40bc1b567f91ba8",
+          "executions": 165,
+          "unique_names": 165
+        },
+        "provider-package-wordpress-installed-native-results.json": {
+          "sha256": "65ad01d58d11220f73c81b5fe1c2e077b9573c236870a742f9d6dc0470d3774d",
+          "executions": 123,
+          "unique_names": 123
+        },
+        "wordpress-installed-http-handler-results.json": {
+          "sha256": "f4a445d37816a49de825ab28e459b02b13c591bba5fc48e15b0d493c93d409b7",
+          "executions": 17,
+          "unique_names": 17
+        },
+        "provider-document-roots-native-results.json": {
+          "sha256": "46aed7e041015940b00019f6796f68232f2dd25e3e74258f63babbcb18badcc4",
+          "executions": 115,
+          "unique_names": 114
+        },
+        "provider-directory-listing-native-results.json": {
+          "sha256": "61caba98d0e5af687251e68263f3b1681a16e4274c14714dd5865388d604810f",
+          "executions": 127,
+          "unique_names": 127
+        },
+        "provider-package-force-ssl-native-results.json": {
+          "sha256": "dd6d0d96003cfbca8130ddaf629ec94404fa0b27a292c105248ec8d280c28423",
+          "executions": 119,
+          "unique_names": 119
+        },
+        "directory-listing-transport-results.json": {
+          "sha256": "560ae5b473d3bc1b5ecdb707a7569103c23a972c9be134710cf15c2e1db65759",
+          "executions": 24,
+          "unique_names": 24
+        },
+        "directory-listing-transport-no-ini-results.json": {
+          "sha256": "560ae5b473d3bc1b5ecdb707a7569103c23a972c9be134710cf15c2e1db65759",
+          "executions": 24,
+          "unique_names": 24
+        },
+        "directory-listing-document-results.json": {
+          "sha256": "89f7c83556126e26d027685edf7e023f6c774bfae330137d07b88be5a6fa0aa7",
+          "executions": 157,
+          "unique_names": 157
+        },
+        "directory-listing-document-no-ini-results.json": {
+          "sha256": "89f7c83556126e26d027685edf7e023f6c774bfae330137d07b88be5a6fa0aa7",
+          "executions": 157,
+          "unique_names": 157
+        },
+        "provider-package-php-native-results.json": {
+          "sha256": "e5fac5d25c37fc7bcfb4bc4d8f1f0fbd18bc53e38446c8e757328f88427c6485",
+          "executions": 99,
+          "unique_names": 98
+        },
+        "domain-expiry-native-results.json": {
+          "sha256": "e24d773a1a1d45a92df5bb5b96c4d8bae1e41822a25883e739a5e08b338cfaed",
+          "executions": 111,
+          "unique_names": 111
+        },
+        "provider-schedule-native-results.json": {
+          "sha256": "3b13cb6ec4116446c655c299cbed01397bc2ab5cf1135460124496d38cfd9f64",
+          "executions": 102,
+          "unique_names": 102
+        }
+      }
+    },
+    {
+      "artifact_id": 12034078542,
+      "name": "wordpress-installed-8.4-mysql-8.4-3f8adaa091f70e515a4bda008af8368f623ac122",
+      "size_bytes": 25311,
+      "sha256": "1facaeeaebaa4ed82c316147d83e07687cdca954ee4b029589d48144d6081400",
+      "reports": {
+        "package-wordpress-installed-pure-results.json": {
+          "sha256": "257fe4101be160021d47192cf14f9f35be20a4709277c992a40bc1b567f91ba8",
+          "executions": 165,
+          "unique_names": 165
+        },
+        "provider-package-wordpress-installed-native-results.json": {
+          "sha256": "65ad01d58d11220f73c81b5fe1c2e077b9573c236870a742f9d6dc0470d3774d",
+          "executions": 123,
+          "unique_names": 123
+        },
+        "package-wordpress-installed-pure-no-ini-results.json": {
+          "sha256": "257fe4101be160021d47192cf14f9f35be20a4709277c992a40bc1b567f91ba8",
+          "executions": 165,
+          "unique_names": 165
+        },
+        "wordpress-installed-http-handler-results.json": {
+          "sha256": "f4a445d37816a49de825ab28e459b02b13c591bba5fc48e15b0d493c93d409b7",
+          "executions": 17,
+          "unique_names": 17
+        },
+        "provider-document-roots-native-results.json": {
+          "sha256": "46aed7e041015940b00019f6796f68232f2dd25e3e74258f63babbcb18badcc4",
+          "executions": 115,
+          "unique_names": 114
+        },
+        "provider-directory-listing-native-results.json": {
+          "sha256": "61caba98d0e5af687251e68263f3b1681a16e4274c14714dd5865388d604810f",
+          "executions": 127,
+          "unique_names": 127
+        },
+        "provider-package-force-ssl-native-results.json": {
+          "sha256": "dd6d0d96003cfbca8130ddaf629ec94404fa0b27a292c105248ec8d280c28423",
+          "executions": 119,
+          "unique_names": 119
+        },
+        "directory-listing-transport-results.json": {
+          "sha256": "560ae5b473d3bc1b5ecdb707a7569103c23a972c9be134710cf15c2e1db65759",
+          "executions": 24,
+          "unique_names": 24
+        },
+        "directory-listing-transport-no-ini-results.json": {
+          "sha256": "560ae5b473d3bc1b5ecdb707a7569103c23a972c9be134710cf15c2e1db65759",
+          "executions": 24,
+          "unique_names": 24
+        },
+        "directory-listing-document-results.json": {
+          "sha256": "89f7c83556126e26d027685edf7e023f6c774bfae330137d07b88be5a6fa0aa7",
+          "executions": 157,
+          "unique_names": 157
+        },
+        "directory-listing-document-no-ini-results.json": {
+          "sha256": "89f7c83556126e26d027685edf7e023f6c774bfae330137d07b88be5a6fa0aa7",
+          "executions": 157,
+          "unique_names": 157
+        },
+        "provider-package-php-native-results.json": {
+          "sha256": "e5fac5d25c37fc7bcfb4bc4d8f1f0fbd18bc53e38446c8e757328f88427c6485",
+          "executions": 99,
+          "unique_names": 98
+        },
+        "domain-expiry-native-results.json": {
+          "sha256": "989b1c52b5c581b6e61336736ac9a5f595e08ea8a20d14c17d3ed47dc674805a",
+          "executions": 111,
+          "unique_names": 111
+        },
+        "provider-schedule-native-results.json": {
+          "sha256": "3b13cb6ec4116446c655c299cbed01397bc2ab5cf1135460124496d38cfd9f64",
+          "executions": 102,
+          "unique_names": 102
+        }
+      }
+    }
+  ],
+  "verification": [
+    "Fresh run/attempt/source/artifact metadata and all four successful jobs",
+    "Exact downloaded sizes and published SHA256 digests",
+    "ZIP CRC, safe case-unique paths and exact14 report set from committed workflow",
+    "Every named result true; present outer aggregates true, no outer failure/exception",
+    "Identical named outcomes and counts across environments; inherited expiry diagnostic clocks differ only in observed_epoch"
+  ]
+}

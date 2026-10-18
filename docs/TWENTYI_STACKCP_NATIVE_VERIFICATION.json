@@ -1,0 +1,691 @@
+{
+  "run": 38900009435,
+  "attempt": 1,
+  "source": "fbaae6ec3b20b17be3dbc32ca6ebf9f3423e9019",
+  "tree": "a11616cca5c4eb1dfc884fefdafe46b418fc0f5e",
+  "verified_at": "2026-10-16T12:25:35.441453+00:00",
+  "status": "completed",
+  "conclusion": "success",
+  "scope": "Actual original Linux PHP/database synthetic fixture archives only. No browser, SSO/session, real provider, live target or release acceptance.",
+  "complete_matrix": true,
+  "all_reports_pass": true,
+  "accepted_native": true,
+  "provenance": {
+    "full_named_proof": {
+      "path": "20i-stackcp-prerequisites\\qa\\38900009435\\verification.json",
+      "sha256": "da586f2106944731828b637e276929404944b7d8cb1048ac79262430ef350750"
+    },
+    "verifier": {
+      "path": "20i-stackcp-prerequisites/qa/verify_stackcp_matrix.py",
+      "sha256": "8d673674824f3a1eea5d3da6fc0df09ec1c0e14c6a52331858779a903610d1e2"
+    },
+    "metadata": {
+      "run.json": "2016886f972fdf5fc3919ade22d69780cdcc82173ddc297fa74a2d9a49956617",
+      "jobs.json": "c6ec7f2dc7156c0d3a4e397d22eef3862935a83ab102b36eca04e7a0a0dfbdd7",
+      "metadata.json": "6530af439d360d2f3ac0411d2361e62d76d6ec257fbffbc21a70c8e4bd074197"
+    },
+    "method": "Concise projection of retained actual verification; original manifests and archives unchanged. No second verifier execution, download or test run."
+  },
+  "artifacts": [
+    {
+      "id": 12045875889,
+      "name": "stackcp-prerequisites-8.4-mysql-8.4-fbaae6ec3b20b17be3dbc32ca6ebf9f3423e9019",
+      "sha256": "e95fd9c108c3a5b04210738e9fff06e5c4777c558f260b3b791358e765887866",
+      "size": 18522,
+      "crc_passed": true,
+      "safe_unique_members": true,
+      "missing_reports": [],
+      "path": "20i-stackcp-prerequisites\\qa\\38900009435\\12045875889.zip",
+      "reports": [
+        {
+          "name": "stackcp-handoff-contract-minimal.json",
+          "sha256": "f9c9f82da6c7b72618b61c69d81bf055005550cf095efeb8c1d0074aa4887295",
+          "count": 315,
+          "unique_labels": 315,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-contract-default.json",
+          "sha256": "f31740f417e447d4be5773584b37f446aca5d75fd754092c13aca0c3446f8844",
+          "count": 141,
+          "unique_labels": 141,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-handoff-contract-default.json",
+          "sha256": "f9c9f82da6c7b72618b61c69d81bf055005550cf095efeb8c1d0074aa4887295",
+          "count": 315,
+          "unique_labels": 315,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-contract-minimal.json",
+          "sha256": "f31740f417e447d4be5773584b37f446aca5d75fd754092c13aca0c3446f8844",
+          "count": 141,
+          "unique_labels": 141,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-views-default.json",
+          "sha256": "386c0896aa01f39edcbe5a2a9245b8df270d8abf879f85b20cd0688a9d6db383",
+          "count": 46,
+          "unique_labels": 46,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-views-minimal.json",
+          "sha256": "386c0896aa01f39edcbe5a2a9245b8df270d8abf879f85b20cd0688a9d6db383",
+          "count": 46,
+          "unique_labels": 46,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-native-results.json",
+          "sha256": "38759e8605fa2577f15ef93d1af0caea8d433d7420351d71b178accb214ec95a",
+          "count": 112,
+          "unique_labels": 112,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "provider-settings-native-results.json",
+          "sha256": "8652d799ae6949252535e4aa1dfb6778cf66e0e6853082ca0bf42f7b0d24c5e4",
+          "count": 69,
+          "unique_labels": 69,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "provider-inventory-native-results.json",
+          "sha256": "32e3d9bb2fc1fd3cfcee413fec3c617f6ee92619d57fc1445182841ab9a0ed35",
+          "count": 157,
+          "unique_labels": 157,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "provider-checks-native-results.json",
+          "sha256": "045daebf293ab23883bf4f8fb1c2c3f782c5d2574e3dc079a17a788f700c8fa6",
+          "count": 49,
+          "unique_labels": 49,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        }
+      ],
+      "total_named_outcomes": 1391,
+      "critical_native_named_outcomes": [
+        {
+          "name": "Unprepared status creates no auth tables and never promises login",
+          "passed": true
+        },
+        {
+          "name": "Actual GCM opens only the separate auth key",
+          "passed": true
+        },
+        {
+          "name": "Actual native status verifies HMAC with zero decrypt or encrypt calls",
+          "passed": true
+        },
+        {
+          "name": "General-key resolver is not invoked by a stale status read",
+          "passed": true
+        },
+        {
+          "name": "Missing original master key refuses auth status without replacement",
+          "passed": true
+        },
+        {
+          "name": "Missing original master key refuses assignment status without replacement",
+          "passed": true
+        },
+        {
+          "name": "Repeated preparation cannot adopt or recreate a missing established key",
+          "passed": true
+        },
+        {
+          "name": "Waiting process rechecks revoked owner after acquiring shared mutex",
+          "passed": true
+        },
+        {
+          "name": "Durable public history excludes all synthetic provider secrets and passwords",
+          "passed": true
+        },
+        {
+          "name": "Prerequisites never create an operation dispatch ledger",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": 12045428693,
+      "name": "stackcp-prerequisites-8.2-mysql-8.4-fbaae6ec3b20b17be3dbc32ca6ebf9f3423e9019",
+      "sha256": "d4c64db71de49ef639b25d4da4479e8c911bda6c34fd3394d27829606a6235a3",
+      "size": 18522,
+      "crc_passed": true,
+      "safe_unique_members": true,
+      "missing_reports": [],
+      "path": "20i-stackcp-prerequisites\\qa\\38900009435\\12045428693.zip",
+      "reports": [
+        {
+          "name": "stackcp-handoff-contract-default.json",
+          "sha256": "f9c9f82da6c7b72618b61c69d81bf055005550cf095efeb8c1d0074aa4887295",
+          "count": 315,
+          "unique_labels": 315,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-handoff-contract-minimal.json",
+          "sha256": "f9c9f82da6c7b72618b61c69d81bf055005550cf095efeb8c1d0074aa4887295",
+          "count": 315,
+          "unique_labels": 315,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-contract-default.json",
+          "sha256": "f31740f417e447d4be5773584b37f446aca5d75fd754092c13aca0c3446f8844",
+          "count": 141,
+          "unique_labels": 141,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-contract-minimal.json",
+          "sha256": "f31740f417e447d4be5773584b37f446aca5d75fd754092c13aca0c3446f8844",
+          "count": 141,
+          "unique_labels": 141,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-views-default.json",
+          "sha256": "386c0896aa01f39edcbe5a2a9245b8df270d8abf879f85b20cd0688a9d6db383",
+          "count": 46,
+          "unique_labels": 46,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-views-minimal.json",
+          "sha256": "386c0896aa01f39edcbe5a2a9245b8df270d8abf879f85b20cd0688a9d6db383",
+          "count": 46,
+          "unique_labels": 46,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-native-results.json",
+          "sha256": "38759e8605fa2577f15ef93d1af0caea8d433d7420351d71b178accb214ec95a",
+          "count": 112,
+          "unique_labels": 112,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "provider-settings-native-results.json",
+          "sha256": "8652d799ae6949252535e4aa1dfb6778cf66e0e6853082ca0bf42f7b0d24c5e4",
+          "count": 69,
+          "unique_labels": 69,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "provider-inventory-native-results.json",
+          "sha256": "32e3d9bb2fc1fd3cfcee413fec3c617f6ee92619d57fc1445182841ab9a0ed35",
+          "count": 157,
+          "unique_labels": 157,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "provider-checks-native-results.json",
+          "sha256": "045daebf293ab23883bf4f8fb1c2c3f782c5d2574e3dc079a17a788f700c8fa6",
+          "count": 49,
+          "unique_labels": 49,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        }
+      ],
+      "total_named_outcomes": 1391,
+      "critical_native_named_outcomes": [
+        {
+          "name": "Unprepared status creates no auth tables and never promises login",
+          "passed": true
+        },
+        {
+          "name": "Actual GCM opens only the separate auth key",
+          "passed": true
+        },
+        {
+          "name": "Actual native status verifies HMAC with zero decrypt or encrypt calls",
+          "passed": true
+        },
+        {
+          "name": "General-key resolver is not invoked by a stale status read",
+          "passed": true
+        },
+        {
+          "name": "Missing original master key refuses auth status without replacement",
+          "passed": true
+        },
+        {
+          "name": "Missing original master key refuses assignment status without replacement",
+          "passed": true
+        },
+        {
+          "name": "Repeated preparation cannot adopt or recreate a missing established key",
+          "passed": true
+        },
+        {
+          "name": "Waiting process rechecks revoked owner after acquiring shared mutex",
+          "passed": true
+        },
+        {
+          "name": "Durable public history excludes all synthetic provider secrets and passwords",
+          "passed": true
+        },
+        {
+          "name": "Prerequisites never create an operation dispatch ledger",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": 12045343009,
+      "name": "stackcp-prerequisites-8.2-mariadb-10.11-fbaae6ec3b20b17be3dbc32ca6ebf9f3423e9019",
+      "sha256": "a57ec342d7549f9818365da79465b98f32efd20b801ddb4c87048d7670241c88",
+      "size": 18522,
+      "crc_passed": true,
+      "safe_unique_members": true,
+      "missing_reports": [],
+      "path": "20i-stackcp-prerequisites\\qa\\38900009435\\12045343009.zip",
+      "reports": [
+        {
+          "name": "stackcp-handoff-contract-minimal.json",
+          "sha256": "f9c9f82da6c7b72618b61c69d81bf055005550cf095efeb8c1d0074aa4887295",
+          "count": 315,
+          "unique_labels": 315,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-contract-default.json",
+          "sha256": "f31740f417e447d4be5773584b37f446aca5d75fd754092c13aca0c3446f8844",
+          "count": 141,
+          "unique_labels": 141,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-handoff-contract-default.json",
+          "sha256": "f9c9f82da6c7b72618b61c69d81bf055005550cf095efeb8c1d0074aa4887295",
+          "count": 315,
+          "unique_labels": 315,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-contract-minimal.json",
+          "sha256": "f31740f417e447d4be5773584b37f446aca5d75fd754092c13aca0c3446f8844",
+          "count": 141,
+          "unique_labels": 141,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-views-default.json",
+          "sha256": "386c0896aa01f39edcbe5a2a9245b8df270d8abf879f85b20cd0688a9d6db383",
+          "count": 46,
+          "unique_labels": 46,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-views-minimal.json",
+          "sha256": "386c0896aa01f39edcbe5a2a9245b8df270d8abf879f85b20cd0688a9d6db383",
+          "count": 46,
+          "unique_labels": 46,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-native-results.json",
+          "sha256": "38759e8605fa2577f15ef93d1af0caea8d433d7420351d71b178accb214ec95a",
+          "count": 112,
+          "unique_labels": 112,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "provider-settings-native-results.json",
+          "sha256": "8652d799ae6949252535e4aa1dfb6778cf66e0e6853082ca0bf42f7b0d24c5e4",
+          "count": 69,
+          "unique_labels": 69,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "provider-inventory-native-results.json",
+          "sha256": "32e3d9bb2fc1fd3cfcee413fec3c617f6ee92619d57fc1445182841ab9a0ed35",
+          "count": 157,
+          "unique_labels": 157,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "provider-checks-native-results.json",
+          "sha256": "045daebf293ab23883bf4f8fb1c2c3f782c5d2574e3dc079a17a788f700c8fa6",
+          "count": 49,
+          "unique_labels": 49,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        }
+      ],
+      "total_named_outcomes": 1391,
+      "critical_native_named_outcomes": [
+        {
+          "name": "Unprepared status creates no auth tables and never promises login",
+          "passed": true
+        },
+        {
+          "name": "Actual GCM opens only the separate auth key",
+          "passed": true
+        },
+        {
+          "name": "Actual native status verifies HMAC with zero decrypt or encrypt calls",
+          "passed": true
+        },
+        {
+          "name": "General-key resolver is not invoked by a stale status read",
+          "passed": true
+        },
+        {
+          "name": "Missing original master key refuses auth status without replacement",
+          "passed": true
+        },
+        {
+          "name": "Missing original master key refuses assignment status without replacement",
+          "passed": true
+        },
+        {
+          "name": "Repeated preparation cannot adopt or recreate a missing established key",
+          "passed": true
+        },
+        {
+          "name": "Waiting process rechecks revoked owner after acquiring shared mutex",
+          "passed": true
+        },
+        {
+          "name": "Durable public history excludes all synthetic provider secrets and passwords",
+          "passed": true
+        },
+        {
+          "name": "Prerequisites never create an operation dispatch ledger",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": 12045304283,
+      "name": "stackcp-prerequisites-8.4-mariadb-10.11-fbaae6ec3b20b17be3dbc32ca6ebf9f3423e9019",
+      "sha256": "f90f1caa190ad1349922dab46ee8a81a6f2aba5083471cc2e445285194345c5f",
+      "size": 18522,
+      "crc_passed": true,
+      "safe_unique_members": true,
+      "missing_reports": [],
+      "path": "20i-stackcp-prerequisites\\qa\\38900009435\\12045304283.zip",
+      "reports": [
+        {
+          "name": "stackcp-handoff-contract-default.json",
+          "sha256": "f9c9f82da6c7b72618b61c69d81bf055005550cf095efeb8c1d0074aa4887295",
+          "count": 315,
+          "unique_labels": 315,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-contract-default.json",
+          "sha256": "f31740f417e447d4be5773584b37f446aca5d75fd754092c13aca0c3446f8844",
+          "count": 141,
+          "unique_labels": 141,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-handoff-contract-minimal.json",
+          "sha256": "f9c9f82da6c7b72618b61c69d81bf055005550cf095efeb8c1d0074aa4887295",
+          "count": 315,
+          "unique_labels": 315,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-contract-minimal.json",
+          "sha256": "f31740f417e447d4be5773584b37f446aca5d75fd754092c13aca0c3446f8844",
+          "count": 141,
+          "unique_labels": 141,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-views-default.json",
+          "sha256": "386c0896aa01f39edcbe5a2a9245b8df270d8abf879f85b20cd0688a9d6db383",
+          "count": 46,
+          "unique_labels": 46,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-views-minimal.json",
+          "sha256": "386c0896aa01f39edcbe5a2a9245b8df270d8abf879f85b20cd0688a9d6db383",
+          "count": 46,
+          "unique_labels": 46,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "stackcp-prerequisites-native-results.json",
+          "sha256": "38759e8605fa2577f15ef93d1af0caea8d433d7420351d71b178accb214ec95a",
+          "count": 112,
+          "unique_labels": 112,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "provider-settings-native-results.json",
+          "sha256": "8652d799ae6949252535e4aa1dfb6778cf66e0e6853082ca0bf42f7b0d24c5e4",
+          "count": 69,
+          "unique_labels": 69,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "provider-inventory-native-results.json",
+          "sha256": "32e3d9bb2fc1fd3cfcee413fec3c617f6ee92619d57fc1445182841ab9a0ed35",
+          "count": 157,
+          "unique_labels": 157,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        },
+        {
+          "name": "provider-checks-native-results.json",
+          "sha256": "045daebf293ab23883bf4f8fb1c2c3f782c5d2574e3dc079a17a788f700c8fa6",
+          "count": 49,
+          "unique_labels": 49,
+          "duplicates": {},
+          "passed": true,
+          "missing_required": [],
+          "failed": [],
+          "outer_failure": null
+        }
+      ],
+      "total_named_outcomes": 1391,
+      "critical_native_named_outcomes": [
+        {
+          "name": "Unprepared status creates no auth tables and never promises login",
+          "passed": true
+        },
+        {
+          "name": "Actual GCM opens only the separate auth key",
+          "passed": true
+        },
+        {
+          "name": "Actual native status verifies HMAC with zero decrypt or encrypt calls",
+          "passed": true
+        },
+        {
+          "name": "General-key resolver is not invoked by a stale status read",
+          "passed": true
+        },
+        {
+          "name": "Missing original master key refuses auth status without replacement",
+          "passed": true
+        },
+        {
+          "name": "Missing original master key refuses assignment status without replacement",
+          "passed": true
+        },
+        {
+          "name": "Repeated preparation cannot adopt or recreate a missing established key",
+          "passed": true
+        },
+        {
+          "name": "Waiting process rechecks revoked owner after acquiring shared mutex",
+          "passed": true
+        },
+        {
+          "name": "Durable public history excludes all synthetic provider secrets and passwords",
+          "passed": true
+        },
+        {
+          "name": "Prerequisites never create an operation dispatch ledger",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}
