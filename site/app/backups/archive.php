@@ -4,9 +4,9 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/backups/records.php';
 use CajunWebPro\Foundation\Backups\{BackupManifest,RestorePlan};
 
-/** Mirror of BackupManifest::FORBIDDEN applied during collection so a real forbidden file is skipped, not fatal. */
+/** Mirror of BackupManifest::FORBIDDEN applied during collection so a real forbidden file is skipped, not fatal. Every rule applies per path component, at any depth. */
 function backups_item_allowed(string $name): bool {
-    return !preg_match('#^(config\.php|proxy-config\.php|\.installed\.php|\.env|.*\.(key|pem|p12)|storage/|.*payment-master)#i',$name)
+    return !preg_match('#(^|/)(config\.php|proxy-config\.php|\.installed\.php|\.env)$|(^|/)[^/]*\.(key|pem|p12)$|(^|/)storage(/|$)|(^|/)[^/]*payment-master#i',$name)
         && !preg_match('#(^|/)(\.|\.git|__MACOSX)(/|$)#',$name)
         && !preg_match('#(^|/)\.\.(/|$)#',$name);
 }
@@ -44,38 +44,93 @@ function backups_current_hashes(string $root,array $items): array {
     return $current;
 }
 
-/** Apply the authorized plan: extract each differing item and write it atomically, then prove the result hash. */
+/**
+ * Resolve a manifest item's destination inside the verified source root.
+ * Every existing ancestor must be a real (non-link, non-reparse) directory
+ * contained inside the root; missing ancestors are returned for creation.
+ * Containment is enforced for existing and missing destinations alike so a
+ * restore can never escape the authorized tree.
+ */
+function backups_target(string $rootReal,string $name): array {
+    if(str_contains($name,'\\')||str_contains($name,"\0")||str_starts_with($name,'/')||preg_match('#^[A-Za-z]:#',$name))throw new RuntimeException('Restore path is not a canonical relative name: '.$name);
+    $parts=explode('/',$name);$file=array_pop($parts);
+    if($file===''||$file==='.'||$file==='..')throw new RuntimeException('Restore path is not a canonical relative name: '.$name);
+    $dir=$rootReal;$missing=[];
+    foreach($parts as $seg){
+        if($seg===''||$seg==='.'||$seg==='..')throw new RuntimeException('Restore path is not a canonical relative name: '.$name);
+        $next=$dir.'/'.$seg;
+        if(is_link($next))throw new RuntimeException('Restore refuses a linked parent directory: '.$name);
+        if(is_dir($next)){
+            $resolved=realpath($next);if($resolved===false)throw new RuntimeException('Restore parent could not be resolved: '.$name);
+            $a=backups_canonical($resolved);$b=backups_canonical($rootReal);
+            if($a!==$b&&!str_starts_with($a,$b.'/'))throw new RuntimeException('Restore parent resolves outside the source root: '.$name);
+            $dir=$resolved;continue;
+        }
+        if(file_exists($next))throw new RuntimeException('Restore parent exists but is not a directory: '.$name);
+        $dir=$next;$missing[]=$next;
+    }
+    $target=$dir.'/'.$file;
+    if(is_link($target))throw new RuntimeException('Refusing to overwrite a symbolic link: '.$name);
+    if(file_exists($target)&&!is_file($target))throw new RuntimeException('Restore target exists but is not a regular file: '.$name);
+    return ['dir'=>$dir,'target'=>$target,'missing'=>$missing];
+}
+
+/** Apply the authorized plan: preflight every member and destination, then write atomically with recoverable originals and a post-restore hash proof. */
 function backups_apply(string $root,BackupManifest $manifest,RestorePlan $plan,string $archive): int {
     if($plan->state()!==RestorePlan::AUTHORIZED)throw new LogicException('Restore cannot run before deliberate authorization.');
     if(!class_exists('ZipArchive'))throw new RuntimeException('Ask your host to enable the PHP ZIP extension before restoring.');
-    $real=realpath($root);$zip=new ZipArchive();
+    $real=realpath($root);if($real===false)throw new RuntimeException('The deployed source root is unavailable.');
+    $zip=new ZipArchive();
     if($zip->open($archive,ZipArchive::RDONLY|ZipArchive::CHECKCONS)!==true)throw new RuntimeException('The stored backup archive is corrupt or unsupported.');
-    $changed=$plan->changedItems();$written=0;$touched=[];
     try{
-        foreach($changed as $entry){$name=$entry['item'];
+        // Preflight every intended member and destination before the first live replacement.
+        $staged=[];
+        foreach($plan->changedItems() as $entry){$name=$entry['item'];
             if(!backups_item_allowed($name))throw new RuntimeException('Manifest contains a path outside the restorable scope: '.$name);
+            if(!isset($manifest->items[$name]))throw new RuntimeException('The manifest does not cover a planned item: '.$name);
             $data=$zip->getFromName($name);if($data===false)throw new RuntimeException('The stored archive is missing an item: '.$name);
             if(!hash_equals($manifest->items[$name],hash('sha256',$data)))throw new RuntimeException('The stored archive no longer matches its manifest: '.$name);
-            $target=$real.'/'.$name;$dir=dirname($target);
-            if(!is_dir($dir)&&!mkdir($dir,0755,true))throw new RuntimeException('Restore directory could not be created for: '.$name);
-            if(is_link($target))throw new RuntimeException('Refusing to overwrite a symbolic link: '.$name);
-            $tmp=tempnam($dir,'.backup-');if($tmp===false||file_put_contents($tmp,$data)!==strlen($data))throw new RuntimeException('Restore write failed for: '.$name);
-            if(!rename($tmp,$target)){@unlink($tmp);throw new RuntimeException('Restore replace failed for: '.$name);}
-            $touched[$name]=$target;$written++;
+            $staged[]=backups_target($real,$name)+['name'=>$name,'data'=>$data];
         }
     }finally{$zip->close();}
-    foreach($touched as $name=>$path){$actual=hash_file('sha256',$path);if($actual===false||!$manifest->verifyItem($name,$actual))throw new RuntimeException('Post-restore verification failed for: '.$name);}
+    $written=0;$touched=[];$originals=[];
+    try{
+        foreach($staged as $s){
+            $dir=$s['dir'];
+            if(!is_dir($dir)&&!mkdir($dir,0755,true))throw new RuntimeException('Restore directory could not be created for: '.$s['name']);
+            if(is_link($dir))throw new RuntimeException('Restore refuses a linked parent directory: '.$s['name']);
+            $target=$s['target'];$original=null;
+            if(file_exists($target)){
+                $original=tempnam($dir,'.orig-');if($original===false||!copy($target,$original))throw new RuntimeException('The original file could not be preserved for: '.$s['name']);
+            }
+            $originals[]=['target'=>$target,'original'=>$original,'done'=>false];$oi=array_key_last($originals);
+            $tmp=tempnam($dir,'.backup-');if($tmp===false||file_put_contents($tmp,$s['data'])!==strlen($s['data'])){@unlink($tmp);throw new RuntimeException('Restore write failed for: '.$s['name']);}
+            if(!rename($tmp,$target)){@unlink($tmp);throw new RuntimeException('Restore replace failed for: '.$s['name']);}
+            $originals[$oi]['done']=true;$touched[$s['name']]=$target;$written++;
+        }
+        foreach($touched as $name=>$path){$actual=hash_file('sha256',$path);if($actual===false||!$manifest->verifyItem($name,$actual))throw new RuntimeException('Post-restore verification failed for: '.$name);}
+    }catch(Throwable $e){
+        // Best-effort recovery: restore preserved originals in reverse and
+        // remove targets that had no prior file, so a failed restore leaves
+        // the tree as close to its authorized starting state as possible.
+        foreach(array_reverse($originals) as $o){
+            if($o['original']!==null){if($o['done']){@unlink($o['target']);@rename($o['original'],$o['target']);}else @unlink($o['original']);}
+            elseif($o['done'])@unlink($o['target']);
+        }
+        throw $e;
+    }
+    foreach($originals as $o)if($o['original']!==null)@unlink($o['original']);
     return $written;
 }
 
-/** Full create: collect, archive and persist under exact-request replay protection. */
+/** Full create: collect, archive and persist under exact-request replay protection. Authorization is refreshed inside the shared mutex so a grant revoked between the form read and the lock cannot write. */
 function backups_create(array $data,string $key): string {
-    $actor=backups_require();
     $notes=trim((string)($data['notes']??''));if(strlen($notes)>5000)throw new InvalidArgumentException('Keep backup notes under 5000 characters.');
     $days=(int)($data['retain_days']??30);if($days<7||$days>365)throw new InvalidArgumentException('Choose a retention between 7 and 365 days.');
     if(!preg_match('/^[a-f0-9]{64}$/D',$key))throw new InvalidArgumentException('Reload the form before creating a backup.');
     $request=hash('sha256',json_encode([$notes,$days],JSON_THROW_ON_ERROR));
-    return staff_locked(function() use($actor,$notes,$days,$key,$request): string {
+    return staff_locked(function() use($notes,$days,$key,$request): string {
+        $actor=backups_require();
         $old=one('SELECT * FROM '.table('backups').' WHERE request_key=?',[$key]);
         if($old){if((int)$old['created_by']!==(int)$actor['id']||!hash_equals($old['request_hash'],$request))throw new RuntimeException('This backup request was already used with different details.');return $old['id'];}
         $id=bin2hex(random_bytes(16));$created=gmdate('Y-m-d\TH:i:s\Z');$retain=gmdate('Y-m-d',strtotime('+'.$days.' days'));
@@ -102,13 +157,24 @@ function backups_preview(array $row): RestorePlan {
 
 function backups_restore_phrase(array $row): string {return 'RESTORE '.strtoupper(substr($row['id'],0,8));}
 
-/** Deliberate restore: owner re-authentication, exact phrase, atomic item writes, recorded outcome. Replaying an applied restore is naturally a no-op — every item verifies identical. */
+/** Deliberate restore: owner re-authentication, exact phrase, recorded intent, prefighted atomic writes, recoverable originals and a recorded outcome that survives later write/audit failure. Replaying an applied restore is naturally a no-op — every item verifies identical. */
 function backups_restore(string $id,string $confirmation,#[\SensitiveParameter] string $password): void {
     staff_locked(function() use($id,$confirmation,$password): void {
         $actor=staff_owner($password);$row=backups_row($id);
         $plan=backups_preview($row);
         $plan=$plan->authorize('staff:'.$actor['id'],$confirmation,backups_restore_phrase($row),time());
-        $written=backups_apply(CWP_CODE_ROOT,$plan->manifest,$plan,backups_archive_path($row));
+        staff_transaction(function() use($row,$actor): void {
+            query('UPDATE '.table('backups').' SET status=? WHERE id=?',['restoring',$row['id']]);
+            backups_audit((int)$actor['id'],'restore.attempt','Backup '.substr($row['id'],0,8).' restore authorized by '.$actor['email']);
+        });
+        try{$written=backups_apply(CWP_CODE_ROOT,$plan->manifest,$plan,backups_archive_path($row));}
+        catch(Throwable $e){$message=$e->getMessage();
+            try{staff_transaction(function() use($row,$actor,$message): void {
+                query('UPDATE '.table('backups').' SET status=? WHERE id=?',['failed',$row['id']]);
+                backups_audit((int)$actor['id'],'restore.failed','Backup '.substr($row['id'],0,8).' restore failed: '.substr($message,0,180));
+            });}catch(Throwable $ignored){}
+            throw $e;
+        }
         staff_transaction(function() use($row,$actor,$written): void {
             query('UPDATE '.table('backups').' SET status=?,restored_by=?,restored_at=? WHERE id=?',['applied',$actor['id'],gmdate('Y-m-d H:i:s'),$row['id']]);
             backups_audit((int)$actor['id'],'restore','Backup '.substr($row['id'],0,8).' restored '.$written.' items by '.$actor['email']);
