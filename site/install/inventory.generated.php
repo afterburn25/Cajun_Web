@@ -199,7 +199,7 @@ function setup_expected_files(): array { return [
     'app/portfolio/browse.php'=>'fa8340a1416e8884a08eb6fe54b055dafb38ec5ae8bb925828e6e06020275d14',
     'app/projects/archive.php'=>'268adf8bec7572fb73db45babc2a3037868d69e6a330552ab6e1d3b428292fdb',
     'app/projects/deliveries.php'=>'4c60ba2a54a721fdda8446f59d35d70f6650586acccbcf943c437390dfc8fab5',
-    'app/projects/reviews.php'=>'fffd404534c4d73455a37b2e1ac69a4b48ad29c0ba9529a91821cdb18c16d7b1',
+    'app/projects/reviews.php'=>'ffd206264564e68a4a3e81aec22b5c9144325ba0a288a5d59c6bd7f637a2f843',
     'app/providers/catalog_import.php'=>'889f773922d61b899dad5953721e8739c4ce40d75e0ccae8056cc396f5b69519',
     'app/providers/catalog_import_document.php'=>'50be32d795dbf21a20c29ffe249c986e8ca345b42dce42a7a6e1695ada437e75',
     'app/providers/catalog_import_storage.php'=>'31a9f9293803e6301ffbfab3989e83ed3ed3c215c57d0cad6b690d50aba6d025',

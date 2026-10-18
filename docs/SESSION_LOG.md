@@ -2184,6 +2184,17 @@ Known limits: PR open at c025e501, not merged; Codex coordinates integration. De
 
 Next: integrate via Codex sequencing; continue next non-20i increment.
 
+## 2026-10-17 - P-05 contact-attributed version decisions
+
+Request: continue non-20i roadmap after PR #203 verified green (48/48); selected the remaining per-contact decision attribution gap. Stacked branch devin/non20i-contact-decisions on devin/non20i-client-contacts (c025e501+) because the feature depends on the contacts model.
+
+Changed: studio_decide now attributes the auto-inserted decision message to the acting contact (author_type=contact, author_id=contact id) when a contact session decides; decided_by stays the client account (company artifact). No schema change - studio_versions is validated with exact columns by studio_migrate, so adding a column would collide with the previews/stage-history marker stack; the message row is already the durable attribution record rendered with the contact name in admin and portal conversations. tests/contacts_cases.py gains: owner publishes a decision fixture version, project-permission contact approves it, decided_by stays the client while the message attributes the contact id, admin conversation renders the contact name, and a billing-only forged decision POST is refused.
+
+Tests so far: php -l reviews.php clean; contacts_cases.py compiles; no shipping-file signature changes needed beyond reviews.php (inventory refresh pending in commit). Packaged acceptance pending on the stacked PR.
+
+Known limits: decided_by remains client-level by design; per-contact notification routing still pending.
+
+Next: commit, refresh inventory if needed, open stacked PR, monitor CI.
 ## 2026-10-15 — Preserve current main and repair replacement rollback during20i integration
 
 Continued complete20i objective fromf86c745c/PR139. Normal merge preserves main16f07e49 including licensing/domain controls. Both session histories retained; incoming handoff archived. Source inspection and actual temporary-table MariaDB reproduction showed invalid replacement/database failure disabled the original licensed domain. Added a transaction with original-row lock and rollback, plus caller-transaction refusal. Local4 corrected cases and35 named merged native licensing checks pass (isolated fixture prefix/config only; actual app functions). Added persistent CI native report; no Website_Core execution. All merged/changed PHP/Python syntax and installer refresh pass. Current combined Linux/browser/recovery/review acceptance remains pending.
