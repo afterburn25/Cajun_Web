@@ -10,16 +10,20 @@ set_exception_handler(static function(Throwable $error)use($operation):never {
     fwrite(STDERR,json_encode($safe,JSON_THROW_ON_ERROR).PHP_EOL);exit(1);
 });
 set_error_handler(static function(int $severity,string $message,string $file,int $line):bool {if(!(error_reporting()&$severity))return false;throw new ErrorException('Fixture PHP diagnostic',0,$severity,$file,$line);});
+$fullMode=getenv('CWP_TEST_HOSTING_PURCHASE_FULL_SUITE');if(!in_array($fullMode,[false,'','1'],true))throw new RuntimeException('Unknown purchase output mode');$fullSuite=$fullMode==='1';
+$portText=getenv('CWP_TEST_PORT');if(!is_string($portText)||!preg_match('/\A[1-9][0-9]{0,4}\z/',$portText)||(int)$portText>65535)throw new RuntimeException('Assigned disposable database port required');$purchasePort=(int)$portText;
+if($fullSuite){$version=getenv('CWP_PHP_VERSION');if(!in_array($version,['8.2','8.3','8.4'],true)||getenv('PHP_BINARY')!=='/usr/bin/php'.$version||PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION!==$version||realpath(PHP_BINARY)!==realpath((string)getenv('PHP_BINARY')))throw new RuntimeException('Selected supported PHP runtime required');}
+elseif($purchasePort!==33306)throw new RuntimeException('Original focused database port required');
 $root=realpath(dirname(__DIR__));$runtime=$root.'/test-runtime/hosting-purchase';$site=$root.'/test-runtime/hosting-purchase-web/hosting-purchase';$private=$runtime.'/private';
 foreach([$runtime,$site,$private,$runtime.'/browser-sessions'] as $path){if(!is_dir($path)||realpath($path)!==$path)throw new RuntimeException('Expected isolated purchase directory');for($p=$path;$p!==dirname($p);$p=dirname($p))if(is_link($p))throw new RuntimeException('Purchase paths must not contain links');}
 if(!is_file($private.'/provider-master.key')||is_link($private.'/provider-master.key'))throw new RuntimeException('Original private provider identity is missing');
-$report=json_decode(file_get_contents($root.'/qa/hosting-purchase/due-results.json'),true,64,JSON_THROW_ON_ERROR);
+$report=json_decode(file_get_contents($root.($fullSuite?'/qa/hosting-purchase-due-results.json':'/qa/hosting-purchase/due-results.json')),true,64,JSON_THROW_ON_ERROR);
 if(($report['passed']??null)!==true||($report['phase']??null)!=='due'||!($report['checks']??[])||array_filter($report['checks'],static fn(array $c):bool=>($c['passed']??null)!==true))throw new RuntimeException('Completed native purchase required');
 $joined=$report['joined'];$state=json_decode(file_get_contents($runtime.'/state.json'),true,16,JSON_THROW_ON_ERROR);
 if($joined['client_id']!==1||$joined['project_id']!==1||$joined['package_id']!==876001||$joined['order']!==str_pad(dechex(70),32,'0',STR_PAD_LEFT)||$joined['account']!==str_pad(dechex(80),32,'0',STR_PAD_LEFT)||$joined['agreement']!==$state['agreement']||$joined['mapping']!==$state['mapping_id'])throw new RuntimeException('Joined purchase identity differs');
 define('CWP_BOOT',true);define('CWP_ROOT',$site);require $site.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/hosting-purchase','storage'=>$private,'key'=>str_repeat('synthetic-joined-hosting-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'hpci_']];
-if(config()['db']['host']!=='127.0.0.1'||config()['db']['port']!==33306)throw new RuntimeException('Fixed disposable database required');
+if(config()['db']['host']!=='127.0.0.1'||config()['db']['port']!==$purchasePort)throw new RuntimeException('Selected disposable database required');
 require_once CWP_CODE_ROOT.'/app/hosting/fulfillment_views.php';
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];
 ini_set('session.save_path',$runtime.'/browser-sessions');start_session();

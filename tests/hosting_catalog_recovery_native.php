@@ -41,8 +41,8 @@ function hcr_files(string $root): array {
 }
 function hcr_database(): array {
     $state=[];
-    foreach(all('SELECT TABLE_NAME AS name FROM information_schema.tables WHERE table_schema=DATABASE() AND BINARY LEFT(TABLE_NAME,5)=BINARY ? ORDER BY TABLE_NAME',['hoci_']) as $t){
-        if(!preg_match('/\Ahoci_[a-z0-9_]+\z/',$t['name']))throw new LogicException('Unexpected disposable table.');
+    foreach(all('SELECT TABLE_NAME AS name FROM information_schema.tables WHERE table_schema=DATABASE() AND BINARY LEFT(TABLE_NAME,5)=BINARY ? ORDER BY TABLE_NAME',['hofc_']) as $t){
+        if(!preg_match('/\Ahofc_[a-z0-9_]+\z/',$t['name']))throw new LogicException('Unexpected disposable table.');
         $rows=array_map(static fn($r)=>json_encode($r,JSON_THROW_ON_ERROR),all('SELECT * FROM `'.$t['name'].'`'));sort($rows,SORT_STRING);
         $state[$t['name']]=['rows'=>$rows,'schema'=>array_values(one('SHOW CREATE TABLE `'.$t['name'].'`'))[1]];
     }return $state;
@@ -69,7 +69,7 @@ function hcr_pdo(): PDO {
     $c=$GLOBALS['cwp_config']['db'];
     return new PDO('mysql:host='.$c['host'].';port='.$c['port'].';dbname='.$c['name'].';charset=utf8mb4',$c['user'],$c['pass'],[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,PDO::ATTR_EMULATE_PREPARES=>false,PDO::ATTR_TIMEOUT=>8]);
 }
-function hcr_lock_key(): string {return 'cwp-staff-'.substr(hash('sha256','cwp_test|hoci_'),0,40);}
+function hcr_lock_key(): string {return 'cwp-staff-'.substr(hash('sha256','cwp_test|hofc_'),0,40);}
 /** Observes real statement execution; never substitutes SQL, results or parameters. */
 final class HostingRecoveryStatement extends PDOStatement {
     protected function __construct() {}
@@ -121,7 +121,7 @@ if(!CWP_ROOT||CWP_ROOT===$code||dirname(CWP_ROOT)!==$root)exit(2);
 require CWP_CODE_ROOT.'/includes/bootstrap.php';
 require_once CWP_CODE_ROOT.'/app/hosting/catalog_recovery.php';
 $private=realpath(__DIR__.'/../test-runtime/hosting-catalog-private');if(!$private)exit(2);
-$GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/hosting-catalog','storage'=>$private,'key'=>str_repeat('synthetic-hosting-catalog-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'hoci_']];
+$GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/hosting-catalog','storage'=>$private,'key'=>str_repeat('synthetic-hosting-catalog-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'hofc_']];
 if($argv[1]==='--watch')hcr_watch($root,(int)($argv[4]??0));
 $GLOBALS['hcr_checks']=[];$GLOBALS['hcr_refusals']=[];$GLOBALS['hcr_recovery']=$root.'/recovery';$lock=null;$watch=null;$diagnostics=[];$failure=null;
 try{
@@ -149,10 +149,10 @@ try{
         $known=array_filter(hosting_catalog_tables(),static fn($n)=>hosting_catalog_exists($n));
         hcr_ok('Recovery '.$phase.' phase has exact intended SQL history',($phase==='absent'?count($known)===0:count($known)===4&&(int)query('SELECT COUNT(*) FROM '.table('hosting_catalog_publications'))->fetchColumn()===0));
         // The partial/unknown tables are test-owned and dropped exactly, never generalized cleanup.
-        $unknown='hoci_hosting_catalog_future';db()->exec('CREATE TABLE `'.$unknown.'` (id INT NOT NULL PRIMARY KEY) ENGINE=InnoDB');
+        $unknown='hofc_hosting_catalog_future';db()->exec('CREATE TABLE `'.$unknown.'` (id INT NOT NULL PRIMARY KEY) ENGINE=InnoDB');
         try{hcr_refusal('Recovery '.$phase.' refuses unknown empty hosting namespace without changes',$namespace);}finally{db()->exec('DROP TABLE `'.$unknown.'`');}
         if($phase==='absent'){
-            $schema=hosting_catalog_schema('hoci_');$first=array_key_first($schema);db()->exec($schema[$first]);
+            $schema=hosting_catalog_schema('hofc_');$first=array_key_first($schema);db()->exec($schema[$first]);
             try{hcr_refusal('Recovery absent refuses partial empty known storage without changes',$namespace);}finally{db()->exec('DROP TABLE '.table($first));}
         }else{
             hcr_refusal('Recovery refuses an incorrect current owner password without changes',$authority,fn()=>hcr_call('wrong'));

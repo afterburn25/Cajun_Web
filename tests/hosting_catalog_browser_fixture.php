@@ -1,5 +1,5 @@
 <?php
-/** CLI-only continuation of the successful disposable hoci_ native fixture. Never shipped. */
+/** CLI-only continuation of the successful disposable hofc_ native fixture. Never shipped. */
 declare(strict_types=1);
 if (PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test') exit(2);
 $operation=$argv[1]??'';
@@ -33,7 +33,7 @@ $native=json_decode(file_get_contents($root.'/qa/hosting-catalog-native-results.
 if (($native['passed']??null)!==true||!($native['checks']??[])||array_filter($native['checks'],static fn(array $c):bool=>($c['passed']??null)!==true)) throw new RuntimeException('Successful native checks required.');
 define('CWP_BOOT',true);define('CWP_ROOT',$site);
 require $site.'/includes/bootstrap.php';
-$GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/hosting-catalog','storage'=>$private,'key'=>str_repeat('synthetic-hosting-catalog-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'hoci_']];
+$GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/hosting-catalog','storage'=>$private,'key'=>str_repeat('synthetic-hosting-catalog-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'hofc_']];
 require_once CWP_CODE_ROOT.'/app/hosting/catalog_offers.php';
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];
 start_session();
@@ -56,7 +56,7 @@ if ($operation==='prepare') {
     });
     if (file_put_contents($site.'/config.php','<?php return '.var_export(config(),true).';')===false||!chmod($site.'/config.php',0600)) throw new RuntimeException('Cannot protect installed config.');
     if (file_put_contents($site.'/.installed.php',CWP_GUARD.'synthetic installed guard')===false||file_put_contents($prepared,'prepared',LOCK_EX)===false) throw new RuntimeException('Cannot retain fixture preparation.');
-    echo json_encode(['prepared'=>true,'product_id'=>(int)$product['id'],'plan_id'=>str_pad('1',32,'0',STR_PAD_LEFT),'prefix'=>'hoci_'],JSON_THROW_ON_ERROR);exit;
+    echo json_encode(['prepared'=>true,'product_id'=>(int)$product['id'],'plan_id'=>str_pad('1',32,'0',STR_PAD_LEFT),'prefix'=>'hofc_'],JSON_THROW_ON_ERROR);exit;
 }
 if (!is_file($prepared)) throw new RuntimeException('Prepare browser fixture first.');
 if ($operation==='edit-summary') {
@@ -92,8 +92,8 @@ $result=recurring_billing_locked(function():array {
     $tables=['catalog_products','catalog_revisions','catalog_provider_imports','media','catalog_invoice_snapshots','studio_invoices','payment_gateways','payment_requests',
         'service_plans','service_plan_events','service_subscriptions','service_subscription_events',
         'hosting_catalog_publications','hosting_catalog_withdrawals','hosting_catalog_requests','hosting_catalog_decisions'];
-    foreach (all('SELECT TABLE_NAME AS name FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(table_name,14)=? ORDER BY table_name',['hoci_provider_']) as $t) {
-        if (!preg_match('/\Ahoci_provider_[a-z0-9_]+\z/',$t['name'])) throw new LogicException('Unexpected provider fixture table.');
+    foreach (all('SELECT TABLE_NAME AS name FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(table_name,14)=? ORDER BY table_name',['hofc_provider_']) as $t) {
+        if (!preg_match('/\Ahofc_provider_[a-z0-9_]+\z/',$t['name'])) throw new LogicException('Unexpected provider fixture table.');
         $tables[]=substr($t['name'],5);
     }
     $rows=[];$counts=[];

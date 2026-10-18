@@ -1,3 +1,7 @@
+## Hosting acceptance successor —2026-10-18
+
+The separate `codex/twentyi-hosting-full-acceptance` branch integrates full-suite hosting and real published1.25 upgrade tests. [Current scope](docs/TWENTYI_HOSTING_FULL_ACCEPTANCE.md) and current status distinguish locally verified preparation from pending runtime/release acceptance. Original10142/512/f67 sources and runs stay intact; published1.25 remains immutable.
+
 ## Current development candidate —2026-10-18
 
 Version1.26.0 is being assembled on `codex/twentyi-direct-hosting-catalog`; it is not published. See [candidate scope](docs/RELEASE_SCOPE_1.26.0.md), [current status](PROJECT_STATUS.md) and [handoff](SESSION_HANDOFF.md). Published1.25.0 remains immutable and available. Native feature checks do not replace the candidate's remaining browser, upgrade, full-runtime and release/download verification.

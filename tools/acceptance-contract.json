@@ -28,6 +28,13 @@
     "\"$PHP_BINARY\" tests/provider_package_types.php > qa/provider-package-types-default.json",
     "\"$PHP_BINARY\" -n tests/provider_package_types.php > qa/provider-package-types-minimal.json",
     "\"$PHP_BINARY\" tests/provider_package_types_native.php",
+    "\"$PHP_BINARY\" tests/hosting_catalog_document.php qa/hosting-catalog-document-default.json",
+    "\"$PHP_BINARY\" -n tests/hosting_catalog_document.php qa/hosting-catalog-document-minimal.json",
+    "CWP_TEST_HOSTING_RECOVERY=1 \"$PHP_BINARY\" tests/hosting_catalog_native.php",
+    "\"$PHP_BINARY\" tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-default.json",
+    "\"$PHP_BINARY\" -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json",
+    ".ci-venv/bin/python -B tests/hosting_catalog_purchase_guards.py",
+    ".ci-venv/bin/python -B tests/hosting_catalog_purchase.py --full-suite",
     "\"$PHP_BINARY\" tests/payments_native.php",
     "\"$PHP_BINARY\" tests/attempts_native.php",
     "\"$PHP_BINARY\" tests/notifications_native.php",
@@ -688,14 +695,325 @@
       "tests/release_126_catalog_guards.py": "5035b7876a7ac8d21e60a9a2eddb920ed3711ff69a78189b114a24e46e77a6ba",
       "tests/release_126_catalog_records.py": "7171397b84b089453a5372866f25c35dbac221930b5672bd1c4edb57ad33d899",
       "tests/release_126_original_records.py": "a1d91855a559b1911291c59c7a45ffb5903e31af76717ca88aa60e5a38001523",
-      "tests/release_126_provider_fixture.php": "34c75361f491729300a6ab9907c0414f5c888aa26c4319e5e57b83ce271000b1",
+      "tests/release_126_provider_fixture.php": "f0e8c63d57716e298865e5ee69ca50f7593bf1da61d3ced2952f38ae652278ca",
       "tests/release_126_retention.py": "572accea7616a5ba93f210cce5c88b0d4ffb9448fc2b22aa14bff55427c53a64",
       "tests/release_126_retention_fixture.php": "556b8f5fa01f32b7de5e58a24e292c324038230f902430a05dff5f54d065c304",
-      "tests/release_126_upgrade_acceptance.py": "89c112a841ae498e6d7a59bddb33700ee90c9bb98241d40f38c8c3e02b4cc899",
-      "tests/release_126_upgrade_cases.py": "7ad6aef9ec11e62853f24309f91cfa1f8fecc2b7723ecb48f5ffd160fcc3a38e",
+      "tests/release_126_upgrade_acceptance.py": "594fb0f09a7e4865d409fb7b92d7e8e961389200318eb9557afd8837295f092e",
+      "tests/release_126_upgrade_cases.py": "4526d07e64350a4299a58db8e85a1e38c63f2b0463708333e1eeeaa691df482c",
       "tests/release_126_upgrade_guards.py": "9fba62bccb9ebad671bcf4a98a01db992fb89359deebd789763c7d2423783df3",
       "tests/release_126_upgrade_input_guards.py": "e7f1381a05715d0d84a8508d8ed833f1dfd248098e7ed22d30b5f906f8cc2245"
     },
     "scope": "Actual published1.25 original with populated business, licensing, inventory imports and images; explicit catalog activation after recovery/reapply; synthetic transport only."
+  },
+  "hosting_catalog_offers": {
+    "predecessor_source": "10142c7e97c8ba9986e0c18d9ab0190ccc432727",
+    "predecessor_native_count": 155,
+    "predecessor_native_sha256": "d36050549701ce6412b7288cb119d6e6d2d71e40287f33e5308de72fa09665e5",
+    "additions_after": "\"$PHP_BINARY\" tests/provider_package_types_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/hosting_catalog_document.php qa/hosting-catalog-document-default.json",
+      "\"$PHP_BINARY\" -n tests/hosting_catalog_document.php qa/hosting-catalog-document-minimal.json",
+      "CWP_TEST_HOSTING_RECOVERY=1 \"$PHP_BINARY\" tests/hosting_catalog_native.php",
+      "\"$PHP_BINARY\" tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-default.json",
+      "\"$PHP_BINARY\" -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json"
+    ],
+    "browser_commands": [
+      ".ci-venv/bin/python tests/browser_acceptance.py",
+      ".ci-venv/bin/python -B tests/hosting_catalog_browser.py --full-suite"
+    ],
+    "reports": [
+      "hosting-catalog-document-default.json",
+      "hosting-catalog-document-minimal.json",
+      "hosting-catalog-native-results.json",
+      "hosting-catalog-http-results.json",
+      "hosting-catalog-recovery-guard-default.json",
+      "hosting-catalog-recovery-guard-minimal.json",
+      "hosting-catalog-recovery-native-results.json"
+    ],
+    "screenshots": [
+      "Hosting-Offers-Owner-Preview-Desktop.png",
+      "Hosting-Offers-Owner-Preview-Mobile.png",
+      "Hosting-Offers-Public-Desktop.png",
+      "Hosting-Offers-Public-Mobile.png",
+      "Hosting-Offers-Owner-Request-Desktop.png",
+      "Hosting-Offers-Owner-Request-Mobile.png",
+      "Hosting-Offers-Client-History-Desktop.png",
+      "Hosting-Offers-Client-History-Mobile.png",
+      "Hosting-Offers-Client-Agreement-Desktop.png",
+      "Hosting-Offers-Client-Agreement-Mobile.png"
+    ],
+    "predecessor_reports_sha256": {
+      "browser": "9bc497b3a5c64dac5ee5bcd9eeafafb6ab5fa4ff56190f0f3295989196467a1f",
+      "final": "bda03ec7e38f72bd65781d8bf612cd2a2171167f6183a1489dd27e7cca35e3eb"
+    },
+    "predecessor_workflow_sha256": "b0c5042d6e5dc3d5660f19f64ec0118c59349b16b0a413c92af5291fe9d4d50b",
+    "workflow_delta": [
+      {
+        "before": "          \"$PHP_BINARY\" tests/provider_package_types_native.php\n",
+        "after": "          \"$PHP_BINARY\" tests/provider_package_types_native.php\n          \"$PHP_BINARY\" tests/hosting_catalog_document.php qa/hosting-catalog-document-default.json\n          \"$PHP_BINARY\" -n tests/hosting_catalog_document.php qa/hosting-catalog-document-minimal.json\n          CWP_TEST_HOSTING_RECOVERY=1 \"$PHP_BINARY\" tests/hosting_catalog_native.php\n          \"$PHP_BINARY\" tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-default.json\n          \"$PHP_BINARY\" -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json\n"
+      },
+      {
+        "before": "        run: .ci-venv/bin/python tests/browser_acceptance.py\n",
+        "after": "        run: |\n          .ci-venv/bin/python tests/browser_acceptance.py\n          .ci-venv/bin/python -B tests/hosting_catalog_browser.py --full-suite\n"
+      },
+      {
+        "before": "  recovery:\n",
+        "after": "      - name: Preserve isolated hosting recovery files and child diagnostics\n        if: always()\n        id: hosting_recovery_upload\n        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02\n        with:\n          name: application-hosting-recovery-files-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}\n          path: |\n            test-runtime/hosting-recovery-absent-*/**\n            test-runtime/hosting-recovery-empty-*/**\n            test-runtime/hosting-recovery-published-*/**\n            test-runtime/hosting-recovery-withdrawn-*/**\n            test-runtime/hosting-recovery-child-output-*/**\n          include-hidden-files: true\n          retention-days: 14\n          if-no-files-found: error\n  recovery:\n"
+      }
+    ],
+    "source_sha256": {
+      "tests/hosting_catalog_document.php": "7897b57e40d7f4cfde599b695ef37a7cc1aec8c33d7474b7fbd9ae05aadd3a70",
+      "tests/hosting_catalog_native.php": "ebb5180ac0e36d437b29d52af64d2a16c8181d2148aa2b7f2c91946b46fb4cf9",
+      "tests/hosting_catalog_recovery_guard.php": "2518f102c537ca0b0197a49c9243d4454d076ff0081a9a602ae89e80b7f6f7d1",
+      "tests/hosting_catalog_recovery_native.php": "45f16f7c17cc5addbc8a61501732e6a9eb81caf2e4543e2a272d8b6573b520b8",
+      "tests/hosting_catalog_browser.py": "a1cd0c04b686523cd2e8752385bb56497b1342538d8cf8bf15076e14782d2c21",
+      "tests/hosting_catalog_browser_fixture.php": "5708f1fab66c0907bd7abac9c41c289ce55085103352936a36dd2d58cc3e6080",
+      "tests/hosting_catalog_cases.py": "f192e1d8a34240739e2b02beea00feeab0c4ade8658311020aa93769dd07fce1",
+      "site/app/hosting/catalog_offers_document.php": "16cea1c9d51665e9f4e586e19c84d6c3f107fa6f520dd9fc75d9d78d8a3a2250",
+      "site/app/hosting/catalog_offers.php": "a49e7380dd2500fdd8e9de611a6bda11c9908225c393bd628bf834d14afa117e",
+      "site/app/hosting/catalog_offers_context.php": "179354247cacc3533e9896d0ed238b0c3af97d8291ebc692dad7bb92064de3ea",
+      "site/app/hosting/catalog_offers_storage.php": "4fcd3f257001b78c22a59ea9b5734cef8fca6bc3dbe5e6cdbf567798d1746239",
+      "site/app/hosting/catalog_recovery.php": "bc98280a62deba07b62d5081146139fb610c4d26a90a426969e8e9a2d965b870",
+      "site/app/updates/structure.php": "9085455efdb94ccce41cf8006a6e1137ec35d986f432b3259cb6e6194a71b3d6",
+      "site/database/schema/hosting_catalog_schema.php": "c7251ecd8343d1d24a75d4f3c54f80e6f7cd1c0823b88f7fd5d16539d31158d0",
+      "site/database/migrations/hosting_catalog_migrate.php": "a4a2fdfe11451d8dce9bced966828f02439d91e53d621be61fca998b16c2c30e",
+      "tools/update/owner-update.php": "c9a770d2fca8658616e57050c6163ab564cf9667429f7c85f4bb12ac68d17405",
+      "site/app/staff/accounts.php": "772883771d8b51d4564d50a6363d9723060435fc60cc8910c689cfe2217e3579",
+      "site/app/settings/store.php": "f2c9eeba756c02f3b31b5cee3f93866f6fd22cc6f3e1f3e3bc6a5aa0108af564",
+      "tests/hosting_catalog_recovery_http.php": "b6b9e91ecfe29f881a6ad6e8add15cc057cb85fe974f8c82be529bb5e75f551a",
+      "tests/hosting_catalog_recovery_http.py": "ba76bcf656e9956ced5e68f893a7c6a9ab9023951472446ab2ac98026ec2afc8",
+      ".github/workflows/hosting-catalog-offers.yml": "1b2762ed8f25ec6535e89c169b449c294c2f0a9b607a03f18320f51d54b4c2f5"
+    },
+    "raw_evidence": {
+      "role": "hosting-recovery-files",
+      "job": "native-and-browser",
+      "step": "hosting_recovery_upload",
+      "artifact_name": "application-hosting-recovery-files-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}",
+      "path": "test-runtime/hosting-recovery-absent-*/**\ntest-runtime/hosting-recovery-empty-*/**\ntest-runtime/hosting-recovery-published-*/**\ntest-runtime/hosting-recovery-withdrawn-*/**\ntest-runtime/hosting-recovery-child-output-*/**",
+      "include_hidden_files": true,
+      "retention_days": 14,
+      "if_no_files_found": "error",
+      "scope": "Separate exact four synthetic native recovery phase trees and child-output only. Excludes hosting-recovery-http, private/session/runtime data. Original artifact collection and phase/report/file reconciliation remain separately required; no full acceptance by presence."
+    },
+    "scope": "Additive offer/request/agreement and opt-in synthetic-root SQL/file recovery coverage. Separate joined purchase reports retain simulated prepare time and synthetic provider/payment limits. Published1.25 upgrade extension is separately proposed; no unpublished baseline claim."
+  },
+  "hosting_joined_purchase": {
+    "source_base": "10142c7e97c8ba9986e0c18d9ab0190ccc432727",
+    "predecessor_native_count": 160,
+    "predecessor_native_sha256": "42b2fac1e53ff177ee9a67c5d6bb39d938f418b7596fc49cb410647e1e3f86f8",
+    "additions_after": "\"$PHP_BINARY\" -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json",
+    "additions": [
+      ".ci-venv/bin/python -B tests/hosting_catalog_purchase_guards.py",
+      ".ci-venv/bin/python -B tests/hosting_catalog_purchase.py --full-suite"
+    ],
+    "browser_additions": [
+      ".ci-venv/bin/python -B tests/hosting_purchase_handoff_guards.py > qa/hosting-purchase-handoff-guards.json",
+      ".ci-venv/bin/python -B tests/hosting_purchase_handoff_browser.py --full-suite"
+    ],
+    "workflow_delta": [
+      {
+        "before": "          \"$PHP_BINARY\" -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json\n",
+        "after": "          \"$PHP_BINARY\" -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json\n          .ci-venv/bin/python -B tests/hosting_catalog_purchase_guards.py\n          .ci-venv/bin/python -B tests/hosting_catalog_purchase.py --full-suite\n"
+      },
+      {
+        "before": "          .ci-venv/bin/python -B tests/hosting_catalog_browser.py --full-suite\n",
+        "after": "          .ci-venv/bin/python -B tests/hosting_catalog_browser.py --full-suite\n          .ci-venv/bin/python -B tests/hosting_purchase_handoff_guards.py > qa/hosting-purchase-handoff-guards.json\n          .ci-venv/bin/python -B tests/hosting_purchase_handoff_browser.py --full-suite\n"
+      },
+      {
+        "before": "          sudo apt-get -o Acquire::Retries=5 install -y \"php${CWP_PHP_VERSION}-cli\" \"php${CWP_PHP_VERSION}-mysql\" \"php${CWP_PHP_VERSION}-gd\" \"php${CWP_PHP_VERSION}-zip\" \"php${CWP_PHP_VERSION}-curl\" \"php${CWP_PHP_VERSION}-xml\" \"php${CWP_PHP_VERSION}-mbstring\"\n          export PHP_BINARY=\"/usr/bin/php${CWP_PHP_VERSION}\"\n",
+        "after": "          sudo apt-get -o Acquire::Retries=5 install -y libfaketime \"php${CWP_PHP_VERSION}-cli\" \"php${CWP_PHP_VERSION}-mysql\" \"php${CWP_PHP_VERSION}-gd\" \"php${CWP_PHP_VERSION}-zip\" \"php${CWP_PHP_VERSION}-curl\" \"php${CWP_PHP_VERSION}-xml\" \"php${CWP_PHP_VERSION}-mbstring\"\n          export PHP_BINARY=\"/usr/bin/php${CWP_PHP_VERSION}\"\n"
+      }
+    ],
+    "predecessor_workflow_sha256": "20b95730deb927bd7653abdff0fd6be0c2bc11e7c83d4b2cf157cf05a76b75f1",
+    "reports": [
+      "hosting-purchase-prepare-results.json",
+      "hosting-purchase-due-results.json",
+      "hosting-purchase-portal-own-results.json",
+      "hosting-purchase-portal-other-results.json",
+      "hosting-purchase-joined-results.json",
+      "hosting-purchase-handoff-guards.json",
+      "hosting-purchase-http-results.json"
+    ],
+    "predecessor_reports_sha256": {
+      "browser": "9fe11c9422679ed4d549cb4324214dffaa85980d5d1d42d0b05b79d874ab2da7",
+      "final": "665ebeb2200454d65f0404e9a45e1b863e7ccbbabbed0a8f505b804c1309cc43"
+    },
+    "screenshots": [
+      "Hosting-Purchase-Owner-Linked-Desktop.png",
+      "Hosting-Purchase-Owner-Linked-Mobile.png",
+      "Hosting-Purchase-Owner-Unlinked-Desktop.png",
+      "Hosting-Purchase-Owner-Unlinked-Mobile.png",
+      "Hosting-Purchase-Owner-Package-Desktop.png",
+      "Hosting-Purchase-Owner-Package-Mobile.png",
+      "Hosting-Purchase-Client-Hosting-Desktop.png",
+      "Hosting-Purchase-Client-Hosting-Mobile.png",
+      "Hosting-Purchase-Other-Client-Desktop.png",
+      "Hosting-Purchase-Other-Client-Mobile.png"
+    ],
+    "source_sha256": {
+      "site/app/billing/recurring_billing.php": "43d6ddad2ea17b1c92ced7784f3b4fa84244b4b7a41901ff845650ca0e259b58",
+      "site/app/hosting/fulfillment.php": "c2fd98af65798b5b3fa505857b1a4480fd0ebec2e3cf9fd0b59e5f3258817f20",
+      "site/app/hosting/fulfillment_confirmation.php": "618ccdc0db47f30b94c8a9e9c4eaae375f9597f3c08d9d8a534d1d1a8b2e5270",
+      "site/app/hosting/fulfillment_views.php": "38f09c7ad49d47dcfa64b8bba44560d4970e4bf101e474dc90d804f5a4774f01",
+      "site/app/hosting/order_link_views.php": "54bb2d422fa6d212b25b6e4b7e9d5b275693c0f71aa602ae5b6e256dff24aa61",
+      "site/app/hosting/order_links.php": "41010ccf888ff1b42687078e81640e134abadcc8095eba3b927910a48323b2f4",
+      "site/app/plans/records.php": "3061622a373ce24d5d379a29d5fdc52e9b7b8d15887d95ec9f17a3cd03466f2c",
+      "site/app/providers/inventory.php": "0e364dc91975fb3b28576ce32edfab34fb3cec4da6733ba4749cc6cb4275e863",
+      "site/app/providers/plan_catalog.php": "f7cea8cfaaba5d7280ccf184199db47954de6e39d3288dc7a7cf0dab04b908c1",
+      "site/includes/layout/hosting_fulfillment.php": "3516014e6f46083b9eba1babde36541a34f6c33f01a85106361e7645d6a2f6b9",
+      "tests/hosting_catalog_purchase.py": "eea7b2ce5b30ad03be3da7acfd661359890ce1184ebd113ff0a83e671431ed0c",
+      "tests/hosting_catalog_purchase_guards.py": "ce89db86d42ec541103cc1e6d129bc83600197cbfc96eb2c4c4d4fadc3225ced",
+      "tests/hosting_catalog_purchase_native.php": "be2c318ace66803a27740d0dc3db11fd3dceea40df5c2a2ce5813b5b71161e20",
+      "tests/hosting_purchase_handoff_browser.py": "9f0a9b2a40fe61d02d6714deead77ef08213e19ecd314b428b7c889003bdb483",
+      "tests/hosting_purchase_handoff_cases.py": "0178e333b27b61065cc1ba258d39c32c1f7eafcec5b030b541dd0369c7931cb1",
+      "tests/hosting_purchase_handoff_fixture.php": "65e6dfbbc51ae0c1af833667c11fcf9d0d19d26ac0c4cc216e8e5c0239b036c7",
+      "tests/hosting_purchase_handoff_guards.py": "d2951c4b20185c4b354e520ec38fbd69db3bf60e3dd5bb19939755758987f7a0"
+    },
+    "runtime": {
+      "php_versions": [
+        "8.2",
+        "8.3",
+        "8.4"
+      ],
+      "database": "cwp_test",
+      "host": "127.0.0.1",
+      "port": "CWP_TEST_PORT assigned by existing native-and-browser service-container setup",
+      "clock": "Only prepare PHP child receives libfaketime -2d; parent, database, due, CLI portal and HTTP/browser remain real time."
+    },
+    "scope": "Actual wrapper-derived commercial rows with synthetic external receipt/provider transport; separate packaged owner unlink/re-link and client isolation. No live provider/payment, immediate purchase, image review or full acceptance inferred from source."
+  },
+  "published125_hosting_extension": {
+    "source_base": "10142c7e97c8ba9986e0c18d9ab0190ccc432727",
+    "predecessor_workflow_sha256": "30d2827075f12b45f582a4eb754183e36c546cee3047925344176f7420b3bf0c",
+    "workflow_delta": {
+      "before": "          .ci-venv/bin/python tests/release_126_upgrade_acceptance.py\n",
+      "after": "          .ci-venv/bin/python -B tests/release_126_hosting_guards.py --report qa/apache-release126-hosting-guards-results.json\n          .ci-venv/bin/python tests/release_126_upgrade_acceptance.py\n"
+    },
+    "source_sha256": {
+      "tests/release_126_hosting_fixture.php": "de12763cb75da029cbe2c6f5573ab197ce6487d11ea34325a4012cb64dd9adf4",
+      "tests/release_126_hosting_guards.py": "5acf9557765591a81cb74797b0c63121d417c32324bbe52a20c300172eb5d09e",
+      "tests/release_126_hosting_records.py": "de25d8bd0e5003e962460fe66097c00f6e90e4eeef975aa85f43e946a4c66196",
+      "tests/release_126_provider_fixture.php": "f0e8c63d57716e298865e5ee69ca50f7593bf1da61d3ced2952f38ae652278ca",
+      "tests/release_126_upgrade_acceptance.py": "594fb0f09a7e4865d409fb7b92d7e8e961389200318eb9557afd8837295f092e",
+      "tests/release_126_upgrade_cases.py": "4526d07e64350a4299a58db8e85a1e38c63f2b0463708333e1eeeaa691df482c"
+    },
+    "source_delta": {
+      "tests/release_126_upgrade_cases.py": {
+        "predecessor_sha256": "7ad6aef9ec11e62853f24309f91cfa1f8fecc2b7723ecb48f5ffd160fcc3a38e",
+        "current_sha256": "4526d07e64350a4299a58db8e85a1e38c63f2b0463708333e1eeeaa691df482c",
+        "replacements": [
+          {
+            "before": "import os\n",
+            "after": "import os\nimport re\n"
+          },
+          {
+            "before": "def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document_root):",
+            "after": "def target_version(repo):\n    value = (Path(repo) / \"VERSION\").read_text(encoding=\"utf-8\").strip()\n    assert re.fullmatch(r\"[0-9]+\\.[0-9]+\\.[0-9]+\", value), \"Invalid candidate version\"\n    return value\n\n\ndef run(repo, installed, base, prefix, php, check, qa, browser=None, *, document_root, hosting_evidence):"
+          },
+          {
+            "before": "    updates = list((repo / 'dist').glob('CajunWebPro-1.26.0-UPDATE.zip'))\n    assert len(updates) == 1, 'Bind this release fixture only after1.26 scope/version freeze.'",
+            "after": "    candidate_version = target_version(repo)\n    updates = list((repo / 'dist').glob('CajunWebPro-' + candidate_version + '-UPDATE.zip'))\n    assert len(updates) == 1, 'Bind this release fixture only after candidate scope/version freeze.'"
+          },
+          {
+            "before": "        if helper == 'organized_update_fixture.php':",
+            "after": "        if helper == 'release_126_provider_fixture.php' and mode in ('catalog-read', 'catalog-state', 'catalog-replay'):\n            arguments.append(candidate_version)\n        if helper == 'organized_update_fixture.php':"
+          },
+          {
+            "before": "    updater = base + '/cwp-update-1.26.0/owner-update.php'",
+            "after": "    updater = base + '/cwp-update-' + candidate_version + '/owner-update.php'"
+          },
+          {
+            "before": "    ok('First update retains every original table row column and private file', retained(initial, snapshot()))",
+            "after": "    ok('First update retains every original table row column and private file', retained(initial, snapshot()))\n    from release_126_hosting_records import before_setup, continue_after_retention\n    before_setup(repo, installed, base, prefix, php, candidate_version, owner, snapshot, hosting_evidence, qa)"
+          },
+          {
+            "before": "    return checks\n",
+            "after": "    continue_after_retention(repo, installed, base, prefix, php, candidate_version, owner, alice, bob, first, second,\n                             job_id, initial, catalog, private, OWNER, STAFF, fields, submit, snapshot, identity,\n                             browser, hosting_evidence, qa, BASELINE_SOURCE, BASELINE_SHA)\n    return checks\n"
+          }
+        ]
+      },
+      "tests/release_126_upgrade_acceptance.py": {
+        "predecessor_sha256": "89c112a841ae498e6d7a59bddb33700ee90c9bb98241d40f38c8c3e02b4cc899",
+        "current_sha256": "594fb0f09a7e4865d409fb7b92d7e8e961389200318eb9557afd8837295f092e",
+        "replacements": [
+          {
+            "before": "from release_126_upgrade_cases import BASELINE_SHA, BASELINE_SOURCE, run, unpack",
+            "after": "from release_126_upgrade_cases import BASELINE_SHA, BASELINE_SOURCE, run, unpack, target_version\nfrom release_126_hosting_records import new_evidence, finish, names, PREFIXES, REPORT"
+          },
+          {
+            "before": "    checks = []; scopes = []; failure = None; apache_http = {}; evidence = {}",
+            "after": "    checks = []; scopes = []; failure = None; apache_http = {}; evidence = {}\n    hosting = new_evidence(); candidate = target_version(ROOT)\n    owned = [REPORT, 'apache-release126-hosting-progress.txt', 'apache-release126-hosting-failure.log']\n    owned += [n for p in PREFIXES for n in [names(p)['retention'], *names(p)['images']]]\n    assert not any((QA / n).exists() for n in owned), 'Never overwrite earlier hosting upgrade evidence'"
+          },
+          {
+            "before": "result = run(ROOT, installed, base, prefix, php, check, QA, browser, document_root=web)",
+            "after": "result = run(ROOT, installed, base, prefix, php, check, QA, browser, document_root=web, hosting_evidence=hosting)"
+          },
+          {
+            "before": "check(prefix + ' final snapshot is from updated1.26', obj['initial']['version'] == '1.25.0' and obj['final']['version'] == '1.26.0')",
+            "after": "check(prefix + ' final snapshot is from updated' + candidate.removesuffix('.0'), obj['initial']['version'] == '1.25.0' and obj['final']['version'] == candidate)"
+          },
+          {
+            "before": "        (QA / 'apache-release126-failure.log').write_text(traceback.format_exc(), encoding='utf-8')",
+            "after": "        (QA / 'apache-release126-failure.log').write_text(traceback.format_exc(), encoding='utf-8')\n        (QA / 'apache-release126-hosting-failure.log').write_text(traceback.format_exc(), encoding='utf-8')"
+          },
+          {
+            "before": "            'candidate_version': '1.26.0',",
+            "after": "            'candidate_version': candidate,"
+          },
+          {
+            "before": "            'cases': scopes, 'checks': checks, 'evidence': evidence, 'failure': failure}, indent=2) + '\\n', encoding='utf-8')",
+            "after": "            'cases': scopes, 'checks': checks, 'evidence': evidence, 'failure': failure}, indent=2) + '\\n', encoding='utf-8')\n        hosting_passed = finish(hosting, QA, failure, candidate, selected(), apache_http, BASELINE_SOURCE, BASELINE_SHA)\n        if failure is None:\n            assert hosting_passed, 'All four supplemental hosting upgrade scopes are required'"
+          }
+        ]
+      },
+      "tests/release_126_provider_fixture.php": {
+        "predecessor_sha256": "34c75361f491729300a6ab9907c0414f5c888aa26c4319e5e57b83ce271000b1",
+        "current_sha256": "f0e8c63d57716e298865e5ee69ca50f7593bf1da61d3ced2952f38ae652278ca",
+        "replacements": [
+          {
+            "before": "count($argv)!==3",
+            "after": "!in_array(count($argv),[3,4],true)"
+          },
+          {
+            "before": "if($argv[2]==='seed'){",
+            "after": "if($argv[2]==='seed'){\n    if(count($argv)!==3)exit(2);"
+          },
+          {
+            "before": "if($argv[2]==='replay'){",
+            "after": "if($argv[2]==='replay'){\n    if(count($argv)!==3)exit(2);"
+          },
+          {
+            "before": "if(CWP_VERSION!=='1.26.0')throw new RuntimeException('New catalog actions require actual candidate1.26 files.');",
+            "after": "if(count($argv)!==4||!preg_match('/\\A[0-9]+\\.[0-9]+\\.[0-9]+\\z/',$argv[3])||trim(file_get_contents(__DIR__.'/../VERSION'))!==$argv[3]||CWP_VERSION!==$argv[3])throw new RuntimeException('New catalog actions require actual source-bound candidate files.');"
+          }
+        ]
+      }
+    },
+    "predecessor_upgrade_contract_sha256": "df1f78bb41b5b40c610da4fad4b37b4d02605fb87c2c57d6d1da7ceabe3d01fd",
+    "predecessor_reports_sha256": {
+      "browser": "8bf4ebd1cf62608cb3aaab27caebaf6375bc2ce75dec4f7129bb863d4d551bc3",
+      "final": "3c7889405d3f7fe24db2441cebe99db1f4bb8c6e87b2d565d7218d5146a05886"
+    },
+    "reports": [
+      "apache-release126-hosting-guards-results.json",
+      "apache-release126-hosting-results.json"
+    ],
+    "snapshots": [
+      "apache-release126-hosting-r126_ron_-retention.json",
+      "apache-release126-hosting-r126_son_-retention.json",
+      "apache-release126-hosting-r126_roff_-retention.json",
+      "apache-release126-hosting-r126_soff_-retention.json"
+    ],
+    "screenshots": [
+      "apache-release126-hosting-r126_ron_-Upgraded-Hosting-Offers-Desktop.png",
+      "apache-release126-hosting-r126_ron_-Upgraded-Hosting-Offers-Mobile.png",
+      "apache-release126-hosting-r126_son_-Upgraded-Hosting-Offers-Desktop.png",
+      "apache-release126-hosting-r126_son_-Upgraded-Hosting-Offers-Mobile.png",
+      "apache-release126-hosting-r126_roff_-Upgraded-Hosting-Offers-Desktop.png",
+      "apache-release126-hosting-r126_roff_-Upgraded-Hosting-Offers-Mobile.png",
+      "apache-release126-hosting-r126_soff_-Upgraded-Hosting-Offers-Desktop.png",
+      "apache-release126-hosting-r126_soff_-Upgraded-Hosting-Offers-Mobile.png"
+    ],
+    "scope": "Real published1.25 baseline in the existing four Apache contexts, explicit owner setup and commercial forms, preserved data and recovery refusals. Runtime acceptance remains required. No payment, provisioning, live provider call, or future published1.26 baseline claim."
   }
 }

@@ -1,3 +1,7 @@
+## Successor follow-through — full hosting acceptance
+
+The separate `codex/twentyi-hosting-full-acceptance` branch integrates reviewed offer/recovery and eventual purchase/client-access tests into the existing full suite, plus a genuine published1.25 upgrade continuation. It is development preparation awaiting original focused outcomes and combined runtime/visual acceptance. [Scope and remaining gates](TWENTYI_HOSTING_FULL_ACCEPTANCE.md). Complete cloud imports, automatic provider images and immediate first-payment checkout remain unfinished.
+
 ## Successor follow-through — joined purchase verification
 
 The portal-handoff branch now prepares an actual-wrapper eventual purchase test plus packaged owner re-link and client Hosting isolation. Local checks are separate from pending Linux SQL/clock, HTTP/Chromium and visual acceptance. Immediate first-payment checkout, complete cloud catalog coverage and automatic provider images remain unfinished. [Test scope](TWENTYI_HOSTING_CLIENT_ACCESS.md#joined-purchase-and-browser-continuation).

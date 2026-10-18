@@ -54,12 +54,12 @@ define('CWP_BOOT',true);define('CWP_ROOT',$site);define('CWP_CODE_ROOT',$stages[
 require CWP_CODE_ROOT.'/includes/bootstrap.php';
 require_once CWP_CODE_ROOT.'/app/hosting/catalog_recovery.php';
 $GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8092','storage'=>$private,'key'=>str_repeat('synthetic-hosting-catalog-',4),
-    'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'hoci_']];
+    'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'hofc_']];
 
 function hch_rows(): array {
     $rows=[];
-    foreach(all('SELECT TABLE_NAME AS name FROM information_schema.tables WHERE table_schema=DATABASE() AND BINARY LEFT(TABLE_NAME,5)=BINARY ? ORDER BY TABLE_NAME',['hoci_'])as $t){
-        if(!preg_match('/\Ahoci_[a-z0-9_]+\z/',$t['name']))throw new LogicException('Unexpected disposable table.');
+    foreach(all('SELECT TABLE_NAME AS name FROM information_schema.tables WHERE table_schema=DATABASE() AND BINARY LEFT(TABLE_NAME,5)=BINARY ? ORDER BY TABLE_NAME',['hofc_'])as $t){
+        if(!preg_match('/\Ahofc_[a-z0-9_]+\z/',$t['name']))throw new LogicException('Unexpected disposable table.');
         $list=all('SELECT * FROM `'.$t['name'].'`');usort($list,static fn($a,$b)=>strcmp(json_encode($a),json_encode($b)));$rows[$t['name']]=$list;
     }return $rows;
 }
@@ -70,31 +70,31 @@ function hch_schemas(array $rows): array {
     return $schemas;
 }
 function hch_stable(array $rows): array {
-    unset($rows['hoci_audit'],$rows['hoci_rate_limits']);
-    foreach($rows['hoci_users']as &$u)$u['last_login']=null;unset($u);
+    unset($rows['hofc_audit'],$rows['hofc_rate_limits']);
+    foreach($rows['hofc_users']as &$u)$u['last_login']=null;unset($u);
     return $rows;
 }
 /** Only owner-login timestamp, the exact loopback owner rate bucket and appended updater audit are allowed. */
 function hch_observe(array $saved): array {
     $rows=hch_rows();$now=time();if($now-$saved['epoch']>900)throw new RuntimeException('Fixture phase exceeded its side-effect window.');
-    $oldUsers=array_column($saved['rows']['hoci_users'],null,'id');$login=0;
-    foreach($rows['hoci_users']as $u){$old=$oldUsers[$u['id']]??null;if(!$old)throw new RuntimeException('Unexpected user.');
+    $oldUsers=array_column($saved['rows']['hofc_users'],null,'id');$login=0;
+    foreach($rows['hofc_users']as $u){$old=$oldUsers[$u['id']]??null;if(!$old)throw new RuntimeException('Unexpected user.');
         if($u['last_login']!==$old['last_login']){
             $epoch=strtotime((string)$u['last_login'].' UTC');
             if((int)$u['id']!==1||$epoch===false||$epoch<$saved['epoch']||$epoch>$now)throw new RuntimeException('Unexpected login change.');$login++;
         }
     }
-    $oldAudit=array_column($saved['rows']['hoci_audit'],null,'id');$actions=[];$newAudit=[];
-    foreach($rows['hoci_audit']as $row){
+    $oldAudit=array_column($saved['rows']['hofc_audit'],null,'id');$actions=[];$newAudit=[];
+    foreach($rows['hofc_audit']as $row){
         if(isset($oldAudit[$row['id']])){if($oldAudit[$row['id']]!==$row)throw new RuntimeException('Original audit changed.');unset($oldAudit[$row['id']]);continue;}
         if((int)$row['user_id']!==1||!in_array($row['action'],['structure.inspect','structure.recover'],true)
             ||$row['detail']!=='Version '.CWP_VERSION.'; state '.($row['action']==='structure.inspect'?'complete':'rolled-back'))throw new RuntimeException('Unexpected updater audit.');
         $actions[]=$row['action'];$newAudit[]=$row['id'];
     }if($oldAudit)throw new RuntimeException('Original audit removed.');sort($actions);
-    $oldRates=array_column($saved['rows']['hoci_rate_limits'],null,'bucket');$attempts=0;$changed=[];
+    $oldRates=array_column($saved['rows']['hofc_rate_limits'],null,'bucket');$attempts=0;$changed=[];
     $key=hash_hmac('sha256','structure-owner|127.0.0.1',config()['key']);$allowed=[];
     for($window=(int)floor($saved['epoch']/900);$window<=(int)floor($now/900);$window++)$allowed[]=hash('sha256',$key.'|'.$window);
-    foreach($rows['hoci_rate_limits']as $r){$old=$oldRates[$r['bucket']]??null;unset($oldRates[$r['bucket']]);if($r===$old)continue;
+    foreach($rows['hofc_rate_limits']as $r){$old=$oldRates[$r['bucket']]??null;unset($oldRates[$r['bucket']]);if($r===$old)continue;
         if(!in_array($r['bucket'],$allowed,true)||(int)$r['attempts']<=(int)($old['attempts']??0)
             ||($old!==null&&$r['expires']!==$old['expires'])||($old===null&&((int)$r['expires']<$saved['epoch']+900||(int)$r['expires']>$now+900)))throw new RuntimeException('Unexpected rate change.');
         $attempts+=(int)$r['attempts']-(int)($old['attempts']??0);$changed[$r['bucket']]=$old;
@@ -146,7 +146,7 @@ $state=hch_observe($saved);
 if($op==='cleanup'){
     if($state['stable_sha256']!==hch_hash(hch_stable($saved['rows']))||$state['schema_sha256']!==hch_hash($saved['schemas']))throw new RuntimeException('Do not erase unexpected business changes.');
     staff_locked(function()use($saved,$state):void{staff_transaction(function()use($saved,$state):void{
-        $owner=array_column($saved['rows']['hoci_users'],null,'id')[1];query('UPDATE '.table('users').' SET last_login=? WHERE id=1',[$owner['last_login']]);
+        $owner=array_column($saved['rows']['hofc_users'],null,'id')[1];query('UPDATE '.table('users').' SET last_login=? WHERE id=1',[$owner['last_login']]);
         foreach($state['_new_audit']as $id)query('DELETE FROM '.table('audit').' WHERE id=?',[$id]);
         foreach($state['_changed_rates']as $bucket=>$row){if($row===null)query('DELETE FROM '.table('rate_limits').' WHERE bucket=?',[$bucket]);else query('UPDATE '.table('rate_limits').' SET attempts=?,expires=? WHERE bucket=?',[$row['attempts'],$row['expires'],$bucket]);}
     });});

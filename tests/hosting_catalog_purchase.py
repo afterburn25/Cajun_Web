@@ -5,6 +5,7 @@ portal PHP children stay on real time. This is eventual, not immediate, purchase
 """
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import os
@@ -38,7 +39,7 @@ def sha(data: bytes) -> str:
 def clean_environment(environ: dict[str, str]) -> dict[str, str]:
     forbidden = [key for key in environ if key.startswith("FAKETIME") or key in
                  {"LD_PRELOAD", "LD_AUDIT", "DONT_FAKE_MONOTONIC", "CWP_PURCHASE_PARENT_EPOCH",
-                  "CWP_TEST_HOSTING_PURCHASE", "PHPRC", "PHP_INI_SCAN_DIR"}]
+                  "CWP_TEST_HOSTING_PURCHASE", "CWP_TEST_HOSTING_PURCHASE_FULL_SUITE", "PHPRC", "PHP_INI_SCAN_DIR"}]
     require(not forbidden, "An inherited process clock/runtime override is present")
     env = dict(environ)
     env["TZ"] = "UTC"
@@ -118,15 +119,56 @@ def real_php_clock(php: str, env: dict[str, str]) -> dict:
     return probe
 
 
-def main() -> int:
+def arguments(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
+    parser.add_argument('--full-suite', action='store_true')
+    return parser.parse_args(argv)
+
+
+def runtime_selection(env, full_suite):
+    require(env.get('CWP_TEST_DATABASE') == 'cwp_test' and env.get('CWP_TEST_HOST') == '127.0.0.1',
+            'Use the dedicated disposable loopback database')
+    port = env.get('CWP_TEST_PORT', '')
+    require(bool(re.fullmatch('[1-9][0-9]{0,4}', port)) and int(port) <= 65535,
+            'Use the actual assigned disposable database port')
+    php = env.get('PHP_BINARY', '')
+    if full_suite:
+        version = env.get('CWP_PHP_VERSION', '')
+        require(version in ('8.2', '8.3', '8.4') and php == '/usr/bin/php' + version,
+                'Use the full-suite selected supported PHP binary')
+    else:
+        require(php == '/usr/bin/php8.3' and port == '33306', 'Use the original focused runtime')
+    return php, int(port)
+
+
+def purchase_output_paths(root, full_suite):
+    qa = root / ('qa' if full_suite else 'qa/hosting-purchase')
+    names = {phase: phase + '-results.json' for phase in PHASES}
+    names['joined'] = 'joined-purchase-results.json'
+    return qa, {key: qa / (('hosting-purchase-' + key + '-results.json') if full_suite else name)
+                for key, name in names.items()}
+
+
+def prepare_purchase_outputs(root, full_suite):
+    qa, outputs = purchase_output_paths(root, full_suite)
+    if full_suite:
+        for parent in (qa, *qa.parents):
+            require(not parent.is_symlink() and (not parent.exists() or parent.is_dir()),
+                    'Purchase output parent is not a regular directory')
+        require(all(not p.exists() and not p.is_symlink() for p in outputs.values()),
+                'Preserve previous joined purchase evidence')
+    else:
+        require(qa == contained_fresh(root, 'qa', 'hosting-purchase'), 'Unexpected focused output path')
+    qa.mkdir(parents=True, exist_ok=full_suite, mode=0o700)
+    return qa, outputs
+
+
+def main(full_suite=False) -> int:
     root = Path(__file__).absolute().parent.parent
     env = clean_environment(dict(os.environ))
     require(platform.system() == "Linux" and platform.machine() == "x86_64", "Use the focused Ubuntu x86_64 job")
-    require(env.get("CWP_TEST_DATABASE") == "cwp_test" and
-            env.get("CWP_TEST_HOST") == "127.0.0.1" and env.get("CWP_TEST_PORT") == "33306",
-            "Use the dedicated disposable loopback database")
-    php = env.get("PHP_BINARY", "")
-    require(php == "/usr/bin/php8.3" and Path(php).is_file(), "Use the maintained focused PHP binary")
+    php, port = runtime_selection(env, full_suite)
+    require(Path(php).is_file(), "Selected PHP binary is unavailable")
     require(LIBRARY.is_file(), "Install the distro libfaketime package first")
     lib = LIBRARY.stat()
     require(lib.st_uid == 0 and not lib.st_mode & (stat.S_IWGRP | stat.S_IWOTH), "Clock library ownership differs")
@@ -134,9 +176,8 @@ def main() -> int:
                              check=True, capture_output=True, text=True, timeout=20)
     require(package.stdout.startswith("libfaketime\t") and package.stderr == "", "Clock package identity unavailable")
     runtime = contained_fresh(root, "test-runtime", "hosting-purchase")
-    qa = contained_fresh(root, "qa", "hosting-purchase")
-    for directory in (runtime, qa):
-        directory.mkdir(parents=True, mode=0o700)
+    qa, outputs = prepare_purchase_outputs(root, full_suite)
+    runtime.mkdir(parents=True, mode=0o700)
     for name in ("private", "sessions"):
         (runtime / name).mkdir(mode=0o700)
     (runtime / "private" / "media").mkdir(mode=0o700)
@@ -154,6 +195,7 @@ def main() -> int:
         for phase in PHASES:
             epoch = int(time.time())
             child_env = phase_environment(env, phase, epoch)
+            if full_suite: child_env["CWP_TEST_HOSTING_PURCHASE_FULL_SUITE"] = "1"
             stdout_path, stderr_path = runtime / (phase + ".stdout"), runtime / (phase + ".stderr")
             with stdout_path.open("xb") as stdout, stderr_path.open("xb") as stderr:
                 child = subprocess.run([php, "-d", "display_errors=0", "-d", "log_errors=1",
@@ -166,7 +208,7 @@ def main() -> int:
             proof["phases"].append(record)
             if err:
                 record["diagnostic"] = safe_tail(err, root, env.get("CWP_TEST_PASSWORD", ""))
-            report_path = qa / (phase + "-results.json")
+            report_path = outputs[phase]
             if report_path.is_file():
                 data = report_path.read_bytes()
                 record.update(report=report_path.name, report_sha256=sha(data))
@@ -190,7 +232,7 @@ def main() -> int:
         proof["error"] = {"class": type(error).__name__, "message": safe_tail(str(error).encode(), root, env.get("CWP_TEST_PASSWORD", ""))}
     finally:
         proof["elapsed_seconds"] = round(time.monotonic() - monotonic, 3)
-        with (qa / "joined-purchase-results.json").open("x", encoding="utf-8") as stream:
+        with outputs["joined"].open("x", encoding="utf-8") as stream:
             json.dump(proof, stream, indent=2, allow_nan=False)
             stream.write("\n")
     print(json.dumps({"passed": proof["passed"], "phases": len(proof["phases"])}))
@@ -198,4 +240,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(arguments().full_suite))

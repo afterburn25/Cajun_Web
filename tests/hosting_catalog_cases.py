@@ -259,7 +259,7 @@ def run_browser(env, browser):
         fixture('damage-marker')
         try:
             unavailable = get(anon, public); private = get(alice, portal + '?hosting=requests')
-            check('Damaged history renders generic public and private unavailable messages', unavailable.status_code == 200 and private.status_code == 200 and 'temporarily unavailable' in unavailable.text.lower() and 'temporarily unavailable' in private.text.lower() and safe_text(unavailable.text) and safe_text(private.text) and all(v not in unavailable.text + private.text for v in ('SQLSTATE', 'hoci_', 'Restore its original', 'provider-master.key')))
+            check('Damaged history renders generic public and private unavailable messages', unavailable.status_code == 200 and private.status_code == 200 and 'temporarily unavailable' in unavailable.text.lower() and 'temporarily unavailable' in private.text.lower() and safe_text(unavailable.text) and safe_text(private.text) and all(v not in unavailable.text + private.text for v in ('SQLSTATE', 'hofc_', 'Restore its original', 'provider-master.key')))
         finally:
             fixture('restore-marker')
         final = fixture('state')
@@ -268,7 +268,7 @@ def run_browser(env, browser):
         check('Hosting browser has no script errors or external resource requests', not errors and not forbidden_network)
         return {'post_upload_business_sha256': before['sha256'], 'final_business_sha256': final['sha256'],
                 'provider_key_sha256': final['provider_key_sha256'], 'agreement_revision': now['revision'],
-                'scope': 'Real packaged owner/client UI and local HTTP on the preserved hoci_ synthetic native dataset. CLI seed and one real catalog edit; no provider transport, payment, full-matrix browser or visual approval.'}
+                'scope': 'Real packaged owner/client UI and local HTTP on the preserved hofc_ synthetic native dataset. CLI seed and one real catalog edit; no provider transport, payment, full-matrix browser or visual approval.'}
     finally:
         for ctx in contexts:
             ctx.close()

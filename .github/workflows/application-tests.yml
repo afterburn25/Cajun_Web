@@ -251,7 +251,7 @@ jobs:
           CWP_PHP_MIRROR
           fi
           sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
-          sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
+          sudo apt-get -o Acquire::Retries=5 install -y libfaketime "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
           export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
           test -x "$PHP_BINARY"
           printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
@@ -296,6 +296,13 @@ jobs:
           "$PHP_BINARY" tests/provider_package_types.php > qa/provider-package-types-default.json
           "$PHP_BINARY" -n tests/provider_package_types.php > qa/provider-package-types-minimal.json
           "$PHP_BINARY" tests/provider_package_types_native.php
+          "$PHP_BINARY" tests/hosting_catalog_document.php qa/hosting-catalog-document-default.json
+          "$PHP_BINARY" -n tests/hosting_catalog_document.php qa/hosting-catalog-document-minimal.json
+          CWP_TEST_HOSTING_RECOVERY=1 "$PHP_BINARY" tests/hosting_catalog_native.php
+          "$PHP_BINARY" tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-default.json
+          "$PHP_BINARY" -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json
+          .ci-venv/bin/python -B tests/hosting_catalog_purchase_guards.py
+          .ci-venv/bin/python -B tests/hosting_catalog_purchase.py --full-suite
           "$PHP_BINARY" tests/payments_native.php
           "$PHP_BINARY" tests/attempts_native.php
           "$PHP_BINARY" tests/notifications_native.php
@@ -435,7 +442,11 @@ jobs:
           "$PHP_BINARY" tests/license_native.php
       - name: Real HTTP and Chromium application workflows
         id: browser
-        run: .ci-venv/bin/python tests/browser_acceptance.py
+        run: |
+          .ci-venv/bin/python tests/browser_acceptance.py
+          .ci-venv/bin/python -B tests/hosting_catalog_browser.py --full-suite
+          .ci-venv/bin/python -B tests/hosting_purchase_handoff_guards.py > qa/hosting-purchase-handoff-guards.json
+          .ci-venv/bin/python -B tests/hosting_purchase_handoff_browser.py --full-suite
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation
@@ -468,6 +479,21 @@ jobs:
           path: ${{ steps.seal.outcome == 'success' && '.acceptance/checkpoint/qa/' || 'qa/' }}
           retention-days: 3
           if-no-files-found: warn
+      - name: Preserve isolated hosting recovery files and child diagnostics
+        if: always()
+        id: hosting_recovery_upload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: application-hosting-recovery-files-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            test-runtime/hosting-recovery-absent-*/**
+            test-runtime/hosting-recovery-empty-*/**
+            test-runtime/hosting-recovery-published-*/**
+            test-runtime/hosting-recovery-withdrawn-*/**
+            test-runtime/hosting-recovery-child-output-*/**
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
   recovery:
     needs: build
     if: ${{ !inputs.checkpoint_only }}
@@ -706,6 +732,7 @@ jobs:
           .ci-venv/bin/python tests/release_125_upgrade_acceptance.py
           .ci-venv/bin/python tests/release_126_upgrade_guards.py qa/apache-release126-guards-results.json
           .ci-venv/bin/python tests/release_126_upgrade_input_guards.py --report qa/apache-release126-input-guards-results.json
+          .ci-venv/bin/python -B tests/release_126_hosting_guards.py --report qa/apache-release126-hosting-guards-results.json
           .ci-venv/bin/python tests/release_126_upgrade_acceptance.py
       - name: Verify shipping source after this job, including failure
         if: always()

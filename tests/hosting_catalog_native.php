@@ -14,7 +14,7 @@ use CajunWebPro\Foundation\TwentyIInventoryReader\PackageTypes;
 
 $private=__DIR__.'/../test-runtime/hosting-catalog-private';
 @mkdir($private,0700,true);@mkdir($private.'/media',0700,true);@mkdir(__DIR__.'/../qa',0700,true);
-$GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/hosting-catalog','storage'=>realpath($private),'key'=>str_repeat('synthetic-hosting-catalog-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'hoci_']];
+$GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/hosting-catalog','storage'=>realpath($private),'key'=>str_repeat('synthetic-hosting-catalog-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'hofc_']];
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];
 $_SERVER['DOCUMENT_ROOT']=realpath(__DIR__.'/../site');start_session();
 $checks=[];$runtime=null;$password='Synthetic hosting catalog owner';$secret='SYNTHETIC_HOSTING_CATALOG_KEY';$calls=0;
@@ -28,8 +28,8 @@ function hcn_client(int $id=1):void {$c=one('SELECT * FROM '.table('studio_clien
 /** Exact row-state digest for this disposable prefix, including audit, agreements, counters and source history. */
 function hcn_state():string {
     $state=[];
-    foreach(all('SELECT TABLE_NAME AS name FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(table_name,5)=? ORDER BY table_name',['hoci_']) as $t){
-        if(!preg_match('/\Ahoci_[a-z0-9_]+\z/',$t['name']))throw new LogicException('Unexpected fixture table name');
+    foreach(all('SELECT TABLE_NAME AS name FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(table_name,5)=? ORDER BY table_name',['hofc_']) as $t){
+        if(!preg_match('/\Ahofc_[a-z0-9_]+\z/',$t['name']))throw new LogicException('Unexpected fixture table name');
         $rows=array_map(static fn(array $r):string=>json_encode($r,JSON_THROW_ON_ERROR),all('SELECT * FROM `'.$t['name'].'`'));sort($rows,SORT_STRING);$state[$t['name']]=$rows;
     }
     return hash('sha256',json_encode($state,JSON_THROW_ON_ERROR));
@@ -63,14 +63,14 @@ function hcn_read(array $row,string $key,string $address,callable $authorize,str
 /** Only a deliberately signalled audit failure counts; unrelated PDO failures remain failures. */
 function hcn_fail_audit(string $action,callable $work):bool {
     if(!in_array($action,['hosting_catalog.publication','hosting_catalog.decision'],true))throw new LogicException('Unexpected audit target');
-    query('SET @hoci_agreements_at_failure=NULL');
-    db()->exec('CREATE TRIGGER hoci_audit_failure BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='".$action."' THEN SET @hoci_agreements_at_failure=(SELECT COUNT(*) FROM ".table('service_subscriptions')."); SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic hosting audit failure'; END IF; END");
-    try{$work();return false;}catch(PDOException $e){if(($e->errorInfo[0]??null)!=='45000'||($e->errorInfo[1]??null)!==1644||!str_contains($e->getMessage(),'Synthetic hosting audit failure'))throw $e;return true;}finally{db()->exec('DROP TRIGGER hoci_audit_failure');}
+    query('SET @hofc_agreements_at_failure=NULL');
+    db()->exec('CREATE TRIGGER hofc_audit_failure BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='".$action."' THEN SET @hofc_agreements_at_failure=(SELECT COUNT(*) FROM ".table('service_subscriptions')."); SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic hosting audit failure'; END IF; END");
+    try{$work();return false;}catch(PDOException $e){if(($e->errorInfo[0]??null)!=='45000'||($e->errorInfo[1]??null)!==1644||!str_contains($e->getMessage(),'Synthetic hosting audit failure'))throw $e;return true;}finally{db()->exec('DROP TRIGGER hofc_audit_failure');}
 }
 try {
-    if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(table_name,5)=? LIMIT 1',['hoci_']))throw new RuntimeException('Disposable hoci_ prefix already exists; preserve the earlier run and use a clean test database.');
+    if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(table_name,5)=? LIMIT 1',['hofc_']))throw new RuntimeException('Disposable hofc_ prefix already exists; preserve the earlier run and use a clean test database.');
     if (!db()->setAttribute(PDO::ATTR_STATEMENT_CLASS,[HostingCatalogReadProbeStatement::class])) throw new RuntimeException('Read probe statement class is unavailable.');
-    foreach(schema_statements('hoci_') as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
+    foreach(schema_statements('hofc_') as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','2');
     foreach([1,2] as $id)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Hosting staff '.$id,'hosting-staff'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat($id===1?'a':'b',32),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);query('INSERT INTO '.table('staff_profiles')." (user_id,role,enabled,permissions) VALUES (?,'administrator',1,?)",[2,json_encode(array_keys(staff_permissions()))]);
@@ -165,7 +165,7 @@ try {
     hcn_ok('Denied conversions preserve all requests and agreements',hcn_state()===$before);
     $subscriptions=(int)query('SELECT COUNT(*) FROM '.table('service_subscriptions'))->fetchColumn();
     $failed=hcn_fail_audit('hosting_catalog.decision',fn()=>hosting_catalog_convert(hcn_id(201),hcn_id(101),$request->fingerprint(),1,$password));
-    hcn_ok('Decision audit failure occurs after the agreement INSERT',$failed&&(int)query('SELECT @hoci_agreements_at_failure')->fetchColumn()===$subscriptions+1);
+    hcn_ok('Decision audit failure occurs after the agreement INSERT',$failed&&(int)query('SELECT @hofc_agreements_at_failure')->fetchColumn()===$subscriptions+1);
     hcn_ok('Decision audit failure atomically rolls back agreement link audit and counter',hcn_state()===$before&&hcn_ready());
     $agreement=hosting_catalog_convert(hcn_id(201),hcn_id(101),$request->fingerprint(),1,$password);$decision=one('SELECT * FROM '.table('hosting_catalog_decisions').' WHERE request_id=?',[hcn_id(101)]);
     hcn_ok('Owner conversion links the exact pending agreement and plan to its request',$decision['agreement_id']===$agreement->data()['id']&&(int)$decision['job_id']===1&&$agreement->data()['client_id']===1&&service_plans_json($agreement->data()['plan'])===$publication->data()['plan_json']&&$agreement->revision()===0&&$agreement->model()->state()==='pending-consent');

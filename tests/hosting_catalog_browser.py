@@ -1,8 +1,9 @@
 """Linux-only focused hosting UI runner; reuse exact existing form helpers.
 
-Requires the actual native hoci_ seed and a package built from this exact checkout.
+Requires the actual native hofc_ seed and a package built from this exact checkout.
 This does not replace complete application acceptance or a human pixel review.
 """
+import argparse
 import ast
 import hashlib
 import json
@@ -39,6 +40,56 @@ SOURCE_PATHS = [
     'site/portal/controllers/router.php', 'site/portal/controllers/actions.php',
     'site/admin/views/catalog_import.php', 'site/pages/services/hosting.php',
 ]
+
+
+FULL_SUITE_SOURCE_PATHS = [
+    '.github/workflows/application-tests.yml', 'tools/acceptance-contract.json',
+    'tools/acceptance-reports.json',
+]
+CAPTURE_NAMES = tuple(
+    'Hosting-Offers-' + stem + '-' + size + '.png'
+    for stem in ('Owner-Preview', 'Public', 'Owner-Request', 'Client-History', 'Client-Agreement')
+    for size in ('Desktop', 'Mobile')
+)
+
+
+def arguments(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
+    parser.add_argument('--full-suite', action='store_true',
+                        help='Write only the fixed flat hosting outputs into the existing full-suite QA directory.')
+    return parser.parse_args(argv)
+
+
+def output_paths(full_suite):
+    qa = ROOT / 'qa' if full_suite else QA
+    names = {
+        'results.json': 'hosting-catalog-http-results.json',
+        'progress.json': 'hosting-catalog-http-progress.txt',
+        'commands.json': 'hosting-catalog-http-commands.json',
+        'server.log': 'hosting-catalog-http-server.log',
+    }
+    return qa, {name: qa / (flat if full_suite else name) for name, flat in names.items()}
+
+
+def prepare_outputs(full_suite):
+    qa, outputs = output_paths(full_suite)
+    if full_suite:
+        assert not WEB.exists() and not WEB.is_symlink(), 'Preserve the previous isolated hosting runtime.'
+        assert not qa.is_symlink() and (not qa.exists() or qa.is_dir()), 'Use a regular QA directory.'
+        owned = [*outputs.values(), *(qa / name for name in CAPTURE_NAMES)]
+        assert all(not path.exists() and not path.is_symlink() for path in owned), 'Preserve previous hosting evidence.'
+    else:
+        assert not QA.exists() and not WEB.exists(), 'Preserve previous evidence and use a fresh isolated runtime.'
+    qa.mkdir(parents=True, exist_ok=full_suite); SITE.mkdir(parents=True)
+    return qa, outputs
+
+
+def report_files(qa, outputs, full_suite):
+    # The shared full-suite directory already contains unrelated reports and captures.
+    paths = ([path for name, path in outputs.items() if name != 'results.json']
+             + [qa / name for name in CAPTURE_NAMES]) if full_suite else qa.iterdir()
+    return {path.name: {'bytes': path.stat().st_size, 'sha256': sha(path.read_bytes())}
+            for path in paths if path.is_file()}
 
 
 def sha(raw):
@@ -78,19 +129,18 @@ def fixture_diagnostic(raw, operation):
     return value
 
 
-def main():
+def main(full_suite=False):
     assert os.name == 'posix' and os.geteuid() != 0, 'Use the unprivileged disposable Linux runner.'
     assert os.environ.get('CWP_TEST_DATABASE') == 'cwp_test'
     php = os.environ['PHP_BINARY']
     assert Path(php).is_absolute() and Path(php).is_file()
-    assert not QA.exists() and not WEB.exists(), 'Preserve previous evidence and use a fresh isolated runtime.'
-    QA.mkdir(parents=True); SITE.mkdir(parents=True)
+    qa, outputs = prepare_outputs(full_suite)
     checks = []; commands = []; source = {}; package = {}; runtime = {}; result = {}
     completed = False; failure = None; server = None; log = None
 
     def check(name, condition):
         checks.append({'name': name, 'passed': bool(condition)})
-        write(QA / 'progress.json', {'complete': False, 'checks': checks})
+        write(outputs['progress.json'], {'complete': False, 'checks': checks})
         if not condition:
             raise AssertionError(name)
 
@@ -100,10 +150,10 @@ def main():
         commands.append({'operation': operation, 'returncode': child.returncode,
             'stdout_bytes': len(child.stdout.encode()), 'stdout_sha256': sha(child.stdout.encode()),
             'stderr_bytes': len(child.stderr.encode()), 'stderr_sha256': sha(child.stderr.encode())})
-        write(QA / 'commands.json', commands)
+        write(outputs['commands.json'], commands)
         if child.returncode != 0 or child.stderr:
             commands[-1]['diagnostic'] = fixture_diagnostic(child.stderr, operation)
-            write(QA / 'commands.json', commands)
+            write(outputs['commands.json'], commands)
             raise RuntimeError('Isolated hosting fixture failed: ' + operation)
         return json.loads(child.stdout)
 
@@ -112,7 +162,7 @@ def main():
         check('Hosting UI checkout equals its workflow source', head == os.environ['GITHUB_SHA'])
         source = {'source': head, 'tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], cwd=ROOT, text=True).strip(),
                   'run': os.environ['GITHUB_RUN_ID'], 'attempt': os.environ['GITHUB_RUN_ATTEMPT'], 'files': {}}
-        for path in SOURCE_PATHS:
+        for path in SOURCE_PATHS + (FULL_SUITE_SOURCE_PATHS if full_suite else []):
             raw = (ROOT / path).read_bytes(); source['files'][path] = sha(raw)
             check('Hosting UI source equals Git: ' + path, raw == subprocess.check_output(['git', 'show', head + ':' + path], cwd=ROOT))
         native_path = ROOT / 'qa/hosting-catalog-native-results.json'
@@ -137,14 +187,14 @@ def main():
         package = {'name': archive.name, 'sha256': manifest['sha256'], 'bytes': archive.stat().st_size,
                    'members': len(names), 'manifest_sha256': sha(mp.read_bytes())}
         seed = fixture('prepare')
-        check('Hosting UI uses only its isolated native prefix and product', seed['prepared'] is True and seed['prefix'] == 'hoci_' and type(seed['product_id']) is int and seed['product_id'] > 0)
+        check('Hosting UI uses only its isolated native prefix and product', seed['prepared'] is True and seed['prefix'] == 'hofc_' and type(seed['product_id']) is int and seed['product_id'] > 0)
         helpers = {'BeautifulSoup': BeautifulSoup, 'urljoin': urljoin}
         required = {'soup', 'token', 'form_data', 'form_for', 'submit'}
         tree = ast.parse((ROOT / 'tests/browser_acceptance.py').read_text(encoding='utf-8'))
         definitions = [n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name in required]
         check('Hosting UI reuses the five exact full-browser form helpers', len(definitions) == len(required) and {n.name for n in definitions} == required)
         exec(compile(ast.Module(body=definitions, type_ignores=[]), 'browser_acceptance.py', 'exec'), helpers)
-        log = open(QA / 'server.log', 'w', encoding='utf-8')
+        log = open(outputs['server.log'], 'w', encoding='utf-8')
         server = subprocess.Popen([php, '-S', '127.0.0.1:8091', '-t', str(WEB)], cwd=ROOT, stdout=log, stderr=log)
         probe = WEB / 'hosting-runtime.php'
         probe.write_text("<?php echo json_encode(['version'=>PHP_VERSION,'sapi'=>PHP_SAPI]);\n", encoding='utf-8')
@@ -164,7 +214,7 @@ def main():
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(headless=True)
             try:
-                result = run_browser({**helpers, 'ROOT': ROOT, 'BASE': BASE, 'QA': QA,
+                result = run_browser({**helpers, 'ROOT': ROOT, 'BASE': BASE, 'QA': qa,
                     'check': check, 'fixture': fixture, 'seed': seed}, browser)
             finally:
                 browser.close()
@@ -186,18 +236,18 @@ def main():
             except subprocess.TimeoutExpired: server.kill(); server.wait()
         if log is not None: log.close()
         if completed:
-            clean = re.search(r'PHP (?:Warning|Notice|Fatal error|Parse error|Deprecated):', (QA / 'server.log').read_text(encoding='utf-8', errors='replace')) is None
+            clean = re.search(r'PHP (?:Warning|Notice|Fatal error|Parse error|Deprecated):', (outputs['server.log']).read_text(encoding='utf-8', errors='replace')) is None
             checks.append({'name': 'Hosting UI server has no PHP runtime warnings or errors', 'passed': clean})
             if not clean: completed = False; failure = {'class': 'RuntimeLogFailure'}
-        files = {p.name: {'bytes': p.stat().st_size, 'sha256': sha(p.read_bytes())} for p in QA.iterdir() if p.is_file()}
+        files = report_files(qa, outputs, full_suite)
         report = {'passed': completed and all(c['passed'] is True for c in checks), 'full_acceptance': False,
             'visual_approval': False, 'source': source, 'package': package, 'runtime': runtime, 'result': result,
             'checks': checks, 'failure': failure, 'files': files,
             'scope': 'Focused packaged owner/client hosting UI on one disposable Linux database. Actual retained outcomes only; not full application, provider, payment or release acceptance.'}
-        write(QA / 'results.json', report)
+        write(outputs['results.json'], report)
         print(json.dumps({'passed': report['passed'], 'checks': len(checks), 'failure': failure, 'full_acceptance': False}))
     return 0 if report['passed'] else 1
 
 
 if __name__ == '__main__':
-    raise SystemExit(main())
+    raise SystemExit(main(arguments().full_suite))

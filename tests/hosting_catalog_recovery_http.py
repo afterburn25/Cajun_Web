@@ -1,4 +1,4 @@
-"""One paused hoci_ phase, real packaged staged-owner HTTP, synthetic complete journal.
+"""One paused hofc_ phase, real packaged staged-owner HTTP, synthetic complete journal.
 
 Linux UI job only, after exact-source packages exist. No published-baseline or
 interrupted-upgrade acceptance, browser screenshots, provider calls or retries.

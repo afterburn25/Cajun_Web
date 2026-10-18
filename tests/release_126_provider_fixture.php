@@ -1,7 +1,7 @@
 <?php
 /** Original1.25 inventory plus candidate1.26 catalog; fixed synthetic transports only. */
 declare(strict_types=1);
-if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||count($argv)!==3)exit(2);
+if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||!in_array(count($argv),[3,4],true))exit(2);
 $root=realpath($argv[1]);$base=realpath(__DIR__.'/../test-runtime');
 if(!$root||!$base||!str_starts_with($root,$base.DIRECTORY_SEPARATOR))exit(2);
 define('CWP_BOOT',true);define('CWP_ROOT',$root);require $root.'/includes/bootstrap.php';
@@ -18,6 +18,7 @@ final class Retained126Transport implements HttpTransport {
     public function send(TransportRequest $request):TransportResponse {global $requests;$requests++;if($request->method!=='POST')throw new LogicException('Expected one synthetic label request.');return new TransportResponse(200,[],'false');}
 }
 if($argv[2]==='seed'){
+    if(count($argv)!==3)exit(2);
     if(CWP_VERSION!=='1.25.0'||setting('provider_inventory_schema_version')!=='5')throw new RuntimeException('Seed only the original published1.25 inventory schema.');
     $read=static function(array $row,#[SensitiveParameter] string $secret,string $address,callable $authorize):InventorySnapshot {
         $authorize();if($address!=='8.8.8.8'||$secret!=='SYNTHETIC_ORIGINAL_120_GENERAL_KEY')throw new LogicException('Unexpected isolated fixture boundary.');
@@ -39,6 +40,7 @@ if($argv[2]==='seed'){
     echo json_encode(['seeded'=>true,'synthetic_posts'=>$requests],JSON_THROW_ON_ERROR);exit;
 }
 if($argv[2]==='replay'){
+    if(count($argv)!==3)exit(2);
     $grant=one('SELECT id FROM '.table('provider_operation_grants').' WHERE consumed_key=?',['retained126-label']);if(!$grant)throw new RuntimeException('Original consumed approval missing.');
     $resolver=static function()use(&$requests):string{$requests++;throw new LogicException('Recovered request must not resolve or send.');};
     $perform=static function()use(&$requests):OperationResult{$requests++;throw new LogicException('Recovered request must not send.');};
@@ -48,7 +50,7 @@ if($argv[2]==='replay'){
 
 // Candidate-only modes are appended below; no other action is admitted.
 if(!in_array($argv[2],['catalog-read','catalog-state','catalog-replay'],true))exit(2);
-if(CWP_VERSION!=='1.26.0')throw new RuntimeException('New catalog actions require actual candidate1.26 files.');
+if(count($argv)!==4||!preg_match('/\A[0-9]+\.[0-9]+\.[0-9]+\z/',$argv[3])||trim(file_get_contents(__DIR__.'/../VERSION'))!==$argv[3]||CWP_VERSION!==$argv[3])throw new RuntimeException('New catalog actions require actual source-bound candidate files.');
 require_once CWP_CODE_ROOT.'/app/providers/catalog_import.php';
 require_once CWP_CODE_ROOT.'/app/providers/package_types.php';
 if(!provider_package_types_ready())throw new RuntimeException('Enable catalog storage through the real HTTP owner form first.');

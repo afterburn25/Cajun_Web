@@ -182,6 +182,228 @@ def baseline_driver_predecessor(path, data, contract):
     return data
 
 
+def hosting_upgrade_workflow_predecessor(workflow, extension):
+    edit = extension['workflow_delta']
+    a.require(set(edit) == {'before', 'after'} and workflow.count(edit['after']) == 1, 'Exact hosting upgrade guard command missing')
+    original = workflow.replace(edit['after'], edit['before'], 1)
+    a.require(hashlib.sha256(original.encode()).hexdigest() == extension['predecessor_workflow_sha256'], 'Full workflow changed outside hosting upgrade guard')
+    return original
+
+
+def hosting_upgrade_source_predecessor(data, delta):
+    a.require(hashlib.sha256(data).hexdigest() == delta['current_sha256'], 'Changed hosting upgrade source')
+    for edit in reversed(delta['replacements']):
+        before, after = edit['before'].encode(), edit['after'].encode()
+        a.require(set(edit) == {'before', 'after'} and before and after and data.count(after) == 1, 'Missing exact hosting upgrade source addition')
+        data = data.replace(after, before, 1)
+    a.require(hashlib.sha256(data).hexdigest() == delta['predecessor_sha256'], 'Original upgrade source changed')
+    return data
+
+
+def hosting_upgrade_wiring_checks(tmp, workflow, contract):
+    extension = contract['published125_hosting_extension']
+    prior_workflow = hosting_upgrade_workflow_predecessor(workflow, extension)
+    check('Hosting upgrade adds its guard while retaining the exact prior full workflow', bool(prior_workflow))
+    deny('Hosting upgrade workflow cannot omit its guard', lambda: hosting_upgrade_workflow_predecessor(prior_workflow, extension))
+    deny('Hosting upgrade workflow cannot change an old timeout', lambda: hosting_upgrade_workflow_predecessor(workflow.replace('timeout-minutes: 240', 'timeout-minutes: 241', 1), extension))
+    hosting_source_bytes(ROOT, extension['source_sha256'])
+    check('Hosting upgrade binds all six actual source files', set(extension['source_sha256']) == {
+        'tests/release_126_hosting_records.py', 'tests/release_126_hosting_fixture.php', 'tests/release_126_hosting_guards.py',
+        'tests/release_126_upgrade_cases.py', 'tests/release_126_upgrade_acceptance.py', 'tests/release_126_provider_fixture.php'})
+    deltas = extension['source_delta']
+    check('Hosting upgrade modifies only three existing upgrade producers', set(deltas) == {
+        'tests/release_126_upgrade_cases.py', 'tests/release_126_upgrade_acceptance.py', 'tests/release_126_provider_fixture.php'})
+    previous = copy.deepcopy(contract['published_release_upgrade_126'])
+    for path, delta in deltas.items():
+        current = ROOT.joinpath(path).read_bytes().replace(b'\r\n', b'\n')
+        check('Hosting upgrade preserves exact original source ' + path, bool(hosting_upgrade_source_predecessor(current, delta)))
+        deny('Hosting upgrade source mutation is refused ' + path, lambda d=current, x=delta: hosting_upgrade_source_predecessor(d + b'\n# mutation', x))
+        check('Existing upgrade contract binds current producer ' + path, previous['source_sha256'][path] == delta['current_sha256'])
+        previous['source_sha256'][path] = delta['predecessor_sha256']
+    check('Original published baseline contract changes only three current source pins',
+          hashlib.sha256(json.dumps(previous, sort_keys=True, separators=(',', ':')).encode()).hexdigest() == extension['predecessor_upgrade_contract_sha256'])
+    check('Hosting supplement uses the immutable published1.25 baseline', previous['baseline_source'] == 'b79c67110829126916e3a65e616191542448bccc'
+          and previous['baseline_sha256'] == 'bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'
+          and previous['baseline_members'] == 2895)
+    expected = ['apache-release126-hosting-guards-results.json', 'apache-release126-hosting-results.json']
+    check('Hosting upgrade adds exactly two required reports', extension['reports'] == expected)
+    reports = a.load(ROOT / 'tools/acceptance-reports.json')
+    for lane, count in [('browser', 181), ('final', 232)]:
+        current = reports[lane]
+        additions = expected if lane == 'final' else []
+        prior = [name for name in current if name not in additions]
+        check('Hosting upgrade preserves all preceding reports ' + lane, len(current) == len(set(current)) == count
+              and all(current.count(name) == 1 for name in additions)
+              and hashlib.sha256(json.dumps(prior, separators=(',', ':')).encode()).hexdigest() == extension['predecessor_reports_sha256'][lane])
+        reports[lane] = prior
+    sample = tmp / 'hosting-upgrade-reports'
+    for name in expected:
+        named(sample / 'qa' / name)
+        check('Hosting upgrade report belongs only to Apache ' + name, a.evidence_allowed('qa/' + name, 'apache')
+              and all(not a.evidence_allowed('qa/' + name, lane) for lane in ('build', 'native-browser', 'recovery')))
+        named(sample / 'qa' / name, False)
+        check('Hosting upgrade cannot hide failed report ' + name, not a.reports(sample)[name]['passed'])
+        (sample / 'qa' / name).unlink()
+        check('Hosting upgrade cannot hide missing report ' + name, name not in a.reports(sample))
+        named(sample / 'qa' / name)
+    prefixes = ('r126_ron_', 'r126_son_', 'r126_roff_', 'r126_soff_')
+    snapshots = ['apache-release126-hosting-' + p + '-retention.json' for p in prefixes]
+    images = ['apache-release126-hosting-' + p + '-Upgraded-Hosting-Offers-' + size + '.png' for p in prefixes for size in ('Desktop', 'Mobile')]
+    check('Hosting upgrade inventories four snapshots and eight captures separately', extension['snapshots'] == snapshots and extension['screenshots'] == images)
+    for name in snapshots:
+        a.write(sample / 'qa' / name, {'sha256': '0' * 64})
+    a.write(sample / 'qa/apache-release126-hosting-progress.txt', {'checks': [{'name': 'Incomplete synthetic progress', 'passed': False}]})
+    check('Hosting upgrade snapshots and progress cannot count as acceptance reports', set(a.reports(sample)) == set(expected))
+    for name in snapshots + images:
+        check('Hosting upgrade output has unchanged Apache ownership ' + name, a.evidence_allowed('qa/' + name, 'apache')
+              and all(not a.evidence_allowed('qa/' + name, lane) for lane in ('build', 'native-browser', 'recovery')))
+    for name in ['test-runtime/apache-release126-private/state.json', 'test-runtime/apache-release126-private/sessions/session', 'qa/hosting-upgrade/nested.json']:
+        check('Hosting upgrade private or nested path stays excluded ' + name, not a.evidence_allowed(name, 'apache'))
+    deny('Hosting upgrade private provider key stays refused', lambda: a.evidence_allowed('test-runtime/apache-release126-private/provider-master.key', 'apache'))
+    return prior_workflow, reports
+
+
+def hosting_purchase_recipe_predecessor(commands, contract):
+    joined=contract['hosting_joined_purchase']; additions=joined['additions']
+    a.require(len(commands)==162 and commands==contract['native_commands'], 'Joined recipe requires exactly162 commands')
+    a.require(additions==['.ci-venv/bin/python -B tests/hosting_catalog_purchase_guards.py','.ci-venv/bin/python -B tests/hosting_catalog_purchase.py --full-suite'], 'Exact joined runner and guards required')
+    pos=commands.index(joined['additions_after'])+1
+    a.require(commands[pos:pos+2]==additions and all(commands.count(c)==1 for c in additions), 'Joined commands occur once at exact position')
+    original=[c for c in commands if c not in additions]
+    a.require(len(original)==joined['predecessor_native_count']==160 and hashlib.sha256(json.dumps(original,separators=(',',':')).encode()).hexdigest()==joined['predecessor_native_sha256'], 'Original160 recipe changed')
+    return original
+
+
+def hosting_purchase_workflow_predecessor(workflow, joined):
+    for edit in reversed(joined['workflow_delta']):
+        a.require(set(edit)=={'before','after'} and edit['before'] and edit['after'] and workflow.count(edit['after'])==1, 'Exact joined workflow change missing')
+        workflow=workflow.replace(edit['after'],edit['before'],1)
+    a.require(hashlib.sha256(workflow.encode()).hexdigest()==joined['predecessor_workflow_sha256'], 'Prior full workflow changed outside joined additions')
+    return workflow
+
+
+def hosting_purchase_wiring_checks(tmp, workflow, commands, contract, reports=None):
+    joined=contract['hosting_joined_purchase']
+    original=hosting_purchase_recipe_predecessor(commands,contract)
+    prior_workflow=hosting_purchase_workflow_predecessor(workflow,joined)
+    check('Joined purchase retains the exact160 predecessor recipe and full workflow',len(original)==160 and bool(prior_workflow))
+    for label,changed in [('missing',commands[:-1]),('duplicate',commands+[joined['additions'][0]]),('reordered',commands[1:]+commands[:1])]:
+        deny('Joined recipe refuses '+label,lambda c=changed:hosting_purchase_recipe_predecessor(c,contract))
+    deny('Joined recipe cannot omit full-suite output mode',lambda:hosting_purchase_recipe_predecessor([c.replace('hosting_catalog_purchase.py --full-suite','hosting_catalog_purchase.py') for c in commands],contract))
+    deny('Joined workflow cannot alter existing job timeout',lambda:hosting_purchase_workflow_predecessor(workflow.replace('timeout-minutes: 240','timeout-minutes: 241',1),joined))
+    deny('Joined workflow cannot omit isolated clock dependency',lambda:hosting_purchase_workflow_predecessor(workflow.replace('install -y libfaketime ','install -y ',1),joined))
+    hosting_source_bytes(ROOT,joined['source_sha256'])
+    check('Joined purchase exact current source producers and runtime dependencies are pinned',True)
+    expected=['hosting-purchase-'+p+'-results.json' for p in ('prepare','due','portal-own','portal-other','joined')]+['hosting-purchase-handoff-guards.json','hosting-purchase-http-results.json']
+    check('Joined purchase requires exact five native phase runner reports and two handoff reports',joined['reports']==expected and len(set(expected))==7)
+    if reports is None: reports=a.load(ROOT/'tools/acceptance-reports.json')
+    for lane,count in [('browser',181),('final',230)]:
+        current=reports[lane];prior=[n for n in current if n not in expected]
+        check('Joined purchase retains every original report '+lane,len(current)==len(set(current))==count and all(current.count(n)==1 for n in expected) and hashlib.sha256(json.dumps(prior,separators=(',',':')).encode()).hexdigest()==joined['predecessor_reports_sha256'][lane])
+        reports[lane]=prior
+    sample=tmp/'joined-purchase-reports'
+    for name in expected:
+        named(sample/'qa'/name)
+        check('Joined report belongs only to unchanged flat browser partition '+name,a.evidence_allowed('qa/'+name,'native-browser') and all(not a.evidence_allowed('qa/'+name,lane) for lane in ('build','apache','recovery')))
+    a.write(sample/'qa/hosting-purchase-http-progress.txt',{'checks':[{'name':'Synthetic incomplete','passed':False}]})
+    a.write(sample/'qa/hosting-purchase-http-commands.json',[{'returncode':0}])
+    check('Joined progress and commands cannot masquerade as additional passing reports',set(a.reports(sample))==set(expected))
+    for name in expected:
+        named(sample/'qa'/name,False)
+        check('Joined failed report cannot be masked by passing neighbors '+name,not a.reports(sample)[name]['passed'])
+        (sample/'qa'/name).unlink()
+        check('Joined missing report remains missing '+name,name not in a.reports(sample))
+        named(sample/'qa'/name)
+    captures=['Hosting-Purchase-'+stem+'-'+size+'.png' for stem in ('Owner-Linked','Owner-Unlinked','Owner-Package','Client-Hosting','Other-Client') for size in ('Desktop','Mobile')]
+    check('Joined handoff has exactly ten independently named captures',joined['screenshots']==captures and len(set(captures))==10)
+    deny('Private joined provider key is explicitly refused',lambda:a.evidence_allowed('test-runtime/hosting-purchase/private/provider-master.key','native-browser'))
+    for name in ['test-runtime/hosting-purchase/state.json','test-runtime/hosting-purchase/browser-sessions/session','qa/hosting-purchase/due-results.json','qa/hosting-purchase-http/results.json']:
+        check('Private or nested joined file remains excluded '+name,not a.evidence_allowed(name,'native-browser'))
+    return prior_workflow,original,reports
+
+
+def hosting_recipe_predecessor(commands, contract):
+    hosting = contract['hosting_catalog_offers']; additions = hosting['additions']
+    a.require(len(commands) == 160 and commands == contract['native_commands'], 'Hosting recipe must contain exactly160 ordered commands')
+    a.require(len(additions) == len(set(additions)) == 5, 'Exactly five hosting additions are required')
+    position = commands.index(hosting['additions_after']) + 1
+    a.require(commands[position:position + 5] == additions and all(commands.count(c) == 1 for c in additions), 'Hosting additions must occur exactly once at the reviewed position')
+    original = [c for c in commands if c not in additions]
+    a.require(len(original) == hosting['predecessor_native_count'] == 155 and hashlib.sha256(json.dumps(original, separators=(',', ':')).encode()).hexdigest() == hosting['predecessor_native_sha256'], 'Original155 hosting predecessor recipe changed')
+    return original
+
+
+def hosting_workflow_predecessor(workflow, hosting):
+    for edit in reversed(hosting['workflow_delta']):
+        a.require(set(edit) == {'before', 'after'} and edit['before'] and edit['after'] and workflow.count(edit['after']) == 1, 'Missing exact hosting workflow insertion')
+        workflow = workflow.replace(edit['after'], edit['before'], 1)
+    a.require(hashlib.sha256(workflow.encode()).hexdigest() == hosting['predecessor_workflow_sha256'], 'Original full workflow changed outside finite hosting additions')
+    return workflow
+
+
+def hosting_source_bytes(root, pins):
+    a.require(pins and all(isinstance(v, str) and re.fullmatch('[0-9a-f]{64}', v) for v in pins.values()), 'Hosting source pins must all be bound')
+    for path, expected in pins.items():
+        a.safe_name(path)
+        a.require(hashlib.sha256(root.joinpath(path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == expected, 'Changed hosting source: ' + path)
+
+
+def hosting_wiring_checks(tmp, workflow, commands, contract, reports=None):
+    hosting = contract['hosting_catalog_offers']
+    original = hosting_recipe_predecessor(commands, contract)
+    check('Hosting adds five ordered commands while preserving all155 predecessor commands', len(original) == 155)
+    check('Hosting workflow reverses exactly without changing old jobs or outcomes', bool(hosting_workflow_predecessor(workflow, hosting)))
+    for label, changed in [('missing', commands[:-1]), ('duplicate', commands + [hosting['additions'][0]]), ('reordered', commands[1:] + commands[:1])]:
+        deny('Hosting recipe refuses ' + label + ' commands', lambda c=changed: hosting_recipe_predecessor(c, contract))
+    wrong = copy.deepcopy(contract); wrong['hosting_catalog_offers']['additions'][2] = wrong['hosting_catalog_offers']['additions'][2].replace('CWP_TEST_HOSTING_RECOVERY=1 ', '')
+    deny('Hosting recovery opt-in cannot silently disappear', lambda: hosting_recipe_predecessor(commands, wrong))
+    deny('Hosting workflow refuses an unrelated timeout change', lambda: hosting_workflow_predecessor(workflow.replace('timeout-minutes: 240', 'timeout-minutes: 241', 1), hosting))
+    deny('Hosting workflow refuses removal of raw recovery retention', lambda: hosting_workflow_predecessor(workflow.replace(hosting['workflow_delta'][-1]['after'], hosting['workflow_delta'][-1]['before'], 1), hosting))
+    hosting_source_bytes(ROOT, hosting['source_sha256'])
+    check('Hosting source and recovery producers match every exact current pin', True)
+    pin_root = tmp / 'hosting-source'; blob(pin_root / 'tests/probe.php', b'<?php /* synthetic */')
+    pins = {'tests/probe.php': a.digest(pin_root / 'tests/probe.php')}
+    hosting_source_bytes(pin_root, pins)
+    (pin_root / 'tests/probe.php').unlink()
+    deny('Missing hosting producer source cannot pass', lambda: hosting_source_bytes(pin_root, pins))
+    blob(pin_root / 'tests/probe.php', b'<?php /* changed */')
+    deny('Changed hosting producer source cannot pass', lambda: hosting_source_bytes(pin_root, pins))
+    deny('Pending hosting producer pin cannot pass', lambda: hosting_source_bytes(pin_root, {'tests/probe.php': None}))
+    reports = a.load(ROOT / 'tools/acceptance-reports.json') if reports is None else reports
+    names = hosting['reports']
+    expected_names = ['hosting-catalog-document-default.json', 'hosting-catalog-document-minimal.json',
+                      'hosting-catalog-native-results.json', 'hosting-catalog-http-results.json',
+                      'hosting-catalog-recovery-guard-default.json', 'hosting-catalog-recovery-guard-minimal.json',
+                      'hosting-catalog-recovery-native-results.json']
+    check('Hosting requires exactly seven distinct named reports', names == expected_names and len(set(names)) == 7)
+    for lane, count in [('browser', 174), ('final', 223)]:
+        current = reports[lane]; prior = [n for n in current if n not in names]
+        check('Hosting preserves exact original report union ' + lane, len(current) == len(set(current)) == count and all(current.count(n) == 1 for n in names) and hashlib.sha256(json.dumps(prior, separators=(',', ':')).encode()).hexdigest() == hosting['predecessor_reports_sha256'][lane])
+    report_root = tmp / 'hosting-reports'
+    for name in names:
+        named(report_root / 'qa' / name)
+        check('Hosting report remains in the existing flat native browser partition ' + name, a.evidence_allowed('qa/' + name, 'native-browser') and all(not a.evidence_allowed('qa/' + name, lane) for lane in ('build', 'recovery', 'apache')))
+    a.write(report_root / 'qa/hosting-catalog-http-commands.json', [{'command': ['synthetic'], 'returncode': 0}])
+    a.write(report_root / 'qa/hosting-catalog-http-progress.txt', {'passed': False, 'checks': [{'name': 'Incomplete synthetic progress', 'passed': False}]})
+    check('Hosting diagnostic progress and commands cannot become extra passing reports', set(a.reports(report_root)) == set(names))
+    for name in names:
+        named(report_root / 'qa' / name, False)
+        check('Successful neighboring reports cannot mask hosting failure ' + name, not a.reports(report_root)[name]['passed'])
+        named(report_root / 'qa' / name)
+        (report_root / 'qa' / name).unlink()
+        check('Absent hosting report remains absent ' + name, name not in a.reports(report_root))
+        named(report_root / 'qa' / name)
+    duplicate = report_root / 'qa' / names[0]
+    duplicate.write_bytes(b'{"passed":true,"passed":false,"checks":[{"name":"Synthetic","passed":true}]}')
+    deny('Duplicate keys cannot disguise a failed hosting report', lambda: a.reports(report_root))
+    captures = hosting['screenshots']
+    expected_captures = ['Hosting-Offers-' + stem + '-' + size + '.png' for stem in ('Owner-Preview', 'Public', 'Owner-Request', 'Client-History', 'Client-Agreement') for size in ('Desktop', 'Mobile')]
+    check('Hosting adds only the ten exact desktop and mobile captures', captures == expected_captures and len(set(captures)) == 10 and all(a.evidence_allowed('qa/' + n, 'native-browser') for n in captures))
+    for name in ['test-runtime/hosting-recovery-absent-0000000000000000/site/index.php', 'qa/hosting-recovery/site/index.php']:
+        check('Raw recovery files require their separate artifact ' + name, not a.evidence_allowed(name, 'native-browser'))
+    return original
+
+
 def run(tmp):
     def remove_partition(path):
         resolved=path.resolve();require_parent=tmp.resolve()
@@ -388,8 +610,13 @@ def run(tmp):
             original_bytes=original_bytes.replace(added,b'',1)
         check('Original test source retained '+path, hashlib.sha256(original_bytes).hexdigest()==expected_hash)
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
+    workflow,upgrade_reports=hosting_upgrade_wiring_checks(tmp,workflow,contract)
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
+    workflow,native_commands,hosting_reports=hosting_purchase_wiring_checks(tmp,workflow,native_commands,contract,upgrade_reports)
+    contract['native_commands']=list(native_commands)
+    native_commands=hosting_wiring_checks(tmp, workflow, native_commands, contract, hosting_reports)
+    contract['native_commands']=list(native_commands)
     package_contract=contract['provider_package_types'];package_commands=package_contract['additions']
     check('Direct hosting catalog retains the complete155-command recipe',len(native_commands)==155 and native_commands==contract['native_commands'])
     package_position=native_commands.index(package_contract['additions_after'])+1

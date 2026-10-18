@@ -4,7 +4,11 @@ declare(strict_types=1);
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test'||getenv('CWP_TEST_HOSTING_PURCHASE')!=='1')exit(2);
 $phase=$argv[1]??'';
 if(!in_array($phase,['prepare','due','portal-own','portal-other'],true))exit(2);
-$root=realpath(__DIR__.'/..');$runtime=$root.'/test-runtime/hosting-purchase';$qa=$root.'/qa/hosting-purchase';
+$fullMode=getenv('CWP_TEST_HOSTING_PURCHASE_FULL_SUITE');if(!in_array($fullMode,[false,'','1'],true))throw new RuntimeException('Unknown purchase output mode');$fullSuite=$fullMode==='1';
+$portText=getenv('CWP_TEST_PORT');if(!is_string($portText)||!preg_match('/\A[1-9][0-9]{0,4}\z/',$portText)||(int)$portText>65535)throw new RuntimeException('Assigned disposable database port required');$purchasePort=(int)$portText;
+if($fullSuite){$version=getenv('CWP_PHP_VERSION');if(!in_array($version,['8.2','8.3','8.4'],true)||getenv('PHP_BINARY')!=='/usr/bin/php'.$version||PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION!==$version||realpath(PHP_BINARY)!==realpath((string)getenv('PHP_BINARY')))throw new RuntimeException('Selected supported PHP runtime required');}
+elseif($purchasePort!==33306)throw new RuntimeException('Original focused database port required');
+$root=realpath(__DIR__.'/..');$runtime=$root.'/test-runtime/hosting-purchase';$qa=$root.($fullSuite?'/qa':'/qa/hosting-purchase');
 foreach([$runtime,$qa] as $path){if(!is_dir($path)||realpath($path)!==$path)throw new RuntimeException('Use the isolated purchase runner.');for($p=$path;$p!==dirname($p);$p=dirname($p))if(is_link($p))throw new RuntimeException('Purchase fixture paths must not contain links.');}
 define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
@@ -27,7 +31,7 @@ const HPC_SECRET='SYNTHETIC_JOINED_HOSTING_KEY';
 const HPC_DOMAIN='purchase.example';
 const HPC_PACKAGE=876001;
 $GLOBALS['cwp_config']=['site_url'=>'http://127.0.0.1:8091/hosting-purchase','storage'=>$runtime.'/private','key'=>str_repeat('synthetic-joined-hosting-',4),'db'=>['host'=>getenv('CWP_TEST_HOST')?:'127.0.0.1','port'=>(int)(getenv('CWP_TEST_PORT')?:33306),'name'=>'cwp_test','user'=>getenv('CWP_TEST_USER')?:'cwp_test','pass'=>getenv('CWP_TEST_PASSWORD')?:'local-ci-only','prefix'=>'hpci_']];
-if(config()['db']['host']!=='127.0.0.1'||config()['db']['port']!==33306)throw new RuntimeException('Use the fixed disposable database endpoint.');
+if(config()['db']['host']!=='127.0.0.1'||config()['db']['port']!==$purchasePort)throw new RuntimeException('Use the selected disposable database endpoint.');
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];
 $_SERVER['DOCUMENT_ROOT']=CWP_CODE_ROOT;ini_set('session.save_path',$runtime.'/sessions');start_session();
 date_default_timezone_set('UTC');
@@ -93,7 +97,7 @@ function hp_read(array $p,string $secret,string $address,callable $authorize,str
     $credential=new ProviderCredential('twenty-i',$p['id'],static function()use($authorize,$secret):string{$authorize();return $secret;});
     return InventoryReader::read(new HostingPurchaseTransport(Closure::fromCallable($authorize)),$credential,$operation,0,time());
 }
-function hp_write(string $name,array $value):void{global $qa;$f=fopen($qa.'/'.$name,'x');if(!$f)throw new RuntimeException('Purchase evidence already exists');try{fwrite($f,json_encode($value,JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n");}finally{fclose($f);}}
+function hp_write(string $name,array $value):void{global $qa,$fullSuite;if($fullSuite)$name='hosting-purchase-'.$name;$f=fopen($qa.'/'.$name,'x');if(!$f)throw new RuntimeException('Purchase evidence already exists');try{fwrite($f,json_encode($value,JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n");}finally{fclose($f);}}
 
 try{
     db()->setAttribute(PDO::ATTR_STATEMENT_CLASS,[HostingPurchaseStatement::class,[]]);

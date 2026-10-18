@@ -113,6 +113,31 @@ def main():
             check('Unsafe ' + label + ' writes no output', not (root / 'absent').exists())
         manifest = make([('index.php', b'php', stat.S_IFREG | 0o644)]); manifest['files']['index.php'] = '9' * 64
         refuses('Refuse wrong original member hash', lambda: extract_package(archive, manifest, root / 'absent', source))
+    # Same original report predicates in the explicit full-suite flat layout.
+    import hosting_purchase_handoff_browser as runner
+    flat = copy.deepcopy(proof)
+    for record in flat['phases']: record['report'] = 'hosting-purchase-' + record['phase'] + '-results.json'
+    check('Full-suite original four phase reports retain exact validation', validate_joined(flat,reports,source,fixture_hash,True)['phase']=='due')
+    refuses('Focused report names cannot masquerade as full-suite evidence',lambda:validate_joined(proof,reports,source,fixture_hash,True))
+    refuses('Full-suite report names cannot masquerade as focused evidence',lambda:validate_joined(flat,reports,source,fixture_hash))
+    saved=(runner.ROOT,runner.QA,runner.WEB)
+    try:
+        with tempfile.TemporaryDirectory(prefix='hosting-handoff-flat-') as temporary:
+            root=Path(temporary).resolve();qa=root/'qa';qa.mkdir();(qa/'unrelated.json').write_bytes(b'keep')
+            runner.ROOT=root;runner.QA=qa/'hosting-purchase-http';runner.WEB=root/'test-runtime/hosting-purchase-web'
+            directory,outputs=runner.prepare_handoff_outputs(True)
+            check('Full-suite browser outputs are flat and closed',directory==qa and {p.name for p in outputs.values()}=={'hosting-purchase-http-results.json','hosting-purchase-http-progress.txt','hosting-purchase-http-commands.json','hosting-purchase-http-server.log'})
+            outputs['progress.json'].write_bytes(b'synthetic diagnostics')
+            (qa/runner.CAPTURE_NAMES[0]).write_bytes(b'synthetic not PNG')
+            check('Full-suite browser excludes unrelated QA from owned file inventory',set(runner.handoff_report_files(qa,outputs,True))=={'hosting-purchase-http-progress.txt',runner.CAPTURE_NAMES[0]})
+            outputs['progress.json'].unlink();(qa/runner.CAPTURE_NAMES[0]).unlink()
+            for path in [*outputs.values(),*(qa/n for n in runner.CAPTURE_NAMES)]:
+                path.write_bytes(b'keep')
+                refuses('Full-suite refuses existing owned output '+path.name,lambda:runner.prepare_handoff_outputs(True))
+                check('Refusal preserves output and does not create runtime '+path.name,path.read_bytes()==b'keep' and not runner.WEB.exists())
+                path.unlink()
+            check('Full-suite browser leaves unrelated QA exact',(qa/'unrelated.json').read_bytes()==b'keep' and not runner.QA.exists())
+    finally:runner.ROOT,runner.QA,runner.WEB=saved
     print(json.dumps({'passed': True, 'scope': 'Portable synthetic envelope and temporary ZIP/path checks only', 'checks': checks, 'skipped': skipped}, indent=2))
     return 0
 

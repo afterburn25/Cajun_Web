@@ -1,3 +1,11 @@
+## 2026-10-18 — full hosting acceptance integration in development
+
+Branch `codex/twentyi-hosting-full-acceptance` starts at `10142c7e97c8ba9986e0c18d9ab0190ccc432727` and connects the reviewed hosting offers, recovery, eventual purchase and owner/client handoff tests to the existing complete acceptance workflow. It also extends the real published 1.25 upgrade in the same four Apache contexts. [Exact scope and remaining gates](docs/TWENTYI_HOSTING_FULL_ACCEPTANCE.md).
+
+The 23 test/CI/contract files pass independent source review and local portable checks: 385 artifact-helper outcomes retain all previous 342, 43 new upgrade guards pass, and touched Python/PHP syntax passes. These results do not establish database, HTTP, Chromium, screenshot or release acceptance. No shipping file, version, schema or live service changes.
+
+Original focused hosting source `28351f71` is separately verified from run39100808137: 18 reports, 2,043 named outcomes and ten reviewed captures. Later original512/run39104617939 and10142/run39108671173 remain queued at the 08:22 UTC observation. Their source branches and runs are preserved. The f67 1.26 release candidate and published1.25 assets remain separate. Next: retain original focused outcomes, fix concrete failures, then run complete acceptance for the final combined source. Full catalog coverage, automatic provider images and immediate first-payment checkout remain unfinished.
+
 ## 2026-10-18 — joined hosting purchase and client-access tests
 
 The portal-handoff branch adds a disposable purchase test using actual application wrappers, followed by packaged owner/client browser navigation. The native sequence covers imported offer, client consent, due invoice, verified synthetic receipt, fulfillment, confirmation and explicit package assignment. The browser continuation uses the real owner Unlink form and guided re-link, then checks correct-client visibility and other-client exclusion. [Scope and limitations](docs/TWENTYI_HOSTING_CLIENT_ACCESS.md#joined-purchase-and-browser-continuation).

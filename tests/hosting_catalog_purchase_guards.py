@@ -129,5 +129,48 @@ class PurchaseGuards(unittest.TestCase):
         self.assertLessEqual(len(safe), 1200)
 
 
+class FullSuiteGuards(unittest.TestCase):
+    def environment(self, version='8.3', port='49152'):
+        return {'CWP_TEST_DATABASE':'cwp_test','CWP_TEST_HOST':'127.0.0.1',
+                'CWP_TEST_PORT':port,'CWP_PHP_VERSION':version,'PHP_BINARY':'/usr/bin/php'+version}
+
+    def test_supported_selected_runtimes_and_dynamic_ports(self):
+        for version in ('8.2','8.3','8.4'):
+            for port in ('1','33306','49152','65535'):
+                with self.subTest(version=version,port=port):
+                    self.assertEqual(purchase.runtime_selection(self.environment(version,port),True),('/usr/bin/php'+version,int(port)))
+        self.assertEqual(purchase.runtime_selection(self.environment(port='33306'),False),('/usr/bin/php8.3',33306))
+
+    def test_unknown_runtime_port_database_or_selection_refused(self):
+        for key,value in [('CWP_PHP_VERSION','8.5'),('CWP_PHP_VERSION',''),('PHP_BINARY','/usr/bin/php8.2'),
+                          ('PHP_BINARY','php'),('CWP_TEST_HOST','provider.invalid'),('CWP_TEST_DATABASE','production'),
+                          *[('CWP_TEST_PORT',v) for v in ('','0','01','65536','33306x','-1','3306;echo')]]:
+            env=self.environment();env[key]=value
+            with self.subTest(key=key,value=value),self.assertRaises(RuntimeError): purchase.runtime_selection(env,True)
+        for env in (self.environment('8.2','33306'),self.environment()):
+            with self.assertRaises(RuntimeError):purchase.runtime_selection(env,False)
+        with self.assertRaises(RuntimeError):purchase.clean_environment({'CWP_TEST_HOSTING_PURCHASE_FULL_SUITE':'1'})
+
+    def test_flat_outputs_preserve_unrelated_evidence_and_refuse_owned_collision(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary).resolve();qa=root/'qa';qa.mkdir();(qa/'unrelated.json').write_bytes(b'keep')
+            directory,outputs=purchase.prepare_purchase_outputs(root,True)
+            self.assertEqual(directory,qa)
+            self.assertEqual({p.name for p in outputs.values()},{'hosting-purchase-'+p+'-results.json' for p in (*purchase.PHASES,'joined')})
+            self.assertFalse((qa/'hosting-purchase').exists())
+            for path in outputs.values():
+                path.write_bytes(b'keep')
+                with self.assertRaises(RuntimeError):purchase.prepare_purchase_outputs(root,True)
+                self.assertEqual(path.read_bytes(),b'keep');path.unlink()
+            self.assertEqual((qa/'unrelated.json').read_bytes(),b'keep')
+
+    def test_full_mode_cannot_choose_arbitrary_output(self):
+        import contextlib,io
+        self.assertFalse(purchase.arguments([]).full_suite)
+        self.assertTrue(purchase.arguments(['--full-suite']).full_suite)
+        for args in (['--full'],['--full-suite=x'],['--output','other']):
+            with contextlib.redirect_stderr(io.StringIO()),self.assertRaises(SystemExit):purchase.arguments(args)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
