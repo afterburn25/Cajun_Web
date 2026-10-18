@@ -1,5 +1,13 @@
 # CajunWebPro 1.26.0 candidate test record
 
+## 2026-10-18 — captured inventory closed; StackCP capture correction
+
+A finite receipt union verifies exactly 324 original browser images plus 16 previously reviewed Apache images, with no duplicates or unassigned browser images. The 358 referenced files and original browser image bytes match their receipts. This is closure of already-performed visual reviews, not a new visual or runtime pass and not credit for obscured/off-capture content.
+
+The two StackCP fixtures preserve all original predicates, viewport sizes, provider actions and report/image names. Five mobile captures use 320x1500 only after the original 320x740 checks and add full-target/header/skip-link/hit-point assertions. Twelve actual synthetic file-only Chromium cases passed, including retained keyboard focus; 69 independent source checks confirm the exact inverse and preserved actions. After integration, all 262 artifact-helper checks and Python syntax/source-hash checks pass. No database, HTTP or provider execution is represented by those local results.
+
+[Exact receipts, findings and next acceptance](RELEASE_CAPTURE_READINESS_1.26.0.md#complete-captured-image-inventory-and-stackcp-correction). The unchanged shipping source needs no installer regeneration. Original source78 full run39134909145 remains queued; the latest changed test source needs its own first full execution. No 1.26 release clearance.
+
 ## 2026-10-18 — further visual evidence, original runs queued
 
 First full changed-source run39134909145 is queued at78f45bd8; original f67 run39098482550 still has its four successful partitions and queued final aggregation. No rerun, cancellation or additional dispatch occurred. Separate PHP-controls run39132700033 remains queued. These states are not passing acceptance.

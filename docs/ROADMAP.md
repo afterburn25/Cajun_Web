@@ -1,3 +1,7 @@
+## 2026-10-18 — complete captured-image inventory and StackCP correction
+
+All 340 original candidate captured extents are reviewed with explicit overlay/scrolling limitations. A [test-only StackCP capture correction](RELEASE_CAPTURE_READINESS_1.26.0.md#complete-captured-image-inventory-and-stackcp-correction) completes the consolidated capture changes; fresh application execution and actual corrected images remain required. Full20i, cloud catalog, provider artwork and hosting commerce are still unfinished. Use the retained owner API reference without requesting it again.
+
 ## 2026-10-18 — further candidate image review
 
 Direct hosting catalog release verification continues with115 additional finite browser-image reviews. Five StackCP section captures still need unobscured heading evidence; original full-application runs remain queued. [Detailed evidence](RELEASE_CAPTURE_READINESS_1.26.0.md#further-image-review--2026-10-18). Full20i, automatic provider images, cloud catalog imports and hosting commerce remain unfinished. The owner reference is retained; no repeated documentation request is needed.

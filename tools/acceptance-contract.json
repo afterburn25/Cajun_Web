@@ -716,5 +716,27 @@
     },
     "added_named_outcomes": 7,
     "scope": "Preserve every original assertion, provider action, report and screenshot name. Add real root-page scroll/reveal/image readiness and original-viewport image-save target checks, then a taller same-width section capture. Wait for the mobile domain-search drawer to leave the viewport. No shipping CSS or runtime changes."
+  },
+  "stackcp_capture_readiness_correction": {
+    "parent": "7a65b9ecd6b5b70fda58258fcb20c8c3f0935554",
+    "source_changes": {
+      "tests/stackcp_access_cases.py": {
+        "before": "bf79b3b87172c01d9e51bd4461a9f2614efc1699c8240333e1a3bd35f394229b",
+        "after": "9c09c2e95b03f940356f0eae31668c7dc2de771b33be5288c0cf705aabfd465c"
+      },
+      "tests/stackcp_prerequisites_cases.py": {
+        "before": "92b4116d89a8d51ea1b926114325f7c4d12130c85e50e88d7807e81b24c2990a",
+        "after": "3147923ed55bc720d064d9ca1c08dc617d63d8e2dd965cbcc2d410957e428c0d"
+      }
+    },
+    "added_named_outcomes": 5,
+    "named_outcomes": [
+      "StackCP-Access-Matched Mobile capture is unobscured",
+      "StackCP-Access-Unavailable Mobile capture is unobscured",
+      "StackCP-Access-Empty Mobile capture is unobscured",
+      "StackCP-Setup-Key Mobile capture is unobscured",
+      "StackCP-Setup-Unverified Mobile capture is unobscured"
+    ],
+    "scope": "Preserve original predicates, 1440x1050 and 320x740 checks, provider actions and all report/screenshot names. After original viewport checks, capture five mobile cards at 320x1500 with complete-target, header/skip-link separation and hit-point checks. No content, focus, CSS, runtime or workflow changes."
   }
 }

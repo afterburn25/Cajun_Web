@@ -1,3 +1,13 @@
+## 2026-10-18 — complete captured-image inventory and StackCP correction
+
+Continue on `codex/release126-capture-readiness`, starting this correction from `7a65b9ecd6b5b70fda58258fcb20c8c3f0935554`. The enclosing commit is intended as `test: capture complete mobile StackCP cards`. Only two browser fixtures, additive contract metadata and seven continuity documents change. All original assertions, 320x740 layout checks, actions and report/image names remain. Five affected screenshots alone use 320x1500 after those checks.
+
+The [finite image closure](docs/RELEASE_CAPTURE_READINESS_1.26.0.md#complete-captured-image-inventory-and-stackcp-correction) covers all 340 original captured extents. Do not repeat the completed reviews. Fresh-root reveal/image, imported-image card, domain drawer and five StackCP capture corrections still require actual corrected application pixels. Wix/payment/support scrolling limits and companion-covered section overlays remain explicit; hidden content receives no credit.
+
+Local checks pass: 12 synthetic Chromium cases in the proposal, 69 independent source checks and 262 artifact-helper checks after integration. No full application run is claimed. Next: commit/push this coherent correction, dispatch its first full default application test once, preserve the existing original runs and review results when available. Original 78 run39134909145 and f67 aggregation39098482550 were still queued at this checkpoint; f67 runtime39098588864 was executing its browser step. Separate PHP-controls run39132700033 remains independent. Do not cancel or rerun those originals.
+
+Devin PR198 head `f717a118e45003528d79e6656f7f6c5eabdaa103` addresses the prior project-quota lock and missing established binding-history findings in source; [review](https://github.com/afterburn25/Cajun_Web/pull/198#issuecomment-6251229265). Three PHP syntax checks pass. Native/HTTP/upgrade results are still queued and no merge is authorized by this source-only review. The app could not attach the PR because the chat already has 100 attachment identities; GitHub remains available. No production or published asset changed.
+
 ## 2026-10-18 — further candidate image review
 
 Continue from `codex/release126-capture-readiness`, code/test source `78f45bd8cda7df89494c4ecaaa762ea14170227f`. Its first full run39134909145 remains queued; original f67 aggregation39098482550 remains queued. The separate PHP-controls first run39132700033 is also queued. Preserve these originals; this documentation follow-up does not justify another application dispatch. Remote main was verified as `e397d9a6e293850e8dff61a593e3ba39ee178400`.

@@ -1,3 +1,11 @@
+## 2026-10-18 — complete captured-image inventory and StackCP correction
+
+All 340 original captured extents now have finite visual receipts: 324 browser images and 16 Apache images, with no duplicate or unassigned browser images. This closes the captured-image inventory, not the content hidden by overlays or outside scrolling regions. The [review and correction record](docs/RELEASE_CAPTURE_READINESS_1.26.0.md#complete-captured-image-inventory-and-stackcp-correction) retains those limits.
+
+Two StackCP test fixtures now check the original desktop/mobile layouts first, then capture five tall mobile cards below the header and focused skip link. Five new checks verify complete card bounds and unobscured hit points. Twelve synthetic local Chromium cases and all 262 artifact-helper checks pass; actual corrected application images remain pending. No shipping code or workflow changes. Published 1.25.0 remains the latest verified release.
+
+The owner reference is retained; no resend is needed. Automatic provider artwork and complete cloud catalog mapping remain unresolved. A bounded [Devin PR198 source follow-up](https://github.com/afterburn25/Cajun_Web/pull/198#issuecomment-6251229265) confirms its two previous defects are addressed in source; queued native/HTTP/upgrade acceptance still prevents integration clearance.
+
 ## 2026-10-18 — further candidate image review
 
 The direct hosting catalog candidate remains under release verification. First full capture-corrected [run39134909145](https://github.com/afterburn25/Cajun_Web/actions/runs/39134909145) is queued at immutable `78f45bd8cda7df89494c4ecaaa762ea14170227f`; the original f67 final aggregation is also queued. Neither was rerun or replaced. Published 1.25.0 remains the latest verified release.
