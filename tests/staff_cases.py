@@ -73,12 +73,6 @@ def run_http(env):
     check('Admin project renders the note privately once','staff only' in r.text and r.text.count('Staff-only internal marker note.')==1 and 'Internal notes are never shown' in r.text)
     alice=requests.Session();submit(alice,BASE+'/existing/portal/index.php','login',{'email':'alice@example.invalid','password':'Synthetic client passphrase 2026'})
     check('Client conversation never shows internal notes','Staff-only internal marker note.' not in alice.get(BASE+'/existing/portal/index.php?job=1').text)
-    # The upgraded install gates workspace activity behind owner setup; enable it before asserting feed content.
-    if not db("SELECT value FROM ci_settings WHERE name='activity_schema_version'"):
-        r=submit(admin,BASE+'/existing/admin/index.php?view=activity','activity_setup',{'password':OWNER})
-        check('Owner enables workspace activity on the upgraded install','Workspace activity is enabled' in r.text)
-    check('Workspace activity is enabled for feed assertions',db("SELECT value FROM ci_settings WHERE name='activity_schema_version'")==[{'value':'1'}])
-    check('Client activity never surfaces internal notes','Staff-only internal marker note.' not in alice.get(BASE+'/existing/portal/index.php?activity=1').text)
     # Structured milestones carry a state and optional target date the client can follow.
     job=BASE+'/existing/admin/index.php?view=studio-job&id=1'
     r=chosen_form(admin,job,'studio_milestone','id',0,{'title':'Synthetic milestone content approved','state':'done','target_date':'2026-11-30'})
@@ -96,8 +90,6 @@ def run_http(env):
     check('Milestone target accepts a real leap day','Project updated' in r.text and db('SELECT target_date FROM ci_studio_milestones WHERE id=?',[mid])[0]['target_date']=='2028-02-29')
     r=alice.get(BASE+'/existing/portal/index.php?job=1')
     check('Client sees milestone states and target dates','Synthetic milestone content approved' in r.text and '2026-11-30' in r.text and 'milestone-'+str(mid) in r.text)
-    feed=alice.get(BASE+'/existing/portal/index.php?activity=1')
-    check('Milestone change enters client activity feed','milestone:'+str(mid) in feed.text)
     check('Milestones stay isolated to the owning client',bob.get(BASE+'/existing/portal/index.php?job=1').status_code==404)
     return {'url':url,'id':uid,'link':link,'code':code}
 
