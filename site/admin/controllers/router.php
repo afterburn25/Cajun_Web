@@ -19,11 +19,12 @@ require_once CWP_CODE_ROOT.'/admin/controllers/appointments.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/plans.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/recurring_billing.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/domain_registration_drafts.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/backups.php';
 header('X-Robots-Tag: noindex, nofollow');
 if(in_array($_GET['view']??'', ['staff-setup','reset'],true))header('Referrer-Policy: no-referrer');
 $view=is_string($_GET['view']??null)?$_GET['view']:'dashboard';
 $validViews=['login','forgot','reset','dashboard','projects','project','services','service','leads','lead','website-review','consultations','consultation','consultation-settings','testimonials','testimonial','settings','email','security','health'];
-$validViews=array_merge($validViews,['registration-drafts','domain-renewal-dispatch','domain-renewal-agreements','recurring-billing','service-plans','service-plan','service-agreements','service-agreement','mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft','provider-settings','provider-operations','mail-notices','mail-message','mail-inbox','mail-accounts','mail-account','mailboxes','mail-templates','mail-template','activity','deliveries','staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],array_keys(studio_admin_views()));
+$validViews=array_merge($validViews,['registration-drafts','domain-renewal-dispatch','domain-renewal-agreements','recurring-billing','service-plans','service-plan','service-agreements','service-agreement','mail-submissions','mail-submission','mail-send','mail-drafts','mail-draft','provider-settings','provider-operations','mail-notices','mail-message','mail-inbox','mail-accounts','mail-account','mailboxes','mail-templates','mail-template','activity','deliveries','backups','staff','staff-setup','support','catalog','catalog-invoice','payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],array_keys(studio_admin_views()));
 if(!in_array($view,$validViews,true)){$view='dashboard';}
 if(in_array($view,['studio-clients','service-plans','service-plan','service-agreements','service-agreement'],true) || (is_string($_POST['action']??null) && str_starts_with($_POST['action'],'service_plans_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
 if($view==='recurring-billing'||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'recurring_'))){header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');}
@@ -63,6 +64,7 @@ if($view==='support')support_admin_render($user,$error);
 if(in_array($view,['catalog','catalog-invoice'],true))catalog_admin_render($view,$user,$error);
 if(in_array($view,['payments','invoice-payments','payment-settings','payment-trials','payment-notifications'],true))payments_admin_render($view,$user,$error);
 if($view==='deliveries')delivery_admin_render($user,$error);
+if($view==='backups')backups_admin_render($user,$error);
 if($view==='activity')activity_render('admin',$error);
 if(array_key_exists($view,studio_admin_views())){studio_admin_render($view,$user,$error);exit;}
 $titles=['dashboard'=>'Your studio, at a glance.','projects'=>'Portfolio','project'=>$id?'Edit project':'New project','services'=>'Services','service'=>$id?'Edit service':'New service','leads'=>'Project inquiries','lead'=>'Inquiry details','testimonials'=>'Client testimonials','testimonial'=>$id?'Edit testimonial':'New testimonial','settings'=>'Website settings','email'=>'Email delivery','security'=>'Your account','health'=>'System health'];admin_head($titles[$view],$view,$user);if($error)echo '<div class="notice error" role="alert">'.esc($error).'</div>';

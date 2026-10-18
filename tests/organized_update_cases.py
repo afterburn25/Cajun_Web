@@ -20,6 +20,7 @@ def run(web,base,check,qa,php,label,prefix,version):
     (qa/('organized-'+label+'-install.json')).write_text(r.text)
     check(label+' actual retained release installs through Apache',r.status_code==200 and r.json()['ok'])
     private=Path(r.json()['storage']);(private/'retained-customer.php').write_bytes(b'<?php exit; ?>private retained customer bytes')
+    (private/'backups').mkdir(exist_ok=True);(private/'backups/retained-archive.zip').write_bytes(b'PK\x05\x06'+(b'\x00'*18));(private/'backups/index.html').write_bytes(b'')
     original={n:(root/n).read_bytes() for n in ['config.php','.installed.php','storage/.htaccess','upload/.htaccess','config/defaults.php','assets/css/site.css']}
     def records(action='snapshot'):
         p=subprocess.run([php,str(ROOT/'tests/organized_update_fixture.php'),str(root),action],capture_output=True,text=True)
@@ -103,7 +104,7 @@ def run(web,base,check,qa,php,label,prefix,version):
     r=session.get(url+'/admin/index.php')
     check(label+' same owner session sees new version despite prior opcode cache',r.status_code==200 and ('STUDIO RELEASE '+VERSION) in r.text)
     check(label+' organized update preserves exact business rows',records()==before)
-    check(label+' organized update preserves config guards scaffolds and private bytes',all((root/n).read_bytes()==original[n] for n in ['config.php','.installed.php','storage/.htaccess','upload/.htaccess']) and (private/'retained-customer.php').read_bytes()==b'<?php exit; ?>private retained customer bytes')
+    check(label+' organized update preserves config guards scaffolds and private bytes',all((root/n).read_bytes()==original[n] for n in ['config.php','.installed.php','storage/.htaccess','upload/.htaccess']) and (private/'retained-customer.php').read_bytes()==b'<?php exit; ?>private retained customer bytes' and (private/'backups/retained-archive.zip').read_bytes()==b'PK\x05\x06'+(b'\x00'*18))
     check(label+' fresh organized update adds no legacy PHP endpoints',all(not (root/n).exists() for n in ['admin.php','portal.php','api.php','activity.php','media.php','sandbox-notifications.php','install.php']))
     r=action('recover');check(label+' owner can recover original organized files','<h2>Rolled-back</h2>' in r.text and all((root/n).read_bytes()==b for n,b in original.items()))
     check(label+' recovery invalidates cached version and preserves session',('STUDIO RELEASE '+version) in session.get(url+'/admin/index.php').text)
