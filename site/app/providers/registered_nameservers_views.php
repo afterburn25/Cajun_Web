@@ -2,6 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/providers/registered_nameservers.php';
+require_once CWP_CODE_ROOT.'/app/providers/registered_nameserver_changes_views.php';
 
 /** Render only the bounded saved-data projection, never its private binding. */
 function registered_nameservers_render(array $projection): void {
@@ -15,6 +16,7 @@ function registered_nameservers_render(array $projection): void {
         'access_changed' => 'The assignment or account changed during the latest refresh.',
         'credential' => 'Review the saved 20i connection before refreshing nameservers.',
         'assignment_changed' => 'Refresh nameservers for the current assignment.',
+        'change_pending' => 'A nameserver change is unresolved. Check its request history below.',
     ];
     $status = $projection['status'] ?? '';
     echo '<div data-registered-nameservers><h3 style="overflow-wrap:anywhere">'.esc($projection['domain']).'</h3>';
@@ -102,6 +104,19 @@ function registered_nameservers_admin_render(): void {
         echo '<p class="hint">Prepare registered domains above first.</p></section>';
         return;
     }
+    $changesReady = false;
+    try {
+        [$changesReady, $operationsReady] = staff_locked(fn() => staff_transaction(fn() => [
+            registered_nameserver_changes_ready(), provider_operations_ready(),
+        ]));
+        if (!$changesReady) {
+            if ($operationsReady) registered_nameserver_changes_prepare_form();
+            else echo '<p class="hint">Prepare provider operations before enabling nameserver changes.</p>';
+        }
+    } catch (InvalidArgumentException|RuntimeException $error) {
+        if ($error instanceof PDOException) throw $error;
+        echo '<p class="notice error">'.esc($error->getMessage()).'</p>';
+    }
     $page = registered_nameservers_query_page($_GET['nameserver_page'] ?? null, 10000);
     $historyPage = registered_nameservers_query_page($_GET['nameserver_history_page'] ?? null, 1000000);
     $historyLink = $_GET['nameserver_link'] ?? '';
@@ -122,10 +137,28 @@ function registered_nameservers_admin_render(): void {
             if ($error instanceof PDOException) throw $error;
             echo '<p class="notice error">'.esc($error->getMessage()).'</p>';
         }
+        if ($changesReady) {
+            try {
+                $form = staff_locked(fn() => staff_transaction(fn() => registered_nameserver_changes_form($link['id'], (int)$link['revision'])));
+                registered_nameserver_changes_form_render($form);
+            } catch (InvalidArgumentException|RuntimeException $error) {
+                if ($error instanceof PDOException) throw $error;
+                echo '<p class="notice error">'.esc($error->getMessage()).'</p>';
+            }
+        }
         echo '</article>';
     }
     echo '<nav class="button-row" aria-label="Registered nameserver domain pages">';
     if ($page > 1) echo '<a class="btn outline" href="'.esc(admin_url('provider-settings', ['nameserver_page' => $page - 1])).'#registered-nameservers">Previous domains</a>';
     if (count($links) === 20 && $page < 10000) echo '<a class="btn outline" href="'.esc(admin_url('provider-settings', ['nameserver_page' => $page + 1])).'#registered-nameservers">More domains</a>';
-    echo '</nav></section>';
+    echo '</nav>';
+    if ($changesReady) {
+        try {
+            registered_nameserver_changes_history_render();
+        } catch (InvalidArgumentException|RuntimeException $error) {
+            if ($error instanceof PDOException) throw $error;
+            echo '<p class="notice error">'.esc($error->getMessage()).'</p>';
+        }
+    }
+    echo '</section>';
 }

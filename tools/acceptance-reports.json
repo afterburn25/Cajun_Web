@@ -130,6 +130,13 @@
     "recurring-billing-forms-default-results.json",
     "recurring-billing-forms-results.json",
     "recurring-billing-native-results.json",
+    "registered-nameserver-changes-native-results.json",
+    "registered-nameserver-changes-service-no-ini-results.json",
+    "registered-nameserver-changes-service-results.json",
+    "registered-nameserver-changes-storage-no-ini-results.json",
+    "registered-nameserver-changes-storage-results.json",
+    "registered-nameserver-changes-views-no-ini-results.json",
+    "registered-nameserver-changes-views-results.json",
     "registered-nameservers-native-results.json",
     "registered-nameservers-reader-no-ini-results.json",
     "registered-nameservers-reader-results.json",
@@ -168,7 +175,8 @@
     "twentyi-cloud-sites-integrated-results.json",
     "twentyi-mailboxes-integrated-results.json",
     "twentyi-operations-integrated-results.json",
-    "wordpress-installed-http-handler-results.json"
+    "wordpress-installed-http-handler-results.json",
+    "registered-nameserver-changes-http-fixture-results.json"
   ],
   "final": [
     "activity-native-results.json",
@@ -346,6 +354,13 @@
     "recurring-billing-forms-default-results.json",
     "recurring-billing-forms-results.json",
     "recurring-billing-native-results.json",
+    "registered-nameserver-changes-native-results.json",
+    "registered-nameserver-changes-service-no-ini-results.json",
+    "registered-nameserver-changes-service-results.json",
+    "registered-nameserver-changes-storage-no-ini-results.json",
+    "registered-nameserver-changes-storage-results.json",
+    "registered-nameserver-changes-views-no-ini-results.json",
+    "registered-nameserver-changes-views-results.json",
     "registered-nameservers-native-results.json",
     "registered-nameservers-reader-no-ini-results.json",
     "registered-nameservers-reader-results.json",
@@ -385,7 +400,10 @@
     "twentyi-cloud-sites-integrated-results.json",
     "twentyi-mailboxes-integrated-results.json",
     "twentyi-operations-integrated-results.json",
-    "wordpress-installed-http-handler-results.json"
+    "wordpress-installed-http-handler-results.json",
+    "registered-nameserver-changes-http-fixture-results.json",
+    "apache-registered-nameserver-changes-upgrade-guards-results.json",
+    "apache-registered-nameserver-changes-upgrade-results.json"
   ],
   "provenance": {
     "original_source": "faef8a6a0fb0a3969a67fe8bc7aabd3b107c1c10",
@@ -399,7 +417,8 @@
       "eight cloud assignment binding, legacy-context, owner-view, native authority and immutable-fixture reports",
       "three observed hosting type import document/native reports; isolated packaged multipart browser assertions and two captures remain in existing HTTP report",
       "five registered nameserver reader/view/native reports; actual owner HTTP refresh/history and responsive captures remain in the existing HTTP report",
-      "two Apache registered nameserver upgrade/guard reports from pinned published1.25; retained snapshots are diagnostic metadata"
+      "two Apache registered nameserver upgrade/guard reports from pinned published1.25; retained snapshots are diagnostic metadata",
+      "seven registered nameserver change storage/service/renderer/native reports; SQL and owner action coverage uses synthetic provider transport"
     ],
     "renewal_source": "b221eb4be95ec1509458d916f1ffd10d65e71e64",
     "root_before_renewal": "5560635bb2117556de289f0d24c5b170d48e9c77",
@@ -408,6 +427,7 @@
     "registration_drafts_source_base": "9538ef1c87884167de8e0c1d84d1f9c28203423c",
     "registration_drafts_owned_ancestry": "2e86e4e021980364b8f6d340e100e66779cf6fb0",
     "cloud_assignment_base": "819c3ea39b4ebbef8f37280dc5ede59cf06fd01c",
-    "registered_nameservers_base": "2c5898fa665252fdb92bd2d2c91f8786fcea143c"
+    "registered_nameservers_base": "2c5898fa665252fdb92bd2d2c91f8786fcea143c",
+    "registered_nameserver_changes_base": "fbe00172a0a1dee683d2501203985d2537a90abc"
   }
 }

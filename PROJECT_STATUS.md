@@ -1,3 +1,15 @@
+## 2026-10-18 — installed nameserver change acceptance prepared
+
+The separate nameserver-change branch now includes packaged owner-form/Chromium tests, eight scoped desktop/mobile captures, and a published-1.25 UPDATE/recovery producer for original request, ledger, readback and pending-fence history. This is acceptance preparation for source `5654649dc62095298ce703b39b54d12d56c49f09`, recorded by the enclosing **test: cover installed nameserver change recovery** commit. Application shipping files and published 1.25 are unchanged.
+
+Actual root checks pass 80 isolated TLS fixture outcomes, 31 portable upgrade guards, 334 acceptance helpers and 19 syntax/source/inventory checks. Installed SQL, actual application forms, resulting browser images and real update/recovery execution remain pending. [Scope and remaining gates](docs/TWENTYI_REGISTRAR_NAMESERVER_CHANGES.md#installed-acceptance-producers--2026-10-18).
+
+## 2026-10-18 — nameserver change candidate
+
+The separate `codex/twentyi-nameserver-changes` branch adds owner-approved complete-set nameserver changes, durable request/ledger history, no automatic resend, explicit follow-up reads and narrowly scoped interrupted-history recovery. Controls are grouped inside existing domain cards; global history survives unlinking. [Scope, actual evidence and remaining gates](docs/TWENTYI_REGISTRAR_NAMESERVER_CHANGES.md).
+
+Local checks pass1,350 portable PHP executions,30 changed-file syntax executions,18 synthetic responsive-layout checks and283 acceptance helpers. Native SQL, packaged owner write forms/browser, installed request-history recovery and release acceptance remain pending. Canonical installer refresh and documentation checks pass. Published1.25 and the full retained API reference are unchanged; no live provider call or deployment occurred.
+
 ## 2026-10-18 — nameserver packaged acceptance wired
 
 The nameserver candidate now includes actual owner-form/Chromium checks, eight responsive captures, and a separate published-1.25 update/retry/recovery producer. The full workflow preserves its previous commands and adds five native commands and two Apache commands. Local checks pass 271 acceptance-helper outcomes, 20 upgrade guards, 19 actual published-archive guards and four PHP syntax executions; canonical refresh passes. These are local/source results, not Linux application acceptance. [Scope, corrections and remaining gates](docs/TWENTYI_REGISTRAR_NAMESERVERS.md#packaged-acceptance-producers--2026-10-18).

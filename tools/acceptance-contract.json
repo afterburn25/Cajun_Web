@@ -99,6 +99,13 @@
     "\"$PHP_BINARY\" tests/registered_nameservers_views.php qa/registered-nameservers-views-results.json",
     "\"$PHP_BINARY\" -n tests/registered_nameservers_views.php qa/registered-nameservers-views-no-ini-results.json",
     "\"$PHP_BINARY\" tests/registered_nameservers_native.php",
+    "\"$PHP_BINARY\" tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-results.json",
+    "\"$PHP_BINARY\" -n tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-no-ini-results.json",
+    "\"$PHP_BINARY\" tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-results.json",
+    "\"$PHP_BINARY\" -n tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-no-ini-results.json",
+    "\"$PHP_BINARY\" tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-results.json",
+    "\"$PHP_BINARY\" -n tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-no-ini-results.json",
+    "\"$PHP_BINARY\" tests/registered_nameserver_changes_native.php",
     "\"$PHP_BINARY\" tests/domain_expiry_contract.php > qa/domain-expiry-contract-integrated-results.json",
     "\"$PHP_BINARY\" tests/domain_expiry_reader.php > qa/domain-expiry-reader-integrated-results.json",
     "\"$PHP_BINARY\" tests/domain_expiry_native.php",
@@ -658,5 +665,166 @@
       },
       "scope": "Actual pinned published1.25 update/recovery at unchanged version using build and file identity; no new browser captures."
     }
+  },
+  "registered_nameserver_changes": {
+    "source_base": "fbe00172a0a1dee683d2501203985d2537a90abc",
+    "predecessor_native_count": 157,
+    "predecessor_native_sha256": "410798bb70c001a0dcc79836888e38118bf623fc777a1722d24bf9db2f292efb",
+    "additions_after": "\"$PHP_BINARY\" tests/registered_nameservers_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-results.json",
+      "\"$PHP_BINARY\" -n tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-results.json",
+      "\"$PHP_BINARY\" -n tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-results.json",
+      "\"$PHP_BINARY\" -n tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/registered_nameserver_changes_native.php"
+    ],
+    "reports": [
+      "registered-nameserver-changes-storage-results.json",
+      "registered-nameserver-changes-storage-no-ini-results.json",
+      "registered-nameserver-changes-service-results.json",
+      "registered-nameserver-changes-service-no-ini-results.json",
+      "registered-nameserver-changes-views-results.json",
+      "registered-nameserver-changes-views-no-ini-results.json",
+      "registered-nameserver-changes-native-results.json"
+    ],
+    "source_sha256": {
+      "tests/registered_nameserver_changes_storage.php": "3341e864ee25d721640a6c6b6193429a77b6eb84d8a254514f3e61e8355b9bd7",
+      "tests/registered_nameserver_changes.php": "7035fa6cec58c317eebc0a2813af4e6fbc5efa87dc390bef0fd33e5e4b1cd189",
+      "tests/registered_nameserver_changes_views.php": "fd7a5570bddd64b800fd102b42275e70f0fc208788050d21add7c64d1e98f56c",
+      "tests/registered_nameserver_changes_native.php": "209d30908a2e2c1d7f619f5a47ee5dea727ed2facc11cd0ed4e04a30f07e5904",
+      "tests/registered_nameservers_views.php": "b260dfa38d32ea4fcb9f2fc2c6d3775ca656c716818b6859ddc5550b650af965"
+    },
+    "predecessor_source_delta": {
+      "tests/registered_nameservers_views.php": {
+        "before": "'assignment_changed', 'unknown'] as $status)",
+        "after": "'assignment_changed', 'change_pending', 'unknown'] as $status)",
+        "predecessor_sha256": "b40afb2e0891b6e6fa6796f943e7f87f4dc73bc371b9fcb42104974f4170d39f"
+      }
+    }
+  },
+  "registered_nameserver_changes_installed": {
+    "source_predecessor": "5654649dc62095298ce703b39b54d12d56c49f09",
+    "predecessor_contract_sha256": "a2908af06f08e42f38e734642cd8557af5daee20badeef08b92096ad2c63ddf7",
+    "predecessor_reports_sha256": "242596b274a3bc4322f3bf14585f1192e0e4cc0ec9e11f0b05f3017ab9b2d646",
+    "reports": {
+      "browser": [
+        "registered-nameserver-changes-http-fixture-results.json"
+      ],
+      "final": [
+        "registered-nameserver-changes-http-fixture-results.json",
+        "apache-registered-nameserver-changes-upgrade-guards-results.json",
+        "apache-registered-nameserver-changes-upgrade-results.json"
+      ]
+    },
+    "source_sha256": {
+      ".github/workflows/application-tests.yml": "9a1f579de4352d3b4e05b1f13a4ca3f20288755f65490efbd56386b367d0a80f",
+      ".github/workflows/provider-nameserver-changes.yml": "7de097af4e6af5162352f60b70ec13f181ed296e24174683c56460120db6ef3c",
+      "tests/acceptance_artifacts_test.py": "fcf85b9cd81ac8a7b0242efc89c20d7c9cd31b1139c01241c2ea634ea0482644",
+      "tests/provider_http_server.py": "07bedf5e27a506abe9439c4b507ddcd4914498bbeba576e46bdc6a2d367ee07d",
+      "tests/registered_nameservers_cases.py": "7cfec6fcd0aefb16f6165a8874a18ae89bb464d47a5beb84e957b7da902fe593",
+      "tests/registered_nameserver_changes_cases.py": "aad25fa9502c2ab6be37d2dea543193b1319ba1a5d29e9ea3e5b11de0402d48f",
+      "tests/registered_nameserver_changes_http_fixture_test.py": "1ffcf7a47fc3fccba50e7bacd3f4c6e2f1a69a48285bb0201cdc0fb4d0b9b000",
+      "tests/registered_nameserver_changes_upgrade.py": "80e855b0288385001575beda5872724a0ab6b5140361a97f75bd13b34225c75e",
+      "tests/registered_nameserver_changes_upgrade_fixture.php": "ddfddf90a9352726a73f7c7bd34d82621a0e1aee86fbf4ab664b227fe1dae9d1",
+      "tests/registered_nameserver_changes_upgrade_test.py": "df52c8eed801e618d318227aac6735dbac8b9064f7795628e42913431339d8a5",
+      "tests/registered_nameserver_changes_acceptance.py": "1e2d969837ee0f45e618cc3c15adfa0bb4e5f93e36d723b404ebd4495baf3653",
+      "tools/acceptance-reports.json": "6407f9870a35ffd47c6935bb4ee57ad1faec5d35f929bafe5ee33ad46c0bf3e2"
+    },
+    "source_delta": {
+      ".github/workflows/application-tests.yml": {
+        "predecessor_sha256": "3e907f1684d2a1cff3419ff8698ae940542d083ce593b5dcc529d11cefe6da7a",
+        "current_sha256": "9a1f579de4352d3b4e05b1f13a4ca3f20288755f65490efbd56386b367d0a80f",
+        "replacements": [
+          {
+            "before": "          \"$PHP_BINARY\" tests/license_native.php\n      - name: Real HTTP and Chromium application workflows\n        id: browser\n        run: .ci-venv/bin/python tests/browser_acceptance.py\n      - name: Verify shipping source after this job, including failure\n        if: always()\n        id: mutation\n",
+            "after": "          \"$PHP_BINARY\" tests/license_native.php\n      - name: Real HTTP and Chromium application workflows\n        id: browser\n        run: |\n          .ci-venv/bin/python -B tests/registered_nameserver_changes_http_fixture_test.py --report qa/registered-nameserver-changes-http-fixture-results.json\n          .ci-venv/bin/python tests/browser_acceptance.py\n      - name: Verify shipping source after this job, including failure\n        if: always()\n        id: mutation\n"
+          },
+          {
+            "before": "          .ci-venv/bin/python tests/release_125_upgrade_acceptance.py\n          .ci-venv/bin/python -B tests/registered_nameservers_upgrade_test.py --report qa/apache-registered-nameservers-upgrade-guards-results.json\n          .ci-venv/bin/python -B tests/registered_nameservers_upgrade.py\n      - name: Verify shipping source after this job, including failure\n        if: always()\n        id: mutation\n",
+            "after": "          .ci-venv/bin/python tests/release_125_upgrade_acceptance.py\n          .ci-venv/bin/python -B tests/registered_nameservers_upgrade_test.py --report qa/apache-registered-nameservers-upgrade-guards-results.json\n          .ci-venv/bin/python -B tests/registered_nameservers_upgrade.py\n          .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade_test.py --report qa/apache-registered-nameserver-changes-upgrade-guards-results.json\n          .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade.py\n      - name: Verify shipping source after this job, including failure\n        if: always()\n        id: mutation\n"
+          }
+        ]
+      },
+      ".github/workflows/provider-nameserver-changes.yml": {
+        "predecessor_sha256": "ff6553df33db1895dcd9dfffab37b59efefb0e0aa0456a1b7efdb81ef0690308",
+        "current_sha256": "7de097af4e6af5162352f60b70ec13f181ed296e24174683c56460120db6ef3c",
+        "replacements": [
+          {
+            "before": "on:\n  push:\n    branches: [main, codex/twentyi-nameserver-changes]\n    paths: ['site/app/providers/**', 'site/admin/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-domain-contracts/**', 'tests/registered_nameserver_changes*.php', 'tests/registered_nameservers*.php', '.github/workflows/provider-nameserver-changes.yml']\n  pull_request:\n    paths: ['site/app/providers/**', 'site/admin/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-domain-contracts/**', 'tests/registered_nameserver_changes*.php', 'tests/registered_nameservers*.php', '.github/workflows/provider-nameserver-changes.yml']\n  workflow_dispatch:\npermissions:\n  contents: read\n",
+            "after": "on:\n  push:\n    branches: [main, codex/twentyi-nameserver-changes]\n    paths: ['site/app/providers/**', 'site/admin/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-domain-contracts/**', 'tests/registered_nameserver_changes*.php', 'tests/registered_nameservers*.php', 'tests/registered_nameserver_changes*.py', 'tests/provider_http_server.py', 'tests/twentyi/tls_test.py', '.github/workflows/provider-nameserver-changes.yml']\n  pull_request:\n    paths: ['site/app/providers/**', 'site/admin/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-domain-contracts/**', 'tests/registered_nameserver_changes*.php', 'tests/registered_nameservers*.php', 'tests/registered_nameserver_changes*.py', 'tests/provider_http_server.py', 'tests/twentyi/tls_test.py', '.github/workflows/provider-nameserver-changes.yml']\n  workflow_dispatch:\npermissions:\n  contents: read\n"
+          },
+          {
+            "before": "        if: always()\n        run: |\n          echo 'Owner-approved complete registered-domain nameserver changes, immutable request/ledger/terminal history, no automatic resend, exact fresh follow-up reads and interrupted-history fences. Actual disposable MySQL/MariaDB with synthetic transport. No live provider, browser, deployment or release acceptance.' >> \"$GITHUB_STEP_SUMMARY\"\n",
+            "after": "        if: always()\n        run: |\n          echo 'Owner-approved complete registered-domain nameserver changes, immutable request/ledger/terminal history, no automatic resend, exact fresh follow-up reads and interrupted-history fences. Actual disposable MySQL/MariaDB with synthetic transport. No live provider, browser, deployment or release acceptance.' >> \"$GITHUB_STEP_SUMMARY\"\n  nameserver-http-fixture:\n    name: Closed synthetic nameserver TLS fixture\n    runs-on: ubuntu-24.04\n    timeout-minutes: 10\n    steps:\n      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262\n        with:\n          persist-credentials: false\n      - name: Prepare isolated Python fixture dependencies\n        run: |\n          python3 -m venv .fixture-venv\n          .fixture-venv/bin/pip install --disable-pip-version-check cryptography\n      - name: Verify disabled default exact requests and independent readback\n        run: |\n          mkdir -p qa\n          .fixture-venv/bin/python -B tests/registered_nameserver_changes_http_fixture_test.py --report qa/registered-nameserver-changes-http-fixture-results.json\n      - name: Preserve exact named fixture results\n        if: always()\n        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02\n        with:\n          name: nameserver-http-fixture-${{ github.sha }}\n          path: qa/registered-nameserver-changes-http-fixture-results.json\n          if-no-files-found: error\n          retention-days: 14\n      - name: Preserve unchanged source\n        if: always()\n        run: git diff --exit-code -- site foundation tools tests .github/workflows\n"
+          }
+        ]
+      },
+      "tests/acceptance_artifacts_test.py": {
+        "predecessor_sha256": "73fc4f2b669eb9b4ede6b7b2b85d437dd3a258d16ee8d405f6efdbe2d98f4195",
+        "current_sha256": "fcf85b9cd81ac8a7b0242efc89c20d7c9cd31b1139c01241c2ea634ea0482644",
+        "replacements": [
+          {
+            "before": "    environment_checks(a,check,deny,tmp)\n    # Retain reviewed driver bytes and the complete predecessor command sequence.\n    contract=a.load(ROOT/'tools/acceptance-contract.json')\n    driver_paths = {'tests/prepare_legacy.py'}\n    check('Published1.25 input inverse is limited to the original preparation source', set(contract['published125_input_driver_delta']) == driver_paths)\n    for driver in sorted(driver_paths):\n",
+            "after": "    environment_checks(a,check,deny,tmp)\n    # Retain reviewed driver bytes and the complete predecessor command sequence.\n    contract=a.load(ROOT/'tools/acceptance-contract.json')\n    from registered_nameserver_changes_acceptance import verify as nameserver_changes_acceptance\n    changes_predecessor = nameserver_changes_acceptance(a, ROOT, tmp, check, deny, contract)\n    driver_paths = {'tests/prepare_legacy.py'}\n    check('Published1.25 input inverse is limited to the original preparation source', set(contract['published125_input_driver_delta']) == driver_paths)\n    for driver in sorted(driver_paths):\n"
+          },
+          {
+            "before": "            check('Nameserver browser callback occurs once',original_bytes.count(nameserver_addition)==1)\n            original_bytes=original_bytes.replace(nameserver_addition,b'',1)\n        check('Original test source retained '+path, hashlib.sha256(original_bytes).hexdigest()==expected_hash)\n    workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()\n    native=workflow.split('      - name: Native database, upgrade and authorization integration\\n        id: native\\n        run: |\\n',1)[1].split('      - name: Real HTTP',1)[0]\n    native_commands=[line.strip() for line in native.splitlines()]\n    # New write controls extend the recipe without changing predecessor assertions.\n",
+            "after": "            check('Nameserver browser callback occurs once',original_bytes.count(nameserver_addition)==1)\n            original_bytes=original_bytes.replace(nameserver_addition,b'',1)\n        check('Original test source retained '+path, hashlib.sha256(original_bytes).hexdigest()==expected_hash)\n    workflow=changes_predecessor['workflow']\n    native=workflow.split('      - name: Native database, upgrade and authorization integration\\n        id: native\\n        run: |\\n',1)[1].split('      - name: Real HTTP',1)[0]\n    native_commands=[line.strip() for line in native.splitlines()]\n    # New write controls extend the recipe without changing predecessor assertions.\n"
+          },
+          {
+            "before": "    native_commands=[command for command in native_commands if command not in nameserver_commands]\n    check('Nameserver extension preserves exact152 predecessor commands',len(native_commands)==nameserver_contract['predecessor_native_count']==152 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==nameserver_contract['predecessor_native_sha256'])\n    for path,expected_hash in nameserver_contract['source_sha256'].items():\n        check('Nameserver fixture source retained '+path,hashlib.sha256(write_original_sources.get(path,ROOT.joinpath(path).read_bytes().replace(b'\\r\\n',b'\\n'))).hexdigest()==expected_hash)\n    nameserver_server=ROOT.joinpath('tests/provider_http_server.py').read_text(encoding='utf-8')\n    for index,change in enumerate(reversed(nameserver_contract['server_changes'])):\n        check('Nameserver synthetic GET addition is finite '+str(index),nameserver_server.count(change['after'])==change['count'])\n        nameserver_server=nameserver_server.replace(change['after'],change['before'])\n",
+            "after": "    native_commands=[command for command in native_commands if command not in nameserver_commands]\n    check('Nameserver extension preserves exact152 predecessor commands',len(native_commands)==nameserver_contract['predecessor_native_count']==152 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==nameserver_contract['predecessor_native_sha256'])\n    for path,expected_hash in nameserver_contract['source_sha256'].items():\n        check('Nameserver fixture source retained '+path,hashlib.sha256(write_original_sources.get(path,changes_predecessor['source'].get(path,ROOT.joinpath(path).read_bytes().replace(b'\\r\\n',b'\\n')))).hexdigest()==expected_hash)\n    nameserver_server=changes_predecessor['source']['tests/provider_http_server.py'].decode('utf-8')\n    for index,change in enumerate(reversed(nameserver_contract['server_changes'])):\n        check('Nameserver synthetic GET addition is finite '+str(index),nameserver_server.count(change['after'])==change['count'])\n        nameserver_server=nameserver_server.replace(change['after'],change['before'])\n"
+          }
+        ]
+      },
+      "tests/provider_http_server.py": {
+        "predecessor_sha256": "58c09bac0f6a9cefb6d74ba0eacf2ef3db8b84b76d270889ea09e785092f5283",
+        "current_sha256": "07bedf5e27a506abe9439c4b507ddcd4914498bbeba576e46bdc6a2d367ee07d",
+        "replacements": [
+          {
+            "before": "    return 200, json.dumps({'result': fixture.nameservers[match.group(1)]}, separators=(',', ':')).encode('utf-8')\n\n\nclass ProviderServer:\n    def __init__(self,root):\n        runtime=(root/'test-runtime/provider-http').resolve()\n",
+            "after": "    return 200, json.dumps({'result': fixture.nameservers[match.group(1)]}, separators=(',', ':')).encode('utf-8')\n\n\ndef registered_nameserver_change_reply(fixture, path, headers, raw):\n    \"\"\"Opt-in synthetic whole-set replacement; never a verified acknowledgement.\n\n    The raw request stays in memory for the installed fixture's exact wire check.\n    Only explicit uncertain_landed mode changes the separate GET observation.\n    \"\"\"\n    if fixture.nameserver_change_mode == 'disabled' or not re.fullmatch(r'/domain/([1-9][0-9]{0,17})/nameservers', path or ''):\n        return None\n\n    def refused():\n        fixture.errors.append('Unexpected registered nameserver change request')\n        return 400, b'{\"error\":\"synthetic nameserver change refused\"}'\n\n    def names(values):\n        import ipaddress\n        if type(values) is not list or not 1 <= len(values) <= 64:\n            return False\n        for value in values:\n            if type(value) is not str or len(value) > 253 or not re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+', value):\n                return False\n            try:\n                ipaddress.ip_address(value)\n                return False\n            except ValueError:\n                pass\n        return values == sorted(set(values))\n\n    mode = fixture.nameserver_change_mode\n    if mode not in ('uncertain_landed', 'uncertain_unlanded', 'authentication') or path != '/domain/14701/nameservers':\n        return refused()\n    required = {'Authorization': 'Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode(),\n                'Content-Type': 'application/json', 'Accept': 'application/json'}\n    if any(headers.get(key) != value for key, value in required.items()) or headers.get('Transfer-Encoding') is not None:\n        return refused()\n    if hasattr(headers, 'get_all') and any(len(headers.get_all(key, [])) != 1 for key in (*required, 'Content-Length')):\n        return refused()\n    length = headers.get('Content-Length', '')\n    if not re.fullmatch(r'[1-9][0-9]{0,3}', length) or type(raw) is not bytes or not 0 < len(raw) <= 8192 or int(length) != len(raw):\n        return refused()\n    try:\n        payload = json.loads(raw.decode('utf-8'))\n    except (UnicodeDecodeError, ValueError, RecursionError):\n        return refused()\n    if type(payload) is not dict or list(payload) != ['ns', 'old-ns'] or not names(payload['ns']) or not names(payload['old-ns']):\n        return refused()\n    if set(payload['ns']).intersection(payload['old-ns']) or not names(fixture.nameservers.get('14701')) or payload['old-ns'] != fixture.nameservers['14701']:\n        return refused()\n    if raw != json.dumps(payload, separators=(',', ':'), ensure_ascii=True).encode('ascii'):\n        return refused()\n    fixture.nameserver_change_posts.append({'path': path, 'body': payload, 'raw': raw.decode('ascii')})\n    fixture.posts.append({'path': path, 'body': payload})\n    if mode == 'uncertain_landed':\n        fixture.nameservers['14701'] = list(payload['ns'])\n    if mode == 'authentication':\n        return 401, b'private synthetic nameserver change response'\n    return 202, b'{\"status\":\"synthetic unverified acknowledgement\"}'\n\n\nclass ProviderServer:\n    def __init__(self,root):\n        runtime=(root/'test-runtime/provider-http').resolve()\n"
+          },
+          {
+            "before": "        (runtime/'server.key').write_bytes(key.private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.PKCS8,serialization.NoEncryption()))\n        self.mode='success';self.write_mode='success';self.calls=0;self.errors=[];self.names=[];self.packages=[];self.posts=[];self.cloud_servers=[];self.cloud_mode='success';self.get_paths=[];self.domain_mode='success';self.registrar_mode='success';self.registrar_domains=[];self.cloud_providers=[];self.cloud_providers_mode='success';self.contract_dates={};self.contract_mode='success';self.expiry_dates={};self.expiry_mode='success';self.php_version='php82';self.php_version_mode='success';self.document_roots={};self.document_roots_mode='success';self.force_ssl=True;self.force_ssl_mode='success';self.directory_indexing=True;self.directory_indexing_mode='success';self.wp_installed=True;self.wp_installed_mode='success';fixture=self\n        self.nameservers={};self.nameserver_mode='success'\n        self.stackcp_membership=[];self.stackcp_grants=[]\n        self.renewal_mode='success';self.renewal_posts=[]\n        self.period_mode='success';self.period_map={'.invalid':[1,3],'.co.uk':[1,2],'.com':[1,5]}\n",
+            "after": "        (runtime/'server.key').write_bytes(key.private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.PKCS8,serialization.NoEncryption()))\n        self.mode='success';self.write_mode='success';self.calls=0;self.errors=[];self.names=[];self.packages=[];self.posts=[];self.cloud_servers=[];self.cloud_mode='success';self.get_paths=[];self.domain_mode='success';self.registrar_mode='success';self.registrar_domains=[];self.cloud_providers=[];self.cloud_providers_mode='success';self.contract_dates={};self.contract_mode='success';self.expiry_dates={};self.expiry_mode='success';self.php_version='php82';self.php_version_mode='success';self.document_roots={};self.document_roots_mode='success';self.force_ssl=True;self.force_ssl_mode='success';self.directory_indexing=True;self.directory_indexing_mode='success';self.wp_installed=True;self.wp_installed_mode='success';fixture=self\n        self.nameservers={};self.nameserver_mode='success'\n        self.nameserver_change_mode='disabled';self.nameserver_change_posts=[]\n        self.stackcp_membership=[];self.stackcp_grants=[]\n        self.renewal_mode='success';self.renewal_posts=[]\n        self.period_mode='success';self.period_map={'.invalid':[1,3],'.co.uk':[1,2],'.com':[1,5]}\n"
+          },
+          {
+            "before": "                self.send_response(status);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(body)));self.send_header('Connection','close');self.end_headers();self.wfile.write(body)\n            def do_POST(self):\n                fixture.calls+=1\n                length=int(self.headers.get('Content-Length') or '0')\n                raw=self.rfile.read(length) if 0<length<=8192 else b''\n                import re\n",
+            "after": "                self.send_response(status);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(body)));self.send_header('Connection','close');self.end_headers();self.wfile.write(body)\n            def do_POST(self):\n                fixture.calls+=1\n                import re\n                if fixture.nameserver_change_mode != 'disabled' and re.fullmatch(r'/domain/([1-9][0-9]{0,17})/nameservers', self.path or ''):\n                    length = self.headers.get('Content-Length', '')\n                    raw = self.rfile.read(int(length)) if re.fullmatch(r'[1-9][0-9]{0,3}', length) and int(length) <= 8192 and self.headers.get('Transfer-Encoding') is None else b''\n                    status, body = registered_nameserver_change_reply(fixture, self.path, self.headers, raw)\n                    self.send_response(status);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(body)));self.send_header('Connection','close');self.end_headers();self.wfile.write(body)\n                    return\n                length=int(self.headers.get('Content-Length') or '0')\n                raw=self.rfile.read(length) if 0<length<=8192 else b''\n                import re\n"
+          }
+        ]
+      },
+      "tests/registered_nameservers_cases.py": {
+        "predecessor_sha256": "a0bea9386d4a4291070d823f5d4898a6e4aac2acb2d2c45b391fe94a0035f1fb",
+        "current_sha256": "7cfec6fcd0aefb16f6165a8874a18ae89bb464d47a5beb84e957b7da902fe593",
+        "replacements": [
+          {
+            "before": "            context.close()\n        for value in sessions:\n            value.close()\n",
+            "after": "            context.close()\n        for value in sessions:\n            value.close()\n    from registered_nameserver_changes_cases import run_browser as changes_browser, CAPTURES as CHANGE_CAPTURES\n    changes = changes_browser(env, browser)\n    check('Installed nameserver change continuation completes all scoped forms and captures',\n          changes['passed'] is True and tuple(c['name'] for c in changes['captures']) == CHANGE_CAPTURES\n          and all((qa/name).is_file() and (qa/name).stat().st_size > 0 for name in CHANGE_CAPTURES))\n"
+          }
+        ]
+      }
+    },
+    "unchanged_source_sha256": {
+      "tests/browser_acceptance.py": "acaee053417dcd2ae02b4bd8139557f592527d24c586dac30243fc86c487996b",
+      "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f",
+      "tests/registered_nameservers_upgrade.py": "5a53b7006a5d3f98a1456605dcc9327f87effa0b3570d7ee394b801052567861",
+      "tests/registered_nameservers_upgrade_fixture.php": "eeca52604d80e28387ccb87a4a0e95822f56b3a6d2515f61f4ef8897105cf789",
+      "tests/registered_nameservers_upgrade_test.py": "c9b650c4fcf32894d24e23488df730a13ebc34b52b5e93ab5f2c326eac748e07",
+      "tests/registered_nameserver_changes_native.php": "209d30908a2e2c1d7f619f5a47ee5dea727ed2facc11cd0ed4e04a30f07e5904"
+    },
+    "screenshots": [
+      "Nameserver-Change-Ready-Desktop.png",
+      "Nameserver-Change-Ready-Mobile.png",
+      "Nameserver-Change-Interrupted-Desktop.png",
+      "Nameserver-Change-Interrupted-Mobile.png",
+      "Nameserver-Change-Observed-Desktop.png",
+      "Nameserver-Change-Observed-Mobile.png",
+      "Nameserver-Change-Orphan-Desktop.png",
+      "Nameserver-Change-Orphan-Mobile.png"
+    ]
   }
 }

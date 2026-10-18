@@ -19,6 +19,64 @@ def registered_nameserver_reply(fixture, path):
     return 200, json.dumps({'result': fixture.nameservers[match.group(1)]}, separators=(',', ':')).encode('utf-8')
 
 
+def registered_nameserver_change_reply(fixture, path, headers, raw):
+    """Opt-in synthetic whole-set replacement; never a verified acknowledgement.
+
+    The raw request stays in memory for the installed fixture's exact wire check.
+    Only explicit uncertain_landed mode changes the separate GET observation.
+    """
+    if fixture.nameserver_change_mode == 'disabled' or not re.fullmatch(r'/domain/([1-9][0-9]{0,17})/nameservers', path or ''):
+        return None
+
+    def refused():
+        fixture.errors.append('Unexpected registered nameserver change request')
+        return 400, b'{"error":"synthetic nameserver change refused"}'
+
+    def names(values):
+        import ipaddress
+        if type(values) is not list or not 1 <= len(values) <= 64:
+            return False
+        for value in values:
+            if type(value) is not str or len(value) > 253 or not re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+', value):
+                return False
+            try:
+                ipaddress.ip_address(value)
+                return False
+            except ValueError:
+                pass
+        return values == sorted(set(values))
+
+    mode = fixture.nameserver_change_mode
+    if mode not in ('uncertain_landed', 'uncertain_unlanded', 'authentication') or path != '/domain/14701/nameservers':
+        return refused()
+    required = {'Authorization': 'Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode(),
+                'Content-Type': 'application/json', 'Accept': 'application/json'}
+    if any(headers.get(key) != value for key, value in required.items()) or headers.get('Transfer-Encoding') is not None:
+        return refused()
+    if hasattr(headers, 'get_all') and any(len(headers.get_all(key, [])) != 1 for key in (*required, 'Content-Length')):
+        return refused()
+    length = headers.get('Content-Length', '')
+    if not re.fullmatch(r'[1-9][0-9]{0,3}', length) or type(raw) is not bytes or not 0 < len(raw) <= 8192 or int(length) != len(raw):
+        return refused()
+    try:
+        payload = json.loads(raw.decode('utf-8'))
+    except (UnicodeDecodeError, ValueError, RecursionError):
+        return refused()
+    if type(payload) is not dict or list(payload) != ['ns', 'old-ns'] or not names(payload['ns']) or not names(payload['old-ns']):
+        return refused()
+    if set(payload['ns']).intersection(payload['old-ns']) or not names(fixture.nameservers.get('14701')) or payload['old-ns'] != fixture.nameservers['14701']:
+        return refused()
+    if raw != json.dumps(payload, separators=(',', ':'), ensure_ascii=True).encode('ascii'):
+        return refused()
+    fixture.nameserver_change_posts.append({'path': path, 'body': payload, 'raw': raw.decode('ascii')})
+    fixture.posts.append({'path': path, 'body': payload})
+    if mode == 'uncertain_landed':
+        fixture.nameservers['14701'] = list(payload['ns'])
+    if mode == 'authentication':
+        return 401, b'private synthetic nameserver change response'
+    return 202, b'{"status":"synthetic unverified acknowledgement"}'
+
+
 class ProviderServer:
     def __init__(self,root):
         runtime=(root/'test-runtime/provider-http').resolve()
@@ -33,6 +91,7 @@ class ProviderServer:
         (runtime/'server.key').write_bytes(key.private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.PKCS8,serialization.NoEncryption()))
         self.mode='success';self.write_mode='success';self.calls=0;self.errors=[];self.names=[];self.packages=[];self.posts=[];self.cloud_servers=[];self.cloud_mode='success';self.get_paths=[];self.domain_mode='success';self.registrar_mode='success';self.registrar_domains=[];self.cloud_providers=[];self.cloud_providers_mode='success';self.contract_dates={};self.contract_mode='success';self.expiry_dates={};self.expiry_mode='success';self.php_version='php82';self.php_version_mode='success';self.document_roots={};self.document_roots_mode='success';self.force_ssl=True;self.force_ssl_mode='success';self.directory_indexing=True;self.directory_indexing_mode='success';self.wp_installed=True;self.wp_installed_mode='success';fixture=self
         self.nameservers={};self.nameserver_mode='success'
+        self.nameserver_change_mode='disabled';self.nameserver_change_posts=[]
         self.stackcp_membership=[];self.stackcp_grants=[]
         self.renewal_mode='success';self.renewal_posts=[]
         self.period_mode='success';self.period_map={'.invalid':[1,3],'.co.uk':[1,2],'.com':[1,5]}
@@ -96,6 +155,13 @@ class ProviderServer:
                 self.send_response(status);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(body)));self.send_header('Connection','close');self.end_headers();self.wfile.write(body)
             def do_POST(self):
                 fixture.calls+=1
+                import re
+                if fixture.nameserver_change_mode != 'disabled' and re.fullmatch(r'/domain/([1-9][0-9]{0,17})/nameservers', self.path or ''):
+                    length = self.headers.get('Content-Length', '')
+                    raw = self.rfile.read(int(length)) if re.fullmatch(r'[1-9][0-9]{0,3}', length) and int(length) <= 8192 and self.headers.get('Transfer-Encoding') is None else b''
+                    status, body = registered_nameserver_change_reply(fixture, self.path, self.headers, raw)
+                    self.send_response(status);self.send_header('Content-Type','application/json');self.send_header('Content-Length',str(len(body)));self.send_header('Connection','close');self.end_headers();self.wfile.write(body)
+                    return
                 length=int(self.headers.get('Content-Length') or '0')
                 raw=self.rfile.read(length) if 0<length<=8192 else b''
                 import re

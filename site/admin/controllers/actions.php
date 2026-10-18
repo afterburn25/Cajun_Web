@@ -19,6 +19,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     if(str_starts_with($action,'provider_force_ssl_control_'))provider_force_ssl_controls_admin_action($action);
     if(str_starts_with($action,'provider_renewal_dispatch_'))domain_renewal_dispatch_admin_action($action);
     if(str_starts_with($action,'provider_directory_indexing_control_'))provider_directory_indexing_controls_admin_action($action);
+    if(str_starts_with($action,'provider_nameserver_change_'))registered_nameserver_changes_admin_action($action);
     if(str_starts_with($action,'provider_inventory_')){provider_inventory_admin_action($action);return;}
     if(str_starts_with($action,'mail_accounts_')){mail_accounts_admin_action($action);return;}
     if(str_starts_with($action,'mail_notices_'))mail_notices_admin_action($action);
