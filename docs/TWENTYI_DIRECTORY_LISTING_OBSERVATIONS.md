@@ -1,0 +1,54 @@
+# Saved directory listing setting
+
+## Scope and source
+
+This isolated increment starts at `b5c2e8738a405ee7817ce7dc882ff751592439a5` on `codex/twentyi-directory-listing-observations`. That base includes the reviewed Force SSL, document-root and expiry contexts and corrected owner-login fixtures. Force SSL native acceptance was pending when this work began. Published 1.24.0 and the root release candidate remain separate; this increment is not a release or deployment.
+
+The owner-supplied complete reference, 195,404 bytes and SHA256 `34e713c3c0b4145b6a5e3f5929d0bd470605793f98d2d917c2b28f21814c3e95`, documents `GET /package/{packageId}/web/directoryIndexing` at lines 2515–2521. Its prose describes whether `Options +Indexes` is enabled and says null means the request could not complete. This is distinct from document-priority `directoryIndex` and name/path-map `documentRoots`.
+
+The retained provider-authored SDK snapshot `696a5f1299cd2b1e67ae7f688d644ac800f41b67` directly JSON-decodes GET results at `lib/TwentyI/API/REST.php` lines 168–171. The 23 retained files comprise 19 PHP and four metadata files; each retained size/hash was checked. The package identifies itself as `20i/api-modules` 1.0.6 and carries 20i copyright. There is no endpoint-specific example in that snapshot. This old distribution and the supplied prose establish neither current account entitlement nor an exhaustive response schema. [Reference provenance](TWENTYI_OWNER_API_REFERENCE.md).
+
+The reader accepts bare JSON `true` and `false` as a strict local subset of the documented setting. It displays **Reported enabled** and **Reported disabled**, preserving the exact boolean. Null, strings, numbers, objects, arrays, malformed bodies and unexpected HTTP responses are unavailable rather than disabled. A 128-byte body cap, strict allocated package ID, fixed origin/path, null request body and 15-second timeout are defensive application bounds, not claims about provider capacity. Unknown provider/error bodies are discarded. Only finite local reasons survive, and credential-owned raw or Base64 echoes cannot become a saved boolean. Saved values do not establish current file exposure, website health or file contents. The documented setter is excluded.
+
+## Authority, storage and sharing
+
+The component has its own immutable package binding and authority; it does not inherit a PHP-version, Force SSL or document-root permission. Every owner refresh checks the exact current profile and revision, key fingerprint and sealed credential, client/package link, link event and audit, and a complete recent post-assignment package observation. Stored package sequence order must agree with original start-audit order, so a failed, unfinished, lost or reordered later intent cannot revive older current authority. Restored bindings are rebuilt and detached before use; mutable references cannot change an already-constructed request or observation.
+
+Storage is explicit owner preparation with password reauthentication. Ordinary GET/client views perform no DDL, repair, provider call or credential resolution. The dedicated reads, observations and permissions tables retain independent counters and exact start/result/sharing audit witnesses. Fixed SQL checks reconcile original common intents, results and audits with retained canonical bytes and sequence. Paired row/audit loss, malformed counters, missing preparation and altered scalar history refuse use. Private recorder entry requires the actual connection-owned staff mutex and caller transaction; audit failures roll back the associated intent, observation or permission.
+
+Sharing is initially off. A separately reauthenticated owner approves an exact current observation, establishing a per-assignment history anchor for that observation and later reads. Immutable revisions support revocation, matching replay and stale-form refusal. Another client, support context, inactive client, changed assignment or changed key/profile does not inherit the approval. Direct-client projection contains only finite status and approved boolean/date rows. Failed or unfinished newer attempts leave older permitted observations explicitly historical. Client views cannot trigger a refresh or change the provider setting.
+
+The owner section is **Directory listing settings**; the client service action is **Directory listing setting**. Both explain that the saved setting does not check whether visitors can currently see files. Owner assignments are bounded and paginated. Current, historical and unavailable states remain distinct.
+
+## Shared integration contract
+
+New context `directoryIndexingContext` appends at reader argument 11 and refresh argument 13, after actual Force SSL 10/12, document roots 9/11, expiry 8/10, PHP 7/9 and domain 6/8. Internal calls use named arguments. The existing executor rejects wrong or missing operation/context combinations before credentials, retains the common quota/cooldown, and revalidates current authority around transport. The new exclusive typed recorder checks dedicated readiness before common-result insertion. The scheduler transaction guard and every earlier typed/list path remain intact.
+
+The only transport admission is exact fixed `GET /package/{allocated numeric ID}/web/directoryIndexing`, with existing fixed headers, null body and timeout. No generic URL, query override, setter, daemon or additional provider client is introduced. Routes, controller/action prefixes and private deployment paths are additive. Canonical and shipping foundation copies must match; generated installer inventory must be refreshed before freeze. Browser order places this independent setting after Force SSL and before scheduler, which remains last.
+
+## Verification status and next action
+
+Local PHP 8.4 passes 157 named pure checks in both normal and minimal configuration. These include direct boolean/null/type handling, malformed/oversized response refusal, finite errors and credential redaction, exact account binding, restored-object rejection and detached-reference regression cases. Independent domains source review confirms the eleven canonical runtime/pure hashes, mirrored files and syntax; runtime/database/browser acceptance is not implied by that review.
+
+The production transport fixture now passes 24 named cases in each PHP mode; native fixtures now pass the verified four-way matrix below; the prepared browser fixture has not run. Native cases cover separate preparation/sharing, SQL/PHP witness parity, typed/transaction/audit rollback, exact affected-row paired loss, failed/unfinished sequence fencing, current account/client revocation and restoration, raw credential echo, actual rendering, and the unchanged twenty-per-hour quota. The quota fixture inserts new synthetic evidence under a third owner; it never rewrites retained timestamps or changes production limits.
+
+The browser fixture uses package 2001, `directory-listing.synthetic.invalid`, and a distinct owner created through the actual staff invite/activation/login flow. It allows only the expected setup-login timestamp change and then preserves the complete original account, role and all inherited intent/audit bytes. Five real synthetic reads consume that owner's independent budget: package observations before/after assignment, enabled, disabled and null. Real cooldowns remain; diagnostic files contain finite response metadata and hashes, not credentials or private account rows. Owner/client true, false and historical desktop/mobile captures are defined for future combined acceptance.
+
+Root and independent reviewers cleared exact runtime, all twelve shared proposals and final fixtures/workflow; those exact shared bytes are applied. Local verification passes 70 named syntax/AST/YAML/hash checks and 157 directory contract +24 directory transport +165 inherited Force SSL +24 inherited roots transport cases per default/minimal PHP 8.4 mode. Reviewed runtime and fixture hashes remain unchanged. The one authorized focused matrix now passes PHP 8.2/8.4 with MariaDB 10.11/MySQL 8.4, retaining the new pure/transport/native reports plus Force SSL, roots, PHP, expiry and scheduler native regressions. No standalone full/browser/PR dispatch is authorized for this branch. After exact installer/Git parity and native evidence, root owns normal integration and fresh packaged/browser/recovery/Apache acceptance. Original failed/running workflows and previous release evidence remain preserved. No live provider call, write, charge, customer mail, SSH, filesystem action, deployment or licensing change is included.
+
+
+Installer refresh 13763 completed successfully. Exact staged source verification matches all 2,805 shipping files byte-for-byte with disk, all 2,804 generated inventory hashes, the twelve reviewed shared proposals and five reviewed fixture/workflow files. Unrelated foundation mirrors, licensing and unrelated provider paths remain unchanged. The single approved automatic four-way native matrix is verified below. The next action is parent-owned normal integration and fresh combined acceptance; source/installer parity alone does not establish browser acceptance.
+
+
+## Exact native acceptance — 2026-10-16
+
+Exact source `3bdba5eba684454a04179df7f5045a9b71417447` passes the single original [four-way native run 38864231460](https://github.com/afterburn25/Cajun_Web/actions/runs/38864231460). All four actual archives were downloaded and verified against GitHub source, byte size and SHA256; ZIP CRC, safe unique members and all ten required named reports pass. Each PHP/database environment has 127 directory-listing native, 157+157 pure, 24+24 transport, 119 Force SSL, 115 roots, 99 PHP, 111 expiry and 102 scheduler executions: 1,035 per environment, 4,140 total. The inherited roots/PHP fixtures each repeat one named failed/unfinished assertion; those two known repetitions are recorded honestly rather than counted as distinct scenarios. All 127 new native labels are unique. Browser, packaged combined acceptance and root integration remain pending; no live provider request or release is claimed.
+
+| Environment | Actual archive | SHA256 | Bytes |
+|---|---|---|---|
+| 8.2-mariadb-10.11 | 12031105391 | `be1423d34860fdded437dc39d2352212d0c443a83df6247404cfe6b18c3b8cd9` | 18284 |
+| 8.2-mysql-8.4 | 12029709487 | `8815feeffde744d5c14885e5e2ca3be7417ec436b8d087fe6772a3d4113cfded` | 18277 |
+| 8.4-mariadb-10.11 | 12030577837 | `17e118fc46c7f1563910707067dbd4bacb713cb12e9a7692bfce5c50f5cc13ec` | 18285 |
+| 8.4-mysql-8.4 | 12030796799 | `d3dde9f16c3249a11931aa92cbca2a5e66556e5030f74249fb712fecaa122e33` | 18286 |
+
+Local evidence is retained at `qa/38864231460/verification.json` with original archives, fresh run/jobs/metadata and every named outcome. Shipping, tests, workflows and generated inventory remain exact to 3bdba5eb in this evidence-only update.

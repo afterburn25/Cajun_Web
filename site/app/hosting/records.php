@@ -3,6 +3,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/clients/workspace.php';
+require_once CWP_CODE_ROOT.'/app/hosting/storage.php';
 require_once CWP_CODE_ROOT.'/app/staff/accounts.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/hosting/HostingJournal.php';
 require_once CWP_CODE_ROOT.'/database/schema/hosting_records_schema.php';
@@ -10,13 +11,13 @@ require_once CWP_CODE_ROOT.'/database/migrations/hosting_records_migrate.php';
 use CajunWebPro\Foundation\Hosting\{HostingJournal,HostingPackage};
 
 function hosting_records_ready():bool {
-    return (one('SELECT value FROM '.table('settings').' WHERE name=?',['hosting_records_schema_version'])['value']??'')==='1';
+    return hosting_storage_ready('records');
 }
 function hosting_records_owner(bool $ready=true):array {
     if (support_current() || array_key_exists('support',$_GET)) throw new RuntimeException('Leave client support before using hosting records.');
     $actor=admin_user();
     if (!$actor || !staff_ready() || !studio_ready() || $actor['role']!=='owner' || !staff_can('staff.manage',$actor) || !staff_can('clients.manage',$actor)) throw new RuntimeException('An active owner account and prepared client workspace are required.');
-    if ($ready && !hosting_records_ready()) throw new RuntimeException('An owner must prepare hosting records first.');
+    if ($ready) hosting_storage_require('records');
     return $actor;
 }
 function hosting_records_password(#[\SensitiveParameter] string $password,bool $ready=true):array {
@@ -75,18 +76,24 @@ function hosting_records_journal(array $row):HostingJournal {
 /** An approved local package snapshot, not an order, provider entitlement or paid service. */
 function hosting_records_create(string $id,int $client,HostingPackage $package,#[\SensitiveParameter] string $password):string {
     return staff_locked(fn()=>staff_transaction(function()use($id,$client,$package,$password):string {
-        $actor=hosting_records_password($password);hosting_records_id($id);hosting_records_client($client,true);
+        $actor=hosting_records_password($password);
+        return hosting_records_create_locked($id,$client,$package,(int)$actor['id']);
+    }));
+}
+/** Internal writer shared by explicit owner creation and atomic order association. */
+function hosting_records_create_locked(string $id,int $client,HostingPackage $package,int $actorId):string {
+        if(!db()->inTransaction())throw new LogicException('Hosting creation needs its owning transaction.');
+        hosting_storage_require('records');hosting_records_id($id);hosting_records_client($client,true);
         $old=one('SELECT * FROM '.table('hosting_records').' WHERE id=? FOR UPDATE',[$id]);
         $journal=HostingJournal::create($id,$package,'client:'.$client,$old?(int)$old['created_epoch']:time());
         if ($old) {
             hosting_records_journal($old);
-            if ((int)$old['client_id']!==$client || (int)$old['created_by']!==(int)$actor['id'] || $old['initial_json']!==$journal->json()) throw new InvalidArgumentException('This hosting request identity was already used.');
+            if ((int)$old['client_id']!==$client || (int)$old['created_by']!==$actorId || $old['initial_json']!==$journal->json()) throw new InvalidArgumentException('This hosting request identity was already used.');
             return $id;
         }
         $epoch=json_decode($journal->json(),true)['created_at'];
-        query('INSERT INTO '.table('hosting_records').' (id,client_id,created_by,created_epoch,initial_json,journal_json,journal_sha256,revision) VALUES (?,?,?,?,?,?,?,0)',[$id,$client,$actor['id'],$epoch,$journal->json(),$journal->json(),$journal->fingerprint()]);
-        hosting_records_audit((int)$actor['id'],'created','Local account '.$id.' client '.$client);return $id;
-    }));
+        query('INSERT INTO '.table('hosting_records').' (id,client_id,created_by,created_epoch,initial_json,journal_json,journal_sha256,revision) VALUES (?,?,?,?,?,?,?,0)',[$id,$client,$actorId,$epoch,$journal->json(),$journal->json(),$journal->fingerprint()]);
+        hosting_records_audit($actorId,'created','Local account '.$id.' client '.$client);return $id;
 }
 /** Local commands only. Remote attempts/results and reconciliation require a separate adapter. */
 function hosting_records_change(string $id,int $client,int $revision,string $event,string $command,array $arguments,#[\SensitiveParameter] string $password):HostingJournal {
