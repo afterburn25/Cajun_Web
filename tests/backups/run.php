@@ -77,6 +77,10 @@ rejects('.env rejected from scope', fn () => manifest(['items' => ['.env' => h('
 rejects('storage path rejected from scope', fn () => manifest(['items' => ['storage/private/x' => h('x')]]));
 rejects('pem rejected from scope', fn () => manifest(['items' => ['certs/site.pem' => h('x')]]));
 rejects('installed flag rejected', fn () => manifest(['items' => ['.installed.php' => h('x')]]));
+rejects('nested config.php rejected at depth', fn () => manifest(['items' => ['includes/config.php' => h('x')]]));
+rejects('nested .env rejected at depth', fn () => manifest(['items' => ['app/vars/.env' => h('x')]]));
+rejects('nested storage directory rejected at depth', fn () => manifest(['items' => ['deploy/storage/keys' => h('x')]]));
+rejects('nested .installed.php rejected at depth', fn () => manifest(['items' => ['releases/v2/.installed.php' => h('x')]]));
 rejects('empty scope rejected', fn () => manifest(['items' => []]));
 rejects('non-sha item hash rejected', fn () => manifest(['items' => ['db/x' => 'abc']]));
 rejects('unparsable dates rejected', fn () => manifest(['retainUntil' => 'soon']));
