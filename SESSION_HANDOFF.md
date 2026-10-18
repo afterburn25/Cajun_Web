@@ -1,3 +1,9 @@
+## 2026-10-19 — backups-runtime review corrections (non-20i)
+
+Coordinator review corrections landed on `devin/non20i-backups-runtime` (`a79e0007` merge + `55d4f7bf`): depth-aware protected-path exclusions inherited from backups-foundation in the manifest and its deployed mirror; restore resolves every destination under the canonical source root, refuses linked/reparse parents and escapes, preflights all manifest members before the first write, and preserves recoverable originals through the post-write hash proof (including a `rename`-cannot-overwrite fallback); restore records authorized intent plus applied/failed outcomes in separate transactions and refreshes owner authority inside the staff mutex; create cleans up uncommitted archives and temporary dumps on failure; setup validates the recorded marker/table family before DDL; and the native fixture gained a completion guard so any early `exit(0)` becomes a failure, with corrected owner/non-owner actors.
+
+Local verification: 37 manifest, 24 archive-adapter and 221 acceptance-artifact checks pass; PHP lint clean; installer inventory regenerated. The MariaDB native fixture and packaged acceptance run in CI. No merge, deployment, provider action or release.
+
 ## 2026-10-18 — cloud endpoint supplied no catalog details
 
 The separate [cloud-only diagnostic](docs/TWENTYI_CLOUD_ROOT_DIAGNOSTIC.md#original-follow-up-outcome--2026-10-18), original run39090973425 at source `bf788894b1acd4c07daf74e718c4f95774acef85`, completed successfully after 42 passing offline checks. Its one fixed GET observed a JSON `null` root. This establishes the response type for that request and credential context, not an empty catalog, missing entitlement, provider fault or valid import contract. No cloud product fields were supplied. The original two-operation run39090394774 remains failed and unchanged; this later observation cannot retrospectively identify its scalar kind.
