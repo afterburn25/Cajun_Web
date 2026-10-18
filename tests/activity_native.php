@@ -26,7 +26,7 @@ try{
     }
     $original=all('SELECT * FROM '.table('studio_jobs'));a_admin();a_deny('Setup reauthenticates owner',fn()=>activity_migrate('wrong'));
     a_admin(2);a_deny('Client staff cannot enable activity',fn()=>activity_migrate($password));a_admin();
-    foreach(activity_schema('activityci_') as $sql)db()->exec($sql);
+    foreach(activity_schema('activityci_') as $name=>$sql)if($name==='activity_reads')db()->exec($sql);
     db()->exec('ALTER TABLE '.table('activity_reads').' DROP INDEX read_event');a_deny('Migration rejects missing recipient-key uniqueness',fn()=>activity_migrate($password));db()->exec('ALTER TABLE '.table('activity_reads').' ADD UNIQUE read_event(actor_type,actor_id,event_key)');
     db()->exec('ALTER TABLE '.table('activity_reads').' MODIFY event_key VARCHAR(80) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL');a_deny('Migration rejects folded source keys',fn()=>activity_migrate($password));db()->exec('ALTER TABLE '.table('activity_reads').' MODIFY event_key VARCHAR(80) CHARACTER SET ascii COLLATE ascii_bin NOT NULL');
     query('INSERT INTO '.table('activity_reads')." (actor_type,actor_id,event_key,read_at) VALUES ('client',1,'message:1',?)",[$now]);a_deny('Migration refuses unrecognized populated state',fn()=>activity_migrate($password));query('DELETE FROM '.table('activity_reads'));
@@ -52,6 +52,13 @@ try{
     a_ok('Published delivery destination opens owned release',str_contains(activity_destination('client','release:'.$published),'release='.$published));
     activity_mark('client',[$message],true);$first=all('SELECT * FROM '.table('activity_reads'));activity_mark('client',[$message],true);a_ok('Repeated mark read is idempotent and preserves first timestamp',all('SELECT * FROM '.table('activity_reads'))===$first&&activity_count('client')===6);
     a_ok('Unread filter omits marked source',!in_array($message,array_column(activity_feed('client',true)['rows'],'event_key'),true));activity_mark('client',[$message],false);a_ok('Explicit unread restores only that event',activity_count('client')===7);
+    a_ok('Client can hide every receivable update type including milestones',count(activity_kinds(activity_actor('client')))===7&&in_array('milestone',activity_kinds(activity_actor('client')),true));
+    activity_prefs_save(activity_actor('client'),['message']);a_ok('Hidden update type leaves feed and count',activity_count('client')===6&&!in_array($message,a_keys('client'),true));
+    a_deny('Hidden source cannot be opened',fn()=>activity_source('client',$message));a_deny('Hidden source cannot be marked',fn()=>activity_mark('client',[$message],true));
+    a_ok('Hidden source stays in the project record',one('SELECT id FROM '.table('studio_messages').' WHERE id=?',[substr($message,8)])!==false&&all('SELECT kind,actor_type FROM '.table('activity_prefs'))===[['kind'=>'message','actor_type'=>'client']]);
+    a_admin();a_ok('Preferences are per-actor, staff feed keeps the kind',activity_count('admin')===3);a_client();
+    activity_prefs_save(activity_actor('client'),[]);a_ok('Re-enabling restores hidden updates',activity_count('client')===7&&all('SELECT * FROM '.table('activity_prefs'))===[]);
+    activity_prefs_save(activity_actor('client'),['decision']);a_ok('Out-of-scope preference kinds never persist',all('SELECT * FROM '.table('activity_prefs'))===[]);
     a_deny('Mixed owned and foreign mark is all-or-nothing',fn()=>activity_mark('client',[$message,$foreign],true));a_ok('Rejected batch leaves owned item unread',activity_count('client')===7);
     a_deny('Invalid key rejected',fn()=>activity_source('client','message:1 OR 1=1'));a_deny('Unknown source denied',fn()=>activity_source('client','message:99999'));a_deny('Foreign cursor denied',fn()=>activity_feed('client',false,$foreign));
     a_deny('Duplicate keys rejected',fn()=>activity_mark('client',[$message,$message],true));a_deny('Empty batch rejected',fn()=>activity_mark('client',[],true));a_deny('Oversized batch rejected',fn()=>activity_mark('client',array_map(fn($n)=>'message:'.$n,range(1,31)),true));

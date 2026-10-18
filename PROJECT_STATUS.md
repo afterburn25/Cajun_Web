@@ -17,6 +17,16 @@ Previous checkpoint: https://github.com/afterburn25/Cajun_Web/blob/35d8fb7efc94f
 Devin PRs verified green: #198, #202, #203 on main (48/48 each) and stacked #200, #204, #205 on their parents (long lanes run after retarget). New tip `devin/non20i-staff-notes` @ `b6d20382` stacked on #205: staff-only internal project notes via `studio_messages.author_type='internal'` — invisible to clients, contacts, support sessions and activity feeds; no schema change. Syntax/test-compile/canonical inventory pass; PR pending GitHub API rate limit reset.
 
 Nothing merged, deployed or contacted externally. 20i/provider/hosting/SSH work remains Codex-owned.
+
+
+## Devin lane update — 2026-10-17 (later)
+
+Current tips (stacked chain on devin/non20i-contact-activity):
+- #209 `devin/non20i-staff-notes` @ `3e6db257` — staff-only internal project notes via `studio_messages.author_type='internal'` (no schema change); portal conversation allow-lists visible author types. `3e6db257` corrects `d203b5ea`'s flash assertion ('Project updated' is the shared `studio_*` group flash; 'Project saved.' is only for `studio_job`).
+- #210 `devin/non20i-milestones` @ `868e967c` — additive `studio_milestones` (state + optional YYYY-MM-DD target date) via existing `studio_migrate`; admin manage forms, portal visibility, milestone activity events.
+- #211 `devin/non20i-activity-prefs` @ `537c2c98` — additive `activity_prefs`; per-actor hiding of update types from feed/unread/open/mark, re-run `activity_setup` provisions on existing installs.
+
+php -l + test-compile + canonical inventory pass on all. Component lanes queued (GitHub runner starvation); long lanes run after Codex retargets to main.
 Original [run 39090394774](https://github.com/afterburn25/Cajun_Web/actions/runs/39090394774), attempt 1, checked out `1159648f968d46439f7e88a9cd0f6dbee3758643`. Its 39 offline transport/disclosure tests passed; the live step and overall run failed, and the bounded shape artifact was uploaded. `package_types` observed an array of objects with `id` integer, `label` string and `platform` string. `cloud_server_product_data` returned the diagnostic outcome `unexpected_root`; the actual root kind was not retained, so an empty catalog or missing entitlement cannot be inferred.
 
 The [original safe shape and interpretation](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#original-outcome--2026-10-18) establish lexical field/type observations only. Complete catalog, pricing, image and importer contracts remain unaccepted; no absence of provider images is established. Domains is preparing the bounded hosting follow-through, and VPS is preparing a separate one-read cloud root-kind diagnostic. Neither proposal is executed by this documentation follow-up. Preserve the first failure; do not rerun it automatically. Published 1.25.0 remains unchanged. The preparation checkpoint below is historical.

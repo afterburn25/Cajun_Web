@@ -569,6 +569,10 @@ Parent `e37517fa` merges tested hosting confirmation with newer main. Four nativ
 
 # Changelog
 
+## Unreleased — per-actor update preferences (devin/non20i-activity-prefs)
+
+Clients, company contacts and staff can each hide chosen update types (messages, files, reviews, milestones, invoices, payments, releases, decisions) from their own activity feed and unread count through a preferences card on the activity page. Storage is the additive activity_prefs table created by re-running workspace-activity setup; hidden updates cannot be opened or marked but stay in the project record, and preferences never affect other accounts.
+
 ## Unreleased — structured project milestones (devin/non20i-milestones)
 
 Projects gain a tracked milestone list alongside the free-form narrative: staff add and update items with a state (pending, in progress, done, blocked) and an optional ISO target date from the project screen. Clients and projects-permission contacts see the states and dates in the workspace; milestone updates surface in workspace activity for both audiences with exact links. Storage is a new additive studio_milestones table created by the existing workspace update on older installs and by fresh setup. Requires clients.manage for writes; milestones cannot be deleted.
