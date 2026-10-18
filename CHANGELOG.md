@@ -3,6 +3,11 @@
 Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.
 
 ## Unreleased — record observed cloud null response
+## Unreleased — protected version previews
+
+Staff can attach one private PDF/PNG/JPEG preview to an exact published design or proposal version. The artifact lives in guarded private storage and is served inline with integrity verification only to the owning client, staff or granted support sessions — never as a public URL. External staging links remain available and labeled external. Workspace storage upgrades additively (marker 3); existing content is preserved. Branch `devin/non20i-protected-previews`; packaged acceptance pending on CI.
+
+## 2026-10-16 — publish the concrete release freeze and branch
 
 Retain the exact safe result of separate original run39090973425:42 offline guards and the one-GET diagnostic passed, observing JSON null. No cloud catalog/import semantics follow; the earlier two-operation failure stays preserved. Hosting catalog implementation continues separately. No released bytes or production behavior changed.
 

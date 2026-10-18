@@ -188,7 +188,7 @@ function staff_action_permission(string $action): ?string {
     if(str_starts_with($action,'catalog_'))return 'catalog.manage';
     if(in_array($action,['support_migrate','support_policy'],true))return 'staff.manage';
     if(str_starts_with($action,'staff_')||in_array($action,['email_save','email_test','installer_cleanup','storage_repair','clear_limits','media_cleanup','studio_migrate'],true))return 'staff.manage';
-    if(in_array($action,['studio_client','studio_invite','studio_job','studio_message','studio_publish','studio_upload','studio_invoice','studio_paid'],true))return 'clients.manage';
+    if(in_array($action,['studio_client','studio_invite','studio_job','studio_message','studio_publish','studio_upload','studio_preview','studio_invoice','studio_paid'],true))return 'clients.manage';
     return 'website.manage';
 }
 function staff_home(array $user): string {

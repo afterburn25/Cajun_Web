@@ -19,10 +19,12 @@ def upgrade():
     up=requests.Session();root=BASE+'/catalog-upgrade/admin/index.php'
     r=submit(up,root+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
     check('Actual 1.3.0 owner signs in before catalog upgrade','Sales pipeline' in r.text)
+    r=submit(up,root+'?view=studio-upgrade','studio_migrate',{'confirm':'1'})
+    check('Actual 1.3.0 workspace upgrade precedes catalog migration','Database update completed' in r.text)
     r=submit(up,root+'?view=catalog','catalog_migrate',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'})
     check('Actual 1.3.0 catalog migration completes','Service catalog enabled' in r.text)
     for t in tables[2:]:check('Actual 1.3.0 retains '+t,db('SELECT * FROM catalogup_'+t)==before[t])
-    settings={r['name']:r['value'] for r in db('SELECT * FROM catalogup_settings')};check('Actual 1.3.0 retains all original settings',all(settings[r['name']]==r['value'] for r in before['settings']))
+    settings={r['name']:r['value'] for r in db('SELECT * FROM catalogup_settings')};check('Actual 1.3.0 retains all original settings',all(settings[r['name']]==r['value'] for r in before['settings'] if not r['name'].endswith('_schema_version')))
     users=db('SELECT * FROM catalogup_users');check('Actual 1.3.0 retains passwords IDs and auth versions',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(users,before['users'])))
     check('Actual 1.3.0 publishes no automatic product or price',not db('SELECT * FROM catalogup_catalog_products'))
     check('Actual 1.3.0 installed guard remains',removed_setup_unavailable(globals(),dest,up))

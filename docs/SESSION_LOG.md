@@ -176,6 +176,9 @@ Owners explicitly approve an observed cloud/VPS server for an existing client. T
 The new original1.24 fixture seeds populated package/domain ownership and one uncertain synthetic label request through the original gateway/ledger. Apply/recover checks preserve original links, observations, approval events, consumed grants and operation attempts. Cloud migration remains an explicit owner HTTP action; recovered requests cannot reach the synthetic network callback. Current native/browser/full recovery, screenshots, independent review, normal merge and exact-main/download gates remain required.
 
 Published1.24 source7190b582 and all16 assets remain immutable. Complete20i orders/payments/native controls/domain/VPS lifecycle/support/SSH remain unfinished. Necessary billing #130/#133 continues separately; unrelated work stays paused. No production operation or deployment occurred.
+## Protected version previews in the client workspace — 2026-10-16
+
+Non-20i increment requested under assignment#157 item2 ("protected previews/uploads"). Starting from main d7153b07 on branch `devin/non20i-protected-previews`. Adds additive `studio_version_files` binding storage (workspace schema marker 2→3, additive migrate, unique version/file bindings), `studio_preview_upload` (staff-attached PDF/PNG/JPEG, same guarded private storage, type/size/executable-content limits and 100 MB project cap as project files), and `studio_preview_download` (integrity-verified inline serving, project-owner client scope, staff or granted support access, no-store). Admin job cards expose attach/open controls; portal version cards show a protected-preview link distinct from the labeled external staging link. Test seeds/marker updated to 3; provider-inventory workspace prerequisite accepts versions 2–3. HTTP cases assert attach/open inline, other-client and anonymous refusal, foreign-version and duplicate-binding rejection. php -l clean on all touched files; Python syntax clean; package HTTP/native acceptance pending on CI. Commit: "Bind protected staff-uploaded previews to published design and proposal versions". No live deployment, customer data or external staging is claimed.
 
 ## Synchronize release entry points after review — 2026-10-15
 
@@ -3403,6 +3406,9 @@ Starting at `bf788894b1acd4c07daf74e718c4f95774acef85` on `ops/twentyi-cloud-roo
 This documentation-only commit updates status, handoff, changelog and diagnostic interpretation. The next implementation is direct hosting catalog import, with documented same-type identity and preserved inventory-origin drafts. The current source does not implement that follow-through, import cloud products or fetch provider images. Enclosing commit: `docs: record cloud catalog null response`; no diagnostic code or trigger paths change.
 
 Actual root documentation checks passed 12 required documents,271 Markdown files and1,851 local links, including30 heading links; whitespace passed. Source and application tests were not rerun for this outcome record.
+## 2026-10-16 - Protected-preview test harness repair
+
+`native-and-browser` on #198 failed with `NameError: php` — `release_cases.db` resolves `php` in its own module globals, populated only inside `run_browser(env)`; the direct preview-version `db()` lookup ran earlier. Fix `5c5f3454` injects `release_cases.php=php` right after the local binary is resolved. Same-lineage `devin/non20i-stage-history` received the fix via merge `8962924d`; its earlier green snapshot never ran the `native-and-browser` lane at all, so this repair is real coverage for both branches.
 
 ## 2026-10-18 — reduce unrelated pull-request workflow fan-out
 
@@ -3413,3 +3419,12 @@ At 06:18 UTC the GitHub API reported 1,032 queued workflows and three active wor
 Validation: 119 finite source/YAML/dependency/inverse/applicability checks passed, plus independent comparison of all ten jobs sections and non-path settings before applying the patch. Static retained PR186/188/191 file comparisons each reduce these ten workflows from 26 to 22 jobs; docs/CSS examples reduce them to zero. This is not a runtime or queue-clearing claim. No original CI run was canceled, deleted or retried.
 
 The separate corrected 1.26 build job passed and its original inputs/build artifacts were retained with API digest verification. Database/browser/server/recovery acceptance remains pending; hosting offer/recovery source6cf7 also awaits focused acceptance. Next: normal PR integration of this CI-only correction, then continue original-result review and staged-owner HTTP/full-suite hosting work. Published1.25 and production remain unchanged.
+
+
+## 2026-10-19 — protected-preview review corrections (non-20i)
+
+Request: resolve coordinator integration-review findings on PR198 (project-lock ordering and established `studio_version_files` preservation). Starting head: `d1477ab6` on `devin/non20i-protected-previews`; enclosing commit `4602b1d6`.
+
+Changed: `site/app/clients/files.php` — preview persistence extracted into `studio_preview_store`, locking `studio_jobs ... FOR UPDATE` (the row ordinary `studio_upload` locks) before `studio_versions ... FOR UPDATE`, keeping quota reads/inserts inside one transaction; `site/database/migrations/workspace.php` — recorded-marker and table-family preflight before DDL: markers `''`/`0`/`1`/`2`/`3` supported, marker `3` requires the full workspace family (a missing `studio_version_files` is established history and refuses rather than recreating empty), marker `2` requires the v2 family and may still add the binding table, unknown markers refuse without writes; `tests/native.php` — nine-table count, missing-v3-history refusal, v2->v3 additive path, unknown-marker refusal, and a two-connection lock-wait case proving a preview store blocked on the shared project lock leaves no file or binding row.
+
+Verification and scope: `php -l` clean on all touched files; `tests/acceptance_artifacts_test.py` 221 checks; installer inventory regenerated over LF bytes. MariaDB `tests/native.php` cannot run locally (no test database); packaged browser/Apache acceptance runs in CI. Next: CI lanes on `4602b1d6`; Codex owns integration. No deployment, provider call, merge or release.

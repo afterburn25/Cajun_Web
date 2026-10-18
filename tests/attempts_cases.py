@@ -18,6 +18,7 @@ def upgrade():
     apply_file_update(globals(),dest)
     check('Original 1.5 update preserves config guard private files and external master key',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();url=BASE+'/trial-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
+    r=submit(up,url+'?view=studio-upgrade','studio_migrate',{'confirm':'1'});check('Workspace schema upgrade precedes the feature migration','Database update completed' in r.text)
     r=submit(up,url+'?view=payment-trials','payments_trial_setup',{'owner_password':'wrong','confirm':'1'});check('Trial upgrade refuses wrong owner password','current password' in r.text.lower())
     r=submit(up,url+'?view=payment-trials','payments_trial_setup',{'owner_password':'Synthetic upgrade passphrase 2026','confirm':'1'});check('Original 1.5 upgrade enables additive sandbox history','Sandbox trial history enabled' in r.text)
     check('Original 1.5 gateway ciphertext requests invoices and all retained records preserved',all(db('SELECT * FROM trialup_'+t)==v for t,v in before.items()))

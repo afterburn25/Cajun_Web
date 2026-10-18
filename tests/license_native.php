@@ -135,7 +135,7 @@ try{
     // A second purchase of the same product must mint a NEW license — the
     // pre-invoice_id check keyed on customer+product wrongly returned the
     // existing license. UNIQUE(invoice_id) also collapses concurrent runs.
-    save_setting('staff_schema_version','1');save_setting('studio_schema_version','2');save_setting('catalog_schema_version','1');
+    save_setting('staff_schema_version','1');save_setting('studio_schema_version','3');save_setting('catalog_schema_version','1');
     $now=gmdate('Y-m-d H:i:s');
     query('INSERT INTO '.table('studio_jobs').' (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,?,?)',[1,'License fixture job','Fixture','[]',$now,$now]);
     $jobId=(int)db()->lastInsertId();
