@@ -1,0 +1,28 @@
+<?php
+declare(strict_types=1);
+if(!defined('CWP_BOOT')){http_response_code(404);exit;}
+require_once CWP_CODE_ROOT.'/app/providers/package_force_ssl.php';
+function provider_force_ssl_label(string $status):string {return match($status){'observed'=>'Latest saved Force SSL flag','stale'=>'Saved Force SSL flag is out of date','unfinished'=>'Latest refresh has no saved result','complete'=>'Saved Force SSL flag','assignment_changed'=>'The studio needs to confirm this hosting assignment','not_shared'=>'Force SSL flag sharing is off','not_observed'=>'No Force SSL flag has been saved','unavailable','refused','credential','access_changed'=>'Latest refresh did not provide a Force SSL flag',default=>'Force SSL flag is unavailable'};}
+function provider_force_ssl_render(array $view):void {
+    echo '<div data-force-ssl-observation><p><strong>'.esc(provider_force_ssl_label($view['status'])).'</strong></p><p class="hint">The Force SSL flag reported for this website at the time shown. This saved flag does not check its certificate or whether HTTPS works.</p>';
+    foreach($view['rows'] as $r){$label=match($r['value']){true=>'Flag reported set',false=>'Flag reported false',default=>'Flag unavailable'};echo '<article class="workspace-message"><h3>'.esc($label).'</h3><p>'.esc(gmdate('Y-m-d H:i:s',$r['observed_epoch'])).' UTC · '.($r['current']?'Latest saved observation':'Historical observation').'</p></article>';}
+    echo '</div>';
+}
+function provider_force_ssl_admin_render():void {
+    provider_settings_manager();echo '<section class="workspace-card" id="package-force-ssl"><h2>Website Force SSL flags</h2><p>Refresh the reported Force SSL flag for an assigned hosting package. Share its saved observation with that client separately.</p>';
+    try{
+        if(!provider_inventory_ready()){echo '<p>Prepare hosting inventory first.</p></section>';return;}
+        if(!provider_force_ssl_ready()){echo '<form method="post">';admin_action('provider_inventory_force_ssl_prepare');admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"');echo '<button class="btn gold">Enable Force SSL observations</button></form></section>';return;}
+        $page=max(1,min(10000,(int)($_GET['force_ssl_page']??1)));$links=all('SELECT l.id,l.package_id,c.name AS client_name FROM '.table('provider_package_links').' l JOIN '.table('studio_clients').' c ON c.id=l.client_id ORDER BY l.id LIMIT 20 OFFSET '.(($page-1)*20));if(!$links)echo '<p>Assign a hosting package to a client first.</p>';
+        foreach($links as $link){echo '<article class="workspace-card" data-force-ssl-owner-package><h3>'.esc($link['client_name']).' · Package '.esc((string)$link['package_id']).'</h3>';
+            try{
+                $view=staff_locked(fn()=>staff_transaction(fn()=>provider_force_ssl_project($link['id'],false)));provider_force_ssl_render($view);$permission=$view['permission'];$binding=null;
+                try{$binding=staff_locked(fn()=>staff_transaction(fn()=>provider_force_ssl_binding($link['id'])));}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo '<p class="hint">'.esc($e->getMessage()).'</p>';}
+                if($binding){echo '<form method="post" data-force-ssl-refresh>';admin_action('provider_inventory_force_ssl_refresh');foreach(['link_id'=>$link['id'],'binding_sha256'=>$binding->sha256] as $name=>$value)echo '<input type="hidden" name="'.$name.'" value="'.esc($value).'">';admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"');echo '<button class="btn gold">Refresh Force SSL flag</button><p class="hint">One read for this website. Hosting inventory must be complete and less than 15 minutes old.</p></form>';}
+                echo '<p>'.($permission&&$permission['document']['enabled']?'Sharing is approved for the recorded assignment.':'Force SSL flag sharing is off.').'</p>';
+                if($permission||$view['status']==='observed'){echo '<form method="post" data-force-ssl-sharing>';admin_action('provider_inventory_force_ssl_share');foreach(['link_id'=>$link['id'],'expected_id'=>$permission['document']['id']??'','event_id'=>bin2hex(random_bytes(16)),'anchor_id'=>$view['latest_id']??''] as $name=>$value)echo '<input type="hidden" name="'.$name.'" value="'.esc($value).'">';admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"');echo '<div class="button-row">';if($view['status']==='observed')echo '<button class="btn gold" name="sharing" value="enable">Share saved Force SSL flag</button>';if($permission)echo '<button class="btn outline" name="sharing" value="disable">Turn off Force SSL sharing</button>';echo '</div><p class="hint">Sharing covers this reviewed observation and later reads for the same approved assignment.</p></form>';}
+            }catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo '<p class="notice error">'.esc($e->getMessage()).'</p>';}echo '</article>';
+        }
+        echo '<nav class="button-row" aria-label="Force SSL observation assignments">';if($page>1)echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['force_ssl_page'=>$page-1])).'#package-force-ssl">Previous assignments</a>';if(count($links)===20&&$page<10000)echo '<a class="btn outline" href="'.esc(admin_url('provider-settings',['force_ssl_page'=>$page+1])).'#package-force-ssl">More assignments</a>';echo '</nav>';
+    }catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo '<p class="notice error">'.esc($e->getMessage()).'</p>';}echo '</section>';
+}
