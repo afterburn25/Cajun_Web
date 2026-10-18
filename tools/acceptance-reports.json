@@ -191,7 +191,12 @@
     "hosting-checkout-views-minimal.json",
     "hosting-checkout-native-results.json",
     "hosting-checkout-http-guards.json",
-    "hosting-checkout-http-results.json"
+    "hosting-checkout-http-results.json",
+    "hosting-catalog-plan-setup-document-default.json",
+    "hosting-catalog-plan-setup-document-minimal.json",
+    "hosting-catalog-plan-setup-views-default.json",
+    "hosting-catalog-plan-setup-views-minimal.json",
+    "hosting-catalog-plan-setup-native-results.json"
   ],
   "final": [
     "activity-native-results.json",
@@ -436,7 +441,12 @@
     "hosting-checkout-views-minimal.json",
     "hosting-checkout-native-results.json",
     "hosting-checkout-http-guards.json",
-    "hosting-checkout-http-results.json"
+    "hosting-checkout-http-results.json",
+    "hosting-catalog-plan-setup-document-default.json",
+    "hosting-catalog-plan-setup-document-minimal.json",
+    "hosting-catalog-plan-setup-views-default.json",
+    "hosting-catalog-plan-setup-views-minimal.json",
+    "hosting-catalog-plan-setup-native-results.json"
   ],
   "provenance": {
     "original_source": "faef8a6a0fb0a3969a67fe8bc7aabd3b107c1c10",

@@ -77,9 +77,9 @@ function hosting_catalog_review_actor(int $id): array {
     return ['id'=>(int)$actor['id'],'role'=>'owner','enabled'=>true,'auth_version'=>$actor['auth_version']];
 }
 
-/** Return strict publication inputs. Existing source/audit validation precedes these projections. */
-function hosting_catalog_sources(int $productId,string $planId,int $publisherId,array $scope): array {
-    hosting_catalog_guard();service_plans_actor($productId);service_plans_id($planId);
+/** Validate a product and its exact saved import within an already authenticated read scope. */
+function hosting_catalog_product_source(int $productId,array $scope): array {
+    hosting_catalog_guard();service_plans_actor($productId);
     $record=$scope['imports'][$productId]??null;
     if (!$record) throw new LogicException('The hosting product is outside this guarded read scope.');
     $row=one('SELECT '.catalog_public_fields().' ,status FROM '.table('catalog_products').' WHERE id=?',[$productId]);
@@ -94,6 +94,13 @@ function hosting_catalog_sources(int $productId,string $planId,int $publisherId,
     $import=[];
     foreach (['id','product_id','profile_id','source_revision','refresh_id','source_key_fingerprint','type_ref','type_name','source_hash'] as $key) $import[$key]=in_array($key,['id','product_id','source_revision'],true)?(int)$record[$key]:$record[$key];
     hosting_catalog_import($import);
+    return ['product'=>$product,'import'=>$import];
+}
+
+/** Return strict publication inputs. Existing source/audit validation precedes these projections. */
+function hosting_catalog_sources(int $productId,string $planId,int $publisherId,array $scope): array {
+    hosting_catalog_guard();service_plans_actor($productId);service_plans_id($planId);
+    $source=hosting_catalog_product_source($productId,$scope);$product=$source['product'];$import=$source['import'];
     $plan=service_plans_validate(service_plans_row($planId));
     $mapping=provider_plan_catalog_current($planId);
     if (!$mapping) throw new RuntimeException('Choose a reviewed hosting mapping for this plan.');

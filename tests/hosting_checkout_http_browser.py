@@ -14,14 +14,18 @@ from hosting_catalog_purchase import clean_environment, runtime_selection, sha
 from hosting_purchase_handoff_browser import fresh_directory, extract_package, DISABLED
 from hosting_checkout_http_cases import run_browser, CAPTURE_STEMS
 from catalog_storefront_checkout_cases import run_browser as storefront_browser, CAPTURES as STOREFRONT_CAPTURES
+from hosting_catalog_plan_setup_cases import CAPTURES as PLAN_SETUP_CAPTURES
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT/'test-runtime/hosting-checkout-web'; SITE = WEB/'hosting-checkout'
 SESSIONS = ROOT/'test-runtime/hosting-checkout-browser-sessions'
 BASE = 'http://127.0.0.1:8091'
 CAPTURES = tuple('Hosting-Checkout-' + stem + '-' + size + '.png' for stem in CAPTURE_STEMS for size in ('Desktop', 'Mobile'))
-ALL_CAPTURES = CAPTURES + STOREFRONT_CAPTURES
+ALL_CAPTURES = CAPTURES + STOREFRONT_CAPTURES + PLAN_SETUP_CAPTURES
 SOURCE_PATHS = [
+    'tests/hosting_catalog_plan_setup_cases.py',
+    'site/app/hosting/catalog_offer_setup.php', 'site/app/hosting/catalog_offer_setup_document.php',
+    'site/app/hosting/catalog_offer_setup_views.php', 'site/app/hosting/catalog_offer_views.php', 'site/app/plans/records.php',
     'tests/catalog_storefront_checkout_cases.py',
     'tests/hosting_checkout_http_browser.py', 'tests/hosting_checkout_http_cases.py', 'tests/hosting_checkout_http_fixture.php', 'tests/hosting_checkout_http_guards.py',
     'tests/hosting_checkout_native.php', 'tests/hosting_catalog_purchase.py', 'tests/hosting_purchase_handoff_browser.py',
@@ -159,11 +163,15 @@ def main(full_suite=False):
                       result['catalog_storefront']['passed'] is True
                       and tuple(c['name'] for c in result['catalog_storefront']['captures']) == STOREFRONT_CAPTURES
                       and all((qa/n).is_file() and (qa/n).stat().st_size > 0 for n in STOREFRONT_CAPTURES))
+                check('Installed imported product completes plan setup and separate publication preview',
+                      result['catalog_storefront']['plan_setup']['passed'] is True
+                      and tuple(c['name'] for c in result['catalog_storefront']['plan_setup']['captures']) == PLAN_SETUP_CAPTURES
+                      and all((qa/n).is_file() and (qa/n).stat().st_size > 0 for n in PLAN_SETUP_CAPTURES))
             finally: browser.close()
         check('All twelve current checkout captures were produced', {p.name for p in qa.glob('Hosting-Checkout-*.png')} == set(CAPTURES))
         complete = True
     except Exception as error:
-        names = {'hosting_checkout_http_browser.py', 'hosting_checkout_http_cases.py', 'catalog_storefront_checkout_cases.py'}
+        names = {'hosting_checkout_http_browser.py', 'hosting_checkout_http_cases.py', 'catalog_storefront_checkout_cases.py', 'hosting_catalog_plan_setup_cases.py'}
         locations = [{'file': Path(f.filename).name, 'line': f.lineno, 'function': f.name} for f in traceback.extract_tb(error.__traceback__) if Path(f.filename).name in names][-8:]
         failure = {'class': type(error).__name__, 'message': checks[-1]['name'] if checks and checks[-1]['passed'] is False else 'Packaged checkout stopped; inspect bounded source locations.', 'locations': locations}
     finally:

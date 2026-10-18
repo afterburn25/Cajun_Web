@@ -7,7 +7,9 @@ if (!$data['ready']) {
     echo '<section class="workspace-card"><h2>Enable hosting offers</h2><p>Prepare the offer and request history after setting up your product catalog, service plans and hosting mappings. Existing products stay as drafts.</p><form method="post">';
     hosting_catalog_admin_fields('hosting_catalog_setup',[]);
     hosting_catalog_admin_confirmation('I confirm that hosting offer history should be enabled.');
-    echo '<button class="btn gold">Enable hosting offers</button></form></section>';return;
+    echo '<button class="btn gold">Enable hosting offers</button></form></section>';
+    if ($setup['retry']) hosting_catalog_setup_form($setup);
+    return;
 }
 if ($data['tab']==='requests') {
     echo '<section class="workspace-card"><h2>Client requests</h2><form method="get"><input type="hidden" name="view" value="hosting-offers"><input type="hidden" name="tab" value="requests">';
@@ -58,15 +60,17 @@ foreach ($data['products'] as $item) {
     echo '<article><h3>'.esc($item['title']).'</h3><p>'.esc($item['sku']).' · '.($item['amount_cents']===null?'Price not set':'$'.esc(gmoney($item['amount_cents'])).' '.esc($item['currency'])).'</p><a class="btn outline" href="'.esc(admin_url('hosting-offers',['product_id'=>$item['id']])).'">Choose this draft</a></article>';
 }
 hosting_catalog_admin_pagination($data['page'],$data['has_more'],['search'=>$data['search']]);echo '</section>';
-if (!$data['product']) return;
+if (!$data['product']) {if ($setup['retry']) hosting_catalog_setup_form($setup);return;}
 $product=$data['product'];
+hosting_catalog_setup_form($setup);
 echo '<section class="workspace-card"><h2>Prepare '.esc($product['title']).'</h2><p>Choose an active plan. Its hosting mapping and the latest saved 20i catalog are checked when you preview.</p><form method="get"><input type="hidden" name="view" value="hosting-offers"><input type="hidden" name="product_id" value="'.(int)$product['id'].'">';
 admin_input('plan_search','Find a matching plan by saved text or plan ID',$data['plan_search'],'search','maxlength="120"');
 echo '<button class="btn outline">Find plans</button></form>';
 hosting_catalog_admin_pagination($data['plan_page'],$data['plans_more'],['product_id'=>$product['id'],'plan_search'=>$data['plan_search']],'plan_page');
 if ($data['plans_more']) echo '<p class="hint">More saved plans may match on the next page.</p>';
+if ($data['plan_notice']!=='') echo '<p class="notice warning" role="alert">'.esc($data['plan_notice']).'</p>';
 $publicationId=in_array($values['action'],['hosting_catalog_preview','hosting_catalog_publish'],true)?$values['publication_id']:bin2hex(random_bytes(16));
-$selectedPlan=in_array($values['action'],['hosting_catalog_preview','hosting_catalog_publish'],true)?$values['plan_id']:'';
+$selectedPlan=in_array($values['action'],['hosting_catalog_preview','hosting_catalog_publish'],true)?$values['plan_id']:$data['selected_plan_id'];
 $selectedProduct=in_array($values['action'],['hosting_catalog_preview','hosting_catalog_publish'],true)?$values['product_id']:(string)$product['id'];
 echo '<form method="post">';
 hosting_catalog_admin_fields('hosting_catalog_preview',['publication_id'=>$publicationId,'product_id'=>$selectedProduct]);

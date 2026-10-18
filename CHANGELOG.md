@@ -1,3 +1,9 @@
+## 2026-10-18 — guided imported hosting plan setup
+
+Continue from exact catalog storefront source `460eebfb5d8d87c3816576aeb7289bfa90478668` on `codex/twentyi-imported-plan-setup`. The enclosing commit, **Connect imported hosting products to plan setup**, adds the owner form and atomic matching-plan/activation/provider-mapping composition. Saved product pricing and imported type/profile remain authoritative; exact retries preserve the original records and expiry. The existing offer preview, separate publication and invoice checkout remain in place. [Behavior, verification and remaining gates](docs/TWENTYI_IMPORTED_PLAN_SETUP.md).
+
+Applied-source portable/model checks and local synthetic-data Chromium layout checks pass. The independent review found and corrected a form-fallback database re-read; the original proposal remains preserved externally. Linux native transactions, installed HTTP/browser execution, supported upgrades and final release acceptance remain pending. Published1.25.0 and original queued runs are unchanged. Complete VPS catalog discovery, automatic provider artwork, remote SSH and whole-project completion remain open.
+
 ## Unreleased — installed catalog storefront tests
 
 Require packaged admin catalog and public-to-client checkout continuations through existing HTTP reports. Cover bounded imports/retries, retained local artwork, exact selected-offer login and one unpaid invoice; retain eight scoped captures. Preserve prior fixtures, assertions, source guards and workflows. Local checks pass; Linux application execution and actual image review remain pending. No shipping behavior or published release changes.

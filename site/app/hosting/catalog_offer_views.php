@@ -4,6 +4,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once __DIR__.'/catalog_offers.php';
 require_once CWP_CODE_ROOT.'/app/plans/forms.php';
+require_once __DIR__.'/catalog_offer_setup_views.php';
 
 function hosting_catalog_admin_owner(): array {
     $actor=service_plans_owner(false);$provider=provider_catalog_import_owner();
@@ -11,7 +12,7 @@ function hosting_catalog_admin_owner(): array {
     return $actor;
 }
 function hosting_catalog_admin_actions(): array {
-    return ['hosting_catalog_setup','hosting_catalog_checkout_setup','hosting_catalog_preview','hosting_catalog_publish','hosting_catalog_withdraw','hosting_catalog_convert','hosting_catalog_decline'];
+    return ['hosting_catalog_setup','hosting_catalog_checkout_setup','hosting_catalog_finish_plan','hosting_catalog_preview','hosting_catalog_publish','hosting_catalog_withdraw','hosting_catalog_convert','hosting_catalog_decline'];
 }
 /** Secrets and confirmation never enter redisplay state. An invalid value becomes empty, not a fresh identity. */
 function hosting_catalog_admin_values(array $input): array {
@@ -20,7 +21,7 @@ function hosting_catalog_admin_values(array $input): array {
         $value=$input[$key]??'';
         $out[$key]=is_string($value)&&strlen($value)<=$max&&preg_match('//u',$value)===1&&!str_contains($value,"\0")?$value:'';
     }
-    return $out;
+    return $out+hosting_catalog_setup_values($input);
 }
 function hosting_catalog_admin_page(array $query,string $field): int {
     $page=service_plans_form_number([$field=>$query[$field]??'1'],$field,100000);
@@ -43,6 +44,7 @@ function hosting_catalog_admin_checkout_policy(array $input): ?array {
 /** The complete intent is parsed before any service mutation. No server-generated retry identity. */
 function hosting_catalog_admin_intent(string $action,array $input): array {
     if (!in_array($action,hosting_catalog_admin_actions(),true)) throw new InvalidArgumentException('Unknown hosting offer action.');
+    if ($action==='hosting_catalog_finish_plan') return ['action'=>$action]+hosting_catalog_setup_intent($input);
     $result=['action'=>$action];
     if (in_array($action,['hosting_catalog_preview','hosting_catalog_publish'],true)) {
         $result+=['publication_id'=>service_plans_form_id($input,'publication_id'),'product_id'=>hosting_catalog_admin_positive($input,'product_id'),'plan_id'=>service_plans_form_id($input,'plan_id')];
@@ -83,21 +85,23 @@ function hosting_catalog_admin_data(array $query,array $post=[]): array {
     $tab=service_plans_form_text($query,'tab',12);
     if ($tab==='') $tab='offers';
     if (!in_array($tab,['offers','requests'],true)) throw new InvalidArgumentException('Choose offers or client requests.');
-    if (in_array($action,['hosting_catalog_preview','hosting_catalog_publish','hosting_catalog_withdraw'],true)) $tab='offers';
+    if (in_array($action,['hosting_catalog_preview','hosting_catalog_publish','hosting_catalog_withdraw','hosting_catalog_finish_plan'],true)) $tab='offers';
     if (in_array($action,['hosting_catalog_convert','hosting_catalog_decline'],true)) $tab='requests';
     $productText=service_plans_form_text($query,'product_id',10);
     $requestText=service_plans_form_text($query,'request_id',32);
-    if (in_array($action,['hosting_catalog_preview','hosting_catalog_publish'],true)) $productText=$values['product_id'];
+    if (in_array($action,['hosting_catalog_preview','hosting_catalog_publish','hosting_catalog_finish_plan'],true)) $productText=$values['product_id'];
     if (in_array($action,['hosting_catalog_convert','hosting_catalog_decline'],true)) $requestText=$values['request_id'];
     $productId=$productText===''?null:hosting_catalog_admin_positive(['product_id'=>$productText],'product_id');
     if ($requestText!=='') service_plans_id($requestText);
+    $selectedPlan=service_plans_form_text($query,'plan_id',32);
+    if ($selectedPlan!=='') service_plans_id($selectedPlan);
     $page=hosting_catalog_admin_page($query,'p');$planPage=hosting_catalog_admin_page($query,'plan_page');$jobPage=hosting_catalog_admin_page($query,'job_page');
     $search=service_plans_form_text($query,'search',120,true);$planSearch=service_plans_form_text($query,'plan_search',120,true);$jobSearch=service_plans_form_text($query,'job_search',160,true);
-    return recurring_billing_locked(function()use($tab,$productId,$requestText,$page,$planPage,$jobPage,$search,$planSearch,$jobSearch,$action,$values):array {
+    return recurring_billing_locked(function()use($tab,$productId,$requestText,$page,$planPage,$jobPage,$search,$planSearch,$jobSearch,$action,$values,$selectedPlan):array {
         hosting_catalog_admin_owner();
         $data=['tab'=>$tab,'page'=>$page,'plan_page'=>$planPage,'job_page'=>$jobPage,'search'=>$search,'plan_search'=>$planSearch,'job_search'=>$jobSearch,
             'ready'=>hosting_catalog_ready(),'products'=>[],'requests'=>[],'has_more'=>false,'product'=>null,'latest'=>null,'withdrawal_offer'=>null,
-            'plans'=>[],'plans_more'=>false,'request'=>null,'jobs'=>[],'jobs_more'=>false];
+            'plans'=>[],'plans_more'=>false,'selected_plan_id'=>'','plan_notice'=>'','request'=>null,'jobs'=>[],'jobs_more'=>false];
         if (!$data['ready']) return $data;
         if ($tab==='requests') {
             $rows=all('SELECT r.id FROM '.table('hosting_catalog_requests').' r JOIN '.table('studio_clients').' c ON c.id=r.client_id WHERE LOCATE(?,c.name)>0 ORDER BY r.created_epoch DESC,r.id DESC LIMIT 21 OFFSET '.(($page-1)*20),[$search]);
@@ -140,7 +144,30 @@ function hosting_catalog_admin_data(array $query,array $post=[]): array {
                 $doc=service_plans_validate($saved);
                 if (hosting_catalog_admin_plan_matches($row,$doc)) $data['plans'][]=['id'=>$doc->data()['id'],'revision'=>$doc->revision(),'name'=>$doc->model()->name,'created_at'=>$doc->data()['created_at']];
             }
+            if ($selectedPlan!=='') {
+                // A completed setup may be outside this search page; load only the exact requested plan.
+                try {
+                    $selected=hosting_catalog_admin_selected_plan($row,$selectedPlan);
+                    if ($selected!==null) {
+                        if (!in_array($selectedPlan,array_column($data['plans'],'id'),true)) $data['plans'][]=$selected;
+                        $data['selected_plan_id']=$selectedPlan;
+                    } else $data['plan_notice']='That plan no longer matches this draft. Choose a matching plan below.';
+                } catch (RuntimeException|InvalidArgumentException|LogicException $e) {
+                    if ($e instanceof PDOException) throw $e;
+                    $data['plan_notice']='That plan is unavailable. Review the saved service plan before continuing.';
+                }
+            }
         }
         return $data;
     });
+}
+
+/** Exact current journal lookup; a query-string selection never grants publication eligibility. */
+function hosting_catalog_admin_selected_plan(array $product,string $id): ?array {
+    service_plans_id($id);
+    $row=one('SELECT * FROM '.table('service_plans').' WHERE id=?',[$id]);
+    if (!$row) return null;
+    $doc=service_plans_validate($row);
+    if (!hosting_catalog_admin_plan_matches($product,$doc)) return null;
+    return ['id'=>$doc->data()['id'],'revision'=>$doc->revision(),'name'=>$doc->model()->name,'created_at'=>$doc->data()['created_at']];
 }

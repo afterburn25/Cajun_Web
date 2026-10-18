@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('acceptance_artifacts', ROOT / 'tools/acceptance_artifacts.py')
 a = importlib.util.module_from_spec(spec); spec.loader.exec_module(a)
 checks = []
+from imported_plan_setup_wiring import historical_bytes, run as imported_plan_setup_checks
 
 
 def check(name, condition):
@@ -227,7 +228,7 @@ def hosting_checkout_report_predecessor(reports, checkout):
     return original
 
 
-def hosting_checkout_wiring_checks(tmp, workflow, contract):
+def hosting_checkout_wiring_checks(tmp, workflow, contract, reports=None):
     checkout = contract['hosting_checkout']
     native = workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n', 1)[1].split('      - name: Real HTTP', 1)[0]
     commands = [line.strip() for line in native.splitlines()]
@@ -255,7 +256,7 @@ def hosting_checkout_wiring_checks(tmp, workflow, contract):
     check('Original browser driver and transfer helper remain byte-identical',
           all(hashlib.sha256(ROOT.joinpath(p).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == h for p, h in checkout['unchanged_source_sha256'].items())
           and set(checkout['unchanged_source_sha256']) == {'tests/browser_acceptance.py', 'tools/acceptance_artifacts.py'})
-    reports = a.load(ROOT / 'tools/acceptance-reports.json')
+    reports = a.load(ROOT / 'tools/acceptance-reports.json') if reports is None else reports
     prior_reports = hosting_checkout_report_predecessor(reports, checkout)
     check('Checkout adds eleven required reports while retaining181 browser and232 final reports', len(prior_reports['browser']) == 181 and len(prior_reports['final']) == 232)
     for label in ('missing', 'duplicate', 'changed predecessor'):
@@ -453,7 +454,7 @@ def hosting_source_bytes(root, pins):
     a.require(pins and all(isinstance(v, str) and re.fullmatch('[0-9a-f]{64}', v) for v in pins.values()), 'Hosting source pins must all be bound')
     for path, expected in pins.items():
         a.safe_name(path)
-        a.require(hashlib.sha256(root.joinpath(path).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == expected, 'Changed hosting source: ' + path)
+        a.require(hashlib.sha256(historical_bytes(root, path)).hexdigest() == expected, 'Changed hosting source: ' + path)
 
 
 def hosting_wiring_checks(tmp, workflow, commands, contract, reports=None):
@@ -532,7 +533,7 @@ def catalog_storefront_http_checks(contract):
     hosting_source_bytes(ROOT, extension['source_sha256'])
     check('Storefront HTTP binds both installed case modules and their actual callers', set(extension['source_sha256']) == set(pins) | {'tests/catalog_storefront_http_cases.py', 'tests/catalog_storefront_checkout_cases.py'})
     for path, delta in extension['source_delta'].items():
-        raw = ROOT.joinpath(path).read_bytes().replace(b'\r\n', b'\n')
+        raw = historical_bytes(ROOT, path)
         check('Storefront HTTP retains the complete prior producer ' + path, bool(hosting_upgrade_source_predecessor(raw, delta)))
         deny('Storefront HTTP refuses an altered producer ' + path, lambda b=raw, d=delta: hosting_upgrade_source_predecessor(b + b'\n# changed', d))
     check('Storefront HTTP preserves the entire 9b450 acceptance contract', bool(catalog_storefront_http_predecessor(contract)))
@@ -569,7 +570,7 @@ def catalog_storefront_source_checks(contract):
     check('Hosting renderer source pin binds the exact appended comparison', prior['hosting_catalog_offers']['source_sha256'][path] == delta['current_sha256'])
     prior['hosting_catalog_offers']['source_sha256'][path] = delta['predecessor_sha256']
     check('Every prior acceptance contract entry is retained exactly', hashlib.sha256(json.dumps(prior, sort_keys=True, separators=(',', ':')).encode()).hexdigest() == extension['predecessor_contract_sha256'])
-    check('Original application and hosting workflows remain unchanged', all(hashlib.sha256(ROOT.joinpath(p).read_bytes().replace(b'\r\n', b'\n')).hexdigest() == h for p, h in extension['unchanged_workflows'].items()))
+    check('Original application and hosting workflows remain unchanged', all(hashlib.sha256(historical_bytes(ROOT, p)).hexdigest() == h for p, h in extension['unchanged_workflows'].items()))
 
 
 def run(tmp):
@@ -756,6 +757,7 @@ def run(tmp):
     environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
     contract=a.load(ROOT/'tools/acceptance-contract.json')
+    contract,plan_workflow,plan_reports=imported_plan_setup_checks(a,ROOT,tmp,check,deny,named,contract)
     catalog_storefront_http_checks(contract)
     catalog_storefront_source_checks(contract)
     driver_paths = {'tests/prepare_legacy.py', 'tests/apache_acceptance.py', 'tests/structure_acceptance.py'}
@@ -780,7 +782,8 @@ def run(tmp):
             original_bytes=original_bytes.replace(added,b'',1)
         check('Original test source retained '+path, hashlib.sha256(original_bytes).hexdigest()==expected_hash)
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
-    workflow,checkout_reports=hosting_checkout_wiring_checks(tmp,workflow,contract)
+    workflow=plan_workflow
+    workflow,checkout_reports=hosting_checkout_wiring_checks(tmp,workflow,contract,plan_reports)
     workflow,upgrade_reports=hosting_upgrade_wiring_checks(tmp,workflow,contract,checkout_reports)
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
