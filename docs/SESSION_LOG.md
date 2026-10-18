@@ -3990,3 +3990,23 @@ files, 2,886 update files). All `devin/non20i-*` PRs report MERGEABLE;
 remaining CONFLICTING PRs are Codex-owned. CI re-queued on every
 touched head; results pending. No merge, deployment, provider action
 or release claimed.
+
+## 2026-10-18 — extend acceptance contract for added native commands
+
+Third diagnosis: 13 heads wire existing feature-native tests into the
+selected-runtime recipe (`support_tickets_native`, `notification_feed_native`,
+`backups_native`, `mail_replies_native`, `mail_flags_native`), giving
+153–154 commands against the contract's hard-pinned 152. Following
+Codex's established `provider_package_types` extension pattern, each
+head now carries a `non20i_native_command_extension` contract entry
+(additions, immediate-predecessor positions, residual-152 recipe hash,
+added test-source pins) plus a matching strip-check in
+`tests/acceptance_artifacts_test.py` — the extended recipe stays
+reviewable rather than failing the pinned count. Every head's
+`acceptance_artifacts_test.py` run was verified locally before push
+(221–226 checks pass on all 51 `devin/non20i-*` heads). Parent
+advances were merged into stacked children (8 merges this wave);
+`tools/build.py --commit` assembles all three archives end-to-end.
+167 queued CI runs on superseded heads were cancelled so runners
+verify current sources. CI re-queued; results pending. No merge,
+deployment, provider action or release claimed.
