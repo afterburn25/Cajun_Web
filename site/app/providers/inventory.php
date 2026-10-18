@@ -6,7 +6,8 @@
  * authority and exact profile revision before credentials open and again
  * before results persist, and never replaces or mutates an earlier
  * observation — failed or ambiguous refreshes cannot erase the last good
- * one. No background or implicit refresh exists.
+ * one. The separate owner-approved scheduler reuses the guarded result
+ * writer; this module's public refresh actions remain explicit.
  */
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
@@ -16,25 +17,47 @@ use CajunWebPro\Foundation\Provider\ProviderCredential;
 use CajunWebPro\Foundation\Provider\TransportException;
 use CajunWebPro\Foundation\TwentyI\FixedHttpTransport;
 use CajunWebPro\Foundation\TwentyIInventory\InventoryPackage;
+use CajunWebPro\Foundation\TwentyIInventory\InventoryCloudServer;
+use CajunWebPro\Foundation\TwentyIInventory\InventoryDomain;
 use CajunWebPro\Foundation\TwentyIInventory\InventoryRead;
 use CajunWebPro\Foundation\TwentyIInventory\InventorySnapshot;
 use CajunWebPro\Foundation\TwentyIInventoryReader\InventoryReader;
+use CajunWebPro\Foundation\TwentyIDomainContracts\{DomainContractBinding,DomainContractObservation,DomainContract};
+use CajunWebPro\Foundation\TwentyIDomainExpiry\{DomainExpiryBinding,DomainExpiryObservation,DomainExpiry,DomainExpiryReader};
+use CajunWebPro\Foundation\TwentyIPackagePhp\{PackagePhpVersionBinding,PackagePhpVersionObservation,PackagePhpVersion};
+use CajunWebPro\Foundation\TwentyIDocumentRoots\{DocumentRootsBinding,DocumentRootsObservation,DocumentRootsReader};
+use CajunWebPro\Foundation\TwentyIPackageForceSsl\{PackageForceSslBinding,PackageForceSslObservation,PackageForceSsl};
+use CajunWebPro\Foundation\TwentyIDirectoryListing\{DirectoryListingBinding,DirectoryListingObservation,DirectoryListingReader};
+use CajunWebPro\Foundation\TwentyIPackageWordpressInstalled\{PackageWordpressInstalledBinding,PackageWordpressInstalledObservation,PackageWordpressInstalled};
+use CajunWebPro\Foundation\TwentyIStackCpAccess\{StackCpAccessBinding,StackCpAccessObservation,StackCpAccessRead};
 
 require_once CWP_CODE_ROOT.'/app/providers/settings.php';
 require_once CWP_CODE_ROOT.'/app/providers/checks.php';
 require_once CWP_CODE_ROOT.'/database/migrations/provider_inventory_migrate.php';
 foreach(['ProviderCredential','TransportRequest','TransportResponse','TransportException','HttpTransport'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/provider/'.$class.'.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/twentyi/FixedHttpTransport.php';
-foreach(['InventoryRead','InventoryPackage','InventorySnapshot','InventoryProjector'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory/'.$class.'.php';
+foreach(['InventoryRead','InventoryPackage','InventoryCloudServer','InventoryDomain','RegistrationPeriod','InventorySnapshot','InventoryProjector'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory/'.$class.'.php';
+require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory-reader/RegistrationPeriods.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-inventory-reader/InventoryReader.php';
+foreach(['DomainContractBinding','DomainContractObservation','DomainContract'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-domain-contracts/'.$class.'.php';
+foreach(['DomainExpiryBinding','DomainExpiryObservation','DomainExpiry','DomainExpiryReader'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-domain-expiry/'.$class.'.php';
+foreach(['PackagePhpVersionBinding','PackagePhpVersionObservation','PackagePhpVersion'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-package-php/'.$class.'.php';
+foreach(['DocumentRootsBinding','DocumentRootsObservation','DocumentRootsReader'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-document-roots/'.$class.'.php';
+foreach(['PackageForceSslBinding','PackageForceSslObservation','PackageForceSsl'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-package-force-ssl/'.$class.'.php';
+foreach(['DirectoryListingBinding','DirectoryListingObservation','DirectoryListingReader'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-directory-listing/'.$class.'.php';
+foreach(['PackageWordpressInstalledBinding','PackageWordpressInstalledObservation','PackageWordpressInstalled'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-package-wordpress-installed/'.$class.'.php';
+foreach(['StackCpAccessBinding','StackCpAccessJson','StackCpAccessObservation','StackCpAccessRead'] as $class)require_once CWP_CODE_ROOT.'/includes/foundation/twentyi-stackcp-access/'.$class.'.php';
 
 final class ProviderInventoryAccessChanged extends RuntimeException {}
 
 function provider_inventory_ready(): bool {
     $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'');
-    // Both admin and portal inventory screens include the v3 domain tables.
+    // Version 5 adds explicit cloud ownership and immutable approval history.
     // Older installations must retain the explicit owner preparation action.
-    return $version==='3';
+    if($version!=='5')return false;
+    $prefix=config()['db']['prefix'];$names=array_map(fn($name)=>$prefix.$name,array_keys(provider_inventory_schema($prefix)));
+    if((int)query('SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name IN ('.implode(',',array_fill(0,count($names),'?')).')',$names)->fetchColumn()!==count($names))return false;
+    return one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[$prefix.'provider_refreshes','operation'])!==null;
 }
 
 /** A credential fingerprint fences a context; it does not establish account identity. */
@@ -61,27 +84,119 @@ function provider_inventory_authority(string $id,int $revision,#[\SensitiveParam
  * Internal only. Builds the credential with an access-gated resolver and
  * performs one bounded authenticated read over the injected transport.
  */
-function provider_inventory_read(array $row,#[\SensitiveParameter] string $secret,string $address,callable $authorize): InventorySnapshot {
+function provider_inventory_read(array $row,#[\SensitiveParameter] string $secret,string $address,callable $authorize,string $operation=InventoryRead::PACKAGES_LIST,?DomainContractBinding $domainContext=null,?PackagePhpVersionBinding $packageContext=null,?DomainExpiryBinding $expiryContext=null,?DocumentRootsBinding $documentRootsContext=null,?PackageForceSslBinding $forceSslContext=null,?DirectoryListingBinding $directoryIndexingContext=null,?PackageWordpressInstalledBinding $wordpressInstalledContext=null,?StackCpAccessBinding $stackcpAccessContext=null): InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|DomainExpiryObservation|DocumentRootsObservation|PackageForceSslObservation|DirectoryListingObservation|PackageWordpressInstalledObservation|StackCpAccessObservation {
+    if($domainContext!==null&&$operation!==DomainContract::OPERATION)throw new LogicException('Unexpected domain read binding.');
+    if($packageContext!==null&&$operation!==PackagePhpVersion::OPERATION)throw new LogicException('Package context belongs only to the PHP observation operation.');
+    if($expiryContext!==null&&$operation!==DomainExpiry::OPERATION)throw new LogicException('Expiry context belongs only to the registrar expiry operation.');
+    if($documentRootsContext!==null&&$operation!==DocumentRootsBinding::OPERATION)throw new LogicException('Document roots context belongs only to its observation operation.');
+    if($forceSslContext!==null&&$operation!==PackageForceSsl::OPERATION)throw new LogicException('Force SSL context belongs only to its observation operation.');
+    if($directoryIndexingContext!==null&&$operation!==DirectoryListingReader::OPERATION)throw new LogicException('Directory listing context belongs only to its observation operation.');
+    if($wordpressInstalledContext!==null&&$operation!==PackageWordpressInstalled::OPERATION)throw new LogicException('WordPress installation context belongs only to its observation operation.');
+    $isStackCpAccess=in_array($operation,[StackCpAccessBinding::MEMBERSHIP,StackCpAccessBinding::GRANTS],true);
+    if(($stackcpAccessContext!==null)!==$isStackCpAccess)throw new InvalidArgumentException('StackCP access operation requires its exact typed context.');
+    if($stackcpAccessContext){$stackcpAccessContext=$stackcpAccessContext->validated();if($stackcpAccessContext->data['operation']!==$operation||$stackcpAccessContext->data['profile_id']!==$row['id']||$stackcpAccessContext->data['profile_revision']!==(int)$row['revision'])throw new InvalidArgumentException('StackCP access read context changed.');}
     $credential=new ProviderCredential('twenty-i',$row['id'],static function()use($secret,$authorize):string{$authorize();return $secret;});
-    return InventoryReader::read(new FixedHttpTransport($address,$authorize),$credential,InventoryRead::PACKAGES_LIST,0,time());
+    if($operation===DomainContract::OPERATION){if(!$domainContext)throw new LogicException('Domain read binding is required.');return DomainContract::read(new FixedHttpTransport($address,$authorize),$credential,$domainContext,time());}
+    if($operation===PackagePhpVersion::OPERATION){if(!$packageContext)throw new LogicException('PHP observation requires an exact package context.');return PackagePhpVersion::read(new FixedHttpTransport($address,$authorize),$credential,$packageContext,time());}
+    if($operation===DomainExpiry::OPERATION){if(!$expiryContext)throw new LogicException('Expiry observation requires an exact registrar context.');return DomainExpiryReader::read(new FixedHttpTransport($address,$authorize),$credential,$expiryContext,time());}
+    if($operation===DocumentRootsBinding::OPERATION){if(!$documentRootsContext)throw new LogicException('Document roots observation requires an exact package context.');return DocumentRootsReader::read(new FixedHttpTransport($address,$authorize),$credential,$documentRootsContext,time());}
+    if($operation===PackageForceSsl::OPERATION){if(!$forceSslContext)throw new LogicException('Force SSL observation requires an exact package context.');return PackageForceSsl::read(new FixedHttpTransport($address,$authorize),$credential,$forceSslContext,time());}
+    if($operation===DirectoryListingReader::OPERATION){if(!$directoryIndexingContext)throw new LogicException('Directory listing observation requires an exact package context.');return DirectoryListingReader::read(new FixedHttpTransport($address,$authorize),$credential,$directoryIndexingContext,time());}
+    if($operation===PackageWordpressInstalled::OPERATION){if(!$wordpressInstalledContext)throw new LogicException('WordPress installation observation requires an exact package context.');return PackageWordpressInstalled::read(new FixedHttpTransport($address,$authorize),$credential,$wordpressInstalledContext,time());}
+    if($stackcpAccessContext)return StackCpAccessRead::read(new FixedHttpTransport($address,$authorize),$credential,$stackcpAccessContext,time());
+    return InventoryReader::read(new FixedHttpTransport($address,$authorize),$credential,$operation,0,time());
 }
 
 /** Result states that carry package observations. */
 function provider_inventory_observed(string $state): bool {return in_array($state,['complete','partial'],true);}
 
-function provider_inventory_record(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,?InventorySnapshot $snapshot,string $fingerprint=''): void {
-    staff_transaction(function()use($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint):void {
+/** The public wrapper retains its original transaction behavior for existing callers. */
+function provider_inventory_record(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|DomainExpiryObservation|DocumentRootsObservation|PackageForceSslObservation|DirectoryListingObservation|PackageWordpressInstalledObservation|StackCpAccessObservation|null $snapshot,string $fingerprint=''): void {
+    ProviderInventoryRecorder::record($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint);
+}
+/** Internal scheduled-job commit path. The caller owns both guards and the surrounding transaction. */
+function provider_inventory_record_transaction(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|DomainExpiryObservation|DocumentRootsObservation|PackageForceSslObservation|DirectoryListingObservation|PackageWordpressInstalledObservation|StackCpAccessObservation|null $snapshot,string $fingerprint=''): void {
+    ProviderInventoryRecorder::withinTransaction($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint);
+}
+final class ProviderInventoryRecorder {
+    public static function record(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|DomainExpiryObservation|DocumentRootsObservation|PackageForceSslObservation|DirectoryListingObservation|PackageWordpressInstalledObservation|StackCpAccessObservation|null $snapshot,string $fingerprint=''): void {
+        staff_transaction(fn()=>self::write($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint));
+    }
+    public static function withinTransaction(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|DomainExpiryObservation|DocumentRootsObservation|PackageForceSslObservation|DirectoryListingObservation|PackageWordpressInstalledObservation|StackCpAccessObservation|null $snapshot,string $fingerprint=''): void {
+        $key='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
+        if(!db()->inTransaction()||(int)query('SELECT IS_USED_LOCK(?)=CONNECTION_ID()',[$key])->fetchColumn()!==1)throw new LogicException('Inventory persistence requires the owning account transaction and mutex.');
+        self::write($started,$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,$elapsed,$snapshot,$fingerprint);
+    }
+    private static function write(array $started,string $state,string $reason,string $scope,string $coverage,int $packages,int $skipped,string $skipReasons,int $elapsed,InventorySnapshot|DomainContractObservation|PackagePhpVersionObservation|DomainExpiryObservation|DocumentRootsObservation|PackageForceSslObservation|DirectoryListingObservation|PackageWordpressInstalledObservation|StackCpAccessObservation|null $snapshot,string $fingerprint=''): void {
+        if(($started['operation']??'')===InventoryRead::DOMAIN_REGISTRATION_PERIODS){require_once CWP_CODE_ROOT.'/app/providers/registration_periods.php';if(!provider_registration_period_ready())throw new RuntimeException('Restore registration period history before recording a result.');}
+        if(($started['operation']??'')===DomainExpiry::OPERATION){require_once CWP_CODE_ROOT.'/app/providers/domain_expiry.php';if(!domain_expiry_ready())throw new RuntimeException('Restore registrar expiry history before recording a result.');}
+        if(($started['operation']??'')===DocumentRootsBinding::OPERATION){require_once CWP_CODE_ROOT.'/app/providers/document_roots.php';if(!provider_document_roots_ready())throw new RuntimeException('Restore document roots history before recording a result.');}
+        if(($started['operation']??'')===PackageForceSsl::OPERATION){require_once CWP_CODE_ROOT.'/app/providers/package_force_ssl.php';if(!provider_force_ssl_ready())throw new RuntimeException('Restore Force SSL history before recording a result.');}
+        if(($started['operation']??'')===DirectoryListingReader::OPERATION){require_once CWP_CODE_ROOT.'/app/providers/directory_listing.php';if(!provider_directory_indexing_ready())throw new RuntimeException('Restore Directory listing history before recording a result.');}
+        if(($started['operation']??'')===PackageWordpressInstalled::OPERATION){require_once CWP_CODE_ROOT.'/app/providers/package_wordpress_installed.php';if(!provider_wp_installed_ready())throw new RuntimeException('Restore WordPress installation history before recording a result.');}
+        if(in_array($started['operation']??'',[StackCpAccessBinding::MEMBERSHIP,StackCpAccessBinding::GRANTS],true)){require_once CWP_CODE_ROOT.'/app/providers/stackcp_access.php';if(!provider_stackcp_access_ready())throw new RuntimeException('Restore StackCP access observation history before recording a result.');}
+        if(($started['operation']??'')===InventoryRead::CLOUD_SERVERS_LIST){require_once CWP_CODE_ROOT.'/app/providers/cloud_assignment.php';provider_cloud_assignment_before_read();}
         query('INSERT INTO '.table('provider_refresh_results').' (id,state,reason,scope,coverage,package_count,skipped,skip_reasons,finished_at,elapsed_ms,key_fingerprint) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
             [$started['id'],$state,$reason,$scope,$coverage,$packages,$skipped,$skipReasons,gmdate('Y-m-d H:i:s'),max(0,min($elapsed,2147483647)),$fingerprint]);
-        if($snapshot!==null&&provider_inventory_observed($state)) {
+        if(in_array($started['operation']??'',[StackCpAccessBinding::MEMBERSHIP,StackCpAccessBinding::GRANTS],true)){
+            if($snapshot!==null&&!$snapshot instanceof StackCpAccessObservation)throw new LogicException('Only the exact typed StackCP access result may persist.');
+            provider_stackcp_access_record($started,$snapshot,$fingerprint);
+        }elseif(($started['operation']??'')===DomainContract::OPERATION){
+            require_once CWP_CODE_ROOT.'/app/providers/domain_contracts.php';
+            if($snapshot!==null&&!$snapshot instanceof DomainContractObservation)throw new LogicException('Only the exact typed domain result may persist.');
+            domain_contracts_record($started,$state,$snapshot,$fingerprint);
+        }elseif(($started['operation']??'')===DomainExpiry::OPERATION){
+            require_once CWP_CODE_ROOT.'/app/providers/domain_expiry.php';
+            if($snapshot!==null&&!$snapshot instanceof DomainExpiryObservation)throw new LogicException('Only an exact typed expiry observation may persist.');
+            domain_expiry_record($started,$state,$snapshot,$fingerprint);
+        }elseif(($started['operation']??'')===DocumentRootsBinding::OPERATION){
+            require_once CWP_CODE_ROOT.'/app/providers/document_roots.php';
+            if($snapshot!==null&&!$snapshot instanceof DocumentRootsObservation)throw new LogicException('Only an exact typed document roots observation may persist.');
+            provider_document_roots_record($started,$snapshot,$fingerprint);
+        }elseif(($started['operation']??'')===PackageForceSsl::OPERATION){
+            require_once CWP_CODE_ROOT.'/app/providers/package_force_ssl.php';
+            if($snapshot!==null&&!$snapshot instanceof PackageForceSslObservation)throw new LogicException('Only an exact typed Force SSL observation may persist.');
+            provider_force_ssl_record($started,$snapshot,$fingerprint);
+        }elseif(($started['operation']??'')===DirectoryListingReader::OPERATION){
+            require_once CWP_CODE_ROOT.'/app/providers/directory_listing.php';
+            if($snapshot!==null&&!$snapshot instanceof DirectoryListingObservation)throw new LogicException('Only an exact typed Directory listing observation may persist.');
+            provider_directory_indexing_record($started,$snapshot,$fingerprint);
+        }elseif(($started['operation']??'')===PackageWordpressInstalled::OPERATION){
+            require_once CWP_CODE_ROOT.'/app/providers/package_wordpress_installed.php';
+            if($snapshot!==null&&!$snapshot instanceof PackageWordpressInstalledObservation)throw new LogicException('Only an exact typed WordPress installation observation may persist.');
+            provider_wp_installed_record($started,$snapshot,$fingerprint);
+        }elseif(($started['operation']??'')===PackagePhpVersion::OPERATION){
+            require_once CWP_CODE_ROOT.'/app/providers/package_php.php';
+            if($snapshot!==null&&!$snapshot instanceof PackagePhpVersionObservation)throw new LogicException('Only an exact typed PHP observation may persist.');
+            provider_php_record($started,$snapshot,$fingerprint);
+        }elseif(($started['operation']??'')===InventoryRead::DOMAIN_REGISTRATION_PERIODS){
+            require_once CWP_CODE_ROOT.'/app/providers/registration_periods.php';
+            provider_registration_period_record($started,$state,$snapshot);
+        }elseif(($started['operation']??'')===InventoryRead::CLOUD_PROVIDERS_LIST){
+            require_once CWP_CODE_ROOT.'/app/providers/cloud_providers.php';
+            provider_cloud_providers_record($started,$snapshot,$fingerprint);
+        }elseif($snapshot!==null&&provider_inventory_observed($state)) {
+            if(!$snapshot instanceof InventorySnapshot)throw new LogicException('List reads require a list snapshot.');
             foreach($snapshot->packages as $package) {
+                if(($started['operation']??'')===InventoryRead::DOMAINS_LIST) {
+                    if(!$package instanceof InventoryDomain)throw new LogicException('Only validated registrar identities persist.');
+                    query('INSERT INTO '.table('provider_registrar_observations').' (id,refresh_id,domain_id,domain,unmapped_count) VALUES (?,?,?,?,?)',[bin2hex(random_bytes(16)),$started['id'],$package->id,$package->name,$package->unmappedCount]);
+                    continue;
+                }
+                if(($started['operation']??InventoryRead::PACKAGES_LIST)===InventoryRead::CLOUD_SERVERS_LIST) {
+                    if(!$package instanceof InventoryCloudServer)throw new LogicException('Only validated cloud records persist for cloud reads.');
+                    $metadata=['id'=>$package->id,'name'=>$package->name,'location'=>$package->location,'productSpec'=>$package->productSpec,'configuration'=>$package->configuration,'packageIds'=>$package->packageIds];
+                    query('INSERT INTO '.table('provider_observation_cloud').' (id,refresh_id,server_id,metadata,unmapped_count) VALUES (?,?,?,?,?)',[bin2hex(random_bytes(16)),$started['id'],$package->id,json_encode($metadata,JSON_THROW_ON_ERROR),$package->unmappedCount]);
+                    continue;
+                }
                 if(!$package instanceof InventoryPackage)throw new LogicException('Only validated package records persist.');
                 query('INSERT INTO '.table('provider_observation_packages').' (id,refresh_id,package_id,name,names,enabled,created_at,created_epoch,type_ref,package_type_name,stack_users,package_labels,has_spec,unmapped_keys,unmapped_count) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                     [bin2hex(random_bytes(16)),$started['id'],$package->id,$package->name,json_encode(array_values($package->names)),$package->enabled?1:0,$package->createdAt,$package->createdEpoch,$package->typeRef,$package->packageTypeName,json_encode(array_values($package->stackUsers)),json_encode(array_values($package->packageLabels)),$package->hasProductSpec?1:0,json_encode(array_values($package->unmappedKeys)),$package->unmappedCount]);
             }
         }
         provider_settings_audit((int)$started['actor_id'],'refresh_finished','Refresh '.$started['id'].' '.$state.($reason!==''?' '.$reason:''));
-    });
+        if(($started['operation']??'')===InventoryRead::CLOUD_SERVERS_LIST)provider_cloud_assignment_finished($started);
+    }
 }
 
 /**
@@ -89,22 +204,62 @@ function provider_inventory_record(array $started,string $state,string $reason,s
  * state code: complete|partial|unavailable|refused|access_changed.
  * Resolver/transport are internal test seams, never HTTP input.
  */
-function provider_inventory_refresh(string $id,int $revision,#[\SensitiveParameter] string $password,?callable $resolver=null,?callable $transport=null): string {
+function provider_inventory_refresh(string $id,int $revision,#[\SensitiveParameter] string $password,?callable $resolver=null,?callable $transport=null,string $operation=InventoryRead::PACKAGES_LIST): string {
+    return provider_inventory_refresh_attempt($id,$revision,$password,$resolver,$transport,$operation)['state'];
+}
+/** Internal receipt exposes the exact durable refresh, never a latest-row guess. */
+function provider_inventory_refresh_attempt(string $id,int $revision,#[\SensitiveParameter] string $password,?callable $resolver=null,?callable $transport=null,string $operation=InventoryRead::PACKAGES_LIST,?callable $scopeAuthority=null,?DomainContractBinding $domainContext=null,?PackagePhpVersionBinding $packageContext=null,?DomainExpiryBinding $expiryContext=null,?DocumentRootsBinding $documentRootsContext=null,?PackageForceSslBinding $forceSslContext=null,?DirectoryListingBinding $directoryIndexingContext=null,?PackageWordpressInstalledBinding $wordpressInstalledContext=null,?StackCpAccessBinding $stackcpAccessContext=null):array {
+    $isDomain=$operation===DomainContract::OPERATION;$isPhp=$operation===PackagePhpVersion::OPERATION;$isExpiry=$operation===DomainExpiry::OPERATION;$isDocumentRoots=$operation===DocumentRootsBinding::OPERATION;$isForceSsl=$operation===PackageForceSsl::OPERATION;$isDirectoryIndexing=$operation===DirectoryListingReader::OPERATION;$isWordpressInstalled=$operation===PackageWordpressInstalled::OPERATION;
+    $isStackCpAccess=in_array($operation,[StackCpAccessBinding::MEMBERSHIP,StackCpAccessBinding::GRANTS],true);
+    if(($stackcpAccessContext!==null)!==$isStackCpAccess)throw new InvalidArgumentException('StackCP access operation requires its exact typed context.');
+    if($stackcpAccessContext){require_once CWP_CODE_ROOT.'/app/providers/stackcp_access.php';$stackcpAccessContext=$stackcpAccessContext->validated();if($stackcpAccessContext->data['operation']!==$operation||$stackcpAccessContext->data['profile_id']!==$id||$stackcpAccessContext->data['profile_revision']!==$revision)throw new InvalidArgumentException('StackCP access requires the exact profile context.');provider_stackcp_access_authority($stackcpAccessContext);}
+    if($domainContext!==null&&!$isDomain)throw new InvalidArgumentException('This inventory reader is not available.');
+    if($packageContext!==null&&!$isPhp)throw new InvalidArgumentException('Package context belongs only to the PHP observation operation.');
+    if($expiryContext!==null&&!$isExpiry)throw new InvalidArgumentException('Expiry context belongs only to the registrar expiry operation.');
+    if($documentRootsContext!==null&&!$isDocumentRoots)throw new InvalidArgumentException('Document roots context belongs only to its observation operation.');
+    if($forceSslContext!==null&&!$isForceSsl)throw new InvalidArgumentException('Force SSL context belongs only to its observation operation.');
+    if($directoryIndexingContext!==null&&!$isDirectoryIndexing)throw new InvalidArgumentException('Directory listing context belongs only to its observation operation.');
+    if($wordpressInstalledContext!==null&&!$isWordpressInstalled)throw new InvalidArgumentException('WordPress installation context belongs only to its observation operation.');
+    if($isForceSsl){require_once CWP_CODE_ROOT.'/app/providers/package_force_ssl.php';if(!$forceSslContext)throw new InvalidArgumentException('Force SSL observation requires the exact profile context.');$forceSslContext=$forceSslContext->validated();if($forceSslContext->data['profile_id']!==$id||$forceSslContext->data['profile_revision']!==$revision)throw new InvalidArgumentException('Force SSL observation requires the exact profile context.');provider_force_ssl_authority($forceSslContext);}
+    if($isDirectoryIndexing){require_once CWP_CODE_ROOT.'/app/providers/directory_listing.php';if(!$directoryIndexingContext)throw new InvalidArgumentException('Directory listing observation requires the exact profile context.');$directoryIndexingContext=$directoryIndexingContext->validated();if($directoryIndexingContext->data['profile_id']!==$id||$directoryIndexingContext->data['profile_revision']!==$revision)throw new InvalidArgumentException('Directory listing observation requires the exact profile context.');provider_directory_indexing_authority($directoryIndexingContext);}
+    if($isWordpressInstalled){require_once CWP_CODE_ROOT.'/app/providers/package_wordpress_installed.php';if(!$wordpressInstalledContext)throw new InvalidArgumentException('WordPress installation observation requires the exact profile context.');$wordpressInstalledContext=$wordpressInstalledContext->validated();if($wordpressInstalledContext->data['profile_id']!==$id||$wordpressInstalledContext->data['profile_revision']!==$revision)throw new InvalidArgumentException('WordPress installation observation requires the exact profile context.');provider_wp_installed_authority($wordpressInstalledContext);}
+    if($isDocumentRoots){require_once CWP_CODE_ROOT.'/app/providers/document_roots.php';if(!$documentRootsContext)throw new InvalidArgumentException('Document roots observation requires the exact profile context.');$documentRootsContext=DocumentRootsBinding::validated($documentRootsContext);if($documentRootsContext->data['package']['profile_id']!==$id||$documentRootsContext->data['package']['profile_revision']!==$revision)throw new InvalidArgumentException('Document roots observation requires the exact profile context.');provider_document_roots_authority($documentRootsContext);}
+    if($isExpiry){require_once CWP_CODE_ROOT.'/app/providers/domain_expiry.php';if(!$expiryContext||$expiryContext->registrar->data['profile_id']!==$id||$expiryContext->registrar->data['profile_revision']!==$revision)throw new InvalidArgumentException('Expiry observation requires the exact profile context.');}
+    if($isDomain){require_once CWP_CODE_ROOT.'/app/providers/domain_contracts.php';if(!$domainContext||$domainContext->data['profile_id']!==$id||$domainContext->data['profile_revision']!==$revision)throw new InvalidArgumentException('Exact domain read binding is required.');}
+    if($isPhp){require_once CWP_CODE_ROOT.'/app/providers/package_php.php';if(!$packageContext||$packageContext->data['profile_id']!==$id||$packageContext->data['profile_revision']!==$revision)throw new InvalidArgumentException('PHP observation requires the exact profile context.');provider_php_authority($packageContext);}
+    if(!$isDomain&&!$isPhp&&!$isExpiry&&!$isDocumentRoots&&!$isForceSsl&&!$isDirectoryIndexing&&!$isWordpressInstalled&&!$isStackCpAccess&&!InventoryReader::supports($operation))throw new InvalidArgumentException('This inventory reader is not available.');
+    if($operation===InventoryRead::DOMAIN_REGISTRATION_PERIODS)require_once CWP_CODE_ROOT.'/app/providers/registration_periods.php';
+    if($operation===InventoryRead::CLOUD_PROVIDERS_LIST){require_once CWP_CODE_ROOT.'/app/providers/cloud_providers.php';if(!provider_cloud_providers_ready())throw new RuntimeException('Prepare cloud provider storage first.');}
+    if($operation===InventoryRead::DOMAINS_LIST){require_once CWP_CODE_ROOT.'/app/providers/registrar.php';if(!provider_registrar_ready())throw new RuntimeException('Prepare registered-domain storage first.');}
     if(db()->inTransaction())throw new LogicException('Provider refreshes cannot run inside a transaction.');
-    $started=staff_locked(fn()=>staff_transaction(function()use($id,$revision,$password):array {
+    $started=staff_locked(fn()=>staff_transaction(function()use($id,$revision,$password,$operation,$scopeAuthority,$domainContext,$packageContext,$expiryContext,$documentRootsContext,$forceSslContext,$directoryIndexingContext,$wordpressInstalledContext,$stackcpAccessContext):array {
+        if($domainContext)domain_contracts_authority($domainContext);if($expiryContext)domain_expiry_authority($expiryContext);if($documentRootsContext)provider_document_roots_authority($documentRootsContext);if($forceSslContext)provider_force_ssl_authority($forceSslContext);if($directoryIndexingContext)provider_directory_indexing_authority($directoryIndexingContext);if($wordpressInstalledContext)provider_wp_installed_authority($wordpressInstalledContext);if($stackcpAccessContext)provider_stackcp_access_authority($stackcpAccessContext);
+        if($scopeAuthority)$scopeAuthority();if($packageContext)provider_php_authority($packageContext);
+        if($operation===InventoryRead::DOMAIN_REGISTRATION_PERIODS)provider_registration_period_authority($id,$revision,$password);
         [$actor]=provider_inventory_authority($id,$revision,$password);$now=time();
+        if($operation===InventoryRead::CLOUD_SERVERS_LIST){require_once CWP_CODE_ROOT.'/app/providers/cloud_assignment.php';provider_cloud_assignment_before_read();}
         if(one('SELECT id FROM '.table('provider_refreshes').' WHERE profile_id=? AND started_epoch>? LIMIT 1',[$id,$now-30]))throw new RuntimeException('Wait 30 seconds between refreshes of this profile.');
         if((int)query('SELECT COUNT(*) FROM '.table('provider_refreshes').' WHERE actor_id=? AND started_epoch>?',[$actor['id'],$now-3600])->fetchColumn()>=20)throw new RuntimeException('Inventory refresh limit reached. Try again later.');
-        $started=['id'=>bin2hex(random_bytes(16)),'profile_id'=>$id,'profile_revision'=>$revision,'actor_id'=>(int)$actor['id'],'started_at'=>gmdate('Y-m-d H:i:s',$now),'started_epoch'=>$now];
-        query('INSERT INTO '.table('provider_refreshes').' (id,profile_id,profile_revision,actor_id,started_at,started_epoch) VALUES (?,?,?,?,?,?)',array_values($started));
-        provider_settings_audit((int)$actor['id'],'refresh_started','Refresh '.$started['id'].' profile '.$id.' revision '.$revision);return $started;
+        if($operation===InventoryRead::DOMAINS_LIST&&!provider_registrar_ready())throw new RuntimeException('Registered-domain storage is unavailable.');
+        if($operation===InventoryRead::CLOUD_PROVIDERS_LIST&&!provider_cloud_providers_ready())throw new RuntimeException('Cloud provider storage is unavailable.');
+        $started=['id'=>bin2hex(random_bytes(16)),'profile_id'=>$id,'profile_revision'=>$revision,'actor_id'=>(int)$actor['id'],'started_at'=>gmdate('Y-m-d H:i:s',$now),'started_epoch'=>$now,'operation'=>$operation];
+        query('INSERT INTO '.table('provider_refreshes').' (id,profile_id,profile_revision,actor_id,started_at,started_epoch,operation) VALUES (?,?,?,?,?,?,?)',array_values($started));
+        provider_settings_audit((int)$actor['id'],'refresh_started','Refresh '.$started['id'].' profile '.$id.' revision '.$revision);
+        if($operation===InventoryRead::DOMAIN_REGISTRATION_PERIODS)provider_registration_period_start($started);
+        if($operation===InventoryRead::CLOUD_PROVIDERS_LIST)provider_cloud_providers_started($started);
+        if($operation===InventoryRead::CLOUD_SERVERS_LIST)provider_cloud_assignment_started($started);
+        if($domainContext)domain_contracts_start($started,$domainContext);
+        if($packageContext)provider_php_started($started,$packageContext);if($expiryContext)domain_expiry_start($started,$expiryContext);if($documentRootsContext)provider_document_roots_started($started,$documentRootsContext);if($forceSslContext)provider_force_ssl_started($started,$forceSslContext);if($directoryIndexingContext)provider_directory_indexing_started($started,$directoryIndexingContext);if($wordpressInstalledContext)provider_wp_installed_started($started,$wordpressInstalledContext);if($stackcpAccessContext)provider_stackcp_access_started($started,$stackcpAccessContext);return $started;
     }));
     $begin=hrtime(true);$code=null;$address='';
-    try{$address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];}
+    try{
+        if($stackcpAccessContext)$address=staff_locked(function()use($stackcpAccessContext,$resolver):string{provider_stackcp_access_authority($stackcpAccessContext);return EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];});
+        else $address=EndpointPolicy::addresses([($resolver??[FixedHttpTransport::class,'resolve'])()])[0];
+    }
     catch(Throwable $e){if($e instanceof PDOException)throw $e;$code='unavailable';}
-    return staff_locked(function()use($started,$password,$address,$code,$begin,$transport):string {
-        $authorize=static function()use($started):void {
-            try{[$actor]=provider_inventory_authority($started['profile_id'],$started['profile_revision']);if((int)$actor['id']!==$started['actor_id'])throw new RuntimeException('Changed actor.');}
+    $state=staff_locked(function()use($started,$password,$address,$code,$begin,$transport,$scopeAuthority,$domainContext,$packageContext,$expiryContext,$documentRootsContext,$forceSslContext,$directoryIndexingContext,$wordpressInstalledContext,$stackcpAccessContext):string {
+        $authorize=static function()use($started,$scopeAuthority,$domainContext,$packageContext,$expiryContext,$documentRootsContext,$forceSslContext,$directoryIndexingContext,$wordpressInstalledContext,$stackcpAccessContext):void {
+            try{if($started['operation']===InventoryRead::CLOUD_SERVERS_LIST)provider_cloud_assignment_inspect(fn()=>provider_cloud_assignment_ready());if($domainContext)domain_contracts_authority($domainContext);if($expiryContext)domain_expiry_authority($expiryContext);if($documentRootsContext)provider_document_roots_authority($documentRootsContext);if($forceSslContext)provider_force_ssl_authority($forceSslContext);if($directoryIndexingContext)provider_directory_indexing_authority($directoryIndexingContext);if($wordpressInstalledContext)provider_wp_installed_authority($wordpressInstalledContext);if($stackcpAccessContext)provider_stackcp_access_authority($stackcpAccessContext);if($scopeAuthority)$scopeAuthority();if($packageContext)provider_php_authority($packageContext);if($started['operation']===InventoryRead::DOMAIN_REGISTRATION_PERIODS)provider_registration_period_intent_authority($started);if($started['operation']===InventoryRead::CLOUD_PROVIDERS_LIST&&!provider_cloud_providers_ready())throw new RuntimeException('Cloud provider history unavailable.');[$actor]=provider_inventory_authority($started['profile_id'],$started['profile_revision']);if((int)$actor['id']!==$started['actor_id'])throw new RuntimeException('Changed actor.');}
             catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;throw new ProviderInventoryAccessChanged('Current provider access changed.');}
         };
         $elapsed=static fn():int=>(int)((hrtime(true)-$begin)/1e6);
@@ -112,13 +267,43 @@ function provider_inventory_refresh(string $id,int $revision,#[\SensitiveParamet
         catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;provider_inventory_record($started,'access_changed','access_changed','','unknown',0,0,'[]',$elapsed(),null);return 'access_changed';}
         $snapshot=null;$fingerprint='';
         if($code===null) {
-            try{$authorize();$secret=provider_settings_key_value(provider_settings_unseal($row['id'],$row['environment'],$row['credentials']));$fingerprint=provider_inventory_fingerprint($secret);}
+            try{$authorize();$secret=provider_settings_key_value(provider_settings_unseal($row['id'],$row['environment'],$row['credentials']));$fingerprint=provider_inventory_fingerprint($secret);if($domainContext&&!hash_equals($domainContext->data['key_fingerprint'],$fingerprint)){$code='access_changed';unset($secret);}if($packageContext&&!hash_equals($packageContext->data['key_fingerprint'],$fingerprint))throw new ProviderInventoryAccessChanged('PHP observation credential context changed.');if($expiryContext&&!hash_equals($expiryContext->registrar->data['key_fingerprint'],$fingerprint))throw new ProviderInventoryAccessChanged('Expiry observation credential context changed.');if($documentRootsContext&&!hash_equals($documentRootsContext->data['package']['key_fingerprint'],$fingerprint))throw new ProviderInventoryAccessChanged('Document roots credential context changed.');if($forceSslContext&&!hash_equals($forceSslContext->data['key_fingerprint'],$fingerprint))throw new ProviderInventoryAccessChanged('Force SSL credential context changed.');if($directoryIndexingContext&&!hash_equals($directoryIndexingContext->data['key_fingerprint'],$fingerprint))throw new ProviderInventoryAccessChanged('Directory listing credential context changed.');if($wordpressInstalledContext&&!hash_equals($wordpressInstalledContext->data['key_fingerprint'],$fingerprint))throw new ProviderInventoryAccessChanged('WordPress installation credential context changed.');if($stackcpAccessContext&&!hash_equals($stackcpAccessContext->data['key_fingerprint'],$fingerprint))throw new ProviderInventoryAccessChanged('StackCP access credential context changed.');}
             catch(ProviderInventoryAccessChanged){$code='access_changed';}
             catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;$code='credential';}
             if($code===null) {
                 try{
-                    $snapshot=($transport??'provider_inventory_read')($row,$secret,$address,$authorize);
-                    if(!$snapshot instanceof InventorySnapshot)throw new LogicException('Reader returned no snapshot.');
+                    if($domainContext)$snapshot=($transport??'provider_inventory_read')($row,$secret,$address,$authorize,$started['operation'],$domainContext);
+                    elseif($packageContext)$snapshot=($transport??'provider_inventory_read')($row,$secret,$address,$authorize,$started['operation'],packageContext:$packageContext);
+                    elseif($expiryContext)$snapshot=($transport??'provider_inventory_read')($row,$secret,$address,$authorize,$started['operation'],expiryContext:$expiryContext);
+                    elseif($documentRootsContext)$snapshot=($transport??'provider_inventory_read')($row,$secret,$address,$authorize,$started['operation'],documentRootsContext:$documentRootsContext);
+                    elseif($forceSslContext)$snapshot=($transport??'provider_inventory_read')($row,$secret,$address,$authorize,$started['operation'],forceSslContext:$forceSslContext);
+                    elseif($directoryIndexingContext)$snapshot=($transport??'provider_inventory_read')($row,$secret,$address,$authorize,$started['operation'],directoryIndexingContext:$directoryIndexingContext);
+                    elseif($wordpressInstalledContext)$snapshot=($transport??'provider_inventory_read')($row,$secret,$address,$authorize,$started['operation'],wordpressInstalledContext:$wordpressInstalledContext);
+                    elseif($stackcpAccessContext)$snapshot=($transport??'provider_inventory_read')($row,$secret,$address,$authorize,$started['operation'],stackcpAccessContext:$stackcpAccessContext);
+                    else $snapshot=($transport??'provider_inventory_read')($row,$secret,$address,$authorize,$started['operation']);
+                    if($domainContext){
+                        if(!$snapshot instanceof DomainContractObservation||$snapshot->scope!==$domainContext->scope||$snapshot->domainId!==$domainContext->data['domain_id']||$snapshot->domainName!==$domainContext->data['domain']||!hash_equals($snapshot->binding->sha256,$domainContext->sha256))throw new LogicException('Domain reader result does not match its exact intent.');
+                        if(!hash_equals($domainContext->data['key_fingerprint'],$fingerprint))throw new ProviderInventoryAccessChanged('Provider credential context changed.');
+                    }elseif($packageContext){
+                        if(!$snapshot instanceof PackagePhpVersionObservation||!hash_equals($packageContext->sha256,$snapshot->binding->sha256)||$snapshot->scope!==$packageContext->scope)throw new LogicException('PHP reader result does not match its exact intent.');
+                    }elseif($expiryContext){
+                        if(!$snapshot instanceof DomainExpiryObservation||$snapshot->scope!==$expiryContext->scope||$snapshot->domainId!==$expiryContext->registrar->data['domain_id']||$snapshot->domainName!==$expiryContext->registrar->data['domain']||!hash_equals($snapshot->binding->sha256,$expiryContext->sha256))throw new LogicException('Expiry reader result does not match its exact intent.');
+                    }elseif($documentRootsContext){
+                        if(!$snapshot instanceof DocumentRootsObservation)throw new LogicException('Document roots reader returned the wrong type.');$snapshot=provider_document_roots_validate_observation($snapshot);
+                        if(!hash_equals($documentRootsContext->sha256,$snapshot->binding->sha256)||$snapshot->scope!==$documentRootsContext->scope)throw new LogicException('Document roots reader result does not match its exact intent.');
+                    }elseif($forceSslContext){
+                        if(!$snapshot instanceof PackageForceSslObservation)throw new LogicException('Force SSL reader returned the wrong type.');$snapshot=$snapshot->validated();
+                        if(!hash_equals($forceSslContext->sha256,$snapshot->binding->sha256)||$snapshot->scope!==$forceSslContext->scope)throw new LogicException('Force SSL reader result does not match its exact intent.');
+                    }elseif($directoryIndexingContext){
+                        if(!$snapshot instanceof DirectoryListingObservation)throw new LogicException('Directory listing reader returned the wrong type.');$snapshot=$snapshot->validated();
+                        if(!hash_equals($directoryIndexingContext->sha256,$snapshot->binding->sha256)||$snapshot->scope!==$directoryIndexingContext->scope)throw new LogicException('Directory listing reader result does not match its exact intent.');
+                    }elseif($wordpressInstalledContext){
+                        if(!$snapshot instanceof PackageWordpressInstalledObservation)throw new LogicException('WordPress installation reader returned the wrong type.');$snapshot=$snapshot->validated();
+                        if(!hash_equals($wordpressInstalledContext->sha256,$snapshot->binding->sha256)||$snapshot->scope!==$wordpressInstalledContext->scope)throw new LogicException('WordPress installation reader result does not match its exact intent.');
+                    }elseif($stackcpAccessContext){
+                        if(!$snapshot instanceof StackCpAccessObservation)throw new LogicException('StackCP access reader returned the wrong type.');$snapshot=$snapshot->validated();
+                        if(!hash_equals($stackcpAccessContext->sha256,$snapshot->binding->sha256)||$snapshot->scope!==$stackcpAccessContext->scope)throw new LogicException('StackCP access result does not match its exact intent.');
+                    }elseif(!$snapshot instanceof InventorySnapshot||$snapshot->scope!=='twenty-i|'.$started['profile_id'].'|'.$started['operation'])throw new LogicException('Reader scope does not match its intent.');
                     $code=$snapshot->state;
                 }catch(ProviderInventoryAccessChanged){$code='access_changed';}
                 catch(TransportException){$code='unavailable';}
@@ -129,29 +314,61 @@ function provider_inventory_refresh(string $id,int $revision,#[\SensitiveParamet
         }
         // Even a returned snapshot cannot persist after access changed.
         try{$authorize();}catch(ProviderInventoryAccessChanged){$code='access_changed';}
+        if($stackcpAccessContext){
+            $self=$snapshot instanceof StackCpAccessObservation&&$snapshot->state===$code;
+            provider_inventory_record($started,$code,$self?$snapshot->reason:$code,$self?$snapshot->scope:'','unknown',0,0,'[]',$elapsed(),$code==='complete'&&$self?$snapshot:null,$fingerprint);return $code;
+        }
+        if($forceSslContext){
+            $self=$snapshot instanceof PackageForceSslObservation&&$snapshot->state===$code;
+            provider_inventory_record($started,$code,$self?$snapshot->reason:$code,$self?$snapshot->scope:'','unknown',0,0,'[]',$elapsed(),$code==='complete'&&$self?$snapshot:null,$fingerprint);return $code;
+        }
+        if($directoryIndexingContext){
+            $self=$snapshot instanceof DirectoryListingObservation&&$snapshot->state===$code;
+            provider_inventory_record($started,$code,$self?$snapshot->reason:$code,$self?$snapshot->scope:'','unknown',0,0,'[]',$elapsed(),$code==='complete'&&$self?$snapshot:null,$fingerprint);return $code;
+        }
+        if($wordpressInstalledContext){
+            $self=$snapshot instanceof PackageWordpressInstalledObservation&&$snapshot->state===$code;
+            provider_inventory_record($started,$code,$self?$snapshot->reason:$code,$self?$snapshot->scope:'','unknown',0,0,'[]',$elapsed(),$code==='complete'&&$self?$snapshot:null,$fingerprint);return $code;
+        }
+        if($documentRootsContext){
+            $self=$snapshot instanceof DocumentRootsObservation&&$snapshot->state===$code;
+            provider_inventory_record($started,$code,$self?$snapshot->reason:$code,$self?$snapshot->scope:'','unknown',0,0,'[]',$elapsed(),$code==='complete'&&$self?$snapshot:null,$fingerprint);return $code;
+        }
+        if($expiryContext){
+            $self=$snapshot instanceof DomainExpiryObservation&&$snapshot->state===$code;
+            provider_inventory_record($started,$code,$self?$snapshot->reason:$code,$self?$snapshot->scope:'','unknown',0,0,'[]',$elapsed(),$code==='complete'&&$self?$snapshot:null,$fingerprint);return $code;
+        }
+        if($packageContext){
+            $self=$snapshot instanceof PackagePhpVersionObservation&&$snapshot->state===$code;
+            provider_inventory_record($started,$code,$self?$snapshot->reason:$code,$self?$snapshot->scope:'','unknown',0,0,'[]',$elapsed(),$code==='complete'&&$self?$snapshot:null,$fingerprint);return $code;
+        }
         if(!provider_inventory_observed($code)) {
             // Refusals, unavailable reads and access changes persist a bounded
             // result with no package rows; the snapshot's own fields are
             // retained only when it classified itself.
             $self=$snapshot!==null&&$snapshot->state===$code;
-            provider_inventory_record($started,$code,$self?$snapshot->reason:$code,$self?$snapshot->scope:'','unknown',0,$self?$snapshot->skipped:0,$self?json_encode(array_values($snapshot->skipReasons)):'[]',$elapsed(),null,$fingerprint);
+            provider_inventory_record($started,$code,$self?$snapshot->reason:$code,$self?$snapshot->scope:'','unknown',0,$self&&$snapshot instanceof InventorySnapshot?$snapshot->skipped:0,$self&&$snapshot instanceof InventorySnapshot?json_encode(array_values($snapshot->skipReasons)):'[]',$elapsed(),null,$fingerprint);
             return $code;
         }
-        provider_inventory_record($started,$code,'',$snapshot->scope,$snapshot->coverage,count($snapshot->packages),$snapshot->skipped,json_encode(array_values($snapshot->skipReasons)),$elapsed(),$snapshot,$fingerprint);
+        if($snapshot instanceof DomainContractObservation)provider_inventory_record($started,$code,'',$snapshot->scope,'unknown',0,0,'[]',$elapsed(),$snapshot,$fingerprint);
+        else provider_inventory_record($started,$code,'',$snapshot->scope,$snapshot->coverage,count($snapshot->packages),$snapshot->skipped,json_encode(array_values($snapshot->skipReasons)),$elapsed(),$snapshot,$fingerprint);
         return $code;
     });
+    return ['id'=>$started['id'],'state'=>$state];
 }
 
 /** Latest finished refresh of any state — the freshness display. */
-function provider_inventory_latest(string $profileId): ?array {
+function provider_inventory_latest(string $profileId,string $operation=InventoryRead::PACKAGES_LIST): ?array {
     provider_settings_manager();
-    return one('SELECT r.*,f.profile_id,f.profile_revision,f.actor_id,f.started_at,f.started_epoch,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$profileId]);
+    if(!InventoryReader::supports($operation))throw new InvalidArgumentException('Unknown inventory operation.');
+    return one('SELECT r.*,f.profile_id,f.profile_revision,f.actor_id,f.started_at,f.started_epoch,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? AND COALESCE(f.operation,\'packages.list\')=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$profileId,$operation]);
 }
 
 /** Last good observation: the newest refresh that actually carried packages. */
-function provider_inventory_observation(string $profileId): ?array {
+function provider_inventory_observation(string $profileId,string $operation=InventoryRead::PACKAGES_LIST): ?array {
     provider_settings_manager();
-    return one('SELECT r.*,f.profile_id,f.profile_revision,f.actor_id,f.started_at,f.started_epoch,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? AND r.state IN (\'complete\',\'partial\') ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$profileId]);
+    if(!InventoryReader::supports($operation))throw new InvalidArgumentException('Unknown inventory operation.');
+    return one('SELECT r.*,f.profile_id,f.profile_revision,f.actor_id,f.started_at,f.started_epoch,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? AND COALESCE(f.operation,\'packages.list\')=? AND r.state IN (\'complete\',\'partial\') ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$profileId,$operation]);
 }
 
 /** Validated package rows of one recorded observation. */
@@ -168,9 +385,9 @@ function provider_inventory_links(string $profileId): array {
 }
 
 /** Bounded refresh history for one profile — every recorded result, newest first. */
-function provider_inventory_history(string $profileId,int $page=1): array {
+function provider_inventory_history(string $profileId,int $page=1,string $operation=InventoryRead::PACKAGES_LIST): array {
     provider_settings_manager();$page=max(1,min($page,100000));
-    return all('SELECT f.id,f.started_at,f.started_epoch,f.profile_revision,r.state,r.reason,r.scope,r.coverage,r.package_count,r.skipped,r.finished_at,r.elapsed_ms,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 21 OFFSET '.(($page-1)*20),[$profileId]);
+    return all('SELECT f.id,f.started_at,f.started_epoch,f.profile_revision,r.state,r.reason,r.scope,r.coverage,r.package_count,r.skipped,r.finished_at,r.elapsed_ms,u.name AS actor_name FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id LEFT JOIN '.table('users').' u ON u.id=f.actor_id WHERE f.profile_id=? AND COALESCE(f.operation,\'packages.list\')=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 21 OFFSET '.(($page-1)*20),[$profileId,$operation]);
 }
 
 function provider_inventory_link_events(string $profileId,int $page=1): array {
@@ -189,9 +406,18 @@ function provider_inventory_link_events(string $profileId,int $page=1): array {
  */
 function provider_inventory_link(string $profileId,int $packageId,int $clientId,int $revision,#[\SensitiveParameter] string $password): void {
     staff_locked(fn()=>staff_transaction(function()use($profileId,$packageId,$clientId,$revision,$password):void {
+        provider_inventory_link_in_transaction($profileId,$packageId,$clientId,$revision,$password);
+    }));
+}
+
+/** Internal composition point: the caller owns both the staff mutex and transaction. */
+function provider_inventory_link_in_transaction(string $profileId,int $packageId,int $clientId,int $revision,#[\SensitiveParameter] string $password,?string $expectedRefresh=null): array {
+        $mutex='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
+        if(!db()->inTransaction()||(int)query('SELECT COALESCE(IS_USED_LOCK(?),0)=CONNECTION_ID()',[$mutex])->fetchColumn()!==1)throw new LogicException('Package linking requires the owning staff transaction.');
         [$actor]=provider_inventory_authority($profileId,$revision,$password);
         if($packageId<=0)throw new InvalidArgumentException('Provider package identity unavailable.');
         $observation=provider_inventory_observation($profileId);
+        if($expectedRefresh!==null&&($observation['id']??null)!==$expectedRefresh)throw new RuntimeException('The hosting observation changed. Review the current inventory again.');
         if(!$observation||(int)$observation['profile_revision']!==$revision)throw new RuntimeException('The saved observation is from an earlier provider configuration. Refresh under the current settings before linking.');
         if(!one('SELECT id FROM '.table('provider_observation_packages').' WHERE refresh_id=? AND package_id=?',[$observation['id'],$packageId]))throw new RuntimeException('That package is not in the last good observation for this profile. Refresh first.');
         if(!one('SELECT id FROM '.table('studio_clients').' WHERE id=? AND active=1',[$clientId]))throw new InvalidArgumentException('Active client account not found.');
@@ -199,7 +425,7 @@ function provider_inventory_link(string $profileId,int $packageId,int $clientId,
         query('INSERT INTO '.table('provider_package_links').' (id,profile_id,package_id,client_id,linked_by,linked_at,key_fingerprint,profile_revision) VALUES (?,?,?,?,?,?,?,?)',[bin2hex(random_bytes(16)),$profileId,$packageId,$clientId,(int)$actor['id'],gmdate('Y-m-d H:i:s'),$observation['key_fingerprint'],$revision]);
         query('INSERT INTO '.table('provider_package_link_events').' (profile_id,package_id,client_id,event,actor_id,recorded_at) VALUES (?,?,?,?,?,?)',[$profileId,$packageId,$clientId,'link',(int)$actor['id'],gmdate('Y-m-d H:i:s')]);
         provider_settings_audit((int)$actor['id'],'service_linked','Profile '.$profileId.' package '.$packageId.' client '.$clientId);
-    }));
+        return one('SELECT * FROM '.table('provider_package_links').' WHERE profile_id=? AND package_id=?',[$profileId,$packageId]);
 }
 
 /** Explicit owner unlink; the mapping is removed and an event is recorded. */
@@ -331,7 +557,7 @@ function provider_inventory_client_services(int $clientId): array {
     foreach($links as $link) {
         $profile=one('SELECT revision FROM '.table('provider_profiles').' WHERE id=?',[$link['profile_id']]);
         $current=$profile!==null&&(int)$profile['revision']===(int)$link['profile_revision'];
-        $observation=$current?one('SELECT r.id AS refresh_id,r.state,r.coverage,f.started_at FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id WHERE f.profile_id=? AND r.state IN (\'complete\',\'partial\') AND r.key_fingerprint=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$link['profile_id'],$link['key_fingerprint']]):null;
+        $observation=$current?one('SELECT r.id AS refresh_id,r.state,r.coverage,f.started_at FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id WHERE f.profile_id=? AND COALESCE(f.operation,\'packages.list\')=\'packages.list\' AND r.state IN (\'complete\',\'partial\') AND r.key_fingerprint=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$link['profile_id'],$link['key_fingerprint']]):null;
         $package=$observation?one('SELECT * FROM '.table('provider_observation_packages').' WHERE refresh_id=? AND package_id=?',[$observation['refresh_id'],$link['package_id']]):null;
         if($package){$package['names']=json_decode($package['names'],true);$package['package_labels']=json_decode($package['package_labels'],true);unset($package['stack_users'],$package['unmapped_keys']);}
         $out[]=['link'=>$link,'package'=>$package,'observed_at'=>$observation['started_at']??null,'observation'=>$observation===null?null:'present','present'=>$package!==null,'context_changed'=>!$current];
@@ -352,7 +578,7 @@ function provider_inventory_client_domains(int $clientId): array {
     foreach($links as $link) {
         $profile=one('SELECT revision FROM '.table('provider_profiles').' WHERE id=?',[$link['profile_id']]);
         $current=$profile!==null&&(int)$profile['revision']===(int)$link['profile_revision'];
-        $observation=$current?one('SELECT r.id AS refresh_id,f.started_at FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id WHERE f.profile_id=? AND r.state IN (\'complete\',\'partial\') AND r.key_fingerprint=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$link['profile_id'],$link['key_fingerprint']]):null;
+        $observation=$current?one('SELECT r.id AS refresh_id,f.started_at FROM '.table('provider_refresh_results').' r JOIN '.table('provider_refreshes').' f ON f.id=r.id WHERE f.profile_id=? AND COALESCE(f.operation,\'packages.list\')=\'packages.list\' AND r.state IN (\'complete\',\'partial\') AND r.key_fingerprint=? ORDER BY f.started_epoch DESC,f.seq DESC LIMIT 1',[$link['profile_id'],$link['key_fingerprint']]):null;
         $package=$observation?one('SELECT package_id,names,enabled FROM '.table('provider_observation_packages').' WHERE refresh_id=? AND package_id=?',[$observation['refresh_id'],$link['package_id']]):null;
         $present=false;
         if($package){$names=array_map('strtolower',array_map('strval',json_decode($package['names'],true)?:[]));$present=in_array($link['domain'],$names,true);unset($package['names']);}
@@ -367,3 +593,14 @@ function provider_inventory_clients(): array {
     provider_settings_manager();
     return all('SELECT id,name,email FROM '.table('studio_clients').' WHERE active=1 ORDER BY name,id');
 }
+
+/** Sanitized cloud records for an owner-visible, explicitly cloud-scoped read. */
+function provider_inventory_cloud_servers(string $refreshId): array {
+    provider_settings_manager();
+    if(!provider_inventory_ready())return [];
+    $rows=all('SELECT c.* FROM '.table('provider_observation_cloud').' c JOIN '.table('provider_refreshes').' f ON f.id=c.refresh_id WHERE c.refresh_id=? AND f.operation=? ORDER BY c.server_id',[$refreshId,InventoryRead::CLOUD_SERVERS_LIST]);
+    foreach($rows as &$row){$row['server']=InventoryCloudServer::fromItem(json_decode($row['metadata'],false,16,JSON_THROW_ON_ERROR));if($row['server']->id!==(int)$row['server_id'])throw new RuntimeException('Cloud observation identity is inconsistent. Restore the original database.');unset($row['metadata']);}unset($row);
+    return $rows;
+}
+
+require_once CWP_CODE_ROOT.'/app/providers/cloud_links.php';

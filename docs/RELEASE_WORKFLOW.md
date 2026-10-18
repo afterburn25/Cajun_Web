@@ -1,10 +1,36 @@
+## Release 1.25.0 evidence and publication boundary
+
+## 2026-10-17 - complete acceptance job allowance
+
+The combined native/browser job has a240-minute aggregate execution allowance. The change from180 follows the preserved [original cancellation and timing evidence](ACCEPTANCE_JOB_BUDGET_1.25.0.md); individual application/request/browser/provider timeout behavior and every acceptance requirement stay intact. Keep the native-to-browser state in one job. This is capacity for completing the suite, not a successful result or a substitute for any missing report. Require actual corrected candidate/default PHP8.3 and four-environment results, then fresh exact-main acceptance before release.
+
+The bounded increment is defined by [scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md), [acceptance report](TEST_REPORT_1.25.0.md) and [migration instructions](MIGRATION-INSTRUCTIONS-1.25.0.md). The original main/mature20i histories are already normally merged. Preserve every existing acceptance and publication gate; current source integration does not itself publish or deploy the application.
+
+Record complete exact-main outcomes and publication only from their actual receipts. Final release notes/report assets may add those facts after accepted source is frozen. Do not rewrite an accepted commit to claim a future result, and do not replace an immutable released asset with a later source. A publication is verified only after every asset is freshly downloaded and compared with its prepared source-bound bytes.
+
+## Historical source checkpoints
+
+The following dated checkpoints and earlier releases preserve their original status. Their pending-work statements are not current instructions.
+
+### Historical checkpoint: Release acceptance correction checkpoint — 2026-10-16
+
+Canonical `codex/release-1.25.0` parent85f0b489 retains main35d8/d715 and mature3fa through normal merges. Root applied complete supported-runtime selection, authentic published1.24 upgrade fixtures, reviewed licensing repairs and narrow existing-layout capture/copy changes. Local208helper/69build-guard/28retention/19actual-ZIP checks pass; the independently reviewed licensing audit-history recovery correction is applied. All native/HTTP/visual/full-candidate/exact-main/publication gates remain pending. See [current acceptance report](TEST_REPORT_1.25.0.md) and [precise owner update instructions](MIGRATION-INSTRUCTIONS-1.25.0.md). Stable1.24 and main runtime remain unchanged; no1.25 release or live deployment. Frozen scope and held roadmap remain in force.
+
+### Historical checkpoint: Release priority checkpoint — 2026-10-16
+
+Canonical `codex/release-1.25.0` starts from main35d8 and normally integrates mature3fa. New20i capabilities are frozen until publication and download verification. [Frozen scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md), [current status](../PROJECT_STATUS.md) and [handoff](../SESSION_HANDOFF.md) supersede older current labels below. Source3fa focused38933590118 and Windows packages pass their bounded scopes; the combined release still needs licensing corrections, supported runtime/full browser/actual1.24 upgrade gates, independent review, exact-main acceptance and all-asset verification. Published1.24 remains unchanged; no1.25 release or live deployment exists yet.
+
+## Retained earlier source and release records
+
 # GitHub testing, incremental releases and agent continuity
 
-## Current publication — 2026-10-15
+## Historical publication checkpoint — 2026-10-15
 
 Codex owns the complete 20i P0 integration. [Version1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0) is published and freshly download-verified at immutable source7190b582. [Exact-main acceptance](https://github.com/afterburn25/Cajun_Web/actions/runs/38711850732) passes9,134 named executions and30 gates; all16 assets, tag, manifests and ZIP contents match accepted source. Previous1.23 assets remain unchanged. [Current status](../PROJECT_STATUS.md), [release evidence](TEST_REPORT_1.24.0.md) and [requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md) define current scope. Complete20i remains unfinished; unrelated work stays paused. No live deployment is claimed.
 
 The procedure below applies to the next candidate. Prior release entries are historical evidence, not pending1.24 gates. Browser-only checkpoints cannot certify a release; retain full candidate, independent review, normal merge, exact-main and fresh downloaded-asset checks.
+
+The isolated [parallel acceptance workflow](PARALLEL_APPLICATION_ACCEPTANCE.md) preserves one exact build and all existing tests while separating native/browser, filesystem recovery and Apache jobs. It requires exact same-attempt input/evidence partitions, successful final aggregation, independent report/visual review and unchanged Windows/package comparison gates. Source review and 100 offline helper checks do not establish actual GitHub acceptance; keep original serial runs and their verifiers unchanged. No release gate is waived by the proposed split.
 
 ## Historical publication — 1.23.0
 
@@ -173,6 +199,8 @@ Owner direction recorded 2026-10-12: use GitHub for testing, deliver incremental
 
 ## Current implementation
 
+The build tool resolves an immutable Git tree and reads raw blob objects through one binary batch process. It checks framing, exact object identity and content, and closes/reaps the child on refusal. Existing clean-checkout, source normalization, symlink/path, installer, full PHP/JavaScript lint and archive checks remain unchanged; batching does not skip them. The [portable blob tests](../tests/build_git_blob_batch.py) use a small temporary Git repository and run inside the existing [builder guard report](../tests/build_guards.py), preserving its original 21 checks. Local source-read timing is not full-build or release acceptance.
+
 - [Repository checks](../.github/workflows/repository-checks.yml) runs on pull requests, pushes to `main` and manual dispatch. It uses read-only repository permissions and no production credentials.
 - [Documentation checker](../tools/check_docs.py) verifies required continuity files and inline relative Markdown links, including heading targets. Use `python tools/check_docs.py` locally. External URLs, reference-style links, HTML links and application behavior are outside this check's scope.
 - [Application acceptance](../.github/workflows/application-tests.yml) verifies exact source/package bytes, native MariaDB and actual HTTP/Chromium workflows, plus fresh/update package behavior. It retains reports and screenshots. Final combined-main acceptance and downloaded release verification are required; documentation checks alone are insufficient.
@@ -243,3 +271,7 @@ Append an entry to [SESSION_LOG.md](SESSION_LOG.md), update [CHANGELOG.md](../CH
 Reviewed 2026-10-12: [GitHub Actions workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax), [managing releases](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository), and [source-code archives](https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives).
 
 The [estimator workflow](../.github/workflows/estimator.yml) verifies only standalone decisions on PHP 8.2/8.4. It does not test the current estimator form, quantity pricing, database or notification delivery; the component remains excluded from deployment.
+
+## Hosting storage CI database ports
+
+The hosting storage workflow exposes container port3306 without fixing a host port. Its native test step passes `job.services.database.ports['3306']` as CWP_TEST_PORT into the existing host-network PHP container. This follows [GitHub's service-container port mapping](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idservices) and avoids the actual port33306 collision in original run38879885470. Preserve that failed attempt and its skipped PHP8.2 execution. A new source revision must pass its own original job; a corrected configuration is not itself test evidence.

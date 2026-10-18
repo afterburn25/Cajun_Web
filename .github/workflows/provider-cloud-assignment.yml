@@ -1,0 +1,167 @@
+name: Native cloud assignment authority
+on:
+  push:
+    branches: [main, codex/twentyi-cloud-assignment-authority, codex/twentyi-cloud-assignment-integration]
+    paths: ['site/app/providers/**', 'site/admin/**', 'site/database/**', 'site/includes/foundation/**', 'site/includes/layout/provider_services.php', 'foundation/twentyi-cloud-assignment/**', 'tests/twentyi-cloud-assignment/**', 'tests/cloud_assignment_fixture*', 'tests/provider_cloud_assignment*', 'tests/provider_inventory_native.php', 'tests/provider_inventory_upgrade_native.php', 'tests/provider_inventory_cloud_link_cases.php', 'tests/provider_cloud_sites_native.php', 'tests/provider_cloud_confirmation_native.php', '.github/workflows/provider-cloud-assignment.yml']
+  pull_request:
+    paths: ['site/app/providers/**', 'site/admin/**', 'site/database/**', 'site/includes/foundation/**', 'site/includes/layout/provider_services.php', 'foundation/twentyi-cloud-assignment/**', 'tests/twentyi-cloud-assignment/**', 'tests/cloud_assignment_fixture*', 'tests/provider_cloud_assignment*', 'tests/provider_inventory_native.php', 'tests/provider_inventory_upgrade_native.php', 'tests/provider_inventory_cloud_link_cases.php', 'tests/provider_cloud_sites_native.php', 'tests/provider_cloud_confirmation_native.php', '.github/workflows/provider-cloud-assignment.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cloud-assignment-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  native-history:
+    name: Cloud assignment ${{ matrix.php }} and ${{ matrix.database.label }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database:
+          - {image: 'mariadb:10.11', label: 'mariadb-10.11'}
+          - {image: 'mysql:8.4', label: 'mysql-8.4'}
+    services:
+      database:
+        image: ${{ matrix.database.image }}
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['3306/tcp']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify generated deployment inventory and documentation
+        run: |
+          PYTHONPATH=tools python -B -c 'import build; build.generated(False)'
+          python -B tools/check_docs.py
+      - name: Prepare official PHP with PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-inventory-test -f tests/invitations/Dockerfile tests/invitations
+      - name: Allow isolated MySQL audit-failure fixture triggers
+        if: matrix.database.label == 'mysql-8.4'
+        run: docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+      - name: Native cloud assignment and preserved cloud creation boundaries
+        env:
+          CWP_TEST_PORT: ${{ job.services.database.ports['3306'] }}
+        run: |
+          mkdir -p qa
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-inventory-test sh -ec '
+              for source in foundation/twentyi-cloud-assignment/CloudAssignmentBinding.php site/includes/foundation/twentyi-cloud-assignment/CloudAssignmentBinding.php site/app/providers/cloud_assignment.php site/app/providers/cloud_assignment_storage.php site/database/schema/provider_cloud_assignment_schema.php tests/provider_cloud_assignment_native.php tests/twentyi-cloud-assignment/run.php tests/twentyi-cloud-assignment/legacy-context.php tests/twentyi-cloud-assignment/views.php; do php -l "$source"; done
+              php tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json
+              php -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json
+              php tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json
+              php -n tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json
+              php tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json
+              php -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json
+              php tests/provider_cloud_assignment_native.php
+              php tests/provider_inventory_upgrade_native.php
+              php tests/provider_inventory_native.php
+              php tests/provider_cloud_sites_native.php
+              php tests/provider_cloud_confirmation_native.php
+            '
+      - name: Check immutable cloud fixture aging offline
+        run: python -B tests/cloud_assignment_fixture_test.py qa/cloud-assignment-fixture-results.json
+      - name: Preserve named storage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloud-assignment-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
+          path: |
+            qa/cloud-assignment-binding-default.json
+            qa/cloud-assignment-binding-minimal.json
+            qa/cloud-assignment-legacy-default.json
+            qa/cloud-assignment-legacy-minimal.json
+            qa/cloud-assignment-views-default.json
+            qa/cloud-assignment-views-minimal.json
+            qa/provider-cloud-assignment-native-results.json
+            qa/cloud-assignment-fixture-results.json
+            qa/provider-inventory-upgrade-results.json
+            qa/provider-inventory-native-results.json
+            qa/provider-cloud-sites-native-results.json
+            qa/provider-cloud-confirmation-native-results.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Exact owner and client cloud assignment authority, immutable intent/result/event evidence, legacy unknown credential context, recovery refusal, separate-process mutex and preserved cloud website creation/confirmation. Disposable database and synthetic DNS/transport only; no live provider request, browser, deployment or health proof.' >> "$GITHUB_STEP_SUMMARY"
+
+  distro-minimal:
+    name: Distro PHP 8.3 cloud minimal compatibility
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Prepare the same Ubuntu distribution PHP used by full acceptance
+        run: |
+          mkdir -p qa
+          sudo apt-get update -qq
+          sudo apt-get install -y php8.3-cli php8.3-common
+          {
+            php8.3 -v
+            php8.3 --ini
+            php8.3 -m
+            php8.3 -n -m
+            php8.3 -n -d extension=tokenizer -d extension=pdo -m
+            for module in pdo tokenizer; do
+              test -f "/etc/php/8.3/mods-available/$module.ini"
+              cat "/etc/php/8.3/mods-available/$module.ini"
+            done
+          } > qa/cloud-assignment-distro-runtime.txt
+      - name: Verify the exact minimal exception and extractor dependencies without a driver
+        run: |
+          php8.3 -n -d extension=tokenizer -d extension=pdo -r '
+            $runtime = ["php" => PHP_VERSION, "pdo_exception_extension" => (new ReflectionClass(PDOException::class))->getExtensionName(), "tokenizer_extension" => (new ReflectionFunction("token_get_all"))->getExtensionName(), "drivers" => PDO::getAvailableDrivers(), "modules" => get_loaded_extensions()];
+            if ($runtime["pdo_exception_extension"] !== "PDO" || $runtime["tokenizer_extension"] !== "tokenizer" || $runtime["drivers"] !== []) throw new RuntimeException("Unexpected minimal fixture dependencies.");
+            file_put_contents("qa/cloud-assignment-distro-dependencies.json", json_encode($runtime, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
+          '
+      - name: Run the six exact full-workflow cloud pure and view commands
+        run: |
+          php8.3 tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json
+          php8.3 -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json
+          php8.3 tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json
+          php8.3 -n -d extension=tokenizer -d extension=pdo tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json
+          php8.3 tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json
+          php8.3 -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json
+      - name: Preserve the exact distro compatibility reports and module configuration
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloud-assignment-distro-php83-${{ github.sha }}
+          path: |
+            qa/cloud-assignment-binding-default.json
+            qa/cloud-assignment-binding-minimal.json
+            qa/cloud-assignment-legacy-default.json
+            qa/cloud-assignment-legacy-minimal.json
+            qa/cloud-assignment-views-default.json
+            qa/cloud-assignment-views-minimal.json
+            qa/cloud-assignment-distro-runtime.txt
+            qa/cloud-assignment-distro-dependencies.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record compatibility scope
+        if: always()
+        run: |
+          echo 'Distribution PHP8.3 default/no-INI compatibility only: exact existing binding, synthetic legacy-credential and rendered-view assertions. PDO is loaded solely for its exception class; no database driver, connection, HTTP, provider call or release acceptance.' >> "$GITHUB_STEP_SUMMARY"
