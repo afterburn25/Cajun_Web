@@ -128,7 +128,7 @@ jobs:
       - name: Install maintained runtime and real browser dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring python3-venv
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring python3-venv libfaketime
           test -x "$PHP_BINARY"
           python3 -m venv .ci-venv
           .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 playwright
@@ -144,6 +144,14 @@ jobs:
         run: '"$PHP_BINARY" tests/hosting_catalog_native.php > qa/hosting-catalog-ui-native.log 2>&1'
       - name: Actual packaged owner client and agreement browser flow
         run: .ci-venv/bin/python -B tests/hosting_catalog_browser.py
+      - name: Eventual joined purchase with isolated application time
+        run: |
+          .ci-venv/bin/python -B tests/hosting_catalog_purchase_guards.py
+          .ci-venv/bin/python -B tests/hosting_catalog_purchase.py
+      - name: Packaged owner re-link and client Hosting continuation
+        run: |
+          .ci-venv/bin/python -B tests/hosting_purchase_handoff_guards.py
+          .ci-venv/bin/python -B tests/hosting_purchase_handoff_browser.py
       - name: Preserve unchanged source
         if: always()
         run: git diff --exit-code -- site foundation tools tests .github/workflows
@@ -159,6 +167,8 @@ jobs:
             qa/hosting-catalog-http/
             qa/hosting-catalog-recovery-http-results.json
             qa/hosting-catalog-recovery-http/
+            qa/hosting-purchase/
+            qa/hosting-purchase-http/
             dist/*-COMPLETE-UPLOAD.zip
             dist/*-COMPLETE-UPLOAD.manifest.json
             dist/*-UPDATE.zip

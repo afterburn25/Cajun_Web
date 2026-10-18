@@ -14,9 +14,9 @@ The card reads saved records under the existing owner authorization and lock. It
 
 The three changed PHP files pass syntax checks. The exact proposed projection and renderer passed 68 synthetic checks in normal PHP 8.4.25 and the same 68 in minimal PHP. These cover assignment states, identity restrictions, escaped client text, owner denial, wrong-client denial, read-only query behavior and package navigation. They are modeled dependency checks, not native SQL, HTTP or visual acceptance.
 
-The canonical build refresh updates the installer dependency inventory for the changed shipping files. This branch changes no test workflow, existing assertion count, schema, API request or version label. The frozen 1.26 candidate and current focused hosting source remain unchanged.
+The initial implementation refreshed the installer dependency inventory for the changed shipping files. The later test continuation below adds focused workflow coverage; existing assertions, schema, API requests and version labels are unchanged. The frozen 1.26 candidate and original focused hosting source remain unchanged.
 
-Before integration/release, run existing native fulfillment and inventory tests on the combined source and inspect actual desktop/mobile navigation. Complete one joined imported offer through client request, agreement consent/activation, billing consent/activation, first invoice, verified synthetic receipt, hosting order, synthetic fulfillment, exact confirmation, explicit owner package assignment and client Hosting visibility. Verify other-client exclusion, replay, concurrent assignment, audit rollback and recovery. The prepared hosting-offer fixtures currently stop before that entire joined flow.
+Before integration/release, run existing native fulfillment and inventory tests on the combined source and inspect actual desktop/mobile navigation. Complete one joined imported offer through client request, agreement consent/activation, billing consent/activation, first invoice, verified synthetic receipt, hosting order, synthetic fulfillment, exact confirmation, explicit owner package assignment and client Hosting visibility. Verify other-client exclusion, replay, concurrent assignment, audit rollback and recovery. The joined continuation below exercises that purchase sequence; actual execution remains required.
 
 ## Preserve the original offer mapping
 
@@ -29,3 +29,13 @@ The five production files pass PHP syntax, independent source review, 37 exact-f
 ## Current recurring purchase timing
 
 A newly accepted recurring schedule must activate on a future billing date, and its first invoice cannot be issued before that period begins. The planned joined test uses an isolated process clock only for preparation, then real time for invoicing and fulfillment. It demonstrates an eventual recurring purchase, not immediate checkout. Billing semantics are unchanged; immediate first-payment hosting checkout remains separate unfinished work.
+
+## Joined purchase and browser continuation
+
+The test continuation starts from `26b57f4412db12117729901280372e2fd58f6cde`. A fresh disposable `hpci_` database namespace contains only bootstrap client/project/owner identities. Publications, requests, agreements, schedules, invoices, verified synthetic bank receipts, orders, provider-operation records and package assignments use the production wrappers. A finite synthetic transport handles the exact package creation and inventory read; no live purchase or payment is performed.
+
+Only the preparation PHP child receives Ubuntu's process-local `libfaketime` offset of two days. The database, parent process, due phase and portal renderers keep real time. The test checks clock isolation, early-invoice refusal, replay, audit rollback, wrong-client denial and original mapping continuity. A second real accepted order must refuse replacement, manual and superseded mappings. Wrapper query counts and elapsed time are recorded without a performance threshold. This demonstrates the eventual recurring path described above, not immediate checkout.
+
+The separate packaged Chromium continuation starts after the complete native first-link path. An owner signs in, uses the existing Unlink form, follows **Review client access** to the exact package and explicitly re-links it. The client follows **Hosting services** to see the package; another client cannot see it, including with a forged client selector. Ten new desktop/mobile captures require visual review. This is browser re-link coverage, not a claim that the original first assignment occurred in the browser.
+
+The focused workflow preserves its original native, recovery and browser tests. New reports and screenshots are separate from private test configuration, sessions, provider keys and raw native output. Portable runner checks, syntax and source review are local evidence only. Actual Linux clock/database, installed HTTP/Chromium, screenshots, full application and release acceptance remain pending.

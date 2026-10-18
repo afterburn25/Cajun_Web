@@ -1,3 +1,7 @@
+## Successor follow-through — joined purchase verification
+
+The portal-handoff branch now prepares an actual-wrapper eventual purchase test plus packaged owner re-link and client Hosting isolation. Local checks are separate from pending Linux SQL/clock, HTTP/Chromium and visual acceptance. Immediate first-payment checkout, complete cloud catalog coverage and automatic provider images remain unfinished. [Test scope](TWENTYI_HOSTING_CLIENT_ACCESS.md#joined-purchase-and-browser-continuation).
+
 ## Successor follow-through — original package continuity
 
 Catalog-origin order preparation and retained service links now enforce the original publication mapping on the separate portal handoff branch. The owner screen follows that mapping and preserves the original project link. Source/model checks pass; actual joined SQL/browser acceptance remains pending. Current recurring billing also requires a future activation date and invoices only after that period starts, so immediate first-payment checkout remains unfinished. See [behavior and limitations](TWENTYI_HOSTING_CLIENT_ACCESS.md).

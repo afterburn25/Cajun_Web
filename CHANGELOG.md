@@ -1,3 +1,7 @@
+## Development — joined hosting purchase verification, 2026-10-18
+
+Add an isolated eventual purchase test and packaged owner re-link/client visibility checks. Preserve the original focused tests and recurring billing rules; no shipping files or version labels change. Actual Linux database/browser and release acceptance remain pending.
+
 ## Development — original hosting mapping continuity, 2026-10-18
 
 - Keep new and saved catalog-origin hosting order links tied to the exact provider mapping in the client's original offer. Reject silent substitutions and manual bypasses; guide owners through a new offer/agreement when the original mapping is no longer eligible.

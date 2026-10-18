@@ -1,3 +1,11 @@
+## 2026-10-18 — joined hosting purchase and client-access tests
+
+The portal-handoff branch adds a disposable purchase test using actual application wrappers, followed by packaged owner/client browser navigation. The native sequence covers imported offer, client consent, due invoice, verified synthetic receipt, fulfillment, confirmation and explicit package assignment. The browser continuation uses the real owner Unlink form and guided re-link, then checks correct-client visibility and other-client exclusion. [Scope and limitations](docs/TWENTYI_HOSTING_CLIENT_ACCESS.md#joined-purchase-and-browser-continuation).
+
+Starting source `26b57f4412db12117729901280372e2fd58f6cde`. The preparation child alone uses a two-day process clock offset; remaining processes and the database keep real time. This tests eventual recurring purchase, not immediate checkout. Existing focused native/recovery/browser assertions remain intact. Private runtime state is excluded from uploaded evidence.
+
+Source review and local portable/syntax checks pass. Actual Linux clock/database and packaged HTTP/Chromium execution, ten new screenshots, full-suite integration and release gates remain pending. Original 1.26 and hosting512 runs are preserved; published 1.25.0 remains unchanged. Next: retain the first combined run and diagnose its actual outcomes without replacing original evidence.
+
 ## 2026-10-18 — preserve the hosting package a client requested
 
 The separate `codex/twentyi-hosting-portal-handoff` branch now binds catalog-origin order preparation and saved-link validation to the provider mapping retained in the original published offer. A later mapping for the same retail plan, or a manual preparation submission, cannot silently replace it. Owners see the original mapping or guidance to create a new offer and client agreement; historical validation does not require that old mapping to remain currently available. Ordinary non-catalog orders and explicit billing project consent retain their existing behavior.
