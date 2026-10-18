@@ -65,13 +65,15 @@ jobs:
             -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
             -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
             cwp-inventory-test sh -ec '
-              for source in site/app/providers/*.php site/database/schema/provider_package_php_schema.php site/admin/views/provider_package_php.php site/admin/controllers/providers.php tests/provider_package_php_native.php tests/provider_php_controls_delegation.php tests/provider_php_controls_delegation_native.php site/database/schema/provider_php_control_delegation_schema.php; do php -l "$source"; done
+              for source in site/app/providers/*.php site/database/schema/provider_package_php_schema.php site/admin/views/provider_package_php.php site/admin/controllers/providers.php tests/provider_package_php_native.php tests/provider_php_controls_delegation.php tests/provider_php_controls_delegation_native.php site/database/schema/provider_php_control_delegation_schema.php foundation/twentyi-package-php/PackagePhpOptionSet.php site/includes/foundation/twentyi-package-php/PackagePhpOptionSet.php tests/twentyi-package-php/options.php; do php -l "$source"; done
               php tests/twentyi-package-php/run.php > qa/package-php-document-results.json
               php -n tests/twentyi-package-php/run.php > qa/package-php-document-no-ini-results.json
               php tests/provider_package_php_native.php
               php tests/provider_php_controls_delegation.php > qa/php-controls-delegation-document-results.json
               php -n tests/provider_php_controls_delegation.php > qa/php-controls-delegation-document-no-ini-results.json
               php tests/provider_php_controls_delegation_native.php
+              php tests/twentyi-package-php/options.php > qa/php-options-document-results.json
+              php -n tests/twentyi-package-php/options.php > qa/php-options-document-no-ini-results.json
             '
       - name: Preserve named storage evidence
         if: always()
@@ -85,6 +87,8 @@ jobs:
             qa/php-controls-delegation-document-results.json
             qa/php-controls-delegation-document-no-ini-results.json
             qa/provider-php-controls-delegation-native-results.json
+            qa/php-options-document-results.json
+            qa/php-options-document-no-ini-results.json
           if-no-files-found: warn
           retention-days: 14
       - name: Record verification scope

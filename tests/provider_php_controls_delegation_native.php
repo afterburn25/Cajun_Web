@@ -11,6 +11,7 @@ define('CWP_BOOT',true);
 require __DIR__.'/../site/includes/bootstrap.php';
 require __DIR__.'/../site/database/schema/base.php';
 require __DIR__.'/../site/app/providers/php_controls_authority.php';
+require __DIR__.'/../site/app/providers/php_controls_connection.php';
 use CajunWebPro\Foundation\Provider\TransportResponse;
 use CajunWebPro\Foundation\TwentyIInventory\{InventoryRead,InventoryProjector};
 
@@ -157,6 +158,13 @@ try {
     pcd_ok('Delegation leaves old saved-value sharing unchanged',pcd_count('provider_php_permissions')===0);
     $ownerContext=pcd_scope(fn()=>provider_php_controls_owner_context($link));pcd_client();$clientContext=pcd_scope(fn()=>provider_php_controls_client_context(1,$link));
     pcd_ok('Current client context has real client actor and exact permission',$clientContext['document']['actor']['kind']==='client'&&$clientContext['document']['actor']['id']===1&&$clientContext['document']['permission_id']===$event&&$clientContext['binding']->data['source_id']===$source);
+    $clientProfile=staff_locked(fn()=>provider_php_controls_connection($clientContext));
+    pcd_ok('Real delegated client connection needs no owner session',admin_user()===null&&$clientProfile['id']===$profile&&hash('sha256',$clientProfile['credentials'])===$clientContext['binding']->data['credential_sha256']);
+    pcd_ok('Real connection closes its short transaction',!db()->inTransaction());
+    pcd_deny('Real connection without owning mutex refuses',fn()=>provider_php_controls_connection($clientContext));
+    pcd_scope(function()use($clientContext):void{pcd_deny('Real connection refuses inherited SQL transaction',fn()=>provider_php_controls_connection($clientContext));pcd_ok('Real connection does not commit caller transaction',db()->inTransaction());});
+    pcd_client(2);staff_locked(fn()=>pcd_deny('Real connection rechecks primary client identity',fn()=>provider_php_controls_connection($clientContext)));pcd_ok('Refused real connection closes its own transaction',!db()->inTransaction());
+    pcd_owner();pcd_ok('Real owner connection retains staff authority',staff_locked(fn()=>provider_php_controls_connection($ownerContext))['id']===$profile);pcd_client();
     pcd_ok('Current client password uses the actual primary account',pcd_scope(fn()=>provider_php_controls_client_password(1,PCD_CLIENT_PASSWORD))['id']==1);
     pcd_deny('Wrong primary client password refuses',fn()=>pcd_scope(fn()=>provider_php_controls_client_password(1,'wrong')));
     pcd_deny('Client cannot select sibling assignment',fn()=>pcd_scope(fn()=>provider_php_controls_client_context(1,$other)));

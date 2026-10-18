@@ -40,6 +40,15 @@ function provider_php_digest(array $values):string {$b='';foreach($values as $v)
 function provider_php_retained_binding(PackagePhpVersionBinding $binding):void {global $model;if(!$model['retained_source'])throw new RuntimeException('Modeled retained source missing.');}
 function all(string $sql,array $args=[]):array {global $model;if(str_starts_with($sql,'SELECT id,user_id FROM audit WHERE BINARY action='))return $model['audits'];throw new LogicException('Unexpected modeled read.');}
 function pc_reset():void {global $model,$baseModel;$model=$baseModel;$_SESSION=[];$_GET=[];}
+final class PcConnectionDatabase {public function inTransaction():bool {global $model;return $model['transaction'];}}
+function db():PcConnectionDatabase {return new PcConnectionDatabase();}
+function staff_transaction(callable $work):mixed {global $model;if($model['transaction'])throw new LogicException('Unexpected nested modeled transaction.');$model['transaction']=true;try{return $work();}finally{$model['transaction']=false;}}
+function provider_settings_load(string $id,bool $lock=false):array {global $model;if(!$lock||!$model['transaction']||$id!==$model['profile']['id'])throw new RuntimeException('Modeled profile load refused.');$model['profile_reads']++;return $model['profile'];}
+function pc_connection_reset():array {
+    global $model;pc_reset();$d=$model['binding']->data;$d['credential_sha256']=hash('sha256','synthetic-sealed-profile');$model['binding']=new PackagePhpVersionBinding($d);
+    $model['profile']=['id'=>$d['profile_id'],'provider_code'=>'twenty-i','environment'=>'live','revision'=>'2','enabled'=>'1','credentials'=>'synthetic-sealed-profile'];$model['profile_reads']=0;
+    $context=provider_php_controls_client_context(7,$d['link_id']);$model['transaction']=false;return $context;
+}
 
 try{
     $binding=new PackagePhpVersionBinding(['profile_id'=>str_repeat('a',32),'profile_revision'=>2,'key_fingerprint'=>str_repeat('b',64),'credential_sha256'=>str_repeat('c',64),'package_id'=>101,'client_id'=>7,'link_id'=>str_repeat('d',32),'link_sha256'=>str_repeat('e',64),'event_id'=>5,'event_sha256'=>str_repeat('f',64),'audit_id'=>6,'audit_sha256'=>str_repeat('1',64),'source_id'=>str_repeat('2',32),'source_seq'=>3,'source_sha256'=>str_repeat('3',64)]);
@@ -84,6 +93,17 @@ try{
     foreach(['document_sha256'=>str_repeat('a',64),'proof'=>str_repeat('b',64),'owner_id'=>'9','revision'=>'2'] as $key=>$value){$bad=$row;$bad[$key]=$value;pc_refuse('Changed retained row '.$key.' refuses',fn()=>provider_php_controls_decode($bad));}
     foreach(['missing'=>[],'duplicate'=>[['id'=>9,'user_id'=>8],['id'=>10,'user_id'=>8]],'wrong actor'=>[['id'=>9,'user_id'=>99]]] as $name=>$audit){pc_reset();$model['audits']=$audit;pc_refuse('Retained '.$name.' audit refuses',fn()=>provider_php_controls_decode($row));}
     pc_reset();$model['retained_source']=false;pc_refuse('Lost original package source refuses historical delegation',fn()=>provider_php_controls_decode($row));
+    pc_load('app/providers/php_controls_connection.php',['provider_php_controls_connection']);
+    $connectionContext=pc_connection_reset();$model['manager']=false;$profile=provider_php_controls_connection($connectionContext);
+    pc_check('Delegated client obtains only its exact sealed profile without owner session',$profile===$model['profile']&&$model['profile_reads']===1);
+    pc_check('Connection leaves no transaction open on success',$model['transaction']===false);
+    $connectionContext=pc_connection_reset();$model['transaction']=true;pc_refuse('Connection refuses inherited transaction',fn()=>provider_php_controls_connection($connectionContext));pc_check('Inherited transaction is neither committed nor read',$model['transaction']===true&&$model['profile_reads']===0);
+    $connectionContext=pc_connection_reset();$model['mutex']=false;pc_refuse('Connection requires the operation mutex',fn()=>provider_php_controls_connection($connectionContext));pc_check('Missing mutex refuses before profile load',$model['profile_reads']===0);
+    foreach(['revision'=>'3','enabled'=>'0','credentials'=>'different-ciphertext','provider_code'=>'other','environment'=>'sandbox'] as $key=>$value){$connectionContext=pc_connection_reset();$model['profile'][$key]=$value;pc_refuse('Connection rejects changed profile '.$key,fn()=>provider_php_controls_connection($connectionContext));pc_check('Failed '.$key.' connection closes its transaction',$model['transaction']===false);}
+    $connectionContext=pc_connection_reset();$model['profile']['credentials']='';pc_refuse('Connection refuses missing sealed credentials',fn()=>provider_php_controls_connection($connectionContext));
+    $connectionContext=pc_connection_reset();$model['client']['auth_version']=str_repeat('a',32);pc_refuse('Connection rechecks actual client authentication',fn()=>provider_php_controls_connection($connectionContext));pc_check('Stale client refuses before profile load and closes transaction',$model['profile_reads']===0&&$model['transaction']===false);
+    $connectionContext=pc_connection_reset();$model['permission']['document']['enabled']=false;pc_refuse('Connection rechecks current delegation',fn()=>provider_php_controls_connection($connectionContext));
+    $connectionContext=pc_connection_reset();$model['transaction']=true;$ownerConnectionContext=provider_php_controls_owner_context($d['link_id']);$model['transaction']=false;pc_check('Owner connection retains actual staff authority',provider_php_controls_connection($ownerConnectionContext)===$model['profile']);
     $engineEscaped=false;try{pc_refuse('Unexpected engine error must not become a denial',static function():void{throw new TypeError('synthetic engine error');});}catch(TypeError){$engineEscaped=true;}pc_check('Unexpected engine errors escape the denial helper',$engineEscaped);
     echo json_encode(['passed'=>true,'count'=>count($checks),'checks'=>$checks,'scope'=>'Actual pure documents and extracted production authority/row validators with explicitly modeled SQL/session/prerequisite seams. No native SQL, provider, HTTP or image acceptance.'],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR)."\n";
 }catch(Throwable $e){echo json_encode(['passed'=>false,'checks'=>$checks,'failure'=>$e->getMessage()],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n";exit(1);}
