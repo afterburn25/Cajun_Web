@@ -1,3 +1,7 @@
+## 2026-10-19 — backup manifest depth exclusions (non-20i)
+
+Coordinator review correction landed on `devin/non20i-backups-foundation` (`66fe1439`): the manifest `FORBIDDEN` pattern anchored exact secrets at the path root, so a manifest could describe nested secrets such as `includes/config.php`. All protected-path rules (`config.php`, `proxy-config.php`, `.installed.php`, `.env`, `*.key`/`*.pem`/`*.p12`, any `storage/` component, `payment-master` names) now apply per path component at any depth. Collection still skips real forbidden files rather than failing. Nested-depth rejection cases added to `tests/backups/run.php`; the isolated suite passes 37 checks on PHP 8.4.25. This branch is foundation-only — the deployed `site/includes` mirror receives the same pattern on the descendant branches. No merge, deployment, provider action or release.
+
 ## 2026-10-18 — cloud endpoint supplied no catalog details
 
 The separate [cloud-only diagnostic](docs/TWENTYI_CLOUD_ROOT_DIAGNOSTIC.md#original-follow-up-outcome--2026-10-18), original run39090973425 at source `bf788894b1acd4c07daf74e718c4f95774acef85`, completed successfully after 42 passing offline checks. Its one fixed GET observed a JSON `null` root. This establishes the response type for that request and credential context, not an empty catalog, missing entitlement, provider fault or valid import contract. No cloud product fields were supplied. The original two-operation run39090394774 remains failed and unchanged; this later observation cannot retrospectively identify its scalar kind.

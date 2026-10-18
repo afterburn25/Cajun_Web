@@ -3412,3 +3412,12 @@ Starting at `bf788894b1acd4c07daf74e718c4f95774acef85` on `ops/twentyi-cloud-roo
 This documentation-only commit updates status, handoff, changelog and diagnostic interpretation. The next implementation is direct hosting catalog import, with documented same-type identity and preserved inventory-origin drafts. The current source does not implement that follow-through, import cloud products or fetch provider images. Enclosing commit: `docs: record cloud catalog null response`; no diagnostic code or trigger paths change.
 
 Actual root documentation checks passed 12 required documents,271 Markdown files and1,851 local links, including30 heading links; whitespace passed. Source and application tests were not rerun for this outcome record.
+
+
+## 2026-10-19 — backup manifest depth exclusions (non-20i)
+
+Request: resolve the coordinator review finding that protected backup scope items matched only at the path root. Starting head: `385f3fed` on `devin/non20i-backups-foundation`; enclosing commit `66fe1439`.
+
+Changed: `foundation/backups/BackupManifest.php` — `FORBIDDEN` rewritten component-aware (`(^|/)` anchors for exact names, extension and `storage`/`payment-master` rules at any depth); `tests/backups/run.php` — nested rejection cases (`includes/config.php`, `app/vars/.env`, `deploy/storage/keys`, `releases/v2/.installed.php`) plus retained collection-skip behavior.
+
+Verification and scope: `php tests/backups/run.php` — 37 checks on PHP 8.4.25; isolated manifest/restore-plan contract only. The deployed `site/includes/foundation/backups/BackupManifest.php` mirror carries the same pattern on the descendant runtime/drill/export branches. Next: descendant branches consume via merge; Codex owns integration. No deployment, provider call, merge or release.
