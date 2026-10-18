@@ -22,6 +22,7 @@ function provider_services_portal_render(): never {
         echo '<p>Your services will appear here once the studio enables hosting inventory.</p></div></section>';site_foot(false);exit;
     }
     if(function_exists('provider_mailbox_client_navigation')&&!support_current()&&provider_mailbox_client_navigation((int)$client['id']))echo '<a class="btn outline" href="'.esc(studio_url(['hosting_mail'=>1])).'">Hosting mailboxes</a>';
+    if(!support_current()&&!array_key_exists('support',$_GET)&&!array_key_exists('contact_id',$_SESSION)&&!array_key_exists('contact_auth',$_SESSION))echo '<a class="btn outline" href="'.esc(studio_url(['cloud_websites'=>1])).'">Cloud website requests</a>';
     if(!support_current())echo '<a class="btn outline" href="'.esc(studio_url(['domain_expiry'=>1])).'">Expiry observations</a> <a class="btn outline" href="'.esc(studio_url(['domain_dates'=>1])).'">Renewal dates</a> <a class="btn outline" href="'.esc(studio_url(['domain_renewals'=>1])).'">Domain renewal requests</a><a class="btn outline" href="'.esc(studio_url(['service_history'=>1])).'">Service history</a><a class="btn outline" href="'.esc(studio_url(['forwarding'=>1])).'">Email forwarding requests</a>';
     $services=provider_inventory_client_services((int)$client['id']);
     $domains=provider_inventory_client_domains((int)$client['id']);

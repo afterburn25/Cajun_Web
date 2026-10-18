@@ -23,6 +23,8 @@ if(array_key_exists('document_roots',$_GET))header('Cache-Control: no-store, pri
 if(array_key_exists('php_version',$_GET))header('Cache-Control: no-store, private');
 if(array_key_exists('service_history',$_GET))header('Cache-Control: no-store, private');
 require_once CWP_CODE_ROOT.'/portal/controllers/forwarding.php';
+require_once CWP_CODE_ROOT.'/portal/controllers/cloud_site_requests.php';
+if(array_key_exists('cloud_websites',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'cloud_website_request_')))header('Cache-Control: no-store, private');
 if(array_key_exists('forwarding',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'forwarding_')))header('Cache-Control: no-store, private');
 if(array_key_exists('domain_renewals',$_GET)||(is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'domain_renewal_')))header('Cache-Control: no-store, private');
 if(array_key_exists('hosting_mail',$_GET)||($_POST['action']??null)==='client_mailbox_create')header('Cache-Control: no-store, private');
@@ -60,6 +62,7 @@ if(array_key_exists('force_ssl',$_GET))provider_force_ssl_client_render($client)
 if(array_key_exists('directory_indexing',$_GET))provider_directory_indexing_client_render($client);
 if(array_key_exists('wp_installed',$_GET))provider_wp_installed_client_render($client);
 if(array_key_exists('forwarding',$_GET))provider_forwarding_client_render($client,$error);
+if(array_key_exists('cloud_websites',$_GET))provider_cloud_site_requests_client_render($client,$error);
 if(array_key_exists('recurring',$_GET))recurring_billing_portal_render($client,$error);
 if(array_key_exists('agreements',$_GET) || array_key_exists('agreement',$_GET))service_plans_portal_render($client,$error);
 if($jobId){try{$job=studio_job($jobId,(int)$client['id']);}catch(InvalidArgumentException){if(support_current())support_record('portal.view','project',(string)$jobId,'denied');fail_page('Project not found or access denied.',404);}}

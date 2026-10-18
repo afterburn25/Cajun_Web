@@ -3,6 +3,7 @@ declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 $record=provider_settings_profile();$profileId=$record['id']??'';
 $values=$record??['label'=>'Studio 20i','revision'=>0,'enabled'=>0];$revision=(int)$values['revision'];
+provider_cloud_site_request_confirmation_render();
 if(($_POST['action']??'')==='provider_settings_save'&&($_POST['profile_id']??'')===$profileId){
     if(is_string($_POST['label']??null))$values['label']=substr($_POST['label'],0,632);
     $values['enabled']=($_POST['enabled']??'')==='1';
@@ -162,6 +163,7 @@ if($observedDomains||$domainLinks): ?><h3>Observed domains</h3>
 <?php provider_directory_indexing_controls_admin_render(); ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_package_wordpress_installed.php'; ?>
 <?php require CWP_CODE_ROOT.'/admin/views/provider_forwarding.php'; ?>
+<?php provider_cloud_site_requests_admin_render(); ?>
 
 <?php provider_stackcp_admin_render(); ?>
 <?php provider_stackcp_access_admin_render(); ?>

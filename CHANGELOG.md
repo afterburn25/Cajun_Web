@@ -1,3 +1,9 @@
+## 2026-10-18 — client cloud website journey
+
+From main `e397d9a6e293850e8dff61a593e3ba39ee178400`, branch `codex/twentyi-client-cloud-websites` implements primary-client request/cancel, owner decline/explicit creation, retained outcomes and exact returned-package confirmation navigation. Client dispatch and the existing shared grant commit atomically; replay never sends again. The current intake requires a complete cloud observation within15 minutes. [Behavior, authority, evidence and remaining gates](docs/TWENTYI_CLIENT_CLOUD_WEBSITES.md).
+
+Local evidence:141 document and98 modeled UI checks per PHP mode; four actual module cold loads;34 legacy-context checks per mode;271 final artifact-helper checks;35 portable installed-update guards;19 actual published-baseline negative checks. Original1.24 and1.25 ZIP bytes validate against their retained member inventories, with all27 earlier release maps unchanged. Independent service, browser, installed-update and shared-wiring review is recorded in the feature guide. Native SQL/concurrency, packaged browser pixels, installed Linux/Apache execution and full combined acceptance remain pending. No live operation, new release or deployment; published1.25 and all separate original CI handles remain unchanged.
+
 ## Unreleased — reduce unrelated pull-request test runs
 
 Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.

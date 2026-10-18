@@ -326,6 +326,11 @@ jobs:
           "$PHP_BINARY" tests/provider_inventory_native.php
           "$PHP_BINARY" tests/provider_cloud_sites_native.php
           "$PHP_BINARY" tests/provider_cloud_confirmation_native.php
+          "$PHP_BINARY" tests/twentyi-cloud-site-requests/documents.php > qa/cloud-site-requests-document-default.json
+          "$PHP_BINARY" -n tests/twentyi-cloud-site-requests/documents.php > qa/cloud-site-requests-document-minimal.json
+          "$PHP_BINARY" tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-default.json
+          "$PHP_BINARY" -n tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-minimal.json
+          CWP_TEST_CLOUD_SITE_REQUESTS=1 "$PHP_BINARY" tests/provider_cloud_site_requests_native.php
           "$PHP_BINARY" tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json
           "$PHP_BINARY" -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json
           "$PHP_BINARY" tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json
@@ -701,6 +706,8 @@ jobs:
           .ci-venv/bin/python tests/release_125_upgrade_guards.py qa/apache-release125-guards-results.json
           .ci-venv/bin/python tests/release_125_upgrade_input_guards.py --report qa/apache-release125-input-guards-results.json
           .ci-venv/bin/python tests/release_125_upgrade_acceptance.py
+          .ci-venv/bin/python -B tests/provider_cloud_site_requests_upgrade_test.py --report qa/apache-cloud-site-requests-upgrade-guards-results.json
+          .ci-venv/bin/python -B tests/provider_cloud_site_requests_upgrade.py
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation
