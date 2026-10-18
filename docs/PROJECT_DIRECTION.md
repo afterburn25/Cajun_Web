@@ -1,3 +1,13 @@
+## Published scope checkpoint — 2026-10-18
+
+The bounded increment and owner additions are included in verified 1.25.0 source `b79c67110829126916e3a65e616191542448bccc`; [publication/evidence](RELEASE_1.25.0_PUBLICATION.md). Complete candidate/main and publication/download gates have passed. All HOLD capabilities and live-operation limits remain unchanged.
+
+Earlier dated candidate and branch checkpoints below retain their original evidence and failures. Their pending-work statements do not supersede this publication record.
+
+## Owner additions — 2026-10-17
+
+The owner explicitly added installer corrections, reorganized collapsible admin navigation, public Hosting / Web Design / Products links, and admin import of 20i products with images. These bounded requests supersede the earlier release freeze only for this work. Installer correction is committed as `345b335e`; this branch adds the [reviewed navigation increment](NAVIGATION_1.25.0.md). Root coordinates shared seams and normal integration; the [product-import lane](TWENTYI_PRODUCT_IMPORT.md) has a reviewed hosting-draft and local-image subset; native acceptance and complete catalog coverage remain pending. All other held capabilities and the complete candidate/main/publication gates remain in force. No live deployment is authorized.
+
 # Project direction
 
 Recorded: 2026-10-12. This document captures accepted owner requirements, not a claim all features are implemented.
@@ -70,3 +80,8 @@ Build our own WHMCS from scratch: CajunWebPro owns its storefront, customer/staf
 The client portal must be the home for every purchased service and web-design project: verified native 20i controls, project stages and dated updates, previews/approvals, support, payments and versioned website ZIP downloads with needed authorized content/database exports. Customers need a notification center and genuine progress/service observations. Keep admin email private. [Client portal roadmap](CLIENT_PORTAL_ROADMAP.md) defines capability coverage and release acceptance; StackCP handoffs are identified bridges, not completed native controls.
 
 The owner and explicitly authorized support staff also need one-click access to a selected client's portal and an Open SSH action for their eligible VPS. Preserve staff attribution, visible support-session context and audit without requesting client passwords. VPS terminal access requires separately verified permissions, server authentication and a working supported transport; a portal login alone is not SSH. Implement A-09/A-10 with the client-data boundaries and shared-host-compatible deployment specified in the client-portal roadmap.
+
+
+## 2026-10-15 clarification — licensing sold software products
+
+The owner is assigning Devin licensing for software products offered by CajunWebPro, including generation of licenses for installing other products. Existing licensing development remains preserved; Codex's active20i work stays separate. The requirement does not replace CajunWebPro's one-page keyless installer. [Ownership and shared integration boundaries](AGENT_COORDINATION.md).
