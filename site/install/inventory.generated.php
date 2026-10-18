@@ -161,6 +161,7 @@ function setup_expected_files(): array { return [
     'app/hosting/catalog_offers_context.php'=>'179354247cacc3533e9896d0ed238b0c3af97d8291ebc692dad7bb92064de3ea',
     'app/hosting/catalog_offers_document.php'=>'16cea1c9d51665e9f4e586e19c84d6c3f107fa6f520dd9fc75d9d78d8a3a2250',
     'app/hosting/catalog_offers_storage.php'=>'83608b3e907b70f269e0c2a3070644a04877d1d42decb749f0cee9afe8892f41',
+    'app/hosting/catalog_recovery.php'=>'bc98280a62deba07b62d5081146139fb610c4d26a90a426969e8e9a2d965b870',
     'app/hosting/fulfillment.php'=>'c2fd98af65798b5b3fa505857b1a4480fd0ebec2e3cf9fd0b59e5f3258817f20',
     'app/hosting/fulfillment_confirmation.php'=>'618ccdc0db47f30b94c8a9e9c4eaae375f9597f3c08d9d8a534d1d1a8b2e5270',
     'app/hosting/fulfillment_views.php'=>'7ae613f7b9856e90db1635d521bf013c62db4d6e995237e7a7a04c2c09f91adf',

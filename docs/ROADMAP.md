@@ -2,6 +2,8 @@
 
 The separate `codex/twentyi-hosting-commerce` branch connects imported shared-hosting products to existing service agreements through owner/public/client screens under development. [Scope and remaining acceptance](TWENTYI_HOSTING_OFFERS.md). Document and isolated existing-agreement SQL checks pass; combined hosting SQL, public/admin/client browser behavior and the complete payment/order/fulfillment path remain unaccepted. Cloud catalog and provider image contracts remain unresolved. The 1.26 release candidate stays separate.
 
+The successor also guards owner file recovery against published or inconsistent hosting history. Modeled regression passes; real SQL/filesystem and staged HTTP acceptance remains pending. See [recovery scope](TWENTYI_HOSTING_OFFERS.md#file-recovery).
+
 ## Current increment —direct hosting catalog
 
 The direct hosting catalog import passes its focused four-way database matrix. Browser and1.26 release/upgrade acceptance remain pending; see [scope](RELEASE_SCOPE_1.26.0.md). Complete20i, cloud catalog, provider prices/images and hosting publication remain unfinished.

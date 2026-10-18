@@ -1,3 +1,7 @@
+## 2026-10-18 — retain published hosting history during recovery
+
+All currently recognized older release inventories lack hosting-publication image retention. The successor staged owner updater therefore refuses automatic file recovery once any immutable publication exists, even after withdrawal, and refuses damaged or unknown hosting storage. It holds the existing staff mutex across fresh owner/history validation and the entire generic rollback, with no inherited database transaction. Absent or validated prepared-empty history can use existing recovery. No compatibility is inferred from a future version number. Historical staged updaters and manual file replacement cannot be retroactively guarded; operators needing recovery must use a matching files/database/private-storage backup. [Feature scope](TWENTYI_HOSTING_OFFERS.md#file-recovery).
+
 ## 2026-10-18 — use existing service agreements for imported hosting offers
 
 Imported hosting drafts retain generic catalog publication/invoice refusals. A separate, explicit owner publication binds the exact draft, active retail plan, provider mapping and observed hosting type. A client request preserves those terms and an owner converts it to one existing service agreement atomically with its request link. Existing consent, invoice, payment, order and provisioning gates remain authoritative. Historical images stay retained after replacement. No browser, payment or provider acceptance follows from the backend implementation alone. See [scope](TWENTYI_HOSTING_OFFERS.md).

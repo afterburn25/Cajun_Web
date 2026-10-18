@@ -1,3 +1,9 @@
+## 2026-10-18 — hosting recovery safeguard checkpoint
+
+Parent `28351f7132b821d4f98a50580ed0e76a34481c7d`, branch `codex/twentyi-hosting-commerce`: `site/app/hosting/catalog_recovery.php` now wraps only the owner updater's recovery call. The generic filesystem engine and its original fixtures remain unchanged. The wrapper rejects inherited transactions, reloads current owner settings/account/password under the staff mutex, validates real hosting history and the exact table namespace, and holds that mutex through permitted file recovery. Existing updater locking, CSRF, password, backup confirmation and rate bookkeeping remain.
+
+Default/minimal PHP each pass 142 modeled checks. This is not actual SQL, filesystem-journal, concurrent-connection or HTTP acceptance. Catalog is preparing a separate isolated native worker with phase calls from the original 88-case fixture; it must never restore files in repository `site/`. Next: review and integrate that fixture, finish local inventory/docs checks, preserve the original focused runs and review their actual artifacts. [Issue #217](https://github.com/afterburn25/Cajun_Web/issues/217) and [feature guide](docs/TWENTYI_HOSTING_OFFERS.md#file-recovery) track the remaining release gates and old-updater limitation. The four corrected 1.26 full runs remain separate and were queued at the last 05:53 UTC observation.
+
 ## 2026-10-18 — finish hosting offer UI acceptance
 
 Continue on `codex/twentyi-hosting-commerce`, parent backend `47fc69f6f8e016f29ee7a19f8d10b150ec2489fb`. Owner/public/client modules and shared routing are connected for development. Review links must use `product_id`; failed forms retain the original request/publication/decision identities and hashes. Owners handle publication and conversion; clients can request a plan or withdraw their own pending request. Existing agreements retain consent, activation, invoicing and provisioning authority. [Current scope](docs/TWENTYI_HOSTING_OFFERS.md).

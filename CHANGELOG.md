@@ -1,3 +1,7 @@
+## 2026-10-18 — hosting successor recovery protection
+
+Guard staged owner file recovery with fresh owner authentication and retained hosting history under the same mutex as publication. Empty, validated history remains eligible; publications, partial/unknown storage and inherited transactions refuse before recovery changes files or the journal. Keep the generic recovery engine intact. Add 142 modeled regression checks per PHP mode; real SQL/HTTP acceptance remains pending. [Behavior and limits](docs/TWENTYI_HOSTING_OFFERS.md#file-recovery).
+
 ## Unreleased successor — hosting offer screens
 
 Add owner offer review/publication and client request handling under Hosting & Domains, public hosting cards with local artwork, and client request history with agreement/project links. Preserve failed submissions, current permissions, support restrictions and explicit confirmation. Correct the product review link to select its imported draft. Runtime/browser acceptance remains pending; these changes are outside the 1.26 release candidate.

@@ -1,3 +1,9 @@
+## 2026-10-18 — protect hosting history during file recovery
+
+The hosting-commerce successor now guards the staged owner updater before restoring files. It rechecks current owner access under the shared account/publication lock and permits absent or validated empty hosting history. Any publication, including a withdrawn offer, or incomplete/unrecognized history blocks automatic file recovery. Historical updater copies and manual file replacement remain outside this safeguard. [Recovery behavior and limits](docs/TWENTYI_HOSTING_OFFERS.md#file-recovery).
+
+The 142-case regression passes in normal and minimal PHP with modeled database and recovery seams; actual Linux SQL, concurrent recovery and staged HTTP acceptance remain pending. Tracking [issue #217](https://github.com/afterburn25/Cajun_Web/issues/217) retains that distinction. This successor is separate from the unchanged 1.26 candidate and published 1.25 release.
+
 ## 2026-10-18 — hosting offer screens in development
 
 The separate `codex/twentyi-hosting-commerce` branch now connects owner publication/review, public hosting cards and authenticated client requests to the backend committed at `47fc69f6`. These screens are development work awaiting Linux database and packaged browser acceptance. [Feature scope and verification](docs/TWENTYI_HOSTING_OFFERS.md). The focused workflow now also contains an isolated packaged PHP 8.3/MariaDB HTTP and Chromium job covering image upload, publication, client requests, owner decisions and existing agreement consent. Its ten desktop/mobile captures still require actual pixel review. All runtime results remain pending. The original four-environment run [39098575981](https://github.com/afterburn25/Cajun_Web/actions/runs/39098575981) remains preserved.

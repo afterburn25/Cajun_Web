@@ -26,6 +26,16 @@ Schema/setup, maintenance, controllers, CSRF routing, public/admin/client screen
 
 Each returned page contains at most 20 records. Public pages now perform one fresh hosting-history validation per call through private read composition, removing a duplicate scan without caching authority. Integrity validation still examines retained history and is not constant-time pagination. The native fixture observes executed statements and tests fresh calls after damaged history, changed credentials and revoked reviewers; those added assertions still await Linux execution. Full SQL, query-cost and browser acceptance remain pending. Do not mark ordering complete from component tests or source review.
 
+## File recovery
+
+The successor's staged **Recover original files** action remains available when hosting history is completely absent or validated and empty. Once an offer has been published, automatic file recovery is blocked, including after withdrawal. Older files do not protect images referenced only by retained offer history. Incomplete, inconsistent or unrecognized hosting storage also blocks recovery.
+
+The updater rechecks current owner access and password after acquiring the same mutex used by publication. It holds that mutex through the entire file recovery and rejects an inherited database transaction so an older database snapshot cannot hide a publication. The adapter makes read-only database queries and does not prepare, erase or repair hosting history. The original filesystem engine still handles interruption and recovery errors; this guard does not make filesystem changes atomic. Existing login/rate and update-lock bookkeeping precedes the guard.
+
+Keep this successor's exact staged updater. Previously downloaded updater copies and manual file replacement do not contain this protection. If recovery is necessary after publication, restore a matching backup of website files, database and configured private storage through the hosting provider. A future compatible rollback target requires a separately verified contract.
+
+The current regression executes exact adapter/readiness/mutex function bodies against modeled SQL, authentication and recovery seams: 142 checks pass in each normal and minimal PHP mode. Actual database, interrupted-filesystem, concurrent-connection and authenticated staged HTTP cases remain required before release.
+
 ## Verification and next work
 
 The pure document suite passes 119 named checks in normal and minimal PHP 8.4.25 against the successor tree. PHP syntax and whitespace checks pass for the current new modules and extracted writer. Independent source review verified the original agreement writer body and examined publication/request replay and conversion boundaries. None of this establishes native SQL, HTTP, provider, payment or release acceptance.
