@@ -194,7 +194,7 @@ def run_browser(env,browser):
     r=submit(owner,jobAdmin,'studio_publish',{'kind':'proposal','title':'Boundary proposal','body':'Pending proposal outside the display window'})
     old_vid=db("SELECT id FROM ci_studio_versions WHERE job_id=1 AND kind='proposal' ORDER BY id DESC LIMIT 1")[0]['id']
     for n in range(101):
-        db("INSERT INTO ci_studio_versions (job_id,kind,version_no,title,body,decision,created_at) VALUES (1,'design',?,?,?,'approved',NOW())",[900+n,'Window filler '+str(n),'filler'])
+        db("INSERT INTO ci_studio_versions (job_id,kind,version_no,title,body,feedback,decision,created_at) VALUES (1,'design',?,?,?,'','approved',NOW())",[900+n,'Window filler '+str(n),'filler'])
     r=contact.get(portal+'?job=1')
     link=[a.get('href') for a in soup(r).select('a[href]') if 'focus_review='+str(old_vid) in (a.get('href') or '')]
     check('Pending review outside the 100-row window is still offered',len(link)==1)
@@ -203,7 +203,7 @@ def run_browser(env,browser):
     check('Action link reaches the exact pending decision form',article is not None and article.select_one('form [name=action][value=decision]') is not None)
     db("INSERT INTO ci_studio_jobs (client_id,title,summary,milestones,created_at,updated_at) VALUES (?,?,?,?,NOW(),NOW())",[cid,'Other job','s','m'])
     other_job=db('SELECT MAX(id) m FROM ci_studio_jobs')[0]['m']
-    db("INSERT INTO ci_studio_versions (job_id,kind,version_no,title,body,decision,created_at) VALUES (?,?,?,?,?,'pending',NOW())",[other_job,'proposal',1,'Other job review','other'])
+    db("INSERT INTO ci_studio_versions (job_id,kind,version_no,title,body,feedback,decision,created_at) VALUES (?,?,?,?,?,'','pending',NOW())",[other_job,'proposal',1,'Other job review','other'])
     other_vid=db('SELECT MAX(id) m FROM ci_studio_versions')[0]['m']
     r=contact.get(portal+'?job=1&focus_review='+str(other_vid))
     check('focus_review cannot pull another job review into this project',soup(r).select_one('#review-'+str(other_vid)) is None)
