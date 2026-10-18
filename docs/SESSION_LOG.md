@@ -2315,7 +2315,6 @@ Follow-up reviews produced three more work items; all corrected and pushed:
   controls cover another job's review and superseded pending rows.
 
 CI is re-running on all three heads at this writing.
-<<<<<<< HEAD
 ## Review corrections, 2026-10-17 (round 3 status)
 
 - #212 `5e1e043d`: component matrix green 41/41 (native-and-browser runs post-retarget per stacked-chain convention; the boundary regression itself is verified code-reviewed and will exercise then).
@@ -2658,7 +2657,6 @@ Owner reviews on #210 and #211 plus follow-throughs on #212/#213:
 - PR #159 closed with verification comment 6245264465; branch retained
   for history. Source inspection only — no runtime test, merge or
   release action.
-<<<<<<< HEAD
 
 ## 2026-10-18 — Devin mass restack: all 51 non-20i PRs mergeable
 
@@ -2704,7 +2702,6 @@ claimed.
 
 Next: Codex retargets stacked PRs as parents integrate; combined
 acceptance runs after retarget, not from branch state alone.
-=======
 
 Continued complete20i objective fromf86c745c/PR139. Normal merge preserves main16f07e49 including licensing/domain controls. Both session histories retained; incoming handoff archived. Source inspection and actual temporary-table MariaDB reproduction showed invalid replacement/database failure disabled the original licensed domain. Added a transaction with original-row lock and rollback, plus caller-transaction refusal. Local4 corrected cases and35 named merged native licensing checks pass (isolated fixture prefix/config only; actual app functions). Added persistent CI native report; no Website_Core execution. All merged/changed PHP/Python syntax and installer refresh pass. Current combined Linux/browser/recovery/review acceptance remains pending.
 
@@ -3946,4 +3943,32 @@ Starting at `bf788894b1acd4c07daf74e718c4f95774acef85` on `ops/twentyi-cloud-roo
 This documentation-only commit updates status, handoff, changelog and diagnostic interpretation. The next implementation is direct hosting catalog import, with documented same-type identity and preserved inventory-origin drafts. The current source does not implement that follow-through, import cloud products or fetch provider images. Enclosing commit: `docs: record cloud catalog null response`; no diagnostic code or trigger paths change.
 
 Actual root documentation checks passed 12 required documents,271 Markdown files and1,851 local links, including30 heading links; whitespace passed. Source and application tests were not rerun for this outcome record.
->>>>>>> origin/devin/non20i-portal-account
+
+## 2026-10-18 — LF inventory regeneration across non-20i heads
+
+Request: continue without stopping after the mass restack. Diagnosis of
+run failures on restacked heads found installer inventory hashes recorded
+over CRLF worktree bytes (ad-hoc Python text-mode writes during conflict
+resolution) while `.gitattributes eol=lf` commits LF content — verified by
+matching a recorded hash to the CRLF variant of
+`portal/views/workspace.php` (`c3b8bd4c…`).
+
+Actions: regenerated `site/install/inventory.generated.php` over
+LF-normalized bytes and updated `tools/acceptance-contract.json` pins
+(`unchanged_test_sha256`, `native_commands`) where each branch's own
+sources legitimately changed pinned test files — the contract diff keeps
+the change reviewable. Fixed 43 heads; 14 already clean; 6 old
+`devin/twentyi-*` heads predate the contract and needed nothing. Then
+merged each fixed parent head into its stacked child (32 merges),
+regenerating inventory/contract per child so every stacked pair stays
+mergeable. One latent docs defect also repaired: four literal merge
+marker lines committed in `docs/SESSION_LOG.md` (lines 2318/2661/2707/
+3949) — removed, preserving all genuine entries on both sides.
+
+Representative new heads: client-contacts `b4459a45`, portal-account
+`7f1a2c81`, mail-html-compose `6d02642c`, stage-history `fb8b67cf`,
+recurring-billing `7eea8733`, ticket-notifications `4d18132e`. Full local
+build gates pass on merged heads (locked packages, receiving/submission
+mirrors byte-for-byte, PHPMailer pins, generated installer checks). CI
+lanes re-queued on all touched heads; results pending. No merge,
+deployment, provider action or release claimed.
