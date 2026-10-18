@@ -2,8 +2,9 @@ name: Service-plan storage and client agreement checks
 on:
   push:
     branches: [main, codex/service-plan-records, codex/service-plan-screens]
-    paths: ['site/admin/controllers/plans.php', 'site/admin/views/plans.php', 'site/portal/controllers/**', 'site/portal/views/plans.php', 'site/includes/layout/plans.php', 'site/app/plans/**', 'site/database/**', 'site/app/staff/**', 'site/app/clients/**', 'site/includes/auth/**', 'foundation/service-plans/**', 'site/includes/foundation/service-plans/**', 'tests/service_plans_native.php', '.github/workflows/service-plan-records.yml']
+    paths: ['site/admin/controllers/plans.php', 'site/admin/views/plans.php', 'site/portal/controllers/**', 'site/portal/views/plans.php', 'site/includes/layout/plans.php', 'site/app/plans/**', 'site/database/**', 'site/app/staff/**', 'site/app/clients/**', 'site/includes/auth/**', 'foundation/service-plans/**', 'site/includes/foundation/service-plans/**', 'tests/service_plans_native.php', '.github/workflows/service-plan-records.yml', 'site/app/**', 'site/includes/**', 'site/config/**', 'foundation/**', 'tests/invitations/**']
   pull_request:
+    paths: ['site/admin/controllers/plans.php', 'site/admin/views/plans.php', 'site/portal/controllers/**', 'site/portal/views/plans.php', 'site/includes/layout/plans.php', 'site/app/plans/**', 'site/database/**', 'site/app/staff/**', 'site/app/clients/**', 'site/includes/auth/**', 'foundation/service-plans/**', 'site/includes/foundation/service-plans/**', 'tests/service_plans_native.php', '.github/workflows/service-plan-records.yml', 'site/app/**', 'site/includes/**', 'site/config/**', 'foundation/**', 'tests/invitations/**']
   workflow_dispatch:
 permissions:
   contents: read
