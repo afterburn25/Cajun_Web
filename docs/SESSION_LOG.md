@@ -2096,3 +2096,28 @@ Owner reviews on #210 and #211 plus follow-throughs on #212/#213:
 - Propagated: activity-prefs `ef020125` → client-actions `b8a4c369` →
   portal-account `4ce1cf6a`. Acceptance dispatched on `4ce1cf6a`
   (run 39086508010).
+
+## 2026-10-18 — Session-loss ordering collision in the milestone-revision block
+
+- Run 39086508010 (`4ce1cf6a`) passed staff_cases end-to-end and every
+  activity_cases check through idx 768, then died on
+  `IndexError('list index out of range')` — the new milestone-revision
+  block at activity_cases.py:123-128. The checkpoint artifact plus
+  http-server.log show the milestone create POST returned 303 (the row
+  exists), then alice's `GET ?activity=1` returned 403, emptying the
+  `mkey` comprehension at line 127.
+- Root cause: the preceding check (`Client deactivation removes count
+  and exact navigation`, line 111) flips `ci_studio_clients.active` to
+  0, makes two requests, then restores `active=1`. `studio_client()`
+  (site/app/clients/identity.php:9) finds no active row on those
+  requests and unsets `$_SESSION['client_id']` — restoring the row does
+  not restore the session, so the milestone block ran on an anonymous
+  session and the feed 403'd. The contact-side block in
+  contacts_cases.py is unaffected (no deactivation precedes it).
+- Fix `2774c60d` on `devin/non20i-milestones`: alice signs in again
+  through the real portal login before the revision block — matching
+  the suite's own login pattern — instead of skipping the deactivation
+  check or weakening its assertions.
+- Propagated clean: activity-prefs `275fade9` → client-actions
+  `9f243f97` → portal-account `d3fdafaf`. Acceptance dispatched on
+  `d3fdafaf` (run 39088084804).
