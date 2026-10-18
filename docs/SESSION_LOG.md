@@ -3972,3 +3972,21 @@ build gates pass on merged heads (locked packages, receiving/submission
 mirrors byte-for-byte, PHPMailer pins, generated installer checks). CI
 lanes re-queued on all touched heads; results pending. No merge,
 deployment, provider action or release claimed.
+
+## 2026-10-18 — approve ops/ area in full-project archive gate
+
+Follow-up diagnosis: after the LF inventory fix, a deeper build step
+(`tools/build.py --commit`) reported `Unapproved full-project area:
+ops/...` — Codex merged the `ops/` diagnostic trees to main
+(`bf788894`, `1159648f`) but `build.py`'s `allowed` area set predates
+it. Codex's own `codex/twentyi-direct-hosting-catalog` head carries
+the identical fix (`'ops'` appended to `allowed`). Applied the same
+one-word change on all 51 non-20i heads and merged each new parent
+head into its stacked child (32 clean merges — identical change on
+both sides auto-resolved). Verified `tools/build.py --commit` now
+assembles all three archives end-to-end on the deepest merged head
+(portal-account `10b39ca5`: 5,955 full-project files, 2,899 shipping
+files, 2,886 update files). All `devin/non20i-*` PRs report MERGEABLE;
+remaining CONFLICTING PRs are Codex-owned. CI re-queued on every
+touched head; results pending. No merge, deployment, provider action
+or release claimed.
