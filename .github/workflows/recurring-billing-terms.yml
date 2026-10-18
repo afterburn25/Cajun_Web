@@ -1,0 +1,45 @@
+name: Recurring invoice terms checks
+on:
+  push:
+    branches: [main, codex/recurring-billing-terms, codex/twentyi-recurring-eligibility]
+    paths: ['foundation/recurring-billing/**', 'tests/recurring-billing/**', 'foundation/billing-calendar/**', '.github/workflows/recurring-billing-terms.yml']
+  pull_request:
+    paths: ['foundation/recurring-billing/**', 'tests/recurring-billing/**', 'foundation/billing-calendar/**', '.github/workflows/recurring-billing-terms.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: recurring-billing-terms-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  terms:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Exact terms and periods in isolated official PHP
+        run: |
+          mkdir -p qa
+          docker run --rm --network none --user "$(id -u):$(id -g)" -v "$PWD:/workspace:ro" -v "$PWD/qa:/workspace/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            php -l foundation/recurring-billing/RecurringBillingTerms.php
+            php -l tests/recurring-billing/terms.php
+            php tests/recurring-billing/terms.php > qa/recurring-billing-terms-default.json
+            php -n tests/recurring-billing/terms.php > qa/recurring-billing-terms-no-ini.json
+          '
+      - name: Preserve named evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: recurring-billing-terms-${{ matrix.php }}-${{ github.sha }}
+          path: qa/recurring-billing-terms-*.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record scope
+        if: always()
+        run: echo 'Pure immutable recurring invoice terms and period facts. No source-authority validation, consent, database, issued invoice, scheduler, merchant or provider acceptance.' >> "$GITHUB_STEP_SUMMARY"
