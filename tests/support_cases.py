@@ -15,7 +15,7 @@ def run_upgrade():
     tables=['users','settings','staff_profiles','staff_invitations','studio_clients','studio_jobs','leads','projects']
     before={t:db('SELECT * FROM supportup_'+t) for t in tables}
     with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(dest)
-    from structure_helpers import apply_file_update
+    from structure_helpers import apply_file_update, removed_setup_unavailable
     apply_file_update(globals(),dest)
     check('Actual 1.2.0 update preserves configuration locks private media and unrelated files',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();root=BASE+'/support-upgrade/admin/index.php'
@@ -32,7 +32,7 @@ def run_upgrade():
     users=db('SELECT * FROM supportup_users')
     check('Actual 1.2.0 retains passwords and auth versions',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(users,before['users'])))
     check('Actual 1.2.0 has no implicit client support grants',not db('SELECT * FROM supportup_support_clients'))
-    check('Actual 1.2.0 installed guard still blocks fresh setup',requests.get(BASE+'/support-upgrade/install.php').status_code==404)
+    check('Actual 1.2.0 installed guard still blocks fresh setup',removed_setup_unavailable(globals(),dest,up))
 
 def start(session,client):
     r=chosen_form(session,ADMIN+'?view=support','support_start','client_id',client,{})

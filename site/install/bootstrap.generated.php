@@ -4,7 +4,7 @@ if (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); ex
 // GENERATED from canonical bootstrap modules by tools/build.py.
 
 // config/defaults.php
-const CWP_VERSION = '1.24.0';
+const CWP_VERSION = '1.25.0';
 const CWP_GUARD = "<?php http_response_code(404); exit; ?>\n";
 
 // includes/security/input.php
@@ -17,6 +17,12 @@ function safe_url(string $url, bool $httpsOnly=false): string { if($url==='') re
 function slugify(string $text): string { return trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($text)) ?? '', '-'); }
 
 function validate_password(string $password): void { if(str_contains($password,"\0") || strlen($password)<14 || strlen($password)>72) throw new InvalidArgumentException('Use a password between 14 and 72 bytes. A long, unique passphrase works well.'); }
+
+function validate_admin_password(string $password): void {
+    $characters=preg_match_all('/./us',$password);
+    if(str_contains($password,"\0") || $characters===false || $characters<12 || strlen($password)>72)
+        throw new InvalidArgumentException('Use an administrator password with at least 12 characters and no more than 72 bytes. A long, unique passphrase works well.');
+}
 
 function format_date(?string $date): string { return $date ? gmdate('M j, Y',strtotime($date)) : '—'; }
 
@@ -276,7 +282,13 @@ function upload_image(string $field='image'): ?string {
 // includes/runtime.php
 function boot(bool $session=true): void {
     security_headers();
-    if(!is_file(CWP_ROOT . '/config.php')) { if(is_file(CWP_ROOT . '/install.php')) { header('Location: ' . base_path() . '/install.php',true,302); exit; } fail_page('Installation is not complete. Upload the installer from your original package.'); }
+    if(!is_file(CWP_ROOT . '/config.php')) {
+        foreach(['config.php','.installed.php','storage/install.lock.php'] as $guard) {
+            if(@lstat(CWP_ROOT.'/'.$guard)!==false)fail_page('An existing installation was found, but its configuration is missing or unreadable. Restore the original config.php from your backup to retain the database connection, encryption key and private-storage location. Uploading website files does not require reinstalling.');
+        }
+        if(is_file(CWP_ROOT . '/install.php')) { header('Location: ' . base_path() . '/install.php',true,302); exit; }
+        fail_page('Installation is not complete. Upload the installer from your original package.');
+    }
     $c=require CWP_ROOT . '/config.php'; if(!is_array($c) || !isset($c['db'],$c['key'],$c['site_url'])) fail_page('Configuration needs attention. Contact the site owner.'); $GLOBALS['cwp_config']=$c;
     if(!https_request() && !local_request()) { header('Location: ' . site_url(ltrim(substr((string)($_SERVER['SCRIPT_NAME'] ?? '/index.php'),strlen(base_path())),'/')) . (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] !== '' ? '?' . str_replace(["\r","\n"], '', $_SERVER['QUERY_STRING']) : ''), true, 307); exit; }
     if($session) start_session();
