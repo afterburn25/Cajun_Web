@@ -467,7 +467,7 @@
       "tests/release_125_upgrade_acceptance.py": "516d2bbea414eded95171d885004c320eb9e25a5ebd5736837731c144e8ce8ad",
       "tests/release_125_upgrade_cases.py": "f5673e293b74d1809a6500e819908c00e513b5827f5766d15411440e4db2ee56",
       "tests/release_125_upgrade_guards.py": "663fd253d77613fa8614a622dbe0671f58f9ddd892b8efc3a6619e9cd8a99336",
-      "tests/release_125_upgrade_input_guards.py": "4ab56e4449a55fabbb9574d493bdf1bea8de03b56b1f0d8257c95a662cc37d99"
+      "tests/release_125_upgrade_input_guards.py": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985"
     },
     "scope": "Actual published original and synthetic business records; later agreement/recurring/licensing families are created only after candidate upgrade; all prior acceptance remains required."
   },
@@ -555,5 +555,130 @@
       "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
     },
     "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."
+  },
+  "document_root_controls": {
+    "parent": "642fa02a00d2fe22c9c13a2f4c409aec1f059ca0",
+    "native_additions": [
+      "CWP_TEST_DOCUMENT_ROOT_CONTROLS=1 \"$PHP_BINARY\" tests/provider_document_root_controls_native.php",
+      "python3 -B tests/provider_document_root_controls_http_contract.py > qa/provider-document-root-controls-handler-results.json"
+    ],
+    "native_after": "\"$PHP_BINARY\" tests/provider_document_roots_native.php",
+    "browser_after": "        document_roots_browser(globals(),browser)\n",
+    "browser_hook": "        from provider_document_root_controls_cases import run_browser as document_root_controls_browser\n        document_root_controls_browser(globals(),browser)\n",
+    "source_extensions": {
+      "tests/browser_acceptance.py": {
+        "predecessor_sha256": "2c899d14afa3b0408167ffd3b03cb9817d28789c03b4c0a456e26afe1114ea2c",
+        "current_sha256": "2cbd4f2c94fc792b93a48e773e953513549e85041477121b35a5cfb761c524db",
+        "edits": [
+          {
+            "before": "        domain_expiry_browser(globals(),browser)\n        from provider_document_roots_cases import run_browser as document_roots_browser\n        document_roots_browser(globals(),browser)\n        from provider_package_force_ssl_cases import run_browser as package_force_ssl_browser\n        package_force_ssl_browser(globals(),browser)\n        from provider_directory_listing_cases import run_browser as directory_listing_browser\n",
+            "after": "        domain_expiry_browser(globals(),browser)\n        from provider_document_roots_cases import run_browser as document_roots_browser\n        document_roots_browser(globals(),browser)\n        from provider_document_root_controls_cases import run_browser as document_root_controls_browser\n        document_root_controls_browser(globals(),browser)\n        from provider_package_force_ssl_cases import run_browser as package_force_ssl_browser\n        package_force_ssl_browser(globals(),browser)\n        from provider_directory_listing_cases import run_browser as directory_listing_browser\n"
+          }
+        ]
+      },
+      "tests/provider_http_server.py": {
+        "predecessor_sha256": "d98da874c5f486c76d9d314bad3ef6551d6d94f841c3c0132736630e938031ee",
+        "current_sha256": "e17ae42b426ae48ff0a1e3bcd0f410c720c4d4841354c749d75be7b563d0503d",
+        "edits": [
+          {
+            "before": "                mailbox_path=re.fullmatch(r'/package/([1-9][0-9]*)/email/([a-z0-9.-]+)',self.path or '')\n                force_ssl_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/forceSSL',self.path or '')\n                directory_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/directoryIndexing',self.path or '')\n                renewal_write=self.path=='/reseller/*/renewDomain'\n                if not (renewal_write or force_ssl_write or directory_write or mailbox_path or re.fullmatch(r'(?:/reseller/[A-Za-z0-9_.*-]+/(addWeb|updatePackage|deleteWeb)|/cloud_server/[1-9][0-9]{0,17}/addWeb)',self.path or '')) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Content-Type')!='application/json' or self.headers.get('Accept')!='application/json':\n                    fixture.errors.append('Unexpected write request '+str(self.path))\n                try:payload=json.loads(raw)\n                except Exception:payload=None;fixture.errors.append('Unparseable write body')\n                if force_ssl_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected Force SSL boolean write body')\n                if directory_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected directory listing boolean write body')\n                fixture.posts.append({'path':self.path,'body':{'mailbox_local':payload.get('new',{}).get('mailbox',{}).get('local')} if mailbox_path and isinstance(payload,dict) else payload})\n                if renewal_write:\n                    valid=isinstance(payload,dict) and list(payload)==['name','years','renewPrivacy'] and isinstance(payload.get('name'),str) and re.fullmatch(r'[a-z0-9-]+(?:\\.[a-z0-9-]+)+',payload['name']) and type(payload.get('years')) is int and 1<=payload['years']<=10 and type(payload.get('renewPrivacy')) is bool\n",
+            "after": "                mailbox_path=re.fullmatch(r'/package/([1-9][0-9]*)/email/([a-z0-9.-]+)',self.path or '')\n                force_ssl_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/forceSSL',self.path or '')\n                directory_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/directoryIndexing',self.path or '')\n                document_root_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/updateDocRoot',self.path or '')\n                renewal_write=self.path=='/reseller/*/renewDomain'\n                if not (renewal_write or force_ssl_write or directory_write or document_root_write or mailbox_path or re.fullmatch(r'(?:/reseller/[A-Za-z0-9_.*-]+/(addWeb|updatePackage|deleteWeb)|/cloud_server/[1-9][0-9]{0,17}/addWeb)',self.path or '')) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Content-Type')!='application/json' or self.headers.get('Accept')!='application/json':\n                    fixture.errors.append('Unexpected write request '+str(self.path))\n                try:payload=json.loads(raw)\n                except Exception:payload=None;fixture.errors.append('Unparseable write body')\n                if force_ssl_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected Force SSL boolean write body')\n                if directory_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected directory listing boolean write body')\n                if document_root_write:\n                    update=payload.get('update') if isinstance(payload,dict) else None\n                    document_root_valid=(isinstance(payload,dict) and list(payload)==['update'] and isinstance(update,dict) and len(update)==1\n                        and all(isinstance(name,str) and len(name)<=253 and re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+',name)\n                            and isinstance(path,str) and 0<len(path)<=1024 and re.fullmatch(r'[A-Za-z0-9_-][A-Za-z0-9._-]*(?:/[A-Za-z0-9_-][A-Za-z0-9._-]*)*',path) for name,path in update.items())\n                        and json.dumps(payload,separators=(',',':'),ensure_ascii=True).encode()==raw)\n                    if not document_root_valid:fixture.errors.append('Unexpected single-website folder change body')\n                fixture.posts.append({'path':self.path,'body':{'mailbox_local':payload.get('new',{}).get('mailbox',{}).get('local')} if mailbox_path and isinstance(payload,dict) else payload})\n                if renewal_write:\n                    valid=isinstance(payload,dict) and list(payload)==['name','years','renewPrivacy'] and isinstance(payload.get('name'),str) and re.fullmatch(r'[a-z0-9-]+(?:\\.[a-z0-9-]+)+',payload['name']) and type(payload.get('years')) is int and 1<=payload['years']<=10 and type(payload.get('renewPrivacy')) is bool\n"
+          },
+          {
+            "before": "                    fixture.renewal_posts.append({'path':self.path,'body':payload})\n                    status,body={'success':(200,b'true'),'failure':(200,b'false'),'null':(200,b'null'),'object':(200,b'{\"result\":true}'),'authentication':(401,b'private synthetic renewal response'),'uncertain':(202,b'true'),'echo':(200,b'\"SYNTHETIC_RAW_GENERAL_KEY\"')}[fixture.renewal_mode]\n                    if not valid:status,body=400,b'{\"error\":\"synthetic renewal scope refused\"}'\n                elif fixture.write_mode in ('success','uncertain_landed'):\n                    status=200 if fixture.write_mode=='success' else 202;result={'id':100+len(fixture.packages)}\n                    if self.path.endswith('/addWeb') and isinstance(payload,dict) and isinstance(payload.get('domain_name'),str):\n                        name=payload['domain_name'];fixture.packages.append({'id':result['id'],'typeRef':int(payload.get('type',1)),'name':name,'names':[name]+(payload.get('extra_domain_names') or []),'enabled':True,'created':'2000-01-01T00:00:00Z'})\n                    body=json.dumps({'result':result['id']} if fixture.write_mode=='success' and self.path.endswith('/addWeb') else result).encode()\n                    if force_ssl_write or directory_write:\n                        body=b'true'  # Synthetic unverified acknowledgement; never changes the GET fixture flag.\n                    if mailbox_path:\n                        mailbox=payload['new']['mailbox']\n",
+            "after": "                    fixture.renewal_posts.append({'path':self.path,'body':payload})\n                    status,body={'success':(200,b'true'),'failure':(200,b'false'),'null':(200,b'null'),'object':(200,b'{\"result\":true}'),'authentication':(401,b'private synthetic renewal response'),'uncertain':(202,b'true'),'echo':(200,b'\"SYNTHETIC_RAW_GENERAL_KEY\"')}[fixture.renewal_mode]\n                    if not valid:status,body=400,b'{\"error\":\"synthetic renewal scope refused\"}'\n                elif document_root_write and not document_root_valid:\n                    status,body=400,b'{\"error\":\"synthetic folder change scope refused\"}'\n                elif fixture.write_mode in ('success','uncertain_landed'):\n                    status=200 if fixture.write_mode=='success' else 202;result={'id':100+len(fixture.packages)}\n                    if self.path.endswith('/addWeb') and isinstance(payload,dict) and isinstance(payload.get('domain_name'),str):\n                        name=payload['domain_name'];fixture.packages.append({'id':result['id'],'typeRef':int(payload.get('type',1)),'name':name,'names':[name]+(payload.get('extra_domain_names') or []),'enabled':True,'created':'2000-01-01T00:00:00Z'})\n                    body=json.dumps({'result':result['id']} if fixture.write_mode=='success' and self.path.endswith('/addWeb') else result).encode()\n                    if force_ssl_write or directory_write or document_root_write:\n                        body=b'true'  # Synthetic unverified acknowledgement; never changes the GET fixture flag.\n                    if mailbox_path:\n                        mailbox=payload['new']['mailbox']\n"
+          }
+        ]
+      },
+      "tests/prepare_legacy.py": {
+        "predecessor_sha256": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
+        "current_sha256": "46f8e858ccd8dfde44ddafe026e2b2ea8752eb729fe26d530785e73ba7b953a6",
+        "edits": [
+          {
+            "before": "        assert (item.external_attr>>16)&0o170000 != 0o120000\n    z.extractall(root/'test-runtime/released-1.24.0')\nprint('PASS: immutable released 1.24.0 package checksum, archive paths and extraction')\n",
+            "after": "        assert (item.external_attr>>16)&0o170000 != 0o120000\n    z.extractall(root/'test-runtime/released-1.24.0')\nprint('PASS: immutable released 1.24.0 package checksum, archive paths and extraction')\n\n# Retain the actual published 1.25 source for current-build upgrade/recovery acceptance.\norganized_baseline=root/'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'\nwith urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip',timeout=60) as response:\n    organized_bytes=response.read(15843209)\nassert len(organized_bytes)==15843208\nassert hashlib.sha256(organized_bytes).hexdigest()=='bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'\norganized_baseline.write_bytes(organized_bytes)\norganized_history=json.loads((root/'tools/legacy-release-files.json').read_text(encoding='utf-8'))['1.25.0']\nassert organized_history['archive_sha256']==hashlib.sha256(organized_bytes).hexdigest()\nwith zipfile.ZipFile(organized_baseline) as z:\n    assert z.testzip() is None\n    names=z.namelist()\n    assert len(names)==len(set(names))==len({name.casefold() for name in names})==2895\n    assert set(names)==set(organized_history['files'])\n    for item in z.infolist():\n        path=PurePosixPath(item.filename)\n        assert not item.is_dir() and not path.is_absolute() and path.as_posix()==item.filename\n        assert not any(part in ('','.','..') for part in item.filename.split('/'))\n        assert '\\\\' not in item.filename and ':' not in item.filename\n        assert (item.external_attr>>16)&0o170000 != 0o120000\n        assert hashlib.sha256(z.read(item)).hexdigest()==organized_history['files'][item.filename]\n    z.extractall(root/'test-runtime/released-1.25.0')\nprint('PASS: immutable released 1.25.0 package checksum, exact member hashes, archive paths and extraction')\n"
+          }
+        ]
+      }
+    },
+    "source_sha256": {
+      "tests/provider_document_root_controls_native.php": "668654ca2bce3da5e5b18a32f00b1d0cbdf8fca64c4bc0f482aed753fdeb0932",
+      "tests/provider_document_root_controls_cases.py": "c6dd55725f82fdd18e9d97cc8ad07f64bd2e9ff521c9f1b91c0414c7df70d9a6",
+      "tests/provider_document_root_controls_http_contract.py": "78f09487832f92fccca942b1bc30a14eaa09dce25ae6c61266fee1419063ac78",
+      "tests/document_root_controls_acceptance_contract.py": "cb8ca9496a8d6c3f8baadd815f0eda0a6ca219a0c153514b786e5f634233f1f8",
+      ".github/workflows/provider-document-root-controls.yml": "aba2f9c99e8bd4ab521152829d86fa72f5217e2020094e66db8446dfb6e43d15"
+    },
+    "reports": [
+      "provider-document-root-controls-native-results.json",
+      "provider-document-root-controls-handler-results.json"
+    ],
+    "predecessor_reports": {
+      "browser": {
+        "count": 164,
+        "sha256": "3d86de54f903edf0dd64cba2b293d5632a3f8fcb38e11ac719f2240a73253487"
+      },
+      "final": {
+        "count": 208,
+        "sha256": "0f39300542fdab4ace1b3dc0e63510a3d4cb6f9b73a6d22fd811f330b8bee8f9"
+      }
+    },
+    "screenshots": [
+      "Document-Root-Control-Ready-Desktop.png",
+      "Document-Root-Control-Ready-Mobile.png",
+      "Document-Root-Control-Requested-Desktop.png",
+      "Document-Root-Control-Requested-Mobile.png",
+      "Document-Root-Control-Different-Desktop.png",
+      "Document-Root-Control-Different-Mobile.png",
+      "Document-Root-Control-Observed-Desktop.png",
+      "Document-Root-Control-Observed-Mobile.png"
+    ],
+    "scope": "Owner folder control native/browser/handler wiring; predecessor recipes, evidence, browser calls and synthetic routes retained. Native/browser execution and installed-upgrade acceptance remain required."
+  },
+  "document_root_controls_upgrade": {
+    "parent": "8558119bcea66722af4180d6e3db3d1bd923adf2",
+    "apache_after": "          .ci-venv/bin/python tests/release_125_upgrade_acceptance.py\n",
+    "apache_additions": "          .ci-venv/bin/python -B tests/provider_document_root_controls_upgrade_test.py --report qa/apache-document-root-controls-upgrade-guard-results.json\n          .ci-venv/bin/python -B tests/provider_document_root_controls_upgrade.py\n",
+    "predecessor_workflow_sha256": "1f1cebc2a15a5387d21bc922d4c221df05db5d6389e744dad7fdc4bcfa4de9ee",
+    "reports": [
+      "apache-document-root-controls-upgrade-guard-results.json",
+      "apache-document-root-controls-upgrade-results.json"
+    ],
+    "predecessor_reports": {
+      "browser": {
+        "count": 166,
+        "sha256": "7f52c7d7d4cf19fe1d421ee0d0fedf5c21b1bcaab56abda18e5915ece763f456"
+      },
+      "final": {
+        "count": 210,
+        "sha256": "840d742d324d79e6b8236b24645f77a4c92692d7f88cef7672058768abbfac80"
+      }
+    },
+    "source_sha256": {
+      "tools/acceptance_artifacts.py": "85da6e5405af546075d0ab8e3996f2bf4e0cf65ea3b48ee4d39b1410898cae6f",
+      "tools/legacy-release-files.json": "4c4c74f156e9e1d12f5dfcc07f21977f8af5a4fea1c17039a2d10148cc269fca",
+      "tests/prepare_legacy.py": "46f8e858ccd8dfde44ddafe026e2b2ea8752eb729fe26d530785e73ba7b953a6",
+      "tests/release_125_upgrade_input_guards.py": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985",
+      "tests/provider_document_root_controls_upgrade.py": "34ded6e92834ebd97044969ef6945b7c72abfaee13d355cbd849026b068dec9e",
+      "tests/provider_document_root_controls_upgrade_test.py": "261e30198a72b484071ecc19607b56f2c7e5609a22085d4e5507d893e61f63a7",
+      "tests/provider_document_root_controls_upgrade_fixture.php": "a02c455a30913670ffc2a613303ee6657937e0e83de79637ae8a0a3eb1ea1043"
+    },
+    "old_baseline_guard": {
+      "path": "tests/release_125_upgrade_input_guards.py",
+      "before_sha256": "4ab56e4449a55fabbb9574d493bdf1bea8de03b56b1f0d8257c95a662cc37d99",
+      "after_sha256": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985",
+      "edits": [
+        {
+          "before": "        check('Only exact public archive path is an input', a.input_allowed('test-runtime/' + a.PUBLISHED_BASELINE))\n        for path in ['test-runtime/Other-COMPLETE-UPLOAD.zip', 'test-runtime/../' + a.PUBLISHED_BASELINE,\n                     'test-runtime/' + a.PUBLISHED_BASELINE + '/nested.php', 'test-runtime/private/' + a.PUBLISHED_BASELINE,\n                     'qa/' + a.PUBLISHED_BASELINE, 'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip']:\n            def rejected_path():\n                if a.input_allowed(path): raise AssertionError('Admitted unintended raw ZIP path')\n            try: rejected_path()\n",
+          "after": "        check('Only exact public archive path is an input', a.input_allowed('test-runtime/' + a.PUBLISHED_BASELINE))\n        for path in ['test-runtime/Other-COMPLETE-UPLOAD.zip', 'test-runtime/../' + a.PUBLISHED_BASELINE,\n                     'test-runtime/' + a.PUBLISHED_BASELINE + '/nested.php', 'test-runtime/private/' + a.PUBLISHED_BASELINE,\n                     'qa/' + a.PUBLISHED_BASELINE, 'test-runtime/CajunWebPro-1.26.0-COMPLETE-UPLOAD.zip']:\n            def rejected_path():\n                if a.input_allowed(path): raise AssertionError('Admitted unintended raw ZIP path')\n            try: rejected_path()\n"
+        }
+      ],
+      "raw_inverse": true,
+      "exact_donor_file": true
+    },
+    "baseline_source": "b79c67110829126916e3a65e616191542448bccc",
+    "baseline_archive_sha256": "bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39",
+    "baseline_bytes": 15843208,
+    "baseline_members": 2895,
+    "scope": "One real published1.25 subfolder/rewrite installation followed by exact candidate UPDATE and populated folder-control retry, complete-journal rollback, reapply and narrow local terminal recovery. No native/installed outcome follows from portable checks."
   }
 }

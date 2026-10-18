@@ -1,3 +1,21 @@
+## Unreleased — include retained diagnostic sources in FULL-PROJECT
+
+Reuse the existing reviewed ops source-area correction after the exact package build refused already-tracked diagnostic scripts. Sensitive-file checks and deployment package contents remain unchanged. The original failed build is retained; corrected packaging and installed runtime checks remain required.
+
+## Unreleased — installed upgrade coverage for website folder history
+
+Add an actual published1.25-to-current installed upgrade scenario covering retained folder requests, exact update retry, complete-journal rollback/reapply, local terminal recovery and refusal to reconstruct lost database evidence. Add the immutable1.25 archive to existing sealed test inputs while retaining the1.24 baseline and all earlier acceptance. Local comparison/input checks pass; installed execution and release remain pending. Application behavior and version are unchanged. [Details](docs/TWENTYI_DOCUMENT_ROOT_CONTROLS.md).
+
+## Unreleased — owner website folder changes
+
+Adds the owner website-folder form, explicit preparation, exact latest-map hostname/current-path review, current account/assignment authority, password confirmation and one-send retained history. The owner confirms that the plan supports the change and the destination directory already exists; this is manual attestation, not an API platform or filesystem check. Matching independent readback records an observation without claiming that the request caused it or that website routing works. Missing/claimed execution history cannot be cleared by a later matching map; local recovery requires the exact finished one-attempt ledger and never resends. Client write controls are not added; an unresolved request makes the separately shared saved map historical.
+
+Add authenticated storage, shared owner dispatch, narrow local recovery and additive native/browser/handler acceptance with eight required captures. Keep complete private requests while committing their hashes in the existing grant field. Local source, modeled UI and offline checks pass; native/browser/installed-upgrade acceptance and release remain pending. [Details](docs/TWENTYI_DOCUMENT_ROOT_CONTROLS.md).
+
+## Unreleased — single-website folder request contract
+
+Add a typed one-host request for the documented 20i document-root setter, canonical body/route validation and a narrow relative-path input policy. Keep generic approval closed and unverified replies uncertain. Add synthetic contract, cold-loader, transport and generic-denial checks to the existing focused/full operation suite; retain the saved observation behavior. Dedicated owner/client controls, native acceptance and release remain pending. [Details](docs/TWENTYI_DOCUMENT_ROOT_CONTROLS.md).
+
 ## Unreleased — reduce unrelated pull-request test runs
 
 Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.

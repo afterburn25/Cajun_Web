@@ -145,7 +145,9 @@ function provider_document_roots_share(string $linkId,string $expectedId,string 
 }
 /** Internal saved projection. Caller owns client/owner authority, lock and transaction. */
 function provider_document_roots_project(string $linkId,bool $clientVisible):array {
-    provider_document_roots_guard();if(!provider_document_roots_ready())return ['status'=>'not_ready','rows'=>[],'permission'=>null];$permission=provider_document_roots_permission($linkId);
+    provider_document_roots_guard();if(!provider_document_roots_ready())return ['status'=>'not_ready','rows'=>[],'permission'=>null];
+    require_once CWP_CODE_ROOT.'/app/providers/document_root_controls.php';
+    $controlCurrent=provider_document_root_controls_current($linkId);$permission=provider_document_roots_permission($linkId);
     if($clientVisible&&(!$permission||!$permission['document']['enabled']))return ['status'=>'not_shared','rows'=>[],'permission'=>null];
     if($clientVisible&&!provider_document_roots_assignment_matches($permission['binding']))return ['status'=>'assignment_changed','rows'=>[],'permission'=>null];
     $latest=provider_document_roots_latest($linkId);$saved=provider_document_roots_latest($linkId,true);$observation=$saved?provider_document_roots_observation($saved):null;$status='not_observed';$rows=[];
@@ -153,7 +155,7 @@ function provider_document_roots_project(string $linkId,bool $clientVisible):arr
     if($observation){
         if(!provider_document_roots_assignment_matches($observation['binding']))return ['status'=>'assignment_changed','rows'=>[],'permission'=>$clientVisible?null:$permission];
         if(!$clientVisible||($observation['seq']>=$permission['anchor']['seq']&&$observation['binding']->data['package']['link_sha256']===$permission['binding']->data['package']['link_sha256']&&$observation['binding']->data['package']['event_id']===$permission['binding']->data['package']['event_id'])){
-            $current=$latest['id']===$saved['id']&&service_observations_fresh($saved)&&$observation['observed_epoch']<=time()+30;
+            $current=$controlCurrent&&$latest['id']===$saved['id']&&service_observations_fresh($saved)&&$observation['observed_epoch']<=time()+30;
             if($current){try{$now=provider_document_roots_binding($linkId);$current=$now->data['package']['link_sha256']===$observation['binding']->data['package']['link_sha256']&&$now->data['package']['event_id']===$observation['binding']->data['package']['event_id'];}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;$current=false;}}
             if($latest['id']===$saved['id'])$status=$current?'observed':'stale';$rows[]=['entries'=>$observation['entries'],'observed_epoch'=>$observation['observed_epoch'],'current'=>$current];
         }

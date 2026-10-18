@@ -25,6 +25,10 @@ final class TwentyIOperationRegister
     {
         $operations = [
             new TwentyIOperation(
+                'packages.documentroot', 'POST', '/package/{packageId}/web/updateDocRoot',
+                ['packageId'], ['update'=>'map'], ['update'], shapeComplete: true,
+            ),
+            new TwentyIOperation(
                 'packages.directoryindexing', 'POST', '/package/{packageId}/web/directoryIndexing',
                 ['packageId'], ['value'=>'bool'], ['value'], shapeComplete: true,
             ),

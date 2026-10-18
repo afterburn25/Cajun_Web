@@ -2,10 +2,10 @@ name: 20i write-boundary checks
 
 on:
   pull_request:
-    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
+    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-document-roots/**', 'foundation/mail-transport/**', 'site/app/providers/operations.php', 'tests/twentyi/**', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
   push:
     branches: [main, devin/twentyi-operations, devin/twentyi-execution, devin/twentyi-reconcile, codex/twentyi-nameserver-controls, codex/twentyi-mailbox-controls, codex/twentyi-vps-controls]
-    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
+    paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-document-roots/**', 'foundation/mail-transport/**', 'site/app/providers/operations.php', 'tests/twentyi/**', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
   workflow_dispatch:
 
 permissions:
