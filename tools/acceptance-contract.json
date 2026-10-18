@@ -570,7 +570,7 @@
     "predecessor_native_count": 152,
     "predecessor_native_sha256": "ae7da25c86ee385fe5c3896e75f12badd91b459c5a8ef4ac9db1ab0075c2c0e6",
     "source_sha256": {
-      "tests/mail_flags_native.php": "520a1e70576874eabf5c563c728d2a5030646dbab79c679db9026c764210ed5d",
+      "tests/mail_flags_native.php": "dd09c0fbc5cc6a81329b9242c857a3cf6fcd170ffc7f14a24fa357cf1611f302",
       "tests/mail_replies_native.php": "7e4b311b23518889ab18e8a5d5f8c0d923d29e1d51eba3f5b5098279beaaefb9"
     }
   }
