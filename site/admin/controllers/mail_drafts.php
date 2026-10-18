@@ -151,7 +151,7 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
             $revision=(int)$row['revision'];
         }
         $sender=$account!==''?$account.':'.($row['account_revision']??$accounts[$account]['revision']):'';
-        $editable=!$row||$row['status']==='draft';$unsaved=null;
+        $editable=(!$row||$row['status']==='draft')&&mail_drafts_html_ready();$unsaved=null;
         // A concurrent discard must not erase text submitted from an earlier edit tab.
         // Keep the retained saved record separate, under the same current author/account gate.
         if($post&&$row&&!$editable&&in_array($_POST['action']??null,['mail_drafts_save','mail_drafts_preview','mail_drafts_insert','mail_drafts_accounts','mail_drafts_templates'],true)) {
@@ -172,7 +172,8 @@ function mail_drafts_admin_data(string $view,?DraftContent $preview):array {
         }
         if($id==='')$id=bin2hex(random_bytes(16));
         if($preview&&($_POST['action']??'')==='mail_drafts_insert') {
-            $values['subject']=$preview->subject;$values['body']=$preview->body;
+            // The template supplies plain content only; replacing the message also clears the formatted alternative.
+            $values['subject']=$preview->subject;$values['body']=$preview->body;$values['body_html']='';
         }
         $templates=[];$templatePage=max(1,min((int)($_POST['template_page']??1),100000));$templateSearch=mail_drafts_form_text($_POST,'template_search',120);
         if(staff_can('mail.templates.manage',$actor)&&mail_templates_ready())$templates=mail_templates_list('active',$templateSearch,$templatePage);
@@ -200,6 +201,12 @@ function mail_drafts_admin_render(string $view,string $error,?DraftContent $prev
         }else echo '<p>An owner must prepare drafts before you can use them.</p>';
         echo '</section>';
     }else {
+        if(!mail_drafts_html_ready()) {
+            echo '<section class="workspace-card"><h2>Prepare formatted drafts</h2><p>Writing drafts and the optional formatted alternative need current draft storage columns. An owner prepares this once; existing drafts and submission history are preserved.</p>';
+            if($actor['role']==='owner') {echo '<form method="post">';admin_action('mail_drafts_setup');admin_input('current_password','Your current password','','password','required autocomplete="current-password"');echo '<button class="btn gold">Prepare formatted drafts</button></form>';}
+            else echo '<p>An owner must prepare formatted drafts before editing.</p>';
+            echo '</section>';
+        }
         if(!mail_replies_ready()) {
             echo '<section class="workspace-card"><h2>Prepare protected Reply and Forward drafts</h2><p>Replying to or forwarding an inbox message copies it into a protected private draft. An owner prepares this storage once; existing drafts and submission history are preserved.</p>';
             if($actor['role']==='owner') {echo '<form method="post">';admin_action('mail_drafts_replies_setup');admin_input('current_password','Your current password','','password','required autocomplete="current-password"');echo '<button class="btn gold">Prepare Reply and Forward drafts</button></form>';}

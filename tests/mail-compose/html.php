@@ -27,7 +27,11 @@ try {
         check('Relative links are removed',!str_contains(ComposeHtml::sanitize('<a href="/local">x</a>'),'href'));
         check('Style and class attributes do not survive',ComposeHtml::sanitize('<p style="color:red" class="x">T</p>')==='<p>T</p>');
         check('Tables survive for formatted layouts',str_contains(ComposeHtml::sanitize('<table><tr><th>H</th></tr><tr><td>C</td></tr></table>'),'<td>C</td>'));
-        denied('Input over the byte bound is refused',fn()=>ComposeHtml::sanitize('<p>'.str_repeat('x',40960).'</p>'),'limit');
+        denied('Input over the byte bound is refused',fn()=>ComposeHtml::sanitize('<p>'.str_repeat('x',61440).'</p>'),'limit');
+        $canonical=ComposeHtml::sanitize('<p>'.str_repeat('y',60000).'</p>');
+        check('Accepted canonical output near the bound stays within the output bound',strlen($canonical)<=ComposeHtml::MAX_BYTES&&$canonical!=='');
+        check('Accepted canonical output revalidates unchanged on resubmission',ComposeHtml::sanitize($canonical)===$canonical);
+        check('The same canonical value stays valid as a saved formatted alternative',(new DraftContent([],[],[],'','Plain',$canonical))->html===$canonical);
         denied('Input over the tag-count bound is refused',fn()=>ComposeHtml::sanitize(str_repeat('<b></b>',2100)),'limit');
         denied('Invalid UTF-8 is refused',fn()=>ComposeHtml::sanitize("<p>\xC3\x28</p>"),'protocol');
         denied('NUL bytes are refused',fn()=>ComposeHtml::sanitize("<p>x\0y</p>"),'protocol');

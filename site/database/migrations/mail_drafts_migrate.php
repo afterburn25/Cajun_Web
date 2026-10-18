@@ -50,7 +50,7 @@ function mail_drafts_migrate(#[\SensitiveParameter] string $password):void {
                 // A marked version-1 install upgrades in place; only unmarked
                 // storage must prove it is empty before adoption.
                 if($version==='')foreach(array_keys(mail_drafts_schema(config()['db']['prefix'])) as $name)if((int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn())throw new RuntimeException('Unrecognized draft records exist. No data was adopted.');
-                save_setting('mail_drafts_schema_version','2');
+                save_setting('mail_drafts_schema_version','1');
             }
             mail_drafts_audit((int)$actor['id'],'setup','Additive local draft storage verified');
         });

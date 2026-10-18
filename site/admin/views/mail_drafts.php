@@ -44,6 +44,7 @@ $accounts=$data['accounts'];
 <p class="notice warning">This draft was discarded before your edit could be saved. Copy any text you want to keep into a new draft. The discarded draft below still contains its last saved text.</p>
 <?php foreach(['to'=>'To','cc'=>'Cc','bcc'=>'Bcc','subject'=>'Subject'] as $key=>$label)admin_input($key,$label,$data['unsaved'][$key],'text','readonly'); ?>
 <label>Unsaved message<textarea rows="12" readonly><?=esc($data['unsaved']['body'])?></textarea></label>
+<?php if($data['unsaved']['body_html']!==''): ?><label>Unsaved formatted alternative<textarea rows="10" readonly><?=esc($data['unsaved']['body_html'])?></textarea></label><?php endif; ?>
 </section>
 <?php endif; ?>
 <?php if(!$accounts): ?><p class="notice">An owner must assign you a sending account before you can prepare a draft.</p>
@@ -71,7 +72,7 @@ $staleSender=$data['sender']!==''&&!array_key_exists($data['sender'],$senders);
 <?php foreach(['to'=>'To','cc'=>'Cc','bcc'=>'Bcc'] as $key=>$label)admin_input($key,$label,$values[$key],'text','maxlength="5600" autocomplete="off" spellcheck="false"');
 admin_input('subject','Subject',$values['subject'],'text','maxlength="200"');admin_textarea('body','Message',$values['body'],12,40000); ?>
 <p class="hint">Subject: up to 200 UTF-8 bytes. Message: up to 20,000 UTF-8 bytes. Non-English characters may use more than one byte.</p>
-<?php admin_textarea('body_html','Formatted message (optional)',$values['body_html'],10,40960); ?>
+<?php admin_textarea('body_html','Formatted message (optional)',$values['body_html'],10,61440); ?>
 <p class="hint">Optional HTML for a formatted alternative sent alongside the plain text. Limited to basic formatting, tables and links — scripts, forms, images, styles and remote content are removed when you save or preview. The plain message above is always included.</p>
 <button class="btn gold" name="action" value="mail_drafts_save">Save draft</button>
 <button class="btn outline" name="action" value="mail_drafts_preview">Preview draft</button>

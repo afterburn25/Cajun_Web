@@ -20,7 +20,8 @@ require_once dirname(__DIR__).'/mail-receiving/BodyHtml.php';
  */
 final class ComposeHtml
 {
-    public const MAX_INPUT_BYTES = 40960;
+    /** At least MAX_BYTES so every accepted canonical value revalidates on re-edit. */
+    public const MAX_INPUT_BYTES = 61440;
     /** Matches DraftContent::MAX_HTML_BYTES; keep the two bounds identical. */
     public const MAX_BYTES = 61440;
 

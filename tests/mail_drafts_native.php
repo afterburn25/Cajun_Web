@@ -133,7 +133,14 @@ try {
     if(extension_loaded('dom')) {
         $sanitized=mail_drafts_html('<p>SYNTHETIC <strong>formatted</strong> <script>bad()</script></p>');
         dr_ok('Formatted alternative sanitizes through the service wrapper',$sanitized==='<p>SYNTHETIC <strong>formatted</strong> </p>'&&mail_drafts_html('')===null&&mail_drafts_html('<script>x</script>')===null);
-        dr_deny('Oversized formatted alternative is refused before storage',fn()=>mail_drafts_html('<p>'.str_repeat('x',40960).'</p>'));
+        dr_deny('Oversized formatted alternative is refused before storage',fn()=>mail_drafts_html('<p>'.str_repeat('x',61440).'</p>'));
+        $canonical=mail_drafts_html('<p>'.str_repeat('y',60000).'</p>');
+        $bound=bin2hex(random_bytes(16));mail_drafts_save($bound,0,$a,1,new DraftContent(['client@example.invalid'],[],[],'Near bound','Plain body',$canonical));
+        $got=mail_drafts_get($bound);
+        dr_ok('Near-bound canonical alternative saves and reloads exactly',$got['html']===$canonical&&$canonical!==null&&strlen($canonical)>40960);
+        mail_drafts_save($bound,1,$a,1,new DraftContent(['client@example.invalid'],[],[],'Near bound edited','Plain body',$canonical));
+        dr_ok('A subject-only edit resubmits the same canonical value',(int)mail_drafts_get($bound)['revision']===2);
+        mail_drafts_discard($bound,2);
         $rich=bin2hex(random_bytes(16));mail_drafts_save($rich,0,$a,1,new DraftContent(['client@example.invalid'],[],[],'Formatted draft','Plain body',$sanitized));
         $got=mail_drafts_get($rich);
         dr_ok('Saved formatted alternative persists and round-trips exactly',$got['html']===$sanitized&&one('SELECT body_html FROM '.table('mail_drafts').' WHERE id=?',[$rich])['body_html']===$sanitized);
@@ -146,6 +153,8 @@ try {
     // Version-1 upgrade: populated pre-alternative storage gains the additive column in place.
     dr_actor();db()->exec('ALTER TABLE '.table('mail_drafts').' DROP COLUMN body_html');save_setting('mail_drafts_schema_version','1');
     $legacy=bin2hex(random_bytes(16));query('INSERT INTO '.table('mail_drafts')." (id,owner_id,account_id,account_revision,revision,status,create_fingerprint,to_json,cc_json,bcc_json,subject,body,created_at,updated_at) VALUES (?,1,?,1,1,'draft',?,'[]','[]','[]','Legacy','Text',?,?)",[$legacy,$b,str_repeat('0',64),gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);
+    dr_ok('Version-1 storage keeps existing drafts readable and listed',mail_drafts_get($legacy)['subject']==='Legacy'&&in_array($legacy,array_column(mail_drafts_list($b),'id'),true));
+    dr_deny('Version-1 storage refuses edits until formatted storage is prepared',fn()=>mail_drafts_save($legacy,1,$a,1,new DraftContent(['client@example.invalid'],[],[],'Changed','Text')));
     mail_drafts_migrate($password);
     dr_ok('Version 1 populated storage upgrades additively and preserves records',mail_drafts_ready()&&one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'mail_drafts','body_html'])!==null&&mail_drafts_get($legacy)['subject']==='Legacy'&&mail_drafts_get($legacy)['html']===null);
     mail_drafts_discard($legacy,1);

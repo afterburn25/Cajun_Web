@@ -36,7 +36,9 @@ if(extension_loaded('dom')) {
     df_check('Empty formatted input means plain text only',mail_drafts_form_content(['body'=>'B','body_html'=>'   '])->html===null);
     df_deny('Formatted input over the raw bound is refused',fn()=>mail_drafts_form_content(['body_html'=>str_repeat('x',65537)]));
     df_deny('Non-string formatted input is refused',fn()=>mail_drafts_form_content(['body_html'=>[]]));
-    df_deny('Oversized formatted markup is refused',fn()=>mail_drafts_form_content(['body_html'=>'<p>'.str_repeat('x',40960).'</p>']));
+    df_deny('Oversized formatted markup is refused',fn()=>mail_drafts_form_content(['body_html'=>'<p>'.str_repeat('x',61440).'</p>']));
+    $canonical=mail_drafts_form_content(['body'=>'B','body_html'=>'<p>'.str_repeat('y',60000).'</p>'])->html;
+    df_check('Accepted canonical markup near the bound survives form parsing',strlen($canonical)>40960&&strlen($canonical)<=61440);
     df_check('Form preserves formatted input for correction',strlen(mail_drafts_form_values(['body_html'=>str_repeat('x',300000)])['body_html'])===262144);
 } else $checks[]=['name'=>'DOM unavailable; formatted form checks skipped','passed'=>true];
 @mkdir(__DIR__.'/../qa',0700,true);file_put_contents(__DIR__.'/../qa/mail-drafts-form-results.json',json_encode(['passed'=>true,'php'=>PHP_VERSION,'ini_loaded'=>php_ini_loaded_file()!==false,'scope'=>'Pure form input boundary only; no database, HTTP rendering or mail transport acceptance','checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n");

@@ -49,6 +49,19 @@ try {
     $mixed=PreparedMime::fromSnapshot($full);
     check('Formatted alternative composes inside the attachment wrapper',str_contains($mixed->bytes,'multipart/mixed')&&str_contains($mixed->bytes,'multipart/alternative'));
     check('Plain payload keys are unchanged without an alternative',!array_key_exists('body_html',snapshot(new DraftContent(['client@example.invalid'],[],[],'S','B'))->privatePayload()));
+    // A literal "0" plain body is a real alternative; PHPMailer's empty() check would silently drop it.
+    $zeroPart="Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: base64
+
+MA==";
+    $zero=new DraftContent(['client@example.invalid'],[],[],'Zero','0','<p>Zero formatted</p>');
+    $zeroMime=PreparedMime::fromSnapshot(snapshot($zero))->bytes;
+    check('Literal zero plain body produces an alternative part',str_contains($zeroMime,'multipart/alternative'));
+    check('Literal zero text/plain part exists before the html part',str_contains(explode('text/html',$zeroMime)[0],$zeroPart));
+    $zeroThread=\CajunWebPro\Foundation\MailCompose\MessageThread::reply('<parent@example.invalid>',['<ref@example.invalid>']);
+    $zeroFull=new SubmissionSnapshot(str_repeat('1',32),7,str_repeat('2',32),3,str_repeat('a',32),4,'sender@example.invalid',$zero,1791964800,$zeroThread,str_repeat('f',64),[new \CajunWebPro\Foundation\MailCompose\DraftAttachment('z.txt','text/plain','attach')]);
+    $zeroMixed=PreparedMime::fromSnapshot($zeroFull)->bytes;
+    check('Literal zero plain alternative survives threading and attachments',str_contains($zeroMixed,'multipart/mixed')&&str_contains($zeroMixed,'multipart/alternative')&&str_contains(explode('text/html',$zeroMixed)[0],$zeroPart)&&str_contains($zeroMixed,'In-Reply-To: <parent@example.invalid>'));
     $complete=true;
 } finally {
     if(isset($argv[1]))file_put_contents($argv[1],json_encode(['passed'=>$complete&&!in_array(false,array_column($checks,'passed'),true),'scope'=>'Offline maintained MIME preparation only; synthetic fixture content','checks'=>$checks,'messages'=>$messages],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n");

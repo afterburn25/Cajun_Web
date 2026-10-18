@@ -13,7 +13,9 @@ require_once CWP_CODE_ROOT.'/includes/foundation/mail-compose/DraftContent.php';
 require_once CWP_CODE_ROOT.'/database/schema/mail_drafts_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/mail_drafts_migrate.php';
 
-function mail_drafts_ready():bool {return (one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_schema_version'])['value']??'')==='2';}
+function mail_drafts_ready():bool {return in_array(one('SELECT value FROM '.table('settings').' WHERE name=?',['mail_drafts_schema_version'])['value']??'',['1','2'],true);}
+/** The formatted alternative exists once the additive column does; the storage marker stays compatible with earlier releases. */
+function mail_drafts_html_ready():bool {return (bool)one("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name='body_html'",[config()['db']['prefix'].'mail_drafts']);}
 function mail_drafts_actor():array {
     $actor=mail_accounts_actor();
     // The canonical mailbox decision below still requires both global Send and an exact grant.
@@ -49,7 +51,7 @@ function mail_drafts_content(array $row):DraftContent {
             $value=json_decode($row[$key],false,8,JSON_THROW_ON_ERROR);
             if(!is_array($value))throw new InvalidArgumentException('Invalid recipient list.');$lists[]=$value;
         }
-        return new DraftContent(...[...$lists,$row['subject'],$row['body'],$row['body_html']]);
+        return new DraftContent(...[...$lists,$row['subject'],$row['body'],$row['body_html']??null]);
     }catch(JsonException|InvalidArgumentException){throw new RuntimeException('Saved draft content is damaged. Existing data was preserved.');}
 }
 function mail_drafts_get(string $id):array {
@@ -82,6 +84,7 @@ function mail_drafts_snapshot(array $row,int $actor,string $action):void {
 function mail_drafts_save(string $id,int $revision,string $account,int $accountRevision,DraftContent $content,bool $confirmSenderChange=false):string {
     return staff_locked(fn()=>staff_transaction(function()use($id,$revision,$account,$accountRevision,$content,$confirmSenderChange):string {
         $actor=mail_drafts_actor();mail_drafts_id($id);mail_drafts_account($account,$accountRevision);
+        if(!mail_drafts_html_ready())throw new RuntimeException('An owner must prepare formatted drafts before editing.');
         if($revision<0 || $revision>=2147483647)throw new RuntimeException('The draft changed. Reload before saving.');
         $data=[json_encode($content->to,JSON_THROW_ON_ERROR),json_encode($content->cc,JSON_THROW_ON_ERROR),json_encode($content->bcc,JSON_THROW_ON_ERROR),$content->subject,$content->body,$content->html];
         $fingerprint=hash('sha256',json_encode([(int)$actor['id'],$account,$accountRevision,...$data],JSON_THROW_ON_ERROR));
