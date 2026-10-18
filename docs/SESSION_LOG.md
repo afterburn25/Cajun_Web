@@ -1999,3 +1999,28 @@ Owner reviews on #210 and #211 plus follow-throughs on #212/#213:
 - Acceptance redispatched on the exact corrected heads: client-actions
   run 39079044619 (`8e1cc8b7`), portal-account run 39079050602
   (`2ba0a003`) — in progress.
+
+## 2026-10-18 — Feed-check diagnosis: enablement theory disproven, instrumentation added
+
+- Third acceptance round (runs 39079044619 / 39079050602) failed at the
+  same assertion family but a different point: `submit()` raised
+  "Form missing activity_setup" on `?view=activity` — meaning
+  `activity_ready()` was already true on `/existing/` (the feed page has
+  no setup card). The missing `milestone:<id>` row is therefore a
+  projection question, not an enablement one; the negative assertion at
+  staff_cases.py:76 passes vacuously only when the feed errors, and with
+  activity enabled the feed renders — so the milestone row is genuinely
+  absent from alice's first page.
+- `a5f6fe59` on `devin/non20i-milestones` removes the erroneous setup
+  call and instruments the check to dump `status_code`, `url` and the
+  rendered `data-event-key` list before failing. Propagated:
+  activity-prefs (auto), client-actions `29f8056d` (union conflict —
+  kept #212's blockers check + instrumented feed check), portal-account
+  `5c507dc1`.
+- Process note: an instrument commit initially landed on portal-account
+  (`28080e31`, local only — the push targeted the unchanged milestones
+  branch and no-op'd). Portal-account was reset to its remote tip and
+  the change was committed correctly on milestones; remote history was
+  never affected.
+- Diagnostic acceptance dispatched: run 39081460330 on client-actions
+  `29f8056d` — in progress.
