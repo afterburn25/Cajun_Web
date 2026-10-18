@@ -1,6 +1,9 @@
 ## Unreleased — project stage history
 
 Real stage transitions on web-design projects are recorded durably (`studio_stage_events`, workspace marker 4) with actor attribution, shown as progress history in the portal and admin project views, and projected into both activity centers as `stage:` events with exact anchors. Unchanged saves record nothing. Branch `devin/non20i-stage-history` stacked on protected previews; acceptance pending on CI.
+## Unreleased — reduce unrelated pull-request test runs
+
+Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.
 
 ## Unreleased — record observed cloud null response
 ## Unreleased — protected version previews

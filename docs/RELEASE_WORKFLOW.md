@@ -1,3 +1,15 @@
+## 2026-10-18 — dependency-aware pull-request triggers
+
+Ten focused workflows previously filtered pushes but ran on every eligible pull request: client authority, hosting operations and records, mail drafts and notices, mail receiving and transport, provider operations and settings, and service-plan records. Their PR triggers now use the same paths as their push triggers. Existing branch filters and manual dispatch remain.
+
+The eight native SQL workflows retain their old paths and add shared `site/app/**`, `site/includes/**`, `site/config/**`, `foundation/**` and `tests/invitations/**` dependencies. Receiving additionally watches its transport policy and shipping dependency mirror. Broad existing admin/portal paths remain where already required. This deliberately keeps shared runtime coverage; it is not a complete automatic dependency graph.
+
+All jobs, matrices, commands, reports, artifacts, permissions, timeouts and existing concurrency behavior remain identical. `application-tests.yml` and repository checks are unchanged. Release candidate/main acceptance, actual screenshot review and downloaded-asset verification remain mandatory.
+
+Static evaluation of the retained file lists for PR186, PR188 and PR191 reduces these ten workflows from 26 jobs to 22 jobs for each PR. Documentation-only and isolated CSS changes reduce these ten from 26 jobs to zero; other workflows and repository checks still follow their own triggers. These are path comparisons, not measured runtime savings or a forecast for clearing the queue.
+
+Validation: 119 finite YAML, dependency, exact-inverse and patch-applicability checks passed, followed by independent review and exact application of the ten files. The entire jobs sections and all non-path settings are unchanged. No application tests were rerun solely for this trigger change. Original queued/running/failed evidence is preserved; no cancellation, deletion or duplicate dispatch was performed.
+
 ## Release 1.25.0 evidence and publication boundary
 
 ## 2026-10-17 - complete acceptance job allowance

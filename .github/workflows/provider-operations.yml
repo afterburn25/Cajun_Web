@@ -2,8 +2,9 @@ name: Provider operation ledger checks
 on:
   push:
     branches: [main, devin/twentyi-ledger, devin/twentyi-execution]
-    paths: ['site/app/providers/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/provider/**', 'foundation/twentyi-operations/**', 'tests/provider_operations*.php', '.github/workflows/provider-operations.yml']
+    paths: ['site/app/providers/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/provider/**', 'foundation/twentyi-operations/**', 'tests/provider_operations*.php', '.github/workflows/provider-operations.yml', 'site/app/**', 'site/includes/**', 'site/config/**', 'foundation/**', 'tests/invitations/**']
   pull_request:
+    paths: ['site/app/providers/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/provider/**', 'foundation/twentyi-operations/**', 'tests/provider_operations*.php', '.github/workflows/provider-operations.yml', 'site/app/**', 'site/includes/**', 'site/config/**', 'foundation/**', 'tests/invitations/**']
   workflow_dispatch:
 permissions:
   contents: read
