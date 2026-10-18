@@ -52,7 +52,8 @@ try {
     $before=sn_all();sn_deny('Draft creation requires the current password',fn()=>service_plans_create(sn_id(1),$terms,'wrong'));sn_owner(2);sn_deny('Administrator cannot author owner service plans',fn()=>sn_create(1));sn_owner();
     $_GET['support']='';sn_deny('Support selector cannot author a plan',fn()=>sn_create(1));unset($_GET['support']);$GLOBALS['cwp_support']=['client'=>['id'=>1]];sn_deny('Active support context cannot author a plan',fn()=>sn_create(1));unset($GLOBALS['cwp_support']);
     db()->beginTransaction();sn_deny('Plan creation refuses an inherited transaction',fn()=>sn_create(1));sn_ok('Caller retains its transaction after refusal',db()->inTransaction());db()->rollBack();sn_ok('Denied plan writes preserve rows and audit',sn_all()===$before);
-    sn_ok('Creation audit failure rolls back the entire plan',sn_fail_audit(fn()=>sn_create(1))&&sn_all()===$before);$draft=sn_create(1);sn_ok('Owner draft stores canonical reviewed terms',$draft->revision()===0&&$draft->model()->priceAmount===9900&&$draft->model()->status()==='draft');
+    sn_ok('Creation audit failure rolls back the entire plan',sn_fail_audit(fn()=>sn_create(1))&&sn_all()===$before);$beforePromise=sn_all();sn_deny('Owner cannot save an unsupported promise in a plan name',fn()=>sn_create(999,['name'=>'Unlimited support']));sn_ok('Rejected plan name preserves every term consent and audit record',sn_all()===$beforePromise);
+    $draft=sn_create(1);sn_ok('Owner draft stores canonical reviewed terms',$draft->revision()===0&&$draft->model()->priceAmount===9900&&$draft->model()->status()==='draft');
     $before=sn_all();sn_ok('Identical creation request is idempotent',sn_create(1)->json()===$draft->json()&&sn_all()===$before);sn_deny('Changed creation identity cannot overwrite a plan',fn()=>sn_create(1,['price'=>12900]));sn_owner(3);sn_deny('Another owner cannot reuse a creation identity',fn()=>sn_create(1));sn_owner();
     sn_deny('Draft cannot be offered before publication',fn()=>sn_offer(101));
     $edited=sn_change(1,10,'replace_draft',['terms'=>array_replace($terms,['price'=>12900])]);sn_ok('Draft revision preserves original creation terms',$edited->revision()===1&&$edited->prefix(0)->model()->priceAmount===9900&&$edited->model()->priceAmount===12900);
@@ -119,5 +120,18 @@ try {
     sn_ok('Authorized and refused projections do not alter agreements or audit',sn_all()===$before);
     $savedHash=one('SELECT journal_sha256 FROM '.table('service_subscriptions').' WHERE id=?',[sn_id(512)])['journal_sha256'];query('UPDATE '.table('service_subscriptions').' SET journal_sha256=? WHERE id=?',[str_repeat('0',64),sn_id(512)]);sn_deny('A corrupt displayed agreement fails the entire list closed',fn()=>service_plans_page(0,true,1));query('UPDATE '.table('service_subscriptions').' SET journal_sha256=? WHERE id=?',[$savedHash,sn_id(512)]);
     sn_owner();$key='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);query('SELECT GET_LOCK(?,5)',[$key]);$worker=sn_worker('list-worker',[]);sn_ok('Client list waits for shared current-authority guard',trim(fgets($worker[1][1]))==='ready');query('UPDATE '.table('studio_clients').' SET auth_version=? WHERE id=1',[bin2hex(random_bytes(16))]);query('SELECT RELEASE_LOCK(?)',[$key]);sn_ok('Client revocation while waiting prevents data projection',sn_finish($worker)==='denied');
+    // Populated terms/consent history must never be silently recreated after loss.
+    sn_owner();$beforeMissing=sn_all();
+    foreach(array_keys(service_plans_schema(config()['db']['prefix'])) as $missing){
+        $saved='spln_retained_'.$missing;
+        db()->exec('RENAME TABLE '.table($missing).' TO `'.$saved.'`');
+        try{
+            sn_ok('Missing established '.$missing.' disables readiness',!service_plans_ready());
+            $restoreRefused=false;
+            try{service_plans_migrate($password);}catch(RuntimeException $e){if($e instanceof PDOException)throw $e;$restoreRefused=str_contains($e->getMessage(),'Restore the original database');}
+            sn_ok('Missing established '.$missing.' requires restore without empty recreation',$restoreRefused && !one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$missing]) && (one('SELECT value FROM '.table('settings').' WHERE name=?',['service_plans_schema_version'])['value']??'')==='1');
+        }finally{db()->exec('RENAME TABLE `'.$saved.'` TO '.table($missing));}
+        sn_ok('Restored '.$missing.' retains exact original terms consent and audit',service_plans_ready() && sn_all()===$beforeMissing);
+    }
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,(string)$e."\n");}
 $passed=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/service-plans-native-results.json',json_encode(['passed'=>$passed,'scope'=>'Native MariaDB owner plans, exact-client consent/history and current-authorized bounded projections; synthetic terms, no HTTP, invoice generation or payment authorization','checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));echo ($passed?'PASS':'FAIL').': '.count($checks).' native service-plan checks'.PHP_EOL;exit($passed?0:1);

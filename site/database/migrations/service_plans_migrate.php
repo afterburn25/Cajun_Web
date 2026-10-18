@@ -60,6 +60,9 @@ function service_plans_migrate(#[\SensitiveParameter] string $password):void {
         $actor=service_plans_password($password,false);
         $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['service_plans_schema_version'])['value']??'');
         if(!in_array($version,['','1'],true))throw new RuntimeException('This service-plan storage version is not supported. Existing data was preserved.');
+        // A prepared installation must recover its original terms and consent history.
+        // Check every established table before any CREATE can reconstruct an empty one.
+        if($version==='1' && !service_plans_ready())throw new RuntimeException('Service-plan history storage is missing. Restore the original database before continuing; existing records were preserved.');
         foreach(service_plans_schema(config()['db']['prefix']) as $name=>$sql){
             if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))db()->exec($sql);
             service_plans_validate_schema($name,$sql);

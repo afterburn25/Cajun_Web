@@ -127,7 +127,19 @@ def run_browser(env,browser):
     r=op_post('provider_operations_reconcile',idempotency_key='packaged-ambig-1')
     check('Ambiguous consumed history refuses reconciliation','ambiguous' in r.text.lower())
     legacy_record('packaged-ctx-1','packaged-ctx.example')
-    db('UPDATE ci_provider_profiles SET revision=revision+1 WHERE id=?',[pid])
+    # A real settings change retains its revision history. Directly incrementing
+    # the profile alone leaves an impossible fixture for later service mapping.
+    previous_revision=db('SELECT revision FROM ci_provider_profiles WHERE id=?',[pid])[0]['revision']
+    previous_history=db('SELECT * FROM ci_provider_revisions WHERE profile_id=? ORDER BY revision',[pid])
+    previous_calls=provider_server.calls;previous_posts=list(provider_server.posts)
+    settings_url=root+'?view=provider-settings'
+    r=submit(owner,settings_url,'provider_settings_save',{'label':'Revised operation fixture connection','enabled':'1','general_key':'','current_password':OWNER})
+    current_history=db('SELECT * FROM ci_provider_revisions WHERE profile_id=? ORDER BY revision',[pid])
+    check('Changed operation context retains exact prior and current provider history',
+          r.status_code==200 and db('SELECT revision,enabled FROM ci_provider_profiles WHERE id=?',[pid])==[{'revision':previous_revision+1,'enabled':1}]
+          and current_history[:-1]==previous_history and current_history[-1]['revision']==previous_revision+1
+          and current_history[-1]['enabled']==1 and current_history[-1]['has_credentials']==1
+          and provider_server.calls==previous_calls and provider_server.posts==previous_posts)
     r=op_post('provider_operations_reconcile',idempotency_key='packaged-ctx-1')
     check('A changed approved context refuses reconciliation','approved context' in r.text.lower())
     provider_server.write_mode='success'

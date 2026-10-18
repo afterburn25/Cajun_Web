@@ -1,5 +1,7 @@
 # Owner and client service-agreement screens
 
+Current 2026-10-15: Codex owns complete 20i P0. This retained component is being integrated as a necessary commercial dependency in `codex/twentyi-order-eligibility`; former allocation and acceptance below are historical. [Current integration and remaining eligibility](TWENTYI_COMMERCIAL_ELIGIBILITY.md). Missing established agreement tables now require original database restoration, not empty preparation. Combined native/browser/review evidence is pending.
+
 ## Implemented integration — acceptance pending
 
 The owner/client read models, controllers, routes, navigation and permission mappings are implemented on PR92. Four admin views cover plan list/detail and agreement list/detail; the existing portal handles `agreements=1` and `agreement=<id>`. Owners explicitly prepare storage. No automatic schema activation, invoice generation, scheduled charge or provider action is added.
@@ -8,7 +10,7 @@ Local PHP8.4 default/no-ini each pass98 form/rendering checks; native MariaDB pa
 
 ## Owned scope
 
-Devin owns the ported form/read helpers under `site/app/plans/`, admin controller/views, portal controller/view and the minimal router/navigation/permission integration on `devin/non20i-service-plans`. Existing branding and layouts are reused. No canonical foundation changes, new identity system, payment scheduler or provider integration are needed. The reviewed parent branch remains frozen while its full acceptance runs.
+Codex owns new form/read helpers under `site/app/plans/`, admin controller/views, portal controller/view and the minimal router/navigation/permission integration. Existing branding and layouts are reused. No canonical foundation changes, new identity system, payment scheduler or provider integration are needed. The reviewed parent branch remains frozen while its full acceptance runs.
 
 ## Owner workflow
 
