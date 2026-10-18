@@ -8,5 +8,16 @@ if (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); ex
 .package-panel .compact{padding-top:13px;padding-bottom:14px}.package-panel .path-note{margin-bottom:0}.package-issues{padding-left:20px;color:#ffcfaf;font-size:12px;overflow-wrap:anywhere}.package-issues li{margin:6px 0}.package-issues code{color:#ffe2a5}.package-panel .panel-head{padding-top:15px;padding-bottom:15px}
 .onepage-note{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px;padding:14px 20px;margin:0 0 20px;border:1px solid #b38d463b;border-radius:12px;background:#bda05208;font-size:12px;line-height:1.65;color:#ced9e8}
 .onepage-note strong{color:#f3d48b;font-weight:600}.onepage-note span{color:#9eafc4}
-#host-report{width:100%;box-sizing:border-box;min-height:180px;border:1px solid #556a844f;background:#040d19;color:#dae5f4;border-radius:8px;font:12px/1.6 ui-monospace,monospace;padding:14px;resize:vertical}
-@media(max-width:600px){.onepage-note{padding:12px 15px;font-size:11px}#host-report{font-size:11px}}
+@media(max-width:600px){.onepage-note{padding:12px 15px;font-size:11px}}
+
+/* Keep server checks beside the complete setup form on wider screens. */
+.setup-layout{display:grid;grid-template-columns:minmax(280px,330px) minmax(0,1fr);gap:22px;align-items:start}
+.setup-checks,.setup-main{min-width:0}
+.server-panel .panel-head{flex-direction:column;align-items:flex-start;gap:14px}
+.server-panel .checks-grid{grid-template-columns:1fr}
+.server-panel .storage-line{grid-template-columns:1fr;gap:10px}
+.setup-main .fields-columns .panel-head{flex-wrap:wrap;align-content:flex-start}
+.setup-main .launch-bar{flex-wrap:wrap;gap:18px}
+@media(max-width:1180px){.setup-main .fields-columns{grid-template-columns:1fr;gap:0}.setup-main .fields-columns>.panel{height:auto}}
+@media(max-width:900px){.setup-layout{grid-template-columns:minmax(0,1fr);gap:0}.server-panel .checks-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.server-panel .panel-head{flex-direction:row;align-items:center}}
+@media(max-width:430px){.server-panel .checks-grid{grid-template-columns:1fr}.server-panel .panel-head{flex-direction:column;align-items:flex-start}}

@@ -77,6 +77,16 @@ bf_deny('Deactivated license refused', function () {
     try { license_bundle('TEST-1234-ABCD-5678', 'restaurant', sys_get_temp_dir(), sys_get_temp_dir()); }
     finally { $GLOBALS['bf_license']['is_active'] = 1; }
 });
+bf_deny('Master license refused for bundling', function () {
+    $GLOBALS['bf_license']['is_master'] = 1;
+    try { license_bundle('TEST-1234-ABCD-5678', 'restaurant', sys_get_temp_dir(), sys_get_temp_dir()); }
+    finally { $GLOBALS['bf_license']['is_master'] = 0; }
+});
+bf_deny('Master license refused for bundle storage', function () {
+    $GLOBALS['bf_license']['is_master'] = 1;
+    try { license_bundle_store(7, sys_get_temp_dir() . '/never.zip', 'master'); }
+    finally { $GLOBALS['bf_license']['is_master'] = 0; }
+});
 bf_deny('Unknown industry refused', fn() => license_bundle('TEST-1234-ABCD-5678', 'nonexistent', sys_get_temp_dir(), sys_get_temp_dir()));
 
 // --- bundle store -----------------------------------------------------------
