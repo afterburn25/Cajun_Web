@@ -16,7 +16,7 @@ def upgrade():
     tables=['staff_profiles','staff_invitations','support_clients','support_events','studio_clients','studio_jobs','studio_invoices','catalog_products','catalog_revisions','catalog_invoice_snapshots','leads','projects']
     before={t:db('SELECT * FROM paymentup_'+t) for t in tables};settings=db('SELECT * FROM paymentup_settings');users=db('SELECT * FROM paymentup_users')
     with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(dest)
-    from structure_helpers import apply_file_update
+    from structure_helpers import apply_file_update, removed_setup_unavailable
     apply_file_update(globals(),dest)
     check('Actual 1.4.0 update preserves configuration guards and private files',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();url=BASE+'/payment-upgrade/admin/index.php';submit(up,url+'?view=login','login',{'email':'upgrade@example.invalid','password':'Synthetic upgrade passphrase 2026'})
@@ -26,7 +26,7 @@ def upgrade():
     now={v['name']:v['value'] for v in db('SELECT * FROM paymentup_settings')};check('Actual 1.4.0 retains all original settings',all(now[s['name']]==s['value'] for s in settings if not s['name'].endswith('_schema_version')))
     check('Actual 1.4.0 retains owner passwords and account identities',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(db('SELECT * FROM paymentup_users'),users)))
     check('Actual 1.4.0 upgrade creates no gateway or payable requests',not db('SELECT * FROM paymentup_payment_gateways') and not db('SELECT * FROM paymentup_payment_requests'))
-    check('Actual 1.4.0 installed guard remains',requests.get(BASE+'/payment-upgrade/install.php').status_code==404)
+    check('Actual 1.4.0 installed guard remains',removed_setup_unavailable(globals(),dest,up))
 
 def run_http(env):
     globals().update({k:env[k] for k in ['ROOT','WEB','BASE','QA','check','soup','token','form_data','form_for','submit','php','admin','bob']})

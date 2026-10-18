@@ -9,6 +9,13 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   if($action==='message')support_message($supportId,$jobId,posted('body',5000));else support_upload($supportId,$jobId);
   flash('Saved as Studio support.');redirect(studio_url(['job'=>$jobId]));
  }
+ elseif(str_starts_with($action,'registration_drafts_')){if(!$client)throw new RuntimeException('Sign in to continue.');registration_drafts_client_action($action,$client);}
+ elseif(str_starts_with($action,'forwarding_')){if(!$client)throw new RuntimeException('Sign in to continue.');provider_forwarding_client_action($action,$client);}
+ elseif(str_starts_with($action,'domain_renewal_')){if(!$client)throw new RuntimeException('Sign in to continue.');domain_renewals_client_action($action,$client);}
+ elseif($action==='client_mailbox_create'){if(!$client)throw new RuntimeException('Sign in to continue.');provider_mailbox_client_action($client);}
+ elseif($action==='client_domain_search'){if(!$client)throw new RuntimeException('Sign in to continue.');provider_domain_client_action($client);}
+ elseif(str_starts_with($action,'recurring_')){if(!$client)throw new RuntimeException('Sign in to continue.');recurring_ui_action($action,(int)$client['id']);}
+ elseif(str_starts_with($action,'service_agreements_')){if(!$client)throw new RuntimeException('Sign in to continue.');service_plans_portal_action($action,$client);}
  elseif($action==='activity_mark')activity_post('client');
  elseif($action==='activate'){$password=posted('password',72);if($password!==posted('confirm_password',72))throw new InvalidArgumentException('Passwords do not match.');if(!consume_rate(ip_key('client-activate'),10,900))throw new RuntimeException('Please wait before trying again.');studio_activate(is_string($_POST['invite']??null)?$_POST['invite']:'',$password);flash('Your password is saved. Sign in below.');redirect(studio_url());}
  elseif($action==='login'){studio_login(strtolower(posted('email',190)),posted('password',1000));redirect(studio_url());}
@@ -17,17 +24,17 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
  if($action==='license_domain_add'){$licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);require_once CWP_CODE_ROOT.'/app/licenses/service.php';
   if(!license_ready())throw new RuntimeException('Licensing storage is not prepared yet.');
   if(!consume_rate(ip_key('client-license'),20,3600))throw new RuntimeException('Please wait before making more license changes.');
-  if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=?',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
+  if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=? AND is_master=0',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
   license_register_domain($licenseId,$domain,(int)$client['id']);flash('Domain registered.');redirect(studio_url());}
  elseif($action==='license_domain_deactivate'){$licenseId=gint($_POST,'license_id',1,2147483647);$domain=posted('domain',255);require_once CWP_CODE_ROOT.'/app/licenses/service.php';
   if(!license_ready())throw new RuntimeException('Licensing storage is not prepared yet.');
   if(!consume_rate(ip_key('client-license'),20,3600))throw new RuntimeException('Please wait before making more license changes.');
-  if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=?',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
+  if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=? AND is_master=0',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
   license_deactivate_domain($licenseId,$domain,(int)$client['id']);flash('Domain deactivated.');redirect(studio_url());}
  elseif($action==='license_domain_replace'){$licenseId=gint($_POST,'license_id',1,2147483647);$old=posted('old_domain',255);$new=posted('new_domain',255);require_once CWP_CODE_ROOT.'/app/licenses/service.php';
   if(!license_ready())throw new RuntimeException('Licensing storage is not prepared yet.');
   if(!consume_rate(ip_key('client-license'),20,3600))throw new RuntimeException('Please wait before making more license changes.');
-  if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=?',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
+  if(!one('SELECT id FROM '.table('website_licenses').' WHERE id=? AND customer_id=? AND is_master=0',[$licenseId,$client['id']]))throw new InvalidArgumentException('License not found.');
   license_replace_domain($licenseId,$old,$new,(int)$client['id']);flash('Domain replaced — the old site goes offline at its next license check.');redirect(studio_url());}
  $job=studio_job($jobId,(int)$client['id']);
  if($action==='message'){$body=posted('body',5000);if(strlen($body)<2)throw new InvalidArgumentException('Write a message.');if(!consume_rate(ip_key('client-message'),30,3600))throw new RuntimeException('Please wait before sending more messages.');query('INSERT INTO '.table('studio_messages').' (job_id,author_type,author_id,body,created_at) VALUES (?,?,?,?,?)',[$jobId,'client',$client['id'],$body,gmdate('Y-m-d H:i:s')]);flash('Message saved.');}

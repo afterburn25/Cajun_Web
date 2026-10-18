@@ -123,7 +123,7 @@ function payments_invoice_hash(array $i): string {$base=hash('sha256',json_encod
 function payments_prepare(int $invoice,string $purpose,int $days,string $fingerprint,string $key): int {
     if(!isset(payments_purposes()[$purpose])||$days<1||$days>30||!preg_match('/^[a-f0-9]{64}$/D',$key)||!preg_match('/^[a-f0-9]{64}$/D',$fingerprint))throw new InvalidArgumentException('Review a current invoice, purpose and expiry of 1–30 days.');
     return staff_locked(fn()=>staff_transaction(function() use($invoice,$purpose,$days,$fingerprint,$key): int {
-        $actor=payments_require();$hash=hash('sha256',json_encode([$invoice,$purpose,$days,$fingerprint],JSON_THROW_ON_ERROR));
+        $actor=payments_require();require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_dispatch.php';domain_renewal_dispatch_invoice_guard($invoice);$hash=hash('sha256',json_encode([$invoice,$purpose,$days,$fingerprint],JSON_THROW_ON_ERROR));
         $old=one('SELECT * FROM '.table('payment_requests').' WHERE request_key=? FOR UPDATE',[$key]);
         if($old){if((int)$old['actor_id']!==(int)$actor['id']||!hash_equals($old['request_hash'],$hash))throw new RuntimeException('This request was already submitted with different details.');return (int)$old['id'];}
         $i=payments_invoice($invoice);if(!hash_equals(payments_invoice_hash($i),$fingerprint))throw new RuntimeException('The invoice changed. Reload and review its current amount.');

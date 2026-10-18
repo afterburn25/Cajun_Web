@@ -1,0 +1,124 @@
+name: Native paid domain renewal dispatch checks
+on:
+  push:
+    branches: [main, codex/twentyi-domain-renewal-dispatch]
+    paths: ['site/app/providers/**', 'site/app/plans/**', 'site/app/hosting/**', 'site/app/billing/**', 'site/admin/**', 'site/portal/**', 'site/includes/layout/plans.php', 'site/includes/layout/ledger.php', 'site/database/**', 'site/app/staff/**', 'site/app/clients/**', 'tests/domain_renewal_dispatch*', 'tests/domain_renewal_agreements*', 'tests/provider_http_server.py', 'foundation/twentyi-operations/**', 'foundation/twentyi/**', 'site/includes/foundation/**', 'tests/domain_renewals_native.php', 'tests/service_plans_native.php', 'tests/recurring_billing_native.php', 'tests/service_orders*', '.github/workflows/domain-renewal-dispatch.yml']
+  pull_request:
+    paths: ['site/app/providers/**', 'site/app/plans/**', 'site/app/hosting/**', 'site/app/billing/**', 'site/admin/**', 'site/portal/**', 'site/includes/layout/plans.php', 'site/includes/layout/ledger.php', 'site/database/**', 'site/app/staff/**', 'site/app/clients/**', 'tests/domain_renewal_dispatch*', 'tests/domain_renewal_agreements*', 'tests/provider_http_server.py', 'foundation/twentyi-operations/**', 'foundation/twentyi/**', 'site/includes/foundation/**', 'tests/domain_renewals_native.php', 'tests/service_plans_native.php', 'tests/recurring_billing_native.php', 'tests/service_orders*', '.github/workflows/domain-renewal-dispatch.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: domain-renewal-dispatch-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  native-renewal-dispatch:
+    name: Paid domain renewal dispatch PHP ${{ matrix.php }} and ${{ matrix.database.label }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database:
+          - {image: 'mariadb:10.11', label: 'mariadb-10.11'}
+          - {image: 'mysql:8.4', label: 'mysql-8.4'}
+    services:
+      database:
+        image: ${{ matrix.database.image }}
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['3306/tcp']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify generated deployment inventory and documentation
+        run: |
+          PYTHONPATH=tools python -B -c 'import build; build.generated(False)'
+          python -B tools/check_docs.py
+      - name: Prepare official PHP with PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-inventory-test -f tests/invitations/Dockerfile tests/invitations
+      - name: Allow isolated MySQL audit-failure fixture triggers
+        if: matrix.database.label == 'mysql-8.4'
+        run: docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+      - name: Actual synthetic renewal HTTP Handler
+        run: |
+          mkdir -p qa
+          python -B tests/domain_renewal_dispatch_http_contract.py > qa/domain-renewal-dispatch-handler-results.json
+      - name: Paid renewal allocation, approval and inherited billing paths
+        env:
+          CWP_TEST_PORT: ${{ job.services.database.ports[3306] }}
+        run: |
+          mkdir -p qa
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-inventory-test sh -ec '
+              for source in site/app/providers/domain_renewal_agreements*.php site/admin/controllers/domain_renewal_agreements.php site/admin/views/domain_renewal_agreements.php site/database/schema/domain_renewal_agreements_schema.php site/app/plans/records.php site/app/hosting/orders.php tests/domain_renewal_agreements*.php site/app/providers/domain_renewal_dispatch*.php site/admin/controllers/domain_renewal_dispatch.php site/database/schema/domain_renewal_dispatch_schema.php tests/domain_renewal_dispatch*.php; do php -l "$source"; done
+              php tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-default.json
+              php -n tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-minimal.json
+              php tests/domain_renewal_agreements_native.php
+              php tests/domain_renewals_native.php
+              php tests/service_plans_native.php
+              php -d memory_limit=128M tests/recurring_billing_native.php
+              php tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-default.json
+              php -n tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-minimal.json
+              php tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-default.json
+              php -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json
+              php tests/domain_renewal_dispatch_native.php
+              php tests/twentyi-operations/run.php qa/renewal-existing-operations.json
+              php tests/twentyi-operations/mailboxes.php qa/renewal-existing-mailboxes.json
+              php tests/twentyi-operations/cloud-sites.php qa/renewal-existing-cloud-sites.json
+              php tests/force_ssl_controls_transport.php > qa/renewal-existing-force-ssl-transport.json
+            '
+      - name: Preserve named storage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: domain-renewal-dispatch-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
+          path: |
+            qa/domain-renewal-dispatch-document-default.json
+            qa/domain-renewal-dispatch-document-minimal.json
+            qa/domain-renewal-dispatch-transport-default.json
+            qa/domain-renewal-dispatch-transport-minimal.json
+            qa/domain-renewal-dispatch-handler-results.json
+            qa/domain-renewal-dispatch-native-results.json
+            qa/renewal-existing-operations.json
+            qa/renewal-existing-mailboxes.json
+            qa/renewal-existing-cloud-sites.json
+            qa/renewal-existing-force-ssl-transport.json
+            qa/domain-renewal-agreements-document-default.json
+            qa/domain-renewal-agreements-document-minimal.json
+            qa/domain-renewal-agreements-native-results.json
+            qa/domain-renewals-native-results.json
+            qa/service-plans-native-results.json
+            qa/recurring-billing-native-results.json
+            qa/service-orders-native-results.json
+            qa/service-orders-links-native-results.json
+            qa/service-orders-link-views-native-results.json
+            qa/hosting-fulfillment-native-results.json
+            qa/hosting-fulfillment-forms-native-results.json
+            qa/hosting-confirmation-native-results.json
+            qa/provider-plan-catalog-native-results.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Native permanent prepayment invoice purpose, original client consent, paid receipt evidence, owner approval, one-send existing operation gateway and domain-wide ambiguous-outcome fence; plus original agreement/request/billing/order/provider regressions. Disposable database and synthetic provider only; no real payment, provider, browser or deployment.' >> "$GITHUB_STEP_SUMMARY"
