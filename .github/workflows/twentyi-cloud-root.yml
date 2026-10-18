@@ -1,0 +1,44 @@
+name: 20i cloud root diagnostic
+
+# Owner-authorized operation-specific read. Root reviews these exact bytes before
+# pushing this dedicated branch with the exact message. No PR/schedule/main trigger.
+on:
+  push:
+    branches: [ops/twentyi-cloud-root-read]
+    paths:
+      - .github/workflows/twentyi-cloud-root.yml
+      - ops/twentyi-cloud-root/**
+permissions: {}
+concurrency:
+  group: twentyi-explicit-read-only
+  cancel-in-progress: false
+jobs:
+  cloud-root:
+    if: >-
+      github.repository == 'afterburn25/Cajun_Web' &&
+      github.actor == 'afterburn25' && github.triggering_actor == 'afterburn25' &&
+      github.run_attempt == '1' &&
+      github.event_name == 'push' && github.ref == 'refs/heads/ops/twentyi-cloud-root-read' &&
+      github.event.head_commit.message == 'ci: read one fixed 20i cloud root'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Offline transport and disclosure guards
+        run: python3 -I -B ops/twentyi-cloud-root/test_diagnostic.py
+      - name: One fixed cloud metadata GET; root kind and safe shape
+        env:
+          TWENTYI_API_KEY: ${{ secrets.TWENTYI_API_KEY }}
+        run: python3 -I -B ops/twentyi-cloud-root/diagnostic.py
+      - name: Preserve only the bounded shape result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: twentyi-cloud-root-${{ github.run_id }}-${{ github.run_attempt }}
+          path: cloud-root-evidence/cloud-root-shape.json
+          if-no-files-found: error
+          retention-days: 7

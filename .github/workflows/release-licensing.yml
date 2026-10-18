@@ -1,0 +1,159 @@
+name: Release licensing early native acceptance
+on:
+  push:
+    branches: [codex/release-1.25.0]
+    paths: ['site/app/licenses/**', 'site/api/bundle-download.php', 'site/database/migrations/license_migrate.php', 'site/database/schema/license_schema.php', 'site/database/schema/catalog_validate_schema.php', 'site/admin/controllers/studio.php', 'site/admin/views/studio/licenses.php', 'site/portal/controllers/actions.php', 'site/portal/views/workspace.php', 'site/install/actions/deploy.php', 'tests/license*.php', 'tests/license_release_cases.py', 'tests/license_release_diagnostic.py', 'tests/fixtures/license_pre_master_schema.php', '.github/workflows/release-licensing.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: release-licensing-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+  cancel-in-progress: false
+jobs:
+  licensing:
+    name: Licensing ${{ matrix.php }} and ${{ matrix.database.label }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database:
+          - {image: 'mariadb:10.11', label: 'mariadb-10.11'}
+          - {image: 'mysql:8.4', label: 'mysql-8.4'}
+    services:
+      database:
+        image: ${{ matrix.database.image }}
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['3306/tcp']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prepare official PHP with PDO MySQL and ZIP
+        run: |
+          docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-license-base -f tests/invitations/Dockerfile tests/invitations
+          docker build -t cwp-license-test - <<'DOCKERFILE'
+          FROM cwp-license-base
+          RUN apt-get update -qq && apt-get install -y --no-install-recommends libzip-dev && docker-php-ext-install zip
+          DOCKERFILE
+      - name: Allow isolated MySQL audit-failure fixture triggers
+        if: matrix.database.label == 'mysql-8.4'
+        run: docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+      - name: Native licensing upgrade master isolation and exact owner invoice review
+        env:
+          CWP_TEST_PORT: ${{ job.services.database.ports['3306'] }}
+          CWP_TEST_PHP: ${{ matrix.php }}
+          CWP_TEST_ENGINE: ${{ matrix.database.label }}
+        run: |
+          mkdir -p qa test-runtime
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            -e CWP_TEST_PHP -e CWP_TEST_ENGINE -e GITHUB_SHA -e GITHUB_RUN_ID -e GITHUB_RUN_ATTEMPT \
+            cwp-license-test sh -ec '
+              php -r '\''if(!extension_loaded("pdo_mysql")||!extension_loaded("zip")||!class_exists("ZipArchive"))throw new RuntimeException("Required licensing native extensions are missing.");$config=["site_url"=>"http://127.0.0.1:8091/existing","storage"=>"","key"=>str_repeat("a",64),"db"=>["host"=>getenv("CWP_TEST_HOST"),"port"=>(int)getenv("CWP_TEST_PORT"),"name"=>"cwp_test","user"=>getenv("CWP_TEST_USER"),"pass"=>getenv("CWP_TEST_PASSWORD"),"prefix"=>"ci_"]];file_put_contents("test-runtime/config-fixture.php","<?php return ".var_export($config,true).";");$db=new PDO("mysql:host=".$config["db"]["host"].";port=".$config["db"]["port"].";dbname=cwp_test",$config["db"]["user"],$config["db"]["pass"],[PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);file_put_contents("qa/release-licensing-environment.json",json_encode(["source"=>getenv("GITHUB_SHA"),"run"=>getenv("GITHUB_RUN_ID"),"attempt"=>getenv("GITHUB_RUN_ATTEMPT"),"requested_php"=>getenv("CWP_TEST_PHP"),"php"=>PHP_VERSION,"extensions"=>get_loaded_extensions(),"pdo_drivers"=>PDO::getAvailableDrivers(),"database"=>getenv("CWP_TEST_ENGINE"),"server"=>$db->getAttribute(PDO::ATTR_SERVER_VERSION),"scope"=>"native-only; actual packaged HTTP remains required in full acceptance"],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));'\''
+              php -l tests/license_legacy_contender.php
+              php -l tests/license_upgrade_cases.php
+              php tests/license_native.php
+            '
+      - name: Verify shipping source was not changed
+        if: always()
+        run: git diff --exit-code -- site foundation
+      - name: Preserve exact named native evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-licensing-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            qa/license-native-results.json
+            qa/release-licensing-environment.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Record bounded scope
+        if: always()
+        run: echo 'Early disposable native database and real separate-process acceptance only. Does not substitute exact packaged HTTP, browser, upgrade, recovery, full release or main acceptance. No Website_Core execution, provider, mail or payment operation.' >> "$GITHUB_STEP_SUMMARY"
+
+  licensing-http:
+    name: Supplemental packaged licensing HTTP on maintained PHP 8.3 and MariaDB
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      database:
+        image: mariadb:10.11
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+        ports: ['3306/tcp']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_PHP_VERSION: '8.3'
+      CWP_DATABASE: mariadb-10.11
+      PHP_BINARY: /usr/bin/php8.3
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install maintained distro PHP and real browser dependencies
+        env:
+          CWP_ASSIGNED_PORT: ${{ job.services.database.ports['3306'] }}
+        run: |
+          echo "CWP_TEST_PORT=$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
+          printf 'Acquire::Retries "5";\nAPT::Update::Error-Mode "any";\n' | sudo tee /etc/apt/apt.conf.d/80-cwp-licensing-retries >/dev/null
+          sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update
+          sudo apt-get -o Acquire::Retries=5 install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring python3-venv
+          test -x "$PHP_BINARY"
+          python3 -m venv .ci-venv
+          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
+          .ci-venv/bin/python -m playwright install --with-deps chromium
+      - name: Build this exact source once for the isolated HTTP diagnostic
+        run: |
+          mkdir -p qa
+          python3 tools/build.py --commit "$GITHUB_SHA" > qa/licensing-http-build.log 2>&1
+      - name: Run unchanged actual licensing forms downloads support and six browser captures
+        run: .ci-venv/bin/python tests/license_release_diagnostic.py
+      - name: Preserve source and original complete acceptance recipe
+        if: always()
+        run: git diff --exit-code -- site foundation tools tests .github/workflows
+      - name: Preserve supplemental licensing HTTP results and honest failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-licensing-http-8.3-mariadb-10.11-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            qa/licensing-http-build.log
+            qa/native-environment-results.json
+            qa/licensing-http/
+            dist/*-COMPLETE-UPLOAD.zip
+            dist/*-COMPLETE-UPLOAD.manifest.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Record supplemental diagnostic scope
+        if: always()
+        run: echo 'Supplemental maintained PHP8.3/MariaDB packaged licensing HTTP and Chromium only. Reuses the unchanged complete-browser licensing case, including all assertions, six captures and twenty response diagnostics. Does not replace complete four-environment candidate/main acceptance, upgrade, recovery, visual review or release verification. No provider request or Website_Core execution.' >> "$GITHUB_STEP_SUMMARY"
