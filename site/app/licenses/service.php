@@ -3,6 +3,14 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 
+/** Read-only upgrade guard; existing portals must not query tables they do not yet have. */
+function license_storage_ready(): bool {
+    foreach(['website_licenses','license_domains','license_bundles'] as $name) {
+        if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))return false;
+    }
+    return true;
+}
+
 /**
  * Write a licensing audit record — every mutation (create, domain
  * register/deactivate/replace, license deactivate) leaves a trail so a
@@ -26,6 +34,17 @@ function license_audit(int $actor, string $action, string $detail): void {
  */
 function license_ready(): bool {
     return (one('SELECT value FROM ' . table('settings') . ' WHERE name = ?', ['license_schema_version'])['value'] ?? '') === '3';
+}
+
+/** Pre-upgrade invoice boundary, recorded once by explicit preparation. */
+function license_invoice_cutover_ready(): bool {
+    $value=one('SELECT value FROM '.table('settings').' WHERE name=?',['license_invoice_cutover'])['value']??null;
+    return is_string($value)&&preg_match('/^(0|[1-9][0-9]{0,9})$/D',$value)===1&&(float)$value<=4294967295;
+}
+function license_invoice_cutover(): int {
+    $value=one('SELECT value FROM '.table('settings').' WHERE name=?',['license_invoice_cutover'])['value']??null;
+    if(!is_string($value)||preg_match('/^(0|[1-9][0-9]{0,9})$/D',$value)!==1||(float)$value>4294967295)throw new RuntimeException('Prepare licensing history before fulfilling this invoice.');
+    return (int)$value;
 }
 
 /**

@@ -57,6 +57,7 @@ function hosting_operations_migrate(#[\SensitiveParameter] string $password): vo
         $actor=hosting_records_password($password);provider_settings_manager();
         $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['hosting_operations_schema_version'])['value']??'');
         if(!in_array($version,['','1'],true))throw new RuntimeException('This hosting storage version is not supported. Existing data was preserved.');
+        hosting_storage_prepare('operations');
         foreach(hosting_operations_schema(config()['db']['prefix']) as $name=>$sql) {
             if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))db()->exec($sql);
             hosting_operations_validate_schema($name,$sql);

@@ -55,6 +55,7 @@ function hosting_reconciliation_migrate(#[\SensitiveParameter] string $password)
         $actor=hosting_records_password($password);hosting_operations_require_ready();
         $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['hosting_reconciliation_schema_version'])['value']??'');
         if(!in_array($version,['','1'],true))throw new RuntimeException('This reconciliation storage version is not supported. Existing data was preserved.');
+        hosting_storage_prepare('reconciliation');
         foreach(hosting_reconciliation_schema(config()['db']['prefix']) as $name=>$sql){
             if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))db()->exec($sql);
             hosting_reconciliation_validate_schema($name,$sql);
