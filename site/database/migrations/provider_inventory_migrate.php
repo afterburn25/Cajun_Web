@@ -7,22 +7,24 @@ require_once CWP_CODE_ROOT.'/database/schema/provider_inventory_schema.php';
 function provider_inventory_validate_schema(string $name,string $sql): void {
     $unique=match($name) {
         'provider_refreshes'=>['seq'=>['seq']],
-        'provider_refresh_results','provider_package_link_events','provider_domain_link_events'=>[],
+        'provider_refresh_results','provider_package_link_events','provider_domain_link_events','provider_cloud_link_events'=>[],
         'provider_observation_packages'=>['observation_identity'=>['refresh_id','package_id']],
+        'provider_observation_cloud'=>['observation_identity'=>['refresh_id','server_id']],
         'provider_package_links'=>['link_target'=>['profile_id','package_id']],
         'provider_domain_links'=>['link_target'=>['profile_id','domain']],
+        'provider_cloud_links'=>['link_target'=>['profile_id','server_id']],
         default=>throw new LogicException('Unknown provider inventory storage.'),
     };
     catalog_validate_schema($name,$sql,$unique);
     foreach(all('SHOW FULL COLUMNS FROM '.table($name)) as $column) {
-        $sequenceColumn=(in_array($name,['provider_package_link_events','provider_domain_link_events'],true) && $column['Field']==='id')
+        $sequenceColumn=(in_array($name,['provider_package_link_events','provider_domain_link_events','provider_cloud_link_events'],true) && $column['Field']==='id')
             || ($name==='provider_refreshes' && $column['Field']==='seq');
         if($column['Extra']!=='' && !($sequenceColumn && $column['Extra']==='auto_increment')) throw new RuntimeException('Incompatible provider inventory columns. Existing data was preserved.');
         if($column['Default']!==null) throw new RuntimeException('Incompatible provider inventory columns. Existing data was preserved.');
         $expected=match(true) {
-            ($name==='provider_package_link_events' || $name==='provider_domain_link_events') && $column['Field']==='id'=>null,
-            in_array($column['Field'],['id','profile_id','refresh_id','state','reason','scope','coverage','skip_reasons','created_at','unmapped_keys','event','key_fingerprint'],true)=>'ascii_bin',
-            in_array($column['Field'],['name','names','package_type_name','stack_users','package_labels','domain'],true)=>'utf8mb4_unicode_ci',
+            in_array($name,['provider_package_link_events','provider_domain_link_events','provider_cloud_link_events'],true) && $column['Field']==='id'=>null,
+            in_array($column['Field'],['id','link_id','profile_id','refresh_id','state','reason','scope','operation','coverage','skip_reasons','created_at','unmapped_keys','event','key_fingerprint'],true)=>'ascii_bin',
+            in_array($column['Field'],['name','names','package_type_name','stack_users','package_labels','domain','metadata'],true)=>'utf8mb4_unicode_ci',
             default=>null,
         };
         if($column['Collation']!==$expected) throw new RuntimeException('Incompatible provider inventory identifier or text storage. Existing data was preserved.');
@@ -33,9 +35,12 @@ function provider_inventory_validate_schema(string $name,string $sql): void {
         'provider_refreshes'=>['profile_refreshes'=>['profile_id','started_epoch'],'actor_refreshes'=>['actor_id','started_epoch']],
         'provider_refresh_results'=>[],
         'provider_observation_packages'=>['package_history'=>['package_id','refresh_id']],
+        'provider_observation_cloud'=>['server_history'=>['server_id','refresh_id']],
         'provider_package_links'=>['client_links'=>['client_id'],'link_actor'=>['linked_by']],
         'provider_package_link_events'=>['profile_events'=>['profile_id','recorded_at'],'client_events'=>['client_id','recorded_at'],'event_actor'=>['actor_id']],
         'provider_domain_links'=>['client_links'=>['client_id'],'link_actor'=>['linked_by']],
+        'provider_cloud_links'=>['client_links'=>['client_id'],'link_actor'=>['linked_by'],'approved_observation'=>['refresh_id']],
+        'provider_cloud_link_events'=>['profile_events'=>['profile_id','recorded_at'],'client_events'=>['client_id','recorded_at'],'event_actor'=>['actor_id']],
         'provider_domain_link_events'=>['profile_events'=>['profile_id','recorded_at'],'client_events'=>['client_id','recorded_at'],'event_actor'=>['actor_id']],
     };
     foreach($other as $key=>$columns)$expected[$key]=[1,$columns];
@@ -52,10 +57,13 @@ function provider_inventory_validate_schema(string $name,string $sql): void {
         'provider_refreshes'=>['profile_id'=>['provider_profiles','id'],'actor_id'=>['users','id']],
         'provider_refresh_results'=>['id'=>['provider_refreshes','id']],
         'provider_observation_packages'=>['refresh_id'=>['provider_refreshes','id']],
+        'provider_observation_cloud'=>['refresh_id'=>['provider_refreshes','id']],
         'provider_package_links'=>['profile_id'=>['provider_profiles','id'],'client_id'=>['studio_clients','id'],'linked_by'=>['users','id']],
         'provider_package_link_events'=>['actor_id'=>['users','id']],
         'provider_domain_links'=>['profile_id'=>['provider_profiles','id'],'client_id'=>['studio_clients','id'],'linked_by'=>['users','id']],
         'provider_domain_link_events'=>['actor_id'=>['users','id']],
+        'provider_cloud_links'=>['profile_id'=>['provider_profiles','id'],'client_id'=>['studio_clients','id'],'linked_by'=>['users','id'],'refresh_id'=>['provider_refreshes','id']],
+        'provider_cloud_link_events'=>['actor_id'=>['users','id']],
     };
     $relations=all('SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL',[config()['db']['prefix'].$name]);
     if(count($relations)!==count($expected))throw new RuntimeException('Incompatible provider inventory relationships. Existing data was preserved.');
@@ -88,18 +96,20 @@ function provider_inventory_migrate(#[\SensitiveParameter] string $password): vo
         $actor=provider_settings_owner($password);
         if((one('SELECT value FROM '.table('settings').' WHERE name=?',['studio_schema_version'])['value']??'')!=='2')throw new RuntimeException('Prepare the client workspace before provider inventory.');
         $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_inventory_schema_version'])['value']??'');
-        if(!in_array($version,['','1','2','3'],true))throw new RuntimeException('This provider inventory storage version is not supported. Existing data was preserved.');
+        if(!in_array($version,['','1','2','3','4','5'],true))throw new RuntimeException('This provider inventory storage version is not supported. Existing data was preserved.');
         $missing=[];
         foreach(provider_inventory_schema(config()['db']['prefix']) as $name=>$sql) {
             if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))continue;
-            if($version==='3' || ($version!=='' && !in_array($name,['provider_domain_links','provider_domain_link_events'],true)))throw new RuntimeException('Expected provider inventory storage is missing. Restore the original database before preparing; existing data was preserved.');
+            $introduced=match($name){'provider_cloud_links','provider_cloud_link_events'=>5,'provider_observation_cloud'=>4,'provider_domain_links','provider_domain_link_events'=>3,default=>1};
+            if($version!=='' && (int)$version >= $introduced)throw new RuntimeException('Expected provider inventory storage is missing. Restore the original database before preparing; existing data was preserved.');
             $missing[$name]=$sql;
         }
         foreach($missing as $sql)db()->exec($sql);
         if($version==='1')provider_inventory_upgrade_v2();
+        if(in_array($version,['1','2','3'],true) && !one('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name=? AND column_name=?',[config()['db']['prefix'].'provider_refreshes','operation']))db()->exec('ALTER TABLE '.table('provider_refreshes').' ADD COLUMN operation VARCHAR(32) CHARACTER SET ascii COLLATE ascii_bin NULL AFTER started_epoch');
         foreach(provider_inventory_schema(config()['db']['prefix']) as $name=>$sql)provider_inventory_validate_schema($name,$sql);
         staff_transaction(function()use($actor):void {
-            save_setting('provider_inventory_schema_version','3');
+            save_setting('provider_inventory_schema_version','5');
             provider_settings_audit((int)$actor['id'],'inventory_prepared','20i inventory storage ready');
         });
     });

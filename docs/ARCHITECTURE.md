@@ -327,3 +327,7 @@ Canonical foundation/mail-compose/DraftContent validates plain text and exact re
 ## Local draft recovery and concurrent discard
 
 Candidate1.21.0 uses the verified1.20.0 baseline with existing encrypted provider state and private keys before file update. Draft storage stays additive and file recovery retains its rows. A rejected stale edit of a now-discarded draft renders a separate bounded escaped unsaved projection only after current author/mailbox checks; it never reactivates or overwrites the saved record.
+
+## Prepared service-plan storage
+
+Private `site/app/plans/` contains bounded canonical terms/agreement documents and current-authorized transactional operations. The paired schema and migration live under `site/database/`; no router or automatic schema activation is added. [Storage, ownership and acceptance contract](SERVICE_PLAN_RECORDS.md).

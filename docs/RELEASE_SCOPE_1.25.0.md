@@ -1,8 +1,22 @@
+## Published scope checkpoint — 2026-10-18
+
+The bounded increment and owner additions are included in verified 1.25.0 source `b79c67110829126916e3a65e616191542448bccc`; [publication/evidence](RELEASE_1.25.0_PUBLICATION.md). Complete candidate/main and publication/download gates have passed. All HOLD capabilities and live-operation limits remain unchanged.
+
+Earlier dated candidate and branch checkpoints below retain their original evidence and failures. Their pending-work statements do not supersede this publication record.
+
+## Observed product import candidate — 2026-10-17
+
+The explicit owner addition now has a reviewed [hosting-draft and local-image implementation](TWENTYI_PRODUCT_IMPORT.md), based on navigation source e8ccefc9. Root integrates its shared CI wiring and generated inventory. It preserves prior acceptance requirements and adds three reports and two images. Native/HTTP verification is pending; complete 20i catalogs and automatic provider images remain unresolved. This does not mark the full import roadmap or release complete.
+
+## Owner-requested additions — 2026-10-17
+
+The subsequent explicit requests add the installer correction in [PR206](https://github.com/afterburn25/Cajun_Web/pull/206) and [grouped administration/public navigation](NAVIGATION_1.25.0.md). They retain the original complete acceptance and publication gates. Bounded 20i product import is still on a separate unaccepted branch and is not represented as complete by this navigation change. All other HOLD items remain held.
+
 # CajunWebPro 1.25.0 frozen release scope
 
-Release priority override dated2026-10-16: ship the mature increment; do not wait for complete20i. Root adopted this bounded scope on 2026-10-16. Scope is frozen; combined release acceptance is pending.
+Release priority override dated2026-10-16: ship the mature increment; do not wait for complete20i. Root adopted this bounded scope on 2026-10-16. Scope is frozen; the versioned acceptance report records actual source-specific results and remaining gates.
 
-Published baseline `7190b582a02be8a1daa501db14b5899cfc1eb5d0` remains immutable. Current main `35d8fb7efc94f6f851399d0755fa93097f1fce66` must be the release branch starting point. Candidate `codex/twentyi-stackcp-read-snapshot` at `3fa72d7b3b447fa3d281cc981ed861c508f850f2` contains the mature20i history. Main and candidate diverge at `b8f8528b72520e60ee052119dcff1e8b2c829737` (39 main-only/263 candidate-only commits).
+Published baseline `7190b582a02be8a1daa501db14b5899cfc1eb5d0` remains immutable. Original main `35d8fb7efc94f6f851399d0755fa93097f1fce66` was the release branch starting point. Mature input `codex/twentyi-stackcp-read-snapshot` at `3fa72d7b3b447fa3d281cc981ed861c508f850f2` is already normally merged. These original inputs diverge at `b8f8528b72520e60ee052119dcff1e8b2c829737` (39 main-only/263 candidate-only commits).
 
 All INCLUDE rows are conditional on exact merged candidate/main acceptance and downloaded-release verification. Retained focused/older full evidence proves only its named source and scope. Nothing here authorizes live deployment, purchases, charges, mail or SSH.
 
@@ -51,10 +65,10 @@ All INCLUDE rows are conditional on exact merged candidate/main acceptance and d
 
 ## Release-blocking review and verification items
 
-- Current main licensing has known unresolved migration/master-client exposure/legacy-invoice/future-marker findings recorded in `docs/LICENSING_INTEGRATION_REVIEW.md`. PR159 repairs master exposure/unknown markers in its own source but remains unmerged and has two reported behavior gaps plus stale installer evidence. Root must resolve applicable P1/P2 findings in the exact main-preserving release union; this audit did not re-test licensing or accept that PR.
-- No final combined acceptance exists for3fa/current main. Keep original9779 timeout,2a tokenizer,cccf PDO and earlier fixture/sealing failures.5bfd fixed compatibility and3fa focused succeeds; neither waives full browser/Apache/update gates.
-- Test actual published1.24 COMPLETE as populated UPDATE input, retaining clients/projects/invoices/recurring/licenses/mail/provider rows, keys, links, operations and uncertain outcomes. Exercise repeat/interruption/recovery/reapplication and current supported PHP/database/distro lanes.
-- Inspect actual owner/client desktop/mobile screenshots in the preserved approved shell. WordPress mobile, catalog parser/privacy, period/PHP owner-budget, scheduler privacy, registration labels and renewal-stage corrections are already in the ancestor stack; do not regress or misrepresent older failed captures.
+- The integrated release source contains separately reviewed corrections for historical licensing migration, master-client exposure, older-invoice association and incompatible/missing-history findings. The [acceptance report](TEST_REPORT_1.25.0.md) records actual native evidence and complete-release gates. The [historical PR review](LICENSING_INTEGRATION_REVIEW.md) remains intact; the release correction does not accept PR159 or its other proposed bytes.
+- Complete acceptance must identify the exact merged candidate and exact main separately. Preserve original9779 timeout,2a tokenizer,cccf PDO and later fixture/sealing/provisioning failures with their corrections. Focused or parent success never waives full browser/Apache/update gates.
+- Test actual published1.24 COMPLETE as populated UPDATE input, retaining its client/project/invoice/mail/provider rows, keys, links, operations and uncertain outcomes. Stock1.24 predates recurring/licensing storage; create and preserve those separately after upgrading. Exercise repeat/interruption/recovery/reapplication and every required supported PHP/database/distro lane.
+- Inspect actual owner/client desktop/mobile screenshots in the retained public/portal layouts. The separate approved concept image was unavailable and its dedicated shell is not implemented; no visual-equivalence claim is made. WordPress mobile, catalog parser/privacy, period/PHP owner-budget, scheduler privacy, registration labels and renewal-stage corrections are already in the ancestor stack; do not regress or misrepresent older failed captures.
 - Existing scopes are operator-controlled, account-bound and synthetic-tested. Describe live-provider acceptance/configuration separately. Never advertise full DNS/mail/domain purchase/VPS management, remote StackCP login or SSH.
 - Keep new PHP read-snapshot external and unfinished. Already integrated native-tested StackCP snapshot is an INCLUDE dependency, not a reason to continue performance expansion.
 
