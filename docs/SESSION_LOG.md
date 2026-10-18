@@ -2121,3 +2121,23 @@ Owner reviews on #210 and #211 plus follow-throughs on #212/#213:
 - Propagated clean: activity-prefs `275fade9` → client-actions
   `9f243f97` → portal-account `d3fdafaf`. Acceptance dispatched on
   `d3fdafaf` (run 39088084804).
+
+## 2026-10-18 — Third fixture defect: NOT NULL feedback omitted by boundary INSERTs
+
+- Run 39088084804 (`d3fdafaf`) passed 1,455 checks — staff_cases,
+  activity_cases (including the re-authenticated milestone-revision
+  block) and contacts_cases' own revision block all green — then died
+  on `CalledProcessError(255, fixture_db.php)` in the #212 boundary
+  block at contacts_cases.py:196-206.
+- Root cause: both raw `INSERT INTO ci_studio_versions` statements
+  (the 101-row 'design' filler loop and the other-job 'proposal' row)
+  omit `feedback TEXT NOT NULL`, which has no default — strict mode
+  rejects the insert and `fixture_db.php` exits 255. The block was
+  moved after all feed assertions by `6bf64fce`, and every earlier
+  acceptance run died upstream, so these lines had never executed.
+  `studio_jobs` and all other raw INSERTs in the suite were audited
+  and cover every NOT NULL column.
+- Fix `4c172d6e` on `devin/non20i-client-actions` (the block's owning
+  branch): both INSERTs now supply `feedback`=''.
+- Propagated: portal-account `436e6def`. Acceptance dispatched on
+  `436e6def` (run 39089736893).
