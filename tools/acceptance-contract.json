@@ -554,10 +554,16 @@
     ],
     "source_sha256": {
       "tests/provider_catalog_import.php": "e0cc474d951f51dfdf57ac0d993b1ddadd4e533134b8b72093b23a1392147f66",
-      "tests/provider_catalog_import_native.php": "3266dca6cc1cef46460b789a5d4363ef36b7487b512571d74a4014f4eddfcaff",
+      "tests/provider_catalog_import_native.php": "c6f2460004e18da45c23f0bde3502da7122003121c07310bb611c886ca8bce0c",
       "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
     },
-    "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."
+    "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout.",
+    "provenance_fixture_correction": {
+      "source": "9f0b83fd1f18b9075f7d141f9a1d00b2646f4ebe",
+      "original_sha256": "3266dca6cc1cef46460b789a5d4363ef36b7487b512571d74a4014f4eddfcaff",
+      "corrected_sha256": "c6f2460004e18da45c23f0bde3502da7122003121c07310bb611c886ca8bce0c",
+      "reason": "Model a separate later credential observation without rewriting the retained original import source; all original assertions retained."
+    }
   },
   "provider_package_types": {
     "source_base": "6caf654c99cb5befb610f405e40df69b0c174cb6",

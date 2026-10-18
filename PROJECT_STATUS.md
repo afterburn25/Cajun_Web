@@ -1,5 +1,7 @@
 ## 2026-10-18 — direct hosting catalog candidate
 
+Corrected source `9f0b83fd` passes the four-way hosting catalog native matrix39092587358: 109 default, 109 minimal and 51 database checks per environment. The combined checkpoint39092587539 passes packaging but exposes an older fixture that rewrites original import provenance to model changed credentials. That fixture correction and actual browser verification remain pending. All original outcomes are retained.
+
 First CI source `9aa5c22e` is not accepted: native matrix39092279466 failed on invalid synthetic legacy inventory input; browser checkpoint39092299171 failed on the full-project `ops/` source allowlist before browser execution. The [feature guide](docs/TWENTYI_HOSTING_CATALOG.md#verification-status) preserves the outcomes and correction scope. No published release changed.
 
 The `codex/twentyi-direct-hosting-catalog` branch starts from `6caf654c99cb5befb610f405e40df69b0c174cb6` and implements a [direct hosting catalog draft-import candidate](docs/TWENTYI_HOSTING_CATALOG.md). Owners can explicitly refresh confirmed package-type IDs/names and import types absent from installed inventory. Existing imports, edited prices and local images retain their original identity and provenance across both sources. Additive observation storage binds current owner/connection context and refuses stale, failed or inconsistent sources. No provider pricing, automatic images, cloud import or hosting publication is added.
