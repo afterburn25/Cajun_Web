@@ -12,6 +12,7 @@ import zipfile
 import requests
 from bs4 import BeautifulSoup
 from release_125_retention import retained, exact_business
+from release_version import VERSION, STAGE
 
 BASELINE_SHA = 'aa7a84b4c0d1201a4eddf2fe68340b90d4860117ceff4d959d165e6feafa731e'
 BASELINE_SOURCE = '7190b582a02be8a1daa501db14b5899cfc1eb5d0'
@@ -75,8 +76,8 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
     assert os.environ.get('CWP_TEST_DATABASE') == 'cwp_test'
     assert installed.is_relative_to(repo / 'test-runtime')
     baseline = repo / 'test-runtime/CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip'
-    updates = list((repo / 'dist').glob('CajunWebPro-1.25.0-UPDATE.zip'))
-    assert len(updates) == 1, 'Bind this release fixture only after1.25 scope/version freeze.'
+    updates = list((repo / 'dist').glob('CajunWebPro-'+VERSION+'-UPDATE.zip'))
+    assert len(updates) == 1, 'Bind this historical baseline fixture to the explicit current source version.'
     unpack(baseline, installed, BASELINE_SHA)
     checks = []
 
@@ -246,7 +247,7 @@ def run(repo, installed, base, prefix, php, check, qa, browser=None, *, document
     config_bytes = (installed / 'config.php').read_bytes()
     guard_bytes = (installed / '.installed.php').read_bytes()
     unpack(updates[0], installed)
-    updater = base + '/cwp-update-1.25.0/owner-update.php'
+    updater = base + '/' + STAGE + '/owner-update.php'
 
     def update(action):
         response = submit(owner, updater, action,

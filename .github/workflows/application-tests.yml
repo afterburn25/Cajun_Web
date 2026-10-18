@@ -704,6 +704,9 @@ jobs:
           .ci-venv/bin/python tests/release_125_upgrade_guards.py qa/apache-release125-guards-results.json
           .ci-venv/bin/python tests/release_125_upgrade_input_guards.py --report qa/apache-release125-input-guards-results.json
           .ci-venv/bin/python tests/release_125_upgrade_acceptance.py
+          .ci-venv/bin/python tests/release_126_upgrade_guards.py qa/apache-release126-guards-results.json
+          .ci-venv/bin/python tests/release_126_upgrade_input_guards.py --report qa/apache-release126-input-guards-results.json
+          .ci-venv/bin/python tests/release_126_upgrade_acceptance.py
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation

@@ -1,3 +1,9 @@
+## 2026-10-18 — assembled 1.26.0 candidate
+
+The [1.26.0 candidate](docs/RELEASE_SCOPE_1.26.0.md) adds direct hosting catalog imports. Version markers, installer inventory, the real published 1.25 archive, historical baselines and separate populated 1.25-to-1.26 upgrade cases are assembled. Combined local checks pass: 262 transfer/evidence guards and 28 retained plus 42 new portable upgrade guards. These are not installed upgrade or browser acceptance. [Current test record](docs/TEST_REPORT_1.26.0.md).
+
+Focused catalog native acceptance passed at `9f0b83fd`; combined browser checkpoint [39093140366](https://github.com/afterburn25/Cajun_Web/actions/runs/39093140366) uses test-corrected `12da59d1` and remains pending. Next: review final integration wiring, commit the assembled candidate and run full supported-runtime acceptance. Published 1.25.0 stays unchanged. No 1.26.0 release or live deployment is claimed. Earlier blocks below preserve their original status and are superseded by this entry.
+
 ## 2026-10-18 — direct hosting catalog candidate
 
 Corrected source `9f0b83fd` passes the four-way hosting catalog native matrix39092587358: 109 default, 109 minimal and 51 database checks per environment. The combined checkpoint39092587539 passes packaging but exposes an older fixture that rewrites original import provenance to model changed credentials. That fixture correction and actual browser verification remain pending. All original outcomes are retained.

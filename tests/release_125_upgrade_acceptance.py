@@ -1,4 +1,4 @@
-"""Additive published1.24 -> frozen1.25 real Apache/Chromium upgrade matrix.
+"""Historical published1.24 -> explicit current target real Apache/Chromium upgrade matrix.
 
 One invocation runs root/subfolder x rewrite on/off on the selected PHP/database.
 No existing acceptance fixture or package is changed. Requires an unprivileged CI account.
@@ -18,6 +18,7 @@ import traceback
 import requests
 from playwright.sync_api import sync_playwright
 from acceptance_environment import selected, php_matches
+from release_version import VERSION
 from release_125_upgrade_cases import BASELINE_SHA, BASELINE_SOURCE, run, unpack
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -129,7 +130,7 @@ def main():
                             validate(obj['snapshot']); check(prefix + ' initial snapshot is from installed1.24', obj['snapshot']['version'] == '1.24.0')
                         else:
                             validate(obj['initial']); validate(obj['final'])
-                            check(prefix + ' final snapshot is from updated1.25', obj['initial']['version'] == '1.24.0' and obj['final']['version'] == '1.25.0')
+                            check(prefix + ' final snapshot is from updated current target', obj['initial']['version'] == '1.24.0' and obj['final']['version'] == VERSION)
                         evidence[name] = {'bytes': path.stat().st_size, 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
                     for size in ['Desktop', 'Mobile']:
                         name = 'apache-release125-' + prefix + '-Upgraded-Client-' + size + '.png'; path = QA / name
@@ -145,7 +146,7 @@ def main():
     finally:
         (QA / 'apache-release125-results.json').write_text(json.dumps({'passed': failure is None and len(scopes) == 4,
             'baseline_source': BASELINE_SOURCE, 'baseline_sha256': BASELINE_SHA,
-            'candidate_version': '1.25.0', 'selected': selected(), 'apache_http': apache_http,
+            'candidate_version': VERSION, 'selected': selected(), 'apache_http': apache_http,
             'scope': 'Actual published baseline; synthetic clients/data; no live provider, mail or payment',
             'cases': scopes, 'checks': checks, 'evidence': evidence, 'failure': failure}, indent=2) + '\n', encoding='utf-8')
 

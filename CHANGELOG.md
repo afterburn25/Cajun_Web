@@ -1,3 +1,7 @@
+## Unreleased —1.26.0 upgrade preparation
+
+Advance development version markers and staged-update instructions to1.26.0. Add the immutable published1.25 baseline while retaining older upgrade/recovery cases. Full1.26 acceptance and publication remain pending.
+
 ## Unreleased — direct 20i hosting catalog drafts
 
 The corrected hosting catalog passes all four focused database environments. Preserve original import provenance in the older changed-credential test by modeling a separate later observation. Actual combined browser and next-version upgrade acceptance remain pending.

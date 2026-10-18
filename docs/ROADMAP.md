@@ -1,3 +1,7 @@
+## Current increment —direct hosting catalog
+
+The direct hosting catalog import passes its focused four-way database matrix. Browser and1.26 release/upgrade acceptance remain pending; see [scope](RELEASE_SCOPE_1.26.0.md). Complete20i, cloud catalog, provider prices/images and hosting publication remain unfinished.
+
 ## 2026-10-18 — hosting catalog candidate, acceptance pending
 
 The [direct hosting catalog increment](TWENTYI_HOSTING_CATALOG.md) adds an explicit owner refresh and local draft import for returned IDs/names, including types absent from installed inventory. It preserves cross-source draft identity and original provenance. Source implementation does not complete native/browser or release acceptance, complete product coverage, provider prices/images, cloud imports or hosting publication. The original cloud-only check returned null; no catalog meaning is inferred. Published1.25.0 remains the latest verified release.
