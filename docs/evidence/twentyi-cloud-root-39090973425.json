@@ -1,0 +1,19 @@
+{
+  "catalog_import_accepted": false,
+  "image_download_authorized": false,
+  "operations": [
+    {
+      "operation": "cloud_server_product_data",
+      "outcome": "root_kind_observed",
+      "shape": {
+        "catalog_contract_established": false,
+        "image_contract_established": false,
+        "root_type": "null",
+        "semantics": "root_kind_only_value_withheld"
+      }
+    }
+  ],
+  "outcome": "complete",
+  "raw_values_unknown_keys_urls_headers_and_response_digests_exported": false,
+  "schema": 1
+}

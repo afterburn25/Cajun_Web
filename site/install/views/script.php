@@ -8,6 +8,9 @@ const errorBox=document.getElementById('setup-error');
 const secure=<?=json_encode($secure)?>;
 const installerBuild=<?=json_encode(CWP_INSTALLER_BUILD)?>;
 const csrfToken=document.querySelector('meta[name="csrf-token"]').content;
+const freshStart=document.getElementById('fresh-start');
+const freshPrefix=freshStart.dataset.freshPrefix;
+let originalPrefix=form.elements.db_prefix.value;
 let busy=false;
 function showError(message){errorBox.textContent=message;errorBox.hidden=false;errorBox.scrollIntoView({block:'nearest'});}
 function setBusy(value,label='Installing… Keep this page open.',freezeFields=false){
@@ -55,14 +58,13 @@ function renderChecks(result){
  const diagnostics=document.getElementById('storage-diagnostics');diagnostics.hidden=false;
  document.getElementById('worker-note').textContent='PHP worker: '+(result.host_report?.identity||('UID '+(result.php_uid??'unavailable')))+'. Only dedicated application storage is prepared; parent-directory permissions are not changed.';
  const permissionsFailed=result.checks.some(c=>['Website directory','Private storage','Protected media','Server preparation'].includes(c.label)&&!c.ok);
- const hostHelp=document.getElementById('host-help');hostHelp.hidden=!permissionsFailed||!result.host_report;hostHelp.open=!hostHelp.hidden;
- document.getElementById('host-report').value=result.host_report?.text||'';
  diagnostics.open=permissionsFailed;
  const list=document.getElementById('storage-attempts');list.replaceChildren();
  for(const a of result.attempts||[]){const li=document.createElement('li');li.textContent=a.path+' — '+a.message;list.append(li);}
 }
 async function checkServer(){
  if(busy||!secure)return;const data=new FormData();data.set('private_parent',form.elements.private_parent.value);
+ if(freshStart.checked)data.set('fresh_start','1');
  errorBox.hidden=true;setBusy(true,'Checking server permissions and preparing a permanent private folder…');
  try{const r=await send('checks',data);renderChecks(r);if(!r.checks&&!r.ok)showError(r.message||'Server checks failed.');}
  catch(e){document.getElementById('server-summary').textContent='Checks could not finish. Your form remains available.';showError(e.message);}
@@ -70,8 +72,16 @@ async function checkServer(){
 }
 document.getElementById('run-checks').addEventListener('click',checkServer);
 document.getElementById('private-parent').addEventListener('input',()=>{document.getElementById('server-summary').textContent='Storage preference changed. It will be rechecked when you install.';});
+freshStart.addEventListener('change',()=>{
+ const prefix=form.elements.db_prefix;
+ if(freshStart.checked){originalPrefix=prefix.value;prefix.value=freshPrefix;}else prefix.value=originalPrefix;
+ prefix.readOnly=freshStart.checked;
+ document.getElementById('db-result').textContent='Setup choice changed. Test the connection again or press Install to check it.';
+ checkServer();
+});
 document.getElementById('test-database').addEventListener('click',async()=>{
  if(busy||!secure)return;const data=new FormData();
+ if(freshStart.checked)data.set('fresh_start','1');
  for(const field of form.querySelectorAll('[name^="db_"]')){if(!field.reportValidity())return;data.set(field.name,field.value);}
  setBusy(true,'Testing your database connection…');errorBox.hidden=true;const box=document.getElementById('db-result');
  try{const r=await send('test_database',data);box.textContent=r.message||'Database test completed.';box.className='inline-result '+(r.ok?'':'bad');}
