@@ -2024,3 +2024,34 @@ Owner reviews on #210 and #211 plus follow-throughs on #212/#213:
   never affected.
 - Diagnostic acceptance dispatched: run 39081460330 on client-actions
   `29f8056d` — in progress.
+
+## 2026-10-18 — Feed-check diagnosis round 3: dump fixed, contradiction narrows
+
+- Diagnostic run 39083645344 (`e2ff4337`) failed at HTTP step — but NOT
+  at the milestone assertion: the expanded dump's `db()` probe queried
+  nonexistent `ci_studio_milestones` columns (`active`,`client_id`),
+  making `fixture_db.php` exit 255 before the diagnostic printed. All
+  254 checks up to `Client sees open blockers` passed — including every
+  milestone write/validation/leap-day check and the client job view.
+- Static analysis of the 403 from run 39081460330: `?activity=1` gate
+  (`contact_can`) returns true for alice (primary client, id=1, no
+  contact session), `studio_client()` is valid (the adjacent `?job=1`
+  check passed), so `activity_actor`'s 403 must be
+  "Workspace activity has not been enabled" — i.e. `activity_ready()`
+  is false on `ci_`: `native.php` seeds legacy schema + `studio_migrate`
+  only; nothing ever sets `activity_schema_version` on the `ci_` prefix
+  (only `activity_native.php`'s `activityci_` and `fixture_db.php`'s
+  upgrade prefixes do).
+- Contradiction to resolve: run 39079050602 raised
+  "Form missing activity_setup" on `?view=activity` — the enable card
+  should render when `activity_ready()` is false and the owner session
+  is valid (verified: `PermissionPolicy` owner bypass, `staff_require`
+  path, `admin_user` checks all pass). Either the card was suppressed or
+  the GET redirected — the dump will discriminate.
+- `1e478ef8` on milestones fixes the dump: real milestone columns
+  (id,job_id,title,state,target_date,updated_at) + `db()` calls wrapped
+  so a probe failure still emits page state; also dumps `ci_settings`
+  rows for the four schema_version keys. Propagated: activity-prefs
+  `ef222bb0` → client-actions `d795be7c` → portal-account `ee03cfca`.
+- Diagnostic acceptance dispatched: run 39084434485 on portal-account
+  `ee03cfca` — queued behind the recovery tail of run 39083645344.
