@@ -56,3 +56,4 @@
  .admin-body.admin-nav-open:after{content:"";position:fixed;inset:0;background:#02091485;z-index:40}
 }
 @media(prefers-reduced-motion:reduce){.admin-sidebar,.nav-chevron{transition:none}}
+.diff-add{display:block;color:#9fe3a8}.diff-remove{display:block;color:#e39f9f;text-decoration:line-through}.history-diff{margin:10px 0}

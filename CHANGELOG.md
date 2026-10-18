@@ -573,6 +573,11 @@ Parent `e37517fa` merges tested hosting confirmation with newer main. Four nativ
 
 # Changelog
 
+## Revision diffs (A-02) — devin/non20i-revisions-runtime
+
+- `Admin → Content history` now renders a line-level diff (added/removed line sets with counts) for each `studio_revisions` row using the foundation `RevisionDiff` contract, instead of only raw before/after blocks; full values remain in a nested section and identical restores report no change.
+
+
 ## Unreleased — verified confirmation and current-main integration
 
 - Verify38 authenticated confirmation cases on all four native combinations and exact4d059 Windows packages. Full descendant browser/recovery/Apache acceptance remains pending.
