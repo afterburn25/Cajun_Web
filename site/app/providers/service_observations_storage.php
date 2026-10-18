@@ -1,0 +1,27 @@
+<?php
+declare(strict_types=1);
+if(!defined('CWP_BOOT')){http_response_code(404);exit;}
+require_once CWP_CODE_ROOT.'/database/schema/service_observations_schema.php';
+require_once CWP_CODE_ROOT.'/database/schema/catalog_validate_schema.php';
+function service_observations_exists():bool {return one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'service_observation_permissions'])!==null;}
+function service_observations_ready():bool {
+    foreach(['audit','settings'] as $name){$engine=one('SELECT ENGINE FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]);if(strtolower($engine['ENGINE']??'')!=='innodb')throw new RuntimeException('Service history storage must be transactional.');}
+    $version=one('SELECT value FROM '.table('settings').' WHERE name=?',['service_observations_schema_version'])['value']??'';$count=one('SELECT value FROM '.table('settings').' WHERE name=?',['service_observations_count'])['value']??null;$exists=service_observations_exists();
+    $audits=(int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE BINARY action IN (?,?)',['service_observations.prepared','service_observations.permission'])->fetchColumn();
+    if($version===''){if($count!==null||$audits>0||($exists&&(int)query('SELECT COUNT(*) FROM '.table('service_observation_permissions'))->fetchColumn()>0))throw new RuntimeException('Service history permissions need recovery from the original database.');return false;}
+    if($version!=='1'||!$exists||!is_string($count)||!preg_match('/\A(?:0|[1-9][0-9]{0,18})\z/',$count))throw new RuntimeException('Service history storage needs recovery.');
+    $engine=one('SELECT ENGINE FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'service_observation_permissions']);
+    if(strtolower($engine['ENGINE']??'')!=='innodb'||(string)query('SELECT COUNT(*) FROM '.table('service_observation_permissions'))->fetchColumn()!==$count||$audits!==(int)$count+1||(int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE BINARY action=?',['service_observations.prepared'])->fetchColumn()!==1)throw new RuntimeException('Service history permission sequence needs recovery.');return true;
+}
+function service_observations_audit(int $actor,string $action,string $detail):void {query('INSERT INTO '.table('audit').' (user_id,action,detail,created_at) VALUES (?,?,?,?)',[$actor,'service_observations.'.$action,$detail,gmdate('Y-m-d H:i:s')]);}
+function service_observations_validate_schema(string $sql):void {
+    $name='service_observation_permissions';catalog_validate_schema($name,$sql,['link_revision'=>['link_id','revision']]);
+    foreach(all('SHOW FULL COLUMNS FROM '.table($name)) as $c){$collation=in_array($c['Field'],['id','link_id','document_sha256'],true)?'ascii_bin':($c['Field']==='document_json'?'utf8mb4_unicode_ci':null);if($c['Extra']!==''||$c['Default']!==null||$c['Collation']!==$collation)throw new RuntimeException('Incompatible service history columns.');}
+    $indexes=[];foreach(all('SHOW INDEX FROM '.table($name)) as $i){if($i['Sub_part']!==null||$i['Index_type']!=='BTREE')throw new RuntimeException('Incompatible service history indexes.');$indexes[$i['Key_name']][0]=(int)$i['Non_unique'];$indexes[$i['Key_name']][1][(int)$i['Seq_in_index']]=$i['Column_name'];}foreach($indexes as &$i){ksort($i[1]);$i[1]=array_values($i[1]);}unset($i);ksort($indexes);if($indexes!==['PRIMARY'=>[0,['id']],'client_permissions'=>[1,['client_id']],'link_revision'=>[0,['link_id','revision']]])throw new RuntimeException('Incompatible service history indexes.');
+    $f=all('SELECT k.COLUMN_NAME,k.REFERENCED_TABLE_NAME,k.REFERENCED_COLUMN_NAME,r.DELETE_RULE,r.UPDATE_RULE FROM information_schema.KEY_COLUMN_USAGE k JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON r.CONSTRAINT_SCHEMA=k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME=k.CONSTRAINT_NAME AND r.TABLE_NAME=k.TABLE_NAME WHERE k.TABLE_SCHEMA=DATABASE() AND k.TABLE_NAME=? AND k.REFERENCED_TABLE_NAME IS NOT NULL',[config()['db']['prefix'].$name]);
+    if(count($f)!==1||$f[0]['COLUMN_NAME']!=='client_id'||$f[0]['REFERENCED_TABLE_NAME']!==config()['db']['prefix'].'studio_clients'||$f[0]['REFERENCED_COLUMN_NAME']!=='id'||!in_array($f[0]['DELETE_RULE'],['RESTRICT','NO ACTION'],true)||!in_array($f[0]['UPDATE_RULE'],['RESTRICT','NO ACTION'],true))throw new RuntimeException('Incompatible service history relationships.');
+}
+function service_observations_prepare(#[SensitiveParameter] string $password):void {
+    if(db()->inTransaction())throw new LogicException('Service history preparation cannot run inside a transaction.');
+    staff_locked(function()use($password):void{$actor=provider_settings_owner($password);if(!provider_inventory_ready()||!studio_ready()||!staff_ready())throw new RuntimeException('Prepare hosting inventory and client accounts first.');$ready=service_observations_ready();$sql=service_observations_schema(config()['db']['prefix'])['service_observation_permissions'];if(service_observations_exists())service_observations_validate_schema($sql);else db()->exec($sql);service_observations_validate_schema($sql);if(!$ready)staff_transaction(function()use($actor):void{save_setting('service_observations_schema_version','1');save_setting('service_observations_count','0');service_observations_audit((int)$actor['id'],'prepared','Service history permissions ready');});});
+}
