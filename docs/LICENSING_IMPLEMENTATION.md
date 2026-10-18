@@ -1,4 +1,12 @@
+## Owner allocation — software-product licensing, 2026-10-15
+
+The owner is assigning Devin licensing for software products offered by CajunWebPro, including generation of licenses used to install other products. Continue the existing licensing implementation; this assignment does not establish that a Devin session is running or that licensing is complete. No new Devin branch/PR has been supplied yet. Previous mainb8f8528b licensing changes are preserved in the20i integration branch. New mainb8c432ca adds master-key runtime; it is inspected but not merged pending the migration and internal-key delivery findings in [the licensing handoff](LICENSING_INTEGRATION_REVIEW.md).
+
+Codex and its three agents continue complete20i P0. Reserve licensing service/validation/schema/bundling implementation for Devin. Shared purchase/invoice fulfillment, portal actions/views, admin routing, base schema and installer inventory require sequential integration preserving both lanes. Root reviews the actual incoming Git diff and combined tests before merging; no branch resets, replacement platform or duplicate licensing rewrite. CajunWebPro's own installer remains the approved one-page, keyless installer; licenses here are for other software products. No direct message was sent to Devin by this allocation record.
+
 # Licensing System Implementation — Cajunwebpro.com
+
+Integration note,2026-10-15: the20i branch now retains main13f9662d and its separate licensing changes. Earlier findings about integer product identifiers, project-bound domain actions and root-relative downloads have been corrected upstream. Our optional-storage portal/admin guards and owner-only licensing permissions remain. Main also introduces paid-invoice fulfillment/mail hooks, native licensing tests and optional external bundle-source configuration. This normal merge still needs combined billing/portal/packaged acceptance; neither this note nor20i confirmation tests certify licensing end to end. No Website_Core checkout was read, changed or executed by this20i work, and no customer mail was sent. Historical implementation claims below describe the inherited module, not newly established live acceptance.
 
 ## What has been implemented
 
@@ -224,3 +232,10 @@ license_bundles (
 2. Run a live end-to-end cycle: purchase → fulfilment → portal download →
    Website Core install → periodic validation → domain change → old-site
    deactivation. None of this has been run against a live environment.
+
+
+## Integration correction — preserve the original site when replacement fails
+
+The20i integration branch normally preserves main16f07e49. Actual local MariaDB reproduction found `license_replace_domain()` deactivated the old domain before validating/inserting the new domain: both invalid input and an injected database failure left the original inactive. The integration correction locks the original active domain in a new transaction and commits deactivation/registration together. Any exception rolls back; an existing caller transaction is refused without mutation or rollback. This fixes replacement atomicity; it does not claim to redesign all licensing concurrency or permissions.
+
+Actual local temporary-table repro/fix reports retain2 original failures and4 corrected cases. The merged native suite passes35 named cases with an isolated prefix/config (application functions unchanged), including invalid replacement preservation, injected insertion failure and caller-transaction preservation. CI now retains `qa/license-native-results.json`. Combined browser/current-head Linux and independent review remain pending. No Website_Core checkout was modified or executed; no live purchase, license change or customer message occurred.
