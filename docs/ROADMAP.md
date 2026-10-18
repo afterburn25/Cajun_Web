@@ -1,3 +1,7 @@
+## 2026-10-18 — subscription consent retained
+
+The [first-invoice branch](TWENTYI_HOSTING_FIRST_INVOICE.md) now includes pure client-attributed subscriptions with exact retained checkout consent and an explicit automatic local effect. Database migrations, native composition, recurring/invoice origin support, screens and same-clock acceptance remain open. This checkpoint does not complete checkout or change the published release.
+
 ## 2026-10-18 — hosting checkout consent groundwork
 
 Immediate first invoice is implementing on `codex/twentyi-hosting-first-invoice`, separate from the preserved full-acceptance branch and 1.26 catalog release candidate. [Current scope](TWENTYI_HOSTING_FIRST_INVOICE.md) includes reviewed pure commercial confirmation documents. Client-attributed storage, atomic first-invoice creation, actual screens, same-clock native/browser tests and release acceptance remain unfinished. This does not complete hosting checkout, automatic image import, cloud products or the full20i roadmap.

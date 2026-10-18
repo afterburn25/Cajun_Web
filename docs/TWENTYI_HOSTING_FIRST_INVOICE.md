@@ -12,7 +12,15 @@ Existing format1 publications and requests retain their original behavior. A new
 
 The public projection contains commercial terms and the selected project instruction. Private plan journals, provider mapping, wholesale costs, credential fingerprints and authorization details must remain server-side. Documents validate supplied facts; they do not authenticate a user, establish project ownership, grant billing authority or prove a database record was not rewritten. A valid alternate identity creates a different document and fingerprint. Native storage must bind the original request, authenticated client, exact retained consent and independent audit history.
 
-## Current validation
+## Client-attributed subscriptions
+
+The next pure stage adds subscription format2. It retains the exact accepted publication, plan, composite consent, request fingerprint and resolved project. Its creator is the actual client. Two fixed initial events distinguish that client's consent from the application's automatic local activation; no staff member is recorded as performing either action. Later pause, resume and cancellation keep the existing actor and lifecycle rules. Existing format1 documents retain their fields, byte limit and behavior.
+
+This is document validation, not a native writer. Database code must still authenticate the client, verify current owner authority and project ownership, and bind independently retained rows and audits. An initial format2 document is the complete two-event prefix; empty or one-event format2 documents are invalid. The separate bounded checkout size accommodates its retained documents without increasing the legacy limit.
+
+Applied-source tests pass65 new subscription cases and67 existing cases in both default and minimal PHP8.4.25; the complete legacy output is byte-identical to the baseline. Independent review also verifies direct-parser loading without a dependency cycle. Commands: `php tests/service-plans/checkout_documents.php` and `php tests/service-plans/documents.php`, each repeated with `php -n`. The related130 checkout and119 publication/request cases pass again after applying this shared document change.
+
+## Earlier commercial-document validation
 
 Applied-source tests pass130 new checkout-document cases and119 unchanged publication/request cases in both default and minimal PHP8.4.25. The tests cover exact terms, client/project facts, expiration, DST and skipped dates, legacy-route refusal, historical parsing and private-field exclusion. Independent review repeated the original failing Santiago midnight witness against the corrected source; it now expires at the actual next local date and refuses next-day historical consent. Original failure evidence remains retained.
 
@@ -20,7 +28,7 @@ Run `php tests/hosting_checkout_document.php` and `php tests/hosting_catalog_doc
 
 ## Remaining implementation
 
-1. Add format-aware client attribution to subscriptions, recurring schedules and invoice origins while preserving every legacy creator, document and audit.
+1. Finish native client attribution for subscriptions, and add it to recurring schedules and invoice origins while preserving every legacy creator, document and audit. Pure subscription attribution is implemented; schema and native history acceptance remain separate.
 2. Compose project selection or creation, client consent, explicit automatic local activation and period-zero invoice in one guarded database transaction. Recheck the real client, current publication owner permissions, exact source and project ownership. Roll back the entire operation on failure.
 3. Return the original owned result on exact completed replay. Reject changed input, partial history or missing invoice/audit bindings; do not recreate financial history.
 4. Add owner opt-in and the client review/confirmation page, then prove the complete same-clock journey with native database and packaged browser tests. Keep the existing eventual-purchase test unchanged.

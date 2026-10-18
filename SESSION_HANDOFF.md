@@ -1,3 +1,11 @@
+## 2026-10-18 — subscription attribution checkpoint
+
+Branch `codex/twentyi-hosting-first-invoice`, parent `9f4b374682919ff065d5127de914e87fe04eb2c2`; enclosing commit: **Retain actual client attribution in hosting checkout subscriptions**. Applied the independently reviewed two-file subscription proposal, updated exact source pins and canonical installer inventory. [Current contracts](docs/TWENTYI_HOSTING_FIRST_INVOICE.md) distinguish the actual client decision from automatic local activation.
+
+Applied pure results:65 new and67 legacy subscription cases per default/minimal PHP8.4.25; legacy output is unchanged. Related130 checkout and119 publication/request cases also pass per mode, as do385 artifact-helper checks. No native, HTTP, browser or first-invoice acceptance is claimed. An initial root test wrapper expected hosting JSON on stdout; corrected invocations used the existing report argument, and the original PASS output remains retained outside Git.
+
+Next: review the separate subscription schema/history proposal and recurring period-zero proposal, then compose the native transaction. A new disposable local MariaDB on127.0.0.1:43319 is available for scoped checkout tests; its local-only runtime record is `work/hosting-checkout-native-20261018/runtime.json` outside this repository. Do not use the unrelated43280 instance or retry the Windows provider-file fixture. Preserve full-acceptance0c7, original512/10142/f67 runs and immutable1.25 assets. Devin retains the non20i work and documented corrections.
+
 ## 2026-10-18 — hosting checkout consent groundwork
 
 Current implementation branch: `codex/twentyi-hosting-first-invoice`, parent `0c7cbae34220717c72e2f3dbeed1b41ca3545dbf`. [First-invoice scope](docs/TWENTYI_HOSTING_FIRST_INVOICE.md) records the pure publication-v2/review/consent interfaces and mandatory native seams. New offers require explicit opt-in; ordinary requests cannot bind a checkout publication. One accepted composite will eventually produce the agreement/calendar/first unpaid invoice atomically; that native path and its UI are not implemented by this checkpoint.

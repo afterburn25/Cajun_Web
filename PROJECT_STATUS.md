@@ -1,3 +1,9 @@
+## 2026-10-18 — client-attributed hosting subscription documents
+
+Starting from `9f4b374682919ff065d5127de914e87fe04eb2c2`, the hosting first-invoice branch now retains the actual client as the checkout subscription creator and separates explicit client consent from automatic local activation. Existing subscription format1 behavior remains unchanged. [Scope and remaining integration](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+Applied-source checks pass65 new subscription and67 existing cases in both PHP modes, plus the related130 checkout and119 publication/request cases. The legacy subscription output matches the baseline exactly. This is pure document groundwork: the native schema, atomic invoice writer and customer checkout page are not yet implemented in this checkpoint. Published1.25, original CI sources and live services remain unchanged.
+
 ## 2026-10-18 — hosting checkout consent groundwork
 
 Branch `codex/twentyi-hosting-first-invoice` starts at `0c7cbae34220717c72e2f3dbeed1b41ca3545dbf` and adds pure documents for an explicit owner checkout policy and one client service/billing confirmation. Existing request-only publications retain format1 behavior; format2 checkout offers cannot enter the legacy request/conversion path. [Implementation and remaining work](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).

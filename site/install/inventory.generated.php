@@ -200,7 +200,7 @@ function setup_expected_files(): array { return [
     'app/marketing/review_content.php'=>'413fcf7ac6f6b47d9f3b20d8cdc4187c82f224e03e34512b5f38c5a76c807388',
     'app/marketing/reviews.php'=>'eae78fd15c95d5adde2e52c819f3bd4166163c4ed6f3b9bdf67c6d7b8d3b735e',
     'app/media/images.php'=>'9262a28d87a1d758bd2c40da67fb05e9501df6f5dc9848e476cf571684263f69',
-    'app/plans/documents.php'=>'975204f8b70387190b3a94d4f3f409c79ac21e26e58132af3670d74c11432edb',
+    'app/plans/documents.php'=>'8ae0627a5eebf4840033140a0a6812c63365d0b35eae64c60c894a7f072aea0c',
     'app/plans/forms.php'=>'3fb646a0bfe944299b4111d977ca1deb46b630e77ff99423233ece4a08ddcd42',
     'app/plans/records.php'=>'3061622a373ce24d5d379a29d5fdc52e9b7b8d15887d95ec9f17a3cd03466f2c',
     'app/plans/views.php'=>'b5dc0ecc18ebaa15105f23dab376dbdeef7f3c9320c0a9b45a52c944aca69429',

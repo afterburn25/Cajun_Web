@@ -1,3 +1,9 @@
+## Development — client-attributed checkout subscriptions, 2026-10-18
+
+- Retain the exact hosting consent and real client creator in subscription format2, with separate client-consent and automatic local-activation events.
+- Preserve legacy subscription documents and later lifecycle rules; add65 pure regression cases and refresh installer inventory/source pins.
+- Native storage, invoice creation, customer screens and release acceptance remain pending.
+
 ## 2026-10-18 — hosting checkout consent groundwork
 
 - Added inactive, versioned hosting checkout publication policy and canonical client review/consent documents. They bind exact commercial terms and a selected existing or new hosting project; no route or database writer is enabled.

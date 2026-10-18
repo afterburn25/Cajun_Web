@@ -784,7 +784,9 @@
       "tests/hosting_catalog_recovery_http.py": "ba76bcf656e9956ced5e68f893a7c6a9ab9023951472446ab2ac98026ec2afc8",
       ".github/workflows/hosting-catalog-offers.yml": "1b2762ed8f25ec6535e89c169b449c294c2f0a9b607a03f18320f51d54b4c2f5",
       "site/app/hosting/catalog_checkout_document.php": "6abc2bcdd9e18c52a4c306066bdca6bf8992678be14ad82d12417816485bc380",
-      "tests/hosting_checkout_document.php": "89e812579d2ce910a881250d324e6f326b6b80dcf12d0a3e2a2cc8b4f205c7d5"
+      "tests/hosting_checkout_document.php": "89e812579d2ce910a881250d324e6f326b6b80dcf12d0a3e2a2cc8b4f205c7d5",
+      "site/app/plans/documents.php": "8ae0627a5eebf4840033140a0a6812c63365d0b35eae64c60c894a7f072aea0c",
+      "tests/service-plans/checkout_documents.php": "e131b2ae0ea2831c55082939a5a32b3cd5fb6743303f7c83be60b39211005f2b"
     },
     "raw_evidence": {
       "role": "hosting-recovery-files",
