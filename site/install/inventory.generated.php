@@ -2854,7 +2854,7 @@ function setup_expected_files(): array { return [
     'pages/services/packages.php'=>'973ee673986c1985e0abf8023f80b8da949a250ef4f60ccfb318621c987eb21d',
     'pages/services/products.php'=>'8f441bbc3b2dc36e533ee564477581fc9e6f85cfaffd999be31fd7a2de657d54',
     'portal/controllers/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
-    'portal/controllers/actions.php'=>'8d9a424976f5dd5c07457788f1acc0e687e2796d822b4ab942e57b5ec68b6583',
+    'portal/controllers/actions.php'=>'13d7d968eafc56c08c925068d5fc22a72c20fb8698bf48d2db1c6ed854ce0e58',
     'portal/controllers/directory_listing.php'=>'0118ac746bd49c49371e45d9695d961a5a9414852d2d1eb636abe83814ce9b3b',
     'portal/controllers/document_roots.php'=>'3aaac2a3d168b316210e9071b2f236708727eed8cd75ecd9ce437db05b0b6ab7',
     'portal/controllers/domain_contracts.php'=>'660937285f088eac985dd837585ecb0ff50d5327b025a8d613c4c31d7da9e72f',
