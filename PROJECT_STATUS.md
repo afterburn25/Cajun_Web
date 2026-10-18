@@ -1,3 +1,9 @@
+## 2026-10-18 — nameserver packaged acceptance wired
+
+The nameserver candidate now includes actual owner-form/Chromium checks, eight responsive captures, and a separate published-1.25 update/retry/recovery producer. The full workflow preserves its previous commands and adds five native commands and two Apache commands. Local checks pass 271 acceptance-helper outcomes, 20 upgrade guards, 19 actual published-archive guards and four PHP syntax executions; canonical refresh passes. These are local/source results, not Linux application acceptance. [Scope, corrections and remaining gates](docs/TWENTYI_REGISTRAR_NAMESERVERS.md#packaged-acceptance-producers--2026-10-18).
+
+The full owner API documentation remains retained; no resend is needed. Published 1.25, the separate catalog/hosting candidates and Devin's non-20i work are unchanged. No new release or live deployment occurred.
+
 ## 2026-10-18 — owner nameserver observations candidate
 
 The separate `codex/twentyi-registrar-nameservers` branch now includes explicit owner setup, saved registered-domain nameserver observations, latest-attempt status and dated history in the 20i connection screen. Failed or unfinished newer reads never fall back to an older current result. Previous assignments are labeled in history. [Feature and remaining acceptance](docs/TWENTYI_REGISTRAR_NAMESERVERS.md).

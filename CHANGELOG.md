@@ -1,3 +1,10 @@
+## Unreleased — nameserver packaged acceptance
+
+- Exercise owner preparation and refresh through actual admin forms, with staff/client/support denials and failed/unfinished latest-result handling.
+- Add published-1.25 installed update/retry/recovery coverage for nameserver history, using exact build/file identity and explicit feature preparation.
+- Preserve prior acceptance commands and add fixed baseline inputs, reports and responsive captures. Correct test-only port and resolver assumptions; application behavior is unchanged by this follow-up.
+- Local guards and source checks pass. Linux database, packaged HTTP/browser, update/recovery and release acceptance remain pending.
+
 ## Unreleased — owner registered nameserver observations
 
 - Add explicit owner setup and protected nameserver refresh for assigned registered domains, using the existing shared provider executor and durable intent.

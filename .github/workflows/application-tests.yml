@@ -362,6 +362,11 @@ jobs:
           "$PHP_BINARY" tests/service_observations_native.php
           "$PHP_BINARY" tests/domain_contracts_reader.php > qa/domain-contract-reader-integrated-results.json
           "$PHP_BINARY" tests/domain_contracts_native.php
+          "$PHP_BINARY" tests/registered_nameservers_reader.php > qa/registered-nameservers-reader-results.json
+          "$PHP_BINARY" -n tests/registered_nameservers_reader.php > qa/registered-nameservers-reader-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameservers_views.php qa/registered-nameservers-views-results.json
+          "$PHP_BINARY" -n tests/registered_nameservers_views.php qa/registered-nameservers-views-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameservers_native.php
           "$PHP_BINARY" tests/domain_expiry_contract.php > qa/domain-expiry-contract-integrated-results.json
           "$PHP_BINARY" tests/domain_expiry_reader.php > qa/domain-expiry-reader-integrated-results.json
           "$PHP_BINARY" tests/domain_expiry_native.php
@@ -701,6 +706,8 @@ jobs:
           .ci-venv/bin/python tests/release_125_upgrade_guards.py qa/apache-release125-guards-results.json
           .ci-venv/bin/python tests/release_125_upgrade_input_guards.py --report qa/apache-release125-input-guards-results.json
           .ci-venv/bin/python tests/release_125_upgrade_acceptance.py
+          .ci-venv/bin/python -B tests/registered_nameservers_upgrade_test.py --report qa/apache-registered-nameservers-upgrade-guards-results.json
+          .ci-venv/bin/python -B tests/registered_nameservers_upgrade.py
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation

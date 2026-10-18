@@ -1,3 +1,7 @@
+## 2026-10-18 — nameserver acceptance producers integrated
+
+[Registered nameserver observations](TWENTYI_REGISTRAR_NAMESERVERS.md#packaged-acceptance-producers--2026-10-18) now have packaged owner-form/Chromium and actual published-baseline update/recovery producers wired into full acceptance. Local guards pass; first exact-source runtime outcomes and capture review remain. This advances acceptance preparation, not feature/release completion. The nameserver setter, complete cloud catalog and automatic provider images remain separate unfinished work.
+
 ## 2026-10-18 — nameserver read lifecycle implemented, acceptance pending
 
 The [registered nameserver](TWENTYI_REGISTRAR_NAMESERVERS.md) candidate now has owner preparation, immutable observations, latest-attempt projection and admin history. Local pure/rendering checks pass. First Linux native CI, packaged HTTP/responsive browser, full application report wiring and published-baseline upgrade/recovery remain. The later setter/reservation/fence/readback work is separate and unavailable. Direct hosting catalog release checks continue separately; cloud and automatic image contracts remain unresolved, using the retained full owner reference without asking for another copy.

@@ -1,3 +1,9 @@
+## 2026-10-18 — nameserver additive acceptance
+
+The nameserver branch preserves all152 prior native commands and appends five reader/view/native commands at the domain-contract boundary. The Apache partition preserves its four commands and appends portable guards plus the actual published1.25 nameserver update/recovery producer. Required report sets are169 browser/checkpoint and215 final. Eight new scoped PNG names are fixed in `tools/acceptance-contract.json`; they still require actual capture review.
+
+The shared input bundle now contains independently verified public1.24 and1.25 archives/member trees. Existing1.24 validators and producers remain. `tests/acceptance_artifacts_test.py` checks both baseline guards and finite inverses to the preceding source, including the last browser callback and synthetic GET addition. Local271 helper outcomes pass. No new required runtime report has yet been accepted for this source; source preparation does not satisfy partition or final gates. [Feature details](TWENTYI_REGISTRAR_NAMESERVERS.md#packaged-acceptance-producers--2026-10-18).
+
 # Parallel application acceptance
 
 ## Current renewal integration — 2026-10-16
