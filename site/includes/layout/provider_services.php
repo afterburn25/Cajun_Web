@@ -40,6 +40,7 @@ function provider_services_portal_render(): never {
         } else {
             echo '<h2>Hosting service #'.(int)$service['link']['package_id'].'</h2><p>'.esc($service['observation']===null?'No observation is available yet.':'This service was not present in the last confirmed inventory read.').' Contact the studio for details.</p>';
         }
+        if(!support_current()&&!array_key_exists('contact_id',$_SESSION)&&!array_key_exists('contact_auth',$_SESSION)&&!$service['context_changed'])echo '<a class="btn outline" href="'.esc(studio_url(['php_controls'=>1,'service_link'=>$service['link']['id']])).'">PHP settings</a>';
         if(!support_current()&&!$service['context_changed'])echo '<a class="btn outline" href="'.esc(studio_url(['php_version'=>1,'service_link'=>$service['link']['id']])).'">Website PHP version</a>';
         if(!support_current()&&!$service['context_changed'])echo '<a class="btn outline" href="'.esc(studio_url(['document_roots'=>1,'service_link'=>$service['link']['id']])).'">Website folders</a>';
         if(!support_current()&&!$service['context_changed'])echo '<a class="btn outline" href="'.esc(studio_url(['force_ssl'=>1,'service_link'=>$service['link']['id']])).'">Force SSL flag</a>';

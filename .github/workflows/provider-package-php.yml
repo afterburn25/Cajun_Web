@@ -2,9 +2,9 @@ name: Native assigned-package PHP version checks
 on:
   push:
     branches: [main, codex/twentyi-package-php-version, codex/twentyi-php-version-controls]
-    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', 'tests/provider_php_controls_*.php', '.github/workflows/provider-package-php.yml']
+    paths: ['site/app/providers/**', 'site/admin/**', 'site/assets/css/site.css', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', 'tests/provider_php_controls_*.php', '.github/workflows/provider-package-php.yml']
   pull_request:
-    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', 'tests/provider_php_controls_*.php', '.github/workflows/provider-package-php.yml']
+    paths: ['site/app/providers/**', 'site/admin/**', 'site/assets/css/site.css', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', 'tests/provider_php_controls_*.php', '.github/workflows/provider-package-php.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -83,6 +83,13 @@ jobs:
               php -n tests/provider_php_controls_reads.php > qa/php-controls-reads-no-ini-results.json
               php tests/provider_php_controls_changes.php > qa/php-controls-changes-results.json
               php -n tests/provider_php_controls_changes.php > qa/php-controls-changes-no-ini-results.json
+              for source in site/admin/controllers/provider_php_controls.php site/portal/controllers/php_controls.php tests/provider_php_controls_screen.php tests/provider_php_controls_views.php tests/provider_php_controls_http.php; do php -l "$source"; done
+              php tests/provider_php_controls_screen.php > qa/php-controls-screen-results.json
+              php -n tests/provider_php_controls_screen.php > qa/php-controls-screen-no-ini-results.json
+              php tests/provider_php_controls_views.php qa/php-controls-views-results.json
+              php -n tests/provider_php_controls_views.php qa/php-controls-views-no-ini-results.json
+              php tests/provider_php_controls_http.php > qa/php-controls-http-results.json
+              php -n tests/provider_php_controls_http.php > qa/php-controls-http-no-ini-results.json
               php tests/provider_php_controls_lifecycle_native.php
             '
       - name: Preserve named storage evidence
@@ -107,10 +114,16 @@ jobs:
             qa/php-controls-reads-no-ini-results.json
             qa/php-controls-changes-results.json
             qa/php-controls-changes-no-ini-results.json
+            qa/php-controls-screen-results.json
+            qa/php-controls-screen-no-ini-results.json
+            qa/php-controls-views-results.json
+            qa/php-controls-views-no-ini-results.json
+            qa/php-controls-http-results.json
+            qa/php-controls-http-no-ini-results.json
             qa/provider-php-controls-lifecycle-native-results.json
           if-no-files-found: warn
           retention-days: 14
       - name: Record verification scope
         if: always()
         run: |
-          echo 'Exact assigned-package PHP-version scalar read, current explicit package assignment, credential-bound observation, owner-approved sharing, revocation, retained-history recovery and actual PHP forms. Additional PHP change delegation, owner/primary-client authority, durable reads, single-send gateway, separate readback, recovery, audit rollback and mutex/replay checks. Disposable MariaDB/MySQL and synthetic provider only; no real API, available-options wire-schema acceptance, browser or deployment. Native lifecycle tests retain real 30-second read cooldowns.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Exact assigned-package PHP-version scalar read, current explicit package assignment, credential-bound observation, owner-approved sharing, revocation, retained-history recovery and actual PHP forms. Additional PHP change delegation, owner/primary-client authority, durable reads, single-send gateway, separate readback, recovery, audit rollback and mutex/replay checks. Disposable MariaDB/MySQL and synthetic provider only; no real API, available-options wire-schema acceptance, browser or deployment. Native lifecycle tests retain real 30-second read cooldowns. Added screen, rendering and HTTP-dispatch suites use explicit portable models; they do not exercise authenticated browser routes.' >> "$GITHUB_STEP_SUMMARY"
