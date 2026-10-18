@@ -78,7 +78,7 @@ A proper bounded NDJSON adapter needs finite line/aggregate sizes, a deadline, e
 
 The supplied sections document configuration operations useful for CajunWebPro's own service panel:
 
-- Email/mailboxes (L1451-L1630): mailbox list/configuration, forwarders, autoresponders, spam lists, DKIM/DMARC, quotas/statistics, and POST `/package/{packageId}/email/{domain}` for email-object changes. Its shown mutation payload is empty, so complete field schemas remain missing. The webmail endpoint at L1622-L1630 generates a provider SSO URL; it is not an API to read or send messages in our native multi-account webmail.
+- Email/mailboxes (L1451-L1630): mailbox list/configuration, forwarders, autoresponders, spam lists, DKIM/DMARC, quotas/statistics, and POST `/package/{packageId}/email/{domain}` for email-object changes. The selected upload summary shows an empty mutation payload. The official [mailbox provisioning guide](https://docs.20i.com/api/provision-mailbox-api), checked2026-10-15, supplies the exact mailbox-create request and response; that creation boundary is now implemented with synthetic checks. Other mail-object field/response schemas still require precise evidence. See [mailbox implementation](TWENTYI_MAILBOX_CONTROLS.md). The webmail endpoint at L1622-L1630 generates a provider SSO URL; it is not an API to read or send messages in our native multi-account webmail.
 - SSL/TLS (L1631-L1690): freeSSL, installed certificates, forceSSL and externalSSL. External-certificate input includes a private key and is not ordinary telemetry.
 - WordPress (L1691-L1874): administrators/users, plugin/theme listing and changes, settings, checksum/database checks, staging and version updates. These are package-platform dependent and do not imply a site-builder pivot.
 - CDN (L1875-L1995): features, caches, security headers and measured statistics. Cache purges and replacement of all headers are mutations.
@@ -88,6 +88,8 @@ The supplied sections document configuration operations useful for CajunWebPro's
 Credentials and private material can appear even in GET responses: DKIM signature read (L1459-L1465), primary FTP credentials (L2054-L2060), and VNC details (L2910-L2916). Never bulk-probe, log or cache these with ordinary service metrics. Apply separate credential/access permissions and redact by an explicit output allowlist.
 
 ## 5. Managed VPS / cloud servers / VPS — HC-10, separate A-10 gate
+
+Primary-source follow-up, checked2026-10-15: the [official managed cloud API guide](https://docs.20i.com/api/managed-cloud-hosting-api-guide), updated2025-11-10, supplies addCloudServer request fields, specification/location tables, balance-debit behavior and an ID/null response description. It does not establish current account pricing/entitlement or the exact raw response envelope. Preserve this evidence for lifecycle implementation; no server order was attempted.
 
 | Supplied sample | Source lines | Source-described contract |
 |---|---|---|

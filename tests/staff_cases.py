@@ -21,7 +21,7 @@ def run_http(env):
     tables=['users','settings','leads','projects','studio_clients','studio_jobs']
     before={t:db('SELECT * FROM staffup_'+t) for t in tables}
     with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(dest)
-    from structure_helpers import apply_file_update
+    from structure_helpers import apply_file_update, removed_setup_unavailable
     apply_file_update(globals(),dest)
     check('1.1.0 package update preserves configuration locks media unrelated files',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();root=BASE+'/staff-upgrade/admin/index.php'
@@ -37,7 +37,7 @@ def run_http(env):
     check('Actual 1.1.0 retains all passwords identifiers and auth versions',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(users,before['users'])))
     profiles=db('SELECT role,enabled,permissions FROM staffup_staff_profiles ORDER BY user_id')
     check('Migration explicitly assigns owner and other existing staff',profiles[0]['role']=='owner' and profiles[1]['role']=='administrator' and json.loads(profiles[1]['permissions'])==['website.manage','clients.manage'])
-    check('Upgraded 1.1.0 fresh setup remains blocked',requests.get(BASE+'/staff-upgrade/install.php').status_code==404)
+    check('Upgraded 1.1.0 fresh setup remains blocked',removed_setup_unavailable(globals(),dest,up))
     other=requests.Session();r=submit(other,root+'?view=login','login',{'email':'other-legacy@example.invalid','password':'Synthetic other legacy passphrase'})
     check('Other legacy administrator retains normal sign-in and client access','Sales pipeline' in r.text and other.get(root+'?view=studio-clients').status_code==200 and other.get(root+'?view=staff').status_code==403)
     # Upgrade the regression fixture only after its original release acceptance is complete.
@@ -131,7 +131,12 @@ def run_browser(env,browser):
     check('Browser activates account and consumes single-use link',db('SELECT consumed_at FROM ci_staff_invitations WHERE subject_id=?',[str(uid)])[0]['consumed_at'] is not None)
     s.locator('[name=email]').fill('website-staff@example.invalid');s.locator('[name=password]').fill(STAFF);s.locator('form button').click();s.wait_for_url('**/admin/index.php?view=dashboard')
     nav=s.locator('nav[aria-label=Administration]')
-    check('Assigned website navigation hides owner and client sections',nav.get_by_role('link',name='Portfolio',exact=True).count()==1 and nav.get_by_role('link',name='Administrators',exact=True).count()==0 and nav.get_by_role('link',name='Client workspace',exact=True).count()==0 and nav.get_by_role('link',name='Email delivery',exact=True).count()==0)
+    s.get_by_role('button',name='Toggle administration navigation').click()
+    website_group=nav.locator('[data-nav-group=website]')
+    website_group.locator('summary').click()
+    expect(website_group).to_have_attribute('open','')
+    expect(nav.get_by_role('link',name='Portfolio',exact=True)).to_be_visible()
+    check('Assigned website navigation hides owner and client sections',nav.get_by_role('link',name='Portfolio',exact=True).count()==1 and nav.get_by_role('link',name='Administrators',exact=True,include_hidden=True).count()==0 and nav.get_by_role('link',name='Client workspace',exact=True,include_hidden=True).count()==0 and nav.get_by_role('link',name='Email delivery',exact=True,include_hidden=True).count()==0)
     web=requests.Session();r=submit(web,BASE+'/existing/admin/index.php?view=login','login',{'email':'website-staff@example.invalid','password':STAFF})
     chosen_form(web,BASE+'/existing/admin/index.php?view=studio-pipeline','studio_pipeline','id',1,{'status':'qualified','notes':'Website staff saved this note','follow_up':''})
     check('Website staff can save authorized inquiry work',db('SELECT notes FROM ci_leads WHERE id=1')[0]['notes']=='Website staff saved this note')
@@ -146,7 +151,7 @@ def run_browser(env,browser):
     plain=browser.new_context(java_script_enabled=False);c=plain.new_page();c.goto(client_link);c.locator('[data-setup-token]').fill(parse_qs(urlparse(client_link).fragment)['token'][0]);c.locator('[name=password]').fill(STAFF);c.locator('[name=confirm_password]').fill(STAFF);c.get_by_role('button',name='Set up account').click();expect(c.locator('[name=email]')).to_be_visible()
     c.locator('[name=email]').fill('client-staff@example.invalid');c.locator('[name=password]').fill(STAFF);c.locator('form button').click();c.wait_for_url('**/admin/index.php?view=studio-clients')
     check('No-JavaScript setup and client-only landing work',c.locator('h1').inner_text()=='Client workspace')
-    nav=c.locator('nav[aria-label=Administration]');check('Client-only navigation excludes inquiries website and accounts',nav.get_by_role('link',name='Inquiries',exact=True).count()==0 and nav.get_by_role('link',name='Portfolio',exact=True).count()==0 and nav.get_by_role('link',name='Administrators',exact=True).count()==0)
+    nav=c.locator('nav[aria-label=Administration]');check('Client-only navigation excludes inquiries website and accounts',nav.get_by_role('link',name='Inquiries',exact=True,include_hidden=True).count()==0 and nav.get_by_role('link',name='Portfolio',exact=True,include_hidden=True).count()==0 and nav.get_by_role('link',name='Administrators',exact=True,include_hidden=True).count()==0)
     client=requests.Session();submit(client,BASE+'/existing/admin/index.php?view=login','login',{'email':'client-staff@example.invalid','password':STAFF})
     submit(client,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_message',{'body':'Client support staff can update this project.'})
     check('Client-only staff can save authorized project updates',bool(db('SELECT id FROM ci_studio_messages WHERE job_id=1 AND body=?',['Client support staff can update this project.'])))

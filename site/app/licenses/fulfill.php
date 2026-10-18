@@ -57,6 +57,9 @@ function license_fulfill_invoice(int $invoiceId): ?array {
     );
     if ($existing) return $existing;
 
+    // Old invoices have no reliable automatic link to pre-invoice licenses.
+    if($invoiceId<=license_invoice_cutover())throw new RuntimeException('This older invoice needs an explicit owner licensing review before fulfillment.');
+
     // Create license — UNIQUE(invoice_id) collapses a concurrent fulfilment
     // race: the loser reads the winner's row instead of minting a duplicate.
     try {

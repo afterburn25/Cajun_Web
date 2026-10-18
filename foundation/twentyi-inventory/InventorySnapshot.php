@@ -45,13 +45,13 @@ final readonly class InventorySnapshot
         'transport_protocol', 'transport_unavailable', 'transport_unknown',
     ];
 
-    /** @var InventoryPackage[] Validated, detached record list. */
+    /** @var InventoryPackage[]|InventoryResource[]|InventoryCloudServer[] Validated, detached record list. */
     public array $packages;
     /** @var string[] Validated, detached skip reasons. */
     public array $skipReasons;
 
     /**
-     * @param InventoryPackage[]|InventoryResource[] $packages Projected records for the read.
+     * @param InventoryPackage[]|InventoryResource[]|InventoryCloudServer[] $packages Projected records for the read.
      * @param string[]           $skipReasons First few reasons items were skipped (bounded).
      * @param string             $reason      Unavailable kind; empty when packages were observed.
      * @param string             $scope       Caller-supplied provider account/operation identity.
@@ -78,7 +78,7 @@ final readonly class InventorySnapshot
         }
         $detachedPackages = [];
         foreach ($packages as $package) {
-            if (!$package instanceof InventoryPackage && !$package instanceof InventoryResource) {
+            if (!$package instanceof InventoryPackage && !$package instanceof InventoryResource && !$package instanceof InventoryCloudServer && !$package instanceof InventoryDomain && !$package instanceof RegistrationPeriod && !$package instanceof InventoryCloudProvider) {
                 throw new InvalidArgumentException('Snapshots carry projected inventory records only.');
             }
             $detachedPackages[] = $package;
