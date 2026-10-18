@@ -1,3 +1,7 @@
+## 2026-10-18 — browser fixture ordering correction
+
+The original browser checkpoint39093140366 failed after 1,225 successful HTTP checks: the new catalog fixture made six simulated reads before an unchanged provider-setup test required zero prior calls. All 31 catalog HTTP checks passed. The same ordering exists in frozen `6e3dbeff`. Move only the catalog callback after the existing scheduler callback; retain every assertion and original result. Shipping files are unchanged. The corrected descendant still requires complete candidate/main/browser/release acceptance. See [test record](docs/TEST_REPORT_1.26.0.md). Published 1.25.0 remains unchanged; hosting-order backend work stays on a separate branch.
+
 ## 2026-10-18 — assembled 1.26.0 candidate
 
 The [1.26.0 candidate](docs/RELEASE_SCOPE_1.26.0.md) adds direct hosting catalog imports. Version markers, installer inventory, the real published 1.25 archive, historical baselines and separate populated 1.25-to-1.26 upgrade cases are assembled. Combined local checks pass: 262 transfer/evidence guards and 28 retained plus 42 new portable upgrade guards. These are not installed upgrade or browser acceptance. [Current test record](docs/TEST_REPORT_1.26.0.md).

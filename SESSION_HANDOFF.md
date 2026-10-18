@@ -1,3 +1,7 @@
+## 2026-10-18 — resume after browser fixture correction
+
+Parent `6e3dbeff6dc6359a418837d0c95baa43e4c92533` is not accepted: original checkpoint39093140366 exposes a shared simulated-provider call-counter ordering conflict also present in that parent. The enclosing correction only moves the two-line catalog browser invocation after scheduler tests. Preserve the original 39093901565/39093902783/39093904062/39093905330 full runs and PR39093892253; do not treat their successful partitions as full acceptance. Fresh corrected-source runs are required. [Test record and evidence](docs/TEST_REPORT_1.26.0.md). The separate `codex/twentyi-hosting-commerce` backend is not part of this release.
+
 ## 2026-10-18 — assembled 1.26.0 candidate
 
 The [1.26.0 candidate](docs/RELEASE_SCOPE_1.26.0.md) adds direct hosting catalog imports. Version markers, installer inventory, the real published 1.25 archive, historical baselines and separate populated 1.25-to-1.26 upgrade cases are assembled. Combined local checks pass: 262 transfer/evidence guards and 28 retained plus 42 new portable upgrade guards. These are not installed upgrade or browser acceptance. [Current test record](docs/TEST_REPORT_1.26.0.md).

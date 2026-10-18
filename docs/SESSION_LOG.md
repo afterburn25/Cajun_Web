@@ -1,5 +1,11 @@
 Current outcome: [1.25.0 publication and fresh-download verification](RELEASE_1.25.0_PUBLICATION.md). Earlier dated entries preserve their original cutoff.
 
+## 2026-10-18 — isolate catalog browser callback ordering
+
+Starting at `6e3dbeff6dc6359a418837d0c95baa43e4c92533`, preserve the mature direct-import candidate and correct only the browser driver's two-line catalog callback placement. Original checkpoint39093140366 reached 1,225 successful HTTP checks, including all 31 direct-catalog checks, then failed the older provider-setup composite assertion because six shared simulated-provider reads preceded its zero-prior-call condition. Its original failed logs/archives remain retained. The same source ordering affects the original four full runs and default PR lane; no full acceptance is claimed from their passing build/Apache/recovery/maintained partitions.
+
+The new placement follows the original scheduler callback. Independent source review confirmed separate catalog DB/site state, relative counters, no downstream original callbacks, unchanged assertions and an exact inverse of the two-line move. Root verifies the applied driver against those reviewed bytes and checks Python syntax, documentation and deployment inventory before committing. No PHP, shipping inventory or version marker changes. Next: fresh complete candidate acceptance, actual screenshots, normal main merge and exact-main gates before publication. The separate hosting commerce branch is unaffected. The enclosing commit identifies this correction; published 1.25.0 and live sites are unchanged.
+
 ## 2026-10-17 - complete acceptance job allowance
 
 The enclosing correction starts from `88f116f0caf4a9bd8ea6f7faafd1e0eadb432039`. Its supplemental PHP 8.3/MariaDB [run39024070818](https://github.com/afterburn25/Cajun_Web/actions/runs/39024070818) reached the final scheduler flow before GitHub cancelled the combined native/browser job at its three-hour limit. All seven original archives and five completed logs are preserved. The checkpoint is incomplete, not a pass. Independent timing review supports increasing only this job's overall allowance from 180 to 240 minutes. Every test command, native-to-browser state, assertion, application/request/browser/provider timeout, report and image requirement remains unchanged. See [the timing evidence](ACCEPTANCE_JOB_BUDGET_1.25.0.md).

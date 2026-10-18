@@ -1,3 +1,7 @@
+## Unreleased — isolate direct catalog browser fixture ordering
+
+Run the new catalog browser callback after the existing provider/scheduler callbacks so its six simulated reads do not invalidate older zero-prior-call assertions. Keep all test predicates and deployment bytes unchanged. Original failed evidence remains retained; corrected full acceptance is pending.
+
 ## Unreleased —1.26.0 upgrade preparation
 
 Advance development version markers and staged-update instructions to1.26.0. Add the immutable published1.25 baseline while retaining older upgrade/recovery cases. Full1.26 acceptance and publication remain pending.
