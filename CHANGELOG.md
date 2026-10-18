@@ -1,3 +1,7 @@
+## Development — integration review handoff, 2026-10-18
+
+Document current Devin branch corrections for contact billing authority, preserved invoice checks/navigation and payment-upgrade verification. Include an unapplied invoice restoration patch and carry forward unresolved mail findings. No shipping behavior or version changes; application acceptance remains pending.
+
 ## Development — full hosting and published upgrade verification, 2026-10-18
 
 Connect existing offer/recovery and eventual purchase/client-access tests to complete acceptance. Add explicit hosting setup, publication, request, consent and recovery protection after upgrading the immutable published1.25 package. Preserve all previous test predicates, private output exclusions and released bytes. Local source/portable checks pass; actual combined runtime and release gates remain pending.

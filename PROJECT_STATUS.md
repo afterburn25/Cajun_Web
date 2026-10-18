@@ -1,3 +1,9 @@
+## 2026-10-18 — Devin integration review and correction handoff
+
+Starting at hosting acceptance source `fc5a3fc6391a5d85dfee01060b5806d04dae192a`, reviewed current Devin contacts/activity, payment-link and mail restacks. [Concrete findings and invoice restoration proposal](docs/DEVIN_RESTACK_REVIEW_2026-10-18.md) identify missing contact billing authority, dropped main invoice guards/navigation, payment-upgrade prerequisites, overly broad retained-setting exceptions and stale fixture bindings. Previously reported mail defects remain unresolved. No Devin branch is merged or certified by this review.
+
+Source/model and PHP syntax checks pass within their documented scope; native database, HTTP/browser and combined release acceptance remain pending. Original f67 full runs have successful builds and queued remaining jobs; original512/run39104617939 and10142/run39108671173 remain queued at the latest 2026-10-18 check. The hosting source and immutable published1.25 assets are unchanged. Next: Devin corrects owning branches and propagates shared fixes; Codex retains original hosting results and continues exact-source acceptance before integration.
+
 ## 2026-10-18 — full hosting acceptance integration in development
 
 Branch `codex/twentyi-hosting-full-acceptance` starts at `10142c7e97c8ba9986e0c18d9ab0190ccc432727` and connects the reviewed hosting offers, recovery, eventual purchase and owner/client handoff tests to the existing complete acceptance workflow. It also extends the real published 1.25 upgrade in the same four Apache contexts. [Exact scope and remaining gates](docs/TWENTYI_HOSTING_FULL_ACCEPTANCE.md).

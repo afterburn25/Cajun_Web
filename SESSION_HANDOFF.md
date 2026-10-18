@@ -1,3 +1,9 @@
+## 2026-10-18 — current Devin correction handoff
+
+Parent `fc5a3fc6391a5d85dfee01060b5806d04dae192a`; this documentation-only follow-up keeps the hosting implementation and all original sources/runs intact. [Restack review](docs/DEVIN_RESTACK_REVIEW_2026-10-18.md) pins PR203/212/202/194/195 and provides an unapplied one-file invoice restoration proposal. Contact agreement authority, lost main invoice guards/navigation and payment-upgrade acceptance gaps need correction before integration. The twelve earlier mail findings remain open; do not mistake a merge from main for their repair.
+
+Actual evidence is bounded source comparison, modeled behavior and PHP syntax only. At the latest 2026-10-18 check, original f67 full builds pass with remaining jobs queued, while original512 and10142 focused jobs are still queued. Preserve their first results and approved existing reviewers; do not replace pending originals. No application change, release publication, provider operation or live deployment occurred here. Next: publish the pinned correction handoff for Devin, then review corrected sources and original hosting runtime outcomes. Published1.25 remains immutable.
+
 ## 2026-10-18 — full hosting acceptance integration in development
 
 Branch `codex/twentyi-hosting-full-acceptance` starts at `10142c7e97c8ba9986e0c18d9ab0190ccc432727` and connects the reviewed hosting offers, recovery, eventual purchase and owner/client handoff tests to the existing complete acceptance workflow. It also extends the real published 1.25 upgrade in the same four Apache contexts. [Exact scope and remaining gates](docs/TWENTYI_HOSTING_FULL_ACCEPTANCE.md).
