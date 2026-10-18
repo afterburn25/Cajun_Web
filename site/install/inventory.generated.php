@@ -303,7 +303,7 @@ function setup_expected_files(): array { return [
     'app/staff/accounts.php'=>'8463567670be0d6d3d9b7ae233f677d79449e8e0f2cc440d2a4e4f100ca04a13',
     'app/support/sessions.php'=>'faedce8d00f432dd78ec91ab61e56397b31d9fec778281ea02d515469124512d',
     'app/updates/structure.php'=>'9085455efdb94ccce41cf8006a6e1137ec35d986f432b3259cb6e6194a71b3d6',
-    'assets/css/admin.css'=>'ea80e5d87eca1b2152d654adaf98d407f23afe3696fdab2fbb57163f5d30251f',
+    'assets/css/admin.css'=>'2ef993f118245c2089d1528f0de5e6e4822a2a2dd4c051417c4afe4e68daba44',
     'assets/css/growth.css'=>'ae77e9bca33094ef3b1d7036e6cc10be65b42cc2ad20328314b63ed8e9632d91',
     'assets/css/mail-notices.css'=>'374939d3501c173f69c2b85d01d3b8e68cc21c00e811b6f3e9e2563c06e45d50',
     'assets/css/premium.css'=>'bde2678d7a655d124491b3041a73bc6f474031c17f18396da0e8d3c994299380',
