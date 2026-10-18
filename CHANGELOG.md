@@ -1,3 +1,7 @@
+## Unreleased — record observed cloud null response
+
+Retain the exact safe result of separate original run39090973425:42 offline guards and the one-GET diagnostic passed, observing JSON null. No cloud catalog/import semantics follow; the earlier two-operation failure stays preserved. Hosting catalog implementation continues separately. No released bytes or production behavior changed.
+
 ## Unreleased — cloud metadata response-type follow-up
 
 Add a separate single-endpoint diagnostic for the original catalog read's missing cloud root kind. The original failure and hosting shape remain intact; no production importer, provider write, image download or release bytes change.

@@ -1,5 +1,17 @@
 # 20i cloud response type diagnostic
 
+## Original follow-up outcome — 2026-10-18
+
+Original [run39090973425](https://github.com/afterburn25/Cajun_Web/actions/runs/39090973425), attempt1, checked out `bf788894b1acd4c07daf74e718c4f95774acef85`. Job117567462521 passed all42 offline guards, performed exactly one fixed cloud metadata GET and uploaded the safe artifact. The run and diagnostic completed successfully. The observed JSON root was **null**; no cloud catalog structure was returned for this request and credential context. The diagnostic's success is observation success, not cloud catalog or importer acceptance.
+
+The [exact safe output](evidence/twentyi-cloud-root-39090973425.json) has SHA256 `6a6923edfcb6bb28553d37b526def55e0b7137d493954796174ff2cfd6e10caa`. Artifact12122536756 contains one JSON member, is411bytes and has SHA256 `4a631cc4bfda07286243f35eeeb3795cf2dea002307699f46c665b542b5b1dde`; its API digest, length, ZIP member list and CRC were verified on download. The retained original log has SHA256 `00e4a8728c54c2e6e37beaabf4568097dcfecfa1a5fc95fbd773a54b6c030c3c`.
+
+This result does not explain why null was returned, establish endpoint entitlement or prove the provider has no cloud products. It cannot retroactively identify the scalar kind from the earlier failed run39090394774. Both originals remain preserved. Hosting catalog development proceeds separately; cloud field mapping and automatic provider artwork remain unfinished. No package-types reread, provider write, image fetch or production deployment occurred.
+
+## Historical preparation contract
+
+The following source checkpoint predates this original follow-up. Its pending-read wording is historical; the transport and interpretation limits still apply.
+
 The original catalog diagnostic at source `1159648f968d46439f7e88a9cd0f6dbee3758643`, run `39090394774`, attempt 1, finished with failure. Its 39 offline checks passed. The package-types operation retained a safe shape; the cloud operation retained only `unexpected_root` after HTTP 200 and strict JSON parsing. Its code discarded the root type before recording the refusal. The original artifact does not identify whether the cloud response was null, a boolean, an integer, a number or a string, and does not establish entitlement, an empty catalog or an error-response meaning.
 
 This separate follow-up proposes exactly one request:

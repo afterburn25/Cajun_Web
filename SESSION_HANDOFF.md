@@ -1,3 +1,9 @@
+## 2026-10-18 — cloud endpoint supplied no catalog details
+
+The separate [cloud-only diagnostic](docs/TWENTYI_CLOUD_ROOT_DIAGNOSTIC.md#original-follow-up-outcome--2026-10-18), original run39090973425 at source `bf788894b1acd4c07daf74e718c4f95774acef85`, completed successfully after 42 passing offline checks. Its one fixed GET observed a JSON `null` root. This establishes the response type for that request and credential context, not an empty catalog, missing entitlement, provider fault or valid import contract. No cloud product fields were supplied. The original two-operation run39090394774 remains failed and unchanged; this later observation cannot retrospectively identify its scalar kind.
+
+Continue the hosting catalog import using the observed `id`/`label` fields and documented package-type ID relationship. Do not substitute cloud data or automatic provider images. Three agents now own the hosting projection/importer, durable observations, and focused tests; root coordinates the admin flow and integration. No repeated cloud request is planned without new evidence. Published 1.25.0 and production remain unchanged. Earlier preparation blocks are historical.
+
 ## 2026-10-18 — separate cloud response-type check prepared
 
 The [first catalog diagnostic](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#original-outcome--2026-10-18) remains failed and preserved. A separate [cloud-only follow-up](docs/TWENTYI_CLOUD_ROOT_DIAGNOSTIC.md) addresses its missing root-kind observation with one fixed metadata GET. It never repeats the hosting catalog request. Only a finite JSON type or the same closed container shape is exported; values, URLs and unknown names remain withheld. This source checkpoint prepares the follow-up, without claiming a live outcome or a valid cloud catalog. Hosting import implementation proceeds separately from the observed hosting fields and documented type-ID relationship. Released 1.25.0 is unchanged.
