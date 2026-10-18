@@ -8,7 +8,7 @@ function studio_migrate(): void {
   $exists=one('SELECT table_name FROM information_schema.tables WHERE table_schema=? AND table_name=?',[config()['db']['name'],config()['db']['prefix'].$key]);
   if($exists){$columns=all('SHOW COLUMNS FROM '.table($key));$cols=array_column($columns,'Field');preg_match_all('/(?:\(|,)\s*([a-z_][a-z0-9_]*) (?:INT|BIGINT|VARCHAR|CHAR|TINYINT|DATETIME|LONGTEXT|TEXT)/',$sql,$m);if($cols!==$m[1]||!studio_schema_compatible($key,$sql,$columns))throw new RuntimeException('An incompatible table already uses '.$key.'. No existing table was overwritten.');}
   else db()->exec($sql);
- }save_setting('studio_schema_version','3');log_event('studio.schema','Additive workspace schema 3');}
+ }save_setting('studio_schema_version','4');log_event('studio.schema','Additive workspace schema 4');}
  finally{query('SELECT RELEASE_LOCK(?)',[$name]);}
 }
 

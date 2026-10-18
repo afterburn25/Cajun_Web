@@ -1,3 +1,6 @@
+## Unreleased — project stage history
+
+Real stage transitions on web-design projects are recorded durably (`studio_stage_events`, workspace marker 4) with actor attribution, shown as progress history in the portal and admin project views, and projected into both activity centers as `stage:` events with exact anchors. Unchanged saves record nothing. Branch `devin/non20i-stage-history` stacked on protected previews; acceptance pending on CI.
 ## Unreleased — reduce unrelated pull-request test runs
 
 Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.
@@ -8,6 +11,7 @@ Add path filters to ten focused workflows, preserving their full test jobs and s
 Staff can attach one private PDF/PNG/JPEG preview to an exact published design or proposal version. The artifact lives in guarded private storage and is served inline with integrity verification only to the owning client, staff or granted support sessions — never as a public URL. External staging links remain available and labeled external. Workspace storage upgrades additively (marker 3); existing content is preserved. Branch `devin/non20i-protected-previews`; packaged acceptance pending on CI.
 
 ## 2026-10-16 — publish the concrete release freeze and branch
+## Unreleased — record observed cloud null response
 
 Retain the exact safe result of separate original run39090973425:42 offline guards and the one-GET diagnostic passed, observing JSON null. No cloud catalog/import semantics follow; the earlier two-operation failure stays preserved. Hosting catalog implementation continues separately. No released bytes or production behavior changed.
 

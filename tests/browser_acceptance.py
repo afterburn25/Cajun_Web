@@ -116,6 +116,11 @@ try:
     r=alice.get(links[0]);check('Owner opens the protected preview inline',r.status_code==200 and r.content==(ROOT/'site/images/icons/favicon.png').read_bytes() and r.headers.get('Content-Disposition','').startswith('inline') and r.headers.get('Content-Type','').startswith('image/png') and 'no-store' in r.headers.get('Cache-Control',''))
     r=bob.get(BASE+'/existing/portal/index.php?preview='+str(vrow['id']));check('Other client cannot open the protected preview',r.status_code==404)
     r=requests.get(BASE+'/existing/portal/index.php?preview='+str(vrow['id']));check('Anonymous preview request is refused',r.status_code==403)
+    old_stage=db("SELECT stage FROM ci_studio_jobs WHERE id=1")[0]['stage'];new_stage='development' if old_stage!='development' else 'design'
+    r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_job',{'stage':new_stage})
+    check('Stage change records a durable event',db("SELECT from_stage,to_stage,actor_type FROM ci_studio_stage_events WHERE job_id=1 ORDER BY id DESC LIMIT 1")==[{'from_stage':old_stage,'to_stage':new_stage,'actor_type':'admin'}])
+    check('Unchanged stage save records no event',db("SELECT COUNT(*) AS n FROM ci_studio_stage_events WHERE job_id=1")==[{'n':1}])
+    r=alice.get(BASE+'/existing/portal/index.php?job=1');check('Client sees progress history',('Progress history' in r.text) and ('→' in r.text))
     with open(ROOT/'site/images/icons/favicon.png','rb') as f:r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_preview',{'version_id':'999999'},files={'document':('stray.png',f,'image/png')})
     check('Preview upload to a foreign version is refused','belongs to this project' in r.text)
     with open(ROOT/'site/images/icons/favicon.png','rb') as f:r=submit(admin,BASE+'/existing/admin/index.php?view=studio-job&id=1','studio_preview',{'version_id':str(vrow['id'])},files={'document':('duplicate.png',f,'image/png')})

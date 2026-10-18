@@ -87,7 +87,7 @@ function hr_delete_worker(string $id,int $revision,int $event,int $actor=3):arra
 try {
     foreach(schema_statements('hdel_') as $sql)db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
-    save_setting('studio_schema_version','3');
+    save_setting('studio_schema_version','4');
     for($i=1;$i<=4;$i++)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Deletion operator '.$i,'deletion-operator'.$i.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
     staff_seed_owner(1);
     foreach([2=>'administrator',3=>'owner',4=>'owner'] as $id=>$role)query('INSERT INTO '.table('staff_profiles').' (user_id,role,enabled,permissions) VALUES (?,?,1,?)',[$id,$role,json_encode(array_keys(staff_permissions()))]);
