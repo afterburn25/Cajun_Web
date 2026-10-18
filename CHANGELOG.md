@@ -1,3 +1,9 @@
+## Unreleased — installed nameserver change acceptance
+
+- Add actual owner-form browser cases, eight complete scoped captures, two separately approved one-shot synthetic requests, interrupted local-history recovery and persistent reassignment fences.
+- Add actual published-1.25 update/retry/recovery coverage for original change history and an isolated TLS fixture check; retain all original native/browser/upgrade producers. Three required reports extend the totals to 177 browser and 225 final reports.
+- Root local checks: 334 helpers, 80 TLS fixture outcomes, 31 upgrade guards and 19 source/syntax/inventory checks pass. Installed execution and release acceptance remain pending; shipping code is unchanged. Parent `5654649d`, enclosing **test: cover installed nameserver change recovery**.
+
 ## Unreleased — owner-approved registered nameserver changes
 
 - Add complete-set nameserver approval beside the current domain observation, with explicit review and current-owner password.

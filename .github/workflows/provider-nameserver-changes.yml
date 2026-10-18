@@ -2,9 +2,9 @@ name: Native registered nameserver changes
 on:
   push:
     branches: [main, codex/twentyi-nameserver-changes]
-    paths: ['site/app/providers/**', 'site/admin/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-domain-contracts/**', 'tests/registered_nameserver_changes*.php', 'tests/registered_nameservers*.php', '.github/workflows/provider-nameserver-changes.yml']
+    paths: ['site/app/providers/**', 'site/admin/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-domain-contracts/**', 'tests/registered_nameserver_changes*.php', 'tests/registered_nameservers*.php', 'tests/registered_nameserver_changes*.py', 'tests/provider_http_server.py', 'tests/twentyi/tls_test.py', '.github/workflows/provider-nameserver-changes.yml']
   pull_request:
-    paths: ['site/app/providers/**', 'site/admin/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-domain-contracts/**', 'tests/registered_nameserver_changes*.php', 'tests/registered_nameservers*.php', '.github/workflows/provider-nameserver-changes.yml']
+    paths: ['site/app/providers/**', 'site/admin/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-domain-contracts/**', 'tests/registered_nameserver_changes*.php', 'tests/registered_nameservers*.php', 'tests/registered_nameserver_changes*.py', 'tests/provider_http_server.py', 'tests/twentyi/tls_test.py', '.github/workflows/provider-nameserver-changes.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -93,3 +93,30 @@ jobs:
         if: always()
         run: |
           echo 'Owner-approved complete registered-domain nameserver changes, immutable request/ledger/terminal history, no automatic resend, exact fresh follow-up reads and interrupted-history fences. Actual disposable MySQL/MariaDB with synthetic transport. No live provider, browser, deployment or release acceptance.' >> "$GITHUB_STEP_SUMMARY"
+  nameserver-http-fixture:
+    name: Closed synthetic nameserver TLS fixture
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Prepare isolated Python fixture dependencies
+        run: |
+          python3 -m venv .fixture-venv
+          .fixture-venv/bin/pip install --disable-pip-version-check cryptography
+      - name: Verify disabled default exact requests and independent readback
+        run: |
+          mkdir -p qa
+          .fixture-venv/bin/python -B tests/registered_nameserver_changes_http_fixture_test.py --report qa/registered-nameserver-changes-http-fixture-results.json
+      - name: Preserve exact named fixture results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: nameserver-http-fixture-${{ github.sha }}
+          path: qa/registered-nameserver-changes-http-fixture-results.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve unchanged source
+        if: always()
+        run: git diff --exit-code -- site foundation tools tests .github/workflows

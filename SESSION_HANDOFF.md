@@ -1,3 +1,9 @@
+## 2026-10-18 — installed nameserver change acceptance prepared
+
+The separate nameserver-change branch now includes packaged owner-form/Chromium tests, eight scoped desktop/mobile captures, and a published-1.25 UPDATE/recovery producer for original request, ledger, readback and pending-fence history. This is acceptance preparation for source `5654649dc62095298ce703b39b54d12d56c49f09`, recorded by the enclosing **test: cover installed nameserver change recovery** commit. Application shipping files and published 1.25 are unchanged.
+
+Actual root checks pass 80 isolated TLS fixture outcomes, 31 portable upgrade guards, 334 acceptance helpers and 19 syntax/source/inventory checks. Installed SQL, actual application forms, resulting browser images and real update/recovery execution remain pending. [Scope and remaining gates](docs/TWENTYI_REGISTRAR_NAMESERVER_CHANGES.md#installed-acceptance-producers--2026-10-18).
+
 ## 2026-10-18 — owner nameserver changes, first runtime checks next
 
 Continue `codex/twentyi-nameserver-changes`, parent `fbe00172a0a1dee683d2501203985d2537a90abc`, enclosing commit **Add owner-approved registered nameserver changes**. The previous read-only `codex/twentyi-registrar-nameservers` / draftPR221 remains atfbe. [New implementation and exact evidence](docs/TWENTYI_REGISTRAR_NAMESERVER_CHANGES.md).

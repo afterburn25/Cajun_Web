@@ -366,6 +366,8 @@ def run(tmp):
     environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
     contract=a.load(ROOT/'tools/acceptance-contract.json')
+    from registered_nameserver_changes_acceptance import verify as nameserver_changes_acceptance
+    changes_predecessor = nameserver_changes_acceptance(a, ROOT, tmp, check, deny, contract)
     driver_paths = {'tests/prepare_legacy.py'}
     check('Published1.25 input inverse is limited to the original preparation source', set(contract['published125_input_driver_delta']) == driver_paths)
     for driver in sorted(driver_paths):
@@ -385,7 +387,7 @@ def run(tmp):
             check('Nameserver browser callback occurs once',original_bytes.count(nameserver_addition)==1)
             original_bytes=original_bytes.replace(nameserver_addition,b'',1)
         check('Original test source retained '+path, hashlib.sha256(original_bytes).hexdigest()==expected_hash)
-    workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
+    workflow=changes_predecessor['workflow']
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
     # New write controls extend the recipe without changing predecessor assertions.
@@ -415,8 +417,8 @@ def run(tmp):
     native_commands=[command for command in native_commands if command not in nameserver_commands]
     check('Nameserver extension preserves exact152 predecessor commands',len(native_commands)==nameserver_contract['predecessor_native_count']==152 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==nameserver_contract['predecessor_native_sha256'])
     for path,expected_hash in nameserver_contract['source_sha256'].items():
-        check('Nameserver fixture source retained '+path,hashlib.sha256(write_original_sources.get(path,ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n'))).hexdigest()==expected_hash)
-    nameserver_server=ROOT.joinpath('tests/provider_http_server.py').read_text(encoding='utf-8')
+        check('Nameserver fixture source retained '+path,hashlib.sha256(write_original_sources.get(path,changes_predecessor['source'].get(path,ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')))).hexdigest()==expected_hash)
+    nameserver_server=changes_predecessor['source']['tests/provider_http_server.py'].decode('utf-8')
     for index,change in enumerate(reversed(nameserver_contract['server_changes'])):
         check('Nameserver synthetic GET addition is finite '+str(index),nameserver_server.count(change['after'])==change['count'])
         nameserver_server=nameserver_server.replace(change['after'],change['before'])

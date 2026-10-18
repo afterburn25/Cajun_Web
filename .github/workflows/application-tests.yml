@@ -444,7 +444,9 @@ jobs:
           "$PHP_BINARY" tests/license_native.php
       - name: Real HTTP and Chromium application workflows
         id: browser
-        run: .ci-venv/bin/python tests/browser_acceptance.py
+        run: |
+          .ci-venv/bin/python -B tests/registered_nameserver_changes_http_fixture_test.py --report qa/registered-nameserver-changes-http-fixture-results.json
+          .ci-venv/bin/python tests/browser_acceptance.py
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation
@@ -715,6 +717,8 @@ jobs:
           .ci-venv/bin/python tests/release_125_upgrade_acceptance.py
           .ci-venv/bin/python -B tests/registered_nameservers_upgrade_test.py --report qa/apache-registered-nameservers-upgrade-guards-results.json
           .ci-venv/bin/python -B tests/registered_nameservers_upgrade.py
+          .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade_test.py --report qa/apache-registered-nameserver-changes-upgrade-guards-results.json
+          .ci-venv/bin/python -B tests/registered_nameserver_changes_upgrade.py
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation
