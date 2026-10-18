@@ -2186,3 +2186,48 @@ Owner reviews on #210 and #211 plus follow-throughs on #212/#213:
 - PR #159 closed with verification comment 6245264465; branch retained
   for history. Source inspection only — no runtime test, merge or
   release action.
+
+## 2026-10-18 — Devin mass restack: all 51 non-20i PRs mergeable
+
+Request: continue non-20i work without stopping; clear every
+conflicting Devin PR against the current stack and current main
+(`e397d9a6`, after Codex merged PR #218 PR-check path filters).
+
+Actions: merged each advanced parent head (or main) into its Devin
+child branches in dependency order; resolved conflicts semantically —
+main's canonical versions where they are strict supersets, plus each
+branch's unique deltas (union denial lists, workflow native lanes,
+notification emits/nav/actions, contact-permission gates, stage
+history + focus_review, protected previews, recurring focus_event,
+`is_master` license guards, schema-pin unions). Regenerated
+`site/install/inventory.generated.php` after every source merge;
+`tools/build.py` canonical checks pass on each head (2188 locked
+files; receiving/submission runtime byte-for-byte). All touched PHP
+linted; Python suites compiled.
+
+Key resolutions this round: #200 stage-history kept `focus_review` +
+durable `studio_stage_events` checks on the protected-previews
+workspace; schema pin retained at `'4'`; #187 renewal-notifications
+re-applied `notification_emit` calls onto main's canonical
+`recurring_billing_locked`/`service_plans_client_row` wrappers and
+kept license-legacy/master-key guards; #205/#211 kept the broadened
+contact `activity_mark`/`activity_prefs` permission gate
+(projects|billing|downloads) alongside main's provider dispatches;
+#204 contact-decisions and the whole #209–#213 chain restacked onto
+the new client-contacts head.
+
+Result: all 51 open `devin/non20i-*` PRs report MERGEABLE. Final
+chain tips: portal-account `cf47ae55`; mail-html-compose `88428719`;
+renewal-notifications `86f03b05`; notification-outbox `38a3786d`;
+notification-events `38fe2e41`; contact-activity `3c3aa80e`;
+client-actions `95de0a9c`; mail-folders `ef2b3159`; mail-reply-all
+`f8a92276`; staff-notes `a0ef2679`; milestones `15216b37`;
+ticket-notifications `522686b3`; recurring-billing `ce895bab`;
+service-plans `938efb3c`; mail-attachments `4acb4edc`;
+stage-history `577d9925`/`e574f91d`; plus main-targeted restacks
+#196/#197/#198/#201/#202 onto `e397d9a6`. Branch CI only — Codex
+owns retarget/integration/release; no merge, deployment or 20i work
+claimed.
+
+Next: Codex retargets stacked PRs as parents integrate; combined
+acceptance runs after retarget, not from branch state alone.
