@@ -210,6 +210,15 @@ Owners explicitly approve an observed cloud/VPS server for an existing client. T
 The new original1.24 fixture seeds populated package/domain ownership and one uncertain synthetic label request through the original gateway/ledger. Apply/recover checks preserve original links, observations, approval events, consumed grants and operation attempts. Cloud migration remains an explicit owner HTTP action; recovered requests cannot reach the synthetic network callback. Current native/browser/full recovery, screenshots, independent review, normal merge and exact-main/download gates remain required.
 
 Published1.24 source7190b582 and all16 assets remain immutable. Complete20i orders/payments/native controls/domain/VPS lifecycle/support/SSH remain unfinished. Necessary billing #130/#133 continues separately; unrelated work stays paused. No production operation or deployment occurred.
+## Port A-03 backup/restore contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157); backup/recovery is in Devin's scope. Starting commit: main `595ac9c3`, new branch `devin/non20i-backups-foundation`.
+
+Actions: extracted the preserved `devin/backups-foundation` slice — `foundation/backups/BackupManifest.php`, `foundation/backups/RestorePlan.php`, `tests/backups/run.php`, `.github/workflows/backups.yml`, `docs/BACKUPS_FOUNDATION.md` — skipping that branch's stale shared-doc drift. Added `devin/non20i-*` push trigger and path filters to the workflow; corrected the doc's ownership line (application layers remain in Devin's scope) and check count (33, not 31).
+
+Tests: `php -l` clean on all three PHP files; `php tests/backups/run.php` → 33/33 checks pass on local PHP 8.4. CI runs the same suite in official PHP 8.2/8.4 images with `--network none`. No database, filesystem, archive or application paths exist yet — this is the pure contract layer only.
+
+Next: commit, push, open bounded PR, update issue #157; later roadmap work integrates the manifest/restore adapter and the isolated restore-drill acceptance.
 
 ## Synchronize release entry points after review — 2026-10-15
 
