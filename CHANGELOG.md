@@ -1,3 +1,7 @@
+## Unreleased successor — hosting offer screens
+
+Add owner offer review/publication and client request handling under Hosting & Domains, public hosting cards with local artwork, and client request history with agreement/project links. Preserve failed submissions, current permissions, support restrictions and explicit confirmation. Correct the product review link to select its imported draft. Runtime/browser acceptance remains pending; these changes are outside the 1.26 release candidate.
+
 ## Unreleased successor — hosting offers and client request backend
 
 Connect exact imported hosting drafts to reviewed service plans through explicit local publications, retained client requests and atomic agreement conversion. Add immutable history, current-session and stale-offer checks, and protection for historical product images during media cleanup. Generic hosting catalog invoices remain refused. No route enables the feature yet; focused native SQL, browser and full ordering acceptance are pending. This successor is separate from the frozen 1.26.0 release candidate.

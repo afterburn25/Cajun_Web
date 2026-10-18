@@ -1,3 +1,11 @@
+## 2026-10-18 — hosting offer screens in development
+
+The separate `codex/twentyi-hosting-commerce` branch now connects owner publication/review, public hosting cards and authenticated client requests to the backend committed at `47fc69f6`. These screens are development work awaiting Linux database and packaged browser acceptance. [Feature scope and verification](docs/TWENTYI_HOSTING_OFFERS.md). The focused workflow now also contains an isolated packaged PHP 8.3/MariaDB HTTP and Chromium job covering image upload, publication, client requests, owner decisions and existing agreement consent. Its ten desktop/mobile captures still require actual pixel review. All runtime results remain pending. The original four-environment run [39098575981](https://github.com/afterburn25/Cajun_Web/actions/runs/39098575981) remains preserved.
+
+Local Windows PHP 8.4.25 with MariaDB 10.11.18 passes all 138 existing service-plan SQL checks. The new hosting fixture stops before its assertions because Windows does not retain the existing required POSIX 0600 permissions. No filesystem safeguard was changed or bypassed. The full supplied 20i reference is already retained; automatic provider images and the cloud catalog still lack a verified response contract.
+
+The separate 1.26 release candidate is `f67b1631`, with corrected browser-test ordering and verified Windows packages. Its original full Linux runs remain pending. Published 1.25 assets and the live site are unchanged.
+
 ## 2026-10-18 — separate hosting-order connection in progress
 
 `codex/twentyi-hosting-commerce` starts at frozen 1.26 source `6e3dbeff6dc6359a418837d0c95baa43e4c92533`. It prepares [hosting publications and client requests](docs/TWENTYI_HOSTING_OFFERS.md) connected to the existing agreement writer. Pure documents pass 119 checks in normal and minimal PHP; source/syntax review is separate from pending SQL, route, browser and full ordering acceptance. No customer route is enabled. The 1.26 release candidate remains unchanged on its own branch, and published 1.25 assets remain immutable.

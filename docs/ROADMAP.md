@@ -1,6 +1,6 @@
 ## Successor in progress — hosting offers and client requests
 
-The separate `codex/twentyi-hosting-commerce` branch adds an unrouted backend connecting imported shared-hosting products to existing service agreements. [Scope and remaining acceptance](TWENTYI_HOSTING_OFFERS.md). Document checks pass; native SQL, public/admin/client screens and the complete payment/order/fulfillment path remain unaccepted. Cloud catalog and provider image contracts remain unresolved. The 1.26 release candidate stays separate.
+The separate `codex/twentyi-hosting-commerce` branch connects imported shared-hosting products to existing service agreements through owner/public/client screens under development. [Scope and remaining acceptance](TWENTYI_HOSTING_OFFERS.md). Document and isolated existing-agreement SQL checks pass; combined hosting SQL, public/admin/client browser behavior and the complete payment/order/fulfillment path remain unaccepted. Cloud catalog and provider image contracts remain unresolved. The 1.26 release candidate stays separate.
 
 ## Current increment —direct hosting catalog
 

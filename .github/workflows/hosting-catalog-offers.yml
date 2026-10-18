@@ -79,3 +79,66 @@ jobs:
             qa/service-plans-native-results.json
           if-no-files-found: error
           retention-days: 14
+  ui:
+    name: Packaged hosting offers HTTP and Chromium on PHP 8.3 and MariaDB
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      database:
+        image: mariadb:10.11
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      PHP_BINARY: /usr/bin/php8.3
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install maintained runtime and real browser dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring python3-venv
+          test -x "$PHP_BINARY"
+          python3 -m venv .ci-venv
+          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 playwright
+          .ci-venv/bin/python -m playwright install --with-deps chromium
+      - name: Verify generated deployment and build exact source
+        run: |
+          PYTHONPATH=tools python3 -B -c 'import build; build.generated(False)'
+          mkdir -p qa
+          python3 tools/build.py --commit "$GITHUB_SHA" > qa/hosting-catalog-ui-build.log 2>&1
+      - name: Seed actual isolated native hosting history
+        run: '"$PHP_BINARY" tests/hosting_catalog_native.php > qa/hosting-catalog-ui-native.log 2>&1'
+      - name: Actual packaged owner client and agreement browser flow
+        run: .ci-venv/bin/python -B tests/hosting_catalog_browser.py
+      - name: Preserve unchanged source
+        if: always()
+        run: git diff --exit-code -- site foundation tools tests .github/workflows
+      - name: Preserve focused original results and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hosting-catalog-ui-8.3-mariadb-10.11-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            qa/hosting-catalog-ui-build.log
+            qa/hosting-catalog-ui-native.log
+            qa/hosting-catalog-native-results.json
+            qa/hosting-catalog-http/
+            dist/*-COMPLETE-UPLOAD.zip
+            dist/*-COMPLETE-UPLOAD.manifest.json
+          if-no-files-found: error
+          retention-days: 14

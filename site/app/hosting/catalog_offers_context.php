@@ -8,25 +8,64 @@ require_once CWP_CODE_ROOT.'/app/providers/catalog_import.php';
 require_once CWP_CODE_ROOT.'/app/providers/plan_catalog.php';
 
 /** One guarded read scope for at most twenty products; callers never accept this value from HTTP. */
+/** Read composition only: no cached readiness survives an entrypoint, transaction or write.
+ * Every public page still validates all retained hosting history once: total cost is O(history).
+ */
+final class HostingCatalogRead {
+    private function __construct() {}
+    private static function products(array $productIds): void {
+        hosting_catalog_guard();
+        if (!array_is_list($productIds) || !$productIds || count($productIds)>20 || count(array_unique($productIds,SORT_REGULAR))!==count($productIds)) throw new InvalidArgumentException('Choose one page of hosting offers.');
+        foreach ($productIds as $id) service_plans_actor($id);
+    }
+    /** Mutation callers retain their original fresh guard and full history validation. */
+    public static function forProducts(array $productIds): array {
+        self::products($productIds);
+        if (!hosting_catalog_ready()) throw new RuntimeException('Hosting offers are not ready for new requests.');
+        return self::scope($productIds);
+    }
+    /** Only called synchronously after this entrypoint validated history under its owning guard. */
+    private static function scope(array $productIds): array {
+        if (!catalog_ready() || !service_plans_ready() || !staff_ready() || !provider_settings_ready() || !provider_catalog_import_ready() || !provider_package_types_ready() || !provider_plan_catalog_state()['ready']) throw new RuntimeException('Hosting offers are not ready for new requests.');
+        $profiles=all('SELECT * FROM '.table('provider_profiles').' WHERE provider_code=? AND environment=? LIMIT 2',['twenty-i','live']);
+        if (count($profiles)!==1 || (int)$profiles[0]['enabled']!==1 || $profiles[0]['credentials']==='') throw new RuntimeException('The reviewed hosting connection is unavailable.');
+        $profile=$profiles[0];
+        // This is the same newest-intent rule used by the owner-only catalog view, with no actor mutation.
+        $source=one('SELECT f.*,r.state,r.reason,r.scope,r.coverage,r.package_count,r.skipped,r.skip_reasons,r.finished_at,r.elapsed_ms,r.key_fingerprint FROM '.table('provider_refreshes').' f LEFT JOIN '.table('provider_refresh_results').' r ON r.id=f.id WHERE f.operation=? AND f.profile_id=? ORDER BY f.seq DESC LIMIT 1',['package.types',$profile['id']]);
+        if (!$source || ($source['state']??null)!=='complete' || (int)$source['profile_revision']!==(int)$profile['revision']) throw new RuntimeException('Review the newest complete hosting catalog before publishing offers.');
+        $observation=provider_package_types_observation($source);
+        $records=all('SELECT * FROM '.table('catalog_provider_imports').' WHERE product_id IN ('.implode(',',array_fill(0,count($productIds),'?')).')',$productIds);
+        if (count($records)!==count($productIds)) throw new RuntimeException('An original hosting import is unavailable.');
+        provider_catalog_import_origins($records);
+        $imports=[];foreach ($records as $record) $imports[(int)$record['product_id']]=$record;
+        return ['profile'=>['id'=>$profile['id'],'revision'=>(int)$profile['revision'],'enabled'=>true,'credential_sha256'=>hash('sha256',$profile['credentials']),'key_fingerprint'=>$source['key_fingerprint']],
+            'observation'=>['refresh_id'=>$source['id'],'profile_id'=>$source['profile_id'],'profile_revision'=>(int)$source['profile_revision'],'key_fingerprint'=>$source['key_fingerprint'],'observed_epoch'=>$observation['observed_epoch'],'types'=>$observation['types']],
+            'imports'=>$imports];
+    }
+    public static function publicPage(int $page=1): array {
+        if ($page<1 || $page>100000) throw new InvalidArgumentException('Choose an available hosting page.');
+        return recurring_billing_locked(function()use($page):array {
+            if (!hosting_catalog_ready()) return ['offers'=>[],'has_more'=>false,'unavailable'=>false];
+            $publications=table('hosting_catalog_publications');$withdrawals=table('hosting_catalog_withdrawals');$products=table('catalog_products');
+            $rows=all("SELECT p.id,p.product_id FROM $publications p JOIN $products c ON c.id=p.product_id LEFT JOIN $withdrawals w ON w.publication_id=p.id WHERE c.status='draft' AND c.revision=p.product_revision AND w.id IS NULL AND NOT EXISTS (SELECT 1 FROM $publications n WHERE n.product_id=p.product_id AND n.seq>p.seq) ORDER BY c.sort_order,c.id LIMIT 21 OFFSET ".(($page-1)*20));
+            $more=count($rows)>20;$rows=array_slice($rows,0,20);
+            if (!$rows) return ['offers'=>[],'has_more'=>$more,'unavailable'=>false];
+            $productIds=array_map(static fn(array $row):int=>(int)$row['product_id'],$rows);
+            self::products($productIds);
+            $scope=self::scope($productIds);
+            $offers=[];$unavailable=false;
+            foreach ($rows as $row) {
+                $publication=hosting_catalog_publication($row['id']);
+                try {$offers[]=$publication->publicProjection(hosting_catalog_current_context($publication,$scope),time());}
+                catch (RuntimeException $error) {if ($error instanceof PDOException) throw $error;$unavailable=true;}
+            }
+            return ['offers'=>$offers,'has_more'=>$more,'unavailable'=>$unavailable];
+        });
+    }
+}
+
 function hosting_catalog_read_scope(array $productIds): array {
-    hosting_catalog_guard();
-    if (!array_is_list($productIds) || !$productIds || count($productIds)>20 || count(array_unique($productIds,SORT_REGULAR))!==count($productIds)) throw new InvalidArgumentException('Choose one page of hosting offers.');
-    foreach ($productIds as $id) service_plans_actor($id);
-    if (!hosting_catalog_ready() || !catalog_ready() || !service_plans_ready() || !staff_ready() || !provider_settings_ready() || !provider_catalog_import_ready() || !provider_package_types_ready() || !provider_plan_catalog_state()['ready']) throw new RuntimeException('Hosting offers are not ready for new requests.');
-    $profiles=all('SELECT * FROM '.table('provider_profiles').' WHERE provider_code=? AND environment=? LIMIT 2',['twenty-i','live']);
-    if (count($profiles)!==1 || (int)$profiles[0]['enabled']!==1 || $profiles[0]['credentials']==='') throw new RuntimeException('The reviewed hosting connection is unavailable.');
-    $profile=$profiles[0];
-    // This is the same newest-intent rule used by the owner-only catalog view, with no actor mutation.
-    $source=one('SELECT f.*,r.state,r.reason,r.scope,r.coverage,r.package_count,r.skipped,r.skip_reasons,r.finished_at,r.elapsed_ms,r.key_fingerprint FROM '.table('provider_refreshes').' f LEFT JOIN '.table('provider_refresh_results').' r ON r.id=f.id WHERE f.operation=? AND f.profile_id=? ORDER BY f.seq DESC LIMIT 1',['package.types',$profile['id']]);
-    if (!$source || ($source['state']??null)!=='complete' || (int)$source['profile_revision']!==(int)$profile['revision']) throw new RuntimeException('Review the newest complete hosting catalog before publishing offers.');
-    $observation=provider_package_types_observation($source);
-    $records=all('SELECT * FROM '.table('catalog_provider_imports').' WHERE product_id IN ('.implode(',',array_fill(0,count($productIds),'?')).')',$productIds);
-    if (count($records)!==count($productIds)) throw new RuntimeException('An original hosting import is unavailable.');
-    provider_catalog_import_origins($records);
-    $imports=[];foreach ($records as $record) $imports[(int)$record['product_id']]=$record;
-    return ['profile'=>['id'=>$profile['id'],'revision'=>(int)$profile['revision'],'enabled'=>true,'credential_sha256'=>hash('sha256',$profile['credentials']),'key_fingerprint'=>$source['key_fingerprint']],
-        'observation'=>['refresh_id'=>$source['id'],'profile_id'=>$source['profile_id'],'profile_revision'=>(int)$source['profile_revision'],'key_fingerprint'=>$source['key_fingerprint'],'observed_epoch'=>$observation['observed_epoch'],'types'=>$observation['types']],
-        'imports'=>$imports];
+    return HostingCatalogRead::forProducts($productIds);
 }
 
 /** The current owner's saved role/authentication revision is a fact, not the requesting session. */

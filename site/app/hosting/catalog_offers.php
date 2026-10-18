@@ -148,22 +148,7 @@ function hosting_catalog_close_request(string $id,string $requestId,string $requ
 }
 /** Closed public cards only. This read has no authentication mutation or provider transport. */
 function hosting_catalog_public(int $page=1): array {
-    if ($page<1 || $page>100000) throw new InvalidArgumentException('Choose an available hosting page.');
-    return recurring_billing_locked(function()use($page):array {
-        if (!hosting_catalog_ready()) return ['offers'=>[],'has_more'=>false,'unavailable'=>false];
-        $publications=table('hosting_catalog_publications');$withdrawals=table('hosting_catalog_withdrawals');$products=table('catalog_products');
-        $rows=all("SELECT p.id,p.product_id FROM $publications p JOIN $products c ON c.id=p.product_id LEFT JOIN $withdrawals w ON w.publication_id=p.id WHERE c.status='draft' AND c.revision=p.product_revision AND w.id IS NULL AND NOT EXISTS (SELECT 1 FROM $publications n WHERE n.product_id=p.product_id AND n.seq>p.seq) ORDER BY c.sort_order,c.id LIMIT 21 OFFSET ".(($page-1)*20));
-        $more=count($rows)>20;$rows=array_slice($rows,0,20);
-        if (!$rows) return ['offers'=>[],'has_more'=>$more,'unavailable'=>false];
-        $scope=hosting_catalog_read_scope(array_map(static fn(array $row):int=>(int)$row['product_id'],$rows));
-        $offers=[];$unavailable=false;
-        foreach ($rows as $row) {
-            $publication=hosting_catalog_publication($row['id']);
-            try {$offers[]=$publication->publicProjection(hosting_catalog_current_context($publication,$scope),time());}
-            catch (RuntimeException $error) {if ($error instanceof PDOException) throw $error;$unavailable=true;}
-        }
-        return ['offers'=>$offers,'has_more'=>$more,'unavailable'=>$unavailable];
-    });
+    return HostingCatalogRead::publicPage($page);
 }
 /** Own request history survives later catalog edits, withdrawal and credential replacement. */
 function hosting_catalog_client_requests(int $client,int $page=1): array {

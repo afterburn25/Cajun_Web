@@ -33,6 +33,26 @@ function hcn_state():string {
     return hash('sha256',json_encode($state,JSON_THROW_ON_ERROR));
 }
 function hcn_ready():bool {return recurring_billing_locked(fn()=>hosting_catalog_ready());}
+/** Test-only statement observation. Never retains SQL parameters, account data or credentials. */
+final class HostingCatalogReadProbeStatement extends PDOStatement {
+    protected function __construct() {}
+    public function execute(?array $params=null): bool {
+        if ($GLOBALS['hcn_probe_active']??false) {
+            $GLOBALS['hcn_probe']['statements']++;
+            if ($this->queryString==='SELECT value FROM '.table('settings').' WHERE name=?' && $params===['hosting_catalog_version']) $GLOBALS['hcn_probe']['history_validations']++;
+            if (!preg_match('/\A(?:SELECT|SHOW)\b/',$this->queryString)) $GLOBALS['hcn_probe']['write_statements']++;
+        }
+        return parent::execute($params);
+    }
+}
+function hcn_public_probe(int $page=1): array {
+    $GLOBALS['hcn_probe']=['statements'=>0,'history_validations'=>0,'write_statements'=>0];
+    $savedSession=$_SESSION;$_SESSION=[];
+    $GLOBALS['hcn_probe_active']=true;
+    try {return hosting_catalog_public($page);}
+    finally {$_SESSION=$savedSession;$GLOBALS['hcn_probe_active']=false;$GLOBALS['hcn_public_read_probes'][]=$GLOBALS['hcn_probe'];}
+}
+
 function hcn_read(array $row,string $key,string $address,callable $authorize,string $operation):InventorySnapshot {
     global $calls,$secret;$authorize();
     if($key!==$secret||$address!=='8.8.8.8'||$operation!==InventoryRead::PACKAGE_TYPES)throw new LogicException('Unexpected synthetic catalog transport');
@@ -47,6 +67,7 @@ function hcn_fail_audit(string $action,callable $work):bool {
 }
 try {
     if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND LEFT(table_name,5)=? LIMIT 1',['hoci_']))throw new RuntimeException('Disposable hoci_ prefix already exists; preserve the earlier run and use a clean test database.');
+    if (!db()->setAttribute(PDO::ATTR_STATEMENT_CLASS,[HostingCatalogReadProbeStatement::class])) throw new RuntimeException('Read probe statement class is unavailable.');
     foreach(schema_statements('hoci_') as $name=>$sql)if(!str_starts_with($name,'provider_'))db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);save_setting('studio_schema_version','2');
     foreach([1,2] as $id)query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Hosting staff '.$id,'hosting-staff'.$id.'@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat($id===1?'a':'b',32),gmdate('Y-m-d H:i:s')]);
@@ -68,9 +89,11 @@ try {
     $configuration=['reseller_id'=>42,'type'=>'7002','label'=>'Synthetic owner-reviewed account','region'=>'Reviewed region','limits'=>['websites'=>1],'cost'=>['amount'=>'9.87','currency'=>'USD','period_months'=>1,'tax'=>'unknown','basis'=>'per-package','reference'=>'PRIVATE_COST_REFERENCE']];
     $mapping=provider_plan_catalog_save(hcn_id(10),hcn_id(1),$plan->revision(),$plan->fingerprint(),null,$profile,1,$configuration,7,true,$password);
     $before=hcn_state();hcn_ok('Hosting readiness is read-only before explicit preparation',!hcn_ready()&&hcn_state()===$before);
+    hcn_ok('Unprepared anonymous hosting read validates history once and stays empty',hcn_public_probe()===['offers'=>[],'has_more'=>false,'unavailable'=>false]&&$GLOBALS['hcn_probe']['history_validations']===1&&$GLOBALS['hcn_probe']['write_statements']===0&&hcn_state()===$before);
     hcn_deny('Hosting preparation requires the current owner password',fn()=>hosting_catalog_prepare('wrong'));
     hcn_owner(2);hcn_deny('Delegated administrator cannot prepare hosting offer storage',fn()=>hosting_catalog_prepare($password));hcn_owner();
     hosting_catalog_prepare($password);$before=hcn_state();hosting_catalog_prepare($password);hcn_ok('Repeated hosting preparation preserves all database rows',hcn_ready()&&hcn_state()===$before);
+    hcn_ok('Prepared empty hosting page validates history once without writes',hcn_public_probe()===['offers'=>[],'has_more'=>false,'unavailable'=>false]&&$GLOBALS['hcn_probe']['history_validations']===1&&$GLOBALS['hcn_probe']['write_statements']===0&&hcn_state()===$before);
     hcn_deny('Hosting publication rejects mismatched product and plan price',fn()=>hosting_catalog_preview(hcn_id(20),$product,hcn_id(1)));
     catalog_save($product,2,$input);hcn_deny('Hosting publication rejects a different mapped provider type',fn()=>hosting_catalog_preview(hcn_id(20),$product,hcn_id(1)));
     $configuration['type']='7001';$mapping=provider_plan_catalog_save(hcn_id(11),hcn_id(1),$plan->revision(),$plan->fingerprint(),$mapping['id'],$profile,1,$configuration,7,true,$password);
@@ -87,6 +110,26 @@ try {
     hcn_ok('Anonymous hosting cards have exactly the closed safe projection',$public===['offers'=>[$card],'has_more'=>false,'unavailable'=>false]&&array_keys($card)===['publication_id','publication_sha256','product_id','product_revision','sku','title','summary','amount_cents','currency','cadence','inclusions','exclusions','limits','support','image_id']);
     $bytes=json_encode($public,JSON_THROW_ON_ERROR);hcn_ok('Hosting public cards expose plan terms without private import or provider values',!str_contains($bytes,$secret)&&!str_contains($bytes,$profile)&&!str_contains($bytes,'PRIVATE_')&&!str_contains($bytes,'credential_sha256')&&!str_contains($bytes,'source_key_fingerprint')&&$card['inclusions']===$terms['inclusions']&&$card['exclusions']===$terms['exclusions']&&$card['support']===$terms['support']);
     hcn_ok('Anonymous projection makes no transport or database writes',$calls===1&&hcn_state()===$before);
+    hcn_ok('Nonempty public page validates hosting history exactly once',hcn_public_probe()===$public&&$GLOBALS['hcn_probe']['history_validations']===1&&$GLOBALS['hcn_probe']['write_statements']===0);
+    hcn_ok('Next public call performs its own fresh history validation',hcn_public_probe()===$public&&$GLOBALS['hcn_probe']['history_validations']===1&&$GLOBALS['hcn_probe']['write_statements']===0);
+    $savedMarker=one('SELECT value FROM '.table('settings').' WHERE name=?',['hosting_catalog_version']);
+    query('DELETE FROM '.table('settings').' WHERE name=?',['hosting_catalog_version']);
+    try {hcn_deny('Public call after a successful read refuses missing established marker',fn()=>hcn_public_probe());}
+    finally {save_setting('hosting_catalog_version',$savedMarker['value']);}
+    $savedCount=one('SELECT value FROM '.table('settings').' WHERE name=?',['hosting_catalog_publications_count']);
+    save_setting('hosting_catalog_publications_count',(string)((int)$savedCount['value']+1));
+    try {hcn_deny('Public call refuses a changed retained history count',fn()=>hcn_public_probe());}
+    finally {save_setting('hosting_catalog_publications_count',$savedCount['value']);}
+    $savedWitness=one('SELECT id,detail FROM '.table('audit').' WHERE action=?',['hosting_catalog.publication']);
+    query('UPDATE '.table('audit').' SET detail=? WHERE id=?',[$savedWitness['detail'].' changed',$savedWitness['id']]);
+    try {hcn_deny('Public call refuses changed publication audit witness despite equal counts',fn()=>hcn_public_probe());}
+    finally {query('UPDATE '.table('audit').' SET detail=? WHERE id=?',[$savedWitness['detail'],$savedWitness['id']]);}
+    query('UPDATE '.table('hosting_catalog_publications').' SET document_sha256=? WHERE id=?',[str_repeat('0',64),hcn_id(20)]);
+    try {hcn_deny('Public call refuses corrupt retained publication bytes',fn()=>hcn_public_probe());}
+    finally {query('UPDATE '.table('hosting_catalog_publications').' SET document_sha256=? WHERE id=?',[$publication->fingerprint(),hcn_id(20)]);}
+    hcn_ok('Public integrity probes restore all rows and fresh safe projection',hcn_state()===$before&&hcn_public_probe()===$public&&$GLOBALS['hcn_probe']['history_validations']===1);
+    hcn_deny('Direct product scope still requires owning lock and transaction',fn()=>hosting_catalog_read_scope([$product]));
+
     hcn_owner();hcn_deny('Imported hosting remains blocked from ordinary catalog publication',fn()=>catalog_save($product,3,array_replace($input,['status'=>'published'])));
     hcn_deny('Imported hosting remains blocked from ordinary invoice quotes',fn()=>catalog_quote($product,3,1));
     hcn_deny('Imported hosting remains blocked from ordinary catalog invoice creation',fn()=>catalog_issue(1,$product,3,1,'Synthetic instructions',str_repeat('e',64)));
@@ -135,14 +178,15 @@ try {
 
     $before=hcn_state();$cipher=provider_settings_load($profile)['credentials'];
     query('UPDATE '.table('provider_profiles').' SET credentials=? WHERE id=?',[provider_settings_seal($profile,'live','SYNTHETIC_ROTATED_HOSTING_KEY'),$profile]);
-    try{hcn_client();hcn_deny('Changed credentials refuse new requests against the old offer',fn()=>hosting_catalog_request(hcn_id(107),hcn_id(20),$publication->fingerprint(),1));hcn_ok('Changed credentials do not erase authenticated historical terms',count(hosting_catalog_client_requests(1)['requests'])===5);}
+    try{$_SESSION=[];hcn_ok('Public read rechecks changed credentials after earlier successful calls',hcn_public_probe()===['offers'=>[],'has_more'=>false,'unavailable'=>true]&&$GLOBALS['hcn_probe']['history_validations']===1);hcn_client();hcn_deny('Changed credentials refuse new requests against the old offer',fn()=>hosting_catalog_request(hcn_id(107),hcn_id(20),$publication->fingerprint(),1));hcn_ok('Changed credentials do not erase authenticated historical terms',count(hosting_catalog_client_requests(1)['requests'])===5);}
     finally{query('UPDATE '.table('provider_profiles').' SET credentials=? WHERE id=?',[$cipher,$profile]);hcn_owner();}
-    query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');try{hcn_client();hcn_deny('Revoked original owner authority refuses new hosting requests',fn()=>hosting_catalog_request(hcn_id(107),hcn_id(20),$publication->fingerprint(),1));}finally{query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');hcn_owner();}
+    query('UPDATE '.table('staff_profiles').' SET enabled=0 WHERE user_id=1');try{$_SESSION=[];hcn_ok('Public read rechecks revoked reviewer after earlier successful calls',hcn_public_probe()===['offers'=>[],'has_more'=>false,'unavailable'=>true]&&$GLOBALS['hcn_probe']['history_validations']===1);hcn_client();hcn_deny('Revoked original owner authority refuses new hosting requests',fn()=>hosting_catalog_request(hcn_id(107),hcn_id(20),$publication->fingerprint(),1));}finally{query('UPDATE '.table('staff_profiles').' SET enabled=1 WHERE user_id=1');hcn_owner();}
     hcn_ok('Credential and owner refusal probes restore exact original database rows',hcn_state()===$before);
     hcn_owner(2);hcn_deny('Delegated administrator cannot withdraw an offer',fn()=>hosting_catalog_withdraw(hcn_id(30),hcn_id(20),$publication->fingerprint(),'Owner withdrew offer',$password));hcn_owner();
     hcn_deny('Offer withdrawal requires current owner password',fn()=>hosting_catalog_withdraw(hcn_id(30),hcn_id(20),$publication->fingerprint(),'Owner withdrew offer','wrong'));
     hosting_catalog_withdraw(hcn_id(30),hcn_id(20),$publication->fingerprint(),'Owner withdrew offer',$password);$before=hcn_state();hosting_catalog_withdraw(hcn_id(30),hcn_id(20),$publication->fingerprint(),'Owner withdrew offer',$password);
     hcn_ok('Offer withdrawal replay preserves exact history',hcn_state()===$before&&hosting_catalog_public()===['offers'=>[],'has_more'=>false,'unavailable'=>false]);
+    hcn_ok('Empty withdrawn page still validates all retained history once',hcn_public_probe()===['offers'=>[],'has_more'=>false,'unavailable'=>false]&&$GLOBALS['hcn_probe']['history_validations']===1&&$GLOBALS['hcn_probe']['write_statements']===0&&hcn_state()===$before);
     hcn_client();hcn_deny('Withdrawn offer refuses a new client request',fn()=>hosting_catalog_request(hcn_id(107),hcn_id(20),$publication->fingerprint(),1));
     hcn_ok('Own historical request replay survives offer withdrawal',hosting_catalog_request(hcn_id(101),hcn_id(20),$publication->fingerprint(),1)->json()===$request->json());
     $history=hosting_catalog_client_requests(1);$states=array_column($history['requests'],'status','id');hcn_ok('Withdrawal retains exact client terms and prior request outcomes',count($history['requests'])===5&&array_column($history['requests'],'offer')===array_fill(0,5,$card)&&$states[hcn_id(101)]==='offered'&&$states[hcn_id(103)]==='pending'&&$states[hcn_id(104)]==='withdrawn'&&$states[hcn_id(105)]==='declined');
@@ -162,7 +206,7 @@ try {
     try{hcn_deny('Missing established hosting marker cannot silently recreate history',fn()=>hosting_catalog_prepare($password));}finally{save_setting('hosting_catalog_version',$marker['value']);}
     hcn_ok('Exact marker restoration preserves ready history and all row contents',hcn_ready()&&hcn_state()===$before);
     hcn_ok('Offer and request operations never create an invoice payment or provider write',$calls===1&&(int)query('SELECT COUNT(*) FROM '.table('studio_invoices'))->fetchColumn()===0&&(int)query('SELECT COUNT(*) FROM '.table('catalog_invoice_snapshots'))->fetchColumn()===0&&(int)query('SELECT COUNT(*) FROM '.table('service_subscriptions').' WHERE revision<>0')->fetchColumn()===0);
-    $runtime=['php'=>PHP_VERSION,'pdo_driver'=>db()->getAttribute(PDO::ATTR_DRIVER_NAME),'database_version'=>(string)query('SELECT VERSION()')->fetchColumn(),'synthetic_catalog_transport_calls'=>$calls];
+    $runtime=['php'=>PHP_VERSION,'pdo_driver'=>db()->getAttribute(PDO::ATTR_DRIVER_NAME),'database_version'=>(string)query('SELECT VERSION()')->fetchColumn(),'synthetic_catalog_transport_calls'=>$calls,'public_read_probes'=>$GLOBALS['hcn_public_read_probes']??[]];
 } catch(Throwable $e) {$checks[]=['name'=>'Unexpected hosting catalog native failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
 $passed=!array_filter($checks,static fn(array $c):bool=>$c['passed']!==true);
 file_put_contents(__DIR__.'/../qa/hosting-catalog-native-results.json',json_encode(['passed'=>$passed,'scope'=>'Disposable SQL integration using real local service wrappers and synthetic package-types transport; authenticated session fixtures, no browser, provider write, payment or fulfillment acceptance.','runtime'=>$runtime,'checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
