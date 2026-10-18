@@ -1,3 +1,13 @@
+## Verified publication — 1.25.0
+
+[CajunWebPro 1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0) is published and freshly download-verified from immutable source `b79c67110829126916e3a65e616191542448bccc`, tree `f862cc9205e073513f419cdf5ff24cacd1f801df`, after the normal [PR180](https://github.com/afterburn25/Cajun_Web/pull/180) merge. All 18 release assets match their accepted bytes; 1.24.0 is unchanged. This is a GitHub release, not a live deployment.
+
+Published at **2026-10-18 02:11:10 UTC** (2026-10-17 21:11:10 CDT), release ID `416184457`. The annotated tag object is `f6459eb56722a7dd6e54c850cfa6ac8cc8fcd46a`. Five original full application runs, maintained compatibility and 330 actual main images were accepted before assembly. Both draft and public fresh-download verification passed all 18 assets and 2,335 evidence members. [Complete publication record](RELEASE_1.25.0_PUBLICATION.md); [exact public verification JSON](evidence/release-1.25.0-public-verification.json).
+
+Existing installations use UPDATE; COMPLETE-UPLOAD is for fresh installation and FULL-PROJECT for development. Follow the same-release instructions and retain original configuration, database, private storage and keys.
+
+Earlier dated candidate and branch checkpoints below retain their original evidence and failures. Their pending-work statements do not supersede this publication record.
+
 ## Release 1.25.0 evidence and publication boundary
 
 The bounded increment is defined by [scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md), [acceptance report](TEST_REPORT_1.25.0.md) and [migration instructions](MIGRATION-INSTRUCTIONS-1.25.0.md). The original main/mature20i histories are already normally merged. Preserve every existing acceptance and publication gate; current source integration does not itself publish or deploy the application.

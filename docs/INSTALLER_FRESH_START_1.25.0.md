@@ -1,5 +1,7 @@
 # Installer correction for 1.25.0
 
+Current outcome: included in [published and download-verified 1.25.0](RELEASE_1.25.0_PUBLICATION.md) at immutable source `b79c67110829126916e3a65e616191542448bccc`. Full exact-main acceptance and the 330-image team review passed with the recorded limits. Earlier branch/local-test statements below preserve their historical cutoff; they do not claim target-host deployment.
+
 Status: implemented on `codex/installer-layout-1.25.0` from parent `bc5ec277580aa681f43aaf2c9b97df730f6954f1`; release acceptance and publication pending. The enclosing commit identifies the correction without a self-referential hash.
 
 ## Owner-requested behavior
@@ -13,6 +15,8 @@ Status: implemented on `codex/installer-layout-1.25.0` from parent `bc5ec277580a
 This offers a fresh active site while retaining previous data separately. It is not destructive database overwrite or a promise that deleted original configuration/encryption keys can be recovered. Fresh mode requires a writable permanent private parent and deliberately has no arbitrary public-directory fallback.
 
 ## Bounded evidence and remaining acceptance
+The following local evidence and remaining-work statements record the implementation checkpoint before complete release acceptance.
+
 
 Actual local PHP8.4.25 default/no-ini password checks cover ASCII/Unicode 11-versus-12 boundaries, 72-byte limits, malformed UTF-8/NUL, intentional spaces and unchanged client behavior. The native staff fixture imports those checks and exercises 12-character activation/reset/account changes; native execution remains pending.
 
