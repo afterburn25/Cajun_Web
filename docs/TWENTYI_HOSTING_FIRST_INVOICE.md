@@ -2,7 +2,7 @@
 
 Development branch: `codex/twentyi-hosting-first-invoice`, starting at `0c7cbae34220717c72e2f3dbeed1b41ca3545dbf`. This is separate from the preserved full-acceptance branch and the unpublished 1.26 release candidate. Published 1.25.0 remains unchanged.
 
-The intended experience is one client confirmation showing the hosting service, exact price, full first billing period, due date and project choice. That confirmation will create the agreement and first unpaid invoice together. Card payment, provider provisioning and confirmed service availability are separate steps. Current development includes pure commercial documents and locally tested subscription storage; it does not yet create an invoice or expose a checkout page.
+The intended experience is one client confirmation showing the hosting service, exact price, full first billing period, due date and project choice. That confirmation will create the agreement and first unpaid invoice together. Card payment, provider provisioning and confirmed service availability are separate steps. Current development implements that transaction and its owner/client pages. Local document, migration/history and renderer checks pass within their stated scope; full native checkout and packaged browser acceptance remain pending.
 
 ## Commercial documents
 
@@ -54,12 +54,22 @@ Applied-source tests pass130 new checkout-document cases and119 unchanged public
 
 Run `php tests/hosting_checkout_document.php` and `php tests/hosting_catalog_document.php`, repeating each with `php -n`. These are pure tests with synthetic identities and current-context facts. They do not execute authentication, SQL or an invoice. The existing385-check artifact-helper suite also passes with the updated source pins. The new checkout test is not yet wired into the full application workflow; it will accompany the coherent native increment. Existing workflow commands and their original pending runs remain intact.
 
-## Remaining implementation
+## Integrated owner and client flow
 
-1. Complete supported-runtime acceptance for the subscription and recurring extensions. Both pass the bounded local migration/history checks above; complete checkout remains separate.
-2. Compose project selection or creation, client consent, explicit automatic local activation and period-zero invoice in one guarded database transaction. Recheck the real client, current publication owner permissions, exact source and project ownership. Roll back the entire operation on failure.
-3. Return the original owned result on exact completed replay. Reject changed input, partial history or missing invoice/audit bindings; do not recreate financial history.
-4. Add owner opt-in and the client review/confirmation page, then prove the complete same-clock journey with native database and packaged browser tests. Keep the existing eventual-purchase test unchanged.
-5. Enforce the accepted verified-payment requirement for checkout-origin fulfillment and retain separate owner approval, exact mapping, client order/domain consent and confirmed package assignment. General payment links and gateways remain in Devin's separate lane.
+An owner explicitly prepares the optional checkout tables and subscription/recurring extensions using a current password. New publications default to request-only; choosing invoice checkout retains the billing timezone, calendar alignment and verified-payment policy in the reviewed publication. Existing offers are not converted. Month-end alignment permits confirmation only on the month's last local date; day-of-month alignment clamps to the last day in shorter months. Failed forms retain submitted identities, hashes and choices.
 
-The [full hosting acceptance work](TWENTYI_HOSTING_FULL_ACCEPTANCE.md) and its original runs remain separate requirements. The bounded native checks above do not certify complete purchase, HTTP, browser, supported-runtime upgrade, release or live-provider behavior. Automatic provider product images and full cloud catalog coverage remain unfinished; the saved owner API reference is already available and need not be requested again.
+Primary clients choose an owned existing project or a dedicated hosting project. The retained review displays the service, exact price, first full period, due date, next billing date, timezone and expiry. Confirmation submits only the stable request identifier and exact review fingerprint with explicit consent. The transaction rechecks current client/owner/publication/project authority and writes the project if needed, truthful client consent/system effect, recurring schedule, first unpaid invoice and independent result/origin witnesses. A final audit failure rolls back business rows. The result links to the owned invoice, project, agreement and billing schedule.
+
+Completed retry reads the original complete retained graph after fresh primary-client authentication; it does not depend on the offer still being available. Changed input, contacts, support impersonation, revoked sessions, foreign projects and missing/corrupt history are refused. Checkout-origin service orders require the original first invoice and provider mapping. Manual fulfillment bypass cannot replace the accepted verified-payment policy, including after payment or on a repeated event. Ordinary legacy order behavior remains separate.
+
+## Current verification and next steps
+
+Applied default/minimal PHP8.4.25 runs pass130 commercial-document,65 subscription,92 billing,46 portal-form/renderer and119 existing publication/request checks per mode. The view fixture executes actual routing/parser/render functions with explicitly modeled storage and authority seams. It verifies exact retry fields, correct recurring links, escaping and preview return routing. These results do not establish SQL, HTTP or browser behavior.
+
+The first Linux native fixture uses actual owner migrations, protected synthetic provider credentials, closed local package-types transport, authenticated client wrappers and database rollback/history checks. Its separate synthetic receipt slice exercises actual ledger and local order preparation; it does not charge a card or send a provider operation. Upload only the named QA report, never private runtime/session/key files. The frozen original had an invalid in-process unauthorized ledger check because require_admin redirects/exits; the corrected fixture defers that HTTP assertion and explicitly prepares attempts via the real migration. Native assertion declarations are not passed results.
+
+The focused workflow runs the new pure/view/native tests on PHP8.2/8.4 with MariaDB10.11/MySQL8.4. The full application workflow remains unchanged until its strictly preserved recipe/report inventory can be extended alongside the complete packaged browser journey. Preserve all original runs and failures; do not cancel, rerun or replace them to obtain a cleaner result.
+
+Next: inspect the first exact-source focused native run, finish the same-clock packaged owner/client browser flow, then integrate the bounded recipe/report additions into complete application/upgrade/recovery acceptance. No new source is published or deployed until the applicable gates and exact downloaded release verification pass.
+
+The [full hosting acceptance work](TWENTYI_HOSTING_FULL_ACCEPTANCE.md) and its original runs remain separate requirements. Automatic provider product images and full cloud catalog coverage remain unfinished; the saved owner API reference is already available and need not be requested again.

@@ -26,33 +26,42 @@ function hosting_catalog_review_hash(HostingCatalogPublication $publication): st
     $data=$publication->data();unset($data['created_at']);
     return hash('sha256',service_plans_json($data));
 }
-function hosting_catalog_candidate(string $id,int $product,string $plan,array $actor): HostingCatalogPublication {
+function hosting_catalog_candidate(string $id,int $product,string $plan,array $actor,?array $checkoutPolicy=null): HostingCatalogPublication {
     hosting_catalog_guard();service_plans_id($id);
     $scope=hosting_catalog_read_scope([$product]);
     $source=hosting_catalog_sources($product,$plan,(int)$actor['id'],$scope);
     $source['context']['publication']=['id'=>$id,'sha256'=>null,'enabled'=>true];
+    if ($checkoutPolicy!==null) {
+        require_once __DIR__.'/catalog_checkout.php';
+        if (!staff_can('payments.manage',$actor)) throw new RuntimeException('Current owner financial access is required for invoice checkout.');
+        hosting_checkout_require();
+        return HostingCatalogPublication::createCheckout($id,time(),$source['product'],$source['import'],$source['observation'],$source['plan'],$source['mapping_json'],$source['context'],hosting_checkout_policy($checkoutPolicy));
+    }
     return HostingCatalogPublication::create($id,time(),$source['product'],$source['import'],$source['observation'],$source['plan'],$source['mapping_json'],$source['context']);
 }
-function hosting_catalog_preview(string $id,int $product,string $plan): array {
-    return recurring_billing_locked(function()use($id,$product,$plan):array {
+function hosting_catalog_preview(string $id,int $product,string $plan,?array $checkoutPolicy=null): array {
+    if ($checkoutPolicy!==null) $checkoutPolicy=hosting_checkout_policy($checkoutPolicy);
+    return recurring_billing_locked(function()use($id,$product,$plan,$checkoutPolicy):array {
         $actor=provider_catalog_import_owner();service_plans_owner();
-        $candidate=hosting_catalog_candidate($id,$product,$plan,$actor);
+        $candidate=hosting_catalog_candidate($id,$product,$plan,$actor,$checkoutPolicy);
         return ['review_sha256'=>hosting_catalog_review_hash($candidate),'offer'=>$candidate->historicalProjection()];
     });
 }
-function hosting_catalog_publish(string $id,int $product,string $plan,string $reviewHash,#[\SensitiveParameter] string $password): HostingCatalogPublication {
+function hosting_catalog_publish(string $id,int $product,string $plan,string $reviewHash,#[\SensitiveParameter] string $password,?array $checkoutPolicy=null): HostingCatalogPublication {
     service_plans_id($id);service_plans_id($plan);hosting_catalog_hash($reviewHash);
-    return recurring_billing_locked(function()use($id,$product,$plan,$reviewHash,$password):HostingCatalogPublication {
+    if ($checkoutPolicy!==null) $checkoutPolicy=hosting_checkout_policy($checkoutPolicy);
+    return recurring_billing_locked(function()use($id,$product,$plan,$reviewHash,$password,$checkoutPolicy):HostingCatalogPublication {
         $actor=provider_catalog_import_owner($password);service_plans_password($password);
+        if ($checkoutPolicy!==null && !staff_can('payments.manage',$actor)) throw new RuntimeException('Current owner financial access is required for invoice checkout.');
         if (!hosting_catalog_ready()) throw new RuntimeException('Prepare hosting offer history first.');
         if (one('SELECT id FROM '.table('hosting_catalog_publications').' WHERE id=?',[$id])) {
             $old=hosting_catalog_publication($id);$data=$old->data();
-            if ($data['product']['id']!==$product || ServicePlanDocument::fromJson($data['plan_json'])->data()['id']!==$plan || $data['publisher']['id']!==(int)$actor['id'] || !hash_equals(hosting_catalog_review_hash($old),$reviewHash)) throw new RuntimeException('This publication identity was already used for different details.');
+            if ($old->checkoutPolicy()!==$checkoutPolicy || $data['product']['id']!==$product || ServicePlanDocument::fromJson($data['plan_json'])->data()['id']!==$plan || $data['publisher']['id']!==(int)$actor['id'] || !hash_equals(hosting_catalog_review_hash($old),$reviewHash)) throw new RuntimeException('This publication identity was already used for different details.');
             return $old;
         }
         // Explicit owner publication verifies the current saved key against the observation; public reads never decrypt it.
         provider_catalog_import_context('package.types');
-        $publication=hosting_catalog_candidate($id,$product,$plan,$actor);
+        $publication=hosting_catalog_candidate($id,$product,$plan,$actor,$checkoutPolicy);
         if (!hash_equals(hosting_catalog_review_hash($publication),$reviewHash)) throw new RuntimeException('The hosting offer or provider review changed. Review the current offer before publishing.');
         $data=$publication->data();$mapping=provider_plan_catalog_document($data['mapping_json']);
         query('INSERT INTO '.table('hosting_catalog_publications').' (id,product_id,product_revision,plan_id,mapping_id,media_id,created_by,created_epoch,document_json,document_sha256) VALUES (?,?,?,?,?,?,?,?,?,?)',[$id,$product,$data['product']['revision'],$plan,$mapping['id'],$data['product']['media_id'],$actor['id'],$data['created_at'],$publication->json(),$publication->fingerprint()]);

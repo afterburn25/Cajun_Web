@@ -12,6 +12,11 @@ function hosting_catalog_card(array $offer,string $headingLevel='h3'):void {
     if ($image!==null) echo '<img class="hosting-catalog-image" src="'.esc(site_url('media/index.php?id='.$image)).'" alt="" loading="lazy" decoding="async">';
     echo '<'.$headingLevel.'>'.esc($offer['title']).'</'.$headingLevel.'><p>'.nl2br(esc($offer['summary'])).'</p>';
     echo '<p><strong>$'.esc(gmoney($offer['amount_cents'])).' USD</strong> '.($offer['cadence']==='monthly'?'per month':'per year').'</p><p class="hint">One package · No setup fee</p>';
+    if (isset($offer['checkout_policy'])) {
+        $policy=hosting_checkout_policy($offer['checkout_policy']);
+        echo '<p class="hint">Confirm the terms in your client portal to create an unpaid first invoice. Billing starts on the confirmation date in '.esc($policy['timezone']).'. Hosting setup follows verified payment and owner approval.</p>';
+        echo '<p class="hint">'.($policy['alignment']==='month-end'?'Month-end billing: confirmation is available only on the last day of a month.':'Recurring billing keeps the original day; short months use their last day.').'</p>';
+    }
     echo '<details><summary>Plan terms</summary>';
     foreach (['Included'=>$offer['inclusions'],'Not included'=>$offer['exclusions']] as $label=>$items) {
         echo '<p><strong>'.esc($label).'</strong></p>';
@@ -33,6 +38,6 @@ function hosting_catalog_public_cards(array $page):void {
     }
     echo '<div class="workspace-grid">';
     foreach ($page['offers'] as $offer) {echo '<article class="workspace-card">';hosting_catalog_card($offer);echo '</article>';}
-    echo '</div><p class="hint">A request does not take payment or activate hosting.</p><p><a class="btn gold" href="'.esc(site_url('portal/index.php?hosting=offers')).'">View plans in Client Portal</a></p>';
+    echo '</div><p class="hint">Review the available starting method and exact terms in your client portal.</p><p><a class="btn gold" href="'.esc(site_url('portal/index.php?hosting=offers')).'">View plans in Client Portal</a></p>';
     if (($page['has_more']??false)===true) echo '<p class="hint">More available plans can be browsed in the Client Portal.</p>';
 }

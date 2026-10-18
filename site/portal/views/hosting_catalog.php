@@ -10,6 +10,10 @@ if ($query['tab']==='offers') {
     echo '<p class="hint">A request does not take payment or activate hosting. The studio will review your request before offering a service agreement.</p>';
     foreach ($page['offers'] as $offer) {
         echo '<article class="workspace-card">';hosting_catalog_card($offer,'h2');
+        if (isset($offer['checkout_policy'])) {
+            echo '<p><a class="btn gold" href="'.esc(studio_url(['hosting'=>'checkout','offer'=>$offer['publication_id'],'offer_sha256'=>$offer['publication_sha256']])).'">Review plan and first invoice</a></p></article>';
+            continue;
+        }
         if ($attempt&&$attempt['action']==='hosting_catalog_request'&&$attempt['publication_id']===$offer['publication_id']) {
             $values=$attempt;$attemptShown=true;$current=hash_equals($offer['publication_sha256'],$attempt['publication_sha256']);
             if (!$current) echo '<p class="notice warning">These details changed. Reload and review the plan before trying again.</p>';

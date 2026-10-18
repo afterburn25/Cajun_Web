@@ -1,3 +1,10 @@
+## Development — owner-enabled hosting invoice checkout, 2026-10-18
+
+- Add owner opt-in and primary-client project selection, exact price/date review and first-invoice confirmation.
+- Save the project/agreement/schedule/invoice together, preserve completed retries and reject missing financial history.
+- Require verified payment and the accepted provider mapping for checkout-origin fulfillment.
+- Local document and screen checks pass; native Linux, packaged browser and full release acceptance remain pending.
+
 ## Development — recurring checkout storage, 2026-10-18
 
 - Add explicit owner migration for client-attributed recurring checkout schedules and first invoices, preserving legacy SQL defaults and history.

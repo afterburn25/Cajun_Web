@@ -52,6 +52,7 @@ function hosting_order_links_validate(array $row,ServiceOrderDocument $order):ar
         if($b['request']!==hosting_order_links_request($prefix,$package,$b['request']['params']['resellerId']))throw new RuntimeException('Saved provider request differs.');
         service_plans_keys($b['commercial'],['basis','payment_review_sha256','manual_event_id']);
         service_orders_hash($b['commercial']['payment_review_sha256']);
+        if(($origin['requires_verified_payment']??false)===true && ($b['commercial']['basis']!=='verified-payment'||$b['commercial']['manual_event_id']!==null))throw new RuntimeException('Checkout association requires its original verified-payment snapshot.');
         $manual=$prefix->manualPolicy($b['created_at']);
         if(!in_array($b['commercial']['basis'],['verified-payment','owner-manual-policy'],true)||($b['commercial']['basis']==='owner-manual-policy'&&($manual===null||$b['commercial']['manual_event_id']!==$manual['event_id']))||($b['commercial']['basis']==='verified-payment'&&$b['commercial']['manual_event_id']!==null))throw new RuntimeException('Commercial snapshot differs.');
         if($b['format']===2){

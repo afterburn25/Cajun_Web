@@ -1,3 +1,7 @@
+## 2026-10-18 — checkout implementation joined for acceptance
+
+Owner opt-in, atomic first unpaid invoice, owned project choice, client review/result screens, exact replay and verified-payment/mapping policy are integrated on the development branch. [Current scope](TWENTYI_HOSTING_FIRST_INVOICE.md). Pure/model/render checks pass; first native Linux transaction acceptance, real packaged browser journey, full-suite integration, upgrades and release verification remain pending. No published version or live website changed.
+
 ## 2026-10-18 — recurring checkout attribution and invoice origin
 
 Recurring checkout storage passes66 isolated native checks, following58 subscription migration/history checks. [Exact scope](TWENTYI_HOSTING_FIRST_INVOICE.md). The next increment composes the actual client confirmation transaction, then connects owner/client pages and verified-payment-only fulfillment. Same-clock purchase, supported runtime/browser, upgrade and release acceptance remain outstanding. Synthetic retained rows do not establish a usable purchase flow.

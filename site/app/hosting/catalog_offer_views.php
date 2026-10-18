@@ -11,12 +11,12 @@ function hosting_catalog_admin_owner(): array {
     return $actor;
 }
 function hosting_catalog_admin_actions(): array {
-    return ['hosting_catalog_setup','hosting_catalog_preview','hosting_catalog_publish','hosting_catalog_withdraw','hosting_catalog_convert','hosting_catalog_decline'];
+    return ['hosting_catalog_setup','hosting_catalog_checkout_setup','hosting_catalog_preview','hosting_catalog_publish','hosting_catalog_withdraw','hosting_catalog_convert','hosting_catalog_decline'];
 }
 /** Secrets and confirmation never enter redisplay state. An invalid value becomes empty, not a fresh identity. */
 function hosting_catalog_admin_values(array $input): array {
     $out=[];
-    foreach (['action'=>40,'product_id'=>10,'plan_id'=>32,'publication_id'=>32,'review_sha256'=>64,'publication_sha256'=>64,'request_id'=>32,'request_sha256'=>64,'decision_id'=>32,'withdrawal_id'=>32,'job_id'=>10,'reason'=>1000] as $key=>$max) {
+    foreach (['action'=>40,'product_id'=>10,'plan_id'=>32,'publication_id'=>32,'review_sha256'=>64,'publication_sha256'=>64,'request_id'=>32,'request_sha256'=>64,'decision_id'=>32,'withdrawal_id'=>32,'job_id'=>10,'reason'=>1000,'checkout_mode'=>30,'billing_timezone'=>64,'billing_alignment'=>16] as $key=>$max) {
         $value=$input[$key]??'';
         $out[$key]=is_string($value)&&strlen($value)<=$max&&preg_match('//u',$value)===1&&!str_contains($value,"\0")?$value:'';
     }
@@ -31,6 +31,15 @@ function hosting_catalog_admin_positive(array $input,string $field): int {
     $id=service_plans_form_number($input,$field,2147483647);
     service_plans_actor($id);return $id;
 }
+/** Explicit mode selection is part of the owner review; absent mode preserves old request forms. */
+function hosting_catalog_admin_checkout_policy(array $input): ?array {
+    $mode=array_key_exists('checkout_mode',$input)?service_plans_form_text($input,'checkout_mode',30):'request-only';
+    if ($mode==='request-only') return null;
+    if ($mode!=='invoice-on-confirmation') throw new InvalidArgumentException('Choose requests or invoice checkout.');
+    return hosting_checkout_policy(['mode'=>'invoice-on-confirmation','client'=>'primary-only','project'=>'existing-or-new-hosting',
+        'collection'=>'invoice-only','first_period'=>'full-period-today','requires_verified_payment'=>true,'requires_owner_provisioning'=>true,
+        'timezone'=>service_plans_form_text($input,'billing_timezone',64),'alignment'=>service_plans_form_text($input,'billing_alignment',16),'review_ttl_seconds'=>900]);
+}
 /** The complete intent is parsed before any service mutation. No server-generated retry identity. */
 function hosting_catalog_admin_intent(string $action,array $input): array {
     if (!in_array($action,hosting_catalog_admin_actions(),true)) throw new InvalidArgumentException('Unknown hosting offer action.');
@@ -38,6 +47,7 @@ function hosting_catalog_admin_intent(string $action,array $input): array {
     if (in_array($action,['hosting_catalog_preview','hosting_catalog_publish'],true)) {
         $result+=['publication_id'=>service_plans_form_id($input,'publication_id'),'product_id'=>hosting_catalog_admin_positive($input,'product_id'),'plan_id'=>service_plans_form_id($input,'plan_id')];
         if ($action==='hosting_catalog_publish') $result['review_sha256']=service_plans_form_hash($input,'review_sha256');
+        $policy=hosting_catalog_admin_checkout_policy($input);if ($policy!==null) $result['checkout_policy']=$policy;
     } elseif ($action==='hosting_catalog_withdraw') {
         $result+=['withdrawal_id'=>service_plans_form_id($input,'withdrawal_id'),'publication_id'=>service_plans_form_id($input,'publication_id'),'publication_sha256'=>service_plans_form_hash($input,'publication_sha256'),'reason'=>service_plans_form_text($input,'reason',500,true)];
         if ($result['reason']==='') throw new InvalidArgumentException('Explain why this offer is being withdrawn.');

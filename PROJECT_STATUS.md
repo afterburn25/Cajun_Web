@@ -1,3 +1,9 @@
+## 2026-10-18 — integrated hosting checkout, runtime acceptance pending
+
+The development checkout now connects explicit owner opt-in, the client project/review/confirmation screens, and one guarded transaction for client consent, a recurring schedule and the first unpaid invoice. Exact completed retries return the original records; inconsistent or missing financial history is refused. Checkout-origin fulfillment requires verified payment and the original provider mapping. Existing request-only offers retain their behavior. [Scope and remaining acceptance](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+Actual integrated-source PHP8.4.25 checks pass130 commercial-document,65 subscription,92 billing,46 portal-render/form and119 legacy-publication cases in each default/minimal mode. These are pure/model/renderer checks, not a native checkout or browser run. The first native Linux checkout test is prepared for the focused PHP8.2/8.4 × MariaDB10.11/MySQL8.4 workflow. Its protected provider-key setup cannot run faithfully on this Windows host. Packaged same-clock browser flow, complete-suite wiring, supported upgrade/recovery and release acceptance remain pending. Published1.25 and every original CI source/run remain unchanged.
+
 ## 2026-10-18 — recurring checkout storage verified locally
 
 The hosting first-invoice branch now preserves the actual client on checkout schedules and their first invoice. Explicit owner migration retains legacy records, while stored-history validation binds the exact consent, schedule and independent invoice origin. The applied source passes66 native PHP8.4.25/MariaDB10.11.16 checks in a fresh isolated database. [Scope and remaining work](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).

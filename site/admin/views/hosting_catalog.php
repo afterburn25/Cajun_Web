@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
-echo '<p>Publish hosting offers from your imported drafts and reviewed service plans. A client request starts a review; it does not take payment or create hosting.</p>';
+echo '<p>Publish hosting offers from your imported drafts and reviewed service plans. Choose studio-reviewed requests or a client confirmation that creates an unpaid first invoice. Invoice checkout requires verified payment and a separate owner approval before hosting setup.</p>';
 echo '<div class="button-row"><a class="btn outline" href="'.esc(admin_url('hosting-offers')).'">Offers</a><a class="btn outline" href="'.esc(admin_url('hosting-offers',['tab'=>'requests'])).'">Client requests</a><a class="btn outline" href="'.esc(admin_url('catalog')).'">Edit products and images</a><a class="btn outline" href="'.esc(admin_url('service-plans')).'">Service plans</a></div>';
 if (!$data['ready']) {
     echo '<section class="workspace-card"><h2>Enable hosting offers</h2><p>Prepare the offer and request history after setting up your product catalog, service plans and hosting mappings. Existing products stay as drafts.</p><form method="post">';
@@ -46,6 +46,10 @@ if ($data['tab']==='requests') {
     hosting_catalog_admin_confirmation('I confirm that this request should be declined.');
     echo '<button class="btn outline">Decline request</button></form></section>';return;
 }
+echo '<section class="workspace-card"><h2>Enable invoice checkout</h2><p>After service plans, recurring billing and payments are prepared, enable client confirmation and first-invoice history. Existing offers keep their current behavior. You will choose invoice checkout separately for each new offer.</p><form method="post">';
+hosting_catalog_admin_fields('hosting_catalog_checkout_setup',[]);
+hosting_catalog_admin_confirmation('Enable or verify invoice checkout while preserving existing records.');
+echo '<button class="btn outline">Enable or verify invoice checkout</button></form></section>';
 echo '<section class="workspace-card"><h2>Imported hosting drafts</h2><p>Set a price, description and image in Products first. The matching active plan must use the same name, USD price and monthly or yearly period, without a separate setup fee.</p><form method="get"><input type="hidden" name="view" value="hosting-offers">';
 admin_input('search','Find an imported draft by name or SKU',$data['search'],'search','maxlength="120"');
 echo '<button class="btn outline">Find drafts</button></form>';
@@ -71,15 +75,23 @@ foreach ($data['plans'] as $plan) $options[$plan['id']]=$plan['name'].' · Versi
 if ($selectedPlan!==''&&!array_key_exists($selectedPlan,$options)) $options[$selectedPlan]='Previously selected plan · review required';
 admin_select('plan_id','Active service plan',$options,$selectedPlan);
 if (!$data['plans']) echo '<p>No matching active plan on this page. Review the product price and service plan terms, or try the next page.</p>';
+$retryPublication=in_array($values['action'],['hosting_catalog_preview','hosting_catalog_publish'],true);
+$checkoutMode=$retryPublication?(array_key_exists('checkout_mode',$_POST)?$values['checkout_mode']:'request-only'):'request-only';
+$billingTimezone=$retryPublication?$values['billing_timezone']:'America/Chicago';
+$billingAlignment=$retryPublication?$values['billing_alignment']:'day-of-month';
+admin_select('checkout_mode','How clients start',['request-only'=>'Request a studio review','invoice-on-confirmation'=>'Confirm terms and create the first invoice'],$checkoutMode);
+admin_input('billing_timezone','Invoice checkout billing timezone',$billingTimezone,'text','maxlength="64" placeholder="America/Chicago"');
+admin_select('billing_alignment','Recurring billing date',['day-of-month'=>'Same day each month or year','month-end'=>'Month end · confirmation only on the last day of a month'],$billingAlignment);
+echo '<p class="hint">Invoice checkout starts a full first period on the confirmation date in this timezone. Month-end offers can only be confirmed on the last day of a month. The first invoice is due that day. Reviews last up to 15 minutes and expire when the date changes. Payment and hosting activation are separate steps.</p>';
 echo '<button class="btn gold">Preview offer</button></form></section>';
 if ($previewError!=='') echo '<div class="notice warning" role="alert">'.esc($previewError).' <a href="'.esc(admin_url('hosting-offers',['product_id'=>$product['id']])).'">Start a new review</a></div>';
 if ($preview!==null||$values['action']==='hosting_catalog_publish') {
     echo '<section class="workspace-card"><h2>Review before publishing</h2>';
     if ($preview!==null) hosting_catalog_card($preview['offer']);
     else echo '<p>The previously reviewed card is no longer available for publishing. Your submitted review remains unchanged below.</p>';
-    $publish=['publication_id'=>$publicationId,'product_id'=>$selectedProduct,'plan_id'=>$selectedPlan,'review_sha256'=>$preview['review_sha256']??''];
+    $publish=['publication_id'=>$publicationId,'product_id'=>$selectedProduct,'plan_id'=>$selectedPlan,'review_sha256'=>$preview['review_sha256']??'','checkout_mode'=>$checkoutMode,'billing_timezone'=>$billingTimezone,'billing_alignment'=>$billingAlignment];
     $publish=hosting_catalog_admin_retry('hosting_catalog_publish',$publish);
-    echo '<p>Publishing makes this offer available for client requests. A later edit requires a new review. Existing agreements keep their original terms.</p><form method="post">';
+    echo '<p>Publishing makes the reviewed offer and its chosen starting method available to clients. A later edit requires a new review. Existing agreements keep their original terms.</p><form method="post">';
     hosting_catalog_admin_fields('hosting_catalog_publish',$publish);
     hosting_catalog_admin_confirmation('I have reviewed this public card and confirm publication.');
     echo '<button class="btn gold"'.($preview===null?' disabled':'').'>Publish hosting offer</button></form></section>';
