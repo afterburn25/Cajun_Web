@@ -2,9 +2,35 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/providers/checks.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_schedule.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_stackcp_prerequisites.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_stackcp_access.php';
 require_once CWP_CODE_ROOT.'/app/providers/operations.php';
 require_once CWP_CODE_ROOT.'/app/providers/inventory.php';
 require_once CWP_CODE_ROOT.'/app/providers/reconcile.php';
+require_once CWP_CODE_ROOT.'/app/providers/domain_search.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_mailboxes.php';
+
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_registrar.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/domain_renewals.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/domain_renewal_agreements.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/domain_renewal_dispatch.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/domain_contracts.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/domain_expiry.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/service_observations.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_package_php.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_document_roots.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_package_force_ssl.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_directory_listing.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_force_ssl_controls.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_directory_listing_controls.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_package_wordpress_installed.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_forwarding.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_registration_periods.php';
+
+require_once CWP_CODE_ROOT.'/app/providers/cloud_sites.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_cloud_confirmation.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/provider_cloud_providers.php';
 use CajunWebPro\Foundation\Provider\OperationResult;
 use CajunWebPro\Foundation\TwentyI\Operations\TwentyIOperationRegister;
 
@@ -20,17 +46,53 @@ function provider_inventory_message(?string $code):string {
 }
 
 function provider_inventory_admin_action(string $action):void {
+    if (str_starts_with($action,'provider_inventory_stackcp_access_')) provider_stackcp_access_admin_action($action);
+    if (str_starts_with($action,'provider_inventory_stackcp_')) provider_stackcp_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_contract_'))domain_contracts_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_expiry_'))domain_expiry_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_period_'))provider_registration_period_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_cloud_providers_')){provider_cloud_providers_admin_action($action);return;}
+    if(str_starts_with($action,'provider_inventory_php_'))provider_php_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_document_roots_'))provider_document_roots_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_force_ssl_'))provider_force_ssl_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_directory_indexing_'))provider_directory_indexing_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_wp_installed_'))provider_wp_installed_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_history_'))service_observations_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_forwarding_'))provider_forwarding_admin_action($action);
+    if(in_array($action,['provider_inventory_renewal_agreements_prepare','provider_inventory_renewal_agreement_bind'],true))domain_renewal_agreements_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_renewal_'))domain_renewals_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_cloud_confirmation_')){provider_cloud_confirmation_admin_action($action);return;}
+    if(str_starts_with($action,'provider_inventory_schedule_')){provider_schedule_admin_action($action);return;}
+    if(str_starts_with($action,'provider_inventory_mailbox_'))provider_mailbox_admin_action($action);
+
+    if(str_starts_with($action,'provider_inventory_registrar_')){provider_registrar_admin_action($action);return;}
+    if(str_starts_with($action,'provider_inventory_domain_search_')){provider_domain_search_admin_action($action);return;}
     $password=posted('current_password',200);
+    if($action==='provider_inventory_cloudsite_create'){
+        $number=static function(string $name):int {$value=posted($name,10);if(!preg_match('/^[1-9][0-9]{0,9}$/D',$value)||(int)$value>4294967295)throw new InvalidArgumentException('Reload the current cloud website form.');return (int)$value;};
+        $extra=posted('extra_domains',5080);$extra=$extra===''?[]:preg_split('/\r\n|\n|\r/',$extra);
+        $result=provider_cloud_sites_create(posted('request_id',32),posted('link_id',32),$number('link_revision'),$number('revision'),posted('refresh_id',32),posted('domain_name',253),$extra,posted('reviewed',1)==='1',$password);
+        flash($result->message,$result->status==='accepted_pending'?'success':'error');redirect(admin_url('provider-settings'));
+    }
+
+    if($action==='provider_inventory_cloud_assignment_prepare'){
+        provider_cloud_assignment_prepare($password);flash('Cloud assignment history is ready. Refresh cloud inventory before approving assignments.');redirect(admin_url('provider-settings'));
+    }
     if($action==='provider_inventory_prepare'){
         provider_inventory_migrate($password);flash('20i inventory storage is ready.');redirect(admin_url('provider-settings'));
     }
     provider_settings_manager();$id=posted('profile_id',32);
-    if($action==='provider_inventory_refresh'||$action==='provider_inventory_link'||$action==='provider_inventory_relink'){
+    if($action==='provider_inventory_refresh'||$action==='provider_inventory_cloud_refresh'||$action==='provider_inventory_link'||$action==='provider_inventory_relink'){
         $revision=posted('revision',10);if(!ctype_digit($revision))throw new InvalidArgumentException('Reload the current 20i form.');
     }
     if($action==='provider_inventory_refresh'){
         $code=provider_inventory_refresh($id,(int)$revision,$password);
         flash(provider_inventory_message($code),$code==='complete'?'success':'error');redirect(admin_url('provider-settings'));
+    }
+    if($action==='provider_inventory_cloud_refresh'){
+        $code=provider_inventory_refresh($id,(int)$revision,$password,null,null,\CajunWebPro\Foundation\TwentyIInventory\InventoryRead::CLOUD_SERVERS_LIST);
+        $message=match($code){'complete'=>'The observed cloud server list was saved.','partial'=>'A partial cloud observation was saved; some returned servers could not be validated.',default=>provider_inventory_message($code)};
+        flash($message,$code==='complete'?'success':'error');redirect(admin_url('provider-settings'));
     }
     if($action==='provider_inventory_link'){
         $client=(int)posted('client_id',10);$package=(int)posted('package_id',20);
@@ -52,6 +114,13 @@ function provider_inventory_admin_action(string $action):void {
     if($action==='provider_inventory_domain_relink'){
         $revision=posted('revision',10);if(!ctype_digit($revision))throw new InvalidArgumentException('Reload the current 20i form.');
         provider_inventory_domain_relink(posted('link_id',32),(int)$revision,$password);flash('Domain link re-approved under the current provider settings.');redirect(admin_url('provider-settings'));
+    }
+    if(in_array($action,['provider_inventory_cloud_link','provider_inventory_cloud_relink','provider_inventory_cloud_unlink'],true)){
+        $number=static function(string $name,int $max=4294967295):int {$value=posted($name,18);if(!preg_match('/^[1-9][0-9]{0,17}$/D',$value)||(int)$value>$max)throw new InvalidArgumentException('Reload the current cloud assignment form.');return (int)$value;};
+        if($action==='provider_inventory_cloud_link')provider_cloud_link($id,$number('server_id',999999999999999999),$number('client_id'),$number('revision'),posted('refresh_id',32),$password);
+        elseif($action==='provider_inventory_cloud_relink')provider_cloud_relink(posted('link_id',32),$number('link_revision'),$number('revision'),posted('refresh_id',32),$password);
+        else provider_cloud_unlink(posted('link_id',32),$number('link_revision'),$password);
+        flash(match($action){'provider_inventory_cloud_link'=>'Cloud server linked to the client.','provider_inventory_cloud_relink'=>'Cloud assignment re-approved under the current settings.',default=>'Cloud assignment removed. The server and billing records are unchanged.'});redirect(admin_url('provider-settings'));
     }
     throw new InvalidArgumentException('Unknown provider inventory action.');
 }
@@ -153,4 +222,37 @@ function provider_operations_admin_render(string $error):void {
         admin_action('provider_operations_setup');admin_input('current_password','Your current owner password','','password','required autocomplete="current-password"');echo '<button class="btn gold">Prepare operation records</button></form></section>';admin_foot();exit;
     }
     require CWP_CODE_ROOT.'/admin/views/operations.php';admin_foot();exit;
+}
+
+function provider_domain_search_admin_action(string $action): void {
+    provider_settings_manager();
+    if($action==='provider_inventory_domain_search_prepare') {
+        provider_domain_search_migrate(posted('current_password',200));flash('Domain search history is ready.');redirect(admin_url('provider-settings'));
+    }
+    $number=static function(string $key,bool $zero=false):int {
+        $raw=$_POST[$key]??null;
+        if(!is_string($raw)||preg_match('/\A(?:0|[1-9][0-9]{0,9})\z/',$raw)!==1||(int)$raw>2147483647||(!$zero&&(int)$raw===0))throw new InvalidArgumentException('Reload the current domain search form.');
+        return (int)$raw;
+    };
+    if($action==='provider_inventory_domain_search_client_prepare'){
+        provider_domain_client_prepare(posted('current_password',200));flash('Client domain search history is ready.');redirect(admin_url('provider-settings'));
+    }
+    if($action==='provider_inventory_domain_search_client_configure'){
+        $enabled=$_POST['client_search_enabled']??'0';
+        if(!is_string($enabled)||!in_array($enabled,['0','1'],true))throw new InvalidArgumentException('Reload the current client search form.');
+        provider_domain_client_configure($number('client_search_revision',true),$enabled==='1',posted('current_password',200));
+        flash('Client domain search settings saved.');redirect(admin_url('provider-settings'));
+    }
+    $id=posted('profile_id',32);$profileRevision=$number('revision');$configRevision=$number('search_revision',true);
+    if($action==='provider_inventory_domain_search_configure') {
+        $enabled=$_POST['search_enabled']??'0';
+        if(!is_string($enabled)||!in_array($enabled,['0','1'],true))throw new InvalidArgumentException('Reload the current domain search form.');
+        provider_domain_search_configure($id,$profileRevision,$configRevision,$enabled==='1',$_POST['search_tlds']??'',posted('current_password',200));
+        flash('Domain search settings saved. No lookup or purchase was made.');redirect(admin_url('provider-settings'));
+    }
+    if($action==='provider_inventory_domain_search_run') {
+        provider_domain_search_run($id,$profileRevision,$configRevision,$_POST['domain_query']??null);
+        flash('The lookup outcome is recorded in Domain search history. Availability is an observation, not a reservation.');redirect(admin_url('provider-settings'));
+    }
+    throw new InvalidArgumentException('Unknown domain search action.');
 }

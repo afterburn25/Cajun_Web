@@ -1,0 +1,144 @@
+{
+  "reviewed_utc": "2026-10-16T10:16:58.053502+00:00",
+  "source": "faef8a6a0fb0a3969a67fe8bc7aabd3b107c1c10",
+  "ci_source": "6c429be4cdf66f19c2af0954194d1526b1a3f5bb",
+  "run": 38875935651,
+  "artifact": 12038621466,
+  "automated_browser_reports": 112,
+  "named_report_executions": 15069,
+  "automated_reports_passed": true,
+  "browser_verifier_sha256": "8d11d66f25f0fae21e17f249aad8333b8f4d03ad4fffc1d9db7da4f2583c55e4",
+  "screenshots": {
+    "Domain-Renewal-Agreement-Client-Desktop.png": {
+      "sha256": "238befcdb9cb991fc1d726123edba5aa09ead8e25b344dce127b52f2a346593e",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Domain-Renewal-Agreement-Client-Mobile.png": {
+      "sha256": "0bfcbc2bb3a3f1b6f6934c9c72f8605531961432ad48b70af63421e6d17339e5",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Domain-Renewal-Agreement-Owner-Desktop.png": {
+      "sha256": "321e85a07ea9a359f59c0517de98b45bf161b6e9c9d90c73ed4214d120140d55",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Domain-Renewal-Agreement-Owner-Mobile.png": {
+      "sha256": "c2fa664997155a04c54029323d07eecaaa7e66a07711d2aab692aef426a840e1",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Force-SSL-Control-Historical-Client-Desktop.png": {
+      "sha256": "729c7953c140d7613bbd9319e036bdb8db95ebabe76a8e5c17242b345be5ab14",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Force-SSL-Control-Historical-Client-Mobile.png": {
+      "sha256": "c0f12ecf38b8ff18e41a4751abd3d32620d5033b2ad144e56f7928e7dc4b30b9",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Force-SSL-Control-Observed-Client-Desktop.png": {
+      "sha256": "c272f392c1685e16b464d8d93f4e7c97baaa08d81db578483eac66571f99b4b9",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Force-SSL-Control-Observed-Client-Mobile.png": {
+      "sha256": "40b16efdda6e09b254b96cfc34e21a9c22b495e10c1093934ab8316d1591be7d",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Force-SSL-Control-Observed-Owner-Desktop.png": {
+      "sha256": "f6ff8d29470baf71bf2d5390252d5fa02e57f67f907cb5601c03aa6741cae7b1",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Force-SSL-Control-Observed-Owner-Mobile.png": {
+      "sha256": "fe9c8b5f80a045362f481baa3feb5e60f3795c4fd8160c92eca2f6d7ba6bf9cf",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Force-SSL-Control-Uncertain-Owner-Desktop.png": {
+      "sha256": "33b352d13b1eabe5d0bb60f663e937d3dfcdf100f69289bf50c036e1aa655f1d",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Force-SSL-Control-Uncertain-Owner-Mobile.png": {
+      "sha256": "1bfbb7d5ad6fe7c66585c2885355c844a62ccdfbb906b1d88d1802bd88e1a05c",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Package-WordPress-Installed-Client-Desktop.png": {
+      "sha256": "36c8c03c02136e277c9deeb98c17c5754e418db6883eb53255e5e851ad8bfff0",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Package-WordPress-Installed-Client-Mobile.png": {
+      "sha256": "30f227c5f181cd4dcbc911496f293160b1a3a50e1808d5d43ebb237d140e8c70",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Package-WordPress-Installed-False-Client-Desktop.png": {
+      "sha256": "571ad9621a3a3b10723334a56b2c299df2cb1bc534e6e0d17e6bf804024e1532",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Package-WordPress-Installed-False-Client-Mobile.png": {
+      "sha256": "c43a2feadff8f27301bd5f5dcc7a4aa6fac424720c0ea4ae1bf590bd4a5c5641",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Package-WordPress-Installed-False-Owner-Desktop.png": {
+      "sha256": "95ba2d44071de6f1018f2f745dcc1e444ea9118fbbf80805b1e05517677d1df0",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Package-WordPress-Installed-False-Owner-Mobile.png": {
+      "sha256": "a7d29bf7a378eac6ba15370e0810122c2aef6027a64bb3f985752ef332c36507",
+      "visual": "needs_correction",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Package-WordPress-Installed-Historical-Desktop.png": {
+      "sha256": "01d3e7d952284677745dc8a06d5f18ae16f6c2e9bb17c5ede24409bf62604373",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Package-WordPress-Installed-Historical-Mobile.png": {
+      "sha256": "a9b3250559ba39580dce47ac99c05305ec366adefa97b98a3962825149076b0b",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Package-WordPress-Installed-Owner-Desktop.png": {
+      "sha256": "97b5ec7e7394614dc8ea34ebe422cca557738de0f86d6746d2e083e1cbb49374",
+      "visual": "reviewed_no_new_issue",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    },
+    "Package-WordPress-Installed-Owner-Mobile.png": {
+      "sha256": "1f13ccff8d09a8d020a9beb21ca62ecec9e38cc0283fd363982c732861a2a510",
+      "visual": "needs_correction",
+      "scope": "Full client/agreement page; for long admin screenshots, relevant feature section and action/history cards inspected through original-pixel crops."
+    }
+  },
+  "visual_acceptance": false,
+  "findings": [
+    {
+      "id": "wordpress_mobile_action_labels",
+      "affected": [
+        "Package-WordPress-Installed-Owner-Mobile.png",
+        "Package-WordPress-Installed-False-Owner-Mobile.png"
+      ],
+      "finding": "At320px, refresh buttons extend outside their nested cards and the two sharing action labels clip. Whole-document scrollWidth checks still pass, so they did not detect this.",
+      "correction_branch": "codex/twentyi-wordpress-mobile-controls",
+      "correction": "Scope normal wrapping/max-width to WordPress admin buttons; assert actual button/form/text bounds in the existing real browser captures.",
+      "offline_layout_proof_sha256": "99d4c582a657cc0d30a61d358220773146d1ef9e3d2b4d90cc75a477e06f1a28",
+      "remaining": "Fresh combined browser screenshots of corrected source are required."
+    }
+  ],
+  "observations": [
+    "Renewal terms and consent/actions/history remain readable on desktop and mobile.",
+    "ForceSSL client observations clearly distinguish historical and latest saved flags; owner uncertain state fences resubmission and offers a separate read. Observed history does not assert causality.",
+    "WordPress client installed/false/historical states remain readable and retain the stated indication limits; admin mobile controls require the recorded correction."
+  ],
+  "scope": "Original CI artifact inspection, not a live deployment. Original verifier, source, archive and failed images preserved. No claim of full acceptance or a new release."
+}

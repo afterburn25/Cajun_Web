@@ -1,0 +1,44 @@
+name: 20i catalog shape diagnostic
+
+# Owner-authorized operation-specific read. Root reviews these exact bytes before
+# pushing this dedicated branch with the exact message. No PR/schedule/main trigger.
+on:
+  push:
+    branches: [ops/twentyi-catalog-schema-read]
+    paths:
+      - .github/workflows/twentyi-catalog-schema.yml
+      - ops/twentyi-catalog-schema/**
+permissions: {}
+concurrency:
+  group: twentyi-explicit-read-only
+  cancel-in-progress: false
+jobs:
+  catalog-shape:
+    if: >-
+      github.repository == 'afterburn25/Cajun_Web' &&
+      github.actor == 'afterburn25' && github.triggering_actor == 'afterburn25' &&
+      github.run_attempt == '1' &&
+      github.event_name == 'push' && github.ref == 'refs/heads/ops/twentyi-catalog-schema-read' &&
+      github.event.head_commit.message == 'ci: read two fixed 20i catalog shapes'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Offline transport and disclosure guards
+        run: python3 -I -B ops/twentyi-catalog-schema/test_diagnostic.py
+      - name: Two fixed metadata GETs; shape-only output
+        env:
+          TWENTYI_API_KEY: ${{ secrets.TWENTYI_API_KEY }}
+        run: python3 -I -B ops/twentyi-catalog-schema/diagnostic.py
+      - name: Preserve only the bounded shape result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: twentyi-catalog-shape-${{ github.run_id }}-${{ github.run_attempt }}
+          path: catalog-schema-evidence/catalog-schema-shape.json
+          if-no-files-found: error
+          retention-days: 7
