@@ -371,6 +371,8 @@ jobs:
           "$PHP_BINARY" tests/document_roots_contract.php > qa/document-roots-contract-integrated-results.json
           "$PHP_BINARY" tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json
           "$PHP_BINARY" tests/provider_document_roots_native.php
+          CWP_TEST_DOCUMENT_ROOT_CONTROLS=1 "$PHP_BINARY" tests/provider_document_root_controls_native.php
+          python3 -B tests/provider_document_root_controls_http_contract.py > qa/provider-document-root-controls-handler-results.json
           "$PHP_BINARY" tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-results.json
           "$PHP_BINARY" -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-no-ini-results.json
           "$PHP_BINARY" tests/provider_package_force_ssl_native.php

@@ -1,3 +1,7 @@
+## 2026-10-18 — website folder owner workflow awaiting runtime acceptance
+
+The [folder-control increment](TWENTYI_DOCUMENT_ROOT_CONTROLS.md) now implements owner review, exact map membership/current binding, manual plan/directory attestation, one-send history, independent map readback and finished-ledger-only local recovery. Full/native acceptance wiring is additive and source-checked. Installed database/browser/UPDATE/recovery results remain required before release; these are not passing gates merely because test code exists. This does not complete hosting controls, full20i or the whole project. The preceding pure request boundary is preserved in parent642/PR225.
+
 ## 2026-10-18 — document-root changes: request boundary implemented
 
 The [single-host folder request](TWENTYI_DOCUMENT_ROOT_CONTROLS.md) now has typed input, exact transport admission and synthetic generic-denial coverage on a separate e397-based branch. It is not a complete hosting control. Durable owner review, latest-map/assignment authority, platform/directory eligibility handling, one-send history, independent readback, interrupted-write recovery and native/browser/upgrade acceptance remain. Full20i and the broader platform are unfinished; no completion percentage follows from endpoint or assertion counts.

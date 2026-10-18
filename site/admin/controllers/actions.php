@@ -17,6 +17,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     if(str_starts_with($action,'provider_settings_')){provider_settings_admin_action($action);return;}
     if(str_starts_with($action,'provider_operations_')){provider_operations_admin_action($action);return;}
     if(str_starts_with($action,'provider_force_ssl_control_'))provider_force_ssl_controls_admin_action($action);
+    if(str_starts_with($action,'provider_document_root_control_'))provider_document_root_controls_admin_action($action);
     if(str_starts_with($action,'provider_renewal_dispatch_'))domain_renewal_dispatch_admin_action($action);
     if(str_starts_with($action,'provider_directory_indexing_control_'))provider_directory_indexing_controls_admin_action($action);
     if(str_starts_with($action,'provider_inventory_')){provider_inventory_admin_action($action);return;}

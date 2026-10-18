@@ -1,3 +1,9 @@
+## Unreleased — owner website folder changes
+
+Adds the owner website-folder form, explicit preparation, exact latest-map hostname/current-path review, current account/assignment authority, password confirmation and one-send retained history. The owner confirms that the plan supports the change and the destination directory already exists; this is manual attestation, not an API platform or filesystem check. Matching independent readback records an observation without claiming that the request caused it or that website routing works. Missing/claimed execution history cannot be cleared by a later matching map; local recovery requires the exact finished one-attempt ledger and never resends. Client write controls are not added; an unresolved request makes the separately shared saved map historical.
+
+Add authenticated storage, shared owner dispatch, narrow local recovery and additive native/browser/handler acceptance with eight required captures. Keep complete private requests while committing their hashes in the existing grant field. Local source, modeled UI and offline checks pass; native/browser/installed-upgrade acceptance and release remain pending. [Details](docs/TWENTYI_DOCUMENT_ROOT_CONTROLS.md).
+
 ## Unreleased — single-website folder request contract
 
 Add a typed one-host request for the documented 20i document-root setter, canonical body/route validation and a narrow relative-path input policy. Keep generic approval closed and unverified replies uncertain. Add synthetic contract, cold-loader, transport and generic-denial checks to the existing focused/full operation suite; retain the saved observation behavior. Dedicated owner/client controls, native acceptance and release remain pending. [Details](docs/TWENTYI_DOCUMENT_ROOT_CONTROLS.md).

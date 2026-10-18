@@ -1,4 +1,39 @@
-# Website folder change implementation
+# Owner website folder changes
+
+Current implementation continues `codex/twentyi-document-root-controls` in [PR225](https://github.com/afterburn25/Cajun_Web/pull/225), parent `642fa02a00d2fe22c9c13a2f4c409aec1f059ca0`. Enclosing commit: **Add owner website folder changes with retained dispatch and separate readback**. Source and portable/model checks exist; native database, packaged browser and installed-upgrade acceptance remain pending. Published 1.25.0 is unchanged.
+
+## Owner workflow
+
+Open the 20i provider settings and prepare website-folder request storage with the current owner password. Refresh the hosting inventory and the selected package's complete saved folder map. The form lists only hostnames in that exact latest map and shows each saved folder as escaped opaque text. Choose one existing hostname and enter its new relative folder. Confirm that the hosting plan permits this change and that the destination directory already exists, then confirm the current password. Managed WordPress is excluded by the linked official guide; current inventory has no authenticated platform field and does not supply an automatic eligibility or directory-existence check.
+
+Admission checks the exact map, hostname, old value and current account/credential/client-assignment binding under the existing mutation lock. It retains the full request and a compact ID/hash grant commitment atomically. The shared gateway attempts one canonical request. Refreshing or replaying the captured form cannot send it again. Another unresolved folder request on the package prevents a new approval; the client sees previously shared observations as historical until a separate check observes the requested folder.
+
+An uncertain response stays uncertain. Use the separate **Read folders after this request** action to fetch a new complete map. History records the exact selected hostname as observed, different/missing or unavailable. It does not infer a missing hostname from a failed map, reuse an older successful map after a failure, or overwrite the original execution result. A matching observation does not prove causality, directory contents, filesystem confinement or public routing.
+
+When a completed dispatch loses only its local terminal witness, the owner may review the exact finished one-attempt ledger and restore that witness without a network call. Missing, claimed, zero-attempt or mismatched histories remain blocked; an unrelated later map cannot repair them. Corrupt or incomplete schema/counters/audits are not silently recreated. Existing installations without this optional feature retain saved-map access and gain no tables or provider writes from a GET.
+
+## Files and authority
+
+- `site/app/providers/document_root_controls.php` and its storage/views files implement the private workflow; the schema lives in `site/database/schema/provider_document_root_controls_schema.php`.
+- `site/admin/controllers/provider_document_root_controls.php` accepts exact raw hostname/path/identity bytes. Shared admin dispatch still checks CSRF; provider owner authority is rechecked at admission and dispatch. Password failures retain the same request/website/path only while the original context remains current; passwords and review checkboxes are cleared.
+- The existing saved-map projection checks unresolved folder changes without exposing request IDs or owner history to clients. Client sharing remains a separate explicit permission.
+- The typed request/transport boundary and narrow local writable-path policy below are unchanged. Full observed old paths, including empty or unusual Unicode text, are retained without normalization.
+
+## Acceptance and remaining gates
+
+Actual local evidence: 236 offline acceptance-helper checks preserve the complete 152-command predecessor and 164 browser/208 final report requirements; two commands/reports are additive, resulting in 154/166/210. Exact inverse edits recover the original whole browser driver and synthetic server. New real-source modeled UI/controller checks pass 64 in each default/minimal PHP mode; 27 root syntax checks pass. The extracted synthetic HTTP handler passes 24 folder cases plus 19 directory, 25 renewal and 17 WordPress neighbor cases. Two workflows parse. The native fixture passes its local source/syntax/refusal checks, but Windows deliberately refuses SQL execution. Native database, installed HTTP/Chromium, populated installation UPDATE/recovery and live-provider acceptance are not claimed.
+
+Canonical build refresh passes all shipping PHP/JavaScript syntax and regenerated installer inventory for 2,901 shipping files. Independent application and shared-wiring reviews report no source blocker (34 and 42 finite checks). Their receipts are `work/document-root-controls-application-vps-review/review.json` and `work/document-root-controls-wiring-domain-review/review.json`; these are source reviews, not runtime acceptance. Documentation verification passes 12 required documents, 272 Markdown files and 1,863 local links.
+
+The new native fixture uses an explicitly opted-in disposable `cwp_test` database, `drctl_` tables and private `document-root-controls-private` directory. It exercises actual SQL/authority/gateway code with synthetic provider transport, genuine cooldowns, a real held-lock contender, large full requests/compact grants, send-boundary authority changes, exact replay, independent readback, interrupted terminal recovery and missing witnesses. Those scenarios are defined, not yet passing native executions.
+
+The browser continuation runs after existing saved-map cases with a distinct invited owner. It defines one synthetic POST, six dedicated reads including two hosting reads, current-client sharing checks and eight `Document-Root-Control-{Ready,Requested,Different,Observed}-{Desktop,Mobile}.png` captures. No original owner permissions, retained observation timestamps or old histories are reset to make it fit. The full suite retains all prior recipes/reports and adds two; the new focused lane covers PHP8.2/8.4 with MariaDB10.11/MySQL8.4.
+
+Next: run the connected four PHP/database combinations and full packaged workflow, inspect the eight required desktop/mobile captures, and add/execute populated installation UPDATE/recovery evidence for these new histories. Fix any exact-source failures, then complete combined/main/release acceptance. Keep original queued runs and original failures; no cancellation, rerun or replacement dispatch for delay. Published 1.25.0 and production remain unchanged.
+
+The historical section below records only the first pure-boundary increment and does not supersede the workflow status above.
+
+# Historical first request-boundary increment
 
 Branch `codex/twentyi-document-root-controls` starts from main `e397d9a6e293850e8dff61a593e3ba39ee178400`. The enclosing commit is **Add the documented single-website folder request boundary**. This is the first write-contract increment; it does not add a usable owner/client control or enable generic provider execution. Published 1.25.0 remains unchanged.
 

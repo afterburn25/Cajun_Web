@@ -276,11 +276,13 @@ def run(tmp):
     environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
     contract=a.load(ROOT/'tools/acceptance-contract.json')
+    from document_root_controls_acceptance_contract import predecessor, run as folder_control_checks
     for path,expected_hash in contract['unchanged_test_sha256'].items():
-        check('Original test source retained '+path, hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+        check('Original test source retained '+path, hashlib.sha256(predecessor(path,contract).encode()).hexdigest()==expected_hash)
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
+    native_commands=folder_control_checks(check,contract,workflow,native_commands)
     import_contract=contract['provider_catalog_import'];import_commands=import_contract['additions']
     check('Import additions retain the complete selected-runtime recipe',len(native_commands)==152 and native_commands==contract['native_commands'])
     import_position=native_commands.index(import_contract['additions_after'])+1

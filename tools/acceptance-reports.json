@@ -106,6 +106,8 @@
     "provider-cloud-sites-native-results.json",
     "provider-directory-listing-controls-native-results.json",
     "provider-directory-listing-native-results.json",
+    "provider-document-root-controls-handler-results.json",
+    "provider-document-root-controls-native-results.json",
     "provider-document-roots-native-results.json",
     "provider-domain-client-native-results.json",
     "provider-domain-search-native-results.json",
@@ -314,6 +316,8 @@
     "provider-cloud-sites-native-results.json",
     "provider-directory-listing-controls-native-results.json",
     "provider-directory-listing-native-results.json",
+    "provider-document-root-controls-handler-results.json",
+    "provider-document-root-controls-native-results.json",
     "provider-document-roots-native-results.json",
     "provider-domain-client-native-results.json",
     "provider-domain-search-native-results.json",
@@ -385,7 +389,8 @@
       "eight directory listing control request, transport, recovery, native and actual synthetic Handler reports",
       "five private registration contract, encrypted draft/form and native reports; no provider registration or purchase",
       "eight cloud assignment binding, legacy-context, owner-view, native authority and immutable-fixture reports",
-      "three observed hosting type import document/native reports; isolated packaged multipart browser assertions and two captures remain in existing HTTP report"
+      "three observed hosting type import document/native reports; isolated packaged multipart browser assertions and two captures remain in existing HTTP report",
+      "two website folder change native and actual synthetic HTTP handler reports; packaged owner workflow and eight captures are additive to the existing HTTP report"
     ],
     "renewal_source": "b221eb4be95ec1509458d916f1ffd10d65e71e64",
     "root_before_renewal": "5560635bb2117556de289f0d24c5b170d48e9c77",

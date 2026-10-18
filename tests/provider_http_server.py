@@ -84,13 +84,21 @@ class ProviderServer:
                 mailbox_path=re.fullmatch(r'/package/([1-9][0-9]*)/email/([a-z0-9.-]+)',self.path or '')
                 force_ssl_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/forceSSL',self.path or '')
                 directory_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/directoryIndexing',self.path or '')
+                document_root_write=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/updateDocRoot',self.path or '')
                 renewal_write=self.path=='/reseller/*/renewDomain'
-                if not (renewal_write or force_ssl_write or directory_write or mailbox_path or re.fullmatch(r'(?:/reseller/[A-Za-z0-9_.*-]+/(addWeb|updatePackage|deleteWeb)|/cloud_server/[1-9][0-9]{0,17}/addWeb)',self.path or '')) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Content-Type')!='application/json' or self.headers.get('Accept')!='application/json':
+                if not (renewal_write or force_ssl_write or directory_write or document_root_write or mailbox_path or re.fullmatch(r'(?:/reseller/[A-Za-z0-9_.*-]+/(addWeb|updatePackage|deleteWeb)|/cloud_server/[1-9][0-9]{0,17}/addWeb)',self.path or '')) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Content-Type')!='application/json' or self.headers.get('Accept')!='application/json':
                     fixture.errors.append('Unexpected write request '+str(self.path))
                 try:payload=json.loads(raw)
                 except Exception:payload=None;fixture.errors.append('Unparseable write body')
                 if force_ssl_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected Force SSL boolean write body')
                 if directory_write and (not isinstance(payload,dict) or set(payload)!={'value'} or type(payload['value']) is not bool):fixture.errors.append('Unexpected directory listing boolean write body')
+                if document_root_write:
+                    update=payload.get('update') if isinstance(payload,dict) else None
+                    document_root_valid=(isinstance(payload,dict) and list(payload)==['update'] and isinstance(update,dict) and len(update)==1
+                        and all(isinstance(name,str) and len(name)<=253 and re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+',name)
+                            and isinstance(path,str) and 0<len(path)<=1024 and re.fullmatch(r'[A-Za-z0-9_-][A-Za-z0-9._-]*(?:/[A-Za-z0-9_-][A-Za-z0-9._-]*)*',path) for name,path in update.items())
+                        and json.dumps(payload,separators=(',',':'),ensure_ascii=True).encode()==raw)
+                    if not document_root_valid:fixture.errors.append('Unexpected single-website folder change body')
                 fixture.posts.append({'path':self.path,'body':{'mailbox_local':payload.get('new',{}).get('mailbox',{}).get('local')} if mailbox_path and isinstance(payload,dict) else payload})
                 if renewal_write:
                     valid=isinstance(payload,dict) and list(payload)==['name','years','renewPrivacy'] and isinstance(payload.get('name'),str) and re.fullmatch(r'[a-z0-9-]+(?:\.[a-z0-9-]+)+',payload['name']) and type(payload.get('years')) is int and 1<=payload['years']<=10 and type(payload.get('renewPrivacy')) is bool
@@ -98,12 +106,14 @@ class ProviderServer:
                     fixture.renewal_posts.append({'path':self.path,'body':payload})
                     status,body={'success':(200,b'true'),'failure':(200,b'false'),'null':(200,b'null'),'object':(200,b'{"result":true}'),'authentication':(401,b'private synthetic renewal response'),'uncertain':(202,b'true'),'echo':(200,b'"SYNTHETIC_RAW_GENERAL_KEY"')}[fixture.renewal_mode]
                     if not valid:status,body=400,b'{"error":"synthetic renewal scope refused"}'
+                elif document_root_write and not document_root_valid:
+                    status,body=400,b'{"error":"synthetic folder change scope refused"}'
                 elif fixture.write_mode in ('success','uncertain_landed'):
                     status=200 if fixture.write_mode=='success' else 202;result={'id':100+len(fixture.packages)}
                     if self.path.endswith('/addWeb') and isinstance(payload,dict) and isinstance(payload.get('domain_name'),str):
                         name=payload['domain_name'];fixture.packages.append({'id':result['id'],'typeRef':int(payload.get('type',1)),'name':name,'names':[name]+(payload.get('extra_domain_names') or []),'enabled':True,'created':'2000-01-01T00:00:00Z'})
                     body=json.dumps({'result':result['id']} if fixture.write_mode=='success' and self.path.endswith('/addWeb') else result).encode()
-                    if force_ssl_write or directory_write:
+                    if force_ssl_write or directory_write or document_root_write:
                         body=b'true'  # Synthetic unverified acknowledgement; never changes the GET fixture flag.
                     if mailbox_path:
                         mailbox=payload['new']['mailbox']
