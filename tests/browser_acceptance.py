@@ -186,6 +186,8 @@ try:
         delivery_browser(globals(),browser)
         from activity_cases import run_browser as activity_browser
         activity_browser(globals(),browser)
+        from pipeline_cases import run_browser as pipeline_browser
+        pipeline_browser(globals(),browser)
         from portfolio_cases import run_browser as portfolio_browser
         portfolio_browser(globals(),browser)
         from mail_templates_cases import run_browser as mail_templates_browser
