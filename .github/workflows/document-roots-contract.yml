@@ -1,0 +1,77 @@
+name: Pure document-root observation checks
+
+on:
+  push:
+    branches: [codex/twentyi-document-roots-contract]
+    paths: ['foundation/twentyi-document-roots/**', 'foundation/twentyi-package-php/PackagePhpVersionBinding.php', 'foundation/provider/HttpTransport.php', 'foundation/provider/TransportRequest.php', 'foundation/provider/TransportResponse.php', 'foundation/provider/TransportException.php', 'foundation/provider/ProviderCredential.php', 'tests/document_roots_contract.php', '.github/workflows/document-roots-contract.yml']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: document-roots-contract-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  pure-contract:
+    name: Pure document-root PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - name: Check out exact isolated source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Record exact source provenance
+        run: |
+          mkdir -p qa
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path('.')
+          paths = sorted(root.glob('foundation/twentyi-document-roots/*.php')) + [
+              root / 'foundation/twentyi-package-php/PackagePhpVersionBinding.php',
+              root / 'foundation/provider/HttpTransport.php',
+              root / 'foundation/provider/TransportRequest.php',
+              root / 'foundation/provider/TransportResponse.php',
+              root / 'foundation/provider/TransportException.php',
+              root / 'foundation/provider/ProviderCredential.php',
+              root / 'tests/document_roots_contract.php',
+              root / '.github/workflows/document-roots-contract.yml',
+          ]
+          evidence = {
+              'source': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+              'tree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+              'github_sha': os.environ['GITHUB_SHA'],
+              'requested_php': '${{ matrix.php }}',
+              'scope': 'Pure fixed read/parser only; test container has no network; no live provider request or shipping integration',
+              'sha256': {path.as_posix(): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths},
+          }
+          (root / 'qa/source.json').write_text(json.dumps(evidence, indent=2) + '\n')
+          PY
+      - name: Run normal and minimal PHP without network
+        run: |
+          docker run --rm --network none -v "$PWD:/workspace:ro" -v "$PWD/qa:/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+            php --version > /qa/php-version.txt
+            for source in foundation/twentyi-document-roots/*.php foundation/twentyi-package-php/PackagePhpVersionBinding.php foundation/provider/HttpTransport.php foundation/provider/TransportRequest.php foundation/provider/TransportResponse.php foundation/provider/TransportException.php foundation/provider/ProviderCredential.php tests/document_roots_contract.php; do php -l "$source"; done
+            php tests/document_roots_contract.php > /qa/document-roots-default.json
+            php -n tests/document_roots_contract.php > /qa/document-roots-minimal.json
+          '
+      - name: Preserve exact named observation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: document-roots-contract-${{ matrix.php }}-${{ github.sha }}
+          path: |
+            qa/source.json
+            qa/php-version.txt
+            qa/document-roots-default.json
+            qa/document-roots-minimal.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record acceptance limit
+        if: always()
+        run: echo 'Pure synthetic document-root observations only. No current authority, live provider request, native database, filesystem, browser, package or release acceptance.' >> "$GITHUB_STEP_SUMMARY"

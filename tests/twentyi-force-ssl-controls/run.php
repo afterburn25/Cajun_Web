@@ -1,0 +1,27 @@
+<?php
+declare(strict_types=1);
+use CajunWebPro\Foundation\Provider\{ProviderOperation,TransportRequest,TransportResponse,OperationResult};
+use CajunWebPro\Foundation\TwentyI\Operations\{ForceSslChange,TwentyIOperationRegister,TwentyIResultClassifier};
+foreach(['ProviderOperation','TransportRequest','TransportResponse','OperationResult','TransportException'] as $class)require __DIR__.'/../../foundation/provider/'.$class.'.php';
+foreach(['ForceSslChange','TwentyIOperation','TwentyIOperationRegister','TwentyIResultClassifier'] as $class)require __DIR__.'/../../foundation/twentyi-operations/'.$class.'.php';
+$checks=[];
+function fsc_ok(string $name,bool $ok):void{global $checks;$checks[]=['name'=>$name,'passed'=>$ok];if(!$ok)throw new RuntimeException($name);}
+function fsc_refuses(callable $fn):bool{try{$fn();return false;}catch(InvalidArgumentException){return true;}}
+try{
+    foreach([1,42,999999999999999999] as $id)foreach([true,false] as $value){$op=new ProviderOperation(ForceSslChange::OPERATION,'synthetic-once',['packageId'=>$id,'value'=>$value]);$r=ForceSslChange::request($op);$label=$id.'/'.($value?'true':'false');fsc_ok('Fixed method route and sole JSON boolean '.$label,$r->method==='POST'&&$r->url==='https://api.20i.com/package/'.$id.'/web/forceSSL'&&$r->body===json_encode(['value'=>$value])&&$r->timeoutSeconds===15.0);ForceSslChange::wire($r);fsc_ok('Exact request passes its closed wire contract '.$label,true);}
+    foreach([0,-1,1000000000000000000,'1',1.0,true,null] as $i=>$id)fsc_ok('Invalid package identifier refused '.$i,fsc_refuses(fn()=>ForceSslChange::params(['packageId'=>$id,'value'=>true])));
+    foreach([null,0,1,'true','false',[],(object)[]] as $i=>$value)fsc_ok('Nonboolean desired value refused '.$i,fsc_refuses(fn()=>ForceSslChange::params(['packageId'=>1,'value'=>$value])));
+    foreach([[],['packageId'=>1],['value'=>false],['packageId'=>1,'value'=>true,'extra'=>false],['packageId'=>1,'value'=>false,'resellerId'=>'*']] as $i=>$p)fsc_ok('Missing or extra fields refused '.$i,fsc_refuses(fn()=>ForceSslChange::params($p)));
+    $id=1;$value=false;$p=ForceSslChange::params(['packageId'=>&$id,'value'=>&$value]);$id=2;$value=true;fsc_ok('Parameter construction detaches caller references',$p===['packageId'=>1,'value'=>false]);
+    fsc_ok('Different operation cannot build this request',fsc_refuses(fn()=>ForceSslChange::request(new ProviderOperation('packages.update','x',['packageId'=>1,'value'=>true]))));
+    foreach(['GET','PUT','PATCH','DELETE'] as $method)fsc_ok('Other method refused '.$method,fsc_refuses(fn()=>ForceSslChange::wire(new TransportRequest($method,'https://api.20i.com/package/1/web/forceSSL',[],'{"value":true}',15))));
+    $normalized=new TransportRequest('post','https://api.20i.com/package/1/web/forceSSL',[],'{"value":true}',15);ForceSslChange::wire($normalized);fsc_ok('TransportRequest retains its established uppercase method normalization',$normalized->method==='POST');
+    foreach(['http://api.20i.com/package/1/web/forceSSL','https://api.20i.com.evil.invalid/package/1/web/forceSSL','https://api.20i.com:443/package/1/web/forceSSL','https://user@api.20i.com/package/1/web/forceSSL','https://api.20i.com/package/01/web/forceSSL','https://api.20i.com/package/1/web/forceSSL?x=1','https://api.20i.com/package/1/web/forceSSL#x','https://api.20i.com/package/1/web/forceSSL/','https://api.20i.com/package/1/web/forcessl','https://api.20i.com/package/1/web/directoryIndexing','https://api.20i.com/package/1/web/%66orceSSL'] as $i=>$url)fsc_ok('Nonexact endpoint refused '.$i,fsc_refuses(fn()=>ForceSslChange::wire(new TransportRequest('POST',$url,[],'{"value":true}',15))));
+    foreach([null,'','true','[]','{}','{"value":null}','{"value":1}','{"value":"true"}','{"value":true,"value":false}','{"value":true,"other":false}','{"value": true}','{"Value":true}','{"value":false}\n'] as $i=>$body)fsc_ok('Noncanonical or ambiguous body refused '.$i,fsc_refuses(fn()=>ForceSslChange::wire(new TransportRequest('POST','https://api.20i.com/package/1/web/forceSSL',[],$body,15))));
+    $register=new TwentyIOperationRegister();fsc_ok('Generic owner approval cannot admit Force SSL',!$register->allowsGenericApproval(ForceSslChange::OPERATION,['packageId'=>1,'value'=>true]));
+    $op=new ProviderOperation(ForceSslChange::OPERATION,'one-write',['packageId'=>1,'value'=>true]);
+    foreach(['true','false','null','{"result":true}','{"result":1}','{}','[]','invalid'] as $i=>$body){$result=TwentyIResultClassifier::fromResponse($op->name,new TransportResponse(200,[],$body));fsc_ok('HTTP 200 shape never acknowledges the change '.$i,$result->status===OperationResult::UNCERTAIN&&$result->externalId===null);}
+    foreach([401,403,404,422] as $code){$result=TwentyIResultClassifier::fromResponse($op->name,new TransportResponse($code,[],'{}'));fsc_ok('Post-send HTTP refusal is not success '.$code,$result->status===OperationResult::FAILED);}
+    $mirror=__DIR__.'/../../site/includes/foundation/twentyi-operations/ForceSslChange.php';fsc_ok('Shipping request contract matches canonical bytes',hash_file('sha256',$mirror)===hash_file('sha256',__DIR__.'/../../foundation/twentyi-operations/ForceSslChange.php'));
+    echo json_encode(['passed'=>true,'checks'=>$checks],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES).PHP_EOL;
+}catch(Throwable $e){echo json_encode(['passed'=>false,'checks'=>$checks,'error'=>$e->getMessage()],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES).PHP_EOL;exit(1);}
