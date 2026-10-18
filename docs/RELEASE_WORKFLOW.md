@@ -1,3 +1,7 @@
+## Development candidate —1.26.0
+
+The [direct hosting catalog increment](RELEASE_SCOPE_1.26.0.md) is under acceptance; it is not published. The [candidate update guide](MIGRATION-INSTRUCTIONS-1.26.0.md) uses the new1.26 staging/recovery paths and preserves existing settings, products and private files. Published1.25.0 remains the current verified download. Earlier1.25 instructions below describe that retained release.
+
 ## Release 1.25.0 evidence and publication boundary
 
 ## 2026-10-17 - complete acceptance job allowance

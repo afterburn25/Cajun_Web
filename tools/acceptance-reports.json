@@ -119,6 +119,9 @@
     "provider-operations-native-results.json",
     "provider-package-force-ssl-native-results.json",
     "provider-package-php-native-results.json",
+    "provider-package-types-default.json",
+    "provider-package-types-minimal.json",
+    "provider-package-types-native-results.json",
     "provider-package-wordpress-installed-native-results.json",
     "provider-plan-catalog-native-results.json",
     "provider-registrar-native-results.json",
@@ -174,6 +177,9 @@
     "apache-release125-guards-results.json",
     "apache-release125-input-guards-results.json",
     "apache-release125-results.json",
+    "apache-release126-guards-results.json",
+    "apache-release126-input-guards-results.json",
+    "apache-release126-results.json",
     "apache-results.json",
     "apache-rewrite-root-install.json",
     "apache-rewrite-subfolder-install.json",
@@ -280,6 +286,7 @@
     "organized-no-rewrite 1.22.0-install.json",
     "organized-no-rewrite 1.23.0-install.json",
     "organized-no-rewrite 1.24.0-install.json",
+    "organized-no-rewrite 1.25.0-install.json",
     "organized-rewrite 1.11.0-install.json",
     "organized-rewrite 1.11.1-install.json",
     "organized-rewrite 1.11.2-install.json",
@@ -296,6 +303,7 @@
     "organized-rewrite 1.22.0-install.json",
     "organized-rewrite 1.23.0-install.json",
     "organized-rewrite 1.24.0-install.json",
+    "organized-rewrite 1.25.0-install.json",
     "package-force-ssl-document-no-ini-results.json",
     "package-force-ssl-document-results.json",
     "package-php-document-no-ini-results.json",
@@ -327,6 +335,9 @@
     "provider-operations-native-results.json",
     "provider-package-force-ssl-native-results.json",
     "provider-package-php-native-results.json",
+    "provider-package-types-default.json",
+    "provider-package-types-minimal.json",
+    "provider-package-types-native-results.json",
     "provider-package-wordpress-installed-native-results.json",
     "provider-plan-catalog-native-results.json",
     "provider-registrar-native-results.json",
@@ -385,7 +396,9 @@
       "eight directory listing control request, transport, recovery, native and actual synthetic Handler reports",
       "five private registration contract, encrypted draft/form and native reports; no provider registration or purchase",
       "eight cloud assignment binding, legacy-context, owner-view, native authority and immutable-fixture reports",
-      "three observed hosting type import document/native reports; isolated packaged multipart browser assertions and two captures remain in existing HTTP report"
+      "three observed hosting type import document/native reports; isolated packaged multipart browser assertions and two captures remain in existing HTTP report",
+      "three direct hosting catalog typed-read/native reports; separate ptici_ packaged HTTP source-aware imports and two captures remain in the existing HTTP report",
+      "three published1.25-to1.26 upgrade reports and two organized1.25 installer reports; all older baselines retained"
     ],
     "renewal_source": "b221eb4be95ec1509458d916f1ffd10d65e71e64",
     "root_before_renewal": "5560635bb2117556de289f0d24c5b170d48e9c77",
@@ -393,6 +406,7 @@
     "directory_controls_proposal_sha256": "abdef32316fe6ceb32259218286e5905af9140326320b9a27ba0b09dd1e463d7",
     "registration_drafts_source_base": "9538ef1c87884167de8e0c1d84d1f9c28203423c",
     "registration_drafts_owned_ancestry": "2e86e4e021980364b8f6d340e100e66779cf6fb0",
-    "cloud_assignment_base": "819c3ea39b4ebbef8f37280dc5ede59cf06fd01c"
+    "cloud_assignment_base": "819c3ea39b4ebbef8f37280dc5ede59cf06fd01c",
+    "hosting_catalog_base": "6caf654c99cb5befb610f405e40df69b0c174cb6"
   }
 }

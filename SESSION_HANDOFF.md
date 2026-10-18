@@ -1,3 +1,23 @@
+## 2026-10-18 — resume after browser fixture correction
+
+Parent `6e3dbeff6dc6359a418837d0c95baa43e4c92533` is not accepted: original checkpoint39093140366 exposes a shared simulated-provider call-counter ordering conflict also present in that parent. The enclosing correction only moves the two-line catalog browser invocation after scheduler tests. Preserve the original 39093901565/39093902783/39093904062/39093905330 full runs and PR39093892253; do not treat their successful partitions as full acceptance. Fresh corrected-source runs are required. [Test record and evidence](docs/TEST_REPORT_1.26.0.md). The separate `codex/twentyi-hosting-commerce` backend is not part of this release.
+
+## 2026-10-18 — assembled 1.26.0 candidate
+
+The [1.26.0 candidate](docs/RELEASE_SCOPE_1.26.0.md) adds direct hosting catalog imports. Version markers, installer inventory, the real published 1.25 archive, historical baselines and separate populated 1.25-to-1.26 upgrade cases are assembled. Combined local checks pass: 262 transfer/evidence guards and 28 retained plus 42 new portable upgrade guards. These are not installed upgrade or browser acceptance. [Current test record](docs/TEST_REPORT_1.26.0.md).
+
+Focused catalog native acceptance passed at `9f0b83fd`; combined browser checkpoint [39093140366](https://github.com/afterburn25/Cajun_Web/actions/runs/39093140366) uses test-corrected `12da59d1` and remains pending. Next: review final integration wiring, commit the assembled candidate and run full supported-runtime acceptance. Published 1.25.0 stays unchanged. No 1.26.0 release or live deployment is claimed. Earlier blocks below preserve their original status and are superseded by this entry.
+
+## 2026-10-18 — direct hosting catalog candidate
+
+Corrected source `9f0b83fd` passes the four-way hosting catalog native matrix39092587358: 109 default, 109 minimal and 51 database checks per environment. The combined checkpoint39092587539 passes packaging but exposes an older fixture that rewrites original import provenance to model changed credentials. That fixture correction and actual browser verification remain pending. All original outcomes are retained.
+
+First CI source `9aa5c22e` is not accepted: native matrix39092279466 failed on invalid synthetic legacy inventory input; browser checkpoint39092299171 failed on the full-project `ops/` source allowlist before browser execution. The [feature guide](docs/TWENTYI_HOSTING_CATALOG.md#verification-status) preserves the outcomes and correction scope. Complete the minimal fixture/build corrections, then test the corrected source; retain both original failed runs.
+
+The `codex/twentyi-direct-hosting-catalog` branch starts from `6caf654c99cb5befb610f405e40df69b0c174cb6` and implements a [direct hosting catalog draft-import candidate](docs/TWENTYI_HOSTING_CATALOG.md). Owners can explicitly refresh confirmed package-type IDs/names and import types absent from installed inventory. Existing imports, edited prices and local images retain their original identity and provenance across both sources. Additive observation storage binds current owner/connection context and refuses stale, failed or inconsistent sources. No provider pricing, automatic images, cloud import or hosting publication is added.
+
+Source/syntax and focused offline checks have passed; native database, packaged HTTP/browser and release acceptance remain pending. Root integrates shared admin/build/test wiring; the three agents own projection/importer, persistence and focused test proposals. Published1.25.0 remains immutable and no live deployment occurred. Next: run the combined focused database matrix and browser acceptance, fix any concrete failures, then complete the next version's upgrade and release gates.
+
 ## 2026-10-18 — cloud endpoint supplied no catalog details
 
 The separate [cloud-only diagnostic](docs/TWENTYI_CLOUD_ROOT_DIAGNOSTIC.md#original-follow-up-outcome--2026-10-18), original run39090973425 at source `bf788894b1acd4c07daf74e718c4f95774acef85`, completed successfully after 42 passing offline checks. Its one fixed GET observed a JSON `null` root. This establishes the response type for that request and credential context, not an empty catalog, missing entitlement, provider fault or valid import contract. No cloud product fields were supplied. The original two-operation run39090394774 remains failed and unchanged; this later observation cannot retrospectively identify its scalar kind.

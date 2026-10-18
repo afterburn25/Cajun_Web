@@ -25,6 +25,9 @@
     "\"$PHP_BINARY\" tests/provider_catalog_import.php > qa/provider-catalog-import-default.json",
     "\"$PHP_BINARY\" -n tests/provider_catalog_import.php > qa/provider-catalog-import-minimal.json",
     "\"$PHP_BINARY\" tests/provider_catalog_import_native.php",
+    "\"$PHP_BINARY\" tests/provider_package_types.php > qa/provider-package-types-default.json",
+    "\"$PHP_BINARY\" -n tests/provider_package_types.php > qa/provider-package-types-minimal.json",
+    "\"$PHP_BINARY\" tests/provider_package_types_native.php",
     "\"$PHP_BINARY\" tests/payments_native.php",
     "\"$PHP_BINARY\" tests/attempts_native.php",
     "\"$PHP_BINARY\" tests/notifications_native.php",
@@ -427,7 +430,7 @@
     "baseline_archive": "CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip",
     "baseline_sha256": "aa7a84b4c0d1201a4eddf2fe68340b90d4860117ceff4d959d165e6feafa731e",
     "baseline_members": 2591,
-    "candidate_version": "1.25.0",
+    "candidate_version": "1.26.0",
     "contexts": [
       "root-rewrite",
       "subfolder-rewrite",
@@ -464,12 +467,26 @@
       "tests/release_125_later_records.py": "0902efd051b96eba613c266ed5aba49272bdfa3a00e7b005e2310c19bf131e61",
       "tests/release_125_retention.py": "572accea7616a5ba93f210cce5c88b0d4ffb9448fc2b22aa14bff55427c53a64",
       "tests/release_125_retention_fixture.php": "102635706356d8f52b38f6cd495444290677ba1254889eedf8e96b1eaaf8788c",
-      "tests/release_125_upgrade_acceptance.py": "516d2bbea414eded95171d885004c320eb9e25a5ebd5736837731c144e8ce8ad",
-      "tests/release_125_upgrade_cases.py": "f5673e293b74d1809a6500e819908c00e513b5827f5766d15411440e4db2ee56",
+      "tests/release_125_upgrade_acceptance.py": "561bc5d9e1f2b290cabd3f9c0a041e0959d33dc41ad279b8aba9dfd0cef35cd0",
+      "tests/release_125_upgrade_cases.py": "d2e0440a79359c7c0ee8456aabe44475165f84aef54cf8d15373616afff42f65",
       "tests/release_125_upgrade_guards.py": "663fd253d77613fa8614a622dbe0671f58f9ddd892b8efc3a6619e9cd8a99336",
-      "tests/release_125_upgrade_input_guards.py": "4ab56e4449a55fabbb9574d493bdf1bea8de03b56b1f0d8257c95a662cc37d99"
+      "tests/release_125_upgrade_input_guards.py": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985"
     },
-    "scope": "Actual published original and synthetic business records; later agreement/recurring/licensing families are created only after candidate upgrade; all prior acceptance remains required."
+    "scope": "Actual published original and synthetic business records; later agreement/recurring/licensing families are created only after candidate upgrade; all prior acceptance remains required.",
+    "historical_target_changes": {
+      "tests/release_125_upgrade_acceptance.py": {
+        "before": "516d2bbea414eded95171d885004c320eb9e25a5ebd5736837731c144e8ce8ad",
+        "after": "561bc5d9e1f2b290cabd3f9c0a041e0959d33dc41ad279b8aba9dfd0cef35cd0"
+      },
+      "tests/release_125_upgrade_cases.py": {
+        "before": "f5673e293b74d1809a6500e819908c00e513b5827f5766d15411440e4db2ee56",
+        "after": "d2e0440a79359c7c0ee8456aabe44475165f84aef54cf8d15373616afff42f65"
+      },
+      "tests/release_125_upgrade_input_guards.py": {
+        "before": "4ab56e4449a55fabbb9574d493bdf1bea8de03b56b1f0d8257c95a662cc37d99",
+        "after": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985"
+      }
+    }
   },
   "release_acceptance_corrections": {
     "parent": "85f0b489b30d4e9e6db839e2cf7da02f512176c5",
@@ -551,9 +568,134 @@
     ],
     "source_sha256": {
       "tests/provider_catalog_import.php": "e0cc474d951f51dfdf57ac0d993b1ddadd4e533134b8b72093b23a1392147f66",
-      "tests/provider_catalog_import_native.php": "3266dca6cc1cef46460b789a5d4363ef36b7487b512571d74a4014f4eddfcaff",
+      "tests/provider_catalog_import_native.php": "c6f2460004e18da45c23f0bde3502da7122003121c07310bb611c886ca8bce0c",
       "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
     },
-    "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."
+    "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout.",
+    "provenance_fixture_correction": {
+      "source": "9f0b83fd1f18b9075f7d141f9a1d00b2646f4ebe",
+      "original_sha256": "3266dca6cc1cef46460b789a5d4363ef36b7487b512571d74a4014f4eddfcaff",
+      "corrected_sha256": "c6f2460004e18da45c23f0bde3502da7122003121c07310bb611c886ca8bce0c",
+      "reason": "Model a separate later credential observation without rewriting the retained original import source; all original assertions retained."
+    }
+  },
+  "provider_package_types": {
+    "source_base": "6caf654c99cb5befb610f405e40df69b0c174cb6",
+    "predecessor_native_count": 152,
+    "predecessor_native_sha256": "ae7da25c86ee385fe5c3896e75f12badd91b459c5a8ef4ac9db1ab0075c2c0e6",
+    "additions_after": "\"$PHP_BINARY\" tests/provider_catalog_import_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/provider_package_types.php > qa/provider-package-types-default.json",
+      "\"$PHP_BINARY\" -n tests/provider_package_types.php > qa/provider-package-types-minimal.json",
+      "\"$PHP_BINARY\" tests/provider_package_types_native.php"
+    ],
+    "reports": [
+      "provider-package-types-default.json",
+      "provider-package-types-minimal.json",
+      "provider-package-types-native-results.json"
+    ],
+    "screenshots": [
+      "20i-Hosting-Catalog-Desktop.png",
+      "20i-Hosting-Catalog-Mobile.png"
+    ],
+    "browser_addition": "        from provider_package_types_cases import run_browser as package_types_browser\n        package_types_browser(globals(),browser)\n",
+    "source_sha256": {
+      "tests/provider_package_types.php": "e5812a35e8e034c3a54c8f90b4011e10dd08eadbe759a6204899cdd224636533",
+      "tests/provider_package_types_native.php": "ef3876b71ad15736271d9f9de17b8278a953035a722c81e766d7bf73ed2d2b8d",
+      "tests/provider_package_types_cases.py": "6ec03bc6c389e3ee618499ba691cb3594c4d0ac011bfff5efb47de47c60415ba"
+    },
+    "scope": "Direct hosting catalog typed read, durable observations, current-owner refresh and source-aware draft import with synthetic transport; no live provider writes or images."
+  },
+  "release126_baseline_driver_delta": {
+    "tests/prepare_legacy.py": {
+      "predecessor_sha256": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
+      "current_sha256": "a681bd4dde6a6bc5e11a5875fc2a7005c73070c51287bd7786ee8bbfb1a9ab23",
+      "append": "\n# Retain the actual published 1.25 source for 1.26 upgrade/recovery acceptance.\norganized_baseline=root/'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'\nwith urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip',timeout=60) as response:\n    organized_bytes=response.read(15843209)\nassert len(organized_bytes)==15843208\nassert hashlib.sha256(organized_bytes).hexdigest()=='bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'\norganized_baseline.write_bytes(organized_bytes)\norganized_history=json.loads((root/'tools/legacy-release-files.json').read_text(encoding='utf-8'))['1.25.0']\nassert organized_history['archive_sha256']==hashlib.sha256(organized_bytes).hexdigest()\nwith zipfile.ZipFile(organized_baseline) as z:\n    assert z.testzip() is None\n    names=z.namelist()\n    assert len(names)==len(set(names))==len({name.casefold() for name in names})==2895\n    assert set(names)==set(organized_history['files'])\n    for item in z.infolist():\n        path=PurePosixPath(item.filename)\n        assert not item.is_dir() and not path.is_absolute() and path.as_posix()==item.filename\n        assert not any(part in ('','.','..') for part in item.filename.split('/'))\n        assert '\\\\' not in item.filename and ':' not in item.filename\n        assert (item.external_attr>>16)&0o170000 != 0o120000\n        assert hashlib.sha256(z.read(item)).hexdigest()==organized_history['files'][item.filename]\n    z.extractall(root/'test-runtime/released-1.25.0')\nprint('PASS: immutable released 1.25.0 package checksum, exact member hashes, archive paths and extraction')\n",
+      "replacements": []
+    },
+    "tests/apache_acceptance.py": {
+      "predecessor_sha256": "cb6c083414ad55e6c9c729b19f2bee5b326267d34ef572efaecb1e69e3692703",
+      "current_sha256": "8d4f7f289455510bc146fa086f50d3b93749dcedbcb05e7dae174d865f432fc2",
+      "append": "",
+      "replacements": [
+        {
+          "before": "            for number,version in enumerate(['1.24.0','1.23.0','1.22.0','1.11.0','1.11.1','1.11.2','1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0']):\n",
+          "after": "            for number,version in enumerate(['1.24.0','1.23.0','1.22.0','1.11.0','1.11.1','1.11.2','1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0','1.25.0']):\n",
+          "count": 1
+        }
+      ]
+    },
+    "tests/structure_acceptance.py": {
+      "predecessor_sha256": "15550b124b9aa3d790181aa79141426a53114a98eb3e31509767927b57956aba",
+      "current_sha256": "48b81518871ab935ec5620d421fc54aa2f7e73ab6346a283b438cd130a666eb3",
+      "append": "",
+      "replacements": [
+        {
+          "before": "    # Exercise the newly added baseline first; keep every historical baseline.\n    for version,with_shims in [(v,shims) for v in ['1.24.0','1.23.0','1.22.0','1.11.0','1.11.1','1.11.2','1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0'] for shims in [False,True]]:\n",
+          "after": "    # Preserve the historical baseline order and append the latest published release.\n    for version,with_shims in [(v,shims) for v in ['1.24.0','1.23.0','1.22.0','1.11.0','1.11.1','1.11.2','1.12.0','1.13.0','1.14.0','1.15.0','1.16.0','1.17.0','1.18.0','1.19.0','1.20.0','1.21.0','1.25.0'] for shims in [False,True]]:\n",
+          "count": 1
+        }
+      ]
+    }
+  },
+  "published_release_upgrade_126": {
+    "baseline_source": "b79c67110829126916e3a65e616191542448bccc",
+    "baseline_archive": "CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip",
+    "baseline_sha256": "bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39",
+    "baseline_members": 2895,
+    "candidate_version": "1.26.0",
+    "contexts": [
+      "root-rewrite",
+      "subfolder-rewrite",
+      "root-no-rewrite",
+      "subfolder-no-rewrite"
+    ],
+    "commands": [
+      ".ci-venv/bin/python tests/release_126_upgrade_guards.py qa/apache-release126-guards-results.json",
+      ".ci-venv/bin/python tests/release_126_upgrade_input_guards.py --report qa/apache-release126-input-guards-results.json",
+      ".ci-venv/bin/python tests/release_126_upgrade_acceptance.py"
+    ],
+    "reports": [
+      "apache-release126-guards-results.json",
+      "apache-release126-input-guards-results.json",
+      "apache-release126-results.json"
+    ],
+    "progress": "apache-release126-progress.json",
+    "snapshots": [
+      "apache-release126-r126_ron_-original-retention.json",
+      "apache-release126-r126_ron_-upgrade-retention.json",
+      "apache-release126-r126_son_-original-retention.json",
+      "apache-release126-r126_son_-upgrade-retention.json",
+      "apache-release126-r126_roff_-original-retention.json",
+      "apache-release126-r126_roff_-upgrade-retention.json",
+      "apache-release126-r126_soff_-original-retention.json",
+      "apache-release126-r126_soff_-upgrade-retention.json"
+    ],
+    "screenshots": [
+      "apache-release126-r126_ron_-Upgraded-Client-Desktop.png",
+      "apache-release126-r126_ron_-Upgraded-Client-Mobile.png",
+      "apache-release126-r126_son_-Upgraded-Client-Desktop.png",
+      "apache-release126-r126_son_-Upgraded-Client-Mobile.png",
+      "apache-release126-r126_roff_-Upgraded-Client-Desktop.png",
+      "apache-release126-r126_roff_-Upgraded-Client-Mobile.png",
+      "apache-release126-r126_soff_-Upgraded-Client-Desktop.png",
+      "apache-release126-r126_soff_-Upgraded-Client-Mobile.png"
+    ],
+    "source_sha256": {
+      "tests/release_125_upgrade_acceptance.py": "561bc5d9e1f2b290cabd3f9c0a041e0959d33dc41ad279b8aba9dfd0cef35cd0",
+      "tests/release_125_upgrade_cases.py": "d2e0440a79359c7c0ee8456aabe44475165f84aef54cf8d15373616afff42f65",
+      "tests/release_125_upgrade_input_guards.py": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985",
+      "tests/release_126_catalog_guards.py": "5035b7876a7ac8d21e60a9a2eddb920ed3711ff69a78189b114a24e46e77a6ba",
+      "tests/release_126_catalog_records.py": "7171397b84b089453a5372866f25c35dbac221930b5672bd1c4edb57ad33d899",
+      "tests/release_126_original_records.py": "a1d91855a559b1911291c59c7a45ffb5903e31af76717ca88aa60e5a38001523",
+      "tests/release_126_provider_fixture.php": "34c75361f491729300a6ab9907c0414f5c888aa26c4319e5e57b83ce271000b1",
+      "tests/release_126_retention.py": "572accea7616a5ba93f210cce5c88b0d4ffb9448fc2b22aa14bff55427c53a64",
+      "tests/release_126_retention_fixture.php": "556b8f5fa01f32b7de5e58a24e292c324038230f902430a05dff5f54d065c304",
+      "tests/release_126_upgrade_acceptance.py": "89c112a841ae498e6d7a59bddb33700ee90c9bb98241d40f38c8c3e02b4cc899",
+      "tests/release_126_upgrade_cases.py": "7ad6aef9ec11e62853f24309f91cfa1f8fecc2b7723ecb48f5ffd160fcc3a38e",
+      "tests/release_126_upgrade_guards.py": "9fba62bccb9ebad671bcf4a98a01db992fb89359deebd789763c7d2423783df3",
+      "tests/release_126_upgrade_input_guards.py": "e7f1381a05715d0d84a8508d8ed833f1dfd248098e7ed22d30b5f906f8cc2245"
+    },
+    "scope": "Actual published1.25 original with populated business, licensing, inventory imports and images; explicit catalog activation after recovery/reapply; synthetic transport only."
   }
 }

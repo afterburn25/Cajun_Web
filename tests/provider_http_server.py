@@ -18,6 +18,7 @@ class ProviderServer:
         (runtime/'server.key').write_bytes(key.private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.PKCS8,serialization.NoEncryption()))
         self.mode='success';self.write_mode='success';self.calls=0;self.errors=[];self.names=[];self.packages=[];self.posts=[];self.cloud_servers=[];self.cloud_mode='success';self.get_paths=[];self.domain_mode='success';self.registrar_mode='success';self.registrar_domains=[];self.cloud_providers=[];self.cloud_providers_mode='success';self.contract_dates={};self.contract_mode='success';self.expiry_dates={};self.expiry_mode='success';self.php_version='php82';self.php_version_mode='success';self.document_roots={};self.document_roots_mode='success';self.force_ssl=True;self.force_ssl_mode='success';self.directory_indexing=True;self.directory_indexing_mode='success';self.wp_installed=True;self.wp_installed_mode='success';fixture=self
         self.stackcp_membership=[];self.stackcp_grants=[]
+        self.package_types=[];self.package_types_mode='success'
         self.renewal_mode='success';self.renewal_posts=[]
         self.period_mode='success';self.period_map={'.invalid':[1,3],'.co.uk':[1,2],'.com':[1,5]}
         class Handler(BaseHTTPRequestHandler):
@@ -33,7 +34,7 @@ class ProviderServer:
                 wp_installed_path=re.fullmatch(r'/package/[1-9][0-9]{0,17}/web/wordpressIsInstalled',self.path or '')
                 stackcp_membership_path=re.fullmatch(r'/package/[1-9][0-9]{0,9}/stackUserList',self.path or '')
                 stackcp_grants_path=re.fullmatch(r'/reseller/\*/stackUser/[1-9][0-9]{0,9}/grants',self.path or '')
-                if (not stackcp_membership_path and not stackcp_grants_path and not contract and not expiry and not php_version_path and not document_roots_path and not force_ssl_path and not directory_indexing_path and not wp_installed_path and self.path not in ['/package','/cloud_server','/domain-search/example.invalid','/domain','/domain-period','/reseller/*/cloudProviders']) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Accept')!='application/json':
+                if (not stackcp_membership_path and not stackcp_grants_path and not contract and not expiry and not php_version_path and not document_roots_path and not force_ssl_path and not directory_indexing_path and not wp_installed_path and self.path not in ['/package','/cloud_server','/domain-search/example.invalid','/domain','/domain-period','/reseller/*/cloudProviders','/reseller/*/packageTypes']) or self.headers.get('Authorization')!='Bearer '+base64.b64encode(b'SYNTHETIC_RAW_GENERAL_KEY').decode() or self.headers.get('Accept')!='application/json':
                     fixture.errors.append('Unexpected fixed request')
                 mode=fixture.registrar_mode if self.path=='/domain' else (fixture.cloud_mode if self.path=='/cloud_server' else fixture.mode)
                 status=401 if mode=='authentication' else 200
@@ -50,6 +51,9 @@ class ProviderServer:
                 if self.path=='/reseller/*/cloudProviders':
                     status=401 if fixture.cloud_providers_mode=='authentication' else 200
                     body={'success':json.dumps(fixture.cloud_providers).encode(),'object':b'{}','authentication':b'private cloud provider response'}.get(fixture.cloud_providers_mode,b'["invalid",false]')
+                if self.path=='/reseller/*/packageTypes':
+                    status=401 if fixture.package_types_mode=='authentication' else 200
+                    body={'success':json.dumps(fixture.package_types).encode(),'object':b'{}','authentication':b'private synthetic catalog response'}.get(fixture.package_types_mode,b'null')
                 if self.path=='/domain-search/example.invalid':
                     packets=[{'header':{'names':['example.invalid']}},{'name':'suggested.invalid','can':'register'},{'name':'unsold.com','can':'register'},{'name':'example.invalid','can':'register'}]
                     status=429 if fixture.domain_mode=='limited' else 200

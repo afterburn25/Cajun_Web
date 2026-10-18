@@ -1,0 +1,82 @@
+name: Native hosting catalog import
+on:
+  push:
+    branches: [main, codex/twentyi-direct-hosting-catalog]
+    paths: ['site/app/providers/**', 'site/admin/**', 'site/database/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'tests/provider_package_types*', '.github/workflows/provider-package-types.yml']
+  pull_request:
+    paths: ['site/app/providers/**', 'site/admin/**', 'site/database/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'tests/provider_package_types*', '.github/workflows/provider-package-types.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: provider-package-types-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  hosting-catalog:
+    name: Hosting catalog PHP ${{ matrix.php }} and ${{ matrix.database.label }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database:
+          - {image: 'mariadb:10.11', label: 'mariadb-10.11'}
+          - {image: 'mysql:8.4', label: 'mysql-8.4'}
+    services:
+      database:
+        image: ${{ matrix.database.image }}
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify deployment inventory and documentation
+        run: |
+          PYTHONPATH=tools python -B -c 'import build; build.generated(False)'
+          python -B tools/check_docs.py
+      - name: Prepare PHP with PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-catalog-test -f tests/invitations/Dockerfile tests/invitations
+      - name: Allow isolated MySQL audit-failure fixture triggers
+        if: matrix.database.label == 'mysql-8.4'
+        run: docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+      - name: Typed catalog read and native import persistence
+        run: |
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-catalog-test sh -ec '
+              mkdir -p qa
+              php tests/provider_package_types.php > qa/provider-package-types-default.json
+              php -n tests/provider_package_types.php > qa/provider-package-types-minimal.json
+              php tests/provider_package_types_native.php
+            '
+      - name: Preserve named test results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: provider-package-types-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
+          path: |
+            qa/provider-package-types-default.json
+            qa/provider-package-types-minimal.json
+            qa/provider-package-types-native-results.json
+          if-no-files-found: error
+          retention-days: 14
