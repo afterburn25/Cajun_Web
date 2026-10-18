@@ -1,3 +1,7 @@
+## 2026-10-18 — retain first catalog metadata outcome
+
+Record original [catalog diagnostic run 39090394774](https://github.com/afterburn25/Cajun_Web/actions/runs/39090394774), attempt 1, from `1159648f`: 39 offline tests passed, the live step failed with overall `incomplete`, and the safe shape artifact was retained. Package types expose the observed `id`/`label`/`platform` spellings and integer/string/string types; cloud `unexpected_root` does not disclose its actual root kind. Add the exact safe JSON and [interpretation limits](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#original-outcome--2026-10-18). This documentation update changes no importer, transport, workflow or released 1.25.0 bytes and claims no full catalog/image acceptance.
+
 ## Unreleased — bounded catalog response discovery
 
 Add a separate, owner-scoped two-GET 20i catalog shape diagnostic and offline transport/disclosure tests. It reports only closed field-name/type observations and finite errors; all values and unknown key names remain withheld. It does not change shipped hosting imports, request provider writes or fetch artwork. Execution and actual response evidence are separate from source preparation. Verified 1.25.0 and its assets remain unchanged.

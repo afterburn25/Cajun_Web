@@ -1,5 +1,27 @@
 # 20i catalog schema diagnostic
 
+## Original outcome — 2026-10-18
+
+The first [original run 39090394774](https://github.com/afterburn25/Cajun_Web/actions/runs/39090394774), attempt 1, executed source `1159648f968d46439f7e88a9cd0f6dbee3758643` on `ops/twentyi-catalog-schema-read` at 02:31 UTC. Job `117565701672` passed all 39 offline transport/disclosure tests, failed its live read step and successfully uploaded artifact `12122278795` (`twentyi-catalog-shape-39090394774-1`, 771 bytes). The overall run conclusion is **failure**; the retained diagnostic outcome is **incomplete**.
+
+The [exact safe shape JSON](evidence/twentyi-catalog-schema-39090394774.json) has SHA256 `6dbd9a8cf5bc512f1cd85f335d2246c683b41a81e82ed0eed0c067b40bb30058`. Its original artifact ZIP has SHA256 `94891387ad161d2b9ba180eada3d35382550f5468323af2c50f1f6bced3105b4`. Raw run/job/artifact metadata and the original log remain retained separately; the log SHA256 is `8108c2d35828cee95305ccc981c33c60ca59c62964fce0b85cdf62512f90982e`.
+
+For `package_types`, the bounded document was traversed and observed an array of objects. The following are exact lexical spellings and JSON types, not established identifier or platform semantics:
+
+| Observed path | Type |
+| --- | --- |
+| `$ / [] / id` | integer |
+| `$ / [] / label` | string |
+| `$ / [] / platform` | string |
+
+The JSON also records other permitted spellings/types and collapsed unknown-key paths. Values, collection sizes, unknown key names, URLs, headers and raw response digests were not exported. No production mapping, complete catalog, pricing/terms, image contract or importer acceptance follows from these observations. The report does not establish that provider images are absent; unknown spellings remain withheld, and no image download was performed.
+
+For `cloud_server_product_data`, only `unexpected_root` was retained. The code refused a non-container JSON root, but its actual scalar kind is absent. This evidence cannot establish an empty catalog, entitlement condition or the meaning of that scalar response. Do not guess that missing information or turn the first failed run into a success. Domains is preparing bounded hosting follow-through; VPS is preparing a separate one-read cloud root-kind diagnostic. This documentation update executes neither proposal and does not retry the original read.
+
+## Historical preparation contract — source 1159648f
+
+The following preparation text records the source checkpoint before the first execution. Its pending-execution statements are historical; the original outcome above is the current evidence. Its transport, disclosure and interpretation limits remain applicable.
+
 The owner has requested full product import, including images. The existing [hosting draft importer](TWENTYI_PRODUCT_IMPORT.md) uses saved hosting inventory and local image uploads. This separate diagnostic is proposed to learn enough response structure to plan the next bounded implementation. It does not change the importer or any production transport allowlist.
 
 The retained owner API reference documents two metadata reads:
