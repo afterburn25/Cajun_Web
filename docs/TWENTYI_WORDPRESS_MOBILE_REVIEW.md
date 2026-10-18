@@ -1,0 +1,9 @@
+# WordPress admin mobile action review
+
+Original full run [38875935651](https://github.com/afterburn25/Cajun_Web/actions/runs/38875935651) on frozenfaef produced browser artifact12038621466. All112 automated reports passed, but root inspected the actual22 new screenshots and found the WordPress owner-mobile refresh action extending outside its nested card and both sharing labels clipped. Desktop and client indication states remained readable. Whole-document width did not expose this within-viewport clipping.
+
+The correction at parent734945c3 adds one scoped admin CSS rule so WordPress button labels wrap and stay within their form width. It changes no provider call, authorization, saved observation, sharing behavior or public page. The existing owner observed/false desktop/mobile captures now check button bounds against their form and all text rectangles against the button; all original assertions remain.
+
+An offline Edge155.0.4283.45 probe uses exact shipping CSS, labels checked against the PHP view and the actual new predicate in constructed markup. Old320/375px layouts fail, old768/1440 pass; all four corrected widths pass. Root and Catalog inspected before/after320 images. This confirms the bounded layout mechanism, not full application acceptance. Catalog source reviewf2b4b359 confirms removing the new predicate returns the old fixture AST exactly.
+
+Original visual proof SHA256d29f74c3dd1c07b5c13ab93b752ff035408dc29d8d4460f8e9ffd1d29352636f and offline proof99d4c582a657cc0d30a61d358220773146d1ef9e3d2b4d90cc75a477e06f1a28 remain local. [Portable original-image review](TWENTYI_WORDPRESS_MOBILE_VISUAL_REVIEW.json) binds exact screenshot hashes and records the failure. Original screenshots/archive/helpers remain unchanged. New combined GitHub browser/screenshots, exact source packages and release gates remain required.

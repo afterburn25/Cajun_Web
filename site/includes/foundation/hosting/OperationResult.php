@@ -10,8 +10,9 @@ use InvalidArgumentException;
 /**
  * HC-08 — the recorded outcome of one real provider operation.
  *
- * Produced by the adapter **after** attempting the operation. Three honest
- * outcomes: `applied` (provider confirmed, receipt required), `failed`
+ * Produced by the adapter **after** attempting the operation. Outcomes:
+ * `applied` (provider confirmed, receipt required), `accepted_pending`
+ * (assigned provisioning identity, completion still unconfirmed), `failed`
  * (named error + whether a retry is safe), and `timeout` (the provider did
  * not answer — outcome genuinely unknown, so the adapter must reconcile
  * before retrying rather than risk a duplicate package). Timeout is
@@ -27,14 +28,16 @@ use InvalidArgumentException;
  * account and a stale receipt from an earlier attempt can never satisfy
  * a later dispatch. `receipt` is the provider's operation reference —
  * evidence of the call; it is not a resource identity. `resourceRef` is
- * optional and carries the verified provider resource id only when the
- * provider actually reported one.
+ * optional and carries the provider resource id when actually reported.
+ * For `accepted_pending`, it is only an acknowledged reconciliation target;
+ * it must not be treated as a verified active service or authorize a retry.
  *
  * @internal Roadmap HC-08; additively inserted.
  */
 final readonly class OperationResult
 {
     public const APPLIED = 'applied';
+    public const ACCEPTED_PENDING = 'accepted_pending';
     public const FAILED = 'failed';
     public const TIMEOUT = 'timeout';
 
@@ -76,6 +79,17 @@ final readonly class OperationResult
             throw new InvalidArgumentException('A failed operation must name the error.');
         }
         return new self(self::check($operation), self::FAILED, $at, self::checkSubject($subjectRef), null, null, $error, $retryable, self::checkAttempt($attemptRef));
+    }
+
+    /** Assigned identity is acknowledged, not proof that provisioning is complete. */
+    public static function acceptedPending(string $operation, string $resourceRef, int $at, string $subjectRef, string $attemptRef): self
+    {
+        if ($operation !== 'hosting.provision' || $at < 0 || trim($resourceRef) === ''
+            || strlen($resourceRef) > 256 || preg_match('//u', $resourceRef) !== 1
+            || preg_match('/[\x00-\x1f\x7f]/', $resourceRef)) {
+            throw new InvalidArgumentException('Pending provisioning needs its bounded assigned resource identity.');
+        }
+        return new self($operation, self::ACCEPTED_PENDING, $at, self::checkSubject($subjectRef), null, $resourceRef, null, false, self::checkAttempt($attemptRef));
     }
 
     /** No response — outcome unknown; reconcile before any retry. */
