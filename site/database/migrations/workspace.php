@@ -4,11 +4,22 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 function studio_migrate(): void {
  require_admin();$name='cwp-studio-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
  if((int)query('SELECT GET_LOCK(?,5)',[$name])->fetchColumn()!==1)throw new RuntimeException('Workspace update is already running.');
- try{foreach(studio_schema(config()['db']['prefix']) as $key=>$sql){
-  $exists=one('SELECT table_name FROM information_schema.tables WHERE table_schema=? AND table_name=?',[config()['db']['name'],config()['db']['prefix'].$key]);
-  if($exists){$columns=all('SHOW COLUMNS FROM '.table($key));$cols=array_column($columns,'Field');preg_match_all('/(?:\(|,)\s*([a-z_][a-z0-9_]*) (?:INT|BIGINT|VARCHAR|CHAR|TINYINT|DATETIME|LONGTEXT|TEXT)/',$sql,$m);if($cols!==$m[1]||!studio_schema_compatible($key,$sql,$columns))throw new RuntimeException('An incompatible table already uses '.$key.'. No existing table was overwritten.');}
-  else db()->exec($sql);
- }save_setting('studio_schema_version','3');log_event('studio.schema','Additive workspace schema 3');}
+ try{
+  // Read the recorded marker/table family before DDL. studio_version_files
+  // is established only at marker 3; a v2 site may still add it, but a v3
+  // site missing that binding history must recover it instead of silently
+  // recreating an empty table.
+  $marker=(string)(one('SELECT value FROM '.table('settings').' WHERE name=?',['studio_schema_version'])['value']??'');
+  if(!in_array($marker,['','0','1','2','3'],true))throw new RuntimeException('This workspace schema version is not supported by this installation. No changes were made.');
+  $schema=studio_schema(config()['db']['prefix']);$present=[];
+  foreach($schema as $key=>$sql)$present[$key]=(bool)one('SELECT table_name FROM information_schema.tables WHERE table_schema=? AND table_name=?',[config()['db']['name'],config()['db']['prefix'].$key]);
+  $v2Tables=array_values(array_diff(array_keys($schema),['studio_version_files']));
+  $required=$marker==='3'?array_keys($schema):($marker==='2'?$v2Tables:[]);
+  foreach($required as $key)if(!$present[$key])throw new RuntimeException('Established workspace history is missing '.config()['db']['prefix'].$key.'. Recover the table instead of recreating empty records. No changes were made.');
+  foreach($schema as $key=>$sql){
+   if($present[$key]){$columns=all('SHOW COLUMNS FROM '.table($key));$cols=array_column($columns,'Field');preg_match_all('/(?:\(|,)\s*([a-z_][a-z0-9_]*) (?:INT|BIGINT|VARCHAR|CHAR|TINYINT|DATETIME|LONGTEXT|TEXT)/',$sql,$m);if($cols!==$m[1]||!studio_schema_compatible($key,$sql,$columns))throw new RuntimeException('An incompatible table already uses '.$key.'. No existing table was overwritten.');}
+   else db()->exec($sql);
+  }save_setting('studio_schema_version','3');log_event('studio.schema','Additive workspace schema 3');}
  finally{query('SELECT RELEASE_LOCK(?)',[$name]);}
 }
 

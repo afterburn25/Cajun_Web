@@ -45,13 +45,19 @@ function studio_preview_upload(int $jobId,int $versionId): void {
  $extension=strtolower(pathinfo(is_string($f['name']??null)?$f['name']:'',PATHINFO_EXTENSION));
  if(!in_array($extension,['pdf','png','jpg','jpeg'],true)||preg_match('/<\?(?:php|=)/i',$bytes))throw new InvalidArgumentException('Only PDF, PNG and JPEG files without executable code are accepted.');
  $name=substr(preg_replace('/[^a-zA-Z0-9 ._()-]/','_',basename(is_string($f['name']??null)?$f['name']:'preview')),0,180)?:'preview';
+ studio_preview_store($jobId,$versionId,$name,$bytes,$mime,$size);
+}
+
+/** Persist an authorized preview after locking the same project row ordinary uploads use, so preview/preview and preview/upload quota checks cannot interleave. */
+function studio_preview_store(int $jobId,int $versionId,string $name,string $bytes,string $mime,int $size): string {
  $id=bin2hex(random_bytes(16));$path=config()['storage'].'/media/studio-'.$id.'.php';
  db()->beginTransaction();$written=false;try {
+  if(!one('SELECT id FROM '.table('studio_jobs').' WHERE id=? FOR UPDATE',[$jobId]))throw new InvalidArgumentException('Project not found.');
   if(!one('SELECT id FROM '.table('studio_versions').' WHERE id=? AND job_id=? FOR UPDATE',[$versionId,$jobId]))throw new InvalidArgumentException('Choose a version that belongs to this project.');
   $sum=(int)query('SELECT COALESCE(SUM(bytes),0) FROM '.table('studio_files').' WHERE job_id=?',[$jobId])->fetchColumn();if($sum+$size>100*1024*1024)throw new RuntimeException('This project has reached its 100 MB file limit.');
   write_private_file($path,CWP_GUARD.$bytes);$written=true;
   query('INSERT INTO '.table('studio_files').' (id,job_id,author_type,original_name,stored_name,mime,bytes,sha256,created_at) VALUES (?,?,?,?,?,?,?,?,?)',[$id,$jobId,'admin',$name,basename($path),$mime,$size,hash('sha256',$bytes),gmdate('Y-m-d H:i:s')]);
-  query('INSERT INTO '.table('studio_version_files').' (version_id,file_id,created_at) VALUES (?,?,?)',[$versionId,$id,gmdate('Y-m-d H:i:s')]);db()->commit();
+  query('INSERT INTO '.table('studio_version_files').' (version_id,file_id,created_at) VALUES (?,?,?)',[$versionId,$id,gmdate('Y-m-d H:i:s')]);db()->commit();return $id;
  }catch(Throwable $e){if(db()->inTransaction())db()->rollBack();if($written)@unlink($path);throw $e;}
 }
 
