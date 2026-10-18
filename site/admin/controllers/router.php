@@ -5,7 +5,7 @@ boot();require CWP_CODE_ROOT.'/includes/layout/public.php';require CWP_CODE_ROOT
 require_once CWP_CODE_ROOT.'/app/marketing/growth.php';require_once CWP_CODE_ROOT.'/app/clients/workspace.php';require_once CWP_CODE_ROOT.'/admin/controllers/studio.php';
 require_once CWP_CODE_ROOT.'/app/staff/accounts.php';require_once CWP_CODE_ROOT.'/admin/controllers/staff.php';require_once CWP_CODE_ROOT.'/admin/controllers/support.php';require_once CWP_CODE_ROOT.'/admin/controllers/catalog.php';require_once CWP_CODE_ROOT.'/admin/controllers/payments.php';
 require_once CWP_CODE_ROOT.'/includes/layout/deliveries.php';
-require_once CWP_CODE_ROOT.'/includes/layout/activity.php';
+require_once CWP_CODE_ROOT.'/includes/layout/activity.php';require_once CWP_CODE_ROOT.'/includes/layout/design_financial.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_templates.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/mail_accounts.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/providers.php';

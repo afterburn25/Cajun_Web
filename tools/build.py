@@ -118,7 +118,7 @@ def generated(refresh):
             target=SITE/'includes/foundation/mail-submission'/source.relative_to(submission)
             target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(source.read_bytes())
     check_submission_mirror(required=True)
-    for area in ['project-planning','projects','billing-calendar','recurring-billing','service-plans','hosting','access','invitations','portfolio','estimator','email-templates','webmail','review-requests','scheduling','mail-transport','provider','twentyi','twentyi-inventory','twentyi-inventory-reader','twentyi-operations','twentyi-document-roots','twentyi-directory-listing','twentyi-support-handoff', 'twentyi-cloud-assignment','mail-compose','twentyi-domain-registration','twentyi-stackcp-access']:
+    for area in ['design-payments','project-planning','projects','billing-calendar','recurring-billing','service-plans','hosting','access','invitations','portfolio','estimator','email-templates','webmail','review-requests','scheduling','mail-transport','provider','twentyi','twentyi-inventory','twentyi-inventory-reader','twentyi-operations','twentyi-document-roots','twentyi-directory-listing','twentyi-support-handoff', 'twentyi-cloud-assignment','mail-compose','twentyi-domain-registration','twentyi-stackcp-access']:
         for source in (ROOT/'foundation'/area).glob('*.php'):
             target=SITE/'includes/foundation'/area/source.name
             if refresh:
