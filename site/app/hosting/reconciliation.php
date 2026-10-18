@@ -2,13 +2,14 @@
 /** Trusted internal evidence persistence. No provider verifier, route or network claim. */
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
+require_once CWP_CODE_ROOT.'/app/hosting/storage.php';
 require_once CWP_CODE_ROOT.'/database/schema/hosting_reconciliation_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/hosting_reconciliation_migrate.php';
 use CajunWebPro\Foundation\Hosting\HostingJournal;
 const CWP_HOSTING_MAX_UNKNOWN_OBSERVATIONS=32;
 
 function hosting_reconciliation_ready():bool {
-    return (one('SELECT value FROM '.table('settings').' WHERE name=?',['hosting_reconciliation_schema_version'])['value']??'')==='1';
+    return hosting_storage_ready('reconciliation');
 }
 /** Closed observation format; proof is an opaque reference and digest, never raw provider data. */
 function hosting_reconciliation_data(array $binding,string $fingerprint,array $input):array {
@@ -73,8 +74,17 @@ function hosting_reconciliation_record(string $dispatchId,string $fingerprint,st
     hosting_records_id($dispatchId);hosting_records_id($observationId);
     if(!preg_match('/\A[a-f0-9]{64}\z/',$fingerprint))throw new InvalidArgumentException('Invalid hosting dispatch fingerprint.');
     return staff_locked(fn()=>staff_transaction(function()use($dispatchId,$fingerprint,$observationId,$input):bool {
+        return hosting_reconciliation_record_locked($dispatchId,$fingerprint,$observationId,$input);
+    }));
+}
+
+/** Internal transaction-owned portion for atomic order confirmation and its audit. */
+function hosting_reconciliation_record_locked(string $dispatchId,string $fingerprint,string $observationId,array $input):bool {
+    if(!db()->inTransaction())throw new LogicException('Hosting reconciliation needs its owning transaction.');
+    hosting_records_id($dispatchId);hosting_records_id($observationId);
+    if(!preg_match('/\A[a-f0-9]{64}\z/',$fingerprint))throw new InvalidArgumentException('Invalid hosting dispatch fingerprint.');
         hosting_operations_require_ready();
-        if(!hosting_reconciliation_ready())throw new RuntimeException('An owner must prepare hosting reconciliation storage first.');
+        hosting_storage_require('reconciliation');
         $dispatch=one('SELECT * FROM '.table('hosting_dispatches').' WHERE id=?',[$dispatchId]);
         if(!$dispatch || !hash_equals(hash('sha256',$dispatch['binding_json']),$fingerprint))throw new InvalidArgumentException('No matching committed hosting dispatch exists.');
         $binding=json_decode($dispatch['binding_json'],true,16,JSON_THROW_ON_ERROR);
@@ -97,5 +107,4 @@ function hosting_reconciliation_record(string $dispatchId,string $fingerprint,st
         }
         hosting_records_audit((int)$dispatch['actor_id'],'reconciliation_recorded','Account '.$row['id'].' dispatch '.$dispatchId.' observation '.$observationId.' '.$data['outcome']);
         return true;
-    }));
 }
