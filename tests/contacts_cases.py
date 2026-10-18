@@ -185,6 +185,14 @@ def run_browser(env,browser):
     check('Primary account keeps full project access','Designs & proposals' in r.text and 'Invoices & payment instructions' in r.text and 'HTTP manual invoice' in r.text)
     r=alice.get(portal+'?activity=1')
     check('Primary account feed stays company-wide','invoice:'+str(iid) in r.text and 'message:'+str(mid) in r.text and 'review:'+str(vid) in r.text)
+    r=alice.post(portal+'?job=1',data={'csrf':token(alice.get(portal+'?job=1')),'action':'message','body':'Primary client attribution marker.'})
+    amid=db("SELECT id FROM ci_studio_messages WHERE body='Primary client attribution marker.'")[0]['id']
+    feed=soup(contact.get(portal+'?activity=1'))
+    items={n['data-event-key']:n.select_one('.eyebrow').get_text() for n in feed.select('[data-event-key]')}
+    check('Contact feed keeps real sender attribution',items.get('message:'+str(amid))=='Client message' and items.get('message:'+str(mid))=='Studio message')
+    primary_feed=soup(alice.get(portal+'?activity=1'))
+    pitems={n['data-event-key']:n.select_one('.eyebrow').get_text() for n in primary_feed.select('[data-event-key]')}
+    check('Primary feed attributes the contact-authored message',pitems.get('message:'+str(cmsg))=='Contact message')
 
     # Disabling or editing a contact revokes its session and outstanding invitation.
     edit=find_form('studio_contact','id',ctid);edit.pop('enabled',None)

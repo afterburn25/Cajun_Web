@@ -60,12 +60,22 @@ def run_browser(env,browser):
     check('Cross-client center and exact source stay private',key not in bob.get(center).text and bob.get(center+'&open='+key).status_code==403)
     check('Malformed source is refused',alice.get(center+'&open=message:1%20OR%201=1').status_code==403)
     with (ROOT/'site/images/icons/favicon.png').open('rb') as f:submit(admin,root+'?view=studio-job&id=1','studio_upload',files={'document':('Activity-studio-file.png',f,'image/png')})
-    source_keys=[];next_url=center
+    source_keys=[];next_url=center;feed_statuses=[]
     while next_url:
-        page=soup(alice.get(next_url));source_keys.extend(n['data-event-key'] for n in page.select('[data-event-key]'));link=page.find('a',string='Older updates →');next_url=link['href'] if link else None
+        resp=alice.get(next_url);feed_statuses.append(resp.status_code);page=soup(resp);source_keys.extend(n['data-event-key'] for n in page.select('[data-event-key]'));link=page.find('a',string='Older updates →');next_url=link['href'] if link else None
+    check('Every paginated client activity page returns 200',set(feed_statuses)=={200} and feed_statuses!=[])
     for kind in ['message','review','file','invoice','payment','release']:
         event=next(k for k in source_keys if k.startswith(kind+':'));result=alice.get(center+'&open='+event);fragment=urlparse(result.url).fragment
         check('Activity navigation resolves exact authorized '+kind,result.status_code==200 and (soup(result).find(id=fragment) is not None if fragment else parse_qs(urlparse(result.url).query).get('release')==[event.split(':')[1]]))
+    # Fixture rows created by the staff suite: the internal note must stay out by exact key, and the milestone resolves by its complete revision key.
+    internal=db("SELECT id FROM ci_studio_messages WHERE body='Staff-only internal marker note.'")[0]['id']
+    milestone=db("SELECT id FROM ci_studio_milestones WHERE title='Synthetic milestone launch window'")[0]['id']
+    public=db("SELECT id FROM ci_studio_messages WHERE job_id=1 AND author_type IN ('admin','client','contact') ORDER BY id LIMIT 1")[0]['id']
+    check('Exact internal staff note event key never enters the client feed','message:'+str(internal) not in source_keys)
+    check('A public message event key is present in the client feed','message:'+str(public) in source_keys)
+    mkey_fixture=next(k for k in source_keys if k.startswith('milestone:'+str(milestone)+':'))
+    r=alice.get(center+'&open='+mkey_fixture)
+    check('Revision-qualified milestone event resolves to its authorized destination',r.status_code==200)
     check('Listing and opening do not implicitly mark read',db('SELECT * FROM ci_activity_reads')==[] and alice.get(center+'&open='+key).status_code==200 and db('SELECT * FROM ci_activity_reads')==[])
     r=mark(alice,center,[key],csrf='wrong');check('Read mutation rejects CSRF','session expired' in r.text.lower() and db('SELECT * FROM ci_activity_reads')==[])
     r=mark(alice,center,[key]);check('Client can explicitly mark one update read','read status was saved' in r.text and len(db('SELECT * FROM ci_activity_reads'))==1)
@@ -89,6 +99,8 @@ def run_browser(env,browser):
     r=alice.post(center,data={'csrf':token(alice.get(center)),'action':'activity_prefs'})
     check('Re-enabling restores hidden updates',db('SELECT * FROM ci_activity_prefs')==[] and 'data-event-key="'+newkey+'"' in alice.get(center).text)
     check('Staff center includes client replies','data-event-key="'+ckey+'"' in admin.get(url).text and 'data-event-key="'+ckey+'"' in member.get(url).text)
+    staff_item=soup(admin.get(url)).find('article',attrs={'data-event-key':ckey})
+    check('Staff feed retains real client sender attribution',staff_item is not None and staff_item.select_one('.eyebrow').get_text()=='Client message')
     mark(admin,url,[ckey]);check('One staff read does not mark another staff inbox',ckey not in admin.get(url+'&filter=unread').text and ckey in member.get(url+'&filter=unread').text)
     count=alice.get(endpoint+'?audience=client').json()['count'];db("CREATE TRIGGER ci_activity_fail BEFORE INSERT ON ci_audit FOR EACH ROW BEGIN IF NEW.action LIKE 'activity.%' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic activity audit failure'; END IF; END")
     try:
