@@ -12,35 +12,67 @@ The [first catalog diagnostic](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#origina
 
 Previous checkpoint: https://github.com/afterburn25/Cajun_Web/blob/35d8fb7efc94f6f851399d0755fa93097f1fce66/SESSION_HANDOFF.md
 
-## Devin non-20i lane — 2026-10-18 restack status
+## Devin non-20i lane — 2026-10-18 LF-inventory fix status
 
-All 51 open `devin/non20i-*` PRs report MERGEABLE after a full
-dependency-order restack: each advanced parent head (and main
-`e397d9a6`, post-Codex PR #218) was merged into its Devin children;
-conflicts resolved by keeping canonical/main versions where strictly
-stronger and re-applying each branch's unique deltas. Canonical
-bundle, receiving/submission runtime byte-for-byte checks, installer
-inventory regeneration and PHP/Python syntax all pass on each pushed
-head. Branch-CI evidence only — Codex owns retarget/integration; no
-merge, deployment or 20i work claimed.
+Follow-up to the mass restack: CI failures on restacked heads were
+traced to installer inventory hashes recorded over CRLF worktree bytes
+(ad-hoc text-mode writes during conflict resolution) while
+`.gitattributes eol=lf` commits LF content. Regenerated
+`site/install/inventory.generated.php` over LF bytes on 43 heads and
+updated `tools/acceptance-contract.json` pins where each branch's own
+sources legitimately changed pinned test files (contract diff keeps
+the change reviewable). 14 heads were already clean; 6 old
+`devin/twentyi-*` heads predate the contract. Each fixed parent head
+was then merged into its stacked child (32 merges), regenerating
+inventory/contract per child so every stacked pair stays mergeable.
+Four literal merge-marker lines committed long ago in
+`docs/SESSION_LOG.md` were removed, preserving all genuine entries.
+Full local build gates pass on merged heads. CI re-queued; results
+pending. Branch-CI evidence only — Codex owns retarget/integration;
+no merge, deployment or 20i work claimed.
 
-Latest restacked tips: portal-account `05ecd881`; client-actions
-`95de0a9c`; activity-prefs `70b8c74b`; milestones `15216b37`;
-staff-notes `a0ef2679`; contact-activity `3c3aa80e`;
-contact-decisions `8c269b33`; client-contacts `5224eafc`;
-stage-history `577d9925`; protected-previews (main restack);
-recurring-billing `ce895bab`; service-plans `938efb3c`;
-mail-html-compose `88428719`; mail-flags `90137c3a`; mail-folders
-`ef2b3159`; mail-reply-all `f8a92276`; mail-sent-sync `7d763790`;
-mail-attachments `4acb4edc`; renewal-notifications `86f03b05`;
-notification-outbox `38a3786d`; notification-events `38fe2e41`;
-notification-metrics/notifications-announcements on
-notifications-runtime `29b95feb`; ticket-notifications `522686b3`;
-ticket-screenshots `f410b588`; runtimes `05034949/87e0b280`,
-`3105dadf`, `8beef432`, `76476e06`, `00c10cc5`.
+Latest tips after fix: portal-account `9f3c3a10`; client-actions
+`c585f06d`; activity-prefs `701444e4`; milestones `fb7054e1`;
+staff-notes `6633d1bf`; contact-activity `55997ad1`;
+contact-decisions `0bff1c3f`; client-contacts `b4459a45`;
+stage-history `fb8b67cf`; recurring-billing `7eea8733`;
+renewal-notifications `6c8b55fc`; service-plans `6c10933f`;
+mail chain tip mail-html-compose `6d02642c` (mail-flags `8173ac6e`,
+mail-folders `0a70f154`, mail-send-attachments `f28a752a`,
+mail-reply-all `93eedc3e`, mail-sent-sync `21b454ff`,
+mail-attachments `bffb875b`, mail-replies `28a78132`);
+ticket-notifications `4d18132e`; ticket-screenshots `d4f82eb1`;
+support-tickets `2c64853f`; notification-events `fd16844a`;
+notification-outbox `33e050f2`; notification-metrics `6ed0786a`;
+announcements `7f036c55`; notifications-runtime `e0aec1c2`;
+comparisons `966905e4`/sources `fa3023a3`; backups `c01b138b`;
+pipeline `68c085f5`; proposals `62730615`; revisions `f175d53a`;
+backup-restore-drill `ddd765a4`; backup-database-export `9eef281a`;
+protected-previews `539c3a40`; payment-links `251e8254`;
+project chain progress `d7baad67` / planning `87e61633` /
+design-payments `f65bb674`.
 
 Next: Codex retargets stacked PRs as parents integrate; combined
 acceptance after retarget, not from branch state.
+
+## Devin non-20i lane — 2026-10-18 restack status (superseded heads)
+
+All 51 open `devin/non20i-*` PRs reported MERGEABLE after a full
+dependency-order restack: each advanced parent head (and main
+`e397d9a6`, post-Codex PR #218) was merged into its Devin children;
+conflicts resolved by keeping canonical/main versions where strictly
+stronger and re-applying each branch's unique deltas. Those heads
+were superseded by the LF-inventory fix above.
+
+Prior restack tips: portal-account `05ecd881`; client-actions
+`95de0a9c`; activity-prefs `70b8c74b`; milestones `15216b37`;
+staff-notes `a0ef2679`; contact-activity `3c3aa80e`;
+contact-decisions `8c269b33`; client-contacts `5224eafc`;
+stage-history `577d9925`; recurring-billing `ce895bab`;
+service-plans `938efb3c`; mail-html-compose `88428719`;
+renewal-notifications `86f03b05`; notification-outbox `38a3786d`;
+notification-events `38fe2e41`; ticket-notifications `522686b3`;
+ticket-screenshots `f410b588`.
 
 ## Devin non-20i lane — 2026-10-17
 
