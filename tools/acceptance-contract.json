@@ -63,6 +63,8 @@
     "\"$PHP_BINARY\" tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-default.json",
     "\"$PHP_BINARY\" -n tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-minimal.json",
     "CWP_TEST_CLOUD_SITE_REQUESTS=1 \"$PHP_BINARY\" tests/provider_cloud_site_requests_native.php",
+    "\"$PHP_BINARY\" tests/cloud_site_intake_contract.php > qa/cloud-site-intake-default.json",
+    "\"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/cloud_site_intake_contract.php > qa/cloud-site-intake-minimal.json",
     "\"$PHP_BINARY\" tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json",
     "\"$PHP_BINARY\" -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json",
     "\"$PHP_BINARY\" tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json",
@@ -604,10 +606,10 @@
     ],
     "source_sha256": {
       "tests/twentyi-cloud-site-requests/documents.php": "0a227898eeb5b4cec6cf3f7f4800580b1e02421edbcd675484aae741df91790b",
-      "tests/cloud_site_requests_ui_contract.php": "494b904b0c52932dd4ed527abd8f3b8f4694c047053cf3718dbbdb6732fca2d2",
-      "tests/provider_cloud_site_requests_native.php": "f197cc1c5b626db9edf37d8c21cf794564aefa3e18674d538656778636ec2c4c",
-      "tests/provider_cloud_site_requests_cases.py": "ad0fee381500af08a915e7175133224ba0488159d254ca1cefb2151e502dab29",
-      "tests/cloud_site_requests_wiring.py": "088fde65011cb2f4ab7df324b28351ac6f1ccdbdaa238dbedd673994060785c3",
+      "tests/cloud_site_requests_ui_contract.php": "a1f6afd5e0ae5c0a154da7c1821092fcfff5afd8ee6e70eaab9c640bb20e9486",
+      "tests/provider_cloud_site_requests_native.php": "2e295420a3cd0d3d978267bfb39daacd51bb8d0d51e8a4e1d27ae0e52120b75d",
+      "tests/provider_cloud_site_requests_cases.py": "7562e3e7a8fb913960baa6aa3942c6a8974e39b626fdf07d72bc98c481ce605b",
+      "tests/cloud_site_requests_wiring.py": "24f7d7448b34bf27596fa9b6a99f8acee3c0530b53b4adb57603ef4c2a1064cc",
       "tests/provider_cloud_site_requests_upgrade.py": "f735013b34414206297d186ee9cca847f24761ecd724c52ce525e0c15a4da7fb",
       "tests/provider_cloud_site_requests_upgrade_fixture.php": "614b021fb39c278953983e3f797614d9906662f53ca409255f3502a2eddffd57",
       "tests/provider_cloud_site_requests_upgrade_test.py": "07c0c53741dd51652751a78744411c1c0717ad3a503dc011410d7b4723b945b3",
@@ -644,5 +646,48 @@
       "predecessor_apache_sha256": "c4eea0a190c5e736dc44b5bc73002b22f4fa26e83c84d1e5c784b2b6642e10bf",
       "scope": "Actual published 1.25 subfolder installation followed by exact candidate UPDATE, complete-journal file rollback, reapply and missing request-head refusal. No interrupted-application or live provider claim."
     }
+  },
+  "cloud_site_intake": {
+    "source_base": "e2c88d9d1adec7fa725d88fabdaac8f748ae7567",
+    "predecessor_native_count": 157,
+    "predecessor_native_sha256": "828e3ad9eb173fdf17e1d72d0bf641ba8c48b2657ad1cd859cd0f4924ed58013",
+    "additions_after": "CWP_TEST_CLOUD_SITE_REQUESTS=1 \"$PHP_BINARY\" tests/provider_cloud_site_requests_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/cloud_site_intake_contract.php > qa/cloud-site-intake-default.json",
+      "\"$PHP_BINARY\" -n -d extension=tokenizer -d extension=pdo tests/cloud_site_intake_contract.php > qa/cloud-site-intake-minimal.json"
+    ],
+    "reports": [
+      "cloud-site-intake-default.json",
+      "cloud-site-intake-minimal.json"
+    ],
+    "predecessor_reports": {
+      "browser": {
+        "count": 169,
+        "sha256": "6cd86faab987885dd6addda3082e29e20ab87c8bf3a64b61e96df9f264adb301"
+      },
+      "final": {
+        "count": 215,
+        "sha256": "598f9b54ef59914c614b8f08f449c483f15a6acb4315190abaec258e6da00adb"
+      }
+    },
+    "predecessor_source_sha256": {
+      "site/app/providers/cloud_site_requests.php": "ac5c3c666c916b26081b6f9a5dbef8d588ca942dae9b10164213509014d54af0",
+      "site/app/providers/cloud_site_requests_views.php": "5b7db5c3493f07ffb9826afee3328cb22813e37d1b7b38acbe8f839d4edc0c30",
+      "tests/cloud_site_requests_ui_contract.php": "494b904b0c52932dd4ed527abd8f3b8f4694c047053cf3718dbbdb6732fca2d2",
+      "tests/provider_cloud_site_requests_native.php": "f197cc1c5b626db9edf37d8c21cf794564aefa3e18674d538656778636ec2c4c",
+      "tests/provider_cloud_site_requests_cases.py": "ad0fee381500af08a915e7175133224ba0488159d254ca1cefb2151e502dab29",
+      "tests/cloud_site_requests_wiring.py": "088fde65011cb2f4ab7df324b28351ac6f1ccdbdaa238dbedd673994060785c3"
+    },
+    "source_sha256": {
+      "site/app/providers/cloud_site_requests.php": "aaafdf5210e00e92a946b19186e5e72f2c0025f0277da38c368d844b5f49e84d",
+      "site/app/providers/cloud_site_requests_views.php": "22dfe27c1a6d0ca2a8f7290c50ecfa307444e05d581ef2c884b3c9f69558ff23",
+      "tests/cloud_site_requests_ui_contract.php": "a1f6afd5e0ae5c0a154da7c1821092fcfff5afd8ee6e70eaab9c640bb20e9486",
+      "tests/provider_cloud_site_requests_native.php": "2e295420a3cd0d3d978267bfb39daacd51bb8d0d51e8a4e1d27ae0e52120b75d",
+      "tests/provider_cloud_site_requests_cases.py": "7562e3e7a8fb913960baa6aa3942c6a8974e39b626fdf07d72bc98c481ce605b",
+      "tests/cloud_site_requests_wiring.py": "24f7d7448b34bf27596fa9b6a99f8acee3c0530b53b4adb57603ef4c2a1064cc",
+      "tests/cloud_site_intake_contract.php": "0afa7765917c2f26937884c9baea5559c62aa90e17fea152f735b9ea4eb6e03b",
+      "tests/cloud_site_intake_wiring.py": "8bf810dbb5fd66c448e0b11818e2e274d838e3daffba7f30e910148bd6dbf259"
+    },
+    "scope": "Current local assignment and original anchor permit client intake. Latest fresh observation remains mandatory for owner dispatch. Native elapsed-age evidence is opt-in and not established by portable tests."
   }
 }

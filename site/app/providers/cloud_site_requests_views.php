@@ -103,7 +103,7 @@ function provider_cloud_site_requests_render(array $options,array $history,bool 
         echo '</section>';return;
     }
     if(!$owner){
-        if(!$options)echo '<p class="notice">No current cloud server assignment is ready for a new request. Ask the studio to review your assignment and refresh the cloud server list.</p>';
+        if(!$options)echo '<p class="notice">There is no eligible cloud server assignment for this request. Ask the studio to review your assigned server.</p>';
         if(($retry['action']??null)==='cloud_website_request_create'&&!in_array($retry['link_id']??null,array_map(static fn(array $o):string=>$o['binding']['link_id'],$options),true)){
             echo '<article class="workspace-card" data-cloud-website-unsaved style="overflow-wrap:anywhere"><h3>Unsubmitted request</h3><p>'.esc($retry['domain']??'').'</p><p>'.nl2br(esc($retry['aliases']??'')).'</p><p class="notice">The selected server is no longer available for this request. Reload the forms or contact the studio. These domains have not been resubmitted.</p></article>';
         }
@@ -114,7 +114,7 @@ function provider_cloud_site_requests_render(array $options,array $history,bool 
             $request=provider_cloud_site_requests_form_id($saved,'request_id');
             if($request===null||($saved&&($saved['context']??null)!==$option['context'])){echo '<p class="notice">These details changed. Reload and review the server before trying again.</p></article>';continue;}
             provider_cloud_site_requests_form('cloud_website_request_create',['request_id'=>$request,'link_id'=>$link,'context'=>$option['context']]);
-            echo '<label>Website domain<input type="text" name="domain" maxlength="253" autocomplete="off" autocapitalize="none" spellcheck="false" value="'.esc($saved['domain']??'').'" placeholder="example.com" required></label><label>Additional domains (optional)<textarea name="aliases" maxlength="5120" rows="3" autocapitalize="none" spellcheck="false">'.esc($saved['aliases']??'').'</textarea></label><p class="hint">Use lowercase domains without URLs. Enter at most 20 additional domains, one per line.</p><label class="check"><input type="checkbox" name="request_confirm" value="1" required> Submit these domains for studio review.</label><button class="btn gold">Submit for review</button></form></article>';
+            echo '<label>Website domain<input type="text" name="domain" maxlength="253" autocomplete="off" autocapitalize="none" spellcheck="false" value="'.esc($saved['domain']??'').'" placeholder="example.com" required></label><label>Additional domains (optional)<textarea name="aliases" maxlength="5120" rows="3" autocapitalize="none" spellcheck="false">'.esc($saved['aliases']??'').'</textarea></label><p class="hint">Use lowercase domains without URLs. Enter at most 20 additional domains, one per line. The studio will check current server information, domain permission and capacity before creation.</p><label class="check"><input type="checkbox" name="request_confirm" value="1" required> Submit these domains for studio review.</label><button class="btn gold">Submit for review</button></form></article>';
         }
         echo '</div>';
     }

@@ -331,6 +331,8 @@ jobs:
           "$PHP_BINARY" tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-default.json
           "$PHP_BINARY" -n tests/cloud_site_requests_ui_contract.php > qa/cloud-site-requests-ui-minimal.json
           CWP_TEST_CLOUD_SITE_REQUESTS=1 "$PHP_BINARY" tests/provider_cloud_site_requests_native.php
+          "$PHP_BINARY" tests/cloud_site_intake_contract.php > qa/cloud-site-intake-default.json
+          "$PHP_BINARY" -n -d extension=tokenizer -d extension=pdo tests/cloud_site_intake_contract.php > qa/cloud-site-intake-minimal.json
           "$PHP_BINARY" tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json
           "$PHP_BINARY" -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json
           "$PHP_BINARY" tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json
