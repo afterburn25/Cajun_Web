@@ -3419,3 +3419,12 @@ At 06:18 UTC the GitHub API reported 1,032 queued workflows and three active wor
 Validation: 119 finite source/YAML/dependency/inverse/applicability checks passed, plus independent comparison of all ten jobs sections and non-path settings before applying the patch. Static retained PR186/188/191 file comparisons each reduce these ten workflows from 26 to 22 jobs; docs/CSS examples reduce them to zero. This is not a runtime or queue-clearing claim. No original CI run was canceled, deleted or retried.
 
 The separate corrected 1.26 build job passed and its original inputs/build artifacts were retained with API digest verification. Database/browser/server/recovery acceptance remains pending; hosting offer/recovery source6cf7 also awaits focused acceptance. Next: normal PR integration of this CI-only correction, then continue original-result review and staged-owner HTTP/full-suite hosting work. Published1.25 and production remain unchanged.
+
+
+## 2026-10-19 — protected-preview review corrections (non-20i)
+
+Request: resolve coordinator integration-review findings on PR198 (project-lock ordering and established `studio_version_files` preservation). Starting head: `d1477ab6` on `devin/non20i-protected-previews`; enclosing commit `4602b1d6`.
+
+Changed: `site/app/clients/files.php` — preview persistence extracted into `studio_preview_store`, locking `studio_jobs ... FOR UPDATE` (the row ordinary `studio_upload` locks) before `studio_versions ... FOR UPDATE`, keeping quota reads/inserts inside one transaction; `site/database/migrations/workspace.php` — recorded-marker and table-family preflight before DDL: markers `''`/`0`/`1`/`2`/`3` supported, marker `3` requires the full workspace family (a missing `studio_version_files` is established history and refuses rather than recreating empty), marker `2` requires the v2 family and may still add the binding table, unknown markers refuse without writes; `tests/native.php` — nine-table count, missing-v3-history refusal, v2->v3 additive path, unknown-marker refusal, and a two-connection lock-wait case proving a preview store blocked on the shared project lock leaves no file or binding row.
+
+Verification and scope: `php -l` clean on all touched files; `tests/acceptance_artifacts_test.py` 221 checks; installer inventory regenerated over LF bytes. MariaDB `tests/native.php` cannot run locally (no test database); packaged browser/Apache acceptance runs in CI. Next: CI lanes on `4602b1d6`; Codex owns integration. No deployment, provider call, merge or release.
