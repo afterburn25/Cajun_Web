@@ -1,3 +1,9 @@
+## 2026-10-18 — CI trigger correction
+
+Parent `6caf654c99cb5befb610f405e40df69b0c174cb6`; branch `codex/ci-pr-path-filters`. Ten focused workflows now use matching push/PR path lists, retaining prior paths and covering shared runtime, native Docker and mail dependencies. Source review verifies unchanged jobs and every non-path setting; 119 finite source/applicability checks passed. This is trigger validation, not new application acceptance. [Details](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).
+
+Integrate this CI-only change through a normal PR. Existing queued/running runs and original failure evidence stay intact; do not dispatch replacement runs to address queue delay. The release and hosting feature branches are unchanged. Continue reviewing the original corrected 1.26 runs `39098578401`, `39098583508`, `39098588864`, `39098593805` and focused hosting run `39103179668` as their results arrive. The first corrected build passed; remaining acceptance is pending. Keep published 1.25.0 immutable. No new release or live deployment is authorized by this CI change.
+
 ## 2026-10-18 — cloud endpoint supplied no catalog details
 
 The separate [cloud-only diagnostic](docs/TWENTYI_CLOUD_ROOT_DIAGNOSTIC.md#original-follow-up-outcome--2026-10-18), original run39090973425 at source `bf788894b1acd4c07daf74e718c4f95774acef85`, completed successfully after 42 passing offline checks. Its one fixed GET observed a JSON `null` root. This establishes the response type for that request and credential context, not an empty catalog, missing entitlement, provider fault or valid import contract. No cloud product fields were supplied. The original two-operation run39090394774 remains failed and unchanged; this later observation cannot retrospectively identify its scalar kind.

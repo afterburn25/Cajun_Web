@@ -2,8 +2,9 @@ name: Client authority checks
 on:
   push:
     branches: [main, codex/client-authority]
-    paths: ['site/app/clients/**', 'site/admin/controllers/studio.php', 'site/admin/controllers/router.php', 'site/portal/controllers/actions.php', 'site/admin/views/studio/**', 'site/app/hosting/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/hosting/**', 'site/includes/foundation/hosting/**', 'tests/hosting_*native.php', 'tests/client_authority*.php', '.github/workflows/client-authority.yml']
+    paths: ['site/app/clients/**', 'site/admin/controllers/studio.php', 'site/admin/controllers/router.php', 'site/portal/controllers/actions.php', 'site/admin/views/studio/**', 'site/app/hosting/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/hosting/**', 'site/includes/foundation/hosting/**', 'tests/hosting_*native.php', 'tests/client_authority*.php', '.github/workflows/client-authority.yml', 'site/app/**', 'site/includes/**', 'site/config/**', 'foundation/**', 'tests/invitations/**']
   pull_request:
+    paths: ['site/app/clients/**', 'site/admin/controllers/studio.php', 'site/admin/controllers/router.php', 'site/portal/controllers/actions.php', 'site/admin/views/studio/**', 'site/app/hosting/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'foundation/hosting/**', 'site/includes/foundation/hosting/**', 'tests/hosting_*native.php', 'tests/client_authority*.php', '.github/workflows/client-authority.yml', 'site/app/**', 'site/includes/**', 'site/config/**', 'foundation/**', 'tests/invitations/**']
   workflow_dispatch:
 permissions:
   contents: read

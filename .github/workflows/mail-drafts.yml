@@ -2,8 +2,9 @@ name: Mail draft storage checks
 on:
   push:
     branches: [main]
-    paths: ['site/app/mail/**', 'site/admin/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_drafts*.php', '.github/workflows/mail-drafts.yml']
+    paths: ['site/app/mail/**', 'site/admin/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_drafts*.php', '.github/workflows/mail-drafts.yml', 'site/app/**', 'site/includes/**', 'site/config/**', 'foundation/**', 'tests/invitations/**']
   pull_request:
+    paths: ['site/app/mail/**', 'site/admin/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'tests/mail_drafts*.php', '.github/workflows/mail-drafts.yml', 'site/app/**', 'site/includes/**', 'site/config/**', 'foundation/**', 'tests/invitations/**']
   workflow_dispatch:
 permissions:
   contents: read
