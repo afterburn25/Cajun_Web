@@ -84,5 +84,7 @@ function catalog_transition(int $jobId,int $invoiceId,string $status,string $not
         query('UPDATE '.table('studio_invoices').' SET status=?,paid_note=?,paid_at=? WHERE id=?',[$status,$note,$status==='paid'?gmdate('Y-m-d H:i:s'):null,$invoiceId]);
         catalog_audit((int)$actor['id'],'invoice.'.$status,'Invoice '.$invoiceId.' project '.$jobId);
     }));
-    if($status==='paid'){try{license_fulfill_invoice($invoiceId);}catch(Throwable){/* License fulfilment failure must not roll back the payment transition. Admin can retry from the license page. */}}
+    if($status==='paid'){try{license_fulfill_invoice($invoiceId);}catch(Throwable){/* License fulfilment failure must not roll back the payment transition. Admin can retry from the license page. */}
+        require_once CWP_CODE_ROOT.'/app/notifications/feed.php';try{$r=one('SELECT i.reference,i.title,j.client_id FROM '.table('studio_invoices').' i JOIN '.table('studio_jobs').' j ON j.id=i.job_id WHERE i.id=?',[$invoiceId]);if($r)notification_emit('client',(int)$r['client_id'],'billing','invoice:'.$invoiceId,'Invoice recorded as paid',$r['reference'].' · '.$r['title']);}catch(Throwable $e){report_error($e);}
+    }
 }

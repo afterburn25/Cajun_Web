@@ -62,7 +62,7 @@ function recurring_billing_invoice_guard(array $invoice):void {
 }
 function recurring_billing_issue(string $id,int $client,int $revision,string $hash,int $period,string $request):array {
     service_plans_id($request);if(!preg_match('/\A[a-f0-9]{64}\z/',$hash))throw new InvalidArgumentException('Keep the reviewed recurring agreement fingerprint.');
-    return recurring_billing_locked(function()use($id,$client,$revision,$hash,$period,$request):array{
+    $result=recurring_billing_locked(function()use($id,$client,$revision,$hash,$period,$request):array{
         $actor=recurring_billing_staff();service_plans_client_row($client);$row=recurring_billing_row($id);
         if((int)$row['client_id']!==$client)throw new RuntimeException('Recurring agreement unavailable.');
         $family=recurring_billing_family($row['subscription_id']);$doc=recurring_billing_validate($row,$family['source']);
@@ -81,4 +81,6 @@ function recurring_billing_issue(string $id,int $client,int $revision,string $ha
         query('INSERT INTO '.table('recurring_billing_invoices').' (id,schedule_id,period_index,invoice_id,staff_id,issued_epoch,schedule_revision,schedule_sha256,request_sha256,snapshot_json,snapshot_sha256) VALUES (?,?,?,?,?,?,?,?,?,?,?)',[$request,$id,$period,$invoice,(int)substr($actor,6),$at,$revision,$hash,$input,$snapshot,hash('sha256',$snapshot)]);
         recurring_billing_audit($actor,'issued','Schedule '.$id.' period '.$period.' invoice '.$invoice);return ['invoice_id'=>$invoice,'replayed'=>false];
     });
+    if(!$result['replayed']){require_once CWP_CODE_ROOT.'/app/notifications/feed.php';try{$inv=one('SELECT reference,title FROM '.table('studio_invoices').' WHERE id=?',[$result['invoice_id']]);if($inv)notification_emit('client',$client,'billing','invoice:'.$result['invoice_id'],'Recurring invoice issued',$inv['reference'].' · '.$inv['title']);}catch(Throwable $e){report_error($e);}}
+    return $result;
 }
