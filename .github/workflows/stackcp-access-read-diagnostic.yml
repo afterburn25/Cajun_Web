@@ -1,0 +1,83 @@
+name: Supplemental StackCP access read profiling
+on:
+  push:
+    branches: [codex/release-1.25.0-stackcp-read-diagnostic]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: stackcp-access-read-diagnostic-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+  cancel-in-progress: false
+jobs:
+  profile:
+    name: StackCP native profile and packaged HTTP on maintained PHP 8.3 and MariaDB
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      database:
+        image: mariadb:10.11
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+        ports: ['3306/tcp']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_PHP_VERSION: '8.3'
+      CWP_DATABASE: mariadb-10.11
+      PHP_BINARY: /usr/bin/php8.3
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install maintained distro runtime and real browser dependencies
+        env:
+          CWP_ASSIGNED_PORT: ${{ job.services.database.ports['3306'] }}
+        run: |
+          echo "CWP_TEST_PORT=$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
+          printf 'Acquire::Retries "5";\nAPT::Update::Error-Mode "any";\n' | sudo tee /etc/apt/apt.conf.d/80-cwp-stackcp-retries >/dev/null
+          sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update
+          sudo apt-get -o Acquire::Retries=5 install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring python3-venv
+          test -x "$PHP_BINARY"
+          python3 -m venv .ci-venv
+          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 playwright
+          .ci-venv/bin/python -m playwright install --with-deps chromium
+      - name: Build exact diagnostic source once
+        run: |
+          mkdir -p qa
+          python3 tools/build.py --commit "$GITHUB_SHA" > qa/stackcp-access-profile-build.log 2>&1
+      - name: Actual native original-new output SQL-work and current-authority comparison
+        run: '"$PHP_BINARY" tests/stackcp_access_read_snapshot_native.php > qa/stackcp-access-profile-native.log 2>&1'
+      - name: Actual packaged complete settings response with original navigation timeout
+        run: .ci-venv/bin/python tests/stackcp_access_read_diagnostic.py
+      - name: Preserve shipping and complete acceptance source
+        if: always()
+        run: git diff --exit-code -- site foundation tools tests .github/workflows
+      - name: Retain bounded diagnostic evidence and original failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stackcp-access-read-diagnostic-8.3-mariadb-10.11-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            qa/stackcp-access-profile-build.log
+            qa/stackcp-access-profile-native.log
+            qa/stackcp-access-read-snapshot-native-results.json
+            qa/stackcp-access-read-snapshot-seed.json
+            qa/native-environment-results.json
+            qa/stackcp-access-http/
+            dist/*-COMPLETE-UPLOAD.zip
+            dist/*-COMPLETE-UPLOAD.manifest.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Record diagnostic scope
+        if: always()
+        run: echo 'Supplemental native SQL/output comparison and real packaged settings-page navigation on a bounded synthetic 21-link dataset, maintained PHP8.3/MariaDB. Original 30-second browser navigation limit. Not the inherited full-browser history, original PHP8.2 environment, complete four-environment acceptance, or visual/release clearance. No provider operation or credential publication.' >> "$GITHUB_STEP_SUMMARY"

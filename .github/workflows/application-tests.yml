@@ -1,13 +1,23 @@
 name: Application acceptance
 on:
   push:
-    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, 'devin/non20i-*']
+    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version, 'devin/non20i-*']
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   pull_request:
-    branches: [main]
+    branches: [main, codex/twentyi-fulfillment, codex/twentyi-service-orders, codex/twentyi-client-domain-search, codex/twentyi-mailbox-controls]
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   workflow_dispatch:
     inputs:
+      php_version:
+        description: 'Complete acceptance PHP runtime; 8.3 retains the distro baseline'
+        type: choice
+        options: ['8.3', '8.2', '8.4']
+        default: '8.3'
+      database:
+        description: 'Complete acceptance database server'
+        type: choice
+        options: ['mariadb-10.11', 'mysql-8.4']
+        default: 'mariadb-10.11'
       checkpoint_only:
         description: 'Build, native database and browser checkpoint only; not release acceptance'
         type: boolean
@@ -15,130 +25,762 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: application-${{ github.ref }}-${{ inputs.checkpoint_only && 'checkpoint' || 'full' }}
-  cancel-in-progress: true
+  # Preserve every running acceptance, including repeated invocations of one source.
+  group: application-${{ github.ref }}-${{ github.sha }}-${{ inputs.checkpoint_only && 'checkpoint' || 'full' }}-${{ inputs.php_version || '8.3' }}-${{ inputs.database || 'mariadb-10.11' }}
+  cancel-in-progress: false
+env:
+  CWP_PHP_VERSION: ${{ inputs.php_version || '8.3' }}
+  CWP_DATABASE: ${{ inputs.database || 'mariadb-10.11' }}
+  CWP_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 jobs:
-  native-and-browser:
+  build:
     runs-on: ubuntu-24.04
-    # Browser/SMTP plus 25 retained upgrade baselines and both Apache modes.
-    # The 1.22 candidate exhausted 45m during no-rewrite 1.13; keep every case.
-    # Run38567952137 exhausted75m in Apache; retain every baseline and case.
-    timeout-minutes: 105
+    timeout-minutes: 45
+    outputs:
+      artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
+      sha256: ${{ steps.seal.outputs.sha256 }}
+      inputs_id: ${{ steps.input_upload.outputs.artifact-id }}
+      input_sha256: ${{ steps.inputs.outputs.sha256 }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prepare isolated runtime and evidence directory
+        id: setup
+        run: |
+          mkdir -p qa
+          # Use one package source for the versioned CLI, extensions and Apache module.
+          # Ubuntu 24.04 retains its distro PHP 8.3 path; other selected versions
+          # require the PHP maintainer's signed Ubuntu Noble package repository.
+          if [ "$CWP_PHP_VERSION" != "8.3" ]; then
+            sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
+            sudo apt-get -o Acquire::Retries=5 install -y software-properties-common
+            sudo add-apt-repository --yes --no-update ppa:ondrej/php
+            # setup-php f3e473d116dcccaddc5834248c87452386958240 documents this
+            # fixed mirror. Preserve Launchpad's original scoped publisher key.
+            sudo python3 - <<'CWP_PHP_MIRROR'
+          from pathlib import Path
+          import re, subprocess, tempfile
+          source = Path('/etc/apt/sources.list.d/ondrej-ubuntu-php-noble.sources')
+          primary = 'https://ppa.launchpadcontent.net/ondrej/php/ubuntu/'
+          mirror = 'https://ppa.setup-php.com/ondrej/php/ubuntu/'
+          fingerprint = 'B8DC7E53946656EFBCE4C1DD71DAEAAB4AD4CAB6'
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 65536:
+              raise SystemExit('Expected regular Noble PHP PPA source is unavailable')
+          original = source.read_bytes()
+          text = original.decode('utf-8')
+          for field, expected in [('Types', 'deb'), ('URIs', primary), ('Suites', 'noble'), ('Components', 'main')]:
+              if re.findall(r'^' + field + r': (.*)$', text, re.M) != [expected]:
+                  raise SystemExit('Unexpected Noble PHP PPA source field: ' + field)
+          if re.search(r'^(?:Trusted|Allow-Insecure|Allow-Weak|Allow-Downgrade-To-Insecure):', text, re.M | re.I):
+              raise SystemExit('Unsafe repository trust override refused')
+          keys = re.findall(r'^Signed-By:([^\n]*(?:\n[ \t][^\n]*)*)', text, re.M)
+          if len(keys) != 1:
+              raise SystemExit('Exactly one publisher Signed-By field is required')
+          signed_by = '\n'.join('' if line.strip() == '.' else line.strip() for line in keys[0].splitlines()).strip()
+          if signed_by.startswith('-----BEGIN PGP PUBLIC KEY BLOCK-----'):
+              key = signed_by.encode('ascii')
+          else:
+              key_path = Path(signed_by)
+              if key_path.parent not in (Path('/usr/share/keyrings'), Path('/etc/apt/keyrings')) or key_path.is_symlink() or not key_path.is_file() or key_path.stat().st_size > 65536:
+                  raise SystemExit('Unexpected publisher key file')
+              key = key_path.read_bytes()
+          with tempfile.TemporaryDirectory(prefix='cwp-public-key-inspection-') as key_home:
+              shown = subprocess.run(['gpg', '--batch', '--no-options', '--homedir', key_home, '--no-autostart', '--with-colons', '--show-keys'], input=key, capture_output=True, check=True).stdout.decode('utf-8')
+          if len(re.findall(r'^pub:', shown, re.M)) != 1 or re.findall(r'^fpr:::::::::([A-F0-9]{40}):', shown, re.M)[:1] != [fingerprint]:
+              raise SystemExit('Unexpected PHP PPA signing identity')
+          changed = re.sub(r'^URIs: ' + re.escape(primary) + r'$', 'URIs: ' + mirror, text, count=1, flags=re.M).encode('utf-8')
+          if changed.replace(mirror.encode(), primary.encode(), 1) != original or changed == original:
+              raise SystemExit('Only the exact repository URI may change')
+          source.write_bytes(changed)
+          print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)
+          CWP_PHP_MIRROR
+          fi
+          sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
+          sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
+          export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
+          test -x "$PHP_BINARY"
+          printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
+          "$PHP_BINARY" -v
+          "$PHP_BINARY" -m
+          python3 tests/acceptance_environment.py --lane build
+      - name: Offline transfer, provenance and failure regressions
+        id: helpers
+        run: python3 tests/acceptance_artifacts_test.py --report qa/parallel-helper-tests.json
+      - name: Exact source, installer inventory and one package build
+        id: build
+        run: |
+          set -o pipefail
+          python3 tools/build.py --commit "$GITHUB_SHA" | tee qa/build-results.txt
+          python3 tests/build_guards.py
+      - name: Prepare only pristine public historical fixtures
+        id: fixtures
+        run: |
+          set -o pipefail
+          python3 tests/prepare_legacy.py | tee qa/legacy-preparation.txt
+          "$PHP_BINARY" tests/desk/run.php > qa/desk-supplied-default.txt
+          "$PHP_BINARY" tests/desk/review_controls.php --deployment > qa/desk-deployed-results.json
+          "$PHP_BINARY" tests/desk/ticket_documents.php > qa/desk-documents-results.json
+          "$PHP_BINARY" tests/desk/forms.php > qa/desk-forms-results.json
+      - name: Seal exact build and public inputs
+        id: inputs
+        run: python3 tools/acceptance_artifacts.py pack-inputs
+      - name: Upload immutable build inputs
+        id: input_upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-inputs-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            .acceptance/inputs/inputs.zip
+            .acceptance/inputs/inputs.json
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
+      - name: Verify shipping source after this job, including failure
+        if: always()
+        id: mutation
+        run: python3 tools/acceptance_artifacts.py guard
+      - name: Preserve this job's exact evidence partition
+        if: always()
+        id: seal
+        env:
+          CWP_STEP_OUTCOMES: >-
+            {"setup": "${{ steps.setup.outcome }}", "helpers": "${{ steps.helpers.outcome }}", "build": "${{ steps.build.outcome }}", "fixtures": "${{ steps.fixtures.outcome }}", "inputs": "${{ steps.inputs.outcome }}", "mutation": "${{ steps.mutation.outcome }}"}
+        run: python3 tools/acceptance_artifacts.py seal --lane build
+      - name: Upload immutable evidence partition
+        if: always() && steps.seal.outcome == 'success'
+        id: partition_upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-partition-build-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            .acceptance/partition/partition.zip
+            .acceptance/partition/partition.json
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
+  native-and-browser:
+    needs: build
+    runs-on: ubuntu-24.04
+    # Original run38909577278 exhausted105m; run39024070818 later exhausted180m
+    # during the final scheduler flow, with requests completing until the job cap.
+    # Preserve every assertion, request/browser/provider limit and native-to-browser state.
+    timeout-minutes: 240
+    outputs:
+      artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
+      sha256: ${{ steps.seal.outputs.sha256 }}
+      checkpoint_id: ${{ steps.checkpoint_upload.outputs.artifact-id }}
+      checkpoint_digest: ${{ steps.checkpoint_upload.outputs.artifact-digest }}
     services:
       mariadb:
-        image: mariadb:10.11
+        image: ${{ inputs.database == 'mysql-8.4' && 'mysql:8.4' || 'mariadb:10.11' }}
         env:
           MARIADB_ROOT_PASSWORD: isolated-ci-root-only
           MARIADB_DATABASE: cwp_test
           MARIADB_USER: cwp_test
           MARIADB_PASSWORD: local-ci-only
-        ports: ['33306:3306']
+          MYSQL_ROOT_PASSWORD: isolated-ci-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+        ports: ['3306']
         options: >-
-          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-cmd="mysqladmin ping --silent"
           --health-interval=5s --health-timeout=5s --health-retries=20
     env:
       CWP_TEST_DATABASE: cwp_test
       CWP_TEST_HOST: 127.0.0.1
-      CWP_TEST_PORT: '33306'
       CWP_TEST_USER: cwp_test
       CWP_TEST_PASSWORD: local-ci-only
+      CWP_INPUT_SHA256: ${{ needs.build.outputs.input_sha256 }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
-      - name: Native runtime and browser dependencies
+      - name: Prepare isolated runtime and evidence directory
+        id: setup
+        env:
+          CWP_ASSIGNED_PORT: ${{ job.services.mariadb.ports[3306] }}
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y php8.3-cli php8.3-mysql php8.3-gd php8.3-zip php8.3-curl php8.3-xml php8.3-mbstring apache2-bin libapache2-mod-php8.3
-          php8.3 -v
-          php8.3 -m
-          python3 -m venv .ci-venv
-          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 playwright cryptography==50.0.1
-          .ci-venv/bin/python -m playwright install --with-deps chromium
-      - name: Exact source, installer inventory and package checks
-        run: |
-          set -o pipefail
           mkdir -p qa
-          python3 tools/build.py --commit "$GITHUB_SHA" | tee qa/build-results.txt
-          python3 tests/build_guards.py
+          printf 'CWP_TEST_PORT=%s\n' "$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
+          export CWP_TEST_PORT="$CWP_ASSIGNED_PORT"
+          # Use one package source for the versioned CLI, extensions and Apache module.
+          # Ubuntu 24.04 retains its distro PHP 8.3 path; other selected versions
+          # require the PHP maintainer's signed Ubuntu Noble package repository.
+          if [ "$CWP_PHP_VERSION" != "8.3" ]; then
+            sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
+            sudo apt-get -o Acquire::Retries=5 install -y software-properties-common
+            sudo add-apt-repository --yes --no-update ppa:ondrej/php
+            # setup-php f3e473d116dcccaddc5834248c87452386958240 documents this
+            # fixed mirror. Preserve Launchpad's original scoped publisher key.
+            sudo python3 - <<'CWP_PHP_MIRROR'
+          from pathlib import Path
+          import re, subprocess, tempfile
+          source = Path('/etc/apt/sources.list.d/ondrej-ubuntu-php-noble.sources')
+          primary = 'https://ppa.launchpadcontent.net/ondrej/php/ubuntu/'
+          mirror = 'https://ppa.setup-php.com/ondrej/php/ubuntu/'
+          fingerprint = 'B8DC7E53946656EFBCE4C1DD71DAEAAB4AD4CAB6'
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 65536:
+              raise SystemExit('Expected regular Noble PHP PPA source is unavailable')
+          original = source.read_bytes()
+          text = original.decode('utf-8')
+          for field, expected in [('Types', 'deb'), ('URIs', primary), ('Suites', 'noble'), ('Components', 'main')]:
+              if re.findall(r'^' + field + r': (.*)$', text, re.M) != [expected]:
+                  raise SystemExit('Unexpected Noble PHP PPA source field: ' + field)
+          if re.search(r'^(?:Trusted|Allow-Insecure|Allow-Weak|Allow-Downgrade-To-Insecure):', text, re.M | re.I):
+              raise SystemExit('Unsafe repository trust override refused')
+          keys = re.findall(r'^Signed-By:([^\n]*(?:\n[ \t][^\n]*)*)', text, re.M)
+          if len(keys) != 1:
+              raise SystemExit('Exactly one publisher Signed-By field is required')
+          signed_by = '\n'.join('' if line.strip() == '.' else line.strip() for line in keys[0].splitlines()).strip()
+          if signed_by.startswith('-----BEGIN PGP PUBLIC KEY BLOCK-----'):
+              key = signed_by.encode('ascii')
+          else:
+              key_path = Path(signed_by)
+              if key_path.parent not in (Path('/usr/share/keyrings'), Path('/etc/apt/keyrings')) or key_path.is_symlink() or not key_path.is_file() or key_path.stat().st_size > 65536:
+                  raise SystemExit('Unexpected publisher key file')
+              key = key_path.read_bytes()
+          with tempfile.TemporaryDirectory(prefix='cwp-public-key-inspection-') as key_home:
+              shown = subprocess.run(['gpg', '--batch', '--no-options', '--homedir', key_home, '--no-autostart', '--with-colons', '--show-keys'], input=key, capture_output=True, check=True).stdout.decode('utf-8')
+          if len(re.findall(r'^pub:', shown, re.M)) != 1 or re.findall(r'^fpr:::::::::([A-F0-9]{40}):', shown, re.M)[:1] != [fingerprint]:
+              raise SystemExit('Unexpected PHP PPA signing identity')
+          changed = re.sub(r'^URIs: ' + re.escape(primary) + r'$', 'URIs: ' + mirror, text, count=1, flags=re.M).encode('utf-8')
+          if changed.replace(mirror.encode(), primary.encode(), 1) != original or changed == original:
+              raise SystemExit('Only the exact repository URI may change')
+          source.write_bytes(changed)
+          print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)
+          CWP_PHP_MIRROR
+          fi
+          sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
+          sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
+          export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
+          test -x "$PHP_BINARY"
+          printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
+          "$PHP_BINARY" -v
+          "$PHP_BINARY" -m
+          if [ "$CWP_DATABASE" = "mysql-8.4" ]; then
+            docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+          fi
+          python3 -m venv .ci-venv
+          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
+          .ci-venv/bin/python -m playwright install --with-deps chromium
+          python3 tests/acceptance_environment.py --lane native
+      - name: Download this attempt's immutable build input
+        id: download
+        if: needs.build.outputs.inputs_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.build.outputs.inputs_id }}
+          merge-multiple: true
+          path: .acceptance/download
+      - name: Verify and materialize exact same-attempt inputs
+        id: input
+        run: python3 tools/acceptance_artifacts.py receive --lane native-browser
       - name: Native database, upgrade and authorization integration
+        id: native
         run: |
-          python3 tests/prepare_legacy.py
-          php8.3 tests/desk/run.php > qa/desk-supplied-default.txt
-          php8.3 tests/desk/review_controls.php --deployment > qa/desk-deployed-results.json
-          php8.3 tests/desk/ticket_documents.php > qa/desk-documents-results.json
-          php8.3 tests/desk/forms.php > qa/desk-forms-results.json
-          php8.3 tests/estimator_adapter.php
-          php8.3 tests/native.php
-          php8.3 tests/staff_native.php
-          php8.3 tests/support_native.php
-          php8.3 tests/catalog_native.php
-          php8.3 tests/payments_native.php
-          php8.3 tests/attempts_native.php
-          php8.3 tests/notifications_native.php
-          php8.3 tests/ledger_native.php
-          php8.3 tests/delivery_archive.php
-          php8.3 tests/delivery_native.php
-          php8.3 tests/activity_native.php
-          php8.3 tests/mail_templates_native.php
-          php8.3 tests/mail_accounts_native.php
-          php8.3 tests/reviews_native.php
-          php8.3 tests/appointments_native.php
-          php8.3 tests/mail_connections_native.php
-          php8.3 tests/mail_inbox_native.php
-          php8.3 tests/mail_message_native.php
-          php8.3 tests/mail_notices_native.php
-          php8.3 tests/mail_drafts_native.php
-          php8.3 tests/mail_drafts_form.php
+          "$PHP_BINARY" tests/service-plans/forms.php > qa/service-plans-forms-results.json
+          "$PHP_BINARY" tests/service-plans/documents.php > qa/service-plans-documents-results.json
+          "$PHP_BINARY" tests/service-plans/run.php > qa/service-plans-supplied-default.txt
+          "$PHP_BINARY" tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-results.json
+          "$PHP_BINARY" tests/twentyi-operations/run.php qa/twentyi-operations-integrated-results.json
+          "$PHP_BINARY" tests/twentyi-operations/mailboxes.php qa/twentyi-mailboxes-integrated-results.json
+          "$PHP_BINARY" tests/twentyi-operations/cloud-sites.php qa/twentyi-cloud-sites-integrated-results.json
+          "$PHP_BINARY" tests/estimator_adapter.php
+          "$PHP_BINARY" tests/native.php
+          "$PHP_BINARY" tests/staff_native.php
+          "$PHP_BINARY" tests/support_native.php
+          "$PHP_BINARY" tests/support_tickets_native.php
+          "$PHP_BINARY" tests/catalog_native.php
+          "$PHP_BINARY" tests/provider_catalog_import.php > qa/provider-catalog-import-default.json
+          "$PHP_BINARY" -n tests/provider_catalog_import.php > qa/provider-catalog-import-minimal.json
+          "$PHP_BINARY" tests/provider_catalog_import_native.php
+          "$PHP_BINARY" tests/payments_native.php
+          "$PHP_BINARY" tests/attempts_native.php
+          "$PHP_BINARY" tests/notifications_native.php
+          "$PHP_BINARY" tests/ledger_native.php
+          "$PHP_BINARY" tests/delivery_archive.php
+          "$PHP_BINARY" tests/delivery_native.php
+          "$PHP_BINARY" tests/activity_native.php
+          "$PHP_BINARY" tests/mail_templates_native.php
+          "$PHP_BINARY" tests/mail_accounts_native.php
+          "$PHP_BINARY" tests/reviews_native.php
+          "$PHP_BINARY" tests/appointments_native.php
+          "$PHP_BINARY" tests/mail_connections_native.php
+          "$PHP_BINARY" tests/mail_inbox_native.php
+          "$PHP_BINARY" tests/mail_message_native.php
+          "$PHP_BINARY" tests/mail_notices_native.php
+          "$PHP_BINARY" tests/mail_drafts_native.php
+          "$PHP_BINARY" tests/mail_drafts_form.php
           cp qa/mail-drafts-form-results.json qa/mail-drafts-form-default-results.json
-          php8.3 -n tests/mail_drafts_form.php
-          php8.3 tests/asset_registry.php
-          cp qa/asset-registry-results.json qa/asset-registry-default-results.json
-          php8.3 -n tests/asset_registry.php
-          mv qa/asset-registry-results.json qa/asset-registry-no-ini-results.json
-          php8.3 tests/mail_submissions_native.php
-          php8.3 tests/mail_submission_dispatch_native.php
-          php8.3 tests/mail_submission_forms.php
+          "$PHP_BINARY" -n tests/mail_drafts_form.php
+          "$PHP_BINARY" tests/mail_submissions_native.php
+          "$PHP_BINARY" tests/mail_submission_dispatch_native.php
+          "$PHP_BINARY" tests/mail_submission_forms.php
           cp qa/mail-submission-forms-results.json qa/mail-submission-forms-default-results.json
-          php8.3 -n tests/mail_submission_forms.php
+          "$PHP_BINARY" -n tests/mail_submission_forms.php
           .ci-venv/bin/python tests/mail_submission_combined.py
-          php8.3 tests/provider_settings_native.php
-          php8.3 tests/provider_checks_native.php
-          php8.3 tests/support_tickets_native.php
-          php8.3 tests/provider_inventory_native.php
-          php8.3 tests/provider_inventory_upgrade_native.php
-          php8.3 tests/provider_operations_native.php
-          php8.3 tests/provider_operations_execute_native.php
-          php8.3 tests/hosting_records_native.php
-          php8.3 tests/hosting_operations_native.php
-          php8.3 tests/hosting_retry_native.php
-          php8.3 tests/hosting_delete_retry_native.php
-          php8.3 tests/hosting_reconciliation_native.php
-          php8.3 tests/client_authority_native.php
-          php8.3 tests/license_native.php
+          "$PHP_BINARY" tests/provider_settings_native.php
+          "$PHP_BINARY" tests/provider_checks_native.php
+          "$PHP_BINARY" tests/provider_schedule_document.php
+          "$PHP_BINARY" -n tests/provider_schedule_document.php
+          "$PHP_BINARY" tests/provider_schedule_native.php
+          "$PHP_BINARY" tests/provider_inventory_native.php
+          "$PHP_BINARY" tests/provider_cloud_sites_native.php
+          "$PHP_BINARY" tests/provider_cloud_confirmation_native.php
+          "$PHP_BINARY" tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-default.json
+          "$PHP_BINARY" -n tests/twentyi-cloud-assignment/run.php qa/cloud-assignment-binding-minimal.json
+          "$PHP_BINARY" tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-default.json
+          "$PHP_BINARY" -n -d extension=tokenizer -d extension=pdo tests/twentyi-cloud-assignment/legacy-context.php qa/cloud-assignment-legacy-minimal.json
+          "$PHP_BINARY" tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-default.json
+          "$PHP_BINARY" -n tests/twentyi-cloud-assignment/views.php qa/cloud-assignment-views-minimal.json
+          "$PHP_BINARY" tests/provider_cloud_assignment_native.php
+          python3 -B tests/cloud_assignment_fixture_test.py qa/cloud-assignment-fixture-results.json
+          "$PHP_BINARY" tests/provider_forwarding_contract.php
+          "$PHP_BINARY" tests/provider_forwarding_native.php
+          "$PHP_BINARY" tests/provider_cloud_providers_native.php
+          "$PHP_BINARY" tests/twentyi-inventory-reader/cloud-providers.php > qa/cloud-provider-reader-default.json
+          "$PHP_BINARY" -n tests/twentyi-inventory-reader/cloud-providers.php > qa/cloud-provider-reader-noini.json
+          "$PHP_BINARY" tests/provider_inventory_upgrade_native.php
+          "$PHP_BINARY" tests/provider_registrar_native.php
+          "$PHP_BINARY" tests/provider_registration_periods_native.php
+          "$PHP_BINARY" tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-results.json
+          "$PHP_BINARY" -n tests/twentyi-inventory-reader/registration_periods.php > qa/registration-period-reader-no-ini-results.json
+          "$PHP_BINARY" tests/domain_renewals_native.php
+          "$PHP_BINARY" tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-default.json
+          "$PHP_BINARY" -n tests/domain_renewal_agreements_document.php > qa/domain-renewal-agreements-document-minimal.json
+          "$PHP_BINARY" tests/domain_renewal_agreements_native.php
+          "$PHP_BINARY" tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-default.json
+          "$PHP_BINARY" -n tests/domain_renewal_dispatch_document.php > qa/domain-renewal-dispatch-document-minimal.json
+          "$PHP_BINARY" tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-default.json
+          "$PHP_BINARY" -n tests/domain_renewal_dispatch_transport.php > qa/domain-renewal-dispatch-transport-minimal.json
+          python -B tests/domain_renewal_dispatch_http_contract.py > qa/domain-renewal-dispatch-handler-results.json
+          "$PHP_BINARY" tests/domain_renewal_dispatch_native.php
+          "$PHP_BINARY" tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-default.json
+          "$PHP_BINARY" -n tests/twentyi-domain-registration/run.php > qa/domain-registration-contract-minimal.json
+          "$PHP_BINARY" tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-default.json
+          "$PHP_BINARY" -n tests/domain_registration_drafts_pure.php > qa/domain-registration-drafts-pure-minimal.json
+          "$PHP_BINARY" tests/domain_registration_drafts_native.php
+          "$PHP_BINARY" tests/service_observations_native.php
+          "$PHP_BINARY" tests/domain_contracts_reader.php > qa/domain-contract-reader-integrated-results.json
+          "$PHP_BINARY" tests/domain_contracts_native.php
+          "$PHP_BINARY" tests/domain_expiry_contract.php > qa/domain-expiry-contract-integrated-results.json
+          "$PHP_BINARY" tests/domain_expiry_reader.php > qa/domain-expiry-reader-integrated-results.json
+          "$PHP_BINARY" tests/domain_expiry_native.php
+          "$PHP_BINARY" tests/twentyi-package-php/run.php > qa/package-php-document-results.json
+          "$PHP_BINARY" -n tests/twentyi-package-php/run.php > qa/package-php-document-no-ini-results.json
+          "$PHP_BINARY" tests/provider_package_php_native.php
+          "$PHP_BINARY" tests/document_roots_contract.php > qa/document-roots-contract-integrated-results.json
+          "$PHP_BINARY" tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json
+          "$PHP_BINARY" tests/provider_document_roots_native.php
+          "$PHP_BINARY" tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-results.json
+          "$PHP_BINARY" -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-no-ini-results.json
+          "$PHP_BINARY" tests/provider_package_force_ssl_native.php
+          "$PHP_BINARY" tests/directory_listing_contract.php > qa/directory-listing-document-results.json
+          "$PHP_BINARY" -n tests/directory_listing_contract.php > qa/directory-listing-document-no-ini-results.json
+          "$PHP_BINARY" tests/directory_listing_transport.php > qa/directory-listing-transport-results.json
+          "$PHP_BINARY" -n tests/directory_listing_transport.php > qa/directory-listing-transport-no-ini-results.json
+          "$PHP_BINARY" tests/provider_directory_listing_native.php
+          "$PHP_BINARY" tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-results.json
+          "$PHP_BINARY" -n tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-no-ini-results.json
+          "$PHP_BINARY" tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-results.json
+          "$PHP_BINARY" -n tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-no-ini-results.json
+          "$PHP_BINARY" tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-results.json
+          "$PHP_BINARY" -n tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-no-ini-results.json
+          "$PHP_BINARY" tests/provider_force_ssl_controls_native.php
+          "$PHP_BINARY" tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-results.json
+          "$PHP_BINARY" -n tests/twentyi-directory-listing-controls/run.php > qa/directory-listing-control-contract-no-ini-results.json
+          "$PHP_BINARY" tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-results.json
+          "$PHP_BINARY" -n tests/directory_listing_controls_transport.php > qa/directory-listing-control-transport-no-ini-results.json
+          "$PHP_BINARY" tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-results.json
+          "$PHP_BINARY" -n tests/directory_listing_controls_recovery.php > qa/directory-listing-control-recovery-no-ini-results.json
+          "$PHP_BINARY" tests/provider_directory_listing_controls_native.php
+          python -B tests/provider_directory_controls_http_contract.py > qa/directory-listing-controls-http-handler-results.json
+          python -B tests/provider_wordpress_installed_http_contract.py > qa/wordpress-installed-http-handler-results.json
+          "$PHP_BINARY" tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-results.json
+          "$PHP_BINARY" -n tests/twentyi-package-wordpress-installed/run.php > qa/package-wordpress-installed-pure-no-ini-results.json
+          "$PHP_BINARY" tests/provider_package_wordpress_installed_native.php
+          "$PHP_BINARY" tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-default.json
+          "$PHP_BINARY" -n tests/stackcp_handoff_contract.php qa/stackcp-handoff-contract-minimal.json
+          "$PHP_BINARY" tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-default.json
+          "$PHP_BINARY" -n tests/stackcp_prerequisites_contract.php qa/stackcp-prerequisites-contract-minimal.json
+          "$PHP_BINARY" tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-default.json
+          "$PHP_BINARY" -n tests/stackcp_prerequisites_views.php qa/stackcp-prerequisites-views-minimal.json
+          "$PHP_BINARY" tests/stackcp_prerequisites_native.php
+          "$PHP_BINARY" tests/stackcp_access_contract.php > qa/stackcp-access-contract-default.json
+          "$PHP_BINARY" -n tests/stackcp_access_contract.php > qa/stackcp-access-contract-minimal.json
+          "$PHP_BINARY" tests/stackcp_access_views.php qa/stackcp-access-views-default.json
+          "$PHP_BINARY" -n tests/stackcp_access_views.php qa/stackcp-access-views-minimal.json
+          "$PHP_BINARY" tests/stackcp_access_transport.php > qa/stackcp-access-transport-default.json
+          "$PHP_BINARY" -n tests/stackcp_access_transport.php > qa/stackcp-access-transport-minimal.json
+          python -B tests/stackcp_access_http_contract.py > qa/stackcp-access-http-handler-results.json
+          "$PHP_BINARY" tests/stackcp_access_native.php
+          "$PHP_BINARY" tests/stackcp_read_snapshot_native.php
+          "$PHP_BINARY" tests/stackcp_access_read_snapshot_native.php
+          "$PHP_BINARY" tests/provider_domain_search_native.php
+          "$PHP_BINARY" tests/provider_mailboxes_native.php
+          "$PHP_BINARY" tests/provider_operations_native.php
+          "$PHP_BINARY" tests/provider_operations_execute_native.php
+          "$PHP_BINARY" tests/service_plans_native.php
+          "$PHP_BINARY" tests/recurring_billing_native.php
+          "$PHP_BINARY" tests/recurring-billing/forms.php qa/recurring-billing-forms-results.json
+          "$PHP_BINARY" -n tests/recurring-billing/forms.php qa/recurring-billing-forms-default-results.json
+          "$PHP_BINARY" tests/hosting_records_native.php
+          "$PHP_BINARY" tests/hosting_operations_native.php
+          "$PHP_BINARY" tests/hosting_retry_native.php
+          "$PHP_BINARY" tests/hosting_delete_retry_native.php
+          "$PHP_BINARY" tests/hosting_reconciliation_native.php
+          "$PHP_BINARY" tests/client_authority_native.php
+          "$PHP_BINARY" tests/license_native.php
       - name: Real HTTP and Chromium application workflows
+        id: browser
         run: .ci-venv/bin/python tests/browser_acceptance.py
-      - name: Preserve browser checkpoint before the extended recovery matrix
+      - name: Verify shipping source after this job, including failure
         if: always()
+        id: mutation
+        run: python3 tools/acceptance_artifacts.py guard
+      - name: Preserve this job's exact evidence partition
+        if: always()
+        id: seal
+        env:
+          CWP_STEP_OUTCOMES: >-
+            {"setup": "${{ steps.setup.outcome }}", "input": "${{ steps.input.outcome }}", "native": "${{ steps.native.outcome }}", "browser": "${{ steps.browser.outcome }}", "mutation": "${{ steps.mutation.outcome }}"}
+        run: python3 tools/acceptance_artifacts.py seal --lane native-browser
+      - name: Upload immutable evidence partition
+        if: always() && steps.seal.outcome == 'success'
+        id: partition_upload
         uses: actions/upload-artifact@v4
         with:
-          name: application-browser-checkpoint-${{ github.sha }}
-          path: qa/
+          name: application-partition-native-browser-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            .acceptance/partition/partition.zip
+            .acceptance/partition/partition.json
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
+      - name: Preserve browser checkpoint independently of other jobs
+        if: always()
+        id: checkpoint_upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-browser-checkpoint-${{ github.sha }}${{ github.run_attempt != 1 && format('-attempt-{0}', github.run_attempt) || '' }}
+          path: ${{ steps.seal.outcome == 'success' && '.acceptance/checkpoint/qa/' || 'qa/' }}
           retention-days: 3
           if-no-files-found: warn
+  recovery:
+    needs: build
+    if: ${{ !inputs.checkpoint_only }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    outputs:
+      artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
+      sha256: ${{ steps.seal.outputs.sha256 }}
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_INPUT_SHA256: ${{ needs.build.outputs.input_sha256 }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prepare isolated runtime and evidence directory
+        id: setup
+        run: |
+          mkdir -p qa
+          # Use one package source for the versioned CLI, extensions and Apache module.
+          # Ubuntu 24.04 retains its distro PHP 8.3 path; other selected versions
+          # require the PHP maintainer's signed Ubuntu Noble package repository.
+          if [ "$CWP_PHP_VERSION" != "8.3" ]; then
+            sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
+            sudo apt-get -o Acquire::Retries=5 install -y software-properties-common
+            sudo add-apt-repository --yes --no-update ppa:ondrej/php
+            # setup-php f3e473d116dcccaddc5834248c87452386958240 documents this
+            # fixed mirror. Preserve Launchpad's original scoped publisher key.
+            sudo python3 - <<'CWP_PHP_MIRROR'
+          from pathlib import Path
+          import re, subprocess, tempfile
+          source = Path('/etc/apt/sources.list.d/ondrej-ubuntu-php-noble.sources')
+          primary = 'https://ppa.launchpadcontent.net/ondrej/php/ubuntu/'
+          mirror = 'https://ppa.setup-php.com/ondrej/php/ubuntu/'
+          fingerprint = 'B8DC7E53946656EFBCE4C1DD71DAEAAB4AD4CAB6'
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 65536:
+              raise SystemExit('Expected regular Noble PHP PPA source is unavailable')
+          original = source.read_bytes()
+          text = original.decode('utf-8')
+          for field, expected in [('Types', 'deb'), ('URIs', primary), ('Suites', 'noble'), ('Components', 'main')]:
+              if re.findall(r'^' + field + r': (.*)$', text, re.M) != [expected]:
+                  raise SystemExit('Unexpected Noble PHP PPA source field: ' + field)
+          if re.search(r'^(?:Trusted|Allow-Insecure|Allow-Weak|Allow-Downgrade-To-Insecure):', text, re.M | re.I):
+              raise SystemExit('Unsafe repository trust override refused')
+          keys = re.findall(r'^Signed-By:([^\n]*(?:\n[ \t][^\n]*)*)', text, re.M)
+          if len(keys) != 1:
+              raise SystemExit('Exactly one publisher Signed-By field is required')
+          signed_by = '\n'.join('' if line.strip() == '.' else line.strip() for line in keys[0].splitlines()).strip()
+          if signed_by.startswith('-----BEGIN PGP PUBLIC KEY BLOCK-----'):
+              key = signed_by.encode('ascii')
+          else:
+              key_path = Path(signed_by)
+              if key_path.parent not in (Path('/usr/share/keyrings'), Path('/etc/apt/keyrings')) or key_path.is_symlink() or not key_path.is_file() or key_path.stat().st_size > 65536:
+                  raise SystemExit('Unexpected publisher key file')
+              key = key_path.read_bytes()
+          with tempfile.TemporaryDirectory(prefix='cwp-public-key-inspection-') as key_home:
+              shown = subprocess.run(['gpg', '--batch', '--no-options', '--homedir', key_home, '--no-autostart', '--with-colons', '--show-keys'], input=key, capture_output=True, check=True).stdout.decode('utf-8')
+          if len(re.findall(r'^pub:', shown, re.M)) != 1 or re.findall(r'^fpr:::::::::([A-F0-9]{40}):', shown, re.M)[:1] != [fingerprint]:
+              raise SystemExit('Unexpected PHP PPA signing identity')
+          changed = re.sub(r'^URIs: ' + re.escape(primary) + r'$', 'URIs: ' + mirror, text, count=1, flags=re.M).encode('utf-8')
+          if changed.replace(mirror.encode(), primary.encode(), 1) != original or changed == original:
+              raise SystemExit('Only the exact repository URI may change')
+          source.write_bytes(changed)
+          print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)
+          CWP_PHP_MIRROR
+          fi
+          sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
+          sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring"
+          export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
+          test -x "$PHP_BINARY"
+          printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
+          "$PHP_BINARY" -v
+          "$PHP_BINARY" -m
+          python3 -m venv .ci-venv
+          python3 tests/acceptance_environment.py --lane recovery
+      - name: Download this attempt's immutable build input
+        id: download
+        if: needs.build.outputs.inputs_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.build.outputs.inputs_id }}
+          merge-multiple: true
+          path: .acceptance/download
+      - name: Verify and materialize exact same-attempt inputs
+        id: input
+        run: python3 tools/acceptance_artifacts.py receive --lane recovery
       - name: Unprivileged structure update interruption and recovery
-        if: (success() || failure()) && !inputs.checkpoint_only
+        id: test
         run: .ci-venv/bin/python tests/structure_acceptance.py
+      - name: Verify shipping source after this job, including failure
+        if: always()
+        id: mutation
+        run: python3 tools/acceptance_artifacts.py guard
+      - name: Preserve this job's exact evidence partition
+        if: always()
+        id: seal
+        env:
+          CWP_STEP_OUTCOMES: >-
+            {"setup": "${{ steps.setup.outcome }}", "input": "${{ steps.input.outcome }}", "test": "${{ steps.test.outcome }}", "mutation": "${{ steps.mutation.outcome }}"}
+        run: python3 tools/acceptance_artifacts.py seal --lane recovery
+      - name: Upload immutable evidence partition
+        if: always() && steps.seal.outcome == 'success'
+        id: partition_upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-partition-recovery-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            .acceptance/partition/partition.zip
+            .acceptance/partition/partition.json
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
+  apache:
+    needs: build
+    if: ${{ !inputs.checkpoint_only }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 105
+    outputs:
+      artifact_id: ${{ steps.partition_upload.outputs.artifact-id }}
+      sha256: ${{ steps.seal.outputs.sha256 }}
+    services:
+      mariadb:
+        image: ${{ inputs.database == 'mysql-8.4' && 'mysql:8.4' || 'mariadb:10.11' }}
+        env:
+          MARIADB_ROOT_PASSWORD: isolated-ci-root-only
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: isolated-ci-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+        ports: ['3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+      CWP_INPUT_SHA256: ${{ needs.build.outputs.input_sha256 }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Prepare isolated runtime and evidence directory
+        id: setup
+        env:
+          CWP_ASSIGNED_PORT: ${{ job.services.mariadb.ports[3306] }}
+        run: |
+          mkdir -p qa
+          printf 'CWP_TEST_PORT=%s\n' "$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"
+          export CWP_TEST_PORT="$CWP_ASSIGNED_PORT"
+          # Use one package source for the versioned CLI, extensions and Apache module.
+          # Ubuntu 24.04 retains its distro PHP 8.3 path; other selected versions
+          # require the PHP maintainer's signed Ubuntu Noble package repository.
+          if [ "$CWP_PHP_VERSION" != "8.3" ]; then
+            sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
+            sudo apt-get -o Acquire::Retries=5 install -y software-properties-common
+            sudo add-apt-repository --yes --no-update ppa:ondrej/php
+            # setup-php f3e473d116dcccaddc5834248c87452386958240 documents this
+            # fixed mirror. Preserve Launchpad's original scoped publisher key.
+            sudo python3 - <<'CWP_PHP_MIRROR'
+          from pathlib import Path
+          import re, subprocess, tempfile
+          source = Path('/etc/apt/sources.list.d/ondrej-ubuntu-php-noble.sources')
+          primary = 'https://ppa.launchpadcontent.net/ondrej/php/ubuntu/'
+          mirror = 'https://ppa.setup-php.com/ondrej/php/ubuntu/'
+          fingerprint = 'B8DC7E53946656EFBCE4C1DD71DAEAAB4AD4CAB6'
+          if source.is_symlink() or not source.is_file() or source.stat().st_size > 65536:
+              raise SystemExit('Expected regular Noble PHP PPA source is unavailable')
+          original = source.read_bytes()
+          text = original.decode('utf-8')
+          for field, expected in [('Types', 'deb'), ('URIs', primary), ('Suites', 'noble'), ('Components', 'main')]:
+              if re.findall(r'^' + field + r': (.*)$', text, re.M) != [expected]:
+                  raise SystemExit('Unexpected Noble PHP PPA source field: ' + field)
+          if re.search(r'^(?:Trusted|Allow-Insecure|Allow-Weak|Allow-Downgrade-To-Insecure):', text, re.M | re.I):
+              raise SystemExit('Unsafe repository trust override refused')
+          keys = re.findall(r'^Signed-By:([^\n]*(?:\n[ \t][^\n]*)*)', text, re.M)
+          if len(keys) != 1:
+              raise SystemExit('Exactly one publisher Signed-By field is required')
+          signed_by = '\n'.join('' if line.strip() == '.' else line.strip() for line in keys[0].splitlines()).strip()
+          if signed_by.startswith('-----BEGIN PGP PUBLIC KEY BLOCK-----'):
+              key = signed_by.encode('ascii')
+          else:
+              key_path = Path(signed_by)
+              if key_path.parent not in (Path('/usr/share/keyrings'), Path('/etc/apt/keyrings')) or key_path.is_symlink() or not key_path.is_file() or key_path.stat().st_size > 65536:
+                  raise SystemExit('Unexpected publisher key file')
+              key = key_path.read_bytes()
+          with tempfile.TemporaryDirectory(prefix='cwp-public-key-inspection-') as key_home:
+              shown = subprocess.run(['gpg', '--batch', '--no-options', '--homedir', key_home, '--no-autostart', '--with-colons', '--show-keys'], input=key, capture_output=True, check=True).stdout.decode('utf-8')
+          if len(re.findall(r'^pub:', shown, re.M)) != 1 or re.findall(r'^fpr:::::::::([A-F0-9]{40}):', shown, re.M)[:1] != [fingerprint]:
+              raise SystemExit('Unexpected PHP PPA signing identity')
+          changed = re.sub(r'^URIs: ' + re.escape(primary) + r'$', 'URIs: ' + mirror, text, count=1, flags=re.M).encode('utf-8')
+          if changed.replace(mirror.encode(), primary.encode(), 1) != original or changed == original:
+              raise SystemExit('Only the exact repository URI may change')
+          source.write_bytes(changed)
+          print('Noble PHP PPA mirror selected; original publisher Signed-By retained: ' + fingerprint)
+          CWP_PHP_MIRROR
+          fi
+          sudo apt-get -o Acquire::Retries=5 -o APT::Update::Error-Mode=any update -qq
+          sudo apt-get -o Acquire::Retries=5 install -y "php${CWP_PHP_VERSION}-cli" "php${CWP_PHP_VERSION}-mysql" "php${CWP_PHP_VERSION}-gd" "php${CWP_PHP_VERSION}-zip" "php${CWP_PHP_VERSION}-curl" "php${CWP_PHP_VERSION}-xml" "php${CWP_PHP_VERSION}-mbstring" apache2-bin "libapache2-mod-php${CWP_PHP_VERSION}"
+          test -s "/usr/lib/apache2/modules/libphp${CWP_PHP_VERSION}.so"
+          export PHP_BINARY="/usr/bin/php${CWP_PHP_VERSION}"
+          test -x "$PHP_BINARY"
+          printf 'PHP_BINARY=%s\n' "$PHP_BINARY" >> "$GITHUB_ENV"
+          "$PHP_BINARY" -v
+          "$PHP_BINARY" -m
+          if [ "$CWP_DATABASE" = "mysql-8.4" ]; then
+            docker exec -e MYSQL_PWD=isolated-ci-root-only ${{ job.services.mariadb.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+          fi
+          python3 -m venv .ci-venv
+          .ci-venv/bin/pip install --disable-pip-version-check requests beautifulsoup4 cryptography==50.0.1 playwright
+          .ci-venv/bin/python -m playwright install --with-deps chromium
+          python3 tests/acceptance_environment.py --lane apache
+      - name: Download this attempt's immutable build input
+        id: download
+        if: needs.build.outputs.inputs_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.build.outputs.inputs_id }}
+          merge-multiple: true
+          path: .acceptance/download
+      - name: Verify and materialize exact same-attempt inputs
+        id: input
+        run: python3 tools/acceptance_artifacts.py receive --lane apache
       - name: Apache protection with and without rewriting
-        if: (success() || failure()) && !inputs.checkpoint_only
-        run: .ci-venv/bin/python tests/apache_acceptance.py
-      - name: Verify tests did not mutate shipping source
-        run: git diff --exit-code -- site/
-      - name: Preserve named test evidence
+        id: test
+        run: |
+          .ci-venv/bin/python tests/apache_acceptance.py
+          .ci-venv/bin/python tests/release_125_upgrade_guards.py qa/apache-release125-guards-results.json
+          .ci-venv/bin/python tests/release_125_upgrade_input_guards.py --report qa/apache-release125-input-guards-results.json
+          .ci-venv/bin/python tests/release_125_upgrade_acceptance.py
+      - name: Verify shipping source after this job, including failure
+        if: always()
+        id: mutation
+        run: python3 tools/acceptance_artifacts.py guard
+      - name: Preserve this job's exact evidence partition
+        if: always()
+        id: seal
+        env:
+          CWP_STEP_OUTCOMES: >-
+            {"setup": "${{ steps.setup.outcome }}", "input": "${{ steps.input.outcome }}", "test": "${{ steps.test.outcome }}", "mutation": "${{ steps.mutation.outcome }}"}
+        run: python3 tools/acceptance_artifacts.py seal --lane apache
+      - name: Upload immutable evidence partition
+        if: always() && steps.seal.outcome == 'success'
+        id: partition_upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-partition-apache-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}
+          path: |
+            .acceptance/partition/partition.zip
+            .acceptance/partition/partition.json
+          include-hidden-files: true
+          retention-days: 14
+          if-no-files-found: error
+  acceptance:
+    needs: [build, native-and-browser, recovery, apache]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Download exact build evidence
+        if: always() && needs.build.outputs.artifact_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.build.outputs.artifact_id }}
+          merge-multiple: true
+          path: .acceptance/incoming/build
+      - name: Download exact native-browser evidence
+        if: always() && needs.native-and-browser.outputs.artifact_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.native-and-browser.outputs.artifact_id }}
+          merge-multiple: true
+          path: .acceptance/incoming/native-browser
+      - name: Download exact recovery evidence
+        if: always() && needs.recovery.outputs.artifact_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.recovery.outputs.artifact_id }}
+          merge-multiple: true
+          path: .acceptance/incoming/recovery
+      - name: Download exact apache evidence
+        if: always() && needs.apache.outputs.artifact_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          artifact-ids: ${{ needs.apache.outputs.artifact_id }}
+          merge-multiple: true
+          path: .acceptance/incoming/apache
+      - name: Verify partitions and assemble honest final evidence
+        if: always()
+        env:
+          CWP_CHECKPOINT_ONLY: ${{ inputs.checkpoint_only && 'true' || 'false' }}
+          CWP_JOB_BINDINGS: >-
+            {"build": {"result": "${{ needs.build.result }}", "artifact_id": "${{ needs.build.outputs.artifact_id }}", "sha256": "${{ needs.build.outputs.sha256 }}", "input_sha256": "${{ needs.build.outputs.input_sha256 }}"}, "native-browser": {"result": "${{ needs.native-and-browser.result }}", "artifact_id": "${{ needs.native-and-browser.outputs.artifact_id }}", "sha256": "${{ needs.native-and-browser.outputs.sha256 }}", "checkpoint_id": "${{ needs.native-and-browser.outputs.checkpoint_id }}", "checkpoint_digest": "${{ needs.native-and-browser.outputs.checkpoint_digest }}"}, "recovery": {"result": "${{ needs.recovery.result }}", "artifact_id": "${{ needs.recovery.outputs.artifact_id }}", "sha256": "${{ needs.recovery.outputs.sha256 }}"}, "apache": {"result": "${{ needs.apache.result }}", "artifact_id": "${{ needs.apache.outputs.artifact_id }}", "sha256": "${{ needs.apache.outputs.sha256 }}"}}
+        run: |
+          mkdir -p qa
+          python3 tools/acceptance_artifacts.py aggregate
+      - name: Preserve final or deliberately limited checkpoint evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: application-${{ inputs.checkpoint_only && 'checkpoint' || 'acceptance' }}-${{ github.sha }}
+          name: application-${{ inputs.checkpoint_only && 'checkpoint' || 'acceptance' }}-${{ github.sha }}${{ github.run_attempt != 1 && format('-attempt-{0}', github.run_attempt) || '' }}
           path: |
             qa/
             dist/
