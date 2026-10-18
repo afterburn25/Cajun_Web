@@ -1,3 +1,9 @@
+## 2026-10-18 — packaged checkout tests and truthful history labels
+
+The client checkout result links now show the actual confirming client and distinguish the application's automatic agreement activation. The old schedule view assumed a staff creator and would emit a PHP warning for checkout schedules; its correction preserves legacy staff history. Actual renderer checks pass 58 cases in each PHP mode, including all 46 preceding cases. [Current checkout scope](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+Packaged owner/client HTTP and Chromium tests are now wired into the focused and full application workflows. They cover publication, owned/new project choice, first invoice now, exact retry, result links, CSRF and other-client/contact-context/support refusals, plus 12 desktop/mobile captures. These are prepared tests, not completed browser outcomes. The native continuation honors the real 30-second refresh cooldown; no clocks or production safeguards are bypassed. Full recipe/report preservation guards retain every preceding test. First source 7703 run 39120172123 and all earlier CI evidence remain unchanged; Linux checkout, visual inspection, upgrade and release acceptance remain pending.
+
 ## 2026-10-18 — integrated hosting checkout, runtime acceptance pending
 
 The development checkout now connects explicit owner opt-in, the client project/review/confirmation screens, and one guarded transaction for client consent, a recurring schedule and the first unpaid invoice. Exact completed retries return the original records; inconsistent or missing financial history is refused. Checkout-origin fulfillment requires verified payment and the original provider mapping. Existing request-only offers retain their behavior. [Scope and remaining acceptance](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).

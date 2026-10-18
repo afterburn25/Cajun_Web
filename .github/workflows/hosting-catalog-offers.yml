@@ -137,6 +137,7 @@ jobs:
       CWP_TEST_USER: cwp_test
       CWP_TEST_PASSWORD: local-ci-only
       PHP_BINARY: /usr/bin/php8.3
+      CWP_PHP_VERSION: '8.3'
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -160,6 +161,8 @@ jobs:
         env:
           CWP_TEST_HOSTING_RECOVERY_HTTP: "1"
         run: '"$PHP_BINARY" tests/hosting_catalog_native.php > qa/hosting-catalog-ui-native.log 2>&1'
+      - name: Seed actual isolated current-time checkout history
+        run: CWP_TEST_HOSTING_CHECKOUT=1 "$PHP_BINARY" tests/hosting_checkout_native.php > qa/hosting-checkout-ui-native.log 2>&1
       - name: Actual packaged owner client and agreement browser flow
         run: .ci-venv/bin/python -B tests/hosting_catalog_browser.py
       - name: Eventual joined purchase with isolated application time
@@ -170,6 +173,10 @@ jobs:
         run: |
           .ci-venv/bin/python -B tests/hosting_purchase_handoff_guards.py
           .ci-venv/bin/python -B tests/hosting_purchase_handoff_browser.py
+      - name: Packaged current-time hosting checkout and exact result links
+        run: |
+          .ci-venv/bin/python -B tests/hosting_checkout_http_guards.py > qa/hosting-checkout-http-guards.json
+          .ci-venv/bin/python -B tests/hosting_checkout_http_browser.py
       - name: Preserve unchanged source
         if: always()
         run: git diff --exit-code -- site foundation tools tests .github/workflows
@@ -181,6 +188,10 @@ jobs:
           path: |
             qa/hosting-catalog-ui-build.log
             qa/hosting-catalog-ui-native.log
+            qa/hosting-checkout-ui-native.log
+            qa/hosting-checkout-native-results.json
+            qa/hosting-checkout-http-guards.json
+            qa/hosting-checkout-http/
             qa/hosting-catalog-native-results.json
             qa/hosting-catalog-http/
             qa/hosting-catalog-recovery-http-results.json

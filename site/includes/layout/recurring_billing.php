@@ -63,7 +63,7 @@ function recurring_ui_command_seed(array $view,string $command):array {
 }
 function recurring_ui_command_label(string $command):string {
     return ['accept'=>'Accept these billing terms','decline'=>'Decline these billing terms','withdraw'=>'Withdraw this offer',
-        'activate'=>'Start billing','pause'=>'Pause billing','resume'=>'Resume billing','end'=>'End future billing','issue'=>'Issue this period invoice'][$command]??'Review retained action';
+        'activate'=>'Start billing','pause'=>'Pause billing','resume'=>'Resume billing','end'=>'End future billing','issue'=>'Issue this period invoice','checkout_accept'=>'Billing terms confirmed at checkout'][$command]??'Review retained action';
 }
 function recurring_ui_command_form(array $a,bool $retained=false):void {
     $command=$a['command'];$label=recurring_ui_command_label($command);
@@ -116,7 +116,9 @@ function recurring_ui_detail(array $v):void {
         if($commands)echo '<p>Next future billing boundary: <strong>'.esc($v['next_date']).'</strong> ('.esc($t['timezone']).'). Changes use the original calendar. Starting, pausing or resuming cannot move earlier than a previously scheduled change; ending future billing can override it.</p>';
         foreach($commands as $command){if(in_array($command,['accept','activate','resume'],true)&&(!$v['client']['active']||$v['source']['state']!=='active'))continue;recurring_ui_command_form(recurring_ui_command_seed($v,$command));}
     }
-    echo '<section class="workspace-card"><h2>Billing history</h2><p>Offered by Studio #'.(int)$data['created_by'].' on '.esc(gmdate('Y-m-d H:i:s',$data['created_at'])).' UTC.</p><ol>';
+    echo '<section class="workspace-card"><h2>Billing history</h2>';
+    if($data['format']===2)echo '<p>Confirmed by Client #'.(int)$data['created_by_client'].' on '.esc(gmdate('Y-m-d H:i:s',$data['created_at'])).' UTC.</p><ol>';
+    else echo '<p>Offered by Studio #'.(int)$data['created_by'].' on '.esc(gmdate('Y-m-d H:i:s',$data['created_at'])).' UTC.</p><ol>';
     foreach($v['history']['items'] as $event){echo '<li><strong>'.esc(recurring_ui_command_label($event['command'])).'</strong> · '.esc(str_replace(['staff:','client:'],['Studio #','Client #'],$event['actor'])).' · '.esc(gmdate('Y-m-d H:i:s',$event['at'])).' UTC';
         if(isset($event['arguments']['period_index']))echo '<p>Effective '.esc($terms->period($event['arguments']['period_index'])['start']).' ('.esc($t['timezone']).').</p>';
         if(isset($event['arguments']['reason']))echo '<p class="recurring-text">'.esc($event['arguments']['reason']).'</p>';echo '</li>';

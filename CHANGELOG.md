@@ -1,3 +1,9 @@
+## Development — checkout history and packaged acceptance, 2026-10-18
+
+- Show actual client confirmation and automatic agreement activation in checkout history; retain legacy staff attribution and remove the missing-creator warning.
+- Add packaged owner/client checkout, denied-access, retry and result-link tests with desktop/mobile captures.
+- Wire focused and full acceptance while preserving all preceding recipes and required reports. Runtime, visual and release acceptance are still pending.
+
 ## Development — owner-enabled hosting invoice checkout, 2026-10-18
 
 - Add owner opt-in and primary-client project selection, exact price/date review and first-invoice confirmation.

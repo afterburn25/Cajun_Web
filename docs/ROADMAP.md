@@ -1,3 +1,7 @@
+## 2026-10-18 — packaged checkout acceptance prepared
+
+Checkout implementation now has truthful linked agreement/billing histories and prepared packaged HTTP/Chromium acceptance, including existing/new projects, first unpaid invoice now, retries and denied authority. [Scope](TWENTYI_HOSTING_FIRST_INVOICE.md). Local 58-case renderer checks pass; the real Linux/browser, screenshot review, supported upgrade/recovery and release gates remain open. Full 20i, cloud catalog completeness and automatic provider images are not claimed complete.
+
 ## 2026-10-18 — checkout implementation joined for acceptance
 
 Owner opt-in, atomic first unpaid invoice, owned project choice, client review/result screens, exact replay and verified-payment/mapping policy are integrated on the development branch. [Current scope](TWENTYI_HOSTING_FIRST_INVOICE.md). Pure/model/render checks pass; first native Linux transaction acceptance, real packaged browser journey, full-suite integration, upgrades and release verification remain pending. No published version or live website changed.
