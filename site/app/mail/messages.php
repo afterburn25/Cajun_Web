@@ -3,7 +3,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 use CajunWebPro\Foundation\MailTransport\{EndpointPolicy,EndpointResolver,ProbeFailure};
-use CajunWebPro\Foundation\MailReceiving\{MessageReader,BodyDecoder,ReceivingFailure};
+use CajunWebPro\Foundation\MailReceiving\{MessageReader,BodyDecoder,AttachmentIndex,ReceivingFailure};
 require_once CWP_CODE_ROOT.'/app/mail/inbox.php';
 require_once CWP_CODE_ROOT.'/database/schema/mail_messages_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/mail_messages_migrate.php';
@@ -39,7 +39,8 @@ function mail_message_content(#[\SensitiveParameter] array $response,string $val
     if(strlen($response['raw'])>262144)throw new ReceivingFailure('limit');
     if((string)strlen($response['raw'])!==$response['bytes'])throw new ReceivingFailure('protocol');
     require_once CWP_CODE_ROOT.'/includes/foundation/mail-receiving/bootstrap.php';
-    return ['folder'=>'INBOX','uidvalidity'=>$validity,'uid'=>$uid,'seen'=>$response['seen'],'bytes'=>$response['bytes']]+BodyDecoder::decode($response['raw']);
+    require_once CWP_CODE_ROOT.'/includes/foundation/mail-receiving/AttachmentIndex.php';
+    return ['folder'=>'INBOX','uidvalidity'=>$validity,'uid'=>$uid,'seen'=>$response['seen'],'bytes'=>$response['bytes']]+BodyDecoder::decode($response['raw'])+['attachments'=>AttachmentIndex::list($response['raw'])];
 }
 function mail_message_record(array $started,string $code,int $elapsed,#[\SensitiveParameter] ?array $content=null): void {
     if(!array_key_exists($code,mail_message_outcomes())||($code==='ok')!==($content!==null))throw new LogicException('Invalid local message result.');
@@ -105,6 +106,17 @@ function mail_message_read(string $id,int $revision,string $validity,string $uid
         mail_message_record($started,$code,(int)((hrtime(true)-$begin)/1e6),$content);
         return ['code'=>$code,'request_id'=>$started['id'],'account_id'=>$started['account_id'],'account_revision'=>$started['account_revision'],'actor_id'=>$started['actor_id'],'uidvalidity'=>$started['uidvalidity'],'uid'=>$started['uid'],'notice_handle'=>$noticeHandle,'loaded_at'=>gmdate('Y-m-d H:i:s'),'content'=>$content];
     });
+}
+/** A protected attachment download is another recorded exact-message read. */
+function mail_message_attachment(string $id,int $revision,string $validity,string $uid,int $index,?callable $resolver=null,?callable $transport=null,?string $noticeHandle=null): array {
+    if($index<0||$index>31)throw new InvalidArgumentException('This attachment is unavailable.');
+    $read=mail_message_read($id,$revision,$validity,$uid,$resolver,$transport,$noticeHandle,true);
+    $attachment=null;
+    if($read['code']==='ok') {
+        try {$attachment=AttachmentIndex::extract($read['content']['source'],$index);}
+        finally {unset($read['content']);}
+    }
+    return $read+['attachment'=>$attachment];
 }
 function mail_message_history(string $id,int $page=1): array {
     [$actor]=mail_message_authority($id,null,false);if(!mail_messages_ready())return [];

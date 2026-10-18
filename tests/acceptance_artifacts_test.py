@@ -281,6 +281,16 @@ def run(tmp):
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
+    ext=contract.get('non20i_native_command_extension')
+    if ext:
+        ext_commands=ext['additions']
+        check('Non-20i additions retain the complete selected-runtime recipe',len(native_commands)==152+len(ext_commands) and native_commands==contract['native_commands'])
+        check('Each non-20i addition occurs once directly after its predecessor',all(native_commands.count(command)==1 and native_commands.index(ext['after'][command])+1==native_commands.index(command) for command in ext_commands))
+        native_commands=[command for command in native_commands if command not in ext_commands]
+        check('Non-20i additions preserve the exact152 predecessor commands',len(native_commands)==ext['predecessor_native_count']==152 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==ext['predecessor_native_sha256'])
+        for path,expected_hash in ext.get('source_sha256',{}).items():
+            check('Non-20i fixture source retained '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+        contract['native_commands']=[command for command in contract['native_commands'] if command not in ext_commands]
     import_contract=contract['provider_catalog_import'];import_commands=import_contract['additions']
     check('Import additions retain the complete selected-runtime recipe',len(native_commands)==152 and native_commands==contract['native_commands'])
     import_position=native_commands.index(import_contract['additions_after'])+1

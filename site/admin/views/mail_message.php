@@ -6,7 +6,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <a href="<?=esc(admin_url('mail-inbox',['account_id'=>$accountId]))?>">← Recent inbox headers</a>
 <p><a href="<?=esc(admin_url('mail-notices'))?>">Recent email notices</a></p>
 <h2><?=esc($record['label'])?></h2><p><?=esc($record['address'])?> · INBOX · Saved version <?=(int)$record['revision']?></p>
-<p>Read this message without changing its server read flag. Remote images, attachments and sending are unavailable in this view. Messages over 256 KiB, including any attachments, must be opened in your regular email app.</p>
+<p>Read this message without changing its server read flag. Remote images and sending are unavailable in this view. Messages over 256 KiB, including any attachments, must be opened in your regular email app.</p>
 <?php if(!mail_messages_ready()): ?><p class="notice">An owner must prepare message reading in Email accounts first.</p>
 <?php else: ?>
 <form method="post" data-message-read><?php admin_action('mail_message_read'); ?>
@@ -28,6 +28,10 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <?php elseif($content['has_html']&&!$content['format_available']): ?><p class="notice" data-message-format-unavailable>Formatted content is unavailable on this host. Use the plain text above, when provided, or open the message in your regular email app.</p><?php endif; ?>
 <?php if($content['text']===null&&$content['html']===null&&!$content['has_html']): ?><p data-message-no-body>No supported inline text was provided. Attachment contents are not displayed.</p><?php endif; ?>
 <?php if($content['additional_inline_parts']>0): ?><p class="hint"><?=(int)$content['additional_inline_parts']?> additional inline parts are not displayed.</p><?php endif; ?>
+<?php if($content['attachments']): ?><h4>Attachments</h4><p class="hint">Each download is another recorded message read and still leaves the server read flag unchanged. Files download instead of opening in the browser.</p>
+<ul data-message-attachments><?php foreach($content['attachments'] as $i=>$attachment): ?>
+<li><form method="post" action="<?=esc(admin_url('mail-message',$route))?>" data-mail-attachment><?=csrf_field()?><?php foreach($route as $key=>$value): ?><input type="hidden" name="<?=esc($key)?>" value="<?=esc($value)?>"><?php endforeach; ?><input type="hidden" name="attachment" value="<?=(int)$i?>"><button class="btn outline" name="action" value="mail_message_attachment"><?=esc($attachment['name'])?> (<?=(int)$attachment['size']?> bytes)</button></form></li>
+<?php endforeach; ?></ul><?php endif; ?>
 </article>
 <?php if(mail_replies_ready()&&mail_drafts_ready()): ?>
 <section class="workspace-card" data-mail-reply><h3>Reply or forward this message</h3>

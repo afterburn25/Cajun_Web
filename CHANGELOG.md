@@ -1,4 +1,7 @@
 ## Unreleased — record observed cloud null response
+## Receive-side mail attachments with authorized downloads — 2026-10-16
+
+On `devin/non20i-mail-attachments` (stacked on `devin/non20i-mail-replies`), staff can now list and download message attachments from the exact-message page. A new bounded `AttachmentIndex` in the canonical mail-receiving foundation parses the already-fetched raw message (256 KiB bound), lists attachment-disposition or named parts with sanitized filenames, declared-type metadata and decoded byte sizes, and never treats attached text as the message body. Successful reads carry attachment metadata in the content result; raw source stays transient and unpersisted. A `mail_message_attachment` POST revalidates the exact account/revision/folder/UIDVALIDITY/UID authority as a second recorded read, extracts the bounded part, and streams it as forced `application/octet-stream` with `X-Content-Type-Options: nosniff`; malformed or out-of-range indexes refuse without bytes. Coverage: new pure attachment suite, native authorization/download assertions, HTTP byte-exact/identity/grant checks, and Apache direct-access denial.
 
 ## Repair copied-submission authorization and draft pagination — 2026-10-16
 
