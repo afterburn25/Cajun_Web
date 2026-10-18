@@ -1,3 +1,9 @@
+## 2026-10-18 — retained diagnostic source packaging correction
+
+The exact local build of `d345eb5a29cc490341fb0c659d721b3d8369cbda` reached shipping syntax checks, then refused the existing tracked `ops/twentyi-catalog-schema/diagnostic.py` because FULL-PROJECT did not admit the ops directory. Its original failed build/logs are retained under `work/document-root-controls-upgrade-validation/`. Parent `d345eb5a29cc490341fb0c659d721b3d8369cbda`; enclosing correction **Reuse source-package correction for retained diagnostics** reuses only the one-line `tools/build.py` change from reviewed catalog commit `9f0b83fd1f18b9075f7d141f9a1d00b2646f4ebe`. It adds ops to FULL-PROJECT's source-area list; existing sensitive-file/symlink exclusions and COMPLETE/UPDATE payload selection remain unchanged. The four tracked ops files are diagnostic/test source, not credentials or generated results. No diagnostic is executed by packaging.
+
+Next repeat the exact-commit package check and run the new producer's actual archive-input validators, then publish this source correction with the installed-acceptance increment. The first failed build remains a failure; Linux installed/native/browser and release acceptance remain pending. Application/version/published1.25/production are unchanged.
+
 ## 2026-10-18 — installed folder-history producer ready for execution
 
 Parent `8558119bcea66722af4180d6e3db3d1bd923adf2`, branch `codex/twentyi-document-root-controls`, [PR225](https://github.com/afterburn25/Cajun_Web/pull/225); enclosing commit **Add installed upgrade preservation checks for website folder history**. Root owns Python producer, portable guards and shared wiring; VPS supplied only the new PHP companion, Domains reviews producer/companion, and Catalog supplied the exact reused published1.25 inputs and reviews shared wiring. No sibling feature implementation is imported.

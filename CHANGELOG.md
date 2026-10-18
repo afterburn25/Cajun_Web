@@ -1,3 +1,7 @@
+## Unreleased — include retained diagnostic sources in FULL-PROJECT
+
+Reuse the existing reviewed ops source-area correction after the exact package build refused already-tracked diagnostic scripts. Sensitive-file checks and deployment package contents remain unchanged. The original failed build is retained; corrected packaging and installed runtime checks remain required.
+
 ## Unreleased — installed upgrade coverage for website folder history
 
 Add an actual published1.25-to-current installed upgrade scenario covering retained folder requests, exact update retry, complete-journal rollback/reapply, local terminal recovery and refusal to reconstruct lost database evidence. Add the immutable1.25 archive to existing sealed test inputs while retaining the1.24 baseline and all earlier acceptance. Local comparison/input checks pass; installed execution and release remain pending. Application behavior and version are unchanged. [Details](docs/TWENTYI_DOCUMENT_ROOT_CONTROLS.md).
