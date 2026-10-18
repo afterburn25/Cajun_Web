@@ -1,5 +1,7 @@
 ## Unreleased — direct 20i hosting catalog drafts
 
+The first CI follow-up corrects one synthetic inventory name list and includes the retained public diagnostic scripts in the sanitized FULL-PROJECT source archive. Deployment payloads are unchanged by these corrections. The original failed native/build runs remain documented.
+
 Add explicit owner refresh of the documented hosting type catalog, including types without installed accounts, and source-aware local draft imports. Preserve existing inventory imports and their prices, wording, images and provenance. Add bounded typed projection and durable current-context observations; retain failed/unfinished attempts instead of falling back. Provider prices/images, cloud products and hosting publication remain unfinished. Combined native/browser acceptance is pending; released1.25.0 is unchanged.
 
 ## Unreleased — record observed cloud null response

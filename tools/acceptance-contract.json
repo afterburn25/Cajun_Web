@@ -581,7 +581,7 @@
     "browser_addition": "        from provider_package_types_cases import run_browser as package_types_browser\n        package_types_browser(globals(),browser)\n",
     "source_sha256": {
       "tests/provider_package_types.php": "e5812a35e8e034c3a54c8f90b4011e10dd08eadbe759a6204899cdd224636533",
-      "tests/provider_package_types_native.php": "96418ff371ce9c8d4d2e1bd3dcf7e60edfed790a25097038df285cffc5fd9d9d",
+      "tests/provider_package_types_native.php": "ef3876b71ad15736271d9f9de17b8278a953035a722c81e766d7bf73ed2d2b8d",
       "tests/provider_package_types_cases.py": "6ec03bc6c389e3ee618499ba691cb3594c4d0ac011bfff5efb47de47c60415ba"
     },
     "scope": "Direct hosting catalog typed read, durable observations, current-owner refresh and source-aware draft import with synthetic transport; no live provider writes or images."
