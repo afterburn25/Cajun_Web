@@ -569,6 +569,10 @@ Parent `e37517fa` merges tested hosting confirmation with newer main. Four nativ
 
 # Changelog
 
+## Unreleased — per-contact workspace activity routing (devin/non20i-contact-activity)
+
+Company contacts now get their own workspace activity feed filtered to assigned permissions: project events (messages, files, published reviews) require projects, invoice/payment events require billing, and website release events require downloads. Read state is recorded per contact identity (actor_type=contact) rather than shared with the client account, contact-authored events never notify contacts, and the ?activity=1 route plus mark-read action accept any routed permission. Primary client feeds remain company-wide and the primary account is unchanged when contacts are unused. No email, provider call, schema change or new notification channel is added.
+
 ## Unreleased — contact-attributed version decisions (devin/non20i-contact-decisions)
 
 When an additional company contact records a version decision, the decision message in the project conversation is attributed to that contact (author_type=contact) while studio_versions.decided_by stays the client account as the company-level artifact. The same contact permission gate (projects) protects the decision action against forged POSTs; no schema change is required because attribution rides the existing contact-authored message model.

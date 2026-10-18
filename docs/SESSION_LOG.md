@@ -2195,6 +2195,18 @@ Tests so far: php -l reviews.php clean; contacts_cases.py compiles; no shipping-
 Known limits: decided_by remains client-level by design; per-contact notification routing still pending.
 
 Next: commit, refresh inventory if needed, open stacked PR, monitor CI.
+
+## 2026-10-17 — P-05 contact notification routing (stacked)
+
+Request: continue non-20i roadmap; close the remaining named P-05 gap "notification routing" for company contacts. Starting commit c70dc0e0 on devin/non20i-contact-activity, stacked on devin/non20i-contact-decisions.
+
+Changed: activity_actor now resolves a signed-in company contact (studio_contact revalidation) and returns a contact actor carrying the owning client id plus the contact's current permissions. activity_projection scopes the contact feed by permission — messages/files/reviews only with projects, invoices/payments only with billing, releases only with downloads — and contact events exclude contact authors entirely (no self-notification or cross-contact noise). activity_reads keeps per-contact read state via actor_type='contact' with no schema change (VARCHAR(10)). The ?activity=1 portal route, activity_mark action and workspace activity link now accept any routed permission instead of requiring projects. Empty-permission projections return an inert empty result instead of malformed SQL. tests/contacts_cases.py gains: project contact sees message/review events but not the seeded invoice, contact-authored messages are absent, marking read writes actor_type='contact' without touching the client account's read state, billing-only contact sees only the invoice event and cannot mark an out-of-scope event, and the primary client feed remains company-wide.
+
+Tests so far: php -l on the four touched PHP files; contacts_cases.py compiles. Packaged acceptance pending on the stacked PR. No email, provider call, payment, deployment or SSH.
+
+Known limits: stage history remains a separate P-05/P-07 increment; contact feeds exclude other contacts' authored events by design.
+
+Next: commit, refresh installer inventory, open stacked PR, monitor CI.
 ## 2026-10-15 — Preserve current main and repair replacement rollback during20i integration
 
 Continued complete20i objective fromf86c745c/PR139. Normal merge preserves main16f07e49 including licensing/domain controls. Both session histories retained; incoming handoff archived. Source inspection and actual temporary-table MariaDB reproduction showed invalid replacement/database failure disabled the original licensed domain. Added a transaction with original-row lock and rollback, plus caller-transaction refusal. Local4 corrected cases and35 named merged native licensing checks pass (isolated fixture prefix/config only; actual app functions). Added persistent CI native report; no Website_Core execution. All merged/changed PHP/Python syntax and installer refresh pass. Current combined Linux/browser/recovery/review acceptance remains pending.
