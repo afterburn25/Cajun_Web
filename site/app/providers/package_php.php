@@ -132,6 +132,7 @@ function provider_php_share(string $linkId,string $expectedId,string $eventId,bo
 /** Internal saved projection. Caller owns client/owner authority, lock and transaction. */
 function provider_php_project(string $linkId,bool $clientVisible):array {
     provider_php_guard();if(!provider_php_ready())return ['status'=>'not_ready','rows'=>[],'permission'=>null];$permission=provider_php_permission($linkId);
+    require_once CWP_CODE_ROOT.'/app/providers/php_controls_projection.php';
     if($clientVisible&&(!$permission||!$permission['document']['enabled']))return ['status'=>'not_shared','rows'=>[],'permission'=>null];
     if($clientVisible&&!provider_php_assignment_matches($permission['binding']))return ['status'=>'assignment_changed','rows'=>[],'permission'=>null];
     $latest=provider_php_latest($linkId);$saved=provider_php_latest($linkId,true);$observation=$saved?provider_php_observation($saved):null;$status='not_observed';$rows=[];
@@ -139,7 +140,7 @@ function provider_php_project(string $linkId,bool $clientVisible):array {
     if($observation){
         if(!provider_php_assignment_matches($observation['binding']))return ['status'=>'assignment_changed','rows'=>[],'permission'=>$clientVisible?null:$permission];
         if(!$clientVisible||($observation['seq']>=$permission['anchor']['seq']&&$observation['binding']->data['link_sha256']===$permission['binding']->data['link_sha256']&&$observation['binding']->data['event_id']===$permission['binding']->data['event_id'])){
-            $current=$latest['id']===$saved['id']&&service_observations_fresh($saved)&&$observation['observed_epoch']<=time()+30;
+            $current=provider_php_controls_observation_current($linkId,(int)$saved['started_epoch'])&&$latest['id']===$saved['id']&&service_observations_fresh($saved)&&$observation['observed_epoch']<=time()+30;
             if($current){try{$now=provider_php_binding($linkId);$current=$now->data['link_sha256']===$observation['binding']->data['link_sha256']&&$now->data['event_id']===$observation['binding']->data['event_id'];}catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;$current=false;}}
             if($latest['id']===$saved['id'])$status=$current?'observed':'stale';$rows[]=['value'=>$observation['value'],'observed_epoch'=>$observation['observed_epoch'],'current'=>$current];
         }

@@ -2,9 +2,9 @@ name: Native assigned-package PHP version checks
 on:
   push:
     branches: [main, codex/twentyi-package-php-version, codex/twentyi-php-version-controls]
-    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', '.github/workflows/provider-package-php.yml']
+    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', 'tests/provider_php_controls_*.php', '.github/workflows/provider-package-php.yml']
   pull_request:
-    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', '.github/workflows/provider-package-php.yml']
+    paths: ['site/app/providers/**', 'site/admin/**', 'foundation/twentyi-inventory/**', 'foundation/twentyi-inventory-reader/**', 'tests/twentyi-inventory-reader/**', 'foundation/twentyi/**', 'site/database/**', 'site/includes/layout/provider_services.php', 'site/app/staff/**', 'site/includes/auth/**', 'site/portal/**', 'foundation/twentyi-package-php/**', 'site/includes/foundation/twentyi-package-php/**', 'tests/twentyi-package-php/**', 'tests/provider_package_php_native.php', 'tests/provider_package_php_cases.py', 'tests/provider_php_controls_delegation*.php', 'tests/provider_php_controls_*.php', '.github/workflows/provider-package-php.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,7 +15,7 @@ jobs:
   native-history:
     name: Assigned package PHP version ${{ matrix.php }} and ${{ matrix.database.label }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -74,6 +74,16 @@ jobs:
               php tests/provider_php_controls_delegation_native.php
               php tests/twentyi-package-php/options.php > qa/php-options-document-results.json
               php -n tests/twentyi-package-php/options.php > qa/php-options-document-no-ini-results.json
+              for source in site/database/schema/provider_php_control_lifecycle_schema.php tests/provider_php_controls_lifecycle.php tests/provider_php_controls_lifecycle_storage.php tests/provider_php_controls_reads.php tests/provider_php_controls_changes.php tests/provider_php_controls_lifecycle_native.php; do php -l "$source"; done
+              php tests/provider_php_controls_lifecycle.php > qa/php-controls-lifecycle-document-results.json
+              php -n tests/provider_php_controls_lifecycle.php > qa/php-controls-lifecycle-document-no-ini-results.json
+              php tests/provider_php_controls_lifecycle_storage.php > qa/php-controls-lifecycle-storage-results.json
+              php -n tests/provider_php_controls_lifecycle_storage.php > qa/php-controls-lifecycle-storage-no-ini-results.json
+              php tests/provider_php_controls_reads.php > qa/php-controls-reads-results.json
+              php -n tests/provider_php_controls_reads.php > qa/php-controls-reads-no-ini-results.json
+              php tests/provider_php_controls_changes.php > qa/php-controls-changes-results.json
+              php -n tests/provider_php_controls_changes.php > qa/php-controls-changes-no-ini-results.json
+              php tests/provider_php_controls_lifecycle_native.php
             '
       - name: Preserve named storage evidence
         if: always()
@@ -89,9 +99,18 @@ jobs:
             qa/provider-php-controls-delegation-native-results.json
             qa/php-options-document-results.json
             qa/php-options-document-no-ini-results.json
+            qa/php-controls-lifecycle-document-results.json
+            qa/php-controls-lifecycle-document-no-ini-results.json
+            qa/php-controls-lifecycle-storage-results.json
+            qa/php-controls-lifecycle-storage-no-ini-results.json
+            qa/php-controls-reads-results.json
+            qa/php-controls-reads-no-ini-results.json
+            qa/php-controls-changes-results.json
+            qa/php-controls-changes-no-ini-results.json
+            qa/provider-php-controls-lifecycle-native-results.json
           if-no-files-found: warn
           retention-days: 14
       - name: Record verification scope
         if: always()
         run: |
-          echo 'Exact assigned-package PHP-version scalar read, current explicit package assignment, credential-bound observation, owner-approved sharing, revocation, retained-history recovery and actual PHP forms. Additional explicit PHP change delegation, current owner/primary-client authority, audit rollback and mutex/replay checks. Disposable MariaDB/MySQL and synthetic provider only; no real API, PHP change send, browser or deployment.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Exact assigned-package PHP-version scalar read, current explicit package assignment, credential-bound observation, owner-approved sharing, revocation, retained-history recovery and actual PHP forms. Additional PHP change delegation, owner/primary-client authority, durable reads, single-send gateway, separate readback, recovery, audit rollback and mutex/replay checks. Disposable MariaDB/MySQL and synthetic provider only; no real API, available-options wire-schema acceptance, browser or deployment. Native lifecycle tests retain real 30-second read cooldowns.' >> "$GITHUB_STEP_SUMMARY"
