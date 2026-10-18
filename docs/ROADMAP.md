@@ -1,3 +1,7 @@
+## 2026-10-18 — PHP version change request boundary
+
+Started from main `e397d9a6e293850e8dff61a593e3ba39ee178400` on `codex/twentyi-php-version-controls`. Added the exact documented PHP setter to the canonical operation builder and fixed transport, with generic approval still denied and uncertain responses retained for separate readback. [Implementation and remaining work](TWENTYI_PHP_VERSION_CONTROLS.md). No client/owner change form or live mutation is enabled by this increment. Operation checks pass 360 named cases in each local PHP 8.4 configuration; existing scalar-reader and adjacent control regressions pass after the documented standalone-wire correction. Available options mapping, client delegation, native workflow, supported-runtime/browser/upgrade acceptance and release verification remain pending. Catalog/checkout candidates and published 1.25.0 remain unchanged.
+
 ## Verified increment and remaining work — 2026-10-18
 
 The bounded 1.25.0 increment, including the owner installer/navigation/hosting-draft and local-image additions, is [published and freshly download-verified](RELEASE_1.25.0_PUBLICATION.md) from `b79c67110829126916e3a65e616191542448bccc`. Its candidate/main acceptance and release-delivery gates are complete. Full 20i remains unfinished; every HOLD row and operation-specific authority limit remains.

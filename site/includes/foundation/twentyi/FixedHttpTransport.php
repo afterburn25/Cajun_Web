@@ -53,10 +53,11 @@ final class FixedHttpTransport implements HttpTransport
             $path = str_starts_with($request->url, self::URL_BASE) ? substr($request->url, strlen(self::URL_BASE)) : '';
             $domainRenewal = $path === 'reseller/*/renewDomain';
             $forceSsl = preg_match('~\Apackage/[1-9][0-9]{0,17}/web/forceSSL\z~', $path) === 1;
+            $phpVersion = $this->isPackagePhpVersion($request->url);
             $directoryIndexing = preg_match('~\Apackage/[1-9][0-9]{0,17}/web/directoryIndexing\z~', $path) === 1;
-            $mailbox = str_starts_with($path, 'package/') && !$forceSsl && !$directoryIndexing;
+            $mailbox = str_starts_with($path, 'package/') && !$forceSsl && !$directoryIndexing && !$phpVersion;
             $cloudWebsite = str_starts_with($path, 'cloud_server/');
-            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb)$/D', $path) && !$mailbox && !$cloudWebsite && !$forceSsl && !$domainRenewal && !$directoryIndexing)
+            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb)$/D', $path) && !$mailbox && !$cloudWebsite && !$forceSsl && !$domainRenewal && !$directoryIndexing && !$phpVersion)
                 || !is_string($request->body) || $request->body === ''
                 || strlen($request->body) > self::REQUEST_BODY_LIMIT
                 || array_keys($request->headers) !== ['Authorization','Accept','Content-Type']
@@ -76,6 +77,10 @@ final class FixedHttpTransport implements HttpTransport
             if ($forceSsl) {
                 require_once __DIR__.'/../twentyi-operations/ForceSslChange.php';
                 \CajunWebPro\Foundation\TwentyI\Operations\ForceSslChange::wire($request);
+            }
+            if ($phpVersion) {
+                require_once __DIR__.'/../twentyi-operations/PhpVersionChange.php';
+                \CajunWebPro\Foundation\TwentyI\Operations\PhpVersionChange::wire($request);
             }
             if ($cloudWebsite) {
                 require_once __DIR__.'/../twentyi-operations/CloudWebsiteCreate.php';

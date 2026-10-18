@@ -4,7 +4,7 @@ on:
   pull_request:
     paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
   push:
-    branches: [main, devin/twentyi-operations, devin/twentyi-execution, devin/twentyi-reconcile, codex/twentyi-nameserver-controls, codex/twentyi-mailbox-controls, codex/twentyi-vps-controls]
+    branches: [main, devin/twentyi-operations, devin/twentyi-execution, devin/twentyi-reconcile, codex/twentyi-nameserver-controls, codex/twentyi-mailbox-controls, codex/twentyi-vps-controls, codex/twentyi-php-version-controls]
     paths: ['foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'tests/twentyi-operations/**', '.github/workflows/twentyi-operations.yml']
   workflow_dispatch:
 
@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: twentyi-operations-${{ github.ref }}-${{ github.sha }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   operations:

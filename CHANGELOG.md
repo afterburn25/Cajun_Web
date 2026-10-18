@@ -1,3 +1,7 @@
+## 2026-10-18 — PHP version change request boundary
+
+Started from main `e397d9a6e293850e8dff61a593e3ba39ee178400` on `codex/twentyi-php-version-controls`. Added the exact documented PHP setter to the canonical operation builder and fixed transport, with generic approval still denied and uncertain responses retained for separate readback. [Implementation and remaining work](docs/TWENTYI_PHP_VERSION_CONTROLS.md). No client/owner change form or live mutation is enabled by this increment. Operation checks pass 360 named cases in each local PHP 8.4 configuration; existing scalar-reader and adjacent control regressions pass after the documented standalone-wire correction. Available options mapping, client delegation, native workflow, supported-runtime/browser/upgrade acceptance and release verification remain pending. Catalog/checkout candidates and published 1.25.0 remain unchanged.
+
 ## Unreleased — reduce unrelated pull-request test runs
 
 Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.

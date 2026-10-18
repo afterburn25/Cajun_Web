@@ -1,3 +1,7 @@
+## 2026-10-18 — PHP version change request boundary
+
+Started from main `e397d9a6e293850e8dff61a593e3ba39ee178400` on `codex/twentyi-php-version-controls`. Added the exact documented PHP setter to the canonical operation builder and fixed transport, with generic approval still denied and uncertain responses retained for separate readback. [Implementation and remaining work](docs/TWENTYI_PHP_VERSION_CONTROLS.md). No client/owner change form or live mutation is enabled by this increment. Operation checks pass 360 named cases in each local PHP 8.4 configuration; existing scalar-reader and adjacent control regressions pass after the documented standalone-wire correction. Available options mapping, client delegation, native workflow, supported-runtime/browser/upgrade acceptance and release verification remain pending. Catalog/checkout candidates and published 1.25.0 remain unchanged.
+
 ## 2026-10-18 — reduce unrelated CI work
 
 Branch `codex/ci-pr-path-filters`, from main `6caf654c99cb5befb610f405e40df69b0c174cb6`, adds dependency-aware pull-request path filters to ten workflows that already filter pushes. Every test job, matrix, artifact, timeout and complete application/release check is unchanged. At 06:18 UTC GitHub reported 1,032 queued workflows and three active workflows; this is a queue observation, not a diagnosis of account limits. The change reduces future unrelated runs and does not clear the existing queue. [Trigger scope and validation](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).
