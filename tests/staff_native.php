@@ -11,6 +11,8 @@ function deny_staff(string $name,callable $f): void {try{$f();}catch(InvalidArgu
 function staff_test_session(int $id): void {$u=one('SELECT * FROM '.table('users').' WHERE id=?',[$id]);$_SESSION['uid']=$id;$_SESSION['auth_version']=$u['auth_version'];$_SESSION['last_activity']=$_SESSION['login_at']=time();}
 function setup_code(string $url): string {parse_str((string)parse_url($url,PHP_URL_FRAGMENT),$parts);return $parts['token'];}
 try{
+    require __DIR__.'/admin_password.php';
+    foreach(admin_password_checks() as $boundary)check_staff($boundary['name'],$boundary['passed']);
     foreach(schema_statements('staffci_') as $name=>$sql)if(!str_starts_with($name,'staff_'))db()->exec($sql);
     foreach(default_settings() as $key=>$value)save_setting($key,$value);
     query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',['Original owner','owner-staff@example.invalid',password_hash($password,PASSWORD_DEFAULT),str_repeat('d',32),gmdate('Y-m-d H:i:s')]);
@@ -36,11 +38,13 @@ try{
     deny_staff('Replaced invitation is rejected',fn()=>staff_activate($first,$password));
     query('UPDATE '.table('staff_invitations').' SET expires_at=? WHERE subject_id=?',[time()-1,(string)$id]);
     deny_staff('Expired application invitation is rejected',fn()=>staff_activate($second,$password));
-    $active=setup_code(staff_invite($id,$password));staff_activate($active,$password);
-    check_staff('Activation sets strong password and consumes invitation',password_verify($password,one('SELECT password_hash FROM '.table('users').' WHERE id=?',[$id])['password_hash'])&&one('SELECT consumed_at FROM '.table('staff_invitations').' WHERE subject_id=?',[(string)$id])['consumed_at']!==null);
+    $active=setup_code(staff_invite($id,$password));
+    deny_staff('Staff activation rejects eleven-character password',fn()=>staff_activate($active,'AdminPass11'));
+    staff_activate($active,'AdminPass12!');
+    check_staff('Activation sets strong password and consumes invitation',password_verify('AdminPass12!',one('SELECT password_hash FROM '.table('users').' WHERE id=?',[$id])['password_hash'])&&one('SELECT consumed_at FROM '.table('staff_invitations').' WHERE subject_id=?',[(string)$id])['consumed_at']!==null);
     deny_staff('Application setup link is single use',fn()=>staff_activate($active,$password));
     staff_test_session($id);check_staff('Assigned website access is allowed',staff_can('website.manage'));check_staff('Unassigned client access is denied',!staff_can('clients.manage'));check_staff('Administrator has no implicit account or mailbox permission',!staff_can('staff.manage')&&!staff_can('mail.accounts.manage'));
-    deny_staff('Administrator cannot elevate another account',fn()=>staff_save($id,'Website administrator','web-staff@example.invalid','owner',true,[],$password));
+    deny_staff('Administrator cannot elevate another account',fn()=>staff_save($id,'Website administrator','web-staff@example.invalid','owner',true,[],'AdminPass12!'));
     $session=$_SESSION;staff_test_session(1);$pending=setup_code(staff_invite($id,$password));query('INSERT INTO '.table('resets').' (token_hash,user_id,expires) VALUES (?,?,?)',[str_repeat('a',64),$id,time()+300]);
     staff_save($id,'Website administrator','web-staff@example.invalid','administrator',false,['website.manage'],$password);
     check_staff('Deactivation atomically revokes reset and invitation records',!one('SELECT subject_id FROM '.table('staff_invitations').' WHERE subject_id=?',[(string)$id])&&!one('SELECT user_id FROM '.table('resets').' WHERE user_id=?',[$id]));
@@ -49,9 +53,12 @@ try{
     staff_test_session(1);staff_save($id,'Website administrator','web-staff@example.invalid','administrator',true,['website.manage'],$password);
     $pending=setup_code(staff_invite($id,$password));staff_activate($pending,$password);staff_test_session($id);
     $reset=staff_reset_token('web-staff@example.invalid');check_staff('Enabled staff can request a reset token',$reset!==null);
-    $oldVersion=$_SESSION['auth_version'];staff_reset($reset['token'],'Synthetic changed staff passphrase');check_staff('Reset rotates current session version',admin_user()===null&&one('SELECT auth_version FROM '.table('users').' WHERE id=?',[$id])['auth_version']!==$oldVersion);
+    deny_staff('Staff reset rejects eleven-character password',fn()=>staff_reset($reset['token'],'AdminPass11'));
+    $oldVersion=$_SESSION['auth_version'];staff_reset($reset['token'],'AdminPass12!');check_staff('Reset rotates current session version',admin_user()===null&&one('SELECT auth_version FROM '.table('users').' WHERE id=?',[$id])['auth_version']!==$oldVersion);
+    check_staff('Staff reset stores twelve-character password',password_verify('AdminPass12!',one('SELECT password_hash FROM '.table('users').' WHERE id=?',[$id])['password_hash']));
     deny_staff('Password reset is single use',fn()=>staff_reset($reset['token'],$password));
-    staff_test_session($id);$newVersion=staff_account_save($id,'Updated administrator','updated-staff@example.invalid','Synthetic changed staff passphrase',$password);check_staff('Self-account edit revokes prior session',admin_user()===null);$_SESSION['auth_version']=$newVersion;staff_test_session($id);
+    staff_test_session($id);deny_staff('Staff account rejects eleven-character password',fn()=>staff_account_save($id,'Updated administrator','updated-staff@example.invalid','AdminPass12!','AdminPass11'));
+    $newVersion=staff_account_save($id,'Updated administrator','updated-staff@example.invalid','AdminPass12!','AdminPass12!');check_staff('Self-account edit revokes prior session',admin_user()===null);$_SESSION['auth_version']=$newVersion;staff_test_session($id);
     check_staff('Account name and email saved without changing grants',admin_user()['name']==='Updated administrator'&&staff_can('website.manage')&&!staff_can('clients.manage'));
     staff_test_session(1);$secondOwner=staff_save(0,'Second owner','second-owner@example.invalid','owner',true,[],$password);
     deny_staff('Pending owner cannot replace last activated owner',fn()=>staff_save(1,'Owner','owner-staff@example.invalid','administrator',true,[],$password));
