@@ -41,7 +41,7 @@ final class FixedHttpTransport implements HttpTransport
             throw new \InvalidArgumentException('Unsupported provider request.');
         }
         if ($request->method === 'GET') {
-            if ((!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server', 'https://api.20i.com/domain', 'https://api.20i.com/domain-period', 'https://api.20i.com/reseller/*/cloudProviders'], true) && !$this->isDomainSearch($request->url) && !$this->isDomainContract($request->url) && !$this->isPackagePhpVersion($request->url) && !$this->isDomainExpiry($request->url) && !$this->isDocumentRoots($request->url) && !$this->isPackageForceSsl($request->url) && !$this->isDirectoryIndexing($request->url) && !$this->isWordpressInstalled($request->url) && !$this->isStackCpAccess($request->url)) || $request->body !== null
+            if ((!in_array($request->url, [TwentyIAdapter::URL, 'https://api.20i.com/cloud_server', 'https://api.20i.com/domain', 'https://api.20i.com/domain-period', 'https://api.20i.com/reseller/*/cloudProviders'], true) && !$this->isDomainSearch($request->url) && !$this->isDomainContract($request->url) && !$this->isRegistrarNameservers($request->url) && !$this->isPackagePhpVersion($request->url) && !$this->isDomainExpiry($request->url) && !$this->isDocumentRoots($request->url) && !$this->isPackageForceSsl($request->url) && !$this->isDirectoryIndexing($request->url) && !$this->isWordpressInstalled($request->url) && !$this->isStackCpAccess($request->url)) || $request->body !== null
                 || array_keys($request->headers) !== ['Authorization','Accept']
                 || $request->headers['Accept'] !== 'application/json') {
                 throw new \InvalidArgumentException('Unsupported provider probe request.');
@@ -52,17 +52,22 @@ final class FixedHttpTransport implements HttpTransport
             // bounded JSON body and three fixed headers.
             $path = str_starts_with($request->url, self::URL_BASE) ? substr($request->url, strlen(self::URL_BASE)) : '';
             $domainRenewal = $path === 'reseller/*/renewDomain';
+            $registrarNameservers = $this->isRegistrarNameservers($request->url);
             $forceSsl = preg_match('~\Apackage/[1-9][0-9]{0,17}/web/forceSSL\z~', $path) === 1;
             $directoryIndexing = preg_match('~\Apackage/[1-9][0-9]{0,17}/web/directoryIndexing\z~', $path) === 1;
             $mailbox = str_starts_with($path, 'package/') && !$forceSsl && !$directoryIndexing;
             $cloudWebsite = str_starts_with($path, 'cloud_server/');
-            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb)$/D', $path) && !$mailbox && !$cloudWebsite && !$forceSsl && !$domainRenewal && !$directoryIndexing)
+            if ((!preg_match('/^reseller\/(?:\*|[1-9][0-9]{0,17})\/(addWeb|updatePackage|deleteWeb)$/D', $path) && !$mailbox && !$cloudWebsite && !$forceSsl && !$domainRenewal && !$directoryIndexing && !$registrarNameservers)
                 || !is_string($request->body) || $request->body === ''
                 || strlen($request->body) > self::REQUEST_BODY_LIMIT
                 || array_keys($request->headers) !== ['Authorization','Accept','Content-Type']
                 || $request->headers['Accept'] !== 'application/json'
                 || $request->headers['Content-Type'] !== 'application/json') {
                 throw new \InvalidArgumentException('Unsupported provider write request.');
+            }
+            if ($registrarNameservers) {
+                require_once __DIR__.'/../twentyi-operations/RegistrarNameserverChange.php';
+                \CajunWebPro\Foundation\TwentyI\Operations\RegistrarNameserverChange::wire($request);
             }
             if ($domainRenewal) {
                 require_once __DIR__.'/../twentyi-inventory/InventoryDomain.php';
@@ -107,6 +112,12 @@ final class FixedHttpTransport implements HttpTransport
         require_once __DIR__.'/../twentyi-domain-expiry/DomainExpiry.php';
         require_once __DIR__.'/../twentyi-domain-expiry/DomainExpiryReader.php';
         return \CajunWebPro\Foundation\TwentyIDomainExpiry\DomainExpiryReader::acceptsUrl($url);
+    }
+
+    /** Exact allocated registrar ID; never a package-domain or arbitrary domain path. */
+    private function isRegistrarNameservers(string $url): bool
+    {
+        return preg_match('~\Ahttps://api\.20i\.com/domain/[1-9][0-9]{0,17}/nameservers\z~',$url)===1;
     }
 
     private function isDomainContract(string $url): bool

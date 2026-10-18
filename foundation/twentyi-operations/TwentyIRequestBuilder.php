@@ -10,6 +10,7 @@ use CajunWebPro\Foundation\Provider\TransportRequest;
 use InvalidArgumentException;
 
 require_once __DIR__.'/NameserverChange.php';
+require_once __DIR__.'/RegistrarNameserverChange.php';
 require_once __DIR__.'/MailboxCreate.php';
 require_once __DIR__.'/CloudWebsiteCreate.php';
 require_once __DIR__.'/ForceSslChange.php';
@@ -61,6 +62,7 @@ final class TwentyIRequestBuilder
             throw new InvalidArgumentException('Operation ' . $operation->name . ' requires typed request validation that is not yet implemented.');
         }
 
+        if ($operation->name === RegistrarNameserverChange::OPERATION) return RegistrarNameserverChange::request($operation);
         if ($operation->name === DomainRenewal::OPERATION) return DomainRenewal::request($operation);
         if ($operation->name === DirectoryIndexingChange::OPERATION) return DirectoryIndexingChange::request($operation);
         if ($operation->name === ForceSslChange::OPERATION) return ForceSslChange::request($operation);

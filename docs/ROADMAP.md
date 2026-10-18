@@ -1,3 +1,15 @@
+## 2026-10-18 — nameserver acceptance producers integrated
+
+[Registered nameserver observations](TWENTYI_REGISTRAR_NAMESERVERS.md#packaged-acceptance-producers--2026-10-18) now have packaged owner-form/Chromium and actual published-baseline update/recovery producers wired into full acceptance. Local guards pass; first exact-source runtime outcomes and capture review remain. This advances acceptance preparation, not feature/release completion. The nameserver setter, complete cloud catalog and automatic provider images remain separate unfinished work.
+
+## 2026-10-18 — nameserver read lifecycle implemented, acceptance pending
+
+The [registered nameserver](TWENTYI_REGISTRAR_NAMESERVERS.md) candidate now has owner preparation, immutable observations, latest-attempt projection and admin history. Local pure/rendering checks pass. First Linux native CI, packaged HTTP/responsive browser, full application report wiring and published-baseline upgrade/recovery remain. The later setter/reservation/fence/readback work is separate and unavailable. Direct hosting catalog release checks continue separately; cloud and automatic image contracts remain unresolved, using the retained full owner reference without asking for another copy.
+
+## 2026-10-18 — registrar nameserver groundwork
+
+A separate reviewed increment adds typed registrar reads and the documented restricted full-set request boundary. It does not enable a nameserver admin action. [Exact implemented scope, local verification and next application work](TWENTYI_REGISTRAR_NAMESERVERS.md) distinguish synthetic boundary tests from pending native authority/storage/history, UI, readback and release acceptance. Full 20i and automatic catalog images remain unfinished.
+
 ## Verified increment and remaining work — 2026-10-18
 
 The bounded 1.25.0 increment, including the owner installer/navigation/hosting-draft and local-image additions, is [published and freshly download-verified](RELEASE_1.25.0_PUBLICATION.md) from `b79c67110829126916e3a65e616191542448bccc`. Its candidate/main acceptance and release-delivery gates are complete. Full 20i remains unfinished; every HOLD row and operation-specific authority limit remains.

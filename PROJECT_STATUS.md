@@ -1,3 +1,23 @@
+## 2026-10-18 — nameserver packaged acceptance wired
+
+The nameserver candidate now includes actual owner-form/Chromium checks, eight responsive captures, and a separate published-1.25 update/retry/recovery producer. The full workflow preserves its previous commands and adds five native commands and two Apache commands. Local checks pass 271 acceptance-helper outcomes, 20 upgrade guards, 19 actual published-archive guards and four PHP syntax executions; canonical refresh passes. These are local/source results, not Linux application acceptance. [Scope, corrections and remaining gates](docs/TWENTYI_REGISTRAR_NAMESERVERS.md#packaged-acceptance-producers--2026-10-18).
+
+The full owner API documentation remains retained; no resend is needed. Published 1.25, the separate catalog/hosting candidates and Devin's non-20i work are unchanged. No new release or live deployment occurred.
+
+## 2026-10-18 — owner nameserver observations candidate
+
+The separate `codex/twentyi-registrar-nameservers` branch now includes explicit owner setup, saved registered-domain nameserver observations, latest-attempt status and dated history in the 20i connection screen. Failed or unfinished newer reads never fall back to an older current result. Previous assignments are labeled in history. [Feature and remaining acceptance](docs/TWENTYI_REGISTRAR_NAMESERVERS.md).
+
+Applied PHP 8.4.25 checks pass 144 reader, 230 operation, 64 registrar and 42 renderer outcomes in each default/minimal mode (960 named executions), plus 22 touched-file syntax executions. These are pure/synthetic checks. The isolated Linux native fixture and four-environment CI extension are present but have not executed at this source checkpoint. Packaged HTTP/browser, upgrade/recovery, full acceptance and publication remain pending. No nameserver setter or live deployment is enabled.
+
+The full owner API reference is retained and needs no resend. Hosting catalog imports are in the separate 1.26 candidate; cloud catalog mapping and automatic provider images remain unresolved. Original f67 runtime run39098588864 has four successful producer jobs and queued aggregation. Its bounded native/browser archive review validates 167 reports, including 3,149 HTTP outcomes on PHP 8.4.26 / MariaDB 10.11.19, without final-acceptance or new pixel-review credit. Corrected b7 run39137551561 remains separate. Published 1.25 stays unchanged.
+
+## 2026-10-18 — registrar nameserver boundary
+
+The separate main-based nameserver branch adds a typed registrar read and restricted request builder using the supplied SDK example. It keeps registrar IDs separate from hosting package-domain IDs and refuses unsupported partial changes. Generic write approval remains denied; admin forms, saved observation history and native authority are still pending. [Scope and next application slice](docs/TWENTYI_REGISTRAR_NAMESERVERS.md).
+
+Actual PHP 8.4.25 checks pass 144 focused and 381 existing cases in each default/minimal mode, plus 221 unchanged acceptance-helper outcomes. These are synthetic/pure checks, not provider or native application results. Focused PHP 8.2/8.4 CI is prepared. The original route-contract finding and patch-encoding failure are preserved. Published 1.25 and the separate 1.26/hosting/PHP-control branches remain unchanged.
+
 ## 2026-10-18 — reduce unrelated CI work
 
 Branch `codex/ci-pr-path-filters`, from main `6caf654c99cb5befb610f405e40df69b0c174cb6`, adds dependency-aware pull-request path filters to ten workflows that already filter pushes. Every test job, matrix, artifact, timeout and complete application/release check is unchanged. At 06:18 UTC GitHub reported 1,032 queued workflows and three active workflows; this is a queue observation, not a diagnosis of account limits. The change reduces future unrelated runs and does not clear the existing queue. [Trigger scope and validation](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).

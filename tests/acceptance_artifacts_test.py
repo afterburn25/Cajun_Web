@@ -69,6 +69,72 @@ def synthetic_baseline():
     return stream.getvalue()
 
 
+def synthetic_baseline_126():
+    # Deliberately different bytes from the retained 1.24 synthetic baseline.
+    stream = io.BytesIO()
+    with zipfile.ZipFile(stream, 'w') as archive:
+        for name, body in {'.htaccess': b'Deny public listing', 'includes/public.php': b'public synthetic 1.25 bytes'}.items():
+            archive.writestr(zipfile.ZipInfo(name, date_time=(2026, 10, 12, 0, 0, 0)), body)
+    return stream.getvalue()
+
+
+def additional_baseline_checks(tmp, ctx, source, transfer, input_sha):
+    obj = a.verify_bundle(transfer, 'inputs', ctx, input_sha)
+    a.validate_published_baseline(source, obj['files'])
+    a.validate_published_baseline_126(source, obj['files'])
+    check('Both independently pinned published baselines validate in one sealed input',
+          a.PUBLISHED_BASELINE != a.PUBLISHED_BASELINE_126 and synthetic_baseline() != synthetic_baseline_126())
+    check('Additional baseline extends the public fixture set to exactly28 trees',
+          len(a.FIXTURES) == 28 and a.VERSIONS[-2:] == ('1.24.0', '1.25.0'))
+    check('Only the exact added published archive is admitted',
+          a.input_allowed('test-runtime/' + a.PUBLISHED_BASELINE_126))
+    for name in ['test-runtime/CajunWebPro-1.26.0-COMPLETE-UPLOAD.zip',
+                 'qa/' + a.PUBLISHED_BASELINE_126,
+                 'test-runtime/' + a.PUBLISHED_BASELINE_126 + '/extra.php',
+                 'test-runtime/private/' + a.PUBLISHED_BASELINE_126]:
+        check('Additional baseline cannot broaden the archive path allowlist ' + name, not a.input_allowed(name))
+    prefix = 'test-runtime/released-1.25.0/'
+    member = prefix + 'includes/public.php'
+    for title, mutation in [
+        ('missing', lambda f: f.pop(member)),
+        ('extra', lambda f: f.update({prefix + 'extra.php': f[member]})),
+        ('changed digest', lambda f: f[member].update(sha256='0' * 64)),
+        ('changed size', lambda f: f[member].update(size=f[member]['size'] + 1)),
+        ('traversal', lambda f: f.update({prefix + '../outside': f.pop(member)})),
+    ]:
+        facts = copy.deepcopy(obj['files']); mutation(facts)
+        deny('Added baseline refuses ' + title + ' member evidence', lambda f=facts: a.validate_published_baseline_126(source, f))
+    archive = source / 'test-runtime' / a.PUBLISHED_BASELINE_126
+    raw = archive.read_bytes()
+    try:
+        archive.write_bytes(synthetic_baseline())
+        deny('Original1.24 raw archive cannot impersonate the added1.25 baseline', lambda: a.validate_published_baseline_126(source, obj['files']))
+        archive.write_bytes(raw[:-1] + bytes([raw[-1] ^ 1]))
+        deny('Added baseline refuses mutated original ZIP bytes', lambda: a.validate_published_baseline_126(source, obj['files']))
+        archive.unlink()
+        deny('Added baseline cannot fall back when its raw original ZIP is absent', lambda: a.validate_published_baseline_126(source, obj['files']))
+    finally:
+        archive.write_bytes(raw)
+    # Correctly re-sealed envelopes still cannot omit either original baseline or new fixture tree.
+    for index, omitted in enumerate(['test-runtime/' + a.PUBLISHED_BASELINE,
+                                     'test-runtime/' + a.PUBLISHED_BASELINE_126, prefix]):
+        facts = {n: f for n, f in obj['files'].items() if n != omitted and not n.startswith(omitted if omitted.endswith('/') else omitted + '/')}
+        folder = tmp / ('baseline-omission-' + str(index)); folder.mkdir()
+        envelope = dict(obj, files=facts, archive=a.pack(source, facts, folder / 'inputs.zip'))
+        a.write(folder / 'inputs.json', envelope)
+        deny('Re-sealed input still requires original baseline family ' + omitted,
+             lambda d=folder, i=index: a.receive_inputs(d, tmp / ('baseline-receive-' + str(i)), ctx, a.digest(d / 'inputs.json'), 'apache'))
+    # Wrong new fixture bytes with coherent outer hashes must fail the immutable inner baseline.
+    changed = tmp / 'baseline-member-changed'; shutil.copytree(source, changed)
+    blob(changed / member, b'wrong but coherently sealed fixture member')
+    facts = copy.deepcopy(obj['files']); facts[member] = a.file_facts(changed / member)
+    folder = tmp / 'baseline-coherent-envelope'; folder.mkdir()
+    envelope = dict(obj, files=facts, archive=a.pack(changed, facts, folder / 'inputs.zip'))
+    a.write(folder / 'inputs.json', envelope)
+    deny('Coherent outer input cannot replace an original1.25 member',
+         lambda: a.receive_inputs(folder, tmp / 'baseline-coherent-child', ctx, a.digest(folder / 'inputs.json'), 'apache'))
+
+
 def fixtures(root, ctx):
     packages(root, ctx)
     for n in a.FIXTURES:
@@ -76,6 +142,8 @@ def fixtures(root, ctx):
         blob(root / 'test-runtime' / n / 'includes/public.php')
     for n in a.FIXTURE_JSON: a.write(root / 'test-runtime' / n, {'public': True})
     blob(root / 'test-runtime' / a.PUBLISHED_BASELINE, synthetic_baseline())
+    blob(root / 'test-runtime' / a.PUBLISHED_BASELINE_126, synthetic_baseline_126())
+    blob(root / 'test-runtime/released-1.25.0/includes/public.php', b'public synthetic 1.25 bytes')
     for n in a.BUILD_QA:
         if n.endswith('.json'): named(root / 'qa' / n)
         else: blob(root / 'qa' / n)
@@ -95,6 +163,23 @@ def valid_port_context(workflow):
         if 'CWP_ASSIGNED_PORT: ${{ job.services.mariadb.ports[3306] }}' not in setup:return False
         if 'printf \'CWP_TEST_PORT=%s\\n\' "$CWP_ASSIGNED_PORT" >> "$GITHUB_ENV"' not in setup:return False
     return True
+
+
+def baseline_driver_predecessor(path, data, contract):
+    delta = contract['published125_input_driver_delta'][path]
+    a.require(set(delta) == {'predecessor_sha256', 'current_sha256', 'append', 'replacements'}, 'Unexpected baseline driver delta fields')
+    a.require(hashlib.sha256(data).hexdigest() == delta['current_sha256'], 'Changed current baseline driver bytes')
+    if delta['append']:
+        suffix = delta['append'].encode()
+        a.require(data.endswith(suffix) and data.count(suffix) == 1, 'Missing exact baseline preparation suffix')
+        data = data[:-len(suffix)]
+    for edit in reversed(delta['replacements']):
+        a.require(set(edit) == {'before', 'after', 'count'} and type(edit['count']) is int and edit['count'] == 1, 'Invalid finite baseline driver edit')
+        before, after = edit['before'].encode(), edit['after'].encode()
+        a.require(before and after and data.count(after) == edit['count'], 'Missing exact baseline driver extension')
+        data = data.replace(after, before)
+    a.require(hashlib.sha256(data).hexdigest() == delta['predecessor_sha256'] == contract['unchanged_test_sha256'][path], 'Baseline driver predecessor changed')
+    return data
 
 
 def run(tmp):
@@ -120,12 +205,17 @@ def run(tmp):
         check('Rejected output fields never append to the GitHub output file',job_output.read_text()==expected)
     transfer = tmp / 'input'; input_sha = a.create_inputs(source, ctx, transfer)
     obj = a.verify_bundle(transfer, 'inputs', ctx, input_sha)
-    check('Input binds all27 public fixture trees plus exact package/checksum files', len(a.FIXTURES) == 27 and 'dist/SHA256SUMS.txt' in obj['files'])
+    check('Input binds all27 public fixture trees plus exact package/checksum files', len(a.FIXTURES - {'released-1.25.0'}) == 27 and 'dist/SHA256SUMS.txt' in obj['files'])
+    additional_baseline_checks(tmp, ctx, source, transfer, input_sha)
     for lane in a.LANES[1:]:
         target = tmp / ('receive-' + lane); target.mkdir()
         (target / 'qa').mkdir()
         a.receive_inputs(transfer, target, ctx, input_sha, lane)
         check('Exact input materializes safely for ' + lane, (target / 'test-runtime/legacy/.htaccess').read_bytes() == b'Deny public listing')
+        check('Both original published archives and distinct1.25 members reach ' + lane,
+              (target / 'test-runtime' / a.PUBLISHED_BASELINE).read_bytes() == synthetic_baseline()
+              and (target / 'test-runtime' / a.PUBLISHED_BASELINE_126).read_bytes() == synthetic_baseline_126()
+              and (target / 'test-runtime/released-1.25.0/includes/public.php').read_bytes() == b'public synthetic 1.25 bytes')
         check('Only native/browser inherits build QA ' + lane, (target / 'qa/build-results.txt').exists() == (lane == 'native-browser'))
         check('Each child saves same-attempt immutable input receipt ' + lane, a.load(target / '.acceptance/input-receipt.json') == {'identity': ctx, 'input_sha256': input_sha, 'lane': lane})
         deny('Input materialization never overwrites an earlier child ' + lane, lambda t=target,l=lane: a.receive_inputs(transfer,t,ctx,input_sha,l))
@@ -276,11 +366,52 @@ def run(tmp):
     environment_checks(a,check,deny,tmp)
     # Retain reviewed driver bytes and the complete predecessor command sequence.
     contract=a.load(ROOT/'tools/acceptance-contract.json')
+    driver_paths = {'tests/prepare_legacy.py'}
+    check('Published1.25 input inverse is limited to the original preparation source', set(contract['published125_input_driver_delta']) == driver_paths)
+    for driver in sorted(driver_paths):
+        data = ROOT.joinpath(driver).read_bytes().replace(b'\r\n', b'\n')
+        check('Published1.25 input extension reverses exactly ' + driver,
+              hashlib.sha256(baseline_driver_predecessor(driver, data, contract)).hexdigest() == contract['unchanged_test_sha256'][driver])
+        deny('Changed preparation bytes cannot bypass baseline inverse',
+             lambda p=driver,d=data: baseline_driver_predecessor(p, d + b'\n# changed', contract))
+        wrong = copy.deepcopy(contract); wrong['published125_input_driver_delta'][driver]['append'] += '# missing exact suffix'
+        deny('Changed preparation inverse description is refused',
+             lambda p=driver,d=data,c=wrong: baseline_driver_predecessor(p, d, c))
     for path,expected_hash in contract['unchanged_test_sha256'].items():
-        check('Original test source retained '+path, hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+        original_bytes=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+        if path in driver_paths: original_bytes=baseline_driver_predecessor(path, original_bytes, contract)
+        if path=='tests/browser_acceptance.py':
+            nameserver_addition=contract['registered_nameservers']['browser_addition'].encode()
+            check('Nameserver browser callback occurs once',original_bytes.count(nameserver_addition)==1)
+            original_bytes=original_bytes.replace(nameserver_addition,b'',1)
+        check('Original test source retained '+path, hashlib.sha256(original_bytes).hexdigest()==expected_hash)
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
+    nameserver_contract=contract['registered_nameservers'];nameserver_commands=nameserver_contract['additions']
+    check('Nameserver extension retains complete157-command recipe',len(native_commands)==157 and native_commands==contract['native_commands'])
+    nameserver_position=native_commands.index(nameserver_contract['additions_after'])+1
+    check('Five nameserver commands occur once in the intended position',len(nameserver_commands)==len(set(nameserver_commands))==5 and native_commands[nameserver_position:nameserver_position+5]==nameserver_commands and all(native_commands.count(command)==1 for command in nameserver_commands))
+    native_commands=[command for command in native_commands if command not in nameserver_commands]
+    check('Nameserver extension preserves exact152 predecessor commands',len(native_commands)==nameserver_contract['predecessor_native_count']==152 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==nameserver_contract['predecessor_native_sha256'])
+    for path,expected_hash in nameserver_contract['source_sha256'].items():
+        check('Nameserver fixture source retained '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+    nameserver_server=ROOT.joinpath('tests/provider_http_server.py').read_text(encoding='utf-8')
+    for index,change in enumerate(reversed(nameserver_contract['server_changes'])):
+        check('Nameserver synthetic GET addition is finite '+str(index),nameserver_server.count(change['after'])==change['count'])
+        nameserver_server=nameserver_server.replace(change['after'],change['before'])
+    check('Nameserver synthetic GET preserves all prior provider fixture bytes',hashlib.sha256(nameserver_server.encode('utf-8')).hexdigest()==nameserver_contract['server_predecessor_sha256'])
+    nameserver_upgrade=nameserver_contract['upgrade']
+    nameserver_apache_header='      - name: Apache protection with and without rewriting\n        id: test\n        run: |\n'
+    nameserver_apache=[line.strip() for line in workflow.split(nameserver_apache_header,1)[1].split('      - name:',1)[0].splitlines()]
+    check('Nameserver upgrade appends exactly two Apache commands',len(nameserver_upgrade['commands'])==2 and nameserver_apache==nameserver_upgrade['predecessor_commands']+nameserver_upgrade['commands'] and len(nameserver_apache)==len(set(nameserver_apache))==6)
+    check('Nameserver upgrade preserves all four prior Apache commands',hashlib.sha256(json.dumps(nameserver_apache[:-2],separators=(',',':')).encode()).hexdigest()==nameserver_upgrade['predecessor_sha256'])
+    for path,expected_hash in nameserver_upgrade['source_sha256'].items():
+        check('Nameserver upgrade fixture source retained '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+    nameserver_reports=a.load(ROOT/'tools/acceptance-reports.json')
+    check('Nameserver native reports required in both aggregates',all(name in nameserver_reports['browser'] and name in nameserver_reports['final'] for name in nameserver_contract['reports']))
+    check('Nameserver Apache reports required only in final aggregate',all(name in nameserver_reports['final'] and name not in nameserver_reports['browser'] for name in nameserver_upgrade['reports']))
+    contract['native_commands']=[command for command in contract['native_commands'] if command not in nameserver_commands]
     import_contract=contract['provider_catalog_import'];import_commands=import_contract['additions']
     check('Import additions retain the complete selected-runtime recipe',len(native_commands)==152 and native_commands==contract['native_commands'])
     import_position=native_commands.index(import_contract['additions_after'])+1
@@ -369,7 +500,13 @@ def main():
     try:
         # Scoped constants describe this suite's two-file synthetic protocol fixture only.
         # The separate published-baseline guards execute with the unchanged production constants.
-        with patch.object(a, 'PUBLISHED_BASELINE_SHA256', hashlib.sha256(synthetic_baseline()).hexdigest()), patch.object(a, 'PUBLISHED_BASELINE_MEMBERS', 2):
+        check('Production1.24 baseline constants retain exact immutable values',
+              a.PUBLISHED_BASELINE == 'CajunWebPro-1.24.0-COMPLETE-UPLOAD.zip'
+              and a.PUBLISHED_BASELINE_SHA256 == 'aa7a84b4c0d1201a4eddf2fe68340b90d4860117ceff4d959d165e6feafa731e' and a.PUBLISHED_BASELINE_MEMBERS == 2591)
+        check('Production1.25 baseline constants bind the actual published COMPLETE archive',
+              a.PUBLISHED_BASELINE_126 == 'CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'
+              and a.PUBLISHED_BASELINE_126_SHA256 == 'bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39' and a.PUBLISHED_BASELINE_126_MEMBERS == 2895)
+        with patch.object(a, 'PUBLISHED_BASELINE_SHA256', hashlib.sha256(synthetic_baseline()).hexdigest()), patch.object(a, 'PUBLISHED_BASELINE_MEMBERS', 2), patch.object(a, 'PUBLISHED_BASELINE_126_SHA256', hashlib.sha256(synthetic_baseline_126()).hexdigest()), patch.object(a, 'PUBLISHED_BASELINE_126_MEMBERS', 2):
             with tempfile.TemporaryDirectory(prefix='cwp-artifact-tests-') as temp:run(Path(temp))
     except Exception as exc:error=exc
     report={'passed':error is None,'scope':'Offline synthetic temporary files and exact transfer helpers; no application, provider, database or CI execution.', 'checks':checks}

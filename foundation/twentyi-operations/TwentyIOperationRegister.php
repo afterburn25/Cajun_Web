@@ -107,6 +107,11 @@ final class TwentyIOperationRegister
                 shapeComplete: true, // Exact disjoint additions/removals; native consent/read workflow remains separate.
             ),
             new TwentyIOperation(
+                'registrar.nameservers', 'POST', '/domain/{domainId}/nameservers',
+                ['domainId'], ['ns'=>'hostname_list','old-ns'=>'hostname_list'],
+                ['ns','old-ns'], shapeComplete: true, // Registrar /domain identity; dedicated owner workflow only.
+            ),
+            new TwentyIOperation(
                 'domains.dns', 'POST', '/package/{packageId}/domain/{domainId}/dns',
                 ['packageId', 'domainId'],
                 [],
@@ -210,6 +215,7 @@ final class TwentyIOperationRegister
             'domains.transfer' => 'Transfers are billing, legal-ownership and potentially irreversible operations; requires a dedicated transfer gate.',
             'domains.renew' => 'Renewal charges the account; requires billing acceptance.',
             'domains.nameservers' => 'Nameserver changes move live DNS; requires per-domain authorization and confirmation.',
+            'registrar.nameservers' => 'Registrar nameserver changes require current registrar identity, owner confirmation and separate readback.',
             'domains.dns' => 'DNS record writes alter live zone data; requires zone review and record-specific validation.',
             'vps.create' => 'addVPS/addManagedVPS provisions billed infrastructure; requires billing acceptance and documented schema.',
             'vps.power' => 'Reboot/shutdown examples are GET-labelled mutations; method alone must not grant execution.',

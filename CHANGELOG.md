@@ -1,3 +1,23 @@
+## Unreleased — nameserver packaged acceptance
+
+- Exercise owner preparation and refresh through actual admin forms, with staff/client/support denials and failed/unfinished latest-result handling.
+- Add published-1.25 installed update/retry/recovery coverage for nameserver history, using exact build/file identity and explicit feature preparation.
+- Preserve prior acceptance commands and add fixed baseline inputs, reports and responsive captures. Correct test-only port and resolver assumptions; application behavior is unchanged by this follow-up.
+- Local guards and source checks pass. Linux database, packaged HTTP/browser, update/recovery and release acceptance remain pending.
+
+## Unreleased — owner registered nameserver observations
+
+- Add explicit owner setup and protected nameserver refresh for assigned registered domains, using the existing shared provider executor and durable intent.
+- Show the latest attempt separately from dated history, with stale/failed/unfinished status, previous-assignment labels and bounded history pagination.
+- Preserve current owner, credential, registrar source and assignment checks before and after the GET; fail closed on damaged saved history.
+- Add renderer and isolated native tests to the existing registrar workflow. Local portable checks pass; database, packaged browser, upgrade and release acceptance remain pending. No domain-setting write is enabled.
+
+## Unreleased — registrar nameserver boundary
+
+- Add a typed read for registered-domain nameservers with exact registrar provenance and closed failure states.
+- Add a restricted full-set request builder while keeping generic write approval denied and uncertain requests non-retryable.
+- Preserve package-domain behavior; add canonical shipping mirrors and focused PHP regression coverage. Admin actions and native observation storage remain pending.
+
 ## Unreleased — reduce unrelated pull-request test runs
 
 Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.

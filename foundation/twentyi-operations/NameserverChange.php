@@ -44,6 +44,9 @@ final readonly class NameserverChange
         return ['ns' => $this->added, 'old-ns' => $this->removed];
     }
 
+    /** Normalize a separately observed set without implying change authority. */
+    public static function observed(mixed $values): array { return self::names($values); }
+
     /** Validate direct builder input as a delta, never as two replacement sets. */
     public static function delta(mixed $added, mixed $removed): array
     {

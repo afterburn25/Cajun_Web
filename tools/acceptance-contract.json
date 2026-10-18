@@ -94,6 +94,11 @@
     "\"$PHP_BINARY\" tests/service_observations_native.php",
     "\"$PHP_BINARY\" tests/domain_contracts_reader.php > qa/domain-contract-reader-integrated-results.json",
     "\"$PHP_BINARY\" tests/domain_contracts_native.php",
+    "\"$PHP_BINARY\" tests/registered_nameservers_reader.php > qa/registered-nameservers-reader-results.json",
+    "\"$PHP_BINARY\" -n tests/registered_nameservers_reader.php > qa/registered-nameservers-reader-no-ini-results.json",
+    "\"$PHP_BINARY\" tests/registered_nameservers_views.php qa/registered-nameservers-views-results.json",
+    "\"$PHP_BINARY\" -n tests/registered_nameservers_views.php qa/registered-nameservers-views-no-ini-results.json",
+    "\"$PHP_BINARY\" tests/registered_nameservers_native.php",
     "\"$PHP_BINARY\" tests/domain_expiry_contract.php > qa/domain-expiry-contract-integrated-results.json",
     "\"$PHP_BINARY\" tests/domain_expiry_reader.php > qa/domain-expiry-reader-integrated-results.json",
     "\"$PHP_BINARY\" tests/domain_expiry_native.php",
@@ -467,7 +472,7 @@
       "tests/release_125_upgrade_acceptance.py": "516d2bbea414eded95171d885004c320eb9e25a5ebd5736837731c144e8ce8ad",
       "tests/release_125_upgrade_cases.py": "f5673e293b74d1809a6500e819908c00e513b5827f5766d15411440e4db2ee56",
       "tests/release_125_upgrade_guards.py": "663fd253d77613fa8614a622dbe0671f58f9ddd892b8efc3a6619e9cd8a99336",
-      "tests/release_125_upgrade_input_guards.py": "4ab56e4449a55fabbb9574d493bdf1bea8de03b56b1f0d8257c95a662cc37d99"
+      "tests/release_125_upgrade_input_guards.py": "1becfc5da89ec85a127e3c44c1d047476b0bd972012f619e5ac960fab6073985"
     },
     "scope": "Actual published original and synthetic business records; later agreement/recurring/licensing families are created only after candidate upgrade; all prior acceptance remains required."
   },
@@ -555,5 +560,103 @@
       "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
     },
     "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."
+  },
+  "published125_input_driver_delta": {
+    "tests/prepare_legacy.py": {
+      "predecessor_sha256": "7dc321012574f0c4d04cefa462ec527938cfd010663fce72aef90f83c8a755a9",
+      "current_sha256": "a681bd4dde6a6bc5e11a5875fc2a7005c73070c51287bd7786ee8bbfb1a9ab23",
+      "append": "\n# Retain the actual published 1.25 source for 1.26 upgrade/recovery acceptance.\norganized_baseline=root/'test-runtime/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip'\nwith urlopen('https://github.com/afterburn25/Cajun_Web/releases/download/v1.25.0/CajunWebPro-1.25.0-COMPLETE-UPLOAD.zip',timeout=60) as response:\n    organized_bytes=response.read(15843209)\nassert len(organized_bytes)==15843208\nassert hashlib.sha256(organized_bytes).hexdigest()=='bebe9a62e36a7b1898baa95babd4f03b2e438a69b48ab42eedcda0f9dd443e39'\norganized_baseline.write_bytes(organized_bytes)\norganized_history=json.loads((root/'tools/legacy-release-files.json').read_text(encoding='utf-8'))['1.25.0']\nassert organized_history['archive_sha256']==hashlib.sha256(organized_bytes).hexdigest()\nwith zipfile.ZipFile(organized_baseline) as z:\n    assert z.testzip() is None\n    names=z.namelist()\n    assert len(names)==len(set(names))==len({name.casefold() for name in names})==2895\n    assert set(names)==set(organized_history['files'])\n    for item in z.infolist():\n        path=PurePosixPath(item.filename)\n        assert not item.is_dir() and not path.is_absolute() and path.as_posix()==item.filename\n        assert not any(part in ('','.','..') for part in item.filename.split('/'))\n        assert '\\\\' not in item.filename and ':' not in item.filename\n        assert (item.external_attr>>16)&0o170000 != 0o120000\n        assert hashlib.sha256(z.read(item)).hexdigest()==organized_history['files'][item.filename]\n    z.extractall(root/'test-runtime/released-1.25.0')\nprint('PASS: immutable released 1.25.0 package checksum, exact member hashes, archive paths and extraction')\n",
+      "replacements": []
+    }
+  },
+  "registered_nameservers": {
+    "source_base": "2c5898fa665252fdb92bd2d2c91f8786fcea143c",
+    "predecessor_native_count": 152,
+    "predecessor_native_sha256": "ae7da25c86ee385fe5c3896e75f12badd91b459c5a8ef4ac9db1ab0075c2c0e6",
+    "additions_after": "\"$PHP_BINARY\" tests/domain_contracts_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/registered_nameservers_reader.php > qa/registered-nameservers-reader-results.json",
+      "\"$PHP_BINARY\" -n tests/registered_nameservers_reader.php > qa/registered-nameservers-reader-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/registered_nameservers_views.php qa/registered-nameservers-views-results.json",
+      "\"$PHP_BINARY\" -n tests/registered_nameservers_views.php qa/registered-nameservers-views-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/registered_nameservers_native.php"
+    ],
+    "reports": [
+      "registered-nameservers-reader-results.json",
+      "registered-nameservers-reader-no-ini-results.json",
+      "registered-nameservers-views-results.json",
+      "registered-nameservers-views-no-ini-results.json",
+      "registered-nameservers-native-results.json"
+    ],
+    "screenshots": [
+      "Registered-Nameservers-Owner-Setup-Desktop.png",
+      "Registered-Nameservers-Owner-Setup-Mobile.png",
+      "Registered-Nameservers-Owner-Observed-Desktop.png",
+      "Registered-Nameservers-Owner-Observed-Mobile.png",
+      "Registered-Nameservers-Owner-Failed-Desktop.png",
+      "Registered-Nameservers-Owner-Failed-Mobile.png",
+      "Registered-Nameservers-Owner-Unfinished-Desktop.png",
+      "Registered-Nameservers-Owner-Unfinished-Mobile.png"
+    ],
+    "browser_addition": "        from registered_nameservers_cases import run_browser as registered_nameservers_browser\n        registered_nameservers_browser(globals(),browser)\n",
+    "server_changes": [
+      {
+        "before": "class ProviderServer:\n",
+        "after": "def registered_nameserver_reply(fixture, path):\n    \"\"\"Closed numeric registrar GET fixture; does not admit a registrar POST.\"\"\"\n    match = re.fullmatch(r'/domain/([1-9][0-9]{0,17})/nameservers', path or '')\n    if not match:\n        return None\n    if match.group(1) not in fixture.nameservers:\n        fixture.errors.append('Unexpected registered nameserver domain')\n        return 404, b'private synthetic nameserver response'\n    if fixture.nameserver_mode == 'authentication':\n        return 403, b'private synthetic nameserver response'\n    if fixture.nameserver_mode != 'success':\n        raise ValueError('Unknown registered nameserver fixture mode')\n    return 200, json.dumps({'result': fixture.nameservers[match.group(1)]}, separators=(',', ':')).encode('utf-8')\n\n\nclass ProviderServer:\n",
+        "count": 1
+      },
+      {
+        "before": "        self.stackcp_membership=[];self.stackcp_grants=[]\n",
+        "after": "        self.nameservers={};self.nameserver_mode='success'\n        self.stackcp_membership=[];self.stackcp_grants=[]\n",
+        "count": 1
+      },
+      {
+        "before": "                expiry=re.fullmatch(r'/domain/([a-z0-9.-]+)/upstreamExpiryDate',self.path or '')\n",
+        "after": "                nameserver_reply=registered_nameserver_reply(fixture,self.path)\n                expiry=re.fullmatch(r'/domain/([a-z0-9.-]+)/upstreamExpiryDate',self.path or '')\n",
+        "count": 1
+      },
+      {
+        "before": "if (not stackcp_membership_path and not stackcp_grants_path and not contract",
+        "after": "if (nameserver_reply is None and not stackcp_membership_path and not stackcp_grants_path and not contract",
+        "count": 1
+      },
+      {
+        "before": "                if expiry:\n",
+        "after": "                if nameserver_reply is not None:status,body=nameserver_reply\n                if expiry:\n",
+        "count": 1
+      }
+    ],
+    "server_predecessor_sha256": "d98da874c5f486c76d9d314bad3ef6551d6d94f841c3c0132736630e938031ee",
+    "source_sha256": {
+      "tests/registered_nameservers_reader.php": "d5c21c2353192a040d310a68444bd217888a4df76efe907bd16d5330d23e19d8",
+      "tests/registered_nameservers_native.php": "8d0fb6f8b97c15ee25d856f8703cf7157f0e3ac377400752ff3d4bb36a952ce5",
+      "tests/registered_nameservers_views.php": "b40afb2e0891b6e6fa6796f943e7f87f4dc73bc371b9fcb42104974f4170d39f",
+      "tests/registered_nameservers_cases.py": "a0bea9386d4a4291070d823f5d4898a6e4aac2acb2d2c45b391fe94a0035f1fb",
+      "tests/provider_http_server.py": "58c09bac0f6a9cefb6d74ba0eacf2ef3db8b84b76d270889ea09e785092f5283"
+    },
+    "scope": "Owner-only registered nameserver observations through isolated native storage and actual packaged HTTP/Chromium with synthetic GET transport; no provider setting changes.",
+    "upgrade": {
+      "commands": [
+        ".ci-venv/bin/python -B tests/registered_nameservers_upgrade_test.py --report qa/apache-registered-nameservers-upgrade-guards-results.json",
+        ".ci-venv/bin/python -B tests/registered_nameservers_upgrade.py"
+      ],
+      "reports": [
+        "apache-registered-nameservers-upgrade-guards-results.json",
+        "apache-registered-nameservers-upgrade-results.json"
+      ],
+      "predecessor_commands": [
+        ".ci-venv/bin/python tests/apache_acceptance.py",
+        ".ci-venv/bin/python tests/release_125_upgrade_guards.py qa/apache-release125-guards-results.json",
+        ".ci-venv/bin/python tests/release_125_upgrade_input_guards.py --report qa/apache-release125-input-guards-results.json",
+        ".ci-venv/bin/python tests/release_125_upgrade_acceptance.py"
+      ],
+      "predecessor_sha256": "c4eea0a190c5e736dc44b5bc73002b22f4fa26e83c84d1e5c784b2b6642e10bf",
+      "source_sha256": {
+        "tests/registered_nameservers_upgrade.py": "5a53b7006a5d3f98a1456605dcc9327f87effa0b3570d7ee394b801052567861",
+        "tests/registered_nameservers_upgrade_fixture.php": "eeca52604d80e28387ccb87a4a0e95822f56b3a6d2515f61f4ef8897105cf789",
+        "tests/registered_nameservers_upgrade_test.py": "c9b650c4fcf32894d24e23488df730a13ebc34b52b5e93ab5f2c326eac748e07"
+      },
+      "scope": "Actual pinned published1.25 update/recovery at unchanged version using build and file identity; no new browser captures."
+    }
   }
 }
