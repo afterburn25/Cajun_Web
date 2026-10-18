@@ -9,6 +9,14 @@ use CajunWebPro\Foundation\Provider\ProviderOperation;
 use CajunWebPro\Foundation\Provider\TransportRequest;
 use InvalidArgumentException;
 
+require_once __DIR__.'/NameserverChange.php';
+require_once __DIR__.'/MailboxCreate.php';
+require_once __DIR__.'/CloudWebsiteCreate.php';
+require_once __DIR__.'/ForceSslChange.php';
+require_once __DIR__.'/../twentyi-inventory/InventoryDomain.php';
+require_once __DIR__.'/DomainRenewal.php';
+require_once __DIR__.'/DirectoryIndexingChange.php';
+
 /**
  * Translates a validated ProviderOperation into one bounded provider
  * write request, or refuses by throwing InvalidArgumentException.
@@ -36,8 +44,11 @@ final class TwentyIRequestBuilder
     private const MAX_DEPTH = 8;
     private const MAX_NODES = 256;
 
-    public function __construct(private TwentyIOperationRegister $register)
+    private ?\Closure $mailboxPassword;
+
+    public function __construct(private TwentyIOperationRegister $register, ?callable $mailboxPassword = null)
     {
+        $this->mailboxPassword = $mailboxPassword === null ? null : \Closure::fromCallable($mailboxPassword);
     }
 
     public function build(ProviderOperation $operation): TransportRequest
@@ -47,7 +58,16 @@ final class TwentyIRequestBuilder
             throw new InvalidArgumentException('Operation ' . $operation->name . ' is not in the documented write catalog.');
         }
         if (!$spec->shapeComplete) {
-            throw new InvalidArgumentException('Operation ' . $operation->name . ' is documented without body fields; refusing to invent them.');
+            throw new InvalidArgumentException('Operation ' . $operation->name . ' requires typed request validation that is not yet implemented.');
+        }
+
+        if ($operation->name === DomainRenewal::OPERATION) return DomainRenewal::request($operation);
+        if ($operation->name === DirectoryIndexingChange::OPERATION) return DirectoryIndexingChange::request($operation);
+        if ($operation->name === ForceSslChange::OPERATION) return ForceSslChange::request($operation);
+        if ($operation->name === CloudWebsiteCreate::OPERATION) return CloudWebsiteCreate::request($operation);
+
+        if ($operation->name === MailboxCreate::OPERATION) {
+            return MailboxCreate::request($operation, $this->mailboxPassword);
         }
 
         $params = $operation->params;
@@ -85,6 +105,10 @@ final class TwentyIRequestBuilder
                     }
                 }
             }
+        }
+
+        if ($operation->name === 'domains.nameservers') {
+            $body = NameserverChange::delta($body['ns'], $body['old-ns']);
         }
 
         $json = json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
