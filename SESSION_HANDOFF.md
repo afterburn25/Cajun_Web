@@ -12,6 +12,27 @@ The [first catalog diagnostic](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#origina
 
 Previous checkpoint: https://github.com/afterburn25/Cajun_Web/blob/35d8fb7efc94f6f851399d0755fa93097f1fce66/SESSION_HANDOFF.md
 
+## CI queue state — 2026-10-18 (Devin non-20i heads)
+
+The three fix waves re-queued ~5,000 lanes across 51 heads at the
+repo's limited GitHub concurrency (~3–5 jobs). Completed lanes are
+green with zero failures, but external confirmation drains slowly.
+Local verification substitutes in the meantime:
+
+- `tests/acceptance_artifacts_test.py` passes on every head
+  (221–226 checks; contract pins, recipe extensions, baselines).
+- `tools/build.py --commit` assembles all archives end-to-end
+  (locked packages, runtime mirrors, PHPMailer pins, installer
+  inventory over LF bytes, ops/ area approved).
+- All 51 `devin/non20i-*` PRs report MERGEABLE; each stacked child
+  contains its parent's fix commits.
+- Superseded-head runs were cancelled; GitHub concurrency groups
+  auto-cancel further stale runs per branch.
+
+Re-check `gh api repos/afterburn25/Cajun_Web/actions/runs` for
+failures as the queue drains; re-dispatch long lanes after Codex
+retargets stacked PRs. No merge, deployment or release claimed.
+
 ## Devin non-20i lane — 2026-10-18 contract/recipe wave
 
 Two further CI defects fixed after the LF-inventory wave. First, main
