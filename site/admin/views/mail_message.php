@@ -68,7 +68,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <h3>Your recent flag requests</h3><p class="hint">History keeps outcomes and message identifiers. Message contents are never saved.</p>
 <?php if(!$flagHistory): ?><p>No flag requests recorded.</p><?php endif; ?>
 <?php foreach(array_slice($flagHistory,0,20) as $entry): ?>
-<article class="workspace-card"><h4><?=esc($entry['outcome']==='success'?'Flag '.((int)$entry['mark_seen']===1?'read':'unread').((int)($entry['applied']??0)===0&&$entry['result_code']==='unchanged'?' already set':' changed'):($entry['outcome']==='failed'?'Flag request failed':'Result not recorded'))?></h4>
+<article class="workspace-card"><h4><?=esc($entry['outcome']==='success'?'Flag '.((int)$entry['mark_seen']===1?'read':'unread').((int)($entry['applied']??0)===0&&$entry['result_code']==='unchanged'?' already set':' changed'):($entry['outcome']==='uncertain'?'Flag change unconfirmed':($entry['outcome']==='failed'?'Flag request failed':'Result not recorded')))?></h4>
 <p><?=esc($entry['started_at'])?> UTC · <?=esc($entry['folder'])?> · Version <?=(int)$entry['account_revision']?><?php if((int)$entry['account_revision']!==(int)$record['revision']): ?> · Historical settings<?php endif; ?></p>
 <p><?=esc(mail_flag_outcome($entry['result_code']??''))?></p></article>
 <?php endforeach; ?>
