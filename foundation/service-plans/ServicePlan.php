@@ -87,7 +87,7 @@ final class ServicePlan
         }
         self::checkText($supportExpectation, 'support expectation');
         // No unbounded promises anywhere in the customer-facing terms.
-        foreach (array_merge($inclusions, $exclusions, [$supportExpectation]) as $text) {
+        foreach (array_merge([$name], $inclusions, $exclusions, [$supportExpectation]) as $text) {
             if (preg_match(self::BANNED, $text)) {
                 throw new InvalidArgumentException('Terms cannot promise unbounded or guaranteed service: ' . $text);
             }

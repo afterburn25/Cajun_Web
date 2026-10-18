@@ -2,10 +2,8 @@ name: Service-plan contract checks
 
 on:
   pull_request:
-    paths: ['foundation/service-plans/**', 'tests/service-plans/**', '.github/workflows/service-plans.yml']
   push:
-    branches: [main, 'devin/non20i-*']
-    paths: ['foundation/service-plans/**', 'tests/service-plans/**', '.github/workflows/service-plans.yml']
+    branches: [main, codex/service-plan-integration, codex/service-plan-records, codex/service-plan-screens, 'devin/non20i-*']
   workflow_dispatch:
 
 permissions:
@@ -31,11 +29,29 @@ jobs:
           persist-credentials: false
       - name: Syntax and service-plan checks using the official PHP image
         run: |
-          docker run --rm --network none -v "$PWD:/workspace:ro" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
+          mkdir -p qa
+          docker run --rm --network none --user "$(id -u):$(id -g)" -v "$PWD:/workspace:ro" -v "$PWD/qa:/workspace/qa" -w /workspace "php:${{ matrix.php }}-cli" sh -ec '
             for source in foundation/service-plans/*.php tests/service-plans/*.php; do php -l "$source"; done
-            php tests/service-plans/run.php
+            php tests/service-plans/run.php > qa/service-plans-supplied-default.txt
+            php -n tests/service-plans/run.php > qa/service-plans-supplied-no-ini.txt
+            php tests/service-plans/forms.php > qa/service-plans-forms-default.json
+            php -n tests/service-plans/forms.php > qa/service-plans-forms-no-ini.json
+            php tests/service-plans/documents.php > qa/service-plans-documents-default.json
+            php -n tests/service-plans/documents.php > qa/service-plans-documents-no-ini.json
+            php tests/service-plans/review_controls.php > qa/service-plans-review-default.json
+            php -n tests/service-plans/review_controls.php > qa/service-plans-review-no-ini.json
+            php tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-default.json
+            php -n tests/service-plans/review_controls.php --deployment > qa/service-plans-deployed-no-ini.json
           '
       - name: Record verification scope
         if: always()
         run: |
           echo 'Isolated service-plan/subscription contract checks only. No billing, persistence or application integration is tested by this job.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve original and deployed model evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: service-plans-${{ matrix.php }}-${{ github.sha }}
+          path: qa/service-plans-*
+          if-no-files-found: error
+          retention-days: 14

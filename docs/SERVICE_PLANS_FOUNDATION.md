@@ -1,6 +1,12 @@
 # Service-plan foundation (P-04 contract layer)
 
-Canonical component: `foundation/service-plans/`. Implementation status: **Implemented (local/source)** on `devin/non20i-service-plans-foundation`. External gate: **Not required** for this contract layer — plan UI, real billing capture and the request workflow are application work remaining in Devin's non-20i scope (Codex owns the complete 20i integration only).
+Current 2026-10-15: Codex owns complete 20i P0. This retained component is being integrated as a necessary commercial dependency in `codex/twentyi-order-eligibility`; former allocation and acceptance below are historical. [Current integration and remaining eligibility](TWENTYI_COMMERCIAL_ELIGIBILITY.md). Missing established agreement tables now require original database restoration, not empty preparation. Combined native/browser/review evidence is pending.
+
+## Preserved application import — unreleased
+
+Codex service-plan-integration ordinarily merges388b80d into candidate21ebe69, preserving both canonical classes and supplied76 checks. Build-generated private mirrors and21 retained independent controls exercise the shipped copies; local default/no-ini total236 passes. Focused combined matrix/import review remain pending. There are still no persisted plans, client consent screens or recurring charges. Earlier contract statements below describe the canonical model, not a live subscription feature.
+
+Canonical component: `foundation/service-plans/`. Implementation status: **Implemented (local/source)**. External gate: **Not required** for this contract layer — plan UI, real billing capture and the request workflow are application work owned by Codex.
 
 This is the safe portion of [P-04](ROADMAP.md#p-04--maintenanceservice-plans): the plan-terms and consent rules a maintenance/service-plan feature must satisfy, as a pure model with no billing calls.
 
