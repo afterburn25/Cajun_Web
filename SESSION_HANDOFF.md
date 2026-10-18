@@ -12,6 +12,36 @@ The [first catalog diagnostic](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#origina
 
 Previous checkpoint: https://github.com/afterburn25/Cajun_Web/blob/35d8fb7efc94f6f851399d0755fa93097f1fce66/SESSION_HANDOFF.md
 
+## Devin non-20i lane — 2026-10-18 restack status
+
+All 51 open `devin/non20i-*` PRs report MERGEABLE after a full
+dependency-order restack: each advanced parent head (and main
+`e397d9a6`, post-Codex PR #218) was merged into its Devin children;
+conflicts resolved by keeping canonical/main versions where strictly
+stronger and re-applying each branch's unique deltas. Canonical
+bundle, receiving/submission runtime byte-for-byte checks, installer
+inventory regeneration and PHP/Python syntax all pass on each pushed
+head. Branch-CI evidence only — Codex owns retarget/integration; no
+merge, deployment or 20i work claimed.
+
+Latest restacked tips: portal-account `05ecd881`; client-actions
+`95de0a9c`; activity-prefs `70b8c74b`; milestones `15216b37`;
+staff-notes `a0ef2679`; contact-activity `3c3aa80e`;
+contact-decisions `8c269b33`; client-contacts `5224eafc`;
+stage-history `577d9925`; protected-previews (main restack);
+recurring-billing `ce895bab`; service-plans `938efb3c`;
+mail-html-compose `88428719`; mail-flags `90137c3a`; mail-folders
+`ef2b3159`; mail-reply-all `f8a92276`; mail-sent-sync `7d763790`;
+mail-attachments `4acb4edc`; renewal-notifications `86f03b05`;
+notification-outbox `38a3786d`; notification-events `38fe2e41`;
+notification-metrics/notifications-announcements on
+notifications-runtime `29b95feb`; ticket-notifications `522686b3`;
+ticket-screenshots `f410b588`; runtimes `05034949/87e0b280`,
+`3105dadf`, `8beef432`, `76476e06`, `00c10cc5`.
+
+Next: Codex retargets stacked PRs as parents integrate; combined
+acceptance after retarget, not from branch state.
+
 ## Devin non-20i lane — 2026-10-17
 
 All earlier Devin PRs verified green: #198 protected previews `21198602` (48/48), #202 payment links `95a3db9b` (48/48), #203 company contacts `37324121` (48/48), plus stacked #200 stage history `93cb8f3a` (43/43), #204 contact decision attribution `c70dc0e0` (37/37), #205 contact activity routing `58c5d4af` (41/41) — long lanes for stacked PRs run after Codex retargets them to main.
