@@ -1,3 +1,9 @@
+## 2026-10-18 — normal main-to-hosting development integration
+
+Integration inputs are development `4e35059b5a3966be33e80fc7e7bd2115a19ce11a` and main `e397d9a6e293850e8dff61a593e3ba39ee178400`, with common ancestor `6caf654c99cb5befb610f405e40df69b0c174cb6`. Main contains normally merged PR218. Retain its ten focused workflow path changes and both documentation histories; keep every hosting shipping/test/contract file exact to the development parent. Resolve only five documentation conflicts. The main 06:18/06:23 checkpoint below is historical and precedes the later packaged recovery and hosting integration records.
+
+This source integration does not perform the separate f67-to-main release merge or supply application acceptance. Original f67/512/10142 sources and runs remain intact, as do published 1.25 assets. No provider action, live deployment or new CI result is claimed. Continue existing original-result review and full hosting/release gates; the earlier dated observations retain their original cutoff.
+
 Current outcome: [1.25.0 publication and fresh-download verification](RELEASE_1.25.0_PUBLICATION.md). Earlier dated entries preserve their original cutoff.
 
 ## 2026-10-18 — isolate catalog browser callback ordering
@@ -3478,6 +3484,17 @@ Starting parent `8024e3dc53d63b4290fb2af8b7cef17e2c272d03`, integrate the two-fi
 PHP syntax, finite source inverse and workflow/documentation checks pass locally. Native recovery checks have not executed here; Windows is refused and Linux originals remain queued. Complete synthetic-file rollback, sampled second-connection locking and current-authority negatives do not claim interrupted UPDATE or staged HTTP acceptance. Shipping files are unchanged from the parent, whose installer inventory and complete shipping syntax checks passed. Next: push this coherent checkpoint once, review the original native and browser artifacts, and retain the separate 1.26 release process. No provider operation or live deployment.
 
 
+
+## 2026-10-18 — reduce unrelated pull-request workflow fan-out
+
+Request: continue the roadmap and finish verification without asking the owner to repeat the supplied 20i reference. Starting main: `6caf654c99cb5befb610f405e40df69b0c174cb6`; branch `codex/ci-pr-path-filters`; enclosing commit: `Filter unrelated pull-request checks while retaining shared dependencies`.
+
+At 06:18 UTC the GitHub API reported 1,032 queued workflows and three active workflows. Ten workflow files had filtered pushes but unfiltered PRs. Added matching PR filters and conservative shared runtime/Docker/mail dependency paths; preserved every existing job, matrix, command, artifact, timeout, permission and concurrency setting. Updated status, handoff, changelog and release workflow guidance. No shipping files or installer inventory changed.
+
+Validation: 119 finite source/YAML/dependency/inverse/applicability checks passed, plus independent comparison of all ten jobs sections and non-path settings before applying the patch. Static retained PR186/188/191 file comparisons each reduce these ten workflows from 26 to 22 jobs; docs/CSS examples reduce them to zero. This is not a runtime or queue-clearing claim. No original CI run was canceled, deleted or retried.
+
+The separate corrected 1.26 build job passed and its original inputs/build artifacts were retained with API digest verification. Database/browser/server/recovery acceptance remains pending; hosting offer/recovery source6cf7 also awaits focused acceptance. Next: normal PR integration of this CI-only correction, then continue original-result review and staged-owner HTTP/full-suite hosting work. Published1.25 and production remain unchanged.
+
 ## 2026-10-18 — add actual staged-owner recovery HTTP fixture
 
 Request: continue20i and finish hosting recovery acceptance using the supplied documentation. Parent `6cf7a8f82bfa87f3bdc3d8565a24ddc3b3072a29`; branch `codex/twentyi-hosting-commerce`; enclosing commit: `Exercise packaged owner recovery through isolated HTTP requests`.
@@ -3535,3 +3552,10 @@ Contacts review covers100 source blobs,16 source checks, an inert-writer authori
 Concrete remaining corrections: contact agreement authorization, main invoice guards/navigation, real payment-migration prerequisites in retained upgrades, narrowly scoped retention predicates and four stale source bindings. Keep existing activity and mail corrections open. Original f67 full builds pass with later jobs queued; original512 and10142 focused jobs remain queued at this session's check. No duplicate dispatch, live deployment, customer mail, provider write or charge occurred. Next: publish the correction handoff for Devin, then review corrected branches and original hosting runtime results before final integration/release acceptance. Published1.25 stays immutable.
 
 Documentation validation passes279 Markdown files and1,926 local links with canonical vendor checks unchanged; Git whitespace checks pass. The copied proposal matches its reviewed SHA-256 exactly. This remains a documentation-only commit, described as `Document Devin restack corrections and invoice proposal`; its enclosing Git history identifies the resulting commit.
+
+
+## 2026-10-18 — verify the normal main-to-hosting development merge
+
+Root applied the reviewed normal merge with ordered parents4e35059b ande397d9a6. The initial resolved tree exactly matched76fcdea9ad4fad626444be750230616452f076fa; this appended verification record is the only addition to that proposal. Independent root review passed76 Git-object, complete-document and YAML-semantic checks after the proposal's64 checks. Documentation validation passed279 Markdown files and1,931 local links, canonical vendor checks and unchanged installer inventory; Git whitespace checks passed. All shipping files, tests, tools, acceptance contracts and full-application workflow remain byte-identical to the development parent. The ten focused workflows exactly match incoming main. No application test was rerun solely for these path filters.
+
+A separate source preflight confirmed that the unchanged local Windows hosting fixture reaches the literal0600 provider-key guard before its first assertion; its recovery worker also requires Linux. No disposable database was initialized, no existing database process was altered, and no guard was bypassed. Local native execution cannot substitute for the original queued Linux runs. The initial merge-review probe also attempted to read a calculated tree hash before constructing its Git object; the corrected independent review built the exact tree with an external index and left the checkout unchanged until this normal merge. Next: preserve original focused/full outcomes, complete the pending hosting runtime and published-upgrade gates, and keep immediate first-payment checkout as unfinished implementation. This commit does not publish a release or deploy a site.

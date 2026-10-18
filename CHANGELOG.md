@@ -1,3 +1,7 @@
+## Development — preserve hosting acceptance while integrating main CI triggers
+
+Integrate the reviewed PR218 workflow path filters from main `e397d9a6e293850e8dff61a593e3ba39ee178400` with hosting development source `4e35059b5a3966be33e80fc7e7bd2115a19ce11a` through a normal merge. Only ten focused workflow triggers and documentation change relative to that development source; shipping files, tests, full acceptance commands and contracts stay exact. This does not merge the separate f67 release candidate to main, certify hosting behavior or change published 1.25.0.
+
 ## Development — integration review handoff, 2026-10-18
 
 Document current Devin branch corrections for contact billing authority, preserved invoice checks/navigation and payment-upgrade verification. Include an unapplied invoice restoration patch and carry forward unresolved mail findings. No shipping behavior or version changes; application acceptance remains pending.
@@ -22,6 +26,10 @@ Show saved package assignment status and the expected client on the owner’s co
 ## Unreleased successor — staged owner recovery HTTP checks
 
 Add isolated tests of the real packaged owner updater for authentication, CSRF, package integrity, backup confirmation and hosting-history recovery decisions. Preserve original native/browser assertions and the production recovery algorithm. Portable/model checks pass; Linux SQL/HTTP and release acceptance remain pending. No shipping files or installer inventory changed.
+
+## Unreleased — reduce unrelated pull-request test runs
+
+Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.
 
 ## 2026-10-18 — hosting successor recovery protection
 

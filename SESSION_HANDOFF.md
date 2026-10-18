@@ -1,3 +1,9 @@
+## 2026-10-18 — continue hosting acceptance after main trigger integration
+
+The intended normal merge has development parent `4e35059b5a3966be33e80fc7e7bd2115a19ce11a` first and main parent `e397d9a6e293850e8dff61a593e3ba39ee178400` second. Main contributes PR218's ten focused workflow path filters and its retained documentation. Preserve all hosting implementation, test fixtures, full acceptance wiring and source-bound contracts from the development parent; this integration changes none of them.
+
+Keep original f67,512 and10142 branches, runs and evidence intact. No new CI completion or acceptance follows from a source merge, and historical queued-status paragraphs below are dated observations. The f67 release merge and exact-main release acceptance remain separate gates; published 1.25 is unchanged. Continue the [existing hosting gates](docs/TWENTYI_HOSTING_FULL_ACCEPTANCE.md) and pinned Devin correction handoff without replacing pending originals. The earlier main CI checkpoint is retained below as history, including its then-pending PR-integration instruction.
+
 ## 2026-10-18 — current Devin correction handoff
 
 Parent `fc5a3fc6391a5d85dfee01060b5806d04dae192a`; this documentation-only follow-up keeps the hosting implementation and all original sources/runs intact. [Restack review](docs/DEVIN_RESTACK_REVIEW_2026-10-18.md) pins PR203/212/202/194/195 and provides an unapplied one-file invoice restoration proposal. Contact agreement authority, lost main invoice guards/navigation and payment-upgrade acceptance gaps need correction before integration. The twelve earlier mail findings remain open; do not mistake a merge from main for their repair.
@@ -41,6 +47,12 @@ Parent `6cf7a8f82bfa87f3bdc3d8565a24ddc3b3072a29`, branch `codex/twentyi-hosting
 Source review and 57 portable checks pass; extracted bookkeeping validation passes 18 modeled checks in each normal/minimal PHP mode. Review actual Linux SQL/HTTP results before claiming acceptance. Preserve original run39103179668 and older originals for their own sources. A later run of this commit must pass all four HTTP phases, original native checks and existing browser checks, followed by inspection of the ten real captures. Complete synthetic journals do not replace interrupted or published-baseline upgrade testing.
 
 The full-suite wiring and collision-free fixture namespace are prepared separately but not applied. Keep the corrected 1.26 full runs and release publication gates independent. Main now includes CI trigger correction [PR218](https://github.com/afterburn25/Cajun_Web/pull/218), merge `e397d9a6`; no existing run was canceled. Next: preserve new original results, finish focused acceptance, then integrate full-suite and real upgrade coverage. Published 1.25.0 remains immutable.
+
+## 2026-10-18 — CI trigger correction
+
+Parent `6caf654c99cb5befb610f405e40df69b0c174cb6`; branch `codex/ci-pr-path-filters`. Ten focused workflows now use matching push/PR path lists, retaining prior paths and covering shared runtime, native Docker and mail dependencies. Source review verifies unchanged jobs and every non-path setting; 119 finite source/applicability checks passed. This is trigger validation, not new application acceptance. [Details](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).
+
+Integrate this CI-only change through a normal PR. Existing queued/running runs and original failure evidence stay intact; do not dispatch replacement runs to address queue delay. The release and hosting feature branches are unchanged. Continue reviewing the original corrected 1.26 runs `39098578401`, `39098583508`, `39098588864`, `39098593805` and focused hosting run `39103179668` as their results arrive. The first corrected build passed; remaining acceptance is pending. Keep published 1.25.0 immutable. No new release or live deployment is authorized by this CI change.
 
 ## 2026-10-18 — hosting recovery safeguard checkpoint
 

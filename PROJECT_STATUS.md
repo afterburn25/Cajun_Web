@@ -1,3 +1,9 @@
+## 2026-10-18 — main CI triggers and hosting development remain separate from release approval
+
+This integration combines hosting development source `4e35059b5a3966be33e80fc7e7bd2115a19ce11a` with main `e397d9a6e293850e8dff61a593e3ba39ee178400`, which normally merged PR218. The ten focused workflow path filters are retained with their original jobs; all hosting shipping files, tests, acceptance contracts and full application workflow remain exact to the development parent. Both histories are preserved by a normal main-to-development merge.
+
+The separate f67 1.26 release candidate, original 512/run39104617939 and 10142/run39108671173 remain their original sources and runs. Dated queue observations below keep their original cutoff; this merge supplies no new runtime result. Published 1.25 assets remain immutable. This is not the f67-to-main release merge, hosting acceptance or publication. Continue the existing original-result reviews and [hosting acceptance gates](docs/TWENTYI_HOSTING_FULL_ACCEPTANCE.md); Devin correction work remains as recorded below.
+
 ## 2026-10-18 — Devin integration review and correction handoff
 
 Starting at hosting acceptance source `fc5a3fc6391a5d85dfee01060b5806d04dae192a`, reviewed current Devin contacts/activity, payment-link and mail restacks. [Concrete findings and invoice restoration proposal](docs/DEVIN_RESTACK_REVIEW_2026-10-18.md) identify missing contact billing authority, dropped main invoice guards/navigation, payment-upgrade prerequisites, overly broad retained-setting exceptions and stale fixture bindings. Previously reported mail defects remain unresolved. No Devin branch is merged or certified by this review.
@@ -39,6 +45,12 @@ This starts from hosting successor `512656850e1d9855b921ab4e3b9b4a891b636b16`; i
 The hosting successor adds an explicit HTTP-test opt-in after its exact-source COMPLETE and UPDATE packages are built. Four isolated installed copies exercise the real staged owner page with absent, empty, published and withdrawn hosting history. Tests cover package validation, CSRF, current owner/password, backup confirmation, permitted recovery and retained-history refusal. They verify business rows, table definitions, files and private media while separately checking expected authentication/rate/audit bookkeeping. [Scope and limits](docs/TWENTYI_HOSTING_OFFERS.md#file-recovery).
 
 All 88 original hosting assertions and the separate 44-case native recovery continuation are preserved. Source/syntax review, 57 portable checks and 18 modeled bookkeeping checks per PHP mode pass; actual packaged SQL/HTTP results remain pending. This uses complete synthetic journals with real same-source packages, not a published-baseline or interrupted-upgrade acceptance result. The 1.26 release candidate remains separate. CI-only [PR218](https://github.com/afterburn25/Cajun_Web/pull/218) is merged on main; its trigger changes do not alter these preserved original runs.
+
+## 2026-10-18 — reduce unrelated CI work
+
+Branch `codex/ci-pr-path-filters`, from main `6caf654c99cb5befb610f405e40df69b0c174cb6`, adds dependency-aware pull-request path filters to ten workflows that already filter pushes. Every test job, matrix, artifact, timeout and complete application/release check is unchanged. At 06:18 UTC GitHub reported 1,032 queued workflows and three active workflows; this is a queue observation, not a diagnosis of account limits. The change reduces future unrelated runs and does not clear the existing queue. [Trigger scope and validation](docs/RELEASE_WORKFLOW.md#2026-10-18--dependency-aware-pull-request-triggers).
+
+The separate 1.26 candidate remains `f67b1631` in [PR216](https://github.com/afterburn25/Cajun_Web/pull/216). Its first original full run has passed its build job; database/browser, Apache and recovery work was still queued at 06:23 UTC. Hosting offer/recovery source `6cf7a8f8` remains separate and awaits its original focused tests. Neither is published. Published 1.25.0 and production are unchanged.
 
 ## 2026-10-18 — protect hosting history during file recovery
 

@@ -2,8 +2,9 @@ name: Mail receiving checks
 on:
   push:
     branches: [main]
-    paths: ['foundation/mail-receiving/**', 'tests/mail-receiving/**', 'tools/check_mail_vendor.py', '.github/workflows/mail-receiving.yml']
+    paths: ['foundation/mail-receiving/**', 'tests/mail-receiving/**', 'tools/check_mail_vendor.py', '.github/workflows/mail-receiving.yml', 'foundation/mail-transport/**', 'site/includes/foundation/mail-receiving/**']
   pull_request:
+    paths: ['foundation/mail-receiving/**', 'tests/mail-receiving/**', 'tools/check_mail_vendor.py', '.github/workflows/mail-receiving.yml', 'foundation/mail-transport/**', 'site/includes/foundation/mail-receiving/**']
     branches: [main]
   workflow_dispatch:
 permissions:
