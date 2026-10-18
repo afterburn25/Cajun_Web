@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths: ['foundation/mail-transport/**', 'tests/mail-transport/**', '.github/workflows/mail-transport.yml']
   pull_request:
+    paths: ['foundation/mail-transport/**', 'tests/mail-transport/**', '.github/workflows/mail-transport.yml']
     branches: [main]
   workflow_dispatch:
 permissions:
