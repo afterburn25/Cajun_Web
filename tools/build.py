@@ -196,7 +196,7 @@ def main():
     modes=subprocess.check_output(['git','ls-tree','-r',commit],cwd=ROOT,text=True).splitlines()
     if any(line.startswith('120000 ') for line in modes):raise RuntimeError('Git symlinks cannot be shipped, including on Windows checkouts')
     if {n[5:] for n in tracked if n.startswith('site/')}!=set(inv):raise RuntimeError('Shipping inventory differs from source commit')
-    full={};allowed={'.github','docs','tests','tools','brand','foundation','site'}
+    full={};allowed={'.github','docs','tests','tools','brand','foundation','site','ops'}
     with source_blobs(commit,tracked) as read_source:
         for n in tracked:
             safe(n);p=ROOT/n
