@@ -18,13 +18,13 @@ $register=new TwentyIOperationRegister();
 $builder=new TwentyIRequestBuilder($register);
 
 // ---- catalog shape ----
-check($register->names()===['packages.create','packages.update','domains.renew','domains.register','domains.transfer','domains.nameservers','domains.dns','packages.userstatus','packages.delete'],'closed catalog is exactly the nine documented operations');
-check($register->buildableNames()===['packages.create','packages.update','domains.renew','packages.delete'],'only shape-complete operations are buildable');
+check($register->names()===['packages.directoryindexing','packages.forcessl','cloudsites.create','packages.create','packages.update','domains.renew','domains.register','domains.transfer','domains.nameservers','domains.dns','packages.userstatus','packages.delete','mailboxes.create'],'closed catalog is exactly the thirteen documented operations');
+check($register->buildableNames()===['packages.directoryindexing','packages.forcessl','cloudsites.create','packages.create','packages.update','domains.renew','domains.nameservers','packages.delete','mailboxes.create'],'only shape-complete operations are buildable with their required dedicated context');
 check($register->get('packages.create')->mayTriggerEmail&&$register->get('packages.create')->mayChargeBilling,'create flags email and billing risk');
 check($register->get('packages.update')->destructive&&$register->get('packages.update')->mayChargeBilling,'update flags mixed delete and billing');
 check($register->get('domains.renew')->mayChargeBilling&&!$register->get('domains.renew')->destructive,'domain renew flags billing only');
 check($register->get('packages.delete')->shapeComplete&&$register->get('packages.delete')->destructive,'delete uses the documented array contract');
-foreach(['domains.register','domains.transfer','domains.nameservers','domains.dns'] as $name){
+foreach(['domains.register','domains.transfer','domains.dns'] as $name){
     check(!$register->get($name)->shapeComplete,'domain operation documented but shape-incomplete '.$name);
     check(refused(static fn()=>$builder->build(new ProviderOperation($name,'k',['resellerId'=>'*','packageId'=>1,'domainId'=>1,'name'=>'a.example','years'=>1]))),'shape-incomplete domain operation refuses to build '.$name);
 }
@@ -178,6 +178,8 @@ check(!TwentyIResultClassifier::fromTransportFailure('packages.create',new Trans
 // ---- adapter still refuses: this component is descriptive until wired ----
 $adapter=__DIR__.'/../../foundation/twentyi/TwentyIAdapter.php';
 check(str_contains(file_get_contents($adapter),'public function supports(string $operation): bool { return false; }'),'adapter still refuses every operation; register is not execution authority');
+
+require __DIR__.'/nameservers.php';
 
 if(isset($argv[1])) {
     $json=json_encode(['passed'=>true,'scope'=>'Synthetic write-boundary only; descriptors, request construction and classification. No HTTP transport, credential, database or provider call','checks'=>$checks],JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR)."\n";

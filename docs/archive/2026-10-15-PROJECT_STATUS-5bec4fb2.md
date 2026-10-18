@@ -1,0 +1,11 @@
+# Current development: hosting confirmation verified; correct contradictory order wording
+
+Codex owns the complete 20i P0 integration. Published [1.24.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.24.0), source `7190b582`, is unchanged. Development continues on `codex/twentyi-service-orders` / [PR 138](https://github.com/afterburn25/Cajun_Web/pull/138). No new release or deployment is claimed.
+
+Normal merge `e37517facecaeb1b91cf5aaad44d03b3fd6428a2` preserves tested hosting confirmation `4d059a5b` and main `13f9662d`. Its four PHP/database combinations pass: downloaded reports verify 38 confirmation, 32 rendered owner-form and 76 fulfillment cases within 465 combined recurring/order checks, plus 108 ledger and 68 forms per mode. Its clean Windows packages pass independent exact-source verification of all 11 checksums, archive members, directory lists and update payload. [Exact evidence](../TWENTYI_ORDER_FULFILLMENT.md).
+
+Parent `4d059a5b` now passes 1,737 actual HTTP/Chromium checks. Downloaded browser evidence and three actual pending/active admin/client screenshots are inspected. That inspection found an accepted-order card still saying setup was pending after service activation. This descendant replaces the unconditional pending statement with neutral request-acceptance wording and adds an end-to-end assertion for both owner and client screens. Local PHP/Python syntax passes; current descendant browser acceptance is pending.
+
+The merged full application run `38805429786` has passed native integration and is in HTTP/Chromium workflows; parent `38803596849` is in recovery. Preserve both. Full combined browser/recovery/Apache acceptance, independent review, normal integration and exact-main release verification remain required. No Website_Core checkout or live provider operation was used.
+
+Full 20i remains unfinished. Public plan-list documentation establishes the endpoint and type ID but not the configuration response fields; no full reference tab is available in the browser. Continue executable client domain search using the existing documented reader while retaining automatic catalog/configuration verification as unfinished. Native hosting controls, domain commerce, VPS/cloud, support and interactive SSH remain required. Unrelated feature work stays paused.
