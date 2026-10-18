@@ -801,6 +801,8 @@ Save meaningful versions, compare changes, restore as draft, and retain approval
 
 Protected export of required database/media/configuration with clear scope, integrity metadata, secrets protection, storage limits and retention. Restore must show impact, validate compatibility, require deliberate authorization, and support recovery. Acceptance: a successful restore drill in an isolated environment; an archive download alone is not a tested backup system.
 
+Status 2026-10-16: contract layer on `devin/non20i-backups-foundation`; file-scope runtime on `devin/non20i-backups-runtime` adds private ZIP archives, a durable `backups` record, admin create/preview/restore/download, owner-phrase restore and retention pruning. Database contents remain out of scope (the ledger/studio records are database-side); media/configuration are private-storage concerns handled by the hosting layer, not this file snapshot.
+
 ### A-04 — Controlled update manager
 
 Identify installed and available versions, verify trusted package integrity/compatibility, preserve private data/configuration, back up affected material, apply ordered migrations, report failures, and offer a tested recovery path. Acceptance: path-traversal/symlink/partial-write protections, concurrent-run prevention, migration tracking, exact artifact manifest, and no reintroduction of install keys or multi-step setup. Signing/trust provisioning must be designed before automatic updates are enabled.
