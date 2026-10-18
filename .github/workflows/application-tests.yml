@@ -293,6 +293,9 @@ jobs:
           "$PHP_BINARY" tests/provider_catalog_import.php > qa/provider-catalog-import-default.json
           "$PHP_BINARY" -n tests/provider_catalog_import.php > qa/provider-catalog-import-minimal.json
           "$PHP_BINARY" tests/provider_catalog_import_native.php
+          "$PHP_BINARY" tests/provider_package_types.php > qa/provider-package-types-default.json
+          "$PHP_BINARY" -n tests/provider_package_types.php > qa/provider-package-types-minimal.json
+          "$PHP_BINARY" tests/provider_package_types_native.php
           "$PHP_BINARY" tests/payments_native.php
           "$PHP_BINARY" tests/attempts_native.php
           "$PHP_BINARY" tests/notifications_native.php

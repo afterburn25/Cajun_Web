@@ -1,3 +1,7 @@
+## 2026-10-18 — hosting catalog candidate, acceptance pending
+
+The [direct hosting catalog increment](TWENTYI_HOSTING_CATALOG.md) adds an explicit owner refresh and local draft import for returned IDs/names, including types absent from installed inventory. It preserves cross-source draft identity and original provenance. Source implementation does not complete native/browser or release acceptance, complete product coverage, provider prices/images, cloud imports or hosting publication. The original cloud-only check returned null; no catalog meaning is inferred. Published1.25.0 remains the latest verified release.
+
 ## Verified increment and remaining work — 2026-10-18
 
 The bounded 1.25.0 increment, including the owner installer/navigation/hosting-draft and local-image additions, is [published and freshly download-verified](RELEASE_1.25.0_PUBLICATION.md) from `b79c67110829126916e3a65e616191542448bccc`. Its candidate/main acceptance and release-delivery gates are complete. Full 20i remains unfinished; every HOLD row and operation-specific authority limit remains.

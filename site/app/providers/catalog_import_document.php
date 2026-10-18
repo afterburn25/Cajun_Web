@@ -2,9 +2,24 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 
-/** Only documented typeRef/packageTypeName from saved GET /package observations. */
+/** Named hosting types from one explicitly selected saved inventory or catalog observation. */
 final readonly class ProviderCatalogImportDocument {
     private function __construct(public array $types, public int $unnamed) {}
+
+    /** Exact packageTypes identities share the documented addWeb.type / typeRef namespace. */
+    public static function fromPackageTypes(array $rows): self {
+        require_once dirname(__DIR__,2).'/includes/foundation/twentyi-inventory/InventoryPackageType.php';
+        if (!array_is_list($rows) || count($rows)>8192) throw new InvalidArgumentException('The saved hosting catalog exceeds the supported bounds.');
+        $types=[];
+        foreach ($rows as $row) {
+            $record=\CajunWebPro\Foundation\TwentyIInventory\InventoryPackageType::fromStored($row);
+            $key='type:'.$record->id;
+            if (isset($types[$key])) throw new InvalidArgumentException('The saved hosting catalog has duplicate type identities.');
+            $types[$key]=['type_ref'=>$record->id,'name'=>$record->label];
+        }
+        ksort($types,SORT_STRING);
+        return new self(array_values($types),0);
+    }
 
     public static function fromRows(array $rows): self {
         if (!array_is_list($rows) || count($rows)>8192) throw new InvalidArgumentException('The saved hosting observation exceeds the supported bounds.');

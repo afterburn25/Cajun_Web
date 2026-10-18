@@ -1,3 +1,7 @@
+## Unreleased — direct 20i hosting catalog drafts
+
+Add explicit owner refresh of the documented hosting type catalog, including types without installed accounts, and source-aware local draft imports. Preserve existing inventory imports and their prices, wording, images and provenance. Add bounded typed projection and durable current-context observations; retain failed/unfinished attempts instead of falling back. Provider prices/images, cloud products and hosting publication remain unfinished. Combined native/browser acceptance is pending; released1.25.0 is unchanged.
+
 ## Unreleased — record observed cloud null response
 
 Retain the exact safe result of separate original run39090973425:42 offline guards and the one-GET diagnostic passed, observing JSON null. No cloud catalog/import semantics follow; the earlier two-operation failure stays preserved. Hosting catalog implementation continues separately. No released bytes or production behavior changed.

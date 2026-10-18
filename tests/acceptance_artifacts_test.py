@@ -277,10 +277,24 @@ def run(tmp):
     # Retain reviewed driver bytes and the complete predecessor command sequence.
     contract=a.load(ROOT/'tools/acceptance-contract.json')
     for path,expected_hash in contract['unchanged_test_sha256'].items():
-        check('Original test source retained '+path, hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+        original_bytes=ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')
+        if path=='tests/browser_acceptance.py':
+            added=contract['provider_package_types']['browser_addition'].encode()
+            check('One hosting catalog browser callback is additive',original_bytes.count(added)==1)
+            original_bytes=original_bytes.replace(added,b'',1)
+        check('Original test source retained '+path, hashlib.sha256(original_bytes).hexdigest()==expected_hash)
     workflow=(ROOT/'.github/workflows/application-tests.yml').read_text()
     native=workflow.split('      - name: Native database, upgrade and authorization integration\n        id: native\n        run: |\n',1)[1].split('      - name: Real HTTP',1)[0]
     native_commands=[line.strip() for line in native.splitlines()]
+    package_contract=contract['provider_package_types'];package_commands=package_contract['additions']
+    check('Direct hosting catalog retains the complete155-command recipe',len(native_commands)==155 and native_commands==contract['native_commands'])
+    package_position=native_commands.index(package_contract['additions_after'])+1
+    check('Three hosting catalog commands occur once after legacy import coverage',len(package_commands)==len(set(package_commands))==3 and native_commands[package_position:package_position+3]==package_commands and all(native_commands.count(command)==1 for command in package_commands))
+    native_commands=[command for command in native_commands if command not in package_commands]
+    check('Direct catalog additions preserve exact152 predecessor commands',len(native_commands)==package_contract['predecessor_native_count']==152 and hashlib.sha256(json.dumps(native_commands,separators=(',',':')).encode()).hexdigest()==package_contract['predecessor_native_sha256'])
+    for path,expected_hash in package_contract['source_sha256'].items():
+        check('Hosting catalog fixture source retained '+path,hashlib.sha256(ROOT.joinpath(path).read_bytes().replace(b'\r\n',b'\n')).hexdigest()==expected_hash)
+    contract['native_commands']=[command for command in contract['native_commands'] if command not in package_commands]
     import_contract=contract['provider_catalog_import'];import_commands=import_contract['additions']
     check('Import additions retain the complete selected-runtime recipe',len(native_commands)==152 and native_commands==contract['native_commands'])
     import_position=native_commands.index(import_contract['additions_after'])+1

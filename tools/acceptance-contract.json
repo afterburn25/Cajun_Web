@@ -25,6 +25,9 @@
     "\"$PHP_BINARY\" tests/provider_catalog_import.php > qa/provider-catalog-import-default.json",
     "\"$PHP_BINARY\" -n tests/provider_catalog_import.php > qa/provider-catalog-import-minimal.json",
     "\"$PHP_BINARY\" tests/provider_catalog_import_native.php",
+    "\"$PHP_BINARY\" tests/provider_package_types.php > qa/provider-package-types-default.json",
+    "\"$PHP_BINARY\" -n tests/provider_package_types.php > qa/provider-package-types-minimal.json",
+    "\"$PHP_BINARY\" tests/provider_package_types_native.php",
     "\"$PHP_BINARY\" tests/payments_native.php",
     "\"$PHP_BINARY\" tests/attempts_native.php",
     "\"$PHP_BINARY\" tests/notifications_native.php",
@@ -555,5 +558,32 @@
       "tests/provider_catalog_import_cases.py": "695358b2edeb7aab0a738d700406289939223d504645a34a8168adbd10c440e5"
     },
     "scope": "Actual document default/minimal and isolated pimci_ native then packaged HTTP multipart; no live provider requests, prices, publication or checkout."
+  },
+  "provider_package_types": {
+    "source_base": "6caf654c99cb5befb610f405e40df69b0c174cb6",
+    "predecessor_native_count": 152,
+    "predecessor_native_sha256": "ae7da25c86ee385fe5c3896e75f12badd91b459c5a8ef4ac9db1ab0075c2c0e6",
+    "additions_after": "\"$PHP_BINARY\" tests/provider_catalog_import_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/provider_package_types.php > qa/provider-package-types-default.json",
+      "\"$PHP_BINARY\" -n tests/provider_package_types.php > qa/provider-package-types-minimal.json",
+      "\"$PHP_BINARY\" tests/provider_package_types_native.php"
+    ],
+    "reports": [
+      "provider-package-types-default.json",
+      "provider-package-types-minimal.json",
+      "provider-package-types-native-results.json"
+    ],
+    "screenshots": [
+      "20i-Hosting-Catalog-Desktop.png",
+      "20i-Hosting-Catalog-Mobile.png"
+    ],
+    "browser_addition": "        from provider_package_types_cases import run_browser as package_types_browser\n        package_types_browser(globals(),browser)\n",
+    "source_sha256": {
+      "tests/provider_package_types.php": "e5812a35e8e034c3a54c8f90b4011e10dd08eadbe759a6204899cdd224636533",
+      "tests/provider_package_types_native.php": "96418ff371ce9c8d4d2e1bd3dcf7e60edfed790a25097038df285cffc5fd9d9d",
+      "tests/provider_package_types_cases.py": "6ec03bc6c389e3ee618499ba691cb3594c4d0ac011bfff5efb47de47c60415ba"
+    },
+    "scope": "Direct hosting catalog typed read, durable observations, current-owner refresh and source-aware draft import with synthetic transport; no live provider writes or images."
   }
 }

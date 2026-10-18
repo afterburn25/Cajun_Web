@@ -1,3 +1,9 @@
+## 2026-10-18 — direct hosting catalog candidate
+
+The `codex/twentyi-direct-hosting-catalog` branch starts from `6caf654c99cb5befb610f405e40df69b0c174cb6` and implements a [direct hosting catalog draft-import candidate](docs/TWENTYI_HOSTING_CATALOG.md). Owners can explicitly refresh confirmed package-type IDs/names and import types absent from installed inventory. Existing imports, edited prices and local images retain their original identity and provenance across both sources. Additive observation storage binds current owner/connection context and refuses stale, failed or inconsistent sources. No provider pricing, automatic images, cloud import or hosting publication is added.
+
+Source/syntax and focused offline checks have passed; native database, packaged HTTP/browser and release acceptance remain pending. Root integrates shared admin/build/test wiring; the three agents own projection/importer, persistence and focused test proposals. Published1.25.0 remains immutable and no live deployment occurred. Next: run the combined focused database matrix and browser acceptance, fix any concrete failures, then complete the next version's upgrade and release gates.
+
 ## 2026-10-18 — cloud endpoint supplied no catalog details
 
 The separate [cloud-only diagnostic](docs/TWENTYI_CLOUD_ROOT_DIAGNOSTIC.md#original-follow-up-outcome--2026-10-18), original run39090973425 at source `bf788894b1acd4c07daf74e718c4f95774acef85`, completed successfully after 42 passing offline checks. Its one fixed GET observed a JSON `null` root. This establishes the response type for that request and credential context, not an empty catalog, missing entitlement, provider fault or valid import contract. No cloud product fields were supplied. The original two-operation run39090394774 remains failed and unchanged; this later observation cannot retrospectively identify its scalar kind.

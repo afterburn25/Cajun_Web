@@ -14,9 +14,19 @@ function catalog_admin_action(string $action,array $user): never {
             if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm that you have a current backup.');
             provider_catalog_import_prepare(posted('owner_password',1000));flash('Observed hosting type imports enabled. Existing catalog products are unchanged.');redirect(admin_url('catalog'));
         }
+        if($action==='catalog_import_catalog_prepare'){
+            provider_package_types_prepare(posted('owner_password',1000));flash('20i hosting catalog discovery enabled. Refresh the catalog to load its hosting types.');redirect(admin_url('catalog',['import_source'=>'package.types']));
+        }
+        if($action==='catalog_import_catalog_refresh'){
+            $revision=posted('profile_revision',10);
+            if(!preg_match('/^[1-9][0-9]{0,9}$/D',$revision)||(int)$revision>2147483647)throw new InvalidArgumentException('Reload the current hosting catalog form.');
+            $state=provider_inventory_refresh(posted('profile_id',32),(int)$revision,posted('owner_password',1000),null,null,\CajunWebPro\Foundation\TwentyIInventory\InventoryRead::PACKAGE_TYPES);
+            flash($state==='complete'?'20i hosting types saved. Review them below before creating local drafts.':'The hosting catalog refresh could not be completed. Existing products are unchanged; refresh again before importing from this catalog.',$state==='complete'?'success':'error');
+            redirect(admin_url('catalog',['import_source'=>'package.types']));
+        }
         if($action==='catalog_import_create'){
             if(posted('confirm',1)!=='1')throw new InvalidArgumentException('Confirm creation of this local draft.');
-            $id=provider_catalog_import_create(posted('preview_hash',64),posted('type_ref',18),posted('sku',60),posted('term',10),posted('owner_password',1000));
+            $id=provider_catalog_import_create(posted('preview_hash',64),posted('type_ref',18),posted('sku',60),posted('term',10),posted('owner_password',1000),posted('import_source',20)?:'packages.list');
             flash('Observed hosting type saved as a local draft, or its existing draft retained. Review its price, terms and image. No product was published or ordered.');redirect(admin_url('catalog',['id'=>$id]));
         }
         if($action==='catalog_import_image'){

@@ -75,11 +75,11 @@ ok('Register and descriptor sets agree', array_keys(InventoryRegister::all()) ==
 $register = InventoryRegister::all();
 ok('Every registered operation is a documented GET', array_reduce($register, fn($c, $cap) => $c && $cap->method === 'GET', true));
 ok('Every registered path is a literal documented template', array_reduce($register, fn($c, $cap) => $c && str_starts_with($cap->pathTemplate, '/'), true));
-ok('Only packages.list carries authenticated-read evidence', count(array_filter($register, fn($cap) => $cap->evidence === InventoryCapability::EVIDENCE_AUTHENTICATED_READ)) === 1);
+ok('Only observed package list and package type shape carry authenticated-read evidence', array_keys(array_filter($register, fn($cap) => $cap->evidence === InventoryCapability::EVIDENCE_AUTHENTICATED_READ)) === [InventoryRead::PACKAGES_LIST, InventoryRead::PACKAGE_TYPES]);
 ok('Package detail is a documented sensitive read', InventoryRegister::get(InventoryRead::PACKAGE_DETAIL)->risk === InventoryCapability::RISK_SENSITIVE_READ);
-ok('Package types schema is honestly unknown', InventoryRegister::get(InventoryRead::PACKAGE_TYPES)->schemaKnown === false);
+ok('Package types bounded identity and label shape is observed', InventoryRegister::get(InventoryRead::PACKAGE_TYPES)->schemaKnown === true);
 ok('Account balance schema is honestly unknown', InventoryRegister::get(InventoryRead::ACCOUNT_BALANCE)->schemaKnown === false);
-ok('Only the evidenced list shape is projectable', InventoryRegister::projectable(InventoryRead::PACKAGES_LIST) && !InventoryRegister::projectable(InventoryRead::PACKAGE_DETAIL) && !InventoryRegister::projectable(InventoryRead::PACKAGE_TYPES) && !InventoryRegister::projectable(InventoryRead::ACCOUNT_BALANCE));
+ok('Observed package list and type shapes are projectable while other sensitive reads remain refused', InventoryRegister::projectable(InventoryRead::PACKAGES_LIST) && !InventoryRegister::projectable(InventoryRead::PACKAGE_DETAIL) && InventoryRegister::projectable(InventoryRead::PACKAGE_TYPES) && !InventoryRegister::projectable(InventoryRead::ACCOUNT_BALANCE));
 deny('Register refuses unknown operations', fn() => InventoryRegister::get('vps.power'));
 deny('A capability cannot claim a non-GET method', fn() => new InventoryCapability('x', 'POST', '/x', InventoryCapability::RISK_READ, InventoryCapability::EVIDENCE_DOCUMENTED, false));
 

@@ -91,7 +91,12 @@ ok('refuse_wrong_provider_no_send', (function (): bool {
 })());
 
 deny('refuse_documented_only_detail', fn() => InventoryReader::read(new ScriptedTransport([]), credential(), InventoryRead::PACKAGE_DETAIL, 7, 1700000000));
-deny('refuse_documented_only_types', fn() => InventoryReader::read(new ScriptedTransport([]), credential(), InventoryRead::PACKAGE_TYPES, '*', 1700000000));
+ok('package_types_fixed_self_empty_observation', (function (): bool {
+    $t = new ScriptedTransport([new TransportResponse(200, [], '[]')]);
+    $s = InventoryReader::read($t, credential(), InventoryRead::PACKAGE_TYPES, '*', 1700000000);
+    return $s->state === 'complete' && $s->packages === [] && $s->coverage === 'unknown' && count($t->sent) === 1 && $t->sent[0]->url === 'https://api.20i.com/reseller/*/packageTypes' && $t->sent[0]->body === null;
+})());
+deny('refuse_package_types_nonself_selector', fn() => InventoryReader::read(new ScriptedTransport([]), new ProviderCredential('twenty-i', 'acct', function (): string { throw new Error('Rejected catalog selector opened a credential'); }), InventoryRead::PACKAGE_TYPES, 7, 1700000000));
 deny('refuse_documented_only_balance', fn() => InventoryReader::read(new ScriptedTransport([]), credential(), InventoryRead::ACCOUNT_BALANCE, '*', 1700000000));
 deny('refuse_unknown_op', fn() => InventoryReader::read(new ScriptedTransport([]), credential(), 'packages.delete', null, 1700000000));
 ok('no_send_on_refusal', (function (): bool {

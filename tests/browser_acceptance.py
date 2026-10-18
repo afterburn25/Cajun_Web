@@ -174,6 +174,8 @@ try:
         catalog_browser(globals(),browser)
         from provider_catalog_import_cases import run_browser as catalog_import_browser
         catalog_import_browser(globals(),browser)
+        from provider_package_types_cases import run_browser as package_types_browser
+        package_types_browser(globals(),browser)
         from payments_cases import run_browser as payments_browser
         payments_browser(globals(),browser)
         from attempts_cases import run_browser as attempts_browser

@@ -4,30 +4,54 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 
 function provider_catalog_import_admin_view(array $user): void {
     if(!staff_can('staff.manage',$user)||support_current()||array_key_exists('support',$_GET))return;
-    ?><section class="workspace-card"><h2>Import hosting products</h2><p>Create drafts from hosting types in your latest 20i inventory. After importing, add your price, description and image. Prices are not imported, and hosting products cannot be published or ordered yet. Other product types are not available here.</p><?php
+    ?><section class="workspace-card"><h2>Import hosting products</h2><p>Choose hosting types from your connected 20i catalog or your saved hosting inventory. Import a draft, then add your price, description and image. Prices are not imported. Hosting publication and ordering are not available yet.</p><?php
     try {
         provider_catalog_import_owner();
         if(!provider_catalog_import_ready()){
             ?><form method="post"><?php admin_action('catalog_import_prepare');admin_input('owner_password','Your current owner password','','password','required autocomplete="current-password"');admin_check('confirm','I have a current database and file backup.',false);?><button class="btn outline">Enable imports</button></form><?php
         }else{
-            $page=gint($_GET,'import_page',1,410,1);$preview=provider_catalog_import_preview($page);
-            echo '<p>Inventory checked: '.esc($preview['observed_at']).' UTC. Review the inventory in <a href="'.esc(admin_url('provider-settings')).'">20i settings</a> to refresh it. Creating a draft does not place an order.</p>';
-            if($preview['unnamed'])echo '<p>'.(int)$preview['unnamed'].' package record(s) have no type name and cannot be imported.</p>';
-            if(!$preview['types'])echo '<p>No named hosting types were found on this page.</p>';
-            foreach($preview['types'] as $type){
-                echo '<div class="catalog-review"><h3>'.esc($type['name']).'</h3><p>20i type '.esc($type['type_ref']).'</p>';
-                if($type['product_id'])echo '<p>'.($type['earlier_credentials']?'Your 20i connection details changed after this draft was imported. The existing draft keeps its original source and cannot be imported again here.':'Already imported. Your price, wording and image will be preserved.').' <a href="'.esc(admin_url('catalog',['id'=>$type['product_id']])).'">Review draft product</a></p>';
-                else{
-                    $retry=($_POST['action']??'')==='catalog_import_create'&&($_POST['type_ref']??null)===$type['type_ref'];
-                    $field=static fn(string $key,string $fallback):string=>$retry?(is_string($_POST[$key]??null)?$_POST[$key]:''):$fallback;
-                    ?><form method="post"><?php admin_action('catalog_import_create');studio_hidden('type_ref',$type['type_ref']);studio_hidden('preview_hash',$field('preview_hash',$preview['hash']));admin_input('sku','Local unique SKU',$field('sku','20I-'.$type['type_ref']),'text','required maxlength="60"');admin_select('term','Local service period to review',[''=>'Choose a period']+catalog_terms(),$field('term',''));?><p>The period is your local choice, not a provider billing term. Price, features and service terms start blank. Publication remains unavailable for hosting products.</p><?php admin_input('owner_password','Your current owner password','','password','required autocomplete="current-password"');admin_check('confirm','Create this local draft for review. No provider order or payment will occur.',$retry&&($_POST['confirm']??'')==='1');?><button class="btn outline">Create draft</button></form><?php
+            $catalogReady=provider_package_types_ready();
+            $source=$_GET['import_source']??($catalogReady?'package.types':'packages.list');
+            if(($_POST['action']??'')==='catalog_import_create')$source=$_POST['import_source']??'packages.list';
+            if(!is_string($source)||!in_array($source,['packages.list','package.types'],true))throw new InvalidArgumentException('Choose the hosting catalog or saved hosting inventory.');
+            echo '<nav aria-label="Hosting import source"><a href="'.esc(admin_url('catalog',['import_source'=>'package.types'])).'"'.($source==='package.types'?' aria-current="page"':'').'>20i hosting catalog</a> · <a href="'.esc(admin_url('catalog',['import_source'=>'packages.list'])).'"'.($source==='packages.list'?' aria-current="page"':'').'>Existing hosting inventory</a></nav>';
+            if($source==='package.types'){
+                echo '<p>Load hosting types directly from 20i, including types without an existing hosting account. Prices and provider images are not imported.</p>';
+                if(!provider_inventory_ready()){
+                    echo '<p>Enable hosting inventory in <a href="'.esc(admin_url('provider-settings')).'">20i settings</a> first, then return here.</p>';
+                }elseif(!$catalogReady){
+                    ?><form method="post"><?php admin_action('catalog_import_catalog_prepare');admin_input('owner_password','Your current owner password','','password','required autocomplete="current-password"');?><button class="btn outline">Enable hosting catalog</button></form><?php
+                }else{
+                    $profile=provider_settings_profile();
+                    if(!$profile)echo '<p>Save your connection in <a href="'.esc(admin_url('provider-settings')).'">20i settings</a> before refreshing the catalog.</p>';
+                    else{
+                        ?><form method="post"><?php admin_action('catalog_import_catalog_refresh');studio_hidden('profile_id',$profile['id']);studio_hidden('profile_revision',(string)$profile['revision']);admin_input('owner_password','Your current owner password','','password','required autocomplete="current-password"');?><button class="btn outline">Refresh 20i hosting catalog</button></form><?php
+                    }
                 }
-                echo '</div>';
             }
-            echo '<nav aria-label="Observed hosting type pages">';
-            if($page>1)echo '<a href="'.esc(admin_url('catalog',['import_page'=>$page-1])).'">Previous types</a> ';
-            if($preview['has_more'])echo '<a href="'.esc(admin_url('catalog',['import_page'=>$page+1])).'">More types</a>';
-            echo '</nav>';
+            if($source==='packages.list'||$catalogReady){
+                $page=gint($_GET,'import_page',1,410,1);$preview=provider_catalog_import_preview($page,$source);
+                if($source==='package.types')echo '<p>Catalog checked: '.esc($preview['observed_at']).' UTC. Creating a draft does not place an order.</p>';
+                else echo '<p>Inventory checked: '.esc($preview['observed_at']).' UTC. Review the inventory in <a href="'.esc(admin_url('provider-settings')).'">20i settings</a> to refresh it. Creating a draft does not place an order.</p>';
+                if($preview['unnamed'])echo '<p>'.(int)$preview['unnamed'].' package record(s) have no type name and cannot be imported.</p>';
+                if(!$preview['types'])echo '<p>No named hosting types were found on this page.</p>';
+                foreach($preview['types'] as $type){
+                    echo '<div class="catalog-review"><h3>'.esc($type['name']).'</h3><p>20i type '.esc($type['type_ref']).'</p>';
+                    if($type['product_id']){
+                        echo '<p>'.($type['earlier_credentials']?'Your 20i connection details changed after this draft was imported. The existing draft keeps its original source and cannot be imported again here.':'Already imported. Your price, wording and image will be preserved.').' <a href="'.esc(admin_url('catalog',['id'=>$type['product_id']])).'">Review draft product</a></p>';
+                        if(isset($type['origin_operation'],$type['origin_name']))echo '<p>Original import: '.($type['origin_operation']==='package.types'?'20i hosting catalog':'saved hosting inventory').' · '.esc($type['origin_name']).'.</p>';
+                    }else{
+                        $retry=($_POST['action']??'')==='catalog_import_create'&&($_POST['type_ref']??null)===$type['type_ref']&&($_POST['import_source']??'packages.list')===$source;
+                        $field=static fn(string $key,string $fallback):string=>$retry?(is_string($_POST[$key]??null)?$_POST[$key]:''):$fallback;
+                        ?><form method="post"><?php admin_action('catalog_import_create');studio_hidden('import_source',$source);studio_hidden('type_ref',$type['type_ref']);studio_hidden('preview_hash',$field('preview_hash',$preview['hash']));admin_input('sku','Local unique SKU',$field('sku','20I-'.$type['type_ref']),'text','required maxlength="60"');admin_select('term','Local service period to review',[''=>'Choose a period']+catalog_terms(),$field('term',''));?><p>The period is your local choice, not a provider billing term. Price, features and service terms start blank. Publication remains unavailable for hosting products.</p><?php admin_input('owner_password','Your current owner password','','password','required autocomplete="current-password"');admin_check('confirm','Create this local draft for review. No provider order or payment will occur.',$retry&&($_POST['confirm']??'')==='1');?><button class="btn outline">Create draft</button></form><?php
+                    }
+                    echo '</div>';
+                }
+                echo '<nav aria-label="Observed hosting type pages">';
+                if($page>1)echo '<a href="'.esc(admin_url('catalog',['import_source'=>$source,'import_page'=>$page-1])).'">Previous types</a> ';
+                if($preview['has_more'])echo '<a href="'.esc(admin_url('catalog',['import_source'=>$source,'import_page'=>$page+1])).'">More types</a>';
+                echo '</nav>';
+            }
         }
     }catch(InvalidArgumentException|RuntimeException $e){if($e instanceof PDOException)throw $e;echo '<div class="notice warning">'.esc($e->getMessage()).'</div>';}
     ?><p>After importing, upload an image you own. Images are not copied from 20i.</p></section><?php
