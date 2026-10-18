@@ -1708,3 +1708,24 @@ Continue roadmap and keep the published assignment directly usable. Start main00
 ## 2026-10-16 - Devin licensing v5: PR159 review corrections
 
 Request: actionable owner review on PR #159 (comment 6218434878). Branch `devin/non20i-licensing` merged current main and applied the two P1 corrections. Fulfilment: removed sole-candidate NULL-invoice claiming — a paid invoice now always mints its own entitlement and unlinked legacy rows are never inferred; `license_link_invoice()` gives owners the explicit reconciliation path (active, non-master, unlinked license + paid invoice with matching customer/product + invoice not already produced), exposed owner-only in the licenses view and `studio_license_reconcile` action. Migration: unmarked populated installs now adopt through `license_legacy_columns` — every existing column must belong to the known historical layout and stray licensing tables refuse untouched; the canonical loop then widens legacy INT product_id, adds invoice_id/is_master and validates before stamping. Tests: native suite reworked — non-capture of unrelated/revoked/admin rows, reconcile refusal matrix, reconciled-link retry, genuine v0-shaped populated unmarked adoption (INT product_id, no bundles table), unknown-column refusal preserving rows, adoption retry. `php -l` clean; `build.py --refresh` regenerated inventory (review item 3). Native/HTTP execution runs in CI.
+
+## 2026-10-18 — Licensing PR #159 audited against main and closed as superseded
+
+- `devin/non20i-licensing` @ `69630e95` (48/48 lanes green) was
+  CONFLICTING vs main `6caf654c`. Merge preview showed 9 conflicts;
+  main's licensing subsystem had been rewritten during the 1.25
+  integration (`license_upgrade_shape`, journaled
+  `license_upgrade_pending`, `license_invoice_cutover`,
+  `legacy.php::license_resolve_legacy_invoice`).
+- File-by-file delta audit: every #159 protection exists on main in an
+  equal-or-stronger form (master-key `is_master=0` filters on portal /
+  bundle / download / admin mint; owner-attested legacy reconcile with
+  evidence + password + FOR UPDATE; version gate refusing unknown
+  markers before DDL; `catalog_validate_schema` checks column types so
+  legacy INT `product_id` is preserved-not-widened).
+- Residual branch deltas evaluated and dropped: stray `license_%`
+  table scan (inert tables never adopted), `product_id` INT→VARCHAR
+  widening (unsafe — would mint `'1'` not a product key).
+- PR #159 closed with verification comment 6245264465; branch retained
+  for history. Source inspection only — no runtime test, merge or
+  release action.
