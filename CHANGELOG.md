@@ -1,3 +1,10 @@
+## Unreleased — owner registered nameserver observations
+
+- Add explicit owner setup and protected nameserver refresh for assigned registered domains, using the existing shared provider executor and durable intent.
+- Show the latest attempt separately from dated history, with stale/failed/unfinished status, previous-assignment labels and bounded history pagination.
+- Preserve current owner, credential, registrar source and assignment checks before and after the GET; fail closed on damaged saved history.
+- Add renderer and isolated native tests to the existing registrar workflow. Local portable checks pass; database, packaged browser, upgrade and release acceptance remain pending. No domain-setting write is enabled.
+
 ## Unreleased — registrar nameserver boundary
 
 - Add a typed read for registered-domain nameservers with exact registrar provenance and closed failure states.

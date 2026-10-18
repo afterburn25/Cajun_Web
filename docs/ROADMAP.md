@@ -1,3 +1,7 @@
+## 2026-10-18 — nameserver read lifecycle implemented, acceptance pending
+
+The [registered nameserver](TWENTYI_REGISTRAR_NAMESERVERS.md) candidate now has owner preparation, immutable observations, latest-attempt projection and admin history. Local pure/rendering checks pass. First Linux native CI, packaged HTTP/responsive browser, full application report wiring and published-baseline upgrade/recovery remain. The later setter/reservation/fence/readback work is separate and unavailable. Direct hosting catalog release checks continue separately; cloud and automatic image contracts remain unresolved, using the retained full owner reference without asking for another copy.
+
 ## 2026-10-18 — registrar nameserver groundwork
 
 A separate reviewed increment adds typed registrar reads and the documented restricted full-set request boundary. It does not enable a nameserver admin action. [Exact implemented scope, local verification and next application work](TWENTYI_REGISTRAR_NAMESERVERS.md) distinguish synthetic boundary tests from pending native authority/storage/history, UI, readback and release acceptance. Full 20i and automatic catalog images remain unfinished.

@@ -1,3 +1,13 @@
+## 2026-10-18 — owner nameserver observation integration
+
+Parent `17cf286394c1e5a82172a73a917af87253f402f0`; enclosing commit **Add owner registered nameserver observations and history**, branch `codex/twentyi-registrar-nameservers`, checkout `work/20i-hosting-dns-contract`. The five-file native proposal and six-file owner UI/test proposal are independently reviewed and applied byte-exact. Existing shared executor calls remain compatible; explicit feature setup does not enable renewal dates. Root also integrates the registrar-focused workflow and refreshes the canonical installer inventory. [Implementation and evidence](docs/TWENTYI_REGISTRAR_NAMESERVERS.md).
+
+Actual applied checks: 960 portable named executions and 22 PHP syntax executions. RNS-UI-1 was a missing synthetic site URL in the renderer fixture; the exact original failure is reproduced and retained externally, and the corrected test passes 42 checks per mode. No product safeguard or assertion was removed. Source review and schema-factory checks are not native SQL acceptance.
+
+Next: preserve and inspect the first exact-source registrar matrix (PHP 8.2/8.4 with MariaDB/MySQL); do not dispatch a duplicate if push already starts it. Its timeout is 20 minutes because the new fixture uses genuine cooldown waits. Add real packaged HTTP/Chromium owner/CSRF/password/support denial and responsive-history coverage, then extend full application/report contracts and published-baseline upgrade/recovery before release. Existing full acceptance remains unchanged and does not yet certify this new native/UI feature. Writes require a separate reserved, fenced, reconciled workflow; no setter is authorized here.
+
+Keep the full 20i reference, all failed/cancelled/queued originals, immutable 1.25, separate 1.26 capture correction b7, hosting correction 1db and PHP controls 7af intact. f67 run39098588864 native/browser evidence is now reviewed at `work/release126-f67-run39098588864-native-browser-review/review.json` (SHA256 `c1236d04a82e3a24627270492d3a08519f7973d8318abc53d6f3039be136a57c`); aggregation remains queued. This is not b7 acceptance or release clearance.
+
 ## 2026-10-18 — registrar nameserver boundary, native read next
 
 Parent `e397d9a6e293850e8dff61a593e3ba39ee178400`; enclosing commit **Add restricted registrar nameserver reader and request boundary**, branch `codex/twentyi-registrar-nameservers`. Worktree directory is the reused `work/20i-hosting-dns-contract`; the old `codex/twentyi-hosting-dns-contract` branch at fb2f19d2 remains preserved. [Feature contract and current evidence](docs/TWENTYI_REGISTRAR_NAMESERVERS.md).

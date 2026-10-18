@@ -1,3 +1,11 @@
+## 2026-10-18 — owner nameserver observations candidate
+
+The separate `codex/twentyi-registrar-nameservers` branch now includes explicit owner setup, saved registered-domain nameserver observations, latest-attempt status and dated history in the 20i connection screen. Failed or unfinished newer reads never fall back to an older current result. Previous assignments are labeled in history. [Feature and remaining acceptance](docs/TWENTYI_REGISTRAR_NAMESERVERS.md).
+
+Applied PHP 8.4.25 checks pass 144 reader, 230 operation, 64 registrar and 42 renderer outcomes in each default/minimal mode (960 named executions), plus 22 touched-file syntax executions. These are pure/synthetic checks. The isolated Linux native fixture and four-environment CI extension are present but have not executed at this source checkpoint. Packaged HTTP/browser, upgrade/recovery, full acceptance and publication remain pending. No nameserver setter or live deployment is enabled.
+
+The full owner API reference is retained and needs no resend. Hosting catalog imports are in the separate 1.26 candidate; cloud catalog mapping and automatic provider images remain unresolved. Original f67 runtime run39098588864 has four successful producer jobs and queued aggregation. Its bounded native/browser archive review validates 167 reports, including 3,149 HTTP outcomes on PHP 8.4.26 / MariaDB 10.11.19, without final-acceptance or new pixel-review credit. Corrected b7 run39137551561 remains separate. Published 1.25 stays unchanged.
+
 ## 2026-10-18 — registrar nameserver boundary
 
 The separate main-based nameserver branch adds a typed registrar read and restricted request builder using the supplied SDK example. It keeps registrar IDs separate from hosting package-domain IDs and refuses unsupported partial changes. Generic write approval remains denied; admin forms, saved observation history and native authority are still pending. [Scope and next application slice](docs/TWENTYI_REGISTRAR_NAMESERVERS.md).

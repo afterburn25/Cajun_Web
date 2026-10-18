@@ -15,6 +15,7 @@ require_once CWP_CODE_ROOT.'/admin/controllers/provider_registrar.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/domain_renewals.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/domain_renewal_agreements.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/domain_renewal_dispatch.php';
+require_once CWP_CODE_ROOT.'/admin/controllers/registered_nameservers.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/domain_contracts.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/domain_expiry.php';
 require_once CWP_CODE_ROOT.'/admin/controllers/service_observations.php';
@@ -48,6 +49,7 @@ function provider_inventory_message(?string $code):string {
 function provider_inventory_admin_action(string $action):void {
     if (str_starts_with($action,'provider_inventory_stackcp_access_')) provider_stackcp_access_admin_action($action);
     if (str_starts_with($action,'provider_inventory_stackcp_')) provider_stackcp_admin_action($action);
+    if(str_starts_with($action,'provider_inventory_nameservers_'))registered_nameservers_admin_action($action);
     if(str_starts_with($action,'provider_inventory_contract_'))domain_contracts_admin_action($action);
     if(str_starts_with($action,'provider_inventory_expiry_'))domain_expiry_admin_action($action);
     if(str_starts_with($action,'provider_inventory_period_'))provider_registration_period_admin_action($action);
