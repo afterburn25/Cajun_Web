@@ -1,3 +1,11 @@
+## 2026-10-18 — further candidate image review
+
+Continue from `codex/release126-capture-readiness`, code/test source `78f45bd8cda7df89494c4ecaaa762ea14170227f`. Its first full run39134909145 remains queued; original f67 aggregation39098482550 remains queued. The separate PHP-controls first run39132700033 is also queued. Preserve these originals; this documentation follow-up does not justify another application dispatch. Remote main was verified as `e397d9a6e293850e8dff61a593e3ba39ee178400`.
+
+Root completed 63 additional browser-image extents; catalog completed its52-image hosting-commerce scope. [The review record](docs/RELEASE_CAPTURE_READINESS_1.26.0.md#further-image-review--2026-10-18) binds every receipt and the five uncovered StackCP mobile headings. The existing Apache16 receipt and original archive were found and integrity-rechecked; do not repeat that completed visual review. Directory30 and package38 review assignments continue, followed by the remaining provider17, billing17 and public15 groups. Collect their concrete findings before making a consolidated capture-only correction. Full runtime, all-image, integration and publication gates remain.
+
+The owner-supplied 3,116-line API reference is present and checksum-correct. Continue from it and official20i sources; do not ask the owner to resend it. No new cloud provider request or image fetch was performed. Devin retains non-20i implementation ownership; published1.25 and production remain unchanged.
+
 ## 2026-10-18 — finish the capture-readiness correction
 
 Work on `codex/release126-capture-readiness`, parent `f67b1631683b29096dd8ec1daee405e104dc0b83`; intended commit: `test: wait for visible content before release captures`. The original direct-hosting branch and PR216 are preserved at f67. Only acceptance tests, their source contract and continuity documentation change. [Detailed evidence](docs/RELEASE_CAPTURE_READINESS_1.26.0.md) distinguishes actual parent images, synthetic Chromium probes and pending corrected application execution.

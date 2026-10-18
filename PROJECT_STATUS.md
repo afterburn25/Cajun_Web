@@ -1,3 +1,11 @@
+## 2026-10-18 — further candidate image review
+
+The direct hosting catalog candidate remains under release verification. First full capture-corrected [run39134909145](https://github.com/afterburn25/Cajun_Web/actions/runs/39134909145) is queued at immutable `78f45bd8cda7df89494c4ecaaa762ea14170227f`; the original f67 final aggregation is also queued. Neither was rerun or replaced. Published 1.25.0 remains the latest verified release.
+
+Another 115 original browser captures have finite visual receipts: StackCP14, mail23, website delivery/licensing12, client/activity/support14 and hosting commerce52. Five StackCP mobile section captures obscure upper content beneath the sticky header; those areas remain unverified. Minor spacing/inner-card overruns and companion-covered section gaps are recorded separately. This is visual progress, not full release acceptance. [Evidence and remaining work](docs/RELEASE_CAPTURE_READINESS_1.26.0.md#further-image-review--2026-10-18).
+
+The complete owner API reference is retained and its hash was rechecked. Official documentation confirms separate HostShop product and image setup without supplying the missing reseller catalog image contract. No resend is needed; automatic provider images and cloud catalog imports remain unfinished. No application, test, workflow, released asset or production setting changes in this checkpoint.
+
 ## 2026-10-18 — capture readiness and actual candidate image review
 
 Original candidate `f67b1631683b29096dd8ec1daee405e104dc0b83` has successful build, Apache, native/browser and recovery jobs in [run39098482550](https://github.com/afterburn25/Cajun_Web/actions/runs/39098482550); final acceptance remains queued. The retained browser partition contains 167 reports and 20,749 passing named executions, including 3,149 HTTP checks. These results do not certify all remaining runtime or release gates.

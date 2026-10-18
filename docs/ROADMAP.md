@@ -1,3 +1,7 @@
+## 2026-10-18 — further candidate image review
+
+Direct hosting catalog release verification continues with115 additional finite browser-image reviews. Five StackCP section captures still need unobscured heading evidence; original full-application runs remain queued. [Detailed evidence](RELEASE_CAPTURE_READINESS_1.26.0.md#further-image-review--2026-10-18). Full20i, automatic provider images, cloud catalog imports and hosting commerce remain unfinished. The owner reference is retained; no repeated documentation request is needed.
+
 ## 2026-10-18 — direct catalog release verification continues
 
 Candidate f67 passes the original build, Apache, native/browser and recovery partitions; final aggregation and other runtime gates remain pending. Actual image review identified fresh-root reveal and imported-image card capture gaps. The separate [capture-readiness correction](RELEASE_CAPTURE_READINESS_1.26.0.md) changes tests only and requires fresh application execution. Full catalog coverage, provider artwork, cloud products and hosting commerce remain unfinished; 1.25.0 is still the latest published verified release.

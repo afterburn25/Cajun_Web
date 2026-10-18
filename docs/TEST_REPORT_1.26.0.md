@@ -1,5 +1,11 @@
 # CajunWebPro 1.26.0 candidate test record
 
+## 2026-10-18 — further visual evidence, original runs queued
+
+First full changed-source run39134909145 is queued at78f45bd8; original f67 run39098482550 still has its four successful partitions and queued final aggregation. No rerun, cancellation or additional dispatch occurred. Separate PHP-controls run39132700033 remains queued. These states are not passing acceptance.
+
+115 additional original browser captures have completed finite captured-extent reviews. The [review guide](RELEASE_CAPTURE_READINESS_1.26.0.md#further-image-review--2026-10-18) preserves exact receipts, uncovered StackCP headings and qualified companion coverage. The earlier Apache16 receipt was integrity-rechecked against its original artifact and image bytes; no new Apache run or repeated visual pass is claimed. No new application/native/HTTP tests ran for this documentation-only checkpoint.
+
 ## 2026-10-18 — actual parent results and capture correction
 
 At f67, original run39098482550 passes build, Apache, native/browser and recovery; final aggregation is still queued. The verified browser partition has 167 reports / 20,749 passing named executions, including 3,149 HTTP executions, and 324 original PNGs. The final required image inventory remains 340 including 16 Apache images. Counts are not complete visual acceptance. [Capture evidence and correction](RELEASE_CAPTURE_READINESS_1.26.0.md) records exact original archive identity, inspected scopes, concrete capture limits and pending successor execution. The 25 local Chromium readiness checks and 262 offline helper checks do not replace native application acceptance.
