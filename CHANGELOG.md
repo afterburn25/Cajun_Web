@@ -1,6 +1,6 @@
 ## 2026-10-18 — hosting successor recovery protection
 
-Guard staged owner file recovery with fresh owner authentication and retained hosting history under the same mutex as publication. Empty, validated history remains eligible; publications, partial/unknown storage and inherited transactions refuse before recovery changes files or the journal. Keep the generic recovery engine intact. Add 142 modeled regression checks per PHP mode; real SQL/HTTP acceptance remains pending. [Behavior and limits](docs/TWENTYI_HOSTING_OFFERS.md#file-recovery).
+Guard staged owner file recovery with fresh owner authentication and retained hosting history under the same mutex as publication. Empty, validated history remains eligible; publications, partial/unknown storage and inherited transactions refuse before recovery changes files or the journal. Keep the generic recovery engine intact. Add 142 modeled regression checks per PHP mode and wire 44 separate native recovery cases into the four-environment focused matrix, preserving all 88 earlier hosting cases and the packaged UI job. Native execution and real HTTP acceptance remain pending. [Behavior and limits](docs/TWENTYI_HOSTING_OFFERS.md#file-recovery).
 
 ## Unreleased successor — hosting offer screens
 

@@ -34,7 +34,7 @@ The updater rechecks current owner access and password after acquiring the same 
 
 Keep this successor's exact staged updater. Previously downloaded updater copies and manual file replacement do not contain this protection. If recovery is necessary after publication, restore a matching backup of website files, database and configured private storage through the hosting provider. A future compatible rollback target requires a separately verified contract.
 
-The current regression executes exact adapter/readiness/mutex function bodies against modeled SQL, authentication and recovery seams: 142 checks pass in each normal and minimal PHP mode. Actual database, interrupted-filesystem, concurrent-connection and authenticated staged HTTP cases remain required before release.
+The current regression executes exact adapter/readiness/mutex function bodies against modeled SQL, authentication and recovery seams: 142 checks pass in each normal and minimal PHP mode. Actual database, interrupted-filesystem, concurrent-connection and authenticated staged HTTP cases remain required before release. The focused native matrix now opts into 44 additional checks across absent, prepared-empty, published and withdrawn history. Each child uses a fresh isolated installed root and real SQL; positive cases generate actual backups with the unchanged filesystem engine. A separate connection samples lock ownership during restoration. These cases are implemented but have not yet executed. Complete synthetic-file recovery does not establish interrupted or published-package upgrade acceptance.
 
 ## Verification and next work
 

@@ -64,9 +64,14 @@ jobs:
               mkdir -p qa
               php tests/hosting_catalog_document.php qa/hosting-catalog-document-default.json
               php -n tests/hosting_catalog_document.php qa/hosting-catalog-document-minimal.json
-              php tests/hosting_catalog_native.php
+              php tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-default.json
+              php -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json
+              CWP_TEST_HOSTING_RECOVERY=1 php tests/hosting_catalog_native.php
               php tests/service_plans_native.php
             '
+      - name: Preserve unchanged source
+        if: always()
+        run: git diff --exit-code -- site foundation tools tests .github/workflows
       - name: Preserve named test results
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -77,6 +82,18 @@ jobs:
             qa/hosting-catalog-document-minimal.json
             qa/hosting-catalog-native-results.json
             qa/service-plans-native-results.json
+            qa/hosting-catalog-recovery-guard-default.json
+            qa/hosting-catalog-recovery-guard-minimal.json
+            qa/hosting-catalog-recovery-native-results.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve isolated recovery files and child diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hosting-catalog-recovery-files-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
+          path: test-runtime/hosting-recovery-*/**
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
   ui:
