@@ -54,5 +54,8 @@ try{
     $GLOBALS['cwp_support']=['session'=>['id'=>'synthetic'],'actor'=>['id'=>1]];
     n_deny('Support sessions cannot run feed setup',fn()=>notification_feed_migrate($password));unset($GLOBALS['cwp_support']);
     $kept=all('SELECT * FROM '.table('notification_feed'));notification_feed_migrate($password);n_ok('Re-running setup preserves every notification',all('SELECT * FROM '.table('notification_feed'))===$kept);
+    require_once CWP_CODE_ROOT.'/app/notifications/metrics.php';$now=time();$metric=[];foreach(metric_samples() as $m)$metric[$m['sample']->kind]=$m;
+    n_ok('Metrics carry real recorded timestamps',isset($metric['audit.activity'],$metric['inquiry.latest'],$metric['delivery.published'],$metric['notification.deliveries'])&&$metric['notification.deliveries']['sample']->status($now,$metric['notification.deliveries']['max_age'])==='fresh');
+    n_ok('Unprepared features honestly report absent metrics',$metric['delivery.published']['sample']->status($now,$metric['delivery.published']['max_age'])==='absent'&&$metric['delivery.published']['sample']->currentValue($now,$metric['delivery.published']['max_age'])===null);
 }catch(Throwable $e){echo 'FAILED: '.$e->getMessage().' @ '.$e->getFile().':'.$e->getLine()."\n";exit(1);}
 echo 'notification feed native: '.count($checks).' checks, 0 failures'."\n";
