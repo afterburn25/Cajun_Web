@@ -1,3 +1,10 @@
+## Unreleased — owner-approved registered nameserver changes
+
+- Add complete-set nameserver approval beside the current domain observation, with explicit review and current-owner password.
+- Keep immutable request/dispatch/follow-up history and block repeat changes while an outcome is unresolved, including after reassignment.
+- Add separate fresh readback and narrowly scoped local history recovery without resending a change or claiming DNS propagation.
+- Group controls within existing domain cards and preserve global request history. Native, packaged browser, upgrade and release acceptance remain pending; no live deployment occurred.
+
 ## Unreleased — nameserver packaged acceptance
 
 - Exercise owner preparation and refresh through actual admin forms, with staff/client/support denials and failed/unfinished latest-result handling.

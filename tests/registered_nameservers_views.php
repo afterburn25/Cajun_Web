@@ -22,7 +22,7 @@ $html = rnv_html(fn() => registered_nameservers_render($projection));
 rnv_check('Current list includes both hosts and its exact UTC observation time', str_contains($html, 'data-nameserver-current') && str_contains($html, 'ns1.example.test') && str_contains($html, 'ns2.example.test') && str_contains($html, gmdate('Y-m-d H:i:s', 1760000000).' UTC'));
 rnv_check('Saved observation is not described as propagation or change permission', str_contains($html, 'does not confirm propagation or permission to change nameservers'));
 $history = ['id' => str_repeat('d', 32), 'state' => 'complete', 'nameservers' => ['old.example.test'], 'observed_epoch' => 1759999000, 'current_assignment' => true];
-foreach (['not_observed', 'stale', 'unfinished', 'unavailable', 'refused', 'access_changed', 'credential', 'assignment_changed', 'unknown'] as $status) {
+foreach (['not_observed', 'stale', 'unfinished', 'unavailable', 'refused', 'access_changed', 'credential', 'assignment_changed', 'change_pending', 'unknown'] as $status) {
     $p = $projection; $p['status'] = $status; $p['history'] = [$history];
     $html = rnv_html(fn() => registered_nameservers_render($p));
     rnv_check($status.' suppresses current values even if an inconsistent caller supplies them', !str_contains($html, 'data-nameserver-current') && !str_contains($html, 'ns1.example.test') && !str_contains($html, 'ns2.example.test'));

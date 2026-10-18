@@ -1,3 +1,9 @@
+## 2026-10-18 — nameserver change candidate
+
+The separate `codex/twentyi-nameserver-changes` branch adds owner-approved complete-set nameserver changes, durable request/ledger history, no automatic resend, explicit follow-up reads and narrowly scoped interrupted-history recovery. Controls are grouped inside existing domain cards; global history survives unlinking. [Scope, actual evidence and remaining gates](docs/TWENTYI_REGISTRAR_NAMESERVER_CHANGES.md).
+
+Local checks pass1,350 portable PHP executions,30 changed-file syntax executions,18 synthetic responsive-layout checks and283 acceptance helpers. Native SQL, packaged owner write forms/browser, installed request-history recovery and release acceptance remain pending. Canonical installer refresh and documentation checks pass. Published1.25 and the full retained API reference are unchanged; no live provider call or deployment occurred.
+
 ## 2026-10-18 — nameserver packaged acceptance wired
 
 The nameserver candidate now includes actual owner-form/Chromium checks, eight responsive captures, and a separate published-1.25 update/retry/recovery producer. The full workflow preserves its previous commands and adds five native commands and two Apache commands. Local checks pass 271 acceptance-helper outcomes, 20 upgrade guards, 19 actual published-archive guards and four PHP syntax executions; canonical refresh passes. These are local/source results, not Linux application acceptance. [Scope, corrections and remaining gates](docs/TWENTYI_REGISTRAR_NAMESERVERS.md#packaged-acceptance-producers--2026-10-18).

@@ -1,0 +1,95 @@
+name: Native registered nameserver changes
+on:
+  push:
+    branches: [main, codex/twentyi-nameserver-changes]
+    paths: ['site/app/providers/**', 'site/admin/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-domain-contracts/**', 'tests/registered_nameserver_changes*.php', 'tests/registered_nameservers*.php', '.github/workflows/provider-nameserver-changes.yml']
+  pull_request:
+    paths: ['site/app/providers/**', 'site/admin/**', 'site/app/staff/**', 'site/includes/auth/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'foundation/twentyi-registrar-nameservers/**', 'foundation/twentyi-domain-contracts/**', 'tests/registered_nameserver_changes*.php', 'tests/registered_nameservers*.php', '.github/workflows/provider-nameserver-changes.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: provider-nameserver-changes-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  native-nameserver-changes:
+    name: Nameserver changes PHP ${{ matrix.php }} and ${{ matrix.database.label }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database:
+          - {image: 'mariadb:10.11', label: 'mariadb-10.11'}
+          - {image: 'mysql:8.4', label: 'mysql-8.4'}
+    services:
+      database:
+        image: ${{ matrix.database.image }}
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify generated deployment inventory and documentation
+        run: |
+          PYTHONPATH=tools python -B -c 'import build; build.generated(False)'
+          python -B tools/check_docs.py
+      - name: Prepare official PHP with PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-inventory-test -f tests/invitations/Dockerfile tests/invitations
+      - name: Allow isolated MySQL audit-failure fixture triggers
+        if: matrix.database.label == 'mysql-8.4'
+        run: docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+      - name: Native owner nameserver approval dispatch and readback
+        run: |
+          mkdir -p qa
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-inventory-test sh -ec '
+              for source in site/app/providers/registered_nameserver*.php site/database/schema/registered_nameserver*.php site/admin/controllers/registered_nameserver*.php tests/registered_nameserver_changes*.php; do php -l "$source"; done
+              php tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-results.json
+              php -n tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-no-ini-results.json
+              php tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-results.json
+              php -n tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-no-ini-results.json
+              php tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-results.json
+              php -n tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-no-ini-results.json
+              php tests/registered_nameserver_changes_native.php
+            '
+      - name: Preserve named storage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-nameserver-changes-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
+          path: |
+            qa/registered-nameserver-changes-storage-results.json
+            qa/registered-nameserver-changes-storage-no-ini-results.json
+            qa/registered-nameserver-changes-service-results.json
+            qa/registered-nameserver-changes-service-no-ini-results.json
+            qa/registered-nameserver-changes-views-results.json
+            qa/registered-nameserver-changes-views-no-ini-results.json
+            qa/registered-nameserver-changes-native-results.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Owner-approved complete registered-domain nameserver changes, immutable request/ledger/terminal history, no automatic resend, exact fresh follow-up reads and interrupted-history fences. Actual disposable MySQL/MariaDB with synthetic transport. No live provider, browser, deployment or release acceptance.' >> "$GITHUB_STEP_SUMMARY"

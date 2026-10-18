@@ -99,6 +99,13 @@
     "\"$PHP_BINARY\" tests/registered_nameservers_views.php qa/registered-nameservers-views-results.json",
     "\"$PHP_BINARY\" -n tests/registered_nameservers_views.php qa/registered-nameservers-views-no-ini-results.json",
     "\"$PHP_BINARY\" tests/registered_nameservers_native.php",
+    "\"$PHP_BINARY\" tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-results.json",
+    "\"$PHP_BINARY\" -n tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-no-ini-results.json",
+    "\"$PHP_BINARY\" tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-results.json",
+    "\"$PHP_BINARY\" -n tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-no-ini-results.json",
+    "\"$PHP_BINARY\" tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-results.json",
+    "\"$PHP_BINARY\" -n tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-no-ini-results.json",
+    "\"$PHP_BINARY\" tests/registered_nameserver_changes_native.php",
     "\"$PHP_BINARY\" tests/domain_expiry_contract.php > qa/domain-expiry-contract-integrated-results.json",
     "\"$PHP_BINARY\" tests/domain_expiry_reader.php > qa/domain-expiry-reader-integrated-results.json",
     "\"$PHP_BINARY\" tests/domain_expiry_native.php",
@@ -657,6 +664,44 @@
         "tests/registered_nameservers_upgrade_test.py": "c9b650c4fcf32894d24e23488df730a13ebc34b52b5e93ab5f2c326eac748e07"
       },
       "scope": "Actual pinned published1.25 update/recovery at unchanged version using build and file identity; no new browser captures."
+    }
+  },
+  "registered_nameserver_changes": {
+    "source_base": "fbe00172a0a1dee683d2501203985d2537a90abc",
+    "predecessor_native_count": 157,
+    "predecessor_native_sha256": "410798bb70c001a0dcc79836888e38118bf623fc777a1722d24bf9db2f292efb",
+    "additions_after": "\"$PHP_BINARY\" tests/registered_nameservers_native.php",
+    "additions": [
+      "\"$PHP_BINARY\" tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-results.json",
+      "\"$PHP_BINARY\" -n tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-results.json",
+      "\"$PHP_BINARY\" -n tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-results.json",
+      "\"$PHP_BINARY\" -n tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-no-ini-results.json",
+      "\"$PHP_BINARY\" tests/registered_nameserver_changes_native.php"
+    ],
+    "reports": [
+      "registered-nameserver-changes-storage-results.json",
+      "registered-nameserver-changes-storage-no-ini-results.json",
+      "registered-nameserver-changes-service-results.json",
+      "registered-nameserver-changes-service-no-ini-results.json",
+      "registered-nameserver-changes-views-results.json",
+      "registered-nameserver-changes-views-no-ini-results.json",
+      "registered-nameserver-changes-native-results.json"
+    ],
+    "source_sha256": {
+      "tests/registered_nameserver_changes_storage.php": "3341e864ee25d721640a6c6b6193429a77b6eb84d8a254514f3e61e8355b9bd7",
+      "tests/registered_nameserver_changes.php": "7035fa6cec58c317eebc0a2813af4e6fbc5efa87dc390bef0fd33e5e4b1cd189",
+      "tests/registered_nameserver_changes_views.php": "fd7a5570bddd64b800fd102b42275e70f0fc208788050d21add7c64d1e98f56c",
+      "tests/registered_nameserver_changes_native.php": "209d30908a2e2c1d7f619f5a47ee5dea727ed2facc11cd0ed4e04a30f07e5904",
+      "tests/registered_nameservers_views.php": "b260dfa38d32ea4fcb9f2fc2c6d3775ca656c716818b6859ddc5550b650af965"
+    },
+    "predecessor_source_delta": {
+      "tests/registered_nameservers_views.php": {
+        "before": "'assignment_changed', 'unknown'] as $status)",
+        "after": "'assignment_changed', 'change_pending', 'unknown'] as $status)",
+        "predecessor_sha256": "b40afb2e0891b6e6fa6796f943e7f87f4dc73bc371b9fcb42104974f4170d39f"
+      }
     }
   }
 }

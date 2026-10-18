@@ -1,3 +1,15 @@
+## 2026-10-18 — owner nameserver changes, first runtime checks next
+
+Continue `codex/twentyi-nameserver-changes`, parent `fbe00172a0a1dee683d2501203985d2537a90abc`, enclosing commit **Add owner-approved registered nameserver changes**. The previous read-only `codex/twentyi-registrar-nameservers` / draftPR221 remains atfbe. [New implementation and exact evidence](docs/TWENTYI_REGISTRAR_NAMESERVER_CHANGES.md).
+
+Three agents supplied frozen storage/service/native proposals; root applied exact bytes, controller/forms, pending-observation hook, permission routing and shared test wiring. Corrected storage clears inherited settings under the setup mutex. All POST outcomes remain uncertain; a matching exact new GET releases the profile/domain fence only with a valid original finished ledger. Completed-ledger recovery reconstructs only a missing local terminal, without another provider call.
+
+Actual local results:1,350 named portable PHP executions,30 changed-PHP syntax executions,18 local Chromium layout/keyboard checks with four inspected captures,283 helper outcomes. Canonical installer refresh and documentation checks pass. These do not certify native SQL or authenticated HTTP. Original external wrapper/early-helper failures and corrected source are retained under `work/registered-nameserver-changes-integration/`. The exact native fixture refuses Windows; do not weaken permissions or fake native results.
+
+The new focused four-way PHP/database workflow and full164-command recipe are prepared;176 browser/checkpoint and222 final reports are required. Next inspect the first automatic push runs, preserving any failure. Add actual packaged new-form/recovery/check HTTP/browser and published-baseline request/fence/ledger retention before merge or release; inherited read-only acceptance does not cover those flows. Source VERSION stays1.25.0. No duplicate dispatch while queued, no cancelling historical runs, no live provider action or deployment.
+
+Original fbe registrar39144346808 and full39144351774 remain queued at the latest check. Keep catalogf67/b7, hosting1db, PHP7af, Devin's separate non20i work and immutable published1.25 unchanged. Full20i is unfinished; any chat percentage for this nameserver slice is a rough implementation estimate, not a measured overall completion or release result.
+
 ## 2026-10-18 — nameserver browser and installed-update checks
 
 Continue `codex/twentyi-registrar-nameservers` / draft [PR221](https://github.com/afterburn25/Cajun_Web/pull/221). Starting commit is `2c5898fa665252fdb92bd2d2c91f8786fcea143c`; the enclosing commit is “Exercise nameserver forms and preserve history through updates”. Browser, published-baseline inputs, actual installed update/recovery and the combined workflow/report contract are now integrated. VERSION stays 1.25.0; the fixture distinguishes published/current builds by source and exact file bytes.

@@ -1,7 +1,7 @@
 name: Application acceptance
 on:
   push:
-    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version]
+    branches: [main, codex/finish-1.1.0, codex/release-1.1.0, codex/admin-accounts, codex/client-support, codex/service-catalog, codex/payment-foundation, codex/sandbox-attempts, codex/sandbox-webhooks, codex/invoice-ledger, codex/client-deliveries, codex/workspace-activity, codex/portfolio-browsing, codex/priority-directory-refactor, codex/twentyi-domain-search, codex/twentyi-recurring-recovery, codex/twentyi-catalog-controls, codex/twentyi-vps-controls, codex/twentyi-catalog-readiness, codex/twentyi-cloud-confirmation, codex/twentyi-forwarding-requests, codex/twentyi-scheduled-refresh, codex/twentyi-cloud-providers, codex/twentyi-domain-contracts, codex/twentyi-package-php-version, codex/twentyi-nameserver-changes]
     paths: ['site/**', 'foundation/**', 'tests/**', 'tools/**', '.github/workflows/application-tests.yml']
   pull_request:
     branches: [main, codex/twentyi-fulfillment, codex/twentyi-service-orders, codex/twentyi-client-domain-search, codex/twentyi-mailbox-controls]
@@ -367,6 +367,13 @@ jobs:
           "$PHP_BINARY" tests/registered_nameservers_views.php qa/registered-nameservers-views-results.json
           "$PHP_BINARY" -n tests/registered_nameservers_views.php qa/registered-nameservers-views-no-ini-results.json
           "$PHP_BINARY" tests/registered_nameservers_native.php
+          "$PHP_BINARY" tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-results.json
+          "$PHP_BINARY" -n tests/registered_nameserver_changes_storage.php > qa/registered-nameserver-changes-storage-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-results.json
+          "$PHP_BINARY" -n tests/registered_nameserver_changes.php > qa/registered-nameserver-changes-service-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-results.json
+          "$PHP_BINARY" -n tests/registered_nameserver_changes_views.php qa/registered-nameserver-changes-views-no-ini-results.json
+          "$PHP_BINARY" tests/registered_nameserver_changes_native.php
           "$PHP_BINARY" tests/domain_expiry_contract.php > qa/domain-expiry-contract-integrated-results.json
           "$PHP_BINARY" tests/domain_expiry_reader.php > qa/domain-expiry-reader-integrated-results.json
           "$PHP_BINARY" tests/domain_expiry_native.php

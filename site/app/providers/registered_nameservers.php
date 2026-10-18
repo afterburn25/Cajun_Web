@@ -99,5 +99,7 @@ function registered_nameservers_project_locked(string $linkId,int $revision,int 
     $total=(int)query('SELECT COUNT(*)'.$from,[$linkId])->fetchColumn();$pages=max(1,(int)ceil($total/20));$page=min($page,$pages);$offset=($page-1)*20;
     foreach(all('SELECT b.id'.$from.' ORDER BY f.seq DESC LIMIT 20 OFFSET '.$offset,[$linkId]) as $raw){$r=registered_nameservers_read_row($raw['id']);$rows[]=['id'=>$r['id'],'state'=>$r['state'],'nameservers'=>$r['nameservers'],'observed_epoch'=>$r['observed_epoch'],'current_assignment'=>$sameContext($r['binding'])];
     }
+    require_once CWP_CODE_ROOT.'/app/providers/registered_nameserver_changes.php';
+    if(!registered_nameserver_changes_current($linkId)){$status='change_pending';$set=null;$at=null;}
     return ['domain'=>$current->data['domain'],'status'=>$status,'nameservers'=>$set,'observed_epoch'=>$at,'history'=>$rows,'pagination'=>['page'=>$page,'pages'=>$pages,'total'=>$total]];
 }

@@ -1,3 +1,7 @@
+## Later change candidate — 2026-10-18
+
+The separate [owner-approved nameserver change candidate](TWENTYI_REGISTRAR_NAMESERVER_CHANGES.md) extends this read-only fbe history. It adds complete-set approval, durable dispatch/fences and explicit readback; native/browser/update/release acceptance remains pending. The earlier no-setter statements below describe their named read-only source checkpoints, which remain preserved.
+
 # Registered-domain nameserver observations
 
 ## Packaged acceptance producers — 2026-10-18

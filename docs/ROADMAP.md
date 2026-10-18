@@ -1,3 +1,7 @@
+## 2026-10-18 — owner nameserver change source implemented
+
+The separate [registered nameserver change candidate](TWENTYI_REGISTRAR_NAMESERVER_CHANGES.md) now has owner consent, original complete-set binding, durable one-send ledger, pending-resource fences, exact fresh readback and completed-ledger history recovery. Local portable/renderer/layout checks pass; first native execution, packaged new-form browser tests, installed-history retention and release verification remain. This advances the registrar controls slice without marking complete20i or provider catalog/image imports complete.
+
 ## 2026-10-18 — nameserver acceptance producers integrated
 
 [Registered nameserver observations](TWENTYI_REGISTRAR_NAMESERVERS.md#packaged-acceptance-producers--2026-10-18) now have packaged owner-form/Chromium and actual published-baseline update/recovery producers wired into full acceptance. Local guards pass; first exact-source runtime outcomes and capture review remain. This advances acceptance preparation, not feature/release completion. The nameserver setter, complete cloud catalog and automatic provider images remain separate unfinished work.
