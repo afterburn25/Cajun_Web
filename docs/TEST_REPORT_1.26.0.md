@@ -1,5 +1,9 @@
 # CajunWebPro 1.26.0 candidate test record
 
+## 2026-10-18 — actual parent results and capture correction
+
+At f67, original run39098482550 passes build, Apache, native/browser and recovery; final aggregation is still queued. The verified browser partition has 167 reports / 20,749 passing named executions, including 3,149 HTTP executions, and 324 original PNGs. The final required image inventory remains 340 including 16 Apache images. Counts are not complete visual acceptance. [Capture evidence and correction](RELEASE_CAPTURE_READINESS_1.26.0.md) records exact original archive identity, inspected scopes, concrete capture limits and pending successor execution. The 25 local Chromium readiness checks and 262 offline helper checks do not replace native application acceptance.
+
 This records the assembled candidate on `codex/twentyi-direct-hosting-catalog`, parent `12da59d15dfdc4b31fd7859c6e377e66ce8daf09`. It does not certify a release or deployment. [Scope](RELEASE_SCOPE_1.26.0.md) and [update instructions](MIGRATION-INSTRUCTIONS-1.26.0.md) describe the intended increment. Published 1.25.0 remains immutable.
 
 ## Existing feature evidence

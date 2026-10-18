@@ -1,3 +1,7 @@
+## Unreleased — wait for release captures to be ready
+
+Scroll the actual fresh-root content into view and decode its images before taking the full-page screenshot. Verify the imported-image Save button is reachable at the original mobile size, then capture the whole card at the same width with additional height. Wait for the domain-search mobile drawer to leave the viewport before capture. Preserve original assertions, report/image names and application behavior. These test corrections address observed capture gaps; corrected application acceptance is pending.
+
 ## Unreleased — isolate direct catalog browser fixture ordering
 
 Run the new catalog browser callback after the existing provider/scheduler callbacks so its six simulated reads do not invalidate older zero-prior-call assertions. Keep all test predicates and deployment bytes unchanged. Original failed evidence remains retained; corrected full acceptance is pending.

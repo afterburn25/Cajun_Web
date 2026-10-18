@@ -1,3 +1,9 @@
+## 2026-10-18 — finish the capture-readiness correction
+
+Work on `codex/release126-capture-readiness`, parent `f67b1631683b29096dd8ec1daee405e104dc0b83`; intended commit: `test: wait for visible content before release captures`. The original direct-hosting branch and PR216 are preserved at f67. Only acceptance tests, their source contract and continuity documentation change. [Detailed evidence](docs/RELEASE_CAPTURE_READINESS_1.26.0.md) distinguishes actual parent images, synthetic Chromium probes and pending corrected application execution.
+
+Independent final source review is clear and final local checks pass. Next: commit/push this bounded correction and execute its first full acceptance workflow. Preserve all original queued/failed/cancelled runs; do not rerun them or substitute their metadata. Full candidate/runtime/main/compatibility/image/download gates remain. Do not infer release clearance from successful parent partitions or local static fixtures. The PHP-version-controls lane is separate at `7af25ed5`; its first native/browser workflow39132700033 remains queued. Complete cloud catalog and automatic image mappings remain unresolved; the saved owner API documentation is available and need not be requested again.
+
 ## 2026-10-18 — resume after browser fixture correction
 
 Parent `6e3dbeff6dc6359a418837d0c95baa43e4c92533` is not accepted: original checkpoint39093140366 exposes a shared simulated-provider call-counter ordering conflict also present in that parent. The enclosing correction only moves the two-line catalog browser invocation after scheduler tests. Preserve the original 39093901565/39093902783/39093904062/39093905330 full runs and PR39093892253; do not treat their successful partitions as full acceptance. Fresh corrected-source runs are required. [Test record and evidence](docs/TEST_REPORT_1.26.0.md). The separate `codex/twentyi-hosting-commerce` backend is not part of this release.

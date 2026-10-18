@@ -1,3 +1,9 @@
+## 2026-10-18 — capture readiness and actual candidate image review
+
+Original candidate `f67b1631683b29096dd8ec1daee405e104dc0b83` has successful build, Apache, native/browser and recovery jobs in [run39098482550](https://github.com/afterburn25/Cajun_Web/actions/runs/39098482550); final acceptance remains queued. The retained browser partition contains 167 reports and 20,749 passing named executions, including 3,149 HTTP checks. These results do not certify all remaining runtime or release gates.
+
+On separate `codex/release126-capture-readiness`, actual image inspection led to test-only corrections: reveal motion content and decode images before the fresh-root capture, prove the image-save button reachable at the original viewport before capturing its complete card, and wait for the mobile domain-search drawer to close. Shipping files are unchanged. Local Chromium root probes pass 25 named checks; a separate domain capture probe preserves ten original viewport outcomes. The existing artifact helper suite passes 262. Corrected full-application captures remain pending. [Evidence, limits and next steps](docs/RELEASE_CAPTURE_READINESS_1.26.0.md). Published 1.25.0 and original candidate runs remain intact; no deployment occurred.
+
 ## 2026-10-18 — browser fixture ordering correction
 
 The original browser checkpoint39093140366 failed after 1,225 successful HTTP checks: the new catalog fixture made six simulated reads before an unchanged provider-setup test required zero prior calls. All 31 catalog HTTP checks passed. The same ordering exists in frozen `6e3dbeff`. Move only the catalog callback after the existing scheduler callback; retain every assertion and original result. Shipping files are unchanged. The corrected descendant still requires complete candidate/main/browser/release acceptance. See [test record](docs/TEST_REPORT_1.26.0.md). Published 1.25.0 remains unchanged; hosting-order backend work stays on a separate branch.

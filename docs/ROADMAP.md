@@ -1,3 +1,7 @@
+## 2026-10-18 — direct catalog release verification continues
+
+Candidate f67 passes the original build, Apache, native/browser and recovery partitions; final aggregation and other runtime gates remain pending. Actual image review identified fresh-root reveal and imported-image card capture gaps. The separate [capture-readiness correction](RELEASE_CAPTURE_READINESS_1.26.0.md) changes tests only and requires fresh application execution. Full catalog coverage, provider artwork, cloud products and hosting commerce remain unfinished; 1.25.0 is still the latest published verified release.
+
 ## Current increment —direct hosting catalog
 
 The direct hosting catalog import passes its focused four-way database matrix. Browser and1.26 release/upgrade acceptance remain pending; see [scope](RELEASE_SCOPE_1.26.0.md). Complete20i, cloud catalog, provider prices/images and hosting publication remain unfinished.
