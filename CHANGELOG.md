@@ -5,6 +5,8 @@
 - #211 `devin/non20i-activity-prefs`: additive `activity_prefs`; per-actor hide/show of permitted update kinds filtered centrally in `activity_projection` (feeds, unread counts, `?open=` destinations, mark-read); CSRF+authorization+audit; upgrade hint re-provisions via `activity_migrate`.
 - #212 `devin/non20i-client-actions`: read-only derived "What we need from you" (pending latest-version decisions; outstanding issued invoices when billing access applies) and "Open blockers" (blocked milestones) on the portal project dashboard; no schema.
 
+- #213 `devin/non20i-portal-account`: portal Account page; client/contact self-service password change with current-password verification, auth_version session rotation, rate limiting, audit and support-session denial; no schema.
+
 ## 2026-10-16 — publish the concrete release freeze and branch
 ## Unreleased — record observed cloud null response
 

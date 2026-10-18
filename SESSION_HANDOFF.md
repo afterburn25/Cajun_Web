@@ -1,3 +1,12 @@
+## 2026-10-18 — #203/#212 integration-review corrections applied and propagated
+
+Codex integration reviews were applied to the restacked contacts chain:
+
+- **#203 review 6104933952 (P1+P2+P3):** `service_plans_current_client()` now rechecks the contact's `billing` permission and `auth_version` inside the lock/transaction (direct row recheck throwing `RuntimeException`, not `contact_can()`/`fail_page`), covering portal renders, subscription reads, consent/cancel/abandon, order-form decide, recurring-billing authority and payment-detail invoice guard. `workspace.php` regains the five main billing-nav links gated by `$canBilling`/`$canDownloads` and re-gates invoice links behind `recurring_billing_invoice_guard` + `domain_renewal_dispatch_invoice_display`. Native (`sn_contact` helper + in-lock revocation worker + wrong-permission writers) and packaged HTTP coverage added. Head `cefb08d6`.
+- **#212 review 6247843434 (P2+P3 + PR213 doc):** `activity_projection()` now unions `author_type` so the layout renders Studio/Client/Contact sender labels correctly. Fixture-order correction per the review: the early activity-enablement was removed from `staff_cases.py`; the two feed assertions moved into `activity_cases.py` after its own setup sequence, asserting page HTTP 200 and exact revision-qualified milestone/event keys. New attribution checks: contact feed `Client message`/`Studio message`, primary feed `Contact message`, staff feed `Client message`. The handoff's earlier "transient card-render" diagnosis was corrected to the supported fixture-order explanation.
+- **Propagation:** the fix merged down contact-decisions `c6005b4c` → contact-activity `ff145744` → staff-notes `7795ffcb` → milestones `2a6808e5` → activity-prefs `e87ff1d4` → client-actions `5dd2ee47` → portal-account `863ec193` (each head's own diffs unioned; inventory regenerated at every level).
+- **Pending:** #202 payment-schema review (start from updated head `467d488d`); #194/#195 carried-forward mail review items; fresh packaged-HTTP/browser lanes for the corrected feeds (queued at GitHub concurrency). Codex owns retarget/integration.
+
 ## 2026-10-18 — cloud endpoint supplied no catalog details
 
 The separate [cloud-only diagnostic](docs/TWENTYI_CLOUD_ROOT_DIAGNOSTIC.md#original-follow-up-outcome--2026-10-18), original run39090973425 at source `bf788894b1acd4c07daf74e718c4f95774acef85`, completed successfully after 42 passing offline checks. Its one fixed GET observed a JSON `null` root. This establishes the response type for that request and credential context, not an empty catalog, missing entitlement, provider fault or valid import contract. No cloud product fields were supplied. The original two-operation run39090394774 remains failed and unchanged; this later observation cannot retrospectively identify its scalar kind.
@@ -12,6 +21,113 @@ The [first catalog diagnostic](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#origina
 
 Previous checkpoint: https://github.com/afterburn25/Cajun_Web/blob/35d8fb7efc94f6f851399d0755fa93097f1fce66/SESSION_HANDOFF.md
 
+## CI queue state — 2026-10-18 (Devin non-20i heads)
+
+The three fix waves re-queued ~5,000 lanes across 51 heads at the
+repo's limited GitHub concurrency (~3–5 jobs). Completed lanes are
+green with zero failures, but external confirmation drains slowly.
+Local verification substitutes in the meantime:
+
+- `tests/acceptance_artifacts_test.py` passes on every head
+  (221–226 checks; contract pins, recipe extensions, baselines).
+- `tools/build.py --commit` assembles all archives end-to-end
+  (locked packages, runtime mirrors, PHPMailer pins, installer
+  inventory over LF bytes, ops/ area approved).
+- All 51 `devin/non20i-*` PRs report MERGEABLE; each stacked child
+  contains its parent's fix commits.
+- Superseded-head runs were cancelled; GitHub concurrency groups
+  auto-cancel further stale runs per branch.
+
+Re-check `gh api repos/afterburn25/Cajun_Web/actions/runs` for
+failures as the queue drains; re-dispatch long lanes after Codex
+retargets stacked PRs. No merge, deployment or release claimed.
+
+## Devin non-20i lane — 2026-10-18 contract/recipe wave
+
+Two further CI defects fixed after the LF-inventory wave. First, main
+integrated `ops/` diagnostic trees but `build.py`'s full-project
+`allowed` set predated them — `'ops'` added on all 51 heads, matching
+the identical fix on `codex/twentyi-direct-hosting-catalog`;
+`tools/build.py --commit` now assembles all archives end-to-end.
+Second, 13 heads wire existing feature-native tests into the
+selected-runtime recipe (153–154 commands vs pinned 152); following
+the `provider_package_types` pattern, each carries a
+`non20i_native_command_extension` contract entry plus a strip-check
+in `tests/acceptance_artifacts_test.py`. All 51 heads pass the full
+artifacts suite locally (221–226 checks) and every stacked pair was
+re-merged after each fix wave. 167 stale-head CI runs were cancelled;
+current-head lanes are queued — results pending.
+
+Latest tips: portal-account `45ba4d97`; client-actions `904604ff`+ops;
+mail chain tip `b9f96940`; ticket-notifications `47e81656`;
+ticket-screenshots `935c634d`; stage-history `1a537618`;
+recurring-billing `88f03ccb`; renewal-notifications `12400816`;
+client-contacts `a49b6409`; contact-decisions `935bfcfa`;
+contact-activity `bb0de709`; staff-notes `362a2365`; milestones
+`828f2720`; activity-prefs `c3c24671`.
+
+## Devin non-20i lane — 2026-10-18 LF-inventory fix status
+
+Follow-up to the mass restack: CI failures on restacked heads were
+traced to installer inventory hashes recorded over CRLF worktree bytes
+(ad-hoc text-mode writes during conflict resolution) while
+`.gitattributes eol=lf` commits LF content. Regenerated
+`site/install/inventory.generated.php` over LF bytes on 43 heads and
+updated `tools/acceptance-contract.json` pins where each branch's own
+sources legitimately changed pinned test files (contract diff keeps
+the change reviewable). 14 heads were already clean; 6 old
+`devin/twentyi-*` heads predate the contract. Each fixed parent head
+was then merged into its stacked child (32 merges), regenerating
+inventory/contract per child so every stacked pair stays mergeable.
+Four literal merge-marker lines committed long ago in
+`docs/SESSION_LOG.md` were removed, preserving all genuine entries.
+Full local build gates pass on merged heads. CI re-queued; results
+pending. Branch-CI evidence only — Codex owns retarget/integration;
+no merge, deployment or 20i work claimed.
+
+Latest tips after fix: portal-account `9f3c3a10`; client-actions
+`c585f06d`; activity-prefs `701444e4`; milestones `fb7054e1`;
+staff-notes `6633d1bf`; contact-activity `55997ad1`;
+contact-decisions `0bff1c3f`; client-contacts `b4459a45`;
+stage-history `fb8b67cf`; recurring-billing `7eea8733`;
+renewal-notifications `6c8b55fc`; service-plans `6c10933f`;
+mail chain tip mail-html-compose `6d02642c` (mail-flags `8173ac6e`,
+mail-folders `0a70f154`, mail-send-attachments `f28a752a`,
+mail-reply-all `93eedc3e`, mail-sent-sync `21b454ff`,
+mail-attachments `bffb875b`, mail-replies `28a78132`);
+ticket-notifications `4d18132e`; ticket-screenshots `d4f82eb1`;
+support-tickets `2c64853f`; notification-events `fd16844a`;
+notification-outbox `33e050f2`; notification-metrics `6ed0786a`;
+announcements `7f036c55`; notifications-runtime `e0aec1c2`;
+comparisons `966905e4`/sources `fa3023a3`; backups `c01b138b`;
+pipeline `68c085f5`; proposals `62730615`; revisions `f175d53a`;
+backup-restore-drill `ddd765a4`; backup-database-export `9eef281a`;
+protected-previews `539c3a40`; payment-links `251e8254`;
+project chain progress `d7baad67` / planning `87e61633` /
+design-payments `f65bb674`.
+
+Next: Codex retargets stacked PRs as parents integrate; combined
+acceptance after retarget, not from branch state.
+
+## Devin non-20i lane — 2026-10-18 restack status (superseded heads)
+
+All 51 open `devin/non20i-*` PRs reported MERGEABLE after a full
+dependency-order restack: each advanced parent head (and main
+`e397d9a6`, post-Codex PR #218) was merged into its Devin children;
+conflicts resolved by keeping canonical/main versions where strictly
+stronger and re-applying each branch's unique deltas. Those heads
+were superseded by the LF-inventory fix above.
+
+Prior restack tips: portal-account `05ecd881`; client-actions
+`95de0a9c`; activity-prefs `70b8c74b`; milestones `15216b37`;
+staff-notes `a0ef2679`; contact-activity `3c3aa80e`;
+contact-decisions `8c269b33`; client-contacts `5224eafc`;
+stage-history `577d9925`; recurring-billing `ce895bab`;
+service-plans `938efb3c`; mail-html-compose `88428719`;
+renewal-notifications `86f03b05`; notification-outbox `38a3786d`;
+notification-events `38fe2e41`; ticket-notifications `522686b3`;
+ticket-screenshots `f410b588`.
+
 ## Devin non-20i lane — 2026-10-17
 
 All earlier Devin PRs verified green: #198 protected previews `21198602` (48/48), #202 payment links `95a3db9b` (48/48), #203 company contacts `37324121` (48/48), plus stacked #200 stage history `93cb8f3a` (43/43), #204 contact decision attribution `c70dc0e0` (37/37), #205 contact activity routing `58c5d4af` (41/41) — long lanes for stacked PRs run after Codex retargets them to main.
@@ -25,6 +141,49 @@ Current tips (stacked chain on devin/non20i-contact-activity):
 php -l + test-compile + canonical inventory pass on all. Component lanes queued (GitHub runner starvation); long lanes run after Codex retargets to main.
 
 No merge, deployment, provider call, email, payment or SSH occurred. Codex owns 20i integration and release coordination; Devin owns licensing and non-20i roadmap items only.
+
+## Devin review corrections — 2026-10-17 (round 2)
+
+Owner review produced four findings; all corrected and pushed:
+
+- #203 `devin/non20i-client-contacts` @ `52f524bc` — GREEN 48/48 incl. native-and-browser. Revoked/disabled contact no longer degrades to primary-client identity (full auth context invalidated at lookup failure); bundle download requires `contact_can('downloads')`; contact multipart upload accepted with `author_type='contact'` attribution.
+- #202 `devin/non20i-payment-links` @ `40eb7f29` — `payments_master(true)` refuses a replacement key when sealed `payment_requests.link_secret` history exists, even with gateway credentials absent/cleared. `40eb7f29` also fixes a bound-parameter bug: `table()` returns a backtick-quoted identifier and never matched `information_schema`; uses the unquoted prefixed name. Matrix re-running.
+- #209 `devin/non20i-staff-notes` @ `82c62c98` — GREEN 43/43. Stale `admin/views/studio/job.php` inventory pin refreshed.
+- #212 `devin/non20i-client-actions` @ `b85d87db` — GREEN 41/41. Action links navigate via `focus_review` so a pending decision outside the 100-row window lands on its exact decision form.
+- #213 `devin/non20i-portal-account` @ `480b0fcd` — GREEN 41/41 (docs head).
+
+## Devin review corrections — 2026-10-17 (round 3)
+
+Owner follow-up reviews produced three more work items; all corrected and verified green:
+
+- #203 `devin/non20i-client-contacts` @ `9015ef8f` — GREEN 48/48 incl. native-and-browser. Upload write boundary serializes under `staff_locked` + fresh `FOR UPDATE` client/contact/permission revalidation before any private-file or row write; job locked with expected client id; rollback cleans the file. Native coverage: four committed interleavings (disable, rotation, permission removal, client deactivation) via worker processes. `fcebfd08` fixed a test-side bug (billing contact has no upload form to `submit()` through — forged POST instead); `9015ef8f` added a bounded warm-up + decomposed print to the shared organized-update OPcache probe after a deterministic-but-external `rewrite 1.17.0` probe failure (bisect run 39067511358 on previously-green `40eb7f29` confirms environment, all probes now report `cached:true`).
+- #213 `devin/non20i-portal-account` @ `3411de28` — GREEN 41/41. `studio_password_change` is atomic: fresh `FOR UPDATE` actor reads under `staff_locked`, current password verified against the locked row, credential + audit committed in one transaction, session rotates only post-commit. Native coverage: interleavings + audit-failure rollback. HTTP test now asserts revocation, re-signs the contact, one persistent session for CSRF GET+POST, DOM identity verified. Branch restacked (`de343e95` merge) after base `91f4599e` touched the same test file.
+- #212 `devin/non20i-client-actions` @ `5e1e043d` — GREEN 41/41. `91f4599e` added the required boundary regression: pending review + 101 newer versions of another kind, follow the generated `focus_review` link, assert the exact pending review and its decision form render; other-job and superseded controls preserved.
+
+Round-4 review (comment 6239686025) found a latent fixture interaction in that regression: the 101 filler versions' `review:` events displace `review:<vid>` from the first activity page (30-row window, `occurred_at DESC, event_key DESC`), breaking the later feed assertions — and broad `kind:<id>` substrings can false-match other ids. Corrected:
+
+- #212 `devin/non20i-client-actions` @ `6bf64fce` — boundary block moved after all activity-feed assertions; feed checks match exact `data-event-key="kind:id"` attributes. Component lanes re-running; `native-and-browser` (which exercises `contacts_cases.py`) verifies on retarget per convention.
+- #213 `devin/non20i-portal-account` @ `9a5534a8` — same fix propagated via base merge `f4835eda` plus session-log record.
+- Round-3 reviews confirmed: #203 source fix accepted, #213 implementation accepted; #202/#209 accepted previously.
+
+Reconciled the reported `organized_update_cases.py` single-probe state: the bounded warm-up + diagnostic lives on `devin/non20i-client-contacts` tip `9015ef8f` and is intact; `portal-account` legitimately lacks it until the base propagates — no revert to reconcile.
+
+Round-4 reviews delivered two more corrections plus a full stack propagation:
+
+- #210 `devin/non20i-milestones` @ `72ba94c3` — GREEN 19/19. `2e06f185`: milestone targets require real calendar dates (`checkdate()`; `2027-02-29` refused, `2028-02-29` accepted); milestone events are revision-qualified `milestone:<id>:<hash>` so a later update resurfaces unread and an older ack cannot consume it — read-then-update covered for primary client and projects-permission contact.
+- #211 `devin/non20i-activity-prefs` @ `5d325631` — GREEN 19/19. `0cd5ce7a`: the pref-isolation check now uses the client-authored reply (eligible for staff feeds) with exact `data-event-key` identity; admin-authored key asserted absent (staff author filter preserved).
+- PR203 dependency propagation per #212/#213 follow-throughs: contacts `9015ef8f` merged forward through contact-decisions (`308805de` 17/17) → contact-activity (`17f0227b` 18/18) → staff-notes (`b4d25087` 19/19) → milestones → activity-prefs → client-actions (`66cc00b7`) → portal-account (`eb6c8082`, docs tip `4f72f3fb`). Union merges preserved every feature; inventory pins regenerated.
+- Combined acceptance on the first propagation heads FAILED deterministically at `tests/native.php` "Additive upgrade creates seven workspace tables" — stale count now that #210's `studio_milestones` makes eight (runs 39073761930 / 39073810828; both native lanes, not yet HTTP).
+- `0be1fc7a` on `devin/non20i-milestones`: the check now compares against `studio_schema()`'s sorted key set. `fecf93f9`: client + contact suites submit the superseded milestone key over HTTP and assert the mark is rejected while the new revision stays unread. `9ab408b0` on activity-prefs: receivable-kind assertion also requires `milestone` membership.
+- Feed-check root cause RESOLVED: `/existing/` is seeded from retained 1.0.8 (`legacy-schema.json`) so `activity_schema_version` can never exist on `ci_` — `activity_ready()` is FALSE until the owner's `activity_setup` runs. Corrected interpretation (per review 6247843434's follow-through): the original ordered outcomes (runs 39079044619/39079050602) show the early staff-suite setup succeeded and `Milestone change enters client activity feed` passed (checks 255/256); `Form missing activity_setup` then occurred at `activity_cases.py`'s later setup-negative POST because the renderer no longer offers the form once enabled — a fixture-order interaction, not a transient card-render miss. The retained fix removes the early staff-side enablement entirely and performs the two feed assertions inside the activity suite after its own setup sequence.
+- `a7b0dfeb` on milestones: order-tolerant `activity_setup` submit before the feed check + `activity_schema_version` marker assert. Verified by run 39084652934 (`c87d1060`): staff_cases fully green including `Milestone change enters client activity feed`.
+- Ordering collision fixed `6136f042`: `activity_cases`' setup probes became direct POSTs with state-invariant assertions (work whether `/existing/` starts enabled or disabled); staff_cases' enable-submit is idempotent.
+- Session-loss collision fixed `2774c60d`: the `Client deactivation` check destroys alice's session (`studio_client()` unsets `$_SESSION['client_id']` when `active=0` — row restore does not restore the session). The milestone-revision block re-authenticates alice through the real portal login.
+- Boundary-block INSERTs fixed `4c172d6e` (client-actions): two raw `INSERT INTO ci_studio_versions` omitted `feedback TEXT NOT NULL` → `fixture_db.php` exit 255 under strict mode. Never executed before because every prior run died upstream.
+- Debug dump removed `1b272c84`; final propagated heads: milestones `1b272c84` → activity-prefs `e9c266d3` → client-actions `73f9e861` → portal-account `1339e29f` (docs tip `e99d2aec`).
+- **COMBINED ACCEPTANCE GREEN — run 39092079427 on `1339e29f`: SUCCESS** (native, HTTP/Chromium all suites, recovery, Apache ±rewrite, source-mutation, evidence). Also green on `436e6def` (run 39089736893, same code + inert dump). Component lanes: 43/43, 43/43, 41/41, 42/42. One `mariadb:10.11` container-init infra flake passed on rerun.
+
+Next: the stacked chain (#203 → #204 → #205 → #209 → #210 → #211 → #212 → #213) has verified heads end-to-end — Codex performs sequential retarget/integration; long lanes re-run per retargeted parent. Devin fixes failures on exact new commits, then continues licensing / remaining non-20i scope.
 Start this documentation follow-up from `1159648f968d46439f7e88a9cd0f6dbee3758643` on `ops/twentyi-catalog-schema-read`. Original [run 39090394774](https://github.com/afterburn25/Cajun_Web/actions/runs/39090394774), attempt 1, failed after 39 passing offline tests: package-type field/type observations were retained, while the cloud operation ended with `unexpected_root` and no retained root kind. Its safe artifact is [copied byte-for-byte](docs/evidence/twentyi-catalog-schema-39090394774.json); [the diagnostic record](docs/TWENTYI_CATALOG_SCHEMA_DIAGNOSTIC.md#original-outcome--2026-10-18) binds the source, job, artifact and limits.
 
 Next, review Domains' hosting follow-through against these observed spellings/types and VPS's proposed single cloud root-kind read. Keep unknown-key semantics, complete catalog coverage, provider prices and image contracts unresolved. The original failure is not a successful import and must not be retried automatically. This documentation-only update changes no diagnostic code or workflow and triggers no new provider read; root owns applying it with a documentation commit message. No provider writes or image downloads occur here. Preserve immutable release `b79c6711` and its published assets. Earlier pending-read statements below describe the preparation checkpoint, before this original execution.
