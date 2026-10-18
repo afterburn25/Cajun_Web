@@ -2,7 +2,7 @@
 /** Disposable MySQL fixture; injected DNS/transport here, actual TLS in the separate receiving suite. */
 declare(strict_types=1);
 if(PHP_SAPI!=='cli'||getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
-define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';
+define('CWP_BOOT',true);require __DIR__.'/../site/includes/bootstrap.php';require __DIR__.'/../site/database/schema/base.php';require __DIR__.'/../site/app/mail/flags.php';
 use CajunWebPro\Foundation\MailReceiving\ReceivingFailure;
 $GLOBALS['cwp_config']=require __DIR__.'/../test-runtime/config-fixture.php';$GLOBALS['cwp_config']['db']['prefix']='mfci_';
 $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1:8091','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=realpath(__DIR__.'/../site');start_session();
@@ -19,9 +19,10 @@ function mf_transport(array $row,#[SensitiveParameter] array $secrets,string $ad
     if(db()->inTransaction()||$address!=='8.8.8.8'||$secrets['imap_password']!=='Synthetic private flag password')throw new LogicException('Invalid flag boundary');
     if($mode==='expire')query('UPDATE '.table('mail_account_grants').' SET expires_at=? WHERE account_id=? AND user_id=1',[time()-1,$row['id']]);
     $authorize();if($mode==='flags')throw new ReceivingFailure('flags');if($mode==='throw')throw new RuntimeException('private provider secret');
-    $response=['folder'=>$folder,'uidvalidity'=>$validity,'uid'=>$uid,'seen'=>$seen,'applied'=>true];
+    $response=['folder'=>$folder,'uidvalidity'=>$validity,'uid'=>$uid,'seen'=>$seen,'applied'=>true,'confirmed'=>true];
     if($mode==='after')query('UPDATE '.table('mail_account_grants').' SET enabled=0 WHERE account_id=? AND user_id=1',[$row['id']]);
     if($mode==='unchanged')$response['applied']=false;
+    if($mode==='unconfirmed')$response['confirmed']=false;
     if($mode==='folder')$response['folder']=$folder==='INBOX'?'Sent':'INBOX';
     if($mode==='uid')$response['uid']='1';
     if($mode==='extra')$response['secret']='provider detail';
@@ -60,10 +61,10 @@ try {
     mf_age();$r=mf_mark($id,false);mf_ok('Mark unread records the remove intent',$r['code']==='ok'&&$r['seen']===false&&(int)one('SELECT mark_seen FROM '.table('mail_flag_requests').' WHERE id=?',[$r['request_id']])['mark_seen']===0);
     mf_age();$mode='unchanged';$r=mf_mark($id);mf_ok('Already-matching server state records unchanged',$r['code']==='unchanged'&&$r['applied']===false);$mode='ok';
     mf_age();mf_grant($id,2);mf_actor(2);$r=mf_mark($id);mf_ok('Currently assigned non-owner can mark the exact message',$r['code']==='ok'&&$r['actor_id']===2);mf_actor();
-    mf_ok('Flag history is private to the requesting staff member',count(mail_flags_history($id))===1&&mail_flags_history($id)[0]['actor_id']===2);
-    mf_actor(2);mf_ok('Reader sees only their own flag history',count(mail_flags_history($id))===1);mf_actor();
-    foreach(['flags'=>'flags','throw'=>'connection','folder'=>'protocol','uid'=>'protocol','expire'=>'access_changed','after'=>'access_changed'] as $flagMode=>$expected) {
-        mf_age();$r=mf_mark($id);mf_ok('Transport '.$flagMode.' returns a finite failure',$r['code']===$expected);mf_grant($id);
+    $ownerHistory=mail_flags_history($id);mf_ok('Flag history is private to the requesting staff member',count($ownerHistory)===3&&array_map('intval',array_column($ownerHistory,'mark_seen'))===[1,0,1]&&!isset($ownerHistory[0]['actor_id']));
+    mf_actor(2);$readerHistory=mail_flags_history($id);mf_ok('Reader sees only their own flag history',count($readerHistory)===1&&(int)$readerHistory[0]['mark_seen']===1);mf_actor();
+    foreach(['flags'=>'flags','throw'=>'connection','folder'=>'protocol','uid'=>'protocol','expire'=>'access_changed','after'=>'access_changed','unconfirmed'=>'unconfirmed'] as $flagMode=>$expected) {
+        mf_age();$mode=$flagMode;$r=mf_mark($id);mf_ok('Transport '.$flagMode.' returns a finite failure',$r['code']===$expected);$mode='ok';mf_grant($id);
     }
     $mode='extra';mf_age();$r=mf_mark($id);mf_ok('Extra transport fields never escape the flag contract',$r['code']==='ok'&&!str_contains(json_encode($r),'provider detail'));$mode='ok';
     mf_age();$before=$transportCalls;$r=mail_message_mark($id,1,'INBOX','4294967295','4294967295',true,fn($h)=>['8.8.8.8','127.0.0.1'],'mf_transport');mf_ok('Mixed public private DNS is refused before flag transport',$r['code']==='destination'&&$transportCalls===$before);

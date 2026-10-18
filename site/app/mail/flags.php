@@ -15,6 +15,7 @@ function mail_flags_outcomes(): array {
     return array_replace(mail_inbox_messages(),[
         'ok'=>'The server read flag was updated.',
         'unchanged'=>'The server already reported this read state. No flag change was sent.',
+        'unconfirmed'=>'The server accepted the command but did not confirm the flag changed. The flag may already have changed; load the message again to see the current state before marking.',
         'flags'=>'The server refused the flag change. The message state is unchanged here.',
         'folder'=>'The server folder is unavailable. Load the recent headers again before marking.',
         'mailbox_changed'=>'This exact message is no longer available in the current folder. Load the recent headers again.',
@@ -47,12 +48,13 @@ function mail_flag_transport(array $row,#[\SensitiveParameter] array $secrets,st
 /** Project only the bounded contract. Nothing else the session saw can escape. */
 function mail_flag_response(#[\SensitiveParameter] array $response,string $folder,string $validity,string $uid,bool $seen): array {
     if(($response['folder']??null)!==$folder||($response['uidvalidity']??null)!==$validity||($response['uid']??null)!==$uid
-        ||($response['seen']??null)!==$seen||!is_bool($response['applied']??null))throw new ReceivingFailure('protocol');
-    return ['applied'=>$response['applied']];
+        ||($response['seen']??null)!==$seen||!is_bool($response['applied']??null)||!is_bool($response['confirmed']??null))throw new ReceivingFailure('protocol');
+    return ['applied'=>$response['applied'],'confirmed'=>$response['confirmed']];
 }
 function mail_flag_record(array $started,string $code,int $elapsed,?bool $applied): void {
     staff_transaction(function()use($started,$code,$elapsed,$applied):void {
-        query('INSERT INTO '.table('mail_flag_results').' (id,outcome,result_code,applied,finished_at,elapsed_ms) VALUES (?,?,?,?,?,?)',[$started['id'],$code==='ok'||$code==='unchanged'?'success':'failed',$code,$applied===null?null:(int)$applied,gmdate('Y-m-d H:i:s'),max(0,min($elapsed,2147483647))]);
+        $outcome=$code==='ok'||$code==='unchanged'?'success':($code==='unconfirmed'?'uncertain':'failed');
+        query('INSERT INTO '.table('mail_flag_results').' (id,outcome,result_code,applied,finished_at,elapsed_ms) VALUES (?,?,?,?,?,?)',[$started['id'],$outcome,$code,$applied===null?null:(int)$applied,gmdate('Y-m-d H:i:s'),max(0,min($elapsed,2147483647))]);
         if(($code==='ok'||$code==='unchanged')&&mail_notices_ready()) {
             require_once CWP_CODE_ROOT.'/app/mail/notices.php';
             query('UPDATE '.table('mail_notice_items').' SET server_seen=?,flags_observed_at=? WHERE account_id=? AND folder=? AND uidvalidity=? AND uid=?',
@@ -104,8 +106,10 @@ function mail_message_mark(string $id,int $revision,string $folder,string $valid
                 try {
                     $response=($transport??'mail_flag_transport')($current,$secrets,$addresses[0],$started['folder'],$started['uidvalidity'],$started['uid'],$seen,$authorize);
                     $authorize();
-                    $applied=mail_flag_response($response,$started['folder'],$started['uidvalidity'],$started['uid'],$seen)['applied'];
+                    $result=mail_flag_response($response,$started['folder'],$started['uidvalidity'],$started['uid'],$seen);
+                    $applied=$result['applied'];
                     if(!$applied)$code='unchanged';
+                    elseif(!$result['confirmed'])$code='unconfirmed';
                 }catch(ReceivingFailure $e) {$code=$e->getMessage();$applied=null;}
                 catch(Throwable $e) {if($e instanceof PDOException)throw $e;$code='connection';$applied=null;}
                 finally {unset($secrets,$response);}

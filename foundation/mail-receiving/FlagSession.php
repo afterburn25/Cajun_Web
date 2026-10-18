@@ -16,6 +16,8 @@ final class FlagSession
     private int $tag=0;
     private int $responses=0;
     private \Closure $authorize;
+    /** null = server omitted PERMANENTFLAGS (all flags permanent per RFC3501 6.3.1). */
+    private ?bool $seenPermanent=null;
     public function __construct(private StreamInterface $stream, callable $authorize)
     {
         $this->authorize=\Closure::fromCallable($authorize);
@@ -122,14 +124,26 @@ final class FlagSession
             if($current!==$validity) throw new ReceivingFailure('mailbox_changed');
             $before=$this->flags($uid);
             $applied=$before!==$seen;
+            $confirmed=$applied;
             if($applied) {
+                // An explicit PERMANENTFLAGS exclusion means a \\Seen change cannot persist; do not claim one.
+                if($this->seenPermanent===false) throw new ReceivingFailure('flags');
                 $this->authorize();
-                $this->replies($this->command('UID STORE '.$uid.' '.($seen?'+':'-').'FLAGS.SILENT (\\Seen)'),'flags');
-                $this->authorize();
+                $tag=$this->command('UID STORE '.$uid.' '.($seen?'+':'-').'FLAGS.SILENT (\\Seen)');
+                try {
+                    $this->replies($tag,'flags');
+                    $this->authorize();
+                    // A tagged OK can legally be a no-op (e.g. concurrent EXPUNGE): verify the exact post-command state.
+                    $confirmed=$this->flags($uid)===$seen;
+                } catch(ReceivingFailure $e) {
+                    if($e->getMessage()==='flags') throw $e;
+                    $confirmed=false;
+                } catch(\Throwable) { $confirmed=false; }
+                if((hrtime(true)-$started)/1e9>20) $confirmed=false;
             }
-            if((hrtime(true)-$started)/1e9>20) throw new ReceivingFailure('timeout');
+            if((hrtime(true)-$started)/1e9>20 && !$applied) throw new ReceivingFailure('timeout');
             try { $this->command('LOGOUT'); } catch(\Throwable) {}
-            return ['folder'=>$folder,'uidvalidity'=>$current,'uid'=>$uid,'seen'=>$seen,'applied'=>$applied];
+            return ['folder'=>$folder,'uidvalidity'=>$current,'uid'=>$uid,'seen'=>$seen,'applied'=>$applied,'confirmed'=>$confirmed];
         } catch(ReceivingFailure $e) { throw $e; }
         catch(\Throwable) { throw new ReceivingFailure('protocol'); }
         finally { $this->stream->close(); }
@@ -138,7 +152,7 @@ final class FlagSession
     /** SELECT requires READ-WRITE; UIDVALIDITY is proven before any write. */
     private function select(string $folder): string
     {
-        $exists=null; $validity=null; $readWrite=false;
+        $exists=null; $validity=null; $readWrite=false; $permanent=null;
         foreach($this->replies($this->command('SELECT "'.ReadSession::folder($folder).'"'),'folder') as $row) {
             $tokens=$row->tokens();
             if($row instanceof UntaggedResponse && ($tokens[1]??null) instanceof Number) {
@@ -156,11 +170,17 @@ final class FlagSession
                     if($validity!==null || count($code)!==2) throw new ReceivingFailure('protocol');
                     $validity=self::number($code[1]);
                 }
+                if($name==='PERMANENTFLAGS') {
+                    if($permanent!==null || count($code)!==2 || !$code[1] instanceof ListData) throw new ReceivingFailure('protocol');
+                    $permanent=array_map(fn($flag)=>self::word($flag),$code[1]->tokens());
+                }
                 if($name==='READ-WRITE' && $row instanceof TaggedResponse && count($code)===1) $readWrite=true;
                 if($name==='READ-ONLY') throw new ReceivingFailure('flags');
             }
         }
         if($exists===null || $validity===null || !$readWrite) throw new ReceivingFailure('protocol');
+        // Omitted PERMANENTFLAGS keeps the documented fallback: every flag is permanent.
+        if($permanent!==null) $this->seenPermanent=in_array('\\*',$permanent,true)||in_array('\\SEEN',$permanent,true);
         return $validity;
     }
 
