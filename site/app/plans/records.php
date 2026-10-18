@@ -6,11 +6,18 @@ require_once CWP_CODE_ROOT.'/app/clients/workspace.php';
 require_once CWP_CODE_ROOT.'/app/plans/documents.php';
 require_once CWP_CODE_ROOT.'/database/schema/service_plans_schema.php';
 require_once CWP_CODE_ROOT.'/database/migrations/service_plans_migrate.php';
+require_once CWP_CODE_ROOT.'/database/migrations/service_plans_checkout_migrate.php';
 
 function service_plans_ready():bool {
-    if((one('SELECT value FROM '.table('settings').' WHERE name=?',['service_plans_schema_version'])['value']??'')!=='1')return false;
+    $checkout=service_plans_checkout_schema_enabled();
+    if((one('SELECT value FROM '.table('settings').' WHERE name=?',['service_plans_schema_version'])['value']??'')!=='1'){
+        if($checkout)throw new RuntimeException('Checkout storage lost its original service-plan marker.');
+        return false;
+    }
     $names=array_map(fn($name)=>config()['db']['prefix'].$name,array_keys(service_plans_schema(config()['db']['prefix'])));
-    return count(all('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name IN (?,?,?,?)',$names))===count($names);
+    if(count(all('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name IN (?,?,?,?)',$names))!==count($names))return false;
+    if(service_plans_checkout_schema_stage()!==($checkout?2:0))throw new RuntimeException('Service-plan checkout schema is partial or not explicitly prepared.');
+    return true;
 }
 function service_plans_require_ready():void {if(!service_plans_ready())throw new RuntimeException('An owner must prepare service-plan storage first.');}
 function service_plans_owner(bool $ready=true):array {
@@ -42,8 +49,16 @@ function service_plans_row(string $id,bool $subscription=false,bool $lock=false)
 /** Compare creation, the bounded journal and every retained hash-linked event before use. */
 function service_plans_validate(array $row,bool $subscription=false):ServicePlanDocument|ServiceSubscriptionDocument {
     $class=$subscription?ServiceSubscriptionDocument::class:ServicePlanDocument::class;
-    $initial=$class::fromJson($row['initial_json']);$current=$class::fromJson($row['journal_json']);$start=$initial->data();$d=$current->data();$events=$d['events'];$d['events']=[];
-    if($initial->revision()!==0 || $start!==$d || $d['id']!==$row['id'] || $d['created_by']!==(int)$row['created_by'] || $d['created_at']!==(int)$row['created_epoch'] || $current->revision()!==(int)$row['revision'] || !hash_equals($current->fingerprint(),$row['journal_sha256']))throw new RuntimeException('Saved service-plan records are inconsistent.');
+    $initial=$class::fromJson($row['initial_json']);$current=$class::fromJson($row['journal_json']);$start=$initial->data();$d=$current->data();$events=$d['events'];$checkout=$subscription&&$d['format']===2;
+    if($checkout){
+        if(!service_plans_checkout_ready())throw new RuntimeException('Checkout subscription storage is not explicitly prepared.');
+        $prefix=$d;$prefix['events']=array_slice($events,0,2);
+        if($initial->revision()!==2 || $start!==$prefix || $row['created_by']!==null || !array_key_exists('created_by_client',$row) || $row['created_by_client']===null || $d['created_by_client']!==(int)$row['created_by_client'])throw new RuntimeException('Saved checkout creation or completed consent prefix is inconsistent.');
+    }else{
+        $empty=$d;$empty['events']=[];
+        if($initial->revision()!==0 || $start!==$empty || $d['created_by']!==(int)$row['created_by'] || ($subscription&&($row['created_by_client']??null)!==null))throw new RuntimeException('Saved service-plan creation is inconsistent.');
+    }
+    if($d['id']!==$row['id'] || $d['created_at']!==(int)$row['created_epoch'] || $current->revision()!==(int)$row['revision'] || !hash_equals($current->fingerprint(),$row['journal_sha256']))throw new RuntimeException('Saved service-plan records are inconsistent.');
     if($subscription){
         if($d['client_id']!==(int)$row['client_id'])throw new RuntimeException('Saved subscription client is inconsistent.');
         $plan=service_plans_validate(service_plans_row($row['plan_id']));$prefix=$plan->prefix((int)$row['plan_revision']);
@@ -52,16 +67,28 @@ function service_plans_validate(array $row,bool $subscription=false):ServicePlan
     $parent=$subscription?'subscription_id':'plan_id';$table=$subscription?'service_subscription_events':'service_plan_events';
     $retained=all('SELECT * FROM '.table($table).' WHERE '.$parent.'=? ORDER BY revision LIMIT '.($class::MAX_EVENTS+1),[$row['id']]);
     if(count($retained)!==count($events))throw new RuntimeException('A service-plan event is missing.');
-    $before=$initial->fingerprint();$prefix=$start;
+    $prefix=$start;
+    // Format2 empty/one-event byte prefixes are hash-chain witnesses, never valid standalone documents.
+    if($checkout)$prefix['events']=[];
+    $before=$checkout?hash('sha256',service_plans_json($prefix)):$initial->fingerprint();
     foreach($events as $i=>$event){
         $saved=$retained[$i];$prefix['events'][]=$event;$after=hash('sha256',service_plans_json($prefix));
-        $actor=$subscription?($saved['actor_staff_id']!==null?'staff:'.$saved['actor_staff_id']:'client:'.$saved['actor_client_id']):(int)$saved['actor_id'];
-        if($subscription && (($saved['actor_staff_id']===null)===($saved['actor_client_id']===null)))throw new RuntimeException('A subscription event has ambiguous attribution.');
+        $actor=$subscription?service_plans_subscription_actor($saved,$checkout,$i):(int)$saved['actor_id'];
         $input=service_plans_json(['revision'=>$i,'command'=>$event['command'],'arguments'=>$event['arguments']]);
         if($saved['id']!==$event['id'] || (int)$saved['revision']!==$i+1 || $actor!==$event['actor'] || (int)$saved['recorded_epoch']!==$event['at'] || $saved['input_json']!==$input || !hash_equals($before,$saved['before_sha256']) || !hash_equals($after,$saved['after_sha256']))throw new RuntimeException('Saved service-plan event is inconsistent.');
         $before=$after;
     }
     return $current;
+}
+function service_plans_subscription_actor(array $row,bool $checkout,int $index):string {
+    $staff=$row['actor_staff_id'];$client=$row['actor_client_id'];$system=$row['actor_system']??null;
+    if((int)($staff!==null)+(int)($client!==null)+(int)($system!==null)!==1)throw new RuntimeException('A subscription event has ambiguous attribution.');
+    if($system!==null){
+        if(!$checkout || $index!==1 || $system!=='hosting-checkout')throw new RuntimeException('Unrecognized subscription system effect.');
+        return 'system:hosting-checkout';
+    }
+    if($checkout&&$index===1)throw new RuntimeException('The checkout activation must retain its explicit system attribution.');
+    return $staff!==null?'staff:'.$staff:'client:'.$client;
 }
 function service_plans_create(string $id,array $terms,#[\SensitiveParameter] string $password):ServicePlanDocument {
     return staff_locked(fn()=>staff_transaction(function()use($id,$terms,$password):ServicePlanDocument {
@@ -80,7 +107,7 @@ function service_plans_append_locked(array $row,int $revision,string $event,stri
     if($revision<0 || $revision>=$doc::MAX_EVENTS)throw new InvalidArgumentException('Invalid plan revision.');
     $input=service_plans_json(['revision'=>$revision,'command'=>$command,'arguments'=>$args]);$old=one('SELECT * FROM '.table($table).' WHERE id=?',[$event]);
     if($old){
-        $oldActor=$subscription?($old['actor_staff_id']!==null?'staff:'.$old['actor_staff_id']:'client:'.$old['actor_client_id']):(int)$old['actor_id'];
+        $oldActor=$subscription?service_plans_subscription_actor($old,$doc->data()['format']===2,(int)$old['revision']-1):(int)$old['actor_id'];
         if($old[$parent]!==$row['id'] || $oldActor!==$actor || $old['input_json']!==$input)throw new InvalidArgumentException('This plan event identity was already used.');return $doc;
     }
     if($doc->revision()!==$revision)throw new RuntimeException('This plan changed. Reload and review the current version.');

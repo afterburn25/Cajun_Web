@@ -106,6 +106,7 @@ def main(phase):
     checks = []; commands = []; responses = []; source = {}; packages = []; seed = {}; failure = None
     server = None; log = None; prepared = False; completed = False; restored = False
     role_changed = damaged = False
+    server_start_stage = None
 
     def check(name, ok):
         checks.append({'name': 'Packaged recovery ' + phase + ': ' + name, 'passed': bool(ok)})
@@ -169,8 +170,14 @@ def main(phase):
         check('real packaged code created the synthetic complete journal', seed['prepared'] is True and seed['phase'] == phase
               and seed['source'] == head and seed['version'] == version and seed['operations'] == 4 and seed['journal'] == 'complete')
         initial = state()
-        with socket.socket() as probe: probe.bind(('127.0.0.1',8092))
+        server_start_stage = 'port_preflight'
+        with socket.socket() as probe:
+            # Match the PHP CLI server: reuse a closed connection, never a live listener.
+            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            probe.bind(('127.0.0.1',8092))
+        server_start_stage = 'server_log_open'
         log = open(qa / 'server.log','wb')
+        server_start_stage = None
         server = subprocess.Popen([php,'-d','session.save_path=' + str(sessions),'-S','127.0.0.1:8092','-t',str(site)],
             cwd=runtime, stdout=log, stderr=log)
         deadline = time.monotonic() + 15
@@ -257,6 +264,9 @@ def main(phase):
         # Do not dump HTTP bodies, request values, fixture stdout or local configuration.
         failure = {'class':type(error).__name__,'message':'Packaged recovery HTTP did not finish; inspect last named check and finite command diagnostic.',
                    'last_check':checks[-1]['name'] if checks else None}
+        if server_start_stage is not None:
+            failure['server_start'] = {'stage': server_start_stage, 'errno': error.errno
+                if isinstance(error, OSError) and type(error.errno) is int and 1 <= error.errno <= 4095 else None}
         checks.append({'name':'Packaged recovery ' + phase + ': completes without unexpected failure','passed':False})
     finally:
         if server is not None:

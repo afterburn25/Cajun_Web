@@ -180,7 +180,18 @@
     "hosting-purchase-portal-other-results.json",
     "hosting-purchase-joined-results.json",
     "hosting-purchase-handoff-guards.json",
-    "hosting-purchase-http-results.json"
+    "hosting-purchase-http-results.json",
+    "hosting-checkout-document-default.json",
+    "hosting-checkout-document-minimal.json",
+    "hosting-checkout-subscription-default.json",
+    "hosting-checkout-subscription-minimal.json",
+    "hosting-checkout-billing-default.json",
+    "hosting-checkout-billing-minimal.json",
+    "hosting-checkout-views-default.json",
+    "hosting-checkout-views-minimal.json",
+    "hosting-checkout-native-results.json",
+    "hosting-checkout-http-guards.json",
+    "hosting-checkout-http-results.json"
   ],
   "final": [
     "activity-native-results.json",
@@ -414,7 +425,18 @@
     "hosting-purchase-handoff-guards.json",
     "hosting-purchase-http-results.json",
     "apache-release126-hosting-guards-results.json",
-    "apache-release126-hosting-results.json"
+    "apache-release126-hosting-results.json",
+    "hosting-checkout-document-default.json",
+    "hosting-checkout-document-minimal.json",
+    "hosting-checkout-subscription-default.json",
+    "hosting-checkout-subscription-minimal.json",
+    "hosting-checkout-billing-default.json",
+    "hosting-checkout-billing-minimal.json",
+    "hosting-checkout-views-default.json",
+    "hosting-checkout-views-minimal.json",
+    "hosting-checkout-native-results.json",
+    "hosting-checkout-http-guards.json",
+    "hosting-checkout-http-results.json"
   ],
   "provenance": {
     "original_source": "faef8a6a0fb0a3969a67fe8bc7aabd3b107c1c10",

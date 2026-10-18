@@ -1,3 +1,35 @@
+## 2026-10-18 — hosting acceptance correction
+
+The first-invoice branch has a reviewed recovery startup correction with six passing portable regressions and 466 preserved artifact-helper outcomes. Two mandatory Linux socket regressions and corrected exact-source application/browser acceptance remain pending. The historical 512 native matrix supplies bounded successful evidence, while its whole run remains failed. [Exact scope and next checks](TWENTYI_HOSTING_FULL_ACCEPTANCE.md#recovery-startup-correction-and-original-outcomes). This does not complete checkout, full 20i, catalog images or a new release.
+
+## 2026-10-18 — packaged checkout acceptance prepared
+
+Checkout implementation now has truthful linked agreement/billing histories and prepared packaged HTTP/Chromium acceptance, including existing/new projects, first unpaid invoice now, retries and denied authority. [Scope](TWENTYI_HOSTING_FIRST_INVOICE.md). Local 58-case renderer checks pass; the real Linux/browser, screenshot review, supported upgrade/recovery and release gates remain open. Full 20i, cloud catalog completeness and automatic provider images are not claimed complete.
+
+## 2026-10-18 — checkout implementation joined for acceptance
+
+Owner opt-in, atomic first unpaid invoice, owned project choice, client review/result screens, exact replay and verified-payment/mapping policy are integrated on the development branch. [Current scope](TWENTYI_HOSTING_FIRST_INVOICE.md). Pure/model/render checks pass; first native Linux transaction acceptance, real packaged browser journey, full-suite integration, upgrades and release verification remain pending. No published version or live website changed.
+
+## 2026-10-18 — recurring checkout attribution and invoice origin
+
+Recurring checkout storage passes66 isolated native checks, following58 subscription migration/history checks. [Exact scope](TWENTYI_HOSTING_FIRST_INVOICE.md). The next increment composes the actual client confirmation transaction, then connects owner/client pages and verified-payment-only fulfillment. Same-clock purchase, supported runtime/browser, upgrade and release acceptance remain outstanding. Synthetic retained rows do not establish a usable purchase flow.
+
+## 2026-10-18 — native subscription attribution
+
+Checkout subscription migration and stored-history validation pass58 isolated local MariaDB checks. [Scope and limits](TWENTYI_HOSTING_FIRST_INVOICE.md). Remaining work includes recurring/invoice native origins, atomic checkout creation, owner/client pages, complete same-clock and supported-runtime acceptance, and release verification. Synthetic retained checkout rows do not establish a usable purchase flow.
+
+## 2026-10-18 — first-period billing model
+
+Pure checkout subscriptions and recurring schedules now retain the client's exact agreement and begin the first billing period on confirmation. [Scope](TWENTYI_HOSTING_FIRST_INVOICE.md). Native attribution, invoice origins, atomic writes, owner/client pages and same-clock acceptance remain unfinished. The legacy future-start flow and existing release gates remain intact.
+
+## 2026-10-18 — subscription consent retained
+
+The [first-invoice branch](TWENTYI_HOSTING_FIRST_INVOICE.md) now includes pure client-attributed subscriptions with exact retained checkout consent and an explicit automatic local effect. Database migrations, native composition, recurring/invoice origin support, screens and same-clock acceptance remain open. This checkpoint does not complete checkout or change the published release.
+
+## 2026-10-18 — hosting checkout consent groundwork
+
+Immediate first invoice is implementing on `codex/twentyi-hosting-first-invoice`, separate from the preserved full-acceptance branch and 1.26 catalog release candidate. [Current scope](TWENTYI_HOSTING_FIRST_INVOICE.md) includes reviewed pure commercial confirmation documents. Client-attributed storage, atomic first-invoice creation, actual screens, same-clock native/browser tests and release acceptance remain unfinished. This does not complete hosting checkout, automatic image import, cloud products or the full20i roadmap.
+
 ## Successor follow-through — full hosting acceptance
 
 The separate `codex/twentyi-hosting-full-acceptance` branch integrates reviewed offer/recovery and eventual purchase/client-access tests into the existing full suite, plus a genuine published1.25 upgrade continuation. It is development preparation awaiting original focused outcomes and combined runtime/visual acceptance. [Scope and remaining gates](TWENTYI_HOSTING_FULL_ACCEPTANCE.md). Complete cloud imports, automatic provider images and immediate first-payment checkout remain unfinished.

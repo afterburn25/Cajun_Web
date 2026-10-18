@@ -10,16 +10,21 @@ function hosting_catalog_admin_action(string $action): void {
     check_csrf();hosting_catalog_admin_owner();
     $intent=hosting_catalog_admin_intent($action,$_POST);
     if ($action==='hosting_catalog_preview') {
-        $GLOBALS['hosting_catalog_admin_preview']=hosting_catalog_preview($intent['publication_id'],$intent['product_id'],$intent['plan_id']);
+        $GLOBALS['hosting_catalog_admin_preview']=hosting_catalog_preview($intent['publication_id'],$intent['product_id'],$intent['plan_id'],$intent['checkout_policy']??null);
         return;
     }
     $password=service_plans_form_text($_POST,'current_password',200);
     if ($action==='hosting_catalog_setup') {
         hosting_catalog_prepare($password);flash('Hosting offers are ready.');redirect(admin_url('hosting-offers'));
     }
+    if ($action==='hosting_catalog_checkout_setup') {
+        require_once CWP_CODE_ROOT.'/app/hosting/catalog_checkout.php';
+        service_plans_checkout_migrate($password);recurring_billing_checkout_migrate($password);hosting_checkout_prepare($password);
+        flash('Invoice checkout is ready. Choose it explicitly when publishing a new hosting offer.');redirect(admin_url('hosting-offers'));
+    }
     if ($action==='hosting_catalog_publish') {
-        hosting_catalog_publish($intent['publication_id'],$intent['product_id'],$intent['plan_id'],$intent['review_sha256'],$password);
-        flash('Hosting offer published. Clients can request these terms.');redirect(admin_url('hosting-offers',['product_id'=>$intent['product_id']]));
+        hosting_catalog_publish($intent['publication_id'],$intent['product_id'],$intent['plan_id'],$intent['review_sha256'],$password,$intent['checkout_policy']??null);
+        flash(isset($intent['checkout_policy'])?'Hosting offer published. Primary clients can review the terms and create their first invoice.':'Hosting offer published. Clients can request these terms.');redirect(admin_url('hosting-offers',['product_id'=>$intent['product_id']]));
     }
     if ($action==='hosting_catalog_withdraw') {
         hosting_catalog_withdraw($intent['withdrawal_id'],$intent['publication_id'],$intent['publication_sha256'],$intent['reason'],$password);
@@ -37,6 +42,7 @@ function hosting_catalog_admin_retry(string $action,array $fresh): array {
     if (($_POST['action']??null)!==$action) return $fresh;
     $values=hosting_catalog_admin_values($_POST);
     foreach ($fresh as $key=>$value) $fresh[$key]=$values[$key]??'';
+    if (array_key_exists('checkout_mode',$fresh)&&!array_key_exists('checkout_mode',$_POST)) $fresh['checkout_mode']='request-only';
     return $fresh;
 }
 function hosting_catalog_admin_fields(string $action,array $fields): void {
@@ -54,7 +60,7 @@ function hosting_catalog_admin_confirmation(string $label): void {
 /** A damaged/unavailable read must not silently replace a failed write's submitted selection. */
 function hosting_catalog_admin_preserved_submission(): void {
     $values=hosting_catalog_admin_values($_POST);$action=$values['action'];
-    if (!in_array($action,hosting_catalog_admin_actions(),true)||$action==='hosting_catalog_setup') return;
+    if (!in_array($action,hosting_catalog_admin_actions(),true)||in_array($action,['hosting_catalog_setup','hosting_catalog_checkout_setup'],true)) return;
     unset($values['action']);
     echo '<section class="workspace-card"><h2>Submitted selection retained</h2><p>The original selection is retained, but cannot be submitted again until its saved details are available for review.</p><form method="post">';
     hosting_catalog_admin_fields($action,$values);
@@ -85,7 +91,7 @@ function hosting_catalog_admin_render(string $error): never {
             try {
                 $intent=hosting_catalog_admin_intent('hosting_catalog_preview',$_POST);
                 $intent['review_sha256']=service_plans_form_hash($_POST,'review_sha256');
-                $current=hosting_catalog_preview($intent['publication_id'],$intent['product_id'],$intent['plan_id']);
+                $current=hosting_catalog_preview($intent['publication_id'],$intent['product_id'],$intent['plan_id'],$intent['checkout_policy']??null);
                 if (!hash_equals($intent['review_sha256'],$current['review_sha256'])) throw new RuntimeException('The saved offer changed. Start a new preview before publishing.');
                 $preview=$current;
             } catch (RuntimeException|InvalidArgumentException|LogicException $e) {

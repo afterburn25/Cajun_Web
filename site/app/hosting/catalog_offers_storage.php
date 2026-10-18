@@ -226,6 +226,15 @@ function hosting_catalog_ready(): bool {
  */
 function hosting_catalog_agreement_origin(string $agreement,int $client): ?array {
     hosting_catalog_guard();service_plans_id($agreement);service_plans_actor($client);
+    // Inspect retained native subscription data before any optional hosting marker.
+    // Erased checkout tables or markers cannot turn a checkout into an ordinary agreement.
+    $subscription=service_plans_validate(service_plans_row($agreement,true,true),true);
+    if ($subscription->data()['format']===2) {
+        require_once CWP_CODE_ROOT.'/app/hosting/catalog_checkout_storage.php';
+        $origin=hosting_checkout_agreement_origin($agreement,$client);
+        if ($origin===null || ($origin['requires_verified_payment']??null)!==true || ($origin['requires_owner_provisioning']??null)!==true) hosting_catalog_recovery();
+        return $origin;
+    }
     if (!hosting_catalog_ready()) return null;
     $row=one('SELECT * FROM '.table('hosting_catalog_decisions').' WHERE agreement_id=?',[$agreement]);
     if (!$row) return null;

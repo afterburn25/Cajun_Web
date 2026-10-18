@@ -8,7 +8,7 @@ require_once CWP_CODE_ROOT.'/includes/layout/hosting_catalog.php';
 
 function hosting_catalog_portal_query(array $query):array {
     $tab=$query['hosting']??null;
-    if (!is_string($tab)||!in_array($tab,['offers','requests'],true)) throw new InvalidArgumentException('Choose available plans or your requests.');
+    if (!is_string($tab)||!in_array($tab,['offers','requests','checkout'],true)) throw new InvalidArgumentException('Choose available plans or your requests.');
     $page=service_plans_form_number(['page'=>$query['p']??'1'],'page',100000);
     if ($page<1) throw new InvalidArgumentException('Choose an available page.');
     return ['tab'=>$tab,'page'=>$page];
@@ -26,9 +26,13 @@ function hosting_catalog_portal_values(array $input):array {
 function hosting_catalog_portal_attempt():?array {
     return ($_SERVER['REQUEST_METHOD']??'GET')==='POST'&&is_string($_POST['action']??null)&&str_starts_with($_POST['action'],'hosting_catalog_')?hosting_catalog_portal_values($_POST):null;
 }
-function hosting_catalog_portal_action(string $action,array $client):never {
+function hosting_catalog_portal_action(string $action,array $client):void {
     if (($_SERVER['REQUEST_METHOD']??'')!=='POST') throw new InvalidArgumentException('Submit the reviewed form to continue.');
     $query=hosting_catalog_portal_query($_GET);
+    if ($query['tab']==='checkout') {
+        require_once CWP_CODE_ROOT.'/portal/controllers/hosting_checkout.php';
+        hosting_checkout_portal_action($action,$client);return;
+    }
     service_plans_form_confirm($_POST);
     if ($action==='hosting_catalog_request'&&$query['tab']==='offers') {
         $requestId=service_plans_form_id($_POST,'request_id');$publicationId=service_plans_form_id($_POST,'publication_id');$publicationHash=service_plans_form_hash($_POST,'publication_sha256');
@@ -57,6 +61,10 @@ function hosting_catalog_portal_form(array $values,bool $enabled=true,int $page=
 }
 function hosting_catalog_portal_render(array $client,string $error):never {
     header('Cache-Control: no-store, private');header('Referrer-Policy: no-referrer');
+    if (($_GET['hosting']??null)==='checkout') {
+        require_once CWP_CODE_ROOT.'/portal/controllers/hosting_checkout.php';
+        hosting_checkout_portal_render($client,$error);
+    }
     try {recurring_billing_touch(fn()=>recurring_billing_locked(fn()=>service_plans_current_client((int)$client['id'])),false);}
     catch (Throwable $e) {if ($e instanceof PDOException||!($e instanceof InvalidArgumentException||$e instanceof RuntimeException)) {report_error($e);fail_page('Hosting requests are temporarily unavailable.',503);}fail_page('Sign in as the client outside support access to view hosting requests.',403);}
     try {$query=hosting_catalog_portal_query($_GET);}

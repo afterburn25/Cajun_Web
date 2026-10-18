@@ -1,3 +1,52 @@
+## Unreleased — hosting recovery test startup
+
+- Match the PHP test server's closed-connection address reuse during loopback preflight; active listeners still cause failure.
+- Retain only a fixed startup stage and bounded errno for preflight/log-open errors.
+- Require real Linux socket regressions before focused packaged hosting tests. Existing application checks, cleanup, complete-suite recipe and release assets are preserved.
+
+## Development — checkout history and packaged acceptance, 2026-10-18
+
+- Show actual client confirmation and automatic agreement activation in checkout history; retain legacy staff attribution and remove the missing-creator warning.
+- Add packaged owner/client checkout, denied-access, retry and result-link tests with desktop/mobile captures.
+- Wire focused and full acceptance while preserving all preceding recipes and required reports. Runtime, visual and release acceptance are still pending.
+
+## Development — owner-enabled hosting invoice checkout, 2026-10-18
+
+- Add owner opt-in and primary-client project selection, exact price/date review and first-invoice confirmation.
+- Save the project/agreement/schedule/invoice together, preserve completed retries and reject missing financial history.
+- Require verified payment and the accepted provider mapping for checkout-origin fulfillment.
+- Local document and screen checks pass; native Linux, packaged browser and full release acceptance remain pending.
+
+## Development — recurring checkout storage, 2026-10-18
+
+- Add explicit owner migration for client-attributed recurring checkout schedules and first invoices, preserving legacy SQL defaults and history.
+- Bind the first invoice to exact consent and an independent compact audit origin; refuse missing history or staff recreation of the client obligation.
+- Pass66 isolated native migration/history checks. Atomic checkout, customer screens and release acceptance remain pending.
+
+## Development — checkout subscription storage, 2026-10-18
+
+- Add an explicit owner migration for checkout client creators and system activation events, preserving old documents, actors and audits.
+- Validate recognized interrupted migration states and complete retained checkout history; reject missing or inconsistent records.
+- Pass58 isolated native migration/history checks. Checkout creation, invoices, screens and full release acceptance remain pending.
+
+## Development — first-period checkout billing rules, 2026-10-18
+
+- Derive checkout billing from exact retained subscription/consent and start its first period on the accepted local date.
+- Preserve legacy activation and future lifecycle boundaries; add92 pure regressions and exact foundation/site mirrors.
+- Actual invoice creation, native checkout storage and customer screens remain pending.
+
+## Development — client-attributed checkout subscriptions, 2026-10-18
+
+- Retain the exact hosting consent and real client creator in subscription format2, with separate client-consent and automatic local-activation events.
+- Preserve legacy subscription documents and later lifecycle rules; add65 pure regression cases and refresh installer inventory/source pins.
+- Native storage, invoice creation, customer screens and release acceptance remain pending.
+
+## 2026-10-18 — hosting checkout consent groundwork
+
+- Added inactive, versioned hosting checkout publication policy and canonical client review/consent documents. They bind exact commercial terms and a selected existing or new hosting project; no route or database writer is enabled.
+- Preserved format1 requests and blocked checkout publications from their legacy conversion path. Corrected skipped-midnight expiry and historical acceptance-date validation; added pure regressions for date, ownership facts, changed terms, replay identity and private-field exclusion.
+- Refreshed installer inventory and exact source pins for the development branch. Database/invoice/UI integration and release acceptance remain pending.
+
 ## Development — preserve hosting acceptance while integrating main CI triggers
 
 Integrate the reviewed PR218 workflow path filters from main `e397d9a6e293850e8dff61a593e3ba39ee178400` with hosting development source `4e35059b5a3966be33e80fc7e7bd2115a19ce11a` through a normal merge. Only ten focused workflow triggers and documentation change relative to that development source; shipping files, tests, full acceptance commands and contracts stay exact. This does not merge the separate f67 release candidate to main, certify hosting behavior or change published 1.25.0.

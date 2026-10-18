@@ -299,6 +299,15 @@ jobs:
           "$PHP_BINARY" tests/hosting_catalog_document.php qa/hosting-catalog-document-default.json
           "$PHP_BINARY" -n tests/hosting_catalog_document.php qa/hosting-catalog-document-minimal.json
           CWP_TEST_HOSTING_RECOVERY=1 "$PHP_BINARY" tests/hosting_catalog_native.php
+          "$PHP_BINARY" tests/hosting_checkout_document.php qa/hosting-checkout-document-default.json
+          "$PHP_BINARY" -n tests/hosting_checkout_document.php qa/hosting-checkout-document-minimal.json
+          "$PHP_BINARY" tests/service-plans/checkout_documents.php > qa/hosting-checkout-subscription-default.json
+          "$PHP_BINARY" -n tests/service-plans/checkout_documents.php > qa/hosting-checkout-subscription-minimal.json
+          "$PHP_BINARY" tests/recurring-billing/checkout.php > qa/hosting-checkout-billing-default.json
+          "$PHP_BINARY" -n tests/recurring-billing/checkout.php > qa/hosting-checkout-billing-minimal.json
+          "$PHP_BINARY" tests/hosting_checkout_views.php > qa/hosting-checkout-views-default.json
+          "$PHP_BINARY" -n tests/hosting_checkout_views.php > qa/hosting-checkout-views-minimal.json
+          CWP_TEST_HOSTING_CHECKOUT=1 "$PHP_BINARY" tests/hosting_checkout_native.php
           "$PHP_BINARY" tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-default.json
           "$PHP_BINARY" -n tests/hosting_catalog_recovery_guard.php > qa/hosting-catalog-recovery-guard-minimal.json
           .ci-venv/bin/python -B tests/hosting_catalog_purchase_guards.py
@@ -447,6 +456,8 @@ jobs:
           .ci-venv/bin/python -B tests/hosting_catalog_browser.py --full-suite
           .ci-venv/bin/python -B tests/hosting_purchase_handoff_guards.py > qa/hosting-purchase-handoff-guards.json
           .ci-venv/bin/python -B tests/hosting_purchase_handoff_browser.py --full-suite
+          .ci-venv/bin/python -B tests/hosting_checkout_http_guards.py > qa/hosting-checkout-http-guards.json
+          .ci-venv/bin/python -B tests/hosting_checkout_http_browser.py --full-suite
       - name: Verify shipping source after this job, including failure
         if: always()
         id: mutation

@@ -1,3 +1,51 @@
+## 2026-10-18 — recovery test startup correction
+
+The hosting first-invoice branch corrects the test server's loopback preflight and retains a bounded startup stage/errno when startup fails. The original application actions and cleanup remain unchanged. Six portable checks and all 466 existing artifact-helper checks pass; two real Linux socket regressions are now mandatory in the focused workflow. Corrected native/application/browser execution is still pending. [Evidence and scope](docs/TWENTYI_HOSTING_FULL_ACCEPTANCE.md#recovery-startup-correction-and-original-outcomes).
+
+The historical 512 run remains failed overall. Its four native matrix lanes have 28 verified reports with 3,168 exact named outcomes; its packaged recovery passed the 66-check absent phase before an OSError in the next phase. The original errno and exact startup stage were not retained, so TIME_WAIT is a hypothesis, not an established cause. Published 1.25, production and all original runs remain unchanged.
+
+## 2026-10-18 — packaged checkout tests and truthful history labels
+
+The client checkout result links now show the actual confirming client and distinguish the application's automatic agreement activation. The old schedule view assumed a staff creator and would emit a PHP warning for checkout schedules; its correction preserves legacy staff history. Actual renderer checks pass 58 cases in each PHP mode, including all 46 preceding cases. [Current checkout scope](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+Packaged owner/client HTTP and Chromium tests are now wired into the focused and full application workflows. They cover publication, owned/new project choice, first invoice now, exact retry, result links, CSRF and other-client/contact-context/support refusals, plus 12 desktop/mobile captures. These are prepared tests, not completed browser outcomes. The native continuation honors the real 30-second refresh cooldown; no clocks or production safeguards are bypassed. Full recipe/report preservation guards retain every preceding test. First source 7703 run 39120172123 and all earlier CI evidence remain unchanged; Linux checkout, visual inspection, upgrade and release acceptance remain pending.
+
+## 2026-10-18 — integrated hosting checkout, runtime acceptance pending
+
+The development checkout now connects explicit owner opt-in, the client project/review/confirmation screens, and one guarded transaction for client consent, a recurring schedule and the first unpaid invoice. Exact completed retries return the original records; inconsistent or missing financial history is refused. Checkout-origin fulfillment requires verified payment and the original provider mapping. Existing request-only offers retain their behavior. [Scope and remaining acceptance](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+Actual integrated-source PHP8.4.25 checks pass130 commercial-document,65 subscription,92 billing,46 portal-render/form and119 legacy-publication cases in each default/minimal mode. These are pure/model/renderer checks, not a native checkout or browser run. The first native Linux checkout test is prepared for the focused PHP8.2/8.4 × MariaDB10.11/MySQL8.4 workflow. Its protected provider-key setup cannot run faithfully on this Windows host. Packaged same-clock browser flow, complete-suite wiring, supported upgrade/recovery and release acceptance remain pending. Published1.25 and every original CI source/run remain unchanged.
+
+## 2026-10-18 — recurring checkout storage verified locally
+
+The hosting first-invoice branch now preserves the actual client on checkout schedules and their first invoice. Explicit owner migration retains legacy records, while stored-history validation binds the exact consent, schedule and independent invoice origin. The applied source passes66 native PHP8.4.25/MariaDB10.11.16 checks in a fresh isolated database. [Scope and remaining work](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+The original test stopped after34 checks at a fixture audit lookup; its output and database remain preserved. The corrected fixture keeps all assertions. These checks cover migration and synthetic retained history, not a completed client purchase. Atomic checkout creation, owner/client pages, verified-payment fulfillment integration and full release acceptance remain pending. Published1.25 is unchanged.
+
+## 2026-10-18 — subscription migration verified locally
+
+The hosting first-invoice branch adds an explicit owner migration for actual client/system attribution while preserving legacy subscriptions and audits. The applied source passes58 native PHP8.4.25/MariaDB10.11.16 checks, including interrupted DDL recovery, rollback of the final marker/audit, original-record preservation and actor/history corruption refusals. [Exact scope](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+The first test run exposed a fixture identifier bug after12 checks; its output and database are preserved. The corrected fixture passed in a fresh isolated database. This is bounded migration/history acceptance, using synthetic format2 retained rows. Authenticated checkout composition, first invoice creation, screens, other runtime combinations and release acceptance remain pending. Published1.25 is unchanged.
+
+## 2026-10-18 — hosting first-period billing groundwork
+
+The hosting first-invoice branch now combines client-attributed subscription documents with recurring terms derived from the exact retained consent. Its separate checkout path starts period0 on the accepted local date; legacy activation and later future-period rules remain unchanged. [Implementation and remaining work](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+Parent `e6b97ec3bf6dc7298a63971d371367f98524edec` already records the subscription increment. Applied recurring tests pass92 new,372 existing terms and321 existing schedule cases per PHP mode; legacy outputs match the baseline. This checkpoint does not create an invoice or expose checkout. Native storage, the atomic writer, customer screens and release acceptance remain pending; published1.25 is unchanged.
+
+## 2026-10-18 — client-attributed hosting subscription documents
+
+Starting from `9f4b374682919ff065d5127de914e87fe04eb2c2`, the hosting first-invoice branch now retains the actual client as the checkout subscription creator and separates explicit client consent from automatic local activation. Existing subscription format1 behavior remains unchanged. [Scope and remaining integration](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+Applied-source checks pass65 new subscription and67 existing cases in both PHP modes, plus the related130 checkout and119 publication/request cases. The legacy subscription output matches the baseline exactly. This is pure document groundwork: the native schema, atomic invoice writer and customer checkout page are not yet implemented in this checkpoint. Published1.25, original CI sources and live services remain unchanged.
+
+## 2026-10-18 — hosting checkout consent groundwork
+
+Branch `codex/twentyi-hosting-first-invoice` starts at `0c7cbae34220717c72e2f3dbeed1b41ca3545dbf` and adds pure documents for an explicit owner checkout policy and one client service/billing confirmation. Existing request-only publications retain format1 behavior; format2 checkout offers cannot enter the legacy request/conversion path. [Implementation and remaining work](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+The new review fixes local-midnight and skipped-date boundaries, binds the exact plan/price/client/project/date and keeps private provider facts out of the display projection. Applied-source PHP8.4.25 checks pass130 new and119 existing cases in both default and minimal modes. This stage adds no checkout page, database migration, invoice creation, charge or provisioning. Native atomic composition, actual actor storage, same-clock browser acceptance and release gates remain pending. Original full-acceptance0c7, hosting512/10142/f67 runs and published1.25 remain preserved.
+
 ## 2026-10-18 — main CI triggers and hosting development remain separate from release approval
 
 This integration combines hosting development source `4e35059b5a3966be33e80fc7e7bd2115a19ce11a` with main `e397d9a6e293850e8dff61a593e3ba39ee178400`, which normally merged PR218. The ten focused workflow path filters are retained with their original jobs; all hosting shipping files, tests, acceptance contracts and full application workflow remain exact to the development parent. Both histories are preserved by a normal main-to-development merge.

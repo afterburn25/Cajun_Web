@@ -1,3 +1,9 @@
+## 2026-10-18 — hosting checkout consent groundwork
+
+The first-invoice increment uses one composite client confirmation of service and billing terms under an explicitly opted-in owner publication. Native composition will create a real dedicated hosting project when requested, then the exact agreement, recurring calendar and first unpaid full-period invoice atomically on the displayed local date. A date rollover requires re-review. Legacy format1 requests and future-date activation rules remain unchanged; checkout publications cannot use the legacy conversion route.
+
+Actual client initiation, the retained owner publication authorization and automatic local activation must have distinct attribution. Verified payment and owner provisioning remain requirements for the new origin. General gateway/payment-link work stays with Devin. [Current implementation boundary](TWENTYI_HOSTING_FIRST_INVOICE.md): pure documents only; no native checkout or card-payment claim.
+
 ## 2026-10-18 — retain published hosting history during recovery
 
 All currently recognized older release inventories lack hosting-publication image retention. The successor staged owner updater therefore refuses automatic file recovery once any immutable publication exists, even after withdrawal, and refuses damaged or unknown hosting storage. It holds the existing staff mutex across fresh owner/history validation and the entire generic rollback, with no inherited database transaction. Absent or validated prepared-empty history can use existing recovery. No compatibility is inferred from a future version number. Historical staged updaters and manual file replacement cannot be retroactively guarded; operators needing recovery must use a matching files/database/private-storage backup. [Feature scope](TWENTYI_HOSTING_OFFERS.md#file-recovery).
