@@ -2833,7 +2833,7 @@ function setup_expected_files(): array { return [
     'install/.htaccess'=>'fa28d421a28ed9b6f4b997d5119c2b8adbacff6e2dd119a179b71230f9664934',
     'install/actions/checks.php'=>'d1575aa05e5f191206faf38824c83d10412e3a9b5518728c4bee38807dfaef63',
     'install/actions/cleanup.php'=>'8f84f800e46408749b00e4fd3af2dd4d1a253f85865048f0576d23dad45deaec',
-    'install/actions/deploy.php'=>'ea8afc39e50de2d972d35f722ab95b13a23fa5c8b517da649e2f8c73f04cde21',
+    'install/actions/deploy.php'=>'597b2cd32230f873e5858eba3d8297bb2edfe61d1211e974955b472882f5d833',
     'install/actions/package.php'=>'0cbc18438456043d4107aad3ba4251bd630b24e83c1651b6d7ad08a7491690ef',
     'install/actions/storage.php'=>'21f4247c3cc3fa82f153d934988a7a34e77e6a40adc4ca71c3565a367209ed9d',
     'install/bootstrap.generated.php'=>'3d579d89e8d1759136a10c1316aff1941ed8085ae32e96d311fc2bb6613008da',
