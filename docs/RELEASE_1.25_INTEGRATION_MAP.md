@@ -1,3 +1,9 @@
+## Published scope checkpoint — 2026-10-18
+
+The bounded increment and owner additions are included in verified 1.25.0 source `b79c67110829126916e3a65e616191542448bccc`; [publication/evidence](RELEASE_1.25.0_PUBLICATION.md). Complete candidate/main and publication/download gates have passed. The normal PR180 merge has ordered parents d7153b07 and fccd8449 and the identical candidate tree. The final accepted contract has 164 browser / 208 final reports, 131 source pins and 330 image names; older totals below remain tied to their original checkpoints. All HOLD capabilities and live-operation limits remain unchanged.
+
+Earlier dated candidate and branch checkpoints below retain their original evidence and failures. Their pending-work statements do not supersede this publication record.
+
 ## Observed product import candidate — 2026-10-17
 
 The explicit owner addition now has a reviewed [hosting-draft and local-image implementation](TWENTYI_PRODUCT_IMPORT.md), based on navigation source e8ccefc9. Root integrates its shared CI wiring and generated inventory. It preserves prior acceptance requirements and adds three reports and two images. Native/HTTP verification is pending; complete 20i catalogs and automatic provider images remain unresolved. This does not mark the full import roadmap or release complete.

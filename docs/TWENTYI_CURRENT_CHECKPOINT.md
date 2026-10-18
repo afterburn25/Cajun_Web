@@ -1,8 +1,8 @@
 # Current 1.25.0 scope and evidence pointer
 
-The mature20i source and current-main licensing history have already been normally integrated on `codex/release-1.25.0`; original35d8/3fa are integration inputs, not a feature stack waiting to be imported. Read [status](../PROJECT_STATUS.md), [scope](RELEASE_SCOPE_1.25.0.md), [integration map](RELEASE_1.25_INTEGRATION_MAP.md) and [versioned acceptance](TEST_REPORT_1.25.0.md) for the bounded release and actual source-specific evidence.
+1.25.0 is [published and freshly download-verified](RELEASE_1.25.0_PUBLICATION.md) from immutable source `b79c67110829126916e3a65e616191542448bccc`, tree `f862cc9205e073513f419cdf5ff24cacd1f801df`. The normal PR180 merge preserves the mature20i and licensing histories; no feature stack needs to be imported again. Five original exact-main full runs, maintained compatibility and 330 actual main image canvases were accepted before the separate draft/public verification.
 
-At this documentation preparation checkpoint, complete release-candidate acceptance remains pending. Later exact-main and publication receipts must identify their actual source and outcomes. The separate full20i roadmap remains incomplete; no remote StackCP session or SSH claim is added. Devin's separate [assignment157](../DEVIN_START_HERE.md) and unaccepted proposals remain separate from this release.
+The release freeze condition is satisfied. Resume remaining20i on reviewed branches while preserving the [bounded scope](RELEASE_SCOPE_1.25.0.md) and all HOLD capabilities. Complete provider product/pricing/image discovery, provider-issued StackCP login and SSH remain unfinished. The owner reference is already retained; do not ask for it again. Devin's unaccepted proposals remain separate. [Status](../PROJECT_STATUS.md) and [handoff](../SESSION_HANDOFF.md) identify current next actions.
 
 ## Historical source checkpoints
 

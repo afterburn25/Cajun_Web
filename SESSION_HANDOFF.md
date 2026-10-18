@@ -1,5 +1,17 @@
 # CajunWebPro 1.25.0 release handoff
 
+## 2026-10-18 — resume after verified publication
+
+[CajunWebPro 1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0) is published and freshly download-verified from immutable source `b79c67110829126916e3a65e616191542448bccc`, tree `f862cc9205e073513f419cdf5ff24cacd1f801df`, after the normal [PR180](https://github.com/afterburn25/Cajun_Web/pull/180) merge. All 18 release assets match their accepted bytes; 1.24.0 is unchanged. This is a GitHub release, not a live deployment.
+
+The acceptance, assembly, draft and public verification stages are complete; [the publication record](docs/RELEASE_1.25.0_PUBLICATION.md) binds the original runs, all 330 reviewed canvases and the exact public proof. Preserve the released tag/assets and all earlier failed/cancelled evidence. This documentation follow-up starts from `b79c67110829126916e3a65e616191542448bccc`; its later commit does not become the release source.
+
+For the existing website, use UPDATE and the same-release migration instructions. Never delete installed configuration or locks to run setup; fresh start is a separate explicit option and does not recover missing original keys. No live deployment has occurred.
+
+Next: Codex resumes held 20i work from the documented gaps and existing branches; Devin continues non-20i proposals separately. The full owner API reference is already retained. Root is preparing a reviewed, bounded read-only schema diagnostic for the owner-requested catalog import, limited to GET /reseller/*/packageTypes and GET /reseller/*/cloudServerProductData; no writes, arbitrary endpoints or image downloads. It has not yet executed. Unaccepted Devin proposals still require exact-head review and fresh acceptance before later integration.
+
+Earlier dated candidate and branch checkpoints below retain their original evidence and failures. Their pending-work statements do not supersede this publication record.
+
 ## 2026-10-17 — resume from delivery selector correction
 
 The enclosing correction starts from `de97e63b3354f52ee26508bfc0609e951a6ee20c`. Original default run[39047519450](https://github.com/afterburn25/Cajun_Web/actions/runs/39047519450) failed browser acceptance at the delivery manifest: generic `summary` matched the new navigation groups as well. Preserve its seven original archives and failed-job logs. The two manifest clicks now use `.delivery-detail > details > summary`, with an additive exact fixture pin; shipping source and every release gate remain intact.221 helper checks and12 actual Chromium checks with exact PHP renderers/synthetic rows passed; this is not native/HTTP/full application acceptance.

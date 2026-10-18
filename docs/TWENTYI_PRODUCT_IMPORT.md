@@ -23,7 +23,11 @@ Images use the existing genuine multipart upload, size/type/pixel validation and
 
 Cleanup takes the same staff mutex as preparation/import/image replacement, then rechecks current `staff.manage`, validates the complete import store and reads media before deleting anything. Thus cleanup either finishes before a new import/image attachment or observes that attachment after acquiring the mutex; it cannot reuse a pre-lock false readiness result. This serialization is source-reviewed; the current native fixture separately tests duplicate import contention, not a timed cleanup race. Existing project, marketing, filename and symlink safeguards remain.
 
-## Verification and integration
+## Accepted release evidence
+
+The bounded hosting-draft and owner-uploaded-image path is included in [verified 1.25.0](RELEASE_1.25.0_PUBLICATION.md) at source `b79c67110829126916e3a65e616191542448bccc`. Its native database and multipart/browser fixtures completed within all five original full main runs, and the two original import captures are included in the 330-image review with the recorded capture limits. This does not add complete provider catalogs, provider images, hosting publication or ordering.
+
+## Historical implementation and local verification
 
 Implementation started at `345b335eeea8331bba5800aa926a3bc1c7507100`; the branch was then fast-forwarded to reviewed navigation source `e8ccefc931829aa9245a71d4ba0d310db2d0add6` with the twelve owned files unchanged. PHP 8.4.25 default and `-n` each executed 48 named document checks. All changed PHP files pass syntax checks and the new browser fixture parses. A final dependency review found that the isolated native renderer omitted the existing studio form helper; its one-line real-controller include and contract pin were corrected before CI. Production files and assertions were unchanged. The isolated native and HTTP fixtures have not been executed locally; no database, browser, provider or publication acceptance is claimed.
 

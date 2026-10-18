@@ -1,3 +1,11 @@
+## Verified increment and remaining work — 2026-10-18
+
+The bounded 1.25.0 increment, including the owner installer/navigation/hosting-draft and local-image additions, is [published and freshly download-verified](RELEASE_1.25.0_PUBLICATION.md) from `b79c67110829126916e3a65e616191542448bccc`. Its candidate/main acceptance and release-delivery gates are complete. Full 20i remains unfinished; every HOLD row and operation-specific authority limit remains.
+
+Resume the documented remaining 20i work without treating saved inventory types as a complete product catalog or local uploads as imported provider images. No new capability is implemented by this documentation update.
+
+Earlier dated candidate and branch checkpoints below retain their original evidence and failures. Their pending-work statements do not supersede this publication record.
+
 ## 2026-10-17 — installer layout, administrator passwords and explicit fresh start
 
 ## 2026-10-17 — observed hosting draft imports and product images

@@ -1,5 +1,15 @@
 # CajunWebPro 1.25.0 scope and release status
 
+## 2026-10-18 — 1.25.0 published and download-verified
+
+[CajunWebPro 1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0) is published and freshly download-verified from immutable source `b79c67110829126916e3a65e616191542448bccc`, tree `f862cc9205e073513f419cdf5ff24cacd1f801df`, after the normal [PR180](https://github.com/afterburn25/Cajun_Web/pull/180) merge. All 18 release assets match their accepted bytes; 1.24.0 is unchanged. This is a GitHub release, not a live deployment.
+
+All five original exact-main full runs passed: the required PHP 8.2/8.4 × MariaDB 10.11/MySQL 8.4 matrix plus automatic PHP 8.3/MariaDB. Each has 208 final reports. Maintained compatibility passed 54 reports / 3,280 named executions. The team reviewed all 330 original main image canvases with the recorded capture/overlay limits. Windows/Linux packages, published-1.24 upgrades, draft downloads and separate public downloads were verified. [Exact runs, hashes and limits](docs/RELEASE_1.25.0_PUBLICATION.md).
+
+The release includes the owner-requested installer/password/fresh-start, navigation and bounded saved-inventory hosting-draft/local-image increments. Full catalog/pricing/image discovery and hosting publication/ordering remain held. The release freeze condition is satisfied. Codex resumes the remaining 20i roadmap on separate reviewed branches; Devin continues the separate non-20i assignment. Existing operation-specific authorization and live-operation gates remain. Complete 20i, automatic provider product/image import, remote StackCP login and SSH are not claimed complete.
+
+Earlier dated candidate and branch checkpoints below retain their original evidence and failures. Their pending-work statements do not supersede this publication record.
+
 ## 2026-10-17 — delivery manifest browser correction
 
 Candidate `de97e63b` is not accepted: [original default PHP8.3 run39047519450](https://github.com/afterburn25/Cajun_Web/actions/runs/39047519450) completed native integration, then failed when the delivery browser test's generic `summary` click matched seven new navigation headings and the file manifest. All seven original evidence archives and both failed-job logs are retained. The correction scopes both admin/client manifest clicks to `.delivery-detail > details > summary` and adds the fixture's exact source pin. Shipping files, all assertions,152 native commands,164 browser/208 final reports,330 images and timeouts are unchanged.

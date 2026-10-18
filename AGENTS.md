@@ -1,3 +1,13 @@
+## Current release instructions — 2026-10-18
+
+[CajunWebPro 1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0) is published and freshly download-verified from immutable source `b79c67110829126916e3a65e616191542448bccc`, tree `f862cc9205e073513f419cdf5ff24cacd1f801df`, after the normal [PR180](https://github.com/afterburn25/Cajun_Web/pull/180) merge. All 18 release assets match their accepted bytes; 1.24.0 is unchanged. This is a GitHub release, not a live deployment.
+
+The release freeze condition is satisfied. Codex resumes the remaining 20i roadmap on separate reviewed branches; Devin continues the separate non-20i assignment. Existing operation-specific authorization and live-operation gates remain. Complete 20i, automatic provider product/image import, remote StackCP login and SSH are not claimed complete.
+
+Read [publication and evidence](docs/RELEASE_1.25.0_PUBLICATION.md), [status](PROJECT_STATUS.md) and [handoff](SESSION_HANDOFF.md) before acting. Do not rerun completed candidate/main acceptance or rebuild/replace the released 1.25.0 bytes merely because a historical block says pending. Documentation follow-ups do not change the immutable release source.
+
+Earlier dated candidate and branch checkpoints below retain their original evidence and failures. Their pending-work statements do not supersede this publication record.
+
 ## Owner additions — 2026-10-17
 
 The owner explicitly added installer corrections, reorganized collapsible admin navigation, public Hosting / Web Design / Products links, and admin import of 20i products with images. These bounded requests supersede the earlier release freeze only for this work. Installer correction is committed as `345b335e`; this branch adds the [reviewed navigation increment](docs/NAVIGATION_1.25.0.md). Root coordinates shared seams and normal integration; the [product-import lane](docs/TWENTYI_PRODUCT_IMPORT.md) now has a reviewed hosting-draft/local-image subset, with native acceptance and full catalog coverage pending. All other held capabilities and the complete candidate/main/publication gates remain in force. No live deployment is authorized.

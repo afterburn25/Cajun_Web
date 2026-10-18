@@ -1,5 +1,7 @@
 # Administration and public navigation — 1.25.0 candidate
 
+Current outcome: included in [published and download-verified 1.25.0](RELEASE_1.25.0_PUBLICATION.md) at immutable source `b79c67110829126916e3a65e616191542448bccc`. Full exact-main acceptance and the 330-image team review passed with the recorded limits. Earlier branch/local-test statements below preserve their historical cutoff; they do not claim target-host deployment.
+
 The owner requested collapsible administration categories, clearer placement of settings, and Hosting, Web Design and Products in the public menu. This increment starts from installer correction `345b335eeea8331bba5800aa926a3bc1c7507100` on `codex/admin-navigation-1.25.0`. The enclosing commit records its resulting source identity. These are candidate changes, not a published release or live deployment.
 
 ## Administration
@@ -15,6 +17,8 @@ The main menu now includes Hosting, Web Design and Products. Web Design retains 
 The wider menu switches to its mobile control at 1,200 pixels and retains navigation when JavaScript is disabled. The approved logo, colors and page styles are preserved.
 
 ## Verification and limits
+The following local evidence and remaining-work statements record the implementation checkpoint before complete release acceptance.
+
 
 The admin renderer and actual assets passed 134 local PHP/Chromium checks across permission profiles and desktop/mobile widths. The public controller, templates and assets passed 91 local checks across seven widths. Both harnesses used explicit synthetic permission/settings/database seams; neither is native database acceptance. Each author viewed six actual browser screenshots. Independent cross-review inspected the corresponding source, results and pixels. Root also inspected representative desktop and mobile previews.
 

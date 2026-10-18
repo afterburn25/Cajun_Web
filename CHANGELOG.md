@@ -1,5 +1,13 @@
 ## 1.25.0 — bounded mature increment
 
+### Verified publication — 2026-10-18
+
+[CajunWebPro 1.25.0](https://github.com/afterburn25/Cajun_Web/releases/tag/v1.25.0) is published and freshly download-verified from immutable source `b79c67110829126916e3a65e616191542448bccc`, tree `f862cc9205e073513f419cdf5ff24cacd1f801df`, after the normal [PR180](https://github.com/afterburn25/Cajun_Web/pull/180) merge. All 18 release assets match their accepted bytes; 1.24.0 is unchanged. This is a GitHub release, not a live deployment.
+
+The accepted increment includes the mature bounded 20i scope, release-only licensing repairs, installer layout and 12-character administrator passwords, explicit non-destructive fresh start/recovery, grouped navigation and saved-inventory hosting drafts with owner-uploaded images. Full provider catalogs, automatic provider images and held lifecycle capabilities remain incomplete. [Publication evidence and limits](docs/RELEASE_1.25.0_PUBLICATION.md).
+
+Earlier dated candidate and branch checkpoints below retain their original evidence and failures. Their pending-work statements do not supersede this publication record.
+
 ## 2026-10-17 — scope delivery manifest browser clicks
 
 Correct two browser selectors to target the delivery file manifest after adding collapsible admin navigation. Preserve all existing assertions/captures and add the fixture's exact acceptance pin. No shipping behavior changes. Original default de97 acceptance failed and is retained;221 helper checks plus12 exact-renderer/synthetic Chromium checks pass locally. Complete corrected candidate/main acceptance and publication remain pending.
