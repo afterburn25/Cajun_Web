@@ -1,10 +1,12 @@
 # Service-plan records and client agreement contract
 
+Current 2026-10-15: Codex owns complete 20i P0. This retained component is being integrated as a necessary commercial dependency in `codex/twentyi-order-eligibility`; former allocation and acceptance below are historical. [Current integration and remaining eligibility](TWENTYI_COMMERCIAL_ELIGIBILITY.md). Missing established agreement tables now require original database restoration, not empty preparation. Combined native/browser/review evidence is pending.
+
 ## Scope and ownership
 
-Unreleased application increment ported from preserved `codex/service-plan-records` (`148606fb`), continuing the canonical classes Devin's foundation port retained. It preserves the exact reviewed Devin service-plan classes and supplied tests. HC-06/HC-11 are partially implemented; this increment supplies durable local service terms and enrollment, not recurring billing. Owner UI and authenticated client agreement screens are the next bounded layer. [Canonical terms](SERVICE_PLANS_FOUNDATION.md), [dependency gates](DEPENDENCY_GATES.md) and [client authority](CLIENT_AUTHORITY.md) remain applicable.
+Unreleased Codex application increment from PR90/148606fbab8fac1eba0c7c300927bb81f6d6d954. It preserves the exact reviewed Devin service-plan classes and supplied tests. HC-06/HC-11 are partially implemented; this increment supplies durable local service terms and enrollment, not recurring billing. Owner UI and authenticated client agreement screens are the next bounded layer. [Canonical terms](SERVICE_PLANS_FOUNDATION.md), [dependency gates](DEPENDENCY_GATES.md) and [client authority](CLIENT_AUTHORITY.md) remain applicable.
 
-Devin owns `site/app/plans/`, `service_plans_schema.php`, `service_plans_migrate.php`, the native/document fixtures and their application integration on `devin/non20i-service-plans` (stacked on `devin/non20i-service-plans-foundation`, which preserved the canonical classes). Codex retains complete 20i implementation. No competing identity, invoice or payment ledger is introduced.
+Codex owns `site/app/plans/`, `service_plans_schema.php`, `service_plans_migrate.php`, the native/document fixtures and their application integration. Devin retains its canonical branch and read-only 20i inventory assignment. No competing identity, invoice or payment ledger is introduced.
 
 ## Documents and states
 

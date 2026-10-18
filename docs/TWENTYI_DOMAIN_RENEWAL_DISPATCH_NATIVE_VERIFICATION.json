@@ -1,0 +1,401 @@
+{
+  "source": "b221eb4be95ec1509458d916f1ffd10d65e71e64",
+  "tree": "1553560b77eac8aa5eda4a2265bed42b73c35ea0",
+  "branch": "codex/twentyi-domain-renewal-dispatch",
+  "run": 38890526079,
+  "attempt": 1,
+  "event": "push",
+  "conclusion": "success",
+  "workflow_sha256": "698064b8091afc4fb29a7812859358c5d780f6ff93a553ea43af469f8111577e",
+  "verification_sha256": "9128918a9c3af927b7c84b0afa4c7c166ca393ade12fb782f494e002b289df93",
+  "metadata_sha256": "d0fde76160dc6678a12891dea3c99a7fd15ba8a105b06d2c2fe857305f6152b9",
+  "scope": "Exact original four-way focused native, pure, patched adapter/transport and offline Handler acceptance. No packaged browser, real provider request, payment, release or deployment acceptance.",
+  "jobs": [
+    {
+      "id": 116938632257,
+      "name": "Paid domain renewal dispatch PHP 8.4 and mariadb-10.11",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 116938632461,
+      "name": "Paid domain renewal dispatch PHP 8.4 and mysql-8.4",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 116938632476,
+      "name": "Paid domain renewal dispatch PHP 8.2 and mysql-8.4",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 116938632624,
+      "name": "Paid domain renewal dispatch PHP 8.2 and mariadb-10.11",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    }
+  ],
+  "expected_reports": [
+    "domain-renewal-agreements-document-default.json",
+    "domain-renewal-agreements-document-minimal.json",
+    "domain-renewal-agreements-native-results.json",
+    "domain-renewal-dispatch-document-default.json",
+    "domain-renewal-dispatch-document-minimal.json",
+    "domain-renewal-dispatch-handler-results.json",
+    "domain-renewal-dispatch-native-results.json",
+    "domain-renewal-dispatch-transport-default.json",
+    "domain-renewal-dispatch-transport-minimal.json",
+    "domain-renewals-native-results.json",
+    "hosting-confirmation-native-results.json",
+    "hosting-fulfillment-forms-native-results.json",
+    "hosting-fulfillment-native-results.json",
+    "provider-plan-catalog-native-results.json",
+    "recurring-billing-native-results.json",
+    "renewal-existing-cloud-sites.json",
+    "renewal-existing-force-ssl-transport.json",
+    "renewal-existing-mailboxes.json",
+    "renewal-existing-operations.json",
+    "service-orders-link-views-native-results.json",
+    "service-orders-links-native-results.json",
+    "service-orders-native-results.json",
+    "service-plans-native-results.json"
+  ],
+  "report_counts": {
+    "domain-renewal-agreements-document-default.json": {
+      "executions": 69,
+      "unique_names": 69
+    },
+    "domain-renewal-agreements-document-minimal.json": {
+      "executions": 69,
+      "unique_names": 69
+    },
+    "domain-renewal-agreements-native-results.json": {
+      "executions": 71,
+      "unique_names": 71
+    },
+    "domain-renewal-dispatch-document-default.json": {
+      "executions": 128,
+      "unique_names": 128
+    },
+    "domain-renewal-dispatch-document-minimal.json": {
+      "executions": 128,
+      "unique_names": 128
+    },
+    "domain-renewal-dispatch-handler-results.json": {
+      "executions": 25,
+      "unique_names": 25
+    },
+    "domain-renewal-dispatch-native-results.json": {
+      "executions": 84,
+      "unique_names": 84
+    },
+    "domain-renewal-dispatch-transport-default.json": {
+      "executions": 25,
+      "unique_names": 25
+    },
+    "domain-renewal-dispatch-transport-minimal.json": {
+      "executions": 25,
+      "unique_names": 25
+    },
+    "domain-renewals-native-results.json": {
+      "executions": 78,
+      "unique_names": 78
+    },
+    "hosting-confirmation-native-results.json": {
+      "executions": 38,
+      "unique_names": 38
+    },
+    "hosting-fulfillment-forms-native-results.json": {
+      "executions": 32,
+      "unique_names": 32
+    },
+    "hosting-fulfillment-native-results.json": {
+      "executions": 76,
+      "unique_names": 76
+    },
+    "provider-plan-catalog-native-results.json": {
+      "executions": 78,
+      "unique_names": 78
+    },
+    "recurring-billing-native-results.json": {
+      "executions": 543,
+      "unique_names": 543
+    },
+    "renewal-existing-cloud-sites.json": {
+      "executions": 48,
+      "unique_names": 48
+    },
+    "renewal-existing-force-ssl-transport.json": {
+      "executions": 37,
+      "unique_names": 37
+    },
+    "renewal-existing-mailboxes.json": {
+      "executions": 95,
+      "unique_names": 95
+    },
+    "renewal-existing-operations.json": {
+      "executions": 230,
+      "unique_names": 230
+    },
+    "service-orders-link-views-native-results.json": {
+      "executions": 38,
+      "unique_names": 38
+    },
+    "service-orders-links-native-results.json": {
+      "executions": 42,
+      "unique_names": 42
+    },
+    "service-orders-native-results.json": {
+      "executions": 82,
+      "unique_names": 82
+    },
+    "service-plans-native-results.json": {
+      "executions": 138,
+      "unique_names": 138
+    }
+  },
+  "artifacts": [
+    {
+      "id": 12042066248,
+      "name": "domain-renewal-dispatch-8.2-mariadb-10.11-b221eb4be95ec1509458d916f1ffd10d65e71e64",
+      "environment": "8.2-mariadb-10.11",
+      "size_bytes": 44767,
+      "sha256": "933cd233d6e80476c6b65ecd6566461950ad8bbb3b8b3e7b6f430c5e3713d436",
+      "safe_members": 23,
+      "crc": "passed",
+      "named_executions": 2179,
+      "passed": true,
+      "report_sha256": {
+        "domain-renewal-agreements-document-default.json": "94bb1db44428ecbb0d7e4b8b8161af38bfd24fd9bd05791cceb8e3395dc93878",
+        "domain-renewal-agreements-document-minimal.json": "94bb1db44428ecbb0d7e4b8b8161af38bfd24fd9bd05791cceb8e3395dc93878",
+        "domain-renewal-agreements-native-results.json": "27040b1c17a0425a6de791622396d037c953220c4abdc7e5fe79de6814c55901",
+        "domain-renewal-dispatch-document-default.json": "0f270ec38121cd9adad17d0c9ba297c850ef69b44e9318216ff9ceafbb8d8c0e",
+        "domain-renewal-dispatch-document-minimal.json": "0f270ec38121cd9adad17d0c9ba297c850ef69b44e9318216ff9ceafbb8d8c0e",
+        "domain-renewal-dispatch-handler-results.json": "de03c5e153746310c6da4aaf36fa4eb30c5859909d1022bb66336cec4ae8ca02",
+        "domain-renewal-dispatch-native-results.json": "2d9f8e3f67c4e93bcf6a1b0062cbfd18117115a036a942fe7ce73058ea391940",
+        "domain-renewal-dispatch-transport-default.json": "5519a0811ef4b6b4fc8068bfdd2217dd45dc36d8fe79d79b104ee09e59fd300d",
+        "domain-renewal-dispatch-transport-minimal.json": "5519a0811ef4b6b4fc8068bfdd2217dd45dc36d8fe79d79b104ee09e59fd300d",
+        "domain-renewals-native-results.json": "f0c123bc4646a2999066115d4927149ff1b45e769d0f1844542d511d4e221e24",
+        "hosting-confirmation-native-results.json": "86331c987e38aeb56144274cf7c67c0634414d6177478e1676770ac59964ca91",
+        "hosting-fulfillment-forms-native-results.json": "95ea0114b3914c459a001b0d08541bb22898d7cb47226048c587ebd895183ab8",
+        "hosting-fulfillment-native-results.json": "f145d948b53f002a6790d5e13b446cae91ea420958b5ad8dea4c4544d1fcdfbc",
+        "provider-plan-catalog-native-results.json": "50cce39e0451571ada3e677c3e36aa25dab9492fda8c80ce1b1c2c0342ce02b3",
+        "recurring-billing-native-results.json": "b2cc8e4ea0898a595b0db5e4d7b9bc3cc7f3a15673171b9ade510c949d2e2222",
+        "renewal-existing-cloud-sites.json": "d0703c007774696feb4618ad22a0c15b9f8dbe5473b0bbfb96b06ce87b0d7ae7",
+        "renewal-existing-force-ssl-transport.json": "46fdbce0e250520f2ecb59d2185bc059fd93c8012c8688b99d810b92fa509bd8",
+        "renewal-existing-mailboxes.json": "96f33473ea747864f6fc4e9fc2635c319c77b38008a584a398e7088833f4ac86",
+        "renewal-existing-operations.json": "7fdff1a222eaa2aa0afb3c47468d016591a0b26bfa7a48eeb140adc3fca60906",
+        "service-orders-link-views-native-results.json": "4909beeba7f0b565f6b1e80a17a746a8090a43222fc58cb54be6043ecf09ddba",
+        "service-orders-links-native-results.json": "df6502ae0e7aa65ae2fa6aff58ffc8d8135e43d74af65d35bfd6190e9af5c58d",
+        "service-orders-native-results.json": "77474a2d48395ae17e2e9496f0e2608ff2ca85186f2f36aaedcee19e2ba11610",
+        "service-plans-native-results.json": "5e2af47766e20fc4decdd57981d45bcad68ef989e5b64e2a2fc1f9d59af3d766"
+      }
+    },
+    {
+      "id": 12041821964,
+      "name": "domain-renewal-dispatch-8.4-mysql-8.4-b221eb4be95ec1509458d916f1ffd10d65e71e64",
+      "environment": "8.4-mysql-8.4",
+      "size_bytes": 44767,
+      "sha256": "249ae8134d594382cb1a7a5dabb6d87cdfce52ab8eeca276996a378f55b10da2",
+      "safe_members": 23,
+      "crc": "passed",
+      "named_executions": 2179,
+      "passed": true,
+      "report_sha256": {
+        "domain-renewal-agreements-document-default.json": "94bb1db44428ecbb0d7e4b8b8161af38bfd24fd9bd05791cceb8e3395dc93878",
+        "domain-renewal-agreements-document-minimal.json": "94bb1db44428ecbb0d7e4b8b8161af38bfd24fd9bd05791cceb8e3395dc93878",
+        "domain-renewal-agreements-native-results.json": "27040b1c17a0425a6de791622396d037c953220c4abdc7e5fe79de6814c55901",
+        "domain-renewal-dispatch-document-default.json": "0f270ec38121cd9adad17d0c9ba297c850ef69b44e9318216ff9ceafbb8d8c0e",
+        "domain-renewal-dispatch-document-minimal.json": "0f270ec38121cd9adad17d0c9ba297c850ef69b44e9318216ff9ceafbb8d8c0e",
+        "domain-renewal-dispatch-handler-results.json": "de03c5e153746310c6da4aaf36fa4eb30c5859909d1022bb66336cec4ae8ca02",
+        "domain-renewal-dispatch-native-results.json": "2d9f8e3f67c4e93bcf6a1b0062cbfd18117115a036a942fe7ce73058ea391940",
+        "domain-renewal-dispatch-transport-default.json": "5519a0811ef4b6b4fc8068bfdd2217dd45dc36d8fe79d79b104ee09e59fd300d",
+        "domain-renewal-dispatch-transport-minimal.json": "5519a0811ef4b6b4fc8068bfdd2217dd45dc36d8fe79d79b104ee09e59fd300d",
+        "domain-renewals-native-results.json": "f0c123bc4646a2999066115d4927149ff1b45e769d0f1844542d511d4e221e24",
+        "hosting-confirmation-native-results.json": "86331c987e38aeb56144274cf7c67c0634414d6177478e1676770ac59964ca91",
+        "hosting-fulfillment-forms-native-results.json": "95ea0114b3914c459a001b0d08541bb22898d7cb47226048c587ebd895183ab8",
+        "hosting-fulfillment-native-results.json": "f145d948b53f002a6790d5e13b446cae91ea420958b5ad8dea4c4544d1fcdfbc",
+        "provider-plan-catalog-native-results.json": "50cce39e0451571ada3e677c3e36aa25dab9492fda8c80ce1b1c2c0342ce02b3",
+        "recurring-billing-native-results.json": "00c11b86d0fb0d81729053045e44143dfe21b801274c99b56f30d755d6743a30",
+        "renewal-existing-cloud-sites.json": "d0703c007774696feb4618ad22a0c15b9f8dbe5473b0bbfb96b06ce87b0d7ae7",
+        "renewal-existing-force-ssl-transport.json": "46fdbce0e250520f2ecb59d2185bc059fd93c8012c8688b99d810b92fa509bd8",
+        "renewal-existing-mailboxes.json": "96f33473ea747864f6fc4e9fc2635c319c77b38008a584a398e7088833f4ac86",
+        "renewal-existing-operations.json": "7fdff1a222eaa2aa0afb3c47468d016591a0b26bfa7a48eeb140adc3fca60906",
+        "service-orders-link-views-native-results.json": "4909beeba7f0b565f6b1e80a17a746a8090a43222fc58cb54be6043ecf09ddba",
+        "service-orders-links-native-results.json": "df6502ae0e7aa65ae2fa6aff58ffc8d8135e43d74af65d35bfd6190e9af5c58d",
+        "service-orders-native-results.json": "77474a2d48395ae17e2e9496f0e2608ff2ca85186f2f36aaedcee19e2ba11610",
+        "service-plans-native-results.json": "5e2af47766e20fc4decdd57981d45bcad68ef989e5b64e2a2fc1f9d59af3d766"
+      }
+    },
+    {
+      "id": 12041428450,
+      "name": "domain-renewal-dispatch-8.4-mariadb-10.11-b221eb4be95ec1509458d916f1ffd10d65e71e64",
+      "environment": "8.4-mariadb-10.11",
+      "size_bytes": 44767,
+      "sha256": "07f270f6959a47d4ea295dd93548c950897666f3a2d722ba03b7ab761204af8a",
+      "safe_members": 23,
+      "crc": "passed",
+      "named_executions": 2179,
+      "passed": true,
+      "report_sha256": {
+        "domain-renewal-agreements-document-default.json": "94bb1db44428ecbb0d7e4b8b8161af38bfd24fd9bd05791cceb8e3395dc93878",
+        "domain-renewal-agreements-document-minimal.json": "94bb1db44428ecbb0d7e4b8b8161af38bfd24fd9bd05791cceb8e3395dc93878",
+        "domain-renewal-agreements-native-results.json": "27040b1c17a0425a6de791622396d037c953220c4abdc7e5fe79de6814c55901",
+        "domain-renewal-dispatch-document-default.json": "0f270ec38121cd9adad17d0c9ba297c850ef69b44e9318216ff9ceafbb8d8c0e",
+        "domain-renewal-dispatch-document-minimal.json": "0f270ec38121cd9adad17d0c9ba297c850ef69b44e9318216ff9ceafbb8d8c0e",
+        "domain-renewal-dispatch-handler-results.json": "de03c5e153746310c6da4aaf36fa4eb30c5859909d1022bb66336cec4ae8ca02",
+        "domain-renewal-dispatch-native-results.json": "2d9f8e3f67c4e93bcf6a1b0062cbfd18117115a036a942fe7ce73058ea391940",
+        "domain-renewal-dispatch-transport-default.json": "5519a0811ef4b6b4fc8068bfdd2217dd45dc36d8fe79d79b104ee09e59fd300d",
+        "domain-renewal-dispatch-transport-minimal.json": "5519a0811ef4b6b4fc8068bfdd2217dd45dc36d8fe79d79b104ee09e59fd300d",
+        "domain-renewals-native-results.json": "f0c123bc4646a2999066115d4927149ff1b45e769d0f1844542d511d4e221e24",
+        "hosting-confirmation-native-results.json": "86331c987e38aeb56144274cf7c67c0634414d6177478e1676770ac59964ca91",
+        "hosting-fulfillment-forms-native-results.json": "95ea0114b3914c459a001b0d08541bb22898d7cb47226048c587ebd895183ab8",
+        "hosting-fulfillment-native-results.json": "f145d948b53f002a6790d5e13b446cae91ea420958b5ad8dea4c4544d1fcdfbc",
+        "provider-plan-catalog-native-results.json": "50cce39e0451571ada3e677c3e36aa25dab9492fda8c80ce1b1c2c0342ce02b3",
+        "recurring-billing-native-results.json": "00c11b86d0fb0d81729053045e44143dfe21b801274c99b56f30d755d6743a30",
+        "renewal-existing-cloud-sites.json": "d0703c007774696feb4618ad22a0c15b9f8dbe5473b0bbfb96b06ce87b0d7ae7",
+        "renewal-existing-force-ssl-transport.json": "46fdbce0e250520f2ecb59d2185bc059fd93c8012c8688b99d810b92fa509bd8",
+        "renewal-existing-mailboxes.json": "96f33473ea747864f6fc4e9fc2635c319c77b38008a584a398e7088833f4ac86",
+        "renewal-existing-operations.json": "7fdff1a222eaa2aa0afb3c47468d016591a0b26bfa7a48eeb140adc3fca60906",
+        "service-orders-link-views-native-results.json": "4909beeba7f0b565f6b1e80a17a746a8090a43222fc58cb54be6043ecf09ddba",
+        "service-orders-links-native-results.json": "df6502ae0e7aa65ae2fa6aff58ffc8d8135e43d74af65d35bfd6190e9af5c58d",
+        "service-orders-native-results.json": "77474a2d48395ae17e2e9496f0e2608ff2ca85186f2f36aaedcee19e2ba11610",
+        "service-plans-native-results.json": "5e2af47766e20fc4decdd57981d45bcad68ef989e5b64e2a2fc1f9d59af3d766"
+      }
+    },
+    {
+      "id": 12041268859,
+      "name": "domain-renewal-dispatch-8.2-mysql-8.4-b221eb4be95ec1509458d916f1ffd10d65e71e64",
+      "environment": "8.2-mysql-8.4",
+      "size_bytes": 44767,
+      "sha256": "5e6129a593770fe42b338345b76dd784a24c151c0f1d7f8a743c8923f7c597c4",
+      "safe_members": 23,
+      "crc": "passed",
+      "named_executions": 2179,
+      "passed": true,
+      "report_sha256": {
+        "domain-renewal-agreements-document-default.json": "94bb1db44428ecbb0d7e4b8b8161af38bfd24fd9bd05791cceb8e3395dc93878",
+        "domain-renewal-agreements-document-minimal.json": "94bb1db44428ecbb0d7e4b8b8161af38bfd24fd9bd05791cceb8e3395dc93878",
+        "domain-renewal-agreements-native-results.json": "27040b1c17a0425a6de791622396d037c953220c4abdc7e5fe79de6814c55901",
+        "domain-renewal-dispatch-document-default.json": "0f270ec38121cd9adad17d0c9ba297c850ef69b44e9318216ff9ceafbb8d8c0e",
+        "domain-renewal-dispatch-document-minimal.json": "0f270ec38121cd9adad17d0c9ba297c850ef69b44e9318216ff9ceafbb8d8c0e",
+        "domain-renewal-dispatch-handler-results.json": "de03c5e153746310c6da4aaf36fa4eb30c5859909d1022bb66336cec4ae8ca02",
+        "domain-renewal-dispatch-native-results.json": "2d9f8e3f67c4e93bcf6a1b0062cbfd18117115a036a942fe7ce73058ea391940",
+        "domain-renewal-dispatch-transport-default.json": "5519a0811ef4b6b4fc8068bfdd2217dd45dc36d8fe79d79b104ee09e59fd300d",
+        "domain-renewal-dispatch-transport-minimal.json": "5519a0811ef4b6b4fc8068bfdd2217dd45dc36d8fe79d79b104ee09e59fd300d",
+        "domain-renewals-native-results.json": "f0c123bc4646a2999066115d4927149ff1b45e769d0f1844542d511d4e221e24",
+        "hosting-confirmation-native-results.json": "86331c987e38aeb56144274cf7c67c0634414d6177478e1676770ac59964ca91",
+        "hosting-fulfillment-forms-native-results.json": "95ea0114b3914c459a001b0d08541bb22898d7cb47226048c587ebd895183ab8",
+        "hosting-fulfillment-native-results.json": "f145d948b53f002a6790d5e13b446cae91ea420958b5ad8dea4c4544d1fcdfbc",
+        "provider-plan-catalog-native-results.json": "50cce39e0451571ada3e677c3e36aa25dab9492fda8c80ce1b1c2c0342ce02b3",
+        "recurring-billing-native-results.json": "b2cc8e4ea0898a595b0db5e4d7b9bc3cc7f3a15673171b9ade510c949d2e2222",
+        "renewal-existing-cloud-sites.json": "d0703c007774696feb4618ad22a0c15b9f8dbe5473b0bbfb96b06ce87b0d7ae7",
+        "renewal-existing-force-ssl-transport.json": "46fdbce0e250520f2ecb59d2185bc059fd93c8012c8688b99d810b92fa509bd8",
+        "renewal-existing-mailboxes.json": "96f33473ea747864f6fc4e9fc2635c319c77b38008a584a398e7088833f4ac86",
+        "renewal-existing-operations.json": "7fdff1a222eaa2aa0afb3c47468d016591a0b26bfa7a48eeb140adc3fca60906",
+        "service-orders-link-views-native-results.json": "4909beeba7f0b565f6b1e80a17a746a8090a43222fc58cb54be6043ecf09ddba",
+        "service-orders-links-native-results.json": "df6502ae0e7aa65ae2fa6aff58ffc8d8135e43d74af65d35bfd6190e9af5c58d",
+        "service-orders-native-results.json": "77474a2d48395ae17e2e9496f0e2608ff2ca85186f2f36aaedcee19e2ba11610",
+        "service-plans-native-results.json": "5e2af47766e20fc4decdd57981d45bcad68ef989e5b64e2a2fc1f9d59af3d766"
+      }
+    }
+  ],
+  "total_named_executions": 8716,
+  "own_native_names": [
+    "Ordinary owner invoice needs no configured provider or optional payment family",
+    "Ordinary direct-client invoice needs no optional renewal setup",
+    "Existing owner request remains available without plan payment or renewal allocation families",
+    "Existing client history remains readable before optional setup",
+    "Existing owner history remains readable before optional setup",
+    "Dispatch preparation requires current password",
+    "Delegated administrator cannot prepare charging records",
+    "Dispatch preparation refuses inherited transaction before DDL",
+    "Inherited transaction remains owned and feature tables absent",
+    "Preparation validates schema idempotently without provider writes",
+    "Actual current renewal offer accepts the original namespaced direct-client consent",
+    "Unrelated already-paid invoice cannot be allocated retroactively",
+    "Foreign client matching invoice cannot fund agreed renewal",
+    "Orphan sandbox audit without invoice mapping refuses pristine allocation",
+    "Orphan refusal creates no reservation or billing side effect",
+    "Exact allocation replay retains original accepted terms and invoice purpose",
+    "One renewal agreement cannot reserve another invoice",
+    "Actual hosting offer cannot consume permanently reserved invoice",
+    "Moved invoice index with rewritten unkeyed audit refuses actual original hosting admission",
+    "Moved invoice refusal preserves original signed bytes and adds no order DNS or send",
+    "Exact invoice index and audit restoration recovers permanent reservation",
+    "Client sees exact purpose before payment without provider data",
+    "Wrong client cannot read reserved invoice purpose",
+    "Support session cannot read reserved renewal payment authority",
+    "Consent and allocation alone do not prove paid renewal",
+    "Missing receipt audit refuses paid dispatch review",
+    "Exact receipt audit restoration recovers captured review",
+    "Reinserted same receipt audit ID order invalidates captured dispatch review",
+    "Reinserted receipt audit cannot reach DNS or create approval",
+    "Synthetic failed source retains exact result boundary",
+    "Later failed intent moved below success refuses paid dispatch before DNS",
+    "Altered failed source creates no new approval or network",
+    "Synthetic unfinished source retains exact result boundary",
+    "Later unfinished intent moved below success refuses paid dispatch before DNS",
+    "Altered unfinished source creates no new approval or network",
+    "Same revision key replacement refuses captured charging authority",
+    "Credential replacement refusal precedes DNS and approval",
+    "Delegated administrator cannot dispatch paid renewal",
+    "Direct client cannot approve provider balance charge",
+    "Support identity cannot dispatch paid renewal",
+    "Wrong current owner password cannot approve dispatch",
+    "Undecided owner charge review cannot dispatch",
+    "All unauthorized captured dispatches leave approval journal and network exact",
+    "Separate captured owner process cannot acquire dispatch mutex or send concurrently",
+    "Paid owner approval makes one actual gateway POST and retains provider true",
+    "Exact completed approval replay sends nothing again",
+    "Different key cannot resubmit the same accepted paid request",
+    "Provider success releases only new request admission without rewriting original journal",
+    "Successful domain permits a separate explicit future request",
+    "Actual false outcome is retained once without success claim",
+    "Actual false replay never blindly sends again",
+    "Declining false request does not bypass canonical-domain attempt fence",
+    "Blocked false re-intake leaves network unchanged",
+    "Actual null outcome is retained once without success claim",
+    "Actual null replay never blindly sends again",
+    "Declining null request does not bypass canonical-domain attempt fence",
+    "Blocked null re-intake leaves network unchanged",
+    "Actual timeout outcome is retained once without success claim",
+    "Actual timeout replay never blindly sends again",
+    "Declining timeout request does not bypass canonical-domain attempt fence",
+    "Blocked timeout re-intake leaves network unchanged",
+    "Moved unknown approval domain and rewritten audit cannot hide domain fence",
+    "Moved domain preserves original proof and denies before any mutation or network",
+    "Exact domain index restoration retains original unknown attempt",
+    "Supported reassignment creates a distinct current client link while retaining original unknown history",
+    "New direct client cannot bypass the prior canonical-domain attempt fence",
+    "Reassigned client has no new intake form request approval DNS or send",
+    "Native binary SQL and PHP allocation witness digest agree",
+    "Missing allocation audit is not repaired implicitly",
+    "Missing allocation audit is not repaired implicitly exact rollback restores readiness",
+    "Native binary SQL and PHP approval witness digest agree",
+    "Missing approval audit is not repaired implicitly",
+    "Missing approval audit is not repaired implicitly exact rollback restores readiness",
+    "Native binary SQL and PHP terminal witness digest agree",
+    "Missing terminal audit is not repaired implicitly",
+    "Missing terminal audit is not repaired implicitly exact rollback restores readiness",
+    "Missing established marker never becomes ordinary optional absence",
+    "Missing established marker never becomes ordinary optional absence exact rollback restores readiness",
+    "Paired unused allocation and audit loss cannot reset permanent reservation",
+    "Paired unused allocation and audit loss cannot reset permanent reservation exact rollback restores readiness",
+    "Supported credential rotation invalidates original captured paid review",
+    "Supported credential rotation cannot reach DNS for old accepted terms",
+    "Actual locally accepted boolean credential echo persists only uncertain redacted result",
+    "Supported key restoration retains all original reservations approvals and terminal proofs"
+  ],
+  "original_failure": {
+    "source": "bbf43f8a06fd1aca80726926dca23053376295fa",
+    "run": 38888746617,
+    "verification_sha256": "ff416cfbb7a0af4e18ef0aa31af19d9082a61bdf83ff079974c517278a0d1b58",
+    "cause": "Two dedicated consent comparisons omitted the existing client: actor namespace; original paid-invoice negative assertions remain unchanged."
+  }
+}

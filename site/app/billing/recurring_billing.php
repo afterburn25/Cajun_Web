@@ -3,7 +3,6 @@
 declare(strict_types=1);
 if(!defined('CWP_BOOT')){http_response_code(404);exit;}
 require_once CWP_CODE_ROOT.'/app/billing/payments.php';
-require_once CWP_CODE_ROOT.'/app/projects/progress.php';
 require_once CWP_CODE_ROOT.'/app/plans/records.php';
 require_once CWP_CODE_ROOT.'/includes/foundation/recurring-billing/RecurringBillingSchedule.php';
 require_once CWP_CODE_ROOT.'/database/schema/recurring_billing_schema.php';
@@ -11,7 +10,26 @@ require_once CWP_CODE_ROOT.'/database/migrations/recurring_billing_migrate.php';
 use CajunWebPro\Foundation\RecurringBilling\{RecurringBillingTerms,RecurringBillingSchedule};
 const RECURRING_BILLING_MAX_SCHEDULES=256;
 function recurring_billing_json(array $data):string{return json_encode($data,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);}
-function recurring_billing_ready():bool{return (one('SELECT value FROM '.table('settings').' WHERE name=?',['recurring_billing_schema_version'])['value']??'')==='1';}
+/** Reuse the existing global staff mutex and transaction for consent/invoice atomicity. */
+function recurring_billing_locked(callable $work):mixed {
+    if(db()->inTransaction())throw new LogicException('Recurring billing cannot inherit a transaction.');
+    return staff_locked(fn()=>staff_transaction($work));
+}
+/** Read-only projections must not keep an idle session alive indefinitely. */
+function recurring_billing_touch(callable $work,bool $touch):mixed {
+    $saved=array_intersect_key($_SESSION,array_flip(['last_activity','client_last']));
+    try{return $work();}finally{if(!$touch)foreach(['last_activity','client_last'] as $key){if(array_key_exists($key,$saved))$_SESSION[$key]=$saved[$key];else unset($_SESSION[$key]);}}
+}
+/** Existing project ownership only; unrelated project-history features are not required. */
+function recurring_billing_job(int $id,?int $client=null):array {
+    service_plans_actor($id);$row=one('SELECT * FROM '.table('studio_jobs').' WHERE id=? FOR UPDATE',[$id]);
+    if(!$row||($client!==null&&(int)$row['client_id']!==$client))throw new RuntimeException('Project unavailable.');return $row;
+}
+function recurring_billing_ready():bool{
+    if((one('SELECT value FROM '.table('settings').' WHERE name=?',['recurring_billing_schema_version'])['value']??'')!=='1')return false;
+    $names=array_map(fn($name)=>config()['db']['prefix'].$name,array_keys(recurring_billing_schema(config()['db']['prefix'])));
+    return count(all('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name IN (?,?,?,?)',$names))===count($names);
+}
 function recurring_billing_require():void {if(!recurring_billing_ready()||!service_plans_ready()||!ledger_ready()||!payments_ready())throw new RuntimeException('An owner must prepare recurring billing first.');}
 function recurring_billing_staff(bool $ready=true):string {
     if(support_current()||array_key_exists('support',$_GET))throw new RuntimeException('Recurring billing changes are unavailable during support.');
@@ -45,7 +63,7 @@ function recurring_billing_validate(array $row,?ServiceSubscriptionDocument $sou
     $initial=RecurringBillingSchedule::fromJson($row['initial_json']);$doc=RecurringBillingSchedule::fromJson($row['journal_json']);$data=$doc->data();$events=$data['events'];$data['events']=[];$terms=RecurringBillingTerms::fromArray($data['terms']);$t=$terms->data();
     if($initial->revision()!==0||$initial->data()!==$data||$t['id']!==$row['id']||$t['source_subscription']['id']!==$row['subscription_id']||$t['client_id']!==(int)$row['client_id']||$t['project_id']!==(int)$row['job_id']||$data['created_by']!==(int)$row['created_by']||$data['created_at']!==(int)$row['created_epoch']||$doc->revision()!==(int)$row['revision']||$doc->fingerprint()!==$row['journal_sha256'])throw new RuntimeException('Retained recurring agreement is inconsistent.');
     recurring_billing_source($terms,false,false,$source,$data['created_at']);
-    $job=project_progress_job($t['project_id'],$t['client_id']);
+    $job=recurring_billing_job($t['project_id'],$t['client_id']);
     $saved=all('SELECT * FROM '.table('recurring_billing_events').' WHERE schedule_id=? ORDER BY revision LIMIT 257',[$row['id']]);
     if(count($events)!==count($saved))throw new RuntimeException('A recurring agreement event is missing.');
     $before=$initial->fingerprint();$prefix=$data;
@@ -89,8 +107,8 @@ function recurring_billing_family(string $sourceId):array {
 }
 function recurring_billing_offer(array $fields,?string $previousId=null,?string $previousHash=null):RecurringBillingSchedule {
     $terms=RecurringBillingTerms::fromArray($fields);
-    return project_progress_locked(function()use($terms,$previousId,$previousHash):RecurringBillingSchedule{
-        $actor=recurring_billing_staff();$t=$terms->data();project_progress_client_row($t['client_id']);project_progress_job($t['project_id'],$t['client_id']);
+    return recurring_billing_locked(function()use($terms,$previousId,$previousHash):RecurringBillingSchedule{
+        $actor=recurring_billing_staff();$t=$terms->data();service_plans_client_row($t['client_id']);recurring_billing_job($t['project_id'],$t['client_id']);
         $family=recurring_billing_family($t['source_subscription']['id']);
         $old=one('SELECT * FROM '.table('recurring_billing_schedules').' WHERE id=?',[$t['id']]);
         if($old){
@@ -134,23 +152,23 @@ function recurring_billing_append(array $row,int $revision,string $event,string 
 }
 function recurring_billing_change(string $id,int $client,int $revision,string $event,string $command,array $args):RecurringBillingSchedule {
     if(!in_array($command,['withdraw','activate','pause','resume','end'],true))throw new InvalidArgumentException('Choose a staff recurring action.');
-    return project_progress_locked(function()use($id,$client,$revision,$event,$command,$args):RecurringBillingSchedule{
-        $actor=recurring_billing_staff();project_progress_client_row($client,!in_array($command,['withdraw','pause','end'],true));$row=recurring_billing_row($id);
+    return recurring_billing_locked(function()use($id,$client,$revision,$event,$command,$args):RecurringBillingSchedule{
+        $actor=recurring_billing_staff();service_plans_client_row($client,!in_array($command,['withdraw','pause','end'],true));$row=recurring_billing_row($id);
         if((int)$row['client_id']!==$client)throw new RuntimeException('Recurring agreement unavailable.');
         return recurring_billing_append($row,$revision,$event,$command,$actor,$args);
     });
 }
 function recurring_billing_decide(string $id,int $client,int $revision,string $event,string $command,array $args,bool $confirmed):RecurringBillingSchedule {
     if(!$confirmed||!in_array($command,['accept','decline','end'],true))throw new InvalidArgumentException('Review and explicitly confirm this client action.');
-    return project_progress_locked(function()use($id,$client,$revision,$event,$command,$args):RecurringBillingSchedule{
+    return recurring_billing_locked(function()use($id,$client,$revision,$event,$command,$args):RecurringBillingSchedule{
         $actor=recurring_billing_client($client);$row=recurring_billing_row($id);
         if((int)$row['client_id']!==$client)throw new RuntimeException('Recurring agreement unavailable.');
         return recurring_billing_append($row,$revision,$event,$command,$actor,$args);
     });
 }
 function recurring_billing_get(string $id,int $client,bool $asClient=false):RecurringBillingSchedule {
-    return project_progress_locked(function()use($id,$client,$asClient):RecurringBillingSchedule{
-        if($asClient)recurring_billing_client($client);else{recurring_billing_staff();project_progress_client_row($client,false);}
+    return recurring_billing_locked(function()use($id,$client,$asClient):RecurringBillingSchedule{
+        if($asClient)recurring_billing_client($client);else{recurring_billing_staff();service_plans_client_row($client,false);}
         $row=recurring_billing_row($id);if((int)$row['client_id']!==$client)throw new RuntimeException('Recurring agreement unavailable.');
         $family=recurring_billing_family($row['subscription_id']);return recurring_billing_validate($row,$family['source']);
     });

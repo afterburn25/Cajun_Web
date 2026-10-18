@@ -20,6 +20,7 @@ function recurring_ui_capture(array $post):array {
         else $out[$key]=$value;
     }
     foreach($post as $key=>$value)if(!array_key_exists($key,$limits)&&!in_array($key,['csrf','owner_password'],true))$out['invalid'][]='unknown field';
+    if($out['focus_event']!==''&&$out['schedule']==='')throw new InvalidArgumentException('Choose the original recurring agreement for this event.');
     return $out;
 }
 function recurring_ui_valid(array $form):void {
@@ -49,7 +50,6 @@ function recurring_ui_query(array $query,bool $staff):array {
     if(isset($query['period_date'])){$value=$query['period_date'];if(!preg_match('/\A[1-9][0-9]{3}-[0-9]{2}-[0-9]{2}\z/',$value))throw new InvalidArgumentException('Choose a billing period start date.');$out['period_date']=$value;}
     if(($out['source']!==''||$out['schedule']!=='')&&!$out['job'])throw new InvalidArgumentException('Choose the related project first.');
     if($out['source']!==''&&$out['schedule']!=='')throw new InvalidArgumentException('Choose an offer or an existing agreement.');
-    if($out['focus_event']!==''&&$out['schedule']==='')throw new InvalidArgumentException('Choose the original recurring agreement for this event.');
     return $out;
 }
 /** Resolve an opaque event against the whole journal after later entries have been appended. */

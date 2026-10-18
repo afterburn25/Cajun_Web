@@ -1,5 +1,11 @@
 # Recurring billing in the studio and client portal
 
+## Original invoice identity and restoration
+
+The append-only `recurring_billing.issued` audit entry is part of permanent financial history. Retain it with the original invoice, schedule and binding; never prune these entries. Current validation requires one matching original actor, schedule and period. A missing binding or origin requires original database restoration. Editing the displayed invoice reference cannot convert recurring debt into an ordinary invoice, and retained period issuance prevents duplicate billing after binding loss. Restore the original database as a unit; this is not tamper-proof recovery after all independent records have been deleted.
+
+Current integration: Codex owns complete 20i P0. These preserved interface requirements come from #121 at `abaa20081870ede3bae9a606f71d730972792d6d`; former allocation and acceptance notes below remain historical. The current branch reuses only the necessary billing dependency and requires its own native/HTTP/recovery/review evidence. [Source provenance](TWENTYI_RECURRING_SOURCE.json).
+
 This interface is a draft implementation on `codex/recurring-billing-screens`, following native PR120/`66f7760` and interface contract `4eb85bf`. It is not part of published 1.23.0. Independent review, combined application/upgrade/recovery/package acceptance and exact-main release checks remain required.
 
 ## Prepare and offer terms
@@ -26,7 +32,7 @@ The latest recorded decision can describe a future change. Read its effective da
 
 The existing invoice ledger supplies recorded payments and the remaining balance. **View invoice and payment history** opens the established staff or client invoice route. The agreement's eligibility is never treated as evidence of payment. Historical invoices remain valid after legitimate later service cancellation, while new invoices require a current active source.
 
-This increment does not add automatic charging, a renewal scheduler, provider actions or service entitlement changes. Codex retains complete 20i implementation.
+This increment does not add automatic charging, a renewal scheduler, provider actions or service entitlement changes. Devin retains complete 20i implementation.
 
 ## Rejected forms and access
 
@@ -47,7 +53,3 @@ Related: [interface contract](RECURRING_BILLING_INTERFACE_CONTRACT.md), [native 
 ## Focused acceptance and recovery follow-up
 
 Draft [PR121](https://github.com/afterburn25/Cajun_Web/pull/121) at `e9ee051` has independently downloaded/verified1280 focused named executions across push/PR PHP8.2/8.4 matrices, with all29 triggered workflows successful. The retained1.23 upgrade fixture now includes recurring consent, invoices, partial receipts, original-request replay and future termination through real HTTP recovery/reapplication. These new scenarios have only syntax verification at this checkpoint; their combined Apache execution, Windows/Linux packages and independent review remain required. No release or automatic collection is claimed.
-
-## Notifications
-
-The separate [recurring activity increment](RECURRING_BILLING_ACTIVITY.md) adds personal offer/decision updates and exact retained-history links to the existing workspace bell. Local source/browser acceptance is verified; focused CI, complete packaged recovery and independent review remain pending. Native agreement/invoice mutations are unchanged.

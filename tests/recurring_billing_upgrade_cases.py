@@ -89,6 +89,7 @@ def run(env):
                 and BeautifulSoup(response.text,'html.parser').find(id='recurring-event-'+activation['request_id']) is not None
                 and BeautifulSoup(staff_response.text,'html.parser').find(id='recurring-event-'+consent['request_id']) is not None)
 
+
     # Only the historical dates are seeded. Invoice/payment actions remain real HTTP.
     # No clock override or future-period eligibility bypass enters the shipped code.
     fixture = subprocess.run([env['php'], str(Path(__file__).with_name('recurring_billing_browser_fixture.php')),
@@ -114,7 +115,8 @@ def run(env):
 
     stable = records()
     earlier = {name: records(name) for name in ['financial', 'planning', 'progress', 'tickets', 'plans',
-                                               'submissions', 'drafts', 'provider', 'mail-accounts', 'templates']}
+                                               'submissions', 'drafts', 'provider', 'mail-accounts', 'templates',
+                                               'notices', 'messages', 'inbox', 'mail-checks', 'appointments', 'reviews']}
     # Shared invoice/receipt rows are compared by the recurring snapshot, so a later
     # intentional receipt need not rewrite the baseline for unrelated financial terms.
     for name in ['studio_invoices', 'invoice_payments']:

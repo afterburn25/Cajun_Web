@@ -1,6 +1,8 @@
 # Recurring invoice consent and whole-period lifecycle
 
-Devin owns this pure HC-06/P-03/P-04 increment on `devin/non20i-recurring-billing` (continuing preserved `codex/recurring-billing-lifecycle`), starting from terms PR 118/`4b99e646191aac8d2b3b5b927959516bad764756`. Codex retains complete 20i implementation. This contract precedes code. The component stays outside deployment and does not replace the required native records, current authority, invoice uniqueness or actual staff/client interfaces.
+Current integration: Codex owns the complete 20i P0 under the [owner takeover](TWENTYI_CODEX_TAKEOVER.md). This preserved contract comes from #120 at `66f7760b686c91ca88b8395d350e083cd1ef2516`; its older Devin allocation and checkpoint claims below are historical. Only the necessary recurring consent/invoice dependency is reused. New combined native, interface, package and review evidence remain required.
+
+Codex owns this pure HC-06/P-03/P-04 increment on `codex/recurring-billing-lifecycle`, starting from terms PR 118/`4b99e646191aac8d2b3b5b927959516bad764756`. Devin retains complete 20i implementation. This contract precedes code. The component stays outside deployment and does not replace the required native records, current authority, invoice uniqueness or actual staff/client interfaces.
 
 ## Purpose
 

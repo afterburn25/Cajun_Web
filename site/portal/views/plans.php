@@ -5,7 +5,9 @@ if(isset($_GET['agreement'])) {
     $id=service_plans_form_id($_GET,'agreement');$doc=service_plans_subscription_get($id,(int)$client['id'],true);
     echo '<p class="workspace-status">'.esc(service_plans_agreement_label($doc)).'</p>';
     service_plans_terms_view(ServicePlanDocument::fromJson(service_plans_json($doc->data()['plan'])));
-    service_plans_agreement_controls($doc,false);service_plans_agreement_history($doc);return;
+    require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_agreements.php';require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_agreements_views.php';
+    $renewalContext=domain_renewal_agreements_context($id,(int)$client['id'],true);if($renewalContext!==null)domain_renewal_agreements_card($renewalContext);
+    service_plans_agreement_controls($doc,false,true,$renewalContext);service_plans_agreement_history($doc);if($renewalContext===null)service_orders_ui($doc,false);return;
 }
 $page=service_plans_page(service_plans_ui_page(),true,(int)$client['id']);
 foreach($page['items'] as $item){

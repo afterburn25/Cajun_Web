@@ -12,7 +12,7 @@ function recurring_ui_action(string $action,?int $client=null):void {
     $staff=$client===null;$q=recurring_ui_query($_GET,$staff);
     $a=recurring_ui_capture($_POST);$GLOBALS['cwp_recurring_attempt']=$a;recurring_ui_valid($a);
     if($a['action']!==$action)throw new InvalidArgumentException('Choose a valid recurring billing action.');
-    project_progress_locked(fn()=>recurring_ui_authority($client));
+    recurring_billing_locked(fn()=>recurring_ui_authority($client));
     if($action==='recurring_setup'&&$staff){
         recurring_ui_confirm($a);$password=$_POST['owner_password']??null;
         if(!is_string($password)||strlen($password)>1000)throw new InvalidArgumentException('Enter your current owner password.');
@@ -25,7 +25,7 @@ function recurring_ui_action(string $action,?int $client=null):void {
         if(!in_array($a['intent'],['preview','publish'],true))throw new InvalidArgumentException('Choose preview or publish.');
         $source=recurring_ui_offer_source($a,$q['job']);$fields=recurring_ui_offer_fields($a,$source);
         if($a['intent']==='preview'){
-            project_progress_locked(function()use($fields,$a):void{
+            recurring_billing_locked(function()use($fields,$a):void{
                 recurring_billing_staff();$terms=RecurringBillingTerms::fromArray($fields);$family=recurring_billing_family($a['source_id']);
                 recurring_billing_source($terms,true,true,$family['source'],time());
                 if($a['previous_id']!==($family['row']['id']??'')||$a['previous_sha256']!==($family['document']?->fingerprint()??''))throw new RuntimeException('Review the current preceding recurring agreement.');

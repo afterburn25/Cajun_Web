@@ -30,6 +30,7 @@ function recurring_billing_migrate(#[\SensitiveParameter] string $password):void
         if(!ledger_ready())throw new RuntimeException('Prepare the invoice ledger first.');
         $version=one('SELECT value FROM '.table('settings').' WHERE name=?',['recurring_billing_schema_version'])['value']??'';
         if(!in_array($version,['','1'],true))throw new RuntimeException('Unknown recurring billing storage version.');
+        if($version==='1'&&!recurring_billing_ready())throw new RuntimeException('Established recurring billing history is missing. Restore the original database before continuing.');
         foreach(recurring_billing_schema(config()['db']['prefix']) as $name=>$sql){
             if(!one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name]))db()->exec($sql);
             recurring_billing_validate_schema($name,$sql);
