@@ -92,10 +92,17 @@ function provider_operations_upgrade_v4(): void {
 }
 
 function provider_operations_migrate(#[\SensitiveParameter] string $password): void {
+    if(db()->inTransaction())throw new LogicException('Provider operation preparation requires its own transaction boundary.');
     staff_locked(function()use($password):void {
         $actor=provider_settings_owner($password,false);
         $version=(one('SELECT value FROM '.table('settings').' WHERE name=?',['provider_operations_schema_version'])['value']??'');
         if(!in_array($version,['','1','2','3','4'],true))throw new RuntimeException('This provider operation storage version is not supported. Existing data was preserved.');
+        // A lost marker is not a fresh installation when independent operation
+        // or cloud execution witnesses survive. Refuse before creating tables.
+        if($version==='') {
+            if(one('SELECT id FROM '.table('audit').' WHERE action LIKE ? OR action IN (?,?) LIMIT 1',['provider.operation%','provider.cloudsite_started','provider.cloudsite_result']))throw new RuntimeException('Established provider operation history has lost its storage marker. Restore the original database backup before preparing storage.');
+            foreach(array_keys(provider_operations_schema(config()['db']['prefix'])) as $name)if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].$name])&&(int)query('SELECT COUNT(*) FROM '.table($name))->fetchColumn())throw new RuntimeException('Unrecognized provider operation records exist. Restore the original storage marker; no replacement tables were created.');
+        }
         // Both tables exist in every stamped version. Reconstructing either
         // would forget duplicate keys or the original approved request evidence.
         // Preflight all tables before any DDL so recovery remains reversible.

@@ -41,9 +41,9 @@ if (!is_string($bundleId) || !preg_match('/^\d+$/D', $bundleId)) {
 }
 
 $bundle = one(
-    'SELECT b.*, l.customer_id, l.license_key FROM ' . table('license_bundles') . ' b
+    'SELECT b.*, l.customer_id, l.license_key, l.is_master FROM ' . table('license_bundles') . ' b
      JOIN ' . table('website_licenses') . ' l ON b.license_id = l.id
-     WHERE b.id = ? AND l.customer_id = ? AND l.is_active = 1',
+     WHERE b.id = ? AND l.customer_id = ? AND l.is_active = 1 AND l.is_master = 0',
     [(int)$bundleId, $client['id']]
 );
 

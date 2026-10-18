@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['cwp_check'])) {
     exit;
 }
 start_session();
+if(!isset($_SESSION['cwp_setup_fresh_token'])||!is_string($_SESSION['cwp_setup_fresh_token'])||!preg_match('/^[a-f0-9]{12}$/D',$_SESSION['cwp_setup_fresh_token']))$_SESSION['cwp_setup_fresh_token']=bin2hex(random_bytes(6));
 // Clear legacy setup session data when switching installer builds. Never destroy
 // administrator auth or unrelated session values. Raw passwords are not retained.
 if (($_SESSION['cwp_setup_build'] ?? '') !== CWP_INSTALLER_BUILD) {
@@ -44,10 +45,10 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         $handle=acquire_installation_mutex();clearstatcache();
         if(cwp_installer_installed())throw new RuntimeException('The website was already installed by another request. Open admin/index.php.');
         if($action==='checks')$result=setup_checks();
-        elseif($action==='test_database'){$v=setup_database_test(setup_database_input());$result=['ok'=>true,'message'=>'Connected to database '.$v.'. Read/write/create/drop probes passed; existing tables were not overwritten.'];}
+        elseif($action==='test_database'){$testDatabase=setup_database_input();$v=setup_database_test($testDatabase);$result=['ok'=>true,'message'=>'Connected to database '.$v.'. Table prefix: '.$testDatabase['prefix'].'. Read/write/create/drop probes passed; existing tables were not overwritten.'];}
         else {
             $checks=setup_checks();
-            if(!$checks['ok']){$result=$checks+['message'=>'Resolve the highlighted server checks, then click Install again. Your form entries remain on this page.'];$status=422;}
+            if(!$checks['ok']){$result=$checks+['message'=>'Installation is paused. Review the failed server checks for the cause and required action. Your form entries remain on this page.'];$status=422;}
             else{$v=setup_database_test($database);$result=setup_deploy($owner,$database,$checks['storage']);$result['checks']=$checks['checks'];$result['storage_note']=$checks['storage_note'];$result['php_uid']=$checks['php_uid'];}
         }
     }catch(Throwable $e){
@@ -58,7 +59,7 @@ if($_SERVER['REQUEST_METHOD']==='POST') {
         if(isset($action)&&$action==='checks'){
             $result['php_uid']=setup_worker_uid();$result['host_report']=setup_permission_report($result['message']);
             $result['checks']=[['label'=>'Server preparation','ok'=>false,'message'=>$result['message']]];
-            $result['storage_note']='All database, account and website fields stay on this page. Correct only the targeted hosting permissions shown below, then recheck.';
+            $result['storage_note']='All database, account and website fields stay on this page. Resolve the permission issue in the server checks, then recheck.';
         }
     }
     finally{if(is_resource($handle)){flock($handle,LOCK_UN);fclose($handle);}}

@@ -1,0 +1,11 @@
+# Cloud-history recovery candidate: exact acceptance
+
+Source `a9637f2bb2000196312f72e10f39f614980c98c7` repairs lost later package-link history reviving an older cloud assignment. [Full run38834893741](https://github.com/afterburn25/Cajun_Web/actions/runs/38834893741), job116761691062, is terminal SUCCESS through source-cleanliness verification. PR test merge `43fa70166dde2f65de42a7207482c1faf9dd7c3b` has the identical Git tree. This proves that source, not later integrations or live20i behavior.
+
+Downloaded final artifact12019534379 is124,222,046 bytes, SHA256 `40db9ebb85a0eb394ff0f4a52cf0044299b56cddc0dc07247bb7c380f765c5e9`. Root verifies394 safe unique file members/CRC;108 named result reports;11 clean diagnostic reports;1,945 HTTP,289 recovery and1,959 Apache checks. All11 distribution checksums, nested ZIP inventories/directories, FULL Git source, COMPLETE site and decoded UPDATE payload match the exact source. FULL has5496 files, COMPLETE2697, UPDATE2684. All167 screenshot bytes equal the actual browser checkpoint12018933633. Twelve selected cloud/renewal/catalog images were reviewed directly, with readable original-pixel crops for long owner pages; no blocking finding. This is not a claim that every image was visually reviewed.
+
+Preserved Windows packages at the same source independently match every FULL/COMPLETE member. UPDATE differs only in its encoded equivalent-tree CI source commit. Local proofs are `work/20i-a963-final-verification.json`, `work/20i-a963-windows-verification.json` and the retained browser/visual verification records.
+
+All31 focused PR gates succeeded. Sixty downloaded matrix archives contain230 named JSON reports; overlaps are retained, not counted as unique assertions. Cloud's four PHP8.2/8.4 × MariaDB10.11/MySQL8.4 combinations each pass45 creation and87 confirmation cases, including later link/relink/unlink loss, different-owner loss, exact restoration and historical ordinal pairing. Eleven console-only workflows are reported as gate status only.
+
+The original3bbc evidence remains historical; it preceded the repaired recovery defect. New hosting-history1759, forwarding and scheduler integration requires its own combined acceptance. [Current state](../PROJECT_STATUS.md), [requirements](TWENTYI_REQUIREMENTS_EVIDENCE.md).
