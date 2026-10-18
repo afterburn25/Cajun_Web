@@ -84,6 +84,7 @@ try{
     $GLOBALS['cwp_support']=['client'=>one('SELECT * FROM '.table('studio_clients').' WHERE id=1')];l_ok('Support can read owned safe invoice',(int)ledger_client_invoice(1)['id']===1);l_deny('Support cannot print receipt',fn()=>ledger_client_receipt($receipt));unset($GLOBALS['cwp_support']);
     l_actor();ledger_reverse((int)$legacy['id'],'Legacy balance was recorded in error',l_key(),l_review(2),$password);l_ok('Owner can correct imported balance without modifying original invoice amount',l_balance(2)['due_cents']===12510&&ledger_invoice(2)['status']==='issued'&&one('SELECT * FROM '.table('invoice_payments').' WHERE id=?',[$legacy['id']])===$legacy);
     l_ok('Strict audit retains staff attribution without private reference leakage',one('SELECT user_id FROM '.table('audit')." WHERE action='payments.ledger.manual' ORDER BY id LIMIT 1")['user_id']===2&&!str_contains(json_encode(all('SELECT * FROM '.table('audit'))),'Private bank'));
+    require __DIR__.'/ledger_fulfillment_cases.php';
 }catch(Throwable $e){$failure=get_class($e).': '.$e->getMessage();}
 file_put_contents(__DIR__.'/../qa/ledger-native-results.json',json_encode(['scope'=>'Isolated MariaDB, parallel PHP receipt processes, synthetic sandbox transport; no live merchant or payment','checks'=>$checks,'passed'=>!isset($failure),'failure'=>$failure??null],JSON_PRETTY_PRINT));
 foreach($checks as $c)echo ($c['passed']?'PASS ':'FAIL ').$c['name'].PHP_EOL;

@@ -13,7 +13,7 @@ def upgrade():
     tables=['users','settings','staff_profiles','staff_invitations','support_clients','support_events','studio_clients','studio_jobs','studio_invoices','leads','projects']
     before={t:db('SELECT * FROM catalogup_'+t) for t in tables}
     with zipfile.ZipFile(next((ROOT/'dist').glob('*-UPDATE.zip'))) as z:z.extractall(dest)
-    from structure_helpers import apply_file_update
+    from structure_helpers import apply_file_update, removed_setup_unavailable
     apply_file_update(globals(),dest)
     check('Actual 1.3.0 update preserves config locks private media and unrelated files',all(p.read_bytes()==v for p,v in preserved.items()))
     up=requests.Session();root=BASE+'/catalog-upgrade/admin/index.php'
@@ -27,7 +27,7 @@ def upgrade():
     settings={r['name']:r['value'] for r in db('SELECT * FROM catalogup_settings')};check('Actual 1.3.0 retains all original settings',all(settings[r['name']]==r['value'] for r in before['settings'] if not r['name'].endswith('_schema_version')))
     users=db('SELECT * FROM catalogup_users');check('Actual 1.3.0 retains passwords IDs and auth versions',all(all(a[k]==b[k] for k in b if k!='last_login') for a,b in zip(users,before['users'])))
     check('Actual 1.3.0 publishes no automatic product or price',not db('SELECT * FROM catalogup_catalog_products'))
-    check('Actual 1.3.0 installed guard remains',requests.get(BASE+'/catalog-upgrade/install.php').status_code==404)
+    check('Actual 1.3.0 installed guard remains',removed_setup_unavailable(globals(),dest,up))
 
 def product_data(**changes):
     return dict({'sku':'HTTP-DESIGN','title':'HTTP design service','family':'web-design','status':'draft','term':'once','currency':'USD','amount':'125.10','setup':'10.00','cost':'42.37','provider_ref':'INTERNAL_PROVIDER_ONLY_1938','summary':'Approved HTTP design scope','features':'Responsive layout\nAgreed launch testing','terms':'One agreed project phase. No automatic renewal.','sort_order':'0'},**changes)

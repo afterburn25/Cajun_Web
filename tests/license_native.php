@@ -18,7 +18,7 @@ try{
 
     // --- storage readiness (fresh deploy marks license_schema_version) -------
     lic_ok('Storage not ready before version mark',!license_ready());
-    save_setting('license_schema_version','3');
+    save_setting('license_schema_version','3');save_setting('license_invoice_cutover','0');
     lic_ok('Storage ready after version mark',license_ready());
 
     // --- key generation ----------------------------------------------------
@@ -61,15 +61,36 @@ try{
     lic_ok('Re-register reactivates without duplicating',count($domains)===2&&(int)array_column($domains,'is_active','domain')['example.com']===1);
 
     // --- atomic domain replace (customer "change website") ---------------------
-    license_replace_domain($licId,'test.example.com','NEW-SITE.example.com');
+    license_replace_domain($licId,'test.example.com','NEW-SITE.example.com',72);
     $domains=license_domains($licId);$active=array_column($domains,'is_active','domain');
     lic_ok('Replace deactivates old domain',(int)$active['test.example.com']===0);
     lic_ok('Replace registers new domain canonicalized',(int)$active['new-site.example.com']===1);
     lic_ok('Replace keeps the other active domain',(int)$active['example.com']===1);
     lic_deny('Replace to same domain rejected',fn()=>license_replace_domain($licId,'example.com','example.com'));
     lic_deny('Replace of inactive domain rejected',fn()=>license_replace_domain($licId,'ghost.example.com','other.example.com'));
+    $before=all('SELECT * FROM '.table('license_domains').' ORDER BY id');
+    $auditBefore=all('SELECT * FROM '.table('audit').' ORDER BY id');
+    lic_deny('Invalid replacement domain is rejected',fn()=>license_replace_domain($licId,'example.com','not a domain'));
+    lic_ok('Invalid replacement preserves all original rows',all('SELECT * FROM '.table('license_domains').' ORDER BY id')===$before&&!db()->inTransaction());
+    lic_ok('Invalid replacement rolls back intermediate audit events',all('SELECT * FROM '.table('audit').' ORDER BY id')===$auditBefore);
+    db()->exec('CREATE TRIGGER licenseci_replace_fail BEFORE INSERT ON '.table('license_domains')." FOR EACH ROW BEGIN IF NEW.domain='rejected.example.com' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic replacement storage failure'; END IF; END");
+    try {
+        $failed=false;try{license_replace_domain($licId,'example.com','rejected.example.com');}catch(PDOException){$failed=true;}
+        lic_ok('Failed replacement insert restores every original domain', $failed&&all('SELECT * FROM '.table('license_domains').' ORDER BY id')===$before&&!db()->inTransaction());
+    } finally {db()->exec('DROP TRIGGER licenseci_replace_fail');}
+    db()->exec('CREATE TRIGGER licenseci_replace_audit_fail BEFORE INSERT ON '.table('audit')." FOR EACH ROW BEGIN IF NEW.action='license.domain.replace' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Synthetic replacement audit failure'; END IF; END");
+    try {
+        $failed=false;try{license_replace_domain($licId,'example.com','audited.example.com',72);}catch(PDOException){$failed=true;}
+        lic_ok('Replacement audit failure restores original domains and audit events',$failed&&all('SELECT * FROM '.table('license_domains').' ORDER BY id')===$before&&all('SELECT * FROM '.table('audit').' ORDER BY id')===$auditBefore&&!db()->inTransaction());
+    }finally{db()->exec('DROP TRIGGER licenseci_replace_audit_fail');}
+    db()->beginTransaction();
+    try {
+        $refused=false;try{license_replace_domain($licId,'example.com','next.example.com');}catch(LogicException){$refused=true;}
+        lic_ok('Replacement preserves an existing caller transaction', $refused&&db()->inTransaction()&&all('SELECT * FROM '.table('license_domains').' ORDER BY id')===$before);
+    } finally {if(db()->inTransaction())db()->rollBack();}
     lic_ok('Domain mutations audited',(bool)one('SELECT id FROM '.table('audit')." WHERE action='license.domain.replace'")
         &&(bool)one('SELECT id FROM '.table('audit')." WHERE action='license.domain.register'"));
+    lic_ok('Replacement records the same actor on all three mutation events',(int)query('SELECT COUNT(*) FROM '.table('audit').' WHERE user_id=? AND action IN (?,?,?)',[72,'license.domain.deactivate','license.domain.register','license.domain.replace'])->fetchColumn()===3);
 
     // --- deactivation --------------------------------------------------------
     license_deactivate_domain($licId,'test.example.com');
@@ -149,7 +170,25 @@ try{
     lic_ok('Bundle record stored',count($bundles)===1&&$bundles[0]['title']==='Test bundle');
     lic_ok('Bundle SHA-256 recorded for download integrity',$bundles[0]['sha256']===hash_file('sha256',$bundleFile));
     @unlink($bundleFile);
-}catch(Throwable $e){fwrite(STDERR,'SETUP '.get_class($e).': '.$e->getMessage());exit(1);}
+    $bundleBefore=all('SELECT * FROM '.table('license_bundles').' ORDER BY id');
+    try{license_bundle_store((int)$lic3['id'],'/synthetic/not-read.zip','Master delivery');lic_ok('Master bundle storage refusal',false);}catch(InvalidArgumentException $e){lic_ok('Master bundle storage refusal',$e->getMessage()==='Master license keys cannot be bundled for delivery.'&&all('SELECT * FROM '.table('license_bundles').' ORDER BY id')===$bundleBefore);}
+    // Execute the exact production endpoint query, not a copied security predicate.
+    $downloadSource=file_get_contents(CWP_CODE_ROOT.'/api/bundle-download.php');
+    if(preg_match('/\$bundle = one\(\s*(.*?),\s*\[\(int\)\$bundleId/s',$downloadSource,$sqlMatch)!==1)throw new RuntimeException('Cannot extract exact download query');
+    $downloadSql=eval('return '.$sqlMatch[1].';');
+    query('INSERT INTO '.table('license_bundles').' (license_id,file_path,title,sha256,created_at) VALUES (?,?,?,?,?)',[$lic3['id'],'/synthetic/old-master.zip','Existing master',null,gmdate('Y-m-d H:i:s')]);$masterBundle=(int)db()->lastInsertId();
+    lic_ok('Exact endpoint SQL refuses an already-created customer master bundle',one($downloadSql,[$masterBundle,2])===null);
+    lic_ok('Exact endpoint SQL retains ordinary owner access',one($downloadSql,[(int)$bundles[0]['id'],2])!==null);
+    lic_ok('Exact endpoint SQL excludes a foreign ordinary client',one($downloadSql,[(int)$bundles[0]['id'],1])===null);
+    require __DIR__.'/license_upgrade_cases.php';
+
+}catch(Throwable $e){
+    $report=['checks'=>$checks,'passed'=>false,'error'=>get_class($e).': '.$e->getMessage()];
+    file_put_contents(__DIR__.'/../qa/license-native-results.json',json_encode($report,JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
+    fwrite(STDERR,'SETUP '.get_class($e).': '.$e->getMessage());exit(1);
+}
 $failed=array_filter($checks,fn($c)=>!$c['passed']);
-echo json_encode(['checks'=>$checks,'passed'=>count($checks)-count($failed),'failed'=>count($failed)],JSON_THROW_ON_ERROR);
+$report=['checks'=>$checks,'passed'=>count($checks)-count($failed),'failed'=>count($failed)];
+file_put_contents(__DIR__.'/../qa/license-native-results.json',json_encode($report,JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR));
+echo json_encode($report,JSON_THROW_ON_ERROR);
 exit($failed?1:0);

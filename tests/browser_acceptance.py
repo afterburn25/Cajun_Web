@@ -55,7 +55,8 @@ from provider_http_server import ProviderServer
 provider_server=ProviderServer(ROOT)
 from mail_submission_server import SubmissionServer
 submission_server=SubmissionServer(ROOT)
-php=shutil.which('php8.3') or shutil.which('php');release_cases.php=php;release_cases.ROOT=ROOT;log=open(QA/'http-server.log','w');proc=subprocess.Popen([php,'-d','auto_prepend_file='+str(ROOT/'tests/mail_inbox_http_connector.php'),'-d','sendmail_path=python3 '+str(ROOT/'tests/mail_capture.py'),'-S','127.0.0.1:8091','-t',str(WEB)],stdout=log,stderr=log)
+php=os.environ.get('PHP_BINARY') or shutil.which('php8.3') or shutil.which('php');log=open(QA/'http-server.log','w');proc=subprocess.Popen([php,'-d','auto_prepend_file='+str(ROOT/'tests/mail_inbox_http_connector.php'),'-d','sendmail_path=python3 '+str(ROOT/'tests/mail_capture.py'),'-S','127.0.0.1:8091','-t',str(WEB)],stdout=log,stderr=log)
+release_cases.php=php;release_cases.ROOT=ROOT
 db=release_cases.db
 error=None
 try:
@@ -168,7 +169,13 @@ try:
         page.go_back();expect(page.locator('.project-card:not([hidden])')).to_have_count(3);check('Browser back restores full portfolio',page.locator('.project-card:not([hidden])').count()==3)
         from motion_cases import run as motion_checks
         motion_checks(globals(),browser)
-        page.goto(BASE+'/existing/portal/index.php');page.locator('[name=email]').fill('alice@example.invalid');page.locator('[name=password]').fill('Synthetic client passphrase 2026');page.locator('button[type=submit],form button').first.click();page.wait_for_url('**/portal/index.php');page.goto(BASE+'/existing/portal/index.php?job=1');page.screenshot(path=str(QA/'Client-Workspace-Desktop.png'),full_page=True)
+        page.goto(BASE+'/existing/portal/index.php');page.locator('[name=email]').fill('alice@example.invalid');page.locator('[name=password]').fill('Synthetic client passphrase 2026');page.locator('button[type=submit],form button').first.click();page.wait_for_url('**/portal/index.php')
+        expect(page.locator('h1')).to_contain_text('Welcome,')
+        for width,height,label in [(1440,1000,'Desktop'),(390,844,'Mobile')]:
+            page.set_viewport_size({'width':width,'height':height})
+            check('Client project list '+label+' fits viewport',page.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
+            page.screenshot(path=str(QA/('Client-Projects-'+label+'.png')),full_page=True)
+        page.set_viewport_size({'width':1440,'height':1000});page.goto(BASE+'/existing/portal/index.php?job=1');page.screenshot(path=str(QA/'Client-Workspace-Desktop.png'),full_page=True)
         check('Browser private project renders','HTTP manual invoice' in page.content());check('No uncaught browser errors',not errors)
         with page.expect_download() as download:page.locator('a[href*="portal/index.php?file="]').first.click()
         check('Browser authorized download matches stored file',Path(download.value.path()).read_bytes()==(ROOT/'site/images/icons/favicon.png').read_bytes())
@@ -180,6 +187,8 @@ try:
         support_browser(globals(),browser)
         from catalog_cases import run_browser as catalog_browser
         catalog_browser(globals(),browser)
+        from provider_catalog_import_cases import run_browser as catalog_import_browser
+        catalog_import_browser(globals(),browser)
         from payments_cases import run_browser as payments_browser
         payments_browser(globals(),browser)
         from attempts_cases import run_browser as attempts_browser
@@ -214,12 +223,70 @@ try:
         provider_browser(globals(),browser)
         from provider_operations_cases import run_browser as provider_operations_browser
         provider_operations_browser(globals(),browser)
+        from provider_domain_search_cases import run_browser as domain_search_browser
+        domain_search_browser(globals(),browser)
+        from provider_mailbox_cases import run_browser as mailbox_creation_browser
+        mailbox_creation_browser(globals(),browser)
+        from provider_forwarding_cases import run_browser as forwarding_browser
+        forwarding_browser(globals(),browser)
+
+        from provider_registrar_cases import run_browser as registrar_browser
+        registrar_browser(globals(),browser)
+        from domain_renewals_cases import run_browser as domain_renewals_browser
+        domain_renewals_browser(globals(),browser)
+
+        from provider_cloud_sites_cases import run_browser as cloud_sites_browser
+        cloud_sites_browser(globals(),browser)
+        from service_observations_cases import run_browser as service_history_browser
+        service_history_browser(globals(),browser)
         from mail_drafts_cases import run_browser as drafts_browser
         drafts_browser(globals(),browser)
         from mail_submissions_cases import run_browser as submissions_browser
         submissions_browser(globals(),browser)
         from client_authority_cases import run_browser as client_authority_browser
         client_authority_browser(globals(),browser)
+        from service_plan_cases import run_browser as service_plan_browser
+        service_plan_browser(globals(),browser)
+        from recurring_billing_cases import run_browser as recurring_browser
+        recurring_browser(globals(),browser)
+        from domain_contracts_cases import run_browser as domain_contracts_browser
+        domain_contracts_browser(globals(),browser)
+        from provider_cloud_providers_cases import run_browser as cloud_providers_browser
+        cloud_providers_browser(globals(),browser)
+        from provider_registration_periods_cases import run_browser as registration_periods_browser
+        registration_periods_browser(globals(),browser)
+        from provider_package_php_cases import run_browser as package_php_browser
+        package_php_browser(globals(),browser)
+        from domain_expiry_cases import run_browser as domain_expiry_browser
+        domain_expiry_browser(globals(),browser)
+        from provider_document_roots_cases import run_browser as document_roots_browser
+        document_roots_browser(globals(),browser)
+        from provider_package_force_ssl_cases import run_browser as package_force_ssl_browser
+        package_force_ssl_browser(globals(),browser)
+        from provider_directory_listing_cases import run_browser as directory_listing_browser
+        directory_listing_browser(globals(),browser)
+        from provider_force_ssl_controls_cases import run_browser as force_ssl_controls_browser
+        force_ssl_controls_browser(globals(),browser)
+        from domain_renewal_agreements_cases import run_browser as renewal_agreements_browser
+        renewal_agreements_browser(globals(),browser)
+        from provider_package_wordpress_installed_cases import run_browser as wordpress_installed_browser
+        wordpress_installed_browser(globals(),browser)
+        from domain_renewal_dispatch_cases import run_browser as renewal_dispatch_browser
+        renewal_dispatch_browser(globals(),browser)
+        from provider_directory_listing_controls_cases import run_browser as directory_controls_browser
+        directory_controls_browser(globals(),browser)
+        from stackcp_prerequisites_cases import run_browser as stackcp_prerequisites_browser
+        stackcp_prerequisites_browser(globals(),browser)
+        from domain_registration_drafts_cases import run_browser as registration_drafts_browser
+        registration_drafts_browser(globals(),browser)
+        from stackcp_access_cases import run_browser as stackcp_access_browser
+        stackcp_access_browser(globals(),browser)
+        from provider_cloud_assignment_cases import run_browser as cloud_assignment_browser
+        cloud_assignment_browser(globals(),browser)
+        from license_release_cases import run_browser as license_release_browser
+        license_release_browser(globals(),browser)
+        from provider_schedule_cases import run_browser as schedule_browser
+        schedule_browser(globals(),browser)
         browser.close()
     log.flush()
     diagnostics=re.findall(r'^.*PHP (?:Warning|Fatal error|Parse error|Deprecated|Notice):.*$',(QA/'http-server.log').read_text(),re.M)

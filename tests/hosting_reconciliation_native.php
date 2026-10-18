@@ -223,6 +223,9 @@ try {
     hr_deny('Generic local command cannot forge conclusive reconciliation',fn()=>hosting_records_change(hr_id(60),1,hr_load(hr_id(60))->revision(),hr_id(900034),'reconcile_without_dispatch',[],$password));
     hr_deny('Legacy automatic rearming reconciliation is never a local action',fn()=>hosting_records_change(hr_id(60),1,hr_load(hr_id(60))->revision(),hr_id(900034),'reconcile',[],$password));
     $audits=json_encode(all('SELECT * FROM '.table('audit')));hr_ok('Reconciliation audit excludes evidence bodies digests and provider credentials',!str_contains($audits,'synthetic-local-only-key')&&!str_contains($audits,'synthetic-final-observation')&&!str_contains($audits,'dispatch_fingerprint'));
+    require_once __DIR__.'/hosting_pending_cases.php';
+    require_once __DIR__.'/hosting_storage_recovery_cases.php';hr_actor();
+    hosting_test_recovery('reconciliation',['hosting_observations','hosting_reconciliations'],fn()=>hosting_reconciliation_ready(),fn()=>hosting_reconciliation_migrate($password),fn()=>hr_observe($bounded,900000,$unknown),fn()=>hr_full(),'hr_ok');
 }catch(Throwable $e){$checks[]=['name'=>'Unexpected failure: '.$e->getMessage(),'passed'=>false];fwrite(STDERR,$e->__toString().PHP_EOL);}
 $ok=!array_filter($checks,fn($c)=>!$c['passed']);file_put_contents(__DIR__.'/../qa/hosting-reconciliation-native-results.json',json_encode(['passed'=>$ok,'scope'=>'Native MariaDB trusted synthetic observations and current-authorized retries; no provider verification, route or worker','checks'=>$checks],JSON_PRETTY_PRINT));
 echo ($ok?'PASS':'FAIL').': '.count($checks).' native hosting reconciliation checks'.PHP_EOL;exit($ok?0:1);

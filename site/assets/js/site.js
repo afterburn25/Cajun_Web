@@ -47,7 +47,7 @@
         document.addEventListener('click', e => {
             if (!nav.contains(e.target) && !toggle.contains(e.target)) close();
         });
-        matchMedia('(min-width: 741px)').addEventListener?.('change', e => { if (e.matches) close(); });
+        matchMedia('(min-width: 1201px)').addEventListener?.('change', e => { if (e.matches) close(); });
     }
 
     const reading = document.querySelector('.reading-progress i');
