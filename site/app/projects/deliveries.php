@@ -52,6 +52,7 @@ function delivery_publish(string $id,string $review,#[\SensitiveParameter] strin
         $fh=delivery_open($r);fclose($fh);if($r['status']==='published')return;if($r['status']!=='draft')throw new RuntimeException('Only a reviewed draft can be published.');
         query('UPDATE '.table('website_releases')." SET status='published',published_by=?,published_at=? WHERE id=?",[$actor['id'],gmdate('Y-m-d H:i:s'),$id]);delivery_event($r,'admin',(int)$actor['id'],'publish');delivery_audit((int)$actor['id'],'publish','Release '.$id.' project '.$r['job_id']);
     }));
+    $r=delivery_record($id);if($r['status']==='published'){require_once CWP_CODE_ROOT.'/app/notifications/feed.php';try{notification_emit('client',(int)$r['client_id'],'download-ready','release:'.$id,'Website download published',$r['version'].' · '.$r['title']);}catch(Throwable $e){report_error($e);}}
 }
 function delivery_client_record(string $id): array {
     if(!delivery_ready()||!($client=studio_client()))throw new RuntimeException('Release unavailable.');$r=delivery_record($id);$job=studio_job((int)$r['job_id'],(int)$client['id']);if($r['status']!=='published'||(int)$r['client_id']!==(int)$client['id'])throw new RuntimeException('Release unavailable.');return $r;

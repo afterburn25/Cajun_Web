@@ -141,7 +141,7 @@ function staff_view_permission(string $view): ?string {
     if(in_array($view,['mail-inbox','mail-message'],true))return null; // Mandatory current account authority in both controllers.
     if($view==='consultation-settings')return 'staff.manage';
     if(in_array($view,['consultations','consultation'],true))return 'website.manage';
-    if(in_array($view,['login','forgot','reset','staff-setup','security','mailboxes'],true))return null;
+    if(in_array($view,['login','forgot','reset','staff-setup','security','mailboxes','notifications'],true))return null;
     if(in_array($view,['provider-settings','provider-operations','staff','mail-accounts','mail-account','payment-settings','payment-trials','payment-notifications'],true))return 'staff.manage';
     if(in_array($view,['payments','invoice-payments'],true))return 'payments.manage';
     if(in_array($view,['mail-templates','mail-template'],true))return 'mail.templates.manage';
@@ -184,6 +184,8 @@ function staff_action_permission(string $action): ?string {
     if($action==='activity_setup')return 'staff.manage';
     if($action==='activity_mark')return 'clients.manage';
     if($action==='delivery_upload')return 'clients.manage';
+    if($action==='notifications_setup')return 'staff.manage';
+    if(in_array($action,['notification_mark','notification_mark_all','notification_prefs'],true))return null; // Recipient-scoped; the feed model enforces actor==recipient.
     if($action==='catalog_migrate')return 'staff.manage';
     if(str_starts_with($action,'catalog_'))return 'catalog.manage';
     if(in_array($action,['support_migrate','support_policy'],true))return 'staff.manage';

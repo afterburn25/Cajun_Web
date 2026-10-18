@@ -137,7 +137,17 @@ Starting60bef4d, normally merge domain branch725573f0 with preserved history. Re
 
 Changed PHP/Python syntax and139 inventory,28 reader,82 cloud,64 registrar,230 operation and95 mailbox synthetic checks pass in both default/no-INI modes. Domain native63 per combination and parent browser1810 are documented in the registrar guide. Catalog exact8f browser1794 and four native matrices are verified; cloud exactce8 has41 native cases per combination. Keep their source branches intact. Canonical installer refresh is required before commit. Intermediate normal merges skip automatic CI to avoid duplicating long work; the final combined source must run complete acceptance. No release, deployment or live provider action. Next: merge ready catalog/cloud increments sequentially, refresh and validate the exact combined source.
 
-# Session log
+
+
+## Port P-07 notification contract layer — 2026-10-16
+
+Request: continue the remaining non-20i roadmap (issue #157). Starting commit: main `595ac9c3`, new branch `devin/non20i-notifications-foundation`.
+
+Actions: extracted the preserved `devin/notifications` slice — five `foundation/notifications/` classes, `tests/notifications/run.php`, `notifications.yml`, `docs/NOTIFICATIONS_FOUNDATION.md` — without stale shared-doc drift. Added `devin/non20i-*` trigger and path filters.
+
+Tests: `php -l` clean; `php tests/notifications/run.php` → 65/65 checks pass on local PHP 8.4; CI covers 8.2/8.4 offline. Pure contract layer only.
+
+Next: commit, push, open bounded PR, update #157.
 
 ## 2026-10-15 — concise current state with retained history
 
