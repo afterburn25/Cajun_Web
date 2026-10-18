@@ -14,10 +14,11 @@ orchestrator calls; it owns no persistence, routing or session state.
   unusable account identity or an unresolvable/invalid secret throw
   `InvalidArgumentException` before any transport call — refused reads
   produce no observation.
-- **Executable set is evidence-gated.** Only `packages.list` executes: it is
-  the sole operation with both a documented schema and authenticated-read
-  evidence (issue #65). Documented-only, schema-unknown, sensitive and
-  credential-bearing descriptors are refused regardless of registration.
+- **Implementation and live acceptance are separate.** `packages.list` and
+  `cloudservers.list` have bounded implemented projections. Only the package
+  read has prior authenticated account evidence. Application authorization
+  remains mandatory for each explicit read; descriptors alone grant nothing.
+  Other unsupported/sensitive reads still require their own implementation.
 - **Exact scope binding.** The observation scope is derived inside the
   boundary as `twenty-i|<accountIdentity>|<operation>` — a caller cannot
   mislabel which configured account or operation produced an observation.

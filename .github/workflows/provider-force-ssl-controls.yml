@@ -1,0 +1,109 @@
+name: Native Force SSL change controls
+on:
+  push:
+    branches: [main, codex/twentyi-force-ssl-controls, codex/twentyi-force-ssl-finished-recovery]
+    paths: ['site/app/providers/**', 'site/admin/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'tests/twentyi-force-ssl-controls/**', 'tests/force_ssl_controls*.php', 'tests/provider_force_ssl_controls*', '.github/workflows/provider-force-ssl-controls.yml']
+  pull_request:
+    paths: ['site/app/providers/**', 'site/admin/**', 'site/database/**', 'site/includes/foundation/**', 'foundation/provider/**', 'foundation/twentyi/**', 'foundation/twentyi-operations/**', 'tests/twentyi-force-ssl-controls/**', 'tests/force_ssl_controls*.php', 'tests/provider_force_ssl_controls*', '.github/workflows/provider-force-ssl-controls.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: force-ssl-controls-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  native-history:
+    name: Force SSL changes ${{ matrix.php }} and ${{ matrix.database.label }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+        database:
+          - {image: 'mariadb:10.11', label: 'mariadb-10.11'}
+          - {image: 'mysql:8.4', label: 'mysql-8.4'}
+    services:
+      database:
+        image: ${{ matrix.database.image }}
+        env:
+          MARIADB_DATABASE: cwp_test
+          MARIADB_USER: cwp_test
+          MARIADB_PASSWORD: local-ci-only
+          MARIADB_ROOT_PASSWORD: synthetic-root-only
+          MYSQL_DATABASE: cwp_test
+          MYSQL_USER: cwp_test
+          MYSQL_PASSWORD: local-ci-only
+          MYSQL_ROOT_PASSWORD: synthetic-root-only
+        ports: ['33306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      CWP_TEST_DATABASE: cwp_test
+      CWP_TEST_HOST: 127.0.0.1
+      CWP_TEST_PORT: '33306'
+      CWP_TEST_USER: cwp_test
+      CWP_TEST_PASSWORD: local-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Verify generated deployment inventory and documentation
+        run: |
+          PYTHONPATH=tools python -B -c 'import build; build.generated(False)'
+          python -B tools/check_docs.py
+      - name: Prepare official PHP with PDO MySQL
+        run: docker build --build-arg PHP_VERSION=${{ matrix.php }} -t cwp-inventory-test -f tests/invitations/Dockerfile tests/invitations
+      - name: Allow isolated MySQL audit-failure fixture triggers
+        if: matrix.database.label == 'mysql-8.4'
+        run: docker exec -e MYSQL_PWD=synthetic-root-only ${{ job.services.database.id }} mysql -uroot -e 'SET GLOBAL log_bin_trust_function_creators=1'
+      - name: Native Force SSL dispatch and readback boundaries
+        run: |
+          mkdir -p qa
+          docker run --rm --network host --user "$(id -u):$(id -g)" -v "$PWD:/workspace" \
+            -e CWP_TEST_DATABASE -e CWP_TEST_HOST -e CWP_TEST_PORT \
+            -e CWP_TEST_USER -e CWP_TEST_PASSWORD \
+            cwp-inventory-test sh -ec '
+              for source in site/app/providers/force_ssl_controls*.php site/database/schema/provider_force_ssl_controls_schema.php site/admin/controllers/provider_force_ssl_controls.php tests/provider_force_ssl_controls_native.php tests/force_ssl_controls*.php; do php -l "$source"; done
+              php tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-results.json
+              php -n tests/twentyi-force-ssl-controls/run.php > qa/force-ssl-control-contract-no-ini-results.json
+              php tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-results.json
+              php -n tests/force_ssl_controls_transport.php > qa/force-ssl-control-transport-no-ini-results.json
+              php tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-results.json
+              php -n tests/force_ssl_controls_recovery.php > qa/force-ssl-control-recovery-no-ini-results.json
+              php tests/provider_force_ssl_controls_native.php
+              php tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-results.json
+              php -n tests/twentyi-package-force-ssl/run.php > qa/package-force-ssl-document-no-ini-results.json
+              php tests/provider_package_force_ssl_native.php
+              php tests/twentyi-operations/run.php qa/twentyi-operation-contract-results.json
+              php tests/provider_operations_native.php
+              php tests/provider_operations_execute_native.php
+              php tests/document_roots_transport.php > qa/document-roots-transport-integrated-results.json
+            '
+      - name: Preserve named storage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: force-ssl-controls-${{ matrix.php }}-${{ matrix.database.label }}-${{ github.sha }}
+          path: |
+            qa/force-ssl-control-contract-results.json
+            qa/force-ssl-control-contract-no-ini-results.json
+            qa/force-ssl-control-transport-results.json
+            qa/force-ssl-control-transport-no-ini-results.json
+            qa/force-ssl-control-recovery-results.json
+            qa/force-ssl-control-recovery-no-ini-results.json
+            qa/provider-force-ssl-controls-native-results.json
+            qa/package-force-ssl-document-results.json
+            qa/package-force-ssl-document-no-ini-results.json
+            qa/provider-package-force-ssl-native-results.json
+            qa/twentyi-operation-contract-results.json
+            qa/provider-operations-native-results.json
+            qa/provider-execution-native-results.json
+            qa/document-roots-transport-integrated-results.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Record verification scope
+        if: always()
+        run: |
+          echo 'Exact owner Force SSL consent, one shared-gateway dispatch, pre-perform refusal, narrowly recovered missing dispatch witness from a durable finished ledger, interrupted-request fences and fresh exact readback. Recovery performs no provider call; missing or claimed ledger stays fenced. Desired flag observed after a request does not prove causality or HTTPS health. Disposable database and real process contention with synthetic transport only; no live API, browser or deployment.' >> "$GITHUB_STEP_SUMMARY"

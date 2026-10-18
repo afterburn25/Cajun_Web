@@ -13,6 +13,8 @@ function ledger_invoice(int $id): array {
 /** Independent of mutable payment status/history; protects the original invoiced obligation. */
 function ledger_invoice_hash(array $i): string {return hash('sha256',json_encode([(int)$i['id'],(int)$i['job_id'],(int)$i['client_id'],(int)$i['amount_cents'],$i['currency'],$i['reference'],$i['title'],$i['instructions'],catalog_snapshot((int)$i['id'])],JSON_THROW_ON_ERROR));}
 function ledger_balance(array $i): array {
+    require_once CWP_CODE_ROOT.'/app/billing/recurring_billing_invoices.php';
+    recurring_billing_invoice_guard($i);
     if(!ledger_ready())return ['paid_cents'=>$i['status']==='paid'?(int)$i['amount_cents']:0,'due_cents'=>$i['status']==='issued'?(int)$i['amount_cents']:0,'revision'=>0];
     $v=one('SELECT COUNT(*) AS entries,COALESCE(MAX(id),0) AS revision,COALESCE(SUM(CASE WHEN kind=\'reversal\' THEN -CAST(amount_cents AS SIGNED) ELSE amount_cents END),0) AS paid,MIN(invoice_hash) AS first_hash,MAX(invoice_hash) AS last_hash FROM '.table('invoice_payments').' WHERE invoice_id=?',[$i['id']]);
     $paid=(int)$v['paid'];$total=(int)$i['amount_cents'];
@@ -32,7 +34,7 @@ function ledger_receive(int $invoice,int $amount,string $method,string $referenc
     ledger_key($key,$review);$reference=trim($reference);
     if($amount<1||$amount>99999999||!isset(ledger_methods()[$method])||strlen($reference)<5||strlen($reference)>500||!preg_match('/^(\d{4})-(\d{2})-(\d{2})$/D',$date,$m)||!checkdate((int)$m[2],(int)$m[3],(int)$m[1])||$date>gmdate('Y-m-d')||$date<'1900-01-01')throw new InvalidArgumentException('Enter a positive USD amount, payment method, verified reference and valid receipt date no later than today.');
     $id=staff_locked(fn()=>staff_transaction(function() use($invoice,$amount,$method,$reference,$date,$key,$review): int {
-        $actor=ledger_require();$hash=hash('sha256',json_encode([$invoice,$amount,$method,$reference,$date,$review],JSON_THROW_ON_ERROR));
+        $actor=ledger_require();require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_dispatch.php';domain_renewal_dispatch_invoice_guard($invoice);$hash=hash('sha256',json_encode([$invoice,$amount,$method,$reference,$date,$review],JSON_THROW_ON_ERROR));
         $old=one('SELECT * FROM '.table('invoice_payments').' WHERE request_key=?',[$key]);
         if($old){if((int)$old['actor_id']!==(int)$actor['id']||$old['kind']!=='manual'||!hash_equals($old['request_hash'],$hash))throw new RuntimeException('This receipt request was already used with different details.');return (int)$old['id'];}
         $i=ledger_invoice($invoice);$balance=ledger_balance($i);
@@ -60,7 +62,7 @@ function ledger_reverse(int $entry,string $reason,string $key,string $review,#[\
         if($old){if((int)$old['actor_id']!==(int)$actor['id']||$old['kind']!=='reversal'||!hash_equals($old['request_hash'],$hash))throw new RuntimeException('This correction request was already used with different details.');return (int)$old['id'];}
         $p=one('SELECT * FROM '.table('invoice_payments').' WHERE id=?',[$entry]);
         if(!$p||!in_array($p['kind'],['manual','legacy'],true)||one('SELECT id FROM '.table('invoice_payments').' WHERE reversal_of=?',[$entry]))throw new RuntimeException('Choose an unreversed payment or legacy balance.');
-        $i=ledger_invoice((int)$p['invoice_id']);$balance=ledger_balance($i);
+        require_once CWP_CODE_ROOT.'/app/providers/domain_renewal_dispatch.php';domain_renewal_dispatch_invoice_guard((int)$p['invoice_id']);$i=ledger_invoice((int)$p['invoice_id']);$balance=ledger_balance($i);
         if(!hash_equals(ledger_review_hash($i),$review))throw new RuntimeException('The invoice balance changed. Reload before correcting it.');
         if($i['status']==='void'||$balance['paid_cents']<(int)$p['amount_cents'])throw new RuntimeException('This entry cannot be reversed against the current balance.');
         attempts_assert_clear((int)$i['id']);
