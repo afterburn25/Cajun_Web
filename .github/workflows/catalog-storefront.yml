@@ -1,7 +1,7 @@
 name: Catalog import and shared hosting storefront
 on:
   push:
-    branches: [codex/twentyi-catalog-storefront]
+    branches: [codex/twentyi-catalog-storefront, codex/twentyi-imported-plan-setup]
   workflow_dispatch:
 permissions:
   contents: read
@@ -69,6 +69,11 @@ jobs:
               CWP_TEST_CATALOG_BATCH=1 php tests/provider_catalog_import_batch_native.php
               php tests/provider_catalog_import_native.php
               php tests/provider_package_types_native.php
+              php tests/hosting_catalog_plan_setup_document.php qa/hosting-catalog-plan-setup-document-default.json
+              php -n tests/hosting_catalog_plan_setup_document.php qa/hosting-catalog-plan-setup-document-minimal.json
+              php tests/hosting_catalog_plan_setup_views.php > qa/hosting-catalog-plan-setup-views-default.json
+              php -n tests/hosting_catalog_plan_setup_views.php > qa/hosting-catalog-plan-setup-views-minimal.json
+              CWP_TEST_HOSTING_PLAN_SETUP=1 php tests/hosting_catalog_plan_setup_native.php
             '
       - name: Preserve unchanged source
         if: always()

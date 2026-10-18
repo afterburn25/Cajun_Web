@@ -91,13 +91,17 @@ function service_plans_subscription_actor(array $row,bool $checkout,int $index):
     return $staff!==null?'staff:'.$staff:'client:'.$client;
 }
 function service_plans_create(string $id,array $terms,#[\SensitiveParameter] string $password):ServicePlanDocument {
-    return staff_locked(fn()=>staff_transaction(function()use($id,$terms,$password):ServicePlanDocument {
-        $actor=service_plans_password($password);service_plans_id($id);$old=one('SELECT * FROM '.table('service_plans').' WHERE id=? FOR UPDATE',[$id]);
-        $doc=ServicePlanDocument::create($id,(int)$actor['id'],$old?(int)$old['created_epoch']:time(),$terms);
-        if($old){$current=service_plans_validate($old);if($old['initial_json']!==$doc->json())throw new InvalidArgumentException('This plan identity was already used.');return $current;}
-        query('INSERT INTO '.table('service_plans').' (id,created_by,created_epoch,initial_json,journal_json,journal_sha256,revision) VALUES (?,?,?,?,?,?,0)',[$id,$actor['id'],$doc->data()['created_at'],$doc->json(),$doc->json(),$doc->fingerprint()]);
-        service_plans_audit((int)$actor['id'],'created','Plan '.$id);return $doc;
-    }));
+    return staff_locked(fn()=>staff_transaction(fn()=>service_plans_create_locked($id,$terms,$password)));
+}
+/** Internal composition point; the caller owns the account mutex and transaction. */
+function service_plans_create_locked(string $id,array $terms,#[\SensitiveParameter] string $password):ServicePlanDocument {
+    $mutex='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
+    if(!db()->inTransaction()||(int)query('SELECT COALESCE(IS_USED_LOCK(?),0)=CONNECTION_ID()',[$mutex])->fetchColumn()!==1)throw new LogicException('Creating a service plan requires the owning account transaction.');
+    $actor=service_plans_password($password);service_plans_id($id);$old=one('SELECT * FROM '.table('service_plans').' WHERE id=? FOR UPDATE',[$id]);
+    $doc=ServicePlanDocument::create($id,(int)$actor['id'],$old?(int)$old['created_epoch']:time(),$terms);
+    if($old){$current=service_plans_validate($old);if($old['initial_json']!==$doc->json())throw new InvalidArgumentException('This plan identity was already used.');return $current;}
+    query('INSERT INTO '.table('service_plans').' (id,created_by,created_epoch,initial_json,journal_json,journal_sha256,revision) VALUES (?,?,?,?,?,?,0)',[$id,$actor['id'],$doc->data()['created_at'],$doc->json(),$doc->json(),$doc->fingerprint()]);
+    service_plans_audit((int)$actor['id'],'created','Plan '.$id);return $doc;
 }
 /** Caller holds the shared guard, current authority and this record's transaction. */
 function service_plans_append_locked(array $row,int $revision,string $event,string $command,int|string $actor,array $args,bool $subscription=false,?string $renewalBinding=null):ServicePlanDocument|ServiceSubscriptionDocument {

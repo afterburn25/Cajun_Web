@@ -87,23 +87,29 @@ function provider_plan_catalog_eligible(array $d,int $now):void {
 function provider_plan_catalog_save(string $id,string $planId,int $planRevision,string $planHash,?string $previous,string $profileId,int $profileRevision,array $configuration,int $days,bool $enabled,#[\SensitiveParameter] string $password):array {
     service_plans_id($id);$configuration=provider_plan_catalog_config($configuration);
     if($days<1||$days>30)throw new InvalidArgumentException('Review mappings for 1 to 30 days.');
-    return recurring_billing_locked(function()use($id,$planId,$planRevision,$planHash,$previous,$profileId,$profileRevision,$configuration,$days,$enabled,$password):array {
-        $actor=service_plans_password($password);[, $profile]=provider_checks_authority($profileId,$profileRevision,$password);
-        if(!provider_plan_catalog_state()['ready'])throw new RuntimeException('Prepare provider catalog storage first.');
-        $plan=service_plans_validate(service_plans_row($planId));
-        if($plan->model()->status()!=='active'||$plan->revision()!==$planRevision||$plan->fingerprint()!==$planHash)throw new RuntimeException('Reload the current published retail plan.');
-        $history=provider_plan_catalog_history($planId);$current=$history?end($history):null;
-        $old=one('SELECT * FROM '.table('provider_plan_catalog').' WHERE id=?',[$id]);
-        if($old&&$old['plan_id']!==$planId)throw new RuntimeException('Mapping identity is already used.');
-        $prior=null;foreach($history as $entry)if($entry['id']===$previous)$prior=$entry;
-        if(($previous!==null&&!$prior)||(!$old&&($current['id']??null)!==$previous))throw new RuntimeException('The provider mapping changed. Reload and review it.');
-        $at=$old?(int)$old['created_epoch']:time();
-        $d=['format'=>1,'id'=>$id,'plan_id'=>$planId,'revision'=>($prior['revision']??0)+1,'previous_id'=>$prior['id']??null,'previous_sha256'=>$prior['sha256']??null,'plan_revision'=>$planRevision,'plan_sha256'=>$planHash,'profile_id'=>$profileId,'profile_revision'=>$profileRevision,'credential_sha256'=>hash('sha256',$profile['credentials']),'created_by'=>(int)$actor['id'],'owner_auth'=>$actor['auth_version'],'created_at'=>$at,'expires_at'=>$at+$days*86400,'enabled'=>$enabled,'configuration'=>$configuration,'evidence'=>'owner-account-review'];
-        $bytes=service_plans_json($d);provider_plan_catalog_document($bytes);$sha=hash('sha256',$bytes);
-        if($old){if($old['binding_json']!==$bytes)throw new RuntimeException('Mapping identity is already used for different details.');return $d+['sha256'=>$sha];}
-        $row=['id'=>$id,'plan_id'=>$planId,'revision'=>$d['revision'],'created_by'=>(int)$actor['id'],'created_epoch'=>$at,'binding_json'=>$bytes,'binding_sha256'=>$sha];
-        query('INSERT INTO '.table('provider_plan_catalog').' (id,plan_id,revision,created_by,created_epoch,binding_json,binding_sha256) VALUES (?,?,?,?,?,?,?)',array_values($row));provider_plan_catalog_audit((int)$actor['id'],'saved',provider_plan_catalog_detail($row));save_setting('provider_plan_catalog_latest_'.$planId,$id.':'.$sha);provider_plan_catalog_history($planId);return $d+['sha256'=>$sha];
-    });
+    return recurring_billing_locked(fn()=>provider_plan_catalog_save_locked($id,$planId,$planRevision,$planHash,$previous,$profileId,$profileRevision,$configuration,$days,$enabled,$password));
+}
+/** Internal composition point; direct callers must supply the same validated mapping inputs. */
+function provider_plan_catalog_save_locked(string $id,string $planId,int $planRevision,string $planHash,?string $previous,string $profileId,int $profileRevision,array $configuration,int $days,bool $enabled,#[\SensitiveParameter] string $password):array {
+    $mutex='cwp-staff-'.substr(hash('sha256',config()['db']['name'].'|'.config()['db']['prefix']),0,40);
+    if(!db()->inTransaction()||(int)query('SELECT COALESCE(IS_USED_LOCK(?),0)=CONNECTION_ID()',[$mutex])->fetchColumn()!==1)throw new LogicException('Saving a provider mapping requires the owning account transaction.');
+    service_plans_id($id);$configuration=provider_plan_catalog_config($configuration);
+    if($days<1||$days>30)throw new InvalidArgumentException('Review mappings for 1 to 30 days.');
+    $actor=service_plans_password($password);[, $profile]=provider_checks_authority($profileId,$profileRevision,$password);
+    if(!provider_plan_catalog_state()['ready'])throw new RuntimeException('Prepare provider catalog storage first.');
+    $plan=service_plans_validate(service_plans_row($planId));
+    if($plan->model()->status()!=='active'||$plan->revision()!==$planRevision||$plan->fingerprint()!==$planHash)throw new RuntimeException('Reload the current published retail plan.');
+    $history=provider_plan_catalog_history($planId);$current=$history?end($history):null;
+    $old=one('SELECT * FROM '.table('provider_plan_catalog').' WHERE id=?',[$id]);
+    if($old&&$old['plan_id']!==$planId)throw new RuntimeException('Mapping identity is already used.');
+    $prior=null;foreach($history as $entry)if($entry['id']===$previous)$prior=$entry;
+    if(($previous!==null&&!$prior)||(!$old&&($current['id']??null)!==$previous))throw new RuntimeException('The provider mapping changed. Reload and review it.');
+    $at=$old?(int)$old['created_epoch']:time();
+    $d=['format'=>1,'id'=>$id,'plan_id'=>$planId,'revision'=>($prior['revision']??0)+1,'previous_id'=>$prior['id']??null,'previous_sha256'=>$prior['sha256']??null,'plan_revision'=>$planRevision,'plan_sha256'=>$planHash,'profile_id'=>$profileId,'profile_revision'=>$profileRevision,'credential_sha256'=>hash('sha256',$profile['credentials']),'created_by'=>(int)$actor['id'],'owner_auth'=>$actor['auth_version'],'created_at'=>$at,'expires_at'=>$at+$days*86400,'enabled'=>$enabled,'configuration'=>$configuration,'evidence'=>'owner-account-review'];
+    $bytes=service_plans_json($d);provider_plan_catalog_document($bytes);$sha=hash('sha256',$bytes);
+    if($old){if($old['binding_json']!==$bytes)throw new RuntimeException('Mapping identity is already used for different details.');return $d+['sha256'=>$sha];}
+    $row=['id'=>$id,'plan_id'=>$planId,'revision'=>$d['revision'],'created_by'=>(int)$actor['id'],'created_epoch'=>$at,'binding_json'=>$bytes,'binding_sha256'=>$sha];
+    query('INSERT INTO '.table('provider_plan_catalog').' (id,plan_id,revision,created_by,created_epoch,binding_json,binding_sha256) VALUES (?,?,?,?,?,?,?)',array_values($row));provider_plan_catalog_audit((int)$actor['id'],'saved',provider_plan_catalog_detail($row));save_setting('provider_plan_catalog_latest_'.$planId,$id.':'.$sha);provider_plan_catalog_history($planId);return $d+['sha256'=>$sha];
 }
 /** Internal projection under the shared owner lock/transaction. History corruption is never a readiness state. */
 function provider_plan_catalog_projection(string $plan,?int $revision=null):array {

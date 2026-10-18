@@ -2,6 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 require_once CWP_CODE_ROOT.'/app/hosting/catalog_offer_views.php';
+require_once CWP_CODE_ROOT.'/app/hosting/catalog_offer_setup.php';
 require_once CWP_CODE_ROOT.'/includes/layout/hosting_catalog.php';
 
 function hosting_catalog_admin_action(string $action): void {
@@ -14,6 +15,11 @@ function hosting_catalog_admin_action(string $action): void {
         return;
     }
     $password=service_plans_form_text($_POST,'current_password',200);
+    if ($action==='hosting_catalog_finish_plan') {
+        $created=hosting_catalog_setup_create($intent['plan_id'],$intent['activation_event_id'],$intent['mapping_id'],$intent['product_id'],$intent['review_sha256'],$intent['details'],$intent['configuration'],$intent['days'],$password);
+        flash('Matching plan and hosting setup saved. Preview the offer before publishing.');
+        redirect(admin_url('hosting-offers',['product_id'=>$created['product_id'],'plan_id'=>$created['plan_id']]));
+    }
     if ($action==='hosting_catalog_setup') {
         hosting_catalog_prepare($password);flash('Hosting offers are ready.');redirect(admin_url('hosting-offers'));
     }
@@ -61,6 +67,12 @@ function hosting_catalog_admin_confirmation(string $label): void {
 function hosting_catalog_admin_preserved_submission(): void {
     $values=hosting_catalog_admin_values($_POST);$action=$values['action'];
     if (!in_array($action,hosting_catalog_admin_actions(),true)||in_array($action,['hosting_catalog_setup','hosting_catalog_checkout_setup'],true)) return;
+    if ($action==='hosting_catalog_finish_plan') {
+        // Last-resort redisplay is strictly local: even a failed database read cannot erase the form.
+        hosting_catalog_setup_form(['product'=>null,'preview'=>null,'values'=>hosting_catalog_setup_values($_POST),'retry'=>true,'available'=>false,
+            'notice'=>'Your entries are kept below. Saved product details are unavailable. Return to hosting offers when they are ready for review.']);
+        return;
+    }
     unset($values['action']);
     echo '<section class="workspace-card"><h2>Submitted selection retained</h2><p>The original selection is retained, but cannot be submitted again until its saved details are available for review.</p><form method="post">';
     hosting_catalog_admin_fields($action,$values);
@@ -84,6 +96,7 @@ function hosting_catalog_admin_render(string $error): never {
     if ($error!=='') echo '<div class="notice error" role="alert">'.esc($error).'</div>';
     try {
         $data=hosting_catalog_admin_data($_GET,$_POST);$values=hosting_catalog_admin_values($_POST);
+        $setup=hosting_catalog_setup_screen($data['product'],$_POST);
         $preview=$GLOBALS['hosting_catalog_admin_preview']??null;$previewError='';
         if ($values['action']==='hosting_catalog_publish') {
             // Redisplay a password/transport failure only if the card still matches the submitted review.

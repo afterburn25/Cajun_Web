@@ -339,3 +339,22 @@ def run_browser(env, browser):
     finally:
         for ctx in contexts:
             ctx.close()
+
+
+# Retain the complete original storefront journey before the owner setup continuation.
+_storefront_checkout_before_plan_setup = run_browser
+
+
+def run_browser(env, browser):
+    original = _storefront_checkout_before_plan_setup(env, browser)
+    if original.get('passed') is not True:
+        raise AssertionError('Original storefront journey must complete first')
+    from hosting_catalog_plan_setup_cases import CAPTURES as setup_captures, run_browser as setup_browser
+    setup = setup_browser(env, browser)
+    complete = (setup.get('passed') is True
+                and tuple(row['name'] for row in setup.get('captures', [])) == setup_captures)
+    env['check']('Installed guided plan setup completes after the original storefront journey', complete)
+    if not complete:
+        raise AssertionError('Installed guided plan setup did not complete')
+    original['plan_setup'] = setup
+    return original
