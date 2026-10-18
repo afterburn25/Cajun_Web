@@ -1,3 +1,9 @@
+## Development — checkout subscription storage, 2026-10-18
+
+- Add an explicit owner migration for checkout client creators and system activation events, preserving old documents, actors and audits.
+- Validate recognized interrupted migration states and complete retained checkout history; reject missing or inconsistent records.
+- Pass58 isolated native migration/history checks. Checkout creation, invoices, screens and full release acceptance remain pending.
+
 ## Development — first-period checkout billing rules, 2026-10-18
 
 - Derive checkout billing from exact retained subscription/consent and start its first period on the accepted local date.

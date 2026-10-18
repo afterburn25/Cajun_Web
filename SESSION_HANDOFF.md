@@ -1,3 +1,11 @@
+## 2026-10-18 — subscription database checkpoint
+
+Branch `codex/twentyi-hosting-first-invoice`, parent `bf8befa37486c30fc9dc92bac9dbd8b36f3085d0`; enclosing commit: **Preserve checkout client and system attribution in subscription storage**. Four runtime files add explicit owner migration, strict extension schema/readiness and format-aware history; one new fixture checks native behavior. Exact source pins and canonical inventory are refreshed. [Contracts and remaining work](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+Actual shared-source PHP8.4.25/MariaDB10.11.16 result:58 named checks passed in `cwp_checkout_retry1` on the owned local43319 server. Original failed run in `cwp_checkout_test` stopped after12 checks at a fixture-only field-name regex; original output and populated tables remain untouched. Corrected fixture changes only that regex and the explicit second database allowance. Native rows for format2 are synthetic historical records, not a working checkout writer. Shipping syntax/inventory, fixture syntax,385 artifact-helper checks and documentation links are verified before commit.
+
+Local evidence is outside Git under `work/twentyi-checkout-storage-proposal/root-native-first` and `root-native-retry1`; runtime ownership remains `work/hosting-checkout-native-20261018/runtime.json`. Keep43319 available for the separate recurring fixture in its unused `crbc_` namespace; do not touch unrelated43280 or erase either subscription run. Next: independently review recurring attribution/origin and its actual fixture, implement retained hosting review/result storage plus atomic project/agreement/schedule/invoice composition, then connect owner/client screens and same-clock full acceptance. Original CI sources/runs and immutable1.25 remain preserved.
+
 ## 2026-10-18 — first-period billing model checkpoint
 
 Branch `codex/twentyi-hosting-first-invoice`, parent `e6b97ec3bf6dc7298a63971d371367f98524edec`; enclosing commit: **Derive first-period billing from exact hosting checkout consent**. Integrate the independently reviewed six-file recurring proposal, exact source pins and canonical installer inventory. Foundation/site mirrors remain identical. [Current contracts](docs/TWENTYI_HOSTING_FIRST_INVOICE.md) separate structural commercial facts from native authority.

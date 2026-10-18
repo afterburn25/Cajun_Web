@@ -792,7 +792,12 @@
       "site/app/hosting/catalog_checkout_billing_document.php": "8d5b5fefa002017100be553511e851e7ed64a439eabf45f991a041d0f0b02396",
       "site/includes/foundation/recurring-billing/RecurringBillingSchedule.php": "81b1ab31356e24608fd4f4f0a6fb77c72b73a9192fe90f68ec3b908b777d9c10",
       "site/includes/foundation/recurring-billing/RecurringBillingTerms.php": "8d267eefc9c5cddf6e75de75df6291334cd40b5c260576393e6ccda25793086b",
-      "tests/recurring-billing/checkout.php": "9d3c33791af248ece796114f3c242925b2760db65d5b2f3de3cdfc0c04a12b46"
+      "tests/recurring-billing/checkout.php": "9d3c33791af248ece796114f3c242925b2760db65d5b2f3de3cdfc0c04a12b46",
+      "site/app/plans/records.php": "4160cad7ffd18b94f11815405983f2964fbb43a50d7dfbcb9b6c649147915ee4",
+      "site/database/migrations/service_plans_checkout_migrate.php": "6d058be8375efc790ab7d236b40209d7c5e3987720c8f37d2df8790dec69602b",
+      "site/database/migrations/service_plans_migrate.php": "f2795bd9d83d15dc00afdcc5e88a1d7d617a45d0378d31cee2e9782d98cf5e57",
+      "site/database/schema/service_plans_schema.php": "6734d2ab445fe6822df2314395363ba6e21e96252dbd69157b63dfdbe342b2d7",
+      "tests/service_plans_checkout_native.php": "fec99594a17f40fe8d9cdce991b2af6af3a4ef07f87c17d45bc20521de86c1b7"
     },
     "raw_evidence": {
       "role": "hosting-recovery-files",
@@ -867,7 +872,7 @@
       "site/app/hosting/fulfillment_views.php": "38f09c7ad49d47dcfa64b8bba44560d4970e4bf101e474dc90d804f5a4774f01",
       "site/app/hosting/order_link_views.php": "54bb2d422fa6d212b25b6e4b7e9d5b275693c0f71aa602ae5b6e256dff24aa61",
       "site/app/hosting/order_links.php": "41010ccf888ff1b42687078e81640e134abadcc8095eba3b927910a48323b2f4",
-      "site/app/plans/records.php": "3061622a373ce24d5d379a29d5fdc52e9b7b8d15887d95ec9f17a3cd03466f2c",
+      "site/app/plans/records.php": "4160cad7ffd18b94f11815405983f2964fbb43a50d7dfbcb9b6c649147915ee4",
       "site/app/providers/inventory.php": "0e364dc91975fb3b28576ce32edfab34fb3cec4da6733ba4749cc6cb4275e863",
       "site/app/providers/plan_catalog.php": "f7cea8cfaaba5d7280ccf184199db47954de6e39d3288dc7a7cf0dab04b908c1",
       "site/includes/layout/hosting_fulfillment.php": "3516014e6f46083b9eba1babde36541a34f6c33f01a85106361e7645d6a2f6b9",

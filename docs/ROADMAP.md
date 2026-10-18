@@ -1,3 +1,7 @@
+## 2026-10-18 — native subscription attribution
+
+Checkout subscription migration and stored-history validation pass58 isolated local MariaDB checks. [Scope and limits](TWENTYI_HOSTING_FIRST_INVOICE.md). Remaining work includes recurring/invoice native origins, atomic checkout creation, owner/client pages, complete same-clock and supported-runtime acceptance, and release verification. Synthetic retained checkout rows do not establish a usable purchase flow.
+
 ## 2026-10-18 — first-period billing model
 
 Pure checkout subscriptions and recurring schedules now retain the client's exact agreement and begin the first billing period on confirmation. [Scope](TWENTYI_HOSTING_FIRST_INVOICE.md). Native attribution, invoice origins, atomic writes, owner/client pages and same-clock acceptance remain unfinished. The legacy future-start flow and existing release gates remain intact.

@@ -2,7 +2,7 @@
 
 Development branch: `codex/twentyi-hosting-first-invoice`, starting at `0c7cbae34220717c72e2f3dbeed1b41ca3545dbf`. This is separate from the preserved full-acceptance branch and the unpublished 1.26 release candidate. Published 1.25.0 remains unchanged.
 
-The intended experience is one client confirmation showing the hosting service, exact price, full first billing period, due date and project choice. That confirmation will create the agreement and first unpaid invoice together. Card payment, provider provisioning and confirmed service availability are separate steps. The current implementation stage contains pure commercial documents only; it does not yet create an invoice or expose a checkout page.
+The intended experience is one client confirmation showing the hosting service, exact price, full first billing period, due date and project choice. That confirmation will create the agreement and first unpaid invoice together. Card payment, provider provisioning and confirmed service availability are separate steps. Current development includes pure commercial documents and locally tested subscription storage; it does not yet create an invoice or expose a checkout page.
 
 ## Commercial documents
 
@@ -20,6 +20,16 @@ This is document validation, not a native writer. Database code must still authe
 
 Applied-source tests pass65 new subscription cases and67 existing cases in both default and minimal PHP8.4.25; the complete legacy output is byte-identical to the baseline. Independent review also verifies direct-parser loading without a dependency cycle. Commands: `php tests/service-plans/checkout_documents.php` and `php tests/service-plans/documents.php`, each repeated with `php -n`. The related130 checkout and119 publication/request cases pass again after applying this shared document change.
 
+## Subscription database extension
+
+An explicit owner/password migration now adds truthful checkout attribution without rewriting existing subscription documents or events. The original schema marker and default SQL stay unchanged. A separate checkout marker records preparation, recognized interrupted DDL stages and completion. Missing original tables, unknown schema shapes, unmarked extensions and new-format rows during preparation are refused. Normal use resumes only after the owner migration validates the completed schema and retained history.
+
+Legacy subscriptions retain their staff creator. Checkout subscriptions retain the consent client, followed by a system-only activation event; neither can be relabeled as a fictitious staff action. Native validation checks the exact completed two-event initial document and every stored transition hash. Existing owner/client lifecycle commands continue to work.
+
+The applied source passes58 actual checks on PHP8.4.25/MariaDB10.11.16 in an isolated local database. Coverage includes current owner/password checks, old record/audit preservation, a real final-audit failure with rollback and explicit resume, schema corruption refusal, client/system actor tampering and later lifecycle commands. The format2 rows in this fixture are synthetic retained history. This does not certify authenticated checkout creation, original publication/consent audit composition, project creation, invoice creation, HTTP/browser behavior or other supported database/runtime combinations.
+
+The first run stopped after12 checks because the test helper rejected digit-bearing column names. The corrected fixture preserves every original assertion; the failed output and populated database remain retained, and the successful run used a fresh isolated database. The fixture is `tests/service_plans_checkout_native.php`, gated to local43319 and the two explicitly named disposable databases. Its setup and the new pure tests are not yet wired into the full application workflow. Keep the existing workflow commands and original runs intact until the coherent checkout increment is ready.
+
 ## First-period billing rules
 
 Recurring terms and schedules now have a separate format2 checkout path. The application derives every commercial field from the exact retained two-event subscription prefix and its composite consent. The initial client decision explicitly starts local period0 on the accepted date; it cannot be replayed as a new activation or silently moved to another date. The first period is eligible for an invoice at the accepted instant. Later pause, resume and end decisions keep the existing future-period rules.
@@ -36,7 +46,7 @@ Run `php tests/hosting_checkout_document.php` and `php tests/hosting_catalog_doc
 
 ## Remaining implementation
 
-1. Finish native client attribution for subscriptions, and add it to recurring schedules and invoice origins while preserving every legacy creator, document and audit. Pure subscription attribution is implemented; schema and native history acceptance remain separate.
+1. Finish recurring schedule and invoice-origin native attribution. Subscription storage has passed the bounded local migration/history checks above; complete checkout and cross-runtime acceptance remain separate.
 2. Compose project selection or creation, client consent, explicit automatic local activation and period-zero invoice in one guarded database transaction. Recheck the real client, current publication owner permissions, exact source and project ownership. Roll back the entire operation on failure.
 3. Return the original owned result on exact completed replay. Reject changed input, partial history or missing invoice/audit bindings; do not recreate financial history.
 4. Add owner opt-in and the client review/confirmation page, then prove the complete same-clock journey with native database and packaged browser tests. Keep the existing eventual-purchase test unchanged.

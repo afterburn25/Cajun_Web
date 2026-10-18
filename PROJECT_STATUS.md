@@ -1,3 +1,9 @@
+## 2026-10-18 — subscription migration verified locally
+
+The hosting first-invoice branch adds an explicit owner migration for actual client/system attribution while preserving legacy subscriptions and audits. The applied source passes58 native PHP8.4.25/MariaDB10.11.16 checks, including interrupted DDL recovery, rollback of the final marker/audit, original-record preservation and actor/history corruption refusals. [Exact scope](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
+
+The first test run exposed a fixture identifier bug after12 checks; its output and database are preserved. The corrected fixture passed in a fresh isolated database. This is bounded migration/history acceptance, using synthetic format2 retained rows. Authenticated checkout composition, first invoice creation, screens, other runtime combinations and release acceptance remain pending. Published1.25 is unchanged.
+
 ## 2026-10-18 — hosting first-period billing groundwork
 
 The hosting first-invoice branch now combines client-attributed subscription documents with recurring terms derived from the exact retained consent. Its separate checkout path starts period0 on the accepted local date; legacy activation and later future-period rules remain unchanged. [Implementation and remaining work](docs/TWENTYI_HOSTING_FIRST_INVOICE.md).
