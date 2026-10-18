@@ -3,10 +3,22 @@ declare(strict_types=1);
 if(PHP_SAPI!=='cli' || getenv('CWP_TEST_DATABASE')!=='cwp_test')exit(2);
 $root=realpath($argv[1]);$base=realpath(__DIR__.'/../test-runtime');
 if(!$root || !$base || !str_starts_with($root,$base.DIRECTORY_SEPARATOR))exit(2);
+// Optional real web-server boundary for the release-only root/subfolder fixture.
+// Legacy callers keep their existing per-mode defaults below.
+$documentRoot=null;
+if(array_key_exists(3,$argv)){
+    $documentRoot=realpath($argv[3]);
+    if(!$documentRoot || !is_dir($documentRoot) || !str_starts_with($documentRoot,$base.DIRECTORY_SEPARATOR)
+        || !in_array($documentRoot,[$root,dirname($root)],true))exit(2);
+}
 define('CWP_BOOT',true);define('CWP_ROOT',$root);
 require $root.'/includes/bootstrap.php';
 $GLOBALS['cwp_config']=require $root.'/config.php';
 if(config()['db']['name']!=='cwp_test')exit(2);
+if(($argv[2]??'')==='recurring'){
+    $saved=[];foreach(['recurring_billing_sources'=>'id','recurring_billing_schedules'=>'id','recurring_billing_events'=>'schedule_id,revision','recurring_billing_invoices'=>'id','studio_invoices'=>'id','invoice_payments'=>'id'] as $name=>$order)$saved[$name]=all('SELECT * FROM '.table($name).' ORDER BY '.$order);
+    echo json_encode($saved,JSON_THROW_ON_ERROR);exit;
+}
 if(in_array($argv[2]??'',['owner-rate-exhaust','owner-rate-reset'],true)){
     // Synthetic CLI fixture only: isolate this localhost updater's time window.
     // Keep every other limiter and all business/private data unchanged.
@@ -22,6 +34,13 @@ if(in_array($argv[2]??'',['owner-rate-exhaust','owner-rate-reset'],true)){
     }
     echo json_encode(['isolated_owner_window'=>true],JSON_THROW_ON_ERROR);exit;
 }
+if(($argv[2]??'')==='plans'){
+    $saved=[];
+    foreach(['service_plans','service_plan_events','service_subscriptions','service_subscription_events'] as $name){
+        $saved[$name]=all('SELECT * FROM '.table($name).' ORDER BY id');
+    }
+    echo json_encode($saved,JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='planning'){
     $saved=[];foreach(['studio_plan_events'=>'job_id,revision','studio_plan_requests'=>'id','studio_plan_heads'=>'id','activity_reads'=>'id'] as $name=>$order)$saved[$name]=all('SELECT * FROM '.table($name).' ORDER BY '.$order);
     echo json_encode($saved,JSON_THROW_ON_ERROR);exit;
@@ -36,7 +55,7 @@ if(($argv[2]??'')==='submissions'){
 }
 if(in_array($argv[2]??'',['drafts-seed','submissions-seed'],true)){
     require_once $root.'/app/mail/drafts.php';
-    $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=$root;
+    $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=$documentRoot??$root;
     start_session();$actor=one('SELECT auth_version FROM '.table('users').' WHERE id=1');
     $_SESSION=['uid'=>1,'auth_version'=>$actor['auth_version'],'login_at'=>time(),'last_activity'=>time()];
     $account=one('SELECT * FROM '.table('mail_accounts').' ORDER BY id LIMIT 1');
@@ -73,7 +92,7 @@ if(($argv[2]??'')==='drafts'){
 }
 if(($argv[2]??'')==='provider-seed'){
     require_once $root.'/app/providers/checks.php';
-    $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=$root;
+    $_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1','SCRIPT_NAME'=>'/index.php','REQUEST_METHOD'=>'GET'];$_SERVER['DOCUMENT_ROOT']=$documentRoot??$root;
     start_session();$actor=one('SELECT auth_version FROM '.table('users').' WHERE id=1');
     $_SESSION=['uid'=>1,'auth_version'=>$actor['auth_version'],'login_at'=>time(),'last_activity'=>time()];
     $profile=provider_settings_profile();
@@ -170,7 +189,7 @@ if(($argv[2]??'')==='seed'){
         query('INSERT INTO '.table('mail_template_revisions').' (template_id,revision,name,subject,body,status,visibility,owner_id,action,actor_id,recorded_at) VALUES (?,1,?,?,?,?,?,?,?,1,?)',[$id,...$values,'create',$now]);
     }
     if(one('SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[config()['db']['prefix'].'mail_accounts'])){
-        require_once $root.'/app/mail/accounts.php';$_SERVER['DOCUMENT_ROOT']=dirname($root);$_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1','SCRIPT_NAME'=>'/admin/index.php','REQUEST_METHOD'=>'GET'];start_session();
+        require_once $root.'/app/mail/accounts.php';$_SERVER['DOCUMENT_ROOT']=$documentRoot??dirname($root);$_SERVER+=['REMOTE_ADDR'=>'127.0.0.1','HTTP_HOST'=>'127.0.0.1','SCRIPT_NAME'=>'/admin/index.php','REQUEST_METHOD'=>'GET'];start_session();
         $actor=one('SELECT * FROM '.table('users').' WHERE id=1');$_SESSION=['uid'=>1,'auth_version'=>$actor['auth_version'],'login_at'=>time(),'last_activity'=>time()];
         $password='Synthetic organized upgrade passphrase';
         $id=mail_accounts_save('',0,['label'=>'Earlier saved email account','address'=>'earlier@example.invalid','imap_host'=>'imap.example.invalid','imap_port'=>'993','imap_encryption'=>'ssl','imap_username'=>'earlier-incoming','smtp_host'=>'smtp.example.invalid','smtp_port'=>'587','smtp_encryption'=>'starttls','smtp_username'=>'earlier-outgoing'],true,['imap_password'=>'Synthetic earlier incoming password','smtp_password'=>'Synthetic earlier outgoing password'],$password);

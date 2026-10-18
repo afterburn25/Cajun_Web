@@ -2,7 +2,7 @@
 declare(strict_types=1);
 if (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); exit; }
 function setup_owner_input(): array {
-    $name=posted('owner_name',120);$email=posted('owner_email',190);$password=posted('owner_password',72);validate_password($password);
+    $name=posted('owner_name',120);$email=posted('owner_email',190);$password=posted('owner_password',72);validate_admin_password($password);
     if($password!==posted('owner_confirm',72))throw new InvalidArgumentException('The administrator passwords do not match.');
     if($name===''||!filter_var($email,FILTER_VALIDATE_EMAIL))throw new InvalidArgumentException('Enter your name and a valid administrator email.');
     $url=rtrim(posted('site_url',500),'/');if($url==='')throw new InvalidArgumentException('Enter the website URL.');
@@ -14,6 +14,7 @@ function setup_owner_input(): array {
 function setup_database_input(): array {
     $c=['host'=>posted('db_host',253),'port'=>(int)posted('db_port',5),'name'=>posted('db_name',64),'user'=>posted('db_user',128),'pass'=>posted('db_password',512),'prefix'=>posted('db_prefix',20)];
     if(!preg_match('/^[a-zA-Z0-9.-]+$/D',$c['host'])||$c['port']<1||$c['port']>65535||!preg_match('/^[a-zA-Z0-9_$-]+$/D',$c['name'])||!preg_match('/^[a-zA-Z][a-zA-Z0-9_]{1,19}$/D',$c['prefix'])||$c['user']==='')throw new InvalidArgumentException('Check the database host, port, full database/user names and table prefix. The prefix must be 2–20 letters, digits or underscores, beginning with a letter.');
+    $fresh=setup_fresh_token();if($fresh!=='')$c['prefix']='cwp_fresh_'.substr($fresh,0,9).'_';
     return $c;
 }
 function setup_database_test(array $c): string {
@@ -42,7 +43,7 @@ function setup_deploy(array $o,array $c,string $storage): array {
         save_setting('contact_email',$o['business_email']);save_setting('notification_email',$o['email']);save_setting('mail_from',$o['business_email']);save_setting('site_published',$o['preview']?'0':'1');
         query('INSERT INTO '.table('users').' (name,email,password_hash,auth_version,created_at) VALUES (?,?,?,?,?)',[$o['name'],$o['email'],$o['hash'],bin2hex(random_bytes(16)),gmdate('Y-m-d H:i:s')]);
         staff_seed_owner((int)$pdo->lastInsertId());
-        save_setting('support_schema_version','1');save_setting('catalog_schema_version','1');save_setting('payments_schema_version','1');save_setting('payment_attempts_schema_version','1');save_setting('payment_notifications_schema_version','1');save_setting('invoice_ledger_schema_version','1');save_setting('delivery_schema_version','1');save_setting('activity_schema_version','1');save_setting('mail_templates_schema_version','1');save_setting('mail_accounts_schema_version','1');save_setting('website_reviews_schema_version','1');appointments_seed();save_setting('appointments_schema_version','1');save_setting('mail_connections_schema_version','1');save_setting('mail_inbox_schema_version','1');save_setting('mail_messages_schema_version','1');save_setting('mail_notices_schema_version','1');save_setting('provider_settings_schema_version','1');save_setting('provider_inventory_schema_version','3');save_setting('provider_operations_schema_version','4');save_setting('mail_drafts_schema_version','1');save_setting('mail_submissions_schema_version','1');save_setting('license_schema_version','3');
+        save_setting('support_schema_version','1');save_setting('catalog_schema_version','1');save_setting('payments_schema_version','1');save_setting('payment_attempts_schema_version','1');save_setting('payment_notifications_schema_version','1');save_setting('invoice_ledger_schema_version','1');save_setting('delivery_schema_version','1');save_setting('activity_schema_version','1');save_setting('mail_templates_schema_version','1');save_setting('mail_accounts_schema_version','1');save_setting('website_reviews_schema_version','1');appointments_seed();save_setting('appointments_schema_version','1');save_setting('mail_connections_schema_version','1');save_setting('mail_inbox_schema_version','1');save_setting('mail_messages_schema_version','1');save_setting('mail_notices_schema_version','1');save_setting('provider_settings_schema_version','1');save_setting('provider_inventory_schema_version','5');save_setting('provider_operations_schema_version','4');save_setting('mail_drafts_schema_version','1');save_setting('mail_submissions_schema_version','1');save_setting('license_schema_version','3');save_setting('license_invoice_cutover','0');
         foreach(default_services() as $i=>$v)query('INSERT INTO '.table('services').' (slug,title,summary,body,icon,sort_order,active) VALUES (?,?,?,?,?,?,1)',[...$v,$i]);
         if($o['seed'])foreach(default_projects() as $i=>$v)query('INSERT INTO '.table('projects').' (slug,title,category,summary,description,challenge,solution,deliverables,cover,status,is_demo,featured,sort_order,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,\'published\',1,1,?,?,?)',[...$v,$i,gmdate('Y-m-d H:i:s'),gmdate('Y-m-d H:i:s')]);
         log_event('install.complete','Installer '.CWP_INSTALLER_BUILD);$pdo->commit();$events[]='Saved the administrator account and website content.';
@@ -57,7 +58,7 @@ function setup_deploy(array $o,array $c,string $storage): array {
         try{$deleted=cwp_installer_cleanup();}catch(Throwable $e){$deleted=[];$warnings[]='The website is installed and locked, but installer cleanup needs attention in your hosting File Manager.';}
         foreach($deleted as $file=>$gone){if($gone&&!empty($legacy[$file]))$events[]='Removed '.$file.'.';elseif(!$gone)$warnings[]=$file.' could not be deleted. The installed-site guard blocks setup. Remove only this installer file in File Manager.';}
         $events[]='Private files and media use: '.$storage;
-        unset($_SESSION['setup_db'],$_SESSION['setup_owner'],$_SESSION['setup_storage'],$_SESSION['setup_until']);
+        unset($_SESSION['setup_db'],$_SESSION['setup_owner'],$_SESSION['setup_storage'],$_SESSION['setup_until'],$_SESSION['cwp_setup_fresh_token']);
         @session_regenerate_id(true);
         return ['ok'=>true,'events'=>$events,'warnings'=>$warnings,'deleted'=>$deleted,'storage'=>$storage,'admin'=>$o['site_url'].'/admin/index.php','site'=>$o['site_url'].'/'];
     } catch(Throwable $e){

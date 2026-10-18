@@ -200,13 +200,13 @@ function provider_operations_credential_fingerprint(#[\SensitiveParameter] strin
  * ledger-claimed operation over the injected transport. The adapter
  * attaches the Authorization material at send time only.
  */
-function provider_operations_perform(array $row,#[\SensitiveParameter] string $secret,string $address,callable $authorize,ProviderOperation $operation): OperationResult {
+function provider_operations_perform(array $row,#[\SensitiveParameter] string $secret,string $address,callable $authorize,ProviderOperation $operation,?callable $mailboxPassword=null): OperationResult {
     // Ledger identity binds profile + revision + the credential itself:
     // a replacement account or any settings change can never replay a
     // resolved operation from a different credential context.
     $identity=$row['id'].':'.(int)$row['revision'].':'.provider_operations_credential_fingerprint($secret);
     $credential=new ProviderCredential('twenty-i',$identity,static function()use($secret,$authorize):string{$authorize();return $secret;});
-    return (new ProviderGateway(new TwentyIOperationAdapter(),new FixedHttpTransport($address,$authorize),new ProviderOperationLedger()))->perform($credential,$operation);
+    return (new ProviderGateway(new TwentyIOperationAdapter($mailboxPassword),new FixedHttpTransport($address,$authorize),new ProviderOperationLedger()))->perform($credential,$operation);
 }
 
 /**
