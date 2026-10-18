@@ -40,8 +40,9 @@ function activity_render(string $audience,string $error=''): never {
     echo '<p>Messages, reviews, files'.($audience==='client'?', invoices, payments and website releases':' and client decisions').'. Opening an update keeps its read status until you change it. All times are UTC.</p><div class="activity-toolbar"><strong>'.($count>=100?'99+':$count).' unread</strong><nav aria-label="Activity filter"><a href="'.esc(activity_url($audience)).'"'.(!$unread?' aria-current="page"':'').'>All updates</a><a href="'.esc(activity_url($audience,['filter'=>'unread'])).'"'.($unread?' aria-current="page"':'').'>Unread</a></nav>';
     if($feed['rows'])activity_form($audience,array_column($feed['rows'],'event_key'),'read','Mark visible updates read');echo '</div><div class="activity-list">';
     $labels=['message'=>$audience==='client'?'Studio message':'Client message','file'=>'Private file added','review'=>'Review published','invoice'=>'Invoice issued','payment'=>'Payment history updated','release'=>'Website release published','decision'=>'Client review decision','milestone'=>'Milestone update'];
-    foreach($feed['rows'] as $r){$read=$r['read_at']!==null;
-        echo '<article class="workspace-card activity-item" data-event-key="'.esc($r['event_key']).'"><div><span class="workspace-status">'.($read?'Read':'Unread').'</span><span class="eyebrow">'.esc($labels[$r['kind']]).'</span><h2><a href="'.esc(activity_url($audience,['open'=>$r['event_key']])).'">'.esc($r['project_title']).'</a></h2>';
+    $senders=['admin'=>'Studio message','client'=>'Client message','contact'=>'Contact message'];
+    foreach($feed['rows'] as $r){$read=$r['read_at']!==null;$label=$r['kind']==='message'?($senders[$r['author_type']??'']??$labels['message']):$labels[$r['kind']];
+        echo '<article class="workspace-card activity-item" data-event-key="'.esc($r['event_key']).'"><div><span class="workspace-status">'.($read?'Read':'Unread').'</span><span class="eyebrow">'.esc($label).'</span><h2><a href="'.esc(activity_url($audience,['open'=>$r['event_key']])).'">'.esc($r['project_title']).'</a></h2>';
         if($r['item_title']!=='')echo '<p>'.esc($r['item_title']).'</p>';
         echo '<time>'.esc($r['occurred_at']).' UTC</time></div>';activity_form($audience,[$r['event_key']],$read?'unread':'read',$read?'Mark unread':'Mark read');echo '</article>';
     }

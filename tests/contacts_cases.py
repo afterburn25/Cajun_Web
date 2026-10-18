@@ -189,6 +189,14 @@ def run_browser(env,browser):
     check('Outstanding invoice appears in the needed-actions list','Outstanding invoice' in r.text)
     r=alice.get(portal+'?activity=1')
     check('Primary account feed stays company-wide','data-event-key="invoice:'+str(iid)+'"' in r.text and 'data-event-key="message:'+str(mid)+'"' in r.text and 'data-event-key="review:'+str(vid)+'"' in r.text)
+    r=alice.post(portal+'?job=1',data={'csrf':token(alice.get(portal+'?job=1')),'action':'message','body':'Primary client attribution marker.'})
+    amid=db("SELECT id FROM ci_studio_messages WHERE body='Primary client attribution marker.'")[0]['id']
+    feed=soup(contact.get(portal+'?activity=1'))
+    items={n['data-event-key']:n.select_one('.eyebrow').get_text() for n in feed.select('[data-event-key]')}
+    check('Contact feed keeps real sender attribution',items.get('message:'+str(amid))=='Client message' and items.get('message:'+str(mid))=='Studio message')
+    primary_feed=soup(alice.get(portal+'?activity=1'))
+    pitems={n['data-event-key']:n.select_one('.eyebrow').get_text() for n in primary_feed.select('[data-event-key]')}
+    check('Primary feed attributes the contact-authored message',pitems.get('message:'+str(cmsg))=='Contact message')
 
     # A pending review pushed outside the 100-version window must still reach its decision form.
     r=submit(owner,jobAdmin,'studio_publish',{'kind':'proposal','title':'Boundary proposal','body':'Pending proposal outside the display window'})
