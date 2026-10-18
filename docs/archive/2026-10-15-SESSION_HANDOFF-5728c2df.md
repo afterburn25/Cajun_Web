@@ -1,0 +1,13 @@
+# Continue 20i P0: initial shared-hosting orders
+
+[PR #138](https://github.com/afterburn25/Cajun_Web/pull/138) targets #137's integration branch. Full acceptance now allows that exact PR target while keeping all stages/cases.
+
+Start with [service orders](../TWENTYI_SERVICE_ORDERS.md). Branch `codex/twentyi-service-orders` descends from exact PR #137 source `7038cb50bafecfd6f96b0fcc3df944622fa0900b`. This commit adds order documents/native storage/cards and native cases to the retained recurring suite. First native146090fd run38770517159 failed at the recurring-state adapter (`active` versus retained `running`). This follow-up fixes the actual phase and period-zero assessment, adds explicit missing-order presentation and real browser cases. Corrected226f7cb passed native38771029583:72 order cases within229 recurring/order plus108 ledger cases in each of four combinations, actual JSON parsed. This follow-up adds controlled malformed-journal handling and concurrency/no-write coverage; inspect its exact native run and stable full acceptance next. Then add real extracted-package HTTP/client/admin journeys, connect exact provider package mapping and durable existing execution/reconciliation, and continue the full takeover scope. The order model alone is not a fulfillment authorization.
+
+Preserve full candidate runs 38765096283 and 38767510944. The latter's PR merge tree is verified identical to source7038. Parent hosting matrix38767511429 passed all four jobs, with actual JSON records112/operations104/retry44/delete67/reconciliation157 per job. No parent result certifies this descendant. The new order implementation has source inspection only until its first tests complete.
+
+Current release remains v1.24.0. No production writes, charges, mail, SSH or deployment. Original full API reference and original approved concept image custody remain as recorded below. Local worktrees remain untouched because this environment is read-only; source changes use the authorized GitHub connector. Existing-PR edits and review-request comments remain blocked by automatic approval review (approval policy never), not by the owner.
+
+Previous candidate details are preserved in [the 7038 checkpoint](2026-10-15-SESSION_HANDOFF-7038cb50.md).
+
+Order follow-up: `phase()` can represent a future decision. `service_orders_billing_eligible()` now checks original and actual-current periods through the existing calendar/schedule APIs. Inspect the native past-pause/future-resume regression and exact full acceptance before integration; do not treat a future scheduled state as current fulfillment policy.

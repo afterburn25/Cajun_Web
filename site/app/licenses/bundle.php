@@ -19,6 +19,11 @@ function license_bundle(string $licenseKey, string $industry, string $coreDir, s
     if (!(bool) $license['is_active']) {
         throw new RuntimeException('License is deactivated.');
     }
+    if ((bool) ($license['is_master'] ?? 0)) {
+        // Master keys are internal staff testing keys — embedding one in a
+        // deliverable ZIP would leak a key that authorizes every domain.
+        throw new InvalidArgumentException('Master license keys cannot be bundled for delivery.');
+    }
 
     // Find the industry module in Website Core examples
     $moduleDir = $coreDir . '/examples/industry-' . $industry;
@@ -99,6 +104,9 @@ function license_bundle(string $licenseKey, string $industry, string $coreDir, s
  * are the bytes built — a corrupted or tampered bundle is refused.
  */
 function license_bundle_store(int $licenseId, string $zipPath, string $title): void {
+    if ((int)(one('SELECT is_master FROM '.table('website_licenses').' WHERE id=?',[$licenseId])['is_master']??0)===1) {
+        throw new InvalidArgumentException('Master license keys cannot be bundled for delivery.');
+    }
     $now = gmdate('Y-m-d H:i:s');
     $sha = is_file($zipPath) ? hash_file('sha256', $zipPath) : false;
     query(

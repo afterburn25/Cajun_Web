@@ -5,6 +5,15 @@ if (!defined('CWP_SETUP') || !defined('CWP_BOOT')) { http_response_code(404); ex
 final class SetupStorageConflict extends RuntimeException {}
 function setup_root(): string { return realpath(CWP_ROOT) ?: CWP_ROOT; }
 function setup_binding(): string { return hash('sha256',setup_root()); }
+/** Explicit fresh-site intent allocates separate resources; it never unlocks a site. */
+function setup_fresh_token(): string {
+    $intent=posted('fresh_start',1);
+    if($intent==='')return '';
+    if($intent!=='1')throw new InvalidArgumentException('Choose whether to start a fresh website.');
+    $token=$_SESSION['cwp_setup_fresh_token']??null;
+    if(!is_string($token)||!preg_match('/^[a-f0-9]{12}$/D',$token))throw new RuntimeException('Reload the installation form before choosing a fresh start.');
+    return $token;
+}
 function setup_worker_uid(): ?int { return function_exists('posix_geteuid') ? posix_geteuid() : null; }
 /** Read-only ownership report; never changes parent permissions or runs commands. */
 function setup_permission_report(?string $reason=null): array {
@@ -48,7 +57,8 @@ function setup_real_parent(string $path): string {
     return $real;
 }
 function setup_storage_candidates(string $requested): array {
-    $name='cajunwebpro-private-'.substr(setup_binding(),0,12);
+    $fresh=setup_fresh_token();
+    $name='cajunwebpro-private-'.substr(setup_binding(),0,12).($fresh!==''?'-fresh-'.$fresh:'');
     if ($requested!=='') return [['path'=>setup_real_parent(rtrim($requested,'/')).'/'.$name,'type'=>'custom private folder']];
     $parents=[dirname(setup_document_root()),dirname(setup_root())];
     // Account home is a fallback only when it is an ancestor of this website.
@@ -65,7 +75,7 @@ function setup_storage_candidates(string $requested): array {
     }
     // The known local storage URL is already denied by the application's server
     // rules. Media additionally has a PHP exit guard; no arbitrary public path.
-    $out[]=['path'=>setup_root().'/storage','type'=>'protected local folder'];
+    if($fresh==='')$out[]=['path'=>setup_root().'/storage','type'=>'protected local folder'];
     return $out;
 }
 function setup_storage_marker(): string { return CWP_GUARD.json_encode(['app'=>'CajunWebPro','binding'=>setup_binding(),'format'=>1],JSON_UNESCAPED_SLASHES)."\n"; }
@@ -81,7 +91,7 @@ function setup_storage_inventory(string $dir): void {
         if ($item==='.' || $item==='..')continue;
         $p=$dir.'/'.$item;
         if (@is_link($p)) throw new SetupStorageConflict('A storage entry is a symbolic link. Nothing was overwritten: '.$p);
-        if ($item==='install.lock.php') throw new SetupStorageConflict('This storage contains a completed-installation lock. Keep it intact; do not reinstall over existing data.');
+        if ($item==='install.lock.php') throw new SetupStorageConflict('Storage from a completed installation remains at '.$dir.'. Deleting website files does not remove private storage. To keep the site, restore its original config.php. For a new site with separate tables and storage, select Start a fresh website. Previous data and this installation lock will be preserved.');
         if (in_array($item,['media','upload'],true) && @is_dir($p)) {
             $media=@scandir($p);if($media===false)throw new SetupStorageConflict('Cannot inspect existing media safely. Correct ownership before setup.');
             foreach ($media as $m) if ($m!=='.' && $m!=='..') {
@@ -159,8 +169,11 @@ function setup_replace_packaged_storage(): ?string {
 
 function setup_prepare_storage(string $requested): array {
     $local=setup_root().'/storage';
-    // Do not sidestep previous data by quietly switching to an empty folder.
-    setup_storage_inventory($local);
+    // Installed-site guards always win, including with explicit fresh-site intent.
+    if(cwp_installer_installed())throw new RuntimeException('This website is already installed. Keep its configuration and storage locks intact.');
+    $fresh=setup_fresh_token();
+    // The default never sidesteps previous data. Explicit fresh setup leaves it intact.
+    if($fresh==='')setup_storage_inventory($local);
     $candidates=setup_storage_candidates($requested);$attempts=[];
     foreach ($candidates as $candidate) {
         $dir=$candidate['path'];setup_storage_inventory($dir);$templateBackup=null;
@@ -192,7 +205,7 @@ function setup_prepare_storage(string $requested): array {
             $probe['message']='Ready: '.$candidate['type'].'. PHP-owned, persistent, 0700; file create/read/append/rename/delete verified.';
             $media['message']='Ready. Protected media folder created and verified under the selected private storage.';
             return ['ok'=>true,'storage'=>$dir,'private'=>$probe,'media'=>$media,'attempts'=>$attempts,
-                'message'=>$templateBackup!==null?'Created PHP-owned storage. The empty original package template is preserved at '.$templateBackup.'.':($dir!==$local && @is_dir($local)?'The bundled storage folder was left unchanged. The website will use the selected private folder instead.':'The selected storage path will be saved in config.php.')];
+                'message'=>$fresh!==''?'Fresh setup uses a separate private folder. Previous storage remains unchanged.':($templateBackup!==null?'Created PHP-owned storage. The empty original package template is preserved at '.$templateBackup.'.':($dir!==$local && @is_dir($local)?'The bundled storage folder was left unchanged. The website will use the selected private folder instead.':'The selected storage path will be saved in config.php.'))];
         }catch(Throwable $e){$attempts[]=['path'=>$dir,'ok'=>false,'message'=>$e->getMessage()];}
     }
     return ['ok'=>false,'storage'=>'','attempts'=>$attempts,'message'=>'No safe, persistent location was writable by PHP. Your host must grant this domain\'s PHP worker access to a private parent folder and the website folder. Do not make the whole site world-writable.'];
