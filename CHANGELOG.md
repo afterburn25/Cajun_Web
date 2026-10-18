@@ -718,6 +718,10 @@ Owners explicitly approve an observed cloud/VPS server for an existing client. T
 The new original1.24 fixture seeds populated package/domain ownership and one uncertain synthetic label request through the original gateway/ledger. Apply/recover checks preserve original links, observations, approval events, consumed grants and operation attempts. Cloud migration remains an explicit owner HTTP action; recovered requests cannot reach the synthetic network callback. Current native/browser/full recovery, screenshots, independent review, normal merge and exact-main/download gates remain required.
 
 Published1.24 source7190b582 and all16 assets remain immutable. Complete20i orders/payments/native controls/domain/VPS lifecycle/support/SSH remain unfinished. Necessary billing #130/#133 continues separately; unrelated work stays paused. No production operation or deployment occurred.
+## Unreleased — structured project planning (Devin port)
+
+Ported the preserved `codex/project-planning`/`project-planning-storage`/`project-planning-screens` stack onto `devin/non20i-project-planning` (stacked on `devin/non20i-project-progress`, which it extends). Owner-prepared additive `studio_plan_events`/`studio_plan_requests`/`studio_plan_heads` storage; canonical `ProjectPlan`/`ProjectPlanEvent` models with bounded milestone dependencies and immutable revision events; staff planning editor and client dashboard/timeline inside the existing private workspace; `planning:` activity items that open the exact authorized event. Existing project free-text fields, progress history, invoices, files and deliveries remain authoritative — no legacy text is converted. No live deployment or release.
+
 ## Unreleased — dated project history and client progress timeline (Devin port)
 
 - Port the preserved `codex/project-progress-screens` slice onto `main` under the 2026-10-16 allocation: `foundation/projects/{ProjectSnapshot,ProjectProgressEvent}` canonical classes with deployment mirrors, additive `studio_progress_{events,requests,heads}` storage behind owner-gated `project_progress_setup`, and immutable hash-linked dated history for existing `studio_job` create/edit forms.

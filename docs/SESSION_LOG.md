@@ -189,6 +189,17 @@ Actions: restored the seventh placeholder in `site/admin/controllers/studio.php`
 Tests: `php -l` clean; `tests/project-progress/records.php` and `forms.php` pure suites pass. HTTP/browser and Apache acceptance rerun in CI on this commit; original run 38954972960 failure preserved as evidence.
 
 Next: push, confirm fresh `native-and-browser` reaches the browser project-history checks, then continue the stacked PRs.
+## Port structured project planning — 2026-10-16
+
+Request: continue the non-20i roadmap (issue #157, item 2 — "web-design project timelines and milestones"), continuing the preserved `codex/project-planning*` stack.
+
+Starting commit: `devin/non20i-project-progress` `433c6094` — planning is genuinely built on the progress service layer (`project_progress_staff/json/locked/job/client_row/touch`), so this branch is stacked; the PR targets the progress branch to keep the diff planning-only.
+
+Files/actions: extracted `foundation/project-planning/{ProjectPlan,ProjectPlanEvent}.php` (+ deployment mirrors via new `project-planning` entry in `tools/build.py`), `site/app/projects/{planning,planning_activity,planning_forms,planning_history}.php`, `site/database/{schema,migrations}/project_planning_*`, `site/includes/layout/project_planning{,_editor}.php`, `site/assets/js/project-planning.js`, planning CSS block in `growth.css`, `tests/project-planning/*`, `tests/project_planning_{native,native_concurrency,native_integrity,native_limits,screen_native_cases,cases.py,upgrade_cases.py}`, `.github/workflows/project-planning{,-native}.yml`, `docs/PROJECT_PLANNING{,_CONTRACT,_SCREENS_CONTRACT,_STORAGE_CONTRACT}.md` (ownership wording updated to current allocation). Wired shared seams (planning-only hunks): `app/activity/events.php` (`planning` feed kind + `focus_plan` destination + validation calls), `includes/layout/activity.php` (`planning` label), `app/staff/accounts.php` (`project_planning_setup` → `staff.manage`, `project_planning_save` → `clients.manage`), `admin/controllers/{studio,actions}.php`, `admin/views/studio/{job,upgrade}.php`, `portal/controllers/router.php`, `portal/views/workspace.php`. `project_planning_upgrade_cases.py` made self-contained (own form helpers + reuses the client the progress case activated); fixture gained a `planning` records mode; upgrade wired at the 1.23 baseline after progress; Apache integrity list + browser suite extended.
+
+Tests/verification (local): `php -l` clean on all touched PHP; `tests/project-planning/records.php` and `forms.php` all checks pass on PHP 8.4; `python tools/build.py --refresh` passes with `foundation/project-planning` mirrored byte-for-byte and inventory regenerated (7 planning entries). Native MariaDB, HTTP/Chromium and packaged 1.23 upgrade lanes are CI-wired; no local database here.
+
+Next: commit, push, open PR targeting the progress branch, update #157.
 
 ## Port dated project history onto main — 2026-10-16
 

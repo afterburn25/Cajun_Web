@@ -41,6 +41,10 @@ if(($argv[2]??'')==='plans'){
     }
     echo json_encode($saved,JSON_THROW_ON_ERROR);exit;
 }
+if(($argv[2]??'')==='planning'){
+    $saved=[];foreach(['studio_plan_events'=>'job_id,revision','studio_plan_requests'=>'id','studio_plan_heads'=>'id','activity_reads'=>'id'] as $name=>$order)$saved[$name]=all('SELECT * FROM '.table($name).' ORDER BY '.$order);
+    echo json_encode($saved,JSON_THROW_ON_ERROR);exit;
+}
 if(($argv[2]??'')==='progress'){
     $saved=[];
     foreach(['studio_jobs'=>'id','studio_progress_events'=>'job_id,revision','studio_progress_requests'=>'id','studio_progress_heads'=>'id','activity_reads'=>'id'] as $name=>$order)$saved[$name]=all('SELECT * FROM '.table($name).' ORDER BY '.$order);
