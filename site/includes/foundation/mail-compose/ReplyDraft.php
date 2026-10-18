@@ -13,14 +13,15 @@ final readonly class ReplyDraft
 {
     private function __construct(public string $mode,public DraftContent $content,public MessageThread $thread,public array $omissions) {}
 
-    public static function prepare(string $mode,#[\SensitiveParameter] string $raw):self
+    public static function prepare(string $mode,#[\SensitiveParameter] string $raw,?string $self=null):self
     {
-        if(!in_array($mode,['reply','forward'],true))throw new InvalidArgumentException('Unsupported mail action.');
+        if(!in_array($mode,['reply','reply-all','forward'],true))throw new InvalidArgumentException('Unsupported mail action.');
         $message=BodyDecoder::decode($raw);
-        $metadata=$mode==='reply'?ReplyMetadata::decode(substr($raw,0,strpos($raw,"\r\n\r\n")+2)):null;
-        $prefix=$mode==='reply'?'Re: ':'Fwd: ';
+        $isReply=$mode!=='forward';
+        $metadata=$isReply?ReplyMetadata::decode(substr($raw,0,strpos($raw,"\r\n\r\n")+2)):null;
+        $prefix=$isReply?'Re: ':'Fwd: ';
         $subject=$message['subject']; $omissions=[];
-        if(!preg_match($mode==='reply'?'/\ARe:\s*/i':'/\AFw(?:d)?:\s*/i',$subject))$subject=$prefix.$subject;
+        if(!preg_match($isReply?'/\ARe:\s*/i':'/\AFw(?:d)?:\s*/i',$subject))$subject=$prefix.$subject;
         if(strlen($subject)>DraftContent::MAX_SUBJECT_BYTES || $message['headers_truncated'])$omissions[]='subject_or_header_shortened';
         $subject=mb_strcut($subject,0,DraftContent::MAX_SUBJECT_BYTES,'UTF-8');
         $quote="From: ".$message['from']."\nDate: ".$message['date']."\nSubject: ".$message['subject']."\n\n";
@@ -30,7 +31,7 @@ final readonly class ReplyDraft
         } else $quote.=$message['text'];
         if($message['additional_inline_parts']>0)$omissions[]='additional_inline_parts';
         // Never include raw headers, hidden recipients or MIME attachments in a quote.
-        $body="\n\n".($mode==='reply'?'Original message:':'Forwarded message:')."\n> ".str_replace("\n","\n> ",$quote);
+        $body="\n\n".($isReply?'Original message:':'Forwarded message:')."\n> ".str_replace("\n","\n> ",$quote);
         $footer="\n\n[Attachments are not included.]";
         if($message['additional_inline_parts']>0)$footer.="\n[Additional inline message parts are not included.]";
         $maximum=DraftContent::MAX_BODY_BYTES-strlen($footer);
@@ -39,6 +40,31 @@ final readonly class ReplyDraft
             $marker="\n[Quoted text shortened to fit this draft. Open the original message for the rest.]";
             $body=mb_strcut($body,0,$maximum-strlen($marker),'UTF-8').$marker;
         }
-        return new self($mode,new DraftContent($metadata?->recipients??[],[],[],$subject,$body.$footer),$metadata?->thread??MessageThread::none(),$omissions);
+        $to=$metadata?->recipients??[];$cc=[];
+        if($mode==='reply-all') {
+            if(!is_string($self)||$self==='')throw new InvalidArgumentException('Reply all needs the chosen sending address.');
+            $selfKey=self::addressKey($self);$seen=[];
+            $to=self::merge([$metadata->recipients,$metadata->to],$seen,$selfKey);
+            $cc=self::merge([$metadata->cc],$seen,$selfKey);
+        }
+        return new self($mode,new DraftContent($to,$cc,[],$subject,$body.$footer),$metadata?->thread??MessageThread::none(),$omissions);
+    }
+
+    /** DraftContent key rule: local part preserved, domain lowercased. */
+    private static function addressKey(string $address):string
+    {
+        $split=strrpos($address,'@');
+        return $split===false?strtolower($address):substr($address,0,$split+1).strtolower(substr($address,$split+1));
+    }
+    /** First-occurrence merge that drops the sender's own address across To and Cc. */
+    private static function merge(array $lists,array &$seen,string $self):array
+    {
+        $result=[];
+        foreach($lists as $list)foreach($list as $address) {
+            $key=self::addressKey($address);
+            if($key===$self || isset($seen[$key]))continue;
+            $seen[$key]=true;$result[]=$address;
+        }
+        return $result;
     }
 }

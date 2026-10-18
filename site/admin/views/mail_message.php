@@ -43,6 +43,7 @@ if (!defined('CWP_BOOT')) { http_response_code(404); exit; }
 <input type="hidden" name="draft_id" value="<?=esc(bin2hex(random_bytes(16)))?>">
 <label>From account<select name="sender" required><?php foreach($replySenders as $sendAccount): ?><option value="<?=esc($sendAccount['id'].':'.$sendAccount['revision'])?>"><?=esc($sendAccount['label'].' · '.$sendAccount['address'])?></option><?php endforeach; ?></select></label>
 <button class="btn gold" name="action" value="mail_message_reply">Reply</button>
+<button class="btn outline" name="action" value="mail_message_reply_all">Reply all</button>
 <button class="btn outline" name="action" value="mail_message_forward">Forward</button></form></section>
 <?php endif; endif; ?>
 <?php endif; ?>
