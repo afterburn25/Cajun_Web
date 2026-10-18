@@ -1,0 +1,44 @@
+name: 20i PHP available-version diagnostic
+
+# Owner-authorized operation-specific read. Root reviews these exact bytes before
+# pushing this dedicated branch with the exact message. No PR/schedule/main trigger.
+on:
+  push:
+    branches: [ops/twentyi-php-versions-read]
+    paths:
+      - .github/workflows/twentyi-php-versions.yml
+      - ops/twentyi-php-versions/**
+permissions: {}
+concurrency:
+  group: twentyi-explicit-read-only
+  cancel-in-progress: false
+jobs:
+  php-versions:
+    if: >-
+      github.repository == 'afterburn25/Cajun_Web' &&
+      github.actor == 'afterburn25' && github.triggering_actor == 'afterburn25' &&
+      github.run_attempt == '1' &&
+      github.event_name == 'push' && github.ref == 'refs/heads/ops/twentyi-php-versions-read' &&
+      github.event.head_commit.message == 'ci: read one 20i package PHP versions shape'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Offline transport and disclosure guards
+        run: python3 -I -B ops/twentyi-php-versions/test_diagnostic.py
+      - name: One selection GET then one PHP metadata GET; bounded public tokens only
+        env:
+          TWENTYI_API_KEY: ${{ secrets.TWENTYI_API_KEY }}
+        run: python3 -I -B ops/twentyi-php-versions/diagnostic.py
+      - name: Preserve only the bounded shape result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: twentyi-php-versions-shape-${{ github.run_id }}-${{ github.run_attempt }}
+          path: php-versions-evidence/php-versions-shape.json
+          if-no-files-found: error
+          retention-days: 7

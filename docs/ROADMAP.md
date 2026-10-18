@@ -1,3 +1,7 @@
+## 2026-10-18 — fixed PHP options metadata diagnostic
+
+Prepared on main `e397d9a6e293850e8dff61a593e3ba39ee178400` for the owner-authorized complete 20i work. [Exact read scope and evidence](TWENTYI_PHP_OPTIONS_DIAGNOSTIC.md). The dedicated original-attempt workflow can select one real package in memory and read its PHP choices once; no provider mutation is possible. The 47 offline tests and independent 39-check source review pass. Live result and its interpretation remain pending. Request-boundary code is preserved separately at `6590d53b`; full client/owner controls, catalog/checkout acceptance and release gates remain open. Published 1.25.0 remains immutable.
+
 ## Verified increment and remaining work — 2026-10-18
 
 The bounded 1.25.0 increment, including the owner installer/navigation/hosting-draft and local-image additions, is [published and freshly download-verified](RELEASE_1.25.0_PUBLICATION.md) from `b79c67110829126916e3a65e616191542448bccc`. Its candidate/main acceptance and release-delivery gates are complete. Full 20i remains unfinished; every HOLD row and operation-specific authority limit remains.

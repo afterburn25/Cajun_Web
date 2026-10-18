@@ -1,0 +1,15 @@
+# Fixed PHP available-version metadata check
+
+The owner authorized complete native 20i integration. The full saved reference documents `GET /package/{packageId}/web/availablePhpVersions` but omits its response fields and value mapping. This dedicated diagnostic obtains necessary metadata without modifying a website. The reviewed source is based on main `e397d9a6e293850e8dff61a593e3ba39ee178400`.
+
+It makes at most two requests: one inventory GET to select the smallest genuine canonical package ID in memory, then one GET for that package's available PHP versions. There is no POST, retry, redirect, pagination or alternate package. Missing, duplicate, malformed or oversized inventory stops selection. The provider key is supplied only inside the Actions read step using the existing secret; no credential value was requested from the owner or inspected during preparation.
+
+Output preserves bounded JSON types and closed field paths. It may retain only exact matches to 45 fixed public PHP spellings (`php53` through the explicitly listed `php85` variants, their decimal spellings and display titles). These are lexical probes, not a supported-version list. Unknown values and keys, package identities and names, customer data, inventory counts, URLs, headers and raw response hashes remain withheld. Handler literals are not exported. Collapsed rows may limit semantic conclusions; inspect the original result before implementing any parser.
+
+Direct verified HTTPS uses TLS 1.2 or newer, no proxy/cookie handling, a 10-second socket bound and 35-second overall deadline. Each response is limited to 2 MiB; parsing, depth, nodes and output are bounded. Duplicate keys, invalid Unicode, nonfinite numbers, unexpected framing and compression are refused. The output file is created exclusively and contains only finite errors or allowed metadata.
+
+The workflow runs only on the exact owner push to `ops/twentyi-php-versions-read` with commit message `ci: read one 20i package PHP versions shape`, in the intended repository, on original attempt 1. It has no manual, PR, main or schedule trigger. It runs offline tests before receiving the secret, then retains only `php-versions-evidence/php-versions-shape.json` with pinned checkout/upload actions. Preserve the original attempt and any failure; do not rerun the read to manufacture success.
+
+Author verification: 47 offline tests with sockets and DNS forbidden. Independent verification: the same 47 tests plus 39 source/privacy/transport/workflow checks passed. Proposal manifest SHA256 `2d2def1010919e7d34b945f7762b908810b2ab036cb6b132ac5ccd144729f440`; independent review SHA256 `704755b7bb27a28c812f1661f5504df95b178ce4533b95924171e4da68f4e371`.
+
+This is reviewed preparation before the first push/run, not live endpoint evidence. PHP request code is separately preserved at `6590d53be88004315d50cc7b7e25e83391f8da67` on `codex/twentyi-php-version-controls`; it does not enable a change form. Choices interpretation, explicit client delegation, native lifecycle and owner/client UI acceptance remain required. No production setting, release asset or live website is changed by this diagnostic source.

@@ -1,3 +1,7 @@
+## 2026-10-18 — fixed PHP options metadata diagnostic
+
+Prepared on main `e397d9a6e293850e8dff61a593e3ba39ee178400` for the owner-authorized complete 20i work. [Exact read scope and evidence](docs/TWENTYI_PHP_OPTIONS_DIAGNOSTIC.md). The dedicated original-attempt workflow can select one real package in memory and read its PHP choices once; no provider mutation is possible. The 47 offline tests and independent 39-check source review pass. Live result and its interpretation remain pending. Request-boundary code is preserved separately at `6590d53b`; full client/owner controls, catalog/checkout acceptance and release gates remain open. Published 1.25.0 remains immutable.
+
 ## Unreleased — reduce unrelated pull-request test runs
 
 Add path filters to ten focused workflows, preserving their full test jobs and shared dependency coverage. Documentation and unrelated UI changes no longer start those ten workflows automatically; relevant changes and manual dispatch remain supported. Complete application and release acceptance are unchanged. This changes future CI admission only, with no application, installer, release asset or live-site changes.
